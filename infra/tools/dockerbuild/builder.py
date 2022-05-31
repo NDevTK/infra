@@ -93,17 +93,6 @@ class Builder(object):
   def wheel(self, system, plat):
     spec = self.spec._replace(version=self.version_fn(system))
 
-    # Make sure the Python version of the Wheel matches the platform. Except for
-    # universal platforms, which can build wheels for any Python version.
-    if not plat.universal and (spec.pyversions and
-                               plat.pyversion not in spec.pyversions):
-      # If the declared pyversions doesn't contain the version corresponding
-      # to this platform, then we don't support it.
-      raise PlatformNotSupported(
-          ("Wheel %s specifies platform [%s] which has version [%s], but its "
-           "pyversions '%r' doesn't contain this version") %
-          (spec.name, plat.name, plat.pyversion, spec.pyversions))
-
     # Make sure universal wheels are only built on universal platforms. This
     # allows us to explicitly select which builders build universal wheels, so
     # we have a disjoint set of wheels for each builder and hence avoid races.
@@ -118,12 +107,9 @@ class Builder(object):
           (spec.name, plat.name))
 
     if spec.universal:
-      if spec.pyversions == ['py2']:
-        pyversion = '27'
-      else:
-        pyversion = '38'
+      pyversion = '38'
     else:
-      # e.g. cp27mu -> 27
+      # e.g. cp38 -> 38
       pyversion = plat.wheel_abi[2:4]
 
     wheel = Wheel(
@@ -153,9 +139,6 @@ class Builder(object):
     if self._only_plat and plat.name not in self._only_plat:
       return False
     if plat.name in self._skip_plat:
-      return False
-    if not plat.universal and (self.spec.pyversions and
-                               plat.pyversion not in self.spec.pyversions):
       return False
     if self.spec.universal != plat.universal:
       return False
@@ -254,15 +237,10 @@ def BuildPackageFromPyPiWheel(system, wheel):
 
     wheel_name = StageWheelForPackage(system, tdir, wheel)
 
-    # In some cases, there are universal wheels with separate wheels for
-    # Python 2 and Python 3, rather than one which supports both at once. This
-    # seems to be fairly rare, so for now we'll just issue an error if that
-    # happens, and split such wheels into two 'Universal's.
-    # TODO: We only do this check for prebuilt universal wheels, but we might
-    # want to expand this and be stricter in other cases too.
+    # Make sure the prebuilt wheel supports the declared pyversions.
     if wheel.spec.universal:
       supported_versions = set(re.findall(r'py\d', wheel_name))
-      required_versions = set(wheel.spec.pyversions or ['py2', 'py3'])
+      required_versions = set(wheel.spec.pyversions or ['py3'])
       if not required_versions.issubset(supported_versions):
         raise Exception(
             'Wheel %s requires [%s], but wheel %s only supports [%s]' % (
@@ -311,7 +289,6 @@ CIPD_PYTHON_LOCK = concurrency.KeyedLock()
 
 def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
   PY_CIPD_VERSION_MAP = {
-      '27': 'version:2@2.7.18.chromium.39',
       '38': 'version:2@3.8.10.chromium.23',
       '39': 'version:2@3.9.8.chromium.20',
   }
@@ -328,8 +305,7 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
       os.makedirs(common_dir)
       system.cipd.init(common_dir)
 
-      cipd_pkg = 'infra/3pp/tools/cpython%s/%s' % (
-          '3' if wheel.pyversion[0] == '3' else '', cipd_platform)
+      cipd_pkg = 'infra/3pp/tools/cpython3/%s' % cipd_platform
       version = PY_CIPD_VERSION_MAP[wheel.pyversion]
       system.cipd.install(cipd_pkg, version, common_dir)
 
@@ -356,9 +332,7 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
   else:
     pkg_dir = common_dir
 
-  interpreter = os.path.join(pkg_dir, 'bin', 'python')
-  if wheel.pyversion[0] == '3':
-    interpreter += '3'
+  interpreter = os.path.join(pkg_dir, 'bin', 'python3')
   return pkg_dir, interpreter
 
 
@@ -395,18 +369,17 @@ def SetupPythonPackages(system, wheel, base_dir):
     pkg_dir, _ = _InstallCipdPythonPackage(system, wheel.plat.cipd_platform,
                                            wheel, base_dir)
     env['PYTHONHOME'] = pkg_dir
-    # For python 3, we need to also set _PYTHON_SYSCONFIGDATA_NAME to point to
-    # the target-architecture sysconfig module.
-    if wheel.pyversion[0] == '3':
-      sysconfigdata_modules = glob.glob('%s/lib/python%s/_sysconfigdata_*.py' %
-                                        (pkg_dir, '.'.join(wheel.pyversion)))
-      if len(sysconfigdata_modules) != 1:
-        raise Exception(
-            'Expected 1 sysconfigdata module in python package ' +
-            'for %s, got: [%s]',
-            (wheel.plat.cipd_platform, ','.join(sysconfigdata_modules)))
-      env['_PYTHON_SYSCONFIGDATA_NAME'] = (os.path.basename(
-          sysconfigdata_modules[0])[:-3])  # remove .py
+    # Set _PYTHON_SYSCONFIGDATA_NAME to point to the target-architecture
+    # sysconfig module.
+    sysconfigdata_modules = glob.glob('%s/lib/python%s/_sysconfigdata_*.py' %
+                                      (pkg_dir, '.'.join(wheel.pyversion)))
+    if len(sysconfigdata_modules) != 1:
+      raise Exception(
+          'Expected 1 sysconfigdata module in python package ' +
+          'for %s, got: [%s]',
+          (wheel.plat.cipd_platform, ','.join(sysconfigdata_modules)))
+    env['_PYTHON_SYSCONFIGDATA_NAME'] = (os.path.basename(
+        sysconfigdata_modules[0])[:-3])  # remove .py
 
   # Make sure not to pick up any extra host python modules.
   env['PYTHONPATH'] = ''
@@ -533,7 +506,6 @@ def PrepareBuildDependenciesCmd(system, wheel, build_dir, deps_dir, deps):
   # environment. Currently this only matters on Linux, where we cross-compile.
   if sys.platform.startswith('linux'):
     host_plat = build_platform.ALL.get({
-        'cp27': 'manyinux-x64',
         'cp38': 'manylinux-x64-py3',
         'cp39': 'manylinux-x64-py3.9',
     }[wheel.plat.wheel_abi[:4]])

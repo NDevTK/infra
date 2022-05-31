@@ -176,7 +176,7 @@ _CFFI_DEPENDENCY = SourceOrPrebuilt(
     'cffi',
     '1.14.5',
     patch_version='chromium.7',
-    packaged=['windows-x86', 'windows-x64'],
+    packaged=(),
 )
 
 _NUMPY_DEPENDENCY = SPECS['numpy-1.2x.supported.1']
@@ -217,13 +217,6 @@ SPECS.update({
         'SourceOrPrebuilt',
         SourceOrPrebuilt(
             'MarkupSafe',
-            '1.0',
-            packaged=(),
-            only_plat=build_platform.ALL_LINUX,
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'MarkupSafe',
             '1.1.1',
             packaged=(
                 'mac-x64',
@@ -241,39 +234,16 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'PyYAML',
-            '3.12',
-            packaged=[
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-            skip_auditwheel=True,
-        ),
-        SourceOrPrebuilt(
-            'PyYAML',
             '5.4.1',
             patch_version='chromium.1',
             skip_auditwheel=True,
-            packaged=[
-                'windows-x86',
-                'windows-x64',
-            ],
-        ),
-        SourceOrPrebuilt(
-            'SQLAlchemy',
-            '1.2.5',
             packaged=(),
-            only_plat=['manylinux-x64'],
-            pyversions=['py2'],
         ),
         SourceOrPrebuilt(
             'aioquic',
             '0.9.15',
             # TODO(crbug/1252073): We don't yet build OpenSSL for Windows.
-            packaged=[
-                'windows-x86', 'windows-x86-py3', 'windows-x64',
-                'windows-x64-py3'
-            ],
+            packaged=['windows-x86-py3', 'windows-x64-py3'],
             pyversions=['py3'],
             tpp_libs=[('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1j.chromium.1')],
@@ -281,40 +251,17 @@ SPECS.update({
         SourceOrPrebuilt(
             'bcrypt',
             '3.1.4',
-            packaged=[
-                'mac-x64',
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2', 'py3'],
+            packaged=(),
+            pyversions=['py3'],
             # To build this on mac-arm64, we would need to supply the
             # arm64 cffi wheel.
-            skip_plat=['mac-x64-cp38', 'mac-arm64', 'mac-arm64-cp38'],
+            skip_plat=['mac-arm64-cp38'],
         ),
         SourceOrPrebuilt(
             'cbor2',
             '5.4.3',
             packaged=(),
             pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'cffi',
-            '1.10.0',
-            arch_map={
-                'mac-x64': ['macosx_10_6_intel'],
-            },
-            pyversions=['py2'],
-            skip_plat=['mac-arm64'],
-        ),
-        SourceOrPrebuilt(
-            'cffi',
-            '1.12.3',
-            arch_map={
-                'mac-x64': ['macosx_10_6_intel'],
-            },
-            pyversions=['py2'],
-            skip_plat=['mac-arm64'],
         ),
         SourceOrPrebuilt(
             'cffi',
@@ -325,7 +272,7 @@ SPECS.update({
         SourceOrPrebuilt(
             'cffi',
             '1.14.5',
-            packaged=['windows-x86', 'windows-x64'],
+            packaged=(),
             pyversions=['py2', 'py3'],
             # patch_version is incremented to force a rebuild when fixes are
             # made to the build environment.
@@ -334,43 +281,13 @@ SPECS.update({
         SourceOrPrebuilt(
             'cffi',
             '1.15.0',
-            packaged=['windows-x86', 'windows-x64'],
+            packaged=(),
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
             'coverage',
-            '4.3.4',
-            packaged=[
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'coverage',
-            '4.5.1',
-            packaged=[
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'coverage',
-            '4.5.3',
-            packaged=[
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'coverage',
             '5.5',
-            packaged=['windows-x86', 'windows-x64'],
+            packaged=(),
             pyversions=['py2', 'py3'],
             patch_version='chromium.3',  # Rebuild for crbug/1233745
         ),
@@ -378,12 +295,7 @@ SPECS.update({
             'crcmod',
             '1.7',
             pyversions=['py2', 'py3'],
-            # This patch causes us to use the pure-python implementation
-            # on Windows Python 2.7. This is because we do not have a proper
-            # build for this configuration, and there is no pre-built wheel.
-            # See crbug/1297798 for details.
-            patches=('no-compile-windows',),
-            patch_version='chromium.3',  # Rebuild for https://crbug.com/1233745
+            patch_version='chromium.4',  # Rebuild for https://crbug.com/1233745
             packaged=(),
         ),
         SourceOrPrebuilt(
@@ -403,20 +315,6 @@ SPECS.update({
             # The freetype build script does not correctly support
             # cross-compiling, and there is also no 32-bit Windows wheel.
             skip_plat=['linux-arm64-py3', 'windows-x86-py3'],
-        ),
-        SourceOrPrebuilt(
-            'gevent',
-            '1.4.0',
-            packaged=('manylinux-x64', 'windows-x86', 'windows-x64'),
-            env_cb=lambda w: {
-                # manylinux1 is too old to build libuv.
-                # So, maybe when manylinux2010 catches on we can build it.
-                # That said, this is currently only used for the recipe engine,
-                # so event loop performance shouldn't be a large concern.
-                'GEVENT_NO_LIBUV_BUILD': '1',
-            },
-            pyversions=['py2'],
-            patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -469,11 +367,7 @@ SPECS.update({
         SourceOrPrebuilt(
             'greenlet',
             '0.4.15',
-            packaged=(
-                'manylinux-x64',
-                'windows-x64',
-                'windows-x86',
-            ),
+            packaged=(),
             skip_plat=[
                 # greenlet 0.4.15 relies on private Python internals which were
                 # changed in 3.9.
@@ -485,25 +379,18 @@ SPECS.update({
         SourceOrPrebuilt(
             'greenlet',
             '0.4.16',
-            packaged=(
-                'windows-x64',
-                'windows-x86',
-            ),
+            packaged=(),
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
             'greenlet',
             '1.0.0',
             packaged=[
-                'windows-x86',
-                'windows-x64',
                 'windows-x86-py3',
                 'windows-x64-py3',
             ],
             patch_version='chromium.1',
         ),
-        SourceOrPrebuilt(
-            'grpcio', '1.4.0', pyversions=['py2'], skip_plat=['mac-arm64']),
         SourceOrPrebuilt(
             'grpcio',
             '1.32.0',
@@ -557,11 +444,7 @@ SPECS.update({
         SourceOrPrebuilt(
             'lazy-object-proxy',
             '1.3.1',
-            packaged=[
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
+            packaged=(),
             skip_plat=[
                 'linux-arm64-py3',
                 'mac-x64-cp38',
@@ -590,46 +473,11 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
-            'netifaces',
-            '0.10.9',
-            packaged=['manylinux-x64'],
-            skip_plat=[
-                'mac-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
             'ninja',
             '1.10.0.post2',
             packaged=(),
             only_plat=['manylinux-x64-py3', 'manylinux-x64-py3.9'],
             pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.11.3',
-            abi_map={
-                'windows-x86': 'none',
-                'windows-x64': 'none',
-            },
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-            pyversions=['py2'],
-            # This wheel currently doesn't build at HEAD.
-            # TODO(crbug.com/1218659): Get it working again.
-            default=False,
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.12.1',
-            abi_map={
-                'windows-x86': 'none',
-                'windows-x64': 'none',
-            },
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-            skip_plat=('linux-arm64', 'mac-arm64'),
-            pyversions=['py2'],
         ),
         SourceOrPrebuilt(
             'numpy',
@@ -764,47 +612,10 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'psutil',
-            '1.2.1',
-            packaged=[],
-            only_plat=build_platform.ALL_LINUX + ['mac-x64'],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'psutil',
-            '5.2.2',
-            abi_map={
-                'windows-x86': 'none',
-                'windows-x64': 'none',
-            },
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-            packaged=['windows-x86', 'windows-x64'],
-            pyversions=['py2'],
-            skip_plat=['mac-arm64'],
-        ),
-        SourceOrPrebuilt(
-            'psutil',
-            '5.4.7',
-            abi_map={
-                'windows-x86': 'none',
-                'windows-x64': 'none',
-            },
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-            packaged=['windows-x86', 'windows-x64'],
-            pyversions=['py2'],
-            skip_plat=['mac-arm64'],
-        ),
-        SourceOrPrebuilt(
-            'psutil',
             '5.6.2',
-            abi_map={
-                'windows-x86': 'none',
-                'windows-x64': 'none',
-            },
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-            packaged=['windows-x86', 'windows-x64'],
+            packaged=(),
             skip_plat=[
                 'linux-arm64-py3',
-                'mac-arm64',
                 'manylinux-x64-py3',
                 'manylinux-x64-py3.9',
             ],
@@ -819,7 +630,7 @@ SPECS.update({
         SourceOrPrebuilt(
             'psutil',
             '5.8.0',
-            packaged=['windows-x86', 'windows-x64'],
+            packaged=(),
             patches=('cpu-affinity',),
             patch_version='chromium.3',  # Rebuild for crbug/1233745
             pyversions=['py2', 'py3'],
@@ -831,13 +642,6 @@ SPECS.update({
             pyversions=['py3'],
             patch_version='chromium.2',  # Rebuild for crbug/1233745
         ),
-        SourceOrPrebuilt(
-            'pyasn',
-            '1.6.0b1',
-            packaged=(),
-            only_plat=['manylinux-x64'],
-            pyversions=['py2'],
-        ),
         # Prefer to use 'cryptography' instead of PyCrypto, if possible. We have
         # to use PyCrypto for GAE dev server (it's the only crypto package
         # available on GAE). Since we support it only on Linux and OSX, build
@@ -847,10 +651,8 @@ SPECS.update({
             '2.6.1',
             packaged=(),
             only_plat=[
-                'manylinux-x64',
                 'manylinux-x64-py3',
                 'manylinux-x64-py3.9',
-                'mac-x64',
             ],
             pyversions=['py2', 'py3'],
         ),
@@ -928,55 +730,6 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
-            'scan-build',
-            '2.0.8',
-            packaged=(),
-            skip_plat=[
-                'mac-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-            skip_auditwheel=True,
-        ),
-        SourceOrPrebuilt(
-            'scandir',
-            '1.7',
-            packaged=[
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'scandir',
-            '1.9.0',
-            packaged=[
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'simplejson',
-            '3.13.2',
-            packaged=[
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
-            'subprocess32',
-            '3.5.0rc1',
-            packaged=['mac-x64'],
-            skip_plat=[
-                'windows-x86',
-                'windows-x64',
-            ],
-            pyversions=['py2'],
-        ),
-        SourceOrPrebuilt(
             'typed-ast',
             '1.4.2',
             packaged=(),
@@ -994,7 +747,6 @@ SPECS.update({
             '1.10.11',
             packaged=(),
             only_plat=[
-                'manylinux-x64',
                 'manylinux-x64-py3',
                 'manylinux-x64-py3.9',
                 'mac-x64-cp38',
@@ -1039,11 +791,6 @@ SPECS.update({
         'Prebuilt',
         Prebuilt(
             'debugpy',
-            '1.0.0rc2',
-            ['mac-x64', 'manylinux-x64', 'windows-x86', 'windows-x64'],
-        ),
-        Prebuilt(
-            'debugpy',
             '1.5.1',
             [
                 'mac-x64-cp38',
@@ -1066,14 +813,10 @@ SPECS.update({
             'freetype-py',
             '2.1.0.post1',
             [
-                'mac-x64',
                 'mac-x64-cp38',
-                'manylinux-x64',
                 'manylinux-x64-py3',
                 'manylinux-x64-py3.9',
-                'windows-x86',
                 'windows-x86-py3',
-                'windows-x64',
                 'windows-x64-py3',
             ],
             pyversions=['py2', 'py3'],
@@ -1099,13 +842,11 @@ SPECS.update({
             'libclang',
             '11.1.0',
             ['manylinux-x64-py3', 'windows-x64-py3', 'mac-x64-cp38'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
         ),
         Prebuilt(
             'libclang',
             '12.0.0',
             ['manylinux-x64-py3', 'windows-x64-py3', 'mac-x64-cp38'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
         ),
         Prebuilt(
             'lxml',
@@ -1116,30 +857,6 @@ SPECS.update({
             'lxml',
             '4.6.2',
             ['manylinux-x64-py3', 'manylinux-x64-py3.9'],
-        ),
-        Prebuilt(
-            'pandas',
-            '0.23.4',
-            ['manylinux-x64', 'mac-x64', 'windows-x86', 'windows-x64'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-        ),
-        Prebuilt(
-            'pillow',
-            '5.2.0',
-            ['mac-x64', 'manylinux-x64', 'windows-x86', 'windows-x64'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-        ),
-        Prebuilt(
-            'pillow',
-            '5.4.1',
-            ['mac-x64', 'manylinux-x64', 'windows-x86', 'windows-x64'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-        ),
-        Prebuilt(
-            'pillow',
-            '6.0.0',
-            ['mac-x64', 'manylinux-x64', 'windows-x86', 'windows-x64'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
         ),
         Prebuilt(
             'pillow',
@@ -1166,38 +883,11 @@ SPECS.update({
                 'windows-x86-py3',
             ],
         ),
-        Prebuilt('pynacl', '1.2.1', ['manylinux-x64', 'mac-x64']),
-        Prebuilt(
-            'pypiwin32',
-            '219',
-            ['windows-x86', 'windows-x64'],
-        ),
-        Prebuilt(
-            'pywin32',
-            '224',
-            ['windows-x86', 'windows-x64'],
-        ),
-        Prebuilt(
-            'pywin32',
-            '225',
-            ['windows-x86', 'windows-x64'],
-        ),
-        Prebuilt(
-            'pywin32',
-            '227',
-            ['windows-x86', 'windows-x64'],
-        ),
         Prebuilt(
             'pywin32',
             '300',
             ['windows-x86-py3', 'windows-x64-py3'],
             pyversions=['py3'],
-        ),
-        Prebuilt(
-            'scipy',
-            '0.19.0',
-            ['mac-x64', 'manylinux-x64'],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
         ),
         Prebuilt(
             'scipy',
@@ -1278,13 +968,11 @@ SPECS.update({
         UniversalSource('Pympler', '0.8'),
         UniversalSource('absl-py', '0.7.1'),
         UniversalSource('apache-beam', '2.0.0'),
-        UniversalSource('backport_ipaddress', '0.1', pyversions=['py2']),
         UniversalSource('backports.ssl_match_hostname', '3.5.0.1'),
         UniversalSource('black', '19.10b0', pyversions=['py3']),
         UniversalSource('clang', '5.0'),
         UniversalSource('configparser', '3.5.0'),
         UniversalSource('crontab', '0.22.0'),
-        UniversalSource('distlib', '0.3.0', pyversions=['py2']),
         UniversalSource('distlib', '0.3.0', pyversions=['py3']),
         UniversalSource('future', '0.16.0'),
         UniversalSource('future', '0.18.2'),
@@ -1332,19 +1020,6 @@ SPECS.update({
         UniversalSource('pyftpdlib', '0.7.0'),
         UniversalSource('pyftpdlib', '1.0.0'),
         UniversalSource('pyftpdlib', '1.5.3'),
-        UniversalSource(
-            'pylint', '1.5.6', patches=(
-                'multiprocessing',), pyversions=['py2']),
-        UniversalSource(
-            'pylint',
-            '1.8.4',
-            patches=('disable-log-spam',),
-            pyversions=['py2']),
-        UniversalSource(
-            'pylint',
-            '1.9.5',
-            patches=('disable-log-spam',),
-            pyversions=['py2']),
         UniversalSource('pylint-quotes', '0.1.8'),
         UniversalSource('pyperclip', '1.8.0'),
         UniversalSource('pyrsistent', '0.16.0', pyversions=['py3']),
@@ -1383,7 +1058,6 @@ SPECS.update({
         Universal('Werkzeug', '1.0.1'),
         Universal('Werkzeug', '2.0.1', pyversions=['py3']),
         Universal('absl-py', '0.11.0', pyversions=['py3']),
-        Universal('aenum', '2.1.2', pyversions=['py2']),
         Universal('aenum', '2.1.2', pyversions=['py3']),
         Universal('altgraph', '0.16.1'),
         Universal('apipkg', '1.5'),
@@ -1422,10 +1096,8 @@ SPECS.update({
         Universal('attrs', '21.4.0'),
         Universal('backports.functools_lru_cache', '1.5'),
         Universal('backports.shutil_get_terminal_size', '1.0.0'),
-        Universal('beautifulsoup4', '4.9.0', pyversions=['py2']),
         Universal('beautifulsoup4', '4.9.0', pyversions=['py3']),
         Universal('black', '22.3.0', pyversions=['py3']),
-        Universal('blessings', '1.7', pyversions=['py2']),
         Universal('blessings', '1.7', pyversions=['py3']),
         Universal('boto', '2.48.0'),
         Universal('boto3', '1.18.56', pyversions=['py3']),
@@ -1453,10 +1125,8 @@ SPECS.update({
         Universal('docker', '5.0.0'),
         Universal('docker-pycreds', '0.2.1'),
         Universal('ecdsa', '0.17.0'),
-        Universal('enum34', '1.1.6', pyversions=['py2']),
         Universal('enum34', '1.1.6', pyversions=['py3']),
         Universal('execnet', '1.8.0'),
-        Universal('fabric', '1.14.0', pyversions=['py2']),
         Universal('fasteners', '0.14.1'),
         Universal('filelock', '3.0.12', pyversions=['py3']),
         Universal('flask', '1.0.2'),
@@ -1465,7 +1135,6 @@ SPECS.update({
         Universal('flatbuffers', '2.0', pyversions=['py3']),
         Universal('frozendict', '2.0.6', pyversions=['py3']),
         Universal('funcsigs', '1.0.2'),
-        Universal('futures', '3.1.1', pyversions=['py2']),
         Universal('futures', '3.1.1', pyversions=['py3']),
         Universal('gast', '0.3.3'),
         Universal('gast', '0.4.0', pyversions=['py3']),
@@ -1478,7 +1147,6 @@ SPECS.update({
         Universal('google-api-python-client', '1.6.2'),
         Universal('google-api-python-client', '1.12.8'),
         Universal('google-api-python-client', '2.2.0', pyversions=['py3']),
-        Universal('google-apitools', '0.5.27', pyversions=['py2']),
         Universal('google-auth', '1.2.1'),
         Universal('google-auth', '1.20.1'),
         Universal('google-auth', '1.25.0'),
@@ -1535,10 +1203,7 @@ SPECS.update({
         Universal('idna', '3.2', pyversions=['py3']),
         Universal('importlib-metadata', '1.6.0'),
         Universal('iniconfig', '1.1.1', pyversions=['py3']),
-        Universal('ipaddress', '1.0.18', pyversions=['py2']),
-        Universal('iso8601', '0.1.12', pyversions=['py2']),
         Universal('iso8601', '0.1.12', pyversions=['py3']),
-        Universal('isort', '4.3.4', pyversions=['py2']),
         Universal('isort', '4.3.4', pyversions=['py3']),
         Universal('isort', '5.8.0', pyversions=['py3']),
         Universal('isort', '5.10.1', pyversions=['py3']),
@@ -1554,7 +1219,6 @@ SPECS.update({
         Universal('mock', '2.0.0'),
         Universal('mock', '4.0.3', pyversions=['py3']),
         Universal('monotonic', '1.5'),
-        Universal('more-itertools', '4.1.0', pyversions=['py2']),
         Universal('more-itertools', '4.1.0', pyversions=['py3']),
         Universal('mozdebug', '0.1.1'),
         Universal('mozdebug', '0.2'),
@@ -1565,14 +1229,12 @@ SPECS.update({
         Universal('mozlog', '4.2.0'),
         Universal('mozlog', '5.0'),
         Universal('mozlog', '7.1.0'),
-        Universal('mozprocess', '0.26', pyversions=['py2']),
         Universal('mozprocess', '1.2.1'),
         Universal('mozprocess', '1.3.0', pyversions=['py3']),
         Universal('mozterm', '1.0.0'),
         Universal('multiprocessing-logging', '0.3.1'),
         Universal('mypy-extensions', '0.4.3', pyversions=['py3']),
         Universal('networkx', '2.5', pyversions=['py3']),
-        Universal('nose', '1.3.7', pyversions=['py2']),
         Universal('nose', '1.3.7', pyversions=['py3']),
         Universal('nose2', '0.9.1'),
         Universal('nose2', '0.9.2'),
@@ -1595,10 +1257,8 @@ SPECS.update({
         Universal('pathlib2', '2.3.3'),
         Universal('pathspec', '0.9.0', pyversions=['py3']),
         Universal('pbr', '3.0.0'),
-        Universal('pipenv', '2018.11.26', pyversions=['py2']),
         Universal('pipenv', '2018.11.26', pyversions=['py3']),
         Universal('platformdirs', '2.5.2', pyversions=['py3']),
-        Universal('pluggy', '0.6.0', pyversions=['py2']),
         Universal('pluggy', '0.6.0', pyversions=['py3']),
         Universal('pluggy', '0.7.1'),
         Universal('pluggy', '0.8.1'),
@@ -1630,8 +1290,6 @@ SPECS.update({
         Universal('pycparser', '2.21'),
         Universal('pyfakefs', '3.7.2'),
         Universal('pyglet', '1.5.0'),
-        Universal('pylint', '1.6.5', pyversions=['py2']),
-        Universal('pylint', '1.7.6', pyversions=['py2']),
         Universal('pylint', '2.0.1', pyversions=['py3']),
         Universal('pylint', '2.1.1', pyversions=['py3']),
         Universal('pylint', '2.2.3', pyversions=['py3']),
@@ -1725,7 +1383,6 @@ SPECS.update({
         Universal('tomli', '2.0.1', pyversions=['py3']),
         Universal('trio', '0.20.0', pyversions=['py3']),
         Universal('trio-websocket', '0.9.2', pyversions=['py3']),
-        Universal('typing', '3.6.4', pyversions=['py2']),
         Universal('typing-extensions', '3.7.4.3', pyversions=['py3']),
         Universal('typing-extensions', '4.0.1', pyversions=['py3']),
         Universal('typing-inspect', '0.7.1', pyversions=['py3']),
@@ -1765,65 +1422,20 @@ SPECS.update({
 # The following packages all require specialized compilation, and so have their
 # own custom builder types.
 
-from .wheel_opencv import OpenCV
-SPECS.update({
-    s.spec.tag: s for s in assert_sorted(
-        'OpenCV',
-        OpenCV(
-            'opencv_python',
-            '2.4.13.2',
-            '1.11.3',
-            only_plat=['manylinux-x64'],
-            # This wheel currently doesn't build at HEAD.
-            # TODO(crbug.com/1218659): Get it working again.
-            default=False),
-        # TODO: 'packaged' and 'only_plat' are identical for this wheel, so it
-        # may as well just be a 'Prebuilt'.
-        OpenCV(
-            'opencv_python',
-            '3.2.0.7',
-            '1.12.1',
-            packaged=[
-                'mac-x64',
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ],
-            arch_map={'mac-x64': _NUMPY_MAC_x64},
-            only_plat=['mac-64', 'manylinux-x64', 'windows-x86', 'windows-x64'],
-        ),
-    )
-})
-
 from .wheel_cryptography import CryptographyPyPI
-_OLD_CRYPTOGRAPHY_PACKAGED_PLATFORMS = [
-    'manylinux-x64',
-    'mac-x64',
-    'windows-x86',
-    'windows-x64',
-]
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'CryptographyPyPI',
-        CryptographyPyPI(
-            'cryptography',
-            '2.0.3',
-            openssl='1.1.0f',
-            packaged=_OLD_CRYPTOGRAPHY_PACKAGED_PLATFORMS,
-            skip_plat=['mac-arm64'],
-            # This wheel currently doesn't build at HEAD.
-            # TODO(crbug.com/1218659): Get it working again.
-            default=False),
         CryptographyPyPI(
             'cryptography',
             '2.6.1',
             openssl='1.1.0f',
             pyversions=['py2', 'py3'],
             skip_plat=[
-                'mac-arm64', 'mac-x64-cp38', 'mac-arm64-cp38',
-                'linux-arm64-py3', 'windows-x86-py3', 'windows-x64-py3'
+                'mac-x64-cp38', 'mac-arm64-cp38', 'linux-arm64-py3',
+                'windows-x86-py3', 'windows-x64-py3'
             ],
-            packaged=_OLD_CRYPTOGRAPHY_PACKAGED_PLATFORMS,
+            packaged=(),
             # This wheel currently doesn't build at HEAD.
             # TODO(crbug.com/1218659): Get it working again.
             default=False),
@@ -1832,10 +1444,7 @@ SPECS.update({
             '2.9.2',
             openssl='1.1.1i',
             pyversions=['py2', 'py3'],
-            packaged=[
-                'windows-x86', 'windows-x86-py3', 'windows-x64',
-                'windows-x64-py3'
-            ],
+            packaged=['windows-x86-py3', 'windows-x64-py3'],
             patch_version='chromium.1',
         ),
         CryptographyPyPI(
@@ -1843,10 +1452,7 @@ SPECS.update({
             '3.3.1',
             openssl='1.1.1i',
             pyversions=['py2', 'py3'],
-            packaged=[
-                'windows-x86', 'windows-x86-py3', 'windows-x64',
-                'windows-x64-py3'
-            ],
+            packaged=['windows-x86-py3', 'windows-x64-py3'],
             patch_version='chromium.1',
         ),
     )
@@ -1860,49 +1466,6 @@ SPECS.update({
         # This should actually be 0.2.7, but the version needs to change in
         # order to pick up dependencies that weren't included when the
         # MultiWheel was originally added.
-        #
-        # Note: One of the subwheels (ppft) produces separate py2 and py3
-        # wheels. As a result, we need separate py2 and py3 versions of the
-        # pathos multiwheel.
-        MultiWheel(
-            'pathos',
-            '0.2.7.chromium.5',
-            ([
-                Universal('dill', '0.3.3'),
-                Universal('klepto', '0.2.0', default=False),
-                Mpi4py(
-                    'mpi4py',
-                    '3.0.3',
-                    'version:2@3.4.1.chromium.4',
-                    packaged=[
-                        'windows-x86',
-                        'windows-x86-py3',
-                        'windows-x64',
-                        'windows-x64-py3',
-                    ],
-                ),
-                SourceOrPrebuilt(
-                    'multiprocess',
-                    '0.70.11.1',
-                    pyversions=['py2', 'py3'],
-                    patch_version='chromium.1',
-                    skip_auditwheel=True,
-                    packaged=['windows-x86', 'windows-x64'],
-                ),
-                Universal('pathos', '0.2.7'),
-                Universal('pox', '0.2.9'),
-                Universal('ppft', '1.6.6.4', pyversions=['py2']),
-                Universal('pyina', '0.2.4'),
-            ]),
-            pyversions=['py2'],
-            # No 3pp builders for these platforms, so cannot build mpi4py.
-            skip_plat=[
-                'linux-armv6',
-                'linux-mipsel',
-                'linux-mips',
-                'linux-mips64',
-            ],
-        ),
         MultiWheel(
             'pathos',
             '0.2.7.chromium.5',
@@ -2089,171 +1652,6 @@ SPECS.update({
             only_plat=['mac-x64-cp38', 'mac-arm64-cp38'],
             pyversions=['py3'],
         ),
-        # List cultivated from "pyobjc-2.5.1"'s "setup.py" as a superset of
-        # available packages.
-        #
-        # - This must be built on Mac 10.9 or lower due to a version string
-        #   parsing error in "setup.py" that rates "10.10" as a lower version
-        #   than "10.9".
-        # - The package requires that "setuptools==1" package be installed.
-        #   Since "run.py" doesn't support this version, the user must create
-        #   their own VirtualEnv, manually install "setuptools==1", and then use
-        #   the "--native-python" Dockerbuild flag to build using that Python.
-        MultiWheel(
-            'pyobjc',
-            '2.5.1',
-            ([
-                SourceOrPrebuilt(name, '2.5.1', packaged=[])
-                for name in ['pyobjc-core'] + [
-                    'pyobjc-framework-%s' % (v,) for v in [
-                        'Accounts',
-                        'AddressBook',
-                        'AppleScriptKit',
-                        'AppleScriptObjC',
-                        'Automator',
-                        'CFNetwork',
-                        'CalendarStore',
-                        'Cocoa',
-                        'Collaboration',
-                        'CoreData',
-                        'CoreLocation',
-                        'CoreText',
-                        'DictionaryServices',
-                        'EventKit',
-                        'ExceptionHandling',
-                        'FSEvents',
-                        'InputMethodKit',
-                        'InstallerPlugins',
-                        'InstantMessage',
-                        'LatentSemanticMapping',
-                        'LaunchServices',
-                        'Message',
-                        'PreferencePanes',
-                        'PubSub',
-                        'QTKit',
-                        'Quartz',
-                        'ScreenSaver',
-                        'ScriptingBridge',
-                        'SearchKit',
-                        'ServerNotification',
-                        'ServiceManagement',
-                        'Social',
-                        'SyncServices',
-                        'SystemConfiguration',
-                        'WebKit',
-                    ]
-                ]
-            ]),
-            only_plat=['mac-x64'],
-            # Because this requires a specialized environment, we will not
-            # include it in the default wheel list.
-            default=False,
-        ),
-
-        # List cultivated from "pyobjc-4.1"'s "setup.py" as a superset of
-        # available packages.
-        #
-        # This package is designed to be built on 10.12, and had to omit the
-        # following framework packages, which require 10.13 to build:
-        # - CoreML
-        # - CoreSpotlight
-        # - ExternalAccessory
-        # - Vision
-        MultiWheel(
-            'pyobjc',
-            '4.1',
-            ([
-                SourceOrPrebuilt(name, '4.1', packaged=[])
-                for name in ['pyobjc-core'] + [
-                    'pyobjc-framework-%s' % (v,) for v in [
-                        'AVFoundation',
-                        'AVKit',
-                        'Accounts',
-                        'AddressBook',
-                        'AppleScriptKit',
-                        'AppleScriptObjC',
-                        'ApplicationServices',
-                        'Automator',
-                        'CFNetwork',
-                        'CalendarStore',
-                        'CloudKit',
-                        'Cocoa',
-                        'Collaboration',
-                        'ColorSync',
-                        'Contacts',
-                        'ContactsUI',
-                        'CoreBluetooth',
-                        'CoreData',
-                        'CoreLocation',
-                        'CoreServices',
-                        'CoreText',
-                        'CoreWLAN',
-                        'CryptoTokenKit',
-                        'DictionaryServices',
-                        'DiskArbitration',
-                        'EventKit',
-                        'ExceptionHandling',
-                        'FSEvents',
-                        'FinderSync',
-                        'GameCenter',
-                        'GameController',
-                        'GameKit',
-                        'GameplayKit',
-                        'IMServicePlugIn',
-                        'IOSurface',
-                        'ImageCaptureCore',
-                        'InputMethodKit',
-                        'InstallerPlugins',
-                        'InstantMessage',
-                        'Intents',
-                        'InterfaceBuilderKit',
-                        'LatentSemanticMapping',
-                        'LaunchServices',
-                        'LocalAuthentication',
-                        'MapKit',
-                        'MediaAccessibility',
-                        'MediaLibrary',
-                        'MediaPlayer',
-                        'Message',
-                        'ModelIO',
-                        'MultipeerConnectivity',
-                        'NetFS',
-                        'NetworkExtension',
-                        'NotificationCenter',
-                        'OpenDirectory',
-                        'Photos',
-                        'PhotosUI',
-                        'PreferencePanes',
-                        'PubSub',
-                        'QTKit',
-                        'Quartz',
-                        'SafariServices',
-                        'SceneKit',
-                        'ScreenSaver',
-                        'ScriptingBridge',
-                        'SearchKit',
-                        'Security',
-                        'SecurityFoundation',
-                        'SecurityInterface',
-                        'ServerNotification',
-                        'ServiceManagement',
-                        'Social',
-                        'SpriteKit',
-                        'StoreKit',
-                        'SyncServices',
-                        'SystemConfiguration',
-                        'WebKit',
-                        'XgridFoundation',
-                        'iTunesLibrary',
-                        'libdispatch',
-                    ]
-                ]
-            ]),
-            only_plat=['mac-x64'],
-            # This wheel currently doesn't build at HEAD.
-            # TODO(crbug.com/1218659): Get it working again.
-            default=False,
-        ),
         # List cultivated from "pyobjc-6.2.2"'s "setup.py" as a superset of
         # available packages.
         #
@@ -2391,27 +1789,10 @@ SPECS.update({
     )
 })
 
-from .wheel_mysql import MySQLPython
-SPECS.update({
-    s.spec.tag: s for s in assert_sorted(
-        'MySQLPython',
-        MySQLPython(
-            '1.2.5',
-            only_plat=[
-                'manylinux-x64',
-                'linux-arm64',
-                'linux-armv6',
-                'linux-mips64',
-            ],
-        ),
-    )
-})
-
 from .wheel_infra import InfraPackage
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'InfraPackage',
-        InfraPackage('expect_tests'),
         InfraPackage('infra_libs'),
     )
 })
