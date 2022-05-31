@@ -53,12 +53,12 @@ type pubsubServer struct {
 
 // Setup implements the PubSub interface.
 func (pubsubServer) Setup(c context.Context) error {
-	topic := topic(c)
+	top := topic(c)
 	sub := subscription(c)
 	pushURL := pushURL(c)
 	logging.Fields{
-		"topic":        topic,
-		"subscription": subscription,
+		"topic":        top,
+		"subscription": sub,
 		"pushURL":      pushURL,
 	}.Infof(c, "PubSub set up.")
 	transport, err := auth.GetRPCTransport(c, auth.AsSelf, auth.WithScopes(pubsub.PubsubScope))
@@ -71,7 +71,7 @@ func (pubsubServer) Setup(c context.Context) error {
 	}
 	// Create the subscription to this topic. Ignore HTTP 409 (means the subscription already exists).
 	_, err = service.Projects.Subscriptions.Create(sub, &pubsub.Subscription{
-		Topic:              topic,
+		Topic:              top,
 		AckDeadlineSeconds: 70, // GAE request timeout plus some spare time
 		PushConfig: &pubsub.PushConfig{
 			PushEndpoint: pushURL, // if "", the subscription will be pull based
