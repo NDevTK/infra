@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/cipd"
@@ -257,23 +258,22 @@ func pep425TagSelector(tags []*vpython.PEP425Tag) *vpython.PEP425Tag {
 //
 // Infra CIPD packages tend to use "${platform}" (generic) combined with
 // "${py_abi}" and "${py_platform}" to identify its packages.
-func getPEP425CIPDTemplateForTag(tag *vpython.PEP425Tag) ([]string, error) {
+func addPEP425CIPDTemplateForTag(expander template.Expander, tag *vpython.PEP425Tag) error {
 	if tag == nil {
-		return nil, errors.New("no PEP425 tag")
+		return errors.New("no PEP425 tag")
 	}
 
-	var template []string
 	if tag.Python != "" {
-		template = append(template, fmt.Sprintf("py_python=%s", tag.Python))
+		expander["py_python"] = tag.Python
 	}
 	if tag.Abi != "" {
-		template = append(template, fmt.Sprintf("py_abi=%s", tag.Abi))
+		expander["py_abi"] = tag.Abi
 	}
 	if tag.Platform != "" {
-		template = append(template, fmt.Sprintf("py_platform=%s", tag.Platform))
+		expander["py_platform"] = tag.Platform
 	}
 	if tag.Python != "" && tag.Abi != "" && tag.Platform != "" {
-		template = append(template, fmt.Sprintf("py_tag=%s", tag.TagString()))
+		expander["py_tag"] = tag.TagString()
 	}
 
 	// Override the CIPD "platform" based on the PEP425 tag. This allows selection
@@ -284,15 +284,15 @@ func getPEP425CIPDTemplateForTag(tag *vpython.PEP425Tag) ([]string, error) {
 	// want to use 32-bit Python wheels.
 	platform := cipd.PlatformForPEP425Tag(tag)
 	if platform == "" {
-		return nil, errors.Reason("failed to infer CIPD platform for tag [%s]", tag).Err()
+		return errors.Reason("failed to infer CIPD platform for tag [%s]", tag).Err()
 	}
-	template = append(template, fmt.Sprintf("platform=%s", platform))
+	expander["platform"] = platform
 
 	// Build the sum tag, "vpython_platform",
 	// "${platform}_${py_python}_${py_abi}"
 	if platform != "" && tag.Python != "" && tag.Abi != "" {
-		template = append(template, fmt.Sprintf("vpython_platform=%s_%s_%s", platform, tag.Python, tag.Abi))
+		expander["vpython_platform"] = fmt.Sprintf("%s_%s_%s", platform, tag.Python, tag.Abi)
 	}
 
-	return template, nil
+	return nil
 }

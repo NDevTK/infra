@@ -17,6 +17,7 @@ import (
 	"infra/libs/cipkg/utilities"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/vpython/api/vpython"
@@ -71,11 +72,27 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 		return err
 	}
 
-	// Translates the packages named in spec into a CIPD ensure file.
+	// Get vpython template from tags
+	expander := template.DefaultExpander()
+	if t := pep425TagSelector(tags); t != nil {
+		if err := addPEP425CIPDTemplateForTag(expander, t); err != nil {
+			return err
+		}
+	}
+
+	// Translates packages' name in spec into a CIPD ensure file.
 	pslice := make(ensure.PackageSlice, len(s.Wheel))
 	for i, pkg := range s.Wheel {
+		name, err := expander.Expand(pkg.Name)
+		switch err {
+		case template.ErrSkipTemplate:
+			continue
+		case nil:
+		default:
+			return errors.Annotate(err, "expanding %#v", pkg).Err()
+		}
 		pslice[i] = ensure.PackageDef{
-			PackageTemplate:   pkg.Name,
+			PackageTemplate:   name,
 			UnresolvedVersion: pkg.Version,
 		}
 	}
@@ -88,18 +105,10 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 		return err
 	}
 
-	// Get vpython template from tags
-	var env []string
-	if t := pep425TagSelector(tags); t != nil {
-		if env, err = getPEP425CIPDTemplateForTag(t); err != nil {
-			return err
-		}
-	}
-
 	// Construct CIPD command and execute
 	// TODO: Replacing it with executing cipd binary directly
 	cipd := exec.CommandContext(ctx, builtins.CIPDEnsureBuilder, efs.String())
-	cipd.Env = append(env, cmd.Env...)
+	cipd.Env = cmd.Env
 	cipd.Stdin = cmd.Stdin
 	cipd.Stdout = cmd.Stdout
 	cipd.Stderr = cmd.Stderr
