@@ -238,22 +238,3 @@ vpython3 -m infra.tools.dockerbuild --upload-sources wheel-build --upload
 
 This can be run after adding a new wheel configuration, or after adding a new
 platform to support.
-
-### Cross-compile Python
-
-To cross-compile Python for the "linux-armv6" platform, download the Python
-source, then configure it for the cross-compile environment and build.
-```bash
-wget https://github.com/python/cpython/archive/v2.7.13.tar.gz
-cd cpython-2.7.13
-vpython3 -m infra.tools.dockerbuild run --platform linux-armv6 run -- \
-  sh -c './configure --prefix=/work/PREFIX --host=$CROSS_TRIPLE --build=$(gcc -dumpmachine)'
-vpython3 -m infra.tools.dockerbuild run --platform linux-armv6 run -- make install
-```
-
-- Note that we use `sh` to ensure that the environment variables are evaluated
-  within the container.
-- Note that the install prefix is `/work/PREFIX`. This will install into the
-  working directory, but all paths will have `/work/PREFIX` hard-coded as their
-  prefix. More specific `./configure` options can be used to ensure that the
-  configured environment matches the target system environment.
