@@ -27,7 +27,8 @@ var RecoveryConfig = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &printConfigRun{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
-		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Used deploy task.")
+		c.Flags.BoolVar(&c.auditRPM, "audit-rpm", false, "Use auditRPM task.")
+		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Use deploy task.")
 		c.Flags.BoolVar(&c.cros, "cros", false, "Print for ChromeOS devices.")
 		c.Flags.BoolVar(&c.labstation, "labstation", false, "Print for labstations.")
 		return c
@@ -38,6 +39,7 @@ type printConfigRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
 
+	auditRPM   bool
 	deployTask bool
 	cros       bool
 	labstation bool
@@ -56,8 +58,11 @@ func (c *printConfigRun) Run(a subcommands.Application, args []string, env subco
 func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
 	tn := tasknames.Recovery
-	if c.deployTask {
+	switch {
+	case c.deployTask:
 		tn = tasknames.Deploy
+	case c.auditRPM:
+		tn = tasknames.AuditRPM
 	}
 	var dsl []tlw.DUTSetupType
 	if c.cros {
