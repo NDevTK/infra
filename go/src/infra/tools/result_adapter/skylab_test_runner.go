@@ -80,9 +80,12 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, 
 func genTestCaseStatus(c TestRunnerTestCase) pb.TestStatus {
 	if c.Verdict == "VERDICT_PASS" {
 		return pb.TestStatus_PASS
-	}
-	if c.Verdict == "VERDICT_NO_VERDICT" {
+	} else if c.Verdict == "VERDICT_NO_VERDICT" {
 		return pb.TestStatus_SKIP
+	} else if c.Verdict == "VERDICT_ERROR" {
+		return pb.TestStatus_CRASH
+	} else if c.Verdict == "VERDICT_ABORT" {
+		return pb.TestStatus_ABORT
 	}
 	return pb.TestStatus_FAIL
 }

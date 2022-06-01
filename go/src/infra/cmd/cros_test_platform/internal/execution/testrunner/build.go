@@ -142,6 +142,12 @@ func (b *Build) verdict() test_platform.TaskState_Verdict {
 		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:
 			// Any case failing means the flat verdict is a failure.
 			return test_platform.TaskState_VERDICT_FAILED
+		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR:
+			// Any case failing means the flat verdict is a failure.
+			return test_platform.TaskState_VERDICT_FAILED
+		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:
+			// Any case failing means the flat verdict is a failure.
+			return test_platform.TaskState_VERDICT_FAILED
 		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
 			// Otherwise, at least 1 passing verdict means a pass.
 			verdict = test_platform.TaskState_VERDICT_PASSED
@@ -185,8 +191,10 @@ func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
 }
 
 var liftTestCaseRunnerVerdict = map[skylab_test_runner.Result_Autotest_TestCase_Verdict]test_platform.TaskState_Verdict{
-	skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS: test_platform.TaskState_VERDICT_PASSED,
-	skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL: test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:  test_platform.TaskState_VERDICT_PASSED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:  test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR: test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT: test_platform.TaskState_VERDICT_FAILED,
 }
 
 // testCases unpacks test cases contained in the results of a build.

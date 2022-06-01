@@ -17,6 +17,8 @@ import (
 
 const verdictPass = skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS
 const verdictFail = skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL
+const verdictError = skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR
+const verdictAbort = skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT
 const verdictNoVerdict = skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT
 
 // parseResultsFile tests
@@ -113,7 +115,7 @@ END ERROR	----	----
 		got := parseResultsFile(input)
 
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
-			testCase("Error", verdictFail, "An error occured.\n"),
+			testCase("Error", verdictError, "An error occured.\n"),
 		}
 		So(got, ShouldResemble, want)
 	})
@@ -257,7 +259,7 @@ END FAIL	----	----
 
 			want := []*skylab_test_runner.Result_Autotest_TestCase{
 				testCase("SubTest1", verdictPass, "A subtest warning.\n"),
-				testCase("SubSubTest", verdictFail, "The outer tests don't care about this error.\n"),
+				testCase("SubSubTest", verdictError, "The outer tests don't care about this error.\n"),
 				testCase("SubTest2", verdictPass, ""),
 				testCase("NestedTest", verdictFail, "A failure of the outer test.\n"),
 			}
@@ -266,7 +268,7 @@ END FAIL	----	----
 }
 
 func TestUnfinishedTestCases(t *testing.T) {
-	Convey("When test cases don't have an 'END ...' event, declare them failed.",
+	Convey("When test cases don't have an 'END ...' event, declare them aborted.",
 		t, func() {
 			input := `
 START	----	CrashedOuter
@@ -279,9 +281,9 @@ START	----	CrashedOuter
 			got := parseResultsFile(input)
 
 			want := []*skylab_test_runner.Result_Autotest_TestCase{
-				testCase("CrashedInner", verdictFail, "Something bad is happening.\n"),
-				testCase("CrashedMiddle", verdictFail, ""),
-				testCase("CrashedOuter", verdictFail, ""),
+				testCase("CrashedInner", verdictAbort, "Something bad is happening.\n"),
+				testCase("CrashedMiddle", verdictAbort, ""),
+				testCase("CrashedOuter", verdictAbort, ""),
 			}
 			So(got, ShouldResemble, want)
 		})
@@ -303,14 +305,14 @@ END ERROR	----	----
 
 			want := []*skylab_test_runner.Result_Autotest_TestCase{
 				testCase("ActuallyPasses", verdictPass, "This test actually succeeds.\n"),
-				testCase("ActuallyFails", verdictFail, ""),
+				testCase("ActuallyFails", verdictError, ""),
 			}
 			So(got, ShouldResemble, want)
 		})
 }
 
 func TestInterruptedTestCase(t *testing.T) {
-	Convey("When status.log contains an interrupted test case without an END event line, the test is still returned.", t, func() {
+	Convey("When status.log contains an interrupted test case without an END event line, the test is still returned but declare it aborted.", t, func() {
 		input := `
 START	----	----
 	START	----	Fail
@@ -318,7 +320,7 @@ START	----	----
 		got := parseResultsFile(input)
 
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
-			testCase("Fail", verdictFail, ""),
+			testCase("Fail", verdictAbort, ""),
 		}
 		So(got, ShouldResemble, want)
 	})
@@ -348,13 +350,22 @@ func TestExitedWithErrors(t *testing.T) {
 }
 
 func TestAborted(t *testing.T) {
-	Convey("When the server job was aborted, report exit error",
-		t, func() {
-			// 9 = Killed.
-			input := "42\n9\n0"
+	Convey("When status.log contains an ABORT status, a test failure with a comment is returned.", t, func() {
+		input := `
+START	----	ActuallyAbort
+	START	----	reboot
+		GOOD	----	reboot.start
+		ABORT	----	reboot.verify	Host did not return from reboot
+	END FAIL	----	reboot	Host did not return from reboot
+END FAIL	----	ActuallyAbort
+`
+		got := parseResultsFile(input)
 
-			So(exitedWithErrors(input), ShouldResemble, true)
-		})
+		want := []*skylab_test_runner.Result_Autotest_TestCase{
+			testCase("ActuallyAbort", verdictAbort, "Host did not return from reboot\n"),
+		}
+		So(got, ShouldResemble, want)
+	})
 }
 
 func TestFailedToParseExitCode(t *testing.T) {

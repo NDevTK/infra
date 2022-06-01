@@ -96,6 +96,24 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 				expectVerdict: test_platform.TaskState_VERDICT_FAILED,
 			},
 			{
+				description: "with 1 error test case",
+				result: &skylab_test_runner.Result_Autotest{
+					TestCases: []*skylab_test_runner.Result_Autotest_TestCase{
+						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR},
+					},
+				},
+				expectVerdict: test_platform.TaskState_VERDICT_FAILED,
+			},
+			{
+				description: "with 1 abort test case",
+				result: &skylab_test_runner.Result_Autotest{
+					TestCases: []*skylab_test_runner.Result_Autotest_TestCase{
+						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT},
+					},
+				},
+				expectVerdict: test_platform.TaskState_VERDICT_FAILED,
+			},
+			{
 				description: "with 1 undefined-verdict test case",
 				result: &skylab_test_runner.Result_Autotest{
 					TestCases: []*skylab_test_runner.Result_Autotest_TestCase{
@@ -151,6 +169,26 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 					TestCases: []*skylab_test_runner.Result_Autotest_TestCase{
 						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS},
 						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL},
+					},
+				},
+				expectVerdict: test_platform.TaskState_VERDICT_FAILED,
+			},
+			{
+				description: "with 1 passing and 1 error test case",
+				result: &skylab_test_runner.Result_Autotest{
+					TestCases: []*skylab_test_runner.Result_Autotest_TestCase{
+						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS},
+						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR},
+					},
+				},
+				expectVerdict: test_platform.TaskState_VERDICT_FAILED,
+			},
+			{
+				description: "with 1 passing and 1 abort test case",
+				result: &skylab_test_runner.Result_Autotest{
+					TestCases: []*skylab_test_runner.Result_Autotest_TestCase{
+						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS},
+						{Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT},
 					},
 				},
 				expectVerdict: test_platform.TaskState_VERDICT_FAILED,
@@ -219,6 +257,14 @@ func TestAutotestTestCases(t *testing.T) {
 							Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL,
 						},
 						{
+							Name:    "foo-error",
+							Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR,
+						},
+						{
+							Name:    "foo-abort",
+							Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT,
+						},
+						{
 							Name: "foo-undefined",
 						},
 					},
@@ -230,6 +276,14 @@ func TestAutotestTestCases(t *testing.T) {
 					},
 					{
 						Name:    "foo-fail",
+						Verdict: test_platform.TaskState_VERDICT_FAILED,
+					},
+					{
+						Name:    "foo-error",
+						Verdict: test_platform.TaskState_VERDICT_FAILED,
+					},
+					{
+						Name:    "foo-abort",
 						Verdict: test_platform.TaskState_VERDICT_FAILED,
 					},
 					{

@@ -27,10 +27,11 @@ const (
 	resultsSummaryFile = "status.log"
 	exitStatusFile     = ".autoserv_execute"
 
-	verdictStringPrefix = "END "
-	undefinedName       = "----"
-	rebootTestName      = "reboot"
-	suspendTestName     = "suspend"
+	verdictStringPrefix  = "END "
+	undefinedName        = "----"
+	rebootTestName       = "reboot"
+	rebootVerifyTestName = "reboot.verify"
+	suspendTestName      = "suspend"
 
 	dutStateReady       = "ready"
 	dutStateNeedsRepair = "needs_repair"
@@ -220,6 +221,9 @@ func parseResultsFile(contents string) []*skylab_test_runner.Result_Autotest_Tes
 	lines := strings.Split(contents, "\n")
 	testCases := []*skylab_test_runner.Result_Autotest_TestCase{}
 
+	// Stores nested aborted test cases because they might not be legal test
+	// case (e.g. reboot) but they imply the outer test case is aborted.
+	nestedAbortTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
 	for _, line := range lines {
 		stack.ParseLine(line)
 
@@ -230,7 +234,12 @@ func parseResultsFile(contents string) []*skylab_test_runner.Result_Autotest_Tes
 		}
 
 		if isLegalTestCaseName(testCase.Name) {
+			processNestedAbortTestCase(testCase, nestedAbortTestCases)
 			testCases = append(testCases, testCase)
+		} else {
+			if testCase.Name == rebootTestName && testCase.Verdict == skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT {
+				nestedAbortTestCases = append(nestedAbortTestCases, testCase)
+			}
 		}
 	}
 
@@ -265,10 +274,20 @@ func (s *testCaseStack) ParseLine(line string) {
 		s.push(testCaseName)
 
 	case isFinalEvent(parts[0]):
+		// ABORT status in the nested job overrides FAIL status in the
+		// outer final event statement.
+		if len(s.testCases) > 0 && s.testCases[len(s.testCases)-1].Verdict == skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT {
+			return
+		}
 		s.setVerdict(parseVerdict(parts[0]))
 
 	case isStatusUpdateEvent(parts[0]):
 		s.addSummary(parts[len(parts)-1])
+
+		// ABORT status might be recorded in the nested reboot.verify job.
+		if parts[0] == "ABORT" && parts[2] == rebootVerifyTestName {
+			s.setVerdict(skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT)
+		}
 	}
 }
 
@@ -292,12 +311,13 @@ func (s *testCaseStack) PopFullyParsedTestCase() *skylab_test_runner.Result_Auto
 }
 
 // Flush pops all the legal test cases currently in the stack, declares them
-// failed and returns them.
+// aborted and returns them.
 func (s *testCaseStack) FlushLegalTestCaseName() []*skylab_test_runner.Result_Autotest_TestCase {
 	r := []*skylab_test_runner.Result_Autotest_TestCase{}
 
 	for {
-		s.setVerdict(skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL)
+		// Set the incomplete test case as ABORT
+		s.setVerdict(skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT)
 
 		tc := s.PopFullyParsedTestCase()
 
@@ -348,6 +368,24 @@ func (s *testCaseStack) setVerdict(verdict skylab_test_runner.Result_Autotest_Te
 	s.testCases[len(s.testCases)-1].Verdict = verdict
 }
 
+// processNestedAbortTestCase processes if there is any nested aborted test
+// case. If so, update the top test case with the abort status and error
+// summary.
+func processNestedAbortTestCase(testCase *skylab_test_runner.Result_Autotest_TestCase, nestedAbortTestCases []*skylab_test_runner.Result_Autotest_TestCase) {
+	nestedAbortTestCaseSize := len(nestedAbortTestCases)
+	if nestedAbortTestCaseSize == 0 {
+		return
+	}
+
+	// Updates the verdict and error summary of the current test case.
+	topAbortTestCase := nestedAbortTestCases[nestedAbortTestCaseSize-1]
+	testCase.Verdict = topAbortTestCase.Verdict
+	testCase.HumanReadableSummary = topAbortTestCase.HumanReadableSummary
+
+	// Pops the top nested aborted test case.
+	nestedAbortTestCases = nestedAbortTestCases[:nestedAbortTestCaseSize-1]
+}
+
 // True for the event string from the first line of a test case.
 func isStartingEvent(event string) bool {
 	return event == "START"
@@ -383,6 +421,10 @@ func parseVerdict(verdict string) skylab_test_runner.Result_Autotest_TestCase_Ve
 	switch verdict[len(verdictStringPrefix):] {
 	case "GOOD", "WARN":
 		return skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS
+	case "ERROR":
+		return skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR
+	case "ABORT":
+		return skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT
 	case "TEST_NA":
 		return skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT
 	}

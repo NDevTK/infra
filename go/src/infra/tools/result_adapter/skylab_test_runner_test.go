@@ -40,6 +40,20 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			Verdict:              "VERDICT_FAIL",
 			HumanReadableSummary: "test failure",
 		},
+		{
+			Name:                 "test4",
+			Verdict:              "VERDICT_ERROR",
+			HumanReadableSummary: "test error",
+			StartTime:            parseTime("2021-07-26T18:53:33.983328614Z"),
+			EndTime:              parseTime("2021-07-26T18:53:37.983328614Z"),
+		},
+		{
+			Name:                 "test5",
+			Verdict:              "VERDICT_ABORT",
+			HumanReadableSummary: "test abort",
+			StartTime:            parseTime("2021-07-26T18:53:33.983328614Z"),
+			EndTime:              parseTime("2021-07-26T18:53:37.983328614Z"),
+		},
 	}
 
 	results := TestRunnerResult{Autotest: TestRunnerAutotest{
@@ -65,7 +79,21 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					"verdict": "VERDICT_FAIL",
 					"name": "test3",
 					"human_readable_summary": "test failure"
-				}
+				},
+                {
+                    "verdict": "VERDICT_ERROR",
+                    "name": "test4",
+                    "human_readable_summary": "test error",
+					"start_time": "2021-07-26T18:53:33.983328614Z",
+					"end_time": "2021-07-26T18:53:37.983328614Z"
+                },
+                {
+                    "verdict": "VERDICT_ABORT",
+                    "name": "test5",
+                    "human_readable_summary": "test abort",
+					"start_time": "2021-07-26T18:53:33.983328614Z",
+					"end_time": "2021-07-26T18:53:37.983328614Z"
+                }
 			  ]
 			}
 		  }`
@@ -102,8 +130,24 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					Status:      pb.TestStatus_FAIL,
 					SummaryHtml: "<pre>test failure</pre>",
 				},
+				{
+					TestId:      "test4",
+					Expected:    false,
+					Status:      pb.TestStatus_CRASH,
+					SummaryHtml: "<pre>test error</pre>",
+					StartTime:   timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:    &duration.Duration{Seconds: 4},
+				},
+				{
+					TestId:      "test5",
+					Expected:    false,
+					Status:      pb.TestStatus_ABORT,
+					SummaryHtml: "<pre>test abort</pre>",
+					StartTime:   timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:    &duration.Duration{Seconds: 4},
+				},
 			}
-			So(testResults, ShouldHaveLength, 3)
+			So(testResults, ShouldHaveLength, 5)
 			So(testResults, ShouldResemble, expected)
 		})
 	})
