@@ -55,7 +55,7 @@ func TestFailureDetection(t *testing.T) {
 			res := &buildbucketpb.SearchBuildsResponse{
 				Builds: []*buildbucketpb.Build{},
 			}
-			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).AnyTimes()
+			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).Times(1)
 			_, _, err := getLastPassedFirstFailedBuilds(c, &buildbucketpb.Build{Id: 123})
 			So(err, ShouldNotBeNil)
 		})
@@ -99,11 +99,141 @@ func TestFailureDetection(t *testing.T) {
 					},
 				},
 			}
-			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).AnyTimes()
+			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).Times(1)
 			lastPassedBuild, firstFailedBuild, err := getLastPassedFirstFailedBuilds(c, &buildbucketpb.Build{Id: 123})
 			So(err, ShouldBeNil)
 			So(lastPassedBuild.Id, ShouldEqual, 120)
 			So(firstFailedBuild.Id, ShouldEqual, 122)
+		})
+
+		Convey("Last passed build not in first search", func() {
+			firstRes := &buildbucketpb.SearchBuildsResponse{
+				Builds: []*buildbucketpb.Build{
+					{
+						Id:     123,
+						Status: buildbucketpb.Status_FAILURE,
+						Steps: []*buildbucketpb.Step{
+							{
+								Name:   "compile",
+								Status: buildbucketpb.Status_FAILURE,
+							},
+						},
+					},
+					{
+						Id:     122,
+						Status: buildbucketpb.Status_FAILURE,
+						Steps: []*buildbucketpb.Step{
+							{
+								Name:   "compile",
+								Status: buildbucketpb.Status_FAILURE,
+							},
+						},
+					},
+				},
+				NextPageToken: "test-token",
+			}
+			secondRes := &buildbucketpb.SearchBuildsResponse{
+				Builds: []*buildbucketpb.Build{
+					{
+						Id:     121,
+						Status: buildbucketpb.Status_INFRA_FAILURE,
+					},
+					{
+						Id:     120,
+						Status: buildbucketpb.Status_SUCCESS,
+						Steps: []*buildbucketpb.Step{
+							{
+								Name:   "compile",
+								Status: buildbucketpb.Status_SUCCESS,
+							},
+						},
+					},
+					{
+						Id:     119,
+						Status: buildbucketpb.Status_FAILURE,
+						Steps: []*buildbucketpb.Step{
+							{
+								Name:   "compile",
+								Status: buildbucketpb.Status_FAILURE,
+							},
+						},
+					},
+				},
+			}
+
+			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(firstRes, nil).Times(1)
+			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(secondRes, nil).Times(1)
+			lastPassedBuild, firstFailedBuild, err := getLastPassedFirstFailedBuilds(c, &buildbucketpb.Build{Id: 123})
+			So(err, ShouldBeNil)
+			So(lastPassedBuild.Id, ShouldEqual, 120)
+			So(firstFailedBuild.Id, ShouldEqual, 122)
+		})
+
+		Convey("Fewer older builds than the search limit and all failed", func() {
+			res := &buildbucketpb.SearchBuildsResponse{
+				Builds: []*buildbucketpb.Build{
+					{
+						Id:     123,
+						Status: buildbucketpb.Status_FAILURE,
+						Steps: []*buildbucketpb.Step{
+							{
+								Name:   "compile",
+								Status: buildbucketpb.Status_FAILURE,
+							},
+						},
+					},
+					{
+						Id:     122,
+						Status: buildbucketpb.Status_FAILURE,
+						Steps: []*buildbucketpb.Step{
+							{
+								Name:   "compile",
+								Status: buildbucketpb.Status_FAILURE,
+							},
+						},
+					},
+					{
+						Id:     121,
+						Status: buildbucketpb.Status_INFRA_FAILURE,
+					},
+				},
+			}
+			mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).Times(1)
+			lastPassedBuild, firstFailedBuild, err := getLastPassedFirstFailedBuilds(c, &buildbucketpb.Build{Id: 123})
+			So(lastPassedBuild, ShouldBeNil)
+			So(firstFailedBuild, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+		})
+
+		Convey("No recent passed build", func() {
+			failedBuilds := make([]*buildbucketpb.Build, 100)
+			for i := 0; i < 100; i++ {
+				failedBuilds[i] = &buildbucketpb.Build{
+					Id:     int64(123 - i),
+					Status: buildbucketpb.Status_FAILURE,
+					Steps: []*buildbucketpb.Step{
+						{
+							Name:   "compile",
+							Status: buildbucketpb.Status_FAILURE,
+						},
+					},
+				}
+			}
+
+			// Mock the return of older builds in batches, setting the response's
+			// NextPageToken value to signify there are more results available
+			for i := 0; i < 5; i++ {
+				res := &buildbucketpb.SearchBuildsResponse{
+					Builds:        failedBuilds[20*i : 20*(i+1)],
+					NextPageToken: "test-token",
+				}
+				mc.Client.EXPECT().SearchBuilds(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).Times(1)
+			}
+
+			lastPassedBuild, firstFailedBuild, err := getLastPassedFirstFailedBuilds(c, &buildbucketpb.Build{Id: 123})
+			So(lastPassedBuild, ShouldBeNil)
+			So(firstFailedBuild, ShouldBeNil)
+			So(err, ShouldNotBeNil)
 		})
 	})
 

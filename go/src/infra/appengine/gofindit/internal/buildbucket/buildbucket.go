@@ -80,8 +80,8 @@ func GetBuild(c context.Context, bbid int64, mask *bbpb.BuildMask) (*bbpb.Build,
 }
 
 // SearchOlderBuilds searches for builds in the same builder and are older than a reference Build.
-// More recent builds appear
-func SearchOlderBuilds(c context.Context, refBuild *bbpb.Build, mask *bbpb.BuildMask, limit int32) ([]*bbpb.Build, error) {
+// More recent builds appear first. The token for the next page of builds is also returned.
+func SearchOlderBuilds(c context.Context, refBuild *bbpb.Build, mask *bbpb.BuildMask, maxResultSize int32, pageToken string) ([]*bbpb.Build, string, error) {
 	req := &bbpb.SearchBuildsRequest{
 		Predicate: &bbpb.BuildPredicate{
 			Builder: refBuild.Builder,
@@ -89,18 +89,22 @@ func SearchOlderBuilds(c context.Context, refBuild *bbpb.Build, mask *bbpb.Build
 				EndBuildId: refBuild.Id,
 			},
 		},
-		Mask:     mask,
-		PageSize: limit,
+		Mask:      mask,
+		PageSize:  maxResultSize,
+		PageToken: pageToken,
 	}
 
+	// Create a new buildbucket client
 	cl, err := NewClient(c, bbHost)
 	if err != nil {
 		logging.Errorf(c, "Cannot create Buildbucket client")
 	}
 
+	// Execute query for older builds
 	res, err := cl.SearchBuild(c, req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return res.Builds, nil
+
+	return res.Builds, res.NextPageToken, nil
 }

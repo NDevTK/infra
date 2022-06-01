@@ -70,37 +70,58 @@ func AnalyzeBuild(c context.Context, bbid int64) (bool, error) {
 
 // Search builds older than refBuild to find the last passed and first failed builds
 func getLastPassedFirstFailedBuilds(c context.Context, refBuild *buildbucketpb.Build) (*buildbucketpb.Build, *buildbucketpb.Build, error) {
+	firstFailedBuild := refBuild
+
 	// Query buildbucket for the first build with compile failure
 	// We only consider maximum of 100 builds before the failed build.
 	// If we cannot find the regression range within 100 builds, the failure is
 	// too old for the analysis to be useful.
-	olderBuilds, err := buildbucket.SearchOlderBuilds(c, refBuild, &buildbucketpb.BuildMask{
+	var buildsToSearch int32 = 100
+	var batchSize int32 = 20
+	var pageToken string = ""
+
+	buildMask := &buildbucketpb.BuildMask{
 		Fields: &fieldmaskpb.FieldMask{
 			Paths: []string{"id", "builder", "input", "status", "steps"},
 		},
-	}, 100)
-
-	if err != nil {
-		logging.Errorf(c, "Could not search for older builds: %s", err)
-		return nil, nil, err
 	}
 
-	var lastPassedBuild *buildbucketpb.Build = nil
-	firstFailedBuild := refBuild
-	for _, oldBuild := range olderBuilds {
-		// We found the last passed build, break
-		if oldBuild.Status == buildbucketpb.Status_SUCCESS || hasCompileStepStatus(c, oldBuild, buildbucketpb.Status_SUCCESS) {
-			lastPassedBuild = oldBuild
+	for buildsToSearch > 0 {
+		// Tweak the batch size if necessary to respect the search limit
+		if buildsToSearch < batchSize {
+			batchSize = buildsToSearch
+		}
+
+		// Get the next batch of older builds
+		olderBuilds, nextPageToken, err := buildbucket.SearchOlderBuilds(c, refBuild, buildMask, batchSize, pageToken)
+		if err != nil {
+			logging.Errorf(c, "Could not search for older builds: %s", err)
+			return nil, nil, err
+		}
+
+		// Search this batch of older builds for the last passed and first failed build
+		for _, oldBuild := range olderBuilds {
+			// We found the last passed build
+			if oldBuild.Status == buildbucketpb.Status_SUCCESS || hasCompileStepStatus(c, oldBuild, buildbucketpb.Status_SUCCESS) {
+				return oldBuild, firstFailedBuild, nil
+			}
+			if hasCompileStepStatus(c, oldBuild, buildbucketpb.Status_FAILURE) {
+				firstFailedBuild = oldBuild
+			}
+		}
+
+		// Stop searching if there are no more older builds available
+		if nextPageToken == "" {
 			break
 		}
-		if hasCompileStepStatus(c, oldBuild, buildbucketpb.Status_FAILURE) {
-			firstFailedBuild = oldBuild
-		}
+
+		// Update the remaining number of builds to search and the page token
+		buildsToSearch -= int32(len(olderBuilds))
+		pageToken = nextPageToken
 	}
-	if lastPassedBuild == nil {
-		return nil, nil, fmt.Errorf("could not find last passed build")
-	}
-	return lastPassedBuild, firstFailedBuild, nil
+
+	// If we have reached here, the last passed build could not be found within the search limit
+	return nil, nil, fmt.Errorf("could not find last passed build")
 }
 
 // analysisExists checks if we need to trigger a new analysis.
