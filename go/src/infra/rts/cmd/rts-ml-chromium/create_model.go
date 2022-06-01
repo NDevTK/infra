@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
@@ -20,6 +21,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/rts/filegraph/git"
@@ -46,6 +48,28 @@ func cmdCreateModel(authOpt *auth.Options) *subcommands.Command {
 				The rationale is that large commits provide a weak signal of file
 				relatedness and are expensive to process, O(N^2).
 			`))
+			r.Flags.StringVar(&r.mlModelDir, "ml-model-dir", "", text.Doc(`
+				Path to the directory with the tensorflow SavedModel.
+			`))
+			r.Flags.StringVar(&r.cli, "cli", "", text.Doc(`
+				The python cli tool to interact with the model.
+			`))
+			r.Flags.StringVar(&r.builder, "builder", "", text.Doc(`
+				The specific builder to collect stability information for.
+			`))
+			r.Flags.StringVar(&r.testSuite, "test-suite", "", text.Doc(`
+				The specific test-suite to collect stability information for.
+			`))
+			r.Flags.Var(flag.Date(&r.startDate), "from", text.Doc(`
+				Fetch results starting on this day. Stability information will
+				be gathered based on this day as a UTC date.
+				format: yyyy-mm-dd
+			`))
+			r.Flags.Var(flag.Date(&r.endDate), "to", text.Doc(`
+				Fetch results up to this date as a UTC date. By default only the
+				start-day will be gathered.
+				format: yyyy-mm-dd
+			`))
 
 			r.ev.LogProgressInterval = 100
 			r.ev.RegisterFlags(&r.Flags)
@@ -61,8 +85,17 @@ type createModelRun struct {
 	checkout    string
 	loadOptions git.LoadOptions
 	fg          *git.Graph
+	mlModelDir  string
+	cli         string
+	builder     string
+	testSuite   string
+	startDate   time.Time
+	endDate     time.Time
 
-	ev eval.Eval
+	// Day to test id to an ml example containing the stability info for that
+	// day and test
+	stabilityMap map[stabilityMapKey]mlExample
+	ev           eval.Eval
 
 	authOpt  *auth.Options
 	bqClient *bigquery.Client
@@ -77,6 +110,14 @@ func (r *createModelRun) validateFlags() error {
 		return errors.New("-model-dir is required")
 	case r.checkout == "":
 		return errors.New("-checkout is required")
+	case r.cli == "":
+		return errors.New("-cli is required")
+	case r.mlModelDir == "":
+		return errors.New("-ml-model-dir is required")
+	case r.startDate.IsZero():
+		return errors.New("-from is required")
+	case r.endDate.IsZero():
+		return errors.New("-to is required")
 	default:
 		return nil
 	}
@@ -161,7 +202,13 @@ func (r *createModelRun) writeFileGraph(ctx context.Context, fileName string) er
 
 // writeStrategyConfig computes and writes the GitBasedStrategyConfig.
 func (r *createModelRun) writeStrategyConfig(ctx context.Context, dir string) error {
-	// TODO(sshrimp): Collect the test stability info for eval
+	// Collect the test stability info once
+	logging.Infof(ctx, "Collecting the stability info...")
+	testStability, err := getTestIdToStabilityRowMap(ctx, r.bqClient, r.builder, r.testSuite, r.startDate, r.endDate)
+	if err != nil {
+		return err
+	}
+	r.stabilityMap = testStability
 
 	// No need to calibrate the edge reader
 	logging.Infof(ctx, "Evaluating the strategy...")
