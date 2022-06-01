@@ -7,11 +7,12 @@ package frontend
 import (
 	"context"
 	"fmt"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/libs/skylab/common/heuristics"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // RouteTask routes a task for a given bot.
@@ -22,15 +23,15 @@ import (
 // -  "paris"  (for PARIS, which is new)
 // -  "latest" (indicates the latest version of paris)
 //
-func RouteTask(ctx context.Context, taskType string, botID string, expectedState string, pools []string, randFloat float64) (string, error) {
+func RouteTask(ctx context.Context, taskType string, botID string, expectedState string, pools []string, randFloat float64) (heuristics.TaskType, error) {
 	if taskType == "" {
-		return "", errors.New("route task: task type cannot be empty")
+		return heuristics.LegacyTaskType, errors.New("route task: task type cannot be empty")
 	}
 	switch taskType {
 	case "repair":
 		return routeRepairTask(ctx, botID, expectedState, pools, randFloat)
 	}
-	return "", fmt.Errorf("route task: unrecognized task name %q", taskType)
+	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", taskType)
 }
 
 // routeRepairTask routes a repair task for a given bot.
@@ -45,14 +46,14 @@ func RouteTask(ctx context.Context, taskType string, botID string, expectedState
 // This argument is, by design, all the entropy that randFloat will need. Taking this as an argument allows
 // routeRepairTask itself to be deterministic because the caller is responsible for generating the random
 // value.
-func routeRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (string, error) {
+func routeRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (heuristics.TaskType, error) {
 	if !(0.0 <= randFloat && randFloat <= 1.0) {
-		return "", fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
+		return heuristics.LegacyTaskType, fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
 	}
 	isLabstation := heuristics.LooksLikeLabstation(botID)
 	rolloutConfig, err := getRolloutConfig(ctx, "repair", isLabstation, expectedState)
 	if err != nil {
-		return "", errors.Annotate(err, "route repair task").Err()
+		return heuristics.LegacyTaskType, errors.Annotate(err, "route repair task").Err()
 	}
 	out, r := routeRepairTaskImpl(
 		ctx,

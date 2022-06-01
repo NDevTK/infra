@@ -15,6 +15,7 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // TestIsDisjoint tests that isDisjoint(a, b) returns true if and only if
@@ -101,7 +102,7 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 		in        *config.RolloutConfig
 		pools     []string
 		randFloat float64
-		out       string
+		out       heuristics.TaskType
 		reason    routing.Reason
 	}{
 		{
@@ -159,7 +160,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		in        *config.RolloutConfig
 		pools     []string
 		randFloat float64
-		out       string
+		out       heuristics.TaskType
 		reason    routing.Reason
 	}{
 		{
@@ -356,7 +357,7 @@ func TestRouteRepairTask(t *testing.T) {
 		expectedState string
 		pools         []string
 		randFloat     float64
-		out           string
+		out           heuristics.TaskType
 		hasErr        bool
 	}{
 		{
@@ -469,7 +470,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "ready",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           "",
+			out:           routing.Legacy,
 			hasErr:        true,
 		},
 		{
@@ -490,7 +491,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "needs_repair",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           "latest",
+			out:           heuristics.LatestTaskType,
 			hasErr:        false,
 		},
 	}

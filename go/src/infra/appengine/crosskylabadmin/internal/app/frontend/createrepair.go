@@ -96,7 +96,7 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		logging.Infof(ctx, "Create repair task: falling back to legacy repair by default: %s", err)
 	}
 	switch taskType {
-	case "paris":
+	case heuristics.ProdTaskType:
 		url, err := createBuildbucketRepairTask(ctx, botID, expectedState)
 		if err != nil {
 			logging.Errorf(ctx, "Attempted and failed to create buildbucket task: %s", err)
@@ -122,7 +122,7 @@ type dutRoutingInfo struct {
 }
 
 // RouteLabstationRepairTask takes a repair task for a labstation and routes it.
-func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dutRoutingInfo, randFloat float64) (string, routing.Reason) {
+func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dutRoutingInfo, randFloat float64) (heuristics.TaskType, routing.Reason) {
 	if info == nil {
 		logging.Errorf(ctx, "info cannot be nil, falling back to legacy")
 		return routing.Legacy, routing.NilArgument
