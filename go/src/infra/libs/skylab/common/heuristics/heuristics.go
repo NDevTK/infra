@@ -73,23 +73,15 @@ func NormalizeTextualData(data string) string {
 	return strings.ToLower(strings.TrimSpace(data))
 }
 
+// TaskType is the high level type of a task such as repair or audit. It indicates what
+// implementation (legacy or paris) and what level of stability (prod vs canary) should be used.
 type TaskType int
 
 const (
+	// LegacyTaskType is the type for the legacy (autotest) based repair flow.
 	LegacyTaskType TaskType = 0
-	ProdTaskType   TaskType = 100
+	// ProdTaskType refers to the paris task on the prod cipd label.
+	ProdTaskType TaskType = 100
+	// LatestTaskType refers to the paris task on the latest cipd label.
 	LatestTaskType TaskType = 200
 )
-
-// GetCIPDVersion returns the cipd version associated with a given task.
-func GetCIPDVersion(taskType TaskType) (string, error) {
-	switch taskType {
-	case LegacyTaskType:
-		return "", errors.Reason("get cipd version: legacy has no cipd version").Err()
-	case ProdTaskType:
-		return "paris", nil
-	case LatestTaskType:
-		return "latest", nil
-	}
-	return "", errors.Reason("get cipd version: %d is not valid", taskType).Err()
-}
