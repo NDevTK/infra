@@ -44,11 +44,6 @@ _DOCKER_VOLUMES = {
       'bind': '/mmutex',
       'mode': 'rw',
     },
-    # Forward the tun/tap device to the docker instance.
-    '/dev/net/tun': {
-      'bind': '/dev/net/tun',
-      'mode': 'rwm', # Read Write & Make node
-    },
 }
 
 _SWARMING_URL_ENV_VAR = 'SWARM_URL'
