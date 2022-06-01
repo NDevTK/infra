@@ -45,7 +45,7 @@ var RepairDutsCmd = &subcommands.Command{
 		c.envFlags.Register(&c.Flags)
 		c.Flags.BoolVar(&c.onlyVerify, "verify", false, "Run only verify actions.")
 		c.Flags.IntVar(&c.expirationMins, "expiration-mins", 10, "The expiration minutes of the repair request.")
-		c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
+		c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow (dogfood).")
 		return c
 	},
 }
