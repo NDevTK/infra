@@ -16,6 +16,7 @@ import ezt
 from features import hotlist_helpers
 from features import hotlist_views
 from framework import framework_helpers
+from framework import flaskservlet
 from framework import framework_views
 from framework import paginate
 from framework import permissions
@@ -30,7 +31,7 @@ class HotlistPeopleList(servlet.Servlet):
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
   # Note: using the project's peoplelist page template. minor edits were
   # to make it compatible with HotlistPeopleList
-  _MAIN_TAB_MODE = servlet.Servlet.HOTLIST_TAB_PEOPLE
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.HOTLIST_TAB_PEOPLE
 
   def AssertBasePermission(self, mr):
     super(HotlistPeopleList, self).AssertBasePermission(mr)
@@ -218,6 +219,8 @@ class HotlistPeopleList(servlet.Servlet):
 
   def ProcessRemoveMembers(self, mr, post_data, hotlist_url):
     """Process the user's request to remove members."""
+    #TODO: convert for flask
+    #remove_strs = post_data.getlist('remove')
     remove_strs = post_data.getall('remove')
     logging.info('remove_strs = %r', remove_strs)
     remove_ids = set(
@@ -250,3 +253,9 @@ class HotlistPeopleList(servlet.Servlet):
         mr, '%s%s' % (
               hotlist_url, urls.HOTLIST_PEOPLE),
           saved=1, ts=int(time.time()), include_project=False)
+
+  # def GetHotlistPeoplePage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostHotlistPeoplePage(self, **kwargs):
+  #   return self.handler(**kwargs)

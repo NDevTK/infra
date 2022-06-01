@@ -14,6 +14,7 @@ import ezt
 
 from features import hotlist_helpers
 from framework import framework_bizobj
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import servlet
 from framework import permissions
@@ -32,7 +33,7 @@ class HotlistDetails(servlet.Servlet):
   """A page with hotlist details and editing options."""
 
   _PAGE_TEMPLATE = 'features/hotlist-details-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.HOTLIST_TAB_DETAILS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.HOTLIST_TAB_DETAILS
 
   def AssertBasePermission(self, mr):
     super(HotlistDetails, self).AssertBasePermission(mr)
@@ -121,3 +122,9 @@ class HotlistDetails(servlet.Servlet):
     if 'default_col_spec' in post_data:
       default_col_spec = post_data['default_col_spec']
     return summary, description, name, default_col_spec
+
+  # def GetHotlistDetailsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostHotlistDetailsPage(self, **kwargs):
+  #   return self.handler(**kwargs)

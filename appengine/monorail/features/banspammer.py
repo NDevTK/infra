@@ -101,7 +101,7 @@ class BanSpammerTask(jsonfeed.InternalTask):
       'comments': len(comments),
       'issues': len(issues),
     })
-  #   self.response.response = json.dumps({
+  # return json.dumps({
   #     'comments': len(comments),
   #     'issues': len(issues),
   #   })

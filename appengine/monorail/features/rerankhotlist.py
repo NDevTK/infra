@@ -19,7 +19,7 @@ from services import features_svc
 from tracker import rerank_helpers
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: convert to FLaskJsonFeed while conver to flask
 class RerankHotlistIssue(jsonfeed.JsonFeed):
   """Rerank an issue in a hotlist."""
 
@@ -135,3 +135,9 @@ class RerankHotlistIssue(jsonfeed.JsonFeed):
     lower, higher = features_bizobj.SplitHotlistIssueRanks(
         mr.target_id, mr.split_above, untouched_items)
     return rerank_helpers.GetInsertRankings(lower, higher, mr.moved_ids)
+
+  # def GetRerankHotlistIssuePage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostRerankHotlistIssuePage(self, **kwargs):
+  #   return self.handler(**kwargs)

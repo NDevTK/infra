@@ -402,13 +402,14 @@ class ServletRegistry(object):
         urls.USER_UPDATES_MINE: userupdates.UserUpdatesIndividual,
         })
 
-    self._SetupUserHotlistServlets({
-        urls.HOTLIST_ISSUES: hotlistissues.HotlistIssues,
-        urls.HOTLIST_ISSUES_CSV: hotlistissuescsv.HotlistIssuesCsv,
-        urls.HOTLIST_PEOPLE: hotlistpeople.HotlistPeopleList,
-        urls.HOTLIST_DETAIL: hotlistdetails.HotlistDetails,
-        urls.HOTLIST_RERANK_JSON: rerankhotlist.RerankHotlistIssue,
-    })
+    self._SetupUserHotlistServlets(
+        {
+            urls.HOTLIST_ISSUES: hotlistissues.HotlistIssues,
+            urls.HOTLIST_ISSUES_CSV: hotlistissuescsv.HotlistIssuesCsv,
+            urls.HOTLIST_PEOPLE: hotlistpeople.HotlistPeopleList,
+            urls.HOTLIST_DETAIL: hotlistdetails.HotlistDetails,
+            urls.HOTLIST_RERANK_JSON: rerankhotlist.RerankHotlistIssue,
+        })
 
     profile_redir = registerpages_helpers.MakeRedirectInScope(
         urls.USER_PROFILE, 'u')

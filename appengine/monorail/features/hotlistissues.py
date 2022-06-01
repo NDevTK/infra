@@ -20,6 +20,7 @@ from features import features_bizobj
 from features import features_constants
 from features import hotlist_helpers
 from framework import exceptions
+from framework import flaskservlet
 from framework import servlet
 from framework import sorting
 from framework import permissions
@@ -46,7 +47,7 @@ class HotlistIssues(servlet.Servlet):
   """HotlistIssues is a page that shows the issues of one hotlist."""
 
   _PAGE_TEMPLATE = 'features/hotlist-issues-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.HOTLIST_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.HOTLIST_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Check that the user has permission to even visit this page."""
@@ -347,3 +348,9 @@ class HotlistIssues(servlet.Servlet):
           url_params=url_params)})
 
     return grid_view_data
+
+  # def GetHotlistIssuesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostHotlistIssuesPage(self, **kwargs):
+  #   return self.handler(**kwargs)

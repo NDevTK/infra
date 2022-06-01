@@ -30,6 +30,15 @@ from sitewide import projectcreate
 from sitewide import usersettings
 from sitewide import groupcreate
 from sitewide import grouplist
+from features import rerankhotlist
+from features import hotlistdetails
+from features import hotlistissues
+from features import hotlistissuescsv
+from features import hotlistpeople
+from features import hotlistcreate
+from features import savedqueries
+from features import userhotlists
+from features import banspammer
 
 
 class ServletRegistry(object):
@@ -143,6 +152,7 @@ class ServletRegistry(object):
     flaskapp_hosting = self._AddFlaskUrlRules(flaskapp_hosting, _HOSTING_URL)
 
     # pylint: disable=unused-variable
+    # for url /hosting/
     @flaskapp_hosting.route('/')
     def DefaultToMainPage():
       url = flask.request.host_url
@@ -252,11 +262,48 @@ class ServletRegistry(object):
         #     '/<string:viewed_username>/updates',
         #     userupdates.UserUpdatesIndividual(
         #         services=service).GetUserUpdatesPage, ['GET']),
+        # (
+        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>',
+        #    hotlistissues.HotlistIssues(services=service).GetHotlistIssuesPage,
+        #     ['GET']),
+        # (
+        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>.do',
+        #   hotlistissues.HotlistIssues(services=service).PostHotlistIssuesPage,
+        #     ['POST']),
+        # (
+        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/csv',
+        #     hotlistissuescsv.HotlistIssuesCsv(
+        #         services=service).GetHotlistIssuesCsvPage, ['GET']),
+        # (
+        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/people',
+        #     hotlistpeople.HotlistPeopleList(
+        #         services=service).GetHotlistPeoplePage, ['GET']),
+        # (
+        #    '/<string:viewed_username>/hotlists/<string:hotlist_id>/people.do',
+        #     hotlistpeople.HotlistPeopleList(
+        #         services=service).PostHotlistPeoplePage, ['POST']),
+        # (
+        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/details',
+        #     hotlistdetails.HotlistDetails(
+        #         services=service).GetHotlistDetailsPage, ['GET']),
+        # (
+        #   '/<string:viewed_username>/hotlists/<string:hotlist_id>/details.do',
+        #     hotlistdetails.HotlistDetails(
+        #         services=service).PostHotlistDetailsPage, ['POST']),
+        # (
+        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/rerank',
+        #     rerankhotlist.RerankHotlistIssue(
+        #         services=service).GetRerankHotlistIssuePage, ['GET']),
+        # (
+        #   '/<string:viewed_username>/hotlists/<string:hotlist_id>/rerank.do',
+        #     rerankhotlist.RerankHotlistIssue(
+        #         services=service).PostRerankHotlistIssuePage, ['POST']),
     ]
 
     flaskapp_user = self._AddFlaskUrlRules(flaskapp_user, _USER_URLS)
 
     # pylint: disable=unused-variable
+    # for url /u/
     @flaskapp_user.route('/')
     def UserRedirectToMainPage():
       url = flask.request.host_url

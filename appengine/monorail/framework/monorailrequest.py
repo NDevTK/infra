@@ -299,7 +299,8 @@ class MonorailRequest(MonorailRequestBase):
       self.request = request
       self.request_path = request.base_url[len(request.host_url) - 1:]
       self.current_page_url = request.url
-      self.current_page_url_encoded = urllib.quote_plus(self.current_page_url)
+      self.current_page_url_encoded = urllib.parse.quote_plus(
+          self.current_page_url)
 
       # Only accept a hostport from the request that looks valid.
       if not _HOSTPORT_RE.match(request.host):
