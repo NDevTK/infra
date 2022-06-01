@@ -229,7 +229,6 @@ def launch_containers(
   # Fetch the image from the registry if it's not present locally.
   if not docker_client.has_image(image_url):
     logging.debug('Local image missing. Fetching %s ...', image_url)
-    docker_client.login(_REGISTRY_URL, args.credentials_file)
     docker_client.pull(image_url)
     logging.debug('Image %s fetched.', image_url)
 
@@ -347,12 +346,6 @@ def add_launch_arguments(parser):  # pragma: no cover
   parser.add_argument(
       '--registry-project', default='chromium-container-registry',
       help='Name of gcloud project id for the container registry.')
-  parser.add_argument(
-      '--credentials-file',
-      default='/creds/service_accounts/'
-              'service-account-container_registry_puller.json',
-      help='Path to service account json file used to access the gcloud '
-           'container registry.')
   parser.add_argument(
       '--max-host-uptime', type=max_uptime, default=60 * 24,
       help='Max uptime of the host, in minutes. A value of zero indicates the '

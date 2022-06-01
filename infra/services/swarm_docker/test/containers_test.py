@@ -25,9 +25,6 @@ class FakeClient(object):
     self.creds = None
     self.responsive = True
 
-  def login(self, **kwargs):
-    self.creds = (kwargs['username'], kwargs['password'])
-
   def ping(self):
     if self.responsive:
       return True
@@ -203,25 +200,6 @@ class TestDockerClient(unittest.TestCase):
     mock_sleep.assert_has_calls(
         [mock.call(1), mock.call(2), mock.call(4), mock.call(8)])
 
-  @mock.patch('os.path.exists')
-  def test_login_no_creds(self, mock_path_exists):
-    mock_path_exists.return_value = False
-
-    client = containers.DockerClient()
-    self.assertRaises(
-        OSError, client.login, 'registry_url.com', '/path/to/creds')
-
-  @mock.patch('os.path.exists')
-  def test_login(self, mock_path_exists):
-    mock_path_exists.return_value = True
-
-    client = containers.DockerClient()
-    with mock.patch('builtins.open', mock.mock_open(read_data='omg creds')):
-      client.login('registry_url.com', '/path/to/creds')
-
-    self.assertTrue(client.logged_in, True)
-    self.assertEquals(self.fake_client.creds[1], 'omg creds')
-
   def test_images(self):
     img1 = FakeImage('image1-id', 'image1-url')
     self.fake_client.images.images.append(img1)
@@ -266,11 +244,6 @@ class TestDockerClient(unittest.TestCase):
     client.logged_in = True
     client.pull('image1')
     self.assertTrue('image1' in self.fake_client.images.images)
-
-  def test_pull_not_logged_in(self):
-    client = containers.DockerClient()
-    client.logged_in = False
-    self.assertRaises(Exception, client.pull, 'image1')
 
   def test_get_running_containers(self):
     running_containers = containers.DockerClient().get_running_containers()
