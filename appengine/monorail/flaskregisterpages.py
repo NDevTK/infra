@@ -13,7 +13,11 @@ from framework import banned
 from framework import excessiveactivity
 from project import peopledetail
 from project import peoplelist
+from project import projectadmin
+from project import projectadminadvanced
+from project import projectsummary
 from project import project_constants
+from project import projectupdates
 from sitewide import moved
 from sitewide import userclearbouncing
 from sitewide import userupdates
@@ -137,6 +141,26 @@ class ServletRegistry(object):
     flaskapp_project = flask.Flask(__name__)
     _PROJECT_URLS = [
         # (
+        #     '/<string:project_name>/adminIntro',
+        #     projectsummary.ProjectSummary(
+        #         services=service).GetProjectSummaryPage, ['GET']),
+        # (
+        #     '/<string:project_name>/admin',
+        #     projectadmin.ProjectAdmin(services=service).GetProjectAdminPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/admin.do',
+        #     projectadmin.ProjectAdmin(services=service).PostProjectAdminPage,
+        #     ['POST']),
+        # (
+        #     '/<string:project_name>/adminAdvanced',
+        #     projectadminadvanced.ProjectAdminAdvanced(
+        #         services=service).GetProjectAdminAdvancedPage, ['GET']),
+        # (
+        #     '/<string:project_name>/adminAdvanced.do',
+        #     projectadminadvanced.ProjectAdminAdvanced(
+        #         services=service).PostProjectAdminAdvancedPage, ['POST']),
+        # (
         #     '/<string:project_name>/people/list',
         #     peoplelist.PeopleList(services=service).GetPeopleListPage,
         #     ['GET']),
@@ -152,6 +176,10 @@ class ServletRegistry(object):
         #     '/<string:project_name>/people/detail.do',
         #     peopledetail.PeopleDetail(services=service).PostPeopleDetailPage,
         #     ['POST']),
+        # (
+        #     '/<string:project_name>/updates/list',
+        #     projectupdates.ProjectUpdates(
+        #         services=service).GetProjectUpdatesPage, ['GET']),
     ]
 
     for rule in _PROJECT_URLS:

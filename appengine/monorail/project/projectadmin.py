@@ -8,7 +8,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import time
 
 from six import string_types
@@ -17,6 +16,7 @@ import ezt
 
 from businesslogic import work_env
 from framework import emailfmt
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
@@ -39,7 +39,7 @@ class ProjectAdmin(servlet.Servlet):
   """A page with project configuration options for the Project Owner(s)."""
 
   _PAGE_TEMPLATE = 'project/project-admin-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ADMIN
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ADMIN
 
   def AssertBasePermission(self, mr):
     super(ProjectAdmin, self).AssertBasePermission(mr)
@@ -190,3 +190,9 @@ class ProjectAdmin(servlet.Servlet):
         errors.description = _MSG_DESCRIPTION_MISSING
 
     return summary, description
+
+  # def GetProjectAdminPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostProjectAdminPage(self, **kwargs):
+  #   return self.handler(**kwargs)

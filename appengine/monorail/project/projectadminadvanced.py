@@ -17,12 +17,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-import logging
 import time
 
 import ezt
 
 from businesslogic import work_env
+from framework import flaskservlet
 from framework import framework_constants
 from framework import framework_helpers
 from framework import permissions
@@ -37,7 +37,7 @@ class ProjectAdminAdvanced(servlet.Servlet):
   """A page with project state options for the Project Owner(s)."""
 
   _PAGE_TEMPLATE = 'project/project-admin-advanced-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ADMIN
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ADMIN
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page.
@@ -211,3 +211,9 @@ class ProjectAdminAdvanced(servlet.Servlet):
               'This project is not live, no user can move it')
         moved_to = post_data.get('moved_to', '')
         we.UpdateProject(mr.project.project_id, moved_to=moved_to)
+
+  # def GetProjectAdminAdvancedPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostProjectAdminAdvancedPage(self, **kwargs):
+  #   return self.handler(**kwargs)
