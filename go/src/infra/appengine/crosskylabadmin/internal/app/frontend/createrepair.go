@@ -219,6 +219,7 @@ func createBuildbucketRepairTask(ctx context.Context, botID string, expectedStat
 		NoStepper:        false,
 		NoMetrics:        false,
 		UpdateInventory:  true,
+		ExpectedState:    expectedState,
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}
