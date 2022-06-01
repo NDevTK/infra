@@ -226,18 +226,23 @@ func newTelemetryBenchmark(benchmark, measurement, story string, storyTags, extr
 
 var (
 	botCfgs = map[string]string{
-		"Android Nexus5X WebView Perf": "performance_webview_test_suite",
-		"android-go_webview-perf":      "performance_webview_test_suite",
-		"android-go-perf":              "performance_test_suite_android_clank_chrome",
-		"android-pixel2_webview-perf":  "performance_webview_test_suite",
-		"android-pixel4_webview-perf":  "performance_webview_test_suite",
-		"Android Nexus5 Perf":          "performance_test_suite_android_chrome",
-		"android-pixel4a_power-perf":   "performance_test_suite_android_clank_chrome",
-		"android-pixel2-perf":          "performance_test_suite_android_clank_monochrome_64_32_bundle",
-		"android-pixel4-perf":          "performance_test_suite_android_clank_trichrome_bundle",
-		"android-pixel2_weblayer-perf": "performance_weblayer_test_suite",
-		"android-pixel4_weblayer-perf": "performance_weblayer_test_suite",
-		"lacros-eve-perf":              "performance_test_suite_eve",
+		"Android Nexus5X WebView Perf":     "performance_webview_test_suite",
+		"android-go_webview-perf":          "performance_webview_test_suite",
+		"android-go-perf":                  "performance_test_suite_android_clank_chrome",
+		"android-go-perf-pgo":              "performance_test_suite_android_clank_chrome",
+		"android-pixel2_webview-perf":      "performance_webview_test_suite",
+		"android-pixel4_webview-perf":      "performance_webview_test_suite",
+		"Android Nexus5 Perf":              "performance_test_suite_android_chrome",
+		"android-pixel4a_power-perf":       "performance_test_suite_android_clank_chrome",
+		"android-pixel4a_power-perf-pgo":   "performance_test_suite_android_clank_chrome",
+		"android-pixel2-perf":              "performance_test_suite_android_clank_monochrome_64_32_bundle",
+		"android-pixel2-perf-pgo":          "performance_test_suite_android_clank_monochrome_64_32_bundle",
+		"android-pixel4-perf":              "performance_test_suite_android_clank_trichrome_bundle",
+		"android-pixel4-perf-pgo":          "performance_test_suite_android_clank_trichrome_bundle",
+		"android-pixel2_weblayer-perf":     "performance_weblayer_test_suite",
+		"android-pixel4_weblayer-perf":     "performance_weblayer_test_suite",
+		"android-pixel4_weblayer-perf-pgo": "performance_weblayer_test_suite",
+		"lacros-eve-perf":                  "performance_test_suite_eve",
 	}
 )
 
