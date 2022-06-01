@@ -254,8 +254,15 @@ class ServletRegistry(object):
         #         services=service).GetUserUpdatesPage, ['GET']),
     ]
 
-    return self._AddFlaskUrlRules(flaskapp_user, _USER_URLS)
+    flaskapp_user = self._AddFlaskUrlRules(flaskapp_user, _USER_URLS)
 
+    # pylint: disable=unused-variable
+    @flaskapp_user.route('/')
+    def UserRedirectToMainPage():
+      url = flask.request.host_url
+      return flask.redirect(url)
+
+    return flaskapp_user
 
   # pylint: disable=unused-argument
   def RegisterTaskUrl(self, service):
