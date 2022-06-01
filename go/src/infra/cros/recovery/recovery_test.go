@@ -127,6 +127,24 @@ var dutPlansCases = []struct {
 		tasknames.TaskName(""),
 		nil,
 	},
+	{
+		"chromeos audit RPM",
+		tlw.DUTSetupTypeCros,
+		tasknames.AuditRPM,
+		[]string{"servo", "cros", "close"},
+	},
+	{
+		"labstation does not have audit RPM",
+		tlw.DUTSetupTypeLabstation,
+		tasknames.AuditRPM,
+		nil,
+	},
+	{
+		"android does not have audit RPM",
+		tlw.DUTSetupTypeAndroid,
+		tasknames.AuditRPM,
+		nil,
+	},
 }
 
 // TestLoadConfiguration tests default configuration used for recovery flow is loading right and parsibale without any issue.

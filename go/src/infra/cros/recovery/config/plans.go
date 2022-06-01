@@ -5,6 +5,9 @@
 package config
 
 // List of known plans.
+//
+// Note that plans are named by the type of device that they refer to.
+// There is exactly one plan per type of device.
 const (
 	PlanAndroid       = "android"
 	PlanCrOS          = "cros"
