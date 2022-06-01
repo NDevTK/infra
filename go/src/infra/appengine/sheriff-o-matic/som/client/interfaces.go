@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 
+	gfipb "infra/appengine/gofindit/proto"
 	"infra/monitoring/messages"
 )
 
@@ -16,6 +17,11 @@ type CrBug interface {
 type FindIt interface {
 	// FinditBuildbucket returns FindIt results for a build. Both input and output are using buildbucket concepts.
 	FinditBuildbucket(ctx context.Context, buildID int64, failedSteps []string) ([]*messages.FinditResultV2, error)
+}
+
+// GoFindit returns information about failures that GoFindit analyzes
+type GoFindit interface {
+	QueryGoFinditResults(c context.Context, bbid int64, stepName string) (*gfipb.QueryAnalysisResponse, error)
 }
 
 // CrRev returns redirects for commit positions.

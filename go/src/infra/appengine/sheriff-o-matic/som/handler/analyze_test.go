@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	gfipb "infra/appengine/gofindit/proto"
 	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/monitoring/messages"
 
@@ -44,6 +45,14 @@ type mockFindit struct {
 
 func (mf *mockFindit) FinditBuildbucket(ctx context.Context, id int64, stepNames []string) ([]*messages.FinditResultV2, error) {
 	return mf.res, mf.err
+}
+
+type mockGoFindit struct {
+	res *gfipb.QueryAnalysisResponse
+}
+
+func (mgfi *mockGoFindit) QueryGoFinditResults(c context.Context, bbid int64, stepName string) (*gfipb.QueryAnalysisResponse, error) {
+	return mgfi.res, nil
 }
 
 func TestAttachFinditResults(t *testing.T) {
@@ -100,6 +109,71 @@ func TestAttachFinditResults(t *testing.T) {
 		So(len(bf), ShouldEqual, 1)
 		So(len(bf[0].Culprits), ShouldEqual, 1)
 		So(bf[0].HasFindings, ShouldEqual, true)
+	})
+}
+
+func TestAttachGoFinditResults(t *testing.T) {
+	c := gaetesting.TestingContext()
+	Convey("not a compile failure", t, func() {
+		bf := []*messages.BuildFailure{
+			{
+				Builders: []*messages.AlertedBuilder{
+					{
+						Project: "chromium",
+						Bucket:  "ci",
+					},
+				},
+				StepAtFault: &messages.BuildStep{
+					Step: &messages.Step{
+						Name: "step",
+					},
+				},
+			},
+		}
+		mockGfi := &mockGoFindit{
+			res: &gfipb.QueryAnalysisResponse{
+				Analyses: []*gfipb.Analysis{
+					{
+						AnalysisId: 12345,
+					},
+				},
+			},
+		}
+		attachGoFinditResults(c, bf, mockGfi)
+		So(len(bf[0].GoFinditResult), ShouldEqual, 0)
+	})
+
+	Convey("compile failure", t, func() {
+		bf := []*messages.BuildFailure{
+			{
+				Builders: []*messages.AlertedBuilder{
+					{
+						Project: "chromium",
+						Bucket:  "ci",
+					},
+					{
+						Project: "chromium",
+						Bucket:  "ci",
+					},
+				},
+				StepAtFault: &messages.BuildStep{
+					Step: &messages.Step{
+						Name: "compile",
+					},
+				},
+			},
+		}
+		mockGfi := &mockGoFindit{
+			res: &gfipb.QueryAnalysisResponse{
+				Analyses: []*gfipb.Analysis{
+					{
+						AnalysisId: 12345,
+					},
+				},
+			},
+		}
+		attachGoFinditResults(c, bf, mockGfi)
+		So(len(bf[0].GoFinditResult), ShouldEqual, 2)
 	})
 }
 

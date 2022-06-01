@@ -52,8 +52,9 @@ type Analyzer struct {
 	Now func() time.Time
 
 	// Mock these out in tests.
-	CrBug  client.CrBug
-	FindIt client.FindIt
+	CrBug    client.CrBug
+	FindIt   client.FindIt
+	GoFindit client.GoFindit
 }
 
 // New returns a new Analyzer. If client is nil, it assigns a default implementation.
@@ -98,12 +99,14 @@ func CreateAnalyzer(c context.Context) *Analyzer {
 
 func setServiceClients(c context.Context, a *Analyzer) {
 	if info.AppID(c) == prodAppID {
-		findIt, crBug, _ := client.ProdClients(c)
+		findIt, crBug, _, goFindit := client.ProdClients(c)
 		a.CrBug = crBug
 		a.FindIt = findIt
+		a.GoFindit = goFindit
 	} else {
-		findIt, crBug, _ := client.StagingClients(c)
+		findIt, crBug, _, goFindit := client.StagingClients(c)
 		a.CrBug = crBug
 		a.FindIt = findIt
+		a.GoFindit = goFindit
 	}
 }

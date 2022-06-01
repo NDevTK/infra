@@ -9,6 +9,7 @@ package messages
 
 import (
 	"encoding/json"
+	gfipb "infra/appengine/gofindit/proto"
 	"log"
 	"os"
 	"time"
@@ -159,6 +160,8 @@ type BuildFailure struct {
 	// that it can support different LUCI projects easily.
 	// When presents, SuspectedCLs should be empty.
 	Culprits []*Culprit `json:"culprits"`
+	// Analysis result from GoFindit
+	GoFinditResult []*gfipb.Analysis `json:"gofindit_result"`
 }
 
 // BuildStep is a step which was run in a particular build. Useful for analyzing

@@ -19,6 +19,7 @@ import (
 	"infra/monitoring/messages"
 
 	"go.chromium.org/luci/common/bq"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
@@ -133,6 +134,11 @@ func generateBigQueryAlerts(c context.Context, a *analyzer.Analyzer, tree string
 	}
 	logging.Infof(c, "filtered alerts, before: %d after: %d", len(builderAlerts), len(filteredBuilderAlerts))
 	attachFindItResults(c, filteredBuilderAlerts, a.FindIt)
+	err = attachGoFinditResults(c, filteredBuilderAlerts, a.GoFindit)
+	if err != nil {
+		// It is not critical, so log and continue
+		logging.Errorf(c, "Failure getting GoFindit results %v", err)
+	}
 
 	alerts := []*messages.Alert{}
 	for _, ba := range filteredBuilderAlerts {
@@ -217,6 +223,40 @@ func attachFindItResults(ctx context.Context, failures []*messages.BuildFailure,
 			}
 		}
 	}
+}
+
+func attachGoFinditResults(c context.Context, failures []*messages.BuildFailure, goFinditClient client.GoFindit) error {
+	// TODO (nqmtuan): supports queries for a list of bbids.
+	if goFinditClient == nil {
+		return fmt.Errorf("goFinditClient is nil")
+	}
+	var errs []error
+	for _, bf := range failures {
+		stepName := bf.StepAtFault.Step.Name
+		// Currently GoFind only supports compile failures
+		if stepName != "compile" {
+			continue
+		}
+		for _, builder := range bf.Builders {
+			// Currently GoFind only supports "chromium"/"ci" failures
+			// Check here as we don't want to waste an RPC call.
+			if !(builder.Project == "chromium" && builder.Bucket == "ci") {
+				continue
+			}
+
+			bbid := builder.LatestFailure
+			res, err := goFinditClient.QueryGoFinditResults(c, bbid, stepName)
+			if err != nil {
+				errs = append(errs, errors.Annotate(err, "failed getting GoFindit result for build %d", bbid).Err())
+				continue
+			}
+			bf.GoFinditResult = append(bf.GoFinditResult, res.Analyses...)
+		}
+	}
+	if len(errs) > 0 {
+		return errors.NewMultiError(errs...)
+	}
+	return nil
 }
 
 func storeAlertsSummary(c context.Context, a *analyzer.Analyzer, tree string, alertsSummary *messages.AlertsSummary) error {

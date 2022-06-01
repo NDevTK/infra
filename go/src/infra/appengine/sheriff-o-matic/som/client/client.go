@@ -269,20 +269,40 @@ func NewMonorailV3Client(c context.Context) (*prpc.Client, error) {
 }
 
 // ProdClients returns a set of service clients pointed at production.
-func ProdClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient) {
+func ProdClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient, GoFindit) {
 	findIt := NewFindit("https://findit-for-me.appspot.com")
 	monorailClient := NewMonorail(ctx, "https://monorail-prod.appspot.com")
 	crBugs := &CrBugs{}
 
-	return findIt, crBugs, monorailClient
+	var goFinditClient *GoFinditClient
+	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "chops-gofindit.appspot.com")
+	// As goFindit client is not mission-critical, we just log the error
+	// if some error occurs.
+	if err != nil {
+		logging.Errorf(ctx, "Cannot create GoFindit Client %s", err)
+	} else {
+		goFinditClient = &GoFinditClient{ServiceClient: goFinditServiceClient}
+	}
+
+	return findIt, crBugs, monorailClient, goFinditClient
 }
 
 // StagingClients returns a set of service clients pointed at instances suitable for a
 // staging environment.
-func StagingClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient) {
+func StagingClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient, GoFindit) {
 	findIt := NewFindit("https://findit-for-me-staging.appspot.com")
 	monorailClient := NewMonorail(ctx, "https://monorail-staging.appspot.com")
 	crBugs := &CrBugs{}
 
-	return findIt, crBugs, monorailClient
+	var goFinditClient *GoFinditClient
+	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "chops-gofindit-dev.appspot.com")
+	// As goFindit client is not mission-critical, we just log the error
+	// if some error occurs.
+	if err != nil {
+		logging.Errorf(ctx, "Cannot create GoFindit Client %s", err)
+	} else {
+		goFinditClient = &GoFinditClient{ServiceClient: goFinditServiceClient}
+	}
+
+	return findIt, crBugs, monorailClient, goFinditClient
 }
