@@ -16,7 +16,7 @@ from framework import jsonfeed
 RUN_DURATION_LIMIT = 50 * 60  # 50 minutes
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to Flask
 class Reap(jsonfeed.InternalTask):
   """Look for doomed and deletable projects and delete them."""
 
@@ -124,3 +124,9 @@ class Reap(jsonfeed.InternalTask):
     for f in project_purge_functions:
       f(cnxn, project_id)
       yield project_id
+
+  # def GetReap(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostReap(self, **kwargs):
+  #   return self.handler(**kwargs)

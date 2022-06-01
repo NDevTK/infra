@@ -14,7 +14,10 @@ from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
 from framework import banned
+from framework import reap
+from framework import deleteusers
 from framework import excessiveactivity
+from framework import trimvisitedpages
 from project import peopledetail
 from project import peoplelist
 from project import projectadmin
@@ -22,6 +25,8 @@ from project import projectadminadvanced
 from project import projectsummary
 from project import project_constants
 from project import projectupdates
+from services import cachemanager_svc
+from services import client_config_svc
 from sitewide import moved
 from sitewide import userclearbouncing
 from sitewide import userupdates
@@ -35,6 +40,8 @@ from features import hotlistdetails
 from features import hotlistissues
 from features import hotlistissuescsv
 from features import hotlistpeople
+from features import dateaction
+from features import filterrules
 from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
@@ -329,3 +336,62 @@ class ServletRegistry(object):
       flaskapp_task.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
 
     return flaskapp_task
+
+  # pylint: disable=unused-argument
+  def RegisterCronUrl(self, service):
+    flaskapp_cron = flask.Flask(__name__)
+    _CRON_URL = [
+        # (
+        #     '/wipeoutSync',
+        #     deleteusers.WipeoutSyncCron(services=service).GetWipeoutSyncCron,
+        #     ['GET']),
+        # (
+        #     '/wipeoutSync.do',
+        #     deleteusers.WipeoutSyncCron(services=service).PostWipeoutSyncCron,
+        #     ['POST']),
+        # (
+        #     '/reindexQueue',
+        #     filterrules.ReindexQueueCron(
+        #       services=service).GetReindexQueueCron,
+        #     ['GET']),
+        # (
+        #     '/reindexQueue.do',
+        #     filterrules.ReindexQueueCron(
+        #       services=service).PostReindexQueueCron,
+        #     ['POST']),
+        # (
+        #     '/dateAction',
+        #     dateaction.DateActionCron(services=service).GetDateActionCron,
+        #     ['GET']),
+        # (
+        #     '/dateAction.do',
+        #     dateaction.DateActionCron(services=service).PostDateActionCron,
+        #     ['POST']),
+        # (
+        #     '/ramCacheConsolidate',
+        #     cachemanager_svc.RamCacheConsolidate(
+        #         services=service).GetRamCacheConsolidate, ['GET']),
+        # (
+        #     '/ramCacheConsolidate.do',
+        #     cachemanager_svc.RamCacheConsolidate(
+        #         services=service).PostRamCacheConsolidate, ['POST']),
+        # ('/reap', reap.Reap(services=service).GetReap, ['GET']),
+        # ('/reap.do', reap.Reap(services=service).PostReap, ['POST']),
+        # (
+        #     '/loadApiClientConfigs',
+        #     client_config_svc.LoadApiClientConfigs().GetLoadApiClientConfigs,
+        #     ['GET']),
+        # (
+        #     '/trimVisitedPages',
+        #     trimvisitedpages.TrimVisitedPages(
+        #         services=service).GetTrimVisitedPages, ['GET']),
+        # (
+        #     '/trimVisitedPages.do',
+        #     trimvisitedpages.TrimVisitedPages(
+        #         services=service).PostTrimVisitedPages, ['POST']),
+    ]
+
+    for rule in _CRON_URL:
+      flaskapp_cron.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+
+    return flaskapp_cron

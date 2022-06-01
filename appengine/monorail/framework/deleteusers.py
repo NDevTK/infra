@@ -32,7 +32,7 @@ def authorize():
   return credentials.authorize(httplib2.Http(timeout=60))
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to Flask
 class WipeoutSyncCron(jsonfeed.InternalTask):
   """Enqueue tasks for sending user lists to wipeout-lite and deleting deleted
      users fetched from wipeout-lite."""
@@ -61,6 +61,12 @@ class WipeoutSyncCron(jsonfeed.InternalTask):
         urls.DELETE_WIPEOUT_USERS_TASK + '.do', {})
     cloud_tasks_helpers.create_task(
         task, queue=framework_constants.QUEUE_FETCH_WIPEOUT_DELETED_USERS)
+
+  # def GetWipeoutSyncCron(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostWipeoutSyncCron(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 # TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?

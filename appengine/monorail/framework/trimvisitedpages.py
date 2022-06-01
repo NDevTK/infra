@@ -11,7 +11,7 @@ from __future__ import absolute_import
 from framework import jsonfeed
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to Flask
 class TrimVisitedPages(jsonfeed.InternalTask):
 
   """Look for users with more than 10 visited hotlists and deletes extras."""
@@ -19,3 +19,9 @@ class TrimVisitedPages(jsonfeed.InternalTask):
   def HandleRequest(self, mr):
     """Delete old RecentHotlist2User rows when there are too many"""
     self.services.user.TrimUserVisitedHotlists(mr.cnxn)
+
+  # def GetTrimVisitedPages(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostTrimVisitedPages(self, **kwargs):
+  #   return self.handler(**kwargs)

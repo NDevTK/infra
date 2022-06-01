@@ -223,7 +223,7 @@ class FlaskJsonFeed(flaskservlet.FlaskServlet):
     self.response.content_type = framework_constants.CONTENT_TYPE_JSON
     self.response.headers['X-Content-Type-Options'] = (
         framework_constants.CONTENT_TYPE_JSON_OPTIONS)
-    self.response.response = json_str
+    self.response.response = XSSI_PREFIX + json_str
 
 
 class FlaskInternalTask(FlaskJsonFeed):

@@ -37,7 +37,7 @@ class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
         }
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to Flask
 class ReindexQueueCron(jsonfeed.InternalTask):
   """JSON servlet that reindexes some issues each minute, as needed."""
 
@@ -50,3 +50,9 @@ class ReindexQueueCron(jsonfeed.InternalTask):
     return {
         'num_reindexed': num_reindexed,
         }
+
+  # def GetReindexQueueCron(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostReindexQueueCron(self, **kwargs):
+  #   return self.handler(**kwargs)

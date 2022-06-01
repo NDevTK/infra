@@ -40,7 +40,7 @@ from tracker import tracker_views
 TEMPLATE_PATH = framework_constants.TEMPLATE_PATH
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to Flask
 class DateActionCron(jsonfeed.InternalTask):
   """Find and process issues with date-type values that arrived today."""
 
@@ -85,6 +85,12 @@ class DateActionCron(jsonfeed.InternalTask):
     task = cloud_tasks_helpers.generate_simple_task(
         urls.ISSUE_DATE_ACTION_TASK + '.do', params)
     cloud_tasks_helpers.create_task(task)
+
+  # def GetDateActionCron(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostDateActionCron(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def _GetTimestampRange(now):

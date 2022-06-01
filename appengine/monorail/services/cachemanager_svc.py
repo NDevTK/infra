@@ -130,7 +130,7 @@ class CacheManager(object):
         cnxn, kind=kind, where=[('timestep < %s', [last_timestep])])
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to Flask
 class RamCacheConsolidate(jsonfeed.InternalTask):
   """Drop old Invalidate rows when there are too many of them."""
 
@@ -165,3 +165,9 @@ class RamCacheConsolidate(jsonfeed.InternalTask):
       'old_count': old_count,
       'new_count': new_count,
       }
+
+  # def GetRamCacheConsolidate(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostRamCacheConsolidate(self, **kwargs):
+  #   return self.handler(**kwargs)
