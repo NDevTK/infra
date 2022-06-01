@@ -215,9 +215,16 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 	// track the parent/child build relationship between the build with the token
 	// and this new build.
 	bbCtx := lucictx.GetBuildbucket(ctx)
-	if bbCtx != nil {
-		if bbCtx.GetScheduleBuildToken() != "" {
-			ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" {
+		ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+
+		// Decide if the child can outlive its parent or not.
+		// For details see https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/buildbucket/proto/builds_service.proto;l=458;drc=79232ce0a0af1f7ab9ae78efa9ab3931a520d2bc.
+		if req.GetCanOutliveParent() == buildbucketpb.Trinary_UNSET {
+			req.CanOutliveParent = buildbucketpb.Trinary_YES
+			if req.GetSwarming().GetParentRunId() != "" {
+				req.CanOutliveParent = buildbucketpb.Trinary_NO
+			}
 		}
 	}
 
