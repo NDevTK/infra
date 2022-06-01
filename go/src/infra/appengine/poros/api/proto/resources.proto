@@ -48,3 +48,22 @@ message ResourceModel {
   // User who modified the record.
   string modified_by = 9;
 }
+
+message AssetResourceModel {
+  // Unique identifier of the entity
+  string asset_resource_id = 1;
+  // Identifier of the asset associated with the entity
+  string asset_id = 2;
+  // Identifier of the resource associated with the entity
+  string resource_id = 3;
+  // Alias name of the entity
+  string alias_name = 4;
+  // User who created the record.
+  string created_by = 5;
+  // Timestamp for the creation of the record.
+  google.protobuf.Timestamp created_at = 6;
+  // Timestamp for the last update of the record.
+  google.protobuf.Timestamp modified_at = 7;
+  // User who modified the record.
+  string modified_by = 8;
+}
