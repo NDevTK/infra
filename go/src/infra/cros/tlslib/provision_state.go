@@ -25,7 +25,7 @@ type provisionState struct {
 	dutName           string
 	imagePath         string
 	targetBuilderPath string
-	targetLsbHash     string
+	targetLsb         string
 	forceProvisionOs  bool
 	preventReboot     bool
 }
@@ -182,19 +182,15 @@ func (p *provisionState) provisionStateful(ctx context.Context) error {
 }
 
 func (p *provisionState) verifyOSProvision(ctx context.Context) error {
-	sourceLsbHash, err := runCmdOutput(p.c, "sha256sum /etc/lsb-release")
+	sourceLsb, err := runCmdOutput(p.c, "cat /etc/lsb-release")
 	if err != nil {
-		return fmt.Errorf("verify OS provision: failed to get /etc/lsb-release hash, %s", err)
+		return fmt.Errorf("verify OS provision: failed to get source /etc/lsb-release, %s", err)
 	}
 
-	shaFields := strings.Fields(sourceLsbHash)
-	if len(shaFields) < 1 {
-		return fmt.Errorf("verify OS provision: invalid output from sha256sum /etc/lsb-release call, %s", sourceLsbHash)
-	}
-	sourceLsbHash = shaFields[0]
-
-	if sourceLsbHash != p.targetLsbHash {
-		return fmt.Errorf("verify OS provision: /etc/lsb-release hashes differ, found %s, %s was expected", sourceLsbHash, p.targetLsbHash)
+	if sourceLsb != p.targetLsb {
+		return fmt.Errorf("verify OS provision: /etc/lsb-release differ, found\nSOURCE:\n%s\nTARGET:\n%s\n", sourceLsb, p.targetLsb)
+	} else {
+		log.Printf("verify OS provision: /etc/lsb-release,\nSOURCE:\n%s\nTARGET:\n%s\n", sourceLsb, p.targetLsb)
 	}
 
 	if err := p.verifyKernelState(ctx); err != nil {
@@ -353,16 +349,10 @@ func (p *provisionState) postInstall(pi partitionInfo) error {
 		return fmt.Errorf("postInstall: failed to mount inactive root, %s", err)
 	}
 
-	targetLsbHash, err := runCmdOutput(p.c, fmt.Sprintf("sha256sum %s/etc/lsb-release", tmpMnt))
+	p.targetLsb, err = runCmdOutput(p.c, fmt.Sprintf("cat %s/etc/lsb-release", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("postInstall: getting sha256 hash of /etc/lsb-release within tmp rootfs mount failed, %s", err)
+		return fmt.Errorf("postInstall: failed getting /etc/lsb-release within inactive root mount, %s", err)
 	}
-	shaFields := strings.Fields(targetLsbHash)
-	if len(shaFields) < 1 {
-		return fmt.Errorf("postInstall: invalid output from sha256sum /etc/lsb-release call, %s", targetLsbHash)
-	}
-	// Since 'sha256sum` includes the filename path we need to split the output.
-	p.targetLsbHash = shaFields[0]
 
 	err = runCmd(p.c, fmt.Sprintf("%s/postinst %s", tmpMnt, pi.inactiveRoot))
 	if err != nil {
