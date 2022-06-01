@@ -72,3 +72,24 @@ var LooksLikeValidPool = regexp.MustCompile(`\A[A-Za-z_][-A-Za-z0-9_]*\z`).Match
 func NormalizeTextualData(data string) string {
 	return strings.ToLower(strings.TrimSpace(data))
 }
+
+type TaskType int
+
+const (
+	LegacyTaskType TaskType = 0
+	ProdTaskType   TaskType = 100
+	LatestTaskType TaskType = 200
+)
+
+// GetCIPDVersion returns the cipd version associated with a given task.
+func GetCIPDVersion(taskType TaskType) (string, error) {
+	switch taskType {
+	case LegacyTaskType:
+		return "", errors.Reason("get cipd version: legacy has no cipd version").Err()
+	case ProdTaskType:
+		return "paris", nil
+	case LatestTaskType:
+		return "latest", nil
+	}
+	return "", errors.Reason("get cipd version: %d is not valid", taskType).Err()
+}
