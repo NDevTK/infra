@@ -9,6 +9,10 @@ import settings
 
 import flask
 
+from features import banspammer
+from features import hotlistcreate
+from features import savedqueries
+from features import userhotlists
 from framework import banned
 from framework import excessiveactivity
 from project import peopledetail
@@ -26,11 +30,6 @@ from sitewide import projectcreate
 from sitewide import usersettings
 from sitewide import groupcreate
 from sitewide import grouplist
-from features import banspammer
-from features import hotlistcreate
-from features import savedqueries
-from features import userhotlists
-from features import banspammer
 
 
 class ServletRegistry(object):
@@ -70,6 +69,21 @@ class ServletRegistry(object):
   def Register(self):
     """Register all the monorail request handlers."""
     return self.routes
+
+  def _AddFlaskUrlRules(self, flask_instance, rule_tuple):
+    """Add url rules to a given Flask instance.
+
+    Args:
+      flask_instance: The Flask app to add URLs to.
+      rule_tuple: List of tuple of path, module and method to call, HTTP method
+
+    Returns:
+      The Flask instance.
+    """
+    for rule in rule_tuple:
+      flask_instance.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+    return flask_instance
+
 
   # pylint: disable=unused-argument
   def RegisterHostingUrl(self, service):
@@ -126,8 +140,7 @@ class ServletRegistry(object):
         #     ['POST']),
     ]
 
-    for rule in _HOSTING_URL:
-      flaskapp_hosting.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+    flaskapp_hosting = self._AddFlaskUrlRules(flaskapp_hosting, _HOSTING_URL)
 
     # pylint: disable=unused-variable
     @flaskapp_hosting.route('/')
@@ -181,10 +194,8 @@ class ServletRegistry(object):
         #     projectupdates.ProjectUpdates(
         #         services=service).GetProjectUpdatesPage, ['GET']),
     ]
+    return self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
 
-    for rule in _PROJECT_URLS:
-      flaskapp_project.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
-    return flaskapp_project
 
   def RegisterUserUrls(self, service):
     flaskapp_user = flask.Flask(__name__)
@@ -243,9 +254,8 @@ class ServletRegistry(object):
         #         services=service).GetUserUpdatesPage, ['GET']),
     ]
 
-    for rule in _USER_URLS:
-      flaskapp_user.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
-    return flaskapp_user
+    return self._AddFlaskUrlRules(flaskapp_user, _USER_URLS)
+
 
   # pylint: disable=unused-argument
   def RegisterTaskUrl(self, service):
