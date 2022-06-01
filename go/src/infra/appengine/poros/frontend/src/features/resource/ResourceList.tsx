@@ -50,8 +50,7 @@ export function ResourceList() {
     { field: 'name', headerName: 'Name', width: 150 },
     { field: 'type', headerName: 'Type', width: 150 },
     { field: 'description', headerName: 'Description', width: 150 },
-    { field: 'machineInfo', headerName: 'Machine Info', width: 150 },
-    { field: 'domainInfo', headerName: 'Domain Info', width: 150 },
+    { field: 'image', headerName: 'Image', width: 150 },
     { field: 'createdBy', headerName: 'Created By', width: 150 },
     { field: 'createdAt', headerName: 'Created At', width: 150 },
     {

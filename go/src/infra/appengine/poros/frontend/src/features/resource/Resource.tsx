@@ -23,8 +23,7 @@ import {
   setName,
   setType,
   setDescription,
-  setMachineInfo,
-  setDomainInfo,
+  setImage,
 } from './resourceSlice';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -36,12 +35,7 @@ export const Resource = () => {
   const description: string = useAppSelector(
     (state) => state.resource.record.description
   );
-  const machineInfo: string = useAppSelector(
-    (state) => state.resource.record.machineInfo
-  );
-  const domainInfo: string = useAppSelector(
-    (state) => state.resource.record.domainInfo
-  );
+  const image: string = useAppSelector((state) => state.resource.record.image);
   const resourceId: string = useAppSelector(
     (state) => state.resource.record.resourceId
   );
@@ -52,8 +46,7 @@ export const Resource = () => {
     name: string,
     type: string,
     description: string,
-    machineInfo: string,
-    domainInfo: string,
+    image: string,
     resourceId: string
   ) => {
     if (resourceId === '') {
@@ -62,8 +55,7 @@ export const Resource = () => {
           name,
           type,
           description,
-          machineInfo,
-          domainInfo,
+          image,
         })
       );
     }
@@ -112,9 +104,9 @@ export const Resource = () => {
           <FormControl variant="standard" fullWidth>
             <InputLabel>VM Images</InputLabel>
             <Select
-              id="machininfo"
-              value={machineInfo}
-              onChange={(e) => dispatch(setMachineInfo(e.target.value))}
+              id="image"
+              value={image}
+              onChange={(e) => dispatch(setImage(e.target.value))}
               fullWidth
               inputProps={{ fullWidth: true }}
               variant="standard"
@@ -142,8 +134,11 @@ export const Resource = () => {
             multiline
             rows={4}
             variant="standard"
-            onChange={(e) => dispatch(setDomainInfo(e.target.value))}
-            value={domainInfo}
+            // TODO: when we allow user to select type domain, edit the onchange and value
+            onChange={(e) => {
+              // dispatch(setDomainInfo(e.target.value))
+            }}
+            value={'some domain info'}
             fullWidth
             InputProps={{ fullWidth: true }}
           />
@@ -239,14 +234,7 @@ export const Resource = () => {
             <Button
               variant="contained"
               onClick={() =>
-                handleSaveClick(
-                  name,
-                  type,
-                  description,
-                  machineInfo,
-                  domainInfo,
-                  resourceId
-                )
+                handleSaveClick(name, type, description, image, resourceId)
               }
               endIcon={<DeleteIcon />}
             >

@@ -133,6 +133,7 @@ func main() {
 		srv.PRPC.HackFixFieldMasksForJSON = true
 
 		proto.RegisterAssetServer(srv.PRPC, &service.AssetHandler{})
+		proto.RegisterResourceServer(srv.PRPC, &service.ResourceHandler{})
 
 		return nil
 	})

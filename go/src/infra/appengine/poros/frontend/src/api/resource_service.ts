@@ -71,9 +71,7 @@ export interface ResourceModel {
   /** Description of the resource */
   description: string;
   /** if machine is selected then type of machine */
-  machineInfo: string;
-  /** if domain is selected then some domain information */
-  domainInfo: string;
+  image: string;
   /** User who created the record */
   createdBy: string;
   /** Timestamp for the creation of the record */
@@ -91,8 +89,7 @@ export const ResourceModel = {
       name: '',
       type: 'machine',
       description: '',
-      machineInfo: '',
-      domainInfo: '',
+      image: '',
       createdBy: '',
       createdAt: undefined,
       modifiedBy: '',
@@ -105,8 +102,7 @@ export const ResourceModel = {
       name: isSet(object.name) ? String(object.name) : '',
       type: isSet(object.type) ? String(object.type) : '',
       description: isSet(object.description) ? String(object.description) : '',
-      machineInfo: isSet(object.machineInfo) ? String(object.machineInfo) : '',
-      domainInfo: isSet(object.domainInfo) ? String(object.domainInfo) : '',
+      image: isSet(object.image) ? String(object.image) : '',
 
       createdBy: isSet(object.createdBy) ? String(object.createdBy) : '',
       createdAt: isSet(object.createdAt)
@@ -126,9 +122,7 @@ export const ResourceModel = {
     message.type !== undefined && (obj.type = message.type);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.machineInfo !== undefined &&
-      (obj.machineInfo = message.machineInfo);
-    message.domainInfo !== undefined && (obj.domainInfo = message.domainInfo);
+    message.image !== undefined && (obj.image = message.image);
     message.createdBy !== undefined && (obj.createdBy = message.createdBy);
     message.createdAt !== undefined &&
       (obj.createdAt = message.createdAt.toISOString());
@@ -148,9 +142,7 @@ export interface CreateResourceRequest {
   /** Description of the resource */
   description: string;
   /** if machine is selected then type of machine */
-  machineInfo: string;
-  /** if domain is selected then some domain information */
-  domainInfo: string;
+  image: string;
 }
 
 export const CreateResourceRequest = {
@@ -160,9 +152,7 @@ export const CreateResourceRequest = {
     message.type !== undefined && (obj.type = message.type);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.machineInfo !== undefined &&
-      (obj.machineInfo = message.machineInfo);
-    message.domainInfo !== undefined && (obj.domainInfo = message.domainInfo);
+    message.image !== undefined && (obj.image = message.image);
     return obj;
   },
 };

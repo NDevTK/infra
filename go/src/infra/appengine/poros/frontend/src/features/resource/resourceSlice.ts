@@ -60,21 +60,18 @@ export const createResourceAsync = createAsyncThunk(
     name,
     type,
     description,
-    machineInfo,
-    domainInfo,
+    image,
   }: {
     name: string;
     type: string;
     description: string;
-    machineInfo: string;
-    domainInfo: string;
+    image: string;
   }) => {
     const request: CreateResourceRequest = {
       name,
       type,
       description,
-      machineInfo,
-      domainInfo,
+      image,
     };
     const service: IResourceService = new ResourceService();
     const response = await service.create(request);
@@ -124,11 +121,8 @@ export const resourceSlice = createSlice({
     setDescription: (state, action) => {
       state.record.description = action.payload;
     },
-    setMachineInfo: (state, action) => {
-      state.record.machineInfo = action.payload;
-    },
-    setDomainInfo: (state, action) => {
-      state.record.domainInfo = action.payload;
+    setImage: (state, action) => {
+      state.record.image = action.payload;
     },
     onSelectRecord: (state, action) => {
       state.record = state.resources.filter(
@@ -188,8 +182,7 @@ export const {
   setName,
   setType,
   setDescription,
-  setMachineInfo,
-  setDomainInfo,
+  setImage,
 } = resourceSlice.actions;
 
 export default resourceSlice.reducer;
