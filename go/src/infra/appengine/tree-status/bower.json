@@ -15,8 +15,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#~2.0.0",
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
-    "moment": "^2.18.1",
-    "moment-timezone": "^0.5.13",
+    "moment": "^2.29.3",
+    "moment-timezone": "^0.5.34",
     "iron-ajax": "^2.0.5",
     "app-route": "PolymerElements/app-route#^2.0.2",
     "chopsui": "^0.0.36"
