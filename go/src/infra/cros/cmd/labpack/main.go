@@ -15,7 +15,6 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -224,7 +223,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 		lg.Infof("Beginning upload attempt. Starting five minute timeout.")
 		lg.Infof("Writing upload marker.")
 		// TODO(b:227489086): Remove this file.
-		if wErr := ioutil.WriteFile("_labpack_upload_marker", []byte("ca85a1f7-0de3-43c5-90ff-2e00b1041007"), 0o666); wErr != nil {
+		if wErr := os.WriteFile("_labpack_upload_marker", []byte("ca85a1f7-0de3-43c5-90ff-2e00b1041007"), 0o666); wErr != nil {
 			lg.Errorf("Failed to write upload marker file: %s", wErr)
 		}
 
