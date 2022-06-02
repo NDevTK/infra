@@ -16,6 +16,24 @@
       "message": "LGTM. Should we add a test for [this](https://chromium.googlesource.com/infra/infra/+/00e2e346f2f3bd8b4e6777bb34f5be1b52b3ec79/go/src/infra/unifiedfleet/app/dumper/goldeneye_test.go)?",
       "revId": "00e2e346f2f3bd8b4e6777bb34f5be1b52b3ec79",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ad51849_6f894377",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-06-02T21:19:49Z",
+      "side": 1,
+      "message": "I can but I will need to refactor the code to be able to do so and it will essentially be a repeat of the tests I added for the controller. So it did not seem very useful to me.",
+      "parentUuid": "bde51401_9845cfbe",
+      "revId": "00e2e346f2f3bd8b4e6777bb34f5be1b52b3ec79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
