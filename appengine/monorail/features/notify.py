@@ -219,6 +219,12 @@ class NotifyIssueChangeTask(notify_helpers.NotifyTaskBase):
 
     return email_tasks
 
+  # def GetNotifyIssueChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostNotifyIssueChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class NotifyBlockingChangeTask(notify_helpers.NotifyTaskBase):
   """JSON servlet that notifies appropriate users after a blocking change."""
@@ -349,6 +355,12 @@ class NotifyBlockingChangeTask(notify_helpers.NotifyTaskBase):
         upstream_project, hostport, commenter_view, detail_url)
 
     return one_issue_email_tasks
+
+  # def GetNotifyBlockingChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostNotifyBlockingChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class NotifyBulkChangeTask(notify_helpers.NotifyTaskBase):
@@ -712,6 +724,12 @@ class NotifyBulkChangeTask(notify_helpers.NotifyTaskBase):
 
     return subject, body
 
+  # def GetNotifyBulkChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostNotifyBulkChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 # For now, this class will not be used to send approval comment notifications
 # TODO(jojwang): monorail:3588, it might make sense for this class to handle
@@ -901,6 +919,12 @@ class NotifyApprovalChangeTask(notify_helpers.NotifyTaskBase):
 
     return list(set(recipient_ids))
 
+  # def GetNotifyApprovalChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostNotifyApprovalChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
   """JSON servlet that sends one email."""
@@ -966,6 +990,12 @@ class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
           dict(from_addr=from_addr, to=dest_email, subject=subject, body=body))
 
     return email_tasks
+
+  # def GetNotifyRulesDeletedTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostNotifyRulesDeletedTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 # TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?

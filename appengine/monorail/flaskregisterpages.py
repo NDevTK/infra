@@ -42,6 +42,7 @@ from features import hotlistissuescsv
 from features import hotlistpeople
 from features import dateaction
 from features import filterrules
+from features import notify
 from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
@@ -356,6 +357,43 @@ class ServletRegistry(object):
         #     '/deleteUsersTask.do',
         #     deleteusers.DeleteUsersTask(
         #         services=service).PostDeleteUsersTask, ['POST']),
+        # (
+        #     '/notifyRulesDeleted',
+        #     notify.NotifyRulesDeletedTask(
+        #         services=service).GetNotifyRulesDeletedTask, ['GET']),
+        # (
+        #     '/notifyRulesDeleted.do',
+        #     notify.NotifyRulesDeletedTask(
+        #         services=service).PostNotifyRulesDeletedTask, ['POST']),
+        # (
+        #     '/notifyIssueChange', notify.NotifyIssueChangeTask(
+        #         services=service).GetNotifyIssueChangeTask, ['GET']),
+        # (
+        #     '/notifyIssueChange.do',
+        #     notify.NotifyIssueChangeTask(
+        #         services=service).PostNotifyIssueChangeTask, ['POST']),
+        # (
+        #     '/notifyBlockingChange',
+        #     notify.NotifyBlockingChangeTask(
+        #         services=service).GetNotifyBlockingChangeTask, ['GET']),
+        # (
+        #     '/notifyBlockingChange.do',
+        #     notify.NotifyBlockingChangeTask(
+        #         services=service).PostNotifyBlockingChangeTask, ['POST']),
+        # (
+        #     '/notifyBulkEdit', notify.NotifyBulkChangeTask(
+        #         services=service).GetNotifyBulkChangeTask, ['GET']),
+        # (
+        #     '/notifyBulkEdit.do', notify.NotifyBulkChangeTask(
+        #         services=service).PostNotifyBulkChangeTask, ['POST']),
+        # (
+        #     '/notifyApprovalChange',
+        #     notify.NotifyApprovalChangeTask(
+        #         services=service).GetNotifyApprovalChangeTask, ['GET']),
+        # (
+        #     '/notifyApprovalChange.do',
+        #     notify.NotifyApprovalChangeTask(
+        #         services=service).PostNotifyApprovalChangeTask, ['POST']),
     ]
 
     for rule in _TASK_URL:
