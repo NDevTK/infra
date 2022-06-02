@@ -273,6 +273,10 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
+	case tasknames.AuditStorage:
+		return nil, errors.Reason("setup type: audit storage not yet implemented").Err()
+	case tasknames.AuditUSB:
+		return nil, errors.Reason("setup type: audit usb not yet implemented").Err()
 	case tasknames.Custom:
 		return nil, errors.Reason("Setup type: %q does not have default configuration for custom tasks", ds).Err()
 	default:
