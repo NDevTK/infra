@@ -393,6 +393,26 @@ class TestDockerClient(unittest.TestCase):
     self.assertEquals(container.devices,
                       ['{0}:{0}'.format(containers._KVM_DEVICE)])
 
+  @mock.patch('os.chown')
+  @mock.patch('os.mkdir')
+  @mock.patch('os.path.exists')
+  @mock.patch('pwd.getpwnam')
+  @mock.patch('sys.platform', 'linux2')
+  def test_create_container_linux_tun(self, mock_getpwnam, mock_exists,
+                                      mock_mkdir, mock_chown):
+    mock_getpwnam.return_value = collections.namedtuple(
+        'pwnam', 'pw_uid, pw_gid')(1,2)
+    mock_exists.side_effect = lambda d: d in (
+        containers._KVM_DEVICE, containers._TUN_DEVICE)
+
+    container = containers.DockerClient().create_container(
+        containers.ContainerDescriptor('1'), 'image', 'swarm-url.com', {})
+    self.assertEquals(container.name, '1')
+    mock_chown.assert_called_with(mock_mkdir.call_args[0][0], 1, 2)
+    self.assertEquals(container.devices,
+                      ['{0}:{0}'.format(containers._KVM_DEVICE),
+                       '{0}:{0}'.format(containers._TUN_DEVICE)])
+
   def test_num_containers_is_set(self):
     client = containers.DockerClient()
     self.assertIsNone(client._get_env('').get('NUM_CONFIGURED_CONTAINERS'))

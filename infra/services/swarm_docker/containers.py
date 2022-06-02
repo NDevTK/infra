@@ -49,6 +49,7 @@ _DOCKER_VOLUMES = {
 _SWARMING_URL_ENV_VAR = 'SWARM_URL'
 _HOST_HOSTNAME_ENV_VAR = 'DOCKER_HOST_HOSTNAME'
 _KVM_DEVICE = '/dev/kvm'
+_TUN_DEVICE = '/dev/net/tun'
 
 
 class FrozenEngineError(Exception):
@@ -265,6 +266,10 @@ class DockerClient(object):
     if sys.platform.startswith('linux') and os.path.exists(_KVM_DEVICE):
       # Allow the container access to the KVM device so it can run qemu-kvm.
       devices = ['{0}:{0}'.format(_KVM_DEVICE)]
+      # Forward the tun device to the docker instance if it exists on the host.
+      # By default, the docker provides Read-Write-Makenode permissions.
+      if os.path.exists(_TUN_DEVICE):
+        devices.append('{0}:{0}'.format(_TUN_DEVICE))
     else:
       devices = None
     new_container = self._client.containers.create(
