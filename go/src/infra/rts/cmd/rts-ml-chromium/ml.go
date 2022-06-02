@@ -5,10 +5,19 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/csv"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/iterator"
 )
 
@@ -64,6 +73,108 @@ func (r bqStabilityRow) mlExample() mlExample {
 		FileDistance:      0,
 		UseFileDistance:   false,
 	}
+}
+
+// Uses the ml cli to make predictions. Passes the dataframes to the cli through
+// a file to avoid command line argument limits
+func fileInferMlModel(rows []mlExample, savedModelDir string, cli string) ([]float64, error) {
+	featuresFile, err := ioutil.TempFile("predictions", "PsFeatures_thread*.csv")
+	if err != nil {
+		return nil, err
+	}
+	featureFileName := featuresFile.Name()
+	defer os.Remove(featureFileName)
+
+	predictionsFileName := strings.Replace(featureFileName, ".csv", "_predict.csv", -1)
+	err = os.MkdirAll("predictions", os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+
+	csvWriter := csv.NewWriter(featuresFile)
+
+	csvData := [][]string{{
+		"GitDistance",
+		"FileDistance",
+		"OneWeekFailCount",
+		"OneWeekRunCount",
+		"OneMonthFailCount",
+		"OneMonthRunCount",
+		"SixMonthFailCount",
+		"SixMonthRunCount"},
+	}
+
+	for _, row := range rows {
+		gitDistance := ""
+		if row.UseGitDistance {
+			gitDistance = fmt.Sprintf("%v", row.GitDistance)
+		}
+		fileDistance := ""
+		if row.UseFileDistance {
+			fileDistance = fmt.Sprintf("%v", row.FileDistance)
+		}
+		csvData = append(csvData,
+			[]string{
+				gitDistance,
+				fileDistance,
+				fmt.Sprintf("%v", row.OneWeekFailCount),
+				fmt.Sprintf("%v", row.OneWeekRunCount),
+				fmt.Sprintf("%v", row.OneMonthFailCount),
+				fmt.Sprintf("%v", row.OneMonthRunCount),
+				fmt.Sprintf("%v", row.SixMonthFailCount),
+				fmt.Sprintf("%v", row.SixMonthRunCount),
+			})
+	}
+	csvWriter.WriteAll(csvData)
+
+	cmd := exec.Command("python3",
+		cli,
+		"predict",
+		"--file",
+		featureFileName,
+		"--output",
+		predictionsFileName,
+		"--model",
+		savedModelDir,
+	)
+	var outBuf bytes.Buffer
+	cmd.Stdout = &outBuf
+	var errBuf bytes.Buffer
+	cmd.Stderr = &errBuf
+	err = cmd.Run()
+
+	fmt.Print("stdout from cli:\n")
+	fmt.Print(string(outBuf.String()))
+
+	if err != nil {
+		fmt.Print("stderr from cli:\n")
+		fmt.Print(string(errBuf.String()))
+		return nil, err
+	}
+
+	fileText, err := ioutil.ReadFile(predictionsFileName)
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(strings.TrimSpace(string(fileText)), "\n")
+
+	if len(rows) != len(lines) {
+		fmt.Print("ML inference returned too many predictions\n")
+		return nil, errors.New("ML inference returned too many predictions")
+	}
+
+	outDistances := make([]float64, len(rows))
+	for i, line := range lines {
+
+		distance, err := strconv.ParseFloat(line, 64)
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to parse a prediction from %q", line).Err()
+		}
+
+		// "Distance" and "Failure" have reverse meaning on whether to run
+		outDistances[i] = 1. - distance
+	}
+	return outDistances, nil
 }
 
 type stabilityMapKey struct {

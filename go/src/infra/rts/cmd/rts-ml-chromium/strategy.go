@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math"
 	"path"
 	"regexp"
 	"strings"
@@ -111,7 +112,31 @@ func (r *createModelRun) evalStrategy() eval.Strategy {
 			fileDistances[i] = out.TestVariantAffectedness[i].Distance
 		}
 
-		// TODO(sshrimp): Create the examples to be inferred and make predicitons
+		// Create the examples to be inferred, using the appropriate day
+		var examples = make([]mlExample, len(in.TestVariants))
+		for i := range in.TestVariants {
+
+			example, ok := r.stabilityMap[stabilityMapKey{testID: in.TestVariants[i].Id, date: in.Timestamp}]
+			if !ok {
+				example = mlExample{}
+				logging.Warningf(ctx, "Stability info not found: %s for %s", in.TestVariants[i].Id, in.Timestamp)
+			}
+			example.GitDistance = gitDistances[i]
+			example.UseGitDistance = gitDistances[i] != 0.0 && !math.IsInf(gitDistances[i], 0)
+			example.FileDistance = fileDistances[i]
+			example.UseFileDistance = fileDistances[i] != 0.0 && !math.IsInf(fileDistances[i], 0)
+			examples[i] = example
+		}
+
+		predictions, err := fileInferMlModel(examples, r.mlModelDir, r.cli)
+
+		if err != nil {
+			return err
+		}
+
+		for i := range out.TestVariantAffectedness {
+			out.TestVariantAffectedness[i] = rts.Affectedness{Distance: predictions[i]}
+		}
 
 		// No matter what filegraph said, never skip certain tests.
 		for i, tv := range in.TestVariants {
