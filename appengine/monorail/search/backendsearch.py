@@ -31,7 +31,7 @@ from search import backendsearchpipeline
 from tracker import tracker_constants
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# Change to FlaskInternalTask
 class BackendSearch(jsonfeed.InternalTask):
   """JSON servlet for issue search in a GAE backend."""
 
@@ -75,3 +75,9 @@ class BackendSearch(jsonfeed.InternalTask):
         'search_limit_reached': pipeline.search_limit_reached,
         'error': error_message,
     }
+
+  # def GetBackendSearch(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostBackendSearch(self, **kwargs):
+  #   return self.handler(**kwargs)

@@ -37,7 +37,7 @@ from search import search_helpers
 NONVIEWABLE_MEMCACHE_EXPIRATION = 15 * framework_constants.SECS_PER_MINUTE
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# Change to FlaskInternalTask
 class BackendNonviewable(jsonfeed.InternalTask):
   """JSON servlet for getting issue IDs that the specified user cannot view."""
 
@@ -136,3 +136,9 @@ class BackendNonviewable(jsonfeed.InternalTask):
       cnxn, effective_ids, [project_id], shard_id)
 
     return ok_iids
+
+  # def GetBackendNonviewable(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostBackendNonviewable(self, **kwargs):
+  #   return self.handler(**kwargs)

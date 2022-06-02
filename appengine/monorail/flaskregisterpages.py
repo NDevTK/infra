@@ -46,6 +46,8 @@ from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
 from features import banspammer
+from search import backendnonviewable
+from search import backendsearch
 
 
 class ServletRegistry(object):
@@ -395,3 +397,32 @@ class ServletRegistry(object):
       flaskapp_cron.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
 
     return flaskapp_cron
+
+  # pylint: disable=unused-argument
+  def RegisterBackendUrl(self, service):
+    flaskapp_backend = flask.Flask(__name__)
+    _BACKEND_URL = [
+        # (
+        #     '/search',
+        #     backendsearch.BackendSearch(services=service).GetBackendSearch,
+        #     ['GET']),
+        # (
+        #     '/search.do',
+        #     backendsearch.BackendSearch(services=service).PostBackendSearch,
+        #     ['POST']),
+        # (
+        #     '/nonviewable',
+        #     backendnonviewable.BackendNonviewable(
+        #         services=service).GetBackendNonviewable,
+        #     ['GET']),
+        # (
+        #     '/nonviewable.do',
+        #     backendnonviewable.BackendNonviewable(
+        #        services=service).PostBackendNonviewable,
+        #     ['POST']),
+    ]
+
+    for rule in _BACKEND_URL:
+      flaskapp_backend.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+
+    return flaskapp_backend
