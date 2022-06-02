@@ -233,3 +233,9 @@ class IssueDateActionTask(notify_helpers.NotifyTaskBase):
     field, timestamp = ping
     date_str = timestr.TimestampToDateWidgetStr(timestamp)
     return 'The %s date has arrived: %s' % (field.field_name, date_str)
+
+  # def GetIssueDateActionTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostIssueDateActionTask(self, **kwargs):
+  #   return self.handler(**kwargs)

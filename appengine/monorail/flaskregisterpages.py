@@ -42,6 +42,7 @@ from features import hotlistissuescsv
 from features import hotlistpeople
 from features import dateaction
 from features import filterrules
+from features import pubsub
 from features import notify
 from features import hotlistcreate
 from features import savedqueries
@@ -49,6 +50,7 @@ from features import userhotlists
 from features import banspammer
 from search import backendnonviewable
 from search import backendsearch
+from tracker import fltconversion
 
 
 class ServletRegistry(object):
@@ -351,12 +353,12 @@ class ServletRegistry(object):
         #         services=service).PostDeleteWipeoutUsersTask, ['POST']),
         # (
         #     '/deleteUsersTask',
-        #     deleteusers.DeleteUsersTask(
-        #         services=service).GetDeleteUsersTask, ['GET']),
+        #     deleteusers.DeleteUsersTask(services=service).GetDeleteUsersTask,
+        #     ['GET']),
         # (
         #     '/deleteUsersTask.do',
-        #     deleteusers.DeleteUsersTask(
-        #         services=service).PostDeleteUsersTask, ['POST']),
+        #     deleteusers.DeleteUsersTask(services=service).PostDeleteUsersTask,
+        #     ['POST']),
         # (
         #     '/notifyRulesDeleted',
         #     notify.NotifyRulesDeletedTask(
@@ -394,6 +396,45 @@ class ServletRegistry(object):
         #     '/notifyApprovalChange.do',
         #     notify.NotifyApprovalChangeTask(
         #         services=service).PostNotifyApprovalChangeTask, ['POST']),
+        # (
+        #     '/publishPubsubIssueChange',
+        #     pubsub.PublishPubsubIssueChangeTask(
+        #         services=service).GetPublishPubsubIssueChangeTask, ['GET']),
+        # (
+        #     '/publishPubsubIssueChange.do',
+        #     pubsub.PublishPubsubIssueChangeTask(
+        #         services=service).PostPublishPubsubIssueChangeTask, ['POST']),
+        # (
+        #     '/issueDateAction', dateaction.IssueDateActionTask(
+        #         services=service).GetIssueDateActionTask, ['GET']),
+        # (
+        #     '/issueDateAction.do',
+        #     dateaction.IssueDateActionTask(
+        #         services=service).PostIssueDateActionTask, ['POST']),
+        # (
+        #     '/fltConversionTask',
+        #     fltconversion.FLTConvertTask(services=service).GetFLTConvertTask,
+        #     ['GET']),
+        # (
+        #     '/fltConversionTask.do',
+        #     fltconversion.FLTConvertTask(services=service).PostFLTConvertTask,
+        #     ['POST']),
+        # (
+        #     '/outboundEmail',
+        #     notify.OutboundEmailTask(services=service).GetOutboundEmailTask,
+        #     ['GET']),
+        # (
+        #     '/outboundEmail.do',
+        #     notify.OutboundEmailTask(services=service).PostOutboundEmailTask,
+        #     ['POST']),
+        # (
+        #     '/recomputeDerivedFields',
+        #     filterrules.RecomputeDerivedFieldsTask(
+        #         services=service).GetRecomputeDerivedFieldsTask, ['GET']),
+        # (
+        #     '/recomputeDerivedFields.do',
+        #     filterrules.RecomputeDerivedFieldsTask(
+        #         services=service).PostRecomputeDerivedFieldsTask, ['POST']),
     ]
 
     for rule in _TASK_URL:

@@ -998,7 +998,7 @@ class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
   #   return self.handler(**kwargs)
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to flask
 class OutboundEmailTask(jsonfeed.InternalTask):
   """JSON servlet that sends one email.
 
@@ -1084,3 +1084,9 @@ class OutboundEmailTask(jsonfeed.InternalTask):
     return dict(
         sender=sender, to=to, subject=subject, body=body, html_body=html_body,
         reply_to=reply_to, references=references)
+
+  # def GetOutboundEmailTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostOutboundEmailTask(self, **kwargs):
+  #   return self.handler(**kwargs)

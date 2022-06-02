@@ -15,7 +15,7 @@ from framework import jsonfeed
 from tracker import tracker_constants
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: change to FlaskInternalTask when convert to flask
 class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
   """JSON servlet that recomputes derived fields on a batch of issues."""
 
@@ -35,6 +35,12 @@ class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
     return {
         'success': True,
         }
+
+  # def GetRecomputeDerivedFieldsTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostRecomputeDerivedFieldsTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 # TODO: change to FlaskInternalTask when convert to Flask
