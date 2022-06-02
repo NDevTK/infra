@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bde51401_9845cfbe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-06-02T20:54:23Z",
+      "side": 1,
+      "message": "LGTM. Should we add a test for [this](https://chromium.googlesource.com/infra/infra/+/00e2e346f2f3bd8b4e6777bb34f5be1b52b3ec79/go/src/infra/unifiedfleet/app/dumper/goldeneye_test.go)?",
+      "revId": "00e2e346f2f3bd8b4e6777bb34f5be1b52b3ec79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
