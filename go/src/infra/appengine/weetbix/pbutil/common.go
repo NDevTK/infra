@@ -23,6 +23,7 @@ const stringPairKeyPattern = `[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*`
 
 var stringPairKeyRe = regexp.MustCompile(fmt.Sprintf(`^%s$`, stringPairKeyPattern))
 var stringPairRe = regexp.MustCompile(fmt.Sprintf("^(%s):(.*)$", stringPairKeyPattern))
+var variantHashRe = regexp.MustCompile("^[0-9a-f]{16}$")
 
 // MustTimestampProto converts a time.Time to a *timestamppb.Timestamp and panics
 // on failure.

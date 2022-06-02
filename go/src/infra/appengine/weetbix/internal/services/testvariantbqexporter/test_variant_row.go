@@ -74,6 +74,9 @@ func (b *BQExporter) populateQueryParameters() (inputs, params map[string]interf
 	case *pb.VariantPredicate_Equals:
 		inputs["VariantHashEquals"] = true
 		params["variantHashEquals"] = pbutil.VariantHash(p.Equals)
+	case *pb.VariantPredicate_HashEquals:
+		inputs["VariantHashEquals"] = true
+		params["variantHashEquals"] = p.HashEquals
 	case *pb.VariantPredicate_Contains:
 		if len(p.Contains.Def) > 0 {
 			inputs["VariantContains"] = true

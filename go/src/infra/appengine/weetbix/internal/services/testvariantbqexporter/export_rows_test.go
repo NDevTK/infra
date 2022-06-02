@@ -521,6 +521,17 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 			test(predicate, variantExpRows)
 		})
 
+		Convey(`variantHashEqual`, func() {
+			predicate := &atvpb.Predicate{
+				Variant: &pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_HashEquals{
+						HashEquals: pbutil.VariantHash(pbutil.Variant("a", "b")),
+					},
+				},
+			}
+			test(predicate, variantExpRows)
+		})
+
 		Convey(`variantContain`, func() {
 			predicate := &atvpb.Predicate{
 				Variant: &pb.VariantPredicate{

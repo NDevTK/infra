@@ -89,6 +89,8 @@ func ValidateVariantPredicate(p *pb.VariantPredicate) error {
 		return errors.Annotate(ValidateVariant(pr.Equals), "equals").Err()
 	case *pb.VariantPredicate_Contains:
 		return errors.Annotate(ValidateVariant(pr.Contains), "contains").Err()
+	case *pb.VariantPredicate_HashEquals:
+		return errors.Annotate(ValidateWithRe(variantHashRe, pr.HashEquals), "hash_equals").Err()
 	case nil:
 		return Unspecified
 	default:

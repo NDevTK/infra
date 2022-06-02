@@ -18,6 +18,9 @@ message VariantPredicate {
 
     // A variant's key-value pairs must contain those in this one.
     Variant contains = 2;
+
+    // A variant's hash must equal this value exactly.
+    string hash_equals = 3;
   }
 }
 

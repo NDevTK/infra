@@ -175,9 +175,10 @@ func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVarian
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
 	opts := testresults.ReadVariantsOptions{
-		SubRealms: []string{req.GetSubRealm()},
-		PageSize:  pageSize,
-		PageToken: req.GetPageToken(),
+		SubRealms:        []string{req.GetSubRealm()},
+		VariantPredicate: req.GetVariantPredicate(),
+		PageSize:         pageSize,
+		PageToken:        req.GetPageToken(),
 	}
 
 	variants, nextPageToken, err := testresults.ReadVariants(span.Single(ctx), req.GetProject(), req.GetTestId(), opts)
@@ -201,6 +202,12 @@ func validateQueryVariantsRequest(req *pb.QueryVariantsRequest) error {
 
 	if err := pagination.ValidatePageSize(req.GetPageSize()); err != nil {
 		return errors.Annotate(err, "page_size").Err()
+	}
+
+	if req.GetVariantPredicate() != nil {
+		if err := pbutil.ValidateVariantPredicate(req.GetVariantPredicate()); err != nil {
+			return errors.Annotate(err, "predicate").Err()
+		}
 	}
 
 	return nil

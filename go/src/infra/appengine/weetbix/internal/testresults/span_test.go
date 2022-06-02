@@ -301,6 +301,35 @@ func TestReadTestHistory(t *testing.T) {
 			})
 		})
 
+		Convey("with hash_equals variant_predicate", func() {
+			opts.VariantPredicate = &pb.VariantPredicate{
+				Predicate: &pb.VariantPredicate_HashEquals{
+					HashEquals: pbutil.VariantHash(var2),
+				},
+			}
+			verdicts, nextPageToken, err := ReadTestHistory(span.Single(ctx), opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(verdicts, ShouldResembleProto, []*pb.TestVerdict{
+				{
+					TestId:            "test_id",
+					VariantHash:       pbutil.VariantHash(var2),
+					InvocationId:      "inv1",
+					Status:            pb.TestVerdictStatus_FLAKY,
+					PartitionTime:     timestamppb.New(referenceTime.Add(-1 * time.Hour)),
+					PassedAvgDuration: nil,
+				},
+				{
+					TestId:            "test_id",
+					VariantHash:       pbutil.VariantHash(var2),
+					InvocationId:      "inv1",
+					Status:            pb.TestVerdictStatus_EXPECTED,
+					PartitionTime:     timestamppb.New(referenceTime.Add(-2 * time.Hour)),
+					PassedAvgDuration: nil,
+				},
+			})
+		})
+
 		Convey("with submitted_filter", func() {
 			opts.SubmittedFilter = pb.SubmittedFilter_ONLY_UNSUBMITTED
 			verdicts, nextPageToken, err := ReadTestHistory(span.Single(ctx), opts)
@@ -644,6 +673,43 @@ func TestReadTestHistoryStats(t *testing.T) {
 			})
 		})
 
+		Convey("with hash_equals variant_predicate", func() {
+			opts.VariantPredicate = &pb.VariantPredicate{
+				Predicate: &pb.VariantPredicate_HashEquals{
+					HashEquals: pbutil.VariantHash(var2),
+				},
+			}
+			verdicts, nextPageToken, err := ReadTestHistoryStats(span.Single(ctx), opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
+				{
+					PartitionTime:     timestamppb.New(referenceTime.Add(-1 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					FlakyCount:        1,
+					PassedAvgDuration: nil,
+				},
+				{
+					PartitionTime:     timestamppb.New(referenceTime.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: nil,
+				},
+			})
+		})
+
+		Convey("with empty hash_equals variant_predicate", func() {
+			opts.VariantPredicate = &pb.VariantPredicate{
+				Predicate: &pb.VariantPredicate_HashEquals{
+					HashEquals: "",
+				},
+			}
+			verdicts, nextPageToken, err := ReadTestHistoryStats(span.Single(ctx), opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(verdicts, ShouldBeEmpty)
+		})
+
 		Convey("with submitted_filter", func() {
 			opts.SubmittedFilter = pb.SubmittedFilter_ONLY_UNSUBMITTED
 			verdicts, nextPageToken, err := ReadTestHistoryStats(span.Single(ctx), opts)
@@ -794,6 +860,92 @@ func TestReadVariants(t *testing.T) {
 					VariantHash: pbutil.VariantHash(var3),
 					Variant:     var3,
 				},
+				{
+					VariantHash: pbutil.VariantHash(var2),
+					Variant:     var2,
+				},
+			})
+		})
+
+		Convey("with contains variant predicate", func() {
+			Convey("with single key-value pair", func() {
+				opts := ReadVariantsOptions{
+					SubRealms: []string{"realm1", "realm2"},
+					VariantPredicate: &pb.VariantPredicate{
+						Predicate: &pb.VariantPredicate_Contains{
+							Contains: pbutil.Variant("key1", "val2"),
+						},
+					},
+				}
+				variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+				So(err, ShouldBeNil)
+				So(nextPageToken, ShouldBeEmpty)
+				So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+					{
+						VariantHash: pbutil.VariantHash(var3),
+						Variant:     var3,
+					},
+					{
+						VariantHash: pbutil.VariantHash(var2),
+						Variant:     var2,
+					},
+				})
+			})
+
+			Convey("with multiple key-value pairs", func() {
+				opts := ReadVariantsOptions{
+					SubRealms: []string{"realm1", "realm2"},
+					VariantPredicate: &pb.VariantPredicate{
+						Predicate: &pb.VariantPredicate_Contains{
+							Contains: pbutil.Variant("key1", "val2", "key2", "val2"),
+						},
+					},
+				}
+				variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+				So(err, ShouldBeNil)
+				So(nextPageToken, ShouldBeEmpty)
+				So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+					{
+						VariantHash: pbutil.VariantHash(var3),
+						Variant:     var3,
+					},
+				})
+			})
+		})
+
+		Convey("with equals variant predicate", func() {
+			opts := ReadVariantsOptions{
+				SubRealms: []string{"realm1", "realm2"},
+				VariantPredicate: &pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Equals{
+						Equals: var2,
+					},
+				},
+			}
+			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+				{
+					VariantHash: pbutil.VariantHash(var2),
+					Variant:     var2,
+				},
+			})
+		})
+
+		Convey("with hash_equals variant predicate", func() {
+			opts := ReadVariantsOptions{
+				SubRealms: []string{"realm2"},
+				VariantPredicate: &pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_HashEquals{
+						HashEquals: pbutil.VariantHash(var2),
+					},
+				},
+			}
+			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
 				{
 					VariantHash: pbutil.VariantHash(var2),
 					Variant:     var2,

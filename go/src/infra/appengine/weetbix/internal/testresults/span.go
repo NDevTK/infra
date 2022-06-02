@@ -316,6 +316,13 @@ func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, p
 		// Exoneration status enum values.
 		"notExonerated": int(pb.ExonerationStatus_NOT_EXONERATED),
 	}
+	input := map[string]interface{}{
+		"hasSubRealms":       len(opts.SubRealms) > 0,
+		"hasLimit":           opts.PageSize > 0,
+		"hasSubmittedFilter": opts.SubmittedFilter != pb.SubmittedFilter_SUBMITTED_FILTER_UNSPECIFIED,
+		"pagination":         opts.PageToken != "",
+		"params":             params,
+	}
 
 	if opts.TimeRange.GetEarliest() != nil {
 		params["afterTime"] = opts.TimeRange.GetEarliest().AsTime()
@@ -330,11 +337,16 @@ func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, p
 
 	switch p := opts.VariantPredicate.GetPredicate().(type) {
 	case *pb.VariantPredicate_Equals:
+		input["hasVariantHash"] = true
 		params["variantHash"] = pbutil.VariantHash(p.Equals)
 	case *pb.VariantPredicate_Contains:
 		if len(p.Contains.Def) > 0 {
+			input["hasVariantKVs"] = true
 			params["variantKVs"] = pbutil.VariantToStrings(p.Contains)
 		}
+	case *pb.VariantPredicate_HashEquals:
+		input["hasVariantHash"] = true
+		params["variantHash"] = p.HashEquals
 	case nil:
 		// No filter.
 	default:
@@ -359,11 +371,7 @@ func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, p
 		}
 	}
 
-	stmt, err := spanutil.GenerateStatement(testHistoryQueryTmpl, tmpl, map[string]interface{}{
-		"submittedFilterSpecified": opts.SubmittedFilter != pb.SubmittedFilter_SUBMITTED_FILTER_UNSPECIFIED,
-		"pagination":               opts.PageToken != "",
-		"params":                   params,
-	})
+	stmt, err := spanutil.GenerateStatement(testHistoryQueryTmpl, tmpl, input)
 	if err != nil {
 		return spanner.Statement{}, err
 	}
@@ -523,9 +531,10 @@ func (tvr *TestVariantRealm) SaveUnverified() *spanner.Mutation {
 
 // ReadVariantsOptions specifies options for ReadVariants().
 type ReadVariantsOptions struct {
-	SubRealms []string
-	PageSize  int
-	PageToken string
+	SubRealms        []string
+	VariantPredicate *pb.VariantPredicate
+	PageSize         int
+	PageToken        string
 }
 
 // parseQueryVariantsPageToken parses the positions from the page token.
@@ -563,10 +572,31 @@ func ReadVariants(ctx context.Context, project, testID string, opts ReadVariants
 		"limit":                 opts.PageSize,
 		"paginationVariantHash": paginationVariantHash,
 	}
+	input := map[string]interface{}{
+		"hasSubRealms": len(opts.SubRealms) > 0,
+		"hasLimit":     opts.PageSize > 0,
+		"params":       params,
+	}
 
-	stmt, err := spanutil.GenerateStatement(variantsQueryTmpl, variantsQueryTmpl.Name(), map[string]interface{}{
-		"params": params,
-	})
+	switch p := opts.VariantPredicate.GetPredicate().(type) {
+	case *pb.VariantPredicate_Equals:
+		input["hasVariantHash"] = true
+		params["variantHash"] = pbutil.VariantHash(p.Equals)
+	case *pb.VariantPredicate_Contains:
+		if len(p.Contains.Def) > 0 {
+			input["hasVariantKVs"] = true
+			params["variantKVs"] = pbutil.VariantToStrings(p.Contains)
+		}
+	case *pb.VariantPredicate_HashEquals:
+		input["hasVariantHash"] = true
+		params["variantHash"] = p.HashEquals
+	case nil:
+		// No filter.
+	default:
+		panic(errors.Reason("unexpected variant predicate %q", opts.VariantPredicate).Err())
+	}
+
+	stmt, err := spanutil.GenerateStatement(variantsQueryTmpl, variantsQueryTmpl.Name(), input)
 	if err != nil {
 		return nil, "", err
 	}
@@ -615,26 +645,26 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 			AND TestId = @testId
 			AND PartitionTime >= @afterTime
 			AND PartitionTime < @beforeTime
-			{{if .params.subRealms}}
+			{{if .hasSubRealms}}
 				AND SubRealm IN UNNEST(@subRealms)
 			{{end}}
-			{{if .params.variantHash}}
+			{{if .hasVariantHash}}
 				AND VariantHash = @variantHash
 			{{end}}
-			{{if .params.variantKVs}}
+			{{if .hasVariantKVs}}
 				AND VariantHash IN (
 					SELECT DISTINCT VariantHash
 					FROM TestVariantRealms
 					WHERE
 						Project = @project
 						AND TestId = @testId
-						{{if .params.subRealms}}
+						{{if .hasSubRealms}}
 							AND SubRealm IN UNNEST(@subRealms)
 						{{end}}
 						AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantKVs) kv)
 				)
 			{{end}}
-			{{if .submittedFilterSpecified}}
+			{{if .hasSubmittedFilter}}
 				AND (ARRAY_LENGTH(ChangelistHosts) > 0) = @hasUnsubmittedChanges
 			{{end}}
 	{{end}}
@@ -661,7 +691,7 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 			PartitionTime DESC,
 			VariantHash ASC,
 			IngestedInvocationId ASC
-		{{if .params.limit}}
+		{{if .hasLimit}}
 			LIMIT @limit
 		{{end}}
 	{{end}}
@@ -703,7 +733,7 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 		ORDER BY
 			PartitionDate DESC,
 			VariantHash ASC
-		{{if .params.limit}}
+		{{if .hasLimit}}
 			LIMIT @limit
 		{{end}}
 	{{end}}
@@ -717,13 +747,19 @@ var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
 	WHERE
 		Project = @project
 			AND TestId = @testId
-			{{if .params.subRealms}}
+			{{if .hasSubRealms}}
 				AND SubRealm IN UNNEST(@subRealms)
+			{{end}}
+			{{if .hasVariantHash}}
+				AND VariantHash = @variantHash
+			{{end}}
+			{{if .hasVariantKVs}}
+				AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantKVs) kv)
 			{{end}}
 			AND VariantHash > @paginationVariantHash
 	GROUP BY VariantHash
 	ORDER BY VariantHash ASC
-	{{if .params.limit}}
+	{{if .hasLimit}}
 		LIMIT @limit
 	{{end}}
 `))

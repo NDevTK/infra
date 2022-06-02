@@ -5,6 +5,7 @@
 package pbutil
 
 import (
+	"strings"
 	"testing"
 
 	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
@@ -47,52 +48,6 @@ func TestValidateAnalyzedTestVariantPredicate(t *testing.T) {
 			})
 		})
 
-		Convey(`Test variant`, func() {
-			validVariant := Variant("a", "b")
-			invalidVariant := Variant("", "")
-
-			validate := func(p *pb.VariantPredicate) error {
-				return ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{
-					Variant: p,
-				})
-			}
-
-			Convey(`Equals`, func() {
-				Convey(`Valid`, func() {
-					err := validate(&pb.VariantPredicate{
-						Predicate: &pb.VariantPredicate_Equals{Equals: validVariant},
-					})
-					So(err, ShouldBeNil)
-				})
-				Convey(`Invalid`, func() {
-					err := validate(&pb.VariantPredicate{
-						Predicate: &pb.VariantPredicate_Equals{Equals: invalidVariant},
-					})
-					So(err, ShouldErrLike, `variant: equals: "":"": key: unspecified`)
-				})
-			})
-
-			Convey(`Contains`, func() {
-				Convey(`Valid`, func() {
-					err := validate(&pb.VariantPredicate{
-						Predicate: &pb.VariantPredicate_Contains{Contains: validVariant},
-					})
-					So(err, ShouldBeNil)
-				})
-				Convey(`Invalid`, func() {
-					err := validate(&pb.VariantPredicate{
-						Predicate: &pb.VariantPredicate_Contains{Contains: invalidVariant},
-					})
-					So(err, ShouldErrLike, `variant: contains: "":"": key: unspecified`)
-				})
-			})
-
-			Convey(`Unspecified`, func() {
-				err := validate(&pb.VariantPredicate{})
-				So(err, ShouldErrLike, `variant: unspecified`)
-			})
-		})
-
 		Convey(`Status`, func() {
 			validate := func(s atvpb.Status) error {
 				return ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{
@@ -111,6 +66,81 @@ func TestValidateAnalyzedTestVariantPredicate(t *testing.T) {
 				err := validate(atvpb.Status_FLAKY)
 				So(err, ShouldBeNil)
 			})
+		})
+	})
+}
+
+func TestValidateVariantPredicate(t *testing.T) {
+	Convey(`TestValidateVariantPredicate`, t, func() {
+		validVariant := Variant("a", "b")
+		invalidVariant := Variant("", "")
+
+		validate := func(p *pb.VariantPredicate) error {
+			return ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{
+				Variant: p,
+			})
+		}
+
+		Convey(`Equals`, func() {
+			Convey(`Valid`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Equals{Equals: validVariant},
+				})
+				So(err, ShouldBeNil)
+			})
+			Convey(`Invalid`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Equals{Equals: invalidVariant},
+				})
+				So(err, ShouldErrLike, `equals: "":"": key: unspecified`)
+			})
+		})
+
+		Convey(`Contains`, func() {
+			Convey(`Valid`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Contains{Contains: validVariant},
+				})
+				So(err, ShouldBeNil)
+			})
+			Convey(`Invalid`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Contains{Contains: invalidVariant},
+				})
+				So(err, ShouldErrLike, `contains: "":"": key: unspecified`)
+			})
+		})
+
+		Convey(`HashEquals`, func() {
+			Convey(`Valid`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_HashEquals{HashEquals: VariantHash(validVariant)},
+				})
+				So(err, ShouldBeNil)
+			})
+			Convey(`Empty string`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_HashEquals{HashEquals: ""},
+				})
+				So(err, ShouldErrLike, "hash_equals: unspecified")
+			})
+			Convey(`Upper case`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_HashEquals{HashEquals: strings.ToUpper(VariantHash(validVariant))},
+				})
+				So(err, ShouldErrLike, "hash_equals: does not match")
+			})
+			Convey(`Invalid length`, func() {
+				err := validate(&pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_HashEquals{HashEquals: VariantHash(validVariant)[1:]},
+				})
+				So(err, ShouldErrLike, "hash_equals: does not match")
+			})
+		})
+
+		Convey(`Unspecified`, func() {
+			err := validate(&pb.VariantPredicate{})
+			So(err, ShouldErrLike, `unspecified`)
 		})
 	})
 }
