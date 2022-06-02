@@ -17,6 +17,7 @@ import {
   createAssetAsync,
   setDescription,
   setName,
+  updateAssetAsync,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 
@@ -26,6 +27,7 @@ export const Asset = () => {
     (state) => state.asset.record.description
   );
   const assetId: string = useAppSelector((state) => state.asset.record.assetId);
+  const asset = useAppSelector((state) => state.asset.record);
   const dispatch = useAppDispatch();
 
   const handleSaveClick = (
@@ -35,6 +37,10 @@ export const Asset = () => {
   ) => {
     if (assetId === '') {
       dispatch(createAssetAsync({ name, description }));
+    } else {
+      dispatch(
+        updateAssetAsync({ asset, updateMask: ['name', 'description'] })
+      );
     }
   };
 

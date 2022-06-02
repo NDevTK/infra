@@ -11,6 +11,7 @@ import {
   AssetService,
   ListAssetsRequest,
   AssetModel,
+  UpdateAssetRequest,
 } from '../../api/asset_service';
 import { RootState } from '../../app/store';
 
@@ -63,6 +64,25 @@ export const createAssetAsync = createAsyncThunk(
     };
     const service: IAssetService = new AssetService();
     const response = await service.create(request);
+    return response;
+  }
+);
+
+export const updateAssetAsync = createAsyncThunk(
+  'asset/updateAsset',
+  async ({
+    asset,
+    updateMask,
+  }: {
+    asset: AssetModel;
+    updateMask: string[];
+  }) => {
+    const request: UpdateAssetRequest = {
+      asset: asset,
+      updateMask: updateMask,
+    };
+    const service: IAssetService = new AssetService();
+    const response = await service.update(request);
     return response;
   }
 );
@@ -131,6 +151,13 @@ export const assetSlice = createSlice({
         state.savingStatus = 'loading';
       })
       .addCase(createAssetAsync.fulfilled, (state, action) => {
+        state.savingStatus = 'idle';
+        state.record = action.payload;
+      })
+      .addCase(updateAssetAsync.pending, (state) => {
+        state.savingStatus = 'loading';
+      })
+      .addCase(updateAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload;
       })

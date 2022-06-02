@@ -12,6 +12,7 @@ import (
 	proto "infra/appengine/poros/api/proto"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"go.chromium.org/luci/gae/impl/memory"
 )
@@ -55,6 +56,79 @@ func TestAssetCreateWithInvalidDescription(t *testing.T) {
 	Convey("Create an asset with invalid description in datastore", t, func() {
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetUpdateWithValidData(t *testing.T) {
+	t.Parallel()
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description")
+	Convey("Update an asset with valid data in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetHandler{}
+		entity, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldBeNil)
+
+		// Update asset with some new value and the operation should not throw any error
+		entity.Name = "Test Asset Name Updated"
+		entity.Description = "Test Asset Description Updated"
+
+		updateRequest := &proto.UpdateAssetRequest{
+			Asset:      entity,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		So(err, ShouldBeNil)
+
+		// Retrieve the updated asset and make sure that the values were correctly updated
+		getRequest := &proto.GetAssetRequest{
+			AssetId: entity.GetAssetId(),
+		}
+		readEntity, err := handler.Get(ctx, getRequest)
+		want := []string{"Test Asset Name Updated", "Test Asset Description Updated"}
+		get := []string{readEntity.GetName(), readEntity.GetDescription()}
+		So(get, ShouldResemble, want)
+	})
+}
+
+func TestAssetUpdateWithInvalidName(t *testing.T) {
+	t.Parallel()
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description")
+	Convey("Update an asset with invalid name in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetHandler{}
+		entity, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldBeNil)
+		entity.Name = ""
+		entity.Description = "Test Asset Description"
+
+		updateRequest := &proto.UpdateAssetRequest{
+			Asset:      entity,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the asset as name is empty
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetUpdateWithInvalidDescription(t *testing.T) {
+	t.Parallel()
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description")
+	Convey("Update an asset with invalid description in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetHandler{}
+		entity, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldBeNil)
+		entity.Name = "Test Asset Name"
+		entity.Description = ""
+
+		updateRequest := &proto.UpdateAssetRequest{
+			Asset:      entity,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the asset as description is empty
 		So(err, ShouldNotBeNil)
 	})
 }
