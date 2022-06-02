@@ -380,6 +380,10 @@ def CollateRevisionHistory(builds, repo):
     revisions := [revision, ...]
     ```
   """
+  # Fetch the repo again to ensure we have all relevant revisions locally
+  # available
+  repo._git('fetch', 'origin')
+
   build_history = {}
   revisions = set()
   for category, category_data in builds.iteritems():
