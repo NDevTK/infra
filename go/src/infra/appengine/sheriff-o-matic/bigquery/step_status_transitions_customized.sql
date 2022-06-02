@@ -10,24 +10,24 @@ WITH
   step_lag AS (
   SELECT
     b.end_time AS end_time,
-    b.builder.project AS project,
-    b.builder.bucket AS bucket,
-    b.builder.builder AS builder,
-    JSON_EXTRACT_SCALAR(b.input.properties, "$.builder_group") as buildergroup,
+    project,
+    bucket,
+    builder,
+    b.buildergroup as buildergroup,
     b.id,
     b.number,
     b.critical as critical,
     b.status as status,
-    output.gitiles_commit as output_commit,
-    input.gitiles_commit as input_commit,
+    output_commit,
+    input_commit,
     step.name AS step_name,
     step.status AS step_status,
-    LAG(step.status) OVER (PARTITION BY b.builder.project, b.builder.bucket, b.builder.builder, b.output.gitiles_commit.host, b.output.gitiles_commit.project, b.output.gitiles_commit.ref, step.name ORDER BY b.output.gitiles_commit.position, b.id desc, b.number) AS previous_step_status,
-    LAG(b.output.gitiles_commit) OVER (PARTITION BY b.builder.project, b.builder.bucket, b.builder.builder, b.output.gitiles_commit.host, b.output.gitiles_commit.project, b.output.gitiles_commit.ref, step.name ORDER BY b.output.gitiles_commit.position, b.id desc, b.number) AS previous_output_commit,
-     LAG(b.input.gitiles_commit) OVER (PARTITION BY b.builder.project, b.builder.bucket, b.builder.builder, b.input.gitiles_commit.host, b.input.gitiles_commit.project, b.input.gitiles_commit.ref, step.name ORDER BY b.input.gitiles_commit.position, b.id desc, b.number) AS previous_input_commit,
-    LAG(b.id) OVER (PARTITION BY b.builder.project, b.builder.bucket, b.builder.builder, b.output.gitiles_commit.host, b.output.gitiles_commit.project, b.output.gitiles_commit.ref, step.name ORDER BY b.output.gitiles_commit.position, b.number) AS previous_id
+    LAG(step.status) OVER (PARTITION BY project, bucket, builder, b.output_commit.host, b.output_commit.project, b.output_commit.ref, step.name ORDER BY b.output_commit.position, b.id desc, b.number) AS previous_step_status,
+    LAG(b.output_commit) OVER (PARTITION BY project, bucket, builder, b.output_commit.host, b.output_commit.project, b.output_commit.ref, step.name ORDER BY b.output_commit.position, b.id desc, b.number) AS previous_output_commit,
+     LAG(b.input_commit) OVER (PARTITION BY project, bucket, builder, b.input_commit.host, b.input_commit.project, b.input_commit.ref, step.name ORDER BY b.input_commit.position, b.id desc, b.number) AS previous_input_commit,
+    LAG(b.id) OVER (PARTITION BY project, bucket, builder, b.output_commit.host, b.output_commit.project, b.output_commit.ref, step.name ORDER BY b.output_commit.position, b.number) AS previous_id
     FROM
-    `cr-buildbucket.raw.completed_builds_prod` b,
+    `sheriff-o-matic.materialized.buildbucket_completed_builds_prod` AS b cross join
     UNNEST(steps) AS step
   WHERE
     PROJECT_FILTER_CONDITIONS
