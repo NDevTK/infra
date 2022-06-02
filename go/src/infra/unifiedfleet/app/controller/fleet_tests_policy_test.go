@@ -22,6 +22,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 		Identity:       "user:abc@def.com",
 		IdentityGroups: []string{"public-chromium-in-chromeos-builders"},
 	})
+	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"})
 	Convey("Is Valid Public Chromium Test", t, func() {
 		Convey("happy path", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
@@ -209,6 +210,32 @@ func TestImportPublicBoardsAndModels(t *testing.T) {
 			entity, err := configuration.GetPublicBoardModelData(ctx, mockDevice.Devices[0].Boards[0].PublicCodename)
 			So(err, ShouldNotBeNil)
 			So(entity, ShouldBeNil)
+		})
+	})
+}
+
+func TestValidatePublicBoardModel(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"})
+	Convey("Validate Board and Model", t, func() {
+		Convey("Happy Path", func() {
+			err := validatePublicBoardModel(ctx, "eve", "eve")
+			So(err, ShouldBeNil)
+		})
+		Convey("Private Board", func() {
+			err := validatePublicBoardModel(ctx, "board", "eve")
+			err, ok := err.(*InvalidBoardError)
+
+			So(err, ShouldNotBeNil)
+			So(ok, ShouldBeTrue)
+		})
+		Convey("Private Model", func() {
+			err := validatePublicBoardModel(ctx, "eve", "model")
+			err, ok := err.(*InvalidModelError)
+
+			So(err, ShouldNotBeNil)
+			So(ok, ShouldBeTrue)
 		})
 	})
 }
