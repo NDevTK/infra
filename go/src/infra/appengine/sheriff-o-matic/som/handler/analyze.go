@@ -145,7 +145,7 @@ func generateBigQueryAlerts(c context.Context, a *analyzer.Analyzer, tree string
 		title := fmt.Sprintf("Step %q failing on %d builder(s)", ba.StepAtFault.Step.Name, len(ba.Builders))
 		// TODO(crbug.com/1043371): Remove the if condition after we disable automatic grouping.
 		if len(ba.Builders) == 1 {
-			title = fmt.Sprintf("Step %q failing on builder %q", ba.StepAtFault.Step.Name, ba.Builders[0].Name)
+			title = fmt.Sprintf("Step %q failing on builder %q", ba.StepAtFault.Step.Name, getBuilderId(ba.Builders[0]))
 		}
 		startTime := messages.TimeToEpochTime(time.Now())
 		severity := messages.NewFailure
@@ -190,6 +190,10 @@ func generateBigQueryAlerts(c context.Context, a *analyzer.Analyzer, tree string
 	}
 
 	return alertsSummary, nil
+}
+
+func getBuilderId(builder *messages.AlertedBuilder) string {
+	return fmt.Sprintf("%s/%s/%s", builder.Project, builder.Bucket, builder.Name)
 }
 
 func getKeyForAlert(ctx context.Context, bf *messages.BuildFailure, tree string) string {
