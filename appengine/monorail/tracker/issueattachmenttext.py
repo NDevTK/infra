@@ -17,8 +17,8 @@ import logging
 import webapp2
 
 from google.appengine.api import app_identity
+from google.cloud import storage
 
-from third_party import cloudstorage
 import ezt
 
 from features import prettify
@@ -58,13 +58,16 @@ class AttachmentText(servlet.Servlet):
       except exceptions.NoSuchCommentException:
         webapp2.abort(404, 'comment not found')
 
-    content = []
+    content = b''
     if attachment.gcs_object_id:
       bucket_name = app_identity.get_default_gcs_bucket_name()
       full_path = '/' + bucket_name + attachment.gcs_object_id
       logging.info("reading gcs: %s" % full_path)
-      with cloudstorage.open(full_path, 'r') as f:
-        content = f.read()
+
+      client = storage.Client()
+      bucket = client.get_bucket(bucket_name)
+      blob = bucket.get_blob(attachment.gcs_object_id)
+      content = blob.download_as_bytes()
 
     filesize = len(content)
 
