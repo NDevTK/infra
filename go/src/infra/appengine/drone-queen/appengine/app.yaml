@@ -14,3 +14,7 @@ handlers:
 - url: /.*
   script: auto
   secure: always
+
+entrypoint: >
+  main
+  -ts-mon-account app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
