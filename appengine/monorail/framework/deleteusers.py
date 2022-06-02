@@ -69,7 +69,7 @@ class WipeoutSyncCron(jsonfeed.InternalTask):
   #   return self.handler(**kwargs)
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: Set to FlaskInternalTask when convert
 class SendWipeoutUserListsTask(jsonfeed.InternalTask):
   """Sends a batch of monorail users to wipeout-lite."""
 
@@ -95,8 +95,14 @@ class SendWipeoutUserListsTask(jsonfeed.InternalTask):
     logging.info(
         'Received response, %s with contents, %s', resp, data)
 
+  # def GetSendWipeoutUserListsTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+  # def PostSendWipeoutUserListsTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+
+# TODO: Set to FlaskInternalTask when convert
 class DeleteWipeoutUsersTask(jsonfeed.InternalTask):
   """Fetches deleted users from wipeout-lite and enqueues tasks to delete
      those users from Monorail's DB."""
@@ -131,8 +137,14 @@ class DeleteWipeoutUsersTask(jsonfeed.InternalTask):
         'Received response, %s with contents, %s', resp, data)
     return json.loads(data)
 
+  # def GetDeleteWipeoutUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+  # def PostDeleteWipeoutUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+
+# TODO: Set to FlaskInternalTask when convert
 class DeleteUsersTask(jsonfeed.InternalTask):
   """Deletes users from Monorail's DB."""
 
@@ -147,3 +159,9 @@ class DeleteUsersTask(jsonfeed.InternalTask):
       return
     with work_env.WorkEnv(mr, self.services) as we:
       we.ExpungeUsers(emails, check_perms=False)
+
+  # def GetDeleteUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostDeleteUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)

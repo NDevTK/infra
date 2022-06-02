@@ -332,6 +332,30 @@ class ServletRegistry(object):
         #     '/banSpammer.do',
         #     banspammer.BanSpammerTask(services=service).PostBanSpammer,
         #     ['POST']),
+        # (
+        #     '/sendWipeoutUserListsTask',
+        #     deleteusers.SendWipeoutUserListsTask(
+        #         services=service).GetSendWipeoutUserListsTask, ['GET']),
+        # (
+        #     '/sendWipeoutUserListsTask.do',
+        #     deleteusers.SendWipeoutUserListsTask(
+        #         services=service).PostSendWipeoutUserListsTask, ['POST']),
+        # (
+        #     '/deleteWipeoutUsersTask',
+        #     deleteusers.DeleteWipeoutUsersTask(
+        #         services=service).GetDeleteWipeoutUsersTask, ['GET']),
+        # (
+        #     '/deleteWipeoutUsersTask.do',
+        #     deleteusers.DeleteWipeoutUsersTask(
+        #         services=service).PostDeleteWipeoutUsersTask, ['POST']),
+        # (
+        #     '/deleteUsersTask',
+        #     deleteusers.DeleteUsersTask(
+        #         services=service).GetDeleteUsersTask, ['GET']),
+        # (
+        #     '/deleteUsersTask.do',
+        #     deleteusers.DeleteUsersTask(
+        #         services=service).PostDeleteUsersTask, ['POST']),
     ]
 
     for rule in _TASK_URL:
