@@ -40,7 +40,8 @@ flask_regist = flaskregisterpages.ServletRegistry()
 app = dispatcher.DispatcherMiddleware(
     app,
     {
-        '/hosting_old': flask_regist.RegisterOldHostUrl(services)
+        '/hosting_old': flask_regist.RegisterOldHostUrl(services),
+        '/projects': flask_regist.RegisterRedirectProjectUrl(),
         # '/hosting': flask_regist.RegisterHostingUrl(services),
         # '/p': flask_regist.RegisterProjectUrls(services),
         # '/u': flask_regist.RegisterUserUrls(services),

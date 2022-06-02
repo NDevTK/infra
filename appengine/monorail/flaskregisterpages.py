@@ -183,6 +183,17 @@ class ServletRegistry(object):
 
     return flaskapp_hosting_old
 
+  def RegisterRedirectProjectUrl(self):
+    flaskapp_project_redirect = flask.Flask(__name__)
+
+    # pylint: disable=unused-variable
+    @flaskapp_project_redirect.route('/')
+    def GetRedirectProject():
+      url = flask.request.host_url
+      return flask.redirect(url)
+
+    return flaskapp_project_redirect
+
   def RegisterProjectUrls(self, service):
     flaskapp_project = flask.Flask(__name__)
     _PROJECT_URLS = [

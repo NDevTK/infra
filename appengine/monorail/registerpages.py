@@ -331,11 +331,6 @@ class ServletRegistry(object):
         '/issues/': list_redir,
         })
 
-    list_redir = registerpages_helpers.MakeRedirect(urls.ISSUE_LIST)
-    self._SetupServlets({
-        '/issues': list_redir,
-        '/issues/': list_redir,
-        })
 
   def _RegisterFrameworkHandlers(self):
     """Register page and form handlers for framework functionality."""
@@ -431,8 +426,6 @@ class ServletRegistry(object):
     redirect = registerpages_helpers.MakeRedirect('/')
     self._SetupServlets(
         {
-            '/projects/': redirect,
-            '/projects': redirect,
             '/hosting/': redirect,
             '/hosting': redirect,
             '/p': redirect,
