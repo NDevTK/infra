@@ -27,6 +27,7 @@ from project import project_constants
 from project import projectupdates
 from services import cachemanager_svc
 from services import client_config_svc
+from sitewide import hostinghome
 from sitewide import moved
 from sitewide import userclearbouncing
 from sitewide import userupdates
@@ -171,6 +172,16 @@ class ServletRegistry(object):
       return flask.redirect(url)
 
     return flaskapp_hosting
+
+  def RegisterOldHostUrl(self, service):
+    flaskapp_hosting_old = flask.Flask(__name__)
+
+    # pylint: disable=unused-variable
+    @flaskapp_hosting_old.route('/')
+    def GetHostingOld():
+      return hostinghome.HostingHome(services=service).GetOldHostingHome()
+
+    return flaskapp_hosting_old
 
   def RegisterProjectUrls(self, service):
     flaskapp_project = flask.Flask(__name__)

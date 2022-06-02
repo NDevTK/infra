@@ -47,7 +47,7 @@ class HostingHomeTest(unittest.TestCase):
     self.project_a = self.services.project.TestAddProject('a', project_id=1)
     self.project_b = self.services.project.TestAddProject('b', project_id=2)
 
-    self.servlet = hostinghome.HostingHome('req', 'res', services=self.services)
+    self.servlet = hostinghome.HostingHome(services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest(user_info={'user_id': 111})
 
     self.orig_pipeline_class = projectsearch.ProjectSearchPipeline

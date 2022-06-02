@@ -14,16 +14,14 @@ import ezt
 import settings
 from businesslogic import work_env
 from framework import exceptions
+from framework import flaskservlet
 from framework import permissions
-from framework import servlet
-from framework import template_helpers
 from framework import urls
 from project import project_views
 from sitewide import projectsearch
-from sitewide import sitewide_helpers
 
 
-class HostingHome(servlet.Servlet):
+class HostingHome(flaskservlet.FlaskServlet):
   """HostingHome shows the project list and link to create a project."""
 
   _PAGE_TEMPLATE = 'sitewide/hosting-home-page.ezt'
@@ -105,3 +103,6 @@ class HostingHome(servlet.Servlet):
     project_url = '/p/%s' % project_name
     self.redirect(project_url, abort=True)
     return 'Redirected to %r' % project_url
+
+  def GetOldHostingHome(self, **kwargs):
+    return self.handler(**kwargs)

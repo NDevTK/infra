@@ -14,12 +14,12 @@ from __future__ import absolute_import
 
 import logging
 import webapp2
-# from werkzeug.middleware import dispatcher
+from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2
 import gae_ts_mon
 
-# import flaskregisterpages
+import flaskregisterpages
 import registerpages
 from framework import sorting
 from services import api_svc_v1
@@ -36,17 +36,18 @@ app = webapp2.WSGIApplication(
 # service account and change to gae_ts_mon.initialize_prod()
 gae_ts_mon.initialize_adhoc(app)
 
-# flask_regist = flaskregisterpages.ServletRegistry()
-# app = dispatcher.DispatcherMiddleware(
-#     app,
-#     {
-#         '/hosting': flask_regist.RegisterHostingUrl(services),
-#         '/p': flask_regist.RegisterProjectUrls(services),
-#         '/u': flask_regist.RegisterUserUrls(services),
-#         '/_task': flask_regist.RegisterTaskUrl(services),
-#         '/_cron': flask_regist.RegisterCronUrl(services)
-#         '/_backend': flask_regist.RegisterBackendUrl(services),
-#     })
+flask_regist = flaskregisterpages.ServletRegistry()
+app = dispatcher.DispatcherMiddleware(
+    app,
+    {
+        '/hosting_old': flask_regist.RegisterOldHostUrl(services)
+        # '/hosting': flask_regist.RegisterHostingUrl(services),
+        # '/p': flask_regist.RegisterProjectUrls(services),
+        # '/u': flask_regist.RegisterUserUrls(services),
+        # '/_task': flask_regist.RegisterTaskUrl(services),
+        # '/_cron': flask_regist.RegisterCronUrl(services),
+        # '/_backend': flask_regist.RegisterBackendUrl(services),
+    })
 
 endpoints = endpoints_webapp2.api_server(
     [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])
