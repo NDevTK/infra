@@ -575,6 +575,8 @@ func crosRepairActions() map[string]*Action {
 				"Battery is expected on device",
 				"Battery is present on device",
 				"Internal storage is responsive",
+				//TODO(b:234761994, Flex device does not have charge_full file)
+				"Is not Flex device",
 			},
 			// TODO: verify if the battery state is for replacement and escape from the finish the process.
 			ExecName: "cros_audit_battery",
