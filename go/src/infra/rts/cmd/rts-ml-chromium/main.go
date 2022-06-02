@@ -41,6 +41,7 @@ func main() {
 		},
 		Commands: []*subcommands.Command{
 			cmdCreateModel(&authOpt),
+			cmdGenTrainingData(&authOpt),
 
 			{}, // a separator
 			chromium.SubcommandCommandFetchRejections(&authOpt),
