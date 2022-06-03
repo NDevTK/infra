@@ -14,11 +14,13 @@ func DownloadImageToServoUSBDrive(gsImagePath, imageName string) *Configuration 
 	rc.PlanNames = []string{
 		PlanServo,
 		PlanCrOS,
-		PlanClosing,
 	}
-	rc.Plans[PlanServo].AllowFail = false
+	// Servo plan is not critical we just care to start servod.
+	rc.Plans[PlanServo].AllowFail = true
+	// Remove closing plan as we do not collect any logs or update states kin spacial ways.
+	delete(rc.Plans, PlanClosing)
 	cp := rc.Plans[PlanCrOS]
-	targetAction := "Download stable image to USB-key"
+	const targetAction = "Download stable image to USB-key"
 	cp.CriticalActions = []string{targetAction}
 	var newArgs []string
 	if gsImagePath != "" {

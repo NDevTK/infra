@@ -1079,7 +1079,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				// If servo is responsive then probably we can download image to USB drive.
+				// Present of DUT connection is not critical.
+				"servo_servod_echo_host",
 			},
 			ExecName:    "servo_download_image_to_usb",
 			ExecTimeout: &durationpb.Duration{Seconds: 3000},
