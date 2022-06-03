@@ -1540,7 +1540,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"dut_servo_host_present",
 				"servod_echo",
-				"servo_power_state_reset",
+				"Cold reset DUT by servo",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:   "sample_pass",
@@ -1872,15 +1872,6 @@ func crosRepairActions() map[string]*Action {
 				"timeout:120",
 				"wait_interval:5",
 			},
-		},
-		"servo_power_state_reset": {
-			Docs: []string{
-				"Reset the DUT using servod power_state control.",
-			},
-			Dependencies: []string{
-				"dut_servo_host_present",
-			},
-			ExecName: "sample_fail",
 		},
 	}
 }
