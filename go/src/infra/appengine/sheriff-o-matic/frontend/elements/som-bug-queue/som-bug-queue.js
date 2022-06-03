@@ -228,6 +228,10 @@ Polymer.Element) {
     return pri != this.UNSET_PRIORITY;
   }
 
+  _hasNoComponent(bug) {
+    return !bug.components || bug.components.length == 0
+  }
+
   // //////////////////// Collapsing by priority ///////////////////////////
 
   _computeCollapseId(pri) {

@@ -48,6 +48,9 @@
       .updated {
         font-size: 12px;
       }
+      .no-component{
+        color: #ff0000;
+      }
     </style>
     <iron-ajax
         id="bugQueueAjax"
@@ -115,6 +118,9 @@
                   (Pri-[[bucket.priority]])
                 </template>
                 <a target="_blank" title="[[bug.modify_time]]" class="modify_time">Last update: [[bug.modify_time]]</a>
+                <template is="dom-if" if="[[_hasNoComponent(bug)]]">
+                  <span class="no-component">(No component)</span>
+                </template>
               </div>
             </template>
           </iron-collapse>
