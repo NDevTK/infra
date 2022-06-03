@@ -1,7 +1,6 @@
 package frontend
 
 import (
-	"context"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -9,16 +8,18 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 
 	api "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/model/configuration"
 )
 
 func TestGetPublicChromiumTestStatus(t *testing.T) {
 	t.Parallel()
-	ctx := auth.WithState(context.Background(), &authtest.FakeState{
+	ctx := auth.WithState(testingContext(), &authtest.FakeState{
 		Identity:       "user:abc@def.com",
 		IdentityGroups: []string{"public-chromium-in-chromeos-builders"},
 	})
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
+	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"})
 	Convey("Check Fleet Policy For Tests", t, func() {
 		Convey("happy path", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
@@ -87,7 +88,7 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 				Model:    "eve",
 				Image:    "R100-14495.0.0-rc1",
 			}
-			ctx := auth.WithState(context.Background(), &authtest.FakeState{
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				Identity: "user:abc@def.com",
 			})
 
@@ -102,7 +103,7 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 				Model:    "eve",
 				Image:    "R100-14495.0.0-rc1",
 			}
-			ctx := auth.WithState(context.Background(), &authtest.FakeState{
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				Identity: "user:abc@def.com",
 			})
 

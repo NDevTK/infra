@@ -81,14 +81,11 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 	if req.Board == "" {
 		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Board cannot be empty for public tests.")
 	}
-	if !contains(getValidPublicBoards(), req.Board) {
-		return &InvalidBoardError{Board: req.Board}
-	}
 	if req.Model == "" {
 		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Model cannot be empty for public tests.")
 	}
-	if !contains(getValidPublictModels(), req.Model) {
-		return &InvalidModelError{Model: req.Model}
+	if err := validatePublicBoardModel(ctx, req.Board, req.Model); err != nil {
+		return err
 	}
 
 	// Validate Test Name
@@ -140,12 +137,17 @@ func getValidPublicTestNames() []string {
 	return []string{"tast.lacros"}
 }
 
-func getValidPublicBoards() []string {
-	return []string{"eve", "octopus"}
-}
-
-func getValidPublictModels() []string {
-	return []string{"eve", "octopus"}
+func validatePublicBoardModel(ctx context.Context, board string, model string) error {
+	publicBoardEntity, err := configuration.GetPublicBoardModelData(ctx, board)
+	if err != nil {
+		return &InvalidBoardError{Board: board}
+	}
+	for _, m := range publicBoardEntity.Models {
+		if m == model {
+			return nil
+		}
+	}
+	return &InvalidModelError{Model: model}
 }
 
 func getValidPublicImages() []string {
