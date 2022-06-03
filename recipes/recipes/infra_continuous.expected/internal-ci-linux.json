@@ -169,7 +169,7 @@
   {
     "cmd": [
       "python",
-      "ccompute/scripts/ccompute_config.py",
+      "[CACHE]/builder/infra_internal/ccompute/scripts/ccompute_config.py",
       "test"
     ],
     "cwd": "[CACHE]/builder/infra_internal",

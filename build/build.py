@@ -53,11 +53,12 @@ KNOWN_GOARCHS = frozenset([
   'arm',
   'arm64',
   'mips',
-  'mipsle',
   'mips64',
   'mips64le',
+  'mipsle',
   'ppc64',
   'ppc64le',
+  'riscv64',
   's390x',
 ])
 

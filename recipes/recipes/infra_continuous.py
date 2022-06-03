@@ -16,7 +16,6 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
-    'recipe_engine/python',
     'recipe_engine/resultdb',
     'recipe_engine/runtime',
     'recipe_engine/step',
@@ -113,13 +112,14 @@ CIPD_PACKAGE_BUILDERS = {
         'linux-arm64',  # ~60 sec
     ],
     'infra-packager-linux-xc2': [
+        'aix-ppc64',  # ~5 sec
         'linux-mips64',  # ~40 sec
         'linux-mips64le',  # ~40 sec
         'linux-mipsle',  # ~40 sec
         'linux-ppc64',  # ~40 sec
         'linux-ppc64le',  # ~40 sec
+        'linux-riscv64',  # ~5 sec
         'linux-s390x',  # ~40 sec
-        'aix-ppc64',  # ~5 sec
     ],
     'infra-packager-mac-64': [
         'native:legacy',  # ~150 sec
@@ -236,13 +236,15 @@ def run_python_tests(api, project_name):
     with api.context(cwd=api.path['checkout']):
       # Run Linux tests everywhere, Windows tests only on public CI.
       if api.platform.is_linux or project_name == 'infra':
-        api.python('infra python tests', 'test.py', ['test'])
+        api.step('infra python tests',
+                 ['python', 'test.py', 'test'])
 
       # Validate ccompute configs.
       if api.platform.is_linux and project_name == 'infra_internal':
-        api.python(
-            'ccompute config test',
-            'ccompute/scripts/ccompute_config.py', ['test'])
+        ccompute_config = api.path['checkout'].join(
+            'ccompute', 'scripts', 'ccompute_config.py')
+        api.step(
+            'ccompute config test', ['python', ccompute_config, 'test'])
 
 
 def GenTests(api):
