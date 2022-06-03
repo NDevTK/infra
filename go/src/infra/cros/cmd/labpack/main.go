@@ -18,6 +18,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	luciauth "go.chromium.org/luci/auth"
@@ -181,13 +182,16 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 	lg.Infof("Persist the swarming logs")
 	// Actually persist the logs.
 	swarmingTaskID := state.Infra().GetSwarming().GetTaskId()
-	if err := parallelUpload(ctx, lg, client, swarmingTaskID); err != nil {
+	gsURL, err := parallelUpload(ctx, lg, client, swarmingTaskID)
+	if err != nil {
 		return errors.Annotate(err, "upload logs").Err()
 	}
 	// Set the summary markdown to something noticeable.
 	// In the future, change this to be a link to the logs.
 	step.Modify(func(sv *build.StepView) {
-		sv.SummaryMarkdown = "TEMPORARY TEXT c2a45be7-f131-4d43-9e5a-99934d01be5c"
+		u := strings.TrimPrefix(gsURL, "gs://")
+		u = fmt.Sprintf("https://%s/%s", "stainless.corp.google.com/browse", u)
+		sv.SummaryMarkdown = fmt.Sprintf("[GS logs](%s)", u)
 	})
 	return nil
 }
@@ -196,12 +200,12 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 //
 // parallelUpload will fail when given invalid arguments. However, it will not fail
 // simply because the upload attempt was unsuccessful.
-func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client, swarmingTaskID string) error {
+func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client, swarmingTaskID string) (string, error) {
 	if lg == nil {
-		return errors.Reason("parallel-upload: logger cannot be nil").Err()
+		return "", errors.Reason("parallel-upload: logger cannot be nil").Err()
 	}
 	if client == nil {
-		return errors.Reason("paralel-upload: client cannot be nil").Err()
+		return "", errors.Reason("paralel-upload: client cannot be nil").Err()
 	}
 	if swarmingTaskID == "" {
 		timestamp := fmt.Sprintf("%d", time.Now().Unix())
@@ -240,7 +244,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 		// TODO: Register error to Karte.
 		lg.Errorf("Upload task error: %s", err)
 	}
-	return nil
+	return gsURL, nil
 }
 
 // internalRun main entry point to execution received request.
