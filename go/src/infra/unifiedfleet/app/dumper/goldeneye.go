@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/controller"
 )
 
 const (
@@ -40,8 +41,11 @@ func getGoldenEyeData(ctx context.Context) (retErr error) {
 		}
 	}()
 
-	// TODO(b/210537474) - Import public boards and models from the parse json data.
-	_, retErr = parseGoldenEyeData(ctx, r)
+	devices, retErr := parseGoldenEyeData(ctx, r)
+	if retErr != nil {
+		return retErr
+	}
+	retErr = controller.ImportPublicBoardsAndModels(ctx, devices)
 	return retErr
 }
 
