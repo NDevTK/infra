@@ -14,6 +14,7 @@ from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
 from framework import banned
+from framework import clientmon
 from framework import reap
 from framework import deleteusers
 from framework import excessiveactivity
@@ -609,3 +610,20 @@ class ServletRegistry(object):
       flaskapp_backend.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
 
     return flaskapp_backend
+
+  # pylint: disable=unused-argument
+  def RegisterMONSetUrl(self, service):
+    flaskapp_mon = flask.Flask(__name__)
+    _MON_URL = [
+        # (
+        #     '/clientmon',
+        #     clientmon.ClientMonitor(services=service).GetClientMonitor, ['GET'
+        #                                                                 ]),
+        # (
+        #     '/clientmon.do',
+        #     clientmon.ClientMonitor(services=service).PostClientMonitor,
+        #     ['POST']),
+    ]
+
+    flaskapp_mon = self._AddFlaskUrlRules(flaskapp_mon, _MON_URL)
+    return flaskapp_mon

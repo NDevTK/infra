@@ -42,6 +42,7 @@ app = dispatcher.DispatcherMiddleware(
     {
         '/hosting_old': flask_regist.RegisterOldHostUrl(services),
         '/projects': flask_regist.RegisterRedirectProjectUrl(),
+        # '/_': flask_regist.RegisterMONSetUrl(services),
         # '/hosting': flask_regist.RegisterHostingUrl(services),
         # '/p': flask_regist.RegisterProjectUrls(services),
         # '/u': flask_regist.RegisterUserUrls(services),

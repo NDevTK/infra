@@ -19,7 +19,7 @@ from framework import jsonfeed
 from infra_libs import ts_mon
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# TODO: convert to FlaskJsonFeed while convert to Flask
 class ClientMonitor(jsonfeed.JsonFeed):
   """JSON feed to track client side js errors in ts_mon."""
 
@@ -37,6 +37,8 @@ class ClientMonitor(jsonfeed.JsonFeed):
       Dict of values used by EZT for rendering the page.
     """
 
+    # TODO: uncomment while convert to flask
+    # post_data = mr.request.values
     post_data = mr.request.POST
     errors = post_data.get('errors')
     try:
@@ -52,3 +54,9 @@ class ClientMonitor(jsonfeed.JsonFeed):
       logging.error('Problem processing client monitor report: %r', e)
 
     return {}
+
+  # def GetClientMonitor(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostClientMonitor(self, **kwargs):
+  #   return self.handler(**kwargs)
