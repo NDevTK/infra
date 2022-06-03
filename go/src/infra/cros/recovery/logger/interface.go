@@ -1,5 +1,10 @@
 package logger
 
+import (
+	"context"
+	"io"
+)
+
 // Logger represents a simple interface for logging data.
 type Logger interface {
 	// Debugf log message at Debugf level.
@@ -19,4 +24,13 @@ type LogIndenter interface {
 	Indent()
 	// Dedent decrement indentation for logger.
 	Dedent()
+}
+
+// StepLogCloser represents a simple function to unregister/close step's log in the logger.
+type StepLogCloser func()
+
+// StepLogRegister represents a simple interface to provide option to add step's log to the logger.
+type StepLogRegister interface {
+	// RegisterStepLog add step's io.Writer as new logger.
+	RegisterStepLog(ctx context.Context, wr io.Writer) (StepLogCloser, error)
 }

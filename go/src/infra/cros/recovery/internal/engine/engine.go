@@ -176,8 +176,18 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			defer actionCloser(rErr)
 		}
 		if r.args.ShowSteps {
-			step, ctx = build.StartStep(ctx, fmt.Sprintf("Run %s", actionName))
+			stepName := fmt.Sprintf("Run %s", actionName)
+			step, ctx = build.StartStep(ctx, stepName)
 			defer func() { step.End(rErr) }()
+			if i, ok := r.args.Logger.(logger.StepLogRegister); ok && step != nil {
+				stepLog := step.Log("log")
+				if logCloser, err := i.RegisterStepLog(ctx, stepLog); err != nil {
+					log.Debugf(ctx, "Fail to register step logger for %q", actionName)
+				} else {
+					// Only if registration passed without issues.
+					defer func() { logCloser() }()
+				}
+			}
 		}
 		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
 			i.Indent()

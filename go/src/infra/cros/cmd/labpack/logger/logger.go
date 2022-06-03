@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -40,8 +41,11 @@ type loggerImpl struct {
 	logDir string
 	// Format used for logging.
 	format string
+	// Step's loggers.
+	stepsLoggers []logging.Logger
 	// closers to manage resource closing when logging is closing.
 	closers []closer
+	mu      sync.Mutex
 }
 
 // Create custom logger config with custom formatter.
@@ -118,21 +122,64 @@ func (l *loggerImpl) Close() {
 // Debugf log message at Debug level.
 func (l *loggerImpl) Debugf(format string, args ...interface{}) {
 	l.log.LogCall(logging.Debug, l.callDepth, format, args)
+	l.lastStepLogger().LogCall(logging.Debug, l.callDepth, format, args)
 }
 
 // Infof is like Debugf, but logs at Info level.
 func (l *loggerImpl) Infof(format string, args ...interface{}) {
 	l.log.LogCall(logging.Info, l.callDepth, format, args)
+	l.lastStepLogger().LogCall(logging.Info, l.callDepth, format, args)
 }
 
 // Warningf is like Debugf, but logs at Warning level.
 func (l *loggerImpl) Warningf(format string, args ...interface{}) {
 	l.log.LogCall(logging.Warning, l.callDepth, format, args)
+	l.lastStepLogger().LogCall(logging.Warning, l.callDepth, format, args)
 }
 
 // Errorf is like Debug, but logs at Error level.
 func (l *loggerImpl) Errorf(format string, args ...interface{}) {
 	l.log.LogCall(logging.Error, l.callDepth, format, args)
+	l.lastStepLogger().LogCall(logging.Error, l.callDepth, format, args)
+}
+
+// Register add logger to the stack of steps as last step.
+//
+// The logger will write only to the last registered step's logger.
+func (l *loggerImpl) RegisterStepLog(ctx context.Context, w io.Writer) (logger.StepLogCloser, error) {
+	if w == nil {
+		return nil, errors.Reason("register step log: writer is nil").Err()
+	}
+	loggerConfig := &gologger.LoggerConfig{
+		Out:    w,
+		Format: l.format,
+	}
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.stepsLoggers = append(l.stepsLoggers, loggerConfig.NewLogger(ctx))
+	// When step closing we need to remove last step logger.
+	closer := func() {
+		l.unregisterLastStep()
+	}
+	return closer, nil
+}
+
+// unregisterLastStep removes last registered step from stack.
+func (l *loggerImpl) unregisterLastStep() {
+	if len(l.stepsLoggers) != 0 {
+		l.mu.Lock()
+		defer l.mu.Unlock()
+		lastIndex := len(l.stepsLoggers) - 1
+		l.stepsLoggers = l.stepsLoggers[:lastIndex]
+	}
+}
+
+// lastStepLogger returns last registered step's logger or Null.
+func (l *loggerImpl) lastStepLogger() logging.Logger {
+	if len(l.stepsLoggers) > 0 {
+		return l.stepsLoggers[len(l.stepsLoggers)-1]
+	}
+	return logging.Null
 }
 
 // closer is function to close some resource.
