@@ -16,6 +16,7 @@ func servoRepairPlan() *Plan {
 			"Set state:WRONG_CONFIG",
 			"Servod port specified",
 			"Servo serial is specified",
+			"Set state:SERVO_HOST_ISSUE",
 			"Initialize docker container",
 			"Set state:NO_SSH",
 			"Device is pingable",
