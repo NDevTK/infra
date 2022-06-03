@@ -218,7 +218,7 @@ func TestPEP425TagSelector(t *testing.T) {
 
 		{
 			[]*vpython.PEP425Tag{
-				{Python: "cp38", Abi: "cp38m", Platform: "win_amd64"},
+				{Python: "cp38", Abi: "cp38", Platform: "win_amd64"},
 				{Python: "cp38", Abi: "none", Platform: "win_amd64"},
 				{Python: "py3", Abi: "none", Platform: "win_amd64"},
 				{Python: "cp38", Abi: "none", Platform: "any"},
@@ -241,6 +241,26 @@ func TestPEP425TagSelector(t *testing.T) {
 				"py_abi":           "cp38",
 				"py_platform":      "win_amd64",
 				"vpython_platform": "windows-amd64_cp38_cp38",
+			},
+		},
+
+		{
+			[]*vpython.PEP425Tag{
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_12_x86_64"},
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_12_intel"},
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_12_fat64"},
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_12_fat32"},
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_12_arm64"},
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_12_universal"},
+				{Python: "cp38", Abi: "abi3", Platform: "macosx_10_11_arm64"},
+			},
+			map[string]string{
+				"platform":         "mac-arm64",
+				"py_tag":           "cp38-abi3-macosx_10_11_arm64",
+				"py_python":        "cp38",
+				"py_abi":           "abi3",
+				"py_platform":      "macosx_10_11_arm64",
+				"vpython_platform": "mac-arm64_cp38_abi3",
 			},
 		},
 	}

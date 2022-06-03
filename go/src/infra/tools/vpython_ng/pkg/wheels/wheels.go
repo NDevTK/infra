@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"infra/libs/cipkg"
@@ -75,30 +76,17 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	// Get vpython template from tags
 	expander := template.DefaultExpander()
 	if t := pep425TagSelector(tags); t != nil {
+		p := PlatformForPEP425Tag(t)
+		expander = p.Expander()
 		if err := addPEP425CIPDTemplateForTag(expander, t); err != nil {
 			return err
 		}
 	}
 
 	// Translates packages' name in spec into a CIPD ensure file.
-	pslice := make(ensure.PackageSlice, len(s.Wheel))
-	for i, pkg := range s.Wheel {
-		name, err := expander.Expand(pkg.Name)
-		switch err {
-		case template.ErrSkipTemplate:
-			continue
-		case nil:
-		default:
-			return errors.Annotate(err, "expanding %#v", pkg).Err()
-		}
-		pslice[i] = ensure.PackageDef{
-			PackageTemplate:   name,
-			UnresolvedVersion: pkg.Version,
-		}
-	}
-	ef := ensure.File{
-		ServiceURL:       chromeinfra.CIPDServiceURL,
-		PackagesBySubdir: map[string]ensure.PackageSlice{"wheels": pslice},
+	ef, err := ensureFileFromWheels(expander, s.Wheel)
+	if err != nil {
+		return err
 	}
 	var efs strings.Builder
 	if err := ef.Serialize(&efs); err != nil {
@@ -130,5 +118,65 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 		return errors.Annotate(err, "failed to write requirements.txt").Err()
 	}
 
+	return nil
+}
+
+func ensureFileFromWheels(expander template.Expander, wheels []*vpython.Spec_Package) (*ensure.File, error) {
+	pslice := make(ensure.PackageSlice, len(wheels))
+	for i, pkg := range wheels {
+		name, err := expander.Expand(pkg.Name)
+		switch err {
+		case template.ErrSkipTemplate:
+			continue
+		case nil:
+		default:
+			return nil, errors.Annotate(err, "expanding %#v", pkg).Err()
+		}
+		pslice[i] = ensure.PackageDef{
+			PackageTemplate:   name,
+			UnresolvedVersion: pkg.Version,
+		}
+	}
+	return &ensure.File{
+		ServiceURL:       chromeinfra.CIPDServiceURL,
+		PackagesBySubdir: map[string]ensure.PackageSlice{"wheels": pslice},
+	}, nil
+}
+
+// Verify the spec for all VerifyPep425Tag listed in the spec. This will ensure
+// all packages existed for these platforms.
+//
+// TODO: Maybe implement it inside a derivation after we executing cipd binary
+// directly.
+func Verify(spec *vpython.Spec) error {
+	for _, t := range spec.VerifyPep425Tag {
+		p := PlatformForPEP425Tag(t)
+		e := p.Expander()
+		if err := addPEP425CIPDTemplateForTag(e, t); err != nil {
+			return err
+		}
+		ef, err := ensureFileFromWheels(e, spec.Wheel)
+		if err != nil {
+			return err
+		}
+		ef.VerifyPlatforms = []template.Platform{p}
+		var efs strings.Builder
+		if err := ef.Serialize(&efs); err != nil {
+			return err
+		}
+
+		bin := "cipd"
+		if runtime.GOOS == "windows" {
+			bin = "cipd.bat"
+		}
+
+		cmd := exec.Command(bin, "ensure-file-verify", "-ensure-file", "-")
+		cmd.Stdin = strings.NewReader(efs.String())
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
 	return nil
 }

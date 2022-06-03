@@ -76,24 +76,33 @@ func (ma *pep425MacPlatform) less(other *pep425MacPlatform) bool {
 //
 // This function favors, in order:
 //	- Mac platforms over non-Mac platforms,
-//	- "intel" package builds over non-"intel"
+//	- arm64 > intel > others
 //	- Older Mac versions over newer ones
 func pep425IsBetterMacPlatform(cur, candidate string) bool {
 	// Parse a Mac platform string
 	curPlatform := parsePEP425MacPlatform(cur)
-	candidatePLatform := parsePEP425MacPlatform(candidate)
+	candidatePlatform := parsePEP425MacPlatform(candidate)
+
+	archScore := func(c *pep425MacPlatform) int {
+		// Smaller is better
+		switch c.arch {
+		case "arm64":
+			return 0
+		case "intel":
+			return 1
+		default:
+			return 2
+		}
+	}
+
 	switch {
 	case curPlatform == nil:
-		return candidatePLatform != nil
-	case candidatePLatform == nil:
+		return candidatePlatform != nil
+	case candidatePlatform == nil:
 		return false
-	case curPlatform.arch != "intel" && candidatePLatform.arch == "intel":
-		// Prefer "intel" architecture over others, since it's more modern and
-		// generic.
-		return true
-	case curPlatform.arch == "intel" && candidatePLatform.arch != "intel":
-		return false
-	case candidatePLatform.less(curPlatform):
+	case archScore(candidatePlatform) != archScore(curPlatform):
+		return archScore(candidatePlatform) < archScore(curPlatform)
+	case candidatePlatform.less(curPlatform):
 		// We prefer the lowest Mac architecture available.
 		return true
 	default:
@@ -223,15 +232,6 @@ func pep425TagSelector(tags []*vpython.PEP425Tag) *vpython.PEP425Tag {
 
 	for _, t := range tags {
 		tag := proto.Clone(t).(*vpython.PEP425Tag)
-
-		// pip has a bug, fixed in 19.2.3 where it adds the "m" ABI tag on 3.8
-		// for some platforms, despite this flag being removed in 3.8. We work
-		// around it here by stripping it from the ABI string.
-		//
-		// TODO: Remove this workaround when we've updated to pip >= 19.2.3.
-		if strings.HasPrefix(tag.Python, "cp3") {
-			tag.Abi = strings.TrimSuffix(tag.Abi, "m")
-		}
 		if isBetter(tag) {
 			best = tag
 		}
@@ -295,4 +295,82 @@ func addPEP425CIPDTemplateForTag(expander template.Expander, tag *vpython.PEP425
 	}
 
 	return nil
+}
+
+// PlatformForPEP425Tag returns the CIPD platform inferred from a given Python
+// PEP425 tag.
+//
+// If the platform could not be determined, an empty string will be returned.
+func PlatformForPEP425Tag(t *vpython.PEP425Tag) template.Platform {
+	switch platSplit := strings.SplitN(t.Platform, "_", 2); platSplit[0] {
+	case "linux", "manylinux1":
+		// Grab the remainder.
+		//
+		// Examples:
+		// - linux_i686
+		// - manylinux1_x86_64
+		// - linux_arm64
+		cpu := ""
+		if len(platSplit) > 1 {
+			cpu = platSplit[1]
+		}
+		switch cpu {
+		case "i686":
+			return template.Platform{OS: "linux", Arch: "386"}
+		case "x86_64":
+			return template.Platform{OS: "linux", Arch: "amd64"}
+		case "arm64", "aarch64":
+			return template.Platform{OS: "linux", Arch: "arm64"}
+		case "mipsel", "mips":
+			return template.Platform{OS: "linux", Arch: "mips32"}
+		case "mips64":
+			return template.Platform{OS: "linux", Arch: "mips64"}
+		default:
+			// All remaining "arm*" get the "armv6l" CIPD platform.
+			if strings.HasPrefix(cpu, "arm") {
+				return template.Platform{OS: "linux", Arch: "armv6l"}
+			}
+			return template.Platform{}
+		}
+
+	case "macosx":
+		// Grab the last token.
+		//
+		// Examples:
+		// - macosx_10_10_intel
+		// - macosx_10_10_i386
+		if len(platSplit) == 1 {
+			return template.Platform{}
+		}
+		suffixSplit := strings.SplitN(platSplit[1], "_", -1)
+		switch suffixSplit[len(suffixSplit)-1] {
+		case "intel", "x86_64", "fat64", "universal":
+			return template.Platform{OS: "mac", Arch: "amd64"}
+		case "arm64":
+			return template.Platform{OS: "mac", Arch: "arm64"}
+		case "i386", "fat32":
+			return template.Platform{OS: "mac", Arch: "386"}
+		default:
+			return template.Platform{}
+		}
+
+	case "win32":
+		// win32
+		return template.Platform{OS: "windows", Arch: "386"}
+	case "win":
+		// Examples:
+		// - win_amd64
+		if len(platSplit) == 1 {
+			return template.Platform{}
+		}
+		switch platSplit[1] {
+		case "amd64":
+			return template.Platform{OS: "windows", Arch: "amd64"}
+		default:
+			return template.Platform{}
+		}
+
+	default:
+		return template.Platform{}
+	}
 }

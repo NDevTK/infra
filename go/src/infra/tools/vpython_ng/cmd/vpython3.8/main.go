@@ -11,6 +11,8 @@ import (
 	"infra/tools/vpython_ng/pkg/application"
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 func main() {
@@ -27,23 +29,40 @@ func main() {
 	app.Must(app.ParseArgs())
 
 	if app.Bypass {
+		// no-op for tool mode if we are bypassing vpython
+		if app.ToolMode != "" {
+			return
+		}
 		app.Must(app.ExecutePython())
 		return
 	}
 
 	app.Must(app.LoadSpec())
-	app.Must(func() error {
-		env := python.NewEnvironment(python.Versions{
-			CPython:    "version:2@3.8.10.chromium.24",
-			VirtualENV: "version:2@16.7.10.chromium.7",
-		})
-		wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
-		if err != nil {
-			return err
-		}
-		venv := env.WithWheels(wheels)
-		return app.BuildVENV(venv)
-	}())
+	env := python.NewEnvironment(python.Versions{
+		CPython:    "version:2@3.8.10.chromium.24",
+		VirtualENV: "version:2@16.7.10.chromium.7",
+	})
+	wheel, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
+	if err != nil {
+		app.Fatal(err)
+	}
+	venv := env.WithWheels(wheel)
 
+	if app.ToolMode != "" {
+		app.Must(func() error {
+			switch app.ToolMode {
+			case "install":
+				app.PruneThreshold = 0
+				return app.BuildVENV(venv)
+			case "verify":
+				return wheels.Verify(app.VpythonSpec)
+			default:
+				return errors.Reason("unknown -vpython-tool command: %s", app.ToolMode).Err()
+			}
+		}())
+		return
+	}
+
+	app.Must(app.BuildVENV(venv))
 	app.Must(app.ExecutePython())
 }

@@ -88,6 +88,10 @@ type Application struct {
 	// cleaned up on completion.
 	VpythonRoot string
 
+	// Tool mode, if it's not empty, vpython will execute the tool instead of
+	// python.
+	ToolMode string
+
 	// WorkDir is the Python working directory. If empty, the current working
 	// directory will be used.
 	WorkDir string
@@ -108,6 +112,10 @@ func (a *Application) Must(err error) {
 	if err == nil {
 		return
 	}
+	a.Fatal(err)
+}
+
+func (a *Application) Fatal(err error) {
 	logging.Errorf(a.Context, "fatal error: %v", err)
 	os.Exit(1)
 }
@@ -152,8 +160,12 @@ func (a *Application) ParseArgs() (err error) {
 		"Path to virtual environment root directory. "+
 			"If explicitly set to empty string, a temporary directory will be used and cleaned up "+
 			"on completion.")
-	fs.StringVar(&a.SpecPath, "vpython-spec", "",
+	fs.StringVar(&a.SpecPath, "vpython-spec", a.SpecPath,
 		"Path to environment specification file to load. Default probes for one.")
+	fs.StringVar(&a.ToolMode, "vpython-tool", a.ToolMode,
+		"Tools for vpython command:\n"+
+			"install: installs the configured virtual environment.\n"+
+			"verify: verifies that a spec and its wheels are valid.")
 
 	vpythonArgs, pythonArgs := extractFlagsForSet(a.Arguments, &fs)
 	if err := fs.Parse(vpythonArgs); err != nil {
