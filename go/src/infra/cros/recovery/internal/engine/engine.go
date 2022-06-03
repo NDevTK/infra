@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -179,8 +180,8 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			stepName := fmt.Sprintf("Run %s", actionName)
 			step, ctx = build.StartStep(ctx, stepName)
 			defer func() { step.End(rErr) }()
-			if i, ok := r.args.Logger.(logger.StepLogRegister); ok && step != nil {
-				stepLog := step.Log("log")
+			if i, ok := r.args.Logger.(logger.StepLogRegister); ok {
+				stepLog := step.Log("execution details")
 				if logCloser, err := i.RegisterStepLog(ctx, stepLog); err != nil {
 					log.Debugf(ctx, "Fail to register step logger for %q", actionName)
 				} else {
@@ -202,6 +203,12 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 	}()
 	a := r.getAction(actionName)
+	if len(a.GetDocs()) > 0 && step != nil {
+		docLog := step.Log("docs")
+		if _, err := io.WriteString(docLog, strings.Join(a.GetDocs(), "\n")); err != nil {
+			log.Debugf(ctx, "Fail write docs for %q, Error: %s", actionName, err)
+		}
+	}
 	if aErr, ok := r.actionResultFromCache(actionName); ok {
 		if aErr == nil {
 			log.Infof(ctx, "Action %q: pass (cached).", actionName)
