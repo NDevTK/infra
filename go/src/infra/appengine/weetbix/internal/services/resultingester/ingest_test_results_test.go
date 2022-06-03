@@ -100,13 +100,13 @@ func TestShouldIngestForTestVariants(t *testing.T) {
 					Id:     "chromium/1111111111111-1-1111111111111111",
 				},
 				PresubmitRunSucceeded: true,
-				Mode:                  "FULL_RUN",
+				Mode:                  pb.PresubmitRunMode_FULL_RUN,
 			}
 			Convey(`Successful full run`, func() {
 				So(shouldIngestForTestVariants(realm, payload), ShouldBeTrue)
 			})
 			Convey(`Successful dry run`, func() {
-				payload.PresubmitRun.Mode = "DRY_RUN"
+				payload.PresubmitRun.Mode = pb.PresubmitRunMode_DRY_RUN
 				So(shouldIngestForTestVariants(realm, payload), ShouldBeFalse)
 			})
 			Convey(`Failed run`, func() {
@@ -195,12 +195,15 @@ func TestIngestTestResults(t *testing.T) {
 
 			verifyIngestedInvocation := func(expectCreate bool) {
 				expectedInvocation := &testresults.IngestedInvocation{
-					Project:                      "project",
-					IngestedInvocationID:         "build-87654321",
-					SubRealm:                     "ci",
-					PartitionTime:                timestamppb.New(partitionTime).AsTime(),
-					BuildStatus:                  pb.BuildStatus_BUILD_STATUS_FAILURE,
-					HasContributedToClSubmission: true,
+					Project:              "project",
+					IngestedInvocationID: "build-87654321",
+					SubRealm:             "ci",
+					PartitionTime:        timestamppb.New(partitionTime).AsTime(),
+					BuildStatus:          pb.BuildStatus_BUILD_STATUS_FAILURE,
+					PresubmitRun: &testresults.PresubmitRun{
+						Owner: "automation",
+						Mode:  pb.PresubmitRunMode_FULL_RUN,
+					},
 					Changelists: []testresults.Changelist{
 						{
 							Host:     "anothergerrit",
@@ -249,7 +252,10 @@ func TestIngestTestResults(t *testing.T) {
 							Patchset: 5,
 						},
 					}).
-					WithHasContributedToClSubmission(true)
+					WithPresubmitRun(&testresults.PresubmitRun{
+						Owner: "automation",
+						Mode:  pb.PresubmitRunMode_FULL_RUN,
+					})
 
 				expectedTRs := []*testresults.TestResult{
 					trBuilder.WithTestID("ninja://test_consistent_failure").
@@ -614,7 +620,8 @@ func TestIngestTestResults(t *testing.T) {
 									Id:     "infra/12345",
 								},
 								PresubmitRunSucceeded: true,
-								Mode:                  "FULL_RUN",
+								Owner:                 "automation",
+								Mode:                  pb.PresubmitRunMode_FULL_RUN,
 								CreationTime:          timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
 							},
 							PageToken: "continuation_token",
@@ -727,7 +734,8 @@ func TestIngestTestResults(t *testing.T) {
 						Id:     "infra/12345",
 					},
 					PresubmitRunSucceeded: true,
-					Mode:                  "FULL_RUN",
+					Mode:                  pb.PresubmitRunMode_FULL_RUN,
+					Owner:                 "automation",
 					CreationTime:          timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
 				},
 				PageToken: "expected_token",

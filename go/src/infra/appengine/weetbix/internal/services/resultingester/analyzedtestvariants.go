@@ -56,7 +56,7 @@ func shouldIngestForTestVariants(realmcfg *configpb.RealmConfig, task *taskspb.I
 		// And presubmit results, where the presubmit run succeeded
 		// and the run was a FULL_RUN.
 		(task.PresubmitRun != nil && task.PresubmitRun.PresubmitRunSucceeded &&
-			task.PresubmitRun.Mode == "FULL_RUN")
+			task.PresubmitRun.Mode == pb.PresubmitRunMode_FULL_RUN)
 }
 
 // createOrUpdateAnalyzedTestVariants looks for new analyzed test variants or

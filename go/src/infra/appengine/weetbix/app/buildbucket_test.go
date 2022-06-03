@@ -148,7 +148,7 @@ func TestHandleBuild(t *testing.T) {
 							},
 							PresubmitRunSucceeded: false,
 							Owner:                 "automation",
-							Mode:                  "FULL_RUN",
+							Mode:                  pb.PresubmitRunMode_FULL_RUN,
 							Cls: []*pb.Changelist{
 								{
 									Host:     "chromium-review.googlesource.com",

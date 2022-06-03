@@ -42,6 +42,13 @@ type Changelist struct {
 	Patchset int64
 }
 
+// PresubmitRun represents information about the presubmit run a test result
+// was part of.
+type PresubmitRun struct {
+	Owner string
+	Mode  pb.PresubmitRunMode
+}
+
 // SortChangelists sorts a slice of changelists to be in ascending
 // lexicographical order by (host, change, patchset).
 func SortChangelists(cls []Changelist) {
@@ -65,12 +72,12 @@ type IngestedInvocation struct {
 	Project string
 	// IngestedInvocationID is the ID of the (root) ResultDB invocation
 	// being ingested, excluding "invocations/".
-	IngestedInvocationID         string
-	SubRealm                     string
-	PartitionTime                time.Time
-	BuildStatus                  pb.BuildStatus
-	HasContributedToClSubmission bool
-	Changelists                  []Changelist
+	IngestedInvocationID string
+	SubRealm             string
+	PartitionTime        time.Time
+	BuildStatus          pb.BuildStatus
+	Changelists          []Changelist
+	PresubmitRun         *PresubmitRun
 }
 
 // ReadIngestedInvocations read ingested invocations from the
@@ -80,13 +87,15 @@ func ReadIngestedInvocations(ctx context.Context, keys spanner.KeySet, fn func(i
 	var b spanutil.Buffer
 	fields := []string{
 		"Project", "IngestedInvocationId", "SubRealm", "PartitionTime",
-		"BuildStatus", "HasContributedToClSubmission",
+		"BuildStatus",
+		"PresubmitRunMode", "PresubmitRunOwner",
 		"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
 	}
 	return span.Read(ctx, "IngestedInvocations", keys, fields).Do(
 		func(row *spanner.Row) error {
 			inv := &IngestedInvocation{}
-			var hasContributedToClSubmission spanner.NullBool
+			var presubmitRunMode spanner.NullInt64
+			var presubmitRunOwner spanner.NullString
 			var changelistHosts []string
 			var changelistChanges []int64
 			var changelistPatchsets []int64
@@ -94,13 +103,22 @@ func ReadIngestedInvocations(ctx context.Context, keys spanner.KeySet, fn func(i
 			err := b.FromSpanner(
 				row,
 				&inv.Project, &inv.IngestedInvocationID, &inv.SubRealm, &inv.PartitionTime,
-				&inv.BuildStatus, &hasContributedToClSubmission,
+				&inv.BuildStatus,
+				&presubmitRunMode, &presubmitRunOwner,
 				&changelistHosts, &changelistChanges, &changelistPatchsets,
 			)
 			if err != nil {
 				return err
 			}
-			inv.HasContributedToClSubmission = hasContributedToClSubmission.Valid && hasContributedToClSubmission.Bool
+
+			// Data in spanner should be consistent, so presubmitRunMode.Valid ==
+			//   presubmitRunOwner.Valid.
+			if presubmitRunMode.Valid {
+				inv.PresubmitRun = &PresubmitRun{
+					Mode:  pb.PresubmitRunMode(presubmitRunMode.Int64),
+					Owner: presubmitRunOwner.StringVal,
+				}
+			}
 
 			// Data in spanner should be consistent, so
 			// len(changelistHosts) == len(changelistChanges)
@@ -125,6 +143,13 @@ func ReadIngestedInvocations(ctx context.Context, keys spanner.KeySet, fn func(i
 // SaveUnverified returns a mutation to insert the ingested invocation into
 // the IngestedInvocations table. The ingested invocation is not validated.
 func (inv *IngestedInvocation) SaveUnverified() *spanner.Mutation {
+	var presubmitRunMode spanner.NullInt64
+	var presubmitRunOwner spanner.NullString
+	if inv.PresubmitRun != nil {
+		presubmitRunMode = spanner.NullInt64{Valid: true, Int64: int64(inv.PresubmitRun.Mode)}
+		presubmitRunOwner = spanner.NullString{Valid: true, StringVal: inv.PresubmitRun.Owner}
+	}
+
 	changelistHosts := make([]string, 0, len(inv.Changelists))
 	changelistChanges := make([]int64, 0, len(inv.Changelists))
 	changelistPatchsets := make([]int64, 0, len(inv.Changelists))
@@ -135,15 +160,16 @@ func (inv *IngestedInvocation) SaveUnverified() *spanner.Mutation {
 	}
 
 	row := map[string]interface{}{
-		"Project":                      inv.Project,
-		"IngestedInvocationId":         inv.IngestedInvocationID,
-		"SubRealm":                     inv.SubRealm,
-		"PartitionTime":                inv.PartitionTime,
-		"BuildStatus":                  inv.BuildStatus,
-		"HasContributedToClSubmission": spanner.NullBool{Bool: inv.HasContributedToClSubmission, Valid: inv.HasContributedToClSubmission},
-		"ChangelistHosts":              changelistHosts,
-		"ChangelistChanges":            changelistChanges,
-		"ChangelistPatchsets":          changelistPatchsets,
+		"Project":              inv.Project,
+		"IngestedInvocationId": inv.IngestedInvocationID,
+		"SubRealm":             inv.SubRealm,
+		"PartitionTime":        inv.PartitionTime,
+		"BuildStatus":          inv.BuildStatus,
+		"PresubmitRunMode":     presubmitRunMode,
+		"PresubmitRunOwner":    presubmitRunOwner,
+		"ChangelistHosts":      changelistHosts,
+		"ChangelistChanges":    changelistChanges,
+		"ChangelistPatchsets":  changelistPatchsets,
 	}
 	return spanner.InsertOrUpdateMap("IngestedInvocations", spanutil.ToSpannerMap(row))
 }
@@ -163,10 +189,10 @@ type TestResult struct {
 	// Properties of the test variant in the invocation (stored denormalised) follow.
 	ExonerationStatus pb.ExonerationStatus
 	// Properties of the invocation (stored denormalised) follow.
-	SubRealm                     string
-	BuildStatus                  pb.BuildStatus
-	HasContributedToClSubmission bool
-	Changelists                  []Changelist
+	SubRealm     string
+	BuildStatus  pb.BuildStatus
+	PresubmitRun *PresubmitRun
+	Changelists  []Changelist
 }
 
 // ReadTestResults reads test results from the TestResults table.
@@ -178,7 +204,8 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 		"RunIndex", "ResultIndex",
 		"IsUnexpected", "RunDurationUsec", "Status",
 		"ExonerationStatus",
-		"SubRealm", "BuildStatus", "HasContributedToClSubmission",
+		"SubRealm", "BuildStatus",
+		"PresubmitRunMode", "PresubmitRunOwner",
 		"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
 	}
 	return span.Read(ctx, "TestResults", keys, fields).Do(
@@ -186,7 +213,8 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 			tr := &TestResult{}
 			var runDurationUsec spanner.NullInt64
 			var isUnexpected spanner.NullBool
-			var hasContributedToClSubmission spanner.NullBool
+			var presubmitRunMode spanner.NullInt64
+			var presubmitRunOwner spanner.NullString
 			var changelistHosts []string
 			var changelistChanges []int64
 			var changelistPatchsets []int64
@@ -196,7 +224,8 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 				&tr.RunIndex, &tr.ResultIndex,
 				&isUnexpected, &runDurationUsec, &tr.Status,
 				&tr.ExonerationStatus,
-				&tr.SubRealm, &tr.BuildStatus, &hasContributedToClSubmission,
+				&tr.SubRealm, &tr.BuildStatus,
+				&presubmitRunMode, &presubmitRunOwner,
 				&changelistHosts, &changelistChanges, &changelistPatchsets,
 			)
 			if err != nil {
@@ -207,7 +236,15 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 				tr.RunDuration = &runDuration
 			}
 			tr.IsUnexpected = isUnexpected.Valid && isUnexpected.Bool
-			tr.HasContributedToClSubmission = hasContributedToClSubmission.Valid && hasContributedToClSubmission.Bool
+
+			// Data in spanner should be consistent, so presubmitRunMode.Valid ==
+			//   presubmitRunOwner.Valid.
+			if presubmitRunMode.Valid {
+				tr.PresubmitRun = &PresubmitRun{
+					Mode:  pb.PresubmitRunMode(presubmitRunMode.Int64),
+					Owner: presubmitRunOwner.StringVal,
+				}
+			}
 
 			// Data in spanner should be consistent, so
 			// len(changelistHosts) == len(changelistChanges)
@@ -236,7 +273,7 @@ var TestResultSaveCols = []string{
 	"IngestedInvocationId", "RunIndex", "ResultIndex",
 	"IsUnexpected", "RunDurationUsec", "Status",
 	"ExonerationStatus", "SubRealm", "BuildStatus",
-	"HasContributedToClSubmission",
+	"PresubmitRunMode", "PresubmitRunOwner",
 	"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
 }
 
@@ -249,6 +286,13 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 		runDurationUsec.Valid = true
 	}
 
+	var presubmitRunMode spanner.NullInt64
+	var presubmitRunOwner spanner.NullString
+	if tr.PresubmitRun != nil {
+		presubmitRunMode = spanner.NullInt64{Valid: true, Int64: int64(tr.PresubmitRun.Mode)}
+		presubmitRunOwner = spanner.NullString{Valid: true, StringVal: tr.PresubmitRun.Owner}
+	}
+
 	changelistHosts := make([]string, 0, len(tr.Changelists))
 	changelistChanges := make([]int64, 0, len(tr.Changelists))
 	changelistPatchsets := make([]int64, 0, len(tr.Changelists))
@@ -259,20 +303,19 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 	}
 
 	isUnexpected := spanner.NullBool{Bool: tr.IsUnexpected, Valid: tr.IsUnexpected}
-	hasContributedToCLSubmission := spanner.NullBool{Bool: tr.HasContributedToClSubmission, Valid: tr.HasContributedToClSubmission}
-	// Specify values directly in a slice of instead of
-	// a map (and calling InsertOrUpdateMap)
-	// as profiling revealed ~15% of all CPU cycles spent
-	// ingesting test results was wasted in generating
-	// the original map and converting it back to the slice
-	// needed for a *spanner.Mutation,
-	// and ingestion appears to be CPU bound at times.
+	// Specify values in a slice directly instead of
+	// creating a map and using spanner.InsertOrUpdateMap.
+	// Profiling revealed ~15% of all CPU cycles spent
+	// ingesting test results were wasted generating a
+	// map and converting it back to the slice
+	// needed for a *spanner.Mutation using InsertOrUpdateMap.
+	// Ingestion appears to be CPU bound at times.
 	vals := []interface{}{
 		tr.Project, tr.TestID, tr.PartitionTime, tr.VariantHash,
 		tr.IngestedInvocationID, tr.RunIndex, tr.ResultIndex,
 		isUnexpected, runDurationUsec, int64(tr.Status),
 		int64(tr.ExonerationStatus), tr.SubRealm, int64(tr.BuildStatus),
-		hasContributedToCLSubmission,
+		presubmitRunMode, presubmitRunOwner,
 		changelistHosts, changelistChanges, changelistPatchsets,
 	}
 	return spanner.InsertOrUpdate("TestResults", TestResultSaveCols, vals)

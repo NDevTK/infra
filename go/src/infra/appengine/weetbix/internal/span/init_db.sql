@@ -518,11 +518,18 @@ CREATE TABLE TestResults (
   -- See weetbix.v1.BuildStatus.
   BuildStatus INT64 NOT NULL,
 
-  -- Whether the invocation was part of a build that has unsubmitted changes
-  -- applied (such as Gerrit changes) AND the changes were later submitted
-  -- because the build was part of a successful presubmit run.
-  -- The value 'true' is used to encode true, and NULL encodes false.
-  HasContributedToClSubmission BOOL,
+  -- The owner of the presubmit run.
+  -- This owner of the CL on which CQ+1/CQ+2 was clicked
+  -- (even in case of presubmit run with multiple CLs).
+  -- There is scope for this field to become an email address if privacy
+  -- approval is obtained, until then it is "automation" (for automation
+  -- service accounts) and "user" otherwise.
+  -- Only populated for builds part of presubmit runs.
+  PresubmitRunOwner STRING(320),
+
+  -- The run mode of the presubmit run (e.g. DRY RUN, FULL RUN).
+  -- Only populated for builds part of presubmit runs.
+  PresubmitRunMode INT64,
 
   -- The following fields capture information about any unsubmitted
   -- changelists that were tested by the test execution. The arrays
@@ -531,6 +538,9 @@ CREATE TABLE TestResults (
   -- and ChangelistPatchsets[OFFSET(0)].
   -- Changelists are stored in ascending lexicographical order (over
   -- (hostname, change, patchset)).
+  -- They will be set for all presubmit runs, and may be set for other
+  -- builds as well (even those outside a formal LUCI CV run) based on
+  -- buildbucket inputs.
 
   -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"
@@ -581,11 +591,18 @@ CREATE TABLE IngestedInvocations (
   -- See weetbix.v1.BuildStatus.
   BuildStatus INT64,
 
-  -- Whether the invocation was part of a build that has unsubmitted changes
-  -- applied (such as Gerrit changes) AND the changes were later submitted
-  -- because the build was part of a successful presubmit run.
-  -- The value 'true' is used to encode true, and NULL encodes false.
-  HasContributedToClSubmission BOOL,
+  -- The owner of the presubmit run.
+  -- This owner of the CL on which CQ+1/CQ+2 was clicked
+  -- (even in case of presubmit run with multiple CLs).
+  -- There is scope for this field to become an email address if privacy
+  -- approval is obtained, until then it is "automation" (for automation
+  -- service accounts) and "user" otherwise.
+  -- Only populated for builds part of presubmit runs.
+  PresubmitRunOwner STRING(320),
+
+  -- The run mode of the presubmit run (e.g. DRY RUN, FULL RUN).
+  -- Only populated for builds part of presubmit runs.
+  PresubmitRunMode INT64,
 
   -- The following fields capture information about any unsubmitted
   -- changelists that were tested by the test execution. The arrays
@@ -594,6 +611,9 @@ CREATE TABLE IngestedInvocations (
   -- and ChangelistPatchsets[OFFSET(0)].
   -- Changelists are stored in ascending lexicographical order (over
   -- (hostname, change, patchset)).
+  -- They will be set for all presubmit runs, and may be set for other
+  -- builds as well (even those outside a formal LUCI CV run) based on
+  -- buildbucket inputs.
 
   -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"

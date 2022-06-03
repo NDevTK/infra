@@ -18,20 +18,19 @@ type TestResultBuilder struct {
 func NewTestResult() *TestResultBuilder {
 	d := time.Hour
 	result := TestResult{
-		Project:                      "proj",
-		TestID:                       "test_id",
-		PartitionTime:                time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
-		VariantHash:                  "hash",
-		IngestedInvocationID:         "inv-id",
-		RunIndex:                     2,
-		ResultIndex:                  3,
-		IsUnexpected:                 true,
-		RunDuration:                  &d,
-		Status:                       pb.TestResultStatus_PASS,
-		ExonerationStatus:            pb.ExonerationStatus_OCCURS_ON_OTHER_CLS,
-		SubRealm:                     "realm",
-		BuildStatus:                  pb.BuildStatus_BUILD_STATUS_SUCCESS,
-		HasContributedToClSubmission: true,
+		Project:              "proj",
+		TestID:               "test_id",
+		PartitionTime:        time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
+		VariantHash:          "hash",
+		IngestedInvocationID: "inv-id",
+		RunIndex:             2,
+		ResultIndex:          3,
+		IsUnexpected:         true,
+		RunDuration:          &d,
+		Status:               pb.TestResultStatus_PASS,
+		ExonerationStatus:    pb.ExonerationStatus_OCCURS_ON_OTHER_CLS,
+		SubRealm:             "realm",
+		BuildStatus:          pb.BuildStatus_BUILD_STATUS_SUCCESS,
 		Changelists: []Changelist{
 			{
 				Host:     "mygerrit",
@@ -120,8 +119,15 @@ func (b *TestResultBuilder) WithBuildStatus(buildStatus pb.BuildStatus) *TestRes
 	return b
 }
 
-func (b *TestResultBuilder) WithHasContributedToClSubmission(hasContributedToClSubmission bool) *TestResultBuilder {
-	b.result.HasContributedToClSubmission = hasContributedToClSubmission
+func (b *TestResultBuilder) WithPresubmitRun(run *PresubmitRun) *TestResultBuilder {
+	if run != nil {
+		// Copy run to stop changes the caller may make to run
+		// after this call propagating into the resultant test result.
+		r := new(PresubmitRun)
+		*r = *run
+		run = r
+	}
+	b.result.PresubmitRun = run
 	return b
 }
 
@@ -143,6 +149,11 @@ func (b *TestResultBuilder) Build() *TestResult {
 	result := new(TestResult)
 	*result = b.result
 
+	if b.result.PresubmitRun != nil {
+		run := new(PresubmitRun)
+		*run = *b.result.PresubmitRun
+		result.PresubmitRun = run
+	}
 	cls := make([]Changelist, len(b.result.Changelists))
 	copy(cls, b.result.Changelists)
 	result.Changelists = cls

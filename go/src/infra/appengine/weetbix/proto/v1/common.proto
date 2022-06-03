@@ -279,8 +279,27 @@ message TestLocation {
 enum SubmittedFilter {
   // Default value. Include all test verdicts.
   SUBMITTED_FILTER_UNSPECIFIED = 0;
+
   // Only include test verdicts that don't have unsubmitted changes.
   ONLY_SUBMITTED = 1;
+
   // Only include test verdicts that have unsubmitted changes.
   ONLY_UNSUBMITTED = 2;
+}
+
+// PresubmitRunMode describes the mode of a presubmit run. Currently
+// based on LUCI CV run mode enumeration at
+// https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto?q=QUICK_DRY_RUN&type=cs.
+enum PresubmitRunMode {
+  // A presubmit run must not have this status.
+  PRESUBMIT_RUN_MODE_UNSPECIFIED = 0;
+
+  // Run all tests but do not submit.
+  DRY_RUN = 1;
+
+  // Run all tests and potentially submit.
+  FULL_RUN = 2;
+
+  // Run some tests but do not submit.
+  QUICK_DRY_RUN = 3;
 }

@@ -40,9 +40,9 @@ message PresubmitResult {
   // the presubmit run failed, or was cancelled.
   bool presubmit_run_succeeded = 2;
 
-  // The presubmit run mode. Defined by LUCI CV.
-  // Valid values include "FULL_RUN", "DRY_RUN" and "QUICK_DRY_RUN".
-  string mode = 6;
+  // The presubmit run mode.
+  // E.g. FULL_RUN, DRY_RUN, QUICK_DRY_RUN.
+  weetbix.v1.PresubmitRunMode mode = 8;
 
   // The owner of the presubmit run (if any).
   // This is the owner of the CL on which CQ+1/CQ+2 was clicked

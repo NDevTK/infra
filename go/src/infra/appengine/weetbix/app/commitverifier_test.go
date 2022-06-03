@@ -124,7 +124,7 @@ func TestHandleCVRun(t *testing.T) {
 						},
 					},
 					PresubmitRunSucceeded: true,
-					Mode:                  "FULL_RUN",
+					Mode:                  pb.PresubmitRunMode_FULL_RUN,
 					Owner:                 "user",
 					CreationTime:          run.CreateTime,
 				},
@@ -143,7 +143,7 @@ func TestHandleCVRun(t *testing.T) {
 			})
 			Convey(`Dry run`, func() {
 				run.Mode = "DRY_RUN"
-				expectedTaskTemplate.PresubmitRun.Mode = "DRY_RUN"
+				expectedTaskTemplate.PresubmitRun.Mode = pb.PresubmitRunMode_DRY_RUN
 
 				processed, tasks := processCVRun(run)
 				So(processed, ShouldBeTrue)

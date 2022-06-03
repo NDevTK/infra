@@ -172,3 +172,17 @@ func VariantToStringPairs(vr *pb.Variant) []*pb.StringPair {
 	}
 	return sp
 }
+
+// PresubmitRunModeFromString returns a pb.PresubmitRunMode corresponding
+// to a CV Run mode string.
+func PresubmitRunModeFromString(mode string) (pb.PresubmitRunMode, error) {
+	switch mode {
+	case "FULL_RUN":
+		return pb.PresubmitRunMode_FULL_RUN, nil
+	case "DRY_RUN":
+		return pb.PresubmitRunMode_DRY_RUN, nil
+	case "QUICK_DRY_RUN":
+		return pb.PresubmitRunMode_QUICK_DRY_RUN, nil
+	}
+	return pb.PresubmitRunMode_PRESUBMIT_RUN_MODE_UNSPECIFIED, fmt.Errorf("unknown run mode %q", mode)
+}

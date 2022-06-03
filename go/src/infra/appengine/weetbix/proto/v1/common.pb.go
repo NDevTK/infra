@@ -285,6 +285,65 @@ func (SubmittedFilter) EnumDescriptor() ([]byte, []int) {
 	return file_infra_appengine_weetbix_proto_v1_common_proto_rawDescGZIP(), []int{2}
 }
 
+// PresubmitRunMode describes the mode of a presubmit run. Currently
+// based on LUCI CV run mode enumeration at
+// https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto?q=QUICK_DRY_RUN&type=cs.
+type PresubmitRunMode int32
+
+const (
+	// A presubmit run must not have this status.
+	PresubmitRunMode_PRESUBMIT_RUN_MODE_UNSPECIFIED PresubmitRunMode = 0
+	// Run all tests but do not submit.
+	PresubmitRunMode_DRY_RUN PresubmitRunMode = 1
+	// Run all tests and potentially submit.
+	PresubmitRunMode_FULL_RUN PresubmitRunMode = 2
+	// Run some tests but do not submit.
+	PresubmitRunMode_QUICK_DRY_RUN PresubmitRunMode = 3
+)
+
+// Enum value maps for PresubmitRunMode.
+var (
+	PresubmitRunMode_name = map[int32]string{
+		0: "PRESUBMIT_RUN_MODE_UNSPECIFIED",
+		1: "DRY_RUN",
+		2: "FULL_RUN",
+		3: "QUICK_DRY_RUN",
+	}
+	PresubmitRunMode_value = map[string]int32{
+		"PRESUBMIT_RUN_MODE_UNSPECIFIED": 0,
+		"DRY_RUN":                        1,
+		"FULL_RUN":                       2,
+		"QUICK_DRY_RUN":                  3,
+	}
+)
+
+func (x PresubmitRunMode) Enum() *PresubmitRunMode {
+	p := new(PresubmitRunMode)
+	*p = x
+	return p
+}
+
+func (x PresubmitRunMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PresubmitRunMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_appengine_weetbix_proto_v1_common_proto_enumTypes[3].Descriptor()
+}
+
+func (PresubmitRunMode) Type() protoreflect.EnumType {
+	return &file_infra_appengine_weetbix_proto_v1_common_proto_enumTypes[3]
+}
+
+func (x PresubmitRunMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PresubmitRunMode.Descriptor instead.
+func (PresubmitRunMode) EnumDescriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_common_proto_rawDescGZIP(), []int{3}
+}
+
 // A range of timestamps.
 type TimeRange struct {
 	state         protoimpl.MessageState
@@ -1024,10 +1083,17 @@ var file_infra_appengine_weetbix_proto_v1_common_proto_rawDesc = []byte{
 	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x12, 0x0a, 0x0e, 0x4f,
 	0x4e, 0x4c, 0x59, 0x5f, 0x53, 0x55, 0x42, 0x4d, 0x49, 0x54, 0x54, 0x45, 0x44, 0x10, 0x01, 0x12,
 	0x14, 0x0a, 0x10, 0x4f, 0x4e, 0x4c, 0x59, 0x5f, 0x55, 0x4e, 0x53, 0x55, 0x42, 0x4d, 0x49, 0x54,
-	0x54, 0x45, 0x44, 0x10, 0x02, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61,
-	0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78,
-	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69,
-	0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x54, 0x45, 0x44, 0x10, 0x02, 0x2a, 0x64, 0x0a, 0x10, 0x50, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d,
+	0x69, 0x74, 0x52, 0x75, 0x6e, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x22, 0x0a, 0x1e, 0x50, 0x52, 0x45,
+	0x53, 0x55, 0x42, 0x4d, 0x49, 0x54, 0x5f, 0x52, 0x55, 0x4e, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f,
+	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0b, 0x0a,
+	0x07, 0x44, 0x52, 0x59, 0x5f, 0x52, 0x55, 0x4e, 0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x46, 0x55,
+	0x4c, 0x4c, 0x5f, 0x52, 0x55, 0x4e, 0x10, 0x02, 0x12, 0x11, 0x0a, 0x0d, 0x51, 0x55, 0x49, 0x43,
+	0x4b, 0x5f, 0x44, 0x52, 0x59, 0x5f, 0x52, 0x55, 0x4e, 0x10, 0x03, 0x42, 0x2c, 0x5a, 0x2a, 0x69,
+	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77,
+	0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b,
+	0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -1042,30 +1108,31 @@ func file_infra_appengine_weetbix_proto_v1_common_proto_rawDescGZIP() []byte {
 	return file_infra_appengine_weetbix_proto_v1_common_proto_rawDescData
 }
 
-var file_infra_appengine_weetbix_proto_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_infra_appengine_weetbix_proto_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
 var file_infra_appengine_weetbix_proto_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_infra_appengine_weetbix_proto_v1_common_proto_goTypes = []interface{}{
 	(BuildStatus)(0),              // 0: weetbix.v1.BuildStatus
 	(ExonerationStatus)(0),        // 1: weetbix.v1.ExonerationStatus
 	(SubmittedFilter)(0),          // 2: weetbix.v1.SubmittedFilter
-	(*TimeRange)(nil),             // 3: weetbix.v1.TimeRange
-	(*TestResultId)(nil),          // 4: weetbix.v1.TestResultId
-	(*Variant)(nil),               // 5: weetbix.v1.Variant
-	(*StringPair)(nil),            // 6: weetbix.v1.StringPair
-	(*BugTrackingComponent)(nil),  // 7: weetbix.v1.BugTrackingComponent
-	(*PresubmitRunId)(nil),        // 8: weetbix.v1.PresubmitRunId
-	(*AssociatedBug)(nil),         // 9: weetbix.v1.AssociatedBug
-	(*ClusterId)(nil),             // 10: weetbix.v1.ClusterId
-	(*TestMetadata)(nil),          // 11: weetbix.v1.TestMetadata
-	(*TestLocation)(nil),          // 12: weetbix.v1.TestLocation
-	nil,                           // 13: weetbix.v1.Variant.DefEntry
-	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
+	(PresubmitRunMode)(0),         // 3: weetbix.v1.PresubmitRunMode
+	(*TimeRange)(nil),             // 4: weetbix.v1.TimeRange
+	(*TestResultId)(nil),          // 5: weetbix.v1.TestResultId
+	(*Variant)(nil),               // 6: weetbix.v1.Variant
+	(*StringPair)(nil),            // 7: weetbix.v1.StringPair
+	(*BugTrackingComponent)(nil),  // 8: weetbix.v1.BugTrackingComponent
+	(*PresubmitRunId)(nil),        // 9: weetbix.v1.PresubmitRunId
+	(*AssociatedBug)(nil),         // 10: weetbix.v1.AssociatedBug
+	(*ClusterId)(nil),             // 11: weetbix.v1.ClusterId
+	(*TestMetadata)(nil),          // 12: weetbix.v1.TestMetadata
+	(*TestLocation)(nil),          // 13: weetbix.v1.TestLocation
+	nil,                           // 14: weetbix.v1.Variant.DefEntry
+	(*timestamppb.Timestamp)(nil), // 15: google.protobuf.Timestamp
 }
 var file_infra_appengine_weetbix_proto_v1_common_proto_depIdxs = []int32{
-	14, // 0: weetbix.v1.TimeRange.earliest:type_name -> google.protobuf.Timestamp
-	14, // 1: weetbix.v1.TimeRange.latest:type_name -> google.protobuf.Timestamp
-	13, // 2: weetbix.v1.Variant.def:type_name -> weetbix.v1.Variant.DefEntry
-	12, // 3: weetbix.v1.TestMetadata.location:type_name -> weetbix.v1.TestLocation
+	15, // 0: weetbix.v1.TimeRange.earliest:type_name -> google.protobuf.Timestamp
+	15, // 1: weetbix.v1.TimeRange.latest:type_name -> google.protobuf.Timestamp
+	14, // 2: weetbix.v1.Variant.def:type_name -> weetbix.v1.Variant.DefEntry
+	13, // 3: weetbix.v1.TestMetadata.location:type_name -> weetbix.v1.TestLocation
 	4,  // [4:4] is the sub-list for method output_type
 	4,  // [4:4] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
@@ -1205,7 +1272,7 @@ func file_infra_appengine_weetbix_proto_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_weetbix_proto_v1_common_proto_rawDesc,
-			NumEnums:      3,
+			NumEnums:      4,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,

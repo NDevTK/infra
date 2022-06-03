@@ -24,6 +24,7 @@ import (
 	"infra/appengine/weetbix/internal/cv"
 	"infra/appengine/weetbix/internal/ingestion/control"
 	ctlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
+	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -112,6 +113,11 @@ func cvPubSubHandlerImpl(ctx context.Context, request *http.Request) (project st
 		owner = "automation"
 	}
 
+	mode, err := pbutil.PresubmitRunModeFromString(run.Mode)
+	if err != nil {
+		return project, false, errors.Annotate(err, "failed to parse run mode").Err()
+	}
+
 	presubmitResultByBuildID := make(map[string]*ctlpb.PresubmitResult)
 	for _, tj := range run.Tryjobs {
 		b := tj.GetResult().GetBuildbucket()
@@ -144,7 +150,7 @@ func cvPubSubHandlerImpl(ctx context.Context, request *http.Request) (project st
 				Id:     fmt.Sprintf("%s/%s", project, runID),
 			},
 			PresubmitRunSucceeded: run.Status == cvv0.Run_SUCCEEDED,
-			Mode:                  run.GetMode(),
+			Mode:                  mode,
 			Owner:                 owner,
 			Cls:                   extractRunChangelists(run.Cls),
 			CreationTime:          run.CreateTime,

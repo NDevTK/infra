@@ -43,11 +43,6 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 			proj, task.Build.Project, task.Build.Host, task.Build.Id).Err()
 	}
 
-	contributedToCLSubmission := false
-	if task.PresubmitRun != nil {
-		contributedToCLSubmission = task.PresubmitRun.PresubmitRunSucceeded
-	}
-
 	var buildStatus pb.BuildStatus
 	switch build.Status {
 	case bbpb.Status_CANCELED:
@@ -79,14 +74,22 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 	// the same combination of CLs tested, the arrays are identical.
 	testresults.SortChangelists(changelists)
 
+	var presubmitRun *testresults.PresubmitRun
+	if task.PresubmitRun != nil {
+		presubmitRun = &testresults.PresubmitRun{
+			Mode:  task.PresubmitRun.Mode,
+			Owner: task.PresubmitRun.Owner,
+		}
+	}
+
 	return &testresults.IngestedInvocation{
-		Project:                      proj,
-		IngestedInvocationID:         invID,
-		SubRealm:                     subRealm,
-		PartitionTime:                task.PartitionTime.AsTime(),
-		BuildStatus:                  buildStatus,
-		HasContributedToClSubmission: contributedToCLSubmission,
-		Changelists:                  changelists,
+		Project:              proj,
+		IngestedInvocationID: invID,
+		SubRealm:             subRealm,
+		PartitionTime:        task.PartitionTime.AsTime(),
+		BuildStatus:          buildStatus,
+		PresubmitRun:         presubmitRun,
+		Changelists:          changelists,
 	}, nil
 }
 
@@ -158,20 +161,20 @@ func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVari
 		for runIndex, run := range resultsByRun {
 			for resultIndex, inputTR := range run {
 				tr := testresults.TestResult{
-					Project:                      inv.Project,
-					TestID:                       tv.TestId,
-					PartitionTime:                inv.PartitionTime,
-					VariantHash:                  tv.VariantHash,
-					IngestedInvocationID:         inv.IngestedInvocationID,
-					RunIndex:                     int64(runIndex),
-					ResultIndex:                  int64(resultIndex),
-					IsUnexpected:                 !inputTR.Result.Expected,
-					Status:                       resultdb.TestResultStatus(inputTR.Result.Status),
-					ExonerationStatus:            exonerationStatus,
-					SubRealm:                     inv.SubRealm,
-					BuildStatus:                  inv.BuildStatus,
-					HasContributedToClSubmission: inv.HasContributedToClSubmission,
-					Changelists:                  inv.Changelists,
+					Project:              inv.Project,
+					TestID:               tv.TestId,
+					PartitionTime:        inv.PartitionTime,
+					VariantHash:          tv.VariantHash,
+					IngestedInvocationID: inv.IngestedInvocationID,
+					RunIndex:             int64(runIndex),
+					ResultIndex:          int64(resultIndex),
+					IsUnexpected:         !inputTR.Result.Expected,
+					Status:               resultdb.TestResultStatus(inputTR.Result.Status),
+					ExonerationStatus:    exonerationStatus,
+					SubRealm:             inv.SubRealm,
+					BuildStatus:          inv.BuildStatus,
+					PresubmitRun:         inv.PresubmitRun,
+					Changelists:          inv.Changelists,
 				}
 				if inputTR.Result.Duration != nil {
 					d := new(time.Duration)
