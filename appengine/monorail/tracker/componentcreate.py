@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import logging
 import time
 
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import jsonfeed
@@ -28,7 +29,7 @@ import ezt
 class ComponentCreate(servlet.Servlet):
   """Servlet allowing project owners to create a component."""
 
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/component-create-page.ezt'
 
   def AssertBasePermission(self, mr):
@@ -135,6 +136,12 @@ class ComponentCreate(servlet.Servlet):
 
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.ADMIN_COMPONENTS, saved=1, ts=int(time.time()))
+
+  # def GetComponentCreatePage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostComponentCreatePage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def LeafNameErrorMessage(parent_path, leaf_name, config):

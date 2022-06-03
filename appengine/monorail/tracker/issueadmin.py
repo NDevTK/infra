@@ -24,6 +24,7 @@ from features import filterrules_helpers
 from features import filterrules_views
 from features import savedqueries_helpers
 from framework import authdata
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
@@ -43,7 +44,7 @@ from tracker import tracker_views
 class IssueAdminBase(servlet.Servlet):
   """Base class for servlets allowing project owners to configure tracker."""
 
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
   _PROCESS_SUBTAB = None  # specified in subclasses
 
   def GatherPageData(self, mr):
@@ -90,7 +91,7 @@ class AdminStatuses(IssueAdminBase):
   """Servlet allowing project owners to configure well-known statuses."""
 
   _PAGE_TEMPLATE = 'tracker/admin-statuses-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_STATUSES
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_STATUSES
 
   def ProcessSubtabForm(self, post_data, mr):
     """Process the status definition section of the admin page.
@@ -141,12 +142,18 @@ class AdminStatuses(IssueAdminBase):
 
     return urls.ADMIN_STATUSES
 
+  # def GetAdminStatusesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostAdminStatusesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class AdminLabels(IssueAdminBase):
   """Servlet allowing project owners to labels and fields."""
 
   _PAGE_TEMPLATE = 'tracker/admin-labels-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_LABELS
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_LABELS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -224,12 +231,18 @@ class AdminLabels(IssueAdminBase):
 
     return urls.ADMIN_LABELS
 
+  # def GetAdminLabelsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostAdminLabelsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class AdminTemplates(IssueAdminBase):
   """Servlet allowing project owners to configure templates."""
 
   _PAGE_TEMPLATE = 'tracker/admin-templates-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_TEMPLATES
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_TEMPLATES
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -288,12 +301,18 @@ class AdminTemplates(IssueAdminBase):
     return (GetSelectedTemplateID('default_template_for_developers'),
             GetSelectedTemplateID('default_template_for_users'))
 
+  # def GetAdminTemplatesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostAdminTemplatesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class AdminComponents(IssueAdminBase):
   """Servlet allowing project owners to view the list of components."""
 
   _PAGE_TEMPLATE = 'tracker/admin-components-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_COMPONENTS
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_COMPONENTS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -398,12 +417,18 @@ class AdminComponents(IssueAdminBase):
         failed_templ=','.join(templates_errors),
         deleted=','.join(deleted_components))
 
+  # def GetAdminComponentsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostAdminComponentsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class AdminViews(IssueAdminBase):
   """Servlet for project owners to set default columns, axes, and sorting."""
 
   _PAGE_TEMPLATE = 'tracker/admin-views-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_VIEWS
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_VIEWS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -463,6 +488,12 @@ class AdminViews(IssueAdminBase):
 
     return urls.ADMIN_VIEWS
 
+  # def GetAdminViewsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostAdminViewsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 def _ParseListPreferences(post_data):
   """Parse the part of a project admin form about artifact list preferences."""
@@ -509,7 +540,7 @@ class AdminRules(IssueAdminBase):
   """Servlet allowing project owners to configure filter rules."""
 
   _PAGE_TEMPLATE = 'tracker/admin-rules-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_RULES
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_RULES
 
   def AssertBasePermission(self, mr):
     """Check whether the user has any permission to visit this page.
@@ -585,3 +616,9 @@ class AdminRules(IssueAdminBase):
           mr.cnxn, self.services, mr.project, config)
 
     return urls.ADMIN_RULES
+
+  # def GetAdminRulesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostAdminRulesPage(self, **kwargs):
+  #   return self.handler(**kwargs)

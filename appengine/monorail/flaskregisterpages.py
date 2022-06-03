@@ -51,7 +51,9 @@ from features import userhotlists
 from features import banspammer
 from search import backendnonviewable
 from search import backendsearch
+from tracker import componentcreate
 from tracker import fltconversion
+from tracker import issueadmin
 
 
 class ServletRegistry(object):
@@ -198,9 +200,57 @@ class ServletRegistry(object):
     flaskapp_project = flask.Flask(__name__)
     _PROJECT_URLS = [
         # (
+        #     '/<string:project_name>/adminComponents',
+        #     issueadmin.AdminComponents(
+        #         services=service).GetAdminComponentsPage, ['GET']),
+        # (
+        #     '/<string:project_name>/adminComponents.do',
+        #     issueadmin.AdminComponents(
+        #         services=service).PostAdminComponentsPage, ['POST']),
+        # (
         #     '/<string:project_name>/adminIntro',
         #     projectsummary.ProjectSummary(
         #         services=service).GetProjectSummaryPage, ['GET']),
+        # (
+        #     '/<string:project_name>/adminLabels',
+        #     issueadmin.AdminLabels(services=service).GetAdminLabelsPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/adminLabels.do',
+        #     issueadmin.AdminLabels(services=service).PostAdminLabelsPage,
+        #     ['POST']),
+        # (
+        #     '/<string:project_name>/adminRules',
+        #     issueadmin.AdminRules(services=service).GetAdminRulesPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/adminRules.do',
+        #     issueadmin.AdminRules(services=service).PostAdminRulesPage,
+        #     ['POST']),
+        # (
+        #     '/<string:project_name>/adminStatuses',
+        #     issueadmin.AdminStatuses(services=service).GetAdminStatusesPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/adminStatuses.do',
+        #     issueadmin.AdminStatuses(services=service).PostAdminStatusesPage,
+        #     ['POST']),
+        # (
+        #     '/<string:project_name>/adminTemplates',
+        #     issueadmin.AdminTemplates(services=service).GetAdminTemplatesPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/adminTemplates.do',
+        #     issueadmin.AdminTemplates(
+        #         services=service).PostAdminTemplatesPage, ['POST']),
+        # (
+        #     '/<string:project_name>/adminViews',
+        #     issueadmin.AdminViews(services=service).GetAdminViewsPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/adminViews.do',
+        #     issueadmin.AdminViews(services=service).PostAdminViewsPage,
+        #     ['POST']),
         # (
         #     '/<string:project_name>/admin',
         #     projectadmin.ProjectAdmin(services=service).GetProjectAdminPage,
@@ -217,6 +267,14 @@ class ServletRegistry(object):
         #     '/<string:project_name>/adminAdvanced.do',
         #     projectadminadvanced.ProjectAdminAdvanced(
         #         services=service).PostProjectAdminAdvancedPage, ['POST']),
+        # (
+        #     '/<string:project_name>/components/create',
+        #     componentcreate.ComponentCreate(
+        #         services=service).GetComponentCreatePage, ['GET']),
+        # (
+        #     '/<string:project_name>/components/create.do',
+        #     componentcreate.ComponentCreate(
+        #         services=service).PostComponentCreatePage, ['POST']),
         # (
         #     '/<string:project_name>/people/list',
         #     peoplelist.PeopleList(services=service).GetPeopleListPage,
