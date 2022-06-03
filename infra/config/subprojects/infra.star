@@ -109,23 +109,6 @@ ci_builder(
     },
 )
 
-# Builds arm64-flavored docker images for swarm_docker.
-ci_builder(
-    name = "swarm-docker-arm64-image-builder",
-    os = "Ubuntu-18.04",
-    cpu = "arm64",
-    # Make sure we're not building Docker images inside another container.
-    extra_dimensions = {"inside_docker": "0"},
-    infra_triggered = False,  # No need to build at every commit.
-    schedule = "triggered",
-    recipe = "docker_image_builder",
-    console_category = "misc",
-    properties = {
-        "container_name": "swarm_docker_arm64",
-        "dir_name": "swarm_docker",
-    },
-)
-
 # All trybots.
 try_builder(name = "infra-try-bionic-64", os = "Ubuntu-18.04", properties = {
     "go_version_variant": "bleeding_edge",
