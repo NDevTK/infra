@@ -5,6 +5,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   CreateResourceRequest,
+  UpdateResourceRequest,
   DeleteResourceRequest,
   GetResourceRequest,
   IResourceService,
@@ -79,6 +80,25 @@ export const createResourceAsync = createAsyncThunk(
   }
 );
 
+export const updateResourceAsync = createAsyncThunk(
+  'asset/updateResource',
+  async ({
+    resource,
+    updateMask,
+  }: {
+    resource: ResourceModel;
+    updateMask: string[];
+  }) => {
+    const request: UpdateResourceRequest = {
+      resource: resource,
+      updateMask: updateMask,
+    };
+    const service: IResourceService = new ResourceService();
+    const response = await service.update(request);
+    return response;
+  }
+);
+
 export const queryResourceAsync = createAsyncThunk(
   'resource/queryResource',
   async ({ pageSize, pageToken }: { pageSize: number; pageToken: string }) => {
@@ -149,6 +169,13 @@ export const resourceSlice = createSlice({
         state.savingStatus = 'loading';
       })
       .addCase(createResourceAsync.fulfilled, (state, action) => {
+        state.savingStatus = 'idle';
+        state.record = action.payload;
+      })
+      .addCase(updateResourceAsync.pending, (state) => {
+        state.savingStatus = 'loading';
+      })
+      .addCase(updateResourceAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload;
       })

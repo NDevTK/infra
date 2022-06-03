@@ -24,6 +24,7 @@ import {
   setType,
   setDescription,
   setImage,
+  updateResourceAsync,
 } from './resourceSlice';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -39,6 +40,7 @@ export const Resource = () => {
   const resourceId: string = useAppSelector(
     (state) => state.resource.record.resourceId
   );
+  const resource = useAppSelector((state) => state.resource.record);
   const dispatch = useAppDispatch();
 
   // Event Handlers
@@ -56,6 +58,13 @@ export const Resource = () => {
           type,
           description,
           image,
+        })
+      );
+    } else {
+      dispatch(
+        updateResourceAsync({
+          resource,
+          updateMask: ['name', 'description', 'type', 'image'],
         })
       );
     }
