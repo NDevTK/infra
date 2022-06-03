@@ -32,6 +32,7 @@ func servoRepairPlan() *Plan {
 			"Servo_v4(p1) main present",
 			"Set state:NEED_REPLACEMENT",
 			"Servo_v3 root present",
+			"Set state:SERVO_UPDATER_ISSUE",
 			"All servo's fw updated",
 			"Set state:SERVO_HOST_ISSUE",
 			"Start servod daemon",
@@ -916,7 +917,6 @@ func servoRepairPlan() *Plan {
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
-					"Set state:SERVO_UPDATER_ISSUE",
 					"Stop servod daemon on servo-host",
 				},
 				ExecName: "servo_update_servo_firmware",
