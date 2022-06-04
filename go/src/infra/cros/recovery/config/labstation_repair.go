@@ -22,6 +22,7 @@ func LabstationRepairConfig() *Configuration {
 					"check_host_info",
 					"Device is pingable",
 					"Device is SSHable",
+					"Filesystem is writable",
 					"cros_is_on_stable_version",
 					"Update provisioned info",
 					"booted_from_right_kernel",
@@ -172,6 +173,16 @@ func LabstationRepairConfig() *Configuration {
 						},
 						ExecName:    "cros_ssh",
 						ExecTimeout: &durationpb.Duration{Seconds: 30},
+					},
+					"Filesystem is writable": {
+						Docs: []string{
+							"This verifier checks whether the host filesystem is writable.",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName:               "cros_is_file_system_writable",
+						AllowFailAfterRecovery: true,
 					},
 					"Labstation reboot": {
 						Docs: []string{
