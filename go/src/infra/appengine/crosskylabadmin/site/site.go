@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/gcloud/gs"
+	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
@@ -68,8 +70,18 @@ const Patch = 0
 // prpcOptionWithUserAgent create prpc option with custom UserAgent.
 //
 // DefaultOptions provides Retry ability in case we have issue with service.
+//
+// There are many permanent failures that are marked as tranisent. In order to
+// mitigate the user-facing impacts of this when developing or testing things,
+// we perform the retries immediately instead of using exponential backoff.
 func prpcOptionWithUserAgent(userAgent string) *prpc.Options {
-	options := *prpc.DefaultOptions()
-	options.UserAgent = userAgent
-	return &options
+	return &prpc.Options{
+		UserAgent: userAgent,
+		Retry: func() retry.Iterator {
+			return &retry.Limited{
+				Delay:   10 * time.Millisecond,
+				Retries: 2,
+			}
+		},
+	}
 }
