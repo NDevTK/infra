@@ -52,6 +52,9 @@ func (c *getMachineLSERun) Run(a subcommands.Application, args []string, env sub
 
 // InnerRun runs the command and returns an error.
 func (c *getMachineLSERun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	if len(args) != 0 {
+		return errors.Reason("get machine lse: positional arguments are unacceptable").Err()
+	}
 	authOptions, err := c.authFlags.Options()
 	if err != nil {
 		return errors.Annotate(err, "get machine lse: authenticating").Err()
