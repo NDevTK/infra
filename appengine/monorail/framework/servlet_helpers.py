@@ -187,7 +187,8 @@ def ComputeIssueEntryURL(mr):
     case. Otherewise it will be a fully qualified URL that includes some
     query string parameters.
   """
-  if mr.project_name == 'chromium':
+  isMember = framework_bizobj.UserIsInProject(mr.project, mr.auth.effective_ids)
+  if mr.project_name == 'chromium' and not isMember:
     return '/p/chromium/issues/wizard'
   else:
     return '/p/%s/issues/entry' % (mr.project_name)
