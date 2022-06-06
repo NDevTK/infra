@@ -14,6 +14,7 @@ import time
 
 import ezt
 
+from framework import flaskservlet
 from framework import permissions
 from framework import jsonfeed
 from framework import servlet
@@ -25,7 +26,7 @@ class ProjectExport(servlet.Servlet):
   """Only site admins can export a project"""
 
   _PAGE_TEMPLATE = 'project/project-export-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ADMIN
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ADMIN
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page."""
@@ -42,8 +43,11 @@ class ProjectExport(servlet.Servlet):
         'page_perms': self.MakePagePerms(mr, None, permissions.CREATE_ISSUE),
     }
 
+  # def GetProjectExportPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+
+# TODO(https://crbug.com/monorail/10936): Use FlaskJsonFeed
 class ProjectExportJSON(jsonfeed.JsonFeed):
   """ProjectExportJSON shows all configuration for a Project in JSON form."""
 
@@ -202,3 +206,9 @@ class ProjectExportJSON(jsonfeed.JsonFeed):
       'ccs': [email_dict.get(user) for user in component.cc_ids],
     }
     return component_json
+
+  # def GetProjectExportJSONPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostProjectExportJSONPage(self, **kwargs):
+  #   return self.handler(**kwargs)

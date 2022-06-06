@@ -23,9 +23,10 @@ from project import peopledetail
 from project import peoplelist
 from project import projectadmin
 from project import projectadminadvanced
+from project import projectexport
 from project import projectsummary
-from project import project_constants
 from project import projectupdates
+from project import project_constants
 from services import cachemanager_svc
 from services import client_config_svc
 from sitewide import hostinghome
@@ -292,6 +293,18 @@ class ServletRegistry(object):
         #     '/<string:project_name>/people/detail.do',
         #     peopledetail.PeopleDetail(services=service).PostPeopleDetailPage,
         #     ['POST']),
+        # (
+        #     '/<string:project_name>/projectExport',
+        #     projectexport.ProjectExport(
+        #         services=service).GetProjectExportPage, ['GET']),
+        # (
+        #     '/<string:project_name>/projectExport/json',
+        #     projectexport.ProjectExportJSON(
+        #         services=service).GetProjectExportJSONPage, ['GET']),
+        # (
+        #     '/<string:project_name>/projectExport/json.do',
+        #     projectexport.ProjectExportJSON(
+        #         services=service).PostProjectExportJSONPage, ['POST']),
         # (
         #     '/<string:project_name>/updates/list',
         #     projectupdates.ProjectUpdates(
