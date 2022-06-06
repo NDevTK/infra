@@ -7,6 +7,7 @@ package service
 import (
 	"context"
 	"errors"
+	"reflect"
 	"time"
 
 	. "infra/appengine/poros/api/entities"
@@ -120,13 +121,23 @@ func (e *AssetResourceHandler) Update(ctx context.Context, req *proto.UpdateAsse
 		if err != nil {
 			return err
 		}
+		// Set updated values for fields specified in Update Mask
+		for _, field := range mask.GetPaths() {
+			newValue := reflect.ValueOf(req.GetAssetResource()).Elem().FieldByName(snakeToPascalCase(field))
+			reflect.ValueOf(asset_resource).Elem().FieldByName(snakeToPascalCase(field)).Set(newValue)
+		}
 		asset_resource.ModifiedBy = auth.CurrentUser(ctx).Email
 		asset_resource.ModifiedAt = time.Now().UTC()
-		err = datastore.Put(ctx, id, &asset_resource)
+
+		if err := validateAssetResourceEntity(asset_resource); err != nil {
+			return err
+		}
+
+		err = datastore.Put(ctx, asset_resource)
 		return err
 	}, nil)
 
-	if err != nil {
+	if err == nil {
 		return toAssetResourceModel(asset_resource), nil
 	}
 	return nil, err

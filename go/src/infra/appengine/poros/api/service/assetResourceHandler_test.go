@@ -12,6 +12,7 @@ import (
 	proto "infra/appengine/poros/api/proto"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -68,6 +69,104 @@ func TestAssetResourceCreateWithInvalidAliasName(t *testing.T) {
 		ctx := memory.Use(context.Background())
 		handler := &AssetResourceHandler{}
 		_, err := handler.Create(ctx, assetResourceRequest)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetResourceUpdateWithValidData(t *testing.T) {
+	t.Parallel()
+	assetResourceRequest := mockCreateAssetResourceRequest("Test AssetId", "Test ResourceId", "Test Alias Name")
+	Convey("Update an asset_resource with valid data in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetResourceHandler{}
+		entity, err := handler.Create(ctx, assetResourceRequest)
+		So(err, ShouldBeNil)
+
+		// Update asset_resource with some new value and the operation should not throw any error
+		entity.ResourceId = "Test ResourceId Updated"
+		entity.AliasName = "Test Alias Name Updated"
+
+		updateRequest := &proto.UpdateAssetResourceRequest{
+			AssetResource: entity,
+			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"resource_id", "alias_name"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		So(err, ShouldBeNil)
+
+		// Retrieve the updated asset_resource and make sure that the values were correctly updated
+		getRequest := &proto.GetAssetResourceRequest{
+			AssetResourceId: entity.GetAssetResourceId(),
+		}
+		readEntity, err := handler.Get(ctx, getRequest)
+		want := []string{"Test AssetId", "Test ResourceId Updated", "Test Alias Name Updated"}
+		get := []string{readEntity.GetAssetId(), readEntity.GetResourceId(), readEntity.GetAliasName()}
+		So(get, ShouldResemble, want)
+	})
+}
+
+func TestAssetResourceUpdateWithInvalidAsset(t *testing.T) {
+	t.Parallel()
+	assetResourceRequest := mockCreateAssetResourceRequest("Test AssetId", "Test ResourceId", "Test Alias Name")
+
+	Convey("Update an asset_resource with invalid asset_id in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetResourceHandler{}
+		entity, err := handler.Create(ctx, assetResourceRequest)
+		So(err, ShouldBeNil)
+		entity.AssetId = ""
+		entity.ResourceId = "Test ResourceId"
+		entity.AliasName = "Test Alias Name Updated"
+
+		updateRequest := &proto.UpdateAssetResourceRequest{
+			AssetResource: entity,
+			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"aliasId", "resourceId", "aliasName"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the asset_resource as resource_id is empty
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetResourceUpdateWithInvalidResource(t *testing.T) {
+	t.Parallel()
+	assetResourceRequest := mockCreateAssetResourceRequest("Test AssetId", "Test ResourceId", "Test Alias Name")
+
+	Convey("Update an asset_resource with invalid resource_id in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetResourceHandler{}
+		entity, err := handler.Create(ctx, assetResourceRequest)
+		So(err, ShouldBeNil)
+		entity.ResourceId = ""
+		entity.AliasName = "Test Alias Name Updated"
+
+		updateRequest := &proto.UpdateAssetResourceRequest{
+			AssetResource: entity,
+			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"resourceId", "aliasName"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the asset_resource as resource_id is empty
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetResourceUpdateWithInvalidAliasName(t *testing.T) {
+	t.Parallel()
+	assetResourceRequest := mockCreateAssetResourceRequest("Test AssetId", "Test ResourceId", "Test Alias Name")
+
+	Convey("Update an asset_resource with invalid alias_name in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetResourceHandler{}
+		entity, err := handler.Create(ctx, assetResourceRequest)
+		So(err, ShouldBeNil)
+		entity.ResourceId = "Test ResourceId"
+		entity.AliasName = ""
+
+		updateRequest := &proto.UpdateAssetResourceRequest{
+			AssetResource: entity,
+			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"resourceId", "aliasName"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the asset_resource as alias_name is empty
 		So(err, ShouldNotBeNil)
 	})
 }
