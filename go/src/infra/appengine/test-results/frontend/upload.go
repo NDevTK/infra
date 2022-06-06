@@ -29,29 +29,6 @@ import (
 	"infra/appengine/test-results/model"
 )
 
-func requestOK(ctx *router.Context) bool {
-	c, w, _ := ctx.Context, ctx.Writer, ctx.Request
-	if info.IsDevAppServer(c) {
-		return true
-	}
-	// Only bots should upload test results. Check IP address against a whitelist.
-	// TODO(crbug.com/1042193): remove this hack.
-	whitelisted, err := auth.GetState(c).DB().IsInWhitelist(
-		c, auth.GetState(c).PeerIP(), "bots")
-	if err != nil {
-		logging.WithError(err).Errorf(c, "uploadHandler: check IP whitelist")
-		http.Error(w, "Failed IP whitelist check", http.StatusInternalServerError)
-		return false
-	}
-	if !whitelisted {
-		logging.WithError(err).Errorf(
-			c, "Uploading IP %s is not whitelisted", auth.GetState(c).PeerIP())
-		http.Error(w, "IP is not whitelisted", http.StatusUnauthorized)
-		return false
-	}
-	return true
-}
-
 type statusError struct {
 	error
 	code int // HTTP status code.
