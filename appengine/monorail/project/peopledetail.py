@@ -234,6 +234,8 @@ class PeopleDetail(servlet.Servlet):
 
     role = post_data.get('role', '').lower()
     extra_perms = []
+    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
+    # for ep in post_data.getlist('extra_perms'):
     for ep in post_data.getall('extra_perms'):
       perm = framework_bizobj.CanonicalizeLabel(ep)
       # Perms with leading underscores are reserved.

@@ -218,6 +218,8 @@ class PeopleList(servlet.Servlet):
     """
     # 1. Parse and validate user input.
     remove_strs = post_data.getall('remove')
+    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
+    # remove_strs = post_data.getlist('remove')
     logging.info('remove_strs = %r', remove_strs)
     remove_ids = set(
         self.services.user.LookupUserIDs(mr.cnxn, remove_strs).values())
