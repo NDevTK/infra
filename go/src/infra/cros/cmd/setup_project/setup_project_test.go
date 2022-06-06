@@ -174,10 +174,11 @@ func TestSetupProject_buildspecs(t *testing.T) {
 
 	gsSuffix := "/buildspecs/" + buildspec
 	expectedDownloads := map[string][]byte{
-		"gs://chromeos-foo" + gsSuffix:           []byte("chromeos/program/foo"),
-		"gs://chromeos-foo-bar1" + gsSuffix:      []byte("chromeos/project/foo/bar1"),
-		"gs://chromeos-foo-bar2" + gsSuffix:      []byte("chromeos/project/foo/bar2"),
-		"gs://chromeos-other-project" + gsSuffix: []byte("chromeos/other/project"),
+		"gs://chromeos-foo" + gsSuffix:                          []byte("chromeos/program/foo"),
+		"gs://chromeos-foo-bar1" + gsSuffix:                     []byte("chromeos/project/foo/bar1"),
+		"gs://chromeos-foo-bar2" + gsSuffix:                     []byte("chromeos/project/foo/bar2"),
+		"gs://chromeos-other-project" + gsSuffix:                []byte("chromeos/other/project"),
+		"gs://chromeos-overlays-chipset-baz-private" + gsSuffix: []byte("chromeos/overlays/chipset-baz-private"),
 	}
 
 	f := &gs.FakeClient{
@@ -196,6 +197,7 @@ func TestSetupProject_buildspecs(t *testing.T) {
 		program:              "foo",
 		allProjects:          true,
 		project:              "bar",
+		chipset:              "baz",
 		buildspec:            buildspec,
 		otherRepos:           []string{"chromeos/other/project"},
 	}
@@ -206,6 +208,7 @@ func TestSetupProject_buildspecs(t *testing.T) {
 		"bar1_project.xml":                "chromeos/project/foo/bar1",
 		"bar2_project.xml":                "chromeos/project/foo/bar2",
 		"chromeos-other-project_repo.xml": "chromeos/other/project",
+		"baz_chipset.xml":                 "chromeos/overlays/chipset-baz-private",
 	}
 	checkFiles(t, localManifestDir, expectedFiles)
 }

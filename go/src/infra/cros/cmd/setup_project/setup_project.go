@@ -126,10 +126,6 @@ func (b *setupProject) validate() error {
 		return fmt.Errorf("--program must be used with --all_projects")
 	}
 
-	if b.chipset != "" && b.buildspec != "" {
-		return fmt.Errorf("using --buildspec with --chipset is not currently supported")
-	}
-
 	return nil
 }
 
@@ -224,6 +220,12 @@ func gsProgramPath(program, buildspec string) lgs.Path {
 	return lgs.MakePath(fmt.Sprintf("chromeos-%s", program), relPath)
 }
 
+// gsChipsetPath returns the appropriate GS path for the given chipset/version.
+func gsChipsetPath(chipset, buildspec string) lgs.Path {
+	relPath := filepath.Join("buildspecs/", buildspec)
+	return lgs.MakePath(fmt.Sprintf("chromeos-overlays-chipset-%s-private", chipset), relPath)
+}
+
 func dasherizeProject(name string) string {
 	return strings.Join(strings.Split(name, "/"), "-")
 }
@@ -287,12 +289,17 @@ func (b *setupProject) setupProject(ctx context.Context, gsClient gs.Client, git
 		})
 	}
 
-	if b.chipset != "" && b.buildspec == "" {
+	if b.chipset != "" {
+		var gspath lgs.Path
+		if b.buildspec != "" {
+			gspath = gsChipsetPath(b.chipset, b.buildspec)
+		}
 		files = append(files,
 			localManifest{
 				project:    fmt.Sprintf("chromeos/overlays/chipset-%s-private", b.chipset),
 				branch:     b.localManifestBranch,
 				path:       "local_manifest.xml",
+				gsPath:     gspath,
 				downloadTo: fmt.Sprintf("%s_chipset.xml", b.chipset),
 			},
 		)
