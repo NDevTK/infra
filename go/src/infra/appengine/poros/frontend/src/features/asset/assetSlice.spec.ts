@@ -15,6 +15,8 @@ describe('asset reducer', () => {
     record: AssetModel.defaultEntity(),
     savingStatus: 'idle',
     deletingStatus: 'idle',
+    resources: [],
+    assetResources: [],
   };
   it('should handle initial state', () => {
     expect(assetReducer(undefined, { type: 'unknown' })).toEqual(initialState);

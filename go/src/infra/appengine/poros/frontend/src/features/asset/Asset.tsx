@@ -8,18 +8,30 @@ import Stack from '@mui/material/Stack';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import {
+  addMachine,
   clearSelectedRecord,
   createAssetAsync,
+  removeMachine,
+  setAlias,
   setDescription,
   setName,
+  setResourceId,
   updateAssetAsync,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { AssetResourceModel } from '../../api/asset_resource_service';
 
 export const Asset = () => {
   const name: string = useAppSelector((state) => state.asset.record.name);
@@ -28,6 +40,9 @@ export const Asset = () => {
   );
   const assetId: string = useAppSelector((state) => state.asset.record.assetId);
   const asset = useAppSelector((state) => state.asset.record);
+  const assetResources: AssetResourceModel[] = useAppSelector(
+    (state) => state.asset.assetResources
+  );
   const dispatch = useAppDispatch();
 
   const handleSaveClick = (
@@ -36,7 +51,7 @@ export const Asset = () => {
     assetId: string
   ) => {
     if (assetId === '') {
-      dispatch(createAssetAsync({ name, description }));
+      dispatch(createAssetAsync({ name, description, assetResources }));
     } else {
       dispatch(
         updateAssetAsync({ asset, updateMask: ['name', 'description'] })
@@ -46,6 +61,77 @@ export const Asset = () => {
 
   const handleCancelClick = () => {
     dispatch(clearSelectedRecord());
+  };
+
+  const renderMenuItem = (name: string, resourceId: string) => {
+    return <MenuItem value={resourceId}> {name} </MenuItem>;
+  };
+
+  const renderRow = (index: number, aliasName: string) => {
+    return (
+      <Grid container spacing={2} padding={1}>
+        <Grid
+          item
+          xs={5}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <FormControl variant="standard" fullWidth>
+            <InputLabel>Image</InputLabel>
+            <Select
+              id={'image-' + index}
+              onChange={(e) =>
+                dispatch(setResourceId({ id: index, value: e.target.value }))
+              }
+              variant="outlined"
+              placeholder="Type"
+            >
+              <MenuItem value={'dummy1'}> Dummy1 </MenuItem>
+              <MenuItem value={'dummy2'}> Dummy2 </MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid
+          item
+          xs={5}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <TextField
+            label="AliasName"
+            id={'alias-' + index}
+            value={aliasName}
+            onChange={(e) =>
+              dispatch(setAlias({ id: index, value: e.target.value }))
+            }
+            variant="outlined"
+          />
+        </Grid>
+        <Grid
+          item
+          xs={1}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={() => {
+              dispatch(removeMachine(index));
+            }}
+            endIcon={<DeleteIcon />}
+          ></Button>
+        </Grid>
+      </Grid>
+    );
   };
 
   return (
@@ -123,6 +209,17 @@ export const Asset = () => {
           <Typography variant="h6">Associated Machines</Typography>
         </Grid>
       </Grid>
+
+      {assetResources.map((entity, index) =>
+        renderRow(index, entity.aliasName)
+      )}
+      <Button
+        variant="outlined"
+        onClick={() => dispatch(addMachine())}
+        startIcon={<AddIcon />}
+      >
+        Add Machine
+      </Button>
 
       <Grid container spacing={2} padding={1}>
         <Grid

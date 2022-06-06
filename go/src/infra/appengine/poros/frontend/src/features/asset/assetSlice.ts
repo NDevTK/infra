@@ -4,6 +4,12 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
+  AssetResourceModel,
+  AssetResourceService,
+  CreateAssetResourceRequest,
+  IAssetResourceService,
+} from '../../api/asset_resource_service';
+import {
   CreateAssetRequest,
   DeleteAssetRequest,
   GetAssetRequest,
@@ -13,6 +19,7 @@ import {
   AssetModel,
   UpdateAssetRequest,
 } from '../../api/asset_service';
+import { ResourceModel } from '../../api/resource_service';
 import { RootState } from '../../app/store';
 
 export interface AssetState {
@@ -24,6 +31,8 @@ export interface AssetState {
   deletingStatus: string;
   pageNumber: number;
   pageSize: number;
+  resources: ResourceModel[];
+  assetResources: AssetResourceModel[];
 }
 
 const initialState: AssetState = {
@@ -35,6 +44,8 @@ const initialState: AssetState = {
   record: AssetModel.defaultEntity(),
   savingStatus: 'idle',
   deletingStatus: 'idle',
+  resources: [],
+  assetResources: [AssetResourceModel.defaultEntity()],
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -57,13 +68,22 @@ export const fetchAssetAsync = createAsyncThunk(
 
 export const createAssetAsync = createAsyncThunk(
   'asset/createAsset',
-  async ({ name, description }: { name: string; description: string }) => {
+  async ({
+    name,
+    description,
+    assetResources,
+  }: {
+    name: string;
+    description: string;
+    assetResources: AssetResourceModel[];
+  }) => {
     const request: CreateAssetRequest = {
       name: name,
       description: description,
     };
     const service: IAssetService = new AssetService();
     const response = await service.create(request);
+    createAssetResourceAsync(response.assetId, assetResources);
     return response;
   }
 );
@@ -113,6 +133,21 @@ export const deleteAssetAsync = createAsyncThunk(
   }
 );
 
+const createAssetResourceAsync = async (
+  assetId: string,
+  assetResource: AssetResourceModel[]
+) => {
+  assetResource.forEach(function (entity) {
+    const request: CreateAssetResourceRequest = {
+      assetId: assetId,
+      resourceId: entity.resourceId,
+      aliasName: entity.aliasName,
+    };
+    const service: IAssetResourceService = new AssetResourceService();
+    service.create(request);
+  });
+};
+
 export const assetSlice = createSlice({
   name: 'asset',
   initialState,
@@ -133,6 +168,24 @@ export const assetSlice = createSlice({
     },
     clearSelectedRecord: (state) => {
       state.record = AssetModel.defaultEntity();
+      state.assetResources = [AssetResourceModel.defaultEntity()];
+    },
+    addMachine: (state) => {
+      state.assetResources = [
+        ...state.assetResources,
+        AssetResourceModel.defaultEntity(),
+      ];
+    },
+    removeMachine: (state, action) => {
+      state.assetResources = state.assetResources.filter(
+        (_, index) => index !== action.payload
+      );
+    },
+    setResourceId: (state, action) => {
+      state.assetResources[action.payload.id].resourceId = action.payload.value;
+    },
+    setAlias: (state, action) => {
+      state.assetResources[action.payload.id].aliasName = action.payload.value;
     },
   },
 
@@ -191,6 +244,10 @@ export const {
   clearSelectedRecord,
   setName,
   setDescription,
+  addMachine,
+  removeMachine,
+  setResourceId,
+  setAlias,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

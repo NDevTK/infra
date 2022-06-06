@@ -134,6 +134,7 @@ func main() {
 
 		proto.RegisterAssetServer(srv.PRPC, &service.AssetHandler{})
 		proto.RegisterResourceServer(srv.PRPC, &service.ResourceHandler{})
+		proto.RegisterAssetResourceServer(srv.PRPC, &service.AssetResourceHandler{})
 
 		return nil
 	})
