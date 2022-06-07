@@ -511,7 +511,7 @@ func newTestResult(uniqifier, testRunNum, resultNum int) *rdbpb.TestResult {
 func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTestRun, resultNum int) *bqpb.ClusteredFailureRow {
 	resultID := fmt.Sprintf("result-%v-%v", testRunNum, resultNum)
 	presubmitRunOwner := "automation"
-	presubmitRunMode := pb.PresubmitRunMode_FULL_RUN
+	presubmitRunMode := "FULL_RUN" // pb.PresubmitRunMode_FULL_RUN
 	presubmitRunStatus := "FAILED" // pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED
 	buildCritical := true
 	return &bqpb.ClusteredFailureRow{

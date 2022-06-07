@@ -196,12 +196,15 @@ message ClusteredFailureRow {
 
   // The mode of the presubmit run (if any).
   // E.g. DRY_RUN, FULL_RUN, QUICK_DRY_RUN.
-  optional weetbix.v1.PresubmitRunMode presubmit_run_mode = 34;
+  // Use a optional string rather than optional enum as BQ exporter
+  // does not support optional enum types.
+  optional string presubmit_run_mode = 34;
 
   // The presubmit run's ending status.
   // Notionally weetbix.v1.PresubmitRunStatus, but string so that
   // we can chop off the "PRESUBMIT_RUN_STATUS_" prefix and have
   // only the status, e.g. SUCCESS, FAILURE, CANCELED.
+  // Also string because BQ exporter does not support optional enum types.
   optional string presubmit_run_status = 35;
 
   reserved 30;

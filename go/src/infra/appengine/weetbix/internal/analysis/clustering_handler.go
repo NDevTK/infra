@@ -184,7 +184,8 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 	if failure.PresubmitRun != nil {
 		entry.PresubmitRunId = failure.PresubmitRun.PresubmitRunId
 		entry.PresubmitRunOwner = &failure.PresubmitRun.Owner
-		entry.PresubmitRunMode = &failure.PresubmitRun.Mode
+		presubmitRunMode := failure.PresubmitRun.Mode.String()
+		entry.PresubmitRunMode = &presubmitRunMode
 		presubmitRunStatus := strings.TrimPrefix(failure.PresubmitRun.Status.String(), "PRESUBMIT_RUN_STATUS_")
 		entry.PresubmitRunStatus = &presubmitRunStatus
 	}

@@ -525,7 +525,7 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 	}
 
 	presubmitRunOwner := fmt.Sprintf("owner-%v", b.uniqifier)
-	presubmitRunMode := pb.PresubmitRunMode(1 + b.uniqifier%3)
+	presubmitRunMode := pb.PresubmitRunMode(1 + b.uniqifier%3).String()
 	presubmitRunStatus := pb.PresubmitRunStatus(3 - b.uniqifier%3).String()
 	if !strings.HasPrefix(presubmitRunStatus, "PRESUBMIT_RUN_STATUS_") {
 		panic("PresubmitRunStatus does not have expected prefix: " + presubmitRunStatus)
