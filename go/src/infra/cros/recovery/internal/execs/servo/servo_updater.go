@@ -79,11 +79,7 @@ func isVersionOutdated(ctx context.Context, runner execs.Runner, device *tlw.Ser
 	if cVersion == "" {
 		return true
 	}
-	channel := "stable"
-	if fwChannel != tlw.ServoFwChannel_FW_UNSPECIFIED {
-		channel = strings.ToLower(fwChannel.String())
-	}
-	lVersion := latestVersionFromUpdater(ctx, runner, channel, device.Type)
+	lVersion := latestVersionFromUpdater(ctx, runner, fwChannel, device.Type)
 	log.Debugf(ctx, "Is Version Outdated: latest version is %q", lVersion)
 	// In LABPACK, if lVersion is empty, we raise an
 	// exception. However, we really only care whether latest version
@@ -97,8 +93,12 @@ func isVersionOutdated(ctx context.Context, runner execs.Runner, device *tlw.Ser
 }
 
 // Get latest available version from the servo_updater command.
-func latestVersionFromUpdater(ctx context.Context, runner execs.Runner, channel string, board string) string {
-	result, err := runner(ctx, time.Minute, fmt.Sprintf(latestVersionCMD, board, channel))
+func latestVersionFromUpdater(ctx context.Context, runner execs.Runner, channel tlw.ServoFwChannel, board string) string {
+	if board == "" {
+		log.Infof(ctx, "Latest Version From Updater: servo board is not provided.")
+		return ""
+	}
+	result, err := runner(ctx, time.Minute, fmt.Sprintf(latestVersionCMD, board, normalizeChannel(channel)))
 	// An example result is "firmware: servo_v4_v2.4.58-c37246f9c". We
 	// need to parse-out the string after ":" here, because that is
 	// the firmware version value we are looking for.
@@ -142,7 +142,7 @@ func createServoDeviceFwUpdateCmd(useContainer bool, device *tlw.ServoTopologyIt
 	} else {
 		cmd = fwUpdateCmd
 	}
-	cmd = fmt.Sprintf(cmd, device.Type, device.Serial, channel)
+	cmd = fmt.Sprintf(cmd, device.Type, device.Serial, normalizeChannel(channel))
 	if forceUpdate {
 		cmd += fwUpdateForceCmdTail
 	}
@@ -268,4 +268,20 @@ func UpdateDevicesServoFw(ctx context.Context, r execs.Runner, req FwUpdaterRequ
 		failDevices = append(failDevices, device)
 	}
 	return failDevices
+}
+
+// Normalize ServoFwChannel to string value.
+func normalizeChannel(fwChannel tlw.ServoFwChannel) string {
+	switch fwChannel {
+	case tlw.ServoFwChannel_PREV:
+		return "prev"
+	case tlw.ServoFwChannel_DEV:
+		return "dev"
+	case tlw.ServoFwChannel_ALPHA:
+		return "alpha"
+	// case tlw.ServoFwChannel_FW_UNSPECIFIED:
+	// case tlw.ServoFwChannel_STABLE:
+	default:
+		return "stable"
+	}
 }
