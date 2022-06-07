@@ -167,15 +167,16 @@ class PackageDef(collections.namedtuple(
       return not is_cross_compiling()
     return get_package_vars()['platform'] in platforms
 
-  def preprocess(self, build_root, pkg_vars, sign_id=None):
+  def preprocess(self, build_root, pkg_vars, cipd_exe, sign_id=None):
     """Parses the definition and filters/extends it before passing to CIPD.
 
     This process may generate additional files that are put into the package.
 
     Args:
       build_root: root directory for building cipd package.
-      sign_id: identity used for Mac codesign.
       pkg_vars: dict with variables passed to cipd as -pkg-var.
+      cipd_exe: path to cipd executable.
+      sign_id: identity used for Mac codesign.
 
     Returns:
       Path to filtered package definition YAML.
@@ -231,6 +232,13 @@ class PackageDef(collections.namedtuple(
           {'file': os.path.relpath(dst, build_root).replace(os.sep, '/')})
       if cp.get('generate_bat_shim'):
         bat_files.append(cp['dst'])
+
+    if 'cipd_export' in pkg_def:
+      # Render target_platform in the ensure file.
+      ensure_contents = pkg_def['cipd_export'].replace(
+          '${target_platform}',
+          get_package_vars()['platform'])
+      cipd_export(ensure_contents, build_root, cipd_exe)
 
     # Copy all included files into build root if not existed. This must be after
     # steps generating files and before any steps referring a symbolic link.
@@ -354,6 +362,19 @@ def copy_if_not_exist(src_root, dst_root, path, pkg_vars):
       raise
 
   copy_tree(src_root, src, dst)
+
+
+def cipd_export(ensure_contents, dst_root, cipd_exe):
+  """Installs cipd_pkg with the given version tag to dst_root."""
+  args = [cipd_exe, 'export', '-ensure-file', '-', '-root', dst_root]
+  cmd = subprocess.Popen(
+      args,
+      stdin=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      executable=cipd_exe)
+  out, _ = cmd.communicate(ensure_contents)
+  if cmd.returncode:
+    raise subprocess.CalledProcessError(cmd.returncode, args, output=out)
 
 
 def copy_tree(src_root, src, dst):
@@ -1012,7 +1033,7 @@ def build_pkg(cipd_exe, pkg_def, out_file, package_vars, sign_id=None):
     # Parse the definition and filter/extend it before passing to CIPD. This
     # process may generate additional files that are put into the package.
     processed_yaml = pkg_def.preprocess(
-        build_root, package_vars, sign_id=sign_id)
+        build_root, package_vars, cipd_exe, sign_id=sign_id)
 
     # Build the package.
     args = ['-pkg-def', processed_yaml]

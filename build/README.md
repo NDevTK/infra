@@ -100,6 +100,15 @@ posix_symlinks:
   - src: some_file
     dst: some_link_name
 
+# CIPD packages may be exported into the build directory by embedding an
+# ensure file (https://pkg.go.dev/go.chromium.org/luci/cipd/client/cipd/ensure).
+# In this specification, ${target_platform} may be used for the cross-compile
+# target, where as ${platform} refers to the host platform.
+# Make sure to also include this path in `data` below.
+cipd_export: |
+  @Subdir pkg/path
+  cipd/pkg/path/${target_platform} version:2.0
+
 data:
   # 'dir' section adds a subdirectory of 'root' to the package. In this case
   # it will scan directory <yaml_path>/../../a/b/c and put files into a/b/c
@@ -128,6 +137,9 @@ data:
   # other case only tag will be updated on the package with same set of tags.
   - file: vpython
     upload_on_change: true
+
+  # Include the CIPD package installed above.
+  - dir: pkg/path
 ```
 
 Following features of the package definition are implemented by `build.py`
