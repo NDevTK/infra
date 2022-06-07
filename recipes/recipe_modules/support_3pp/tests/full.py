@@ -425,8 +425,7 @@ def GenTests(api):
         # Assume all hosts are 64 bits.
         + api.platform(plat_name, 64, arch=host_arch) +
         api.properties(GOOS=goos, GOARCH=goarch) +
-        api.properties(key_path=KEY_PATH) +
-        api.buildbucket.ci_build(experiments=['security.snoopy']) +
+        api.properties(key_path=KEY_PATH) + api.buildbucket.ci_build() +
         api.step_data(
             'find package specs',
             api.file.glob_paths([

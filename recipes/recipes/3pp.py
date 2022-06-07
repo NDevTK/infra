@@ -83,12 +83,8 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
     api.support_3pp._experimental = True
   else:
     revision = 'refs/heads/main'
-    # If reporting to Snoopy is enabled, try to report built package.
-    if 'security.snoopy' in api.buildbucket.build.input.experiments:
-      try:
-        api.bcid_reporter.report_stage("start")
-      except Exception:  # pragma: no cover
-        api.step.active_result.presentation.status = api.step.FAILURE
+    # Report task stage to snoopy.
+    api.bcid_reporter.report_stage("start")
 
   # NOTE: We essentially ignore the on-machine CIPD cache here. We do this in
   # order to make sure this builder always operates with the current set of tags
@@ -164,13 +160,9 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
         platform,
         force_build=force_build,
         tryserver_affected_files=tryserver_affected_files)
-    # If reporting to Snoopy is enabled, try to report built package.
-    if ('security.snoopy' in api.buildbucket.build.input.experiments and
-        not api.tryserver.is_tryserver):
-      try:
-        api.bcid_reporter.report_stage("upload-complete")
-      except Exception:  # pragma: no cover
-        api.step.active_result.presentation.status = api.step.FAILURE
+    # Report task stage to snoopy.
+    if not api.tryserver.is_tryserver:
+      api.bcid_reporter.report_stage("upload-complete")
 
     if unsupported:
       api.step.empty(
