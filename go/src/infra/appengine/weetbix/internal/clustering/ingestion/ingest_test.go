@@ -49,14 +49,20 @@ func TestIngest(t *testing.T) {
 		ingestor := New(chunkStore, analysis)
 
 		opts := Options{
-			Project:           "chromium",
-			PartitionTime:     time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
-			Realm:             "chromium:ci",
-			InvocationID:      "build-123456790123456",
-			TaskIndex:         1,
-			PresubmitRunID:    &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
-			PresubmitRunOwner: "automation",
-			PresubmitRunCls: []*pb.Changelist{
+			TaskIndex:     1,
+			Project:       "chromium",
+			PartitionTime: time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+			Realm:         "chromium:ci",
+			InvocationID:  "build-123456790123456",
+			PresubmitRun: &PresubmitRun{
+				ID:     &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
+				Owner:  "automation",
+				Mode:   pb.PresubmitRunMode_FULL_RUN,
+				Status: pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED,
+			},
+			BuildStatus:   pb.BuildStatus_BUILD_STATUS_FAILURE,
+			BuildCritical: true,
+			Changelists: []*pb.Changelist{
 				{
 					Host:     "chromium-review.googlesource.com",
 					Change:   12345,
@@ -68,7 +74,6 @@ func TestIngest(t *testing.T) {
 					Patchset: 2,
 				},
 			},
-			ImplicitlyExonerateBlockingFailures: false,
 		}
 		testIngestion := func(input []*rdbpb.TestVariant, expectedCFs []*bqpb.ClusteredFailureRow) {
 			err := ingestor.Ingest(ctx, opts, input)
@@ -180,12 +185,10 @@ func TestIngest(t *testing.T) {
 				// Tests are allowed to have no tags.
 				tv.Results[0].Result.Tags = nil
 
-				regexpCF.Tags = nil
-				regexpCF.BugTrackingComponent = nil
-				testnameCF.Tags = nil
-				testnameCF.BugTrackingComponent = nil
-				ruleCF.Tags = nil
-				ruleCF.BugTrackingComponent = nil
+				for _, cf := range expectedCFs {
+					cf.Tags = nil
+					cf.BugTrackingComponent = nil
+				}
 
 				testIngestion(tvs, expectedCFs)
 				So(len(chunkStore.Contents), ShouldEqual, 1)
@@ -195,9 +198,9 @@ func TestIngest(t *testing.T) {
 				tv.Variant = nil
 				tv.Results[0].Result.Variant = nil
 
-				regexpCF.Variant = nil
-				testnameCF.Variant = nil
-				ruleCF.Variant = nil
+				for _, cf := range expectedCFs {
+					cf.Variant = nil
+				}
 
 				testIngestion(tvs, expectedCFs)
 				So(len(chunkStore.Contents), ShouldEqual, 1)
@@ -217,15 +220,19 @@ func TestIngest(t *testing.T) {
 				So(len(chunkStore.Contents), ShouldEqual, 1)
 			})
 			Convey(`Failure without presubmit run`, func() {
-				opts.PresubmitRunID = nil
-				regexpCF.PresubmitRunId = nil
-				testnameCF.PresubmitRunId = nil
-				ruleCF.PresubmitRunId = nil
+				opts.PresubmitRun = nil
+				for _, cf := range expectedCFs {
+					cf.PresubmitRunId = nil
+					cf.PresubmitRunMode = nil
+					cf.PresubmitRunOwner = nil
+					cf.PresubmitRunStatus = nil
+					cf.BuildCritical = nil
+				}
 
 				testIngestion(tvs, expectedCFs)
 				So(len(chunkStore.Contents), ShouldEqual, 1)
 			})
-			Convey(`Failure with explicit exoneration`, func() {
+			Convey(`Failure with multiple exoneration`, func() {
 				tv.Exonerations = []*rdbpb.TestExoneration{
 					{
 						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
@@ -236,23 +243,26 @@ func TestIngest(t *testing.T) {
 						ExplanationHtml: "<p>Some description</p>",
 						Reason:          rdbpb.ExonerationReason_OCCURS_ON_MAINLINE,
 					},
+					{
+						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
+						TestId:          tv.TestId,
+						Variant:         proto.Clone(tv.Variant).(*rdbpb.Variant),
+						VariantHash:     "hash",
+						ExonerationId:   "exon-1",
+						ExplanationHtml: "<p>Some description</p>",
+						Reason:          rdbpb.ExonerationReason_OCCURS_ON_OTHER_CLS,
+					},
 				}
 
 				for _, cf := range expectedCFs {
-					cf.ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
-				}
-
-				testIngestion(tvs, expectedCFs)
-				So(len(chunkStore.Contents), ShouldEqual, 1)
-			})
-			Convey(`Failure with implicit exoneration`, func() {
-				// E.g. the containing invocation was a build which was
-				// cancelled or passed.
-				opts.ImplicitlyExonerateBlockingFailures = true
-
-				// Update expectations.
-				for _, cf := range expectedCFs {
-					cf.ExonerationStatus = pb.ExonerationStatus_IMPLICIT
+					cf.Exonerations = []*bqpb.ClusteredFailureRow_TestExoneration{
+						{
+							Reason: pb.ExonerationReason_OCCURS_ON_MAINLINE,
+						}, {
+							Reason: pb.ExonerationReason_OCCURS_ON_OTHER_CLS,
+						},
+					}
+					cf.ExonerationStatus = "OCCURS_ON_MAINLINE"
 				}
 
 				testIngestion(tvs, expectedCFs)
@@ -320,24 +330,25 @@ func TestIngest(t *testing.T) {
 
 			Convey(`Test run and presubmit run blocked`, func() {
 				Convey(`Build failed`, func() {
-					opts.ImplicitlyExonerateBlockingFailures = false
+					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_FAILURE
 					// No test failure should be exonerated, because
-					// the test variant had no exoneration and
-					// AutoExonerateBlockingFailures is unset.
+					// the test variant had no exoneration,
+					// the build failed and the build was critical.
 					for _, exp := range expectedCFs {
-						exp.ExonerationStatus = pb.ExonerationStatus_NOT_EXONERATED
+						exp.BuildStatus = "FAILURE"
+						exp.ExonerationStatus = "NOT_EXONERATED"
 					}
 					testIngestion(tvs, expectedCFs)
 					So(len(chunkStore.Contents), ShouldEqual, 1)
 				})
 				Convey(`Build passed, cancelled or infra failure`, func() {
-					opts.ImplicitlyExonerateBlockingFailures = true
+					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
 					// The test failure should be exonerated, despite
 					// the test variant having no exoneration, because
-					// all attempts of the test failed, and
-					// AutoExonerateBlockingFailures is set.
+					// the build did not fail due to tests.
 					for _, exp := range expectedCFs {
-						exp.ExonerationStatus = pb.ExonerationStatus_IMPLICIT
+						exp.BuildStatus = "INFRA_FAILURE"
+						exp.ExonerationStatus = "IMPLICIT"
 					}
 					testIngestion(tvs, expectedCFs)
 					So(len(chunkStore.Contents), ShouldEqual, 1)
@@ -366,15 +377,21 @@ func TestIngest(t *testing.T) {
 				//   eligible for auto-exoneration, regardless of the
 				//   value of AutoExonerateBlockingFailures).
 				for _, exp := range expectedCFs {
-					exp.ExonerationStatus = pb.ExonerationStatus_NOT_EXONERATED
+					exp.ExonerationStatus = "NOT_EXONERATED"
 				}
 				Convey(`Build failed`, func() {
-					opts.ImplicitlyExonerateBlockingFailures = false
+					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_FAILURE
+					for _, exp := range expectedCFs {
+						exp.BuildStatus = "FAILURE"
+					}
 					testIngestion(tvs, expectedCFs)
 					So(len(chunkStore.Contents), ShouldEqual, 1)
 				})
 				Convey(`Build passed, cancelled or infra failure`, func() {
-					opts.ImplicitlyExonerateBlockingFailures = true
+					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
+					for _, exp := range expectedCFs {
+						exp.BuildStatus = "INFRA_FAILURE"
+					}
 					testIngestion(tvs, expectedCFs)
 					So(len(chunkStore.Contents), ShouldEqual, 1)
 				})
@@ -493,6 +510,10 @@ func newTestResult(uniqifier, testRunNum, resultNum int) *rdbpb.TestResult {
 
 func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTestRun, resultNum int) *bqpb.ClusteredFailureRow {
 	resultID := fmt.Sprintf("result-%v-%v", testRunNum, resultNum)
+	presubmitRunOwner := "automation"
+	presubmitRunMode := pb.PresubmitRunMode_FULL_RUN
+	presubmitRunStatus := "FAILED" // pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED
+	buildCritical := true
 	return &bqpb.ClusteredFailureRow{
 		ClusterAlgorithm: "", // Determined by clustering algorithm.
 		ClusterId:        "", // Determined by clustering algorithm.
@@ -526,10 +547,16 @@ func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTes
 		BugTrackingComponent: &pb.BugTrackingComponent{System: "monorail", Component: "Component>MyComponent"},
 		StartTime:            timestamppb.New(time.Date(2022, time.February, 12, 0, 0, 0, 0, time.UTC)),
 		Duration:             durationpb.New(time.Second * 10),
-		ExonerationStatus:    pb.ExonerationStatus_NOT_EXONERATED,
-		PresubmitRunId:       &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
-		PresubmitRunOwner:    "automation",
-		PresubmitRunCls: []*pb.Changelist{
+		Exonerations:         nil,
+		ExonerationStatus:    "NOT_EXONERATED",
+
+		PresubmitRunId:     &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
+		PresubmitRunOwner:  &presubmitRunOwner,
+		PresubmitRunMode:   &presubmitRunMode,
+		PresubmitRunStatus: &presubmitRunStatus,
+		BuildStatus:        "FAILURE", // pb.BuildStatus_BUILD_STATUS_FAILURE
+		BuildCritical:      &buildCritical,
+		Changelists: []*pb.Changelist{
 			{
 				Host:     "chromium-review.googlesource.com",
 				Change:   12345,

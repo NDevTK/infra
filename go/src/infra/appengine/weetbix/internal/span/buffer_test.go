@@ -57,8 +57,14 @@ func TestTypeConversion(t *testing.T) {
 	Convey(`pb.BuildStatus`, t, func() {
 		test(pb.BuildStatus_BUILD_STATUS_SUCCESS, int64(1))
 	})
-	Convey(`pb.ExonerationStatus`, t, func() {
-		test(pb.ExonerationStatus_OCCURS_ON_MAINLINE, int64(20))
+	Convey(`[]pb.ExonerationReason`, t, func() {
+		test(
+			[]pb.ExonerationReason{
+				pb.ExonerationReason_OCCURS_ON_MAINLINE,
+				pb.ExonerationReason_NOT_CRITICAL,
+			},
+			[]int64{int64(1), int64(3)},
+		)
 	})
 	Convey(`pb.TestResultStatus`, t, func() {
 		test(pb.TestResultStatus_PASS, int64(1))

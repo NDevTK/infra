@@ -38,28 +38,31 @@ type Options struct {
 	Realm string
 	// InvocationID is the identity of the invocation being ingested.
 	InvocationID string
-	// ImplicitlyExonerateBlockingFailures controls whether invocation-blocking
-	// failures should be automatically treated as exonerated, regardless of
-	// exoneration status reported to ResultDB.
-	// This is set if either:
-	// - the build corresponding to the ingested invocation was cancelled,
-	//   passed, or had an infra failure (i.e. was anything other than a
-	//   build failure), or
-	// - the CQ run did not consider the build critical (e.g. because it
-	//   was experimental).
-	// As inferences that test failures caused the release build or CQ run
-	// to fail are self-evidently untrue in those cases.
-	ImplicitlyExonerateBlockingFailures bool
-	// PresubmitRunID is the identity of the presubmit run (if any).
-	PresubmitRunID *pb.PresubmitRunId
-	// PresubmitRunOwner is the the owner of the presubmit
+	// The presubmit run (if any).
+	PresubmitRun *PresubmitRun
+	// The result of the build that was ingested.
+	BuildStatus pb.BuildStatus
+	// Whether the build was critical to the presubmit run.
+	// Ignored if PresubmitRun is nil.
+	BuildCritical bool
+	// The unsubmitted changelists that were tested (if any).
+	// Changelists are sorted in ascending (host, change, patchset) order.
+	// Up to 10 changelists are captured.
+	Changelists []*pb.Changelist
+}
+
+type PresubmitRun struct {
+	// ID is the identity of the presubmit run (if any).
+	ID *pb.PresubmitRunId
+	// Owner is the the owner of the presubmit
 	// run (if any). This is the owner of the CL on which CQ+1/CQ+2 was
 	// clicked (even in case of presubmit run with multiple CLs).
-	PresubmitRunOwner string
-	// PresubmitRunCls are the Changelists included in the presubmit run
-	// (if any). Changelists must be sorted in ascending
-	// (host, change, patchset) order. Up to 10 changelists may be captured.
-	PresubmitRunCls []*pb.Changelist
+	Owner string
+	// The mode of the presubmit run.
+	// E.g. DRY_RUN, FULL_RUN, QUICK_DRY_RUN.
+	Mode pb.PresubmitRunMode
+	// The presubmit run's ending status.
+	Status pb.PresubmitRunStatus
 }
 
 // ChunkStore is the interface for the blob store archiving chunks of test

@@ -276,7 +276,9 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		if nextPageToken == "" {
 			// In the last task, after all test variants ingested.
 			isPreSubmit := payload.PresubmitRun != nil
-			contributedToCLSubmission := payload.PresubmitRun != nil && payload.PresubmitRun.PresubmitRunSucceeded
+			contributedToCLSubmission := payload.PresubmitRun != nil &&
+				payload.PresubmitRun.Mode == pb.PresubmitRunMode_FULL_RUN &&
+				payload.PresubmitRun.Status == pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED
 			if err = resultcollector.Schedule(ctx, inv, rdbHost, build.Builder.Builder, isPreSubmit, contributedToCLSubmission); err != nil {
 				return transient.Tag.Apply(err)
 			}
@@ -377,33 +379,37 @@ func ingestForClustering(ctx context.Context, clustering *ingestion.Ingester, pa
 		}
 	}
 
+	changelists := make([]*pb.Changelist, 0, len(inv.Changelists))
+	for _, cl := range inv.Changelists {
+		changelists = append(changelists, &pb.Changelist{
+			Host:     cl.Host + "-review.googlesource.com",
+			Change:   cl.Change,
+			Patchset: int32(cl.Patchset),
+		})
+	}
+
 	// Setup clustering ingestion.
 	opts := ingestion.Options{
+		TaskIndex:     payload.TaskIndex,
 		Project:       inv.Project,
-		InvocationID:  inv.IngestedInvocationID,
 		PartitionTime: inv.PartitionTime,
 		Realm:         inv.Project + ":" + inv.SubRealm,
-		TaskIndex:     payload.TaskIndex,
-		// In case of Success, Cancellation, or Infra Failure automatically
-		// exonerate failures of tests which were invocation-blocking,
-		// even if the recipe did not upload an exoneration to ResultDB.
-		// The build status implies the test result could not have been
-		// responsible for causing the build (or consequently, the CQ run)
-		// to fail.
-		ImplicitlyExonerateBlockingFailures: inv.BuildStatus != pb.BuildStatus_BUILD_STATUS_FAILURE,
+		InvocationID:  inv.IngestedInvocationID,
+		BuildStatus:   inv.BuildStatus,
+		Changelists:   changelists,
 	}
 
 	if payload.PresubmitRun != nil {
-		opts.PresubmitRunID = payload.PresubmitRun.PresubmitRunId
-		opts.PresubmitRunOwner = payload.PresubmitRun.Owner
-		opts.PresubmitRunCls = payload.PresubmitRun.Cls
-		if !payload.PresubmitRun.Critical {
-			// CQ did not consider the build critical.
-			opts.ImplicitlyExonerateBlockingFailures = true
+		opts.PresubmitRun = &ingestion.PresubmitRun{
+			ID:     payload.PresubmitRun.PresubmitRunId,
+			Owner:  payload.PresubmitRun.Owner,
+			Mode:   payload.PresubmitRun.Mode,
+			Status: payload.PresubmitRun.Status,
 		}
+		opts.BuildCritical = payload.PresubmitRun.Critical
 		if payload.PresubmitRun.Critical && inv.BuildStatus == pb.BuildStatus_BUILD_STATUS_FAILURE &&
-			payload.PresubmitRun.PresubmitRunSucceeded {
-			logging.Warningf(ctx, "Inconsistent data from LUCI CV: build %v/%v was critical to presubmit run %v/%v and failed, but presubmit run did not fail.",
+			payload.PresubmitRun.Status == pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED {
+			logging.Warningf(ctx, "Inconsistent data from LUCI CV: build %v/%v was critical to presubmit run %v/%v and failed, but presubmit run succeeded.",
 				payload.Build.Host, payload.Build.Id, payload.PresubmitRun.PresubmitRunId.System, payload.PresubmitRun.PresubmitRunId.Id)
 		}
 	}

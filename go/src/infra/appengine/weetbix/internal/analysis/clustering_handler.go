@@ -6,6 +6,7 @@ package analysis
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -123,6 +124,24 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 	// Copy the failure, to ensure the returned ClusteredFailure does not
 	// alias any of the original failure's nested message protos.
 	failure = proto.Clone(failure).(*cpb.Failure)
+
+	exonerations := make([]*bqpb.ClusteredFailureRow_TestExoneration, 0, len(failure.Exonerations))
+	for _, e := range failure.Exonerations {
+		exonerations = append(exonerations, &bqpb.ClusteredFailureRow_TestExoneration{
+			Reason: e.Reason,
+		})
+	}
+
+	status := "NOT_EXONERATED"
+	if failure.IsIngestedInvocationBlocked &&
+		(failure.BuildStatus != pb.BuildStatus_BUILD_STATUS_FAILURE ||
+			(failure.BuildCritical != nil && !*failure.BuildCritical)) {
+		status = "IMPLICIT"
+	}
+	if len(failure.Exonerations) > 0 {
+		status = failure.Exonerations[0].Reason.String()
+	}
+
 	entry := &bqpb.ClusteredFailureRow{
 		ClusterAlgorithm: cluster.Algorithm,
 		ClusterId:        cluster.ID,
@@ -140,18 +159,19 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 
 		Realm:                failure.Realm,
 		TestId:               failure.TestId,
-		Tags:                 failure.Tags,
 		Variant:              variantPairs(failure.Variant),
+		Tags:                 failure.Tags,
 		VariantHash:          failure.VariantHash,
 		FailureReason:        failure.FailureReason,
 		BugTrackingComponent: failure.BugTrackingComponent,
 		StartTime:            failure.StartTime,
 		Duration:             failure.Duration,
-		ExonerationStatus:    failure.ExonerationStatus,
+		Exonerations:         exonerations,
+		ExonerationStatus:    status,
 
-		PresubmitRunId:                failure.PresubmitRunId,
-		PresubmitRunOwner:             failure.PresubmitRunOwner,
-		PresubmitRunCls:               failure.PresubmitRunCls,
+		BuildStatus:                   strings.TrimPrefix(failure.BuildStatus.String(), "BUILD_STATUS_"),
+		BuildCritical:                 failure.BuildCritical,
+		Changelists:                   failure.Changelists,
 		IngestedInvocationId:          failure.IngestedInvocationId,
 		IngestedInvocationResultIndex: failure.IngestedInvocationResultIndex,
 		IngestedInvocationResultCount: failure.IngestedInvocationResultCount,
@@ -160,6 +180,13 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 		TestRunResultIndex:            failure.TestRunResultIndex,
 		TestRunResultCount:            failure.TestRunResultCount,
 		IsTestRunBlocked:              failure.IsTestRunBlocked,
+	}
+	if failure.PresubmitRun != nil {
+		entry.PresubmitRunId = failure.PresubmitRun.PresubmitRunId
+		entry.PresubmitRunOwner = &failure.PresubmitRun.Owner
+		entry.PresubmitRunMode = &failure.PresubmitRun.Mode
+		presubmitRunStatus := strings.TrimPrefix(failure.PresubmitRun.Status.String(), "PRESUBMIT_RUN_STATUS_")
+		entry.PresubmitRunStatus = &presubmitRunStatus
 	}
 	return entry
 }

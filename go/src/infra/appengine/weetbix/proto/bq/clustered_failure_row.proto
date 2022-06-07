@@ -16,7 +16,7 @@ option go_package = "infra/appengine/weetbix/proto/bq;weetbixpb";
 
 // ClusteredFailureRow represents a row in a BigQuery table for a clustered
 // test failure.
-// Next ID: 33.
+// Next ID: 39.
 message ClusteredFailureRow {
   // The clustering algorithm which clustered the test failure.
   string cluster_algorithm = 1;
@@ -134,7 +134,6 @@ message ClusteredFailureRow {
   // A key can be repeated.
   repeated weetbix.v1.StringPair tags = 32;
 
-
   // Hash of the variant.
   // hex(sha256(''.join(sorted('%s:%s\n' for k, v in variant.items())))).
   string variant_hash = 14;
@@ -156,8 +155,22 @@ message ClusteredFailureRow {
   reserved 19;
 
   // A status describing whether the test failure was exonerated, and if
-  // so, why it was exonerated.
-  weetbix.v1.ExonerationStatus exoneration_status = 31;
+  // so, why it was exonerated. One of: NOT_EXONERATED, IMPLICIT,
+  // OCCURS_ON_MAINLINE, OCCURS_ON_OTHER_CLS, NOT_CRITICAL.
+  //
+  // Deprecated -- will be deleted imminently.
+  string exoneration_status = 31;
+
+  message TestExoneration {
+    // Machine-readable reasons describing why the test failure was exonerated
+    // (if any).
+    weetbix.v1.ExonerationReason reason = 1;
+  }
+
+  // The exonerations applied to the test verdict.
+  // An empty list indicates the test verdict this test result was a part of
+  // was not exonerated.
+  repeated TestExoneration exonerations = 33;
 
   // Identity of the presubmit run that contains this test result.
   // This should be unique per "CQ+1"/"CQ+2" attempt on gerrit.
@@ -179,12 +192,37 @@ message ClusteredFailureRow {
   // There is scope for this field to become an email address if privacy
   // approval is obtained, until then it is "automation" (for automation
   // service accounts) and "user" otherwise.
-  string presubmit_run_owner = 29;
+  optional string presubmit_run_owner = 29;
 
-  // The changelist(s) (CLs) that were the subject of the presubmit run.
+  // The mode of the presubmit run (if any).
+  // E.g. DRY_RUN, FULL_RUN, QUICK_DRY_RUN.
+  optional weetbix.v1.PresubmitRunMode presubmit_run_mode = 34;
+
+  // The presubmit run's ending status.
+  // Notionally weetbix.v1.PresubmitRunStatus, but string so that
+  // we can chop off the "PRESUBMIT_RUN_STATUS_" prefix and have
+  // only the status, e.g. SUCCESS, FAILURE, CANCELED.
+  optional string presubmit_run_status = 35;
+
+  reserved 30;
+
+  // The status of the build that contained this test result. Can be used
+  // to filter incomplete results (e.g. where build was cancelled or had
+  // an infra failure). Can also be used to filter builds with incomplete
+  // exonerations (e.g. build succeeded but some tests not exonerated).
+  // This is the build corresponding to ingested_invocation_id.
+  // Notionally weetbix.v1.BuildStatus, but string so that we can chop off
+  // the BUILD_STATUS_ prefix that would otherwise appear on every value.
+  string build_status = 36;
+
+  // Whether the build was critical to a presubmit run succeeding.
+  // If the build was not a tryjob for a presubmit run, this is null.
+  optional bool build_critical = 37;
+
+  // The unsubmitted changelists that were tested (if any).
   // Changelists are sorted in ascending (host, change, patchset) order.
   // Up to 10 changelists are captured.
-  repeated weetbix.v1.Changelist presubmit_run_cls = 30;
+  repeated weetbix.v1.Changelist changelists = 38;
 
   // The invocation from which this test result was ingested. This is
   // the top-level invocation that was ingested, an "invocation" being

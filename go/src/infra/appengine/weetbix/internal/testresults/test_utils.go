@@ -28,7 +28,7 @@ func NewTestResult() *TestResultBuilder {
 		IsUnexpected:         true,
 		RunDuration:          &d,
 		Status:               pb.TestResultStatus_PASS,
-		ExonerationStatus:    pb.ExonerationStatus_OCCURS_ON_OTHER_CLS,
+		ExonerationReasons:   nil,
 		SubRealm:             "realm",
 		BuildStatus:          pb.BuildStatus_BUILD_STATUS_SUCCESS,
 		Changelists: []Changelist{
@@ -104,8 +104,13 @@ func (b *TestResultBuilder) WithStatus(status pb.TestResultStatus) *TestResultBu
 	return b
 }
 
-func (b *TestResultBuilder) WithExonerationStatus(exonerationStatus pb.ExonerationStatus) *TestResultBuilder {
-	b.result.ExonerationStatus = exonerationStatus
+func (b *TestResultBuilder) WithExonerationReasons(exonerationReasons ...pb.ExonerationReason) *TestResultBuilder {
+	b.result.ExonerationReasons = exonerationReasons
+	return b
+}
+
+func (b *TestResultBuilder) WithoutExoneration() *TestResultBuilder {
+	b.result.ExonerationReasons = []pb.ExonerationReason{}
 	return b
 }
 
@@ -219,12 +224,12 @@ func applyStatus(trs []*TestResult, status pb.TestVerdictStatus) {
 	// Set all test results to unexpected, not exonerated by default.
 	for _, tr := range trs {
 		tr.IsUnexpected = true
-		tr.ExonerationStatus = pb.ExonerationStatus_NOT_EXONERATED
+		tr.ExonerationReasons = nil
 	}
 	switch status {
 	case pb.TestVerdictStatus_EXONERATED:
 		for _, tr := range trs {
-			tr.ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
+			tr.ExonerationReasons = []pb.ExonerationReason{pb.ExonerationReason_OCCURS_ON_MAINLINE}
 		}
 	case pb.TestVerdictStatus_UNEXPECTED:
 		// No changes required.

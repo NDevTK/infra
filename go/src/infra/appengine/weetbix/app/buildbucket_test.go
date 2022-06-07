@@ -96,6 +96,7 @@ func TestHandleBuild(t *testing.T) {
 					run := &cvv0.Run{
 						Id:         "projects/cvproject/runs/123e4567-e89b-12d3-a456-426614174000",
 						Mode:       "FULL_RUN",
+						Status:     cvv0.Run_FAILED,
 						Owner:      "chromium-autoroll@skia-public.iam.gserviceaccount.com",
 						CreateTime: timestamppb.New(partitionTime),
 						Tryjobs: []*cvv0.Tryjob{
@@ -146,16 +147,9 @@ func TestHandleBuild(t *testing.T) {
 								System: "luci-cv",
 								Id:     "cvproject/123e4567-e89b-12d3-a456-426614174000",
 							},
-							PresubmitRunSucceeded: false,
-							Owner:                 "automation",
-							Mode:                  pb.PresubmitRunMode_FULL_RUN,
-							Cls: []*pb.Changelist{
-								{
-									Host:     "chromium-review.googlesource.com",
-									Change:   12345,
-									Patchset: 1,
-								},
-							},
+							Status:       pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED,
+							Owner:        "automation",
+							Mode:         pb.PresubmitRunMode_FULL_RUN,
 							CreationTime: timestamppb.New(partitionTime),
 							Critical:     true,
 						},

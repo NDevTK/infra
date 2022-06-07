@@ -86,3 +86,39 @@ func TestMetadataFromResultDB(rdbTmd *rdbpb.TestMetadata) *pb.TestMetadata {
 
 	return tmd
 }
+
+// TestResultStatus returns the Weetbix test result status corresponding
+// to the given ResultDB test result status.
+func TestResultStatusFromResultDB(s rdbpb.TestStatus) pb.TestResultStatus {
+	switch s {
+	case rdbpb.TestStatus_ABORT:
+		return pb.TestResultStatus_ABORT
+	case rdbpb.TestStatus_CRASH:
+		return pb.TestResultStatus_CRASH
+	case rdbpb.TestStatus_FAIL:
+		return pb.TestResultStatus_FAIL
+	case rdbpb.TestStatus_PASS:
+		return pb.TestResultStatus_PASS
+	case rdbpb.TestStatus_SKIP:
+		return pb.TestResultStatus_SKIP
+	default:
+		return pb.TestResultStatus_TEST_RESULT_STATUS_UNSPECIFIED
+	}
+}
+
+// ExonerationReasonFromResultDB converts a ResultDB ExonerationReason to a
+// Weetbix ExonerationReason.
+func ExonerationReasonFromResultDB(s rdbpb.ExonerationReason) pb.ExonerationReason {
+	switch s {
+	case rdbpb.ExonerationReason_NOT_CRITICAL:
+		return pb.ExonerationReason_NOT_CRITICAL
+	case rdbpb.ExonerationReason_OCCURS_ON_MAINLINE:
+		return pb.ExonerationReason_OCCURS_ON_MAINLINE
+	case rdbpb.ExonerationReason_OCCURS_ON_OTHER_CLS:
+		return pb.ExonerationReason_OCCURS_ON_OTHER_CLS
+	case rdbpb.ExonerationReason_UNEXPECTED_PASS:
+		return pb.ExonerationReason_UNEXPECTED_PASS
+	default:
+		return pb.ExonerationReason_EXONERATION_REASON_UNSPECIFIED
+	}
+}

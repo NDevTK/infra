@@ -43,15 +43,9 @@ func NewEntry(uniqifier int) *EntryBuilder {
 					System: "luci-cv",
 					Id:     fmt.Sprintf("%s/123123-%v", "presubmit-project", uniqifier),
 				},
-				PresubmitRunSucceeded: true,
-				Owner:                 "automation",
-				Cls: []*pb.Changelist{
-					{
-						Host:     "chromium-review.googlesource.com",
-						Change:   12345,
-						Patchset: 1,
-					},
-				},
+				Status:       pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED,
+				Mode:         pb.PresubmitRunMode_QUICK_DRY_RUN,
+				Owner:        "automation",
 				CreationTime: timestamppb.New(time.Date(2026, time.December, 1, 1, 2, 3, uniqifier*1000, time.UTC)),
 			},
 			PresubmitJoinedTime: time.Date(2020, time.December, 12, 1, 1, 1, uniqifier*1000, time.UTC),

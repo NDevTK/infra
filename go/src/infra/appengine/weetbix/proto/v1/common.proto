@@ -128,6 +128,10 @@ message ClusterId {
 // This can be used to detect if the test verdict is incomplete (e.g. because
 // an infra failure or cancellation occurred), and whether the unexpected
 // test verdict was also followed by a failing build.
+//
+// Note: All values prefixed with BUILD_STATUS_ as the names are generic
+// and likely to conflict with other/future enumerations otherwise.
+// See https://google.aip.dev/126.
 enum BuildStatus {
   // A build must not have this status.
   BUILD_STATUS_UNSPECIFIED = 0;
@@ -145,72 +149,22 @@ enum BuildStatus {
   BUILD_STATUS_CANCELED = 4;
 }
 
-// ExonerationStatus explains if and why a test failure was
+// ExonerationReason captures a reason why a test failure was
 // exonerated. Exonerated means the failure was ignored and did not
 // have further impact, in terms of causing the build to fail or
 // rejecting the CL being tested in a presubmit run.
 //
-// If multiple reasons for exoneration exist, they are applied in
-// the following order (later values take precedence over earlier values):
-//
-// IMPLICIT
-// OCCURS_ON_OTHER_CLS
-// OCCURS_ON_MAINLINE
-// NOT_CRITICAL
-// EXONERATED_GENERIC
-//
-// This ordering is so that an impact filter "before CQ exoneration"
-// can re-include failures with status OCCURS_ON_MAINLINE and
-// OCCURS_ON_OTHER_CLS without including failures also exonerated
-// for other reasons.
-//
-// The implementation assumes higher values have higher precedence,
-// so if inserting new values, please ensure an appropriate value is used.
-// Gaps have been left in the enumeration for this reason.
-enum ExonerationStatus {
+// Based on https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto?q=ExonerationReason&type=cs.
+enum ExonerationReason {
   // A test failure must not have this status.
-  EXONERATION_STATUS_UNSPECIFIED = 0;
+  EXONERATION_REASON_UNSPECIFIED = 0;
 
-  // The test was not exonerated.
-  NOT_EXONERATED = 1;
-
-  // Despite having an unexpected result, and no exoneration recorded
-  // in ResultDB, the build did not end in the state "failed"
-  // (e.g. the build status was succeeded, was cancelled or had an
-  // infra failure).
-  // The test result is implicitly exonerated.
-  IMPLICIT = 2;
-
-  // DEPRECATED. Use one of the other definitions.
-  // The test was marked exonerated in ResultDB, for a reason
-  // other than Weetbix or FindIt failure analysis.
-  // If a test is exonerated in ResultDB for both reasons
-  // other than Weetbix/FindIt and because of Weetbix/FindIt,
-  // this status takes precedence.
-  EXPLICIT = 3;
-
-  // DEPRECATED. Use OCCURS_ON_OTHER_CLS instead.
-  // The test was exonerated based on Weetbix cluster analysis.
-  // This status is only set if Weetbix is the only explicit
-  // reason(s) given for the exoneration in ResultDB.
-  //
-  // This status is provided to avoid feedback loops in the
-  // cluster analysis performed by Weetbix, by allowing Weetbix to
-  // filter out exoneration decisions based on such analysis from
-  // feeding back into the input of the analysis.
-  //
-  // Example of a situation we want to avoid:
-  // Weetbix detects an impactful cluster of failures
-  // affecting multiple CLs and cause a recipe to exonerate it.
-  // As a result, Weetbix no longer detects the cluster as impactful.
-  // As a result, the cluster is no longer exonerated.
-  // As a result, the impact resumes.
-  //
-  // During the transition from FindIt to Weetbix for failure
-  // exoneration, exonerations caused by FindIt will be treated
-  // the same as exonerations caused by Weetbix, to ensure Weetbix
-  // behaves as if FindIt no longer exists.
-  WEETBIX = 4;
+  // Similar unexpected results were observed on a mainline branch
+  // (i.e. against a build without unsubmitted changes applied).
+  // (For avoidance of doubt, this includes both flakily and
+  // deterministically occurring unexpected results.)
+  // Applies to unexpected results in presubmit/CQ runs only.
+  OCCURS_ON_MAINLINE = 1;
 
   // Similar unexpected results were observed in presubmit run(s) for other,
   // unrelated CL(s). (This is suggestive of the issue being present
@@ -218,25 +172,18 @@ enum ExonerationStatus {
   // factors, like how tests are run on CLs vs how tests are run on
   // mainline branches.)
   // Applies to unexpected results in presubmit/CQ runs only.
-  OCCURS_ON_OTHER_CLS = 10;
-
-  // Similar unexpected results were observed on a mainline branch
-  // (i.e. against a build without unsubmitted changes applied).
-  // (For avoidance of doubt, this includes both flakily and
-  // deterministically occurring unexpected results.)
-  // Applies to unexpected results in presubmit/CQ runs only.
-  OCCURS_ON_MAINLINE = 20;
+  OCCURS_ON_OTHER_CLS = 2;
 
   // The tests are not critical to the test subject (e.g. CL) passing.
   // This could be because more data is being collected to determine if
   // the tests are stable enough to be made critical (as is often the
   // case for experimental test suites).
-  NOT_CRITICAL = 30;
+  NOT_CRITICAL = 3;
 
-  // The test was marked exonerated in ResultDB, but a machine-understandable
-  // reason for the exoneration is not available or cannot be expressed
-  // in terms of a current enumeration value.
-  OTHER_EXPLICIT = 100;
+  // The test result was an unexpected pass. (Note that such an exoneration is
+  // not automatically created for unexpected passes, unless the option is
+  // specified to ResultSink or the project manually creates one).
+  UNEXPECTED_PASS = 4;
 }
 
 // Information about a test.
@@ -302,4 +249,25 @@ enum PresubmitRunMode {
 
   // Run some tests but do not submit.
   QUICK_DRY_RUN = 3;
+}
+
+// PresubmitRunStatus is the ending status of a presubmit run.
+//
+// Note: All values prefixed with PRESUBMIT_RUN_STATUS_ as the names are
+// generic and likely to conflict with other/future enumerations otherwise.
+// See https://google.aip.dev/126.
+//
+// Based on https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cv/internal/run/storage.proto;l=28?q=LUCI%20CV%20status%20lang:proto.
+enum PresubmitRunStatus {
+  // A build must not have this status.
+  PRESUBMIT_RUN_STATUS_UNSPECIFIED = 0;
+
+  // The run succeeded.
+  PRESUBMIT_RUN_STATUS_SUCCEEDED = 1;
+
+  // The run failed.
+  PRESUBMIT_RUN_STATUS_FAILED = 2;
+
+  // The run was canceled.
+  PRESUBMIT_RUN_STATUS_CANCELED = 3;
 }

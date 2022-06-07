@@ -32,12 +32,6 @@ const (
 	// TODO(chanli@@) Removing the hosts after CVPubSub and GetRun RPC added them.
 	// Host name of buildbucket.
 	bbHost = "cr-buildbucket.appspot.com"
-
-	// maximumCLs is the maximum number of CLs to capture from any completed
-	// CV run, after which the CL list is truncated. This avoids CV Runs with
-	// an excessive number of included CLs from storing an excessive amount
-	// of data per failure.
-	maximumCLs = 10
 )
 
 var (
@@ -144,17 +138,21 @@ func cvPubSubHandlerImpl(ctx context.Context, request *http.Request) (project st
 			continue
 		}
 
+		status, err := pbutil.PresubmitRunStatusFromLUCICV(run.Status)
+		if err != nil {
+			return project, false, errors.Annotate(err, "failed to parse run status").Err()
+		}
+
 		presubmitResultByBuildID[buildID] = &ctlpb.PresubmitResult{
 			PresubmitRunId: &pb.PresubmitRunId{
 				System: "luci-cv",
 				Id:     fmt.Sprintf("%s/%s", project, runID),
 			},
-			PresubmitRunSucceeded: run.Status == cvv0.Run_SUCCEEDED,
-			Mode:                  mode,
-			Owner:                 owner,
-			Cls:                   extractRunChangelists(run.Cls),
-			CreationTime:          run.CreateTime,
-			Critical:              tj.Critical,
+			Status:       status,
+			Mode:         mode,
+			Owner:        owner,
+			CreationTime: run.CreateTime,
+			Critical:     tj.Critical,
 		}
 	}
 
@@ -163,26 +161,6 @@ func cvPubSubHandlerImpl(ctx context.Context, request *http.Request) (project st
 	}
 
 	return project, true, nil
-}
-
-func extractRunChangelists(cls []*cvv0.GerritChange) []*pb.Changelist {
-	result := make([]*pb.Changelist, 0, len(cls))
-	for _, cl := range cls {
-		result = append(result, &pb.Changelist{
-			Host:     cl.Host,
-			Change:   cl.Change,
-			Patchset: cl.Patchset,
-		})
-	}
-	// Sort changelists in ascending order by host, then change,
-	// then patchset. This ensures CLs appear in a stable order for
-	// multi-CL CV runs.
-	sortChangelists(result)
-
-	if len(result) > maximumCLs {
-		result = result[:maximumCLs]
-	}
-	return result
 }
 
 func sortChangelists(cls []*pb.Changelist) {

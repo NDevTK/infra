@@ -95,8 +95,8 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 		spanPtr = &b.Int64
 	case *pb.BuildStatus:
 		spanPtr = &b.Int64
-	case *pb.ExonerationStatus:
-		spanPtr = &b.Int64
+	case *[]pb.ExonerationReason:
+		spanPtr = &b.Int64Slice
 	case *pb.TestResultStatus:
 		spanPtr = &b.Int64
 	case **pb.Variant:
@@ -146,8 +146,11 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 	case *pb.BuildStatus:
 		*goPtr = pb.BuildStatus(b.Int64)
 
-	case *pb.ExonerationStatus:
-		*goPtr = pb.ExonerationStatus(b.Int64)
+	case *[]pb.ExonerationReason:
+		*goPtr = make([]pb.ExonerationReason, len(b.Int64Slice))
+		for i, p := range b.Int64Slice {
+			(*goPtr)[i] = pb.ExonerationReason(p)
+		}
 
 	case *pb.TestResultStatus:
 		*goPtr = pb.TestResultStatus(b.Int64)
@@ -223,8 +226,12 @@ func ToSpanner(v interface{}) interface{} {
 	case pb.BuildStatus:
 		return int64(v)
 
-	case pb.ExonerationStatus:
-		return int64(v)
+	case []pb.ExonerationReason:
+		spanPtr := make([]int64, len(v))
+		for i, s := range v {
+			spanPtr[i] = int64(s)
+		}
+		return spanPtr
 
 	case pb.TestResultStatus:
 		return int64(v)

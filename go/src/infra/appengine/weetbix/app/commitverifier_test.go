@@ -100,13 +100,6 @@ func TestHandleCVRun(t *testing.T) {
 					tryjob(2), // This build has not been ingested yet.
 					tryjob(buildIDs[1]),
 				},
-				Cls: []*cvv0.GerritChange{
-					{
-						Host:     "chromium-review.googlesource.com",
-						Change:   12345,
-						Patchset: 1,
-					},
-				},
 				Status: cvv0.Run_SUCCEEDED,
 			}
 			expectedTaskTemplate := &taskspb.IngestTestResults{
@@ -116,17 +109,10 @@ func TestHandleCVRun(t *testing.T) {
 						System: "luci-cv",
 						Id:     "cvproject/" + strings.Split(run.Id, "/")[3],
 					},
-					Cls: []*pb.Changelist{
-						{
-							Host:     "chromium-review.googlesource.com",
-							Change:   12345,
-							Patchset: 1,
-						},
-					},
-					PresubmitRunSucceeded: true,
-					Mode:                  pb.PresubmitRunMode_FULL_RUN,
-					Owner:                 "user",
-					CreationTime:          run.CreateTime,
+					Status:       pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED,
+					Mode:         pb.PresubmitRunMode_FULL_RUN,
+					Owner:        "user",
+					CreationTime: run.CreateTime,
 				},
 			}
 			Convey(`Baseline`, func() {
@@ -191,7 +177,7 @@ func TestHandleCVRun(t *testing.T) {
 			})
 			Convey(`Failing Run`, func() {
 				run.Status = cvv0.Run_FAILED
-				expectedTaskTemplate.PresubmitRun.PresubmitRunSucceeded = false
+				expectedTaskTemplate.PresubmitRun.Status = pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED
 
 				processed, tasks := processCVRun(run)
 				So(processed, ShouldBeTrue)
@@ -200,56 +186,7 @@ func TestHandleCVRun(t *testing.T) {
 			})
 			Convey(`Cancelled Run`, func() {
 				run.Status = cvv0.Run_CANCELLED
-				expectedTaskTemplate.PresubmitRun.PresubmitRunSucceeded = false
-
-				processed, tasks := processCVRun(run)
-				So(processed, ShouldBeTrue)
-				So(sortTasks(tasks), ShouldResembleProto,
-					sortTasks(expectedTasks(expectedTaskTemplate, buildIDs)))
-			})
-			Convey(`Multi-CL`, func() {
-				run.Cls = []*cvv0.GerritChange{
-					{
-						Host:     "host2",
-						Change:   100,
-						Patchset: 1,
-					}, {
-						Host:     "host1",
-						Change:   201,
-						Patchset: 2,
-					}, {
-						Host:     "host1",
-						Change:   200,
-						Patchset: 3,
-					}, {
-						Host:     "host1",
-						Change:   200,
-						Patchset: 4,
-					},
-				}
-				// Must appear in sorted order.
-				expectedTaskTemplate.PresubmitRun.Cls = []*pb.Changelist{
-					{
-						Host:     "host1",
-						Change:   200,
-						Patchset: 3,
-					},
-					{
-						Host:     "host1",
-						Change:   200,
-						Patchset: 4,
-					},
-					{
-						Host:     "host1",
-						Change:   201,
-						Patchset: 2,
-					},
-					{
-						Host:     "host2",
-						Change:   100,
-						Patchset: 1,
-					},
-				}
+				expectedTaskTemplate.PresubmitRun.Status = pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_CANCELED
 
 				processed, tasks := processCVRun(run)
 				So(processed, ShouldBeTrue)

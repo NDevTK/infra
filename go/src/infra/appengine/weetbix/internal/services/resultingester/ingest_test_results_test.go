@@ -99,8 +99,8 @@ func TestShouldIngestForTestVariants(t *testing.T) {
 					System: "luci-cv",
 					Id:     "chromium/1111111111111-1-1111111111111111",
 				},
-				PresubmitRunSucceeded: true,
-				Mode:                  pb.PresubmitRunMode_FULL_RUN,
+				Status: pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED,
+				Mode:   pb.PresubmitRunMode_FULL_RUN,
 			}
 			Convey(`Successful full run`, func() {
 				So(shouldIngestForTestVariants(realm, payload), ShouldBeTrue)
@@ -110,7 +110,7 @@ func TestShouldIngestForTestVariants(t *testing.T) {
 				So(shouldIngestForTestVariants(realm, payload), ShouldBeFalse)
 			})
 			Convey(`Failed run`, func() {
-				payload.PresubmitRun.PresubmitRunSucceeded = false
+				payload.PresubmitRun.Status = pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED
 				So(shouldIngestForTestVariants(realm, payload), ShouldBeFalse)
 			})
 		})
@@ -264,8 +264,8 @@ func TestIngestTestResults(t *testing.T) {
 						WithResultIndex(0).
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
-						WithRunDuration(3 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_CRITICAL).
+						WithRunDuration(3*time.Second).
+						WithExonerationReasons(pb.ExonerationReason_OCCURS_ON_OTHER_CLS, pb.ExonerationReason_NOT_CRITICAL, pb.ExonerationReason_OCCURS_ON_MAINLINE).
 						Build(),
 					trBuilder.WithTestID("ninja://test_expected").
 						WithVariantHash("hash").
@@ -274,7 +274,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(false).
 						WithStatus(pb.TestResultStatus_PASS).
 						WithRunDuration(5 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_has_unexpected").
 						WithVariantHash("hash").
@@ -283,7 +283,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
 						WithoutRunDuration().
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_has_unexpected").
 						WithVariantHash("hash").
@@ -292,7 +292,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(false).
 						WithStatus(pb.TestResultStatus_PASS).
 						WithoutRunDuration().
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_known_flake").
 						WithVariantHash("hash_2").
@@ -301,7 +301,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
 						WithRunDuration(2 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_new_failure").
 						WithVariantHash("hash_1").
@@ -310,7 +310,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
 						WithRunDuration(1 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_new_flake").
 						WithVariantHash("hash").
@@ -319,7 +319,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
 						WithRunDuration(10 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_new_flake").
 						WithVariantHash("hash").
@@ -328,7 +328,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
 						WithRunDuration(11 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_new_flake").
 						WithVariantHash("hash").
@@ -337,7 +337,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(false).
 						WithStatus(pb.TestResultStatus_PASS).
 						WithRunDuration(12 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_no_new_results").
 						WithVariantHash("hash").
@@ -346,7 +346,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_FAIL).
 						WithRunDuration(4 * time.Second).
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_skip").
 						WithVariantHash("hash").
@@ -355,7 +355,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_SKIP).
 						WithoutRunDuration().
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 					trBuilder.WithTestID("ninja://test_unexpected_pass").
 						WithVariantHash("hash").
@@ -364,7 +364,7 @@ func TestIngestTestResults(t *testing.T) {
 						WithIsUnexpected(true).
 						WithStatus(pb.TestResultStatus_PASS).
 						WithoutRunDuration().
-						WithExonerationStatus(pb.ExonerationStatus_NOT_EXONERATED).
+						WithoutExoneration().
 						Build(),
 				}
 
@@ -619,10 +619,10 @@ func TestIngestTestResults(t *testing.T) {
 									System: "luci-cv",
 									Id:     "infra/12345",
 								},
-								PresubmitRunSucceeded: true,
-								Owner:                 "automation",
-								Mode:                  pb.PresubmitRunMode_FULL_RUN,
-								CreationTime:          timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
+								Owner:        "automation",
+								Status:       pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED,
+								Mode:         pb.PresubmitRunMode_FULL_RUN,
+								CreationTime: timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
 							},
 							PageToken: "continuation_token",
 							TaskIndex: 1,
@@ -734,10 +734,10 @@ func TestIngestTestResults(t *testing.T) {
 						System: "luci-cv",
 						Id:     "infra/12345",
 					},
-					PresubmitRunSucceeded: true,
-					Mode:                  pb.PresubmitRunMode_FULL_RUN,
-					Owner:                 "automation",
-					CreationTime:          timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
+					Status:       pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED,
+					Mode:         pb.PresubmitRunMode_FULL_RUN,
+					Owner:        "automation",
+					CreationTime: timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
 				},
 				PageToken: "expected_token",
 				TaskIndex: 0,

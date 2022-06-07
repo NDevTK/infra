@@ -55,19 +55,7 @@ func failuresFromTestVariant(opts Options, tv *rdbpb.TestVariant) []*cpb.Failure
 				continue
 			}
 
-			exoneration := resultdb.StatusFromExonerations(tv.Exonerations)
-			if !hasPass && opts.ImplicitlyExonerateBlockingFailures && exoneration == pb.ExonerationStatus_NOT_EXONERATED {
-				// TODO(meiring): Replace with separate build status field.
-				exoneration = pb.ExonerationStatus_IMPLICIT
-			}
-
-			testRun, err := resultdb.InvocationFromTestResultName(tr.Result.Name)
-			if err != nil {
-				// Should never happen, as the result name from ResultDB
-				// should be valid.
-				panic(err)
-			}
-			failure := failureFromResult(tv, tr.Result, opts, exoneration, testRun)
+			failure := failureFromResult(tv, tr.Result, opts)
 			failure.IngestedInvocationResultIndex = int64(resultIndex)
 			failure.IngestedInvocationResultCount = int64(len(tv.Results))
 			failure.IsIngestedInvocationBlocked = !hasPass
@@ -88,7 +76,31 @@ func isFailure(s rdbpb.TestStatus) bool {
 		s == rdbpb.TestStatus_FAIL)
 }
 
-func failureFromResult(tv *rdbpb.TestVariant, tr *rdbpb.TestResult, opts Options, exonerationStatus pb.ExonerationStatus, testRunID string) *cpb.Failure {
+func failureFromResult(tv *rdbpb.TestVariant, tr *rdbpb.TestResult, opts Options) *cpb.Failure {
+	exonerations := make([]*cpb.TestExoneration, 0, len(tv.Exonerations))
+	for _, e := range tv.Exonerations {
+		exonerations = append(exonerations, exonerationFromResultDB(e))
+	}
+
+	var presubmitRun *cpb.PresubmitRun
+	var buildCritical *bool
+	if opts.PresubmitRun != nil {
+		presubmitRun = &cpb.PresubmitRun{
+			PresubmitRunId: opts.PresubmitRun.ID,
+			Owner:          opts.PresubmitRun.Owner,
+			Mode:           opts.PresubmitRun.Mode,
+			Status:         opts.PresubmitRun.Status,
+		}
+		buildCritical = &opts.BuildCritical
+	}
+
+	testRunID, err := resultdb.InvocationFromTestResultName(tr.Name)
+	if err != nil {
+		// Should never happen, as the result name from ResultDB
+		// should be valid.
+		panic(err)
+	}
+
 	result := &cpb.Failure{
 		TestResultId:                  pbutil.TestResultIDFromResultDB(tr.Name),
 		PartitionTime:                 timestamppb.New(opts.PartitionTime),
@@ -102,7 +114,11 @@ func failureFromResult(tv *rdbpb.TestVariant, tr *rdbpb.TestResult, opts Options
 		BugTrackingComponent:          extractBugTrackingComponent(tr.Tags),
 		StartTime:                     tr.StartTime,
 		Duration:                      tr.Duration,
-		ExonerationStatus:             exonerationStatus,
+		Exonerations:                  exonerations,
+		PresubmitRun:                  presubmitRun,
+		BuildStatus:                   opts.BuildStatus,
+		BuildCritical:                 buildCritical,
+		Changelists:                   opts.Changelists,
 		IngestedInvocationId:          opts.InvocationID,
 		IngestedInvocationResultIndex: -1,    // To be populated by caller.
 		IngestedInvocationResultCount: -1,    // To be populated by caller.
@@ -111,12 +127,16 @@ func failureFromResult(tv *rdbpb.TestVariant, tr *rdbpb.TestResult, opts Options
 		TestRunResultIndex:            -1,    // To be populated by caller.
 		TestRunResultCount:            -1,    // To be populated by caller.
 		IsTestRunBlocked:              false, // To be populated by caller.
-		PresubmitRunId:                opts.PresubmitRunID,
-		PresubmitRunOwner:             opts.PresubmitRunOwner,
-		PresubmitRunCls:               opts.PresubmitRunCls,
 	}
+
 	// Copy the result to avoid the result aliasing any of the protos used as input.
 	return proto.Clone(result).(*cpb.Failure)
+}
+
+func exonerationFromResultDB(e *rdbpb.TestExoneration) *cpb.TestExoneration {
+	return &cpb.TestExoneration{
+		Reason: pbutil.ExonerationReasonFromResultDB(e.Reason),
+	}
 }
 
 func extractBugTrackingComponent(tags []*rdbpb.StringPair) *pb.BugTrackingComponent {

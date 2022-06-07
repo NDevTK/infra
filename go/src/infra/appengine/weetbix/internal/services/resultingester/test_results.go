@@ -27,6 +27,12 @@ import (
 	"infra/appengine/weetbix/utils"
 )
 
+// maximumCLs is the maximum number of changelists to capture from any
+// buildbucket run, after which the CL list is truncated. This avoids builds
+// with an excessive number of included CLs from storing an excessive amount
+// of data per failure.
+const maximumCLs = 10
+
 func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Build, inv *rdbpb.Invocation) (*testresults.IngestedInvocation, error) {
 	invID, err := rdbpbutil.ParseInvocationName(inv.Name)
 	if err != nil {
@@ -73,6 +79,12 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 	// Store the tested changelists in sorted order. This ensures that for
 	// the same combination of CLs tested, the arrays are identical.
 	testresults.SortChangelists(changelists)
+
+	// Truncate the list of changelists to avoid storing an excessive number.
+	// Apply truncation after sorting to ensure a stable set of changelists.
+	if len(changelists) > maximumCLs {
+		changelists = changelists[:maximumCLs]
+	}
 
 	var presubmitRun *testresults.PresubmitRun
 	if task.PresubmitRun != nil {
@@ -154,7 +166,10 @@ func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVari
 		}
 		tvrs = append(tvrs, tvr.SaveUnverified())
 
-		exonerationStatus := resultdb.StatusFromExonerations(tv.Exonerations)
+		exonerationReasons := make([]pb.ExonerationReason, 0, len(tv.Exonerations))
+		for _, ex := range tv.Exonerations {
+			exonerationReasons = append(exonerationReasons, pbutil.ExonerationReasonFromResultDB(ex.Reason))
+		}
 
 		// Group results into test runs and order them by start time.
 		resultsByRun := resultdb.GroupAndOrderTestResults(tv.Results)
@@ -169,8 +184,8 @@ func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVari
 					RunIndex:             int64(runIndex),
 					ResultIndex:          int64(resultIndex),
 					IsUnexpected:         !inputTR.Result.Expected,
-					Status:               resultdb.TestResultStatus(inputTR.Result.Status),
-					ExonerationStatus:    exonerationStatus,
+					Status:               pbutil.TestResultStatusFromResultDB(inputTR.Result.Status),
+					ExonerationReasons:   exonerationReasons,
 					SubRealm:             inv.SubRealm,
 					BuildStatus:          inv.BuildStatus,
 					PresubmitRun:         inv.PresubmitRun,

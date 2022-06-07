@@ -55,7 +55,8 @@ func shouldIngestForTestVariants(realmcfg *configpb.RealmConfig, task *taskspb.I
 	return task.PresubmitRun == nil ||
 		// And presubmit results, where the presubmit run succeeded
 		// and the run was a FULL_RUN.
-		(task.PresubmitRun != nil && task.PresubmitRun.PresubmitRunSucceeded &&
+		(task.PresubmitRun != nil &&
+			task.PresubmitRun.Status == pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED &&
 			task.PresubmitRun.Mode == pb.PresubmitRunMode_FULL_RUN)
 }
 

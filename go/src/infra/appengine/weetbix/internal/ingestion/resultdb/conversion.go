@@ -10,56 +10,7 @@ import (
 	"strings"
 
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
-
-	pb "infra/appengine/weetbix/proto/v1"
 )
-
-// StatusFromExonerations returns the Weetbix exoneration status corresponding
-// to the given ResultDB exonerations. This is NOT_EXONERATED if there are
-// no exonerations, or the exoneration with the highest precedence value
-// otherwise.
-func StatusFromExonerations(es []*rdbpb.TestExoneration) pb.ExonerationStatus {
-	result := pb.ExonerationStatus_NOT_EXONERATED
-	for _, e := range es {
-		alternativeStatus := statusFromExoneration(e)
-		if alternativeStatus > result || result == pb.ExonerationStatus_NOT_EXONERATED {
-			result = alternativeStatus
-		}
-	}
-	return result
-}
-
-// TestResultStatus returns the Weetbix test result status corresponding
-// to the given ResultDB test result status.
-func TestResultStatus(s rdbpb.TestStatus) pb.TestResultStatus {
-	switch s {
-	case rdbpb.TestStatus_ABORT:
-		return pb.TestResultStatus_ABORT
-	case rdbpb.TestStatus_CRASH:
-		return pb.TestResultStatus_CRASH
-	case rdbpb.TestStatus_FAIL:
-		return pb.TestResultStatus_FAIL
-	case rdbpb.TestStatus_PASS:
-		return pb.TestResultStatus_PASS
-	case rdbpb.TestStatus_SKIP:
-		return pb.TestResultStatus_SKIP
-	default:
-		return pb.TestResultStatus_TEST_RESULT_STATUS_UNSPECIFIED
-	}
-}
-
-func statusFromExoneration(e *rdbpb.TestExoneration) pb.ExonerationStatus {
-	switch e.Reason {
-	case rdbpb.ExonerationReason_NOT_CRITICAL:
-		return pb.ExonerationStatus_NOT_CRITICAL
-	case rdbpb.ExonerationReason_OCCURS_ON_MAINLINE:
-		return pb.ExonerationStatus_OCCURS_ON_MAINLINE
-	case rdbpb.ExonerationReason_OCCURS_ON_OTHER_CLS:
-		return pb.ExonerationStatus_OCCURS_ON_OTHER_CLS
-	default:
-		return pb.ExonerationStatus_EXONERATION_STATUS_UNSPECIFIED
-	}
-}
 
 // GroupAndOrderTestResults groups test results into test runs, and orders
 // them by start time. Test results are returned in sorted start time order

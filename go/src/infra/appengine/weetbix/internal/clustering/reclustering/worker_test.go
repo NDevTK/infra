@@ -459,6 +459,7 @@ func (b *testResultBuilder) withFailureReason(reason *pb.FailureReason) *testRes
 
 func (b *testResultBuilder) buildFailure() *cpb.Failure {
 	keyHash := sha256.Sum256([]byte("variantkey:value\n"))
+	buildCritical := b.uniqifier%2 == 0
 	return &cpb.Failure{
 		TestResultId:  pbutil.TestResultIDFromResultDB(fmt.Sprintf("invocations/testrun-%v/tests/test-name-%v/results/%v", b.uniqifier, b.uniqifier, b.uniqifier)),
 		PartitionTime: timestamppb.New(time.Date(2020, time.April, 1, 2, 3, 4, 0, time.UTC)),
@@ -472,21 +473,41 @@ func (b *testResultBuilder) buildFailure() *cpb.Failure {
 			System:    "monorail",
 			Component: "Component>MyComponent",
 		},
-		StartTime:                     timestamppb.New(time.Date(2025, time.March, 2, 2, 2, 2, b.uniqifier, time.UTC)),
-		Duration:                      durationpb.New(time.Duration(b.uniqifier) * time.Second),
-		ExonerationStatus:             pb.ExonerationStatus(1 + (b.uniqifier % 4)),
+		StartTime: timestamppb.New(time.Date(2025, time.March, 2, 2, 2, 2, b.uniqifier, time.UTC)),
+		Duration:  durationpb.New(time.Duration(b.uniqifier) * time.Second),
+		Exonerations: []*cpb.TestExoneration{
+			{
+				Reason: pb.ExonerationReason(1 + (b.uniqifier % 3)),
+			},
+		},
+		PresubmitRun: &cpb.PresubmitRun{
+			PresubmitRunId: &pb.PresubmitRunId{
+				System: "luci-cv",
+				Id:     fmt.Sprintf("run-%v", b.uniqifier),
+			},
+			Owner:  fmt.Sprintf("owner-%v", b.uniqifier),
+			Mode:   pb.PresubmitRunMode(1 + b.uniqifier%3),
+			Status: pb.PresubmitRunStatus(3 - b.uniqifier%3),
+		},
+		BuildStatus:   pb.BuildStatus(1 + b.uniqifier%4),
+		BuildCritical: &buildCritical,
+		Changelists: []*pb.Changelist{
+			{
+				Host:     "chromium",
+				Change:   12345,
+				Patchset: int32(b.uniqifier),
+			},
+		},
+
 		IngestedInvocationId:          fmt.Sprintf("invocation-%v", b.uniqifier),
 		IngestedInvocationResultIndex: int64(b.uniqifier + 1),
 		IngestedInvocationResultCount: int64(b.uniqifier*2 + 1),
 		IsIngestedInvocationBlocked:   b.uniqifier%3 == 0,
-		TestRunId:                     fmt.Sprintf("test-run-%v", b.uniqifier),
-		TestRunResultIndex:            int64((int64(b.uniqifier) / 2) + 1),
-		TestRunResultCount:            int64(b.uniqifier + 1),
-		IsTestRunBlocked:              b.uniqifier%2 == 0,
-		PresubmitRunId: &pb.PresubmitRunId{
-			System: "luci-cv",
-			Id:     fmt.Sprintf("run-%v", b.uniqifier),
-		},
+
+		TestRunId:          fmt.Sprintf("test-run-%v", b.uniqifier),
+		TestRunResultIndex: int64((int64(b.uniqifier) / 2) + 1),
+		TestRunResultCount: int64(b.uniqifier + 1),
+		IsTestRunBlocked:   b.uniqifier%2 == 0,
 	}
 }
 
@@ -502,6 +523,15 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 			inBugCluster = true
 		}
 	}
+
+	presubmitRunOwner := fmt.Sprintf("owner-%v", b.uniqifier)
+	presubmitRunMode := pb.PresubmitRunMode(1 + b.uniqifier%3)
+	presubmitRunStatus := pb.PresubmitRunStatus(3 - b.uniqifier%3).String()
+	if !strings.HasPrefix(presubmitRunStatus, "PRESUBMIT_RUN_STATUS_") {
+		panic("PresubmitRunStatus does not have expected prefix: " + presubmitRunStatus)
+	}
+	presubmitRunStatus = strings.TrimPrefix(presubmitRunStatus, "PRESUBMIT_RUN_STATUS_")
+	buildCritical := b.uniqifier%2 == 0
 
 	var results []*bqpb.ClusteredFailureRow
 	for _, cID := range clusterIDs {
@@ -532,12 +562,29 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 			BugTrackingComponent: &pb.BugTrackingComponent{System: "monorail", Component: "Component>MyComponent"},
 			StartTime:            timestamppb.New(time.Date(2025, time.March, 2, 2, 2, 2, b.uniqifier, time.UTC)),
 			Duration:             durationpb.New(time.Duration(b.uniqifier) * time.Second),
-			ExonerationStatus:    pb.ExonerationStatus(1 + (b.uniqifier % 4)),
-
+			Exonerations: []*bqpb.ClusteredFailureRow_TestExoneration{
+				{
+					Reason: pb.ExonerationReason(1 + (b.uniqifier % 3)),
+				},
+			},
+			ExonerationStatus: pb.ExonerationReason(1 + (b.uniqifier % 3)).String(),
 			PresubmitRunId: &pb.PresubmitRunId{
 				System: "luci-cv",
 				Id:     fmt.Sprintf("run-%v", b.uniqifier),
 			},
+			PresubmitRunOwner:  &presubmitRunOwner,
+			PresubmitRunMode:   &presubmitRunMode,
+			PresubmitRunStatus: &presubmitRunStatus,
+			BuildStatus:        strings.TrimPrefix(pb.BuildStatus(1+b.uniqifier%4).String(), "BUILD_STATUS_"),
+			BuildCritical:      &buildCritical,
+			Changelists: []*pb.Changelist{
+				{
+					Host:     "chromium",
+					Change:   12345,
+					Patchset: int32(b.uniqifier),
+				},
+			},
+
 			IngestedInvocationId:          fmt.Sprintf("invocation-%v", b.uniqifier),
 			IngestedInvocationResultIndex: int64(b.uniqifier + 1),
 			IngestedInvocationResultCount: int64(b.uniqifier*2 + 1),

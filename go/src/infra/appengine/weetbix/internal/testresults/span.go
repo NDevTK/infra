@@ -76,8 +76,10 @@ type IngestedInvocation struct {
 	SubRealm             string
 	PartitionTime        time.Time
 	BuildStatus          pb.BuildStatus
-	Changelists          []Changelist
-	PresubmitRun         *PresubmitRun
+	// The unsubmitted changelists tested (if any). Limited to
+	// at most 10 changelists.
+	Changelists  []Changelist
+	PresubmitRun *PresubmitRun
 }
 
 // ReadIngestedInvocations read ingested invocations from the
@@ -187,7 +189,7 @@ type TestResult struct {
 	RunDuration          *time.Duration
 	Status               pb.TestResultStatus
 	// Properties of the test variant in the invocation (stored denormalised) follow.
-	ExonerationStatus pb.ExonerationStatus
+	ExonerationReasons []pb.ExonerationReason
 	// Properties of the invocation (stored denormalised) follow.
 	SubRealm     string
 	BuildStatus  pb.BuildStatus
@@ -203,7 +205,7 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 		"Project", "TestId", "PartitionTime", "VariantHash", "IngestedInvocationId",
 		"RunIndex", "ResultIndex",
 		"IsUnexpected", "RunDurationUsec", "Status",
-		"ExonerationStatus",
+		"ExonerationReasons",
 		"SubRealm", "BuildStatus",
 		"PresubmitRunMode", "PresubmitRunOwner",
 		"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
@@ -223,7 +225,7 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 				&tr.Project, &tr.TestID, &tr.PartitionTime, &tr.VariantHash, &tr.IngestedInvocationID,
 				&tr.RunIndex, &tr.ResultIndex,
 				&isUnexpected, &runDurationUsec, &tr.Status,
-				&tr.ExonerationStatus,
+				&tr.ExonerationReasons,
 				&tr.SubRealm, &tr.BuildStatus,
 				&presubmitRunMode, &presubmitRunOwner,
 				&changelistHosts, &changelistChanges, &changelistPatchsets,
@@ -272,7 +274,7 @@ var TestResultSaveCols = []string{
 	"Project", "TestId", "PartitionTime", "VariantHash",
 	"IngestedInvocationId", "RunIndex", "ResultIndex",
 	"IsUnexpected", "RunDurationUsec", "Status",
-	"ExonerationStatus", "SubRealm", "BuildStatus",
+	"ExonerationReasons", "SubRealm", "BuildStatus",
 	"PresubmitRunMode", "PresubmitRunOwner",
 	"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
 }
@@ -303,6 +305,7 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 	}
 
 	isUnexpected := spanner.NullBool{Bool: tr.IsUnexpected, Valid: tr.IsUnexpected}
+
 	// Specify values in a slice directly instead of
 	// creating a map and using spanner.InsertOrUpdateMap.
 	// Profiling revealed ~15% of all CPU cycles spent
@@ -314,7 +317,7 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 		tr.Project, tr.TestID, tr.PartitionTime, tr.VariantHash,
 		tr.IngestedInvocationID, tr.RunIndex, tr.ResultIndex,
 		isUnexpected, runDurationUsec, int64(tr.Status),
-		int64(tr.ExonerationStatus), tr.SubRealm, int64(tr.BuildStatus),
+		spanutil.ToSpanner(tr.ExonerationReasons), tr.SubRealm, int64(tr.BuildStatus),
 		presubmitRunMode, presubmitRunOwner,
 		changelistHosts, changelistChanges, changelistPatchsets,
 	}
@@ -333,7 +336,7 @@ type ReadTestHistoryOptions struct {
 	PageToken        string
 }
 
-// statement generats a spanner statement for the specified query template.
+// statement generates a spanner statement for the specified query template.
 func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, paginationParams []string) (spanner.Statement, error) {
 	params := map[string]interface{}{
 		"project":   opts.Project,
@@ -355,9 +358,6 @@ func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, p
 		// Test result status enum values.
 		"skip": int(pb.TestResultStatus_SKIP),
 		"pass": int(pb.TestResultStatus_PASS),
-
-		// Exoneration status enum values.
-		"notExonerated": int(pb.ExonerationStatus_NOT_EXONERATED),
 	}
 	input := map[string]interface{}{
 		"hasSubRealms":       len(opts.SubRealms) > 0,
@@ -674,7 +674,7 @@ func ReadVariants(ctx context.Context, project, testID string, opts ReadVariants
 var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 	{{define "tvStatus"}}
 		CASE
-			WHEN ANY_VALUE(ExonerationStatus) <> @notExonerated THEN @exonerated
+			WHEN ANY_VALUE(ARRAY_LENGTH(ExonerationReasons) > 0) THEN @exonerated
 			-- Use COALESCE as IsUnexpected uses NULL to indicate false.
 			WHEN LOGICAL_AND(NOT COALESCE(IsUnexpected, FALSE)) THEN @expected
 			WHEN LOGICAL_AND(COALESCE(IsUnexpected, FALSE) AND Status = @skip) THEN @unexpectedlySkipped

@@ -500,9 +500,14 @@ CREATE TABLE TestResults (
 
   -- Whether the test verdict was exonerated, and if so, for what reason it
   -- was exonerated.
+  -- DEPRECATED: Will be removed shortly.
+  ExonerationStatus INT64,
+
+  -- The reasons (if any) the test verdict was exonerated.
+  -- If this array is empty, the test verdict was not exonerated.
   -- This field is stored denormalised. It is guaranteed to be the same for
   -- all results for a test variant in an ingested invocation.
-  ExonerationStatus INT64 NOT NULL,
+  ExonerationReasons ARRAY<INT64>,
 
   -- The following data is stored denormalised. It is guaranteed to be
   -- the same for all results for the ingested invocation.
@@ -540,7 +545,7 @@ CREATE TABLE TestResults (
   -- (hostname, change, patchset)).
   -- They will be set for all presubmit runs, and may be set for other
   -- builds as well (even those outside a formal LUCI CV run) based on
-  -- buildbucket inputs.
+  -- buildbucket inputs. At most 10 changelists are included.
 
   -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"
@@ -613,7 +618,7 @@ CREATE TABLE IngestedInvocations (
   -- (hostname, change, patchset)).
   -- They will be set for all presubmit runs, and may be set for other
   -- builds as well (even those outside a formal LUCI CV run) based on
-  -- buildbucket inputs.
+  -- buildbucket inputs. At most 10 changelists are included.
 
   -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"

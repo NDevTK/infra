@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	cvv0 "go.chromium.org/luci/cv/api/v0"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	pb "infra/appengine/weetbix/proto/v1"
@@ -185,4 +186,19 @@ func PresubmitRunModeFromString(mode string) (pb.PresubmitRunMode, error) {
 		return pb.PresubmitRunMode_QUICK_DRY_RUN, nil
 	}
 	return pb.PresubmitRunMode_PRESUBMIT_RUN_MODE_UNSPECIFIED, fmt.Errorf("unknown run mode %q", mode)
+}
+
+// PresubmitRunStatusFromLUCICV returns a pb.PresubmitRunStatus corresponding
+// to a LUCI CV Run status. Only statuses corresponding to an ended run
+// are supported.
+func PresubmitRunStatusFromLUCICV(status cvv0.Run_Status) (pb.PresubmitRunStatus, error) {
+	switch status {
+	case cvv0.Run_SUCCEEDED:
+		return pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_SUCCEEDED, nil
+	case cvv0.Run_FAILED:
+		return pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED, nil
+	case cvv0.Run_CANCELLED:
+		return pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_CANCELED, nil
+	}
+	return pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_UNSPECIFIED, fmt.Errorf("unknown run status %q", status)
 }
