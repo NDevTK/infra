@@ -335,6 +335,24 @@ func TestSetVname(t *testing.T) {
 		Convey("With ChromiumOS", func() {
 			*projectFlag = "chromiumos"
 
+			Convey("Filepath has chroot prefix", func() {
+				p := "chroot/build/amd64-generic/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should prefix vnameProto with path to gen files", func() {
+					So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/chroot/build/amd64-generic/rest/of/path")
+				})
+			})
+
+			Convey("Filepath has out dir prefix", func() {
+				p := "src/out/amd64-generic/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should prefix vnameProto with path to gen files", func() {
+					So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/src/out/amd64-generic/rest/of/path")
+				})
+			})
+
 			Convey("Filepath has no special corpus with src prefix", func() {
 				p := "src/build/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
