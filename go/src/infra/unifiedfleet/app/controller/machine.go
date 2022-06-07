@@ -1292,7 +1292,8 @@ func validateUniqueSerial(ctx context.Context, serialNumber string) error {
 			return err
 		}
 		if len(res) > 0 {
-			return fmt.Errorf("machine %q contains the same serial number %q", res[0].Name, serialNumber)
+			errorMsg := fmt.Sprintf("machine %q contains the same serial number %q", res[0].Name, serialNumber)
+			return status.Errorf(codes.FailedPrecondition, errorMsg)
 		}
 	}
 	return nil
