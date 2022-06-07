@@ -79,15 +79,8 @@ if [[ $_3PP_PLATFORM == "$_3PP_TOOL_PLATFORM" ]]; then  # not cross compiling
   make -j $(nproc) install < /dev/null
 
   INTERP=$(pwd)/host_interp/bin/python
-elif [[ $_3PP_PLATFORM == mac* ]]; then
-  # When cross-compiling on Mac, explicitly force the system python2, so
-  # we don't pick up vpython-native's python2 from $PATH. Running vpython
-  # with "-s -S" below causes problems where built-in modules such as argparse
-  # can't be loaded.
-  INTERP=/usr/bin/python2
 else
-  # When cross-compiling on Linux, use the host python2 in the docker
-  # container.
+  # When cross-compiling use, the host tool package.
   INTERP=python2
 fi
 
@@ -196,7 +189,7 @@ export LDLAST
 # Configure our production Python build with our static configuration
 # environment and generate our basic platform.
 #
-# We're going to use our system python interpreter to generate our static module
+# We're going to use our host python interpreter to generate our static module
 # list.
 ./configure --prefix "$PREFIX" --host="$CROSS_TRIPLE" \
   --disable-shared ${CONFIGURE_FFI} --enable-ipv6 \

@@ -1,7 +1,7 @@
 create {
   verify { test: "python_test.py" }
   source {
-    patch_version: "chromium.42"
+    patch_version: "chromium.43"
     cpe_base_address: "cpe:/a:python:python"
   }
 }
@@ -22,6 +22,16 @@ create {
     tool: "build_support/pip_bootstrap"
     tool: "tools/autoconf"
     tool: "tools/sed"  # Used by python's makefiles
+  }
+}
+
+create {
+  platform_re: "linux-arm.*|linux-mips.*"
+  build {
+    tool: "build_support/pip_bootstrap"
+    tool: "tools/autoconf"
+    tool: "tools/sed"  # Used by python's makefiles
+    tool: "tools/cpython"  # The host cpython for bootstrapping
   }
 }
 
