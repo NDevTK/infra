@@ -524,6 +524,8 @@ message Android {
   string model = 3;
   // Serial number of the DUT.
   string serial_number = 4;
+  // Hostname to which the Android DUT is attached to.
+  string associated_hostname = 5;
 }
 
 // CopyRequest represents data to perform copy data from/to resource.
