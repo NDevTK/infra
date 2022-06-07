@@ -13,6 +13,7 @@ import time
 
 import ezt
 
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import servlet
@@ -121,3 +122,9 @@ class GroupAdmin(servlet.Servlet):
       return framework_helpers.FormatAbsoluteURL(
           mr, '/g/%s%s' % (group_name, urls.GROUP_ADMIN),
           include_project=False, saved=1, ts=int(time.time()))
+
+  # def GetGroupAdmin(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostGroupAdmin(self, **kwargs):
+  #   return self.handler(**kwargs)

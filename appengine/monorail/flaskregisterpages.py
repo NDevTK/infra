@@ -36,7 +36,9 @@ from sitewide import userupdates
 from sitewide import userprofile
 from sitewide import projectcreate
 from sitewide import usersettings
+from sitewide import groupadmin
 from sitewide import groupcreate
+from sitewide import groupdetail
 from sitewide import grouplist
 from features import rerankhotlist
 from features import hotlistdetails
@@ -110,6 +112,29 @@ class ServletRegistry(object):
       flask_instance.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
     return flask_instance
 
+  # pylint: disable=unused-argument
+  def RegisterGroupUrls(self, services):
+    flaskapp_group = flask.Flask(__name__)
+    _GROUP_URL = [
+        # ('/', grouplist.GroupList(services=services).GetGroupList, ['GET']),
+        # (
+        #     '/<string:viewed_username>/',
+        #     groupdetail.GroupDetail(services=services).GetGroupDetail,
+        #     ['GET']),
+        # (
+        #     '/<string:viewed_username>/edit.do',
+        #     groupdetail.GroupDetail(services=services).PostGroupDetail,
+        #     ['POST']),
+        # (
+        #     '/<string:viewed_username>/groupadmin',
+        #     groupadmin.GroupAdmin(services=services).GetGroupAdmin, ['GET']),
+        # (
+        #     '/<string:viewed_username>/groupadmin.do',
+        #     groupadmin.GroupAdmin(services=services).PostGroupAdmin,
+        #     ['POST']),
+    ]
+
+    return self._AddFlaskUrlRules(flaskapp_group, _GROUP_URL)
 
   # pylint: disable=unused-argument
   def RegisterHostingUrl(self, service):

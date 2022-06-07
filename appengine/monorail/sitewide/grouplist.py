@@ -66,6 +66,8 @@ class GroupList(servlet.Servlet):
           'User is not permitted to delete groups')
 
     remove_groups = [int(g) for g in post_data.getall('remove')]
+    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
+    # remove_groups = [int(g) for g in post_data.getlist('remove')]
 
     if not mr.errors.AnyErrors():
       self.services.usergroup.DeleteGroups(mr.cnxn, remove_groups)
@@ -76,6 +78,12 @@ class GroupList(servlet.Servlet):
       return framework_helpers.FormatAbsoluteURL(
           mr, '/g', include_project=False,
           saved=1, ts=int(time.time()))
+
+  # def GetGroupList(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostGroupList(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class GroupDelete(flaskservlet.FlaskServlet):

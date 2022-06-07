@@ -14,6 +14,7 @@ import time
 import ezt
 
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import paginate
@@ -189,6 +190,8 @@ class GroupDetail(servlet.Servlet):
     """
     # 1. Gather data from the request.
     remove_strs = post_data.getall('remove')
+    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
+    # remove_strs = post_data.getlist('remove')
     logging.info('remove_strs = %r', remove_strs)
 
     if not remove_strs:
@@ -208,3 +211,9 @@ class GroupDetail(servlet.Servlet):
       return framework_helpers.FormatAbsoluteURL(
           mr, '/g/%s/' % mr.viewed_username, include_project=False,
           saved=1, ts=int(time.time()))
+
+  # def GetGroupDetail(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostGroupDetail(self, **kwargs):
+  #   return self.handler(**kwargs)
