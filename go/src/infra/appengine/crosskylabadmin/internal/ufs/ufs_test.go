@@ -6,6 +6,7 @@ package ufs
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -15,6 +16,19 @@ import (
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
+
+// TestNewClient tests that NewClient responds in appropriate ways
+// to ill-formed arguments. Not a deep test.
+func TestNewClient(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	hc := http.DefaultClient
+
+	_, err := NewClient(ctx, hc, "")
+	if err == nil {
+		t.Errorf("expected error to not be nil")
+	}
+}
 
 // TestGetPools tests that GetPools passes an appropriately annotated name to the
 func TestGetPools(t *testing.T) {

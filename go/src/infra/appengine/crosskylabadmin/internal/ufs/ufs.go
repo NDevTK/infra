@@ -53,6 +53,9 @@ func NewClient(ctx context.Context, hc *http.Client, hostname string) (Client, e
 	if hc == nil {
 		return nil, errors.Reason("new ufs client: hc cannot be nil").Err()
 	}
+	if hostname == "" {
+		return nil, errors.Reason("new ufs client: hostname cannot be empty").Err()
+	}
 	return ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    hostname,
