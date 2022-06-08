@@ -101,6 +101,7 @@ func (c *prejobRun) innerRun(ctx context.Context, args []string, env subcommands
 			DutHostname:          provisionTarget.GetDutHostname(),
 			UseTls:               r.GetUseTls(),
 			Config:               r.GetConfig(),
+			UpdateFirmware:       provisionTarget.GetUpdateFirmware(),
 		}
 		rl = append(rl, &peerRequest)
 	}
@@ -387,6 +388,7 @@ func provisionChromeOSBuildViaTLS(ctx context.Context, bt *tls.BackgroundTLS, r 
 					GsPathPrefix: fmt.Sprintf("%s/%s", desired.ChromeOSBucket, desired.ChromeOSBuild),
 				},
 			},
+			UpdateFirmware: r.UpdateFirmware,
 		},
 	)
 	if err != nil {
