@@ -8,6 +8,7 @@ import (
 	"time"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/proto/mask"
 	"go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -20,7 +21,7 @@ var sampleTmd = &rdbpb.TestMetadata{
 }
 
 func mockedGetBuildRsp(inv string) *bbpb.Build {
-	return &bbpb.Build{
+	build := &bbpb.Build{
 		Builder: &bbpb.BuilderID{
 			Project: "project",
 			Bucket:  "ci",
@@ -48,10 +49,21 @@ func mockedGetBuildRsp(inv string) *bbpb.Build {
 			},
 		},
 	}
+
+	isFieldNameJSON := false
+	isUpdateMask := false
+	m, err := mask.FromFieldMask(buildReadMask, build, isFieldNameJSON, isUpdateMask)
+	if err != nil {
+		panic(err)
+	}
+	if err := m.Trim(build); err != nil {
+		panic(err)
+	}
+	return build
 }
 
 func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
-	return &rdbpb.QueryTestVariantsResponse{
+	response := &rdbpb.QueryTestVariantsResponse{
 		TestVariants: []*rdbpb.TestVariant{
 			{
 				TestId:      "ninja://test_consistent_failure",
@@ -240,4 +252,17 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 			},
 		},
 	}
+
+	isFieldNameJSON := false
+	isUpdateMask := false
+	m, err := mask.FromFieldMask(testVariantReadMask, &rdbpb.TestVariant{}, isFieldNameJSON, isUpdateMask)
+	if err != nil {
+		panic(err)
+	}
+	for _, tv := range response.TestVariants {
+		if err := m.Trim(tv); err != nil {
+			panic(err)
+		}
+	}
+	return response
 }
