@@ -338,10 +338,10 @@ class MonorailRequest(MonorailRequestBase):
     prod_debug_allowed = self.perms.HasPerm(
         permissions.VIEW_DEBUG, self.auth.user_id, None)
     self.debug_enabled = (
-        request.args.get('debug') and
+        request.values.get('debug') and
         (settings.local_mode or prod_debug_allowed))
     # temporary option for perf testing on staging instance.
-    if request.args.get('disable_cache'):
+    if request.values.get('disable_cache'):
       if settings.local_mode or 'staging' in request.host:
         self.use_cached_searches = False
 
@@ -600,7 +600,7 @@ class MonorailRequest(MonorailRequestBase):
     if hasattr(self.request, 'params'):
       value = self.request.params.get(query_param_name)
     else:
-      value = self.request.args.get(query_param_name)
+      value = self.request.values.get(query_param_name)
     assert value is None or isinstance(value, six.text_type)
     using_default = value is None
     if using_default:
@@ -623,7 +623,7 @@ class MonorailRequest(MonorailRequestBase):
     if hasattr(self.request, 'params'):
       value = self.request.params.get(query_param_name)
     else:
-      value = self.request.args.get(query_param_name)
+      value = self.request.values.get(query_param_name)
     if value is None or value == '':
       return default_value
 
@@ -644,7 +644,7 @@ class MonorailRequest(MonorailRequestBase):
     if hasattr(self.request, 'params'):
       params = self.request.params.get(query_param_name)
     else:
-      params = self.request.args.get(query_param_name)
+      params = self.request.values.get(query_param_name)
     if params is None:
       return default_value
     if not params:
@@ -668,7 +668,7 @@ class MonorailRequest(MonorailRequestBase):
     if hasattr(self.request, 'params'):
       value = self.request.params.get(query_param_name)
     else:
-      value = self.request.args.get(query_param_name)
+      value = self.request.values.get(query_param_name)
 
     if value is None:
       return default_value

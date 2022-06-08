@@ -29,6 +29,7 @@ from project import projectexport
 from project import projectsummary
 from project import projectupdates
 from project import project_constants
+from project import redirects
 from services import cachemanager_svc
 from services import client_config_svc
 from sitewide import hostinghome
@@ -58,7 +59,11 @@ from features import banspammer
 from search import backendnonviewable
 from search import backendsearch
 from tracker import componentcreate
+from tracker import fieldcreate
+from tracker import fielddetail
 from tracker import fltconversion
+from tracker import templatecreate
+from tracker import templatedetail
 from tracker import issueadmin
 
 
@@ -305,6 +310,38 @@ class ServletRegistry(object):
         #     componentcreate.ComponentCreate(
         #         services=service).PostComponentCreatePage, ['POST']),
         # (
+        #     '/<string:project_name>/fields/create',
+        #     fieldcreate.FieldCreate(
+        #         services=service).GetFieldCreate, ['GET']),
+        # (
+        #     '/<string:project_name>/fields/create.do',
+        #     fieldcreate.FieldCreate(
+        #         services=service).PostFieldCreate, ['POST']),
+        # (
+        #     '/<string:project_name>/fields/detail',
+        #     fielddetail.FieldDetail(
+        #         services=service).GetFieldDetail, ['GET']),
+        # (
+        #     '/<string:project_name>/fields/detail.do',
+        #     fielddetail.FieldDetail(
+        #         services=service).PostFieldDetail, ['POST']),
+        # (
+        #     '/<string:project_name>/templates/create',
+        #     templatecreate.TemplateCreate(
+        #         services=service).GetTemplateCreate, ['GET']),
+        # (
+        #     '/<string:project_name>/templates/create.do',
+        #     templatecreate.TemplateCreate(
+        #         services=service).PostTemplateCreate, ['POST']),
+        # (
+        #     '/<string:project_name>/templates/detail',
+        #     templatedetail.TemplateDetail(
+        #         services=service).GetTemplateDetail, ['GET']),
+        # (
+        #     '/<string:project_name>/templates/detail.do',
+        #     templatedetail.TemplateDetail(
+        #         services=service).PostTemplateDetail, ['POST']),
+        # (
         #     '/<string:project_name>/people/list',
         #     peoplelist.PeopleList(services=service).GetPeopleListPage,
         #     ['GET']),
@@ -336,6 +373,18 @@ class ServletRegistry(object):
         #     '/<string:project_name>/updates/list',
         #     projectupdates.ProjectUpdates(
         #         services=service).GetProjectUpdatesPage, ['GET']),
+        # (
+        #     '/<string:project_name>/w/list',
+        #     redirects.WikiRedirect(
+        #         services=service).GetWikiListRedirect, ['GET']),
+        # (
+        #     '/<string:project_name>/wiki/<string:wiki_page>',
+        #     redirects.WikiRedirect(
+        #         services=service).GetWikiRedirect, ['GET']),
+        # (
+        #     '/<string:project_name>/source/<string:source_page>',
+        #     redirects.SourceRedirect(
+        #         services=service).GetSourceRedirect, ['GET']),
     ]
     return self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
 

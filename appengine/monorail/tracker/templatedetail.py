@@ -15,6 +15,7 @@ import time
 import ezt
 
 from framework import authdata
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_helpers
 from framework import framework_views
@@ -33,9 +34,9 @@ from services import user_svc
 class TemplateDetail(servlet.Servlet):
   """Servlet allowing project owners to edit/delete an issue template"""
 
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/template-detail-page.ezt'
-  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_TEMPLATES
+  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_TEMPLATES
 
   def AssertBasePermission(self, mr):
     """Check whether the user has any permission to visit this page.
@@ -243,3 +244,9 @@ class TemplateDetail(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.TEMPLATE_DETAIL, template=template.name,
         saved=1, ts=int(time.time()))
+
+  # def GetTemplateDetail(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostTemplateDetail(self, **kwargs):
+  #   return self.handler(**kwargs)

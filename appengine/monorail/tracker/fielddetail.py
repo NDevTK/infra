@@ -15,6 +15,7 @@ import re
 import ezt
 
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
@@ -30,7 +31,7 @@ from tracker import tracker_views
 class FieldDetail(servlet.Servlet):
   """Servlet allowing project owners to view and edit a custom field."""
 
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/field-detail-page.ezt'
 
   def _GetFieldDef(self, mr):
@@ -247,3 +248,9 @@ class FieldDetail(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
           mr, urls.FIELD_DETAIL, field=field_def.field_name,
           saved=1, ts=int(time.time()))
+
+  # def GetFieldDetail(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostFieldDetail(self, **kwargs):
+  #   return self.handler(**kwargs)

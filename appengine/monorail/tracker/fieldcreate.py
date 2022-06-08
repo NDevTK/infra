@@ -15,6 +15,7 @@ import time
 import ezt
 
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
@@ -30,7 +31,7 @@ from tracker import tracker_helpers
 class FieldCreate(servlet.Servlet):
   """Servlet allowing project owners to create a custom field."""
 
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/field-create-page.ezt'
 
   def AssertBasePermission(self, mr):
@@ -197,6 +198,12 @@ class FieldCreate(servlet.Servlet):
 
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.ADMIN_LABELS, saved=1, ts=int(time.time()))
+
+  # def GetFieldCreate(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostFieldCreate(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def FieldNameErrorMessage(field_name, config):
