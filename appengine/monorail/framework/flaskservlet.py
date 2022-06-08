@@ -876,3 +876,6 @@ class FlaskServlet(object):
           now - framework_constants.VISIT_RESOLUTION):
         user_pb.last_visit_timestamp = now
         self.services.user.UpdateUser(mr.cnxn, user_pb.user_id, user_pb)
+
+  def abort(self, code, context):
+    return flask.abort(code, context)

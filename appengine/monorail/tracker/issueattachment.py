@@ -20,12 +20,11 @@ import os
 import re
 from six.moves import urllib
 
-import webapp2
-
 from google.appengine.api import app_identity
 from google.appengine.api import images
 
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_constants
 from framework import framework_helpers
 from framework import gcs_helpers
@@ -54,20 +53,20 @@ class AttachmentPage(servlet.Servlet):
     Returns: dict of values used by EZT for rendering the page.
     """
     if mr.signed_aid != attachment_helpers.SignAttachmentID(mr.aid):
-      webapp2.abort(400, 'Please reload the issue page')
+      self.abort(400, 'Please reload the issue page')
 
     try:
       attachment, _issue = tracker_helpers.GetAttachmentIfAllowed(
           mr, self.services)
     except exceptions.NoSuchIssueException:
-      webapp2.abort(404, 'issue not found')
+      self.abort(404, 'issue not found')
     except exceptions.NoSuchAttachmentException:
-      webapp2.abort(404, 'attachment not found')
+      self.abort(404, 'attachment not found')
     except exceptions.NoSuchCommentException:
-      webapp2.abort(404, 'comment not found')
+      self.abort(404, 'comment not found')
 
     if not attachment.gcs_object_id:
-      webapp2.abort(404, 'attachment data not found')
+      self.abort(404, 'attachment data not found')
 
     bucket_name = app_identity.get_default_gcs_bucket_name()
 
@@ -91,3 +90,6 @@ class AttachmentPage(servlet.Servlet):
 
     url = gcs_helpers.SignUrl(bucket_name, gcs_object_id)
     self.redirect(url, abort=True)
+
+  # def GetAttachmentPage(self, **kwargs):
+  #   return self.handler(**kwargs)

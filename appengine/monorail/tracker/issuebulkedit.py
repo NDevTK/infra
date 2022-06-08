@@ -24,6 +24,7 @@ import ezt
 from features import filterrules_helpers
 from features import send_notifications
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_constants
 from framework import framework_views
 from framework import permissions
@@ -41,7 +42,7 @@ class IssueBulkEdit(servlet.Servlet):
   """IssueBulkEdit lists multiple issues and allows an edit to all of them."""
 
   _PAGE_TEMPLATE = 'tracker/issue-bulk-edit-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
   _SECONDS_OVERHEAD = 4
   _SECONDS_PER_UPDATE = 0.12
   _SLOWNESS_THRESHOLD = 10
@@ -170,30 +171,40 @@ class IssueBulkEdit(servlet.Servlet):
     """
     if not mr.local_id_list:
       logging.info('missing issue local IDs, probably tampered')
+      #TODO: switch when convert /p to flask
+      # self.response.status_code = http_client.BAD_REQUEST
       self.response.status = http_client.BAD_REQUEST
       return
 
     # Check that the user is logged in; anon users cannot update issues.
     if not mr.auth.user_id:
       logging.info('user was not logged in, cannot update issue')
-      self.response.status = http_client.BAD_REQUEST  # xxx should raise except
+      #TODO: switch when convert /p to flask
+      # self.response.status_code = http_client.BAD_REQUEST
+      self.response.status = http_client.BAD_REQUEST
       return
 
     # Check that the user has permission to add a comment, and to enter
     # metadata if they are trying to do that.
     if not self.CheckPerm(mr, permissions.ADD_ISSUE_COMMENT):
       logging.info('user has no permission to add issue comment')
+      #TODO: switch when convert /p to flask
+      # self.response.status_code = http_client.BAD_REQUEST
       self.response.status = http_client.BAD_REQUEST
       return
 
     if not self.CheckPerm(mr, permissions.EDIT_ISSUE):
       logging.info('user has no permission to edit issue metadata')
+      #TODO: switch when convert /p to flask
+      # self.response.status_code = http_client.BAD_REQUEST
       self.response.status = http_client.BAD_REQUEST
       return
 
     move_to = post_data.get('move_to', '').lower()
     if move_to and not self.CheckPerm(mr, permissions.DELETE_ISSUE):
       logging.info('user has no permission to move issue')
+      #TODO: switch when convert /p to flask
+      # self.response.status_code = http_client.BAD_REQUEST
       self.response.status = http_client.BAD_REQUEST
       return
 
@@ -471,3 +482,9 @@ class IssueBulkEdit(servlet.Servlet):
     # TODO(jrobbins): implement bulk=N param for a better confirmation alert.
     return tracker_helpers.FormatIssueListURL(
         mr, config, saved=len(mr.local_id_list), ts=int(time.time()))
+
+  # def GetIssueBulkEdit(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostIssueBulkEdit(self, **kwargs):
+  #   return self.handler(**kwargs)

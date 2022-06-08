@@ -153,6 +153,8 @@ def ParseIssueRequest(cnxn, post_data, services, errors, default_project_name):
   status = post_data.get('status', '')
   template_name = urllib.parse.unquote_plus(post_data.get('template_name', ''))
   component_str = post_data.get('components', '')
+  # TODO: switch when convert /p to flask
+  # label_strs = post_data.getlist('label')
   label_strs = post_data.getall('label')
 
   if is_description:
@@ -257,6 +259,8 @@ def _ParseIssueRequestFields(post_data):
   phase_field_val_strs_remove = collections.defaultdict(dict)
   for key in post_data.keys():
     if key.startswith(_CUSTOM_FIELD_NAME_PREFIX):
+      # TODO: switch when convert /p to flask
+      # val_strs = [v for v in post_data.getlist(key) if v]
       val_strs = [v for v in post_data.getall(key) if v]
       if val_strs:
         try:
@@ -327,6 +331,8 @@ def _ParseIssueRequestKeptAttachments(post_data):
   Returns:
     a list of attachment ids for kept attachments
   """
+  # TODO: switch when convert /p to flask
+  # kept_attachments = post_data.getlist('keep-attachment')
   kept_attachments = post_data.getall('keep-attachment')
   return [int(aid) for aid in kept_attachments]
 

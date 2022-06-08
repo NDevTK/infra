@@ -11,6 +11,7 @@ from __future__ import absolute_import
 
 import logging
 
+from framework import flaskservlet
 from framework import servlet
 from framework import servlet_helpers
 
@@ -28,3 +29,6 @@ class IssueEntryAfterLogin(servlet.Servlet):
     entry_page_url = servlet_helpers.ComputeIssueEntryURL(mr)
     logging.info('Redirecting to %r', entry_page_url)
     self.redirect(entry_page_url, abort=True)
+
+  # def GetIssueEntryAfterLogin(self, **kwargs):
+  #   return self.handler(**kwargs)

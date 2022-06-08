@@ -23,6 +23,7 @@ import ezt
 
 from features import prettify
 from framework import exceptions
+from framework import flaskservlet
 from framework import filecontent
 from framework import permissions
 from framework import servlet
@@ -36,7 +37,7 @@ class AttachmentText(servlet.Servlet):
   """AttachmentText displays textual attachments much like source browsing."""
 
   _PAGE_TEMPLATE = 'tracker/issue-attachment-text.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
 
   def GatherPageData(self, mr):
     """Parse the attachment ID from the request and serve its content.
@@ -52,11 +53,11 @@ class AttachmentText(servlet.Servlet):
         attachment, issue = tracker_helpers.GetAttachmentIfAllowed(
             mr, self.services)
       except exceptions.NoSuchIssueException:
-        webapp2.abort(404, 'issue not found')
+        self.abort(404, 'issue not found')
       except exceptions.NoSuchAttachmentException:
-        webapp2.abort(404, 'attachment not found')
+        self.abort(404, 'attachment not found')
       except exceptions.NoSuchCommentException:
-        webapp2.abort(404, 'comment not found')
+        self.abort(404, 'comment not found')
 
     content = b''
     if attachment.gcs_object_id:
@@ -104,3 +105,6 @@ class AttachmentText(servlet.Servlet):
           len(lines), attachment.filename))
 
     return page_data
+
+  # def GetAttachmentText(self, **kwargs):
+  #   return self.handler(**kwargs)

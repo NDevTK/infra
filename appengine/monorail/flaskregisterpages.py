@@ -59,12 +59,17 @@ from features import banspammer
 from search import backendnonviewable
 from search import backendsearch
 from tracker import componentcreate
+from tracker import fltconversion
 from tracker import fieldcreate
 from tracker import fielddetail
-from tracker import fltconversion
 from tracker import templatecreate
 from tracker import templatedetail
 from tracker import issueadmin
+from tracker import issueattachment
+from tracker import issueattachmenttext
+from tracker import issuebulkedit
+from tracker import issueentryafterlogin
+from tracker import issuetips
 
 
 class ServletRegistry(object):
@@ -385,6 +390,35 @@ class ServletRegistry(object):
         #     '/<string:project_name>/source/<string:source_page>',
         #     redirects.SourceRedirect(
         #         services=service).GetSourceRedirect, ['GET']),
+        #     '/<string:project_name>/issues/entryafterlogin',
+        #     issueentryafterlogin.IssueEntryAfterLogin(
+        #         services=service).GetIssueEntryAfterLogin,
+        #     ['GET'],
+        # ),
+        # (
+        #     '/<string:project_name>/issues/searchtips',
+        #     issuetips.IssueSearchTips(services=service).GetIssueSearchTips,
+        #     ['GET'],
+        # ),
+        # (
+        #    '/<string:project_name>/issues/attachment',
+        #    issueattachment.AttachmentPage(services=service).GetAttachmentPage,
+        #    ['GET'],
+        # ),
+        # (
+        #     '/<string:project_name>/issues/attachmentText',
+        #     issueattachmenttext.AttachmentText(
+        #         services=service).GetAttachmentText,
+        #     ['GET'],
+        # ),
+        # (
+        #     '/<string:project_name>/issues/bulkedit',
+        #     issuebulkedit.IssueBulkEdit(
+        #         services=service).GetIssueBulkEdit, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/bulkedit.do',
+        #     issuebulkedit.IssueBulkEdit(
+        #         services=service).PostIssueBulkEdit, ['POST']),
     ]
     return self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
 
