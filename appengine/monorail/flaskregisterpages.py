@@ -10,11 +10,13 @@ import settings
 import flask
 
 from features import banspammer
+from features import inboundemail
 from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
 from framework import banned
 from framework import clientmon
+from framework import warmup
 from framework import reap
 from framework import deleteusers
 from framework import excessiveactivity
@@ -665,3 +667,23 @@ class ServletRegistry(object):
 
     flaskapp_mon = self._AddFlaskUrlRules(flaskapp_mon, _MON_URL)
     return flaskapp_mon
+
+  def RegisterAHUrl(self, service):
+    flaskapp_ah = flask.Flask(__name__)
+    _AH_URL = [
+        ('/warmup', warmup.Warmup(services=service).GetWarmup, ['GET']),
+        ('/start', warmup.Start(services=service).GetStart, ['GET']),
+        ('/stop', warmup.Stop(services=service).GetStop, ['GET']),
+        (
+            '/bounce',
+            inboundemail.BouncedEmail(services=service).postBouncedEmail,
+            ['POST']),
+        (
+            '/mail/<string:project_addr>',
+            inboundemail.InboundEmail(services=service).HandleInboundEmail,
+            ['GET', 'POST'])
+    ]
+
+    flaskapp_ah = self._AddFlaskUrlRules(flaskapp_ah, _AH_URL)
+
+    return flaskapp_ah

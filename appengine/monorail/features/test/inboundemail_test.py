@@ -9,13 +9,11 @@ from __future__ import division
 from __future__ import absolute_import
 
 import unittest
-import webapp2
-from mock import patch
 
 import mox
 import time
 
-from google.appengine.ext.webapp.mail_handlers import BounceNotificationHandler
+from google.appengine.api import mail
 
 import settings
 from businesslogic import work_env
@@ -36,7 +34,6 @@ from tracker import tracker_helpers
 
 
 class InboundEmailTest(unittest.TestCase):
-
   def setUp(self):
     self.cnxn = 'fake cnxn'
     self.services = service_manager.Services(
@@ -58,8 +55,7 @@ class InboundEmailTest(unittest.TestCase):
     self.msg = testing_helpers.MakeMessage(
         testing_helpers.HEADER_LINES, 'awesome!')
 
-    request, _ = testing_helpers.GetRequestObjects()
-    self.inbound = inboundemail.InboundEmail(request, None, self.services)
+    self.inbound = inboundemail.InboundEmail(self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):
@@ -348,37 +344,12 @@ class BouncedEmailTest(unittest.TestCase):
         user=fake.UserService())
     self.user = self.services.user.TestAddUser('user@example.com', 111)
 
-    app = webapp2.WSGIApplication(config={'services': self.services})
-    app.set_globals(app=app)
-
-    self.servlet = inboundemail.BouncedEmail()
+    self.servlet = inboundemail.BouncedEmail(self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):
     self.mox.UnsetStubs()
     self.mox.ResetAll()
-
-  def testPost_Normal(self):
-    """Normally, our post() just calls BounceNotificationHandler post()."""
-    self.mox.StubOutWithMock(BounceNotificationHandler, 'post')
-    BounceNotificationHandler.post()
-    self.mox.ReplayAll()
-
-    self.servlet.post()
-    self.mox.VerifyAll()
-
-  def testPost_Exception(self):
-    """Our post() method works around an escaping bug."""
-    self.servlet.request = webapp2.Request.blank(
-        '/', POST={'raw-message': 'this is an email message'})
-
-    self.mox.StubOutWithMock(BounceNotificationHandler, 'post')
-    BounceNotificationHandler.post().AndRaise(AttributeError())
-    BounceNotificationHandler.post()
-    self.mox.ReplayAll()
-
-    self.servlet.post()
-    self.mox.VerifyAll()
 
   def testReceive_Normal(self):
     """Find the user that bounced and set email_bounce_timestamp."""
@@ -391,8 +362,6 @@ class BouncedEmailTest(unittest.TestCase):
 
   def testReceive_NoSuchUser(self):
     """When not found, log it and ignore without creating a user record."""
-    self.servlet.request = webapp2.Request.blank(
-        '/', POST={'raw-message': 'this is an email message'})
     bounce_message = testing_helpers.Blank(
         original={'to': 'nope@example.com'},
         notification='notification')

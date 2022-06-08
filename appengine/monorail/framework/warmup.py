@@ -13,8 +13,7 @@ import logging
 from framework import jsonfeed
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
-class Warmup(jsonfeed.InternalTask):
+class Warmup(jsonfeed.FlaskInternalTask):
   """Placeholder for warmup work.  Used only to enable min_idle_instances."""
 
   def HandleRequest(self, _mr):
@@ -26,9 +25,11 @@ class Warmup(jsonfeed.InternalTask):
       'success': 1,
       }
 
+  def GetWarmup(self, **kwargs):
+    return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
-class Start(jsonfeed.InternalTask):
+
+class Start(jsonfeed.FlaskInternalTask):
   """Placeholder for start work.  Used only to enable manual_scaling."""
 
   def HandleRequest(self, _mr):
@@ -40,9 +41,11 @@ class Start(jsonfeed.InternalTask):
       'success': 1,
       }
 
+  def GetStart(self, **kwargs):
+    return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
-class Stop(jsonfeed.InternalTask):
+
+class Stop(jsonfeed.FlaskInternalTask):
   """Placeholder for stop work.  Used only to enable manual_scaling."""
 
   def HandleRequest(self, _mr):
@@ -53,3 +56,6 @@ class Stop(jsonfeed.InternalTask):
     return {
       'success': 1,
       }
+
+  def GetStop(self, **kwargs):
+    return self.handler(**kwargs)
