@@ -12,7 +12,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
-	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	grpcStatus "google.golang.org/grpc/status"
@@ -452,59 +451,6 @@ func (fs *FleetServerImpl) DeleteRackLSE(ctx context.Context, req *ufsAPI.Delete
 	name := util.RemovePrefix(req.Name)
 	err = controller.DeleteRackLSE(ctx, name)
 	return &empty.Empty{}, err
-}
-
-// ImportMachineLSEs imports browser machines' LSE & related infos (e.g. IP)
-func (fs *FleetServerImpl) ImportMachineLSEs(ctx context.Context, req *ufsAPI.ImportMachineLSEsRequest) (response *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	source := req.GetMachineDbSource()
-	if err := ufsAPI.ValidateMachineDBSource(source); err != nil {
-		return nil, err
-	}
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	mdbClient, err := es.NewMachineDBInterfaceFactory(ctx, source.GetHost())
-	if err != nil {
-		return nil, machineDBConnectionFailureStatus.Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to list the physical hosts")
-	hosts, err := mdbClient.ListPhysicalHosts(ctx, &crimson.ListPhysicalHostsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListPhysicalHosts").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(hosts.GetHosts(), "Name"); err != nil {
-		return nil, errors.Annotate(err, "hosts has invalid chars").Err()
-	}
-	vms, err := mdbClient.ListVMs(ctx, &crimson.ListVMsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListVMs").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(vms.GetVms(), "Name"); err != nil {
-		return nil, errors.Annotate(err, "vms has invalid chars").Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to list the machines")
-	machines, err := mdbClient.ListMachines(ctx, &crimson.ListMachinesRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListMachines").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(machines.GetMachines(), "Name"); err != nil {
-		return nil, errors.Annotate(err, "machines has invalid chars").Err()
-	}
-	platforms, err := mdbClient.ListPlatforms(ctx, &crimson.ListPlatformsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListPlatforms").Err()
-	}
-	pageSize := fs.getImportPageSize()
-	res, err := controller.ImportMachineLSEs(ctx, hosts.GetHosts(), vms.GetVms(), machines.GetMachines(), platforms.GetPlatforms(), pageSize)
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
 }
 
 // ImportOSMachineLSEs imports chromeos devices machine lses

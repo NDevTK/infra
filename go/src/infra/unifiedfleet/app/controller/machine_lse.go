@@ -15,7 +15,6 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
-	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -644,104 +643,6 @@ func ImportOSMachineLSEs(ctx context.Context, labConfigs []*invV2Api.ListCrosDev
 		}
 	}
 
-	return &allRes, nil
-}
-
-// ImportMachineLSEs implements the logic of importing machine lses and related info to backend storage.
-//
-// The function will return:
-//      * all of the results of the operations that already run
-//      * the first error that it meets
-//
-// The function will stop at the very first error.
-func ImportMachineLSEs(ctx context.Context, hosts []*crimson.PhysicalHost, vms []*crimson.VM, machines []*crimson.Machine, platforms []*crimson.Platform, pageSize int) (*ufsds.OpResults, error) {
-	allRes := make(ufsds.OpResults, 0)
-	logging.Infof(ctx, "Importing the basic lse prototypes for browser lab")
-	lps := []*ufspb.MachineLSEPrototype{
-		{
-			Name: "browser:no-vm",
-			VirtualRequirements: []*ufspb.VirtualRequirement{
-				{
-					VirtualType: ufspb.VirtualType_VIRTUAL_TYPE_VM,
-					Min:         0,
-					Max:         0,
-				},
-			},
-			Tags: []string{"browser", "no-vm"},
-		},
-		{
-			Name: "browser:vm",
-			VirtualRequirements: []*ufspb.VirtualRequirement{
-				{
-					VirtualType: ufspb.VirtualType_VIRTUAL_TYPE_VM,
-					Min:         1,
-					// A random number, not true.
-					Max: 100,
-				},
-			},
-			Tags: []string{"browser", "vm"},
-		},
-	}
-	res, err := configuration.ImportMachineLSEPrototypes(ctx, lps)
-	if err != nil {
-		return res, err
-	}
-	allRes = append(allRes, *res...)
-
-	lses, ufsVMs, ips, dhcps := util.ToMachineLSEs(hosts, vms, machines, platforms)
-	deleteNonExistingMachineLSEs(ctx, lses, pageSize, "browser")
-	logging.Infof(ctx, "Importing %d lses", len(lses))
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(lses))
-		res, err := inventory.ImportMachineLSEs(ctx, lses[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(lses) {
-			break
-		}
-	}
-
-	deleteNonExistingVMs(ctx, ufsVMs, pageSize)
-	logging.Infof(ctx, "Importing %d vms", len(ufsVMs))
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(ufsVMs))
-		res, err := inventory.ImportVMs(ctx, ufsVMs[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(ufsVMs) {
-			break
-		}
-	}
-
-	logging.Infof(ctx, "Importing %d ips", len(ips))
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(ips))
-		res, err := configuration.ImportIPs(ctx, ips[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(ips) {
-			break
-		}
-	}
-
-	logging.Infof(ctx, "Importing %d dhcps", len(dhcps))
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(dhcps))
-		res, err := configuration.ImportDHCPConfigs(ctx, dhcps[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(dhcps) {
-			break
-		}
-	}
 	return &allRes, nil
 }
 

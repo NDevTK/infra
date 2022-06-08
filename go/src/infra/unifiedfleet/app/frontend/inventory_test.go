@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"fmt"
-	"strconv"
 	"testing"
 
 	"google.golang.org/grpc/codes"
@@ -811,78 +810,6 @@ func TestListMachineLSEs(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp.MachineLSEs, ShouldResembleProto, machineLSEs)
 		})
-		Convey("ListMachineLSEs get free vm slots", func() {
-			_, err := inventory.ImportMachineLSEs(tf.C, []*ufspb.MachineLSE{
-				{
-					Name:         "lse-vm-1",
-					Hostname:     "lse-vm-1",
-					Manufacturer: "apple",
-					Zone:         ufspb.Zone_ZONE_MTV97.String(),
-					Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
-						ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
-							VmCapacity: 2,
-						},
-					},
-				},
-				{
-					Name:         "lse-vm-2",
-					Hostname:     "lse-vm-2",
-					Manufacturer: "apple",
-					Zone:         ufspb.Zone_ZONE_MTV97.String(),
-					Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
-						ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
-							VmCapacity: 3,
-						},
-					},
-				},
-				{
-					Name:         "lse-vm-3",
-					Hostname:     "lse-vm-3",
-					Manufacturer: "apple",
-					Zone:         ufspb.Zone_ZONE_ATLANTA.String(),
-					Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
-						ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
-							VmCapacity: 2,
-						},
-					},
-				},
-			})
-			So(err, ShouldBeNil)
-			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{
-				{
-					Hostname: "lse-vm-1",
-					Vlan:     "vlan-vm",
-				},
-				{
-					Hostname: "lse-vm-2",
-					Vlan:     "vlan-vm2",
-				},
-			})
-			So(err, ShouldBeNil)
-
-			resp, err := tf.Fleet.ListMachineLSEs(tf.C, &ufsAPI.ListMachineLSEsRequest{
-				PageSize: 3,
-				Filter:   "man=apple & zone=mtv97 & free=true",
-			})
-			So(err, ShouldBeNil)
-			So(resp.GetMachineLSEs(), ShouldHaveLength, 2)
-			for _, r := range resp.GetMachineLSEs() {
-				switch r.GetName() {
-				case "lse-vm-1":
-					So(r.GetZone(), ShouldEqual, "mtv97")
-				case "lse-vm-2":
-					So(r.GetZone(), ShouldEqual, "mtv97")
-				}
-			}
-
-			resp, err = tf.Fleet.ListMachineLSEs(tf.C, &ufsAPI.ListMachineLSEsRequest{
-				PageSize: 2,
-				Filter:   "man=apple & zone=mtv97 & free=true",
-			})
-			So(err, ShouldBeNil)
-			// 1 host is enough for 2 slots
-			So(resp.GetMachineLSEs(), ShouldHaveLength, 1)
-		})
 	})
 }
 
@@ -1298,73 +1225,6 @@ func TestDeleteRackLSE(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
-		})
-	})
-}
-
-func TestImportMachineLSEs(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import machine lses", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportMachineLSEsRequest{
-				Source: &ufsAPI.ImportMachineLSEsRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "fake_host",
-					},
-				},
-			}
-			tf.Fleet.importPageSize = 25
-			res, err := tf.Fleet.ImportMachineLSEs(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-
-			// Verify machine lse prototypes
-			lps, _, err := configuration.ListMachineLSEPrototypes(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(lps, "Name"), ShouldResemble, []string{"browser:no-vm", "browser:vm"})
-
-			// Verify machine lses
-			machineLSEs, _, err := inventory.ListMachineLSEs(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(machineLSEs, "Name"), ShouldResemble, []string{"esx-8", "web"})
-			for _, r := range machineLSEs {
-				switch r.GetName() {
-				case "esx-8":
-					So(r.GetChromeBrowserMachineLse().GetVmCapacity(), ShouldEqual, 10)
-				case "web":
-					So(r.GetChromeBrowserMachineLse().GetVmCapacity(), ShouldEqual, 100)
-				}
-			}
-			lse, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "machine1", false)
-			So(err, ShouldBeNil)
-			So(lse, ShouldHaveLength, 1)
-			So(lse[0].GetMachineLsePrototype(), ShouldEqual, "browser:vm")
-			So(lse[0].GetHostname(), ShouldEqual, "esx-8")
-
-			vms, err := inventory.QueryVMByPropertyName(ctx, "host_id", "esx-8", false)
-			So(err, ShouldBeNil)
-			So(vms, ShouldHaveLength, 1)
-			So(vms[0].GetHostname(), ShouldEqual, "vm578-m4")
-
-			// Verify DHCPs
-			dhcp, err := configuration.GetDHCPConfig(ctx, lse[0].GetHostname())
-			So(err, ShouldBeNil)
-			So(dhcp.GetIp(), ShouldEqual, "192.168.40.60")
-			So(dhcp.GetMacAddress(), ShouldEqual, "00:3e:e1:c8:57:f9")
-
-			// Verify IPs
-			ipv4, err := util.IPv4StrToInt(dhcp.GetIp())
-			So(err, ShouldBeNil)
-			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4": strconv.FormatUint(uint64(ipv4), 10)})
-			So(err, ShouldBeNil)
-			So(ips, ShouldHaveLength, 1)
-			So(ips[0].GetOccupied(), ShouldBeTrue)
-			So(ips[0].GetVlan(), ShouldEqual, "browser:40")
-			So(ips[0].GetId(), ShouldEqual, "browser:40/3232245820")
-			So(ips[0].GetIpv4Str(), ShouldEqual, "192.168.40.60")
 		})
 	})
 }
