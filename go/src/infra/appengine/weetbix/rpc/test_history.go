@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/appstatus"
 	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth/realms"
@@ -113,6 +114,8 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 	if err := utils.HasPermissions(ctx, requiredPerms, realm, nil); err != nil {
 		return nil, err
 	}
+
+	logging.Infof(ctx, "project: %s test_id: %s sub_realm: %s", req.GetProject(), req.GetTestId(), req.GetPredicate().GetSubRealm())
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
 	opts := testresults.ReadTestHistoryOptions{
