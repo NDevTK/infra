@@ -49,9 +49,6 @@ service Fleet {
   // List all the chrome osversions.
   rpc ListOSVersions(ListOSVersionsRequest) returns (ListOSVersionsResponse);
 
-  // ImportOSVersions imports the OS versions.
-  rpc ImportOSVersions(ImportOSVersionsRequest) returns (google.rpc.Status);
-
   // CreateMachineLSEPrototype creates a new MachineLSEPrototype.
   rpc CreateMachineLSEPrototype(CreateMachineLSEPrototypeRequest) returns (models.MachineLSEPrototype);
 

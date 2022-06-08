@@ -130,23 +130,6 @@ func (s *DecoratedFleet) ListOSVersions(ctx context.Context, req *ListOSVersions
 	return
 }
 
-func (s *DecoratedFleet) ImportOSVersions(ctx context.Context, req *ImportOSVersionsRequest) (rsp *status.Status, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ImportOSVersions", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ImportOSVersions(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ImportOSVersions", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedFleet) CreateMachineLSEPrototype(ctx context.Context, req *CreateMachineLSEPrototypeRequest) (rsp *models.MachineLSEPrototype, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

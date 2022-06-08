@@ -424,47 +424,6 @@ func TestDeleteChromePlatform(t *testing.T) {
 	})
 }
 
-func TestImportOSVersions(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import os versions", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportOSVersionsRequest{
-				Source: &ufsAPI.ImportOSVersionsRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "fake_host",
-					},
-				},
-			}
-			res, err := tf.Fleet.ImportOSVersions(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-			resp, _, err := configuration.ListOSes(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			// See ListOSes() in fake/crimson.go
-			So(resp, ShouldHaveLength, 2)
-			So(ufsAPI.ParseResources(resp, "Value"), ShouldResemble, []string{"os1", "os2"})
-			So(ufsAPI.ParseResources(resp, "Description"), ShouldResemble, []string{"os1_description", "os2_description"})
-		})
-		Convey("import oses with invalid argument", func() {
-			req := &ufsAPI.ImportOSVersionsRequest{
-				Source: &ufsAPI.ImportOSVersionsRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "",
-					},
-				},
-			}
-			_, err := tf.Fleet.ImportOSVersions(ctx, req)
-			So(err, ShouldNotBeNil)
-			s, ok := status.FromError(err)
-			So(ok, ShouldBeTrue)
-			So(s.Code(), ShouldEqual, code.Code_INVALID_ARGUMENT)
-		})
-	})
-}
-
 func TestCreateMachineLSEPrototype(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

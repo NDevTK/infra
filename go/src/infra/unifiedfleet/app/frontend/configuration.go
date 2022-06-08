@@ -13,7 +13,6 @@ import (
 	luciconfig "go.chromium.org/luci/config"
 	"go.chromium.org/luci/grpc/grpcutil"
 	crimsonconfig "go.chromium.org/luci/machine-db/api/config/v1"
-	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -170,37 +169,6 @@ func (fs *FleetServerImpl) DeleteChromePlatform(ctx context.Context, req *ufsAPI
 // ListOSVersions lists the chrome os versions in batch.
 func (fs *FleetServerImpl) ListOSVersions(ctx context.Context, req *ufsAPI.ListOSVersionsRequest) (response *ufsAPI.ListOSVersionsResponse, err error) {
 	return nil, nil
-}
-
-// ImportOSVersions imports the Chrome OSVersion in batch.
-func (fs *FleetServerImpl) ImportOSVersions(ctx context.Context, req *ufsAPI.ImportOSVersionsRequest) (response *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	source := req.GetMachineDbSource()
-	if err := ufsAPI.ValidateMachineDBSource(source); err != nil {
-		return nil, err
-	}
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	mdbClient, err := es.NewMachineDBInterfaceFactory(ctx, source.GetHost())
-	if err != nil {
-		return nil, machineDBConnectionFailureStatus.Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to get the list of oses")
-	resp, err := mdbClient.ListOSes(ctx, &crimson.ListOSesRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListOSes").Err()
-	}
-	oses := util.ToOses(resp.GetOses())
-	res, err := controller.ImportOSes(ctx, oses, fs.getImportPageSize())
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
 }
 
 // CreateMachineLSEPrototype creates machinelseprototype entry in database.
