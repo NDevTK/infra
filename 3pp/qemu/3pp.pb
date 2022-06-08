@@ -6,10 +6,11 @@ create {
       version: "7.0.0-rc4"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:qemu:qemu"
   }
   build {
     dep: "pixman"
   }
 }
 
-upload {pkg_prefix: "tools"}
+upload { pkg_prefix: "tools" }
