@@ -35,6 +35,7 @@ func NewHTTPClient(ctx context.Context) (*http.Client, error) {
 // Client exposes a deliberately chosen subset of the UFS functionality.
 type Client interface {
 	GetMachineLSE(context.Context, *ufsAPI.GetMachineLSERequest, ...grpc.CallOption) (*models.MachineLSE, error)
+	GetChromeOSDeviceData(context.Context, *ufsAPI.GetChromeOSDeviceDataRequest, ...grpc.CallOption) (*models.ChromeOSDeviceData, error)
 }
 
 // ClientImpl is the concrete implementation of this client.

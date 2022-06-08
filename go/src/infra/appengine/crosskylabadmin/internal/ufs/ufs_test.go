@@ -79,3 +79,8 @@ func (f *fakeGetPoolsClient) GetMachineLSE(ctx context.Context, in *ufsAPI.GetMa
 	f.names = append(f.names, in.GetName())
 	return fakeMachine, nil
 }
+
+// GetMachineLSE always returns a fake machine.
+func (f *fakeGetPoolsClient) GetChromeOSDeviceData(ctx context.Context, in *ufsAPI.GetChromeOSDeviceDataRequest, opts ...grpc.CallOption) (*models.ChromeOSDeviceData, error) {
+	panic("not used")
+}

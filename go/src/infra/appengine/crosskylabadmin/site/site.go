@@ -17,6 +17,9 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
+// ProdUFS is the unified fleet service.
+const ProdUFS = "ufs.api.cr.dev"
+
 // StagingService is the staging instance of CrOSSkylabAdmin.
 const StagingService = "skylab-staging-bot-fleet.appspot.com"
 

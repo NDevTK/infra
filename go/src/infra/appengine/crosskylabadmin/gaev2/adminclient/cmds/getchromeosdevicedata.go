@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,18 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 
 	"infra/appengine/crosskylabadmin/internal/ufs"
 	"infra/appengine/crosskylabadmin/site"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
-// GetMachineLSE calls the GetMachineLSE RPC of UFS the way that CrOSSkylabAdmin would.
-var GetMachineLSE = &subcommands.Command{
-	UsageLine: `get-machine-lse`,
-	ShortDesc: `Get the stable version`,
+// GetChromeOSDeviceData calls the GetMachineLSE RPC of UFS the way that CrOSSkylabAdmin would.
+var GetChromeOSDeviceData = &subcommands.Command{
+	UsageLine: `get-cros`,
+	ShortDesc: `Get the ChromeOS device data`,
 	CommandRun: func() subcommands.CommandRun {
-		r := &getMachineLSERun{}
+		r := &getChromeOSDeviceDataRun{}
 		r.authFlags.Register(&r.Flags, site.DefaultAuthOptions)
 		r.Flags.StringVar(&r.ufs, "ufs", site.ProdUFS, "the UFS server")
 		r.Flags.StringVar(&r.name, "name", "", "the device name")
@@ -32,16 +32,15 @@ var GetMachineLSE = &subcommands.Command{
 	},
 }
 
-// GetMachineLSERun runs the get-machine-lse command.
-type getMachineLSERun struct {
+type getChromeOSDeviceDataRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
-	name      string
 	ufs       string
+	name      string
 }
 
 // Run runs the command and returns an exit status.
-func (c *getMachineLSERun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+func (c *getChromeOSDeviceDataRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
 	if err := c.innerRun(ctx, a, args, env); err != nil {
 		fmt.Fprintf(a.GetErr(), "%s: %s\n", a.GetName(), err)
@@ -50,28 +49,28 @@ func (c *getMachineLSERun) Run(a subcommands.Application, args []string, env sub
 	return 0
 }
 
-// InnerRun runs the command and returns an error.
-func (c *getMachineLSERun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+// innerRun runs the command and returns an error.
+func (c *getChromeOSDeviceDataRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if len(args) != 0 {
-		return errors.Reason("get machine lse: positional arguments are unacceptable").Err()
+		return errors.Reason("get chromeos device data: positional arguments are unacceptable").Err()
 	}
 	authOptions, err := c.authFlags.Options()
 	if err != nil {
-		return errors.Annotate(err, "get machine lse: authenticating").Err()
+		return errors.Annotate(err, "get chromeos device data: authenticating").Err()
 	}
 	hc, err := auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOptions).Client()
 	if err != nil {
-		return errors.Annotate(err, "get machine lse").Err()
+		return errors.Annotate(err, "get chromeos device data").Err()
 	}
 	client, err := ufs.NewClient(ctx, hc, c.ufs)
 	if err != nil {
-		return errors.Annotate(err, "get machine lse: creating client").Err()
+		return errors.Annotate(err, "get chromeos device data: creating client").Err()
 	}
-	req := &ufsAPI.GetMachineLSERequest{
-		Name: c.name,
+	req := &ufsAPI.GetChromeOSDeviceDataRequest{
+		Hostname: c.name,
 	}
 	jsonMarshaler.Marshal(a.GetErr(), req)
-	res, err := client.GetMachineLSE(ctx, req)
+	res, err := client.GetChromeOSDeviceData(ctx, req)
 	if err != nil {
 		return errors.Annotate(err, "get machine lse: inner run").Err()
 	}
