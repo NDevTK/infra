@@ -10,7 +10,10 @@ import (
 	gerrs "errors"
 	"fmt"
 	"os"
+	"reflect"
 	"testing"
+
+	"go.chromium.org/luci/common/api/gerrit"
 )
 
 type ExpectedFetch struct {
@@ -36,6 +39,13 @@ type MockClient struct {
 	ExpectedProjects map[string][]string
 	ExpectedLists    map[ExpectedPathParams][]string
 	ExpectedFileLogs map[ExpectedPathParams][]Commit
+	// Maps query string to query results.
+	// If an entry is set for "*", that result will be returned for all queries.
+	ExpectedQuery map[string][]*gerrit.Change
+	// Indexed by change ID.
+	ExpectedReview map[string]*gerrit.ReviewInput
+	// Indexed by change ID.
+	ExpectedSubmit map[string]bool
 }
 
 func contains(arr []string, str string) bool {
@@ -156,4 +166,38 @@ func (c *MockClient) GetFileLog(ctx context.Context, host, project, ref, filepat
 		c.T.Fatalf("unexpected GetFileLog for %+v", expectedLog)
 	}
 	return commits, nil
+}
+
+// QueryChanges queries a gerrit host for changes matching the supplied query.
+func (c *MockClient) QueryChanges(ctx context.Context, host string, query gerrit.ChangeQueryParams) ([]*gerrit.Change, error) {
+	anyQuery, ok := c.ExpectedQuery["*"]
+	if ok {
+		return anyQuery, nil
+	}
+	changes, ok := c.ExpectedQuery[query.Query]
+	if !ok {
+		c.T.Fatalf("unexpected QueryChanges for %+v", query.Query)
+	}
+	return changes, nil
+}
+
+// SetReview applies labels/performs other review operations on the specified CL.
+func (c *MockClient) SetReview(ctx context.Context, host, changeID string, review *gerrit.ReviewInput) (*gerrit.ReviewResult, error) {
+	expectedReview, ok := c.ExpectedReview[changeID]
+	if !ok {
+		c.T.Fatalf("unexpected SetReview for %s", changeID)
+	}
+	if !reflect.DeepEqual(*expectedReview, *review) {
+		c.T.Fatalf("mismatch on SetReview for change %s: expected\n%+v\ngot\n%+v", changeID, *expectedReview, *review)
+	}
+	return nil, nil
+}
+
+// SubmitChange submits the specified CL.
+func (c *MockClient) SubmitChange(ctx context.Context, host, changeID string) error {
+	submit, ok := c.ExpectedSubmit[changeID]
+	if !ok || !submit {
+		c.T.Fatalf("unexpected SubmitChange for %s", changeID)
+	}
+	return nil
 }

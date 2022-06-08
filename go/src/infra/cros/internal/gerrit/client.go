@@ -23,6 +23,7 @@ import (
 
 	"infra/cros/internal/shared"
 
+	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -57,6 +58,9 @@ type Client interface {
 	Projects(ctx context.Context, host string) ([]string, error)
 	ListFiles(ctx context.Context, host, project, ref, path string) ([]string, error)
 	GetFileLog(ctx context.Context, host, project, ref, filepath string) ([]Commit, error)
+	QueryChanges(ctx context.Context, host string, query gerrit.ChangeQueryParams) ([]*gerrit.Change, error)
+	SetReview(ctx context.Context, host, changeID string, review *gerrit.ReviewInput) (*gerrit.ReviewResult, error)
+	SubmitChange(ctx context.Context, host, changeID string) error
 }
 
 // Client is a client for interacting with gerrit.
@@ -65,6 +69,8 @@ type ProdClient struct {
 	authedClient *http.Client
 	// gitilesClient maps individual gerrit host to gitiles client.
 	gitilesClient map[string]gitilespb.GitilesClient
+	// gerritClient maps individual gerrit host to gerrit client.
+	gerritClient map[string]*gerrit.Client
 }
 
 // NewClient returns a new Client object.
@@ -73,12 +79,13 @@ func NewClient(authedClient *http.Client) (*ProdClient, error) {
 		isTestClient:  false,
 		authedClient:  authedClient,
 		gitilesClient: map[string]gitilespb.GitilesClient{},
+		gerritClient:  map[string]*gerrit.Client{},
 	}, nil
 }
 
-// getHostClient retrieves the inner gitilespb.GitilesClient for the specific
+// getGitilesClientForHost retrieves the inner gitilespb.GitilesClient for the specific
 // host if it exists and creates a new one if it does not.
-func (c *ProdClient) getHostClient(host string) (gitilespb.GitilesClient, error) {
+func (c *ProdClient) getGitilesClientForHost(host string) (gitilespb.GitilesClient, error) {
 	if client, ok := c.gitilesClient[host]; ok {
 		return client, nil
 	}
@@ -93,12 +100,28 @@ func (c *ProdClient) getHostClient(host string) (gitilespb.GitilesClient, error)
 	return c.gitilesClient[host], err
 }
 
-// NewTestClient returns a new Client that uses the provided GitilesClient
-// objects.
-func NewTestClient(gcs map[string]gitilespb.GitilesClient) *ProdClient {
+// getGerritClientForHost retrieves the inner *gerrit.Client for the specific
+// host if it exists and creates a new one if it does not.
+func (c *ProdClient) getGerritClientForHost(host string) (*gerrit.Client, error) {
+	if client, ok := c.gerritClient[host]; ok {
+		return client, nil
+	}
+	if c.isTestClient {
+		return nil, fmt.Errorf("test clients must have all inner clients set at initialization.")
+	}
+	var err error
+	c.gerritClient[host], err = gerrit.NewClient(c.authedClient, host)
+	if err != nil {
+		return nil, err
+	}
+	return c.gerritClient[host], err
+}
+
+// NewTestClient returns a new Client that uses the provided client objects.
+func NewTestClient(gitilesClients map[string]gitilespb.GitilesClient) *ProdClient {
 	return &ProdClient{
 		isTestClient:  true,
-		gitilesClient: gcs,
+		gitilesClient: gitilesClients,
 	}
 }
 
@@ -111,7 +134,7 @@ func NewTestClient(gcs map[string]gitilespb.GitilesClient) *ProdClient {
 // fetchFilesFromGitiles returns a map from path in the git project to the
 // contents of the file at that path for each requested path.
 func (c *ProdClient) FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string) (*map[string]string, error) {
-	gc, err := c.getHostClient(host)
+	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +147,7 @@ func (c *ProdClient) FetchFilesFromGitiles(ctx context.Context, host, project, r
 
 // DownloadFileFromGitiles downloads a file from Gitiles.
 func (c *ProdClient) DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string) (string, error) {
-	gc, err := c.getHostClient(host)
+	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return "", err
 	}
@@ -261,7 +284,7 @@ func extractGitilesArchive(ctx context.Context, data []byte, paths []string) (*m
 
 // Branches returns a map of branches (to revisions) for a given repo.
 func (c *ProdClient) Branches(ctx context.Context, host, project string) (map[string]string, error) {
-	gc, err := c.getHostClient(host)
+	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +301,7 @@ func (c *ProdClient) Branches(ctx context.Context, host, project string) (map[st
 
 // Projects returns a list of projects for a given host.
 func (c *ProdClient) Projects(ctx context.Context, host string) ([]string, error) {
-	gc, err := c.getHostClient(host)
+	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return nil, err
 	}
@@ -292,7 +315,7 @@ func (c *ProdClient) Projects(ctx context.Context, host string) ([]string, error
 
 // ListFiles returns a list of files/directories for a given host/project/ref/path.
 func (c *ProdClient) ListFiles(ctx context.Context, host, project, ref, path string) ([]string, error) {
-	gc, err := c.getHostClient(host)
+	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return nil, err
 	}
@@ -338,4 +361,39 @@ func (c *ProdClient) GetFileLog(ctx context.Context, host, project, ref, filepat
 		return nil, err
 	}
 	return log.Commits, nil
+}
+
+// QueryChanges queries a gerrit host for changes matching the supplied query.
+func (c *ProdClient) QueryChanges(ctx context.Context, host string, query gerrit.ChangeQueryParams) ([]*gerrit.Change, error) {
+	gc, err := c.getGerritClientForHost(host)
+	if err != nil {
+		return nil, err
+	}
+	changes, _, err := gc.ChangeQuery(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return changes, nil
+}
+
+// SetReview applies labels/performs other review operations on the specified CL.
+func (c *ProdClient) SetReview(ctx context.Context, host, changeID string, review *gerrit.ReviewInput) (*gerrit.ReviewResult, error) {
+	gc, err := c.getGerritClientForHost(host)
+	if err != nil {
+		return nil, err
+	}
+
+	// "current" selects the most recent patchset.
+	return gc.SetReview(ctx, changeID, "current", review)
+}
+
+// SubmitChange submits the specified CL.
+func (c *ProdClient) SubmitChange(ctx context.Context, host, changeID string) error {
+	gc, err := c.getGerritClientForHost(host)
+	if err != nil {
+		return nil
+	}
+
+	_, err = gc.Submit(ctx, changeID, &gerrit.SubmitInput{})
+	return err
 }
