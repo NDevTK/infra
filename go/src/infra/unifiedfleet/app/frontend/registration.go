@@ -9,16 +9,11 @@ import (
 	"strings"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
-	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
-	status "google.golang.org/genproto/googleapis/rpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/util"
 )
 
@@ -153,58 +148,6 @@ func (fs *FleetServerImpl) DeleteMachine(ctx context.Context, req *ufsAPI.Delete
 	name := util.RemovePrefix(req.Name)
 	err = controller.DeleteMachine(ctx, name)
 	return &empty.Empty{}, err
-}
-
-// ImportMachines imports the machines from parent sources.
-func (fs *FleetServerImpl) ImportMachines(ctx context.Context, req *ufsAPI.ImportMachinesRequest) (rsp *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	source := req.GetMachineDbSource()
-	if err := ufsAPI.ValidateMachineDBSource(source); err != nil {
-		return nil, err
-	}
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	mdbClient, err := es.NewMachineDBInterfaceFactory(ctx, source.GetHost())
-	if err != nil {
-		return nil, machineDBConnectionFailureStatus.Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to get the list of machines")
-	resp, err := mdbClient.ListMachines(ctx, &crimson.ListMachinesRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListMachines").Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to get the list of nics")
-	nics, err := mdbClient.ListNICs(ctx, &crimson.ListNICsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListNICs").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(nics.Nics, "Name"); err != nil {
-		return nil, errors.Annotate(err, "nic has invalid chars").Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to get the list of dracs")
-	dracs, err := mdbClient.ListDRACs(ctx, &crimson.ListDRACsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListDRACs").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(dracs.Dracs, "Name"); err != nil {
-		return nil, errors.Annotate(err, "drac has invalid chars").Err()
-	}
-	logging.Debugf(ctx, "Parsing nic and drac")
-	_, _, _, machineToNics, machineToDracs := util.ProcessNetworkInterfaces(nics.Nics, dracs.Dracs, nil)
-	machines := util.ToChromeMachines(resp.GetMachines(), machineToNics, machineToDracs)
-	if err := ufsAPI.ValidateResourceKey(machines, "Name"); err != nil {
-		return nil, errors.Annotate(err, "machines has invalid chars").Err()
-	}
-	res, err := controller.ImportMachines(ctx, machines, fs.getImportPageSize())
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
 }
 
 // RenameMachine renames the machine in database.

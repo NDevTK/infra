@@ -10,8 +10,6 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
-	code "google.golang.org/genproto/googleapis/rpc/code"
-	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -566,67 +564,6 @@ func TestDeleteMachine(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
-		})
-	})
-}
-
-func TestImportMachines(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import browser machines", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportMachinesRequest{
-				Source: &ufsAPI.ImportMachinesRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "fake_host",
-					},
-				},
-			}
-			res, err := tf.Fleet.ImportMachines(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-			machines, _, err := registration.ListMachines(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(machines, ShouldHaveLength, 3)
-			So(ufsAPI.ParseResources(machines, "Name"), ShouldResemble, []string{"machine1", "machine2", "machine3"})
-			for _, m := range machines {
-				So(m.GetRealm(), ShouldEqual, util.BrowserLabAdminRealm)
-				bm := m.GetChromeBrowserMachine()
-				switch m.GetName() {
-				case "machine1":
-					So(bm.GetChromePlatform(), ShouldEqual, "fake_platform")
-				case "machine2":
-					So(bm.GetChromePlatform(), ShouldEqual, "fake_platform")
-				case "machine3":
-					So(bm.GetChromePlatform(), ShouldEqual, "fake_platform2")
-				}
-			}
-		})
-		Convey("import browser machines with empty machineDB host", func() {
-			req := &ufsAPI.ImportMachinesRequest{
-				Source: &ufsAPI.ImportMachinesRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "",
-					},
-				},
-			}
-			_, err := tf.Fleet.ImportMachines(ctx, req)
-			So(err, ShouldNotBeNil)
-			s, ok := status.FromError(err)
-			So(ok, ShouldBeTrue)
-			So(s.Code(), ShouldEqual, code.Code_INVALID_ARGUMENT)
-		})
-		Convey("import browser machines with empty machineDB source", func() {
-			req := &ufsAPI.ImportMachinesRequest{
-				Source: &ufsAPI.ImportMachinesRequest_MachineDbSource{},
-			}
-			_, err := tf.Fleet.ImportMachines(ctx, req)
-			So(err, ShouldNotBeNil)
-			s, ok := status.FromError(err)
-			So(ok, ShouldBeTrue)
-			So(s.Code(), ShouldEqual, code.Code_INVALID_ARGUMENT)
 		})
 	})
 }
