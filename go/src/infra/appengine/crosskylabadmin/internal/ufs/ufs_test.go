@@ -45,7 +45,7 @@ func TestGetPools(t *testing.T) {
 	if diff := cmp.Diff(expectedPools, actualPools); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
-	expectedName := []string{"machineLSEs/a"}
+	expectedName := []string{"a"}
 	actualName := c.names
 	if diff := cmp.Diff(expectedName, actualName); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
@@ -82,5 +82,8 @@ func (f *fakeGetPoolsClient) GetMachineLSE(ctx context.Context, in *ufsAPI.GetMa
 
 // GetMachineLSE always returns a fake machine.
 func (f *fakeGetPoolsClient) GetChromeOSDeviceData(ctx context.Context, in *ufsAPI.GetChromeOSDeviceDataRequest, opts ...grpc.CallOption) (*models.ChromeOSDeviceData, error) {
-	panic("not used")
+	f.names = append(f.names, in.GetHostname())
+	return &models.ChromeOSDeviceData{
+		LabConfig: fakeMachine,
+	}, nil
 }

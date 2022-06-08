@@ -17,7 +17,6 @@ import (
 	"infra/libs/skylab/common/heuristics"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // NewHTTPClient creates a new client specifically configured to talk to UFS correctly when run from
@@ -75,16 +74,18 @@ func GetPools(ctx context.Context, client Client, botID string) ([]string, error
 	if client == nil {
 		return nil, errors.Reason("get pools: client cannot be nil").Err()
 	}
-	res, err := client.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
-		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, heuristics.NormalizeBotNameToDeviceName(botID)),
+	// TODO(gregorynisbet): Consider generalizing this from ChromeOS devices
+	//                       to other kinds of devices.
+	res, err := client.GetChromeOSDeviceData(ctx, &ufsAPI.GetChromeOSDeviceDataRequest{
+		Hostname: heuristics.NormalizeBotNameToDeviceName(botID),
 	})
 	if err != nil {
 		return nil, errors.Annotate(err, "get pools").Err()
 	}
-	if res.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
+	if res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
 		// We have a non-labstation DUT.
-		return res.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), nil
+		return res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), nil
 	}
 	// We have a labstation DUT.
-	return res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
+	return res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
 }
