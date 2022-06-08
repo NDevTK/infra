@@ -113,23 +113,6 @@ func (s *DecoratedFleet) DeleteChromePlatform(ctx context.Context, req *DeleteCh
 	return
 }
 
-func (s *DecoratedFleet) ImportChromePlatforms(ctx context.Context, req *ImportChromePlatformsRequest) (rsp *status.Status, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ImportChromePlatforms", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ImportChromePlatforms(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ImportChromePlatforms", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedFleet) ListOSVersions(ctx context.Context, req *ListOSVersionsRequest) (rsp *ListOSVersionsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -167,54 +167,6 @@ func (fs *FleetServerImpl) DeleteChromePlatform(ctx context.Context, req *ufsAPI
 	return &empty.Empty{}, err
 }
 
-// ImportChromePlatforms imports the Chrome Platform in batch.
-func (fs *FleetServerImpl) ImportChromePlatforms(ctx context.Context, req *ufsAPI.ImportChromePlatformsRequest) (response *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-
-	var platforms []*ufspb.ChromePlatform
-	oldP := &crimsonconfig.Platforms{}
-	configSource := req.GetConfigSource()
-	if configSource == nil {
-		return nil, emptyConfigSourceStatus.Err()
-	}
-
-	switch configSource.ConfigServiceName {
-	case "":
-		logging.Debugf(ctx, "Importing chrome platforms from local config file")
-		oldP, err = parsePlatformsFunc(configSource.FileName)
-		if err != nil {
-			return nil, invalidConfigFileContentStatus.Err()
-		}
-	default:
-		logging.Debugf(ctx, "Importing chrome platforms from luci-config")
-		es, err := external.GetServerInterface(ctx)
-		if err != nil {
-			return nil, err
-		}
-		cfgInterface := es.NewCfgInterface(ctx)
-		fetchedConfigs, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet(configSource.ConfigServiceName), configSource.FileName, false)
-		if err != nil {
-			logging.Debugf(ctx, "Fail to fetch configs: %s", err.Error())
-			return nil, configServiceFailureStatus.Err()
-		}
-		if err := luciproto.UnmarshalTextML(fetchedConfigs.Content, oldP); err != nil {
-			logging.Debugf(ctx, "Fail to unmarshal configs: %s", err.Error())
-			return nil, invalidConfigFileContentStatus.Err()
-		}
-	}
-	platforms = util.ToChromePlatforms(oldP)
-
-	logging.Debugf(ctx, "Importing %d platforms", len(platforms))
-	if err := ufsAPI.ValidateResourceKey(platforms, "Name"); err != nil {
-		return nil, err
-	}
-	res, err := controller.ImportChromePlatforms(ctx, platforms, fs.getImportPageSize())
-	s := processImportDatastoreRes(res, err)
-	return s.Proto(), s.Err()
-}
-
 // ListOSVersions lists the chrome os versions in batch.
 func (fs *FleetServerImpl) ListOSVersions(ctx context.Context, req *ufsAPI.ListOSVersionsRequest) (response *ufsAPI.ListOSVersionsResponse, err error) {
 	return nil, nil

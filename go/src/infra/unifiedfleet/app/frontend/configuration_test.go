@@ -424,44 +424,6 @@ func TestDeleteChromePlatform(t *testing.T) {
 	})
 }
 
-func TestImportChromePlatforms(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import chrome platforms", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportChromePlatformsRequest{
-				Source: &ufsAPI.ImportChromePlatformsRequest_ConfigSource{
-					ConfigSource: &ufsAPI.ConfigSource{
-						ConfigServiceName: "",
-						FileName:          "test.config",
-					},
-				},
-			}
-			parsePlatformsFunc = mockParsePlatformsFunc
-			res, err := tf.Fleet.ImportChromePlatforms(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-			getRes, err := configuration.GetAllChromePlatforms(ctx)
-			So(err, ShouldBeNil)
-			So(getRes, ShouldHaveLength, len(localPlatforms))
-			gets := getReturnedPlatformNames(*getRes)
-			So(gets, ShouldResemble, []string{"fake_platform1", "fake_platform2", "fake_platform3"})
-		})
-		Convey("import platforms with invalid argument", func() {
-			req := &ufsAPI.ImportChromePlatformsRequest{
-				Source: &ufsAPI.ImportChromePlatformsRequest_ConfigSource{},
-			}
-			_, err := tf.Fleet.ImportChromePlatforms(ctx, req)
-			So(err, ShouldNotBeNil)
-			s, ok := status.FromError(err)
-			So(ok, ShouldBeTrue)
-			So(s.Code(), ShouldEqual, code.Code_INVALID_ARGUMENT)
-		})
-	})
-}
-
 func TestImportOSVersions(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

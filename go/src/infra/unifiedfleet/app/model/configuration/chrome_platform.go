@@ -173,17 +173,6 @@ func DeleteChromePlatforms(ctx context.Context, resourceNames []string) *ufsds.O
 	return ufsds.DeleteAll(ctx, protos, newChromePlatformEntity)
 }
 
-// ImportChromePlatforms inserts chrome platforms to datastore.
-func ImportChromePlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(platforms))
-	utime := ptypes.TimestampNow()
-	for i, p := range platforms {
-		p.UpdateTime = utime
-		protos[i] = p
-	}
-	return ufsds.Insert(ctx, protos, newChromePlatformEntity, true, true)
-}
-
 // GetAllChromePlatforms returns all platforms in record.
 func GetAllChromePlatforms(ctx context.Context) (*ufsds.OpResults, error) {
 	return ufsds.GetAll(ctx, queryAll)

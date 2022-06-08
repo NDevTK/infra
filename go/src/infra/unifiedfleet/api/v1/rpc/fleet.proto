@@ -46,9 +46,6 @@ service Fleet {
   // Delete delete the chromePlatform
   rpc DeleteChromePlatform(DeleteChromePlatformRequest) returns (google.protobuf.Empty);
 
-  // ImportChromePlatforms imports chrome platforms.
-  rpc ImportChromePlatforms(ImportChromePlatformsRequest) returns (google.rpc.Status);
-
   // List all the chrome osversions.
   rpc ListOSVersions(ListOSVersionsRequest) returns (ListOSVersionsResponse);
 

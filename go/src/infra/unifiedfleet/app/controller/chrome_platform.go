@@ -140,12 +140,6 @@ func DeleteChromePlatform(ctx context.Context, id string) error {
 	return configuration.DeleteChromePlatform(ctx, id)
 }
 
-// ImportChromePlatforms inserts chrome platforms to datastore.
-func ImportChromePlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*ufsds.OpResults, error) {
-	deleteNonExistingPlatforms(ctx, platforms, pageSize)
-	return configuration.ImportChromePlatforms(ctx, platforms)
-}
-
 func deleteNonExistingPlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*ufsds.OpResults, error) {
 	resMap := make(map[string]bool)
 	for _, r := range platforms {
