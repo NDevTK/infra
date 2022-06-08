@@ -11,7 +11,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -301,55 +300,6 @@ func deleteNicHelper(ctx context.Context, id string, inTransaction bool) error {
 		return nil
 	}
 	return f(ctx)
-}
-
-// ImportNetworkInterfaces creates or updates a batch of nics, dracs, and dhcps in datastore
-func ImportNetworkInterfaces(ctx context.Context, nics []*crimson.NIC, dracs []*crimson.DRAC, machines []*crimson.Machine, pageSize int) (*ufsds.OpResults, error) {
-	var allRes ufsds.OpResults
-	newNics, newDracs, dhcps, _, _ := ufsUtil.ProcessNetworkInterfaces(nics, dracs, machines)
-	// Please note that the importing here is not in one transaction, which
-	// actually may cause data incompleteness. But as the importing job
-	// will be triggered periodically, such incompleteness that's caused by
-	// potential failure will be ignored.
-	deleteNonExistingNics(ctx, newNics, pageSize)
-	logging.Infof(ctx, "Importing %d nics", len(newNics))
-	for i := 0; ; i += pageSize {
-		end := ufsUtil.Min(i+pageSize, len(newNics))
-		res, err := registration.ImportNics(ctx, newNics[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(newNics) {
-			break
-		}
-	}
-	deleteNonExistingDracs(ctx, newDracs, pageSize)
-	logging.Infof(ctx, "Importing %d dracs", len(newDracs))
-	for i := 0; ; i += pageSize {
-		end := ufsUtil.Min(i+pageSize, len(newDracs))
-		res, err := registration.ImportDracs(ctx, newDracs[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(newDracs) {
-			break
-		}
-	}
-	logging.Infof(ctx, "Importing %d dhcps", len(dhcps))
-	for i := 0; ; i += pageSize {
-		end := ufsUtil.Min(i+pageSize, len(dhcps))
-		res, err := configuration.ImportDHCPConfigs(ctx, dhcps[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(dhcps) {
-			break
-		}
-	}
-	return &allRes, nil
 }
 
 func deleteNonExistingNics(ctx context.Context, nics []*ufspb.Nic, pageSize int) (*ufsds.OpResults, error) {
