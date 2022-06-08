@@ -78,20 +78,6 @@ ALL = {
         # We don't currently run a wheel builder for linux-armv6, but
         # we keep it as a platform here for use by the 3pp recipe.
         Platform(
-            name='linux-armv6',
-            manylinux_name=None,
-            cross_triple='arm-linux-gnueabihf',
-            wheel_abi='cp27mu',
-            wheel_plat=('linux_armv6l', 'linux_armv7l', 'linux_armv8l',
-                        'linux_armv9l'),
-            dockcross_base='linux-armv6',
-            dockcross_tag='20210625-795dd4d',
-            openssl_target='linux-armv4',
-            packaged=False,
-            cipd_platform='linux-armv6l',
-            env={},
-        ),
-        Platform(
             name='linux-armv6-py3',
             manylinux_name=None,
             cross_triple='arm-linux-gnueabihf',

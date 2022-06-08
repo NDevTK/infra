@@ -218,12 +218,7 @@ SPECS.update({
         SourceOrPrebuilt(
             'MarkupSafe',
             '1.1.1',
-            packaged=(
-                'mac-x64',
-                'manylinux-x64',
-                'windows-x86',
-                'windows-x64',
-            ),
+            packaged=(),
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
@@ -331,8 +326,6 @@ SPECS.update({
                         'greenlet',
                         '0.4.16',
                         packaged=[
-                            'windows-x86',
-                            'windows-x64',
                             'windows-x86-py3',
                             'windows-x64-py3',
                         ],
@@ -847,11 +840,6 @@ SPECS.update({
             'libclang',
             '12.0.0',
             ['manylinux-x64-py3', 'windows-x64-py3', 'mac-x64-cp38'],
-        ),
-        Prebuilt(
-            'lxml',
-            '4.2.5',
-            ['mac-x64', 'manylinux-x64', 'windows-x86', 'windows-x64'],
         ),
         Prebuilt(
             'lxml',
@@ -1478,9 +1466,7 @@ SPECS.update({
                     '3.0.3',
                     'version:2@3.4.1.chromium.4',
                     packaged=[
-                        'windows-x86',
                         'windows-x86-py3',
-                        'windows-x64',
                         'windows-x64-py3',
                     ],
                 ),
@@ -1490,7 +1476,7 @@ SPECS.update({
                     pyversions=['py2', 'py3'],
                     patch_version='chromium.1',
                     skip_auditwheel=True,
-                    packaged=['windows-x86', 'windows-x64'],
+                    packaged=(),
                 ),
                 Universal('pathos', '0.2.7'),
                 Universal('pox', '0.2.9'),
@@ -1498,13 +1484,6 @@ SPECS.update({
                 Universal('pyina', '0.2.4'),
             ]),
             pyversions=['py3'],
-            # No 3pp builders for these platforms, so cannot build mpi4py.
-            skip_plat=[
-                'linux-armv6',
-                'linux-mipsel',
-                'linux-mips',
-                'linux-mips64',
-            ],
         ),
         # This should actually be 4.8.0, but the version needs to change in
         # order to pick up dependencies that weren't included when the
