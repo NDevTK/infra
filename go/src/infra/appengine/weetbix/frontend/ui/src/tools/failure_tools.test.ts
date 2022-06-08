@@ -21,6 +21,7 @@ interface ExtractorTestCase {
     filter: string;
     shouldExtractTestRunId: boolean;
     shouldExtractIngestedInvocationId: boolean;
+    shouldExtractPresubmitRunId: boolean;
 }
 
 describe.each<ExtractorTestCase>([{
@@ -28,166 +29,235 @@ describe.each<ExtractorTestCase>([{
   filter: 'Actual Impact',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().testRunBlocked().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().notPresubmitCritical().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().testRunBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().exonerateNotCritical().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().testRunBlocked().exonerateNotCritical().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateNotCritical().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().notPresubmitCritical().build(),
+  filter: 'Without Weetbix Exoneration',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().notPresubmitCritical().build(),
+  filter: 'Without Weetbix Exoneration',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().exonerateNotCritical().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateNotCritical().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().notPresubmitCritical().build(),
+  filter: 'Without All Exoneration',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().exonerateNotCritical().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateNotCritical().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().build(),
   filter: 'Without Retrying Test Runs',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().testRunBlocked().build(),
   filter: 'Without Retrying Test Runs',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().build(),
   filter: 'Without Retrying Test Runs',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Retrying Test Runs',
   shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().testRunBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Retrying Test Runs',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Retrying Test Runs',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().notPresubmitCritical().build(),
+  filter: 'Without Retrying Test Runs',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
 }, {
   failure: newMockFailure().build(),
   filter: 'Without Any Retries',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().testRunBlocked().build(),
   filter: 'Without Any Retries',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().build(),
   filter: 'Without Any Retries',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Any Retries',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().testRunBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Any Retries',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Any Retries',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().notPresubmitCritical().build(),
+  filter: 'Without Any Retries',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
 }])('Extractors with %j', (tc: ExtractorTestCase) => {
   it('should return ids in only the cases expected by failure type and impact filter.', () => {
     const testRunIds = rejectedTestRunIdsExtractor(impactFilterNamed(tc.filter))(tc.failure);
@@ -203,8 +273,7 @@ describe.each<ExtractorTestCase>([{
       expect(ingestedInvocationIds.size).toBe(0);
     }
     const presubmitRunIds = rejectedPresubmitRunIdsExtractor(impactFilterNamed(tc.filter))(tc.failure);
-    // presubmitRunId is extracted under exactly the same conditions as ingestedInvocationId.
-    if (tc.shouldExtractIngestedInvocationId) {
+    if (tc.shouldExtractPresubmitRunId) {
       expect(presubmitRunIds.size).toBeGreaterThan(0);
     } else {
       expect(presubmitRunIds.size).toBe(0);

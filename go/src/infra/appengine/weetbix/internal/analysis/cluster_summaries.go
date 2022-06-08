@@ -411,23 +411,25 @@ func (c *Client) ReadCluster(ctx context.Context, luciProject string, clusterID 
 }
 
 type ClusterFailure struct {
-	Realm             bigquery.NullString    `json:"realm"`
-	TestID            bigquery.NullString    `json:"testId"`
-	Variant           []*Variant             `json:"variant"`
-	PresubmitRunID    *PresubmitRunID        `json:"presubmitRunId"`
-	PresubmitRunOwner bigquery.NullString    `json:"presubmitRunOwner"`
-	PresubmitRunCl    *Changelist            `json:"presubmitRunCl"`
-	PartitionTime     bigquery.NullTimestamp `json:"partitionTime"`
-	// ExonerationStatus defines the type of exoneration applied to the
-	// test result.
-	// One of NOT_EXONERATED, IMPLICIT, EXPLICIT, WEETBIX, OCCURS_ON_OTHER_CLS,
-	// OCCURS_ON_MAINLINE, NOT_CRITICAL, UNEXPECTED_PASS, OTHER_EXPLICIT.
-	ExonerationStatus           bigquery.NullString   `json:"exonerationStatus"`
-	IngestedInvocationID        bigquery.NullString   `json:"ingestedInvocationId"`
-	IsIngestedInvocationBlocked bigquery.NullBool     `json:"isIngestedInvocationBlocked"`
-	TestRunIds                  []bigquery.NullString `json:"testRunIds"`
-	IsTestRunBlocked            bigquery.NullBool     `json:"isTestRunBlocked"`
-	Count                       int32                 `json:"count"`
+	Realm                       bigquery.NullString    `json:"realm"`
+	TestID                      bigquery.NullString    `json:"testId"`
+	Variant                     []*Variant             `json:"variant"`
+	PresubmitRunID              *PresubmitRunID        `json:"presubmitRunId"`
+	PresubmitRunOwner           bigquery.NullString    `json:"presubmitRunOwner"`
+	PresubmitRunCl              *Changelist            `json:"presubmitRunCl"`
+	PartitionTime               bigquery.NullTimestamp `json:"partitionTime"`
+	Exonerations                []*Exoneration         `json:"exonerations"`
+	IngestedInvocationID        bigquery.NullString    `json:"ingestedInvocationId"`
+	IsPresubmitCritical         bigquery.NullBool      `json:"isPresubmitCritical"`
+	IsIngestedInvocationBlocked bigquery.NullBool      `json:"isIngestedInvocationBlocked"`
+	TestRunIds                  []bigquery.NullString  `json:"testRunIds"`
+	IsTestRunBlocked            bigquery.NullBool      `json:"isTestRunBlocked"`
+	Count                       int32                  `json:"count"`
+}
+
+type Exoneration struct {
+	// One of OCCURS_ON_OTHER_CLS, OCCURS_ON_MAINLINE, NOT_CRITICAL.
+	Reason bigquery.NullString `json:"reason"`
 }
 
 type Variant struct {
@@ -473,13 +475,19 @@ func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, cl
 			ANY_VALUE(r.variant) as Variant,
 			ANY_VALUE(r.presubmit_run_id) as PresubmitRunID,
 			ANY_VALUE(r.presubmit_run_owner) as PresubmitRunOwner,
-			ANY_VALUE(IF(ARRAY_LENGTH(r.presubmit_run_cls)>0,
-				r.presubmit_run_cls[OFFSET(0)], NULL)) as PresubmitRunCL,
+			ANY_VALUE(IF(ARRAY_LENGTH(r.changelists)>0,
+				r.changelists[OFFSET(0)], NULL)) as PresubmitRunCL,
 			r.partition_time as PartitionTime,
-			ANY_VALUE(r.exoneration_status) as ExonerationStatus,
+			ANY_VALUE(r.exonerations) as Exonerations,
 			r.ingested_invocation_id as IngestedInvocationID,
 			ANY_VALUE(r.is_ingested_invocation_blocked) as IsIngestedInvocationBlocked,
+			ANY_VALUE(r.build_critical AND
+				r.build_status = 'BUILD_STATUS_FAILURE' AND
+				r.presubmit_run_mode = 'FULL_RUN') as is_presubmit_critical,
 			ARRAY_AGG(DISTINCT r.test_run_id) as TestRunIds,
+			-- TODO: This is broken, is_test_run_blocked is not the same value for
+			-- every ingested_invocation_id as it is unique per test run per
+			-- ingested_invocation_id. This will behave non-deterministically.
 			ANY_VALUE(r.is_test_run_blocked) as IsTestRunBlocked,
 			count(*) as Count
 		FROM latest_failures_7d

@@ -23,8 +23,8 @@ const clusterPresubmitAnalysis = `
 	  -- The identity of the first changelist that was tested, assuming the
 	  -- result was part of a presubmit run, and the owner of the presubmit
 	  -- run was a user and not automation.
-	  IF(ARRAY_LENGTH(r.presubmit_run_cls)>0 AND r.presubmit_run_owner='user',
-		  CONCAT(r.presubmit_run_cls[OFFSET(0)].host, r.presubmit_run_cls[OFFSET(0)].change),
+	  IF(ARRAY_LENGTH(r.changelists)>0 AND r.presubmit_run_owner='user',
+		  CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
 		  NULL) as presubmit_run_user_cl_id,
 	  r.is_test_run_blocked as is_test_run_fail,
 	FROM clustered_failures_latest
@@ -58,11 +58,11 @@ const clusterSummariesAnalysis = `
 	  cluster_id,
 	  r.is_included,
 	  r.is_included_with_high_priority,
-	  NOT (r.exoneration_status = 'NOT_EXONERATED') as is_exonerated,
-	  NOT (r.exoneration_status = 'NOT_EXONERATED' OR
-		  r.exoneration_status = 'WEETBIX' OR
-		  r.exoneration_status = 'OCCURS_ON_MAINLINE' OR
-		  r.exoneration_status = 'OCCURS_ON_OTHER_CLS') as is_exonerated_pre_weetbix,
+	  (ARRAY_LENGTH(r.exonerations) > 0) as is_exonerated,
+	  (EXISTS
+		(SELECT TRUE FROM UNNEST(r.exonerations) e
+	     WHERE e.Reason <> 'OCCURS_ON_MAINLINE'
+		   AND e.Reason <> 'OCCURS_ON_OTHER_CLS')) as is_exonerated_pre_weetbix,
 	  r.test_id,
 	  r.failure_reason,
 	  r.test_run_id,
@@ -73,10 +73,12 @@ const clusterSummariesAnalysis = `
 	  -- The identity of the first changelist that was tested, assuming the
 	  -- result was part of a presubmit run, and the owner of the presubmit
 	  -- run was a user and not automation.
-	  IF(ARRAY_LENGTH(r.presubmit_run_cls)>0 AND r.presubmit_run_owner='user',
-		  CONCAT(r.presubmit_run_cls[OFFSET(0)].host, r.presubmit_run_cls[OFFSET(0)].change),
+	  IF(ARRAY_LENGTH(r.changelists)>0 AND r.presubmit_run_owner='user',
+		  CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
 		  NULL) as presubmit_run_user_cl_id,
-	  (r.presubmit_run_id IS NOT NULL AND r.is_ingested_invocation_blocked) as is_presubmit_reject,
+	  (r.is_ingested_invocation_blocked AND r.build_critical AND
+		r.build_status = 'BUILD_STATUS_FAILURE' AND
+		r.presubmit_run_mode = 'FULL_RUN') as is_presubmit_reject,
 	  r.is_test_run_blocked as is_test_run_fail,
 	FROM clustered_failures_latest
   )

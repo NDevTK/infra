@@ -152,12 +152,23 @@ export const rejectedTestRunIdsExtractor = (impactFilter: ImpactFilter): Feature
   };
 };
 
-// Returns whether the failure was exonerated because it occurs on other
+// Returns whether the failure was only exonerated because it occurs on other
 // CLs or on mainline. These are exoneration types that appear only in CQ.
-const isExoneratedByOccuranceElsewhere = (status: ExonerationStatus | null): boolean => {
-  return status == 'WEETBIX' || // Deprecated. Can be removed from June 2022.
-            status == 'OCCURS_ON_OTHER_CLS' ||
-            status == 'OCCURS_ON_MAINLINE';
+const isOnlyExoneratedByOccuranceElsewhere = (exonerations: Exoneration[] | null): boolean => {
+  if (exonerations == null) {
+    return false;
+  }
+  let hasOccursElsewhereExoneration = false;
+  let hasOtherExoneration = false;
+  for (let i = 0; i < exonerations.length; i++) {
+    if (exonerations[i].reason == 'OCCURS_ON_MAINLINE' ||
+          exonerations[i].reason == 'OCCURS_ON_OTHER_CLS') {
+      hasOccursElsewhereExoneration = true;
+    } else {
+      hasOtherExoneration = true;
+    }
+  }
+  return hasOccursElsewhereExoneration && !hasOtherExoneration;
 };
 
 // Returns an extractor that returns the id of the ingested invocation that was rejected by this failure, if any.
@@ -165,13 +176,13 @@ const isExoneratedByOccuranceElsewhere = (status: ExonerationStatus | null): boo
 export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
   return (failure) => {
     const values: Set<string> = new Set();
-    if (isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
+    if (isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
       return values;
     }
-    if (failure.exonerationStatus != 'NOT_EXONERATED' &&
-        !isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
-         !impactFilter.ignoreAllExoneration) {
+    if (failure.exonerations != null && failure.exonerations.length > 0 &&
+        !isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
+        !impactFilter.ignoreAllExoneration) {
       return values;
     }
     if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
@@ -192,12 +203,13 @@ export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilte
 export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
   return (failure) => {
     const values: Set<string> = new Set();
-    if (isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
+    if (isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
       return values;
     }
-    if ((failure.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(failure.exonerationStatus)) &&
-                        !impactFilter.ignoreAllExoneration) {
+    if (failure.exonerations != null && failure.exonerations.length > 0 &&
+        !isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
+        !impactFilter.ignoreAllExoneration) {
       return values;
     }
     if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
@@ -206,7 +218,7 @@ export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): Fe
     if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
       return values;
     }
-    if (failure.presubmitRunCl && failure.presubmitRunOwner == 'user') {
+    if (failure.presubmitRunCl && failure.presubmitRunOwner == 'user' && failure.isPresubmitCritical) {
       values.add(failure.presubmitRunCl.host + '/' + failure.presubmitRunCl.change.toFixed(0));
     }
     return values;
@@ -339,21 +351,10 @@ export const ImpactFilters: ImpactFilter[] = [
 
 export const defaultImpactFilter: ImpactFilter = ImpactFilters[1];
 
-// Test result was no exonerated.
-type ExonerationStatus =
-      // The test was not exonerated.
-    'NOT_EXONERATED'
-    // Despite having an unexpected result, and no exoneration recorded
-    // in ResultDB, the build did not end in the state "failed"
-    // (e.g. the status was succeeded, cancelled or infra failure).
-    // The test result is implicitly exonerated.
-    | 'IMPLICIT'
-    // DEPRECATED. The test was marked exonerated in ResultDB, for a reason
-    // other than Weetbix or FindIt failure analysis.
-    | 'EXPLICIT'
-    // DEPRECATED. Test result was recorded as exonerated
-    // based on Weetbix (or FindIt) data.
-    | 'WEETBIX'
+// The reason a test result was exonerated.
+type ExonerationReason =
+    // The exoneration reason is not known to Weetbix.
+    'EXONERATION_REASON_UNSPECIFIED'
     // Similar unexpected results were observed in presubmit run(s) for other,
     // unrelated CL(s). (This is suggestive of the issue being present
     // on mainline but is not confirmed as there are possible confounding
@@ -371,12 +372,7 @@ type ExonerationStatus =
     // This could be because more data is being collected to determine if
     // the tests are stable enough to be made critical (as is often the
     // case for experimental test suites).
-    | 'NOT_CRITICAL'
-    // The test result was an unexpected pass.
-    | 'UNEXPECTED_PASS'
-    // The test was marked exonerated in ResultDB, but a machine-understandable
-    // reason for the exoneration is not available.
-    | 'OTHER_EXPLICIT';
+    | 'NOT_CRITICAL';
 
 // ClusterFailure is the data returned by the server for each failure.
 export interface ClusterFailure {
@@ -387,12 +383,19 @@ export interface ClusterFailure {
     presubmitRunId: PresubmitRunId | null;
     presubmitRunOwner: string | null;
     partitionTime: string | null;
-    exonerationStatus: ExonerationStatus | null;
+    exonerations: Exoneration[] | null;
     ingestedInvocationId: string | null;
+    isPresubmitCritical: boolean | null;
     isIngestedInvocationBlocked: boolean | null;
     testRunIds: Array<string | null>;
     isTestRunBlocked: boolean | null;
     count: number;
+}
+
+// Exoneration relieves a test of responsibility for causing the
+// test subject (e.g. a presubmit run or build) to fail.
+export interface Exoneration {
+  reason: ExonerationReason;
 }
 
 // Key/Value Variant pairs for failures.

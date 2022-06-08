@@ -23,8 +23,9 @@ class ClusterFailureBuilder {
       presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
       presubmitRunOwner: 'user',
       partitionTime: '2021-05-12T19:05:34',
-      exonerationStatus: 'NOT_EXONERATED',
+      exonerations: null,
       ingestedInvocationId: 'ingestedInvocationId',
+      isPresubmitCritical: true,
       isIngestedInvocationBlocked: false,
       testRunIds: ['testRunId'],
       isTestRunBlocked: false,
@@ -38,17 +39,23 @@ class ClusterFailureBuilder {
     this.failure.isTestRunBlocked = true;
     return this;
   }
+  notPresubmitCritical() {
+    this.failure.isPresubmitCritical = false;
+    return this;
+  }
   ingestedInvocationBlocked() {
     this.failure.isIngestedInvocationBlocked = true;
     this.failure.isTestRunBlocked = true;
     return this;
   }
   exonerateOccursOnOtherCLs() {
-    this.failure.exonerationStatus = 'OCCURS_ON_OTHER_CLS';
+    this.failure.exonerations = []
+    this.failure.exonerations.push({reason: 'OCCURS_ON_OTHER_CLS'})
     return this;
   }
   exonerateNotCritical() {
-    this.failure.exonerationStatus = 'NOT_CRITICAL';
+    this.failure.exonerations = []
+    this.failure.exonerations.push({reason: 'NOT_CRITICAL'})
     return this;
   }
   withVariantGroups(key: string, value: string) {
