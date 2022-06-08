@@ -21,7 +21,6 @@ import (
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/util"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -487,7 +486,7 @@ func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryC
 // validateRenameRack validates if a rack can be renamed
 func validateRenameRack(ctx context.Context, oldRack *ufspb.Rack, newName string) error {
 	// Check permission
-	if err := util.CheckPermission(ctx, util.RegistrationsUpdate, oldRack.GetRealm()); err != nil {
+	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, oldRack.GetRealm()); err != nil {
 		return err
 	}
 	// Check if new rack name already exists
