@@ -1158,61 +1158,6 @@ func TestDeleteNic(t *testing.T) {
 	})
 }
 
-func TestImportNics(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import nics", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportNicsRequest{
-				Source: &ufsAPI.ImportNicsRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "fake_host",
-					},
-				},
-			}
-			res, err := tf.Fleet.ImportNics(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-			nics, _, err := registration.ListNics(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(nics, "Name"), ShouldResemble, []string{"machine1:eth0", "machine1:eth1", "machine2:eth0", "machine3:eth0"})
-			switches := make([]*ufspb.SwitchInterface, len(nics))
-			for i, nic := range nics {
-				switches[i] = nic.GetSwitchInterface()
-			}
-			So(switches, ShouldResembleProto, []*ufspb.SwitchInterface{
-				{
-					Switch:   "eq017.atl97",
-					PortName: "2",
-				},
-				{
-					Switch:   "eq017.atl97",
-					PortName: "3",
-				},
-				{
-					Switch:   "eq017.atl97",
-					PortName: "4",
-				},
-				{
-					Switch:   "eq041.atl97",
-					PortName: "1",
-				},
-			})
-			dracs, _, err := registration.ListDracs(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(dracs, "Name"), ShouldResemble, []string{"drac-hostname"})
-			So(ufsAPI.ParseResources(dracs, "DisplayName"), ShouldResemble, []string{"machine1:drac"})
-			dhcps, _, err := configuration.ListDHCPConfigs(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(dhcps, "Ip"), ShouldResemble, []string{"ip1.1"})
-		})
-		// Invalid & Empty machines DB hosts are tested in TestImportMachines
-		// Skip testing here
-	})
-}
-
 func TestCreateKVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

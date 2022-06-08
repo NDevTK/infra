@@ -445,50 +445,6 @@ func (fs *FleetServerImpl) DeleteNic(ctx context.Context, req *ufsAPI.DeleteNicR
 	return &empty.Empty{}, err
 }
 
-// ImportNics imports the nics info in batch.
-func (fs *FleetServerImpl) ImportNics(ctx context.Context, req *ufsAPI.ImportNicsRequest) (response *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	source := req.GetMachineDbSource()
-	if err := ufsAPI.ValidateMachineDBSource(source); err != nil {
-		return nil, err
-	}
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	mdbClient, err := es.NewMachineDBInterfaceFactory(ctx, source.GetHost())
-	if err != nil {
-		return nil, machineDBConnectionFailureStatus.Err()
-	}
-	logging.Debugf(ctx, "Querying machine-db to get the list of nics")
-	nics, err := mdbClient.ListNICs(ctx, &crimson.ListNICsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListNICs").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(nics.Nics, "Name"); err != nil {
-		return nil, errors.Annotate(err, "nic has invalid chars").Err()
-	}
-	dracs, err := mdbClient.ListDRACs(ctx, &crimson.ListDRACsRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListDRACs").Err()
-	}
-	if err := ufsAPI.ValidateResourceKey(dracs.Dracs, "Name"); err != nil {
-		return nil, errors.Annotate(err, "drac has invalid chars").Err()
-	}
-	resp, err := mdbClient.ListMachines(ctx, &crimson.ListMachinesRequest{})
-	if err != nil {
-		return nil, machineDBServiceFailureStatus("ListMachines").Err()
-	}
-	res, err := controller.ImportNetworkInterfaces(ctx, nics.Nics, dracs.Dracs, resp.GetMachines(), fs.getImportPageSize())
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
-}
-
 // RenameNic renames the nic in database.
 func (fs *FleetServerImpl) RenameNic(ctx context.Context, req *ufsAPI.RenameNicRequest) (rsp *ufspb.Nic, err error) {
 	defer func() {

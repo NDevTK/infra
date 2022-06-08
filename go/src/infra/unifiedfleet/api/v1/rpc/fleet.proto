@@ -178,9 +178,6 @@ service Fleet {
   // Delete delete the nic
   rpc DeleteNic(DeleteNicRequest) returns (google.protobuf.Empty);
 
-  // ImportNics imports nics info.
-  rpc ImportNics(ImportNicsRequest) returns (google.rpc.Status);
-
   // Rename rename the nic
   rpc RenameNic(RenameNicRequest) returns (models.Nic);
 
