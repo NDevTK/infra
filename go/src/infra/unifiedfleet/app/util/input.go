@@ -69,9 +69,6 @@ const (
 	// SchedulingUnitCollection refers to the prefix of the SchedulingUnit.
 	SchedulingUnitCollection string = "schedulingunits"
 
-	// DefaultImporter refers to the user of the cron job importer
-	DefaultImporter string = "crimson-importer"
-
 	defaultPageSize int32 = 100
 	// MaxPageSize maximum page size for list operations
 	MaxPageSize int32 = 1000

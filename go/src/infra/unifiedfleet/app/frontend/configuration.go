@@ -17,12 +17,7 @@ import (
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/util"
-)
-
-var (
-	parsePlatformsFunc = configuration.ParsePlatformsFromFile
 )
 
 // CreateChromePlatform creates chromeplatform entry in database.

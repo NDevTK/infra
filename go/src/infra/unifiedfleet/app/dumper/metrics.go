@@ -28,12 +28,6 @@ var (
 		nil,
 		field.Bool("success"),
 	)
-	dumpCrimsonTick = metric.NewCounter(
-		"chromeos/ufs/dumper/import_crimson",
-		"import crimson attempt",
-		nil,
-		field.Bool("success"),
-	)
 	dumpCrosNetworkTick = metric.NewCounter(
 		"chromeos/ufs/dumper/import_cros_network",
 		"import cros network attempt",

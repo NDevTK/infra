@@ -16,7 +16,6 @@ import (
 	luciconfig "go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/impl/remote"
 	"go.chromium.org/luci/grpc/prpc"
-	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -44,10 +43,6 @@ var InterfaceFactoryKey = util.Key("ufs external-server-interface key")
 // For potential unittest usage
 type CfgInterfaceFactory func(ctx context.Context) luciconfig.Interface
 
-// MachineDBInterfaceFactory is a constructor for a crimson.CrimsonClient
-// For potential unittest usage
-type MachineDBInterfaceFactory func(ctx context.Context, host string) (crimson.CrimsonClient, error)
-
 // CrosInventoryInterfaceFactory is a constructor for a invV2Api.InventoryClient
 type CrosInventoryInterfaceFactory func(ctx context.Context, host string) (CrosInventoryClient, error)
 
@@ -63,7 +58,6 @@ type HwidInterfaceFactory func(ctx context.Context) (hwid.ClientInterface, error
 // InterfaceFactory provides a collection of interfaces to external clients.
 type InterfaceFactory struct {
 	cfgInterfaceFactory           CfgInterfaceFactory
-	machineDBInterfaceFactory     MachineDBInterfaceFactory
 	crosInventoryInterfaceFactory CrosInventoryInterfaceFactory
 	sheetInterfaceFactory         SheetInterfaceFactory
 	gitInterfaceFactory           GitInterfaceFactory
@@ -90,32 +84,11 @@ func GetServerInterface(ctx context.Context) (*InterfaceFactory, error) {
 // WithServerInterface adds the external server interface to context.
 func WithServerInterface(ctx context.Context) context.Context {
 	return context.WithValue(ctx, InterfaceFactoryKey, &InterfaceFactory{
-		machineDBInterfaceFactory:     machineDBInterfaceFactoryImpl,
 		crosInventoryInterfaceFactory: crosInventoryInterfaceFactoryImpl,
 		sheetInterfaceFactory:         sheetInterfaceFactoryImpl,
 		gitInterfaceFactory:           gitInterfaceFactoryImpl,
 		hwidInterfaceFactory:          hwidInterfaceFactoryImpl,
 	})
-}
-
-// NewMachineDBInterfaceFactory creates a new machine DB interface.
-func (es *InterfaceFactory) NewMachineDBInterfaceFactory(ctx context.Context, host string) (crimson.CrimsonClient, error) {
-	if es.machineDBInterfaceFactory == nil {
-		es.machineDBInterfaceFactory = machineDBInterfaceFactoryImpl
-	}
-	return es.machineDBInterfaceFactory(ctx, host)
-}
-
-func machineDBInterfaceFactoryImpl(ctx context.Context, host string) (crimson.CrimsonClient, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
-	if err != nil {
-		return nil, err
-	}
-	pclient := &prpc.Client{
-		C:    &http.Client{Transport: t},
-		Host: host,
-	}
-	return crimson.NewCrimsonPRPCClient(pclient), nil
 }
 
 // NewCrosInventoryInterfaceFactory creates a new CrosInventoryInterface.

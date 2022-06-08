@@ -22,24 +22,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
 	. "go.chromium.org/luci/common/testing/assertions"
-	crimsonconfig "go.chromium.org/luci/machine-db/api/config/v1"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/testing/protocmp"
 )
-
-var localPlatforms = []*crimsonconfig.Platform{
-	{Name: "fake platform1"},
-	{Name: "fake platform2"},
-	{Name: "fake platform3"},
-}
-
-func mockParsePlatformsFunc(path string) (*crimsonconfig.Platforms, error) {
-	return &crimsonconfig.Platforms{
-		Platform: localPlatforms,
-	}, nil
-}
 
 func mockChromePlatform(id, desc string) *ufspb.ChromePlatform {
 	return &ufspb.ChromePlatform{
