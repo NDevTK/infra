@@ -6,6 +6,7 @@ create {
       version: "0.40.0"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:pixman:pixman"
   }
   build {
   }
