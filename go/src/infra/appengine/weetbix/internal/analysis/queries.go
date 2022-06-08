@@ -77,7 +77,7 @@ const clusterSummariesAnalysis = `
 		  CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
 		  NULL) as presubmit_run_user_cl_id,
 	  (r.is_ingested_invocation_blocked AND r.build_critical AND
-		r.build_status = 'BUILD_STATUS_FAILURE' AND
+		r.build_status = 'FAILURE' AND
 		r.presubmit_run_mode = 'FULL_RUN') as is_presubmit_reject,
 	  r.is_test_run_blocked as is_test_run_fail,
 	FROM clustered_failures_latest

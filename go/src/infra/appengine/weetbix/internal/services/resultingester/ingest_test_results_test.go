@@ -667,7 +667,7 @@ func TestIngestTestResults(t *testing.T) {
 				Id: bID,
 				Mask: &bbpb.BuildMask{
 					Fields: &field_mask.FieldMask{
-						Paths: []string{"builder", "infra.resultdb", "status"},
+						Paths: []string{"builder", "infra.resultdb", "status", "input"},
 					},
 				},
 			}

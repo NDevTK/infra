@@ -68,6 +68,28 @@ var (
 		// "ignored_no_bb_access", "ignored_no_project_config",
 		// "ignored_no_invocation".
 		field.String("outcome"))
+
+	testVariantReadMask = &fieldmaskpb.FieldMask{
+		Paths: []string{
+			"test_id",
+			"variant_hash",
+			"status",
+			"variant",
+			"test_metadata",
+			"exonerations.*.reason",
+			"results.*.result.name",
+			"results.*.result.expected",
+			"results.*.result.status",
+			"results.*.result.start_time",
+			"results.*.result.duration",
+			"results.*.result.tags",
+			"results.*.result.failure_reason",
+		},
+	}
+
+	buildReadMask = &field_mask.FieldMask{
+		Paths: []string{"builder", "infra.resultdb", "status", "input"},
+	}
 )
 
 // Options configures test result ingestion.
@@ -203,24 +225,8 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 	req := &rdbpb.QueryTestVariantsRequest{
 		Invocations: []string{inv.Name},
 		PageSize:    10000,
-		ReadMask: &fieldmaskpb.FieldMask{
-			Paths: []string{
-				"test_id",
-				"variant_hash",
-				"status",
-				"variant",
-				"test_metadata",
-				"exonerations.*.reason",
-				"results.*.result.name",
-				"results.*.result.expected",
-				"results.*.result.status",
-				"results.*.result.start_time",
-				"results.*.result.duration",
-				"results.*.result.tags",
-				"results.*.result.failure_reason",
-			},
-		},
-		PageToken: payload.PageToken,
+		ReadMask:    testVariantReadMask,
+		PageToken:   payload.PageToken,
 	}
 	rsp, err := rc.QueryTestVariants(ctx, req)
 	if err != nil {
@@ -454,9 +460,7 @@ func retrieveBuild(ctx context.Context, payload *taskspb.IngestTestResults) (*bb
 	request := &bbpb.GetBuildRequest{
 		Id: id,
 		Mask: &bbpb.BuildMask{
-			Fields: &field_mask.FieldMask{
-				Paths: []string{"builder", "infra.resultdb", "status"},
-			},
+			Fields: buildReadMask,
 		},
 	}
 	b, err := bc.GetBuild(ctx, request)
