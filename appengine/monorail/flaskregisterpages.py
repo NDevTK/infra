@@ -65,6 +65,7 @@ from tracker import fielddetail
 from tracker import templatecreate
 from tracker import templatedetail
 from tracker import issueadmin
+from tracker import issueadvsearch
 from tracker import issueattachment
 from tracker import issueattachmenttext
 from tracker import issuebulkedit
@@ -330,6 +331,14 @@ class ServletRegistry(object):
         #     '/<string:project_name>/fields/detail.do',
         #     fielddetail.FieldDetail(
         #         services=service).PostFieldDetail, ['POST']),
+        # (
+        #     '/<string:project_name>/issues/advsearch',
+        #     issueadvsearch.IssueAdvancedSearch(
+        #         services=service).GetIssueAdvSearchPage, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/advsearch.do',
+        #     issueadvsearch.IssueAdvancedSearch(
+        #         services=service).PostIssueAdvSearchPage, ['POST']),
         # (
         #     '/<string:project_name>/templates/create',
         #     templatecreate.TemplateCreate(

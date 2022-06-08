@@ -17,6 +17,7 @@ import logging
 import re
 
 from features import savedqueries_helpers
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import servlet
@@ -31,7 +32,7 @@ class IssueAdvancedSearch(servlet.Servlet):
   """IssueAdvancedSearch shows a form to enter an advanced search."""
 
   _PAGE_TEMPLATE = 'tracker/issue-advsearch-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
 
   # This form *only* redirects to a GET request, and permissions are checked
   # in that handler.
@@ -121,3 +122,9 @@ class IssueAdvancedSearch(servlet.Servlet):
       values = VALUE_RE.findall(user_input)
       search_term = '%s%s' % (operator, ','.join(values))
       search_query.append(search_term)
+
+  # def GetIssueAdvSearchPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostIssueAdvSearchPage(self, **kwargs):
+  #   return self.handler(**kwargs)
