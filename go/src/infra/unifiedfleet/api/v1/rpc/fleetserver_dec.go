@@ -1269,23 +1269,6 @@ func (s *DecoratedFleet) DeleteVlan(ctx context.Context, req *DeleteVlanRequest)
 	return
 }
 
-func (s *DecoratedFleet) ImportVlans(ctx context.Context, req *ImportVlansRequest) (rsp *status.Status, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ImportVlans", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ImportVlans(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ImportVlans", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedFleet) ImportOSVlans(ctx context.Context, req *ImportOSVlansRequest) (rsp *status.Status, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

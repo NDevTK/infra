@@ -12,7 +12,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-	crimsonconfig "go.chromium.org/luci/machine-db/api/config/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -207,65 +206,6 @@ func DeleteVlan(ctx context.Context, id string) error {
 		}
 	}
 	return nil
-}
-
-// ImportVlans implements the logic of importing vlans and related info to backend storage.
-//
-// The function will return:
-//      * all of the results of the operations that already run
-//      * the first error that it meets
-//
-// The function will stop at the very first error.
-func ImportVlans(ctx context.Context, vlans []*crimsonconfig.VLAN, pageSize int) (*ufsds.OpResults, error) {
-	IPs := make([]*ufspb.IP, 0)
-	vs := make([]*ufspb.Vlan, len(vlans))
-	for i, vlan := range vlans {
-		vlanName := util.GetBrowserLabName(util.Int64ToStr(vlan.GetId()))
-		ips, length, freeStartIP, freeEndIP, err := util.ParseVlan(vlanName, vlan.GetCidrBlock(), "", "")
-		if err != nil {
-			return nil, err
-		}
-		IPs = append(IPs, ips...)
-		vs[i] = &ufspb.Vlan{
-			Name:             vlanName,
-			Description:      vlan.GetAlias(),
-			CapacityIp:       int32(length),
-			VlanAddress:      vlan.GetCidrBlock(),
-			ResourceState:    util.ToState(vlan.GetState()),
-			FreeStartIpv4Str: freeStartIP,
-			FreeEndIpv4Str:   freeEndIP,
-			VlanNumber:       util.GetSuffixAfterSeparator(vlanName, ":"),
-		}
-	}
-	deleteNonExistingVlans(ctx, vs, pageSize)
-	allRes := make(ufsds.OpResults, 0)
-	logging.Infof(ctx, "Importing %d vlans", len(vs))
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(vs))
-		res, err := configuration.ImportVlans(ctx, vs[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(vs) {
-			break
-		}
-	}
-
-	deleteInvalidIPs(ctx, pageSize)
-	logging.Infof(ctx, "Importing %d ips", len(IPs))
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(IPs))
-		res, err := configuration.ImportIPs(ctx, IPs[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(IPs) {
-			break
-		}
-	}
-	return &allRes, nil
 }
 
 func deleteInvalidIPs(ctx context.Context, pageSize int) {

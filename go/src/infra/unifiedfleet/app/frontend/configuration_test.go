@@ -1373,38 +1373,6 @@ func TestDeleteVlan(t *testing.T) {
 	})
 }
 
-func TestImportVlans(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import vlans", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportVlansRequest{
-				Source: &ufsAPI.ImportVlansRequest_ConfigSource{
-					ConfigSource: &ufsAPI.ConfigSource{
-						ConfigServiceName: "fake-service",
-						FileName:          "fakeVlans.cfg",
-					},
-				},
-			}
-			tf.Fleet.importPageSize = 25
-			res, err := tf.Fleet.ImportVlans(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-			vlans, _, err := configuration.ListVlans(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(vlans, "Name"), ShouldResemble, []string{"browser:144", "browser:20", "browser:40"})
-			vlan, err := configuration.GetVlan(ctx, "browser:40")
-			So(err, ShouldBeNil)
-			So(vlan.GetCapacityIp(), ShouldEqual, 1024)
-			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "browser:40"})
-			So(err, ShouldBeNil)
-			So(len(ips), ShouldEqual, 1024)
-		})
-	})
-}
-
 func TestOSImportVlans(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

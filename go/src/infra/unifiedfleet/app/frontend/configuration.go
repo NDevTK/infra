@@ -9,10 +9,7 @@ import (
 
 	empty "github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/luci/common/logging"
-	luciproto "go.chromium.org/luci/common/proto"
-	luciconfig "go.chromium.org/luci/config"
 	"go.chromium.org/luci/grpc/grpcutil"
-	crimsonconfig "go.chromium.org/luci/machine-db/api/config/v1"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -493,43 +490,6 @@ func (fs *FleetServerImpl) DeleteVlan(ctx context.Context, req *ufsAPI.DeleteVla
 	name := util.RemovePrefix(req.Name)
 	err = controller.DeleteVlan(ctx, name)
 	return &empty.Empty{}, err
-}
-
-// ImportVlans imports vlans & all IP-related infos.
-func (fs *FleetServerImpl) ImportVlans(ctx context.Context, req *ufsAPI.ImportVlansRequest) (response *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	configSource := req.GetConfigSource()
-	if configSource == nil {
-		return nil, emptyConfigSourceStatus.Err()
-	}
-	if configSource.ConfigServiceName == "" {
-		return nil, invalidConfigServiceName.Err()
-	}
-
-	logging.Debugf(ctx, "Importing vlans from luci-config: %s", configSource.FileName)
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	cfgInterface := es.NewCfgInterface(ctx)
-	fetchedConfigs, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet(configSource.ConfigServiceName), configSource.FileName, false)
-	if err != nil {
-		return nil, configServiceFailureStatus.Err()
-	}
-	vlans := &crimsonconfig.VLANs{}
-	if err := luciproto.UnmarshalTextML(fetchedConfigs.Content, vlans); err != nil {
-		return nil, invalidConfigFileContentStatus.Err()
-	}
-
-	pageSize := fs.getImportPageSize()
-	res, err := controller.ImportVlans(ctx, vlans.GetVlan(), pageSize)
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
 }
 
 // ImportOSVlans imports the ChromeOS vlans, ips and dhcp configs.
