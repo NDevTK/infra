@@ -329,6 +329,7 @@ var StrToUFSState = map[string]string{
 	"decommissioned":       "STATE_DECOMMISSIONED",
 	"deploying":            "STATE_DEPLOYING",
 	"ready":                "STATE_READY",
+	"build":                "STATE_BUILD",
 }
 
 // StateToDescription refers a map between a State to its description.
@@ -345,6 +346,7 @@ var StateToDescription = map[string]string{
 	"decommissioned":       "Decommissioned from the prod, but still lives in UFS record",
 	"deploying":            "Deploying the resource with required configs just before it is READY",
 	"ready":                "Resource is ready for use or free to use",
+	"build":                "Resource is in the process of being built out or assembled",
 }
 
 // IsUFSState checks if a string refers to a valid UFS state.
