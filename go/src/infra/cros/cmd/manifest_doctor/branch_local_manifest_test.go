@@ -13,8 +13,11 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
+	"infra/cros/internal/gerrit"
 	"infra/cros/internal/repo"
 	rh "infra/cros/internal/repoharness"
+
+	lgerrit "go.chromium.org/luci/common/api/gerrit"
 )
 
 const (
@@ -84,7 +87,7 @@ func (f *fakeFirestoreClient) writeFirestoreData(_ context.Context, branch strin
 	assert.Assert(f.t, reflect.DeepEqual(expected, bm))
 }
 
-func setUp(t *testing.T) (*rh.RepoHarness, rh.RemoteProject, *fakeFirestoreClient) {
+func setUp(t *testing.T) (*rh.RepoHarness, rh.RemoteProject, *fakeFirestoreClient, gerrit.Client) {
 	config := &rh.Config{
 		Manifest: repo.Manifest{
 			Default: repo.Default{
@@ -172,12 +175,34 @@ func setUp(t *testing.T) (*rh.RepoHarness, rh.RemoteProject, *fakeFirestoreClien
 		expectedWriteData: expectedWriteData,
 	}
 
-	return harness, remoteManifestProject, firestoreClient
+	gerritClient := &gerrit.MockClient{
+		T: t,
+		ExpectedQuery: map[string][]*lgerrit.Change{
+			"*": {
+				&lgerrit.Change{
+					ChangeNumber: 12345,
+				},
+			},
+		},
+		ExpectedReview: map[string]*lgerrit.ReviewInput{
+			"12345": {
+				Labels: map[string]int{
+					"Bot-Commit":      1,
+					"Owners-Override": 1,
+				},
+			},
+		},
+		ExpectedSubmit: map[string]bool{
+			"12345": true,
+		},
+	}
+
+	return harness, remoteManifestProject, firestoreClient, gerritClient
 }
 
 func TestBranchLocalManifests(t *testing.T) {
 	t.Parallel()
-	harness, remoteManifestProject, fsClient := setUp(t)
+	harness, remoteManifestProject, fsClient, gerritClient := setUp(t)
 	defer harness.Teardown()
 
 	checkout, err := harness.Checkout(remoteManifestProject, "main", "default.xml")
@@ -191,8 +216,7 @@ func TestBranchLocalManifests(t *testing.T) {
 		push:                 true,
 		workerCount:          2,
 	}
-	assert.NilError(t, b.BranchLocalManifests(ctx, fsClient))
-	assert.NilError(t, harness.ProcessSubmitRefs())
+	assert.NilError(t, b.BranchLocalManifests(ctx, fsClient, gerritClient))
 
 	checkBranches := map[string]bool{
 		"release-R90-13816.B": true,
@@ -208,8 +232,9 @@ func TestBranchLocalManifests(t *testing.T) {
 		project, err := manifest.GetProjectByName("foo")
 		assert.NilError(t, err)
 
-		localManifest, err := harness.ReadFile(
-			rh.GetRemoteProject(*project), branch, "local_manifest.xml")
+		localManifest, err := harness.ReadCheckoutFile(
+			project, branch, "local_manifest.xml")
+		assert.NilError(t, err)
 
 		var expected string
 		if branched, ok := checkBranches[branch]; branched && ok {
@@ -223,7 +248,7 @@ func TestBranchLocalManifests(t *testing.T) {
 
 func TestBranchLocalManifestsDryRun(t *testing.T) {
 	t.Parallel()
-	r, remoteManifestProject, fsClient := setUp(t)
+	r, remoteManifestProject, fsClient, gerritClient := setUp(t)
 	defer r.Teardown()
 
 	assert.NilError(t, r.SnapshotRemotes())
@@ -239,13 +264,13 @@ func TestBranchLocalManifestsDryRun(t *testing.T) {
 		push:                 false,
 		workerCount:          1,
 	}
-	assert.NilError(t, b.BranchLocalManifests(ctx, fsClient))
+	assert.NilError(t, b.BranchLocalManifests(ctx, fsClient, gerritClient))
 	assert.NilError(t, r.AssertNoRemoteDiff())
 }
 
 func TestBranchLocalManifests_specificBranches(t *testing.T) {
 	t.Parallel()
-	harness, remoteManifestProject, fsClient := setUp(t)
+	harness, remoteManifestProject, fsClient, gerritClient := setUp(t)
 	defer harness.Teardown()
 
 	branch := "stabilize-13851.B"
@@ -260,15 +285,15 @@ func TestBranchLocalManifests_specificBranches(t *testing.T) {
 		push:                 true,
 		workerCount:          2,
 	}
-	assert.NilError(t, b.BranchLocalManifests(ctx, fsClient))
-	assert.NilError(t, harness.ProcessSubmitRefs())
+	assert.NilError(t, b.BranchLocalManifests(ctx, fsClient, gerritClient))
 
 	manifest := harness.Manifest()
 	project, err := manifest.GetProjectByName("foo")
 	assert.NilError(t, err)
 
-	localManifest, err := harness.ReadFile(
-		rh.GetRemoteProject(*project), branch, "local_manifest.xml")
+	localManifest, err := harness.ReadCheckoutFile(
+		project, branch, "local_manifest.xml")
+	assert.NilError(t, err)
 
 	expected := fmt.Sprintf(localManifestXML, branch)
 	assert.StringsEqual(t, string(localManifest), expected)

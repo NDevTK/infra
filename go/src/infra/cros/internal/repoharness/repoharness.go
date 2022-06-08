@@ -495,6 +495,22 @@ func (r *RepoHarness) Checkout(manifestProject RemoteProject, branch, manifestFi
 	return checkoutPath, nil
 }
 
+func (r *RepoHarness) ReadCheckoutFile(project *repo.Project, branch, filePath string) ([]byte, error) {
+	if r.localCheckout == "" {
+		return nil, errors.New("checkout does not exist")
+	}
+	projectPath := filepath.Join(r.localCheckout, project.Path)
+	if err := git.Checkout(projectPath, branch); err != nil {
+		return nil, err
+	}
+
+	contents, err := ioutil.ReadFile(filepath.Join(projectPath, filePath))
+	if err != nil {
+		return []byte{}, errors.Annotate(err, "failed to read file %s from %s:%s", filePath, projectPath, branch).Err()
+	}
+	return contents, nil
+}
+
 // Snapshot recursively copies a directory's contents to a temp dir.
 func (r *RepoHarness) Snapshot(path string) (string, error) {
 	snapshotRoot := filepath.Join(r.harnessRoot, "snapshots/")

@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"infra/cros/internal/branch"
+	"infra/cros/internal/gerrit"
 	"infra/cros/internal/git"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/osutils"
@@ -23,9 +24,9 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
+	lucigerrit "go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
-	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,6 +38,8 @@ const (
 
 	firestoreProject    = "chromeos-bot"
 	firestoreCollection = "LocalManifestBranchMetadatas"
+
+	internalHost = "https://chrome-internal-review.googlesource.com"
 )
 
 type localManifestBrancher struct {
@@ -101,13 +104,13 @@ func (b *localManifestBrancher) validate() error {
 	return nil
 }
 
-func (b *localManifestBrancher) authToken(ctx context.Context) (oauth2.TokenSource, error) {
+func (b *localManifestBrancher) newAuthenticator(ctx context.Context) (*auth.Authenticator, error) {
 	authOpts, err := b.authFlags.Options()
 	if err != nil {
 		return nil, err
 	}
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
-	return authenticator.TokenSource()
+	return authenticator, nil
 }
 
 func (b *localManifestBrancher) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -118,10 +121,15 @@ func (b *localManifestBrancher) Run(a subcommands.Application, args []string, en
 	}
 
 	ctx := context.Background()
-	authToken, err := b.authToken(ctx)
+	authenticator, err := b.newAuthenticator(ctx)
 	if err != nil {
 		LogErr(err.Error())
 		return 2
+	}
+	authToken, err := authenticator.TokenSource()
+	if err != nil {
+		LogErr(err.Error())
+		return 5
 	}
 	client, err := firestore.NewClient(ctx, firestoreProject, option.WithTokenSource(authToken))
 	if err != nil {
@@ -133,7 +141,18 @@ func (b *localManifestBrancher) Run(a subcommands.Application, args []string, en
 	fsClient := &prodFirestoreClient{
 		dsClient: client,
 	}
-	if err := b.BranchLocalManifests(ctx, fsClient); err != nil {
+
+	authClient, err := authenticator.Client()
+	if err != nil {
+		LogErr(err.Error())
+		return 6
+	}
+	gerritClient, err := gerrit.NewClient(authClient)
+	if err != nil {
+		LogErr(err.Error())
+		return 7
+	}
+	if err := b.BranchLocalManifests(ctx, fsClient, gerritClient); err != nil {
 		LogErr(err.Error())
 		return 4
 	}
@@ -196,7 +215,10 @@ func (p *prodFirestoreClient) writeFirestoreData(ctx context.Context, branch str
 // pinLocalManifest returns whether or not local_manifest.xml in the specified
 // the project/branch is up to date (false if the file does not exist), and
 // a potential error.
-func pinLocalManifest(ctx context.Context, checkout, path, branch string, referenceManifest *repo.Manifest, bbid int, dryRun bool) (bool, error) {
+func pinLocalManifest(ctx context.Context,
+	checkout, path, branch string,
+	referenceManifest *repo.Manifest, bbid int, dryRun bool,
+	gerritClient gerrit.Client) (bool, error) {
 	// Checkout appropriate branch of project.
 	projectPath := filepath.Join(checkout, path)
 	if !osutils.PathExists(projectPath) {
@@ -259,8 +281,10 @@ func pinLocalManifest(ctx context.Context, checkout, path, branch string, refere
 	if bbid != 0 {
 		commitMsg += fmt.Sprintf("See original build: http://go/bbid/%d\n", bbid)
 	}
-	if _, err := git.CommitAll(projectPath, commitMsg); err != nil {
-		return false, errors.Annotate(err, "%s: failed to commit changes", logPrefix).Err()
+	// Need to acquire lock to make sure ChangeId is unique.
+	commitHash, commitErr := git.CommitAll(projectPath, commitMsg)
+	if commitErr != nil {
+		return false, errors.Annotate(commitErr, "%s: failed to commit changes", logPrefix).Err()
 	}
 
 	remotes, err := git.GetRemotes(projectPath)
@@ -276,7 +300,7 @@ func pinLocalManifest(ctx context.Context, checkout, path, branch string, refere
 
 	remoteRef := git.RemoteRef{
 		Remote: remotes[0],
-		Ref:    fmt.Sprintf("refs/for/%s", branch) + "%submit",
+		Ref:    fmt.Sprintf("refs/for/%s", branch),
 	}
 	pushFunc := func() error {
 		return git.PushRef(projectPath, "HEAD", remoteRef, git.DryRunIf(dryRun))
@@ -286,6 +310,33 @@ func pinLocalManifest(ctx context.Context, checkout, path, branch string, refere
 	}
 	if !dryRun {
 		LogOut("%s: committed changes\n", logPrefix)
+
+		// Look up gerrit change-id by commit hash.
+		query := lucigerrit.ChangeQueryParams{
+			Query: "commit:" + commitHash,
+		}
+		change, err := gerritClient.QueryChanges(ctx, internalHost, query)
+		if err != nil {
+			return false, errors.Annotate(err, "failed to get change-id for commit %s", commitHash).Err()
+		}
+		changeID := fmt.Sprintf("%d", change[0].ChangeNumber)
+		LogOut("%s: committed changes\n", logPrefix)
+
+		LogOut("%s: applying labels to changelist %s/q/%s", logPrefix, internalHost, changeID)
+		reviewInput := &lucigerrit.ReviewInput{
+			Labels: map[string]int{
+				"Bot-Commit":      1,
+				"Owners-Override": 1,
+			},
+		}
+		_, err = gerritClient.SetReview(ctx, internalHost, changeID, reviewInput)
+		if err != nil {
+			return false, errors.Annotate(err, "%s: failed to apply labels to change", logPrefix).Err()
+		}
+		LogOut("%s: submitting changelist %s/q/%s", logPrefix, internalHost, changeID)
+		if err := gerritClient.SubmitChange(ctx, internalHost, changeID); err != nil {
+			return false, errors.Annotate(err, "%s: failed to submit changes", logPrefix).Err()
+		}
 	} else {
 		LogOut("%s: would have committed changes (dry run)\n", logPrefix)
 	}
@@ -298,7 +349,7 @@ type localManifestBranchMetadata struct {
 }
 
 // BranchLocalManifests is responsible for doing the actual work of local manifest branching.
-func (b *localManifestBrancher) BranchLocalManifests(ctx context.Context, fsClient firestoreClient) error {
+func (b *localManifestBrancher) BranchLocalManifests(ctx context.Context, fsClient firestoreClient, gerritClient gerrit.Client) error {
 	checkout := b.chromeosCheckoutPath
 	projects := b.projects
 	minMilestone := b.minMilestone
@@ -374,7 +425,7 @@ func (b *localManifestBrancher) BranchLocalManifests(ctx context.Context, fsClie
 		for i := 1; i <= b.workerCount; i++ {
 			go func(workerId int) {
 				for path := range toProcess {
-					if didWork, err := pinLocalManifest(ctx, checkout, path, branch, referenceManifest, b.bbid, dryRun); err != nil {
+					if didWork, err := pinLocalManifest(ctx, checkout, path, branch, referenceManifest, b.bbid, dryRun, gerritClient); err != nil {
 						LogErr("error: %s", err.Error())
 						errs = append(errs, err)
 						wg.Done()
