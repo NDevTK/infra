@@ -41,6 +41,7 @@ var AddDracCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.vlanName, "vlan", "", "vlan to assign to the drac")
 
 		c.Flags.StringVar(&c.machineName, "machine", "", "name of the machine to associate the drac")
+		c.Flags.StringVar(&c.displayName, "display-name", "", "the display name of the drac")
 		c.Flags.StringVar(&c.dracName, "name", "", "the name of the drac to add")
 		c.Flags.StringVar(&c.macAddress, "mac", "", "the mac address of the drac to add")
 		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this drac is connected to")
@@ -60,6 +61,7 @@ type addDrac struct {
 	interactive  bool
 
 	machineName string
+	displayName string
 	dracName    string
 	macAddress  string
 	switchName  string
@@ -139,6 +141,7 @@ func (c *addDrac) innerRun(a subcommands.Application, args []string, env subcomm
 
 func (c *addDrac) parseArgs(drac *ufspb.Drac) {
 	drac.Name = c.dracName
+	drac.DisplayName = c.displayName
 	drac.Machine = c.machineName
 	drac.MacAddress = c.macAddress
 	drac.SwitchInterface = &ufspb.SwitchInterface{
