@@ -309,7 +309,7 @@ SPECS.update({
             },
             # The freetype build script does not correctly support
             # cross-compiling, and there is also no 32-bit Windows wheel.
-            skip_plat=['linux-arm64-py3', 'windows-x86-py3'],
+            skip_plat=['linux-armv6-py3', 'linux-arm64-py3', 'windows-x86-py3'],
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -389,6 +389,7 @@ SPECS.update({
             '1.32.0',
             skip_plat=[
                 'manylinux-x64-py3.9',
+                'linux-armv6-py3',
                 'linux-arm64-py3',
                 # grpcio does not yet support Mac ARM64, but work is underway.
                 # See https://github.com/grpc/grpc/issues/24002
@@ -400,6 +401,7 @@ SPECS.update({
             '1.34.1',
             skip_plat=[
                 'manylinux-x64-py3.9',
+                'linux-armv6-py3',
                 'linux-arm64-py3',
                 # grpcio does not yet support Mac ARM64, but work is underway.
                 # See https://github.com/grpc/grpc/issues/24002
@@ -411,16 +413,26 @@ SPECS.update({
             '1.39.0',
             skip_plat=[
                 'manylinux-x64-py3.9',
+                'linux-armv6-py3',
                 'linux-arm64-py3',
             ],
             pyversions=['py3']),
         SourceOrPrebuilt(
-            'grpcio', '1.44.0', pyversions=['py3'], env_cb=_GrpcEnv),
+            'grpcio',
+            '1.44.0',
+            pyversions=['py3'],
+            env_cb=_GrpcEnv,
+            skip_plat=[
+                # This won't work until we update to a dockcross image
+                # with a C++14-compatible compiler.
+                'linux-armv6-py3'
+            ]),
         SourceOrPrebuilt(
             'grpcio-tools',
             '1.32.0',
             skip_plat=[
                 'manylinux-x64-py3.9',
+                'linux-armv6-py3',
                 'linux-arm64-py3',
                 'mac-arm64-cp38',
             ],
@@ -430,6 +442,7 @@ SPECS.update({
             '1.39.0',
             skip_plat=[
                 'manylinux-x64-py3.9',
+                'linux-armv6-py3',
                 'linux-arm64-py3',
             ],
             pyversions=['py3'],
@@ -499,6 +512,7 @@ SPECS.update({
             only_plat=[
                 'manylinux-x64-py3',
                 'manylinux-x64-py3.9',
+                'linux-armv6-py3',
                 'linux-arm64-py3',
                 'mac-x64-cp38',
                 'windows-x86-py3',
@@ -539,6 +553,7 @@ SPECS.update({
                 'mac-arm64-cp38': _NUMPY_MAC_ARM,
             },
             skip_plat=[
+                'linux-armv6-py3',
                 'linux-arm64-py3',
             ],
             pyversions=['py3'],
@@ -558,6 +573,7 @@ SPECS.update({
                 ]),
             packaged=(),
             skip_plat=[
+                'linux-armv6-py3',
                 'linux-arm64-py3',
             ],
             patch_version='chromium.4',
@@ -598,6 +614,7 @@ SPECS.update({
                 'windows-x64-py3',
             ],
             skip_plat=[
+                'linux-armv6-py3',
                 'linux-arm64-py3',
             ],
             patch_version='chromium.1',
@@ -667,8 +684,8 @@ SPECS.update({
             '1.2.1',
             packaged=(),
             skip_plat=[
-                'mac-x64-cp38', 'mac-arm64-cp38', 'linux-arm64-py3',
-                'windows-x86-py3', 'windows-x64-py3'
+                'mac-x64-cp38', 'mac-arm64-cp38', 'linux-armv6-py3',
+                'linux-arm64-py3', 'windows-x86-py3', 'windows-x64-py3'
             ],
             pyversions=['py3'],
         ),
@@ -688,7 +705,7 @@ SPECS.update({
                 'windows-x86-py3',
                 'windows-x64-py3',
             ),
-            skip_plat=['linux-arm64-py3'],
+            skip_plat=['linux-armv6-py3', 'linux-arm64-py3'],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -1421,8 +1438,8 @@ SPECS.update({
             openssl='1.1.0f',
             pyversions=['py2', 'py3'],
             skip_plat=[
-                'mac-x64-cp38', 'mac-arm64-cp38', 'linux-arm64-py3',
-                'windows-x86-py3', 'windows-x64-py3'
+                'mac-x64-cp38', 'mac-arm64-cp38', 'linux-armv6-py3',
+                'linux-arm64-py3', 'windows-x86-py3', 'windows-x64-py3'
             ],
             packaged=(),
             # This wheel currently doesn't build at HEAD.
