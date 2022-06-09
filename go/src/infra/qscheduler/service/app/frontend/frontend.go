@@ -42,10 +42,13 @@ const (
 	roleView
 )
 
+// Put a maximum limit on the number of AssignTasks RPCs.
+const maxAssignTasksConcurrency = 32
+
 // InstallServices installs the services implemented by the frontend package.
 func InstallServices(apiServer *prpc.Server) {
 	swarming.RegisterExternalSchedulerServer(apiServer, &swarming.DecoratedExternalScheduler{
-		Service: NewBatchedServer(),
+		Service: NewBatchedServer(maxAssignTasksConcurrency),
 		Prelude: accessChecker(roleSwarming),
 	})
 	qscheduler.RegisterQSchedulerAdminServer(apiServer, &qscheduler.DecoratedQSchedulerAdmin{

@@ -19,6 +19,7 @@ import (
 	"math/rand"
 	"sync"
 
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -39,12 +40,19 @@ type BatchedQSchedulerServer struct {
 
 	// batchersLock governs access to batchers.
 	batchersLock sync.RWMutex
+
+	// The maximum number of assignTasks RPCs which can operate at once.
+	//
+	// Incoming AssignTasks RPCs which exceed this limit will fast fail with
+	// codes.ResourceExhausted.
+	assignTasksConcurrency *semaphore.Weighted
 }
 
 // NewBatchedServer initializes a new BatchedQSchedulerServer
-func NewBatchedServer() *BatchedQSchedulerServer {
+func NewBatchedServer(assignTasksConcurrency int64) *BatchedQSchedulerServer {
 	return &BatchedQSchedulerServer{
-		batchers: make(map[string]*state.BatchRunner),
+		batchers:               make(map[string]*state.BatchRunner),
+		assignTasksConcurrency: semaphore.NewWeighted(assignTasksConcurrency),
 	}
 }
 
@@ -84,6 +92,11 @@ func (s *BatchedQSchedulerServer) getBatcher(schedulerID string) (*state.BatchRu
 
 // AssignTasks implements QSchedulerServer.
 func (s *BatchedQSchedulerServer) AssignTasks(ctx context.Context, r *swarming.AssignTasksRequest) (resp *swarming.AssignTasksResponse, err error) {
+	if !s.assignTasksConcurrency.TryAcquire(1) {
+		return nil, status.Errorf(codes.ResourceExhausted, "AssignTasks hit concurrency limit.")
+	}
+	defer s.assignTasksConcurrency.Release(1)
+
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
