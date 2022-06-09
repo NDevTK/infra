@@ -19,17 +19,10 @@ fresh version of the image. This [builder](https://ci.chromium.org/p/infra-inter
 essentially runs `./build.sh` and uploads the resultant image to a docker
 [container registry](https://docs.docker.com/registry/). The registry, hosted
 by gcloud, is located at
-[chromium-container-registry](https://console.cloud.google.com/gcr/images/chromium-container-registry/GLOBAL/swarm_docker).
-
-***note
-For **arm64** images, the process is a little different. Its
-[builder](https://ci.chromium.org/p/infra/builders/ci/swarm-docker-arm64-image-builder)
-doesn't run on a schedule. Instead, when you need it to create a new image,
-simply trigger it via the
-[luci-scheduler UI](https://luci-scheduler.appspot.com/jobs/infra/swarm-docker-arm64-image-builder).
-If you don't have the permissions to trigger a build, please file a Trooper bug
-and someone can trigger it on your behalf.
-***
+[chops-public-images-prod](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/swarm_docker).
+Similarly, this [builder](https://ci.chromium.org/p/infra-internal/builders/prod/swarm-docker-arm64-image-builder)
+builds arm64 images and uploads them
+[here](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/swarm_docker_arm64).
 
 ### Shutting container down from within
 Because a swarming bot may trigger a reboot of the bot at any time (see

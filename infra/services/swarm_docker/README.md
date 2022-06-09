@@ -37,10 +37,10 @@ Fetching the docker image
 When a new container is launched with an image that is missing
 on a bot's local cache, it pulls it from the specified container registry. By
 default, this is the gcloud registry
-[chromium-container-registry](https://console.cloud.google.com/gcr/images/chromium-container-registry/GLOBAL/swarm_docker).
-It authenticates with the registry before downloading by using the specified
-credentials file (default is
-/creds/service_accounts/service-account-container_registry_puller.json)
+[chops-public-images-prod](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/swarm_docker).
+These images are world-readable, so no authentication with the registry is
+required. Additionally, when new images are fetched, any old and unused images
+still present on the machine will be deleted.
 
 
 File locking

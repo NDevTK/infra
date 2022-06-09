@@ -18,12 +18,16 @@ to by the `$SWARM_URL` env var. Note that running the image locally on a
 developer workstation is unsupported.
 
 ### Automatic image building
-Everyday at 8am PST, a builder on the internal.infra.cron waterfall builds a
-fresh version of the image. This [builder](https://ci.chromium.org/p/infra-internal/builders/prod/android-docker-image-builder)
-essentially runs `./build.sh` and uploads the resultant images to a docker
+Everyday at 8am PST, builders on the internal.infra.cron waterfall build a
+fresh version of the images. These builders essentially run `./build.sh` and
+upload the resultant images to a docker
 [container registry](https://docs.docker.com/registry/). The registry, hosted
 by gcloud, is located at
-[chromium-container-registry](https://console.cloud.google.com/gcr/images/chromium-container-registry/GLOBAL/).
+[chops-public-images-prod](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/).
+Specifically, the [android builder](https://ci.chromium.org/p/infra-internal/builders/prod/android-docker-image-builder)
+uploads its images [here](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/android_docker),
+and the [ChromeOS builder](https://ci.chromium.org/p/infra-internal/builders/prod/cros-docker-image-builder)
+uploads its images [here](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/cros_docker).
 
 ### Bumping src-rev for install-build-deps.sh
 Many of the packages and dependencies needed to build and test chromium are
