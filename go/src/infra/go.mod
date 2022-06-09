@@ -23,6 +23,7 @@ require (
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/remote-apis-sdks v0.0.0-20220518145948-4b34b65cbf91
 	github.com/bmatcuk/doublestar v1.3.4
+	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20220131014315-6e321f4509c8
 	github.com/docker/docker v20.10.8+incompatible
 	github.com/dustin/go-humanize v1.0.0
@@ -108,6 +109,7 @@ require (
 	github.com/cncf/udpa/go v0.0.0-20220112060539-c52dc94e7fbe // indirect
 	github.com/cncf/xds/go v0.0.0-20220520190051-1e77728a1eaa // indirect
 	github.com/containerd/containerd v1.5.5 // indirect
+	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/cli v20.10.7+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
@@ -119,6 +121,7 @@ require (
 	github.com/fiorix/go-web v1.0.1-0.20150221144011-5b593f1e8966 // indirect
 	github.com/go-logr/logr v1.1.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -152,6 +155,7 @@ require (
 	github.com/mostynb/zstdpool-syncpool v0.0.12 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pkg/xattr v0.4.7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

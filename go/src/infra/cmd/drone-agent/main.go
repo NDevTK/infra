@@ -27,6 +27,7 @@ import (
 	"infra/cmd/drone-agent/internal/agent"
 	"infra/cmd/drone-agent/internal/bot"
 	"infra/cmd/drone-agent/internal/draining"
+	"infra/cmd/drone-agent/internal/metrics"
 	"infra/cmd/drone-agent/internal/tokman"
 )
 
@@ -52,6 +53,13 @@ var (
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
 	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), os.Getenv("DOCKER_DRONE_SERVER_NAME"))
+
+	// tsmonEndpoint is the URL (including file://, https://,
+	// pubsub://project/topic) to post monitoring metrics to.
+	// If empty, we will try to load configuration from LUCI tsmon default
+	// configuration file, i.e. /etc/chrome-infra/ts-mon.json.
+	tsmonEndpoint       = os.Getenv("DRONE_AGENT_TSMON_ENDPOINT")
+	tsmonCredentialPath = os.Getenv("DRONE_AGENT_TSMON_CREDENTIAL_PATH")
 )
 
 func main() {
@@ -66,9 +74,14 @@ func innerMain() error {
 	ctx = notifySIGTERM(ctx)
 	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
 
+	if err := metrics.Setup(ctx, tsmonEndpoint, tsmonCredentialPath); err != nil {
+		log.Printf("Skipping metrics setup: %s", err)
+	}
+
 	var wg sync.WaitGroup
 	defer wg.Wait()
 	defer cancel()
+	defer metrics.Shutdown(ctx)
 
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
 
