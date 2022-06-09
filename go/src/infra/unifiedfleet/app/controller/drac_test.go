@@ -841,6 +841,35 @@ func TestUpdateDrac(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_SERVING)
 		})
+
+		Convey("Update drac with new display name", func() {
+			machine1 := &ufspb.Machine{
+				Name: "machine-26",
+			}
+			registration.CreateMachine(ctx, machine1)
+			drac := &ufspb.Drac{
+				Name:        "drac-26",
+				DisplayName: "64d1c223-afe6-45a0-b2d9-96c6f8884181",
+				Machine:     "machine-26",
+				SwitchInterface: &ufspb.SwitchInterface{
+					Switch:   "switch-26",
+					PortName: "27",
+				},
+			}
+			d, err := registration.CreateDrac(ctx, drac)
+			So(err, ShouldBeNil)
+			So(d, ShouldNotBeNil)
+			So(d.GetDisplayName(), ShouldEqual, "64d1c223-afe6-45a0-b2d9-96c6f8884181")
+
+			drac1 := &ufspb.Drac{
+				Name:        "drac-26",
+				DisplayName: "e08c1cf7-020c-4ca1-874b-4d41e65f85d5",
+			}
+			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"display_name"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetDisplayName(), ShouldEqual, "e08c1cf7-020c-4ca1-874b-4d41e65f85d5")
+		})
 	})
 }
 
