@@ -1474,9 +1474,11 @@ func servoRepairPlan() *Plan {
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"servo_power_cycle_root_servo": {
-				Docs: []string{"Try to reset(power-cycle) the servo via smart usbhub."},
+				Docs: []string{
+					"Try to reset(power-cycle) the servo via smart usbhub.",
+				},
 				Conditions: []string{
-					"is_labstation",
+					"Is not servo_v3",
 				},
 				ExecExtraArgs: []string{
 					"reset_timeout:60",
