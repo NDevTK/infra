@@ -1372,11 +1372,14 @@ func PrintDutsShort(res []proto.Message, keysOnly bool) {
 
 // PrintMachineLSEsJSON prints the machinelse details in json format.
 func PrintMachineLSEsJSON(res []proto.Message, emit bool) {
+	shouldPrintDelimiters := len(res) != 1
 	machinelses := make([]*ufspb.MachineLSE, len(res))
 	for i, r := range res {
 		machinelses[i] = r.(*ufspb.MachineLSE)
 	}
-	fmt.Print("[")
+	if shouldPrintDelimiters {
+		fmt.Print("[")
+	}
 	for i, m := range machinelses {
 		m.Name = ufsUtil.RemovePrefix(m.Name)
 		PrintProtoJSON(m, emit)
@@ -1385,7 +1388,9 @@ func PrintMachineLSEsJSON(res []proto.Message, emit bool) {
 			fmt.Println()
 		}
 	}
-	fmt.Println("]")
+	if shouldPrintDelimiters {
+		fmt.Println("]")
+	}
 }
 
 func machineLSEFullOutputStrs(lse *ufspb.MachineLSE, dhcp *ufspb.DHCPConfig) []string {
