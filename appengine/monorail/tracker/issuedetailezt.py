@@ -27,6 +27,7 @@ from features import send_notifications
 from features import hotlist_helpers
 from features import hotlist_views
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
@@ -158,9 +159,17 @@ class FlipperRedirectBase(servlet.Servlet):
 class FlipperNext(FlipperRedirectBase):
   next_handler = True
 
+  # def GetFlipperNextRedirectPage(self, **kwargs):
+  #   self.next_handler = True
+  #   return self.handler(**kwargs)
+
 
 class FlipperPrev(FlipperRedirectBase):
   next_handler = False
+
+  # def GetFlipperPrevRedirectPage(self, **kwargs):
+  #   self.next_handler = False
+  #   return self.handler(**kwargs)
 
 
 class FlipperList(servlet.Servlet):

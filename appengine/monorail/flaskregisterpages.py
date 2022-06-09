@@ -69,6 +69,7 @@ from tracker import issueadvsearch
 from tracker import issueattachment
 from tracker import issueattachmenttext
 from tracker import issuebulkedit
+from tracker import issuedetailezt
 from tracker import issueentryafterlogin
 from tracker import issuetips
 
@@ -428,6 +429,14 @@ class ServletRegistry(object):
         #     '/<string:project_name>/issues/bulkedit.do',
         #     issuebulkedit.IssueBulkEdit(
         #         services=service).PostIssueBulkEdit, ['POST']),
+        # (
+        #     '/<string:project_name>/issues/detail/next',
+        #     issuedetailezt.FlipperNext(
+        #         services=service).GetFlipperNextRedirectPage, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/detail/previous',
+        #     issuedetailezt.FlipperPrev(
+        #         services=service).GetFlipperPrevRedirectPage, ['GET']),
     ]
     return self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
 
