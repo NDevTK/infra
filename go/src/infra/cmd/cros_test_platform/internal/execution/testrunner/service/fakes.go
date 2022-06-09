@@ -11,11 +11,14 @@ import (
 	"infra/cmd/cros_test_platform/internal/execution/types"
 	"infra/libs/skylab/request"
 
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
+
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/data/stringset"
+	"google.golang.org/grpc"
 )
 
 // StubClient implements a noop Client with "reasonable" default behavior for
@@ -33,6 +36,16 @@ func (c StubClient) ValidateArgs(context.Context, *request.Args) (bool, []types.
 // LaunchTask implements Client interface.
 func (c StubClient) LaunchTask(context.Context, *request.Args) (TaskReference, error) {
 	return TaskReference(unguessableString()), nil
+}
+
+// CheckFleetTestsPolicy implements Client interface.
+func (c StubClient) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest, opt ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return &ufsapi.CheckFleetTestsPolicyResponse{
+		IsTestValid: true,
+		TestStatus: &ufsapi.TestStatus{
+			Code: ufsapi.TestStatus_OK,
+		},
+	}, nil
 }
 
 // FetchResults implements Client interface.
@@ -225,11 +238,12 @@ type CallCountingClientWrapper struct {
 	// CallCounts is a POD value that contains the number of each time each method
 	// in Client was called.
 	CallCounts struct {
-		ValidateArgs   int
-		LaunchTask     int
-		FetchResults   int
-		SwarmingTaskID int
-		URL            int
+		ValidateArgs          int
+		LaunchTask            int
+		FetchResults          int
+		SwarmingTaskID        int
+		URL                   int
+		CheckFleetTestsPolicy int
 	}
 }
 
@@ -252,6 +266,12 @@ func (c *CallCountingClientWrapper) LaunchTask(ctx context.Context, args *reques
 func (c *CallCountingClientWrapper) FetchResults(ctx context.Context, t TaskReference) (*FetchResultsResponse, error) {
 	c.CallCounts.FetchResults++
 	return c.Client.FetchResults(ctx, t)
+}
+
+// CheckFleetTestsPolicy implements Client interface.
+func (c *CallCountingClientWrapper) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest, opt ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	c.CallCounts.CheckFleetTestsPolicy++
+	return c.Client.CheckFleetTestsPolicy(ctx, req)
 }
 
 // SwarmingTaskID implements Client interface.
@@ -345,4 +365,14 @@ func (c *ArgsCollectingClientWrapper) URL(t TaskReference) string {
 		T: t,
 	})
 	return c.Client.URL(t)
+}
+
+// CheckFleetTestsPolicy implements Client interface.
+func (c *ArgsCollectingClientWrapper) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest, opt ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return &ufsapi.CheckFleetTestsPolicyResponse{
+		IsTestValid: true,
+		TestStatus: &ufsapi.TestStatus{
+			Code: ufsapi.TestStatus_OK,
+		},
+	}, nil
 }

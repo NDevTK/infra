@@ -93,11 +93,15 @@ func TestClientCallCountingWrapper(t *testing.T) {
 	}
 	c.ValidateArgs(context.Background(), nil)
 	c.LaunchTask(context.Background(), nil)
+	c.CheckFleetTestsPolicy(context.Background(), nil)
 	if c.CallCounts.ValidateArgs != 1 {
 		t.Errorf("ValidateArgs counts is %d, want 1", c.CallCounts.ValidateArgs)
 	}
 	if c.CallCounts.LaunchTask != 1 {
 		t.Errorf("LaunchTask counts is %d, want 1", c.CallCounts.LaunchTask)
+	}
+	if c.CallCounts.CheckFleetTestsPolicy != 1 {
+		t.Errorf("CheckFleetTestsPolicy counts is %d, want 1", c.CallCounts.CheckFleetTestsPolicy)
 	}
 }
 

@@ -12,9 +12,13 @@ import (
 	"encoding/base64"
 	"fmt"
 	"infra/cmd/cros_test_platform/internal/execution/types"
+	"infra/libs/skylab/request"
+	"infra/libs/skylab/swarming"
 	"io/ioutil"
 	"net/http"
 	"sort"
+
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
@@ -22,6 +26,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	swarmingapi "go.chromium.org/luci/common/api/swarming/swarming/v1"
@@ -29,11 +34,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
+	authserver "go.chromium.org/luci/server/auth"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/swarming"
+	"google.golang.org/grpc"
 )
 
 // TaskReference is an implementation-independent way to identify test_runner tasks.
@@ -69,6 +74,8 @@ type Client interface {
 
 	// URL returns a canonical URL for a test_runner build.
 	URL(TaskReference) string
+
+	CheckFleetTestsPolicy(context.Context, *ufsapi.CheckFleetTestsPolicyRequest, ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error)
 }
 
 type task struct {
@@ -83,6 +90,7 @@ type clientImpl struct {
 	bbClient       buildbucketpb.BuildsClient
 	builder        *buildbucketpb.BuilderID
 	knownTasks     map[TaskReference]*task
+	ufsClient      ufsapi.FleetClient
 }
 
 // Ensure we satisfy the promised interface.
@@ -93,7 +101,7 @@ type swarmingClient interface {
 }
 
 // NewClient creates a concrete instance of a Client.
-func NewClient(ctx context.Context, cfg *config.Config) (Client, error) {
+func NewClient(ctx context.Context, cfg *config.Config, createdBy string) (Client, error) {
 	sc, err := newSwarmingClient(ctx, cfg.SkylabSwarming)
 	if err != nil {
 		return nil, errors.Annotate(err, "create test_runner service client").Err()
@@ -102,6 +110,8 @@ func NewClient(ctx context.Context, cfg *config.Config) (Client, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "create test_runner service client").Err()
 	}
+
+	ufsclient, err := NewUFSClient(ctx, createdBy)
 	return &clientImpl{
 		swarmingClient: sc,
 		bbClient:       bbc,
@@ -111,6 +121,7 @@ func NewClient(ctx context.Context, cfg *config.Config) (Client, error) {
 			Builder: cfg.TestRunner.Buildbucket.Builder,
 		},
 		knownTasks: make(map[TaskReference]*task),
+		ufsClient:  ufsclient,
 	}, nil
 }
 
@@ -165,6 +176,28 @@ func swarmingHTTPClient(ctx context.Context, authJSONPath string) (*http.Client,
 		return nil, errors.Annotate(err, "create http client").Err()
 	}
 	return h, nil
+}
+
+// NewClient returns a new client to interact with UFS .
+func NewUFSClient(ctx context.Context, createdBy string) (ufsapi.FleetClient, error) {
+	// For UFS test policy we want to authenticate with the account which was used to run the tests through crosfleet cli
+	state := authserver.GetState(ctx)
+	state.User().Identity = identity.Identity(createdBy)
+	ctx = authserver.WithState(ctx, state)
+	hClient, err := httpClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "create UFS client").Err()
+	}
+
+	options := *prpc.DefaultOptions()
+	options.UserAgent = "cros_test_platform"
+
+	return ufsapi.NewFleetPRPCClient(&prpc.Client{
+		C: hClient,
+		// TODO: Change Host to be passed in as a command line argument if a non-prod UFS host is needed
+		Host:    "ufs.api.cr.dev",
+		Options: &options,
+	}), nil
 }
 
 // ValidateArgs checks whether this test has dependencies satisfied by
@@ -284,6 +317,11 @@ func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchR
 		Result:    res,
 		LifeCycle: lc,
 	}, nil
+}
+
+// CheckFleetTestsPolicy checks the fleet test policy for the given test parameters.
+func (c *clientImpl) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest, opt ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return c.ufsClient.CheckFleetTestsPolicy(ctx, req)
 }
 
 // lifeCyclesWithResults lists all task states which have a chance of producing
