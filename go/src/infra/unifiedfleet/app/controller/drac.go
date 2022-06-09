@@ -514,7 +514,7 @@ func validateDracUpdateMask(ctx context.Context, drac *ufspb.Drac, mask *field_m
 				}
 			case "machine":
 				if drac.GetMachine() == "" {
-					status.Error(codes.InvalidArgument, "validateDracUpdateMask - machine cannot be empty")
+					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - machine cannot be empty")
 				}
 			case "macAddress":
 				if err := validateMacAddress(ctx, drac.GetName(), drac.GetMacAddress()); err != nil {
