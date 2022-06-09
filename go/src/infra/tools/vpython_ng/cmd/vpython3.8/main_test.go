@@ -51,10 +51,9 @@ func cmd(app *application.Application) *exec.Cmd {
 
 	So(app.BuildVENV(venv), ShouldBeNil)
 
-	// Usually we don't need to RUnlock the venv package. It will be unlocked
-	// when the vpython process exits. However for tests, the lock will prevent
-	// the temporary vpython root directory from being removed on Windows.
-	defer app.VENVPackage.RUnlock()
+	// Release all the resources so the temporary vpython root directory can be
+	// removed on Windows.
+	defer app.Close()
 
 	return app.GetExecCommand()
 }

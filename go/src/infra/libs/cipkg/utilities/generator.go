@@ -12,54 +12,72 @@ import (
 	"infra/libs/cipkg"
 )
 
+type BaseDependency struct {
+	Runtime   bool
+	Type      int
+	Generator cipkg.Generator
+}
+
 type BaseGenerator struct {
 	Name         string
 	Builder      string
 	Args         []string
 	Env          []string
-	Dependencies []cipkg.Dependency
+	Dependencies []BaseDependency
 }
 
-func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, error) {
-	var inputs, envs []string
+func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
+	var inputs, envs, rDeps []string
 	for _, dep := range g.Dependencies {
-		drv, err := dep.Generate(ctx)
-		if err != nil {
-			return cipkg.Derivation{}, err
+		d := &cipkg.Dependency{
+			Type:      dep.Type,
+			Generator: dep.Generator,
 		}
+		pkg, err := d.Generate(ctx)
+		if err != nil {
+			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		}
+
+		drv := pkg.Derivation()
 		inputs = append(inputs, drv.ID())
-		pkg := ctx.Storage.Add(drv)
 		envs = append(envs, fmt.Sprintf("%s=%s", drv.Name, pkg.Directory()))
+		if dep.Runtime {
+			rDeps = append(rDeps, drv.ID())
+		}
 	}
 	envs = append(envs, g.Env...)
 
 	envMap, err := envToMap(envs)
 	if err != nil {
-		return cipkg.Derivation{}, nil
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, nil
 	}
 
 	tmpl := template.New(g.Name).Option("missingkey=error")
 	builder, err := render(tmpl.New("builder"), g.Builder, envMap)
 	if err != nil {
-		return cipkg.Derivation{}, nil
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, nil
 	}
 	var args []string
 	for i, arg := range g.Args {
 		a, err := render(tmpl.New(fmt.Sprintf("arg_%d", i)), arg, envMap)
 		if err != nil {
-			return cipkg.Derivation{}, nil
+			return cipkg.Derivation{}, cipkg.PackageMetadata{}, nil
 		}
 		args = append(args, a)
 	}
 
 	return cipkg.Derivation{
-		Name:     g.Name,
-		Platform: ctx.Platform.Build,
-		Builder:  builder,
-		Args:     args,
-		Env:      envs,
-		Inputs:   inputs,
-	}, nil
+			Name:     g.Name,
+			Platform: ctx.Platform.Build,
+			Builder:  builder,
+			Args:     args,
+			Env:      envs,
+			Inputs:   inputs,
+		},
+		cipkg.PackageMetadata{
+			Dependencies: rDeps,
+		},
+		nil
 }
 
 func envToMap(envs []string) (map[string]string, error) {

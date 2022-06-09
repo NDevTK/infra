@@ -37,7 +37,7 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 		Name:    "wheels",
 		Builder: "builtin:udf:ensureWheels",
 		Args:    []string{"v1", string(raw)},
-		Dependencies: []cipkg.Dependency{
+		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: tags},
 		},
 	}, nil

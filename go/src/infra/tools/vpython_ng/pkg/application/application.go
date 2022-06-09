@@ -108,7 +108,10 @@ type Application struct {
 	VpythonSpec       *vpythonAPI.Spec
 	PythonCommandLine *python.CommandLine
 	PythonExecutable  string
-	VENVPackage       cipkg.Package
+
+	// Close() is usually unnecessary since resources will be released after
+	// process exited. However we need to release them manually in the tests.
+	Close func()
 }
 
 func (a *Application) Must(err error) {
@@ -134,6 +137,7 @@ func (a *Application) Initialize() {
 	}
 	ctx := gologger.StdConfig.Use(a.Context)
 	a.Context = logging.SetLevel(ctx, defaultLogLevel)
+	a.Close = func() {}
 }
 
 func (a *Application) ParseEnvs() (err error) {
@@ -262,11 +266,11 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		Context: ctx,
 	}
 
-	drv, err := venv.Generate(bctx)
+	drv, meta, err := venv.Generate(bctx)
 	if err != nil {
 		return errors.Annotate(err, "failed to generate venv derivation").Err()
 	}
-	pkg := s.Add(drv)
+	pkg := s.Add(drv, meta)
 
 	// Build derivations
 	b := utilities.NewBuilder(s)
@@ -291,12 +295,12 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		return errors.Annotate(err, "failed to build venv").Err()
 	}
 
-	// This lock is expected to be held during the lifetime of the process.
-	// TODO: cpython need to be locked here
-	if err := pkg.RLock(); err != nil {
+	if err := utilities.RLockRecursive(s, pkg); err != nil {
 		return errors.Annotate(err, "failed to acquire read lock for venv").Err()
 	}
-	a.VENVPackage = pkg
+	a.Close = func() {
+		a.Must(utilities.RUnlockRecursive(s, pkg))
+	}
 
 	a.PythonExecutable = common.Python3VENV(pkg.Directory())
 

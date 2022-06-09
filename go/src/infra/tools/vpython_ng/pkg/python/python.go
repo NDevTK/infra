@@ -62,8 +62,8 @@ func (e *Environment) Pep425Tags() cipkg.Generator {
 		Name:    "python_venv",
 		Builder: common.Python3("{{.cpython}}"),
 		Args:    []string{"-c", pythonVenvBootstrapScript},
-		Dependencies: []cipkg.Dependency{
-			{Type: cipkg.DepsHostTarget, Generator: e.cpython},
+		Dependencies: []utilities.BaseDependency{
+			{Type: cipkg.DepsHostTarget, Generator: e.cpython, Runtime: true},
 			{Type: cipkg.DepsHostTarget, Generator: e.virtualenv},
 		},
 	}
@@ -71,7 +71,7 @@ func (e *Environment) Pep425Tags() cipkg.Generator {
 		Name:    "python_pep425tags",
 		Builder: common.Python3VENV("{{.python_venv}}"),
 		Args:    []string{"-c", pythonPep425TagsScript},
-		Dependencies: []cipkg.Dependency{
+		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: empty},
 		},
 	}
@@ -85,8 +85,8 @@ func (e *Environment) WithWheels(wheels cipkg.Generator) cipkg.Generator {
 		Name:    "python_venv",
 		Builder: common.Python3("{{.cpython}}"),
 		Args:    []string{"-c", pythonVenvBootstrapScript},
-		Dependencies: []cipkg.Dependency{
-			{Type: cipkg.DepsHostTarget, Generator: e.cpython},
+		Dependencies: []utilities.BaseDependency{
+			{Type: cipkg.DepsHostTarget, Generator: e.cpython, Runtime: true},
 			{Type: cipkg.DepsHostTarget, Generator: e.virtualenv},
 			{Type: cipkg.DepsHostTarget, Generator: wheels},
 		},

@@ -51,11 +51,12 @@ func (s *LocalStorage) Get(id string) cipkg.Package {
 	}
 }
 
-func (s *LocalStorage) Add(drv cipkg.Derivation) cipkg.Package {
+func (s *LocalStorage) Add(drv cipkg.Derivation, m cipkg.PackageMetadata) cipkg.Package {
 	id := drv.ID()
 	pkg := &LocalStoragePackage{
 		baseDirectory: filepath.Join(s.storagePath, id),
 		derivation:    &drv,
+		metadata:      &m,
 		lockFile:      filepath.Join(s.storagePath, fmt.Sprintf(".%s.lock", id)),
 	}
 	s.packages[id] = pkg
@@ -91,12 +92,17 @@ func (s *LocalStorage) Prune(c context.Context, ttl time.Duration, max int) {
 type LocalStoragePackage struct {
 	baseDirectory string
 	derivation    *cipkg.Derivation
+	metadata      *cipkg.PackageMetadata
 	lockFile      string
 	rlockHandle   fslock.Handle
 }
 
 func (p *LocalStoragePackage) Derivation() cipkg.Derivation {
 	return *p.derivation
+}
+
+func (p *LocalStoragePackage) Metadata() cipkg.PackageMetadata {
+	return *p.metadata
 }
 
 func (p *LocalStoragePackage) Directory() string {
@@ -211,4 +217,38 @@ func (p *LocalStoragePackage) touch() error {
 		return nil
 	}
 	return filesystem.Touch(p.stampPath(), time.Time{}, 0644)
+}
+
+// RLockRecursive will RLock the package with all its dependencies recursively.
+// If an error happened, it may end up with only part of the packages are
+// locked.
+func RLockRecursive(s cipkg.Storage, pkg cipkg.Package) error {
+	return doPackageRecursive(s, pkg, make(map[string]struct{}),
+		func(pkg cipkg.Package) error { return pkg.RLock() })
+}
+
+// RUnlockRecursive will RUnlock the package with all its dependencies
+// recursively. If an error happened, it may end up with only part of the
+// packages are unlocked.
+func RUnlockRecursive(s cipkg.Storage, pkg cipkg.Package) error {
+	return doPackageRecursive(s, pkg, make(map[string]struct{}),
+		func(pkg cipkg.Package) error { return pkg.RUnlock() })
+}
+
+func doPackageRecursive(s cipkg.Storage, pkg cipkg.Package, visited map[string]struct{}, f func(cipkg.Package) error) error {
+	if _, ok := visited[pkg.Derivation().ID()]; ok {
+		return nil
+	}
+	if err := f(pkg); err != nil {
+		return err
+	}
+	visited[pkg.Derivation().ID()] = struct{}{}
+
+	for _, id := range pkg.Metadata().Dependencies {
+		dep := s.Get(id)
+		if err := doPackageRecursive(s, dep, visited, f); err != nil {
+			return err
+		}
+	}
+	return nil
 }

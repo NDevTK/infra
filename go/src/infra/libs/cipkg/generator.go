@@ -9,7 +9,7 @@ import (
 )
 
 type Generator interface {
-	Generate(ctx *BuildContext) (Derivation, error)
+	Generate(ctx *BuildContext) (Derivation, PackageMetadata, error)
 }
 
 var (
@@ -33,7 +33,7 @@ type Dependency struct {
 	Generator Generator
 }
 
-func (dep *Dependency) Generate(ctx *BuildContext) (Derivation, error) {
+func (dep *Dependency) Generate(ctx *BuildContext) (Package, error) {
 	var plat Platform
 	switch dep.Type {
 	case DepsBuildBuild:
@@ -49,11 +49,11 @@ func (dep *Dependency) Generate(ctx *BuildContext) (Derivation, error) {
 	case DepsTargetTarget:
 		plat = Platform{ctx.Platform.Build, ctx.Platform.Target, ctx.Platform.Target}
 	default:
-		return Derivation{}, ErrUnknowDependencyType
+		return nil, ErrUnknowDependencyType
 	}
-	drv, err := dep.Generator.Generate(ctx.WithPlatform(plat))
+	drv, meta, err := dep.Generator.Generate(ctx.WithPlatform(plat))
 	if err != nil {
-		return Derivation{}, err
+		return nil, err
 	}
-	return ctx.Storage.Add(drv).Derivation(), nil
+	return ctx.Storage.Add(drv, meta), nil
 }

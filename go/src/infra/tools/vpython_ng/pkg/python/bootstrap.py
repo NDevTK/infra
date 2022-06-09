@@ -29,3 +29,9 @@ if 'wheels' in os.environ:
       '--requirement',
       os.path.join(os.environ['wheels'], 'requirements.txt'),
   ])
+
+# Generate all .pyc in the output directory. This prevent generating .pyc on the
+# fly, which modifies derivation output after the build.
+subprocess.check_call([
+    sys.executable, '-m', 'compileall', os.environ['out']
+])

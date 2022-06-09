@@ -39,18 +39,27 @@ type Platform struct {
 type Storage interface {
 	// Get(id) returns the handler for the package. It won't try to make package
 	// available in the storage and not promising the returned package is valid.
-	// Get a package added by Add(drv) with valid derivation will always return a
+	// Get a package added by Add(...) with valid derivation will always return a
 	// valid package.
 	Get(id string) Package
 
-	// Add(drv) returns a valid package if derivation is valid. Whether the
-	// derivation will be persisted when it's added depends on storage's
+	// Add(drv, metadata) returns a valid package if derivation is valid. Whether
+	// the derivation will be persisted when it's added depends on storage's
 	// implementation.
-	Add(drv Derivation) Package
+	Add(drv Derivation, metadata PackageMetadata) Package
 
 	// Prune(ctx, ttl, max) removes at most ${max} packages from storage which
 	// haven't been used in the past ${ttl}.
 	Prune(ctx context.Context, ttl time.Duration, max int)
+}
+
+// PackageMetadata includes all the information for managing packages.
+type PackageMetadata struct {
+	// Version of the package
+	Version string
+
+	// Runtime dependencies for the package.
+	Dependencies []string
 }
 
 // Package is the interface for a package in the storage. The content of a package
@@ -68,6 +77,12 @@ type Package interface {
 	// trying to get Derivation() from an ill-formed package is a fatal error.
 	Derivation() Derivation
 
+	// Metadata() returns the metadata of the Package. For ill-formed
+	// packages (package is retrieved without adding the derivation), calling
+	// Metadata() will PANIC. Storage may modify the added metadata based on its
+	// implementation.
+	Metadata() PackageMetadata
+
 	// Directory() returns the output directory.
 	Directory() string
 
@@ -84,7 +99,7 @@ type Package interface {
 	TryRemove() (ok bool, err error)
 
 	// Available() checks whether the Package is available in the storage and
-	// return the last time it's used. There It only checks the completion stamp in
+	// return the last time it's used. It only checks the completion stamp in
 	// most cases.
 	Available() (ok bool, mtime time.Time)
 

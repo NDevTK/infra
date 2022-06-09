@@ -28,17 +28,17 @@ type CIPDEnsure struct {
 	Expander []string
 }
 
-func (c *CIPDEnsure) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, error) {
+func (c *CIPDEnsure) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
 	var w strings.Builder
 	if err := c.Ensure.Serialize(&w); err != nil {
-		return cipkg.Derivation{}, fmt.Errorf("failed to encode ensure file: %v: %w", c.Ensure, err)
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("failed to encode ensure file: %v: %w", c.Ensure, err)
 	}
 	return cipkg.Derivation{
 		Name:    c.Name,
 		Builder: CIPDEnsureBuilder,
 		Args:    []string{w.String()},
 		Env:     c.Expander,
-	}, nil
+	}, cipkg.PackageMetadata{}, nil
 }
 
 func cipdEnsure(ctx context.Context, cmd *exec.Cmd) error {
