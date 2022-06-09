@@ -75,8 +75,6 @@ class Platform(
 
 ALL = {
     p.name: p for p in (
-        # We don't currently run a wheel builder for linux-armv6, but
-        # we keep it as a platform here for use by the 3pp recipe.
         Platform(
             name='linux-armv6-py3',
             manylinux_name=None,
