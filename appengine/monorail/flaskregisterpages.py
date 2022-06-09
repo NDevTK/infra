@@ -69,6 +69,7 @@ from tracker import issueadvsearch
 from tracker import issueattachment
 from tracker import issueattachmenttext
 from tracker import issuebulkedit
+from tracker import issuedetailezt
 from tracker import issueentryafterlogin
 from tracker import issuetips
 
@@ -428,8 +429,29 @@ class ServletRegistry(object):
         #     '/<string:project_name>/issues/bulkedit.do',
         #     issuebulkedit.IssueBulkEdit(
         #         services=service).PostIssueBulkEdit, ['POST']),
+        # (
+        #     '/<string:project_name>/issues/detail/next',
+        #     issuedetailezt.FlipperNext(
+        #         services=service).GetFlipperNextRedirectPage, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/detail/previous',
+        #     issuedetailezt.FlipperPrev(
+        #         services=service).GetFlipperPrevRedirectPage, ['GET']),
     ]
-    return self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
+    flaskapp_project = self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
+
+    # pylint: disable=unused-variable
+    # for url /issues/list_new
+    @flaskapp_project.route('/<string:project_name>/issues/list_new')
+    def _ProjectRedirectToIssueListPage(**kwargs):
+      base_url = flask.request.base_url
+      url = base_url[:-4]
+      query_string = flask.request.query_string
+      if query_string:
+        url = '%s?%s' % (url, query_string)
+      return flask.redirect(url)
+
+    return flaskapp_project
 
 
   def RegisterUserUrls(self, service):
