@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79def8f5_49e5e4d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-06-09T17:17:15Z",
+      "side": 1,
+      "message": "This is the same code as in https://crrev.com/c/3696629 with the following changes:\n- Removed the redirect changes\n- based on HEAD instead of https://crrev.com/c/3688841",
+      "revId": "93686929c09e2306e359e889b58fa4e10b3f1978",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
