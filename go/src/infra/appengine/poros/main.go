@@ -11,7 +11,6 @@ import (
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
-	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -32,11 +31,6 @@ import (
 // authGroup is the name of the LUCI Auth group that controls whether the user
 // should have access to Poros.
 const authGroup = "project-poros-access"
-
-func init() {
-	// TODO (crbug.com/1242998): Remove when this becomes the default (~Jan 2022).
-	datastore.EnableSafeGet()
-}
 
 // prepareTemplates configures templates.Bundle used by all UI handlers.
 func prepareTemplates(opts *server.Options) *templates.Bundle {

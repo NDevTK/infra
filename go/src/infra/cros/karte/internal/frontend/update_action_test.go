@@ -10,10 +10,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
-
-	// See https://bugs.chromium.org/p/chromium/issues/detail?id=1242998 for details.
-	// TODO(gregorynisbet): Remove this once new behavior is default.
-	_ "go.chromium.org/luci/gae/service/datastore/crbug1242998safeget"
 )
 
 // TestUpdateActionEntity tests writing an action entity to datastore, updating it, and then reading it back.

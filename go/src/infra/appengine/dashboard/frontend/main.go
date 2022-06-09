@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"go.chromium.org/luci/auth/identity"
-	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -88,9 +87,6 @@ func pageBase(srv *server.Server) router.MiddlewareChain {
 }
 
 func main() {
-	// In accordance with https://crbug.com/1242998
-	datastore.EnableSafeGet()
-
 	modules := []module.Module{
 		encryptedcookies.NewModuleFromFlags(),
 		secrets.NewModuleFromFlags(),

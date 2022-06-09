@@ -25,10 +25,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/crosskylabadmin/api/fleet/v1"
-
-	// See https://bugs.chromium.org/p/chromium/issues/detail?id=1242998 for details.
-	// TODO(gregorynisbet): Remove this once new behavior is default.
-	_ "go.chromium.org/luci/gae/service/datastore/crbug1242998safeget"
 )
 
 const SatlabStableVersionKind = "satlab_stable_version"

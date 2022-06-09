@@ -42,11 +42,6 @@ const (
 	ACCESS_GROUP = "gofindit-access"
 )
 
-func init() {
-	// TODO (crbug.com/1242998): Remove when this becomes the default (~Jan 2022).
-	datastore.EnableSafeGet()
-}
-
 // checkAccess is middleware that checks if the user is authorized to
 // access GoFindit.
 func checkAccess(ctx *router.Context, next router.Handler) {

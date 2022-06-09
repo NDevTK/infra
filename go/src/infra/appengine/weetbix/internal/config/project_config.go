@@ -19,7 +19,6 @@ import (
 	"go.chromium.org/luci/config/cfgclient"
 	"go.chromium.org/luci/config/validation"
 	"go.chromium.org/luci/gae/service/datastore"
-	_ "go.chromium.org/luci/gae/service/datastore/crbug1242998safeget"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/caching"
 	"google.golang.org/protobuf/proto"
