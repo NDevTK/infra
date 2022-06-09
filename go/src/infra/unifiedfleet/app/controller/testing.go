@@ -30,7 +30,7 @@ const (
 func testingContext() context.Context {
 	c := gaetesting.TestingContextWithAppID("dev~infra-unified-fleet-system")
 	c = gologger.StdConfig.Use(c)
-	c = logging.SetLevel(c, logging.Debug)
+	c = logging.SetLevel(c, logging.Error)
 	c = config.Use(c, &config.Config{})
 	datastore.GetTestable(c).Consistent(true)
 	return c

@@ -44,7 +44,7 @@ func newTestFixtureWithContext(ctx context.Context, t *testing.T) (testFixture, 
 func testingContext() context.Context {
 	c := gaetesting.TestingContextWithAppID("dev~infra-unified-fleet-system")
 	c = gologger.StdConfig.Use(c)
-	c = logging.SetLevel(c, logging.Debug)
+	c = logging.SetLevel(c, logging.Error)
 	c = config.Use(c, &config.Config{
 		CrosNetworkConfig: &config.OSNetworkConfig{
 			GitilesHost: "test_gitiles",
