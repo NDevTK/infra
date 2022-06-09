@@ -112,7 +112,11 @@ func (s *BatchedQSchedulerServer) AssignTasks(ctx context.Context, r *swarming.A
 	}
 
 	batcher := s.getOrCreateBatcher(r.SchedulerId)
-	return batcher.Assign(ctx, r)
+	resp, err = batcher.TryAssign(ctx, r)
+	if err == state.ErrTryAssignFull {
+		err = status.Errorf(codes.Unavailable, "AssignTasks batch is full")
+	}
+	return
 }
 
 // GetCancellations implements QSchedulerServer.

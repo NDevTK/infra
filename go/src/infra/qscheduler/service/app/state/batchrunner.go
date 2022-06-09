@@ -16,6 +16,7 @@ package state
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 
@@ -95,6 +96,33 @@ func (b *BatchRunner) Notify(ctx context.Context, req *swarming.NotifyTasksReque
 	case <-ctx.Done():
 		// Note: this pathway is slightly harmful, though less so than Assign
 		// (see below) because Notify never returns any data anyway.
+		return nil, ctx.Err()
+	case <-ba.Done():
+		return ba.resp, ba.Err()
+	}
+}
+
+// ErrTryAssignFull is returned from TryAssign when the batch is full.
+var ErrTryAssignFull = errors.New("batch is full")
+
+// TryAssign is the same as Assign, but it will return with ErrTryAssignFull if
+// adding to the batch would block.
+func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRequest) (*swarming.AssignTasksResponse, error) {
+	ba := newBatchedAssign(ctx, req)
+	select {
+	case b.requests <- ba:
+	default:
+		return nil, ErrTryAssignFull
+	}
+
+	select {
+	case <-ctx.Done():
+		// Note: this pathway is slightly harmful; the caller will not receive
+		// an assignment response, but the request is actually still running
+		// in a batch and if it has assignment side-effects they will be
+		// persisted.
+		// Fortunately, qscheduler's reconciler logic ensures that subsequent Assign
+		// calls will return the already-assigned task.
 		return nil, ctx.Err()
 	case <-ba.Done():
 		return ba.resp, ba.Err()
@@ -200,8 +228,11 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 			// In production, this channel is closed so the read returns immediately.
 			<-b.testonlyBatchWait
 
-			// Limit batch size at 1000.
-			if nb.numOperations() >= 1000 {
+			batchSize := int64(1000)
+			if bs := config.Get(ctx).GetQuotaScheduler().GetBatchMaxSize(); bs > 0 {
+				batchSize = bs
+			}
+			if int64(nb.numOperations()) >= batchSize {
 				return nil
 			}
 		case <-ctx.Done():

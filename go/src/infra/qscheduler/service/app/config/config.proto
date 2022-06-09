@@ -8,7 +8,7 @@ package qscheduler.config;
 
 import "google/protobuf/duration.proto";
 
-option go_package = "config";
+option go_package = "infra/qscheduler/service/app/config;config";
 
 // Note: docstrings use generated go style variable names.
 
@@ -53,4 +53,9 @@ message QuotaScheduler {
   // A higher value causes batches to be larger and hence more efficient in
   // in terms of datastore operations, but adds overhead.
   google.protobuf.Duration batch_construction_wait = 2;
+
+  // Maximum number of requests in a batch.
+  //
+  // Defaults to 1000.
+  int64 batch_max_size = 3;
 }
