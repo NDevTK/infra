@@ -86,10 +86,15 @@ func (b *BatchRunner) Start(store *nodestore.NodeStore) {
 	})
 }
 
-// Notify runs the given notify request in a batch.
-func (b *BatchRunner) Notify(ctx context.Context, req *swarming.NotifyTasksRequest) (*swarming.NotifyTasksResponse, error) {
-	ba := newBatchedNotify(ctx, req)
-	if err := b.tryJoin(ctx, ba); err != nil {
+// TryNotify runs the given notify request in a batch.
+//
+// Returns ErrBatchFull if adding to the batch would block.
+func (b *BatchRunner) TryNotify(ctx context.Context, req *swarming.NotifyTasksRequest) (*swarming.NotifyTasksResponse, error) {
+	ba := &batchedNotify{
+		batchedRequest: newBatchedRequest(ctx),
+		req:            req,
+	}
+	if err := b.trySend(ctx, ba); err != nil {
 		return nil, err
 	}
 	select {
@@ -102,37 +107,18 @@ func (b *BatchRunner) Notify(ctx context.Context, req *swarming.NotifyTasksReque
 	}
 }
 
-// ErrTryAssignFull is returned from TryAssign when the batch is full.
-var ErrTryAssignFull = errors.New("batch is full")
+// ErrBatchFull is returned from TryAssign when the batch is full.
+var ErrBatchFull = errors.New("batch is full")
 
-// TryAssign is the same as Assign, but it will return with ErrTryAssignFull if
-// adding to the batch would block.
+// TryAssign runs the given assign request in a batch.
+//
+// Returns ErrBatchFull if adding to the batch would block.
 func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRequest) (*swarming.AssignTasksResponse, error) {
-	ba := newBatchedAssign(ctx, req)
-	select {
-	case b.requests <- ba:
-	default:
-		return nil, ErrTryAssignFull
+	ba := &batchedAssign{
+		batchedRequest: newBatchedRequest(ctx),
+		req:            req,
 	}
-
-	select {
-	case <-ctx.Done():
-		// Note: this pathway is slightly harmful; the caller will not receive
-		// an assignment response, but the request is actually still running
-		// in a batch and if it has assignment side-effects they will be
-		// persisted.
-		// Fortunately, qscheduler's reconciler logic ensures that subsequent Assign
-		// calls will return the already-assigned task.
-		return nil, ctx.Err()
-	case <-ba.Done():
-		return ba.resp, ba.Err()
-	}
-}
-
-// Assign runs the given assign request in a batch.
-func (b *BatchRunner) Assign(ctx context.Context, req *swarming.AssignTasksRequest) (*swarming.AssignTasksResponse, error) {
-	ba := newBatchedAssign(ctx, req)
-	if err := b.tryJoin(ctx, ba); err != nil {
+	if err := b.trySend(ctx, ba); err != nil {
 		return nil, err
 	}
 	select {
@@ -149,14 +135,16 @@ func (b *BatchRunner) Assign(ctx context.Context, req *swarming.AssignTasksReque
 	}
 }
 
-// tryJoin attempts to include bo in a batch, until that succeeds or context
-// is cancelled.
-func (b *BatchRunner) tryJoin(ctx context.Context, bo batchable) error {
+// trySend attempts to include ba in a batch, until that succeeds, context
+// is cancelled, or waitToCollect duration elapses.
+func (b *BatchRunner) trySend(ctx context.Context, bo batchable) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	case b.requests <- bo:
 		return nil
+	case <-time.After(waitToCollect(ctx)):
+		return ErrBatchFull
 	}
 }
 
@@ -209,6 +197,11 @@ func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 
 func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 	timer := clock.After(ctx, waitToCollect(ctx))
+	batchSize := int64(1000)
+	if bs := config.Get(ctx).GetQuotaScheduler().GetBatchMaxSize(); bs > 0 {
+		batchSize = bs
+	}
+
 	for {
 		select {
 		case r, ok := <-b.requests:
@@ -228,10 +221,6 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 			// In production, this channel is closed so the read returns immediately.
 			<-b.testonlyBatchWait
 
-			batchSize := int64(1000)
-			if bs := config.Get(ctx).GetQuotaScheduler().GetBatchMaxSize(); bs > 0 {
-				batchSize = bs
-			}
 			if int64(nb.numOperations()) >= batchSize {
 				return nil
 			}
@@ -351,20 +340,6 @@ type batchedAssign struct {
 
 	req  *swarming.AssignTasksRequest
 	resp *swarming.AssignTasksResponse
-}
-
-func newBatchedNotify(ctx context.Context, req *swarming.NotifyTasksRequest) *batchedNotify {
-	return &batchedNotify{
-		batchedRequest: newBatchedRequest(ctx),
-		req:            req,
-	}
-}
-
-func newBatchedAssign(ctx context.Context, req *swarming.AssignTasksRequest) *batchedAssign {
-	return &batchedAssign{
-		batchedRequest: newBatchedRequest(ctx),
-		req:            req,
-	}
 }
 
 // batch encapsulates a batch of operations.

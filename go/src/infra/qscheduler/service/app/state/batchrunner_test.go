@@ -60,9 +60,9 @@ func TestBatcherCancellations(t *testing.T) {
 			go func() {
 				for i := 0; i < nRequests; i++ {
 					go func(i int) {
-						_, err := batcher.Notify(ctx, &swarming.NotifyTasksRequest{})
+						defer wg.Done()
+						_, err := batcher.TryNotify(ctx, &swarming.NotifyTasksRequest{})
 						errs[i] = err
-						wg.Done()
 					}(i)
 				}
 			}()
@@ -107,6 +107,7 @@ func TestBatcherBehavior(t *testing.T) {
 				wg.Add(2)
 				// Run nTasks assignment requests concurrently.
 				go func(i int) {
+					defer wg.Done()
 					req := &swarming.AssignTasksRequest{
 						IdleBots: []*swarming.IdleBot{
 							{
@@ -116,15 +117,15 @@ func TestBatcherBehavior(t *testing.T) {
 						},
 						Time: now,
 					}
-					resp, err := batcher.Assign(ctx, req)
+					resp, err := batcher.TryAssign(ctx, req)
 					if err != nil {
 						panic(err)
 					}
 					assignements[i] = resp
-					wg.Done()
 				}(i)
 				// Also run nTasks task notifications concurrently.
 				go func(i int) {
+					defer wg.Done()
 					req := &swarming.NotifyTasksRequest{
 						Notifications: []*swarming.NotifyTasksItem{
 							{
@@ -142,14 +143,13 @@ func TestBatcherBehavior(t *testing.T) {
 							},
 						},
 					}
-					resp, err := batcher.Notify(ctx, req)
+					resp, err := batcher.TryNotify(ctx, req)
 					if err != nil {
 						panic(err)
 					}
 					if resp == nil {
 						panic("unexpectedly nil response")
 					}
-					wg.Done()
 				}(i)
 			}
 			batcher.TBatchWait(2 * nTasks)

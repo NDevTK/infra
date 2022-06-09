@@ -19,7 +19,6 @@ import (
 	"math/rand"
 	"sync"
 
-	"golang.org/x/sync/semaphore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -40,19 +39,12 @@ type BatchedQSchedulerServer struct {
 
 	// batchersLock governs access to batchers.
 	batchersLock sync.RWMutex
-
-	// The maximum number of assignTasks RPCs which can operate at once.
-	//
-	// Incoming AssignTasks RPCs which exceed this limit will fast fail with
-	// codes.ResourceExhausted.
-	assignTasksConcurrency *semaphore.Weighted
 }
 
 // NewBatchedServer initializes a new BatchedQSchedulerServer
-func NewBatchedServer(assignTasksConcurrency int64) *BatchedQSchedulerServer {
+func NewBatchedServer() *BatchedQSchedulerServer {
 	return &BatchedQSchedulerServer{
-		batchers:               make(map[string]*state.BatchRunner),
-		assignTasksConcurrency: semaphore.NewWeighted(assignTasksConcurrency),
+		batchers: make(map[string]*state.BatchRunner),
 	}
 }
 
@@ -92,11 +84,6 @@ func (s *BatchedQSchedulerServer) getBatcher(schedulerID string) (*state.BatchRu
 
 // AssignTasks implements QSchedulerServer.
 func (s *BatchedQSchedulerServer) AssignTasks(ctx context.Context, r *swarming.AssignTasksRequest) (resp *swarming.AssignTasksResponse, err error) {
-	if !s.assignTasksConcurrency.TryAcquire(1) {
-		return nil, status.Errorf(codes.ResourceExhausted, "AssignTasks hit concurrency limit.")
-	}
-	defer s.assignTasksConcurrency.Release(1)
-
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
@@ -104,17 +91,9 @@ func (s *BatchedQSchedulerServer) AssignTasks(ctx context.Context, r *swarming.A
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
-	dur := getHandlerTimeout(ctx)
-	var cancel context.CancelFunc
-	if dur != 0 {
-		ctx, cancel = context.WithTimeout(ctx, dur)
-		defer cancel()
-	}
-
 	batcher := s.getOrCreateBatcher(r.SchedulerId)
-	resp, err = batcher.TryAssign(ctx, r)
-	if err == state.ErrTryAssignFull {
-		err = status.Errorf(codes.Unavailable, "AssignTasks batch is full")
+	if resp, err = batcher.TryAssign(ctx, r); err == state.ErrBatchFull {
+		err = status.Errorf(codes.Unavailable, "AssignTasks: %s", err)
 	}
 	return
 }
@@ -151,15 +130,11 @@ func (s *BatchedQSchedulerServer) NotifyTasks(ctx context.Context, r *swarming.N
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
-	dur := getHandlerTimeout(ctx)
-	var cancel context.CancelFunc
-	if dur != 0 {
-		ctx, cancel = context.WithTimeout(ctx, dur)
-		defer cancel()
-	}
-
 	batcher := s.getOrCreateBatcher(r.SchedulerId)
-	return batcher.Notify(ctx, r)
+	if resp, err = batcher.TryNotify(ctx, r); err == state.ErrBatchFull {
+		err = status.Errorf(codes.Unavailable, "NotifyTasks: %s", err)
+	}
+	return
 }
 
 // GetCallbacks implements QSchedulerServer.

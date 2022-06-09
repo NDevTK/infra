@@ -30,7 +30,7 @@ import (
 )
 
 func TestAssignTasks(t *testing.T) {
-	sch := frontend.NewBatchedServer(1)
+	sch := frontend.NewBatchedServer()
 
 	Convey("Given a batched qscheduler server", t, func() {
 

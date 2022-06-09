@@ -41,9 +41,9 @@ message Auth {
 
 // QuotaScheduler contains configuration information for the QuotaScheduler app.
 message QuotaScheduler {
-  // If specified (non-zero), this internal timeout is applied to all Notify and
-  // Assign requests served by the app.
-  google.protobuf.Duration handler_timeout = 1;
+  // handler timeout is controlled via luci/server -default-request-timeout
+  reserved "handler_timeout";
+  reserved 1;
 
   // If specified, the amount of time that a batch waits to collect requests
   // before executing.
