@@ -30,12 +30,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/limiter"
 	"go.chromium.org/luci/server/module"
 )
 
 func main() {
 	modules := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
+		limiter.NewModuleFromFlags(),
 	}
 
 	cfgLoader := config.Loader{}
