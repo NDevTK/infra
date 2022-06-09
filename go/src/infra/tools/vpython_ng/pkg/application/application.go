@@ -46,7 +46,7 @@ const (
 
 	// DefaultSpecENV is an environment variable that, if set, will be used as the
 	// default VirtualEnv spec file if none is provided or found through probing.
-	// DefaultSpecENV = "VPYTHON_DEFAULT_SPEC"
+	DefaultSpecENV = "VPYTHON_DEFAULT_SPEC"
 
 	// LogTraceENV is an environment variable that, if set, will set the default
 	// log level to Debug.
@@ -82,6 +82,9 @@ type Application struct {
 
 	// Path to environment specification file to load. Default probes for one.
 	SpecPath string
+
+	// Path to default specification file to load if no specification is found.
+	DefaultSpecPath string
 
 	// Path to virtual environment root directory.
 	// If explicitly set to empty string, a temporary directory will be used and
@@ -147,6 +150,9 @@ func (a *Application) ParseEnvs() (err error) {
 		a.VpythonRoot = filepath.Join(hdir, ".vpython-ng-root")
 	}
 
+	// Get default spec path
+	a.DefaultSpecPath = e.GetEmpty(DefaultSpecENV)
+
 	// Check if it's in bypass mode
 	if e.GetEmpty(BypassENV) == BypassSentinel {
 		a.Bypass = true
@@ -202,6 +208,12 @@ func (a *Application) LoadSpec() error {
 		},
 		CommandLine: a.PythonCommandLine,
 		WorkDir:     a.WorkDir,
+	}
+
+	if a.DefaultSpecPath != "" {
+		if err := spec.Load(a.DefaultSpecPath, &opts.DefaultSpec); err != nil {
+			return errors.Annotate(err, "failed to load default spec: %#v", a.DefaultSpecPath).Err()
+		}
 	}
 
 	if opts.WorkDir == "" {
@@ -306,7 +318,7 @@ func (a *Application) ExecutePython() error {
 	}
 
 	env := environ.New(a.Environments)
-	python.IsolateEnvironment(&env, false)
+	python.IsolateEnvironment(&env, true)
 
 	// TODO: Pass exec.Cmd instead. exec.Cmd should includes enough information
 	// for execution.

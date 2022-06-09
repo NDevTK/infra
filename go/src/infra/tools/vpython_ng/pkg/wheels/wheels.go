@@ -24,11 +24,11 @@ import (
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/spec"
 	"go.chromium.org/luci/vpython/wheel"
-	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error) {
-	raw, err := prototext.Marshal(spec)
+	raw, err := protojson.Marshal(spec)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to marshal vpython spec").Err()
 	}
@@ -52,7 +52,7 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 
 	// Parse spec file
 	var s vpython.Spec
-	if err := prototext.Unmarshal([]byte(cmd.Args[2]), &s); err != nil {
+	if err := protojson.Unmarshal([]byte(cmd.Args[2]), &s); err != nil {
 		return err
 	}
 
