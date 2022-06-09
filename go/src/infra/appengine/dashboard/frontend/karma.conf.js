@@ -63,17 +63,6 @@ module.exports = function(config) {
       devtool: 'inline-source-map',
       mode: 'development',
       resolve: {modules: ['node_modules', 'elements']},
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            loader: 'istanbul-instrumenter-loader',
-            include: path.resolve('elements/'),
-            exclude: [/\.test.js$/],
-            query: {esModules: true},
-          },
-        ],
-      },
     },
 
     // test results reporter to use
