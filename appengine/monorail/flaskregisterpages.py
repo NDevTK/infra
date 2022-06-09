@@ -32,6 +32,7 @@ from project import project_constants
 from project import redirects
 from services import cachemanager_svc
 from services import client_config_svc
+from sitewide import custom_404
 from sitewide import hostinghome
 from sitewide import moved
 from sitewide import userclearbouncing
@@ -241,6 +242,11 @@ class ServletRegistry(object):
   def RegisterProjectUrls(self, service):
     flaskapp_project = flask.Flask(__name__)
     _PROJECT_URLS = [
+        # (
+        #     '/<string:project_name>/<string:unrecognized>',
+        #     custom_404.ErrorPage(services=service).Get404Page,
+        #     ['GET'],
+        # ),
         # (
         #     '/<string:project_name>/adminComponents',
         #     issueadmin.AdminComponents(
@@ -476,6 +482,13 @@ class ServletRegistry(object):
     @flaskapp_project.route('/')
     def ProjectRedirectToMainPage():
       url = flask.request.host_url
+      return flask.redirect(url)
+
+    # pylint: disable=unused-variable
+    @flaskapp_project.route('/<string:project_name>/people/')
+    def ProjectRedirectToPeopleList(project_name):
+      host_url = flask.request.host_url
+      url = host_url + 'p/' + project_name + '/people/list'
       return flask.redirect(url)
 
     return flaskapp_project

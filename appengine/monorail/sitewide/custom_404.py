@@ -17,6 +17,7 @@ from __future__ import absolute_import
 
 from six.moves import http_client
 from framework import exceptions
+from framework import flaskservlet
 from framework import servlet
 
 
@@ -39,3 +40,6 @@ class ErrorPage(servlet.Servlet):
     return {
         'http_response_code': http_client.NOT_FOUND,
     }
+
+  # def Get404Page(self, **kwargs):
+  #   return self.handler(**kwargs)
