@@ -16,6 +16,7 @@ from __future__ import absolute_import
 import logging
 
 import settings
+from framework import flaskservlet
 from framework import servlet
 from framework import framework_helpers
 from framework import permissions
@@ -59,6 +60,12 @@ class WebComponentsPage(servlet.Servlet):
        'local_id': mr.local_id,
        'old_ui_url': old_ui_url,
       }
+
+  # def GetWebComponentsIssueDetail(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def GetWebComponentsIssueList(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class ProjectListPage(WebComponentsPage):

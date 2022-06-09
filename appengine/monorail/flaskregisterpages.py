@@ -72,6 +72,7 @@ from tracker import issuebulkedit
 from tracker import issuedetailezt
 from tracker import issueentryafterlogin
 from tracker import issuetips
+from tracker import webcomponentspage
 
 
 class ServletRegistry(object):
@@ -341,6 +342,14 @@ class ServletRegistry(object):
         #     issueadvsearch.IssueAdvancedSearch(
         #         services=service).PostIssueAdvSearchPage, ['POST']),
         # (
+        #     '/<string:project_name>/issues/detail',
+        #     webcomponentspage.WebComponentsPage(
+        #         services=service).GetWebComponentsIssueDetail, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/list',
+        #     webcomponentspage.WebComponentsPage(
+        #         services=service).GetWebComponentsIssueList, ['GET']),
+        # (
         #     '/<string:project_name>/templates/create',
         #     templatecreate.TemplateCreate(
         #         services=service).GetTemplateCreate, ['GET']),
@@ -438,8 +447,38 @@ class ServletRegistry(object):
         #     issuedetailezt.FlipperPrev(
         #         services=service).GetFlipperPrevRedirectPage, ['GET']),
     ]
-    return self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
+    flaskapp_project = self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
 
+    # pylint: disable=unused-variable
+    @flaskapp_project.route('/<string:project_name>/issues/approval')
+    @flaskapp_project.route('/<string:project_name>/issues/detail_ezt')
+    def ProjectRedirectToIssueDetail(project_name):
+      host_url = flask.request.host_url
+      url = host_url + 'p/' + project_name + '/issues/detail'
+      query_string = flask.request.query_string
+      if query_string:
+        url = '%s?%s' % (url, query_string)
+      return flask.redirect(url)
+
+    # pylint: disable=unused-variable
+    @flaskapp_project.route('/<string:project_name>/issues/list_new')
+    @flaskapp_project.route('/<string:project_name>/')
+    @flaskapp_project.route('/<string:project_name>/issues/')
+    def ProjectRedirectToIssueList(project_name):
+      host_url = flask.request.host_url
+      url = host_url + 'p/' + project_name + '/issues/list'
+      query_string = flask.request.query_string
+      if query_string:
+        url = '%s?%s' % (url, query_string)
+      return flask.redirect(url)
+
+    # pylint: disable=unused-variable
+    @flaskapp_project.route('/')
+    def ProjectRedirectToMainPage():
+      url = flask.request.host_url
+      return flask.redirect(url)
+
+    return flaskapp_project
 
   def RegisterUserUrls(self, service):
     flaskapp_user = flask.Flask(__name__)
