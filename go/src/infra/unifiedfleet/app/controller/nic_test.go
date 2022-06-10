@@ -382,8 +382,9 @@ func TestUpdateNic(t *testing.T) {
 					PortName: "25",
 				},
 			}
-			_, err := registration.CreateNic(ctx, nic)
+			resp, err := registration.CreateNic(ctx, nic)
 			So(err, ShouldBeNil)
+			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_UNSPECIFIED)
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-7",
@@ -391,14 +392,47 @@ func TestUpdateNic(t *testing.T) {
 				SwitchInterface: &ufspb.SwitchInterface{
 					PortName: "75",
 				},
+				ResourceState: ufspb.State_STATE_NEEDS_REPAIR,
 			}
-			resp, err := UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress"}})
+			resp, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress", "resourceState"}})
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetMachine(), ShouldResemble, "machine-7.1")
 			So(resp.GetSwitchInterface().GetSwitch(), ShouldResemble, "switch-7")
 			So(resp.GetSwitchInterface().GetPortName(), ShouldEqual, "75")
 			So(resp.GetMacAddress(), ShouldResemble, "efgh")
+			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_NEEDS_REPAIR)
+		})
+
+		Convey("Partial update - nic state", func() {
+			machine1 := &ufspb.Machine{
+				Name: "machine-7.2",
+			}
+			registration.CreateMachine(ctx, machine1)
+
+			nic := &ufspb.Nic{
+				Name:    "nic-7.2",
+				Machine: "machine-7.2",
+				SwitchInterface: &ufspb.SwitchInterface{
+					PortName: "25",
+				},
+			}
+			resp, err := registration.CreateNic(ctx, nic)
+			So(err, ShouldBeNil)
+			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_UNSPECIFIED)
+
+			nic1 := &ufspb.Nic{
+				Name:          "nic-7.2",
+				ResourceState: ufspb.State_STATE_NEEDS_REPAIR,
+				SwitchInterface: &ufspb.SwitchInterface{
+					PortName: "25",
+				},
+			}
+			resp, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress", "resourceState"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetMachine(), ShouldResemble, "machine-7.2")
+			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_NEEDS_REPAIR)
 		})
 
 		Convey("Partial Update nic mac address and machine(same realm) - succeed", func() {

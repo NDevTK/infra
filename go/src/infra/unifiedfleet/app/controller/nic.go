@@ -232,6 +232,8 @@ func processNicUpdateMask(ctx context.Context, oldNic *ufspb.Nic, nic *ufspb.Nic
 			}
 		case "tags":
 			oldNic.Tags = mergeTags(oldNic.GetTags(), nic.GetTags())
+		case "resourceState":
+			oldNic.ResourceState = nic.GetResourceState()
 		}
 	}
 	// For partial update, validate switch interface just before updating in case
@@ -478,6 +480,8 @@ func validateNicUpdateMask(ctx context.Context, nic *ufspb.Nic, mask *field_mask
 					return err
 				}
 			case "tags":
+				// valid fields, nothing to validate.
+			case "resourceState":
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateNicUpdateMask - unsupported update mask path %q", path)

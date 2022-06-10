@@ -40,6 +40,7 @@ var UpdateNicCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.machineName, "machine", "", "name of the machine to associate the nic")
 		c.Flags.StringVar(&c.nicName, "name", "", "the name of the nic to update")
 		c.Flags.StringVar(&c.macAddress, "mac", "", "the mac address of the nic to add."+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this nic is connected to. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.switchPort, "switch-port", "", "the port of the switch that this nic is connected to. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
@@ -59,6 +60,7 @@ type updateNic struct {
 	machineName string
 	nicName     string
 	macAddress  string
+	state       string
 	switchName  string
 	switchPort  string
 	tags        []string
@@ -122,6 +124,7 @@ func (c *updateNic) innerRun(a subcommands.Application, args []string, env subco
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
 			"machine":     "machine",
 			"mac":         "macAddress",
+			"state":       "resourceState",
 			"switch":      "switch",
 			"switch-port": "portName",
 			"tag":         "tags",
@@ -144,6 +147,7 @@ func (c *updateNic) parseArgs(nic *ufspb.Nic) {
 	} else {
 		nic.MacAddress = c.macAddress
 	}
+	nic.ResourceState = ufsUtil.ToUFSState(c.state)
 	nic.SwitchInterface = &ufspb.SwitchInterface{}
 	nic.Machine = c.machineName
 	if c.switchName == utils.ClearFieldValue {
@@ -186,13 +190,19 @@ func (c *updateNic) validateArgs() error {
 		if c.machineName != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-machine' cannot be specified at the same time.")
 		}
+		if c.state != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-state' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {
 		if c.nicName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f' or '-i') is specified.")
 		}
-		if c.machineName == "" && c.switchName == "" && c.switchPort == "" && c.macAddress == "" && len(c.tags) == 0 {
+		if c.machineName == "" && c.switchName == "" && c.switchPort == "" && c.macAddress == "" && len(c.tags) == 0 && c.state == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
+		}
+		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
 		}
 	}
 	return nil
