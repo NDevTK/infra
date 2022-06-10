@@ -42,7 +42,6 @@ var UpdateDracCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.ip, "ip", "", "the ip to assign the drac to")
 
 		c.Flags.StringVar(&c.machineName, "machine", "", "name of the machine to update the association of the drac to a different machine")
-		c.Flags.StringVar(&c.displayName, "display-name", "", "the display name of the drac")
 		c.Flags.StringVar(&c.dracName, "name", "", "name of the drac to update")
 		c.Flags.StringVar(&c.macAddress, "mac", "", "the mac address of the drac to add."+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this drac is connected to. "+cmdhelp.ClearFieldHelpText)
@@ -63,7 +62,6 @@ type updateDrac struct {
 	commonFlags  site.CommonFlags
 
 	machineName string
-	displayName string
 	dracName    string
 	macAddress  string
 	switchName  string
@@ -136,13 +134,12 @@ func (c *updateDrac) innerRun(a subcommands.Application, args []string, env subc
 			Ip:     c.ip,
 		},
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"machine":      "machine",
-			"display-name": "displayName",
-			"mac":          "macAddress",
-			"switch":       "switch",
-			"switch-port":  "portName",
-			"tag":          "tags",
-			"state":        "resourceState",
+			"machine":     "machine",
+			"mac":         "macAddress",
+			"switch":      "switch",
+			"switch-port": "portName",
+			"tag":         "tags",
+			"state":       "resourceState",
 		}),
 	})
 	if err != nil {
@@ -201,9 +198,6 @@ func (c *updateDrac) validateArgs() error {
 		if c.dracName != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-name' cannot be specified at the same time.")
 		}
-		if c.displayName != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-display-name' cannot be specified at the same time.")
-		}
 		if c.switchName != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-switch' cannot be specified at the same time.")
 		}
@@ -227,7 +221,7 @@ func (c *updateDrac) validateArgs() error {
 		if c.dracName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f' or '-i') is specified.")
 		}
-		if c.vlanName == "" && !c.deleteVlan && c.ip == "" && c.displayName == "" &&
+		if c.vlanName == "" && !c.deleteVlan && c.ip == "" &&
 			c.machineName == "" && c.switchName == "" && c.switchPort == "" &&
 			c.macAddress == "" && len(c.tags) == 0 && c.state == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
