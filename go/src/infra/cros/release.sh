@@ -48,13 +48,47 @@ cipd_version_to_githash() {
     jq -r '.result.tags|map(.tag|select(startswith("git_revision:")))[0]|sub(".*:";"")'
 }
 
+# Get the paths of directories associated with the relevant packages.
+get_affected_paths() {
+  paths=()
+  for package in "${packages[@]}"
+  do
+    if [ "$package" = "$recipes_bundle" ]; then
+      continue
+    fi
+    pkg_name=$(echo "${package}" | awk '{split($0,a,"/"); print a[3]}')
+
+    # We want to parse everything under the `go_packages:` header.
+    IFS=$'\n'
+    pkg_def=($(cat ${cros_golang_root}/../../../../build/packages/$pkg_name.yaml))
+    unset IFS
+    found_go_packages_section=0
+    for line in "${pkg_def[@]}"
+    do
+      if [ "$line" = "go_packages:" ]; then
+        found_go_packages_section=1
+      elif [ $found_go_packages_section -eq 1 ]; then
+        if [ "${line:0:3}" != "  -" ]; then
+          # On to the next section.
+          break
+        else
+          # Parse the package location, make it an absolute path, and append
+          # to path list.
+          paths+=("${cros_golang_root}/../$(echo $line | sed 's#- infra/##g')")
+        fi
+      fi
+    done
+  done
+  echo "${paths[@]}"
+}
+
 # Print CrOS golang commits pending release to production.
 cros_golang_pending() {
   log_fmt="%C(bold blue)%h %C(bold green)[%al]%C(auto)%d %C(reset)%s"
   cmd=(git -C "${cros_golang_root}" log --color --graph --decorate \
       --pretty=format:"${log_fmt}" "${latest_prod_sha}".."${earliest_staging_sha}")
   if  [[ "$verbose" == "no" ]]; then
-    cmd+=(-- "${cros_golang_root}")
+    cmd+=(-- "${cros_golang_root}/internal" "$(get_affected_paths)")
   else
     cmd+=(-- "${cros_golang_root}"/../../..)
   fi
@@ -179,7 +213,7 @@ uprev_build=$(echo $output | head -n1 | awk '{printf $1}')
 packages=$(grep package_name <<< $output | awk '{printf "%s\n", substr($NF, 2, length($NF)-3)}')
 
 email_subject="ChromeOS ${which_golang} Golang Release - $(TZ='America/Los_Angeles' date)"
-email_message="We've yeeted ${which_golang} Golang to prod!
+email_message="We've released ${which_golang} Golang to prod!
 
 Uprev build: ${uprev_build}
 
