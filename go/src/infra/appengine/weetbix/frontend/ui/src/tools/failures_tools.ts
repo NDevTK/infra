@@ -152,23 +152,20 @@ export const rejectedTestRunIdsExtractor = (impactFilter: ImpactFilter): Feature
   };
 };
 
-// Returns whether the failure was only exonerated because it occurs on other
-// CLs or on mainline. These are exoneration types that appear only in CQ.
-const isOnlyExoneratedByOccuranceElsewhere = (exonerations: Exoneration[] | null): boolean => {
+// Returns whether the failure was exonerated for a reason other than it occurred
+// on other CLs or on mainline.
+const isExoneratedByNonWeetbix = (exonerations: Exoneration[] | null): boolean => {
   if (exonerations == null) {
     return false;
   }
-  let hasOccursElsewhereExoneration = false;
   let hasOtherExoneration = false;
   for (let i = 0; i < exonerations.length; i++) {
-    if (exonerations[i].reason == 'OCCURS_ON_MAINLINE' ||
-          exonerations[i].reason == 'OCCURS_ON_OTHER_CLS') {
-      hasOccursElsewhereExoneration = true;
-    } else {
+    if (exonerations[i].reason != 'OCCURS_ON_MAINLINE' &&
+          exonerations[i].reason != 'OCCURS_ON_OTHER_CLS') {
       hasOtherExoneration = true;
     }
   }
-  return hasOccursElsewhereExoneration && !hasOtherExoneration;
+  return hasOtherExoneration;
 };
 
 // Returns an extractor that returns the id of the ingested invocation that was rejected by this failure, if any.
@@ -176,12 +173,18 @@ const isOnlyExoneratedByOccuranceElsewhere = (exonerations: Exoneration[] | null
 export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
   return (failure) => {
     const values: Set<string> = new Set();
-    if (isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
+    // If neither Weetbix nor all exoneration is ignored, we want actual impact.
+    // This requires exclusion of all exonerated test results, as well as
+    // test results from builds which passed (which implies the test results
+    // could not have caused the presubmit run to fail).
+    if (((failure.exonerations != null && failure.exonerations.length > 0) || failure.buildStatus != 'FAILURE') &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
       return values;
     }
-    if (failure.exonerations != null && failure.exonerations.length > 0 &&
-        !isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
+    // If not all exoneration is ignored, it means we want actual or without weetbix impact.
+    // All exonerations not made by weetbix should be applied, those made by Weetbix should not
+    // be applied (or will have already been applied).
+    if (isExoneratedByNonWeetbix(failure.exonerations) &&
         !impactFilter.ignoreAllExoneration) {
       return values;
     }
@@ -203,12 +206,17 @@ export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilte
 export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
   return (failure) => {
     const values: Set<string> = new Set();
-    if (isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
+    // If neither Weetbix nor all exoneration is ignored, we want actual impact.
+    // This requires exclusion of all exonerated test results, as well as
+    // test results from builds which passed (which implies the test results
+    // could not have caused the presubmit run to fail).
+    if (((failure.exonerations != null && failure.exonerations.length > 0) || failure.buildStatus != 'FAILURE') &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
       return values;
     }
-    if (failure.exonerations != null && failure.exonerations.length > 0 &&
-        !isOnlyExoneratedByOccuranceElsewhere(failure.exonerations) &&
+    // If not all exoneration is ignored, it means we want actual or without weetbix impact.
+    // All test results exonerated, but not exonerated by weetbix should be ignored.
+    if (isExoneratedByNonWeetbix(failure.exonerations) &&
         !impactFilter.ignoreAllExoneration) {
       return values;
     }
@@ -218,8 +226,9 @@ export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): Fe
     if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
       return values;
     }
-    if (failure.presubmitRunCl && failure.presubmitRunOwner == 'user' && failure.isPresubmitCritical) {
-      values.add(failure.presubmitRunCl.host + '/' + failure.presubmitRunCl.change.toFixed(0));
+    if (failure.changelist && failure.presubmitRunOwner == 'user' &&
+        failure.isBuildCritical && failure.presubmitRunMode == 'FULL_RUN') {
+      values.add(failure.changelist.host + '/' + failure.changelist.change.toFixed(0));
     }
     return values;
   };
@@ -379,13 +388,15 @@ export interface ClusterFailure {
     realm: string | null;
     testId: string | null;
     variant: Variant[];
-    presubmitRunCl: Changelist | null;
     presubmitRunId: PresubmitRunId | null;
     presubmitRunOwner: string | null;
+    presubmitRunMode: string | null;
+    changelist: Changelist | null;
     partitionTime: string | null;
     exonerations: Exoneration[] | null;
+    isBuildCritical: boolean | null;
+    buildStatus: string | null;
     ingestedInvocationId: string | null;
-    isPresubmitCritical: boolean | null;
     isIngestedInvocationBlocked: boolean | null;
     testRunIds: Array<string | null>;
     isTestRunBlocked: boolean | null;

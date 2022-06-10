@@ -59,6 +59,7 @@ const clusterSummariesAnalysis = `
 	  r.is_included,
 	  r.is_included_with_high_priority,
 	  (ARRAY_LENGTH(r.exonerations) > 0) as is_exonerated,
+	  r.build_status = 'FAILURE' as build_failed,
 	  (EXISTS
 		(SELECT TRUE FROM UNNEST(r.exonerations) e
 	     WHERE e.Reason <> 'OCCURS_ON_MAINLINE'
@@ -77,7 +78,6 @@ const clusterSummariesAnalysis = `
 		  CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
 		  NULL) as presubmit_run_user_cl_id,
 	  (r.is_ingested_invocation_blocked AND r.build_critical AND
-		r.build_status = 'FAILURE' AND
 		r.presubmit_run_mode = 'FULL_RUN') as is_presubmit_reject,
 	  r.is_test_run_blocked as is_test_run_fail,
 	FROM clustered_failures_latest
@@ -88,10 +88,10 @@ const clusterSummariesAnalysis = `
 	  cluster_id,
 
 	  -- 1 day metrics.
-	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND NOT is_exonerated, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_1d,
+	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_1d,
 	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_weetbix_1d,
 	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_exon_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_1d,
+	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_1d,
 	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_weetbix_1d,
 	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_exon_1d,
 	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_1d,
@@ -108,10 +108,10 @@ const clusterSummariesAnalysis = `
 	  COUNTIF(is_1d AND is_included_with_high_priority) as failures_residual_pre_exon_1d,
 
 	  -- 3 day metrics.
-	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND NOT is_exonerated, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_3d,
+	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_weetbix_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_exon_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_3d,
+	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_weetbix_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_exon_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_3d,
@@ -128,10 +128,10 @@ const clusterSummariesAnalysis = `
 	  COUNTIF(is_3d AND is_included_with_high_priority) as failures_residual_pre_exon_3d,
 
 	  -- 7 day metrics.
-	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND NOT is_exonerated, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_7d,
+	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_weetbix_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_exon_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_7d,
+	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_weetbix_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_exon_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_7d,

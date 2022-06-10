@@ -205,9 +205,9 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		return nil, errors.Annotate(err, "getting dataset").Err()
 	}
 
-	whereFailures, failuresParams := whereThresholdsExceeded("failures", opts.Thresholds.TestResultsFailed)
-	whereTestRuns, testRunsParams := whereThresholdsExceeded("test_run_fails", opts.Thresholds.TestRunsFailed)
-	wherePresubmits, presubmitParams := whereThresholdsExceeded("presubmit_rejects", opts.Thresholds.PresubmitRunsFailed)
+	whereFailures, failuresParams := whereThresholdsMet("failures", opts.Thresholds.TestResultsFailed)
+	whereTestRuns, testRunsParams := whereThresholdsMet("test_run_fails", opts.Thresholds.TestRunsFailed)
+	wherePresubmits, presubmitParams := whereThresholdsMet("presubmit_rejects", opts.Thresholds.PresubmitRunsFailed)
 
 	q := c.client.Query(`
 		SELECT
@@ -328,15 +328,15 @@ func selectCounts(sqlPrefix, fieldPrefix, suffix string) string {
 		`) AS ` + fieldPrefix + suffix + `,`
 }
 
-// whereThresholdsExceeded generates a SQL Where clause to query
-// where a particular metric exceeds a given threshold.
-func whereThresholdsExceeded(sqlPrefix string, threshold *configpb.MetricThreshold) (string, []bigquery.QueryParameter) {
+// whereThresholdsMet generates a SQL Where clause to query
+// where a particular metric meets a given threshold.
+func whereThresholdsMet(sqlPrefix string, threshold *configpb.MetricThreshold) (string, []bigquery.QueryParameter) {
 	if threshold == nil {
 		threshold = &configpb.MetricThreshold{}
 	}
-	sql := sqlPrefix + "_residual_pre_weetbix_1d > @" + sqlPrefix + "_1d OR " +
-		sqlPrefix + "_residual_pre_weetbix_3d > @" + sqlPrefix + "_3d OR " +
-		sqlPrefix + "_residual_pre_weetbix_7d > @" + sqlPrefix + "_7d"
+	sql := sqlPrefix + "_residual_pre_weetbix_1d >= @" + sqlPrefix + "_1d OR " +
+		sqlPrefix + "_residual_pre_weetbix_3d >= @" + sqlPrefix + "_3d OR " +
+		sqlPrefix + "_residual_pre_weetbix_7d >= @" + sqlPrefix + "_7d"
 	parameters := []bigquery.QueryParameter{
 		{
 			Name:  sqlPrefix + "_1d",
@@ -416,11 +416,13 @@ type ClusterFailure struct {
 	Variant                     []*Variant             `json:"variant"`
 	PresubmitRunID              *PresubmitRunID        `json:"presubmitRunId"`
 	PresubmitRunOwner           bigquery.NullString    `json:"presubmitRunOwner"`
-	PresubmitRunCl              *Changelist            `json:"presubmitRunCl"`
+	PresubmitRunMode            bigquery.NullString    `json:"presubmitRunMode"`
+	Changelist                  *Changelist            `json:"changelist"`
 	PartitionTime               bigquery.NullTimestamp `json:"partitionTime"`
 	Exonerations                []*Exoneration         `json:"exonerations"`
+	BuildStatus                 bigquery.NullString    `json:"buildStatus"`
+	IsBuildCritical             bigquery.NullBool      `json:"isBuildCritical"`
 	IngestedInvocationID        bigquery.NullString    `json:"ingestedInvocationId"`
-	IsPresubmitCritical         bigquery.NullBool      `json:"isPresubmitCritical"`
 	IsIngestedInvocationBlocked bigquery.NullBool      `json:"isIngestedInvocationBlocked"`
 	TestRunIds                  []bigquery.NullString  `json:"testRunIds"`
 	IsTestRunBlocked            bigquery.NullBool      `json:"isTestRunBlocked"`
@@ -475,15 +477,15 @@ func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, cl
 			ANY_VALUE(r.variant) as Variant,
 			ANY_VALUE(r.presubmit_run_id) as PresubmitRunID,
 			ANY_VALUE(r.presubmit_run_owner) as PresubmitRunOwner,
+			ANY_VALUE(r.presubmit_run_mode) as PresubmitRunMode,
 			ANY_VALUE(IF(ARRAY_LENGTH(r.changelists)>0,
-				r.changelists[OFFSET(0)], NULL)) as PresubmitRunCL,
+				r.changelists[OFFSET(0)], NULL)) as Changelist,
 			r.partition_time as PartitionTime,
 			ANY_VALUE(r.exonerations) as Exonerations,
+			ANY_VALUE(r.build_status) as BuildStatus,
+			ANY_VALUE(r.build_critical) as IsBuildCritical,
 			r.ingested_invocation_id as IngestedInvocationID,
 			ANY_VALUE(r.is_ingested_invocation_blocked) as IsIngestedInvocationBlocked,
-			ANY_VALUE(r.build_critical AND
-				r.build_status = 'BUILD_STATUS_FAILURE' AND
-				r.presubmit_run_mode = 'FULL_RUN') as is_presubmit_critical,
 			ARRAY_AGG(DISTINCT r.test_run_id) as TestRunIds,
 			-- TODO: This is broken, is_test_run_blocked is not the same value for
 			-- every ingested_invocation_id as it is unique per test run per

@@ -724,21 +724,21 @@ func (f *fakeAnalysisClient) ReadImpactfulClusters(ctx context.Context, opts ana
 		include := opts.AlwaysIncludeBugClusters && c.ClusterID.IsBugCluster()
 		if opts.Thresholds.TestResultsFailed != nil {
 			include = include ||
-				exceedsThreshold(c.Failures1d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.OneDay) ||
-				exceedsThreshold(c.Failures3d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.ThreeDay) ||
-				exceedsThreshold(c.Failures7d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.SevenDay)
+				meetsThreshold(c.Failures1d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.OneDay) ||
+				meetsThreshold(c.Failures3d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.ThreeDay) ||
+				meetsThreshold(c.Failures7d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.SevenDay)
 		}
 		if opts.Thresholds.TestRunsFailed != nil {
 			include = include ||
-				exceedsThreshold(c.TestRunFails1d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.OneDay) ||
-				exceedsThreshold(c.TestRunFails3d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.ThreeDay) ||
-				exceedsThreshold(c.TestRunFails7d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.SevenDay)
+				meetsThreshold(c.TestRunFails1d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.OneDay) ||
+				meetsThreshold(c.TestRunFails3d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.ThreeDay) ||
+				meetsThreshold(c.TestRunFails7d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.SevenDay)
 		}
 		if opts.Thresholds.PresubmitRunsFailed != nil {
 			include = include ||
-				exceedsThreshold(c.PresubmitRejects1d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.OneDay) ||
-				exceedsThreshold(c.PresubmitRejects3d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.ThreeDay) ||
-				exceedsThreshold(c.PresubmitRejects7d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.SevenDay)
+				meetsThreshold(c.PresubmitRejects1d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.OneDay) ||
+				meetsThreshold(c.PresubmitRejects3d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.ThreeDay) ||
+				meetsThreshold(c.PresubmitRejects7d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.SevenDay)
 		}
 		if include {
 			results = append(results, c)
@@ -747,7 +747,7 @@ func (f *fakeAnalysisClient) ReadImpactfulClusters(ctx context.Context, opts ana
 	return results, nil
 }
 
-func exceedsThreshold(value int64, threshold *int64) bool {
+func meetsThreshold(value int64, threshold *int64) bool {
 	// threshold == nil is treated as an unsatisfiable threshold.
 	return threshold != nil && value >= *threshold
 }

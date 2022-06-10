@@ -31,27 +31,15 @@ describe.each<ExtractorTestCase>([{
   shouldExtractIngestedInvocationId: false,
   shouldExtractPresubmitRunId: false,
 }, {
-  failure: newMockFailure().testRunBlocked().build(),
+  failure: newMockFailure().exonerateNotCritical().build(),
   filter: 'Actual Impact',
-  shouldExtractTestRunId: true,
+  shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
   shouldExtractPresubmitRunId: false,
 }, {
-  failure: newMockFailure().ingestedInvocationBlocked().build(),
+  failure: newMockFailure().testRunBlocked().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
-  shouldExtractIngestedInvocationId: true,
-  shouldExtractPresubmitRunId: true,
-}, {
-  failure: newMockFailure().ingestedInvocationBlocked().notPresubmitCritical().build(),
-  filter: 'Actual Impact',
-  shouldExtractTestRunId: true,
-  shouldExtractIngestedInvocationId: true,
-  shouldExtractPresubmitRunId: false,
-}, {
-  failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
-  filter: 'Actual Impact',
-  shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
   shouldExtractPresubmitRunId: false,
 }, {
@@ -61,27 +49,51 @@ describe.each<ExtractorTestCase>([{
   shouldExtractIngestedInvocationId: false,
   shouldExtractPresubmitRunId: false,
 }, {
-  failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().build(),
-  filter: 'Actual Impact',
-  shouldExtractTestRunId: true,
-  shouldExtractIngestedInvocationId: false,
-  shouldExtractPresubmitRunId: false,
-}, {
-  failure: newMockFailure().exonerateNotCritical().build(),
-  filter: 'Actual Impact',
-  shouldExtractTestRunId: false,
-  shouldExtractIngestedInvocationId: false,
-  shouldExtractPresubmitRunId: false,
-}, {
   failure: newMockFailure().testRunBlocked().exonerateNotCritical().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: false,
   shouldExtractPresubmitRunId: false,
 }, {
-  failure: newMockFailure().ingestedInvocationBlocked().exonerateNotCritical().build(),
+  failure: newMockFailure().ingestedInvocationBlocked().build(),
   filter: 'Actual Impact',
   shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().buildFailed().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: true,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().buildFailed().notPresubmitCritical().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().buildFailed().dryRun().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().buildFailed().exonerateOccursOnOtherCLs().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().buildFailed().exonerateNotCritical().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: false,
+  shouldExtractPresubmitRunId: false,
+}, {
+  failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
+  filter: 'Actual Impact',
+  shouldExtractTestRunId: false,
   shouldExtractIngestedInvocationId: false,
   shouldExtractPresubmitRunId: false,
 }, {
@@ -103,6 +115,12 @@ describe.each<ExtractorTestCase>([{
   shouldExtractIngestedInvocationId: true,
   shouldExtractPresubmitRunId: false,
 }, {
+  failure: newMockFailure().ingestedInvocationBlocked().dryRun().build(),
+  filter: 'Without Weetbix Exoneration',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
+}, {
   failure: newMockFailure().exonerateOccursOnOtherCLs().build(),
   filter: 'Without Weetbix Exoneration',
   shouldExtractTestRunId: false,
@@ -158,6 +176,12 @@ describe.each<ExtractorTestCase>([{
   shouldExtractPresubmitRunId: true,
 }, {
   failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().notPresubmitCritical().build(),
+  filter: 'Without All Exoneration',
+  shouldExtractTestRunId: true,
+  shouldExtractIngestedInvocationId: true,
+  shouldExtractPresubmitRunId: false,
+}, {
+  failure: newMockFailure().ingestedInvocationBlocked().exonerateOccursOnOtherCLs().dryRun().build(),
   filter: 'Without All Exoneration',
   shouldExtractTestRunId: true,
   shouldExtractIngestedInvocationId: true,

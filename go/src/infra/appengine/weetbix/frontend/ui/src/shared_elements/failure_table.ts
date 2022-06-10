@@ -159,7 +159,7 @@ export class FailureTable extends LitElement {
                 ${group.failure ?
         html`<td style=${indentStyle(group.level)}>
                         <a href=${failureLink(group.failure)} target="_blank">${group.failure.ingestedInvocationId}</a>
-                        ${group.failure.presubmitRunCl ? html`(<a href=${clLink(group.failure.presubmitRunCl)}>${clName(group.failure.presubmitRunCl)}</a>)` : html``}
+                        ${group.failure.changelist ? html`(<a href=${clLink(group.failure.changelist)}>${clName(group.failure.changelist)}</a>)` : html``}
                         <span class="variant-info">${ungroupedVariants(group.failure).map(v => `${v.key}: ${v.value}`).join(', ')}</span>
                     </td>` :
         html`<td class="group" style=${indentStyle(group.level)} @click=${() => this.toggleExpand(group)}>

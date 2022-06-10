@@ -19,13 +19,15 @@ class ClusterFailureBuilder {
       realm: 'testproject/testrealm',
       testId: 'ninja://dir/test.param',
       variant: [],
-      presubmitRunCl: { host: 'clproject-review.googlesource.com', change: 123456, patchset: 7 },
       presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
       presubmitRunOwner: 'user',
+      presubmitRunMode: 'FULL_RUN',
+      changelist: { host: 'clproject-review.googlesource.com', change: 123456, patchset: 7 },
       partitionTime: '2021-05-12T19:05:34',
       exonerations: null,
+      buildStatus: 'SUCCESS',
+      isBuildCritical: true,
       ingestedInvocationId: 'ingestedInvocationId',
-      isPresubmitCritical: true,
       isIngestedInvocationBlocked: false,
       testRunIds: ['testRunId'],
       isTestRunBlocked: false,
@@ -39,23 +41,31 @@ class ClusterFailureBuilder {
     this.failure.isTestRunBlocked = true;
     return this;
   }
-  notPresubmitCritical() {
-    this.failure.isPresubmitCritical = false;
-    return this;
-  }
   ingestedInvocationBlocked() {
     this.failure.isIngestedInvocationBlocked = true;
     this.failure.isTestRunBlocked = true;
     return this;
   }
+  notPresubmitCritical() {
+    this.failure.isBuildCritical = false;
+    return this;
+  }
+  buildFailed() {
+    this.failure.buildStatus = 'FAILURE';
+    return this;
+  }
+  dryRun() {
+    this.failure.presubmitRunMode = 'DRY_RUN';
+    return this;
+  }
   exonerateOccursOnOtherCLs() {
-    this.failure.exonerations = []
-    this.failure.exonerations.push({reason: 'OCCURS_ON_OTHER_CLS'})
+    this.failure.exonerations = [];
+    this.failure.exonerations.push({ reason: 'OCCURS_ON_OTHER_CLS' });
     return this;
   }
   exonerateNotCritical() {
-    this.failure.exonerations = []
-    this.failure.exonerations.push({reason: 'NOT_CRITICAL'})
+    this.failure.exonerations = [];
+    this.failure.exonerations.push({ reason: 'NOT_CRITICAL' });
     return this;
   }
   withVariantGroups(key: string, value: string) {
@@ -67,9 +77,10 @@ class ClusterFailureBuilder {
     return this;
   }
   withoutPresubmit() {
-    this.failure.presubmitRunCl = null;
+    this.failure.changelist = null;
     this.failure.presubmitRunId = null;
     this.failure.presubmitRunOwner = null;
+    this.failure.presubmitRunMode = null;
     return this;
   }
 }
