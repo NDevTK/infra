@@ -504,7 +504,8 @@ CREATE TABLE TestResults (
   ExonerationStatus INT64,
 
   -- The reasons (if any) the test verdict was exonerated.
-  -- If this array is empty, the test verdict was not exonerated.
+  -- If this array is null, the test verdict was not exonerated.
+  -- Empty array values are not used.
   -- This field is stored denormalised. It is guaranteed to be the same for
   -- all results for a test variant in an ingested invocation.
   ExonerationReasons ARRAY<INT64>,

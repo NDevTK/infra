@@ -306,6 +306,14 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 
 	isUnexpected := spanner.NullBool{Bool: tr.IsUnexpected, Valid: tr.IsUnexpected}
 
+	exonerationReasons := tr.ExonerationReasons
+	if len(exonerationReasons) == 0 {
+		// Store absence of exonerations as a NULL value in the database
+		// rather than an empty array. Backfilling the column is too
+		// time consuming and NULLs use slightly less storage space.
+		exonerationReasons = nil
+	}
+
 	// Specify values in a slice directly instead of
 	// creating a map and using spanner.InsertOrUpdateMap.
 	// Profiling revealed ~15% of all CPU cycles spent
@@ -317,7 +325,7 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 		tr.Project, tr.TestID, tr.PartitionTime, tr.VariantHash,
 		tr.IngestedInvocationID, tr.RunIndex, tr.ResultIndex,
 		isUnexpected, runDurationUsec, int64(tr.Status),
-		spanutil.ToSpanner(tr.ExonerationReasons), tr.SubRealm, int64(tr.BuildStatus),
+		spanutil.ToSpanner(exonerationReasons), tr.SubRealm, int64(tr.BuildStatus),
 		presubmitRunMode, presubmitRunOwner,
 		changelistHosts, changelistChanges, changelistPatchsets,
 	}
@@ -674,7 +682,7 @@ func ReadVariants(ctx context.Context, project, testID string, opts ReadVariants
 var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 	{{define "tvStatus"}}
 		CASE
-			WHEN ANY_VALUE(ARRAY_LENGTH(ExonerationReasons) > 0) THEN @exonerated
+			WHEN ANY_VALUE(ExonerationReasons IS NOT NULL AND ARRAY_LENGTH(ExonerationReasons) > 0) THEN @exonerated
 			-- Use COALESCE as IsUnexpected uses NULL to indicate false.
 			WHEN LOGICAL_AND(NOT COALESCE(IsUnexpected, FALSE)) THEN @expected
 			WHEN LOGICAL_AND(COALESCE(IsUnexpected, FALSE) AND Status = @skip) THEN @unexpectedlySkipped

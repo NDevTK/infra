@@ -65,6 +65,14 @@ func TestTypeConversion(t *testing.T) {
 			},
 			[]int64{int64(1), int64(3)},
 		)
+		test(
+			[]pb.ExonerationReason{},
+			[]int64{},
+		)
+		test(
+			[]pb.ExonerationReason(nil),
+			[]int64(nil),
+		)
 	})
 	Convey(`pb.TestResultStatus`, t, func() {
 		test(pb.TestResultStatus_PASS, int64(1))
