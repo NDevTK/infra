@@ -93,7 +93,7 @@ func (s *BatchedQSchedulerServer) AssignTasks(ctx context.Context, r *swarming.A
 
 	batcher := s.getOrCreateBatcher(r.SchedulerId)
 	if resp, err = batcher.TryAssign(ctx, r); err == state.ErrBatchFull {
-		err = status.Errorf(codes.Unavailable, "AssignTasks: %s", err)
+		err = status.Errorf(codes.ResourceExhausted, "AssignTasks: %s", err)
 	}
 	return
 }
@@ -132,7 +132,7 @@ func (s *BatchedQSchedulerServer) NotifyTasks(ctx context.Context, r *swarming.N
 
 	batcher := s.getOrCreateBatcher(r.SchedulerId)
 	if resp, err = batcher.TryNotify(ctx, r); err == state.ErrBatchFull {
-		err = status.Errorf(codes.Unavailable, "NotifyTasks: %s", err)
+		err = status.Errorf(codes.ResourceExhausted, "NotifyTasks: %s", err)
 	}
 	return
 }

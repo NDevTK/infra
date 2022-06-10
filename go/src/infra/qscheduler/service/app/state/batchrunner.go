@@ -33,6 +33,11 @@ import (
 	"infra/qscheduler/service/app/state/types"
 )
 
+const (
+	defaultConstructionWait = 300 * time.Millisecond
+	defaultInsertionWait    = 300 * time.Millisecond
+)
+
 // BatchRunner runs operations in batches.
 //
 // Requests within a batch are handled in a single read-modify-write
@@ -135,15 +140,22 @@ func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRe
 	}
 }
 
-// trySend attempts to include ba in a batch, until that succeeds, context
-// is cancelled, or waitToCollect duration elapses.
+// trySend attempts to include `bo` in a batch, until that succeeds, context
+// is cancelled, or RequestInsertionWait duration elapses.
 func (b *BatchRunner) trySend(ctx context.Context, bo batchable) error {
+	toWait := defaultInsertionWait
+
+	qsCfg := config.Get(ctx).GetQuotaScheduler()
+	if waitTime := qsCfg.GetRequestInsertionWait().AsDuration(); waitTime > 0 {
+		toWait = waitTime
+	}
+
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	case b.requests <- bo:
 		return nil
-	case <-time.After(waitToCollect(ctx)):
+	case <-time.After(toWait):
 		return ErrBatchFull
 	}
 }
@@ -238,8 +250,6 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 		}
 	}
 }
-
-const defaultConstructionWait = 300 * time.Millisecond
 
 func waitToCollect(ctx context.Context) time.Duration {
 	c := config.Get(ctx)
