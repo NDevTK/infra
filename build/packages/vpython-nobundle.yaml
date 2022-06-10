@@ -1,11 +1,15 @@
+# This file is for platforms where we do not have a cpython package to bundle.
 package: infra/tools/luci/vpython/${platform}
 description: vpython is a VirtualEnv Python bootstrap tool.
 platforms:
-  - linux-amd64
-  - linux-arm64
-  - linux-armv6l
-  - windows-386
-  - windows-amd64
+  - linux-386
+  - linux-mips64
+  - linux-mips64le
+  - linux-mipsle
+  - linux-ppc64
+  - linux-ppc64le
+  - linux-riscv64
+  - linux-s390x
 go_build_environ:
   CGO_ENABLED:
     linux:   0  # to avoid linking to system dynamic libraries
@@ -23,14 +27,7 @@ copies:
     platforms:
       - windows-386
       - windows-amd64
-cipd_export: |
-  @Subdir 2.7
-  infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.43
-  @Subdir 3.8
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.24
 data:
   - file: vpython${exe_suffix}
     generate_bat_shim: true
-  - dir: "2.7"
-  - dir: "3.8"
   - version_file: .versions/vpython${exe_suffix}.cipd_version
