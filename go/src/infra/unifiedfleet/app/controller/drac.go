@@ -509,8 +509,6 @@ func validateDracUpdateMask(ctx context.Context, drac *ufspb.Drac, mask *field_m
 				if drac.GetDisplayName() == "" {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - display name cannot be empty")
 				}
-			case "update_time":
-				return status.Error(codes.InvalidArgument, "validateDracUpdateMask - update_time cannot be updated, it is a Output only field")
 			case "switch":
 				fallthrough
 			case "portName":
