@@ -520,6 +520,20 @@ func servoRepairPlan() *Plan {
 					"Servod detect voltage issue",
 				},
 				ExecName: "sample_fail",
+				// The action failed when issue detected by conditions.
+				// That mean device is not enumerated and we cannot detect it.
+				// We need wake it up from DUT side.
+				RecoveryActions: []string{
+					"Stop servod",
+					"Toggle PD once and stop",
+					"Toggle PD (5 times) and stop",
+					"Try fake disconnect and stop",
+					"Toggle CC line and stop",
+					"Reboot by EC console and stop",
+					"Reset EC from DUT and stop",
+					"Cold reset the DUT by servod and stop",
+					"Reflash Cr50 fw and stop",
+				},
 			},
 			"Servo main device is GSC chip": {
 				Docs: []string{
