@@ -75,7 +75,7 @@ func fakeAncestorKey(ctx context.Context) *datastore.Key {
 }
 
 // Creates the given Asset.
-func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest) (*proto.AssetModel, error) {
+func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest) (*proto.CreateAssetResponse, error) {
 	id := uuid.New().String()
 	entity := &AssetEntity{
 		AssetId:     id,
@@ -85,13 +85,37 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		CreatedAt:   time.Now().UTC(),
 		Parent:      fakeAncestorKey(ctx),
 	}
-	if err := validateEntity(entity); err != nil {
+	response := &proto.CreateAssetResponse{}
+
+	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
+		if err := validateEntity(entity); err != nil {
+			return err
+		}
+		if err := datastore.Put(ctx, entity); err != nil {
+			return err
+		}
+		response.Asset = toModel(entity)
+		assetResourcesToSave := req.GetAssetResourcesToSave()
+		for _, assetResourceModel := range assetResourcesToSave {
+			assetResourceModel.AssetResourceId = uuid.New().String()
+			assetResourceModel.AssetId = id
+			assetResourceEntity := toAssetResourceEntity(assetResourceModel)
+			if err := validateAssetResourceEntity(assetResourceEntity); err != nil {
+				return err
+			}
+			if err := datastore.Put(ctx, assetResourceEntity); err != nil {
+				return err
+			}
+			response.AssetResources = append(response.AssetResources, assetResourceModel)
+		}
+		// If no error occurs, return nil
+		return nil
+	}, nil)
+
+	if err != nil {
 		return nil, err
 	}
-	if err := datastore.Put(ctx, entity); err != nil {
-		return nil, err
-	}
-	return toModel(entity), nil
+	return response, nil
 }
 
 // Retrieves a Asset for a given unique value.
@@ -104,22 +128,22 @@ func (e *AssetHandler) Get(ctx context.Context, req *proto.GetAssetRequest) (*pr
 }
 
 // Update a single asset in Enterprise Asset.
-func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest) (*proto.AssetModel, error) {
-	id := req.GetAsset().GetAssetId()
-	mask := req.GetUpdateMask()
-	asset := &AssetEntity{}
+func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest) (*proto.UpdateAssetResponse, error) {
+	assetId := req.GetAsset().GetAssetId()
+	assetmask := req.GetAssetUpdateMask()
+	response := &proto.UpdateAssetResponse{}
 
-	if mask == nil || len(mask.GetPaths()) == 0 || !mask.IsValid(req.GetAsset()) {
-		return nil, errors.New("Update Mask can't be empty or invalid")
+	if assetmask == nil || len(assetmask.GetPaths()) == 0 || !assetmask.IsValid(req.GetAsset()) {
+		return nil, errors.New("Update Mask for Asset can't be empty or invalid")
 	}
 	// In a transaction load asset, set fields based on field mask.
 	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
-		asset, err := getById(ctx, id)
+		asset, err := getById(ctx, assetId)
 		if err != nil {
 			return err
 		}
 		// Set updated values for fields specified in Update Mask
-		for _, field := range mask.GetPaths() {
+		for _, field := range assetmask.GetPaths() {
 			newValue := reflect.ValueOf(req.GetAsset()).Elem().FieldByName(strings.Title(field))
 			reflect.ValueOf(asset).Elem().FieldByName(strings.Title(field)).Set(newValue)
 		}
@@ -132,13 +156,70 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 		}
 
 		err = datastore.Put(ctx, asset)
-		return err
+		if err != nil {
+			return err
+		}
+
+		response.Asset = toModel(asset)
+		assetResourcesToSave := req.GetAssetResourcesToSave()
+		for _, assetResourceModel := range assetResourcesToSave {
+			if assetResourceModel.GetAssetResourceId() == "" {
+				assetResourceModel.AssetResourceId = uuid.New().String()
+				assetResourceModel.AssetId = assetId
+				assetResourceEntity := toAssetResourceEntity(assetResourceModel)
+				if err := validateAssetResourceEntity(assetResourceEntity); err != nil {
+					return err
+				}
+				if err := datastore.Put(ctx, assetResourceEntity); err != nil {
+					return err
+				}
+				response.AssetResources = append(response.AssetResources, assetResourceModel)
+			} else {
+				assetResourceId := assetResourceModel.GetAssetResourceId()
+				assetResourcemask := req.GetAssetResourceUpdateMask()
+
+				if assetResourcemask == nil || len(assetResourcemask.GetPaths()) == 0 || !assetResourcemask.IsValid(assetResourceModel) {
+					return errors.New("Update Mask for AssetResource can't be empty or invalid")
+				}
+				assetResource, err := getByAssetResourceId(ctx, assetResourceId)
+				if err != nil {
+					return err
+				}
+				for _, field := range assetResourcemask.GetPaths() {
+					newValue := reflect.ValueOf(assetResourceModel).Elem().FieldByName(snakeToPascalCase(field))
+					reflect.ValueOf(assetResource).Elem().FieldByName(snakeToPascalCase(field)).Set(newValue)
+				}
+
+				assetResource.ModifiedBy = auth.CurrentUser(ctx).Email
+				assetResource.ModifiedAt = time.Now().UTC()
+
+				if err := validateAssetResourceEntity(assetResource); err != nil {
+					return err
+				}
+				if err := datastore.Put(ctx, assetResource); err != nil {
+					return err
+				}
+				response.AssetResources = append(response.AssetResources, assetResourceModel)
+			}
+		}
+
+		assetResourcesToDelete := req.GetAssetResourcesToDelete()
+		for _, assetResourceModel := range assetResourcesToDelete {
+			if err := datastore.Delete(ctx, &AssetResourceEntity{
+				AssetResourceId: assetResourceModel.GetAssetResourceId()}); err != nil {
+				return err
+			}
+		}
+		// If no error occurs, return nil
+		return nil
 	}, nil)
 
-	if err == nil {
-		return toModel(asset), nil
+	if err != nil {
+		return nil, err
 	}
-	return nil, err
+
+	return response, nil
+
 }
 
 // Deletes the given Asset.

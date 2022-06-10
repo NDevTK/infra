@@ -40,21 +40,38 @@ export const Asset = () => {
   );
   const assetId: string = useAppSelector((state) => state.asset.record.assetId);
   const asset = useAppSelector((state) => state.asset.record);
-  const assetResources: AssetResourceModel[] = useAppSelector(
-    (state) => state.asset.assetResources
+  const assetResourcesToSave: AssetResourceModel[] = useAppSelector(
+    (state) => state.asset.assetResourcesToSave
+  );
+  const assetResourcesToDelete: AssetResourceModel[] = useAppSelector(
+    (state) => state.asset.assetResourcesToDelete
   );
   const dispatch = useAppDispatch();
 
   const handleSaveClick = (
     name: string,
     description: string,
-    assetId: string
+    assetId: string,
+    assetResourcesToSave: AssetResourceModel[],
+    assetResourcesToDelete: AssetResourceModel[]
   ) => {
     if (assetId === '') {
-      dispatch(createAssetAsync({ name, description, assetResources }));
+      dispatch(
+        createAssetAsync({
+          name,
+          description,
+          assetResourcesToSave,
+        })
+      );
     } else {
       dispatch(
-        updateAssetAsync({ asset, updateMask: ['name', 'description'] })
+        updateAssetAsync({
+          asset,
+          assetUpdateMask: ['name', 'description'],
+          assetResourceUpdateMask: ['resource_id', 'alias_name'],
+          assetResourcesToSave,
+          assetResourcesToDelete,
+        })
       );
     }
   };
@@ -210,7 +227,7 @@ export const Asset = () => {
         </Grid>
       </Grid>
 
-      {assetResources.map((entity, index) =>
+      {assetResourcesToSave.map((entity, index) =>
         renderRow(index, entity.aliasName)
       )}
       <Button
@@ -241,7 +258,15 @@ export const Asset = () => {
             </Button>
             <Button
               variant="contained"
-              onClick={() => handleSaveClick(name, description, assetId)}
+              onClick={() => {
+                handleSaveClick(
+                  name,
+                  description,
+                  assetId,
+                  assetResourcesToSave,
+                  assetResourcesToDelete
+                );
+              }}
               endIcon={<DeleteIcon />}
             >
               Save

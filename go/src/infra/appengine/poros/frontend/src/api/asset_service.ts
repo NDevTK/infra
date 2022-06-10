@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { AssetResourceModel } from './asset_resource_service';
 import { Empty } from './common/empty';
 import { FieldMask } from './common/field_mask';
 import { rpcClient } from './common/rpc_client';
@@ -10,11 +11,11 @@ import { fromJsonTimestamp, isSet } from './common/utils';
 /** Performs operations on Assets. */
 export interface IAssetService {
   /** Creates the given Asset. */
-  create(request: CreateAssetRequest): Promise<AssetModel>;
+  create(request: CreateAssetRequest): Promise<CreateAssetResponse>;
   /** Retrieves a Asset for a given unique value. */
   get(request: GetAssetRequest): Promise<AssetModel>;
   /** Update a single asset in poros. */
-  update(request: UpdateAssetRequest): Promise<AssetModel>;
+  update(request: UpdateAssetRequest): Promise<UpdateAssetResponse>;
   /** Deletes the given Asset. */
   delete(request: DeleteAssetRequest): Promise<Empty>;
   /** Lists all Assets. */
@@ -30,10 +31,10 @@ export class AssetService implements IAssetService {
     this.list = this.list.bind(this);
   }
 
-  create = (request: CreateAssetRequest): Promise<AssetModel> => {
+  create = (request: CreateAssetRequest): Promise<CreateAssetResponse> => {
     const data = CreateAssetRequest.toJSON(request);
     const promise = rpcClient.request('poros.Asset', 'Create', data);
-    return promise.then((data) => AssetModel.fromJSON(data));
+    return promise.then((data) => CreateAssetResponse.fromJSON(data));
   };
 
   get = (request: GetAssetRequest): Promise<AssetModel> => {
@@ -42,10 +43,10 @@ export class AssetService implements IAssetService {
     return promise.then((data) => AssetModel.fromJSON(data));
   };
 
-  update = (request: UpdateAssetRequest): Promise<AssetModel> => {
+  update = (request: UpdateAssetRequest): Promise<UpdateAssetResponse> => {
     const data = UpdateAssetRequest.toJSON(request);
     const promise = rpcClient.request('poros.Asset', 'Update', data);
-    return promise.then((data) => AssetModel.fromJSON(data));
+    return promise.then((data) => UpdateAssetResponse.fromJSON(data));
   };
 
   delete = (request: DeleteAssetRequest): Promise<Empty> => {
@@ -91,7 +92,6 @@ export const AssetModel = {
     };
   },
   fromJSON(object: any): AssetModel {
-    console.log(object);
     return {
       assetId: isSet(object.assetId) ? String(object.assetId) : '',
       name: isSet(object.name) ? String(object.name) : '',
@@ -129,7 +129,15 @@ export interface CreateAssetRequest {
   name: string;
   /** Description of the asset */
   description: string;
-  /** User who created the record */
+  /** List of asset resource to create/update */
+  assetResourcesToSave: AssetResourceModel[];
+}
+
+export interface CreateAssetResponse {
+  /** Asset created */
+  asset: AssetModel;
+  /** List of AssetResources saved */
+  assetResources: AssetResourceModel[];
 }
 
 export const CreateAssetRequest = {
@@ -138,7 +146,20 @@ export const CreateAssetRequest = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.assetResourcesToSave !== undefined &&
+      (obj.assetResourcesToSave = message.assetResourcesToSave);
     return obj;
+  },
+};
+
+export const CreateAssetResponse = {
+  fromJSON(object: any): CreateAssetResponse {
+    return {
+      asset: AssetModel.fromJSON(object.asset),
+      assetResources: Array.isArray(object?.assetResources)
+        ? object.assetResources.map((e: any) => AssetResourceModel.fromJSON(e))
+        : [],
+    };
   },
 };
 
@@ -223,8 +244,21 @@ export const ListAssetsResponse = {
 export interface UpdateAssetRequest {
   /** The existing asset to update in the database. */
   asset: AssetModel | undefined;
-  /** The list of fields to update. */
-  updateMask: string[] | undefined;
+  /** The list of fields to update Asset. */
+  assetUpdateMask: string[] | undefined;
+  /** The list of fields to update the asset_resource. */
+  assetResourceUpdateMask: string[] | undefined;
+  /** The list of fields to update the asset_resource. */
+  assetResourcesToSave: AssetResourceModel[];
+  /** The list of fields to update the asset_resource. */
+  assetResourcesToDelete: AssetResourceModel[];
+}
+
+export interface UpdateAssetResponse {
+  /** Asset updated */
+  asset: AssetModel;
+  /** List of AssetResources saved/updated */
+  assetResources: AssetResourceModel[];
 }
 
 export const UpdateAssetRequest = {
@@ -234,8 +268,28 @@ export const UpdateAssetRequest = {
       (obj.asset = message.asset
         ? AssetModel.toJSON(message.asset)
         : undefined);
-    message.updateMask !== undefined &&
-      (obj.updateMask = FieldMask.toJSON(FieldMask.wrap(message.updateMask)));
+    message.assetUpdateMask !== undefined &&
+      (obj.assetUpdateMask = FieldMask.toJSON(
+        FieldMask.wrap(message.assetUpdateMask)
+      ));
+    message.assetResourceUpdateMask !== undefined &&
+      (obj.assetResourceUpdateMask = FieldMask.toJSON(
+        FieldMask.wrap(message.assetResourceUpdateMask)
+      ));
+    obj.assetResourcesToSave = message.assetResourcesToSave;
+    message.assetResourcesToDelete !== undefined &&
+      (obj.assetResourcesToDelete = message.assetResourcesToDelete);
     return obj;
+  },
+};
+
+export const UpdateAssetResponse = {
+  fromJSON(object: any): CreateAssetResponse {
+    return {
+      asset: AssetModel.fromJSON(object.asset),
+      assetResources: Array.isArray(object?.assetResources)
+        ? object.assetResources.map((e: any) => AssetResourceModel.fromJSON(e))
+        : [],
+    };
   },
 };

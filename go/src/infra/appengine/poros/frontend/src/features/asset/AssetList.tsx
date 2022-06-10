@@ -27,6 +27,7 @@ import {
   clearSelectedRecord,
   onSelectRecord,
   queryAssetAsync,
+  queryAssetResourceAsync,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -70,6 +71,7 @@ export function AssetList() {
     const selectedRow = cellValues.row;
     handleRightSideDrawerOpen();
     dispatch(onSelectRecord({ assetId: selectedRow.assetId }));
+    dispatch(queryAssetResourceAsync());
     console.log(cellValues);
   };
 

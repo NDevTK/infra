@@ -24,11 +24,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AssetClient interface {
 	// Creates the given Asset.
-	Create(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*AssetModel, error)
+	Create(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*CreateAssetResponse, error)
 	// Retrieves a Asset for a given unique value.
 	Get(ctx context.Context, in *GetAssetRequest, opts ...grpc.CallOption) (*AssetModel, error)
 	// Update a single asset in EnterpriseAsset.
-	Update(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*AssetModel, error)
+	Update(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*UpdateAssetResponse, error)
 	// Deletes the given Asset.
 	Delete(ctx context.Context, in *DeleteAssetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all Assets.
@@ -45,8 +45,8 @@ func NewAssetClient(cc grpc.ClientConnInterface) AssetClient {
 	return &assetClient{cc}
 }
 
-func (c *assetClient) Create(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*AssetModel, error) {
-	out := new(AssetModel)
+func (c *assetClient) Create(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*CreateAssetResponse, error) {
+	out := new(CreateAssetResponse)
 	err := c.cc.Invoke(ctx, "/poros.Asset/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -63,8 +63,8 @@ func (c *assetClient) Get(ctx context.Context, in *GetAssetRequest, opts ...grpc
 	return out, nil
 }
 
-func (c *assetClient) Update(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*AssetModel, error) {
-	out := new(AssetModel)
+func (c *assetClient) Update(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*UpdateAssetResponse, error) {
+	out := new(UpdateAssetResponse)
 	err := c.cc.Invoke(ctx, "/poros.Asset/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -104,11 +104,11 @@ func (c *assetClient) GetAssetConfiguration(ctx context.Context, in *GetAssetCon
 // for forward compatibility
 type AssetServer interface {
 	// Creates the given Asset.
-	Create(context.Context, *CreateAssetRequest) (*AssetModel, error)
+	Create(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error)
 	// Retrieves a Asset for a given unique value.
 	Get(context.Context, *GetAssetRequest) (*AssetModel, error)
 	// Update a single asset in EnterpriseAsset.
-	Update(context.Context, *UpdateAssetRequest) (*AssetModel, error)
+	Update(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error)
 	// Deletes the given Asset.
 	Delete(context.Context, *DeleteAssetRequest) (*emptypb.Empty, error)
 	// Lists all Assets.
@@ -122,13 +122,13 @@ type AssetServer interface {
 type UnimplementedAssetServer struct {
 }
 
-func (UnimplementedAssetServer) Create(context.Context, *CreateAssetRequest) (*AssetModel, error) {
+func (UnimplementedAssetServer) Create(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedAssetServer) Get(context.Context, *GetAssetRequest) (*AssetModel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedAssetServer) Update(context.Context, *UpdateAssetRequest) (*AssetModel, error) {
+func (UnimplementedAssetServer) Update(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedAssetServer) Delete(context.Context, *DeleteAssetRequest) (*emptypb.Empty, error) {

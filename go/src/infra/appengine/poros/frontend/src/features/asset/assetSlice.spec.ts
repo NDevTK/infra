@@ -11,12 +11,14 @@ describe('asset reducer', () => {
     pageToken: undefined,
     pageNumber: 1,
     pageSize: 10,
-    fetchStatus: 'idle',
+    fetchAssetStatus: 'idle',
+    fetchAssetResourceStatus: 'idle',
     record: AssetModel.defaultEntity(),
     savingStatus: 'idle',
     deletingStatus: 'idle',
     resources: [],
-    assetResources: [],
+    assetResourcesToSave: [],
+    assetResourcesToDelete: [],
   };
   it('should handle initial state', () => {
     expect(assetReducer(undefined, { type: 'unknown' })).toEqual(initialState);

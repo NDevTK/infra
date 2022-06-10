@@ -168,14 +168,14 @@ export const DeleteAssetResourceRequest = {
   toJSON(message: DeleteAssetResourceRequest): unknown {
     const obj: any = {};
     message.assetResourceId !== undefined &&
-      (obj.name = message.assetResourceId);
+      (obj.assetResourceId = message.assetResourceId);
     return obj;
   },
 };
 
 /** Gets a AssetResource resource. */
 export interface GetAssetResourceRequest {
-  // The name of the AssetResource to retrieve.
+  // The id of the AssetResource to retrieve.
   assetResourceId: string;
 }
 
@@ -245,7 +245,7 @@ export const UpdateAssetResourceRequest = {
   toJSON(message: UpdateAssetResourceRequest): unknown {
     const obj: any = {};
     message.assetResource !== undefined &&
-      (obj.AssetResource = message.assetResource
+      (obj.assetResource = message.assetResource
         ? AssetResourceModel.toJSON(message.assetResource)
         : undefined);
     message.updateMask !== undefined &&

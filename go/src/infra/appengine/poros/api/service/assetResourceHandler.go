@@ -24,7 +24,7 @@ type AssetResourceHandler struct {
 	proto.UnimplementedAssetResourceServer
 }
 
-func toAssetResourceEntity(model *proto.AssetResourceModel, ancestorKey *datastore.Key) *AssetResourceEntity {
+func toAssetResourceEntity(model *proto.AssetResourceModel) *AssetResourceEntity {
 	if model != nil {
 		return &AssetResourceEntity{
 			AssetResourceId: model.AssetResourceId,

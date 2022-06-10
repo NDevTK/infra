@@ -8,6 +8,7 @@ import {
   AssetResourceService,
   CreateAssetResourceRequest,
   IAssetResourceService,
+  ListAssetResourcesRequest,
 } from '../../api/asset_resource_service';
 import {
   CreateAssetRequest,
@@ -26,13 +27,15 @@ export interface AssetState {
   assets: AssetModel[];
   pageToken: string | undefined;
   record: AssetModel;
-  fetchStatus: string;
+  fetchAssetStatus: string;
   savingStatus: string;
   deletingStatus: string;
+  fetchAssetResourceStatus: string;
   pageNumber: number;
   pageSize: number;
   resources: ResourceModel[];
-  assetResources: AssetResourceModel[];
+  assetResourcesToSave: AssetResourceModel[];
+  assetResourcesToDelete: AssetResourceModel[];
 }
 
 const initialState: AssetState = {
@@ -40,12 +43,14 @@ const initialState: AssetState = {
   pageToken: undefined,
   pageNumber: 1,
   pageSize: 25,
-  fetchStatus: 'idle',
+  fetchAssetStatus: 'idle',
   record: AssetModel.defaultEntity(),
   savingStatus: 'idle',
   deletingStatus: 'idle',
+  fetchAssetResourceStatus: 'idle',
   resources: [],
-  assetResources: [AssetResourceModel.defaultEntity()],
+  assetResourcesToSave: [AssetResourceModel.defaultEntity()],
+  assetResourcesToDelete: [],
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -71,19 +76,19 @@ export const createAssetAsync = createAsyncThunk(
   async ({
     name,
     description,
-    assetResources,
+    assetResourcesToSave,
   }: {
     name: string;
     description: string;
-    assetResources: AssetResourceModel[];
+    assetResourcesToSave: AssetResourceModel[];
   }) => {
     const request: CreateAssetRequest = {
       name: name,
       description: description,
+      assetResourcesToSave: assetResourcesToSave,
     };
     const service: IAssetService = new AssetService();
     const response = await service.create(request);
-    createAssetResourceAsync(response.assetId, assetResources);
     return response;
   }
 );
@@ -92,14 +97,23 @@ export const updateAssetAsync = createAsyncThunk(
   'asset/updateAsset',
   async ({
     asset,
-    updateMask,
+    assetUpdateMask,
+    assetResourceUpdateMask,
+    assetResourcesToSave,
+    assetResourcesToDelete,
   }: {
     asset: AssetModel;
-    updateMask: string[];
+    assetUpdateMask: string[];
+    assetResourceUpdateMask: string[];
+    assetResourcesToSave: AssetResourceModel[];
+    assetResourcesToDelete: AssetResourceModel[];
   }) => {
     const request: UpdateAssetRequest = {
       asset: asset,
-      updateMask: updateMask,
+      assetUpdateMask: assetUpdateMask,
+      assetResourceUpdateMask: assetResourceUpdateMask,
+      assetResourcesToSave: assetResourcesToSave,
+      assetResourcesToDelete: assetResourcesToDelete,
     };
     const service: IAssetService = new AssetService();
     const response = await service.update(request);
@@ -133,20 +147,19 @@ export const deleteAssetAsync = createAsyncThunk(
   }
 );
 
-const createAssetResourceAsync = async (
-  assetId: string,
-  assetResource: AssetResourceModel[]
-) => {
-  assetResource.forEach(function (entity) {
-    const request: CreateAssetResourceRequest = {
-      assetId: assetId,
-      resourceId: entity.resourceId,
-      aliasName: entity.aliasName,
+export const queryAssetResourceAsync = createAsyncThunk(
+  'asset/queryAssetResource',
+  async () => {
+    const request: ListAssetResourcesRequest = {
+      readMask: undefined,
+      pageSize: 100,
+      pageToken: '',
     };
     const service: IAssetResourceService = new AssetResourceService();
-    service.create(request);
-  });
-};
+    const response = await service.list(request);
+    return response;
+  }
+);
 
 export const assetSlice = createSlice({
   name: 'asset',
@@ -168,24 +181,32 @@ export const assetSlice = createSlice({
     },
     clearSelectedRecord: (state) => {
       state.record = AssetModel.defaultEntity();
-      state.assetResources = [AssetResourceModel.defaultEntity()];
+      state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
+      state.assetResourcesToDelete = [];
     },
     addMachine: (state) => {
-      state.assetResources = [
-        ...state.assetResources,
+      state.assetResourcesToSave = [
+        ...state.assetResourcesToSave,
         AssetResourceModel.defaultEntity(),
       ];
     },
     removeMachine: (state, action) => {
-      state.assetResources = state.assetResources.filter(
+      if (state.assetResourcesToSave[action.payload].assetResourceId !== '') {
+        state.assetResourcesToDelete.push(
+          state.assetResourcesToSave[action.payload]
+        );
+      }
+      state.assetResourcesToSave = state.assetResourcesToSave.filter(
         (_, index) => index !== action.payload
       );
     },
     setResourceId: (state, action) => {
-      state.assetResources[action.payload.id].resourceId = action.payload.value;
+      state.assetResourcesToSave[action.payload.id].resourceId =
+        action.payload.value;
     },
     setAlias: (state, action) => {
-      state.assetResources[action.payload.id].aliasName = action.payload.value;
+      state.assetResourcesToSave[action.payload.id].aliasName =
+        action.payload.value;
     },
   },
 
@@ -194,10 +215,10 @@ export const assetSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAssetAsync.pending, (state) => {
-        state.fetchStatus = 'loading';
+        state.fetchAssetStatus = 'loading';
       })
       .addCase(fetchAssetAsync.fulfilled, (state, action) => {
-        state.fetchStatus = 'idle';
+        state.fetchAssetStatus = 'idle';
         state.record = action.payload;
       })
       .addCase(createAssetAsync.pending, (state) => {
@@ -205,20 +226,22 @@ export const assetSlice = createSlice({
       })
       .addCase(createAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
-        state.record = action.payload;
+        state.record = action.payload.asset;
+        state.assetResourcesToSave = action.payload.assetResources;
       })
       .addCase(updateAssetAsync.pending, (state) => {
         state.savingStatus = 'loading';
       })
       .addCase(updateAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
-        state.record = action.payload;
+        state.record = action.payload.asset;
+        state.assetResourcesToSave = action.payload.assetResources;
       })
       .addCase(queryAssetAsync.pending, (state) => {
-        state.fetchStatus = 'loading';
+        state.fetchAssetStatus = 'loading';
       })
       .addCase(queryAssetAsync.fulfilled, (state, action) => {
-        state.fetchStatus = 'idle';
+        state.fetchAssetStatus = 'idle';
         console.log(action.payload.assets);
         state.assets = action.payload.assets;
         state.pageToken = action.payload.nextPageToken;
@@ -229,6 +252,18 @@ export const assetSlice = createSlice({
       .addCase(deleteAssetAsync.fulfilled, (state) => {
         state.deletingStatus = 'idle';
         state.record = AssetModel.defaultEntity();
+      })
+      .addCase(queryAssetResourceAsync.pending, (state) => {
+        state.fetchAssetResourceStatus = 'loading';
+      })
+      .addCase(queryAssetResourceAsync.fulfilled, (state, action) => {
+        state.fetchAssetResourceStatus = 'idle';
+        state.assetResourcesToSave = [
+          ...action.payload.assetResources.filter(
+            (entity) => entity.assetId === state.record.assetId
+          ),
+          AssetResourceModel.defaultEntity(),
+        ];
       });
   },
 });

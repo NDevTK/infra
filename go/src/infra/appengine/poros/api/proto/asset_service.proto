@@ -15,13 +15,13 @@ option go_package = "infra/appengine/poros/api/proto;proto";
 // Performs operations on Assets.
 service Asset {
   // Creates the given Asset.
-  rpc Create(CreateAssetRequest) returns (AssetModel);
+  rpc Create(CreateAssetRequest) returns (CreateAssetResponse);
 
   // Retrieves a Asset for a given unique value.
   rpc Get(GetAssetRequest) returns (AssetModel);
 
   // Update a single asset in EnterpriseAsset.
-  rpc Update(UpdateAssetRequest) returns (AssetModel);
+  rpc Update(UpdateAssetRequest) returns (UpdateAssetResponse);
 
   // Deletes the given Asset.
   rpc Delete(DeleteAssetRequest) returns (.google.protobuf.Empty);
@@ -38,6 +38,16 @@ message CreateAssetRequest {
   // The new asset to add to the database.
   string name = 1;
   string description = 2;
+  // The list of AssetReource to create/update
+  repeated AssetResourceModel asset_resources_to_save = 3;
+
+}
+
+message CreateAssetResponse {
+  // The Asset created.
+  AssetModel asset = 1;
+  // The list of AssetResources created/updated
+  repeated AssetResourceModel asset_resources = 2;
 }
 
 // Gets a Asset resource.
@@ -51,9 +61,21 @@ message GetAssetRequest {
 message UpdateAssetRequest {
   // The existing asset to update in the database.
   AssetModel asset = 1;
+  // The list of fields to update the asset.
+  .google.protobuf.FieldMask asset_update_mask = 2;
+  // The list of fields to update the asset_resource.
+  .google.protobuf.FieldMask asset_resource_update_mask = 3;
+  // The list of AssetReource to create
+  repeated AssetResourceModel asset_resources_to_save = 4;
+  // The list of AssetReource to delete
+  repeated AssetResourceModel asset_resources_to_delete = 5;
+}
 
-  // The list of fields to update.
-  .google.protobuf.FieldMask update_mask = 2;
+message UpdateAssetResponse {
+  // The Asset updated.
+  AssetModel asset = 1;
+  // The list of AssetResources created/updated
+  repeated AssetResourceModel asset_resources = 2;
 }
 
 // Request to delete a single asset from EnterpriseAsset.
