@@ -107,7 +107,7 @@ class SpamService(object):
     """
     return self.LookupIssuesFlaggers(cnxn, [issue_id])[issue_id]
 
-  def LookupIssueFlagCounts(self, cnxn, issue_ids):
+  def _LookupIssueFlagCounts(self, cnxn, issue_ids):
     """Returns a map of issue_id to flag counts"""
     rows = self.report_tbl.Select(cnxn, cols=['issue_id', 'COUNT(*)'],
                                   issue_id=issue_ids, group_by=['issue_id'])
@@ -190,7 +190,7 @@ class SpamService(object):
 
     # Now record new verdicts and update issue.is_spam, if they've changed.
     ids = [issue.issue_id for issue in issues]
-    counts = self.LookupIssueFlagCounts(cnxn, ids)
+    counts = self._LookupIssueFlagCounts(cnxn, ids)
     previous_verdicts = self.LookupIssueVerdicts(cnxn, ids)
 
     for issue_id in counts:
@@ -463,62 +463,6 @@ class SpamService(object):
   def ham_classification(self):
     return {'confidence_is_spam': 0.0,
             'failed_open': False}
-
-  def GetIssueClassifierQueue(
-      self, cnxn, _issue_service, project_id, offset=0, limit=10):
-    """Returns list of recent issues with spam verdicts,
-     ranked in ascending order of confidence (so uncertain items are first).
-     """
-    # TODO(seanmccullough): Optimize pagination. This query probably gets
-    # slower as the number of SpamVerdicts grows, regardless of offset
-    # and limit values used here.  Using offset,limit in general may not
-    # be the best way to do this.
-    issue_results = self.verdict_tbl.Select(
-        cnxn,
-        cols=[
-            'issue_id', 'is_spam', 'reason', 'classifier_confidence', 'created'
-        ],
-        where=[
-            ('project_id = %s', [project_id]),
-            (
-                'classifier_confidence <= %s',
-                [settings.classifier_moderation_thresh]),
-            ('overruled = %s', [False]),
-            ('issue_id IS NOT NULL', []),
-        ],
-        order_by=[
-            ('classifier_confidence ASC', []),
-            ('created ASC', []),
-        ],
-        group_by=['issue_id'],
-        offset=offset,
-        limit=limit,
-    )
-
-    ret = []
-    for row in issue_results:
-      ret.append(
-          ModerationItem(
-              issue_id=int(row[0]),
-              is_spam=row[1] == 1,
-              reason=row[2],
-              classifier_confidence=row[3],
-              verdict_time='%s' % row[4],
-          ))
-
-    count = self.verdict_tbl.SelectValue(
-        cnxn,
-        col='COUNT(*)',
-        where=[
-            ('project_id = %s', [project_id]),
-            (
-                'classifier_confidence <= %s',
-                [settings.classifier_moderation_thresh]),
-            ('overruled = %s', [False]),
-            ('issue_id IS NOT NULL', []),
-        ])
-
-    return ret, count
 
   def GetIssueFlagQueue(
       self, cnxn, _issue_service, project_id, offset=0, limit=10):

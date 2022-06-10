@@ -85,7 +85,6 @@ from tracker import issueimport
 from tracker import issueoriginal
 from tracker import issuereindex
 from tracker import issuetips
-from tracker import spam
 from tracker import templatecreate
 from tracker import templatedetail
 from tracker import fltconversion
@@ -293,8 +292,6 @@ class ServletRegistry(object):
                 issueexport.IssueExportJSON,
             urls.ISSUE_IMPORT:
                 issueimport.IssueImport,
-            urls.SPAM_MODERATION_QUEUE:
-                spam.ModerationQueue,
         })
 
     # GETs for /issues/detail are now handled by the web components page.

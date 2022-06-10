@@ -148,5 +148,3 @@ CLIENT_MON = '/_/clientmon'
 TS_MON_JS = '/_/jstsmon'
 
 CSP_REPORT = '/csp'
-
-SPAM_MODERATION_QUEUE = '/spamqueue'

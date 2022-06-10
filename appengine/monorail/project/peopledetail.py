@@ -39,7 +39,6 @@ CHECKBOX_PERMS = [
     permissions.DELETE_OWN,
     permissions.DELETE_ANY,
     permissions.EDIT_ANY_MEMBER_NOTES,
-    permissions.MODERATE_SPAM,
     ]
 
 
