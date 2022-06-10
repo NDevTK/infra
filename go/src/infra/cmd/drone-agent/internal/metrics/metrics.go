@@ -29,7 +29,10 @@ var (
 	cpuThrottledCount = metric.NewCounter("chromeos/skylab/drone_agent/cpu/throttled_count",
 		"The count that drone CPUs have been throttled.",
 		nil)
-	cpuTimeSecond = metric.NewFloat("chromeos/skylab/drone_agent/cpu/time",
+	cpuThrottledTimeSecond = metric.NewFloatCounter("chromeos/skylab/drone_agent/cpu/throttled_time",
+		"The total time duration (in seconds) that drone CPUs have been throttled.",
+		&types.MetricMetadata{Units: types.Seconds})
+	cpuTimeSecond = metric.NewFloatCounter("chromeos/skylab/drone_agent/cpu/time",
 		"The total time duration (in seconds) spent by drone CPUs in user+sys state.",
 		&types.MetricMetadata{Units: types.Seconds})
 
@@ -97,7 +100,8 @@ func updateCPUMetrics(c context.Context, m *stats.Metrics) error {
 	}
 	cpuLimit.Set(c, l)
 	cpuThrottledCount.Set(c, int64(cpu.Throttling.ThrottledPeriods))
-	cpuTimeSecond.Set(c, (time.Duration(cpu.Usage.Total) * time.Nanosecond).Seconds())
+	cpuThrottledTimeSecond.Set(c, float64(cpu.Throttling.ThrottledTime)*time.Nanosecond.Seconds())
+	cpuTimeSecond.Set(c, float64(cpu.Usage.Total)*time.Nanosecond.Seconds())
 	return nil
 }
 
