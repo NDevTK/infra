@@ -188,6 +188,8 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 				oldDrac.Rack = machine.GetLocation().GetRack()
 				oldDrac.Zone = machine.GetLocation().GetZone().String()
 			}
+		case "displayName":
+			oldDrac.DisplayName = drac.GetDisplayName()
 		case "macAddress":
 			oldDrac.MacAddress = drac.GetMacAddress()
 		case "switch":
@@ -503,6 +505,10 @@ func validateDracUpdateMask(ctx context.Context, drac *ufspb.Drac, mask *field_m
 			switch path {
 			case "name":
 				return status.Error(codes.InvalidArgument, "validateDracUpdateMask - name cannot be updated, delete and create a new drac instead")
+			case "displayName":
+				if drac.GetDisplayName() == "" {
+					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - display name cannot be empty")
+				}
 			case "update_time":
 				return status.Error(codes.InvalidArgument, "validateDracUpdateMask - update_time cannot be updated, it is a Output only field")
 			case "switch":
