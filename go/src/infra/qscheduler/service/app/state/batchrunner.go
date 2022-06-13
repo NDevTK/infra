@@ -16,7 +16,6 @@ package state
 
 import (
 	"context"
-	"errors"
 	"sync"
 	"time"
 
@@ -35,7 +34,6 @@ import (
 
 const (
 	defaultConstructionWait = 300 * time.Millisecond
-	defaultInsertionWait    = 300 * time.Millisecond
 )
 
 // BatchRunner runs operations in batches.
@@ -92,8 +90,6 @@ func (b *BatchRunner) Start(store *nodestore.NodeStore) {
 }
 
 // TryNotify runs the given notify request in a batch.
-//
-// Returns ErrBatchFull if adding to the batch would block.
 func (b *BatchRunner) TryNotify(ctx context.Context, req *swarming.NotifyTasksRequest) (*swarming.NotifyTasksResponse, error) {
 	ba := &batchedNotify{
 		batchedRequest: newBatchedRequest(ctx),
@@ -112,12 +108,7 @@ func (b *BatchRunner) TryNotify(ctx context.Context, req *swarming.NotifyTasksRe
 	}
 }
 
-// ErrBatchFull is returned from TryAssign when the batch is full.
-var ErrBatchFull = errors.New("batch is full")
-
 // TryAssign runs the given assign request in a batch.
-//
-// Returns ErrBatchFull if adding to the batch would block.
 func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRequest) (*swarming.AssignTasksResponse, error) {
 	ba := &batchedAssign{
 		batchedRequest: newBatchedRequest(ctx),
@@ -140,23 +131,14 @@ func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRe
 	}
 }
 
-// trySend attempts to include `bo` in a batch, until that succeeds, context
-// is cancelled, or RequestInsertionWait duration elapses.
+// trySend attempts to include `bo` in a batch, until that succeeds or context
+// is cancelled.
 func (b *BatchRunner) trySend(ctx context.Context, bo batchable) error {
-	toWait := defaultInsertionWait
-
-	qsCfg := config.Get(ctx).GetQuotaScheduler()
-	if waitTime := qsCfg.GetRequestInsertionWait().AsDuration(); waitTime > 0 {
-		toWait = waitTime
-	}
-
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	case b.requests <- bo:
 		return nil
-	case <-time.After(toWait):
-		return ErrBatchFull
 	}
 }
 
