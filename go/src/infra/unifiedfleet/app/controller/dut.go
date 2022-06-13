@@ -152,7 +152,7 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 		}
 		// Validate that we are updating a DUT. Will lead to segfault later otherwise.
 		if oldMachinelse.GetChromeosMachineLse() == nil || oldMachinelse.GetChromeosMachineLse().GetDeviceLse().GetDut() == nil {
-			return errors.Reason("%s is not a DUT. Cannot update", machinelse.GetName()).Err()
+			return status.Errorf(codes.Aborted, "%s is not a DUT. Cannot update", machinelse.GetName())
 		}
 
 		// Validate the input. Not passing the update mask as there is a different validation for dut.
