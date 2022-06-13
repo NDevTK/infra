@@ -10,7 +10,6 @@ from __future__ import absolute_import
 
 import unittest
 
-from google.appengine.api import images
 from google.appengine.ext import testbed
 
 import mox
@@ -18,16 +17,12 @@ import webapp2
 
 from framework import gcs_helpers
 from framework import permissions
-from framework import servlet
 from proto import tracker_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers
 from tracker import attachment_helpers
 from tracker import issueattachment
-from tracker import tracker_helpers
-
-from third_party import cloudstorage
 
 
 class IssueattachmentTest(unittest.TestCase):
@@ -40,9 +35,6 @@ class IssueattachmentTest(unittest.TestCase):
     self.testbed.init_app_identity_stub()
     self.testbed.init_urlfetch_stub()
     self.attachment_data = ""
-
-    self._old_gcs_open = cloudstorage.open
-    cloudstorage.open = fake.gcs_open
 
     services = service_manager.Services(
         project=fake.ProjectService(),
@@ -74,7 +66,6 @@ class IssueattachmentTest(unittest.TestCase):
     self.mox.UnsetStubs()
     self.mox.ResetAll()
     self.testbed.deactivate()
-    cloudstorage.open = self._old_gcs_open
     attachment_helpers.SignAttachmentID = self.orig_sign_attachment_id
 
   def testGatherPageData_NotFound(self):

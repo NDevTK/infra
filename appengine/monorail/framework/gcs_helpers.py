@@ -8,10 +8,8 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import base64
 import logging
 import os
-import time
 from six.moves import urllib
 import uuid
 

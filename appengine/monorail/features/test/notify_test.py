@@ -26,8 +26,6 @@ from testing import testing_helpers
 from tracker import attachment_helpers
 from tracker import tracker_bizobj
 
-from third_party import cloudstorage
-
 
 def MakeTestIssue(project_id, local_id, owner_id, reporter_id, is_spam=False):
   issue = tracker_pb2.Issue()
@@ -62,8 +60,6 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         project_id=12345, local_id=2, owner_id=2, reporter_id=1)
     self.services.issue.TestAddIssue(self.issue1)
 
-    self._old_gcs_open = cloudstorage.open
-    cloudstorage.open = fake.gcs_open
     self.orig_sign_attachment_id = attachment_helpers.SignAttachmentID
     attachment_helpers.SignAttachmentID = (
         lambda aid: 'signed_%d' % aid)
@@ -74,7 +70,6 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     self.testbed.init_datastore_v3_stub()
 
   def tearDown(self):
-    cloudstorage.open = self._old_gcs_open
     attachment_helpers.SignAttachmentID = self.orig_sign_attachment_id
 
   def get_filtered_task_call_args(self, create_task_mock, relative_uri):

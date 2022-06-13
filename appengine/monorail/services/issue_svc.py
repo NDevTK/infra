@@ -24,7 +24,7 @@ import uuid
 
 from google.appengine.api import app_identity
 from google.appengine.api import images
-from third_party import cloudstorage
+from google.cloud import storage
 
 import settings
 from features import filterrules_helpers
@@ -1659,12 +1659,11 @@ class IssueService(object):
       # MakeIssueComments expects a list of [(filename, contents, mimetype),...]
       attachments = []
       for attachment in initial_summary_comment.attachments:
-        object_path = ('/' + app_identity.get_default_gcs_bucket_name() +
-                       attachment.gcs_object_id)
-        with cloudstorage.open(object_path, 'r') as f:
-          content = f.read()
-          attachments.append(
-              [attachment.filename, content, attachment.mimetype])
+        client = storage.Client()
+        bucket = client.get_bucket(app_identity.get_default_gcs_bucket_name)
+        blob = bucket.get_blob(attachment.gcs_object_id)
+        content = blob.download_as_bytes()
+        attachments.append([attachment.filename, content, attachment.mimetype])
 
       if attachments:
         new_issue.attachment_count = len(attachments)
