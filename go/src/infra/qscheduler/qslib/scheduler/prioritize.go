@@ -23,14 +23,11 @@ import (
 // The computed priority is based on:
 //   - Quota account balances: requests are assigned a priority based on what
 //     buckets their account has positive balance for.
-//   - Max fanout: for any given account, if there are more than the max fanout
-//     number of requests already running, requests for that account will be
-//     deprioritized to the FreeBucket.
 //
 // Within a priority bucket, items are sorted in ascending examinedTime order.
 //
 // This function does not modify state or config.
-func (s *Scheduler) prioritizeRequests(fanoutCounter *fanoutCounter) [NumPriorities + 1]matchableRequestList {
+func (s *Scheduler) prioritizeRequests() [NumPriorities + 1]matchableRequestList {
 	state := s.state
 
 	var prioritized [NumPriorities + 1]matchableRequestList
@@ -39,12 +36,7 @@ func (s *Scheduler) prioritizeRequests(fanoutCounter *fanoutCounter) [NumPriorit
 		if req.ID == "" {
 			panic("empty request ID")
 		}
-		var p Priority
-		if fanoutCounter.getRemaining(req) <= 0 {
-			p = FreeBucket
-		} else {
-			p = BestPriorityFor(state.balances[req.AccountID])
-		}
+		p := BestPriorityFor(state.balances[req.AccountID])
 
 		disableIfFree := false
 		if c, ok := s.config.AccountConfigs[req.AccountID]; ok {

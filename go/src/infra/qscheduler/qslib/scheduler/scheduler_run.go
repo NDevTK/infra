@@ -59,21 +59,7 @@ type schedulerRun struct {
 	idleWorkers map[WorkerID]*Worker
 
 	// matchableRequestsPerPriority is a per-priority matchableRequestList.
-	//
-	// It takes into account throttling of any requests whose account was
-	// already at the fanout limit when the pass was started, but not newly throttled accounts
-	// as a result of newly assigned requests/workers.
 	matchableRequestsPerPriority [NumPriorities + 1]matchableRequestList
-
-	// fanoutCounter tracks the number of additional requests that each
-	// fanout class may run before reaching its fanout limit and becoming
-	// throttled (at which point its other requests are demoted to FreeBucket).
-	fanoutCounter *fanoutCounter
-
-	// perLabelTaskCounter counts how many tasks per unique label keyval are
-	// currently running for each account that has per-label task limits set
-	// for any labels.
-	perLabelTaskCounter *perLabelTaskCounter
 
 	scheduler *Scheduler
 }
@@ -98,9 +84,6 @@ func (run *schedulerRun) Run(e EventSink) []*Assignment {
 		if !run.scheduler.config.DisablePreemption {
 			output = append(output, run.preemptRunningTasks(p, e)...)
 		}
-		// Step 5: Give any requests that were throttled in this pass a chance to be scheduled
-		// during the final FreeBucket pass.
-		run.moveThrottledRequests(p)
 	}
 
 	// A final pass matches free jobs (in the FreeBucket) to any remaining
@@ -118,8 +101,6 @@ func (run *schedulerRun) Run(e EventSink) []*Assignment {
 // the given request was assigned to a worker.
 func (run *schedulerRun) assignRequestToWorker(w *Worker, item *matchableRequest) {
 	delete(run.idleWorkers, w.ID)
-	run.fanoutCounter.count(item.req)
-	run.perLabelTaskCounter.count(w.Labels, item.req.AccountID)
 	item.alreadyMatched = true
 }
 
@@ -132,14 +113,7 @@ func (run *schedulerRun) updateExaminedTimes() {
 			if item.alreadyMatched {
 				continue
 			}
-			req := item.req
-			// A task request was fully examined unless it was throttled due to
-			// account fanout limit, for an account with free tasks disabled.
-			if item.disableIfFree && run.isThrottled(req) {
-				continue
-			}
-
-			req.examinedTime = run.scheduler.state.lastUpdateTime
+			item.req.examinedTime = run.scheduler.state.lastUpdateTime
 		}
 	}
 }
@@ -150,24 +124,16 @@ func (s *Scheduler) newRun() *schedulerRun {
 	// that is the upper bound, and in normal workload (in which fleet is highly utilized) most
 	// scheduler passes will have only a few idle workers.
 	idleWorkers := make(map[WorkerID]*Worker, len(s.state.workers))
-	fanoutCounter := newFanoutCounter(s.config)
-	perLabelTaskCounter := newPerLabelTaskCounter(s.config)
 
 	for wid, w := range s.state.workers {
 		if w.IsIdle() {
 			idleWorkers[wid] = w
-		} else {
-			r := w.runningTask.request
-			fanoutCounter.count(r)
-			perLabelTaskCounter.count(w.Labels, r.AccountID)
 		}
 	}
 
 	return &schedulerRun{
 		idleWorkers:                  idleWorkers,
-		matchableRequestsPerPriority: s.prioritizeRequests(fanoutCounter),
-		fanoutCounter:                fanoutCounter,
-		perLabelTaskCounter:          perLabelTaskCounter,
+		matchableRequestsPerPriority: s.prioritizeRequests(),
 		scheduler:                    s,
 	}
 }
@@ -275,10 +241,8 @@ func (run *schedulerRun) assignToIdleWorkers(priority Priority, matchesPerWorker
 	for wid, w := range run.idleWorkers {
 		matches := matchesPerWorker[wid]
 		// select first match that is:
-		// - non-throttled match
 		// - not already matched
 		// - matches provision labels, if necessary
-		// - not at any per-label task limits for the worker's label keyvals
 		for _, match := range matches {
 			r := match.matchableRequest.req
 
@@ -289,9 +253,6 @@ func (run *schedulerRun) assignToIdleWorkers(priority Priority, matchesPerWorker
 				continue
 			}
 			if requireProvisionMatch && !match.provisionMatch {
-				continue
-			}
-			if run.perLabelTaskCounter.isAtAnyLimit(w.Labels, r.AccountID) {
 				continue
 			}
 
@@ -319,21 +280,10 @@ func (run *schedulerRun) assignToIdleWorkers(priority Priority, matchesPerWorker
 	return output
 }
 
-// isThrottled determines whether the given request is throttled (i.e. its
-// account has exceeded fanout limit for this request).
-func (run *schedulerRun) isThrottled(request *TaskRequest) bool {
-	return run.fanoutCounter.getRemaining(request) <= 0
-}
-
 // shouldSkip computes if the given request should be skipped at the given priority.
 func (run *schedulerRun) shouldSkip(item *matchableRequest, priority Priority) bool {
-	// Enforce throttling of requests (except for Freebucket).
-	if priority != FreeBucket {
-		return run.isThrottled(item.req)
-	}
-
 	// Enforce DisableFreeTasks (for FreeBucket).
-	return item.disableIfFree
+	return priority == FreeBucket && item.disableIfFree
 }
 
 // reprioritizeRunningTasks changes the priority of running tasks by either
@@ -470,11 +420,9 @@ func (run *schedulerRun) preemptRunningTasks(priority Priority, events EventSink
 		matches := computeMatchList(worker, candidateRequests)
 
 		// Select first matching request from an account that is:
-		// - non-throttled
 		// - non-banned
 		// - not already matched
 		// - has sufficient balance to refund cost of preempted job
-		// - not at any per-label task limits for the worker's label keyvals
 		for _, m := range matches {
 			r := m.matchableRequest.req
 
@@ -484,13 +432,7 @@ func (run *schedulerRun) preemptRunningTasks(priority Priority, events EventSink
 			if bannedAccounts[r.AccountID] {
 				continue
 			}
-			if run.fanoutCounter.getRemaining(r) <= 0 {
-				continue
-			}
 			if !worker.runningTask.cost.Less(state.balances[r.AccountID]) {
-				continue
-			}
-			if run.perLabelTaskCounter.isAtAnyLimit(worker.Labels, r.AccountID) {
 				continue
 			}
 
@@ -525,20 +467,6 @@ func (run *schedulerRun) preemptRunningTasks(priority Priority, events EventSink
 		}
 	}
 	return output
-}
-
-// moveThrottledRequests moves jobs that got throttled at a given prioty level to the FreeBucket priority level
-// in the scheduler pass, to give them a second chance to be scheduled if there are any idle workers left
-// once the FreeBucket pass is reached.
-func (run *schedulerRun) moveThrottledRequests(priority Priority) {
-	for _, item := range run.matchableRequestsPerPriority[priority] {
-		if item.alreadyMatched || item.disableIfFree {
-			continue
-		}
-		if run.isThrottled(item.req) {
-			run.matchableRequestsPerPriority[FreeBucket] = append(run.matchableRequestsPerPriority[FreeBucket], item)
-		}
-	}
 }
 
 // minInt returns the lesser of two integers.

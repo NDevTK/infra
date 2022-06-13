@@ -340,38 +340,6 @@ func TestExaminedTime(t *testing.T) {
 				So(r.examinedTime, ShouldEqual, t0)
 			}
 		})
-
-		t1 := t0.Add(10 * time.Second)
-		s.MarkIdle(ctx, "w1", nil, t1, NullEventSink)
-		s.UpdateTime(ctx, t1)
-		s.RunOnce(ctx, NullEventSink)
-		Convey("after a idle worker is added and a scheduler run in which one request is assigned, the other request's examined time is not updated (due to throttling, with an account with free tasks disabled).", func() {
-			So(s.state.queuedRequests, ShouldHaveLength, 1)
-			for _, r := range s.state.queuedRequests {
-				So(r.examinedTime, ShouldEqual, t0)
-			}
-		})
-
-		accountConfig.MaxFanout = 10
-		s.state.balances["a1"] = Balance{}
-		s.RunOnce(ctx, NullEventSink)
-		Convey("if the request is not throttled due to fanout, but it is still unable to match due to the account being out of quota, its examined time is not updated.", func() {
-			So(s.state.queuedRequests, ShouldHaveLength, 1)
-			for _, r := range s.state.queuedRequests {
-				So(r.examinedTime, ShouldEqual, t0)
-			}
-		})
-
-		s.config.AccountConfigs["a1"].DisableFreeTasks = false
-		t2 := t1.Add(10 * time.Second)
-		s.UpdateTime(ctx, t2)
-		s.RunOnce(ctx, NullEventSink)
-		Convey("when free tasks are enabled, then after a scheduler run the queued request's examined time is updated.", func() {
-			So(s.state.queuedRequests, ShouldHaveLength, 1)
-			for _, r := range s.state.queuedRequests {
-				So(r.examinedTime, ShouldEqual, t2)
-			}
-		})
 	})
 }
 
