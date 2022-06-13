@@ -207,3 +207,23 @@ class QEMUAPI(recipe_api.RecipeApi):
       cmd.append('file={},format=raw,if=ide,media=disk,index={}'.format(
           self.disks.join(d), i))
     self.m.step(name='Start vm {}'.format(name), cmd=cmd)
+
+  def powerdown_vm(self, name):
+    """ powerdown_vm sends a shutdown signal to the given VM. Similar to power
+        button on a physical device
+        Args:
+          name: name of the vm to shutdown
+    """
+    try:
+      res = self.m.step(
+          name='Powerdown {}'.format(name),
+          cmd=[
+              'python3',
+              self.resource('qmp.py'), '-c', 'system_powerdown', '-s',
+              'localhost:4444'
+          ],
+          stdout=self.m.json.output())
+      return res.stdout
+    except Exception as e:
+      #Failed to power down. Is it already powered down?
+      return {'return': {'Error': '{}'.format(e)}}

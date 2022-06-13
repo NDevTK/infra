@@ -60,6 +60,7 @@
   * [qemu:examples/basic](#recipes-qemu_examples_basic) (Python3 ✅)
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
   * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
+  * [qemu:examples/powerdown_vm](#recipes-qemu_examples_powerdown_vm) (Python3 ✅)
   * [qemu:examples/start_vm](#recipes-qemu_examples_start_vm) (Python3 ✅)
   * [recipe_autoroller](#recipes-recipe_autoroller) (Python3 ✅) &mdash; Rolls recipes.
   * [recipe_autoroller:examples/full](#recipes-recipe_autoroller_examples_full) (Python3 ✅)
@@ -633,6 +634,13 @@ Args:
 Returns: loop file used for the disk and mount location
 
 &emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#24)(self):**
+
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#211)(self, name):**
+
+powerdown_vm sends a shutdown signal to the given VM. Similar to power
+button on a physical device
+Args:
+  name: name of the vm to shutdown
 
 &mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#187)(self, name, arch, memory, disks):**
 
@@ -1649,6 +1657,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/create_disk_fail.py#13)(api):**
+### *recipes* / [qemu:examples/powerdown\_vm](/recipes/recipe_modules/qemu/examples/powerdown_vm.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/powerdown_vm.py#8): [qemu](#recipe_modules-qemu), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/powerdown_vm.py#15)(api):**
 ### *recipes* / [qemu:examples/start\_vm](/recipes/recipe_modules/qemu/examples/start_vm.py)
 
 [DEPS](/recipes/recipe_modules/qemu/examples/start_vm.py#9): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
