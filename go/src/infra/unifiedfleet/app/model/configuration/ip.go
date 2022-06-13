@@ -255,17 +255,28 @@ func GetIPIndexedFieldName(input string) (string, error) {
 	return field, nil
 }
 
+// IPBatchSize is the batch size for updating IPs in a batch put request
+const IPBatchSize = 100
+
 // BatchUpdateIPs updates the ip entity to UFS.
 //
 // This can be used inside a transaction
 func BatchUpdateIPs(ctx context.Context, ips []*ufspb.IP) ([]*ufspb.IP, error) {
-	protos := make([]proto.Message, len(ips))
-	for i, ip := range ips {
-		protos[i] = ip
+	for i := 0; i < len(ips); i += IPBatchSize {
+		batchLen := IPBatchSize
+		if i+batchLen > len(ips) {
+			batchLen = len(ips) - i
+		}
+		protos := make([]proto.Message, batchLen)
+		k := 0
+		for j := i; j < i+batchLen; j++ {
+			protos[k] = ips[j]
+			k++
+		}
+		_, err := ufsds.PutAll(ctx, protos, newIPEntity, true)
+		if err != nil {
+			return nil, err
+		}
 	}
-	_, err := ufsds.PutAll(ctx, protos, newIPEntity, true)
-	if err == nil {
-		return ips, err
-	}
-	return nil, err
+	return ips, nil
 }
