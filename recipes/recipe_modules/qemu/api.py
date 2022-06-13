@@ -1,12 +1,16 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from recipe_engine import recipe_api
 from recipe_engine.recipe_api import Property
+from textwrap import dedent
 
-#TODO(anushruth): Move the emulator to a proper cipd location
-QEMU_PKG = 'experimental/anushruth_at_google_com/emulators/qemu/linux-amd64'
+QEMU_PKG = 'infra/3pp/tools/qemu/linux-amd64'
+
+# disk formats available on our linux bots
+DISK_FORMATS = frozenset(
+    ['exfat', 'ext3', 'fat', 'msdos', 'vfat', 'ext2', 'ext4', 'ntfs'])
 
 
 class QEMUAPI(recipe_api.RecipeApi):
@@ -14,13 +18,168 @@ class QEMUAPI(recipe_api.RecipeApi):
 
   def __init__(self, *args, **kwargs):
     super(QEMUAPI, self).__init__(*args, **kwargs)
-    self._install_dir = ''
+    self._install_dir = None
+    self._workdir = None
+
+  @property
+  def path(self):
+    return self._install_dir.join('bin')
+
+  @property
+  def disks(self):
+    return self._workdir.join('disks')
 
   def init(self, version):
-    """ Initialize the module, ensure that qemu exists on the system """
+    """ Initialize the module, ensure that qemu exists on the system
+
+    Note:
+      - QEMU is installed in cache/qemu
+      - Virtual disks are stored in cleanup/qemu/disks
+
+    Args:
+      * version: the cipd version tag for qemu
+    """
     # create a directory to store qemu tools
     self._install_dir = self.m.path['cache'].join('qemu')
+    # directory to store qemu workdata
+    self._workdir = self.m.path['cleanup'].join('qemu', 'workdir')
+    self.m.file.ensure_directory(
+        name='Ensure {}'.format(self.disks), dest=self.disks)
+
     # download the binaries to the install directory
     e = self.m.cipd.EnsureFile()
     e.add_package(QEMU_PKG, version)
     self.m.cipd.ensure(self._install_dir, e, name="Download qemu")
+
+  def create_disk(self, disk_name, fs_format='fat', min_size=0, include=()):
+    """ create_disk creates a virtual disk with the given name, format and size.
+
+    Optionally it is possible to specify a list of paths to copy to the disk.
+    If the size is deemed to be too small to copy the files it might be
+    increased to fit all the files.
+
+    Args:
+      * name: name of the disk image file
+      * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
+      * min_size: minimum size of the disk in bytes
+                  (bigger size used if required)
+      * include: sequence of files and directories to copy to image
+    """
+    if include:
+      # mock output for testing
+      test_res = dedent('''
+                            123567   /usr/local/bin/fortune
+                            123448   /usr/local/lib/libnolib.so
+                            123565   /usr/local/lib/libs.so
+                            13245243 total
+                        ''')
+      # use du to estimate the size on disk
+      res = self.m.step(
+          name='Estimate size required for disk',
+          cmd=['du', '-scb'] + include,
+          stdout=self.m.raw_io.output(),
+          step_test_data=lambda: self.m.raw_io.test_api.stream_output(test_res))
+      # read total from last line of the output
+      op = res.stdout.strip().splitlines()[-1]
+      total_size = int(op.split()[0])
+      # bump up the size by 5% to ensure that all files can be copied
+      total_size += (total_size // 20)
+      min_size = max(total_size, min_size)
+    # create an empty disk
+    self.create_empty_disk(disk_name, fs_format, min_size)
+    if include:
+      # copy files to the disk
+      with self.m.step.nest(name='Copy files to disk'):
+        loop_file, mount_loc = self.mount_disk_image(disk_name)
+        try:
+          for f in include:
+            if self.m.path.isdir(f):
+              self.m.file.copytree(
+                  name='Copy {}'.format(f),
+                  source=f,
+                  dest='{}/{}'.format(mount_loc, self.m.path.basename(f)))
+            if self.m.path.isfile(f):
+              self.m.file.copy(
+                  name='Copy {}'.format(f), source=f, dest=mount_loc)
+        finally:
+          self.unmount_disk_image(loop_file)
+
+  def create_empty_disk(self, disk_name, fs_format, size):
+    """ create_empty_disk creates an empty disk image and formats it
+
+    Args:
+      * disk_name: name of the disk image file
+      * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
+      * size: size of the disk image in bytes
+    """
+    # check if the given format is supported
+    if fs_format not in DISK_FORMATS:
+      raise self.m.step.StepFailure(
+          'Disk format {} not supported'.format(fs_format))
+    res = self.m.step(
+        name='Check if there is enough space on disk',
+        cmd=['df', '--output=avail', self.disks],
+        stdout=self.m.raw_io.output())
+    free_disk = int(res.stdout.splitlines()[-1].strip())
+    if size > free_disk:
+      raise self.m.step.StepFailure(
+          'No space on the bot. Required {}, available {}'.format(
+              size, free_disk))
+    # First create a blank image for given size
+    self.m.step(
+        name='Create blank image {} {}'.format(disk_name, self.disks),
+        cmd=[
+            self.path.join('qemu-img'), 'create',
+            self.disks.join(disk_name),
+            str(size)
+        ])
+    self.m.step(
+        name='Format image',
+        cmd=['mkfs.{}'.format(fs_format),
+             self.disks.join(disk_name)])
+
+  def mount_disk_image(self, disk_name):
+    """ mount_disk_image mounts the given image and returns the mount location
+    and loop file used for mounting
+
+    Args:
+      * disk_name: name of the disk image file
+
+    Returns: loop file used for the disk and mount location
+    """
+
+    res = self.m.step(
+        name='Setup loop',
+        cmd=['udisksctl', 'loop-setup', '-f',
+             self.disks.join(disk_name)],
+        stdout=self.m.raw_io.output(),
+        step_test_data=lambda: self.m.raw_io.test_api.stream_output(
+            'Mapped file {} to /dev/loop6'.format(self.disks.join(disk_name))))
+    loop_file = res.stdout.split()[-1].decode('UTF-8').strip('.')
+    try:
+      res = self.m.step(
+          name='Mount loop',
+          cmd=['udisksctl', 'mount', '-b', loop_file],
+          stdout=self.m.raw_io.output())
+    except Exception as e:
+      # If we fail to mount the loop device, delete it
+      self.m.step(
+          name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])
+      # throw back the exception
+      raise e
+
+    mount_loc = res.stdout.split()[-1].decode('UTF-8').strip('.')
+    return loop_file, mount_loc
+
+  def unmount_disk_image(self, loop_file):
+    """ unmount_disk_image unmounts the disk mounted using the given loop_file
+
+    Args:
+      * loop_file: Loop device used to mount the image
+    """
+    # unmount the loop device
+    self.m.step(
+        name='Unmount loop', cmd=['udisksctl', 'unmount', '-b', loop_file])
+    # delete the loop device
+    self.m.step(
+        name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])

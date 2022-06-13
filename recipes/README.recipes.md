@@ -58,6 +58,8 @@
   * [powershell:examples/test](#recipes-powershell_examples_test)
   * [provenance:examples/usage](#recipes-provenance_examples_usage) (Python3 ✅)
   * [qemu:examples/basic](#recipes-qemu_examples_basic) (Python3 ✅)
+  * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
+  * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
   * [recipe_autoroller](#recipes-recipe_autoroller) (Python3 ✅) &mdash; Rolls recipes.
   * [recipe_autoroller:examples/full](#recipes-recipe_autoroller_examples_full) (Python3 ✅)
   * [recipe_bundler](#recipes-recipe_bundler) (Python3 ✅)
@@ -574,17 +576,69 @@ provenance will be installed using cipd and verified using the provenance
 built-in to the OS image (if available).
 ### *recipe_modules* / [qemu](/recipes/recipe_modules/qemu)
 
-[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/path][recipe_engine/recipe_modules/path]
+[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#12)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#16)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API to manage qemu VMs 
 
-&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#19)(self, version):**
+&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#54)(self, disk_name, fs_format='fat', min_size=0, include=()):**
 
-Initialize the module, ensure that qemu exists on the system 
+create_disk creates a virtual disk with the given name, format and size.
+
+Optionally it is possible to specify a list of paths to copy to the disk.
+If the size is deemed to be too small to copy the files it might be
+increased to fit all the files.
+
+Args:
+  * name: name of the disk image file
+  * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
+  * min_size: minimum size of the disk in bytes
+              (bigger size used if required)
+  * include: sequence of files and directories to copy to image
+
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#107)(self, disk_name, fs_format, size):**
+
+create_empty_disk creates an empty disk image and formats it
+
+Args:
+  * disk_name: name of the disk image file
+  * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
+  * size: size of the disk image in bytes
+
+&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#28)(self):**
+
+&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#32)(self, version):**
+
+Initialize the module, ensure that qemu exists on the system
+
+Note:
+  - QEMU is installed in cache/qemu
+  - Virtual disks are stored in cleanup/qemu/disks
+
+Args:
+  * version: the cipd version tag for qemu
+
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#141)(self, disk_name):**
+
+mount_disk_image mounts the given image and returns the mount location
+and loop file used for mounting
+
+Args:
+  * disk_name: name of the disk image file
+
+Returns: loop file used for the disk and mount location
+
+&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#24)(self):**
+
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#174)(self, loop_file):**
+
+unmount_disk_image unmounts the disk mounted using the given loop_file
+
+Args:
+  * loop_file: Loop device used to mount the image
 ### *recipe_modules* / [recipe\_autoroller](/recipes/recipe_modules/recipe_autoroller)
 
 [DEPS](/recipes/recipe_modules/recipe_autoroller/__init__.py#7): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/futures][recipe_engine/recipe_modules/futures], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/random][recipe_engine/recipe_modules/random], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]
@@ -1566,6 +1620,20 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/basic.py#12)(api):**
+### *recipes* / [qemu:examples/create\_disk](/recipes/recipe_modules/qemu/examples/create_disk.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/create_disk.py#10): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/create_disk.py#15)(api):**
+### *recipes* / [qemu:examples/create\_disk\_fail](/recipes/recipe_modules/qemu/examples/create_disk_fail.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/create_disk_fail.py#8): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/create_disk_fail.py#13)(api):**
 ### *recipes* / [recipe\_autoroller](/recipes/recipes/recipe_autoroller.py)
 
 [DEPS](/recipes/recipes/recipe_autoroller.py#9): [recipe\_autoroller](#recipe_modules-recipe_autoroller), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/time][recipe_engine/recipe_modules/time]
