@@ -410,6 +410,9 @@ func validateCreateVlan(ctx context.Context, vlan *ufspb.Vlan) error {
 	if err := validateFreeIPV4Str(vlan.FreeStartIpv4Str); err != nil {
 		return err
 	}
+	if err := validateIPV4Range(vlan.FreeStartIpv4Str, vlan.FreeEndIpv4Str); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -458,6 +461,9 @@ func validateUpdateVlan(ctx context.Context, oldVlan *ufspb.Vlan, vlan *ufspb.Vl
 		if err := validateFreeIPV4Str(vlan.FreeStartIpv4Str); err != nil {
 			return err
 		}
+		if err := validateIPV4Range(vlan.FreeStartIpv4Str, vlan.FreeEndIpv4Str); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -466,6 +472,20 @@ func validateFreeIPV4Str(ipv4 string) error {
 	if ipv4 != "" {
 		if _, err := util.IPv4StrToInt(ipv4); err != nil {
 			return status.Errorf(codes.InvalidArgument, "free ip %s is an invalid IP", ipv4)
+		}
+	}
+	return nil
+}
+
+func validateIPV4Range(startIp string, endIp string) error {
+	if startIp != "" && endIp != "" {
+		startIpVal, errStart := util.IPv4StrToInt(startIp)
+		endIpVal, errEnd := util.IPv4StrToInt(endIp)
+		if errStart != nil || errEnd != nil {
+			return status.Errorf(codes.InvalidArgument, "invalid start or end free IP")
+		}
+		if startIpVal > endIpVal {
+			return status.Errorf(codes.InvalidArgument, "invalid IP Range %s - %s. FreeStartIPV4 is after FreeEndIPV4", startIp, endIp)
 		}
 	}
 	return nil
@@ -493,8 +513,14 @@ func validateVlanUpdateMask(ctx context.Context, vlan *ufspb.Vlan, mask *field_m
 				if err := validateFreeIPV4Str(vlan.FreeStartIpv4Str); err != nil {
 					return err
 				}
+				if err := validateIPV4Range(vlan.FreeStartIpv4Str, vlan.FreeEndIpv4Str); err != nil {
+					return err
+				}
 			case "free_end_ip":
 				if err := validateFreeIPV4Str(vlan.FreeEndIpv4Str); err != nil {
+					return err
+				}
+				if err := validateIPV4Range(vlan.FreeStartIpv4Str, vlan.FreeEndIpv4Str); err != nil {
 					return err
 				}
 			default:

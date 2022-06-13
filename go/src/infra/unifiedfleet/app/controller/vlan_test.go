@@ -60,12 +60,36 @@ func TestCreateVlan(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "invalid CIDR block")
 		})
 
-		Convey("Create vlan - invalid free ip range", func() {
+		Convey("Create vlan - invalid free start ip", func() {
 			vlan1 := mockVlan("create-vlan-1", "192.168.100.0/27")
 			vlan1.FreeStartIpv4Str = "1235"
 			_, err := CreateVlan(ctx, vlan1)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "free ip 1235 is an invalid IP")
+		})
+
+		Convey("Create vlan - invalid free end ip", func() {
+			vlan1 := mockVlan("create-vlan-1", "192.168.100.0/27")
+			vlan1.FreeEndIpv4Str = "1235"
+			_, err := CreateVlan(ctx, vlan1)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "free ip 1235 is an invalid IP")
+		})
+
+		Convey("Create vlan - invalid free ip range", func() {
+			vlan1 := mockVlan("create-vlan-1", "192.168.100.0/27")
+			vlan1.FreeEndIpv4Str = "192.168.100.6"
+			vlan1.FreeStartIpv4Str = "192.168.100.26"
+			_, err := CreateVlan(ctx, vlan1)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "invalid IP Range")
+		})
+
+		Convey("Create vlan - no range validation if end IP is missing", func() {
+			vlan1 := mockVlan("create-vlan-5", "194.168.100.0/27")
+			vlan1.FreeStartIpv4Str = "194.168.100.26"
+			_, err := CreateVlan(ctx, vlan1)
+			So(err, ShouldBeNil)
 		})
 
 		Convey("Create vlan - happy path", func() {
@@ -468,6 +492,34 @@ func TestUpdateVlan(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetTags(), ShouldResemble, []string{"tag-1", "tag-2"})
+		})
+
+		Convey("Update vlan - invalid IP Range", func() {
+			vlan1 := mockVlan("update-vlan-14", "9.9.9.0/27")
+			vlan1.Description = "before update"
+			resp, err := CreateVlan(ctx, vlan1)
+			So(err, ShouldBeNil)
+			So(resp.GetFreeStartIpv4Str(), ShouldEqual, "9.9.9.11")
+			So(resp.GetFreeEndIpv4Str(), ShouldEqual, "9.9.9.30")
+			startIPInt, err := util.IPv4StrToInt("9.9.9.11")
+			endIPInt, err := util.IPv4StrToInt("9.9.9.30")
+			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "update-vlan-14"})
+			So(err, ShouldBeNil)
+			So(ips, ShouldHaveLength, 32)
+			for _, ip := range ips {
+				if ip.GetIpv4() < startIPInt || ip.GetIpv4() > endIPInt {
+					So(ip.GetReserve(), ShouldBeTrue)
+				} else {
+					So(ip.GetReserve(), ShouldBeFalse)
+				}
+			}
+
+			vlan2 := proto.Clone(vlan1).(*ufspb.Vlan)
+			vlan2.FreeStartIpv4Str = "7.7.7.30"
+			vlan2.FreeEndIpv4Str = "7.7.7.29"
+			resp, err = UpdateVlan(ctx, vlan2, &field_mask.FieldMask{Paths: []string{"free_start_ip", "free_end_ip"}})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "invalid IP Range")
 		})
 	})
 }
