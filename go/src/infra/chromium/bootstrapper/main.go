@@ -17,11 +17,11 @@ import (
 	"time"
 
 	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/cas"
-	"infra/chromium/bootstrapper/cipd"
-	"infra/chromium/bootstrapper/gclient"
-	"infra/chromium/bootstrapper/gerrit"
-	"infra/chromium/bootstrapper/gitiles"
+	"infra/chromium/bootstrapper/clients/cas"
+	"infra/chromium/bootstrapper/clients/cipd"
+	"infra/chromium/bootstrapper/clients/gclient"
+	"infra/chromium/bootstrapper/clients/gerrit"
+	"infra/chromium/bootstrapper/clients/gitiles"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"

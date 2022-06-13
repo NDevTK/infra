@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/chromium/bootstrapper/cas"
-	"infra/chromium/bootstrapper/cipd"
-	fakecas "infra/chromium/bootstrapper/fakes/cas"
-	fakecipd "infra/chromium/bootstrapper/fakes/cipd"
+	"infra/chromium/bootstrapper/clients/cas"
+	"infra/chromium/bootstrapper/clients/cipd"
+	fakecas "infra/chromium/bootstrapper/clients/fakes/cas"
+	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
 	. "infra/chromium/util"
 
 	. "github.com/smartystreets/goconvey/convey"

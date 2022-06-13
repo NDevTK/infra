@@ -6,8 +6,8 @@ package gclient
 
 import (
 	"context"
-	"infra/chromium/bootstrapper/cipd"
-	fakecipd "infra/chromium/bootstrapper/fakes/cipd"
+	"infra/chromium/bootstrapper/clients/cipd"
+	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
 	. "infra/chromium/util"
 	"path/filepath"
 	"testing"

@@ -6,7 +6,7 @@ package cipd
 
 import (
 	"context"
-	bscipd "infra/chromium/bootstrapper/cipd"
+	bscipd "infra/chromium/bootstrapper/clients/cipd"
 	"infra/chromium/util"
 	"path/filepath"
 	"testing"

@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"infra/chromium/bootstrapper/gerrit"
+	"infra/chromium/bootstrapper/clients/gerrit"
 	"infra/chromium/util"
 
 	"go.chromium.org/luci/common/errors"

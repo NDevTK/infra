@@ -6,7 +6,7 @@ package gitiles
 
 import (
 	"context"
-	"infra/chromium/bootstrapper/gitiles"
+	"infra/chromium/bootstrapper/clients/gitiles"
 	"regexp"
 	"testing"
 

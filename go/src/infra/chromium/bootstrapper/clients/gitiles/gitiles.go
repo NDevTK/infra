@@ -7,7 +7,7 @@ package gitiles
 import (
 	"context"
 	"fmt"
-	"infra/chromium/bootstrapper/gob"
+	"infra/chromium/bootstrapper/clients/gob"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
@@ -37,7 +37,7 @@ var _ GitilesClient = (gitilespb.GitilesClient)(nil)
 // instance.
 type GitilesClientFactory func(ctx context.Context, host string) (GitilesClient, error)
 
-var ctxKey = "infra/chromium/bootstrapper/gitiles.GitilesClientFactory"
+var ctxKey = "infra/chromium/bootstrapper/clients/gitiles.GitilesClientFactory"
 
 // UseGitilesClientFactory returns a context that causes new Client instances to
 // use the given factory when getting gitiles clients.

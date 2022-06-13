@@ -16,10 +16,10 @@ import (
 	"testing"
 
 	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/cipd"
-	fakecipd "infra/chromium/bootstrapper/fakes/cipd"
-	fakegitiles "infra/chromium/bootstrapper/fakes/gitiles"
-	"infra/chromium/bootstrapper/gitiles"
+	"infra/chromium/bootstrapper/clients/cipd"
+	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
+	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
+	"infra/chromium/bootstrapper/clients/gitiles"
 	. "infra/chromium/util"
 
 	. "github.com/smartystreets/goconvey/convey"

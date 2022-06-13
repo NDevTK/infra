@@ -9,7 +9,7 @@ package gclient
 import (
 	"context"
 	stderrors "errors"
-	"infra/chromium/bootstrapper/cipd"
+	"infra/chromium/bootstrapper/clients/cipd"
 	"io/ioutil"
 	"os"
 	"os/exec"

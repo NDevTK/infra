@@ -8,8 +8,8 @@ import (
 	"context"
 	"path/filepath"
 
-	"infra/chromium/bootstrapper/cas"
-	"infra/chromium/bootstrapper/cipd"
+	"infra/chromium/bootstrapper/clients/cas"
+	"infra/chromium/bootstrapper/clients/cipd"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"

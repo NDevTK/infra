@@ -6,7 +6,7 @@ package cas
 
 import (
 	"context"
-	bscas "infra/chromium/bootstrapper/cas"
+	bscas "infra/chromium/bootstrapper/clients/cas"
 
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/client"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"

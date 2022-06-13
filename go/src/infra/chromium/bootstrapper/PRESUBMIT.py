@@ -22,7 +22,7 @@ def CheckPanicUtil(input_api, output_api):
     if not f.startswith(d):
       return False
     f = f[len(d):].replace(input_api.os_path.sep, '/')
-    return not (f.startswith('bootstrapper/fakes/') or
+    return not (f.startswith('bootstrapper/clients/fakes/') or
                 f.endswith('/test_utils.go') or f.endswith('_test.go'))
 
   def error_formatter(filename, line_number, line):

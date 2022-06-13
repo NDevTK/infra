@@ -6,7 +6,7 @@ package gerrit
 
 import (
 	"context"
-	"infra/chromium/bootstrapper/gerrit"
+	"infra/chromium/bootstrapper/clients/gerrit"
 	"sort"
 	"strconv"
 	"testing"

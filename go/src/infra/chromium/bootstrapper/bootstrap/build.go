@@ -17,9 +17,9 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"infra/chromium/bootstrapper/gclient"
-	"infra/chromium/bootstrapper/gerrit"
-	"infra/chromium/bootstrapper/gitiles"
+	"infra/chromium/bootstrapper/clients/gclient"
+	"infra/chromium/bootstrapper/clients/gerrit"
+	"infra/chromium/bootstrapper/clients/gitiles"
 )
 
 type GclientGetter func() (*gclient.Client, error)

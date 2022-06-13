@@ -12,7 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"infra/chromium/bootstrapper/gitiles"
+	"infra/chromium/bootstrapper/clients/gitiles"
 	"infra/chromium/util"
 
 	"go.chromium.org/luci/common/errors"

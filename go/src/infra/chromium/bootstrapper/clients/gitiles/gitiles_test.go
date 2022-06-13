@@ -7,7 +7,7 @@ package gitiles
 import (
 	"context"
 	"errors"
-	"infra/chromium/bootstrapper/gob"
+	"infra/chromium/bootstrapper/clients/gob"
 	"testing"
 
 	"github.com/golang/mock/gomock"

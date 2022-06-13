@@ -7,7 +7,7 @@ package gerrit
 import (
 	"context"
 	"fmt"
-	"infra/chromium/bootstrapper/gob"
+	"infra/chromium/bootstrapper/clients/gob"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gerrit"
@@ -36,7 +36,7 @@ var _ GerritClient = (gerritpb.GerritClient)(nil)
 // instance.
 type GerritClientFactory func(ctx context.Context, host string) (GerritClient, error)
 
-var ctxKey = "infra/chromium/bootstrapper/gerrit.GerritClientFactory"
+var ctxKey = "infra/chromium/bootstrapper/clients/gerrit.GerritClientFactory"
 
 // UseGerritClientFactory returns a context that causes new Client instances to
 // use the given factory when getting gerrit clients.

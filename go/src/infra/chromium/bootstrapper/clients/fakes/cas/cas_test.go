@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	bscas "infra/chromium/bootstrapper/cas"
+	bscas "infra/chromium/bootstrapper/clients/cas"
 	"infra/chromium/util"
 
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"

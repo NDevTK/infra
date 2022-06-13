@@ -6,11 +6,11 @@ package bootstrap
 
 import (
 	"context"
-	fakegerrit "infra/chromium/bootstrapper/fakes/gerrit"
-	fakegitiles "infra/chromium/bootstrapper/fakes/gitiles"
-	"infra/chromium/bootstrapper/gclient"
-	"infra/chromium/bootstrapper/gerrit"
-	"infra/chromium/bootstrapper/gitiles"
+	fakegerrit "infra/chromium/bootstrapper/clients/fakes/gerrit"
+	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
+	"infra/chromium/bootstrapper/clients/gclient"
+	"infra/chromium/bootstrapper/clients/gerrit"
+	"infra/chromium/bootstrapper/clients/gitiles"
 	"infra/chromium/util"
 	"testing"
 
