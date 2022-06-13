@@ -227,3 +227,22 @@ class QEMUAPI(recipe_api.RecipeApi):
     except Exception as e:
       #Failed to power down. Is it already powered down?
       return {'return': {'Error': '{}'.format(e)}}
+
+  def quit_vm(self, name):
+    """ quit_vm sends a quit signal to the qemu process. Use this if you VM
+        doesn't respond to powerdown signal.
+        Args:
+          name: name of the vm to quit
+    """
+    try:
+      res = self.m.step(
+          name='Quit {}'.format(name),
+          cmd=[
+              'python3',
+              self.resource('qmp.py'), '-c', 'quit', '-s', 'localhost:4444'
+          ],
+          stdout=self.m.json.output())
+      return res
+    except Exception as e:
+      #Failed to power down. Is it already powered down?
+      return {'return': {'Error': '{}'.format(e)}}
