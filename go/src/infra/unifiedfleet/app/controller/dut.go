@@ -210,7 +210,7 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 				"dut.servo.type",
 				"dut.servo.topology",
 				"dut.servo.fwchannel",
-				"dut.servo.docker_container",
+				"dut.servo.dockerContainer",
 			)
 		} else {
 			// Update servo on full update
@@ -491,7 +491,7 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 		case "dut.servo.fwchannel":
 		case "dut.servo.type":
 		case "dut.servo.topology":
-		case "dut.servo.docker_container":
+		case "dut.servo.dockerContainer":
 		case "dut.chameleon.type":
 		case "dut.chameleon.audioboard":
 		case "dut.camera.type":
@@ -798,7 +798,7 @@ func processUpdateMachineLSEServoMask(oldServo, newServo *chromeosLab.Servo, pat
 		oldServo.ServoTopology = newServo.GetServoTopology()
 	case "dut.servo.fwchannel":
 		oldServo.ServoFwChannel = newServo.GetServoFwChannel()
-	case "dut.servo.docker_container":
+	case "dut.servo.dockerContainer":
 		oldServo.DockerContainerName = newServo.GetDockerContainerName()
 	}
 }

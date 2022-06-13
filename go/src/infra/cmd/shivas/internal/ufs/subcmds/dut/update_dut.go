@@ -45,7 +45,7 @@ const (
 	servoFwChannelPath       = "dut.servo.fwchannel"
 	servoTypePath            = "dut.servo.type"
 	servoTopologyPath        = "dut.servo.topology"
-	servoDockerContainerPath = "dut.servo.docker_container"
+	servoDockerContainerPath = "dut.servo.dockerContainer"
 
 	// LSE related UpdateMask paths.
 	machinesPath    = "machines"
