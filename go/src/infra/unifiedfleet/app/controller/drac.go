@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsds "infra/unifiedfleet/app/model/datastore"
@@ -74,6 +75,11 @@ func CreateDrac(ctx context.Context, drac *ufspb.Drac) (*ufspb.Drac, error) {
 // Checks if the resources referenced by the Drac input already exists
 // in the system before updating a Drac
 func UpdateDrac(ctx context.Context, drac *ufspb.Drac, mask *field_mask.FieldMask) (*ufspb.Drac, error) {
+	for i, f := range mask.GetPaths() {
+		if !heuristics.LooksLikeFieldMask(f) {
+			return nil, errors.Reason("UpdateDrac - field #%d %q is not valid", i, f).Err()
+		}
+	}
 	f := func(ctx context.Context) error {
 		hc := getDracHistoryClient(drac)
 

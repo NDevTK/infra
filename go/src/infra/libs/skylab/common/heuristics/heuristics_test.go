@@ -170,3 +170,71 @@ func TestNormalizeTextualData(t *testing.T) {
 		})
 	}
 }
+
+// TestLooksLikeFieldMask checks whether strings look like field masks or not.
+func TestLooksLikeFieldMask(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		name string
+		in   string
+		out  bool
+	}{
+		{
+			name: "empty",
+			in:   "",
+			out:  false,
+		},
+		{
+			name: "a",
+			in:   "a",
+			out:  true,
+		},
+		{
+			name: "A",
+			in:   "A",
+			out:  false,
+		},
+		{
+			name: "number",
+			in:   "3",
+			out:  false,
+		},
+		{
+			name: "underscore",
+			in:   "invalid_field_mask",
+			out:  false,
+		},
+		{
+			name: "a6",
+			in:   "a6",
+			out:  true,
+		},
+		{
+			name: "a6E8",
+			in:   "a6E8",
+			out:  true,
+		},
+		{
+			name: "a6E8_aaaa",
+			in:   "a6E8_aaaa",
+			out:  false,
+		},
+		{
+			name: "a6E8.aaaa",
+			in:   "a6E8.aaaa",
+			out:  true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			expected := tt.out
+			actual := LooksLikeFieldMask(tt.in)
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
