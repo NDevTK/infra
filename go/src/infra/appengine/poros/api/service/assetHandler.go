@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
-	"strings"
 	"time"
 
 	. "infra/appengine/poros/api/entities"
@@ -31,6 +30,7 @@ func toEntity(model *proto.AssetModel, ancestorKey *datastore.Key) *AssetEntity 
 		return &AssetEntity{
 			AssetId:     model.AssetId,
 			Name:        model.Name,
+			AssetType:   model.AssetType,
 			Description: model.Description,
 			CreatedAt:   model.CreatedAt.AsTime(),
 			CreatedBy:   model.CreatedBy,
@@ -47,6 +47,7 @@ func toModel(entity *AssetEntity) *proto.AssetModel {
 		return &proto.AssetModel{
 			AssetId:     entity.AssetId,
 			Name:        entity.Name,
+			AssetType:   entity.AssetType,
 			Description: entity.Description,
 			CreatedAt:   timestamppb.New(entity.CreatedAt),
 			CreatedBy:   entity.CreatedBy,
@@ -65,6 +66,9 @@ func validateEntity(entity *AssetEntity) error {
 	if entity.Description == "" {
 		return errors.New("description cannot be empty")
 	}
+	if entity.AssetType == "" {
+		return errors.New("type cannot be empty")
+	}
 	return nil
 }
 
@@ -81,6 +85,7 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		AssetId:     id,
 		Name:        req.GetName(),
 		Description: req.GetDescription(),
+		AssetType:   req.GetAssetType(),
 		CreatedBy:   auth.CurrentUser(ctx).Email,
 		CreatedAt:   time.Now().UTC(),
 		Parent:      fakeAncestorKey(ctx),
@@ -144,8 +149,8 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 		}
 		// Set updated values for fields specified in Update Mask
 		for _, field := range assetmask.GetPaths() {
-			newValue := reflect.ValueOf(req.GetAsset()).Elem().FieldByName(strings.Title(field))
-			reflect.ValueOf(asset).Elem().FieldByName(strings.Title(field)).Set(newValue)
+			newValue := reflect.ValueOf(req.GetAsset()).Elem().FieldByName(snakeToPascalCase(field))
+			reflect.ValueOf(asset).Elem().FieldByName(snakeToPascalCase(field)).Set(newValue)
 		}
 
 		asset.ModifiedBy = auth.CurrentUser(ctx).Email

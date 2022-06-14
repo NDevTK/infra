@@ -19,10 +19,11 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 )
 
-func mockCreateAssetRequest(name string, description string, assetResourcesToSave []*proto.AssetResourceModel) *proto.CreateAssetRequest {
+func mockCreateAssetRequest(name string, description string, asset_type string, assetResourcesToSave []*proto.AssetResourceModel) *proto.CreateAssetRequest {
 	return &proto.CreateAssetRequest{
 		Name:                 name,
 		Description:          description,
+		AssetType:            asset_type,
 		AssetResourcesToSave: assetResourcesToSave,
 	}
 }
@@ -47,13 +48,13 @@ func TestAssetCreateWithValidData(t *testing.T) {
 	t.Parallel()
 	ctx := memory.Use(context.Background())
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
-	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", assetResourcesToSave)
+	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Create an asset in datastore", t, func() {
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
-		want := []string{assetRequest.GetName(), assetRequest.GetDescription()}
-		get := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription()}
+		want := []string{assetRequest.GetName(), assetRequest.GetDescription(), assetRequest.GetAssetType()}
+		get := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
 		So(get, ShouldResemble, want)
 		So(response.GetAssetResources(), ShouldHaveLength, 1)
 		want = []string{response.GetAsset().GetAssetId(), "ResourceId", "Alias name"}
@@ -66,7 +67,7 @@ func TestAssetCreateWithValidData(t *testing.T) {
 func TestAssetCreateWithInvalidName(t *testing.T) {
 	t.Parallel()
 	ctx := memory.Use(context.Background())
-	assetRequest := mockCreateAssetRequest("", "Test Asset description", []*proto.AssetResourceModel{})
+	assetRequest := mockCreateAssetRequest("", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Create an asset with invalid name in datastore", t, func() {
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
@@ -77,8 +78,19 @@ func TestAssetCreateWithInvalidName(t *testing.T) {
 func TestAssetCreateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
 	ctx := memory.Use(context.Background())
-	assetRequest := mockCreateAssetRequest("Test Asset", "", []*proto.AssetResourceModel{})
+	assetRequest := mockCreateAssetRequest("Test Asset", "", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Create an asset with invalid description in datastore", t, func() {
+		handler := &AssetHandler{}
+		_, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetCreateWithInvalidAssetType(t *testing.T) {
+	t.Parallel()
+	ctx := memory.Use(context.Background())
+	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "", []*proto.AssetResourceModel{})
+	Convey("Create an asset with invalid asset_type in datastore", t, func() {
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldNotBeNil)
@@ -88,7 +100,7 @@ func TestAssetCreateWithInvalidDescription(t *testing.T) {
 func TestAssetCreateWithInvalidAssetResource(t *testing.T) {
 	t.Parallel()
 	ctx := memory.Use(context.Background())
-	assetRequest := mockCreateAssetRequest("Test Name", "Test Description",
+	assetRequest := mockCreateAssetRequest("Test Name", "Test Description", "active_directory",
 		[]*proto.AssetResourceModel{mockAssetResource("", "", "", "")})
 	Convey("Create an asset with invalid asset_resource in datastore", t, func() {
 		handler := &AssetHandler{}
@@ -101,7 +113,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 	t.Parallel()
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
 	assetResourcesToDelete := []*proto.AssetResourceModel{}
-	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", assetResourcesToSave)
+	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Update an asset with valid data in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetHandler{}
@@ -112,12 +124,13 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 		entity := createAssetesponse.GetAsset()
 		entity.Name = "Test Asset Name Updated"
 		entity.Description = "Test Asset Description Updated"
+		entity.AssetType = "active_directory_updated"
 		assetResourcesToSave[0].ResourceId = "ResourceId Updated"
 		assetResourcesToSave[0].AliasName = "Alias Name Updated"
 
 		updateRequest := &proto.UpdateAssetRequest{
 			Asset:                   entity,
-			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "asset_type"}},
 			AssetResourcesToSave:    assetResourcesToSave,
 			AssetResourceUpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"resource_id", "alias_name"}},
 			AssetResourcesToDelete:  assetResourcesToDelete,
@@ -130,8 +143,8 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 			AssetId: entity.GetAssetId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		want := []string{"Test Asset Name Updated", "Test Asset Description Updated"}
-		get := []string{readEntity.GetName(), readEntity.GetDescription()}
+		want := []string{"Test Asset Name Updated", "Test Asset Description Updated", "active_directory_updated"}
+		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
 		So(get, ShouldResemble, want)
 
 		//Retrieve the updated asset_resource to make sure the update goes through
@@ -147,7 +160,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 
 func TestAssetUpdateWithInvalidName(t *testing.T) {
 	t.Parallel()
-	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", []*proto.AssetResourceModel{})
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetHandler{}
@@ -156,10 +169,11 @@ func TestAssetUpdateWithInvalidName(t *testing.T) {
 		entity := response.GetAsset()
 		entity.Name = ""
 		entity.Description = "Test Asset Description"
+		entity.AssetType = "active_directory"
 
 		updateRequest := &proto.UpdateAssetRequest{
 			Asset:                   entity,
-			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "asset_type"}},
 			AssetResourceUpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"resource_id", "alias_name"}},
 			AssetResourcesToSave:    []*proto.AssetResourceModel{},
 			AssetResourcesToDelete:  []*proto.AssetResourceModel{},
@@ -172,7 +186,7 @@ func TestAssetUpdateWithInvalidName(t *testing.T) {
 
 func TestAssetUpdateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
-	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", []*proto.AssetResourceModel{})
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetHandler{}
@@ -181,10 +195,37 @@ func TestAssetUpdateWithInvalidDescription(t *testing.T) {
 		entity := response.GetAsset()
 		entity.Name = "Test Asset Name"
 		entity.Description = ""
+		entity.AssetType = "active_directory"
 
 		updateRequest := &proto.UpdateAssetRequest{
 			Asset:                   entity,
-			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "asset_type"}},
+			AssetResourceUpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"resource_id", "alias_name"}},
+			AssetResourcesToSave:    []*proto.AssetResourceModel{},
+			AssetResourcesToDelete:  []*proto.AssetResourceModel{},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the asset as name is empty
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestAssetUpdateWithInvalidAssetType(t *testing.T) {
+	t.Parallel()
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
+	Convey("Update an asset with invalid name in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetHandler{}
+		response, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldBeNil)
+		entity := response.GetAsset()
+		entity.Name = "Test Asset Name"
+		entity.Description = "Test Asset description"
+		entity.AssetType = ""
+
+		updateRequest := &proto.UpdateAssetRequest{
+			Asset:                   entity,
+			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "asset_type"}},
 			AssetResourceUpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"resource_id", "alias_name"}},
 			AssetResourcesToSave:    []*proto.AssetResourceModel{},
 			AssetResourcesToDelete:  []*proto.AssetResourceModel{},
@@ -199,7 +240,7 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 	t.Parallel()
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
 	assetResourcesToDelete := []*proto.AssetResourceModel{}
-	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", assetResourcesToSave)
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetHandler{}
@@ -209,7 +250,7 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 
 		updateRequest := &proto.UpdateAssetRequest{
 			Asset:                   response.GetAsset(),
-			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description"}},
+			AssetUpdateMask:         &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "asset_type"}},
 			AssetResourceUpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"resource_id", "alias_name"}},
 			AssetResourcesToSave:    assetResourcesToSave,
 			AssetResourcesToDelete:  assetResourcesToDelete,
@@ -222,7 +263,7 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 
 func TestGetAssetWithValidData(t *testing.T) {
 	ctx := memory.Use(context.Background())
-	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", []*proto.AssetResourceModel{})
+	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Get an assets based on id from datastore", t, func() {
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
@@ -233,8 +274,8 @@ func TestGetAssetWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		So(err, ShouldBeNil)
 
-		want := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription()}
-		get := []string{readEntity.GetName(), readEntity.GetDescription()}
+		want := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
+		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
 		So(get, ShouldResemble, want)
 	})
 }
@@ -242,8 +283,8 @@ func TestGetAssetWithValidData(t *testing.T) {
 func TestListAssets(t *testing.T) {
 	t.Parallel()
 	ctx := memory.Use(context.Background())
-	assetRequest1 := mockCreateAssetRequest("Test Asset1", "Test Asset description", []*proto.AssetResourceModel{})
-	assetRequest2 := mockCreateAssetRequest("Test Asset2", "Test Asset description", []*proto.AssetResourceModel{})
+	assetRequest1 := mockCreateAssetRequest("Test Asset1", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
+	assetRequest2 := mockCreateAssetRequest("Test Asset2", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Get all assets from datastore", t, func() {
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest1)
@@ -329,7 +370,7 @@ func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.A
 
 	assetHandler := &AssetHandler{}
 	var assetsToSave []*proto.AssetResourceModel
-	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", assetsToSave)
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", assetsToSave)
 	asset, err := assetHandler.Create(ctx, assetRequest)
 	if err != nil {
 		return nil, nil, nil, err

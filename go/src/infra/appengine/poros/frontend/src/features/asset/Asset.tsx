@@ -25,6 +25,7 @@ import {
   createAssetAsync,
   removeMachine,
   setAlias,
+  setAssetType,
   setDescription,
   setName,
   setResourceId,
@@ -40,6 +41,9 @@ export const Asset = () => {
   const description: string = useAppSelector(
     (state) => state.asset.record.description
   );
+  const assetType: string = useAppSelector(
+    (state) => state.asset.record.assetType
+  );
   const assetId: string = useAppSelector((state) => state.asset.record.assetId);
   const asset = useAppSelector((state) => state.asset.record);
   const assetResourcesToSave: AssetResourceModel[] = useAppSelector(
@@ -48,13 +52,18 @@ export const Asset = () => {
   const assetResourcesToDelete: AssetResourceModel[] = useAppSelector(
     (state) => state.asset.assetResourcesToDelete
   );
-  const resources: ResourceModel[] = useAppSelector((state) => state.asset.resources);
+  const resources: ResourceModel[] = useAppSelector(
+    (state) => state.asset.resources
+  );
   const dispatch = useAppDispatch();
-  React.useEffect(() => { dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }))},[]);
+  React.useEffect(() => {
+    dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }));
+  }, []);
 
   const handleSaveClick = (
     name: string,
     description: string,
+    assetType: string,
     assetId: string,
     assetResourcesToSave: AssetResourceModel[],
     assetResourcesToDelete: AssetResourceModel[]
@@ -64,6 +73,7 @@ export const Asset = () => {
         createAssetAsync({
           name,
           description,
+          assetType,
           assetResourcesToSave,
         })
       );
@@ -71,7 +81,7 @@ export const Asset = () => {
       dispatch(
         updateAssetAsync({
           asset,
-          assetUpdateMask: ['name', 'description'],
+          assetUpdateMask: ['name', 'description', 'asset_type'],
           assetResourceUpdateMask: ['resource_id', 'alias_name'],
           assetResourcesToSave,
           assetResourcesToDelete,
@@ -82,6 +92,33 @@ export const Asset = () => {
 
   const handleCancelClick = () => {
     dispatch(clearSelectedRecord());
+  };
+
+  const renderAssetTypeDropdown = () => {
+    return (
+      <Grid container spacing={2} padding={1} paddingTop={6}>
+        <Grid item xs={12}>
+          <FormControl variant="standard" fullWidth>
+            <InputLabel>Type</InputLabel>
+            <Select
+              label="AssetType"
+              id="assettype"
+              value={assetType}
+              onChange={(e) => {
+                setAssetType(e.target.value);
+                dispatch(setAssetType(e.target.value));
+              }}
+              fullWidth
+              inputProps={{ fullWidth: true }}
+              variant="standard"
+              placeholder="Type"
+            >
+              <MenuItem value={'active_directory'}>Active Directory</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+    );
   };
 
   const renderMenuItem = (name: string, resourceId: string) => {
@@ -111,7 +148,9 @@ export const Asset = () => {
               variant="outlined"
               placeholder="Type"
             >
-              {resources.map((resource) => renderMenuItem(resource.name, resource.resourceId))}
+              {resources.map((resource) =>
+                renderMenuItem(resource.name, resource.resourceId)
+              )}
             </Select>
           </FormControl>
         </Grid>
@@ -204,6 +243,7 @@ export const Asset = () => {
           />
         </Grid>
       </Grid>
+      {renderAssetTypeDropdown()}
       <Grid container spacing={2} padding={1}>
         <Grid item xs={12}>
           <TextField
@@ -266,6 +306,7 @@ export const Asset = () => {
                 handleSaveClick(
                   name,
                   description,
+                  assetType,
                   assetId,
                   assetResourcesToSave,
                   assetResourcesToDelete

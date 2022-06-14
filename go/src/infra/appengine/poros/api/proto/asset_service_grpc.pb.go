@@ -35,7 +35,7 @@ type AssetClient interface {
 	List(ctx context.Context, in *ListAssetsRequest, opts ...grpc.CallOption) (*ListAssetsResponse, error)
 	// Get AssetConfiguration
 	GetAssetConfiguration(ctx context.Context, in *GetAssetConfigurationRequest, opts ...grpc.CallOption) (*GetAssetConfigurationResponse, error)
-	// Get HostConfig
+	// Get HostConfiguration
 	GetHostConfiguration(ctx context.Context, in *GetHostConfigurationRequest, opts ...grpc.CallOption) (*GetHostConfigurationResponse, error)
 }
 
@@ -126,7 +126,7 @@ type AssetServer interface {
 	List(context.Context, *ListAssetsRequest) (*ListAssetsResponse, error)
 	// Get AssetConfiguration
 	GetAssetConfiguration(context.Context, *GetAssetConfigurationRequest) (*GetAssetConfigurationResponse, error)
-	// Get HostConfig
+	// Get HostConfiguration
 	GetHostConfiguration(context.Context, *GetHostConfigurationRequest) (*GetHostConfigurationResponse, error)
 	mustEmbedUnimplementedAssetServer()
 }

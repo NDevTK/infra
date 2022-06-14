@@ -42,8 +42,9 @@ message CreateAssetRequest {
   // The new asset to add to the database.
   string name = 1;
   string description = 2;
+  string asset_type = 3;
   // The list of AssetReource to create/update
-  repeated AssetResourceModel asset_resources_to_save = 3;
+  repeated AssetResourceModel asset_resources_to_save = 4;
 
 }
 

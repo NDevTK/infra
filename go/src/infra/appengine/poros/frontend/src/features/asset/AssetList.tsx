@@ -48,6 +48,7 @@ export function AssetList() {
     { field: 'assetId', headerName: 'Id', width: 150 },
     { field: 'name', headerName: 'Name', width: 150 },
     { field: 'description', headerName: 'Description', width: 150 },
+    { field: 'assetType', headerName: 'Type', width: 150 },
     { field: 'createdBy', headerName: 'Created By', width: 150 },
     { field: 'createdAt', headerName: 'Created At', width: 150 },
     {

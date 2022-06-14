@@ -69,6 +69,8 @@ export interface AssetModel {
   name: string;
   /** Description of the asset */
   description: string;
+  /** Type of the asset (active_directory, etc) */
+  assetType: string;
   /** User who created the record */
   createdBy: string;
   /** Timestamp for the creation of the record */
@@ -85,6 +87,7 @@ export const AssetModel = {
       assetId: '',
       name: '',
       description: '',
+      assetType: 'active_directory',
       createdBy: '',
       createdAt: undefined,
       modifiedBy: '',
@@ -96,6 +99,7 @@ export const AssetModel = {
       assetId: isSet(object.assetId) ? String(object.assetId) : '',
       name: isSet(object.name) ? String(object.name) : '',
       description: isSet(object.description) ? String(object.description) : '',
+      assetType: isSet(object.assetType) ? String(object.assetType) : '',
       createdBy: isSet(object.createdBy) ? String(object.createdBy) : '',
       createdAt: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
@@ -113,6 +117,7 @@ export const AssetModel = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.assetType !== undefined && (obj.assetType = message.assetType);
     message.createdBy !== undefined && (obj.createdBy = message.createdBy);
     message.createdAt !== undefined &&
       (obj.createdAt = message.createdAt.toISOString());
@@ -129,6 +134,8 @@ export interface CreateAssetRequest {
   name: string;
   /** Description of the asset */
   description: string;
+  /** Type of the asset (active_directory, etc) */
+  assetType: string;
   /** List of asset resource to create/update */
   assetResourcesToSave: AssetResourceModel[];
 }
@@ -146,6 +153,7 @@ export const CreateAssetRequest = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.assetType !== undefined && (obj.assetType = message.assetType);
     message.assetResourcesToSave !== undefined &&
       (obj.assetResourcesToSave = message.assetResourcesToSave);
     return obj;

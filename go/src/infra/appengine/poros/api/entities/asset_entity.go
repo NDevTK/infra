@@ -18,6 +18,8 @@ type AssetEntity struct {
 	Name string
 	// Description of the asset
 	Description string
+	//Type of the Asset (active_directory, etc)
+	AssetType string
 	// User who created the record.
 	CreatedBy string
 	// Timestamp for the creation of the record.

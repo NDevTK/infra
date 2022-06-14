@@ -77,15 +77,18 @@ export const createAssetAsync = createAsyncThunk(
   async ({
     name,
     description,
+    assetType,
     assetResourcesToSave,
   }: {
     name: string;
     description: string;
+    assetType: string;
     assetResourcesToSave: AssetResourceModel[];
   }) => {
     const request: CreateAssetRequest = {
       name: name,
       description: description,
+      assetType: assetType,
       assetResourcesToSave: assetResourcesToSave,
     };
     const service: IAssetService = new AssetService();
@@ -174,6 +177,9 @@ export const assetSlice = createSlice({
     },
     setDescription: (state, action) => {
       state.record.description = action.payload;
+    },
+    setAssetType: (state, action) => {
+      state.record.assetType = action.payload;
     },
     onSelectRecord: (state, action) => {
       state.record = state.assets.filter(
@@ -282,6 +288,7 @@ export const {
   clearSelectedRecord,
   setName,
   setDescription,
+  setAssetType,
   addMachine,
   removeMachine,
   setResourceId,
