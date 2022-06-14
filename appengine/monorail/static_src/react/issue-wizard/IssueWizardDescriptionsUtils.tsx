@@ -42,9 +42,8 @@ export function expandDescriptions(
             }
             break;
           case 'Security':
-            if (typeLabel === '') {
-              typeLabel = 'Type-Bug-Security';
-            }
+            typeLabel = 'Type-Bug-Security';
+            break;
           case 'Other':
             typeLabel = "Type-Bug";
             const issueType = currentAnswer.split(' - ')[0];
