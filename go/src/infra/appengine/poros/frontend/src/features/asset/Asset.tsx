@@ -32,6 +32,8 @@ import {
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { AssetResourceModel } from '../../api/asset_resource_service';
+import { ResourceModel } from '../../api/resource_service';
+import { queryResourceAsync } from '../resource/resourceSlice';
 
 export const Asset = () => {
   const name: string = useAppSelector((state) => state.asset.record.name);
@@ -46,7 +48,9 @@ export const Asset = () => {
   const assetResourcesToDelete: AssetResourceModel[] = useAppSelector(
     (state) => state.asset.assetResourcesToDelete
   );
+  const resources: ResourceModel[] = useAppSelector((state) => state.asset.resources);
   const dispatch = useAppDispatch();
+  React.useEffect(() => { dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }))},[]);
 
   const handleSaveClick = (
     name: string,
@@ -84,7 +88,7 @@ export const Asset = () => {
     return <MenuItem value={resourceId}> {name} </MenuItem>;
   };
 
-  const renderRow = (index: number, aliasName: string) => {
+  const renderRow = (index: number, aliasName: string, resourceId: string) => {
     return (
       <Grid container spacing={2} padding={1}>
         <Grid
@@ -103,11 +107,11 @@ export const Asset = () => {
               onChange={(e) =>
                 dispatch(setResourceId({ id: index, value: e.target.value }))
               }
+              value={resourceId}
               variant="outlined"
               placeholder="Type"
             >
-              <MenuItem value={'dummy1'}> Dummy1 </MenuItem>
-              <MenuItem value={'dummy2'}> Dummy2 </MenuItem>
+              {resources.map((resource) => renderMenuItem(resource.name, resource.resourceId))}
             </Select>
           </FormControl>
         </Grid>
@@ -228,7 +232,7 @@ export const Asset = () => {
       </Grid>
 
       {assetResourcesToSave.map((entity, index) =>
-        renderRow(index, entity.aliasName)
+        renderRow(index, entity.aliasName, entity.resourceId)
       )}
       <Button
         variant="outlined"

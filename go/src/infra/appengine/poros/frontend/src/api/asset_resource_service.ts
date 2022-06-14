@@ -100,14 +100,13 @@ export const AssetResourceModel = {
     };
   },
   fromJSON(object: any): AssetResourceModel {
-    console.log(object);
     return {
       assetResourceId: isSet(object.assetResourceId)
         ? String(object.assetResourceId)
         : '',
       assetId: isSet(object.assetId) ? String(object.assetId) : '',
       resourceId: isSet(object.resourceId)
-        ? String(object.asresourceIdsetId)
+        ? String(object.resourceId)
         : '',
       aliasName: isSet(object.aliasName) ? String(object.aliasName) : '',
       createdBy: isSet(object.createdBy) ? String(object.createdBy) : '',

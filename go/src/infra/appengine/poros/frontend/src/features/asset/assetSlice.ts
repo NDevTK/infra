@@ -22,6 +22,7 @@ import {
 } from '../../api/asset_service';
 import { ResourceModel } from '../../api/resource_service';
 import { RootState } from '../../app/store';
+import { queryResourceAsync } from '../resource/resourceSlice';
 
 export interface AssetState {
   assets: AssetModel[];
@@ -242,7 +243,6 @@ export const assetSlice = createSlice({
       })
       .addCase(queryAssetAsync.fulfilled, (state, action) => {
         state.fetchAssetStatus = 'idle';
-        console.log(action.payload.assets);
         state.assets = action.payload.assets;
         state.pageToken = action.payload.nextPageToken;
       })
@@ -264,6 +264,9 @@ export const assetSlice = createSlice({
           ),
           AssetResourceModel.defaultEntity(),
         ];
+      })
+      .addCase(queryResourceAsync.fulfilled, (state, action) => {
+        state.resources = action.payload.resources;
       });
   },
 });
