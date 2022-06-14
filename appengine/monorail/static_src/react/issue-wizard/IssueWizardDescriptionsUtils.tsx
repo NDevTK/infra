@@ -21,6 +21,10 @@ export function expandDescriptions(
     let compVal = component || '';
     let typeLabel = isRegression ? 'Type-Bug-Regression' : 'Type-Bug';
 
+    if (category === 'Security') {
+      typeLabel = 'Type-Bug-Security'
+    }
+
     customQuestionsAnswers.forEach((ans) => {
       if (ans.startsWith(LABELS_PREFIX)) {
         const currentAnswer = ans.substring(LABELS_PREFIX.length);

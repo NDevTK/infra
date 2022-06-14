@@ -233,7 +233,7 @@ export const ISSUE_WIZARD_QUESTIONS: IssueCategory[] = [
     tip: 'Please follow the instructions for <a href="https://www.chromium.org/Home/chromium-security/reporting-security-bugs" target="_blank">reporting security issues</a>.',
     component: '',
     customQuestions: [],
-    labels: ['Restrict-View-SecurityTeam', 'Type-Bug-Security'],
+    labels: ['Restrict-View-SecurityTeam'],
   },
   {
     name: 'Other',
