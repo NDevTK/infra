@@ -246,3 +246,23 @@ class QEMUAPI(recipe_api.RecipeApi):
     except Exception as e:
       #Failed to power down. Is it already powered down?
       return {'return': {'Error': '{}'.format(e)}}
+
+  def vm_status(self, name):
+    """ vm_status returns a dict describing the status of the vm. The return
+        value is the QMP response to `query-status`
+        Args:
+          name: name of the vm
+    """
+    try:
+      res = self.m.step(
+          name='Status {}'.format(name),
+          cmd=[
+              'python3',
+              self.resource('qmp.py'), '-c', 'query-status', '-s',
+              'localhost:4444'
+          ],
+          stdout=self.m.json.output())
+      return res.stdout
+    except Exception as e:
+      #Failed to power down. Is it already powered down?
+      return {'return': {'Error': '{}'.format(e)}}
