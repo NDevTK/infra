@@ -70,6 +70,8 @@ export interface ResourceModel {
   type: string;
   /** Description of the resource */
   description: string;
+  /** if machine is selected then operating system */
+  operatingSystem: string;
   /** if machine is selected then type of machine */
   image: string;
   /** User who created the record */
@@ -88,6 +90,7 @@ export const ResourceModel = {
       resourceId: '',
       name: '',
       type: 'machine',
+      operatingSystem: '',
       description: '',
       image: '',
       createdBy: '',
@@ -101,6 +104,9 @@ export const ResourceModel = {
       resourceId: isSet(object.resourceId) ? String(object.resourceId) : '',
       name: isSet(object.name) ? String(object.name) : '',
       type: isSet(object.type) ? String(object.type) : '',
+      operatingSystem: isSet(object.operatingSystem)
+        ? String(object.operatingSystem)
+        : '',
       description: isSet(object.description) ? String(object.description) : '',
       image: isSet(object.image) ? String(object.image) : '',
 
@@ -120,6 +126,8 @@ export const ResourceModel = {
     message.resourceId !== undefined && (obj.resourceId = message.resourceId);
     message.name !== undefined && (obj.name = message.name);
     message.type !== undefined && (obj.type = message.type);
+    message.operatingSystem !== undefined &&
+      (obj.operatingSystem = message.operatingSystem);
     message.description !== undefined &&
       (obj.description = message.description);
     message.image !== undefined && (obj.image = message.image);
@@ -139,6 +147,8 @@ export interface CreateResourceRequest {
   name: string;
   /** Type of the resource */
   type: string;
+  /** if machine is selected then operating system */
+  operatingSystem: string;
   /** Description of the resource */
   description: string;
   /** if machine is selected then type of machine */
@@ -150,6 +160,8 @@ export const CreateResourceRequest = {
     const obj: any = {};
     message.name !== undefined && (obj.name = message.name);
     message.type !== undefined && (obj.type = message.type);
+    message.operatingSystem !== undefined &&
+      (obj.operatingSystem = message.operatingSystem);
     message.description !== undefined &&
       (obj.description = message.description);
     message.image !== undefined && (obj.image = message.image);

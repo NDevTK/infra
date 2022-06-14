@@ -12,9 +12,11 @@ import (
 	proto "infra/appengine/poros/api/proto"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/gae/service/datastore"
 )
 
 func mockCreateAssetRequest(name string, description string, assetResourcesToSave []*proto.AssetResourceModel) *proto.CreateAssetRequest {
@@ -34,6 +36,13 @@ func mockAssetResource(assetResourceId string, assetId string, resourceId string
 	}
 }
 
+func mockGetAssetConfigRequest(assetId string) *proto.GetAssetConfigurationRequest {
+	return &proto.GetAssetConfigurationRequest{AssetId: assetId}
+}
+
+func mockGetHostConfigRequest(resourceIds []string) *proto.GetHostConfigurationRequest {
+	return &proto.GetHostConfigurationRequest{ResourceIds: resourceIds}
+}
 func TestAssetCreateWithValidData(t *testing.T) {
 	t.Parallel()
 	ctx := memory.Use(context.Background())
@@ -251,4 +260,88 @@ func TestListAssets(t *testing.T) {
 		sort.Strings(get)
 		So(get, ShouldResemble, want)
 	})
+}
+
+func TestAssetConfigWithValidDetails(t *testing.T) {
+	t.Parallel()
+
+	Convey("Test Generated Asset Configuration with valid data", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+
+		asset, assetResource, resource, err := generateAssetAndResources(ctx)
+		So(err, ShouldBeNil)
+
+		handler := &AssetHandler{}
+		mockRequest := mockGetAssetConfigRequest(asset.AssetId)
+		res, err := handler.GetAssetConfiguration(ctx, mockRequest)
+		So(err, ShouldBeNil)
+
+		assetConfig := &proto.AssetConfiguration{}
+		err = protojson.Unmarshal([]byte(res.Config), assetConfig)
+		So(err, ShouldBeNil)
+
+		So(assetConfig.AssetId, ShouldEqual, asset.AssetId)
+
+		So(len(assetConfig.Resources), ShouldEqual, 1)
+
+		So(assetConfig.Resources[0].ResourceId, ShouldEqual, resource.ResourceId)
+		So(assetConfig.Resources[0].OperatingSystem, ShouldEqual, resource.OperatingSystem)
+		So(assetConfig.Resources[0].AliasName, ShouldEqual, assetResource.AliasName)
+		So(assetConfig.Resources[0].MachineType, ShouldEqual, resource.Name)
+	})
+}
+
+func TestHostConfigWithValidDetails(t *testing.T) {
+	t.Parallel()
+
+	Convey("Test Generated Host Configuration with valid data", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+
+		_, _, resource, err := generateAssetAndResources(ctx)
+		So(err, ShouldBeNil)
+
+		handler := &AssetHandler{}
+		mockRequest := mockGetHostConfigRequest([]string{resource.ResourceId})
+		res, err := handler.GetHostConfiguration(ctx, mockRequest)
+		So(err, ShouldBeNil)
+
+		hostConfig := &proto.HostConfiguration{}
+		err = protojson.Unmarshal([]byte(res.Config), hostConfig)
+		So(err, ShouldBeNil)
+
+		So(len(hostConfig.Resources), ShouldEqual, 1)
+
+		So(hostConfig.Resources[0].ResourceId, ShouldEqual, resource.ResourceId)
+		So(hostConfig.Resources[0].ResourceName, ShouldEqual, resource.Name)
+		So(hostConfig.Resources[0].ResourceImage, ShouldEqual, resource.Image)
+	})
+}
+
+func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.AssetResourceModel, *proto.ResourceModel, error) {
+	resHandler := &ResourceHandler{}
+	resourceRequest := mockCreateResourceRequest("win2016mock", "mock windows machine", "machine", "windows_machine", "win-image-1")
+	resource, err := resHandler.Create(ctx, resourceRequest)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	assetHandler := &AssetHandler{}
+	var assetsToSave []*proto.AssetResourceModel
+	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", assetsToSave)
+	asset, err := assetHandler.Create(ctx, assetRequest)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	assetResHandler := &AssetResourceHandler{}
+	assetResourceRequest := mockCreateAssetResourceRequest(asset.Asset.AssetId, resource.ResourceId, "win-1")
+	assetResource, err := assetResHandler.Create(ctx, assetResourceRequest)
+	_, err = getByAssetResourceId(ctx, assetResource.AssetResourceId)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return asset.Asset, assetResource, resource, nil
 }

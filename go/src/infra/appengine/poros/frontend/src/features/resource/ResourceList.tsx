@@ -49,6 +49,7 @@ export function ResourceList() {
     { field: 'resourceId', headerName: 'Id', width: 150 },
     { field: 'name', headerName: 'Name', width: 150 },
     { field: 'type', headerName: 'Type', width: 150 },
+    { field: 'operatingSystem', headerName: 'Operating System', width: 150 },
     { field: 'description', headerName: 'Description', width: 150 },
     { field: 'image', headerName: 'Image', width: 150 },
     { field: 'createdBy', headerName: 'Created By', width: 150 },

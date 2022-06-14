@@ -32,6 +32,10 @@ service Asset {
   // Get AssetConfiguration
   rpc GetAssetConfiguration(GetAssetConfigurationRequest)
       returns (GetAssetConfigurationResponse);
+
+  // Get HostConfiguration
+  rpc GetHostConfiguration(GetHostConfigurationRequest)
+      returns (GetHostConfigurationResponse);
 }
 // Request to create a single asset in AssetServ
 message CreateAssetRequest {
@@ -114,4 +118,44 @@ message GetAssetConfigurationRequest {
 message GetAssetConfigurationResponse {
   // The configuration for the asset.
   string config = 1;
+}
+
+message AssetConfigurationResource {
+  // Unique Identifier of the Resource
+  string resource_id = 1;
+  // Operating System of the Resource (windows_machine, linux_machine, etc.)
+  string operating_system = 2;
+  // Alias Name of the resource
+  string alias_name = 3;
+  // Name of the resource
+  string machine_type = 4;
+}
+
+message AssetConfiguration {
+  string asset_id = 1;
+  repeated AssetConfigurationResource resources = 2;
+}
+
+// request to get the host configuration by resource id
+message GetHostConfigurationRequest {
+  // The unique identifier of the resource to retrieve.
+  repeated string resource_ids = 1;
+}
+
+message GetHostConfigurationResponse {
+  string config = 1;
+}
+
+// response to GetHostConfigurationRequest
+message HostConfigurationResource {
+  // Unique Identifier of the Resource
+  string resource_id = 1;
+  // Name of the Resource
+  string resource_name = 2;
+  // Image information about the source
+  string resource_image = 3;
+}
+
+message HostConfiguration {
+  repeated HostConfigurationResource resources = 1;
 }

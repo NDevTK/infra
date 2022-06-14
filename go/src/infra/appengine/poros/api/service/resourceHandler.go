@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"reflect"
-	"strings"
 	"time"
 
 	. "infra/appengine/poros/api/entities"
@@ -28,15 +27,16 @@ type ResourceHandler struct {
 func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 	if model != nil {
 		return &ResourceEntity{
-			ResourceId:  model.ResourceId,
-			Name:        model.Name,
-			Description: model.Description,
-			Type:        model.Type,
-			Image:       model.Image,
-			CreatedAt:   model.CreatedAt.AsTime(),
-			CreatedBy:   model.CreatedBy,
-			ModifiedAt:  model.ModifiedAt.AsTime(),
-			ModifiedBy:  model.ModifiedBy,
+			ResourceId:      model.ResourceId,
+			Name:            model.Name,
+			Description:     model.Description,
+			Type:            model.Type,
+			OperatingSystem: model.OperatingSystem,
+			Image:           model.Image,
+			CreatedAt:       model.CreatedAt.AsTime(),
+			CreatedBy:       model.CreatedBy,
+			ModifiedAt:      model.ModifiedAt.AsTime(),
+			ModifiedBy:      model.ModifiedBy,
 		}
 	}
 	return nil
@@ -45,15 +45,16 @@ func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 	if entity != nil {
 		return &proto.ResourceModel{
-			ResourceId:  entity.ResourceId,
-			Name:        entity.Name,
-			Description: entity.Description,
-			Type:        entity.Type,
-			Image:       entity.Image,
-			CreatedAt:   timestamppb.New(entity.CreatedAt),
-			CreatedBy:   entity.CreatedBy,
-			ModifiedAt:  timestamppb.New(entity.ModifiedAt),
-			ModifiedBy:  entity.ModifiedBy,
+			ResourceId:      entity.ResourceId,
+			Name:            entity.Name,
+			Description:     entity.Description,
+			Type:            entity.Type,
+			OperatingSystem: entity.OperatingSystem,
+			Image:           entity.Image,
+			CreatedAt:       timestamppb.New(entity.CreatedAt),
+			CreatedBy:       entity.CreatedBy,
+			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
+			ModifiedBy:      entity.ModifiedBy,
 		}
 	}
 	return nil
@@ -70,6 +71,9 @@ func validateResourceEntity(entity *ResourceEntity) error {
 	if entity.Type == "" {
 		return errors.New("type cannot be empty")
 	}
+	if entity.Type == "machine" && entity.OperatingSystem == "" {
+		return errors.New("Operating System cannot be empty")
+	}
 	if entity.Type == "machine" && entity.Image == "" {
 		return errors.New("VM Image needs to be specified")
 	}
@@ -80,13 +84,14 @@ func validateResourceEntity(entity *ResourceEntity) error {
 func (e *ResourceHandler) Create(ctx context.Context, req *proto.CreateResourceRequest) (*proto.ResourceModel, error) {
 	id := uuid.New().String()
 	entity := &ResourceEntity{
-		ResourceId:  id,
-		Name:        req.GetName(),
-		Description: req.GetDescription(),
-		Type:        req.GetType(),
-		Image:       req.GetImage(),
-		CreatedBy:   auth.CurrentUser(ctx).Email,
-		CreatedAt:   time.Now().UTC(),
+		ResourceId:      id,
+		Name:            req.GetName(),
+		Description:     req.GetDescription(),
+		Type:            req.GetType(),
+		OperatingSystem: req.GetOperatingSystem(),
+		Image:           req.GetImage(),
+		CreatedBy:       auth.CurrentUser(ctx).Email,
+		CreatedAt:       time.Now().UTC(),
 	}
 	if err := validateResourceEntity(entity); err != nil {
 		return nil, err
@@ -124,8 +129,8 @@ func (e *ResourceHandler) Update(ctx context.Context, req *proto.UpdateResourceR
 
 		// Set updated values for fields specified in Update Mask
 		for _, field := range mask.GetPaths() {
-			newValue := reflect.ValueOf(req.GetResource()).Elem().FieldByName(strings.Title(field))
-			reflect.ValueOf(resource).Elem().FieldByName(strings.Title(field)).Set(newValue)
+			newValue := reflect.ValueOf(req.GetResource()).Elem().FieldByName(snakeToPascalCase(field))
+			reflect.ValueOf(resource).Elem().FieldByName(snakeToPascalCase(field)).Set(newValue)
 		}
 
 		resource.ModifiedBy = auth.CurrentUser(ctx).Email

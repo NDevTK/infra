@@ -22,6 +22,7 @@ import {
   createResourceAsync,
   setName,
   setType,
+  setOperatingSystem,
   setDescription,
   setImage,
   updateResourceAsync,
@@ -33,6 +34,9 @@ export const Resource = () => {
   const [activeResourceType, setActiveResourceType] = React.useState('machine');
   const name: string = useAppSelector((state) => state.resource.record.name);
   const type: string = useAppSelector((state) => state.resource.record.type);
+  const operatingSystem: string = useAppSelector(
+    (state) => state.resource.record.operatingSystem
+  );
   const description: string = useAppSelector(
     (state) => state.resource.record.description
   );
@@ -47,6 +51,7 @@ export const Resource = () => {
   const handleSaveClick = (
     name: string,
     type: string,
+    operatingSystem: string,
     description: string,
     image: string,
     resourceId: string
@@ -56,6 +61,7 @@ export const Resource = () => {
         createResourceAsync({
           name,
           type,
+          operatingSystem,
           description,
           image,
         })
@@ -64,7 +70,13 @@ export const Resource = () => {
       dispatch(
         updateResourceAsync({
           resource,
-          updateMask: ['name', 'description', 'type', 'image'],
+          updateMask: [
+            'name',
+            'description',
+            'type',
+            'operating_system',
+            'image',
+          ],
         })
       );
     }
@@ -99,6 +111,35 @@ export const Resource = () => {
             >
               <MenuItem value={'machine'}>Machine</MenuItem>
               <MenuItem value={'domain'}>Domain</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderOperatingSystemDropdown = () => {
+    return (
+      <Grid container spacing={2} padding={1} paddingTop={6}>
+        <Grid item xs={12}>
+          <FormControl variant="standard" fullWidth>
+            <InputLabel>Operating System</InputLabel>
+            <Select
+              label="OperatingSystem"
+              id="OperatingSystem"
+              defaultValue="windows_machine"
+              value={operatingSystem}
+              onChange={(e) => {
+                dispatch(setOperatingSystem(e.target.value));
+              }}
+              fullWidth
+              inputProps={{ fullWidth: true }}
+              variant="standard"
+              placeholder="Type"
+            >
+              <MenuItem value={'windows_machine'}>windows_machine</MenuItem>
+              <MenuItem value={'linux_machine'}>linux_machine</MenuItem>
+              <MenuItem value={'chromeos_machine'}>chromeos_machine</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -209,6 +250,9 @@ export const Resource = () => {
       {activeResourceType == 'machine'
         ? renderMachineMetaDropdown()
         : renderDomainMetaInput()}
+
+      {activeResourceType == 'machine' ? renderOperatingSystemDropdown() : null}
+
       <Grid container spacing={2} padding={1} paddingTop={6}>
         <Grid item xs={12}>
           <TextField
@@ -243,7 +287,14 @@ export const Resource = () => {
             <Button
               variant="contained"
               onClick={() =>
-                handleSaveClick(name, type, description, image, resourceId)
+                handleSaveClick(
+                  name,
+                  type,
+                  operatingSystem,
+                  description,
+                  image,
+                  resourceId
+                )
               }
               endIcon={<DeleteIcon />}
             >

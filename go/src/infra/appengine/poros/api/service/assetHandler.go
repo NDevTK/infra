@@ -6,8 +6,8 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
-	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -249,13 +249,50 @@ func (e *AssetHandler) List(ctx context.Context, in *proto.ListAssetsRequest) (*
 }
 
 func (c *AssetHandler) GetAssetConfiguration(ctx context.Context, in *proto.GetAssetConfigurationRequest) (*proto.GetAssetConfigurationResponse, error) {
-	// TODO: crbug/1322948 - Static file used for implementing & testing the auth
-	// in go binary, this method will be replaced by actual asset config from db
-	data, err := os.ReadFile("./connector_test.asset.textpb")
-	if err != nil {
+	assetId := in.GetAssetId()
+	res := &proto.AssetConfiguration{AssetId: assetId}
+
+	query := datastore.NewQuery("AssetResourceEntity").Eq("AssetId", assetId)
+	var assetResourceEntites []*AssetResourceEntity
+	if err := datastore.GetAll(ctx, query, &assetResourceEntites); err != nil {
 		return nil, err
 	}
-	return &proto.GetAssetConfigurationResponse{Config: string(data)}, nil
+
+	for _, assetResource := range assetResourceEntites {
+		resource, err := getResourceById(ctx, assetResource.ResourceId)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Resources = append(
+			res.Resources,
+			&proto.AssetConfigurationResource{
+				ResourceId:      resource.ResourceId,
+				OperatingSystem: resource.OperatingSystem,
+				AliasName:       assetResource.AliasName,
+				MachineType:     resource.Name})
+	}
+	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
+
+	return &proto.GetAssetConfigurationResponse{Config: string(jsonBytes)}, nil
+}
+
+func (c *AssetHandler) GetHostConfiguration(ctx context.Context, in *proto.GetHostConfigurationRequest) (*proto.GetHostConfigurationResponse, error) {
+	resourceIds := in.ResourceIds
+
+	res := &proto.HostConfiguration{}
+
+	for _, resourceId := range resourceIds {
+		resource, err := getResourceById(ctx, resourceId)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Resources = append(res.Resources, &proto.HostConfigurationResource{ResourceId: resource.ResourceId, ResourceName: resource.Name, ResourceImage: resource.Image})
+	}
+	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
+
+	return &proto.GetHostConfigurationResponse{Config: string(jsonBytes)}, nil
 }
 
 func getById(ctx context.Context, id string) (*AssetEntity, error) {

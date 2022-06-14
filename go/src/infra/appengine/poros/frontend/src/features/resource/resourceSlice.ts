@@ -60,17 +60,20 @@ export const createResourceAsync = createAsyncThunk(
   async ({
     name,
     type,
+    operatingSystem,
     description,
     image,
   }: {
     name: string;
     type: string;
+    operatingSystem: string;
     description: string;
     image: string;
   }) => {
     const request: CreateResourceRequest = {
       name,
       type,
+      operatingSystem,
       description,
       image,
     };
@@ -137,6 +140,9 @@ export const resourceSlice = createSlice({
     },
     setType: (state, action) => {
       state.record.type = action.payload;
+    },
+    setOperatingSystem: (state, action) => {
+      state.record.operatingSystem = action.payload;
     },
     setDescription: (state, action) => {
       state.record.description = action.payload;
@@ -208,6 +214,7 @@ export const {
   clearSelectedRecord,
   setName,
   setType,
+  setOperatingSystem,
   setDescription,
   setImage,
 } = resourceSlice.actions;

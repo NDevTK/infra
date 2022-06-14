@@ -17,6 +17,8 @@ type ResourceEntity struct {
 	Description string
 	// Type of the resource
 	Type string
+	//  Operating system of the machine (If Type is machine)
+	OperatingSystem string
 	// TODO: crbug/1328854 move the image info as part of property later phases
 	// image associated to the machine
 	Image string

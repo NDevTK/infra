@@ -36,17 +36,19 @@ message ResourceModel {
   string description = 3;
   // Type of the resource
   string type = 4;
+  // Operating system of the machine (If Type is machine)
+  string operating_system = 5;
   // TODO: crbug/1328854 move the image info as part of property later phases
   // image associated to the machine
-  string image = 5;
+  string image = 6;
   // User who created the resource.
-  string created_by = 6;
+  string created_by = 7;
   // Timestamp for the creation of the record.
-  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp created_at = 8;
   // Timestamp for the last update of the record.
-  google.protobuf.Timestamp modified_at = 8;
+  google.protobuf.Timestamp modified_at = 9;
   // User who modified the record.
-  string modified_by = 9;
+  string modified_by = 10;
 }
 
 message AssetResourceModel {
