@@ -1743,17 +1743,19 @@ message UpdateDutStateRequest {
   models.LabMeta lab_meta = 4;
 }
 
+// Next ID: 8
 message UpdateDeviceRecoveryDataRequest {
-  // The id or asset tag for chromeos device.
-  string chromeos_device_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The id or asset tag for device.
+  string device_id = 7;
+  string chromeos_device_id = 1 [deprecated = true];
   // The hostname of the device.
-  // Optional field but strongly recommended. If empty, hostname will be derived from chromeos_device_id.
+  // Optional field but strongly recommended. If empty, hostname will be derived from device_id.
   string hostname = 2;
   // The DUT state to update.
   models.State resource_state = 3 [(google.api.field_behavior) = REQUIRED];
 
   // The state record to update.
-  // DutState.id is required and its value should be equal to chromeos_device_id(tag 1)
+  // DutState.id is required and its value should be equal to device_id(tag 7)
   // DutState.hostname is optional, if not empty it should be equal to hostname(tag 2)
   models.chromeos.lab.DutState dut_state = 4 [(google.api.field_behavior) = REQUIRED];
 
