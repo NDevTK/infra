@@ -24,12 +24,13 @@ import "infra/unifiedfleet/api/v1/models/chromeos/device/config.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto";
 import "infra/unifiedfleet/api/v1/models/machine.proto";
 import "infra/libs/skylab/inventory/device.proto";
+import "infra/unifiedfleet/api/v1/models/ownership.proto";
 
 // MachineLSE is the Machine Lab Setup Environment.
 // It refers to the entity in the lab which has Machine(s) associated
 // with it. It also has other components associated with it.
 //
-// Next tag: 22
+// Next tag: 23
 message MachineLSE {
     option (google.api.resource) = {
         type: "unified-fleet-system.appspot.com/MachineLSE"
@@ -125,6 +126,9 @@ message MachineLSE {
     // Schedulable field will determine if a MachineLSE should be exposed to the
     // scheduling layer (currently Swarming) or not.
     bool schedulable = 21;
+
+    // Ownership information of the host like ResourceGroup, Security level etc.
+    OwnershipData ownership = 22;
 }
 
 // ChromeBrowserMachineLSE refers to the entity
@@ -188,6 +192,9 @@ message VM {
 
     // The deployment ticket associated with this vm.
     string deployment_ticket = 14;
+
+    // Ownership information of the host like ResourceGroup, Security level etc.
+    OwnershipData ownership = 16;
 }
 
 // OSVersion refers to the version of Operating System

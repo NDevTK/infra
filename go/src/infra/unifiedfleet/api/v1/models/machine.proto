@@ -15,11 +15,12 @@ import "infra/unifiedfleet/api/v1/models/location.proto";
 import "infra/unifiedfleet/api/v1/models/peripherals.proto";
 import "infra/unifiedfleet/api/v1/models/network.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
+import "infra/unifiedfleet/api/v1/models/ownership.proto";
 
 // Machine refers to the devices or bare metal servers
 // which serves the tests directly.
 //
-// Next Tag: 13
+// Next Tag: 15
 message Machine {
     option (google.api.resource) = {
         type: "unified-fleet-system.appspot.com/Machine"
@@ -66,6 +67,9 @@ message Machine {
 
     // Asset tag of the machine
     string asset_tag = 12;
+
+    // Ownership information of the host like ResourceGroup, Security level etc.
+    OwnershipData ownership = 14;
 }
 
 // ChromeBrowserMachine refers to bare metal servers in Chrome Browser lab
