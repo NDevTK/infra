@@ -25,8 +25,9 @@ import (
 )
 
 // The kzip directories to write data files and compilation units into.
-var filesDir = "kzip/files/"
-var unitsDir = "kzip/pbunits/"
+var rootDir = "root/"
+var filesDir = rootDir + "files/"
+var unitsDir = rootDir + "pbunits/"
 
 // kzipEntry stores the path to a file to be written in the kzip and its contents.
 type kzipEntry struct {
@@ -320,7 +321,7 @@ func (ip *indexPack) writeToKzip(kzipEntryChannel <-chan kzipEntry) error {
 
 	// Create the directories inside kzip.
 	w := zip.NewWriter(kzip)
-	_, err = w.Create("kzip/")
+	_, err = w.Create(rootDir)
 	if err != nil {
 		return err
 	}

@@ -249,9 +249,9 @@ func TestPackageIndexWindows(t *testing.T) {
 				var dataInfo []*zip.File
 				for _, zipInfo := range r.File {
 					So(strings.Contains(zipInfo.Name, "\\"), ShouldBeFalse)
-					if strings.Contains(zipInfo.Name, "pbunits") && zipInfo.Name != "kzip/pbunits/" {
+					if strings.Contains(zipInfo.Name, "pbunits") && zipInfo.Name != "root/pbunits/" {
 						unitInfo = append(unitInfo, zipInfo)
-					} else if strings.Contains(zipInfo.Name, "files") && zipInfo.Name != "kzip/files/" {
+					} else if strings.Contains(zipInfo.Name, "files") && zipInfo.Name != "root/files/" {
 						dataInfo = append(dataInfo, zipInfo)
 					}
 				}
