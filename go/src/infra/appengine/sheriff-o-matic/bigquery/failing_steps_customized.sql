@@ -33,11 +33,11 @@ WITH
     4),
   recent_tests AS (
     SELECT
-    SUBSTR(ingested_invocation_id, 7) AS build_id,
-    realm,
-    variant_hash,
-    ANY_VALUE(COALESCE((SELECT value FROM UNNEST(tags) WHERE key = "test_name"), test_id)) AS test_name,
-    ANY_VALUE((SELECT value FROM UNNEST(tags) WHERE key = "step_name" limit 1)) as step_name,
+    SUBSTR(r.ingested_invocation_id, 7) AS build_id,
+    r.realm,
+    r.variant_hash,
+    ANY_VALUE(COALESCE((SELECT value FROM UNNEST(r.tags) WHERE key = "test_name"), r.test_id)) AS test_name,
+    ANY_VALUE((SELECT value FROM UNNEST(r.tags) WHERE key = "step_name" limit 1)) as step_name,
     -- we prefix 'rules' algorithms with 'a' and others with 'b' so that MIN chooses clusters in order of [rules, reason, testname].
     SUBSTR(MIN(CONCAT(
         IF
@@ -46,45 +46,53 @@ WITH
             'b'), cluster_algorithm, '/', cluster_id)), 2) AS cluster_names
   FROM ((
       SELECT
-        ingested_invocation_id,
-        test_id,
         cluster_algorithm,
         cluster_id,
-        partition_time,
-        is_ingested_invocation_blocked,
-        exoneration_status,
-        is_included,
-        tags,
-        realm,
-        variant_hash
-      FROM      
-        `chops-weetbix.chromium.clustered_failures`)      
+        test_result_system,
+        test_result_id,
+        DATE(partition_time) as partition_time,
+        ARRAY_AGG(STRUCT(
+          ingested_invocation_id,
+          test_id,
+          is_ingested_invocation_blocked,
+          exonerations,
+          is_included,
+          tags,
+          realm,
+          variant_hash
+        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
+      FROM `chops-weetbix.chromium.clustered_failures` cf
+      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
     UNION ALL (
       SELECT
-        ingested_invocation_id,
-        test_id,
         cluster_algorithm,
         cluster_id,
-        partition_time,
-        is_ingested_invocation_blocked,
-        exoneration_status,
-        is_included,
-        tags,
-        realm,
-        variant_hash
-      FROM
-        `chops-weetbix.chrome.clustered_failures`)
+        test_result_system,
+        test_result_id,
+        DATE(partition_time) as partition_time,
+        ARRAY_AGG(STRUCT(
+          ingested_invocation_id,
+          test_id,
+          is_ingested_invocation_blocked,
+          exonerations,
+          is_included,
+          tags,
+          realm,
+          variant_hash
+        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
+      FROM `chops-weetbix.chrome.clustered_failures` cf
+      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
     )
-  WHERE
-    partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-    AND is_ingested_invocation_blocked
-    AND exoneration_status = 'NOT_EXONERATED'
-    AND is_included
+  WHERE r.is_included
+    AND r.is_ingested_invocation_blocked
+    AND ARRAY_LENGTH(r.exonerations) = 0
   GROUP BY
-    ingested_invocation_id,
-    test_id,
-    realm,
-    variant_hash)
+    r.ingested_invocation_id,
+    r.test_id,
+    r.realm,
+    r.variant_hash)
 SELECT
   project,
   bucket,
