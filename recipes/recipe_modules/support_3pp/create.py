@@ -176,5 +176,8 @@ def _build_impl(api, cipd_spec, is_latest, spec_lookup, force_build, recurse_fn,
           # Attach provenance after the package has been uploaded.
           package_hash = api.file.file_hash(cipd_spec.local_pkg_path(),
                                             test_data='deadbeef')
-          api.bcid_reporter.report_cipd(package_hash, cipd_spec.name,
-                                        pin_result['instance_id'])
+          try:
+            api.bcid_reporter.report_cipd(package_hash, cipd_spec.name,
+                                          pin_result['instance_id'])
+          except Exception:  # pragma: no cover
+            api.step.active_result.presentation.status = api.step.FAILURE
