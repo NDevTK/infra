@@ -368,80 +368,6 @@ CREATE TABLE TQLeases (
     ExpiresAt TIMESTAMP NOT NULL,
 ) PRIMARY KEY (SectionID ASC, LeaseID ASC);
 
--- Stores combined results of all runs of a test variant in a single invocation.
-CREATE TABLE TestVerdicts (
-  -- The LUCI Project this test verdict belongs to.
-  Project STRING(40) NOT NULL,
-
-  -- Unique identifier of the test.
-  -- This has the same value as luci.resultdb.v1.TestResult.test_id.
-  TestId STRING(MAX) NOT NULL,
-
-  -- Partition time, as determined by Weetbix ingestion. Start time of the
-  -- ingested build (for postsubmit results) or start time of the presubmit run
-  -- (for presubmit results). Defines date/time axis of test verdicts plotted
-  -- by date/time.
-  -- Including as part of Primary Key allows direct filtering of data for test
-  -- to last N days. This could be used to improve performance for tests with
-  -- many verdicts, or allow experimentation with keeping longer histories
-  -- (e.g. 120 days) without incurring performance penalty on time-windowed
-  -- queries.
-  PartitionTime TIMESTAMP NOT NULL,
-
-  -- A hex-encoded sha256 of concatenated "<key>:<value>\n" variant pairs.
-  -- Computed as hex(sha256(<concatenated_key_value_pairs>)[:8]),
-  -- where concatenated_key_value_pairs is the result of concatenating
-  -- variant pairs formatted as "<key>:<value>\n" in ascending key order.
-  -- Combination of Realm, TestId and VariantHash can identify a test variant.
-  VariantHash STRING(16) NOT NULL,
-
-  -- The invocation from which these test results were ingested.
-  -- This is the top-level invocation that was ingested.
-  IngestedInvocationId STRING(MAX) NOT NULL,
-
-  -- The realm of the test result, excluding project. 62 as ResultDB allows
-  -- at most 64 characters for the construction "<project>:<realm>" and project
-  -- must be at least one character.
-  SubRealm STRING(62) NOT NULL,
-
-  -- Derived information from the included test results.
-  -- Needed to compute the status of the verdict.
-  -- Status can be computed with the following code:
-  -- ```
-  -- WHEN IsExonerated THEN @exonerated
-  -- WHEN UnexpectedCount = 0 THEN @expected
-  -- WHEN SkippedCount = UnexpectedCount AND ExpectedCount = 0 THEN @unexpectedlySkipped
-  -- WHEN ExpectedCount = 0 THEN @unexpected
-  -- ELSE @flaky
-  -- ```
-
-  -- How many expected test results this verdict includes.
-  ExpectedCount INT64 NOT NULL,
-  -- How many unexpected test results this verdict includes.
-  UnexpectedCount INT64 NOT NULL,
-  -- How many skipped test results this verdict includes.
-  SkippedCount INT64 NOT NULL,
-  -- Whether the test verdict was exonerated.
-  IsExonerated BOOL NOT NULL,
-
-  -- How long a passed test execution took on average, in microseconds.
-  PassedAvgDurationUsec INT64,
-
-  -- Whether the invocation was part of a build that has unsubmitted changes
-  -- applied (such as Gerrit changes). (This includes unsubmitted changes
-  -- that were later submitted, e.g. because of a successful presubmit run.)
-  HasUnsubmittedChanges BOOL NOT NULL,
-
-  -- Whether the invocation was part of a build that has unsubmitted changes
-  -- applied (such as Gerrit changes) AND the changes were later submitted
-  -- because the build was part of a successful presubmit run.
-  HasContributedToClSubmission BOOL NOT NULL,
-) PRIMARY KEY(Project, TestId, PartitionTime, VariantHash, IngestedInvocationId, SubRealm)
--- The following DDL query needs to be uncommented when applied to real Spanner
--- instances. But it is commented out for Cloud Spanner Emulator:
--- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
---, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
-
 -- Stores test results.
 CREATE TABLE TestResults (
   -- The LUCI Project this test result belongs to.
@@ -498,14 +424,9 @@ CREATE TABLE TestResults (
   -- The test result status.
   Status INT64 NOT NULL,
 
-  -- Whether the test verdict was exonerated, and if so, for what reason it
-  -- was exonerated.
-  -- DEPRECATED: Will be removed shortly.
-  ExonerationStatus INT64,
-
   -- The reasons (if any) the test verdict was exonerated.
   -- If this array is null, the test verdict was not exonerated.
-  -- Empty array values are not used.
+  -- (Non-null) empty array values are not used.
   -- This field is stored denormalised. It is guaranteed to be the same for
   -- all results for a test variant in an ingested invocation.
   ExonerationReasons ARRAY<INT64>,
