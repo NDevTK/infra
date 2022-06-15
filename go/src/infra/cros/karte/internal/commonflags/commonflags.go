@@ -20,19 +20,19 @@ type Flags struct {
 }
 
 // Register registers the common flags.
-func (c *Flags) Register(f *flag.FlagSet) {
-	if c == nil {
+func (flags *Flags) Register(f *flag.FlagSet) {
+	if f == nil {
 		panic("common flags cannot be nil")
 	}
-	if f == nil {
+	if flags == nil {
 		panic("flagset cannot be nil")
 	}
-	f.StringVar(&c.Env, "env", "local", `choose the Karte service, valid values are local|dev|prod`)
+	f.StringVar(&flags.Env, "env", "local", `choose the Karte service, valid values are local|dev|prod`)
 }
 
 // MustSelectKarteConfig selects the a Karte config corresponding to the environment flag.
-func (f *Flags) MustSelectKarteConfig(o auth.Options) *client.Config {
-	switch f.Env {
+func (flags *Flags) MustSelectKarteConfig(o auth.Options) *client.Config {
+	switch flags.Env {
 	case "", "local":
 		return client.LocalConfig(o)
 	case "dev":
@@ -40,6 +40,6 @@ func (f *Flags) MustSelectKarteConfig(o auth.Options) *client.Config {
 	case "prod":
 		return client.ProdConfig(o)
 	default:
-		panic(fmt.Sprintf("unrecognized environment %q", f.Env))
+		panic(fmt.Sprintf("unrecognized environment %q", flags.Env))
 	}
 }
