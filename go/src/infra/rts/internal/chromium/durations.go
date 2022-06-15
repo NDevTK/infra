@@ -5,8 +5,6 @@
 package chromium
 
 import (
-	"fmt"
-	"os"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -38,35 +36,23 @@ func SubcommandCommandFetchDurations(authOpt *auth.Options) *subcommands.Command
 }
 
 type fetchDurationsRun struct {
-	baseCommandRun
+	BaseCommandRun
 	baseHistoryRun
 	frac        float64
 	minDuration time.Duration
 }
 
-type baseCommandRun struct {
-	subcommands.CommandRunBase
-}
-
-func (r *baseCommandRun) done(err error) int {
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return 1
-	}
-	return 0
-}
-
 func (r *fetchDurationsRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, r, env)
 	if len(args) != 0 {
-		return r.done(errors.New("unexpected positional arguments"))
+		return r.Done(errors.New("unexpected positional arguments"))
 	}
 
 	if err := r.baseHistoryRun.Init(ctx); err != nil {
-		return r.done(err)
+		return r.Done(err)
 	}
 
-	return r.done(r.runAndFetchResults(
+	return r.Done(r.runAndFetchResults(
 		ctx,
 		testDurationsSQL,
 		bigquery.QueryParameter{

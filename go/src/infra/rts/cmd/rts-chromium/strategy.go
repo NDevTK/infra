@@ -64,18 +64,18 @@ var (
 // why RTS was disabled.
 func (r *selectRun) selectTests(skipFile func(*chromium.TestFile) error) (err error) {
 	// Disable RTS if the number of files is unusual.
-	if len(r.changedFiles) < chromium.MinChangedFiles || len(r.changedFiles) > chromium.MaxChangedFiles {
+	if len(r.ChangedFiles) < chromium.MinChangedFiles || len(r.ChangedFiles) > chromium.MaxChangedFiles {
 		return errors.Reason(
 			"%d files were changed, which is outside of [%d, %d] range",
-			len(r.changedFiles),
+			len(r.ChangedFiles),
 			chromium.MinChangedFiles,
 			chromium.MaxChangedFiles,
 		).Tag(disableRTS).Err()
 	}
 
 	// Check if any of the changed files requires all tests.
-	if !r.ignoreExceptions {
-		for f := range r.changedFiles {
+	if !r.IgnoreExceptions {
+		for f := range r.ChangedFiles {
 			if requireAllTestsRegexp.MatchString(f) {
 				return errors.Reason(
 					"%q was changed, which matches regexp %s",
@@ -85,8 +85,8 @@ func (r *selectRun) selectTests(skipFile func(*chromium.TestFile) error) (err er
 			}
 		}
 	}
-	r.strategy.Select(r.changedFiles.ToSlice(), func(fileName string) (keepGoing bool) {
-		file, ok := r.testFiles[fileName]
+	r.Strategy.Select(r.ChangedFiles.ToSlice(), func(fileName string) (keepGoing bool) {
+		file, ok := r.TestFiles[fileName]
 		if !ok {
 			return true
 		}

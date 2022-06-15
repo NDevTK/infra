@@ -40,7 +40,7 @@ func SubcommandCommandFetchRejections(authOpt *auth.Options) *subcommands.Comman
 }
 
 type fetchRejectionsRun struct {
-	baseCommandRun
+	BaseCommandRun
 	baseHistoryRun
 	minCLFlakes         int
 	failedVariantsLimit int
@@ -49,14 +49,14 @@ type fetchRejectionsRun struct {
 func (r *fetchRejectionsRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, r, env)
 	if len(args) != 0 {
-		return r.done(errors.New("unexpected positional arguments"))
+		return r.Done(errors.New("unexpected positional arguments"))
 	}
 
 	if err := r.baseHistoryRun.Init(ctx); err != nil {
-		return r.done(err)
+		return r.Done(err)
 	}
 
-	return r.done(r.runAndFetchResults(
+	return r.Done(r.runAndFetchResults(
 		ctx,
 		rejectedPatchSetsSQL,
 		bigquery.QueryParameter{
