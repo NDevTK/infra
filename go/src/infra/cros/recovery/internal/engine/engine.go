@@ -268,8 +268,22 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 
 // runActionExec runs action's exec function and initiates recovery flow if exec fails.
 // The recover flow start only recoveries is enabled.
-func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, enableRecovery bool) error {
+func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, enableRecovery bool) (rErr error) {
 	a := r.getAction(actionName)
+	if r.args != nil && r.args.ShowSteps {
+		var step *build.Step
+		step, ctx = build.StartStep(ctx, fmt.Sprintf("Execution: %q", actionName))
+		defer func() { step.End(rErr) }()
+		if i, ok := r.args.Logger.(logger.StepLogRegister); ok {
+			stepLog := step.Log("execution details")
+			if logCloser, err := i.RegisterStepLog(ctx, stepLog); err != nil {
+				log.Debugf(ctx, "Fail to register step logger for execution of %q", actionName)
+			} else {
+				// Only if registration passed without issues.
+				defer func() { logCloser() }()
+			}
+		}
+	}
 	if err := r.runActionExecWithTimeout(ctx, a); err != nil {
 		if enableRecovery && len(a.GetRecoveryActions()) > 0 {
 			log.Infof(ctx, "Action %q: starting recovery actions.", actionName)
