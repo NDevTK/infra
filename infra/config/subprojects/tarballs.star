@@ -7,7 +7,7 @@
 load("//lib/build.star", "build")
 load("//lib/infra.star", "infra")
 
-def builder(name, builder_dimension = None, cores = 8, **kwargs):
+def builder(name, cores = 8, **kwargs):
     luci.builder(
         name = name,
         bucket = "cron",
@@ -27,7 +27,6 @@ def builder(name, builder_dimension = None, cores = 8, **kwargs):
 
 builder(
     name = "publish_tarball_dispatcher",
-    builder_dimension = "publish_tarball",  # runs on same bots as 'publish_tarball'
     executable = build.recipe("publish_tarball"),
     execution_timeout = 10 * time.minute,
     schedule = "37 */3 * * *",  # every 3 hours
