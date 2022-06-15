@@ -12,6 +12,7 @@ func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Set state: repair_failed",
+			"Device is pingable",
 			"Device is SSHable",
 			"Verify internal storage",
 			"Check if last provision was good",
@@ -97,9 +98,6 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verify that device is reachable by SSH.",
 				"Limited to 15 seconds.",
-			},
-			Dependencies: []string{
-				"Device is pingable",
 			},
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
