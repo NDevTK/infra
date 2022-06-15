@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package recipes.infra.windows_image_builder.online_winpe_customization;
+package recipes.infra.windows_image_builder.online_windows_customization;
 
 import  "recipes/infra/windows_image_builder/actions.proto";
 import  "recipes/infra/windows_image_builder/vm.proto";
