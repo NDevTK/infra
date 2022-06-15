@@ -567,7 +567,6 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 					Reason: pb.ExonerationReason(1 + (b.uniqifier % 3)),
 				},
 			},
-			ExonerationStatus: pb.ExonerationReason(1 + (b.uniqifier % 3)).String(),
 			PresubmitRunId: &pb.PresubmitRunId{
 				System: "luci-cv",
 				Id:     fmt.Sprintf("run-%v", b.uniqifier),

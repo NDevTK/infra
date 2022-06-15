@@ -110,7 +110,7 @@ func (b *TestResultBuilder) WithExonerationReasons(exonerationReasons ...pb.Exon
 }
 
 func (b *TestResultBuilder) WithoutExoneration() *TestResultBuilder {
-	b.result.ExonerationReasons = []pb.ExonerationReason{}
+	b.result.ExonerationReasons = nil
 	return b
 }
 

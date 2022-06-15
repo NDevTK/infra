@@ -132,16 +132,6 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 		})
 	}
 
-	status := "NOT_EXONERATED"
-	if failure.IsIngestedInvocationBlocked &&
-		(failure.BuildStatus != pb.BuildStatus_BUILD_STATUS_FAILURE ||
-			(failure.BuildCritical != nil && !*failure.BuildCritical)) {
-		status = "IMPLICIT"
-	}
-	if len(failure.Exonerations) > 0 {
-		status = failure.Exonerations[0].Reason.String()
-	}
-
 	entry := &bqpb.ClusteredFailureRow{
 		ClusterAlgorithm: cluster.Algorithm,
 		ClusterId:        cluster.ID,
@@ -167,7 +157,6 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 		StartTime:            failure.StartTime,
 		Duration:             failure.Duration,
 		Exonerations:         exonerations,
-		ExonerationStatus:    status,
 
 		BuildStatus:                   strings.TrimPrefix(failure.BuildStatus.String(), "BUILD_STATUS_"),
 		BuildCritical:                 failure.BuildCritical,

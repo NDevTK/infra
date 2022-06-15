@@ -154,12 +154,7 @@ message ClusteredFailureRow {
 
   reserved 19;
 
-  // A status describing whether the test failure was exonerated, and if
-  // so, why it was exonerated. One of: NOT_EXONERATED, IMPLICIT,
-  // OCCURS_ON_MAINLINE, OCCURS_ON_OTHER_CLS, NOT_CRITICAL.
-  //
-  // Deprecated -- will be deleted imminently.
-  string exoneration_status = 31;
+  reserved 31;
 
   message TestExoneration {
     // Machine-readable reasons describing why the test failure was exonerated

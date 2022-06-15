@@ -262,7 +262,6 @@ func TestIngest(t *testing.T) {
 							Reason: pb.ExonerationReason_OCCURS_ON_OTHER_CLS,
 						},
 					}
-					cf.ExonerationStatus = "OCCURS_ON_MAINLINE"
 				}
 
 				testIngestion(tvs, expectedCFs)
@@ -328,32 +327,6 @@ func TestIngest(t *testing.T) {
 				exp.IsTestRunBlocked = true
 			}
 
-			Convey(`Test run and presubmit run blocked`, func() {
-				Convey(`Build failed`, func() {
-					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_FAILURE
-					// No test failure should be exonerated, because
-					// the test variant had no exoneration,
-					// the build failed and the build was critical.
-					for _, exp := range expectedCFs {
-						exp.BuildStatus = "FAILURE"
-						exp.ExonerationStatus = "NOT_EXONERATED"
-					}
-					testIngestion(tvs, expectedCFs)
-					So(len(chunkStore.Contents), ShouldEqual, 1)
-				})
-				Convey(`Build passed, cancelled or infra failure`, func() {
-					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
-					// The test failure should be exonerated, despite
-					// the test variant having no exoneration, because
-					// the build did not fail due to tests.
-					for _, exp := range expectedCFs {
-						exp.BuildStatus = "INFRA_FAILURE"
-						exp.ExonerationStatus = "IMPLICIT"
-					}
-					testIngestion(tvs, expectedCFs)
-					So(len(chunkStore.Contents), ShouldEqual, 1)
-				})
-			})
 			Convey(`Some test runs blocked and presubmit run not blocked`, func() {
 				// Let the last retry of the last test run pass.
 				tv.Results[testRunsPerVariant*resultsPerTestRun-1].Result.Status = rdbpb.TestStatus_PASS
@@ -370,31 +343,8 @@ func TestIngest(t *testing.T) {
 					exp.IsIngestedInvocationBlocked = false
 					exp.IsTestRunBlocked = false
 				}
-				// No failures should record an exoneration because:
-				// - the test variant did not have an exoneration recorded
-				//   against it, AND
-				// - the failures are not invocation blocking (so are not
-				//   eligible for auto-exoneration, regardless of the
-				//   value of AutoExonerateBlockingFailures).
-				for _, exp := range expectedCFs {
-					exp.ExonerationStatus = "NOT_EXONERATED"
-				}
-				Convey(`Build failed`, func() {
-					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_FAILURE
-					for _, exp := range expectedCFs {
-						exp.BuildStatus = "FAILURE"
-					}
-					testIngestion(tvs, expectedCFs)
-					So(len(chunkStore.Contents), ShouldEqual, 1)
-				})
-				Convey(`Build passed, cancelled or infra failure`, func() {
-					opts.BuildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
-					for _, exp := range expectedCFs {
-						exp.BuildStatus = "INFRA_FAILURE"
-					}
-					testIngestion(tvs, expectedCFs)
-					So(len(chunkStore.Contents), ShouldEqual, 1)
-				})
+				testIngestion(tvs, expectedCFs)
+				So(len(chunkStore.Contents), ShouldEqual, 1)
 			})
 		})
 		Convey(`Ingest many failures`, func() {
@@ -548,7 +498,6 @@ func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTes
 		StartTime:            timestamppb.New(time.Date(2022, time.February, 12, 0, 0, 0, 0, time.UTC)),
 		Duration:             durationpb.New(time.Second * 10),
 		Exonerations:         nil,
-		ExonerationStatus:    "NOT_EXONERATED",
 
 		PresubmitRunId:     &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
 		PresubmitRunOwner:  &presubmitRunOwner,
