@@ -21,6 +21,7 @@ import (
 
 	iv2api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/cros/hwid"
+	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -142,6 +143,11 @@ func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.Machin
 // is removed from old Labstation and new servo info from the DUT is added
 // to the new labstation.
 func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask) (*ufspb.MachineLSE, error) {
+	for i, f := range mask.GetPaths() {
+		if !heuristics.LooksLikeFieldMask(f) {
+			return nil, status.Errorf(codes.InvalidArgument, "Update DUT - mask field #%d %q is not valid", i, f)
+		}
+	}
 	f := func(ctx context.Context) error {
 		hc := getHostHistoryClient(machinelse)
 
