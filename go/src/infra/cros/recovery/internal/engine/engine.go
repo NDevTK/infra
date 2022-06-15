@@ -74,7 +74,7 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 		// TODO: Generate metrics for plan closing.
 		if r.args.ShowSteps {
 			var step *build.Step
-			step, ctx = build.StartStep(ctx, fmt.Sprintf("Run plan %q", r.planName))
+			step, ctx = build.StartStep(ctx, fmt.Sprintf("Plan: %s", r.planName))
 			if r.plan.GetAllowFail() {
 				step.Log("Allowed to fail!")
 			}
@@ -142,13 +142,13 @@ func (r *recoveryEngine) runCriticalActionAttempt(ctx context.Context, attempt i
 		step, ctx = build.StartStep(ctx, stepName)
 		defer func() { step.End(err) }()
 	}
-	return r.runActions(ctx, r.plan.GetCriticalActions(), r.args.EnableRecovery)
+	return r.runActions(ctx, r.plan.GetCriticalActions(), r.args.EnableRecovery, "Action")
 }
 
 // runActions runs actions in order.
-func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enableRecovery bool) error {
+func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enableRecovery bool, stepNamePrefix string) error {
 	for _, actionName := range actions {
-		if err := r.runAction(ctx, actionName, enableRecovery); err != nil {
+		if err := r.runAction(ctx, actionName, enableRecovery, stepNamePrefix); err != nil {
 			return errors.Annotate(err, "run actions").Err()
 		}
 	}
@@ -161,7 +161,7 @@ func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enabl
 // 2) Check if the action is applicable based on conditions. Skip if any fail.
 // 3) Run dependencies of the action. Fail if any fails.
 // 4) Run action exec function. Fail if any fail.
-func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool) (rErr error) {
+func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool, stepNamePrefix string) (rErr error) {
 	action := &metrics.Action{}
 	var step *build.Step
 	// The step and metrics need to know about error but if we need to stop from return then it is here.
@@ -177,7 +177,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			defer actionCloser(rErr)
 		}
 		if r.args.ShowSteps {
-			stepName := fmt.Sprintf("Run %s", actionName)
+			stepName := fmt.Sprintf("%s: %s", stepNamePrefix, actionName)
 			step, ctx = build.StartStep(ctx, stepName)
 			defer func() { step.End(rErr) }()
 			if i, ok := r.args.Logger.(logger.StepLogRegister); ok {
@@ -357,7 +357,7 @@ func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName str
 	log.Debugf(ctx, "Action %q: running conditions...", actionName)
 	enableRecovery := false
 	for _, condition := range a.GetConditions() {
-		if err := r.runAction(ctx, condition, enableRecovery); err != nil {
+		if err := r.runAction(ctx, condition, enableRecovery, "Condition"); err != nil {
 			log.Debugf(ctx, "Action %q: condition %q fails. Error: %s", actionName, condition, err)
 			return condition, errors.Annotate(err, "run conditions").Err()
 		}
@@ -383,8 +383,8 @@ func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string,
 			defer func() { i.Dedent() }()
 		}
 	}
-	err := r.runActions(ctx, a.GetDependencies(), enableRecovery)
-	return errors.Annotate(err, "run dependencies").Err()
+	err := r.runActions(ctx, a.GetDependencies(), enableRecovery, "Dependency")
+	return errors.Annotate(err, "dependencies").Err()
 }
 
 // runRecoveries runs action's recoveries.
@@ -420,7 +420,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string) (
 			// Engine allows to use each recovery action only once in scope of the action.
 			continue
 		}
-		if err := r.runAction(ctx, recoveryName, false); err != nil {
+		if err := r.runAction(ctx, recoveryName, false, "Recovery"); err != nil {
 			log.Debugf(ctx, "Recovery action %q: fail. Error: %s ", recoveryName, err)
 			r.registerRecoveryUsage(actionName, recoveryName, err)
 			continue
