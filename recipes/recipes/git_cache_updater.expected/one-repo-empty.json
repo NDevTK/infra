@@ -15,6 +15,33 @@
     "name": "ensure work_dir"
   },
   {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "RECIPE_REPO[depot_tools]/.cipd_bin",
+      "-ensure-file",
+      "RECIPE_REPO[depot_tools]/cipd_manifest.txt",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CHROME_HEADLESS": "1",
+      "GIT_HTTP_LOW_SPEED_LIMIT": "0",
+      "GIT_HTTP_LOW_SPEED_TIME": "0",
+      "OVERRIDE_BOOTSTRAP_BUCKET": "experimental-gs-bucket"
+    },
+    "name": "ensure depot_tools/.cipd_bin",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {}@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "https://chromium.googlesource.com/empty",
     "~followup_annotations": [
