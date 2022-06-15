@@ -268,23 +268,9 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 
 // runActionExec runs action's exec function and initiates recovery flow if exec fails.
 // The recover flow start only recoveries is enabled.
-func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, enableRecovery bool) (rErr error) {
-	a := r.getAction(actionName)
-	if r.args != nil && r.args.ShowSteps {
-		var step *build.Step
-		step, ctx = build.StartStep(ctx, fmt.Sprintf("Execution: %q", actionName))
-		defer func() { step.End(rErr) }()
-		if i, ok := r.args.Logger.(logger.StepLogRegister); ok {
-			stepLog := step.Log("execution details")
-			if logCloser, err := i.RegisterStepLog(ctx, stepLog); err != nil {
-				log.Debugf(ctx, "Fail to register step logger for execution of %q", actionName)
-			} else {
-				// Only if registration passed without issues.
-				defer func() { logCloser() }()
-			}
-		}
-	}
-	if err := r.runActionExecWithTimeout(ctx, a); err != nil {
+func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, enableRecovery bool) error {
+	if err := r.runActionExecWithTimeout(ctx, actionName); err != nil {
+		a := r.getAction(actionName)
 		if enableRecovery && len(a.GetRecoveryActions()) > 0 {
 			log.Infof(ctx, "Action %q: starting recovery actions.", actionName)
 			log.Debugf(ctx, "Action %q: fail. Error: %s", actionName, err)
@@ -313,7 +299,22 @@ func actionExecTimeout(a *config.Action) time.Duration {
 }
 
 // runActionExecWithTimeout runs action's exec function with timeout.
-func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, a *config.Action) error {
+func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionName string) (rErr error) {
+	a := r.getAction(actionName)
+	if r.args != nil && r.args.ShowSteps {
+		var step *build.Step
+		step, ctx = build.StartStep(ctx, fmt.Sprintf("Execution: %q", actionName))
+		defer func() { step.End(rErr) }()
+		if i, ok := r.args.Logger.(logger.StepLogRegister); ok {
+			stepLog := step.Log("execution details")
+			if logCloser, err := i.RegisterStepLog(ctx, stepLog); err != nil {
+				log.Debugf(ctx, "Fail to register step logger for execution of %q", actionName)
+			} else {
+				// Only if registration passed without issues.
+				defer func() { logCloser() }()
+			}
+		}
+	}
 	timeout := actionExecTimeout(a)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer func() { cancel() }()
