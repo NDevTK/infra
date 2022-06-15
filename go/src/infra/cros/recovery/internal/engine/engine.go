@@ -340,21 +340,7 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, a *config
 // If return err then not applicable, if nil then applicable.
 func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName string) (conditionName string, err error) {
 	a := r.getAction(actionName)
-	if len(a.GetConditions()) == 0 {
-		return "", nil
-	}
-	if r.args != nil {
-		if r.args.ShowSteps {
-			var step *build.Step
-			step, ctx = build.StartStep(ctx, "Run conditions")
-			defer func() { step.End(err) }()
-		}
-		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
-			i.Indent()
-			defer func() { i.Dedent() }()
-		}
-	}
-	log.Debugf(ctx, "Action %q: running conditions...", actionName)
+	log.Debugf(ctx, "Action %q: starting running conditions...", actionName)
 	enableRecovery := false
 	for _, condition := range a.GetConditions() {
 		if err := r.runAction(ctx, condition, enableRecovery, "Condition"); err != nil {
@@ -367,24 +353,17 @@ func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName str
 }
 
 // runDependencies runs action's dependencies.
-func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string, enableRecovery bool) (rErr error) {
+func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string, enableRecovery bool) error {
 	a := r.getAction(actionName)
-	if len(a.GetDependencies()) == 0 {
-		return nil
-	}
-	if r.args != nil {
-		if r.args.ShowSteps {
-			var step *build.Step
-			step, ctx = build.StartStep(ctx, "Run dependencies")
-			defer func() { step.End(rErr) }()
-		}
-		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
-			i.Indent()
-			defer func() { i.Dedent() }()
+	log.Debugf(ctx, "Action %q: starting running dependencies...", actionName)
+	for _, dependencyName := range a.GetDependencies() {
+		if err := r.runAction(ctx, dependencyName, enableRecovery, "Dependency"); err != nil {
+			log.Debugf(ctx, "Action %q: dependency %q fails. Errors: %s", actionName, dependencyName, err)
+			return errors.Annotate(err, "dependencies").Err()
 		}
 	}
-	err := r.runActions(ctx, a.GetDependencies(), enableRecovery, "Dependency")
-	return errors.Annotate(err, "dependencies").Err()
+	log.Debugf(ctx, "Action %q: all dependencies passed.", actionName)
+	return nil
 }
 
 // runRecoveries runs action's recoveries.
@@ -394,40 +373,21 @@ func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string,
 // Recovery action will skip if used before.
 func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string) (rErr error) {
 	a := r.getAction(actionName)
-	if len(a.GetRecoveryActions()) == 0 {
-		return nil
-	}
-	if r.args != nil {
-		if r.args.ShowSteps {
-			var step *build.Step
-			step, ctx = build.StartStep(ctx, "Try recoveries")
-			defer func() {
-				// If error is request to start over then recovery went well and we do not tell that step failed.
-				if startOverTag.In(rErr) {
-					step.End(nil)
-				} else {
-					step.End(rErr)
-				}
-			}()
-		}
-		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
-			i.Indent()
-			defer func() { i.Dedent() }()
-		}
-	}
 	for _, recoveryName := range a.GetRecoveryActions() {
 		if r.isRecoveryUsed(actionName, recoveryName) {
 			// Engine allows to use each recovery action only once in scope of the action.
+			log.Infof(ctx, "Recovery %q skipped as already used before for %q.", recoveryName, actionName)
 			continue
 		}
 		if err := r.runAction(ctx, recoveryName, false, "Recovery"); err != nil {
-			log.Debugf(ctx, "Recovery action %q: fail. Error: %s ", recoveryName, err)
+			log.Infof(ctx, "Recovery %q: fail", recoveryName)
+			log.Debugf(ctx, "Recovery %q: fail. Error: %s", recoveryName, err)
 			r.registerRecoveryUsage(actionName, recoveryName, err)
 			continue
 		}
 		r.registerRecoveryUsage(actionName, recoveryName, nil)
 		log.Infof(ctx, "Recovery action %q: request to start-over.", recoveryName)
-		return errors.Reason("recovery action %q: request to start over", recoveryName).Tag(startOverTag).Err()
+		return errors.Reason("recovery %q: request to start over", recoveryName).Tag(startOverTag).Err()
 	}
 	return nil
 }
