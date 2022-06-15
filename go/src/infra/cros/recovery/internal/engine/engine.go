@@ -400,8 +400,15 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string) (
 	if r.args != nil {
 		if r.args.ShowSteps {
 			var step *build.Step
-			step, ctx = build.StartStep(ctx, "Run recoveries")
-			defer func() { step.End(rErr) }()
+			step, ctx = build.StartStep(ctx, "Try recoveries")
+			defer func() {
+				// If error is request to start over then recovery went well and we do not tell that step failed.
+				if startOverTag.In(rErr) {
+					step.End(nil)
+				} else {
+					step.End(rErr)
+				}
+			}()
 		}
 		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
 			i.Indent()
