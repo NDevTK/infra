@@ -34,7 +34,8 @@ import {
     ImpactFilter,
     ImpactFilters,
     MetricName,
-    sortFailureGroups
+    sortFailureGroups,
+    countDistictVariantValues
 } from '../tools/failures_tools';
 import {
     clLink,
@@ -84,6 +85,7 @@ export class FailureTable extends LitElement {
         getFailures(this.project, this.clusterAlgorithm, this.clusterID)
             .then((failures: ClusterFailure[]) => {
                 this.failures = failures;
+                this.variants = countDistictVariantValues(failures);
                 this.groupCountAndSortFailures();
             });
     }
