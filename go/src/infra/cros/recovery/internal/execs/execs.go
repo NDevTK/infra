@@ -78,27 +78,27 @@ type ExecInfo struct {
 }
 
 // GetActiveResource returns what is active resource.
-func (i *ExecInfo) GetActiveResource() string {
-	if i == nil || i.RunArgs == nil {
+func (ei *ExecInfo) GetActiveResource() string {
+	if ei == nil || ei.RunArgs == nil {
 		return ""
 	}
-	return i.RunArgs.ResourceName
+	return ei.RunArgs.ResourceName
 }
 
 // GetAndroid returns Android device from DUT.
-func (i *ExecInfo) GetAndroid() *tlw.Android {
-	if i == nil || i.RunArgs == nil || i.RunArgs.DUT == nil {
+func (ei *ExecInfo) GetAndroid() *tlw.Android {
+	if ei == nil || ei.RunArgs == nil || ei.RunArgs.DUT == nil {
 		return nil
 	}
-	return i.RunArgs.DUT.GetAndroid()
+	return ei.RunArgs.DUT.GetAndroid()
 }
 
 // GetChromeos returns ChromeOS device from DUT.
-func (i *ExecInfo) GetChromeos() *tlw.ChromeOS {
-	if i == nil || i.RunArgs == nil || i.RunArgs.DUT == nil {
+func (ei *ExecInfo) GetChromeos() *tlw.ChromeOS {
+	if ei == nil || ei.RunArgs == nil || ei.RunArgs.DUT == nil {
 		return nil
 	}
-	return i.RunArgs.DUT.GetChromeos()
+	return ei.RunArgs.DUT.GetChromeos()
 }
 
 // Run runs exec function provided by this package by name.
