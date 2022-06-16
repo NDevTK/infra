@@ -60,6 +60,7 @@
   * [qemu:examples/basic](#recipes-qemu_examples_basic) (Python3 ✅)
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
   * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
+  * [qemu:examples/start_vm](#recipes-qemu_examples_start_vm) (Python3 ✅)
   * [recipe_autoroller](#recipes-recipe_autoroller) (Python3 ✅) &mdash; Rolls recipes.
   * [recipe_autoroller:examples/full](#recipes-recipe_autoroller_examples_full) (Python3 ✅)
   * [recipe_bundler](#recipes-recipe_bundler) (Python3 ✅)
@@ -576,15 +577,15 @@ provenance will be installed using cipd and verified using the provenance
 built-in to the OS image (if available).
 ### *recipe_modules* / [qemu](/recipes/recipe_modules/qemu)
 
-[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#16)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#17)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API to manage qemu VMs 
 
-&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#54)(self, disk_name, fs_format='fat', min_size=0, include=()):**
+&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#55)(self, disk_name, fs_format='fat', min_size=0, include=()):**
 
 create_disk creates a virtual disk with the given name, format and size.
 
@@ -599,7 +600,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#107)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#108)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -608,9 +609,9 @@ Args:
   * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
   * size: size of the disk image in bytes
 
-&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#28)(self):**
+&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#29)(self):**
 
-&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#32)(self, version):**
+&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#33)(self, version):**
 
 Initialize the module, ensure that qemu exists on the system
 
@@ -621,7 +622,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#141)(self, disk_name):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#142)(self, disk_name):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -631,9 +632,23 @@ Args:
 
 Returns: loop file used for the disk and mount location
 
-&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#24)(self):**
+&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#25)(self):**
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#174)(self, loop_file):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#188)(self, name, arch, memory, disks):**
+
+start_vm starts a qemu vm with given disks attached
+
+QEMU is started with qemu_monitor running a qmp service in a unix
+domain socket at [QEMU_WORKDIR]/<name>-mon. This will allow us to
+monitor and control the VM. VM is started as a daemon.
+
+Args:
+  * name: name of the new VM
+  * arch: architecture to run the VM on
+  * memory: RAM size on the VM
+  * disks: list of disks to attach to the VM (except boot)
+
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#175)(self, loop_file):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
@@ -1634,6 +1649,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/create_disk_fail.py#13)(api):**
+### *recipes* / [qemu:examples/start\_vm](/recipes/recipe_modules/qemu/examples/start_vm.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/start_vm.py#9): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/start_vm.py#14)(api):**
 ### *recipes* / [recipe\_autoroller](/recipes/recipes/recipe_autoroller.py)
 
 [DEPS](/recipes/recipes/recipe_autoroller.py#9): [recipe\_autoroller](#recipe_modules-recipe_autoroller), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/time][recipe_engine/recipe_modules/time]
