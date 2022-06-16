@@ -60,6 +60,7 @@
   * [qemu:examples/basic](#recipes-qemu_examples_basic) (Python3 ✅)
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
   * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
+  * [qemu:examples/start_vm](#recipes-qemu_examples_start_vm) (Python3 ✅)
   * [recipe_autoroller](#recipes-recipe_autoroller) (Python3 ✅) &mdash; Rolls recipes.
   * [recipe_autoroller:examples/full](#recipes-recipe_autoroller_examples_full) (Python3 ✅)
   * [recipe_bundler](#recipes-recipe_bundler) (Python3 ✅)
@@ -576,7 +577,7 @@ provenance will be installed using cipd and verified using the provenance
 built-in to the OS image (if available).
 ### *recipe_modules* / [qemu](/recipes/recipe_modules/qemu)
 
-[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
@@ -632,6 +633,20 @@ Args:
 Returns: loop file used for the disk and mount location
 
 &emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#24)(self):**
+
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#187)(self, name, arch, memory, disks):**
+
+start_vm starts a qemu vm with given disks attached
+
+QEMU is started with qemu_monitor running a qmp service in a unix
+domain socket at [QEMU_WORKDIR]/<name>-mon. This will allow us to
+monitor and control the VM. VM is started as a daemon.
+
+Args:
+  * name: name of the new VM
+  * arch: architecture to run the VM on
+  * memory: RAM size on the VM
+  * disks: list of disks to attach to the VM (except boot)
 
 &mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#174)(self, loop_file):**
 
@@ -1634,6 +1649,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/create_disk_fail.py#13)(api):**
+### *recipes* / [qemu:examples/start\_vm](/recipes/recipe_modules/qemu/examples/start_vm.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/start_vm.py#9): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/start_vm.py#14)(api):**
 ### *recipes* / [recipe\_autoroller](/recipes/recipes/recipe_autoroller.py)
 
 [DEPS](/recipes/recipes/recipe_autoroller.py#9): [recipe\_autoroller](#recipe_modules-recipe_autoroller), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/time][recipe_engine/recipe_modules/time]

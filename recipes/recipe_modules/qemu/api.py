@@ -12,6 +12,7 @@ QEMU_PKG = 'infra/3pp/tools/qemu/linux-amd64'
 DISK_FORMATS = frozenset(
     ['exfat', 'ext3', 'fat', 'msdos', 'vfat', 'ext2', 'ext4', 'ntfs'])
 
+QMP_SOCKET = 'tcp:localhost:4444,server,nowait'
 
 class QEMUAPI(recipe_api.RecipeApi):
   """ API to manage qemu VMs """
@@ -183,3 +184,26 @@ class QEMUAPI(recipe_api.RecipeApi):
     # delete the loop device
     self.m.step(
         name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])
+
+  def start_vm(self, name, arch, memory, disks):
+    """ start_vm starts a qemu vm with given disks attached
+
+    QEMU is started with qemu_monitor running a qmp service in a unix
+    domain socket at [QEMU_WORKDIR]/<name>-mon. This will allow us to
+    monitor and control the VM. VM is started as a daemon.
+
+    Args:
+      * name: name of the new VM
+      * arch: architecture to run the VM on
+      * memory: RAM size on the VM
+      * disks: list of disks to attach to the VM (except boot)
+    """
+    cmd = [
+        self.path.join('qemu-system-{}'.format(arch)), '-qmp', QMP_SOCKET,
+        '-daemonize', '-m', memory
+    ]
+    for i, d in enumerate(disks):
+      cmd.append('-drive')
+      cmd.append('file={},format=raw,if=ide,media=disk,index={}'.format(
+          self.disks.join(d), i))
+    self.m.step(name='Start vm {}'.format(name), cmd=cmd)
