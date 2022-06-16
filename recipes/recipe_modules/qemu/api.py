@@ -12,7 +12,10 @@ QEMU_PKG = 'infra/3pp/tools/qemu/linux-amd64'
 DISK_FORMATS = frozenset(
     ['exfat', 'ext3', 'fat', 'msdos', 'vfat', 'ext2', 'ext4', 'ntfs'])
 
-QMP_SOCKET = 'tcp:localhost:4444,server,nowait'
+QMP_HOST = 'localhost:4444'
+
+QMP_SOCKET = 'tcp:' + QMP_HOST + ',server,nowait'
+
 
 class QEMUAPI(recipe_api.RecipeApi):
   """ API to manage qemu VMs """
@@ -207,3 +210,22 @@ class QEMUAPI(recipe_api.RecipeApi):
       cmd.append('file={},format=raw,if=ide,media=disk,index={}'.format(
           self.disks.join(d), i))
     self.m.step(name='Start vm {}'.format(name), cmd=cmd)
+
+  def powerdown_vm(self, name):
+    """ powerdown_vm sends a shutdown signal to the given VM. Similar to power
+        button on a physical device
+        Args:
+          name: name of the vm to shutdown
+    """
+    try:
+      self.m.step(
+          name='Powerdown {}'.format(name),
+          cmd=[
+              'python3',
+              self.resource('qmp.py'), '-c', 'system_powerdown', '-s', QMP_HOST
+          ])
+      return True
+    except Exception:
+      # Failed to power down. Is it already powered down?
+      # avoid raising exception
+      return False
