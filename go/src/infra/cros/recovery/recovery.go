@@ -145,6 +145,8 @@ func runResource(ctx context.Context, resource string, args *RunArgs) (rErr erro
 		var step *build.Step
 		step, ctx = build.StartStep(ctx, fmt.Sprintf("Start %q for %q", args.TaskName, resource))
 		defer func() { step.End(rErr) }()
+		stepLogCloser := log.AddStepLog(ctx, args.Logger, step, "execution details")
+		defer func() { stepLogCloser() }()
 	}
 	dut, err := readInventory(ctx, resource, args)
 	if err != nil {
@@ -175,6 +177,8 @@ func retrieveResources(ctx context.Context, args *RunArgs) (resources []string, 
 		var step *build.Step
 		step, ctx = build.StartStep(ctx, fmt.Sprintf("Retrieve resources for %s", args.UnitName))
 		defer func() { step.End(err) }()
+		stepLogCloser := log.AddStepLog(ctx, args.Logger, step, "execution details")
+		defer func() { stepLogCloser() }()
 	}
 	if i, ok := args.Logger.(logger.LogIndenter); ok {
 		i.Indent()
@@ -191,6 +195,8 @@ func loadConfiguration(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rc *co
 		var step *build.Step
 		step, ctx = build.StartStep(ctx, "Load configuration")
 		defer func() { step.End(err) }()
+		stepLogCloser := log.AddStepLog(ctx, args.Logger, step, "execution details")
+		defer func() { stepLogCloser() }()
 	}
 	if i, ok := args.Logger.(logger.LogIndenter); ok {
 		i.Indent()
@@ -227,7 +233,6 @@ func ParsedDefaultConfiguration(ctx context.Context, tn tasknames.TaskName, ds t
 	} else {
 		return cv, nil
 	}
-
 }
 
 // parseConfiguration parses configuration to configuration proto instance.
@@ -289,6 +294,8 @@ func readInventory(ctx context.Context, resource string, args *RunArgs) (dut *tl
 	if args.ShowSteps {
 		step, _ := build.StartStep(ctx, "Read inventory")
 		defer func() { step.End(err) }()
+		stepLogCloser := log.AddStepLog(ctx, args.Logger, step, "execution details")
+		defer func() { stepLogCloser() }()
 	}
 	if i, ok := args.Logger.(logger.LogIndenter); ok {
 		i.Indent()
@@ -317,6 +324,8 @@ func updateInventory(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rErr err
 	if args.ShowSteps {
 		step, _ := build.StartStep(ctx, "Update inventory")
 		defer func() { step.End(rErr) }()
+		stepLogCloser := log.AddStepLog(ctx, args.Logger, step, "execution details")
+		defer func() { stepLogCloser() }()
 	}
 	if i, ok := args.Logger.(logger.LogIndenter); ok {
 		i.Indent()
