@@ -155,11 +155,12 @@ func (c *Client) repairManifest(m *ManifestRepo, path string, branchesByPath map
 			continue
 		}
 
-		switch branchMode := c.WorkingManifest.ProjectBranchMode(project); branchMode {
+		projectPath := (*workingProject).Path
+		switch branchMode := c.WorkingManifest.ProjectBranchMode(*workingProject); branchMode {
 		case repo.Create:
-			branchName, inDict := branchesByPath[project.Path]
+			branchName, inDict := branchesByPath[projectPath]
 			if !inDict {
-				return nil, fmt.Errorf("project %s is not pinned/tot but not set in branchesByPath", project.Path)
+				return nil, fmt.Errorf("project %s is not pinned/tot but not set in branchesByPath", projectPath)
 			}
 			project.Revision = git.NormalizeRef(branchName)
 		case repo.Tot:
@@ -167,7 +168,7 @@ func (c *Client) repairManifest(m *ManifestRepo, path string, branchesByPath map
 			// so if the revision is blank we have an invalid manifest (no revision + branch_mode ToT).
 			// See b/184966242 for context.
 			if project.Revision == "" {
-				return nil, fmt.Errorf("project %s tracking ToT but has no revision/default revision", project.Path)
+				return nil, fmt.Errorf("project %s tracking ToT but has no revision/default revision", projectPath)
 			}
 		case repo.Pinned:
 			revision, err := c.gitRevision(m, *workingProject)
@@ -179,7 +180,7 @@ func (c *Client) repairManifest(m *ManifestRepo, path string, branchesByPath map
 			// Drop the project from the manifest.
 			continue
 		default:
-			return nil, fmt.Errorf("project %s branch mode unspecifed", project.Path)
+			return nil, fmt.Errorf("project %s branch mode unspecifed", projectPath)
 		}
 		// UpdateManifestElement will write all attributes to the file, so
 		// clear the remote if it matches the default.

@@ -199,6 +199,7 @@ func TestRepairManifestsOnDisk(t *testing.T) {
 	branchMap := make(map[string]string)
 	branchMap[fooProject.Path] = "newbranch"
 
+	fullManifest.ResolveImplicitLinks()
 	c := &Client{
 		WorkingManifest: fullManifest,
 	}
