@@ -12,7 +12,9 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server/cron"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -345,7 +347,19 @@ func (k *karteFrontend) PersistToBigquery(ctx context.Context, req *kartepb.Pers
 }
 
 // InstallServices takes a Karte frontend and exposes it to a LUCI prpc.Server.
-func InstallServices(srv *prpc.Server) {
-	kartepb.RegisterKarteServer(srv, NewKarteFrontend())
-	kartepb.RegisterKarteCronServer(srv, NewKarteFrontend())
+func InstallServices(k KarteFrontend, srv *prpc.Server) {
+	kartepb.RegisterKarteServer(srv, k)
+	kartepb.RegisterKarteCronServer(srv, k)
+	cron.RegisterHandler(
+		"persist-to-bq",
+		func(ctx context.Context) error {
+			_, err := k.PersistToBigquery(
+				ctx,
+				&kartepb.PersistToBigqueryRequest{},
+			)
+			err = grpcutil.WrapIfTransient(err)
+			err = errors.Annotate(err, "persist to bq cron").Err()
+			return err
+		},
+	)
 }

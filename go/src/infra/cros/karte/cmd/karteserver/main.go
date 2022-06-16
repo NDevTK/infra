@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
@@ -24,6 +25,7 @@ func main() {
 	modules := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
 		cfgmodule.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
 	}
 
 	server.Main(nil, modules, func(srv *server.Server) error {
@@ -31,8 +33,8 @@ func main() {
 		srv.Context = idstrategy.Use(srv.Context, idstrategy.NewDefault())
 		logging.Infof(srv.Context, "Starting server.")
 		logging.Infof(srv.Context, "Installing Services.")
-		frontend.InstallServices(srv.PRPC)
-
+		k := frontend.NewKarteFrontend()
+		frontend.InstallServices(k, srv.PRPC)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
 	})
