@@ -82,6 +82,35 @@ func (r bqStabilityRow) mlExample() *mlExample {
 	}
 }
 
+// Trains a model by calling the cli with the provided file
+func trainMlModel(traingDataFile string, savedModelDir string) error {
+	cmd := exec.Command("python3",
+		mlCli,
+		"train",
+		"--train-data",
+		traingDataFile,
+		"--output",
+		savedModelDir,
+	)
+
+	var stdoutBuf bytes.Buffer
+	cmd.Stdout = &stdoutBuf
+	var errBuf bytes.Buffer
+	cmd.Stderr = &errBuf
+
+	err := cmd.Run()
+
+	if err != nil {
+		fmt.Print("stdout from cli:\n")
+		fmt.Print(string(stdoutBuf.String()))
+		fmt.Print("stderr from cli:\n")
+		fmt.Print(string(errBuf.String()))
+		return err
+	}
+
+	return nil
+}
+
 // Uses the ml cli to make predictions. Passes the dataframes to the cli through
 // a file to avoid command line argument limits
 func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error) {

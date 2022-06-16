@@ -48,11 +48,8 @@ func cmdCreateModel(authOpt *auth.Options) *subcommands.Command {
 				The rationale is that large commits provide a weak signal of file
 				relatedness and are expensive to process, O(N^2).
 			`))
-			r.Flags.StringVar(&r.mlModelDir, "ml-model-dir", "", text.Doc(`
-				Path to the directory with the tensorflow SavedModel.
-			`))
-			r.Flags.StringVar(&r.cli, "cli", "", text.Doc(`
-				The python cli tool to interact with the model.
+			r.Flags.StringVar(&r.trainingData, "ml-training-data", "", text.Doc(`
+				Path to the csv file with the ml training data.
 			`))
 			r.Flags.StringVar(&r.builder, "builder", "", text.Doc(`
 				The specific builder to collect stability information for.
@@ -82,15 +79,14 @@ type createModelRun struct {
 	baseCommandRun
 	modelDir string
 
-	checkout    string
-	loadOptions git.LoadOptions
-	fg          *git.Graph
-	mlModelDir  string
-	cli         string
-	builder     string
-	testSuite   string
-	startDate   time.Time
-	endDate     time.Time
+	checkout     string
+	loadOptions  git.LoadOptions
+	fg           *git.Graph
+	builder      string
+	testSuite    string
+	startDate    time.Time
+	endDate      time.Time
+	trainingData string
 
 	// Stability for tests on each day of the evaluation
 	stabilityMap map[stabilityMapKey]*mlExample
@@ -109,10 +105,8 @@ func (r *createModelRun) validateFlags() error {
 		return errors.New("-model-dir is required")
 	case r.checkout == "":
 		return errors.New("-checkout is required")
-	case r.cli == "":
-		return errors.New("-cli is required")
-	case r.mlModelDir == "":
-		return errors.New("-ml-model-dir is required")
+	case r.trainingData == "":
+		return errors.New("-ml-training-data is required")
 	case r.startDate.IsZero():
 		return errors.New("-from is required")
 	case r.endDate.IsZero():
@@ -144,6 +138,11 @@ func (r *createModelRun) writeModel(ctx context.Context, dir string) error {
 	// Ensure model dir exists.
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return errors.Annotate(err, "failed to create model dir at %q", dir).Err()
+	}
+
+	logging.Infof(ctx, "Training the ML model...")
+	if err := trainMlModel(r.trainingData, filepath.Join(dir, "saved_model")); err != nil {
+		return errors.Annotate(err, "failed to train the ml model").Err()
 	}
 
 	eg, ctx := errgroup.WithContext(ctx)
@@ -206,11 +205,10 @@ func (r *createModelRun) writeFileGraph(ctx context.Context, fileName string) er
 
 // writeStrategyConfig computes and writes the GitBasedStrategyConfig.
 func (r *createModelRun) writeStrategyConfig(ctx context.Context, dir string) error {
-	// Collect the test stability info once
 	logging.Infof(ctx, "Collecting the stability info...")
 	testStability, err := getTestIdToStabilityRowMap(ctx, r.bqClient, r.builder, r.testSuite, r.startDate, r.endDate)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "failed to collect stability info for the eval period").Err()
 	}
 	r.stabilityMap = testStability
 
@@ -267,7 +265,7 @@ func (r *createModelRun) writeCurrentStability(ctx context.Context, fileName str
 	defer f.Close()
 	bufW := bufio.NewWriter(f)
 
-	if err := WriteCurrentStability(ctx, "", "", r.bqClient, bufW); err != nil {
+	if err := WriteCurrentStability(ctx, r.builder, r.testSuite, r.bqClient, bufW); err != nil {
 		return err
 	}
 

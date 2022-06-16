@@ -20,7 +20,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
-	luciflag "go.chromium.org/luci/common/flag"
+	"go.chromium.org/luci/common/flag"
 	"google.golang.org/api/iterator"
 
 	"go.chromium.org/luci/auth"
@@ -36,10 +36,10 @@ func cmdGenTrainingData(authOpt *auth.Options) *subcommands.Command {
 		LongDesc: text.Doc(`
 			Generate features and labels for ML model
 
-			Flags -day -out -file-graph-dir are required.
+			Flags -out -from -to -file-graph-dir are required.
 		`),
 		CommandRun: func() subcommands.CommandRun {
-			r := &genTraingDataRun{}
+			r := &genTrainingDataRun{}
 			r.authOpt = authOpt
 			r.Flags.StringVar(&r.fileGraphDir, "file-graph-dir", "", text.Doc(`
 				Path to the directory with the model files.
@@ -56,12 +56,12 @@ func cmdGenTrainingData(authOpt *auth.Options) *subcommands.Command {
 			r.Flags.StringVar(&r.builder, "builder", "", text.Doc(`
 				Builder to get training data for.
 			`))
-			r.Flags.Var(luciflag.Date(&r.startDate), "from", text.Doc(`
+			r.Flags.Var(flag.Date(&r.startDate), "from", text.Doc(`
 				Fetch results starting on this day. Stability information will
 				be gathered based on this day.
 				format: yyyy-mm-dd
 			`))
-			r.Flags.Var(luciflag.Date(&r.endDate), "to", text.Doc(`
+			r.Flags.Var(flag.Date(&r.endDate), "to", text.Doc(`
 				Fetch results up to this date. By default only the start-day
 				will be gathered
 				format: yyyy-mm-dd
@@ -85,7 +85,7 @@ func cmdGenTrainingData(authOpt *auth.Options) *subcommands.Command {
 	}
 }
 
-type genTraingDataRun struct {
+type genTrainingDataRun struct {
 	baseCommandRun
 
 	startDate          time.Time
@@ -107,7 +107,7 @@ type genTraingDataRun struct {
 	http          *http.Client
 }
 
-func (r *genTraingDataRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+func (r *genTrainingDataRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := r.ValidateFlags(); err != nil {
 		return r.done(err)
 	}
@@ -120,7 +120,7 @@ func (r *genTraingDataRun) Run(a subcommands.Application, args []string, env sub
 	return 0
 }
 
-func (r *genTraingDataRun) ValidateFlags() error {
+func (r *genTrainingDataRun) ValidateFlags() error {
 	switch {
 	case r.out == "":
 		return errors.New("-out is required")
@@ -139,7 +139,7 @@ func (r *genTraingDataRun) ValidateFlags() error {
 
 // Generates training data and creates a csv file intended for a ml model
 // to be trained on
-func (r *genTraingDataRun) GenTrainData(ctx context.Context) error {
+func (r *genTrainingDataRun) GenTrainData(ctx context.Context) error {
 	r.loadAffinityFileGraph(ctx)
 	file, err := os.Create(r.out)
 	if err != nil {
@@ -178,7 +178,7 @@ func (r *genTraingDataRun) GenTrainData(ctx context.Context) error {
 
 // Calculates the git and file distances for a single changelist based
 // on its list of changed files
-func (r *genTraingDataRun) calcChangelistDistances(cl bqChangelist) {
+func (r *genTrainingDataRun) calcChangelistDistances(cl bqChangelist) {
 	// Find distances for the last patchset
 	if cl.AffectedFilesCount > 100 {
 		for _, row := range cl.TestResults {
@@ -235,8 +235,7 @@ func (r *genTraingDataRun) calcChangelistDistances(cl bqChangelist) {
 }
 
 // Writes the header to the csv file. This must stay in sync with writeCsvRows
-func (r *genTraingDataRun) writeCsvHeader(csvWriter *csv.Writer) error {
-	// TODO(sshrimp): th
+func (r *genTrainingDataRun) writeCsvHeader(csvWriter *csv.Writer) error {
 	return csvWriter.Write([]string{
 		"Change",
 		"ResultId",
@@ -256,7 +255,7 @@ func (r *genTraingDataRun) writeCsvHeader(csvWriter *csv.Writer) error {
 }
 
 // Writes all the rows for a single changelist
-func (s *genTraingDataRun) writeCsvRows(changelist bqChangelist, csvWriter *csv.Writer) {
+func (s *genTrainingDataRun) writeCsvRows(changelist bqChangelist, csvWriter *csv.Writer) {
 	for _, testResult := range changelist.TestResults {
 		gitDistance := ""
 		if testResult.UseGitDistance {
@@ -286,7 +285,7 @@ func (s *genTraingDataRun) writeCsvRows(changelist bqChangelist, csvWriter *csv.
 	}
 }
 
-func (r *genTraingDataRun) queryResults(ctx context.Context, bqClient *bigquery.Client) ([]bqChangelist, error) {
+func (r *genTrainingDataRun) queryResults(ctx context.Context, bqClient *bigquery.Client) ([]bqChangelist, error) {
 	q := bqClient.Query(filtersQuery)
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "start_day", Value: r.startDate},
@@ -323,7 +322,7 @@ func (r *genTraingDataRun) queryResults(ctx context.Context, bqClient *bigquery.
 	}
 }
 
-func (r *genTraingDataRun) loadAffinityFileGraph(ctx context.Context) error {
+func (r *genTrainingDataRun) loadAffinityFileGraph(ctx context.Context) error {
 	fmt.Printf("Loading filegraph model\n")
 	gitGraphDir := filepath.Join(r.fileGraphDir, "git-file-graph")
 	if err := r.loadGraph(filepath.Join(gitGraphDir, "graph.fg")); err != nil {
@@ -334,7 +333,7 @@ func (r *genTraingDataRun) loadAffinityFileGraph(ctx context.Context) error {
 	return nil
 }
 
-func (r *genTraingDataRun) loadGraph(fileName string) error {
+func (r *genTrainingDataRun) loadGraph(fileName string) error {
 	f, err := os.Open(fileName)
 	if err != nil {
 		return err
