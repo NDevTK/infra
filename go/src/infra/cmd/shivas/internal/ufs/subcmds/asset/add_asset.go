@@ -89,18 +89,21 @@ var mcsvFields = []string{
 }
 
 func (c *addAsset) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	if err := c.innerRun(a, args, env); err != nil {
+	ctx := cli.GetContext(a, c, env)
+	if err := c.innerRun(ctx, a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
 	}
 	return 0
 }
 
-func (c *addAsset) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+func (c *addAsset) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if err := c.validateArgs(); err != nil {
 		return err
 	}
-	ctx := cli.GetContext(a, c, env)
+	if ns, _ := c.envFlags.Namespace(); ns != "" && ns != ufsUtil.OSNamespace {
+		return fmt.Errorf("refusing to override explicitly set non-OS namespace %q", ns)
+	}
 	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
