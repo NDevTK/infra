@@ -29,7 +29,6 @@ import (
 	"infra/cros/recovery"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tasknames"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -56,8 +55,8 @@ For now only running in testing mode.`,
 
 		c.Flags.BoolVar(&c.onlyVerify, "only-verify", false, "Block recovery actions and run only verifiers. Default is no.")
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
-		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Trigger deploy task. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
+		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
 		return c
 	},
 }
@@ -74,9 +73,9 @@ type localRecoveryRun struct {
 	karteServer      string
 	onlyVerify       bool
 	updateInventory  bool
-	deployTask       bool
 	showSteps        bool
 	generateLogFiles bool
+	taskName         string
 }
 
 // Run initiates execution of local recovery.
@@ -99,10 +98,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	if unit == "" {
 		return errors.New("unit is not specified")
 	}
-	tn := tasknames.Recovery
-	if c.deployTask {
-		tn = tasknames.Deploy
-	}
+	tn := c.taskName
 	ctx := cli.GetContext(a, c, env)
 
 	// React to user cancel.
