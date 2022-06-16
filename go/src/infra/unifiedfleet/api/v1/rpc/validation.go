@@ -804,7 +804,11 @@ func (r *UpdateDeviceRecoveryDataRequest) validateDutId() error {
 	dutID := strings.TrimSpace(r.GetDutState().GetId().GetValue())
 	if dutID == "" {
 		return status.Errorf(codes.InvalidArgument, "Empty dut state id. %s", EmptyID)
-	} else if dutID != r.GetChromeosDeviceId() {
+	} else if dutID != r.GetDeviceId() && dutID != r.GetChromeosDeviceId() {
+		// TODO(b/236170648): clean up GetChromeosDeviceId
+		if r.GetDeviceId() != "" {
+			return status.Errorf(codes.InvalidArgument, "Mismatched device id(%q) with dut state id: %q", r.GetDeviceId(), dutID)
+		}
 		return status.Errorf(codes.InvalidArgument, "Mismatched chromeos device id(%q) with dut state id: %q", r.GetChromeosDeviceId(), dutID)
 	}
 	if !IDRegex.MatchString(dutID) {

@@ -17,6 +17,7 @@ import (
 	device "infra/unifiedfleet/api/v1/models/chromeos/device"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmanufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/configuration"
@@ -3156,6 +3157,84 @@ func TestCheckDutIdAndHostnameAreAssociated(t *testing.T) {
 			So(err, ShouldBeNil)
 			err = checkDutIdAndHostnameAreAssociated(ctx, "machine-20", "dut-2")
 			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
+func TestUpdateRecoveryData(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	req := &ufsAPI.UpdateDeviceRecoveryDataRequest{
+		Hostname:      "dut-1",
+		ResourceState: ufspb.State_STATE_READY,
+		DutState: &chromeosLab.DutState{
+			Id: &chromeosLab.ChromeOSDeviceID{
+				Value: "machine-20",
+			},
+			Hostname: "dut-1",
+		},
+		DutData: &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{
+			SerialNumber: "serialNumber",
+			HwID:         "hwID",
+			DeviceSku:    "deviceSku",
+		},
+		LabData: &ufsAPI.UpdateDeviceRecoveryDataRequest_LabData{},
+	}
+	Convey("UpdateRecoveryData", t, func() {
+		Convey("UpdateRecoveryData with device_id field", func() {
+			createValidDUTWithLabstation(ctx, "dut-1", "machine-20", "labstation-1", "machine-10")
+			asset := &ufspb.Asset{
+				Name: "machine-20",
+				Info: &ufspb.AssetInfo{
+					AssetTag: "machine-20",
+				},
+				Type:     ufspb.AssetType_DUT,
+				Location: &ufspb.Location{},
+			}
+			asset, err := registration.CreateAsset(ctx, asset)
+			So(err, ShouldBeNil)
+			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
+			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
+			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+
+			req.DeviceId = "machine-20"
+			req.ChromeosDeviceId = ""
+			err = UpdateRecoveryData(ctx, req)
+			So(err, ShouldBeNil)
+
+			machine, err := registration.GetMachine(ctx, "machine-20")
+			So(err, ShouldBeNil)
+			So(machine.GetSerialNumber(), ShouldEqual, "serialNumber")
+			So(machine.GetChromeosMachine().GetHwid(), ShouldEqual, "hwID")
+			So(machine.GetChromeosMachine().GetSku(), ShouldEqual, "deviceSku")
+		})
+		Convey("UpdateRecoveryData with chromeos_device_id field", func() {
+			createValidDUTWithLabstation(ctx, "dut-2", "machine-40", "labstation-2", "machine-30")
+			asset := &ufspb.Asset{
+				Name: "machine-40",
+				Info: &ufspb.AssetInfo{
+					AssetTag: "machine-40",
+				},
+				Type:     ufspb.AssetType_DUT,
+				Location: &ufspb.Location{},
+			}
+			asset, err := registration.CreateAsset(ctx, asset)
+			So(err, ShouldBeNil)
+			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
+			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
+			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+
+			req.DeviceId = ""
+			req.ChromeosDeviceId = "machine-40"
+			err = UpdateRecoveryData(ctx, req)
+			So(err, ShouldBeNil)
+
+			machine, err := registration.GetMachine(ctx, "machine-40")
+			So(err, ShouldBeNil)
+			So(machine.GetSerialNumber(), ShouldEqual, "serialNumber")
+			So(machine.GetChromeosMachine().GetHwid(), ShouldEqual, "hwID")
+			So(machine.GetChromeosMachine().GetSku(), ShouldEqual, "deviceSku")
 		})
 	})
 }

@@ -324,7 +324,7 @@ func updateRecoveryDutData(ctx context.Context, dutId string, dutData *ufsAPI.Up
 		return nil
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
-		return errors.Annotate(err, "updatRecoveryeDutData (%s),  ", dutId).Err()
+		return errors.Annotate(err, "updateRecoveryDutData (%s)", dutId).Err()
 	}
 	return nil
 }

@@ -1090,10 +1090,15 @@ func GetDUTConnectedToServo(ctx context.Context, servo *chromeosLab.Servo) (*ufs
 //
 // It updates machine/asset, Peripherals(servo, wifirouter,...) and Dut's resourceState
 func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDataRequest) error {
-	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetChromeosDeviceId(), req.GetHostname()); err != nil {
+	// TODO(b/236170648): clean up GetChromeosDeviceId
+	dutId := req.GetDeviceId()
+	if dutId == "" {
+		dutId = req.GetChromeosDeviceId()
+	}
+	if err := checkDutIdAndHostnameAreAssociated(ctx, dutId, req.GetHostname()); err != nil {
 		logging.Errorf(ctx, "updateRecoveryData chrome device id and hostname are not associated", err.Error())
 	}
-	if err := updateRecoveryDutData(ctx, req.GetChromeosDeviceId(), req.GetDutData()); err != nil {
+	if err := updateRecoveryDutData(ctx, dutId, req.GetDutData()); err != nil {
 		logging.Errorf(ctx, "updateRecoveryData unable to update dut data", err.Error())
 		return err
 	}

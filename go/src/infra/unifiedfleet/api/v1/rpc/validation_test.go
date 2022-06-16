@@ -1,6 +1,10 @@
 package ufspb
 
-import "testing"
+import (
+	"testing"
+
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+)
 
 func TestValidateHostnames(t *testing.T) {
 	tt := []struct {
@@ -21,5 +25,25 @@ func TestValidateHostnames(t *testing.T) {
 		if !test.wantOK && err == nil {
 			t.Errorf("validateHostnames(%v) succeeded but want failure", test.in)
 		}
+	}
+}
+
+func TestValidateDutId(t *testing.T) {
+	dutId := "deviceId-1"
+	req := &UpdateDeviceRecoveryDataRequest{
+		DutState: &chromeosLab.DutState{
+			Id: &chromeosLab.ChromeOSDeviceID{
+				Value: dutId,
+			},
+		},
+	}
+	req.DeviceId = dutId
+	if err := req.validateDutId(); err != nil {
+		t.Errorf("validateDutId(%v) with DeviceId failed %v", req, err)
+	}
+	req.DeviceId = ""
+	req.ChromeosDeviceId = dutId
+	if err := req.validateDutId(); err != nil {
+		t.Errorf("validateDutId(%v) with ChromeosDeviceId failed %v", req, err)
 	}
 }
