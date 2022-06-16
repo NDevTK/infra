@@ -177,7 +177,7 @@ class MonorailTemplate(object):
       for sniff_pattern, sniff_replacement in SNIFFABLE_PATTERNS.items():
         whole_page = whole_page.replace(sniff_pattern, sniff_replacement)
     start = time.time()
-    response.response = whole_page
+    response.set_data(whole_page)
     logging.info('wrote response in %dms', int((time.time() - start) * 1000))
 
   def GetResponse(self, data):

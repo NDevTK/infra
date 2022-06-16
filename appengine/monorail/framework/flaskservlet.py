@@ -201,7 +201,7 @@ class FlaskServlet(object):
     except ratelimiter.RateLimitExceeded as e:
       logging.info('RateLimitExceeded Exception %s', e)
       self.response.status_code = httplib.BAD_REQUEST
-      self.response.response = 'Slow your roll.'
+      self.response.set_data('Slow your roll.')
 
     finally:
       self.mr.CleanUp()
