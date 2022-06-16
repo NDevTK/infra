@@ -9,6 +9,8 @@ package main
 // application starts.
 
 import (
+	"time"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
@@ -28,7 +30,16 @@ func main() {
 		cron.NewModuleFromFlags(),
 	}
 
-	server.Main(nil, modules, func(srv *server.Server) error {
+	options := &server.Options{
+		// TODO(gregorynisbet): extract to config file.
+		// Allow for long-running cron jobs like those persisting datastore records to BigQuery.
+		DefaultRequestTimeout: 10 * time.Minute,
+		// TODO(gregorynisbet): extract to config file.
+		// Explicitly set our internal timeout to GAE's maximum value.
+		InternalRequestTimeout: 10 * time.Minute,
+	}
+
+	server.Main(options, modules, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Installing dependencies into context")
 		srv.Context = idstrategy.Use(srv.Context, idstrategy.NewDefault())
 		logging.Infof(srv.Context, "Starting server.")

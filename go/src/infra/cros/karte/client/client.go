@@ -6,6 +6,7 @@ package client
 
 import (
 	"context"
+	"time"
 
 	"go.chromium.org/luci/auth"
 	prpc "go.chromium.org/luci/grpc/prpc"
@@ -117,6 +118,9 @@ func NewCronClient(ctx context.Context, c *Config, o ...Option) (kartepb.KarteCr
 		Host: c.karteService,
 		Options: &prpc.Options{
 			UserAgent: c.userAgent,
+			// TODO(gregorynisbet): extract to config.
+			// Allow for long-running cron jobs.
+			PerRPCTimeout: 10 * time.Minute,
 		},
 	}), nil
 }
