@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41c39899_4df58e24",
+        "filename": "recipes/recipes/windows_image_builder/windows_image_builder.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-06-16T23:00:00Z",
+      "side": 0,
+      "message": "There is no such thing as ARM64. The architecture is called AARCH64",
+      "range": {
+        "startLine": 43,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 12
+      },
+      "revId": "0654a32f3d68d884c25e144831f212551be36594",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
