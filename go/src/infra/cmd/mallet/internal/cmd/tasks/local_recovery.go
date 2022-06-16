@@ -29,6 +29,7 @@ import (
 	"infra/cros/recovery"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/tasknames"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -99,6 +100,9 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		return errors.New("unit is not specified")
 	}
 	tn := c.taskName
+	if err := tasknames.ValidateTaskName(tn); err != nil {
+		return errors.Annotate(err, "local recovery").Err()
+	}
 	ctx := cli.GetContext(a, c, env)
 
 	// React to user cancel.
