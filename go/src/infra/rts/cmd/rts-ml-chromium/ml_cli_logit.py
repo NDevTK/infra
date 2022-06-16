@@ -46,7 +46,6 @@ def predict(args):
   predictions = model.predict(features)
 
   plain_text = '\n'.join([str(prediction[0]) for prediction in predictions])
-  print(plain_text)
   if args.output:
     with open(args.output, 'w') as predictions_file:
       predictions_file.write(plain_text)

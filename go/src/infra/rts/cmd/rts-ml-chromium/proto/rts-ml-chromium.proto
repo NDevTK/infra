@@ -1,0 +1,48 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package main;
+
+option go_package = "infra/rts/cmd/rts-ml-chromium/proto";
+
+// The stability information for a test
+message Stability {
+  // The number of times the test failed in six months
+  int64 six_month_fail_count = 1;
+
+  // The number of times the ran in six months
+  int64 six_month_run_count = 2;
+
+  // The number of times the test failed in one month
+  int64 one_month_fail_count = 3;
+
+  // The number of times the ran in one month
+  int64 one_month_run_count = 4;
+
+  // The number of times the test failed in one week
+  int64 oneWeek_fail_count = 5;
+
+  // The number of times the ran in one week
+  int64 oneWeek_run_count = 6;
+}
+
+// The number of times the test failed in six months
+message TestStability {
+  // The test id of the test the stability belongs to
+  string test_id = 1;
+
+  // The test name of the test the stability belongs to (use for filtering)
+  string test_name = 2;
+
+  // The builder the test was run on
+  string builder = 3;
+
+  // The test suite the tes was run in
+  string test_suite = 4;
+
+  // All the stability information about the test
+  Stability stability = 5;
+}

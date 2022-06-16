@@ -92,9 +92,8 @@ type createModelRun struct {
 	startDate   time.Time
 	endDate     time.Time
 
-	// Day to test id to an ml example containing the stability info for that
-	// day and test
-	stabilityMap map[stabilityMapKey]mlExample
+	// Stability for tests on each day of the evaluation
+	stabilityMap map[stabilityMapKey]*mlExample
 	ev           eval.Eval
 
 	authOpt  *auth.Options
@@ -158,6 +157,11 @@ func (r *createModelRun) writeModel(ctx context.Context, dir string) error {
 	eg.Go(func() error {
 		err := r.writeTestFileSet(ctx, filepath.Join(dir, "test-files.jsonl"))
 		return errors.Annotate(err, "failed to write test file set").Err()
+	})
+
+	eg.Go(func() error {
+		err := r.writeCurrentStability(ctx, filepath.Join(dir, "test-stability.jsonl"))
+		return errors.Annotate(err, "failed to write test stability set").Err()
 	})
 
 	return eg.Wait()
@@ -242,6 +246,28 @@ func (r *createModelRun) writeTestFileSet(ctx context.Context, fileName string) 
 	bufW := bufio.NewWriter(f)
 
 	if err := chromium.WriteTestFiles(ctx, r.bqClient, bufW); err != nil {
+		return err
+	}
+
+	if err := bufW.Flush(); err != nil {
+		return err
+	}
+	return f.Close()
+}
+
+// writeCurrentStability writes the test stability info at the time of model
+// creation
+//
+// The file format is JSON Lines of TestFile protobufs.
+func (r *createModelRun) writeCurrentStability(ctx context.Context, fileName string) error {
+	f, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	bufW := bufio.NewWriter(f)
+
+	if err := WriteCurrentStability(ctx, "", "", r.bqClient, bufW); err != nil {
 		return err
 	}
 

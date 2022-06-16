@@ -41,6 +41,7 @@ func main() {
 		},
 		Commands: []*subcommands.Command{
 			cmdCreateModel(&authOpt),
+			cmdSelect(),
 			cmdGenTrainingData(&authOpt),
 
 			{}, // a separator

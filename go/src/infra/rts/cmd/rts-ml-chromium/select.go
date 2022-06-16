@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/maruel/subcommands"
@@ -17,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/rts/cmd/rts-ml-chromium/proto"
 	"infra/rts/internal/chromium"
 )
 
@@ -35,7 +38,7 @@ func cmdSelect() *subcommands.Command {
 			r.Flags.StringVar(&r.ModelDir, "model-dir", "", text.Doc(`
 				Path to the directory with the model files.
 				Normally it is coming from CIPD package "chromium/rts/model"
-				and precomputed by "rts-chromium create-model" command.
+				and precomputed by "rts-ml-chromium create-model" command.
 			`))
 			r.Flags.StringVar(&r.Out, "out", "", text.Doc(`
 				Path to a directory where to write test filter files.
@@ -58,6 +61,14 @@ func cmdSelect() *subcommands.Command {
 
 type selectRun struct {
 	chromium.BaseSelectRun
+
+	stability      map[string]*proto.TestStability
+	testToExamples map[testFilterTarget]*mlExample
+}
+
+type testFilterTarget struct {
+	testName  string
+	testSuite string
 }
 
 func (r *selectRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -88,7 +99,7 @@ func (r *selectRun) Run(a subcommands.Application, args []string, env subcommand
 	logging.Infof(ctx, "chosen threshold: %f", r.Strategy.MaxDistance)
 
 	// Select the tests and write .filter files.
-	err := r.writeFilterFiles()
+	err := r.writeFilterFiles(ctx)
 	if disableRTS.In(err) {
 		logging.Warningf(ctx, "disabling RTS: %s", err)
 		err = nil
@@ -97,13 +108,12 @@ func (r *selectRun) Run(a subcommands.Application, args []string, env subcommand
 }
 
 // writeFilterFiles writes filter files in r.filterFilesDir directory.
-func (r *selectRun) writeFilterFiles() error {
+func (r *selectRun) writeFilterFiles(ctx context.Context) error {
 	// Maps a test target to the list of tests to skip.
 	testsToSkip := map[string][]string{}
-	err := r.selectTests(func(testFileToSkip *chromium.TestFile) error {
-		for _, target := range testFileToSkip.TestTargets {
-			testsToSkip[target] = append(testsToSkip[target], testFileToSkip.TestNames...)
-		}
+
+	err := r.selectTests(ctx, func(testSuite string, test string) error {
+		testsToSkip[testSuite] = append(testsToSkip[testSuite], test)
 		return nil
 	})
 	if err != nil {
@@ -146,5 +156,28 @@ func (r *selectRun) loadInput(ctx context.Context) error {
 		return errors.Annotate(err, "failed to load changed files").Err()
 	})
 
+	eg.Go(func() (err error) {
+		err = r.loadStability(filepath.Join(r.ModelDir, "test-stability.jsonl"))
+		return errors.Annotate(err, "failed to load stability info").Err()
+	})
+
 	return eg.Wait()
+}
+
+func (r *selectRun) loadStability(fileName string) error {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	r.stability = map[string]*proto.TestStability{}
+	err = ReadCurrentStability(bufio.NewReader(f), func(testStability *proto.TestStability) error {
+		r.stability[testStability.TestName] = testStability
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return f.Close()
 }

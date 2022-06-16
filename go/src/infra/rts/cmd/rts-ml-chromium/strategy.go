@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 	"infra/rts"
 	"infra/rts/filegraph/git"
+	"infra/rts/internal/chromium"
 	"infra/rts/presubmit/eval"
 	evalpb "infra/rts/presubmit/eval/proto"
 )
@@ -58,6 +60,162 @@ var (
 
 	disableRTS = errors.BoolTag{Key: errors.NewTagKey("skip RTS")}
 )
+
+// selectIndividualTests calls skipFile for individual tests that should be
+// skipped additionally using the provided ML model to infer features.
+// May return an error annotated with disableRTS tag and the message explaining
+// why RTS was disabled.
+func (r *selectRun) selectTests(ctx context.Context, skipTest func(string, string) error) (err error) {
+	// Disable RTS if the number of files is unusual.
+	if len(r.ChangedFiles) < chromium.MinChangedFiles || len(r.ChangedFiles) > chromium.MaxChangedFiles {
+		return errors.Reason(
+			"%d files were changed, which is outside of [%d, %d] range",
+			len(r.ChangedFiles),
+			chromium.MinChangedFiles,
+			chromium.MaxChangedFiles,
+		).Tag(disableRTS).Err()
+	}
+
+	// Check if any of the changed files requires all tests.
+	if !r.IgnoreExceptions {
+		for f := range r.ChangedFiles {
+			if requireAllTestsRegexp.MatchString(f) {
+				return errors.Reason(
+					"%q was changed, which matches regexp %s",
+					f,
+					requireAllTests,
+				).Tag(disableRTS).Err()
+			}
+		}
+	}
+
+	r.testToExamples = map[testFilterTarget]*mlExample{}
+	err = r.addGitDistanceFeatures(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = r.addFileDistanceFeatures()
+	if err != nil {
+		return err
+	}
+
+	err = r.addStabilityFeatures()
+	if err != nil {
+		return err
+	}
+
+	var allRows []*mlExample
+	var testFilterTargets []testFilterTarget
+	for filterTarget, example := range r.testToExamples {
+		allRows = append(allRows, example)
+		testFilterTargets = append(testFilterTargets, filterTarget)
+	}
+
+	predictions, err := fileInferMlModel(allRows, filepath.Join(r.ModelDir, "saved_model"))
+
+	for i := range predictions {
+		if predictions[i] > r.Strategy.MaxDistance {
+			err = skipTest(testFilterTargets[i].testSuite, testFilterTargets[i].testName)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return
+}
+
+func (r *selectRun) addStabilityFeatures() error {
+	for testName, testStability := range r.stability {
+		filterTarget := testFilterTarget{testSuite: testStability.TestSuite, testName: testName}
+		if _, ok := r.testToExamples[filterTarget]; ok {
+			r.testToExamples[filterTarget].SixMonthFailCount = testStability.Stability.SixMonthFailCount
+			r.testToExamples[filterTarget].SixMonthRunCount = testStability.Stability.SixMonthRunCount
+			r.testToExamples[filterTarget].OneMonthFailCount = testStability.Stability.OneMonthFailCount
+			r.testToExamples[filterTarget].OneMonthRunCount = testStability.Stability.OneMonthRunCount
+			r.testToExamples[filterTarget].OneWeekFailCount = testStability.Stability.OneWeekFailCount
+			r.testToExamples[filterTarget].OneWeekRunCount = testStability.Stability.OneWeekRunCount
+		} else {
+			r.testToExamples[filterTarget] = &mlExample{
+				SixMonthFailCount: testStability.Stability.SixMonthFailCount,
+				SixMonthRunCount:  testStability.Stability.SixMonthRunCount,
+				OneMonthFailCount: testStability.Stability.OneMonthFailCount,
+				OneMonthRunCount:  testStability.Stability.OneMonthRunCount,
+				OneWeekFailCount:  testStability.Stability.OneWeekFailCount,
+				OneWeekRunCount:   testStability.Stability.OneWeekRunCount,
+			}
+		}
+	}
+	return nil
+}
+
+func (r *selectRun) addGitDistanceFeatures(ctx context.Context) error {
+	r.Strategy.EdgeReader = &git.EdgeReader{
+		ChangeLogDistanceFactor:     1,
+		FileStructureDistanceFactor: 0,
+	}
+	missingFileCount := 0
+	r.Strategy.RunQuery(r.ChangedFiles.ToSlice(), func(fileName string, af rts.Affectedness) bool {
+		file, ok := r.TestFiles[fileName]
+		if !ok {
+			missingFileCount++
+			return true
+		}
+
+		for _, testName := range file.TestNames {
+			for _, testTarget := range file.TestTargets {
+				filterTarget := testFilterTarget{testSuite: testTarget, testName: testName}
+				if _, ok := r.testToExamples[filterTarget]; ok {
+					r.testToExamples[filterTarget].UseGitDistance = true
+					r.testToExamples[filterTarget].GitDistance = af.Distance
+				} else {
+					r.testToExamples[filterTarget] = &mlExample{
+						UseGitDistance: true,
+						GitDistance:    af.Distance,
+					}
+				}
+			}
+		}
+
+		return true
+	})
+	logging.Warningf(ctx, "files not found: %d", missingFileCount)
+	return nil
+}
+
+func (r *selectRun) addFileDistanceFeatures() error {
+	r.Strategy.EdgeReader = &git.EdgeReader{
+		ChangeLogDistanceFactor:     0,
+		FileStructureDistanceFactor: 1,
+	}
+
+	r.Strategy.RunQuery(r.ChangedFiles.ToSlice(), func(fileName string, af rts.Affectedness) bool {
+		file, ok := r.TestFiles[fileName]
+		if !ok {
+			// We don't have test file info for the test, skip it
+			return true
+		}
+
+		for _, testName := range file.TestNames {
+			for _, testTarget := range file.TestTargets {
+				filterTarget := testFilterTarget{testSuite: testTarget, testName: testName}
+				// Set the distances for all rows that use this file
+				if _, ok := r.testToExamples[filterTarget]; ok {
+					r.testToExamples[filterTarget].UseFileDistance = true
+					r.testToExamples[filterTarget].FileDistance = af.Distance
+				} else {
+					r.testToExamples[filterTarget] = &mlExample{
+						UseFileDistance: true,
+						FileDistance:    af.Distance,
+					}
+				}
+			}
+		}
+		// This file too close to skip it.
+		return true
+	})
+	return nil
+}
 
 func (r *createModelRun) evalStrategy() eval.Strategy {
 	onTestNotFound := func(ctx context.Context, tv *evalpb.TestVariant) {
@@ -113,12 +271,12 @@ func (r *createModelRun) evalStrategy() eval.Strategy {
 		}
 
 		// Create the examples to be inferred, using the appropriate day
-		var examples = make([]mlExample, len(in.TestVariants))
+		var examples = make([]*mlExample, len(in.TestVariants))
 		for i := range in.TestVariants {
 
 			example, ok := r.stabilityMap[stabilityMapKey{testID: in.TestVariants[i].Id, date: in.Timestamp}]
 			if !ok {
-				example = mlExample{}
+				example = &mlExample{}
 				logging.Warningf(ctx, "Stability info not found: %s for %s", in.TestVariants[i].Id, in.Timestamp)
 			}
 			example.GitDistance = gitDistances[i]
@@ -128,7 +286,7 @@ func (r *createModelRun) evalStrategy() eval.Strategy {
 			examples[i] = example
 		}
 
-		predictions, err := fileInferMlModel(examples, r.mlModelDir, r.cli)
+		predictions, err := fileInferMlModel(examples, filepath.Join(r.modelDir, "saved_model"))
 
 		if err != nil {
 			return err

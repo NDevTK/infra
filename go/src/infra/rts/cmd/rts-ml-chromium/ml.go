@@ -5,10 +5,12 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/csv"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -19,7 +21,12 @@ import (
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/rts/cmd/rts-ml-chromium/proto"
 )
+
+var mlCli string = "ml_cli_logit.py"
 
 // A single test's stability for a day (Timestamp) including its identify
 // information
@@ -58,8 +65,8 @@ type mlExample struct {
 }
 
 // Convert the stability information into an mlExample for the ML model
-func (r bqStabilityRow) mlExample() mlExample {
-	return mlExample{
+func (r bqStabilityRow) mlExample() *mlExample {
+	return &mlExample{
 		TestId:            r.TestId,
 		TestSuite:         r.TestSuite,
 		SixMonthFailCount: r.Stability.SixMonthFailCount,
@@ -77,7 +84,7 @@ func (r bqStabilityRow) mlExample() mlExample {
 
 // Uses the ml cli to make predictions. Passes the dataframes to the cli through
 // a file to avoid command line argument limits
-func fileInferMlModel(rows []mlExample, savedModelDir string, cli string) ([]float64, error) {
+func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error) {
 	featuresFile, err := ioutil.TempFile("predictions", "PsFeatures_thread*.csv")
 	if err != nil {
 		return nil, err
@@ -128,7 +135,7 @@ func fileInferMlModel(rows []mlExample, savedModelDir string, cli string) ([]flo
 	csvWriter.WriteAll(csvData)
 
 	cmd := exec.Command("python3",
-		cli,
+		mlCli,
 		"predict",
 		"--file",
 		featureFileName,
@@ -184,24 +191,22 @@ type stabilityMapKey struct {
 
 // Returns the test fail rates as they were between the provided time period
 // as a map of the day
-func getTestIdToStabilityRowMap(ctx context.Context, bqClient *bigquery.Client, builder string, testSuite string, start time.Time, stop time.Time) (map[stabilityMapKey]mlExample, error) {
-	testStability, err := queryStability(ctx, bqClient, builder, testSuite, start, stop)
+func getTestIdToStabilityRowMap(ctx context.Context, bqClient *bigquery.Client, builder string, testSuite string, start time.Time, stop time.Time) (map[stabilityMapKey]*mlExample, error) {
+	testStabilityMap := make(map[stabilityMapKey]*mlExample)
 
+	err := queryStability(ctx, bqClient, builder, testSuite, start, stop, func(row *bqStabilityRow) {
+		key := stabilityMapKey{date: row.Timestamp, testID: row.TestId}
+		testStabilityMap[key] = row.mlExample()
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	testStabilityMap := make(map[stabilityMapKey]mlExample)
-	for _, row := range testStability {
-		key := stabilityMapKey{date: row.Timestamp, testID: row.TestId}
-		testStabilityMap[key] = row.mlExample()
-	}
 	return testStabilityMap, err
 }
 
 // Get the historic stability for the given time range
-// TODO(sshrimp): Use a callback to avoid duplicate memory allocationg
-func queryStability(ctx context.Context, bqClient *bigquery.Client, builder string, testSuite string, startTime time.Time, endTime time.Time) ([]bqStabilityRow, error) {
+func queryStability(ctx context.Context, bqClient *bigquery.Client, builder string, testSuite string, startTime time.Time, endTime time.Time, visitor func(*bqStabilityRow)) error {
 	q := bqClient.Query(evalStabilityQuery)
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "start_day", Value: startTime},
@@ -212,24 +217,124 @@ func queryStability(ctx context.Context, bqClient *bigquery.Client, builder stri
 
 	it, err := q.Read(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	rows := []bqStabilityRow{}
 	for {
 		if ctx.Err() != nil {
-			return nil, ctx.Err()
+			return ctx.Err()
 		}
 		// Read the next row.
 		row := &bqStabilityRow{}
 		switch err := it.Next(row); {
 		case err == iterator.Done:
-			return rows, ctx.Err()
+			return ctx.Err()
 		case err != nil:
-			return nil, err
+			return err
+		}
+		visitor(row)
+	}
+}
+
+// ReadCurrentStability reads TestStability written by writeTestFilesFrom().
+func ReadCurrentStability(r io.Reader, callback func(*proto.TestStability) error) error {
+	scan := bufio.NewScanner(r)
+	line := 0
+	scan.Buffer(nil, 1e7) // 10 MB.
+	for scan.Scan() {
+		line++
+		testStability := &proto.TestStability{}
+		if err := protojson.Unmarshal(scan.Bytes(), testStability); err != nil {
+			errors.Annotate(err, "failed to parse current stability at line %d", line).Err()
+			return err
+		}
+		if err := callback(testStability); err != nil {
+			return err
+		}
+	}
+	return scan.Err()
+}
+
+// WriteCurrentStability writes TestStability protobuf messages to w in JSON Lines format.
+func WriteCurrentStability(ctx context.Context, builder string, testSuite string, bqClient *bigquery.Client, w io.Writer) error {
+	// Grab all tests in the past 1 week.
+	q := bqClient.Query(`
+	WITH test_ids as (
+		SELECT
+			ds.test_id test_id,
+			ds.variant_hash variant_hash,
+			ANY_VALUE(ds.test_name) test_name,
+			ANY_VALUE(SUBSTR((SELECT v FROM ds.testVariant.variant v WHERE v LIKE 'builder:%'), 9)) as builder,
+			ANY_VALUE(SUBSTR((SELECT v FROM ds.testVariant.variant v WHERE v LIKE 'test_suite:%'), 12)) as test_suite,
+		FROM chrome-trooper-analytics.test_results.daily_summary ds
+		WHERE day BETWEEN
+		  TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 181 DAY) AND
+		  TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 1 DAY)
+		GROUP BY ds.test_id, variant_hash
+		HAVING
+			("" = @query_test_suite OR test_suite = @query_test_suite)
+			AND ("" = @query_builder OR builder = @query_builder)
+	)
+
+	SELECT
+		tid.test_id TestId,
+		tid.test_name TestName,
+		IFNULL(tid.builder, "") as Builder,
+		IFNULL(tid.test_suite, "") as TestSuite,
+		(
+		SELECT AS STRUCT
+			IFNULL(SUM(ARRAY_LENGTH(dds.patchsets_with_failures)), 0) AS SixMonthFailCount,
+			IFNULL(SUM(dds.run_count), 0) AS SixMonthRunCount,
+			# Note the extra day is to account for lag between collecting the data and a new model being generated
+			IFNULL(SUM(IF(dds.day >= TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 31 DAY), ARRAY_LENGTH(dds.patchsets_with_failures), 0)), 0) AS OneMonthFailCount,
+			IFNULL(SUM(IF(dds.day >= TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 31 DAY), dds.run_count, 0)), 0) AS OneMonthRunCount,
+			IFNULL(SUM(IF(dds.day >= TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 8 DAY), ARRAY_LENGTH(dds.patchsets_with_failures), 0)), 0) AS OneWeekFailCount,
+			IFNULL(SUM(IF(dds.day >= TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 8 DAY), dds.run_count, 0)), 0) AS OneWeekRunCount,
+		FROM chrome-trooper-analytics.test_results.daily_summary dds
+		WHERE day BETWEEN
+			TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 181 DAY) AND
+			TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL 1 DAY)
+			AND dds.test_id = tid.test_id
+			AND dds.variant_hash = tid.variant_hash
+		) as Stability,
+	FROM test_ids tid
+	`)
+	q.Parameters = []bigquery.QueryParameter{
+		{Name: "query_builder", Value: builder},
+		{Name: "query_test_suite", Value: testSuite},
+	}
+
+	it, err := q.Read(ctx)
+	if err != nil {
+		return err
+	}
+	return writeStabilityFrom(ctx, w, it.Next)
+}
+
+func writeStabilityFrom(ctx context.Context, w io.Writer, source func(dest interface{}) error) error {
+	test := &proto.TestStability{}
+	for {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		// Read the next row.
+		switch err := source(test); {
+		case err == iterator.Done:
+			return ctx.Err()
+		case err != nil:
+			return err
 		}
 
-		rows = append(rows, *row)
+		jsonBytes, err := protojson.Marshal(test)
+		if err != nil {
+			return err
+		}
+		if _, err := w.Write(jsonBytes); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintln(w); err != nil {
+			return err
+		}
 	}
 }
 
@@ -265,8 +370,8 @@ SELECT
 	dt.day day,
 	tid.test_id test_id,
 	tid.variant_hash variant_hash,
-	tid.builder as builder,
-	tid.test_suite as test_suite,
+	IFNULL(tid.builder, "") as Builder,
+	IFNULL(tid.test_suite, "") as TestSuite,
 	(
 		# Aggregate the daily summary leading up to the day in the outer query (dt.day)
 		SELECT AS STRUCT
