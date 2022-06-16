@@ -1,0 +1,363 @@
+[
+  {
+    "cmd": [],
+    "name": "Initialize the config engine"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/Pkgs/CIPDPkgs"
+    ],
+    "infra_step": true,
+    "name": "Initialize the config engine.Ensure [CACHE]/Pkgs/CIPDPkgs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/Pkgs/GITPkgs"
+    ],
+    "infra_step": true,
+    "name": "Initialize the config engine.Ensure [CACHE]/Pkgs/GITPkgs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/Pkgs/GCSPkgs"
+    ],
+    "infra_step": true,
+    "name": "Initialize the config engine.Ensure [CACHE]/Pkgs/GCSPkgs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/Pkgs/GCSPkgs/chrome-gce-images/WIB-WIM"
+    ],
+    "infra_step": true,
+    "name": "Initialize the config engine.Ensure [CACHE]/Pkgs/GCSPkgs/chrome-gce-images/WIB-WIM",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/configs"
+    ],
+    "infra_step": true,
+    "name": "Initialize the config engine.Ensure [CLEANUP]/configs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Pin resources from test"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "stat",
+      "gs://ms-windows-images/Release/22621.1_MULTI_ARM64_EN-US.ISO"
+    ],
+    "infra_step": true,
+    "name": "Pin resources from test.gsutil stat gs://ms-windows-images/Release/22621.1_MULTI_ARM64_EN-US.ISO",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gitiles]/resources/gerrit_client.py",
+      "--json-file",
+      "/path/to/tmp/json",
+      "--url",
+      "chromium.dev/+log/HEAD/windows/artifacts/bootstrap.ps1",
+      "--format",
+      "json",
+      "--log-limit",
+      "0"
+    ],
+    "name": "Pin resources from test.gitiles log: HEAD/windows/artifacts/bootstrap.ps1",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br />3 commits fetched@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"log\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"author\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"fake_HEAD@fake_0.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"fake_HEAD\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"commit\": \"ef70cb069518e6dc3ff24bfae7f195de5099c377\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"committer\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"fake_HEAD@fake_0.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"fake_HEAD\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"message\": \"fake HEAD msg 0\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"parents\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"3a19413ba702c51ea545b2332119fc70ce04fc31\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ], @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tree\": \"6f8e56bc2da2832c2842646f1c934b62bf7a4455\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tree_diff\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_id\": \"d2e2c5e403b94bb2cc3926758bc013d44c87e0f7\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_mode\": 33188, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_path\": \"a.py\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"old_id\": \"0000000000000000000000000000000000000000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"old_mode\": 0, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"type\": \"add\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      ]@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"author\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"fake_HEAD@fake_1.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"fake_HEAD\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"commit\": \"cfeb6aa9cff926a75a9afcc651e9e4857d378db8\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"committer\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"fake_HEAD@fake_1.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"fake_HEAD\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"message\": \"fake HEAD msg 1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"parents\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"9a5e076f2d84aac38715645214dad5dba6bda7e7\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ], @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tree\": \"408c7d029783405d4fce80117d6e3e0c0e2f6dc2\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tree_diff\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_id\": \"c701ac6a56ba7c86a4d482719e8ff568a9233437\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_mode\": 33188, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_path\": \"b.py\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"old_id\": \"0000000000000000000000000000000000000000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"old_mode\": 0, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"type\": \"add\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      ]@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"author\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"fake_HEAD@fake_2.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"fake_HEAD\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"commit\": \"711ec6fe0c3dcdde2e03b7a50ecd2dd0836118ee\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"committer\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"fake_HEAD@fake_2.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"fake_HEAD\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"message\": \"fake HEAD msg 2\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"parents\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"4e7cd3662473db1e96a9d3ed603aa7029359c990\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ], @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tree\": \"7b9f8612f4303728c04d4ae0dd94c51ceda9ef08\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tree_diff\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_id\": \"efafa334b60c589f1cdbdfbdec1347f7f40231cd\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_mode\": 33188, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"new_path\": \"c.py\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"old_id\": \"0000000000000000000000000000000000000000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"old_mode\": 0, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"type\": \"add\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      ]@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Download resources for test"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://ms-windows-images/Release/22621.1_MULTI_ARM64_EN-US.ISO",
+      "[CACHE]/Pkgs/GCSPkgs/ms-windows-images/Release\\22621.1_MULTI_ARM64_EN-US.ISO"
+    ],
+    "infra_step": true,
+    "name": "Download resources for test.gsutil download gs://ms-windows-images/Release/22621.1_MULTI_ARM64_EN-US.ISO",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+      "--url",
+      "chromium.dev"
+    ],
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.git setup (windows/artifacts/bootstrap.ps1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "--progress"
+    ],
+    "cwd": "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.git fetch (windows/artifacts/bootstrap.ps1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "ef70cb069518e6dc3ff24bfae7f195de5099c377",
+      "--",
+      "windows/artifacts/bootstrap.ps1"
+    ],
+    "cwd": "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+    "infra_step": true,
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.git checkout (windows/artifacts/bootstrap.ps1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+    "infra_step": true,
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+    "infra_step": true,
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.git clean (windows/artifacts/bootstrap.ps1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+    "infra_step": true,
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.submodule sync (windows/artifacts/bootstrap.ps1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[CACHE]/Pkgs/GITPkgs/ef70cb069518e6dc3ff24bfae7f195de5099c377",
+    "infra_step": true,
+    "name": "Download resources for test.Download chromium.dev/+/ef70cb069518e6dc3ff24bfae7f195de5099c377/windows/artifacts/bootstrap.ps1.submodule update (windows/artifacts/bootstrap.ps1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]
