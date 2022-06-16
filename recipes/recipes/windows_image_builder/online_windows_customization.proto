@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.infra.windows_image_builder.online_winpe_customization;
+
+import  "recipes/infra/windows_image_builder/actions.proto";
+import  "recipes/infra/windows_image_builder/vm.proto";
+
+/* OnlineWinCustomization mounts the given image to a vm and executes it.
+ * You can also mount other images to this vm for modifying.
+ */
+message OnlineWinCustomization {
+  // The name of an OfflineCustomization.
+  //
+  // E.g. gce_winpe_customization
+  string name = 1;
+
+  // Boot into online customization
+  repeated OnlineCustomization boots = 2;
+}
+
+message OnlineCustomization {
+  // The name of this sub customization
+  //
+  // E.g. win10_firstboot_logon
+  string name = 1;
+
+  // VM config to run this boot
+  vm.VM vm_config = 2;
+
+  // List of online actions to perform for this customization
+  repeated actions.OnlineAction online_actions = 3;
+}
