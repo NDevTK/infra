@@ -12,8 +12,19 @@ class Customization(object):
       recipes.
   """
 
-  def __init__(self, image, cust, arch, scripts, configs, step, path,
-               powershell, m_file, archive, source):
+  def __init__(self,
+               image,
+               cust,
+               arch,
+               scripts,
+               configs,
+               step,
+               path,
+               powershell,
+               m_file,
+               archive,
+               source,
+               qemu=None):
     """ __init__ copies common module objects to class references. These are
         commonly used for all customizations
         Args:
@@ -27,6 +38,7 @@ class Customization(object):
           m_file: module object for recipe_engine/file
           archive: module object for recipe_engine/archive
           source: module object for Source from sources.py
+          qemu: module object for qemu
     """
     # generate a copy of image
     self._image = wib.Image()
@@ -49,6 +61,7 @@ class Customization(object):
     self._archive = archive
     self._key = ''
     self._configs = configs
+    self._qemu = qemu
     self._name = ''
 
   def name(self):
