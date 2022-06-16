@@ -254,10 +254,7 @@ CREATE TABLE ClusteringState (
   -- The Spanner commit timestamp of when the row was last updated.
   LastUpdated TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
 ) PRIMARY KEY (Project, ChunkId)
--- Commented out for Cloud Spanner Emulator:
--- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
--- but **should** be applied to real Spanner instances.
---, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
+, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
 
 -- ReclusteringRuns contains details of runs used to re-cluster test results.
 CREATE TABLE ReclusteringRuns (
@@ -369,6 +366,10 @@ CREATE TABLE TQLeases (
 ) PRIMARY KEY (SectionID ASC, LeaseID ASC);
 
 -- Stores test results.
+-- As of Q2 2022, this table is estimated to collect ~250 billion rows over
+-- 90 days. Please be mindful of storage implications when adding new fields.
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/data-types#storage_size_for_data_types
+-- gives guidance on the storage sizes of data types.
 CREATE TABLE TestResults (
   -- The LUCI Project this test result belongs to.
   Project STRING(40) NOT NULL,
@@ -458,6 +459,26 @@ CREATE TABLE TestResults (
   -- Only populated for builds part of presubmit runs.
   PresubmitRunMode INT64,
 
+  -- The identity of the git reference defining the code line that was tested.
+  -- This excludes any unsubmitted changes that were tested, which are
+  -- noted separately in the Changelist... fields below.
+  --
+  -- The details of the git reference is stored in the GitReferences table,
+  -- keyed by (Project, GitReferenceHash).
+  --
+  -- Only populated if CommitPosition is populated.
+  GitReferenceHash BYTES(8),
+
+  -- The commit position along the given git reference that was tested.
+  -- This excludes any unsubmitted changes that were tested, which are
+  -- noted separately in the Changelist... fields below.
+  -- This is populated from the buildbucket build outputs or inputs, usually
+  -- as calculated via goto.google.com/git-numberer.
+  --
+  -- Only populated if build reports the commit position as part of the
+  -- build outputs or inputs.
+  CommitPosition INT64,
+
   -- The following fields capture information about any unsubmitted
   -- changelists that were tested by the test execution. The arrays
   -- are matched in length and correspond in index, i.e.
@@ -482,10 +503,47 @@ CREATE TABLE TestResults (
   -- The patchset number(s) of the changelist, e.g. 1.
   ChangelistPatchsets ARRAY<INT64> NOT NULL,
 ) PRIMARY KEY(Project, TestId, PartitionTime DESC, VariantHash, IngestedInvocationId, RunIndex, ResultIndex)
--- The following DDL query needs to be uncommented when applied to real Spanner
--- instances. But it is commented out for Cloud Spanner Emulator:
--- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
---, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
+, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
+
+-- Stores git references. Git references represent a linear source code
+-- history along which the position of commits can be measured
+-- using an integer (where larger integer means later in history and
+-- smaller integer means earlier in history).
+CREATE TABLE GitReferences (
+  -- The LUCI Project this git reference was used in.
+  -- Although the same git reference could be used in different projects,
+  -- it is stored namespaced by project to isolate projects from each other.
+  Project STRING(40) NOT NULL,
+
+  -- The identity of the git reference.
+  -- Constructed by hashing the following values:
+  -- - The gittiles hostname, e.g. "chromium.googlesource.com".
+  -- - The repository name, e.g. "chromium/src".
+  -- - The reference name, e.g. "refs/heads/main".
+  -- Using the following formula ([:8] indicates truncation to 8 bytes).
+  -- SHA256(hostname + "\n" + repository_name + "\n"  + ref_name)[:8].
+  GitReferenceHash BYTES(8) NOT NULL,
+
+  -- The gittiles hostname. E.g. "chromium.googlesource.com".
+  -- 255 characters for max length of a domain name.
+  Hostname STRING(255) NOT NULL,
+
+  -- The gittiles repository name (also known as the gittiles "project").
+  -- E.g. "chromium/src".
+  -- 4096 for the maximum length of a linux path.
+  Repository STRING(4096) NOT NULL,
+
+  -- The git reference name, e.g. "refs/heads/main".
+  Reference STRING(4096) NOT NULL,
+
+  -- Last (ingestion) time this git reference was observed.
+  -- This value may be out of date by up to 24 hours to allow for contention-
+  -- reducing strategies.
+  LastIngestionTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
+) PRIMARY KEY(Project, GitReferenceHash)
+-- Use a slightly longer retention period to prevent the git reference being
+-- dropped before the associated TestResults.
+, ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 100 DAY));
 
 -- Stores top-level invocations which were ingested.
 --
@@ -531,6 +589,35 @@ CREATE TABLE IngestedInvocations (
   -- Only populated for builds part of presubmit runs.
   PresubmitRunMode INT64,
 
+
+  -- The identity of the git reference defining the code line that was tested.
+  -- This excludes any unsubmitted changes that were tested, which are
+  -- noted separately in the Changelist... fields below.
+  --
+  -- The details of the git reference is stored in the GitReferences table,
+  -- keyed by (Project, GitReferenceHash).
+  --
+  -- Only populated if CommitPosition is populated.
+  GitReferenceHash BYTES(8),
+
+  -- The commit position along the given git reference that was tested.
+  -- This excludes any unsubmitted changes that were tested, which are
+  -- noted separately in the Changelist... fields below.
+  -- This is populated from the buildbucket build outputs or inputs, usually
+  -- as calculated via goto.google.com/git-numberer.
+  --
+  -- Only populated if build reports the commit position as part of the
+  -- build outputs or inputs.
+  CommitPosition INT64,
+
+  -- The SHA-1 commit hash of the commit that was tested.
+  -- Encoded as a lowercase hexadecimal string.
+  -- This excludes any unsubmitted changes that were tested, which are
+  -- noted separately in the Changelist... fields below.
+  --
+  -- Only populated if CommitPosition is populated.
+  CommitHash STRING(40),
+
   -- The following fields capture information about any unsubmitted
   -- changelists that were tested by the test execution. The arrays
   -- are matched in length and correspond in index, i.e.
@@ -555,12 +642,9 @@ CREATE TABLE IngestedInvocations (
   -- The patchset number(s) of the changelist, e.g. 1.
   ChangelistPatchsets ARRAY<INT64> NOT NULL,
 ) PRIMARY KEY(Project, IngestedInvocationId)
--- The following DDL query needs to be uncommented when applied to real Spanner
--- instances. But it is commented out for Cloud Spanner Emulator:
--- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
 -- Use a slightly longer retention period to prevent the invocation being
 -- dropped before the associated TestResults.
---, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 100 DAY));
+, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 100 DAY));
 
 -- Serves three purposes:
 -- - Permits listing of distinct tests observed for a project, filtered by Realm.
@@ -610,7 +694,6 @@ CREATE TABLE TestVariantRealms (
   -- reducing strategies.
   LastIngestionTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
 ) PRIMARY KEY(Project, TestId, VariantHash, SubRealm)
--- The following DDL query needs to be uncommented when applied to real Spanner
--- instances. But it is commented out for Cloud Spanner Emulator:
--- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
---, ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 91 DAY));
+-- Use a slightly longer retention period to prevent the invocation being
+-- dropped before the associated TestResults.
+, ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 100 DAY));
