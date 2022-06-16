@@ -197,26 +197,6 @@ class SomAnnotations extends Polymer.mixinBehaviors([
     this.$.bugDialog.open();
   }
 
-  handleFileBug(alerts, callback) {
-    this._fileBugCallback = callback;
-    this._fileBugModel = alerts;
-
-    let bugSummary = 'Bug filed from Sheriff-o-Matic';
-
-    if (alerts && alerts.length) {
-      bugSummary = this._summaryForBug(this.tree, alerts[0]);
-      if (alerts.length > 1) {
-        bugSummary += ` and ${alerts.length - 1} other alerts`;
-      }
-    }
-
-    this.$.fileBug.summary = bugSummary;
-    this.$.fileBug.description = this._commentForBug(this.tree, alerts);
-    this.$.fileBug.labels = this._computeFileBugLabels(this.tree, alerts);
-    this.$.fileBug.projectId = this.tree.default_monorail_project_name;
-    this.$.fileBug.open();
-  }
-
   handleRemoveBug(alert, detail) {
     this.$.removeBugDialog.open();
     this._removeBugModel = Object.assign({alert: alert}, detail);
@@ -302,61 +282,6 @@ class SomAnnotations extends Polymer.mixinBehaviors([
     return alert.type === 'test-failure' ||
         (alert.extension && alert.extension.reason && alert.extension.reason.step
           && alert.extension.reason.step.includes('test'));
-  }
-
-  _summaryForBug(tree, alert) {
-    if (tree.name === 'android' && alert.extension && alert.extension.builders &&
-        alert.extension.builders.length === 1 && this._alertIsTestFailure(alert)) {
-      return `<insert test name/suite> is failing on builder "${alert.extension.builders[0].name}"`;
-    }
-    return alert.title;
-  }
-
-  _commentForBug(tree, alerts) {
-    return alerts.reduce((comment, alert) => {
-      let result = '';
-      if (alert.extension && alert.extension.builders && alert.extension.builders.length > 0) {
-        const isTestFailure = this._alertIsTestFailure(alert);
-        if (alert.extension.builders.length === 1 && isTestFailure && tree.name === 'android') {
-          result += `<insert test name/suite> is failing in step "${alert.extension.reason.step}" on builder "${alert.extension.builders[0].name}"\n\n`;
-        } else {
-          result += alert.title + '\n\n';
-        }
-        const failuresInfo = [];
-        for (const builder of alert.extension.builders) {
-          failuresInfo.push(this._builderFailureInfo(builder));
-        }
-        result += 'List of failed builders:\n\n' +
-                  failuresInfo.join('\n--------------------\n') + '\n';
-
-        if (tree.name === 'android') {
-          result += `
-------- Note to sheriffs -------
-
-For failing tests:
-Please file a separate bug for each failing test suite, filling in the name of the test or suite (<in angle brackets>).
-
-Add a component so that bugs end up in the appropriate triage queue, and assign an owner if possible.
-
-If applicable, also include a sample stack trace, link to the flakiness dashboard, and/or post-test screenshot to help with future debugging.
-
-If a culprit CL can be identified, revert the CL. Otherwise, disable the test.
-When either action is complete and the issue no longer requires sheriff attention, remove the ${tree.bug_queue_label} label.
-
-For infra failures:
-See go/bugatrooper for instructions and bug templates
-
-------------------------------
-`;
-        }
-      }
-      return comment + result;
-    }, '');
-  }
-
-  _fileBugClicked() {
-    this.$.bugDialog.close();
-    this.handleFileBug(this._fileBugModel, this._fileBugCallBack);
   }
 
   _removeBug() {
@@ -594,33 +519,6 @@ See go/bugatrooper for instructions and bug templates
       return DefaultSnoozeTimes[treeName];
     }
     return DefaultSnoozeTimes['*'];
-  }
-
-  _computeFileBugLabels(tree, alerts) {
-    const labels = ['Filed-Via-SoM'];
-    if (!tree) {
-      return labels;
-    }
-
-    // TODO(zhangtiff): Replace this with some way to mark internal trees and
-    // automatically add RVG labels to them.
-    if (tree.name === 'android') {
-      labels.push('Restrict-View-Google');
-    }
-    if (tree.bug_queue_label) {
-      labels.push(tree.bug_queue_label);
-    }
-
-    if (alerts) {
-      const trooperBug = alerts.some((alert) => {
-        return this.isTrooperAlertType(alert.type);
-      });
-
-      if (trooperBug) {
-        labels.push('Infra-Troopers');
-      }
-    }
-    return labels;
   }
 
   _computeHideDeleteComment(comment) {

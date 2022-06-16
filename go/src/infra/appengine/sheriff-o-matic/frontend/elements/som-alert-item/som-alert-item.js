@@ -209,10 +209,13 @@ class SomAlertItem extends Polymer.mixinBehaviors(
   }
 
   _fileBug(evt) {
-    this.dispatchEvent(new CustomEvent('file-bug', {
-      bubbles: true,
-      composed: true,
-    }));
+    let alerts = [this.alert];
+    // If this is a grouped alert, we actually want to file a bug based on all
+    // the child alerts rather than the group.
+    if (this.alert.alerts && this.alert.alerts.length) {
+      alerts = this.alert.alerts;
+    }
+    this.shadowRoot.querySelector('som-file-bug-dialog').open(this.treeName, alerts);
   }
 
   _formatTimestamp(timestamp) {

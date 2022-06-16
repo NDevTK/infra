@@ -17,8 +17,6 @@
 
 <link rel="import" href="../../elements/som-marked-element/som-marked-element.html">
 
-<link rel="import" href="../../elements/som-annotations/som-file-bug.html">
-
 <script src="../../bower_components/moment/min/moment.min.js"></script>
 <script src="../../bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
 
@@ -135,9 +133,6 @@
           min
         </div>
       </label>
-      <div class="linkText" on-click="_fileBugClicked">
-          File bug
-     </div>
       <div class="error">[[_bugErrorMessage]]</div>
       <div class="buttons">
         <button dialog-dismiss>
@@ -148,8 +143,6 @@
         </button>
       </div>
     </paper-dialog>
-
-    <som-file-bug id="fileBug" creator="[[user]]" on-success="_linkNewBug"></som-file-bug>
 
     <paper-dialog id="removeBugDialog" with-backdrop>
       <h2>Unlinking bug from alert</h2>

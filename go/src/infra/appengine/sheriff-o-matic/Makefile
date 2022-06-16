@@ -1,7 +1,7 @@
 .PHONY: test
 WCT_PATH = ./node_modules/web-component-tester/bin/wct
 VULCANIZE_PATH = ./node_modules/vulcanize/bin/vulcanize
-DEVSERVER_PY = ../../../../../../gcloud/bin/dev_appserver.py
+DEVSERVER_PY = python2 ../../../../../../gcloud/bin/dev_appserver.py
 GAE_PY = ../../../../../luci/appengine/components/tools/gae.py
 
 default: help

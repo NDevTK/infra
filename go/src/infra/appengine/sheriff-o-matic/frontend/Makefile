@@ -23,10 +23,10 @@ build_polymer: bower_deps
 typecheck: node_deps
 	npm run typecheck
 
-build_lit: node_deps typecheck
+build_react: node_deps typecheck
 	npm run build
 
-build: build_polymer build_lit
+build: build_polymer build_react
 
 clean:
 	rm scripts/bundle.js*

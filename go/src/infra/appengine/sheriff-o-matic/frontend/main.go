@@ -13,14 +13,6 @@ import (
 	"net/http"
 	"strings"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/handler"
-	"infra/monorail"
-	monorailv3 "infra/monorailv2/api/v3/api_proto"
-
-	"google.golang.org/appengine"
-
 	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/auth/identity"
@@ -30,6 +22,13 @@ import (
 	"go.chromium.org/luci/server/auth/xsrf"
 	"go.chromium.org/luci/server/portal"
 	"go.chromium.org/luci/server/router"
+	"google.golang.org/appengine"
+
+	"infra/appengine/sheriff-o-matic/som/analyzer"
+	"infra/appengine/sheriff-o-matic/som/client"
+	"infra/appengine/sheriff-o-matic/som/handler"
+	"infra/monorail"
+	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
 const (
@@ -272,7 +271,6 @@ func fileBugHandler(ctx *router.Context) {
 
 //// Routes.
 func init() {
-
 	portal.RegisterPage(settingsKey, handler.SettingsPage{})
 
 	r := router.New()

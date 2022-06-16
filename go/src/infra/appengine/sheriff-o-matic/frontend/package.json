@@ -15,6 +15,7 @@
     "polylint": "^2.9.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-query": "^3.39.1",
     "vulcanize": "~1.14.8"
   },
   "devDependencies": {
