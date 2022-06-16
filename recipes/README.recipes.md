@@ -61,6 +61,7 @@
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
   * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
   * [qemu:examples/powerdown_vm](#recipes-qemu_examples_powerdown_vm) (Python3 ✅)
+  * [qemu:examples/quit_vm](#recipes-qemu_examples_quit_vm) (Python3 ✅)
   * [qemu:examples/start_vm](#recipes-qemu_examples_start_vm) (Python3 ✅)
   * [recipe_autoroller](#recipes-recipe_autoroller) (Python3 ✅) &mdash; Rolls recipes.
   * [recipe_autoroller:examples/full](#recipes-recipe_autoroller_examples_full) (Python3 ✅)
@@ -582,11 +583,11 @@ built-in to the OS image (if available).
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#16)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#19)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API to manage qemu VMs 
 
-&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#54)(self, disk_name, fs_format='fat', min_size=0, include=()):**
+&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#57)(self, disk_name, fs_format='fat', min_size=0, include=()):**
 
 create_disk creates a virtual disk with the given name, format and size.
 
@@ -601,7 +602,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#107)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#110)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -610,9 +611,9 @@ Args:
   * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
   * size: size of the disk image in bytes
 
-&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#28)(self):**
+&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#31)(self):**
 
-&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#32)(self, version):**
+&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#35)(self, version):**
 
 Initialize the module, ensure that qemu exists on the system
 
@@ -623,7 +624,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#141)(self, disk_name):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#144)(self, disk_name):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -633,16 +634,23 @@ Args:
 
 Returns: loop file used for the disk and mount location
 
-&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#24)(self):**
+&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#27)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#211)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#213)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
 Args:
   name: name of the vm to shutdown
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#187)(self, name, arch, memory, disks):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#233)(self, name):**
+
+quit_vm sends a quit signal to the qemu process. Use this if you VM
+doesn't respond to powerdown signal.
+Args:
+  name: name of the vm to quit
+
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#190)(self, name, arch, memory, disks):**
 
 start_vm starts a qemu vm with given disks attached
 
@@ -656,7 +664,7 @@ Args:
   * memory: RAM size on the VM
   * disks: list of disks to attach to the VM (except boot)
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#174)(self, loop_file):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#177)(self, loop_file):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
@@ -1664,6 +1672,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/powerdown_vm.py#15)(api):**
+### *recipes* / [qemu:examples/quit\_vm](/recipes/recipe_modules/qemu/examples/quit_vm.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/quit_vm.py#8): [qemu](#recipe_modules-qemu), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/quit_vm.py#15)(api):**
 ### *recipes* / [qemu:examples/start\_vm](/recipes/recipe_modules/qemu/examples/start_vm.py)
 
 [DEPS](/recipes/recipe_modules/qemu/examples/start_vm.py#9): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
