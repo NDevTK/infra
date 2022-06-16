@@ -1,7 +1,9 @@
 .PHONY: shivas
 shivas:
+	@$(RM) shivas dev-shivas
 	go test ./...
 	go build -o shivas main.go
+	go build -o dev-shivas -tags=dev main.go
 
 # Build a version of shivas targeted specifically
 # at a version of UFS running locally.
