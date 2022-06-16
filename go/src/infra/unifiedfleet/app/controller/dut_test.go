@@ -2437,7 +2437,7 @@ func TestUpdateDUT(t *testing.T) {
 			servo.ServoHostname = "local_labstation"
 			servo.DockerContainerName = "docker-1"
 			dut2.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Servo = servo
-			resp, err := UpdateDUT(ctx, dut2, mockFieldMask("dut.servo.hostname", "dut.servo.docker_container"))
+			resp, err := UpdateDUT(ctx, dut2, mockFieldMask("dut.servo.hostname", "dut.servo.dockerContainer"))
 			So(err, ShouldBeNil)
 			resp.UpdateTime = nil
 			dut2.UpdateTime = nil
@@ -2479,7 +2479,7 @@ func TestUpdateDUT(t *testing.T) {
 			_, err = inventory.CreateMachineLSE(ctx, dut1)
 			So(err, ShouldBeNil)
 			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().DockerContainerName = ""
-			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.servo.docker_container"))
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.servo.dockerContainer"))
 			So(err, ShouldNotBeNil)
 		})
 		Convey("UpdateDUT - Replace docker container with existing labstation", func() {
@@ -2514,7 +2514,7 @@ func TestUpdateDUT(t *testing.T) {
 			// Update the dut to use labstation instead of servod on docker
 			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().DockerContainerName = ""
 			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().ServoHostname = "labstation-y"
-			resp, err := UpdateDUT(ctx, dut1, mockFieldMask("dut.servo.hostname", "dut.servo.docker_container"))
+			resp, err := UpdateDUT(ctx, dut1, mockFieldMask("dut.servo.hostname", "dut.servo.dockerContainer"))
 			So(err, ShouldBeNil)
 			resp.UpdateTime = nil
 			dut1.UpdateTime = nil
@@ -2557,7 +2557,7 @@ func TestUpdateDUT(t *testing.T) {
 			So(err, ShouldBeNil)
 			// Update the docker container name
 			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().DockerContainerName = "docker-2"
-			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.servo.docker_container"))
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.servo.dockerContainer"))
 			So(err, ShouldBeNil)
 			// Check the servo changes were recorded.
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-41")
