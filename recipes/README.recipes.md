@@ -82,6 +82,7 @@
   * [windows_scripts_executor:examples/edit_offline_registry_test](#recipes-windows_scripts_executor_examples_edit_offline_registry_test) (Python3 ✅)
   * [windows_scripts_executor:examples/gcs_test](#recipes-windows_scripts_executor_examples_gcs_test) (Python3 ✅)
   * [windows_scripts_executor:examples/git_test](#recipes-windows_scripts_executor_examples_git_test) (Python3 ✅)
+  * [windows_scripts_executor:examples/online_windows_customization](#recipes-windows_scripts_executor_examples_online_windows_customization) (Python3 ✅)
   * [windows_scripts_executor:examples/test](#recipes-windows_scripts_executor_examples_test) (Python3 ✅)
   * [windows_sdk:examples/full](#recipes-windows_sdk_examples_full) (Python3 ✅)
   * [zip:examples/full](#recipes-zip_examples_full) (Python3 ✅)
@@ -584,11 +585,11 @@ built-in to the OS image (if available).
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#19)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#20)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API to manage qemu VMs 
 
-&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#57)(self, disk_name, fs_format='fat', min_size=0, include=()):**
+&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#58)(self, disk_name, fs_format='fat', min_size=0, include=()):**
 
 create_disk creates a virtual disk with the given name, format and size.
 
@@ -603,7 +604,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#110)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#111)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -612,9 +613,9 @@ Args:
   * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
   * size: size of the disk image in bytes
 
-&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#31)(self):**
+&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#32)(self):**
 
-&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#35)(self, version):**
+&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#36)(self, version):**
 
 Initialize the module, ensure that qemu exists on the system
 
@@ -625,7 +626,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#144)(self, disk_name):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#145)(self, disk_name):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -635,9 +636,9 @@ Args:
 
 Returns: loop file used for the disk and mount location
 
-&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#27)(self):**
+&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#28)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#213)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#214)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
@@ -651,7 +652,7 @@ doesn't respond to powerdown signal.
 Args:
   name: name of the vm to quit
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#190)(self, name, arch, memory, disks):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#191)(self, name, arch, memory, disks):**
 
 start_vm starts a qemu vm with given disks attached
 
@@ -665,19 +666,20 @@ Args:
   * memory: RAM size on the VM
   * disks: list of disks to attach to the VM (except boot)
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#177)(self, loop_file):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#178)(self, loop_file):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#250)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#252)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`
 Args:
   name: name of the vm
+Returns QMP json response for status query
 ### *recipe_modules* / [recipe\_autoroller](/recipes/recipe_modules/recipe_autoroller)
 
 [DEPS](/recipes/recipe_modules/recipe_autoroller/__init__.py#7): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/futures][recipe_engine/recipe_modules/futures], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/random][recipe_engine/recipe_modules/random], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]
@@ -1121,35 +1123,35 @@ Downloads & Installs the Windows ADK.
 Ensures that the WinPE add-on is available.
 ### *recipe_modules* / [windows\_scripts\_executor](/recipes/recipe_modules/windows_scripts_executor)
 
-[DEPS](/recipes/recipe_modules/windows_scripts_executor/__init__.py#5): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [powershell](#recipe_modules-powershell), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/__init__.py#5): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [powershell](#recipe_modules-powershell), [qemu](#recipe_modules-qemu), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-#### **class [WindowsPSExecutorAPI](/recipes/recipe_modules/windows_scripts_executor/api.py#15)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [WindowsPSExecutorAPI](/recipes/recipe_modules/windows_scripts_executor/api.py#16)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#208)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#224)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
 Args:
   customizations: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#218)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#234)(self, custs):**
 
 Executes the windows image builder user config.
 Args:
   customizations: List of Customizations object from customizations.py
 
-&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#194)(self, customizations):**
+&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#210)(self, customizations):**
 
 filter_executable_customizations generates a list of customizations
 that need to be executed.
 Args:
   customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#93)(self, customizations):**
+&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#109)(self, customizations):**
 
 gen_canonical_configs strips all the names in the config and returns
 individual configs containing one customization per image.
@@ -1226,32 +1228,32 @@ Example:
   etc,. are set to empty before calculating the hash to maintain the
   uniqueness of the hash.
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#227)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#243)(self, custs):**
 
 get_executable_config takes list of customizations and returns a list
 of wib.Image proto objects that can be used to trigger other builders
 Args:
   custs: list of customizations refs generated by process_customizations
 
-&mdash; **def [init](/recipes/recipe_modules/windows_scripts_executor/api.py#28)(self):**
+&mdash; **def [init](/recipes/recipe_modules/windows_scripts_executor/api.py#29)(self):**
 
 init initializes all the dirs and sub modules required.
     
 
-&mdash; **def [init\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#40)(self, config):**
+&mdash; **def [init\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#41)(self, config):**
 
 init_customizations initializes the given config and returns
 list of customizations
 Args:
   config: wib.Image proto config
 
-&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#84)(self, customizations):**
+&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#100)(self, customizations):**
 
 pin_customizations pins all the sources in the customizations
 Args:
   customizations: List of Customizations object from customizations.py
 
-&mdash; **def [process\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#72)(self, custs):**
+&mdash; **def [process\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#88)(self, custs):**
 
 process_customizations pins all the volatile srcs, generates
 canonnical configs, filters customizations that need to be executed.
@@ -1841,6 +1843,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/git_test.py#35)(api, config):**
+### *recipes* / [windows\_scripts\_executor:examples/online\_windows\_customization](/recipes/recipe_modules/windows_scripts_executor/examples/online_windows_customization.py)
+
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/online_windows_customization.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/online_windows_customization.py#31)(api, config):**
 ### *recipes* / [windows\_scripts\_executor:examples/test](/recipes/recipe_modules/windows_scripts_executor/examples/test.py)
 
 [DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/test.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
