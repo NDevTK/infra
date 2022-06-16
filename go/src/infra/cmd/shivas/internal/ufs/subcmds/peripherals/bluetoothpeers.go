@@ -154,7 +154,7 @@ func (c *manageBTPsCmd) newBTPs(current []*lab.BluetoothPeer) ([]*lab.BluetoothP
 func (c *manageBTPsCmd) passedBTPs() []*lab.BluetoothPeer {
 	var ret []*lab.BluetoothPeer
 	for _, h := range c.hostnames {
-		ret = append(ret, createBTP(h))
+		ret = append(ret, CreateBluetoothPeer(h))
 	}
 	return ret
 }
@@ -250,8 +250,8 @@ func (c *manageBTPsCmd) cleanAndValidateFlags() error {
 	return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
 }
 
-// createBTP creates a *lab.BluetoothPeer object with initial working state.
-func createBTP(hostname string) *lab.BluetoothPeer {
+// CreateBluetoothPeer creates a *lab.BluetoothPeer object with initial working state.
+func CreateBluetoothPeer(hostname string) *lab.BluetoothPeer {
 	return &lab.BluetoothPeer{
 		Device: &lab.BluetoothPeer_RaspberryPi{
 			RaspberryPi: &lab.RaspberryPi{

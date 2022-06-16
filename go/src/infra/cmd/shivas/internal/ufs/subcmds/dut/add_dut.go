@@ -20,6 +20,7 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 
 	"infra/cmd/shivas/cmdhelp"
+	peripheralsCmd "infra/cmd/shivas/internal/ufs/subcmds/peripherals"
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
@@ -118,6 +119,9 @@ var AddDUTCmd = &subcommands.Command{
 		// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
 		c.Flags.StringVar(&c.model, "model", "", "model of the DUT undergoing deployment. If not given, HaRT data is used. Fails if model is not known for the DUT")
 		c.Flags.StringVar(&c.board, "board", "", "board of the DUT undergoing deployment. If not given, HaRT data is used. Fails if board is not known for the DUT")
+
+		// Multi-peripherals
+		c.Flags.UintVar(&c.bluetoothPeersCount, "btpn", 0, "number of Bluetooth peers connected")
 		return c
 	},
 }
@@ -184,6 +188,9 @@ type addDUT struct {
 	// Machine specific fields
 	model string
 	board string
+
+	// Multi-peripherals
+	bluetoothPeersCount uint
 }
 
 var mcsvFields = []string{
@@ -374,6 +381,10 @@ func (c addDUT) validateArgs() error {
 	}
 	if c.newSpecsFile == "" && c.hostname == "" {
 		return cmdlib.NewQuietUsageError(c.Flags, "Need hostname to create a DUT")
+	}
+
+	if c.bluetoothPeersCount > 4 {
+		return cmdlib.NewQuietUsageError(c.Flags, "Too many Bluetooth peers specified: %d", c.bluetoothPeersCount)
 	}
 	return nil
 }
@@ -601,6 +612,14 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		}
 		cables = append(cables, cable)
 	}
+
+	var bluetoothPeers []*chromeosLab.BluetoothPeer
+	if c.bluetoothPeersCount > 0 {
+		for i := uint(1); i <= c.bluetoothPeersCount; i++ {
+			btpHost := fmt.Sprintf("%s-btpeer%d", c.hostname, i)
+			bluetoothPeers = append(bluetoothPeers, peripheralsCmd.CreateBluetoothPeer(btpHost))
+		}
+	}
 	peripherals.GetChameleon().ChameleonPeripherals = chameleons
 	peripherals.ConnectedCamera = cameras
 	peripherals.Cable = cables
@@ -618,6 +637,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	peripherals.Camerabox = c.cameraBox
 	peripherals.Chaos = c.chaos
 	peripherals.SmartUsbhub = c.smartUSBHub
+	peripherals.BluetoothPeers = bluetoothPeers
 	if c.appcap {
 		peripherals.GetWifi().WifiRouters = []*chromeosLab.WifiRouter{
 			{Hostname: fmt.Sprintf("%s-router", name)},

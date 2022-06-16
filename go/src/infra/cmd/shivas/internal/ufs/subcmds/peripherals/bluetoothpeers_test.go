@@ -92,9 +92,9 @@ func TestDeleteBTPs(t *testing.T) {
 
 	// Test deleting 2 of 3 BTPs
 	current = []*lab.BluetoothPeer{
-		createBTP("h1"),
-		createBTP("h2"),
-		createBTP("h3"),
+		CreateBluetoothPeer("h1"),
+		CreateBluetoothPeer("h2"),
+		CreateBluetoothPeer("h3"),
 	}
 	out, err := cmd.deleteBTPs(current)
 	if err != nil {
