@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.infra.windows_image_builder.vm;
+
+import "recipes/infra/windows_image_builder/drive.proto";
+
+// VM configuration for image builders
+message VM {
+  oneof vm {
+    QEMU qemu = 1;
+  }
+}
+
+// Configuration for a QEMU VM
+message QEMU {
+  // name represents the VM name
+  string name = 1;
+
+  // machine to emulate on the VM
+  // Run qemu-system-${ARCH} -machine help to list available machines
+  // E.g. 'pc-i440fx-7.1', 'raspi3b'
+  string machine = 2;
+
+  // cpu to emulate on VM
+  // Run qemu-system-${ARCH} -cpu help to list available cpus
+  // E.g. 'Broadwell-v1', 'cortex-a53'
+  string cpu = 3;
+
+  // SMP support (Symmetric Multiprocessing)
+  // Options include: clusters=<num>, cores=<num>, cpus=<num>, dies=<num>
+  // maxcpus=<num>, sockets=<num>, threads=<num>
+  // E.g. cpus=4,cores=2
+  string smp = 4;
+
+  // memory represents the RAM size for the VM in megs
+  // E.g. 1024 -> 1024MB
+  int32 memory = 5;
+
+  // Device driver support
+  // E.g 'usb-kdb', 'usb-mouse'
+  repeated string device = 6;
+
+  // extra_args to pass on to QEMU
+  repeated string extra_args = 7;
+
+  // Drives to attach to the VM
+  repeated drive.Drive drives = 8;
+}
