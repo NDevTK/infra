@@ -606,7 +606,8 @@ echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.IPRow  \
-    -partitioning-table HOUR \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
     -table "${APPID}".ufs.ips_hourly); then
   echo ""
   echo ""
@@ -643,7 +644,8 @@ echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.StateRecordRow  \
-    -partitioning-table HOUR \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
     -table "${APPID}".ufs.state_records_hourly); then
   echo ""
   echo ""
