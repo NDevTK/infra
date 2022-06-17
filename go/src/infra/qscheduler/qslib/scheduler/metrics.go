@@ -59,11 +59,8 @@ func eventCommon(request *TaskRequest, w *Worker, s *state, t time.Time) *metric
 	if w != nil {
 		botID = string(w.ID)
 		botLabels = w.Labels.ToSlice()
-		botLabels.Sort()
 		cost = w.runningTask.cost[:]
 	}
-	baseLabels.Sort()
-	provLabels.Sort()
 	accountBalance, accountValid := s.balances[request.AccountID]
 	return &metrics.TaskEvent{
 		AccountBalance:      accountBalance[:],

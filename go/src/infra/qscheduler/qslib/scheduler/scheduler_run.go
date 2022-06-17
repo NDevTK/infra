@@ -22,6 +22,8 @@ import (
 	"infra/qscheduler/qslib/protos/metrics"
 )
 
+const max_sort_amount = 100000
+
 // matchableRequest describes a task request, and attributes related to matching
 // it to workers.
 type matchableRequest struct {
@@ -225,12 +227,22 @@ func computeMatchList(w *Worker, items matchableRequestList) matchList {
 		return items[i].req.examinedTime.After(w.modifiedTime)
 	})
 	for _, item := range items[:end] {
+		// If the request is already matched skip over it so we don't perform costly
+		// computation on it.
+		if item.alreadyMatched {
+			continue
+		}
 		m := computeMatch(w, item.req)
 		if m.match {
 			matches = append(matches, requestAndMatch{match: m, matchableRequest: item})
 		}
 	}
-	sort.Sort(matches)
+
+	// If the matches list is too big then don't sort. We're prioritizing getting
+	// any match versus the best match at high load.
+	if len(matches) < 50000 {
+		sort.Sort(matches)
+	}
 	return matches
 }
 
