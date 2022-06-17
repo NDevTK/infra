@@ -40,5 +40,5 @@ enum Arch {
   ARCH_UNSPECIFIED = 0;
   ARCH_AMD64 = 1;
   ARCH_X86 = 2;
-  ARCH_ARM64 = 3;
+  ARCH_AARCH64 = 3;
 }
