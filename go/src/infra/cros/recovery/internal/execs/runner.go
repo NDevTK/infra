@@ -21,6 +21,9 @@ var (
 	// ErrCodeTag is the key value pair for storing the error code for the linux command.
 	ErrCodeTag = errors.NewTagKey("error_code")
 
+	// ErrCodeTag is the key value pair for storing the error code for the linux command.
+	StdErrTag = errors.NewTagKey("std_error")
+
 	// 127: linux command line error of command not found.
 	SSHErrorCLINotFound = errors.BoolTag{Key: errors.NewTagKey("ssh_error_cli_not_found")}
 
@@ -94,6 +97,8 @@ func (a *RunArgs) NewRunner(host string) Runner {
 			errAnnotator := errors.Reason("runner: command %q completed with exit code %d", r.Command, r.ExitCode)
 			errCodeTagValue := errors.TagValue{Key: ErrCodeTag, Value: exitCode}
 			errAnnotator.Tag(errCodeTagValue)
+			stdErrTagValue := errors.TagValue{Key: StdErrTag, Value: r.Stderr}
+			errAnnotator.Tag(stdErrTagValue)
 			// different kinds of internal errors
 			if exitCode < 0 {
 				errAnnotator.Tag(SSHErrorInternal)
