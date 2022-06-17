@@ -70,6 +70,30 @@
       },
       "revId": "0654a32f3d68d884c25e144831f212551be36594",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0845a170_182e4707",
+        "filename": "recipes/recipes/windows_image_builder/windows_image_builder.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2022-06-17T22:59:24Z",
+      "side": 0,
+      "message": "Ok, additionally consider that winpe also uses this value and calls it ARM64. How would you like to handle for this?",
+      "parentUuid": "3de60a7c_55a8eecb",
+      "range": {
+        "startLine": 43,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 12
+      },
+      "revId": "0654a32f3d68d884c25e144831f212551be36594",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
