@@ -72,7 +72,7 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
               </TableCell>
               <TableCell align="left">{s.score}</TableCell>
               <TableCell align="left">
-                <pre style={{ whiteSpace: 'pre-wrap' }} >{s.justification}</pre>
+                <pre style={{ whiteSpace: 'pre-wrap' }} >{shortenJustification(s.justification)}</pre>
               </TableCell>
             </TableRow>
           ))}
@@ -80,6 +80,18 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
       </Table>
     </TableContainer>
   </>
+}
+
+// Sometimes justification is too long if a CL touches many files.
+// In such case we should shorten the justification to at most 3 lines
+// and link to the detailed analysis if the sheriff wants to see the details
+// (when the detail analysis page is ready).
+function shortenJustification(justification: string) {
+  const lines = justification.split("\n");
+  if (lines.length < 4) {
+    return justification
+  }
+  return lines.slice(0, 3).join("\n") + "\n...";
 }
 
 export class SomGoFinditResult extends HTMLElement {
