@@ -17,6 +17,15 @@ message OfflineAction {
   repeated Action actions = 2;
 }
 
+// Refer to a specific OnlineCustomization action
+message OnlineAction {
+  // The name for a given online customization, e.g. install_cygwin
+  string name = 1;
+
+  // List of actions to be performed for the customization
+  repeated Action actions = 2;
+}
+
 message Action {
   oneof action{
     // Adds the given file to the image
