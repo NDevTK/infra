@@ -10,6 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/execs"
@@ -58,6 +59,24 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		if am.AsBool(ctx, "run_os_install", false) {
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
 			if _, err := dutRun(ctx, installTimeout, "chromeos-install", "--yes"); err != nil {
+				stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
+				if !ok {
+					return errors.Annotate(err, "Install from USB drive: cannot find std err.").Err()
+				}
+				stdErrStr := stdErr.(string)
+				storageErrors := map[string]bool{
+					"No space left on device":                    true,
+					"I/O error when trying to write primary GPT": true,
+					"Input/output error while writing out":       true,
+					"cannot read GPT header":                     true,
+					"can not determine destination device":       true,
+					"wrong fs type":                              true,
+					"bad superblock on":                          true,
+				}
+				if storageErrors[stdErrStr] {
+					info.RunArgs.DUT.State = dutstate.NeedsReplacement
+					log.Debugf(ctx, "Install from USB Drive: Failed to install ChromeOS due to storage error %s, setting DUT state to %s", stdErrStr, dutstate.NeedsReplacement)
+				}
 				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 			}
 			logger.Debugf("Install from USB drive: finished install process")
