@@ -27,6 +27,9 @@ const (
 	// servodPdRoleValueSrc is the one of the two values for servodPdRoleCmd
 	// src is the state that servo in power delivery mode and passes power to the DUT.
 	servodPdRoleValueSrc = "src"
+	// batteryChargePercentCmd is the servod command to determine the
+	// battery charge percentage.
+	batteryChargePercentCmd = "battery_charge_percent"
 )
 
 func ServodPdRoleCmd() string {
@@ -39,6 +42,10 @@ func ServodPdRoleValueSnk() string {
 
 func ServodPdRoleValueSrc() string {
 	return servodPdRoleValueSrc
+}
+
+func BatteryChargePercentCmd() string {
+	return batteryChargePercentCmd
 }
 
 type PDRole struct {
