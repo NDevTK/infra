@@ -1,0 +1,65 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.infra.windows_image_builder.drive;
+
+import  "recipes/infra/windows_image_builder/sources.proto";
+import  "recipes/infra/windows_image_builder/dest.proto";
+
+/* Drive specifies a drive image and options to attach it to a VM. These fields
+ * Correlate to `qemu-system-{ARCH} -drive` options.
+ */
+message Drive {
+  // Name for the drive.
+  //
+  // E.g. win12_vanilla iso
+  string name = 1;
+
+  // The file to mount as this drive. Leaving this empty will create an empty
+  // drive of size
+  sources.Src input_src = 2;
+
+  // The location to upload the image to once customization is done
+  dest.Dest output_dest = 3;
+
+  // The interface this drive is connected on
+  //
+  // E.g. ide, scsi, sd, mtd, floppy, pflash, virtio
+  // Default: ide
+  // qemu-system-{ARCH} ... -drive file=..,if=ide
+  string interface = 4;
+
+  // Specify an index in the list of available connectors for given interface
+  // Leaving this blank will auto assign the index
+  string index = 5;
+
+  // Type of media to emulate
+  //
+  // E.g. drive, cdrom
+  // Default: drive
+  // qemu-system-{ARCH} ... -drive file=..,media=cdrom
+  string media = 6;
+
+  // Specify the format for the drive
+  //
+  // E.g. raw, bcow2
+  // Default: raw
+  // qemu-system-{ARCH} ... -drive file=..,format=raw
+  string fmt = 7;
+
+  // Specify if the drive is to be mounted readonly
+  //
+  // Default: false
+  // qemu-system-{ARCH} ... -drive file=..,readonly
+  bool readonly = 8;
+
+  // Optional size of the drive, Used for creating blank drives
+  int32 size = 9;
+
+  // Optional filesystem type to format the drive to. Used for formatting blank
+  // drive
+  string filesystem = 10;
+}
