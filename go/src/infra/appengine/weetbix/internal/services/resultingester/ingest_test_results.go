@@ -88,7 +88,7 @@ var (
 	}
 
 	buildReadMask = &field_mask.FieldMask{
-		Paths: []string{"builder", "infra.resultdb", "status", "input"},
+		Paths: []string{"builder", "infra.resultdb", "status", "input", "output"},
 	}
 )
 
@@ -208,14 +208,16 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		return transient.Tag.Apply(err)
 	}
 
-	ingestedInv, err := extractIngestedInvocation(payload, build, inv)
+	ingestedInv, gitRef, err := extractIngestionContext(payload, build, inv)
 	if err != nil {
 		return err
 	}
 
 	if payload.TaskIndex == 0 {
-		// The first task should create the ingested invocation record.
-		err = recordIngestedInvocation(ctx, ingestedInv)
+		// The first task should create the ingested invocation record
+		// and git reference record referenced from the invocation record
+		// (if any).
+		err = recordIngestionContext(ctx, ingestedInv, gitRef)
 		if err != nil {
 			return err
 		}

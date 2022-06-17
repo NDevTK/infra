@@ -7,6 +7,7 @@ package resultingester
 import (
 	"context"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -23,10 +24,8 @@ import (
 	"go.chromium.org/luci/server/span"
 	"go.chromium.org/luci/server/tq"
 	_ "go.chromium.org/luci/server/tq/txn/spanner"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/internal/analysis"
@@ -43,6 +42,7 @@ import (
 	spanutil "infra/appengine/weetbix/internal/span"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testresults"
+	"infra/appengine/weetbix/internal/testresults/gitreferences"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
 	"infra/appengine/weetbix/pbutil"
@@ -193,31 +193,42 @@ func TestIngestTestResults(t *testing.T) {
 			realm := "project:ci"
 			partitionTime := clock.Now(ctx).Add(-1 * time.Hour)
 
-			verifyIngestedInvocation := func(expectCreate bool) {
-				expectedInvocation := &testresults.IngestedInvocation{
-					Project:              "project",
-					IngestedInvocationID: "build-87654321",
-					SubRealm:             "ci",
-					PartitionTime:        timestamppb.New(partitionTime).AsTime(),
-					BuildStatus:          pb.BuildStatus_BUILD_STATUS_FAILURE,
-					PresubmitRun: &testresults.PresubmitRun{
-						Owner: "automation",
-						Mode:  pb.PresubmitRunMode_FULL_RUN,
-					},
-					Changelists: []testresults.Changelist{
-						{
-							Host:     "anothergerrit",
-							Change:   77788,
-							Patchset: 19,
-						},
-						{
-							Host:     "mygerrit",
-							Change:   12345,
-							Patchset: 5,
-						},
-					},
-				}
+			expectedGitReference := &gitreferences.GitReference{
+				Project:          "project",
+				GitReferenceHash: gitreferences.GitReferenceHash("myproject.googlesource.com", "someproject/src", "refs/heads/mybranch"),
+				Hostname:         "myproject.googlesource.com",
+				Repository:       "someproject/src",
+				Reference:        "refs/heads/mybranch",
+			}
 
+			expectedInvocation := &testresults.IngestedInvocation{
+				Project:              "project",
+				IngestedInvocationID: "build-87654321",
+				SubRealm:             "ci",
+				PartitionTime:        timestamppb.New(partitionTime).AsTime(),
+				BuildStatus:          pb.BuildStatus_BUILD_STATUS_FAILURE,
+				PresubmitRun: &testresults.PresubmitRun{
+					Owner: "automation",
+					Mode:  pb.PresubmitRunMode_FULL_RUN,
+				},
+				GitReferenceHash: expectedGitReference.GitReferenceHash,
+				CommitPosition:   111888,
+				CommitHash:       strings.Repeat("0a", 20),
+				Changelists: []testresults.Changelist{
+					{
+						Host:     "anothergerrit",
+						Change:   77788,
+						Patchset: 19,
+					},
+					{
+						Host:     "mygerrit",
+						Change:   12345,
+						Patchset: 5,
+					},
+				},
+			}
+
+			verifyIngestedInvocation := func(expected *testresults.IngestedInvocation) {
 				var invs []*testresults.IngestedInvocation
 				// Validate IngestedInvocations table is populated.
 				err := testresults.ReadIngestedInvocations(span.Single(ctx), spanner.AllKeys(), func(inv *testresults.IngestedInvocation) error {
@@ -225,15 +236,33 @@ func TestIngestTestResults(t *testing.T) {
 					return nil
 				})
 				So(err, ShouldBeNil)
-				if expectCreate {
+				if expected != nil {
 					So(invs, ShouldHaveLength, 1)
-					So(invs[0], ShouldResemble, expectedInvocation)
+					So(invs[0], ShouldResemble, expected)
 				} else {
 					So(invs, ShouldHaveLength, 0)
 				}
 			}
 
-			verifyTestResults := func() {
+			verifyGitReference := func(expected *gitreferences.GitReference) {
+				refs, err := gitreferences.ReadAll(span.Single(ctx))
+				So(err, ShouldBeNil)
+				if expected != nil {
+					So(refs, ShouldHaveLength, 1)
+					actual := refs[0]
+					// LastIngestionTime is a commit timestamp in the
+					// control of the implementation. We check it is
+					// populated and assert nothing beyond that.
+					So(actual.LastIngestionTime, ShouldNotBeEmpty)
+					actual.LastIngestionTime = time.Time{}
+
+					So(actual, ShouldResemble, expected)
+				} else {
+					So(refs, ShouldHaveLength, 0)
+				}
+			}
+
+			verifyTestResults := func(expectCommitPosition bool) {
 				trBuilder := testresults.NewTestResult().
 					WithProject("project").
 					WithPartitionTime(timestamppb.New(partitionTime).AsTime()).
@@ -256,6 +285,11 @@ func TestIngestTestResults(t *testing.T) {
 						Owner: "automation",
 						Mode:  pb.PresubmitRunMode_FULL_RUN,
 					})
+				if expectCommitPosition {
+					trBuilder = trBuilder.WithCommitPosition(expectedInvocation.GitReferenceHash, expectedInvocation.CommitPosition)
+				} else {
+					trBuilder = trBuilder.WithoutCommitPosition()
+				}
 
 				expectedTRs := []*testresults.TestResult{
 					trBuilder.WithTestID("ninja://test_consistent_failure").
@@ -666,12 +700,11 @@ func TestIngestTestResults(t *testing.T) {
 			request := &bbpb.GetBuildRequest{
 				Id: bID,
 				Mask: &bbpb.BuildMask{
-					Fields: &field_mask.FieldMask{
-						Paths: []string{"builder", "infra.resultdb", "status", "input"},
-					},
+					Fields: buildReadMask,
 				},
 			}
-			mbc.GetBuild(request, mockedGetBuildRsp(inv))
+			buildResponse := mockedGetBuildRsp(inv)
+			mbc.GetBuild(request, buildResponse)
 
 			invReq := &rdbpb.GetInvocationRequest{
 				Name: inv,
@@ -684,24 +717,8 @@ func TestIngestTestResults(t *testing.T) {
 			tvReq := &rdbpb.QueryTestVariantsRequest{
 				Invocations: []string{inv},
 				PageSize:    10000,
-				ReadMask: &fieldmaskpb.FieldMask{
-					Paths: []string{
-						"test_id",
-						"variant_hash",
-						"status",
-						"variant",
-						"test_metadata",
-						"exonerations.*.reason",
-						"results.*.result.name",
-						"results.*.result.expected",
-						"results.*.result.status",
-						"results.*.result.start_time",
-						"results.*.result.duration",
-						"results.*.result.tags",
-						"results.*.result.failure_reason",
-					},
-				},
-				PageToken: "expected_token",
+				ReadMask:    testVariantReadMask,
+				PageToken:   "expected_token",
 			}
 			tvRsp := mockedQueryTestVariantsRsp()
 			tvRsp.NextPageToken = "continuation_token"
@@ -759,13 +776,16 @@ func TestIngestTestResults(t *testing.T) {
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
-				expectIngestedInvocationExists := true
-				verifyIngestedInvocation(expectIngestedInvocationExists)
+				verifyIngestedInvocation(expectedInvocation)
+				verifyGitReference(expectedGitReference)
+
+				// Expect a continuation task to be created.
 				expectContinuation := true
 				verifyContinuationTask(expectContinuation)
 				ingestionCtl.TaskCount = ingestionCtl.TaskCount + 1 // Expect to have been incremented.
 				verifyIngestionControl(ingestionCtl)
-				verifyTestResults()
+				expectCommitPosition := true
+				verifyTestResults(expectCommitPosition)
 				verifyClustering()
 				verifyAnalyzedTestVariants()
 				expectCollectTaskExists := false
@@ -783,18 +803,28 @@ func TestIngestTestResults(t *testing.T) {
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
-				expectIngestedInvocationExists := false
-				verifyIngestedInvocation(expectIngestedInvocationExists)
+				// Only the first task should create the ingested
+				// invocation record and git reference record (if any).
+				verifyIngestedInvocation(nil)
+				verifyGitReference(nil)
+
+				// As this is the last task, do not expect a continuation
+				// task to be created.
 				expectContinuation := false
 				verifyContinuationTask(expectContinuation)
 				verifyIngestionControl(ingestionCtl)
-				verifyTestResults()
+				expectCommitPosition := true
+				verifyTestResults(expectCommitPosition)
 				verifyClustering()
 				verifyAnalyzedTestVariants()
+
+				// Expect a collect task to be created.
 				expectCollectTaskExists := true
 				verifyCollectTask(expectCollectTaskExists)
 			})
-			Convey("Retry task", func() {
+			Convey("Retry task after continuation task already created", func() {
+				// Scenario: First task fails after it has already scheduled
+				// its continuation.
 				ingestionCtl.TaskCount = 2
 
 				mrc.QueryTestVariants(tvReq, tvRsp)
@@ -804,16 +834,48 @@ func TestIngestTestResults(t *testing.T) {
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
-				expectIngestedInvocationExists := true
-				verifyIngestedInvocation(expectIngestedInvocationExists)
+				verifyIngestedInvocation(expectedInvocation)
+				verifyGitReference(expectedGitReference)
+
+				// Do not expect a continuation task to be created,
+				// as it was already scheduled.
 				expectContinuation := false
 				verifyContinuationTask(expectContinuation)
 				verifyIngestionControl(ingestionCtl)
-				verifyTestResults()
+				expectCommitPosition := true
+				verifyTestResults(expectCommitPosition)
 				verifyClustering()
 				verifyAnalyzedTestVariants()
+
 				expectCollectTaskExists := false
 				verifyCollectTask(expectCollectTaskExists)
+			})
+			Convey("No commit position", func() {
+				// Scenario: The build which completed did not include commit
+				// position data in its output or input.
+				buildResponse.Input.GitilesCommit = nil
+				buildResponse.Output.GitilesCommit = nil
+
+				mrc.QueryTestVariants(tvReq, tvRsp)
+				_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
+				So(err, ShouldBeNil)
+
+				err = ri.ingestTestResults(ctx, payload)
+				So(err, ShouldBeNil)
+
+				// The ingested invocation record should not record
+				// the commit position.
+				expectedInvocation.CommitHash = ""
+				expectedInvocation.CommitPosition = 0
+				expectedInvocation.GitReferenceHash = nil
+				verifyIngestedInvocation(expectedInvocation)
+
+				// No git reference record should be created.
+				verifyGitReference(nil)
+
+				// Test results should not have a commit position.
+				expectCommitPosition := false
+				verifyTestResults(expectCommitPosition)
 			})
 			Convey("No project config", func() {
 				// If no project config exists, results should be ingested into

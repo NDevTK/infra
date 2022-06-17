@@ -5,6 +5,7 @@
 package resultingester
 
 import (
+	"strings"
 	"time"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -46,6 +47,15 @@ func mockedGetBuildRsp(inv string) *bbpb.Build {
 					Change:   77788,
 					Patchset: 19,
 				},
+			},
+		},
+		Output: &bbpb.Build_Output{
+			GitilesCommit: &bbpb.GitilesCommit{
+				Host:     "myproject.googlesource.com",
+				Project:  "someproject/src",
+				Id:       strings.Repeat("0a", 20),
+				Ref:      "refs/heads/mybranch",
+				Position: 111888,
 			},
 		},
 	}

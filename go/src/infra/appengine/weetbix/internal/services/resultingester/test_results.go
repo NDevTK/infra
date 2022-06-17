@@ -22,6 +22,7 @@ import (
 	"infra/appengine/weetbix/internal/ingestion/resultdb"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testresults"
+	"infra/appengine/weetbix/internal/testresults/gitreferences"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/utils"
@@ -33,7 +34,21 @@ import (
 // of data per failure.
 const maximumCLs = 10
 
-func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Build, inv *rdbpb.Invocation) (*testresults.IngestedInvocation, error) {
+// extractGitReference extracts the git reference used to number the commit
+// tested by the given build.
+func extractGitReference(project string, commit *bbpb.GitilesCommit) *gitreferences.GitReference {
+	return &gitreferences.GitReference{
+		Project:          project,
+		GitReferenceHash: gitreferences.GitReferenceHash(commit.Host, commit.Project, commit.Ref),
+		Hostname:         commit.Host,
+		Repository:       commit.Project,
+		Reference:        commit.Ref,
+	}
+}
+
+// extractIngestionContext extracts the ingested invocation and
+// the git reference tested (if any).
+func extractIngestionContext(task *taskspb.IngestTestResults, build *bbpb.Build, inv *rdbpb.Invocation) (*testresults.IngestedInvocation, *gitreferences.GitReference, error) {
 	invID, err := rdbpbutil.ParseInvocationName(inv.Name)
 	if err != nil {
 		// This should never happen. Inv was originated from ResultDB.
@@ -42,10 +57,10 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 
 	proj, subRealm := utils.SplitRealm(inv.Realm)
 	if proj == "" {
-		return nil, errors.Reason("invocation has invalid realm: %q", inv.Realm).Err()
+		return nil, nil, errors.Reason("invocation has invalid realm: %q", inv.Realm).Err()
 	}
 	if proj != task.Build.Project {
-		return nil, errors.Reason("invocation project (%q) does not match build project (%q) for build %s-%d",
+		return nil, nil, errors.Reason("invocation project (%q) does not match build project (%q) for build %s-%d",
 			proj, task.Build.Project, task.Build.Host, task.Build.Id).Err()
 	}
 
@@ -60,14 +75,14 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 	case bbpb.Status_INFRA_FAILURE:
 		buildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
 	default:
-		return nil, fmt.Errorf("build has unknown status: %v", build.Status)
+		return nil, nil, fmt.Errorf("build has unknown status: %v", build.Status)
 	}
 
 	gerritChanges := build.GetInput().GetGerritChanges()
 	changelists := make([]testresults.Changelist, 0, len(gerritChanges))
 	for _, change := range gerritChanges {
 		if !strings.HasSuffix(change.Host, "-review.googlesource.com") {
-			return nil, fmt.Errorf(`gerrit host %q does not end in expected suffix "-review.googlesource.com"`, change.Host)
+			return nil, nil, fmt.Errorf(`gerrit host %q does not end in expected suffix "-review.googlesource.com"`, change.Host)
 		}
 		host := strings.TrimSuffix(change.Host, "-review.googlesource.com")
 		changelists = append(changelists, testresults.Changelist{
@@ -94,7 +109,7 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 		}
 	}
 
-	return &testresults.IngestedInvocation{
+	invocation := &testresults.IngestedInvocation{
 		Project:              proj,
 		IngestedInvocationID: invID,
 		SubRealm:             subRealm,
@@ -102,15 +117,35 @@ func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Buil
 		BuildStatus:          buildStatus,
 		PresubmitRun:         presubmitRun,
 		Changelists:          changelists,
-	}, nil
+	}
+
+	commit := build.Output.GetGitilesCommit()
+	if commit == nil {
+		commit = build.Input.GetGitilesCommit()
+	}
+	var gitRef *gitreferences.GitReference
+	if commit != nil {
+		gitRef = extractGitReference(proj, commit)
+		invocation.GitReferenceHash = gitRef.GitReferenceHash
+		invocation.CommitPosition = int64(commit.Position)
+		invocation.CommitHash = strings.ToLower(commit.Id)
+	}
+	return invocation, gitRef, nil
 }
 
-func recordIngestedInvocation(ctx context.Context, inv *testresults.IngestedInvocation) error {
+func recordIngestionContext(ctx context.Context, inv *testresults.IngestedInvocation, gitRef *gitreferences.GitReference) error {
 	// Update the IngestedInvocations table.
 	m := inv.SaveUnverified()
 
 	_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 		span.BufferWrite(ctx, m)
+
+		if gitRef != nil {
+			// Ensure the git reference (if any) exists in the GitReferences table.
+			if err := gitreferences.EnsureExists(ctx, gitRef); err != nil {
+				return errors.Annotate(err, "ensuring git reference").Err()
+			}
+		}
 		return nil
 	})
 	return err
@@ -189,6 +224,8 @@ func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVari
 					SubRealm:             inv.SubRealm,
 					BuildStatus:          inv.BuildStatus,
 					PresubmitRun:         inv.PresubmitRun,
+					GitReferenceHash:     inv.GitReferenceHash,
+					CommitPosition:       inv.CommitPosition,
 					Changelists:          inv.Changelists,
 				}
 				if inputTR.Result.Duration != nil {

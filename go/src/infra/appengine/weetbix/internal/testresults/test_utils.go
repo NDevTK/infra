@@ -7,6 +7,7 @@ package testresults
 import (
 	"time"
 
+	"infra/appengine/weetbix/internal/testresults/gitreferences"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -31,6 +32,8 @@ func NewTestResult() *TestResultBuilder {
 		ExonerationReasons:   nil,
 		SubRealm:             "realm",
 		BuildStatus:          pb.BuildStatus_BUILD_STATUS_SUCCESS,
+		GitReferenceHash:     gitreferences.GitReferenceHash("hostname", "repository", "reference"),
+		CommitPosition:       1893189,
 		Changelists: []Changelist{
 			{
 				Host:     "mygerrit",
@@ -121,6 +124,18 @@ func (b *TestResultBuilder) WithSubRealm(subRealm string) *TestResultBuilder {
 
 func (b *TestResultBuilder) WithBuildStatus(buildStatus pb.BuildStatus) *TestResultBuilder {
 	b.result.BuildStatus = buildStatus
+	return b
+}
+
+func (b *TestResultBuilder) WithCommitPosition(gitReferenceHash []byte, commitPosition int64) *TestResultBuilder {
+	b.result.GitReferenceHash = gitReferenceHash
+	b.result.CommitPosition = commitPosition
+	return b
+}
+
+func (b *TestResultBuilder) WithoutCommitPosition() *TestResultBuilder {
+	b.result.GitReferenceHash = nil
+	b.result.CommitPosition = 0
 	return b
 }
 
