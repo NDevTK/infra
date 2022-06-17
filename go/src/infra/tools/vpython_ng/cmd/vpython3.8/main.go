@@ -38,10 +38,15 @@ func main() {
 	}
 
 	app.Must(app.LoadSpec())
-	env := python.NewEnvironment(python.Versions{
-		CPython:    "version:2@3.8.10.chromium.24",
-		VirtualENV: "version:2@16.7.10.chromium.7",
-	})
+
+	cpython, err := python.CPythonFromRelativePath("3.8")
+	if err != nil {
+		app.Fatal(err)
+	}
+	env := python.Environment{
+		CPython:    cpython,
+		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.10.chromium.7"),
+	}
 	wheel, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
 	if err != nil {
 		app.Fatal(err)

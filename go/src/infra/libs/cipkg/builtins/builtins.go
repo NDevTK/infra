@@ -31,6 +31,8 @@ func Execute(ctx context.Context, cmd *exec.Cmd) error {
 	//	return fetchURL(ctx, out, drv.Args)
 	//case EmbedFilesBuilder:
 	//	return embedFiles(ctx, out, drv.Args)
+	case ImportBuilder:
+		return importFromHost(ctx, cmd)
 	case CIPDEnsureBuilder:
 		return cipdEnsure(ctx, cmd)
 	}

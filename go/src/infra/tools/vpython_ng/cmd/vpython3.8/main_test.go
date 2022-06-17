@@ -41,10 +41,10 @@ func cmd(app *application.Application) *exec.Cmd {
 
 	So(app.LoadSpec(), ShouldBeNil)
 
-	env := python.NewEnvironment(python.Versions{
-		CPython:    "version:2@3.8.10.chromium.24",
-		VirtualENV: "version:2@16.7.10.chromium.7",
-	})
+	env := python.Environment{
+		CPython:    python.CPythonFromCIPD("version:2@3.8.10.chromium.24"),
+		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.10.chromium.7"),
+	}
 	wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
 	So(err, ShouldBeNil)
 	venv := env.WithWheels(wheels)
