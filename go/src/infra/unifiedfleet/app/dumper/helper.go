@@ -6,6 +6,7 @@ package dumper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -219,56 +220,72 @@ func dumpChangeSnapshotHelper(ctx context.Context, bqClient *bigquery.Client) er
 	return nil
 }
 
-func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string) (err error) {
+func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
 	for k, f := range configurationDumpToolkit {
 		logging.Infof(ctx, "dumping %s", k)
 		msgs, err := f(ctx)
 		if err != nil {
 			return err
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, k, curTimeStr); err != nil {
+		name := k
+		if hourly {
+			name = fmt.Sprintf("%s_hourly", k)
+		}
+		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string) (err error) {
+func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
 	for k, f := range registrationDumpToolkit {
 		logging.Infof(ctx, "dumping %s", k)
 		msgs, err := f(ctx)
 		if err != nil {
 			return err
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, k, curTimeStr); err != nil {
+		name := k
+		if hourly {
+			name = fmt.Sprintf("%s_hourly", k)
+		}
+		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string) (err error) {
+func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
 	for k, f := range inventoryDumpToolkit {
 		logging.Infof(ctx, "dumping %s", k)
 		msgs, err := f(ctx)
 		if err != nil {
 			return err
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, k, curTimeStr); err != nil {
+		name := k
+		if hourly {
+			name = fmt.Sprintf("%s_hourly", k)
+		}
+		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string) (err error) {
+func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
 	for k, f := range stateDumpToolkit {
 		logging.Infof(ctx, "dumping %s", k)
 		msgs, err := f(ctx)
 		if err != nil {
 			return err
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, k, curTimeStr); err != nil {
+		name := k
+		if hourly {
+			name = fmt.Sprintf("%s_hourly", k)
+		}
+		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
 			return err
 		}
 	}

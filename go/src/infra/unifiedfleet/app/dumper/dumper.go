@@ -31,6 +31,13 @@ var Jobs = []*cron.CronTab{
 		Job:      dump,
 	},
 	{
+		// Dump configs, registrations, inventory and states to BQ
+		Name:     util.CronJobNames["mainBQCronHourly"],
+		Time:     30 * time.Minute,
+		TrigType: cron.HOURLY,
+		Job:      dumpHourly,
+	},
+	{
 		// Dump change events to BQ
 		Name:     util.CronJobNames["changeEventToBQCron"],
 		Time:     10 * time.Minute,
@@ -102,9 +109,19 @@ func TriggerJob(name string) error {
 	return status.Errorf(codes.NotFound, "Invalid cron job %s. Not found", name)
 }
 
+// dump a snapshot to BQ daily
 func dump(ctx context.Context) error {
 	ctx = logging.SetLevel(ctx, logging.Info)
 	if err := exportToBQ(ctx, dumpToBQ); err != nil {
+		return err
+	}
+	return nil
+}
+
+// dumpHourly Similar to dump, but hourly
+func dumpHourly(ctx context.Context) error {
+	ctx = logging.SetLevel(ctx, logging.Info)
+	if err := exportToBQ(ctx, dumpToBQHourly); err != nil {
 		return err
 	}
 	return nil
@@ -123,16 +140,45 @@ func dumpToBQ(ctx context.Context, bqClient *bigquery.Client) (err error) {
 	}); err != nil {
 		return err
 	}
-	if err := dumpConfigurations(ctx, bqClient, curTimeStr); err != nil {
+	if err := dumpConfigurations(ctx, bqClient, curTimeStr, false); err != nil {
 		return errors.Annotate(err, "dump configurations").Err()
 	}
-	if err := dumpRegistration(ctx, bqClient, curTimeStr); err != nil {
+	if err := dumpRegistration(ctx, bqClient, curTimeStr, false); err != nil {
 		return errors.Annotate(err, "dump registrations").Err()
 	}
-	if err := dumpInventory(ctx, bqClient, curTimeStr); err != nil {
+	if err := dumpInventory(ctx, bqClient, curTimeStr, false); err != nil {
 		return errors.Annotate(err, "dump inventories").Err()
 	}
-	if err := dumpState(ctx, bqClient, curTimeStr); err != nil {
+	if err := dumpState(ctx, bqClient, curTimeStr, false); err != nil {
+		return errors.Annotate(err, "dump states").Err()
+	}
+	logging.Debugf(ctx, "Dump is successfully finished")
+	return nil
+}
+
+func dumpToBQHourly(ctx context.Context, bqClient *bigquery.Client) (err error) {
+	defer func() {
+		dumpToBQTick.Add(ctx, 1, err == nil)
+	}()
+	logging.Infof(ctx, "Dumping to BQ")
+	curTime := time.Now()
+	curTimeStr := bqlib.GetPSTTimeStamp(curTime)
+	if err := configuration.SaveProjectConfig(ctx, &configuration.ProjectConfigEntity{
+		Name:             getProject(ctx),
+		DailyDumpTimeStr: curTimeStr,
+	}); err != nil {
+		return err
+	}
+	if err := dumpConfigurations(ctx, bqClient, curTimeStr, true); err != nil {
+		return errors.Annotate(err, "dump configurations").Err()
+	}
+	if err := dumpRegistration(ctx, bqClient, curTimeStr, true); err != nil {
+		return errors.Annotate(err, "dump registrations").Err()
+	}
+	if err := dumpInventory(ctx, bqClient, curTimeStr, true); err != nil {
+		return errors.Annotate(err, "dump inventories").Err()
+	}
+	if err := dumpState(ctx, bqClient, curTimeStr, true); err != nil {
 		return errors.Annotate(err, "dump states").Err()
 	}
 	logging.Debugf(ctx, "Dump is successfully finished")
