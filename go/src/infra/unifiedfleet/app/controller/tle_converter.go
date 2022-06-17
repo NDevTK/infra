@@ -27,30 +27,37 @@ const (
 )
 
 type TleSource struct {
-	path       string
 	configType string
+	path       string
 }
 
 var TLE_LABEL_MAPPING = map[string]*TleSource{
-	"misc-license":                createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.licenses..type", "lab_config"),
-	"peripheral-audio-board":      createTleSourceForLabConfig("UNIMPLEMENTED", "lab_config"),
-	"peripheral-audio-box":        createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_box", "lab_config"),
-	"peripheral-audio-cable":      createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_cable", "lab_config"),
-	"peripheral-audio-loopback":   createTleSourceForLabConfig("UNIMPLEMENTED", "lab_config"),
-	"peripheral-camerabox-facing": createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.facing", "lab_config"),
-	"peripheral-camerabox-light":  createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.light", "lab_config"),
-	"peripheral-chameleon":        createTleSourceForLabConfig("UNIMPLEMENTED", "lab_config"),
-	"peripheral-num-btpeer":       createTleSourceForLabConfig("working_bluetooth_btpeer", "dut_state"),
-	"peripheral-servo-state":      createTleSourceForLabConfig("servo", "dut_state"),
-	"peripheral-servo-usb-state":  createTleSourceForLabConfig("servo_usb_state", "dut_state"),
-	"peripheral-wificell":         createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.peripherals.wifi.wificell", "lab_config"),
-	"swarming-pool":               createTleSourceForLabConfig("chromeos_machine_lse.device_lse.dut.pools", "lab_config"),
+	"dut_id":                      createTleSourceForConfig("lab_config", "name"),
+	"dut_name":                    createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.hostname"),
+	"hwid":                        createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"serial_number":               createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"misc-license":                createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.licenses..type"),
+	"peripheral-arc":              createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"peripheral-atrus":            createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.audio.atrus"),
+	"peripheral-audio-board":      createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.chameleon.audio_board"),
+	"peripheral-audio-box":        createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_box"),
+	"peripheral-audio-cable":      createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_cable"),
+	"peripheral-audio-loopback":   createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"peripheral-bluetooth-state":  createTleSourceForConfig("dut_state", "bluetooth_state"),
+	"peripheral-camerabox-facing": createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.facing"),
+	"peripheral-camerabox-light":  createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.light"),
+	"peripheral-chameleon":        createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"peripheral-num-btpeer":       createTleSourceForConfig("dut_state", "working_bluetooth_btpeer"),
+	"peripheral-servo-state":      createTleSourceForConfig("dut_state", "servo"),
+	"peripheral-servo-usb-state":  createTleSourceForConfig("dut_state", "servo_usb_state"),
+	"peripheral-wificell":         createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.wifi.wificell"),
+	"swarming-pool":               createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.pools"),
 }
 
-func createTleSourceForLabConfig(path string, configType string) *TleSource {
+func createTleSourceForConfig(configType, path string) *TleSource {
 	return &TleSource{
-		path:       path,
 		configType: configType,
+		path:       path,
 	}
 }
 
