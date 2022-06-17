@@ -162,7 +162,7 @@ type batch struct {
 func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant, outputC chan batch) {
 	// Must be selected such that no more than 20,000 mutations occur in
 	// one transaction in the worst case.
-	const batchSize = 1000
+	const batchSize = 900
 
 	var trs []*spanner.Mutation
 	var tvrs []*spanner.Mutation
