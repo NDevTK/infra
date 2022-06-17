@@ -16,6 +16,29 @@
       "message": "Otabek, this CL checks whether the error encountered during OS install is a storage error. Accordingly, the device state is set to needs replacement. \n\nCan you please review this? ",
       "revId": "a28f5f85266f48b4be468b97535d2266a4368b03",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f3b2924_3ba5738b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_install_exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-06-17T17:19:22Z",
+      "side": 1,
+      "message": "please move the map outside the method. I thin after that we can have single annotate at the end and keep logic in the if block on line 64",
+      "range": {
+        "startLine": 67,
+        "startChar": 4,
+        "endLine": 75,
+        "endChar": 5
+      },
+      "revId": "a28f5f85266f48b4be468b97535d2266a4368b03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
