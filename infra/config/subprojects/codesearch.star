@@ -395,5 +395,6 @@ builder(
     schedule = "0 */4 * * *",
 )
 
-# TODO(crbug.com/1284439): Add more boards.
 chromiumos_genfiles("codesearch-gen-chromiumos-amd64-generic")
+chromiumos_genfiles("codesearch-gen-chromiumos-arm-generic")
+chromiumos_genfiles("codesearch-gen-chromiumos-arm64-generic")
