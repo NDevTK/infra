@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec33fddb_2b706b8b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-06-17T02:51:59Z",
+      "side": 1,
+      "message": "Otabek, this CL checks whether the error encountered during OS install is a storage error. Accordingly, the device state is set to needs replacement. \n\nCan you please review this? ",
+      "revId": "a28f5f85266f48b4be468b97535d2266a4368b03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
