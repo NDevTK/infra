@@ -523,6 +523,8 @@ func crosRepairActions() map[string]*Action {
 				"reboot:by_host",
 				"updater_timeout:600",
 			},
+			// Allowed to fail as part of b/236417969 to check affect of it.
+			AllowFailAfterRecovery: true,
 		},
 		"Provision OS if needed": {
 			Docs: []string{
@@ -1709,6 +1711,8 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 6000,
 			},
+			// Allowed to fail as part of b/236417969 to check affect of it.
+			AllowFailAfterRecovery: true,
 		},
 		"Update FW from fw-image by servo and reboot": {
 			Docs: []string{
