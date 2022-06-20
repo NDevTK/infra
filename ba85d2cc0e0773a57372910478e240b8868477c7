@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ade7051_9d2d43a0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1530772
+      },
+      "writtenOn": "2022-06-20T00:57:08Z",
+      "side": 1,
+      "message": "I\u0027ll leave it up to foundation to submit this.\nBut please approve and submit this first: https://critique.corp.google.com/cl/455967875",
+      "revId": "ba85d2cc0e0773a57372910478e240b8868477c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
