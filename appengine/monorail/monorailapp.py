@@ -32,9 +32,7 @@ registry = registerpages.ServletRegistry()
 app_routes = registry.Register(services)
 app = webapp2.WSGIApplication(
     app_routes, config={'services': services})
-# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-# service account and change to gae_ts_mon.initialize_prod()
-gae_ts_mon.initialize_adhoc(app)
+gae_ts_mon.initialize_prod(app)
 
 flask_regist = flaskregisterpages.ServletRegistry()
 app = dispatcher.DispatcherMiddleware(
