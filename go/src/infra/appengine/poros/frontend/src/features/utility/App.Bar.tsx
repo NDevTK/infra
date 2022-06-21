@@ -37,7 +37,7 @@ import {
 import { ResourceList } from '../resource/ResourceList';
 
 const drawerWidth = 240;
-const rightSideDrawerWidth = 720;
+const rightSideDrawerWidth = 480;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -116,7 +116,10 @@ const CustomBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'rightSideDrawerOpen',
 })<BoxProps>(({ theme, rightSideDrawerOpen }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  paddingTop: theme.spacing(0),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  spacing: theme.spacing(2),
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -224,7 +227,7 @@ export default function SideDrawerWithAppBar() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box bgcolor={'#dfe3e8'} sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={drawerOpen}>
         <Toolbar>

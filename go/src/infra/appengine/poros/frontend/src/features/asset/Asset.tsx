@@ -6,11 +6,13 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
-import RefreshIcon from '@mui/icons-material/Refresh';
+import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -21,7 +23,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import {
   addMachine,
-  clearSelectedRecord,
   createAssetAsync,
   removeMachine,
   setAlias,
@@ -35,6 +36,7 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { AssetResourceModel } from '../../api/asset_resource_service';
 import { ResourceModel } from '../../api/resource_service';
 import { queryResourceAsync } from '../resource/resourceSlice';
+import { setRightSideDrawerClose } from '../utility/utilitySlice';
 
 export const Asset = () => {
   const name: string = useAppSelector((state) => state.asset.record.name);
@@ -91,12 +93,12 @@ export const Asset = () => {
   };
 
   const handleCancelClick = () => {
-    dispatch(clearSelectedRecord());
+    dispatch(setRightSideDrawerClose());
   };
 
   const renderAssetTypeDropdown = () => {
     return (
-      <Grid container spacing={2} padding={1} paddingTop={6}>
+      <Grid container spacing={2} padding={1} paddingTop={3}>
         <Grid item xs={12}>
           <FormControl variant="standard" fullWidth>
             <InputLabel>Type</InputLabel>
@@ -127,7 +129,16 @@ export const Asset = () => {
 
   const renderRow = (index: number, aliasName: string, resourceId: string) => {
     return (
-      <Grid container spacing={2} padding={1}>
+      <Grid
+        container
+        spacing={2}
+        padding={1}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Grid
           item
           xs={5}
@@ -145,7 +156,7 @@ export const Asset = () => {
                 dispatch(setResourceId({ id: index, value: e.target.value }))
               }
               value={resourceId}
-              variant="outlined"
+              variant="standard"
               placeholder="Type"
             >
               {resources.map((resource) =>
@@ -170,25 +181,48 @@ export const Asset = () => {
             onChange={(e) =>
               dispatch(setAlias({ id: index, value: e.target.value }))
             }
-            variant="outlined"
+            variant="standard"
+            fullWidth
           />
+        </Grid>
+
+        <Grid
+          item
+          xs={1}
+          style={{
+            display: 'bottom',
+            justifyContent: 'flex-end',
+            alignItems: 'bottom',
+          }}
+        >
+          <IconButton
+            aria-label="add"
+            size="small"
+            onClick={() => {
+              dispatch(addMachine());
+            }}
+          >
+            <AddIcon fontSize="inherit" />
+          </IconButton>
         </Grid>
         <Grid
           item
           xs={1}
           style={{
             display: 'flex',
-            justifyContent: 'flex-start',
+            justifyContent: 'flex-end',
             alignItems: 'center',
           }}
         >
-          <Button
-            variant="outlined"
+          <IconButton
+            aria-label="delete"
+            size="small"
             onClick={() => {
               dispatch(removeMachine(index));
             }}
-            endIcon={<DeleteIcon />}
-          ></Button>
+          >
+            <DeleteIcon fontSize="inherit"> Delete </DeleteIcon>
+          </IconButton>
         </Grid>
       </Grid>
     );
@@ -197,7 +231,7 @@ export const Asset = () => {
   return (
     <Box
       sx={{
-        width: 720,
+        width: 465,
         maxWidth: '100%',
         padding: 1,
       }}
@@ -245,6 +279,24 @@ export const Asset = () => {
       </Grid>
       {renderAssetTypeDropdown()}
       <Grid container spacing={2} padding={1}>
+        <Grid
+          item
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+          xs={8}
+        >
+          <Typography variant="inherit">Associated Machines</Typography>
+        </Grid>
+      </Grid>
+
+      {assetResourcesToSave.map((entity, index) =>
+        renderRow(index, entity.aliasName, entity.resourceId)
+      )}
+
+      <Grid container spacing={2} padding={1}>
         <Grid item xs={12}>
           <TextField
             disabled
@@ -257,30 +309,6 @@ export const Asset = () => {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} padding={1}>
-        <Grid
-          item
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-          }}
-          xs={8}
-        >
-          <Typography variant="h6">Associated Machines</Typography>
-        </Grid>
-      </Grid>
-
-      {assetResourcesToSave.map((entity, index) =>
-        renderRow(index, entity.aliasName, entity.resourceId)
-      )}
-      <Button
-        variant="outlined"
-        onClick={() => dispatch(addMachine())}
-        startIcon={<AddIcon />}
-      >
-        Add Machine
-      </Button>
 
       <Grid container spacing={2} padding={1}>
         <Grid
@@ -296,7 +324,7 @@ export const Asset = () => {
             <Button
               variant="outlined"
               onClick={handleCancelClick}
-              startIcon={<RefreshIcon />}
+              endIcon={<CancelIcon />}
             >
               Cancel
             </Button>
@@ -312,7 +340,7 @@ export const Asset = () => {
                   assetResourcesToDelete
                 );
               }}
-              endIcon={<DeleteIcon />}
+              endIcon={<SaveIcon />}
             >
               Save
             </Button>

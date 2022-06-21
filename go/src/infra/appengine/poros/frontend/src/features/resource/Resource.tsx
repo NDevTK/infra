@@ -18,7 +18,6 @@ import {
   FormControl,
 } from '@mui/material';
 import {
-  clearSelectedRecord,
   createResourceAsync,
   setName,
   setType,
@@ -29,6 +28,7 @@ import {
 } from './resourceSlice';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { setRightSideDrawerClose } from '../utility/utilitySlice';
 
 export const Resource = () => {
   const [activeResourceType, setActiveResourceType] = React.useState('machine');
@@ -83,7 +83,7 @@ export const Resource = () => {
   };
 
   const handleCancelClick = () => {
-    dispatch(clearSelectedRecord());
+    dispatch(setRightSideDrawerClose());
   };
 
   // Render functions
@@ -91,7 +91,7 @@ export const Resource = () => {
   // This function will be used once we give user the ability to select type of Resource
   const renderTypeDropdown = () => {
     return (
-      <Grid container spacing={2} padding={1} paddingTop={6}>
+      <Grid container spacing={2} padding={1} paddingTop={3}>
         <Grid item xs={12}>
           <FormControl variant="standard" fullWidth>
             <InputLabel>Type</InputLabel>
@@ -200,7 +200,7 @@ export const Resource = () => {
   return (
     <Box
       sx={{
-        width: 720,
+        width: 465,
         maxWidth: '100%',
         padding: 1,
       }}

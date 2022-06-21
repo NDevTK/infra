@@ -6,7 +6,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   AssetResourceModel,
   AssetResourceService,
-  CreateAssetResourceRequest,
   IAssetResourceService,
   ListAssetResourcesRequest,
 } from '../../api/asset_resource_service';
@@ -198,14 +197,16 @@ export const assetSlice = createSlice({
       ];
     },
     removeMachine: (state, action) => {
-      if (state.assetResourcesToSave[action.payload].assetResourceId !== '') {
-        state.assetResourcesToDelete.push(
-          state.assetResourcesToSave[action.payload]
+      if (state.assetResourcesToSave.length > 1) {
+        if (state.assetResourcesToSave[action.payload].assetResourceId !== '') {
+          state.assetResourcesToDelete.push(
+            state.assetResourcesToSave[action.payload]
+          );
+        }
+        state.assetResourcesToSave = state.assetResourcesToSave.filter(
+          (_, index) => index !== action.payload
         );
       }
-      state.assetResourcesToSave = state.assetResourcesToSave.filter(
-        (_, index) => index !== action.payload
-      );
     },
     setResourceId: (state, action) => {
       state.assetResourcesToSave[action.payload.id].resourceId =
