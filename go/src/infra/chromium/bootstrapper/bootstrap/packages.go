@@ -10,7 +10,6 @@ import (
 	"infra/chromium/bootstrapper/clients/cipd"
 	"path/filepath"
 
-	"go.chromium.org/luci/cipd/common"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
@@ -23,11 +22,6 @@ const (
 	ExeId        = "exe"
 	DepotToolsId = "depot-tools"
 )
-
-type cipdPackage struct {
-	pkg     string
-	version string
-}
 
 const (
 	depotToolsPackage        = "infra/recipe_bundles/chromium.googlesource.com/chromium/tools/depot_tools"
@@ -67,7 +61,7 @@ func DownloadPackages(ctx context.Context, input *Input, packagesRoot string, pa
 		}
 	}
 
-	cipdPackages := make(map[string]*cipdPackage, 2)
+	cipdPackages := make(map[string]*cipd.Package, 2)
 	// This could be nil in the case of properties optional bootstrapping
 	if input.propsProperties != nil {
 		switch x := input.propsProperties.ConfigProject.(type) {
@@ -75,9 +69,9 @@ func DownloadPackages(ctx context.Context, input *Input, packagesRoot string, pa
 			// Do nothing
 
 		case *BootstrapPropertiesProperties_DependencyProject_:
-			cipdPackages[DepotToolsId] = &cipdPackage{
-				pkg:     depotToolsPackage,
-				version: depotToolsPackageVersion,
+			cipdPackages[string(DepotToolsId)] = &cipd.Package{
+				Name:    depotToolsPackage,
+				Version: depotToolsPackageVersion,
 			}
 
 		default:
@@ -97,9 +91,9 @@ func DownloadPackages(ctx context.Context, input *Input, packagesRoot string, pa
 			return err
 		})
 	} else {
-		cipdPackages[ExeId] = &cipdPackage{
-			pkg:     input.exeProperties.Exe.CipdPackage,
-			version: input.exeProperties.Exe.CipdVersion,
+		cipdPackages[string(ExeId)] = &cipd.Package{
+			Name:    input.exeProperties.Exe.CipdPackage,
+			Version: input.exeProperties.Exe.CipdVersion,
 		}
 	}
 
@@ -141,44 +135,29 @@ func downloadExeFromCas(ctx context.Context, outDir string, casRef *apipb.CASRef
 	return &BootstrappedExe_Cas{Cas: casRef}, outDir, nil
 }
 
-func downloadPackagesFromCipd(ctx context.Context, cipdRoot string, packages map[string]*cipdPackage, packageChannels map[string]chan<- string) (*BootstrappedExe_Cipd, string, error) {
-	cipdClient, err := cipd.NewClient(ctx, cipdRoot)
-	if err != nil {
-		return nil, "", err
-	}
-
-	pins := make(common.PinSliceBySubdir, len(packages))
-
-	for id, pkg := range packages {
-		logging.Infof(ctx, "resolving CIPD package %s@%s", pkg.pkg, pkg.version)
-		pin, err := cipdClient.ResolveVersion(ctx, pkg.pkg, pkg.version)
-		if err != nil {
-			return nil, "", err
-		}
-		pins[string(id)] = common.PinSlice{pin}
-	}
-
-	paths, err := cipdClient.EnsurePackages(ctx, pins)
+func downloadPackagesFromCipd(ctx context.Context, cipdRoot string, packages map[string]*cipd.Package, packageChannels map[string]chan<- string) (*BootstrappedExe_Cipd, string, error) {
+	logging.Infof(ctx, "downloading packages from CIPD")
+	resolvedPackages, err := cipd.Ensure(ctx, chromeinfra.CIPDServiceURL, cipdRoot, packages)
 	if err != nil {
 		return nil, "", err
 	}
 
 	for id, ch := range packageChannels {
-		ch <- paths[string(id)]
+		ch <- filepath.Join(cipdRoot, id)
 	}
 
 	var exeSource *BootstrappedExe_Cipd
 	var exePackagePath string
-	if packagePath, ok := paths[string(ExeId)]; ok {
+	if pkg, ok := resolvedPackages[string(ExeId)]; ok {
 		exeSource = &BootstrappedExe_Cipd{
 			Cipd: &Cipd{
 				Server:           chromeinfra.CIPDServiceURL,
-				Package:          packages[ExeId].pkg,
-				RequestedVersion: packages[ExeId].version,
-				ActualVersion:    pins[string(ExeId)][0].InstanceID,
+				Package:          pkg.Name,
+				RequestedVersion: pkg.RequestedVersion,
+				ActualVersion:    pkg.ActualVersion,
 			},
 		}
-		exePackagePath = packagePath
+		exePackagePath = filepath.Join(cipdRoot, string(ExeId))
 	}
 
 	return exeSource, exePackagePath, nil

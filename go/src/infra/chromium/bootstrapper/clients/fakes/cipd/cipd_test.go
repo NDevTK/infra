@@ -6,14 +6,12 @@ package cipd
 
 import (
 	"context"
-	bscipd "infra/chromium/bootstrapper/clients/cipd"
+	real "infra/chromium/bootstrapper/clients/cipd"
 	"infra/chromium/util"
 	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/cipd/client/cipd"
-	"go.chromium.org/luci/cipd/common"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/testfs"
 )
@@ -24,135 +22,154 @@ func collect(cipdRoot, subdir string) map[string]string {
 	return layout
 }
 
-func TestCipdClient(t *testing.T) {
+func TestEnsure(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
 
-	Convey("cipdClient", t, func() {
+	Convey("Client.Ensure", t, func() {
+		cipdRoot := t.TempDir()
 
-		Convey("ResolveVersion", func() {
+		Convey("returns pin for a package by default", func() {
+			client := Client{}
 
-			Convey("returns an instance ID by default", func() {
-				client, _ := Factory(nil)(ctx, "fake-root")
-
-				pin, err := client.ResolveVersion(ctx, "fake-package", "fake-version")
-
-				So(err, ShouldBeNil)
-				So(pin.PackageName, ShouldEqual, "fake-package")
-				So(pin.InstanceID, ShouldNotBeEmpty)
+			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-version",
+				},
 			})
 
-			Convey("fails for a nil package", func() {
-				client, _ := Factory(map[string]*Package{
-					"fake-package": nil,
-				})(ctx, "fake-root")
-
-				pin, err := client.ResolveVersion(ctx, "fake-package", "fake-version")
-
-				So(err, ShouldErrLike, "unknown package")
-				So(pin.PackageName, ShouldBeEmpty)
-				So(pin.InstanceID, ShouldBeEmpty)
-			})
-
-			Convey("fails for an empty instance ID", func() {
-				client, _ := Factory(map[string]*Package{
-					"fake-package": {
-						Refs: map[string]string{
-							"fake-version": "",
-						},
-					},
-				})(ctx, "fake-root")
-
-				pin, err := client.ResolveVersion(ctx, "fake-package", "fake-version")
-
-				So(err, ShouldErrLike, "unknown version")
-				So(pin.PackageName, ShouldBeEmpty)
-				So(pin.InstanceID, ShouldBeEmpty)
-			})
-
-			Convey("returns pin for provided instance ID", func() {
-				client, _ := Factory(map[string]*Package{
-					"fake-package": {
-						Refs: map[string]string{
-							"fake-version": "fake-instance-id",
-						},
-					},
-				})(ctx, "fake-root")
-
-				pin, err := client.ResolveVersion(ctx, "fake-package", "fake-version")
-
-				So(err, ShouldBeNil)
-				So(pin.PackageName, ShouldEqual, "fake-package")
-				So(pin.InstanceID, ShouldEqual, "fake-instance-id")
-			})
-
+			So(err, ShouldBeNil)
+			So(packageVersions, ShouldContainKey, "fake-subdir")
+			So(packageVersions["fake-subdir"], ShouldNotBeEmpty)
 		})
 
-		Convey("EnsurePackages", func() {
+		Convey("fails for a nil package", func() {
+			client := Client{map[string]*Package{
+				"fake-package": nil,
+			}}
 
-			cipdRoot := t.TempDir()
-
-			pkgs := common.PinSliceBySubdir{
-				"fake-subdir": common.PinSlice{common.Pin{PackageName: "fake-package", InstanceID: "fake-instance-id"}},
-			}
-
-			Convey("succeeds by default", func() {
-				client, _ := Factory(nil)(ctx, cipdRoot)
-
-				_, err := client.EnsurePackages(ctx, pkgs, &cipd.EnsureOptions{Paranoia: cipd.CheckIntegrity})
-
-				So(err, ShouldBeNil)
+			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-version",
+				},
 			})
 
-			Convey("fails for a nil package", func() {
-				client, _ := Factory(map[string]*Package{
-					"fake-package": nil,
-				})(ctx, cipdRoot)
+			So(err, ShouldErrLike, `unknown package "fake-package"`)
+			So(packageVersions, ShouldBeNil)
+		})
 
-				_, err := client.EnsurePackages(ctx, pkgs, &cipd.EnsureOptions{Paranoia: cipd.CheckIntegrity})
-
-				So(err, ShouldErrLike, "unknown package")
-			})
-
-			Convey("fails for a nil bundle", func() {
-				client, _ := Factory(map[string]*Package{
-					"fake-package": {
-						Instances: map[string]*PackageInstance{
-							"fake-instance-id": nil,
-						},
+		Convey("fails for an a version mapping to an empty instance ID", func() {
+			client := Client{map[string]*Package{
+				"fake-package": {
+					Refs: map[string]string{
+						"fake-version": "",
 					},
-				})(ctx, cipdRoot)
+				},
+			}}
 
-				_, err := client.EnsurePackages(ctx, pkgs, &cipd.EnsureOptions{Paranoia: cipd.CheckIntegrity})
-
-				So(err, ShouldErrLike, "unknown instance ID")
+			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-version",
+				},
 			})
 
-			Convey("deploys specified files", func() {
-				client, _ := Factory(map[string]*Package{
-					"fake-package": {
-						Instances: map[string]*PackageInstance{
-							"fake-instance-id": {
-								Contents: map[string]string{
-									"infra/config/recipes.cfg": "fake-recipes.cfg",
-									"recipes/foo.py":           "fake-recipe-foo",
-								},
+			So(err, ShouldErrLike, `unknown version "fake-version" of package "fake-package"`)
+			So(packageVersions, ShouldBeNil)
+		})
+
+		Convey("returns pin for version mapping to provided instance ID", func() {
+			client := Client{map[string]*Package{
+				"fake-package": {
+					Refs: map[string]string{
+						"fake-version": "fake-instance-id",
+					},
+				},
+			}}
+
+			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-version",
+				},
+			})
+
+			So(err, ShouldBeNil)
+			So(packageVersions, ShouldContainKey, "fake-subdir")
+			So(packageVersions["fake-subdir"], ShouldEqual, "fake-instance-id")
+		})
+
+		Convey("fails for a non-existent instance ID", func() {
+			client := Client{map[string]*Package{
+				"fake-package": {
+					Instances: map[string]*PackageInstance{
+						"fake-instance-id": nil,
+					},
+				},
+			}}
+
+			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-instance-id",
+				},
+			})
+
+			So(err, ShouldErrLike, `unknown version "fake-instance-id" of package "fake-package"`)
+			So(packageVersions, ShouldBeNil)
+		})
+
+		Convey("returns pin for instance ID", func() {
+			client := Client{map[string]*Package{
+				"fake-package": {
+					Instances: map[string]*PackageInstance{
+						"fake-instance-id": {},
+					},
+				},
+			}}
+
+			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-instance-id",
+				},
+			})
+
+			So(err, ShouldBeNil)
+			So(packageVersions, ShouldContainKey, "fake-subdir")
+			So(packageVersions["fake-subdir"], ShouldEqual, "fake-instance-id")
+		})
+
+		Convey("deploys specified files", func() {
+			client := Client{map[string]*Package{
+				"fake-package": {
+					Instances: map[string]*PackageInstance{
+						"fake-instance-id": {
+							Contents: map[string]string{
+								"infra/config/recipes.cfg": "fake-recipes.cfg",
+								"recipes/foo.py":           "fake-recipe-foo",
 							},
 						},
 					},
-				})(ctx, cipdRoot)
+				},
+			}}
 
-				_, err := client.EnsurePackages(ctx, pkgs, &cipd.EnsureOptions{Paranoia: cipd.CheckIntegrity})
-
-				So(err, ShouldBeNil)
-				layout := collect(cipdRoot, "fake-subdir")
-				So(layout, ShouldResemble, map[string]string{
-					"infra/config/recipes.cfg": "fake-recipes.cfg",
-					"recipes/foo.py":           "fake-recipe-foo",
-				})
+			_, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-instance-id",
+				},
 			})
 
+			So(err, ShouldBeNil)
+			layout := collect(cipdRoot, "fake-subdir")
+			So(layout, ShouldResemble, map[string]string{
+				"infra/config/recipes.cfg": "fake-recipes.cfg",
+				"recipes/foo.py":           "fake-recipe-foo",
+			})
 		})
 
 	})
@@ -167,25 +184,22 @@ func TestIntegration(t *testing.T) {
 
 		cipdRoot := t.TempDir()
 
-		ctx := bscipd.UseCipdClientFactory(ctx, Factory(nil))
+		ctx := real.UseClientFactory(ctx, Factory(nil))
 
 		Convey("succeeds when calling EnsurePackages", func() {
-			client, err := bscipd.NewClient(ctx, cipdRoot)
-			util.PanicOnError(err)
-
-			packagePaths, err := client.EnsurePackages(ctx, common.PinSliceBySubdir{
-				"fake-subdir": common.PinSlice{
-					common.Pin{
-						PackageName: "fake-package",
-						InstanceID:  "fake-version",
-					},
+			packages, err := real.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
+				"fake-subdir": {
+					Name:    "fake-package",
+					Version: "fake-version",
 				},
 			})
 
 			So(err, ShouldBeNil)
-			So(packagePaths, ShouldResemble, map[string]string{
-				"fake-subdir": filepath.Join(cipdRoot, "fake-subdir"),
-			})
+			So(packages, ShouldContainKey, "fake-subdir")
+			pkg := packages["fake-subdir"]
+			So(pkg.Name, ShouldEqual, "fake-package")
+			So(pkg.RequestedVersion, ShouldEqual, "fake-version")
+			So(pkg.ActualVersion, ShouldNotBeEmpty)
 		})
 
 	})

@@ -6,91 +6,158 @@ package cipd
 
 import (
 	"context"
-	"path/filepath"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"strings"
 
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/cipd/client/cipd"
-	"go.chromium.org/luci/cipd/common"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
-// Client provides the recipe-related operations required for bootstrapping.
-type Client struct {
-	cipdRoot string
-	client   CipdClient
+// Package is the details of a package to ensure
+type Package struct {
+	// Name is the name of the package to ensure
+	Name string
+	// Version is the version of the package to ensure
+	Version string
 }
 
-// CipdClient provides a subset of the cipd.Client interface
-type CipdClient interface {
-	ResolveVersion(ctx context.Context, packageName, version string) (common.Pin, error)
-	EnsurePackages(ctx context.Context, packages common.PinSliceBySubdir, opts *cipd.EnsureOptions) (cipd.ActionMap, error)
+type ResolvedPackage struct {
+	// Name is the name of the package that was downloaded
+	Name string
+	// RequestedVersion is the version of the package that was requested
+	RequestedVersion string
+	// ActualVersion is the resolved version of the package that was downloaded
+	ActualVersion string
 }
 
-// Enforce that the CIPD client interface is a subset of the cipd.Client
-// interface.
-var _ CipdClient = (cipd.Client)(nil)
+// Client provides operations for interacting with CIPD.
+type Client interface {
+	// Ensure downloads packages from a given CIPD service to the given CIPD root.
+	//
+	// The packages download are given as a map of subdirectories to the package to download to
+	// the subdirectory.
+	//
+	// If the operation is successful a map containing resolved packages and a nil error will be
+	// returned. The map of resolved packages maps the subdirectory to a Package instance where
+	// the version has been resolved to an instance ID. In the case of an error, a nil map and
+	// non-nil error will be returned.
+	Ensure(ctx context.Context, serviceUrl, cipdRoot string, packages map[string]*Package) (map[string]string, error)
+}
 
-// CipdClientFactory creates the client for accessing CIPD that will
-// deploy packages to the directory identified by cipdRoot.
-type CipdClientFactory func(ctx context.Context, cipdRoot string) (CipdClient, error)
+// ClientFactory creates the client for accessing CIPD.
+type ClientFactory func(ctx context.Context) Client
 
 var ctxKey = "infra/chromium/bootstrapper/recipe.CipdClientFactory"
 
-// UseCipdClientFactory returns a context that causes new Client instances to
-// use the given factory when getting the CIPD client.
-func UseCipdClientFactory(ctx context.Context, factory CipdClientFactory) context.Context {
+// UseClientFactory returns a context that causes new Client instances to be created using the given
+// factory.
+func UseClientFactory(ctx context.Context, factory ClientFactory) context.Context {
 	return context.WithValue(ctx, &ctxKey, factory)
 }
 
-// NewClient returns a new recipe client.
-//
-// If ctx is a context returned from UseCipdClientFactory, then the returned
-// client will use the factory that was passed to UseCipdClientFactory to get a
-// CIPD client. Otherwise, a client created using cipd.NewClient with default
-// options will be used.
-func NewClient(ctx context.Context, cipdRoot string) (*Client, error) {
-	factory, _ := ctx.Value(&ctxKey).(CipdClientFactory)
-	if factory == nil {
-		factory = func(ctx context.Context, cipdRoot string) (CipdClient, error) {
-			authClient, err := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{}).Client()
-			if err != nil {
-				return nil, errors.Annotate(err, "could not initialize auth client").Err()
-			}
-			return cipd.NewClient(cipd.ClientOptions{
-				ServiceURL:          chromeinfra.CIPDServiceURL,
-				Root:                cipdRoot,
-				AuthenticatedClient: authClient,
-			})
+func Ensure(ctx context.Context, serviceUrl, cipdRoot string, packages map[string]*Package) (map[string]*ResolvedPackage, error) {
+	if serviceUrl == "" {
+		return nil, errors.New("empty serviceUrl")
+	}
+	if cipdRoot == "" {
+		return nil, errors.New("empty cipdRoot")
+	}
+	if len(packages) == 0 {
+		return nil, errors.New("empty packages")
+	}
+	for subdir, pkg := range packages {
+		if subdir == "" {
+			return nil, errors.New("empty subdir in packages")
+		}
+		if pkg == nil {
+			return nil, errors.Reason("nil package for subdir %#v", subdir).Err()
+		}
+		if pkg.Name == "" {
+			return nil, errors.Reason("empty package name for subdir %#v", subdir).Err()
+		}
+		if pkg.Version == "" {
+			return nil, errors.Reason("empty package version for subdir %#v", subdir).Err()
 		}
 	}
-	cipdClient, err := factory(ctx, cipdRoot)
+	factory, _ := ctx.Value(&ctxKey).(ClientFactory)
+	var client Client
+	if factory != nil {
+		client = factory(ctx)
+	} else {
+		client = defaultClient{}
+	}
+	packageVersions, err := client.Ensure(ctx, serviceUrl, cipdRoot, packages)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get recipe client for CIPD root: <%s>", cipdRoot).Err()
-	}
-	if cipdClient == nil {
-		return nil, errors.New("nil CIPD client returned from factory")
-	}
-	return &Client{cipdRoot, cipdClient}, nil
-}
-
-// ResolveVersion resolves the requested version of a package to an instance ID,
-// returning the pin for the instance.
-func (c *Client) ResolveVersion(ctx context.Context, name, version string) (common.Pin, error) {
-	return c.client.ResolveVersion(ctx, name, version)
-}
-
-// DownloadPackage downloads and installs the CIPD package with the given name
-// and instance ID and returns the path to the deployed package.
-func (c *Client) EnsurePackages(ctx context.Context, packages common.PinSliceBySubdir) (map[string]string, error) {
-	if _, err := c.client.EnsurePackages(ctx, packages, &cipd.EnsureOptions{
-		Paranoia: cipd.CheckIntegrity,
-	}); err != nil {
 		return nil, err
 	}
-	paths := make(map[string]string, len(packages))
-	for subdir := range packages {
-		paths[subdir] = filepath.Join(c.cipdRoot, subdir)
+	resolvedPackages := make(map[string]*ResolvedPackage, len(packages))
+	for subdir, pkg := range packages {
+		resolvedPackages[subdir] = &ResolvedPackage{
+			Name:             pkg.Name,
+			RequestedVersion: pkg.Version,
+			ActualVersion:    packageVersions[subdir],
+		}
 	}
-	return paths, nil
+	return resolvedPackages, nil
+}
+
+type defaultClient struct{}
+
+type jsonPackage struct {
+	Package    string `json:"package"`
+	InstanceId string `json:"instance_id"`
+}
+
+type jsonOut struct {
+	Result map[string][]jsonPackage `json:"result"`
+}
+
+func (c defaultClient) Ensure(ctx context.Context, serviceUrl, cipdRoot string, packages map[string]*Package) (map[string]string, error) {
+	var ensureContents strings.Builder
+	ensureContents.WriteString("$OverrideInstallMode copy\n")
+	for subdir, pkg := range packages {
+		ensureContents.WriteString(fmt.Sprintf("@Subdir %s\n", subdir))
+		ensureContents.WriteString(fmt.Sprintf("%s %s\n", pkg.Name, pkg.Version))
+	}
+	ensureFile := "cipd.ensure"
+	if err := ioutil.WriteFile(ensureFile, []byte(ensureContents.String()), 0440); err != nil {
+		return nil, errors.Annotate(err, "failed to write out CIPD ensure file").Err()
+	}
+
+	jsonOutFile := "cipd.json.out"
+	cmdCtx := exec.CommandContext(ctx, "cipd", "ensure", "-service-url", serviceUrl, "-root", cipdRoot, "-ensure-file", ensureFile, "-json-output", jsonOutFile)
+	cmdCtx.Stdout = os.Stdout
+	cmdCtx.Stderr = os.Stderr
+	err := cmdCtx.Run()
+	if err != nil {
+		return nil, errors.Annotate(err, "cipd ensure failed").Err()
+	}
+
+	jsonOutContents, err := ioutil.ReadFile(jsonOutFile)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to read json output for cipd ensure").Err()
+	}
+
+	out, err := unmarshalEnsureJsonOut(jsonOutContents)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to unmarshal json output for cipd ensure, contents: %s", jsonOutContents).Err()
+	}
+
+	resolvedVersions := make(map[string]string, len(packages))
+	for subdir, pkgs := range out.Result {
+		pkg := pkgs[0]
+		resolvedVersions[subdir] = pkg.InstanceId
+	}
+	return resolvedVersions, nil
+}
+
+func unmarshalEnsureJsonOut(jsonOutContents []byte) (*jsonOut, error) {
+	out := &jsonOut{}
+	if err := json.Unmarshal(jsonOutContents, out); err != nil {
+		return nil, err
+	}
+	return out, nil
 }

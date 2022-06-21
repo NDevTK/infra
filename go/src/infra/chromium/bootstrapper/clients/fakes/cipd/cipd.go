@@ -7,13 +7,11 @@ package cipd
 import (
 	"context"
 	"fmt"
-	"path/filepath"
+	"path"
 
-	bscipd "infra/chromium/bootstrapper/clients/cipd"
+	real "infra/chromium/bootstrapper/clients/cipd"
 	"infra/chromium/util"
 
-	"go.chromium.org/luci/cipd/client/cipd"
-	"go.chromium.org/luci/cipd/common"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/testing/testfs"
 )
@@ -42,7 +40,6 @@ type Package struct {
 
 // Client is the client that will serve fake data for a given host.
 type Client struct {
-	cipdRoot string
 	packages map[string]*Package
 }
 
@@ -53,68 +50,48 @@ type Client struct {
 // package names to the Package instances containing the fake data for the
 // package. Missing keys will have a default Package. A nil value indicates that
 // the given package is not the name of a package.
-func Factory(packages map[string]*Package) bscipd.CipdClientFactory {
-	return func(ctx context.Context, cipdRoot string) (bscipd.CipdClient, error) {
-		return &Client{cipdRoot: cipdRoot, packages: packages}, nil
+func Factory(packages map[string]*Package) real.ClientFactory {
+	return func(ctx context.Context) real.Client {
+		return &Client{packages: packages}
 	}
 }
 
-func (c *Client) packageForName(packageName string) (*Package, error) {
-	if pkg, ok := c.packages[packageName]; ok {
-		if pkg == nil {
-			return nil, errors.Reason("unknown package %#v", packageName).Err()
-		}
-		return pkg, nil
-	}
-	return &Package{}, nil
-}
+func (c *Client) Ensure(ctx context.Context, serviceUrl, cipdRoot string, packages map[string]*real.Package) (map[string]string, error) {
+	packageVersions := make(map[string]string, len(packages))
+	layout := map[string]string{}
 
-func (c *Client) ResolveVersion(ctx context.Context, packageName, version string) (common.Pin, error) {
-	pkg, err := c.packageForName(packageName)
-	if err != nil {
-		return common.Pin{}, err
-	}
-	instanceId, ok := pkg.Refs[version]
-	if !ok {
-		instanceId = fmt.Sprintf("fake-instance-id|%s|%s", packageName, version)
-	} else if instanceId == "" {
-		return common.Pin{}, errors.Reason("unknown version %#v of package %#v", version, packageName).Err()
-	}
-	return common.Pin{PackageName: packageName, InstanceID: instanceId}, nil
-}
-
-func (c *Client) EnsurePackages(ctx context.Context, packages common.PinSliceBySubdir, opts *cipd.EnsureOptions) (cipd.ActionMap, error) {
-	realOpts := cipd.EnsureOptions{}
-	if opts != nil {
-		realOpts = *opts
-	}
-
-	if err := realOpts.Paranoia.Validate(); err != nil {
-		return nil, err
-	}
-
-	util.PanicIf(realOpts.Paranoia != cipd.CheckIntegrity, "unexpected Paranoia: %s", realOpts.Paranoia)
-	util.PanicIf(realOpts.DryRun, "DryRun is not supported")
-	util.PanicIf(realOpts.Silent, "Silent is not supported")
-	for subdir, pins := range packages {
-		util.PanicIf(len(pins) != 1, "multiple pins for a subdirectory are not supported: subdirectory: %#v, pins: %#v", subdir, pins)
-		pin := pins[0]
-		pkg, err := c.packageForName(pin.PackageName)
-		if err != nil {
-			return nil, err
-		}
-		instance, ok := pkg.Instances[pin.InstanceID]
+	for subdir, pin := range packages {
+		pkg, ok := c.packages[pin.Name]
 		if !ok {
-			instance = &PackageInstance{}
-		} else if instance == nil {
-			return nil, errors.Reason("unknown instance ID %#v of package %#v", pin.InstanceID, pin.PackageName).Err()
+			pkg = &Package{}
+		} else if pkg == nil {
+			return nil, errors.Reason("unknown package %#v", pin.Name).Err()
 		}
-		packageRoot := filepath.Join(c.cipdRoot, filepath.FromSlash(subdir))
-		contents := instance.Contents
-		if contents == nil {
-			contents = map[string]string{}
+		instanceId := pin.Version
+		if _, ok := pkg.Instances[pin.Version]; !ok {
+			var ok bool
+			if instanceId, ok = pkg.Refs[instanceId]; !ok {
+				instanceId = fmt.Sprintf("fake-instance-id|%s|%s", pin.Name, pin.Version)
+			}
 		}
-		util.PanicOnError(testfs.Build(packageRoot, contents))
+		var instance *PackageInstance
+		if instanceId != "" {
+			var ok bool
+			if instance, ok = pkg.Instances[instanceId]; !ok {
+				instance = &PackageInstance{}
+			}
+		}
+		if instance == nil {
+			return nil, errors.Reason("unknown version %#v of package %#v", pin.Version, pin.Name).Err()
+		}
+		packageVersions[subdir] = instanceId
+
+		layout[subdir+"/"] = ""
+		for file, contents := range instance.Contents {
+			layout[path.Join(subdir, file)] = contents
+		}
 	}
-	return nil, nil
+	err := testfs.Build(cipdRoot, layout)
+	util.PanicOnError(err)
+	return packageVersions, nil
 }

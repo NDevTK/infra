@@ -77,7 +77,7 @@ func TestPerformBootstrap(t *testing.T) {
 		},
 	}))
 
-	ctx = cipd.UseCipdClientFactory(ctx, fakecipd.Factory(map[string]*fakecipd.Package{
+	ctx = cipd.UseClientFactory(ctx, fakecipd.Factory(map[string]*fakecipd.Package{
 		"fake-package": pkg,
 	}))
 

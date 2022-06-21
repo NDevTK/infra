@@ -6,7 +6,6 @@ package bootstrap
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
 	"testing"
 
@@ -32,7 +31,7 @@ func TestDownloadPackages(t *testing.T) {
 			Refs:      map[string]string{},
 			Instances: map[string]*fakecipd.PackageInstance{},
 		}
-		ctx := cipd.UseCipdClientFactory(ctx, fakecipd.Factory(map[string]*fakecipd.Package{
+		ctx := cipd.UseClientFactory(ctx, fakecipd.Factory(map[string]*fakecipd.Package{
 			"fake-exe-package": exePkg,
 		}))
 
@@ -114,35 +113,12 @@ func TestDownloadPackages(t *testing.T) {
 				},
 			}
 
-			Convey("fails if getting CIPD client fails", func() {
-				ctx := cipd.UseCipdClientFactory(ctx, func(ctx context.Context, packagesRoot string) (cipd.CipdClient, error) {
-					return nil, errors.New("test cipd client creation failure")
-				})
-
-				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
-
-				So(err, ShouldErrLike, "test cipd client creation failure")
-				So(exe, ShouldBeNil)
-				So(cmd, ShouldBeNil)
-			})
-
-			Convey("fails if resolving package version fails", func() {
+			Convey("fails if ensuring packages fails", func() {
 				exePkg.Refs["fake-exe-version"] = ""
 
 				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
 
 				So(err, ShouldErrLike, "unknown version")
-				So(exe, ShouldBeNil)
-				So(cmd, ShouldBeNil)
-			})
-
-			Convey("fails if ensuring packages fails", func() {
-				exePkg.Refs["fake-exe-version"] = "fake-exe-instance"
-				exePkg.Instances["fake-exe-instance"] = nil
-
-				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
-
-				So(err, ShouldErrLike, "unknown instance ID")
 				So(exe, ShouldBeNil)
 				So(cmd, ShouldBeNil)
 			})
