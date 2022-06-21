@@ -67,6 +67,12 @@ class WebComponentsPage(servlet.Servlet):
   # def GetWebComponentsIssueList(self, **kwargs):
   #   return self.handler(**kwargs)
 
+  # def GetWebComponentsIssueWizard(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def GetWebComponentsIssueNewEntry(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class ProjectListPage(WebComponentsPage):
 

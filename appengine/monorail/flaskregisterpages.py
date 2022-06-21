@@ -71,9 +71,11 @@ from tracker import issueattachment
 from tracker import issueattachmenttext
 from tracker import issuebulkedit
 from tracker import issuedetailezt
+from tracker import issueentry
 from tracker import issueentryafterlogin
 from tracker import issueexport
 from tracker import issueoriginal
+from tracker import issuereindex
 from tracker import issuetips
 from tracker import issueimport
 
@@ -380,9 +382,45 @@ class ServletRegistry(object):
         #     issueoriginal.IssueOriginal(services=service).GetIssueOriginal,
         #     ['GET']),
         # (
+        #     '/<string:project_name>/issues/entry',
+        #     issueentry.IssueEntry(
+        #         services=service).GetIssueEntry, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/entry.do',
+        #     issueentry.IssueEntry(
+        #         services=service).PostIssueEntry, ['POST']),
+        # (
+        #     '/<string:project_name>/issues/entry_new',
+        #     webcomponentspage.WebComponentsPage(
+        #         services=service).GetWebComponentsIssueNewEntry, ['GET']),
+        # (
         #     '/<string:project_name>/issues/list',
         #     webcomponentspage.WebComponentsPage(
         #         services=service).GetWebComponentsIssueList, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/reindex',
+        #     issuereindex.IssueReindex(
+        #         services=service).GetIssueReindex, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/reindex.do',
+        #     issuereindex.IssueReindex(
+        #         services=service).PostIssueReindex, ['POST']),
+        # (
+        #     '/<string:project_name>/issues/detail/list',
+        #     issuedetailezt.FlipperList(
+        #         services=service).GetFlipperList, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/detail/flipper',
+        #     issuedetailezt.FlipperIndex(
+        #         services=service).GetFlipperIndex, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/detail/flipper.do',
+        #     issuedetailezt.FlipperIndex(
+        #         services=service).PostFlipperIndex, ['POST']),
+        # (
+        #     '/<string:project_name>/issues/wizard',
+        #     webcomponentspage.WebComponentsPage(
+        #         services=service).GetWebComponentsIssueWizard, ['GET']),
         # (
         #     '/<string:project_name>/templates/create',
         #     templatecreate.TemplateCreate(

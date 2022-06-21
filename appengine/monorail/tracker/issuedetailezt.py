@@ -175,6 +175,7 @@ class FlipperPrev(FlipperRedirectBase):
 class FlipperList(servlet.Servlet):
   # pylint: disable=arguments-differ
   # pylint: disable=unused-argument
+  # TODO: (monorail:6511)change to get(self) when convert to flask
   def get(self, project_name=None, viewed_username=None, hotlist_id=None):
     with work_env.WorkEnv(self.mr, self.services) as we:
       hotlist_id = self.mr.GetIntParam('hotlist_id')
@@ -198,8 +199,11 @@ class FlipperList(servlet.Servlet):
                                                hotlist, self.services)
     self.redirect(url)
 
+  # def GetFlipperList(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+
+# TODO: (monorail:6511) change to flaskJsonFeed when convert to flask
 class FlipperIndex(jsonfeed.JsonFeed):
   """Return a JSON object of an issue's index in search.
 
@@ -269,6 +273,12 @@ class FlipperIndex(jsonfeed.JsonFeed):
       'list_url': list_url,
       'total_count': total_count,
     }
+
+  # def GetFlipperIndex(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostFlipperIndex(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def _ShouldShowFlipper(mr, services):

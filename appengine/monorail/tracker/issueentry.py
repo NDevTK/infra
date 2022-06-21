@@ -18,6 +18,7 @@ from businesslogic import work_env
 from features import hotlist_helpers
 from features import send_notifications
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
@@ -45,7 +46,7 @@ class IssueEntry(servlet.Servlet):
   """IssueEntry shows a page with a simple form to enter a new issue."""
 
   _PAGE_TEMPLATE = 'tracker/issue-entry-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
 
   # The issue filing wizard is a separate app that posted back to Monorail's
   # issue entry page. To make this possible for the wizard, we need to allow
@@ -510,6 +511,12 @@ class IssueEntry(servlet.Servlet):
         template = templates[0]
 
     return template
+
+  # def GetIssueEntry(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostIssueEntry(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def _AttachDefaultApprovers(config, approval_values):
