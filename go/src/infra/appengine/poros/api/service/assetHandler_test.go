@@ -327,9 +327,11 @@ func TestAssetConfigWithValidDetails(t *testing.T) {
 		So(len(assetConfig.Resources), ShouldEqual, 1)
 
 		So(assetConfig.Resources[0].ResourceId, ShouldEqual, resource.ResourceId)
+		So(assetConfig.Resources[0].Description, ShouldEqual, resource.Description)
 		So(assetConfig.Resources[0].OperatingSystem, ShouldEqual, resource.OperatingSystem)
 		So(assetConfig.Resources[0].AliasName, ShouldEqual, assetResource.AliasName)
-		So(assetConfig.Resources[0].MachineType, ShouldEqual, resource.Name)
+		So(assetConfig.Resources[0].ResourceName, ShouldEqual, resource.Name)
+		So(assetConfig.Resources[0].ResourceType, ShouldEqual, resource.Type)
 	})
 }
 

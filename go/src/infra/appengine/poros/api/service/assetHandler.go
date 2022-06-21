@@ -255,7 +255,11 @@ func (e *AssetHandler) List(ctx context.Context, in *proto.ListAssetsRequest) (*
 
 func (c *AssetHandler) GetAssetConfiguration(ctx context.Context, in *proto.GetAssetConfigurationRequest) (*proto.GetAssetConfigurationResponse, error) {
 	assetId := in.GetAssetId()
-	res := &proto.AssetConfiguration{AssetId: assetId}
+	asset, err := getById(ctx, assetId)
+	if err != nil {
+		return nil, err
+	}
+	res := &proto.AssetConfiguration{AssetId: assetId, AssetType: asset.AssetType}
 
 	query := datastore.NewQuery("AssetResourceEntity").Eq("AssetId", assetId)
 	var assetResourceEntites []*AssetResourceEntity
@@ -273,9 +277,11 @@ func (c *AssetHandler) GetAssetConfiguration(ctx context.Context, in *proto.GetA
 			res.Resources,
 			&proto.AssetConfigurationResource{
 				ResourceId:      resource.ResourceId,
+				Description:     resource.Description,
 				OperatingSystem: resource.OperatingSystem,
 				AliasName:       assetResource.AliasName,
-				MachineType:     resource.Name})
+				ResourceType:    resource.Type,
+				ResourceName:    resource.Name})
 	}
 	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
 
