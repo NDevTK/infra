@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/system/environ"
 
 	"infra/cmd/gaedeploy/gcloud"
 )
@@ -133,5 +134,5 @@ func cleanupVersions(ctx context.Context, appID, module string, vers gcloud.Vers
 		"--quiet", // disable interactive prompts
 		"--project", appID,
 		"--service", module,
-	}, versionsToDelete...), "", nil, dryRun)
+	}, versionsToDelete...), "", environ.Env{}, dryRun)
 }

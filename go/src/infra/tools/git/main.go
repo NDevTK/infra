@@ -90,7 +90,7 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 		Format: loggingFormat,
 	}
 	c = logCfg.Use(c)
-	if v, _ := env.Get(gitWrapperTraceENV); v != "" {
+	if v := env.Get(gitWrapperTraceENV); v != "" {
 		c = logging.SetLevel(c, logging.Debug)
 	} else {
 		c = logging.SetLevel(c, logging.Info)
@@ -98,14 +98,14 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 
 	// If we are performing a Git wrapper check, exit immediately with a non-zero
 	// return code.
-	if _, ok := env.Get(gitWrapperCheckENV); ok {
+	if _, ok := env.Lookup(gitWrapperCheckENV); ok {
 		logging.Debugf(c, "Observed check env ["+gitWrapperCheckENV+"]; exiting with non-zero code.")
 		return 1
 	}
 
 	// Check if we are being passed a wrapper state.
 	var st state.State
-	if v, ok := env.Get(gitWrapperENV); ok {
+	if v, ok := env.Lookup(gitWrapperENV); ok {
 		if err := st.FromENV(v); err != nil {
 			logging.Warningf(c, "Failed to decode "+gitWrapperENV+" [%s]: %s", v, err)
 		}
@@ -138,7 +138,7 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 
 	// Setup custom HOME, if requested. This makes git lookup .gitconfig and
 	// .netrc there instead of default '~'.
-	if newHome, ok := env.Get(gitWrapperHomeENV); ok {
+	if newHome, ok := env.Lookup(gitWrapperHomeENV); ok {
 		if newHome != "" {
 			env.Set("HOME", newHome)
 		} else {

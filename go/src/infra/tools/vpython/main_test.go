@@ -41,7 +41,7 @@ var vpythonTestCase = flag.String("vpython.testcase", "", "Run a specific test c
 func init() {
 	// Do we need to behave exactly like vpython.exe?
 	env := environ.System()
-	if env.GetEmpty(behaveExactlyLikeVpythonENV) != "" {
+	if env.Get(behaveExactlyLikeVpythonENV) != "" {
 		Main(false)
 	}
 }
@@ -55,7 +55,7 @@ func TestMainFunc(t *testing.T) {
 
 	// Are we a spawned subprocess of TestMainFunc?
 	env := environ.System()
-	if v := env.GetEmpty(testMainRunScriptENV); v != "" {
+	if v := env.Get(testMainRunScriptENV); v != "" {
 		os.Exit(testMainRunDelegate(self, v))
 		return
 	}

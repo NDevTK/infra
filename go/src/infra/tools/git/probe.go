@@ -134,7 +134,7 @@ func (p *SystemProbe) Locate(c context.Context, cached string, env environ.Env) 
 
 	// Walk through PATH. Our goal is to find the first program named Target that
 	// isn't self and doesn't identify as a wrapper.
-	origPATH, _ := env.Get("PATH")
+	origPATH := env.Get("PATH")
 	pathParts := strings.Split(origPATH, string(os.PathListSeparator))
 
 	// Build our list of directories to check for Git.

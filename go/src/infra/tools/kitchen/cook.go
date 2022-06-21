@@ -293,7 +293,7 @@ func (c *cookRun) prepareProperties(env environ.Env) (map[string]interface{}, *k
 	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/master/recipes/recipe_modules/infra_paths/
 	props["path_config"] = "generic"
 
-	botID, ok := env.Get("SWARMING_BOT_ID")
+	botID, ok := env.Lookup("SWARMING_BOT_ID")
 	if !ok {
 		return nil, nil, errors.Reason("no Swarming bot ID in $SWARMING_BOT_ID").Err()
 	}
@@ -415,7 +415,7 @@ func (c *cookRun) run(ctx context.Context, args []string, env environ.Env) (*bui
 	// so that kitchen uses the installed git wrapper.
 	//
 	// All other env modifications must be performed using 'env' object.
-	path, _ := env.Get("PATH")
+	path := env.Get("PATH")
 	if err = os.Setenv("PATH", path); err != nil {
 		return fail(errors.Annotate(err, "failed to update process PATH").Err())
 	}
@@ -676,15 +676,15 @@ func (c *cookRun) globalTags(env environ.Env) map[string]string {
 
 	// SWARMING_SERVER is the full URL: https://example.com
 	// We want just the hostname.
-	if v, ok := env.Get("SWARMING_SERVER"); ok {
+	if v, ok := env.Lookup("SWARMING_SERVER"); ok {
 		if u, err := url.Parse(v); err == nil && u.Host != "" {
 			ret["swarming.host"] = u.Host
 		}
 	}
-	if v, ok := env.Get("SWARMING_TASK_ID"); ok {
+	if v, ok := env.Lookup("SWARMING_TASK_ID"); ok {
 		ret["swarming.run_id"] = v
 	}
-	if v, ok := env.Get("SWARMING_BOT_ID"); ok {
+	if v, ok := env.Lookup("SWARMING_BOT_ID"); ok {
 		ret["bot_id"] = v
 	}
 

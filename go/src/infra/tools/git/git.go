@@ -125,12 +125,12 @@ func (gc *GitCommand) Run(c context.Context, args []string, env environ.Env) (in
 
 	// Set the low speed limit if it is not already set.
 	// If an existing speed limit is set in the environment, don't override it.
-	if _, ok := gr.Env.Get("GIT_HTTP_LOW_SPEED_LIMIT"); !ok {
+	if _, ok := gr.Env.Lookup("GIT_HTTP_LOW_SPEED_LIMIT"); !ok {
 		if l := gc.LowSpeedLimit; l > 0 {
 			gr.Env.Set("GIT_HTTP_LOW_SPEED_LIMIT", strconv.Itoa(l))
 		}
 	}
-	if _, ok := gr.Env.Get("GIT_HTTP_LOW_SPEED_TIME"); !ok {
+	if _, ok := gr.Env.Lookup("GIT_HTTP_LOW_SPEED_TIME"); !ok {
 		if l := gc.LowSpeedTime; l > 0 {
 			secs := int(l.Seconds())
 			if secs <= 0 {

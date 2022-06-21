@@ -250,7 +250,7 @@ func prepareForGoDeploy(ctx context.Context, root, modDir string) (newModDir str
 	// Setup GOPATH if the tarball has "_gopath" directory.
 	goPathAbs, err := filepath.Abs(filepath.Join(root, "_gopath"))
 	if err != nil {
-		return "", nil, err
+		return "", environ.Env{}, err
 	}
 	if _, err := os.Stat(goPathAbs); err == nil {
 		logging.Infof(ctx, "Found _gopath, using it as GOPATH")
@@ -264,11 +264,11 @@ func prepareForGoDeploy(ctx context.Context, root, modDir string) (newModDir str
 	// paths. They eventually surface in stack traces in error messages, etc.
 	dest, err := filepath.EvalSymlinks(filepath.Join(root, modDir))
 	if err != nil {
-		return "", nil, errors.Annotate(err, "failed to evaluate %q as a symlink", modDir).Err()
+		return "", environ.Env{}, errors.Annotate(err, "failed to evaluate %q as a symlink", modDir).Err()
 	}
 	rel, err := filepath.Rel(root, dest)
 	if err != nil {
-		return "", nil, errors.Annotate(err, "failed to calculate rel(%q, %q)", root, dest).Err()
+		return "", environ.Env{}, errors.Annotate(err, "failed to calculate rel(%q, %q)", root, dest).Err()
 	}
 	if strings.HasPrefix(rel, filepath.Join("_gopath", "src")+string(filepath.Separator)) {
 		logging.Infof(ctx, "Following symlink %q to its destination in _gopath %q", modDir, rel)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This file mocks typical recipes.py that normally runs a recipe.
 
 import argparse
@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 import sys
-import urllib2
+import urllib.request
 
 
 def main():
@@ -79,11 +79,11 @@ def get_git_email():
 def get_metadata_token():
   metasrv = os.environ.get('GCE_METADATA_HOST')
   assert metasrv and metasrv.startswith('127.0.0.1:'), metasrv
-  req = urllib2.Request(
+  req = urllib.request.Request(
       'http://' + metasrv + '/computeMetadata/v1/instance/'
           'service-accounts/default/token',
       headers={'Metadata-Flavor': 'Google'})
-  resp = json.loads(urllib2.urlopen(req).read())
+  resp = json.loads(urllib.request.urlopen(req).read())
   return resp['access_token']
 
 

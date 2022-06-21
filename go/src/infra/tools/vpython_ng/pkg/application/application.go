@@ -144,7 +144,7 @@ func (a *Application) ParseEnvs() (err error) {
 	e := environ.New(a.Environments)
 
 	// Determine our VirtualEnv base directory.
-	if v, ok := e.Get(VirtualEnvRootENV); ok {
+	if v, ok := e.Lookup(VirtualEnvRootENV); ok {
 		a.VpythonRoot = v
 	} else {
 		hdir, err := homedir.Dir()
@@ -155,10 +155,10 @@ func (a *Application) ParseEnvs() (err error) {
 	}
 
 	// Get default spec path
-	a.DefaultSpecPath = e.GetEmpty(DefaultSpecENV)
+	a.DefaultSpecPath = e.Get(DefaultSpecENV)
 
 	// Check if it's in bypass mode
-	if e.GetEmpty(BypassENV) == BypassSentinel {
+	if e.Get(BypassENV) == BypassSentinel {
 		a.Bypass = true
 	}
 	return nil

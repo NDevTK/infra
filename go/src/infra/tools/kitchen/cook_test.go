@@ -105,10 +105,8 @@ func TestCook(t *testing.T) {
 			kitchenTempDir := filepath.Join(tdir, "tmp")
 			cacheDirPath := filepath.Join(tdir, "cache-dir")
 
-			env := environ.System()
-
 			// Prepare recipe dir.
-			So(setupRecipeRepo(c, env, recipeRepoDir), ShouldBeNil)
+			So(setupRecipeRepo(c, recipeRepoDir), ShouldBeNil)
 
 			// Kitchen works relative to its cwd
 			cwd, err := os.Getwd()
@@ -180,6 +178,10 @@ func TestCook(t *testing.T) {
 					"-luci-system-account", "system_acc",
 				}
 
+				env := environ.System()
+				env.Set("SWARMING_TASK_ID", "task")
+				env.Set("SWARMING_BOT_ID", "bot")
+
 				// Cook.
 				err = cook.Flags.Parse(args)
 				So(err, ShouldBeNil)
@@ -238,9 +240,6 @@ func TestCook(t *testing.T) {
 
 				return result, outputExitCode
 			}
-
-			env.Set("SWARMING_TASK_ID", "task")
-			env.Set("SWARMING_BOT_ID", "bot")
 
 			Convey("recipe success", func() {
 				recipeResult := &recipe_engine.Result{
@@ -303,7 +302,7 @@ func TestCook(t *testing.T) {
 	})
 }
 
-func setupRecipeRepo(c context.Context, env environ.Env, targetDir string) error {
+func setupRecipeRepo(c context.Context, targetDir string) error {
 	if err := copyDir(targetDir, filepath.Join("testdata", "recipe_repo")); err != nil {
 		return err
 	}

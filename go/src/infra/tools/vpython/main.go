@@ -87,7 +87,7 @@ func mainImpl(c context.Context, argv []string, env environ.Env, python3only boo
 	//
 	// If we don't have an environment-specific CIPD cache directory, use one
 	// relative to the user's home directory.
-	if err := cipdPackageLoader.Options.LoadFromEnv(env.GetEmpty); err != nil {
+	if err := cipdPackageLoader.Options.LoadFromEnv(env.SetInCtx(c)); err != nil {
 		logging.Errorf(c, "Could not inialize CIPD package loader: %s", err)
 		return 1
 	}
@@ -102,7 +102,7 @@ func mainImpl(c context.Context, argv []string, env environ.Env, python3only boo
 	}
 
 	// Determine if we're bypassing "vpython".
-	defaultConfig.Bypass = env.GetEmpty(BypassENV) == BypassSentinel
+	defaultConfig.Bypass = env.Get(BypassENV) == BypassSentinel
 	// Determine if we're operating in "vpython3" mode (invoked as ./vpython3, ./vpython3.exe,
 	// ./python3, or ./python3.exe). Alternately, the `vpython3` binary version
 	// will explicitly indicate python3-only behavior.

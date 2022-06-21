@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag/stringlistflag"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/system/environ"
 
 	"infra/cmd/gaedeploy/gcloud"
 )
@@ -91,6 +92,6 @@ func (c *cmdYamlRun) exec(ctx context.Context) error {
 			"app", "deploy",
 			"--project", c.appID,
 			"--quiet", // disable interactive prompts
-		}, c.deployableYaml...), path, nil, c.dryRun)
+		}, c.deployableYaml...), path, environ.Env{}, c.dryRun)
 	})
 }

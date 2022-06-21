@@ -1,2 +1,2 @@
 @echo off
-python "%~dp0recipes" %*
+python3 "%~dp0recipes" %*

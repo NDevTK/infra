@@ -115,7 +115,7 @@ func Run(ctx context.Context, cmd []string, cwd string, env environ.Env, dryRun 
 	cmdObj.Dir = cwd
 	cmdObj.Stdout = os.Stdout
 	cmdObj.Stderr = os.Stderr
-	if env != nil {
+	if env.Len() != 0 {
 		cmdObj.Env = env.Sorted()
 	}
 	if err := cmdObj.Run(); err != nil {
