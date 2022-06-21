@@ -168,6 +168,7 @@ func crosClosePlan() *Plan {
 					"extra args.",
 				},
 				Conditions: []string{
+					"DUT state is repair_failed",
 					"Failure count above threshold",
 				},
 				ExecName: "dut_set_state",
@@ -186,6 +187,15 @@ func crosClosePlan() *Plan {
 				},
 				ExecName: "sample_fail",
 			},
+			"DUT state is repair_failed": {
+				Docs: []string{
+					"Check if the DUT's state is in repair_failed state, if not then fail.",
+				},
+				ExecName: "dut_state_match",
+				ExecExtraArgs: []string{
+					"state:repair_failed",
+				},
+			},
 			"Servo state demands manual repair": {
 				Docs: []string{
 					"Check whether the state of servo mandates a ",
@@ -203,6 +213,7 @@ func crosClosePlan() *Plan {
 					"not above a threshold amount",
 				},
 				Conditions: []string{
+					"DUT state is repair_failed",
 					"Failure count are not above threshold",
 					"dut_servo_host_present",
 					"Servo state demands manual repair",
