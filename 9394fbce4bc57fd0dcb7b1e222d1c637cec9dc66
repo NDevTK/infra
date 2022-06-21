@@ -16,6 +16,24 @@
       "message": "nit: I think it is better to split file by type of object you using. like: account.go, obeservation.go",
       "revId": "9394fbce4bc57fd0dcb7b1e222d1c637cec9dc66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c1356ec_4249f147",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-06-21T17:20:38Z",
+      "side": 1,
+      "message": "I think it will be easier to keep everything consistent if I group everything by the type of action being performed rather than the type of item.",
+      "parentUuid": "4fc3b3f7_180d2b5d",
+      "revId": "9394fbce4bc57fd0dcb7b1e222d1c637cec9dc66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
