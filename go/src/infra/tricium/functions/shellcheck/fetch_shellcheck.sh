@@ -2,8 +2,8 @@
 
 # When updating the version, you must update the SHA512 sum as well, e.g.:
 # shasum -a 512 "${ARCHIVE}" > "${ARCHIVE}.sum"
-VERSION=0.7.1-r50
-SDK_VERSION=2022.05.29.234118
+VERSION=0.7.1-r51
+SDK_VERSION=2022.06.19.122518
 ARCHIVE="shellcheck-${VERSION}.tbz2"
 URL="https://storage.googleapis.com/chromeos-prebuilt/host/amd64/amd64-host/chroot-${SDK_VERSION}/packages/dev-util/${ARCHIVE}"
 SUMFILE="${ARCHIVE}.sum"
