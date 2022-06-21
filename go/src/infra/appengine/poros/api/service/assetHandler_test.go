@@ -44,31 +44,37 @@ func mockGetAssetConfigRequest(assetId string) *proto.GetAssetConfigurationReque
 func mockGetHostConfigRequest(resourceIds []string) *proto.GetHostConfigurationRequest {
 	return &proto.GetHostConfigurationRequest{ResourceIds: resourceIds}
 }
+
 func TestAssetCreateWithValidData(t *testing.T) {
 	t.Parallel()
-	ctx := memory.Use(context.Background())
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Create an asset in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		err := createDefaultResources(ctx)
+		So(err, ShouldBeNil)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
 		want := []string{assetRequest.GetName(), assetRequest.GetDescription(), assetRequest.GetAssetType()}
 		get := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
 		So(get, ShouldResemble, want)
-		So(response.GetAssetResources(), ShouldHaveLength, 1)
-		want = []string{response.GetAsset().GetAssetId(), "ResourceId", "Alias name"}
-		assetResource := response.GetAssetResources()[0]
-		get = []string{assetResource.GetAssetId(), assetResource.GetResourceId(), assetResource.GetAliasName()}
-		So(get, ShouldResemble, want)
+		So(response.GetAssetResources(), ShouldHaveLength, 5)
+		createdResourceNames := []string{"primary", "foo.example", "win2008r2", "Joe", "Alias name"}
+		for _, res := range response.GetAssetResources() {
+			So(res.AliasName, ShouldBeIn, createdResourceNames)
+		}
 	})
 }
 
 func TestAssetCreateWithInvalidName(t *testing.T) {
 	t.Parallel()
-	ctx := memory.Use(context.Background())
 	assetRequest := mockCreateAssetRequest("", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Create an asset with invalid name in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldNotBeNil)
@@ -77,9 +83,11 @@ func TestAssetCreateWithInvalidName(t *testing.T) {
 
 func TestAssetCreateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
-	ctx := memory.Use(context.Background())
 	assetRequest := mockCreateAssetRequest("Test Asset", "", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Create an asset with invalid description in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldNotBeNil)
@@ -88,9 +96,11 @@ func TestAssetCreateWithInvalidDescription(t *testing.T) {
 
 func TestAssetCreateWithInvalidAssetType(t *testing.T) {
 	t.Parallel()
-	ctx := memory.Use(context.Background())
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "", []*proto.AssetResourceModel{})
 	Convey("Create an asset with invalid asset_type in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldNotBeNil)
@@ -99,10 +109,12 @@ func TestAssetCreateWithInvalidAssetType(t *testing.T) {
 
 func TestAssetCreateWithInvalidAssetResource(t *testing.T) {
 	t.Parallel()
-	ctx := memory.Use(context.Background())
 	assetRequest := mockCreateAssetRequest("Test Name", "Test Description", "active_directory",
 		[]*proto.AssetResourceModel{mockAssetResource("", "", "", "")})
 	Convey("Create an asset with invalid asset_resource in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldNotBeNil)
@@ -116,6 +128,8 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Update an asset with valid data in datastore", t, func() {
 		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		createAssetesponse, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
@@ -163,6 +177,8 @@ func TestAssetUpdateWithInvalidName(t *testing.T) {
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
@@ -189,6 +205,8 @@ func TestAssetUpdateWithInvalidDescription(t *testing.T) {
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
@@ -215,6 +233,8 @@ func TestAssetUpdateWithInvalidAssetType(t *testing.T) {
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
@@ -243,6 +263,8 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Update an asset with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
@@ -262,9 +284,11 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 }
 
 func TestGetAssetWithValidData(t *testing.T) {
-	ctx := memory.Use(context.Background())
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Get an assets based on id from datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
 		So(err, ShouldBeNil)
@@ -282,10 +306,12 @@ func TestGetAssetWithValidData(t *testing.T) {
 
 func TestListAssets(t *testing.T) {
 	t.Parallel()
-	ctx := memory.Use(context.Background())
 	assetRequest1 := mockCreateAssetRequest("Test Asset1", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	assetRequest2 := mockCreateAssetRequest("Test Asset2", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	Convey("Get all assets from datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest1)
 		So(err, ShouldBeNil)
@@ -309,8 +335,8 @@ func TestAssetConfigWithValidDetails(t *testing.T) {
 	Convey("Test Generated Asset Configuration with valid data", t, func() {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
-
-		asset, assetResource, resource, err := generateAssetAndResources(ctx)
+		createDefaultResources(ctx)
+		asset, _, _, err := generateAssetAndResources(ctx)
 		So(err, ShouldBeNil)
 
 		handler := &AssetHandler{}
@@ -324,12 +350,7 @@ func TestAssetConfigWithValidDetails(t *testing.T) {
 
 		So(assetConfig.AssetId, ShouldEqual, asset.AssetId)
 
-		So(len(assetConfig.Resources), ShouldEqual, 1)
-
-		So(assetConfig.Resources[0].ResourceId, ShouldEqual, resource.ResourceId)
-		So(assetConfig.Resources[0].OperatingSystem, ShouldEqual, resource.OperatingSystem)
-		So(assetConfig.Resources[0].AliasName, ShouldEqual, assetResource.AliasName)
-		So(assetConfig.Resources[0].MachineType, ShouldEqual, resource.Name)
+		So(len(assetConfig.Resources), ShouldEqual, 5)
 	})
 }
 
@@ -339,6 +360,7 @@ func TestHostConfigWithValidDetails(t *testing.T) {
 	Convey("Test Generated Host Configuration with valid data", t, func() {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
 
 		_, _, resource, err := generateAssetAndResources(ctx)
 		So(err, ShouldBeNil)
@@ -353,11 +375,36 @@ func TestHostConfigWithValidDetails(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		So(len(hostConfig.Resources), ShouldEqual, 1)
-
-		So(hostConfig.Resources[0].ResourceId, ShouldEqual, resource.ResourceId)
-		So(hostConfig.Resources[0].ResourceName, ShouldEqual, resource.Name)
-		So(hostConfig.Resources[0].ResourceImage, ShouldEqual, resource.Image)
 	})
+}
+
+func createDefaultResources(ctx context.Context) error {
+	resHandler := &ResourceHandler{}
+	resourceRequest := mockCreateResourceRequest("Network", "Resource of Type Network", "network", "", "")
+	_, err := resHandler.Create(ctx, resourceRequest)
+	if err != nil {
+		return err
+	}
+
+	resourceRequest = mockCreateResourceRequest("User", "Resource of Type User", "user", "", "")
+	_, err = resHandler.Create(ctx, resourceRequest)
+	if err != nil {
+		return err
+	}
+
+	resourceRequest = mockCreateResourceRequest("win2008r2", "Resource of Domain Controller Machine", "domain_controller_machine", "windows_machine", "win2008r2")
+	_, err = resHandler.Create(ctx, resourceRequest)
+	if err != nil {
+		return err
+	}
+
+	resourceRequest = mockCreateResourceRequest("Active Directory Domain", "Resource of Type Active Directory Domain", "ad_domain", "", "")
+	_, err = resHandler.Create(ctx, resourceRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.AssetResourceModel, *proto.ResourceModel, error) {

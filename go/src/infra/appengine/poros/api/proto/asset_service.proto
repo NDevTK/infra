@@ -124,17 +124,22 @@ message GetAssetConfigurationResponse {
 message AssetConfigurationResource {
   // Unique Identifier of the Resource
   string resource_id = 1;
+  // Description of the resource
+  string description = 2;
   // Operating System of the Resource (windows_machine, linux_machine, etc.)
-  string operating_system = 2;
+  string operating_system = 3;
   // Alias Name of the resource
-  string alias_name = 3;
+  string alias_name = 4;
+  // The type of resource (machine, network, user, etc)
+  string resource_type = 5;
   // Name of the resource
-  string machine_type = 4;
+  string resource_name = 6;
 }
 
 message AssetConfiguration {
   string asset_id = 1;
-  repeated AssetConfigurationResource resources = 2;
+  string asset_type = 2;
+  repeated AssetConfigurationResource resources = 3;
 }
 
 // request to get the host configuration by resource id
