@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/andygrunwald/go-gerrit"
@@ -78,7 +79,7 @@ func TestCreateRemoteBranchesAPI_success(t *testing.T) {
 
 	c := &Client{}
 	if err := c.CreateRemoteBranchesAPI(httpClient,
-		branchesToCreate, false, largeQPS); err != nil {
+		branchesToCreate, false, largeQPS, true, true); err != nil {
 		t.Error(err)
 	}
 	close(branchesCreated)
@@ -112,7 +113,33 @@ func TestCreateRemoteBranchesAPI_apiError(t *testing.T) {
 
 	c := &Client{}
 	if err := c.CreateRemoteBranchesAPI(httpClient,
-		branchesToCreate, false, largeQPS); err != nil {
+		branchesToCreate, false, largeQPS, true, true); err != nil {
+	} else {
+		t.Errorf("expected an error, instead nil")
+	}
+}
+
+func TestCreateRemoteBranchesAPI_apiErrorRetried(t *testing.T) {
+	setUp()
+	defer tearDown()
+
+	branchesToCreate := []GerritProjectBranch{
+		{GerritURL: testServer.URL, Project: "my-project", SrcRef: "my-source", Branch: "my-branch-1"},
+	}
+
+	testMux.HandleFunc("/projects/my-project/branches/", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		branchName := r.URL.Path[len("/projects/my-project/branches/"):]
+		http.Error(w, branchName, http.StatusBadRequest)
+	})
+
+	c := &Client{}
+	err := c.CreateRemoteBranchesAPI(httpClient,
+		branchesToCreate, false, largeQPS, false, true)
+	if err != nil {
+		if !strings.Contains(err.Error(), "retries") {
+			t.Errorf("expected retries on error, instead '%v'", fmt.Sprint(err))
+		}
 	} else {
 		t.Errorf("expected an error, instead nil")
 	}

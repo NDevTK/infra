@@ -5,6 +5,7 @@
 package branch
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,9 +13,17 @@ import (
 	"sync/atomic"
 	"time"
 
+	"infra/cros/internal/shared"
+
 	gerritapi "github.com/andygrunwald/go-gerrit"
 	"go.chromium.org/luci/common/errors"
 	"golang.org/x/sync/errgroup"
+)
+
+const (
+	retriesTimeout = 5 * time.Minute
+	testRetries    = 1
+	testBaseDelay  = 1
 )
 
 // GerritProjectBranch contains all the details for creating a new Gerrit branch
@@ -63,7 +72,7 @@ func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBr
 
 // CreateRemoteBranchesAPI creates a bunch of branches on remote Gerrit instances
 // for the specified inputs using the Gerrit API.
-func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []GerritProjectBranch, dryRun bool, gerritQPS float64) error {
+func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []GerritProjectBranch, dryRun bool, gerritQPS float64, skipRetries bool, isTest bool) error {
 	if c.FakeCreateRemoteBranchesAPI != nil {
 		return c.FakeCreateRemoteBranchesAPI(authedClient, branches, dryRun, gerritQPS)
 	}
@@ -86,9 +95,26 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 		<-throttle
 		b := b
 		g.Go(func() error {
-			err := c.createRemoteBranch(authedClient, b, dryRun)
-			if err != nil {
-				return err
+			if skipRetries {
+				err := c.createRemoteBranch(authedClient, b, dryRun)
+				if err != nil {
+					return err
+				}
+			} else {
+				ctx, cancel := context.WithTimeout(context.Background(), retriesTimeout)
+				defer cancel()
+				opts := shared.DefaultOpts
+				if isTest {
+					opts.Retries = testRetries
+					opts.BaseDelay = testBaseDelay
+				}
+				err := shared.DoWithRetry(ctx, opts, func() error {
+					err := c.createRemoteBranch(authedClient, b, dryRun)
+					return err
+				})
+				if err != nil {
+					return err
+				}
 			}
 			count := atomic.AddInt64(&createCount, 1)
 			if count%10 == 0 {

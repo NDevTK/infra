@@ -67,6 +67,10 @@ func getCmdCreateBranch(opts auth.Options) *subcommands.Command {
 					"is broken. Use this at your own risk.")
 			c.Flags.Float64Var(&c.gerritWriteQPS, "gerrit-write-qps", 1.0,
 				"Maximum QPS to use for Gerrit API write operations.")
+			c.Flags.BoolVar(&c.skipRetries, "skip-retries", false,
+				"Skip retries on remote branch creation.")
+			c.Flags.BoolVar(&c.isTest, "is-test", false,
+				"Test invocation so use a shorten branch creation retries.")
 			return c
 		},
 	}
@@ -83,6 +87,8 @@ type createBranch struct {
 	stabilize         bool
 	custom            string
 	gerritWriteQPS    float64
+	skipRetries       bool
+	isTest            bool
 	file              string
 }
 
@@ -296,7 +302,7 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 	}
 
 	// Create git branches for new branch. Exclude the ManifestProjects, which we just updated.
-	if err = bc.CreateRemoteBranchesAPI(authedClient, branch.GetNonManifestBranches(projectBranches), !c.Push, c.gerritWriteQPS); err != nil {
+	if err = bc.CreateRemoteBranchesAPI(authedClient, branch.GetNonManifestBranches(projectBranches), !c.Push, c.gerritWriteQPS, c.skipRetries, c.isTest); err != nil {
 		bc.LogErr(err.Error())
 		return 1
 	}
