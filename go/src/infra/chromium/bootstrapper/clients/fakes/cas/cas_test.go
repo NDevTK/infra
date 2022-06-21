@@ -87,7 +87,7 @@ func TestDownload(t *testing.T) {
 		Convey("fails for a false blob", func() {
 			client, err := Factory(map[string]*Instance{
 				"fake-instance": {
-					blobs: map[string]bool{
+					Blobs: map[string]bool{
 						"fake-hash": false,
 					},
 				},
@@ -102,7 +102,7 @@ func TestDownload(t *testing.T) {
 		Convey("succeeds for a true blob", func() {
 			client, err := Factory(map[string]*Instance{
 				"fake-instance": {
-					blobs: map[string]bool{
+					Blobs: map[string]bool{
 						"fake-hash": true,
 					},
 				},
@@ -124,20 +124,17 @@ func TestIntegration(t *testing.T) {
 
 	Convey("package using fake CAS client", t, func() {
 
-		execRoot := t.TempDir()
-
 		ctx := bscas.UseCasClientFactory(ctx, Factory(nil))
 
 		Convey("succeeds when calling Download", func() {
-			client := bscas.NewClient(ctx, execRoot)
+			client := bscas.NewClient(ctx)
 
-			packagePath, err := client.Download(ctx, "fake-instance", &apipb.Digest{
+			err := client.Download(ctx, "fake-out-dir", "fake-instance", &apipb.Digest{
 				Hash:      "fake-hash",
 				SizeBytes: 42,
 			})
 
 			So(err, ShouldBeNil)
-			So(packagePath, ShouldNotBeEmpty)
 		})
 
 	})

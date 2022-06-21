@@ -14,11 +14,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/bootstrapper/clients/cipd"
 	"infra/chromium/bootstrapper/clients/gclient"
 	"infra/chromium/bootstrapper/clients/gerrit"
 	"infra/chromium/bootstrapper/clients/gitiles"
@@ -45,7 +44,7 @@ func parseFlags() options {
 	flag.Parse()
 	return options{
 		outputPath:         *outputPath,
-		cipdRoot:           "cipd",
+		packagesRoot:       "packages",
 		polymorphic:        *polymorphic,
 		propertiesOptional: *propertiesOptional,
 	}
@@ -67,7 +66,7 @@ func getBuild(ctx context.Context, input io.Reader) (*buildbucketpb.Build, error
 
 type options struct {
 	outputPath         string
-	cipdRoot           string
+	packagesRoot       string
 	polymorphic        bool
 	propertiesOptional bool
 }
@@ -90,80 +89,75 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 		return nil, nil, err
 	}
 
-	var recipeInput []byte
+	var config *bootstrap.BootstrapConfig
+
+	var exe *bootstrap.BootstrappedExe
 	var cmd []string
 
-	logging.Infof(ctx, "creating CIPD client")
-	cipdClient, err := cipd.NewClient(ctx, opts.cipdRoot)
-	if err != nil {
-		return nil, nil, err
-	}
+	// Downloading the necessary packages and getting the appropriate properties both speak to
+	// external services but don't necessarily depend on each other, so use an errgroup to do
+	// them in parallel
 
 	// Introduce a new block to shadow the ctx variable so that the outer
 	// value can't be used accidentally
 	{
 		group, ctx := errgroup.WithContext(ctx)
 
-		exeCh := make(chan *bootstrap.BootstrappedExe, 1)
+		// If the builder's properties are in a dependent project, getting the properties
+		// might require the gclient binary from the depot_tools package, so provide a
+		// channel that can be used to synchronize where necessary
+		depotToolsCh := make(chan string, 1)
 
-		// Get the arguments for the command
 		group.Go(func() error {
-			bootstrapper := bootstrap.NewExeBootstrapper(cipdClient, cas.NewClient(ctx, opts.cipdRoot))
-
-			logging.Infof(ctx, "determining bootstrapped executable")
-			exe, err := bootstrapper.GetBootstrappedExeInfo(ctx, bootstrapInput)
-			if err != nil {
-				return err
-			}
-			exeCh <- exe
-
-			logging.Infof(ctx, "setting up bootstrapped executable")
-			cmd, err = bootstrapper.DeployExe(ctx, exe)
-			if err != nil {
-				return err
-			}
-
-			if opts.outputPath != "" {
-				cmd = append(cmd, "--output", opts.outputPath)
-			}
-
-			return nil
+			logging.Infof(ctx, "downloading necessary packages")
+			var err error
+			exe, cmd, err = bootstrap.DownloadPackages(ctx, bootstrapInput, opts.packagesRoot, map[string]chan<- string{
+				bootstrap.DepotToolsId: depotToolsCh,
+			})
+			return errors.Annotate(err, "failed to download necessary packages").Err()
 		})
 
-		// Get the input for the command
 		group.Go(func() error {
-			gclientGetter := func() (*gclient.Client, error) {
-				return gclient.NewClient(ctx, cipdClient)
+			// gclientGetter will only be called if dependency_project is set in the
+			// $bootstrap/exe property, depot_tools will always be downloaded in that
+			// case
+			gclientGetter := func(ctx context.Context) (*gclient.Client, error) {
+				var depotToolsPackagePath string
+				select {
+				case depotToolsPackagePath = <-depotToolsCh:
+				case <-ctx.Done():
+					return nil, ctx.Err()
+				}
+				gclientPath := filepath.Join(depotToolsPackagePath, "depot_tools", "gclient")
+				return gclient.NewClient(gclientPath), nil
 			}
 			bootstrapper := bootstrap.NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx), gclientGetter)
 
 			logging.Infof(ctx, "getting bootstrapped config")
-			config, err := bootstrapper.GetBootstrapConfig(ctx, bootstrapInput)
-			if err != nil {
-				return err
-			}
-
-			var exe *bootstrap.BootstrappedExe
-			select {
-			case exe = <-exeCh:
-			case <-ctx.Done():
-				return ctx.Err()
-			}
-
-			logging.Infof(ctx, "updating build")
-			err = config.UpdateBuild(build, exe)
-			if err != nil {
-				return err
-			}
-
-			logging.Infof(ctx, "marshalling bootstrapped build input")
-			recipeInput, err = proto.Marshal(build)
-			return errors.Annotate(err, "failed to marshall bootstrapped build input: <%s>", build).Err()
+			var err error
+			config, err = bootstrapper.GetBootstrapConfig(ctx, bootstrapInput)
+			return err
 		})
 
 		if err := group.Wait(); err != nil {
 			return nil, nil, err
 		}
+	}
+
+	logging.Infof(ctx, "updating build")
+	err = config.UpdateBuild(build, exe)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	logging.Infof(ctx, "marshalling bootstrapped build input")
+	recipeInput, err := proto.Marshal(build)
+	if err != nil {
+		return nil, nil, errors.Annotate(err, "failed to marshall bootstrapped build input: <%s>", build).Err()
+	}
+
+	if opts.outputPath != "" {
+		cmd = append(cmd, "--output", opts.outputPath)
 	}
 
 	return cmd, recipeInput, nil

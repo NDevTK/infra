@@ -80,7 +80,7 @@ func TestResolveVersion(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Client.DownloadPackage", t, func() {
+	Convey("Client.ResolveVersion", t, func() {
 
 		Convey("fails if resolving version fails", func() {
 			factory := func(ctx context.Context, cipdRoot string) (CipdClient, error) {
@@ -122,12 +122,12 @@ func TestResolveVersion(t *testing.T) {
 
 }
 
-func TestDownloadPackage(t *testing.T) {
+func TestEnsurePackages(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
 
-	Convey("Client.DownloadPackage", t, func() {
+	Convey("Client.EnsurePackages", t, func() {
 
 		cipdRoot := t.TempDir()
 
@@ -140,10 +140,17 @@ func TestDownloadPackage(t *testing.T) {
 			ctx := UseCipdClientFactory(ctx, factory)
 			client, _ := NewClient(ctx, cipdRoot)
 
-			packagePath, err := client.DownloadPackage(ctx, "fake-package", "fake-instance-id", "fake-subdir")
+			packagePaths, err := client.EnsurePackages(ctx, common.PinSliceBySubdir{
+				"fake-subdir": common.PinSlice{
+					common.Pin{
+						PackageName: "fake-package",
+						InstanceID:  "fake-instance-id",
+					},
+				},
+			})
 
 			So(err, ShouldErrLike, "test EnsurePackages failure")
-			So(packagePath, ShouldBeEmpty)
+			So(packagePaths, ShouldBeNil)
 		})
 
 		Convey("returns path to deployed package", func() {
@@ -155,10 +162,19 @@ func TestDownloadPackage(t *testing.T) {
 			ctx := UseCipdClientFactory(ctx, factory)
 			client, _ := NewClient(ctx, cipdRoot)
 
-			packagePath, err := client.DownloadPackage(ctx, "fake-package", "fake-instance-id", "fake-subdir")
+			packagePaths, err := client.EnsurePackages(ctx, common.PinSliceBySubdir{
+				"fake-subdir": common.PinSlice{
+					common.Pin{
+						PackageName: "fake-package",
+						InstanceID:  "fake-instance-id",
+					},
+				},
+			})
 
 			So(err, ShouldBeNil)
-			So(packagePath, ShouldEqual, filepath.Join(cipdRoot, "fake-subdir"))
+			So(packagePaths, ShouldResemble, map[string]string{
+				"fake-subdir": filepath.Join(cipdRoot, "fake-subdir"),
+			})
 
 		})
 

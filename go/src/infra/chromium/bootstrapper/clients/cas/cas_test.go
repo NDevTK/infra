@@ -21,10 +21,10 @@ type fakeCasClient struct {
 	downloadDirectory func(ctx context.Context, d digest.Digest, execRoot string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error)
 }
 
-func (f *fakeCasClient) DownloadDirectory(ctx context.Context, d digest.Digest, execRoot string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error) {
+func (f *fakeCasClient) DownloadDirectory(ctx context.Context, d digest.Digest, outDir string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error) {
 	downloadDirectory := f.downloadDirectory
 	if downloadDirectory != nil {
-		return downloadDirectory(ctx, d, execRoot, cache)
+		return downloadDirectory(ctx, d, outDir, cache)
 	}
 	return nil, nil, nil
 }
@@ -41,7 +41,7 @@ func TestClientForHost(t *testing.T) {
 				return nil, errors.New("test client factory failure")
 			})
 
-			client := NewClient(ctx, "fake-exec-root")
+			client := NewClient(ctx)
 			casClient, err := client.clientForInstance(ctx, "fake-instance")
 
 			So(err, ShouldErrLike, "test client factory failure")
@@ -54,7 +54,7 @@ func TestClientForHost(t *testing.T) {
 				return fakeClient, nil
 			})
 
-			client := NewClient(ctx, "fake-exec-root")
+			client := NewClient(ctx)
 			casClient, err := client.clientForInstance(ctx, "fake-instance")
 
 			So(err, ShouldBeNil)
@@ -66,7 +66,7 @@ func TestClientForHost(t *testing.T) {
 				return &fakeCasClient{}, nil
 			})
 
-			client := NewClient(ctx, "fake-exec-root")
+			client := NewClient(ctx)
 			casClientFoo1, _ := client.clientForInstance(ctx, "fake-instance-foo")
 			casClientFoo2, _ := client.clientForInstance(ctx, "fake-instance-foo")
 			casClientBar, _ := client.clientForInstance(ctx, "fake-instance-bar")
@@ -86,21 +86,18 @@ func TestDownload(t *testing.T) {
 
 	Convey("Client.Download", t, func() {
 
-		execRoot := t.TempDir()
-
 		Convey("fails if getting client for instance fails", func() {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, instance string) (CasClient, error) {
 				return nil, errors.New("test client factory failure")
 			})
 
-			client := NewClient(ctx, execRoot)
-			packagePath, err := client.Download(ctx, "fake-instance", &apipb.Digest{
+			client := NewClient(ctx)
+			err := client.Download(ctx, "fake-dir", "fake-instance", &apipb.Digest{
 				Hash:      "fake-hash",
 				SizeBytes: 42,
 			})
 
 			So(err, ShouldErrLike, "test client factory failure")
-			So(packagePath, ShouldBeEmpty)
 		})
 
 		Convey("fails if downloading directory fails", func() {
@@ -112,29 +109,27 @@ func TestDownload(t *testing.T) {
 				}, nil
 			})
 
-			client := NewClient(ctx, execRoot)
-			packagePath, err := client.Download(ctx, "fake-instance", &apipb.Digest{
+			client := NewClient(ctx)
+			err := client.Download(ctx, "fake-dir", "fake-instance", &apipb.Digest{
 				Hash:      "fake-hash",
 				SizeBytes: 42,
 			})
 
 			So(err, ShouldErrLike, "test DownloadDirectory failure")
-			So(packagePath, ShouldBeEmpty)
 		})
 
-		Convey("returns path to deployed package", func() {
+		Convey("succeeds if downloading directory succeeds", func() {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, instance string) (CasClient, error) {
 				return &fakeCasClient{}, nil
 			})
 
-			client := NewClient(ctx, execRoot)
-			packagePath, err := client.Download(ctx, "fake-instance", &apipb.Digest{
+			client := NewClient(ctx)
+			err := client.Download(ctx, "fake-dir", "fake-instance", &apipb.Digest{
 				Hash:      "fake-hash",
 				SizeBytes: 42,
 			})
 
 			So(err, ShouldBeNil)
-			So(packagePath, ShouldEqual, execRoot)
 		})
 
 	})

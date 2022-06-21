@@ -9,41 +9,22 @@ package gclient
 import (
 	"context"
 	stderrors "errors"
-	"infra/chromium/bootstrapper/clients/cipd"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 )
 
 type Client struct {
 	gclientPath string
 }
 
-const (
-	depotToolsPackage        = "infra/recipe_bundles/chromium.googlesource.com/chromium/tools/depot_tools"
-	depotToolsPackageVersion = "refs/heads/main"
-)
-
 // NewClient returns a new gclient client that uses the gclient binary at gclientPath.
-func NewClient(ctx context.Context, cipdClient *cipd.Client) (*Client, error) {
-	logging.Infof(ctx, "resolving CIPD package %s@%s", depotToolsPackage, depotToolsPackageVersion)
-	depotToolsInstance, err := cipdClient.ResolveVersion(ctx, depotToolsPackage, depotToolsPackageVersion)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to resolve depot tools package version").Err()
-	}
-	logging.Infof(ctx, "downloading CIPD package %s@%s", depotToolsInstance.PackageName, depotToolsInstance.InstanceID)
-	packagePath, err := cipdClient.DownloadPackage(ctx, depotToolsInstance.PackageName, depotToolsInstance.InstanceID, "depot-tools")
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to download/install depot tools").Err()
-	}
-	gclientPath := filepath.Join(packagePath, "depot_tools", "gclient")
-	return &Client{gclientPath}, nil
+func NewClient(gclientPath string) *Client {
+	return &Client{gclientPath}
 }
 
 // NewClientForTesting returns a new gclient client that uses the gclient binary found on the

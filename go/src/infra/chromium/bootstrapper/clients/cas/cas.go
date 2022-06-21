@@ -18,22 +18,20 @@ import (
 
 // Client provides the CAS-related operations required for bootstrapping.
 type Client struct {
-	execRoot string
-	clients  map[string]CasClient
-	factory  CasClientFactory
+	clients map[string]CasClient
+	factory CasClientFactory
 }
 
 // CasClient provides a subset of the client.Client interface.
 type CasClient interface {
-	DownloadDirectory(ctx context.Context, d digest.Digest, execRoot string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error)
+	DownloadDirectory(ctx context.Context, d digest.Digest, outDir string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error)
 }
 
 // Enforce that the CasClient interface is a subset of the client.Client
 // interface.
 var _ CasClient = (*client.Client)(nil)
 
-// CasClientFactory creates the client for accessing CAS that will deploy
-// packages to the directory identified by cipdRoot.
+// CasClientFactory creates the client for downloading blobs from CAS.
 type CasClientFactory func(ctx context.Context, instance string) (CasClient, error)
 
 var ctxKey = "infra/chromium/bootstrapper/recipe.CasClientFactory"
@@ -44,14 +42,14 @@ func UseCasClientFactory(ctx context.Context, factory CasClientFactory) context.
 	return context.WithValue(ctx, &ctxKey, factory)
 }
 
-func NewClient(ctx context.Context, execRoot string) *Client {
+func NewClient(ctx context.Context) *Client {
 	factory, _ := ctx.Value(&ctxKey).(CasClientFactory)
 	if factory == nil {
 		factory = func(ctx context.Context, instance string) (CasClient, error) {
 			return casclient.NewLegacy(ctx, casclient.AddrProd, instance, chromeinfra.DefaultAuthOptions(), true)
 		}
 	}
-	return &Client{execRoot, map[string]CasClient{}, factory}
+	return &Client{map[string]CasClient{}, factory}
 }
 
 func (c *Client) clientForInstance(ctx context.Context, instance string) (CasClient, error) {
@@ -71,18 +69,18 @@ func (c *Client) clientForInstance(ctx context.Context, instance string) (CasCli
 
 // Download downloads a CAS blob with the given digest from the given CAS
 // instance.
-func (c *Client) Download(ctx context.Context, instance string, d *apipb.Digest) (string, error) {
+func (c *Client) Download(ctx context.Context, outDir, instance string, d *apipb.Digest) error {
 	client, err := c.clientForInstance(ctx, instance)
 	if err != nil {
-		return "", err
+		return err
 	}
 	casDigest := digest.Digest{
 		Hash: d.Hash,
 		Size: d.SizeBytes,
 	}
-	_, _, err = client.DownloadDirectory(ctx, casDigest, c.execRoot, filemetadata.NewNoopCache())
+	_, _, err = client.DownloadDirectory(ctx, casDigest, outDir, filemetadata.NewNoopCache())
 	if err != nil {
-		return "", err
+		return err
 	}
-	return c.execRoot, nil
+	return nil
 }

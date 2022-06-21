@@ -63,8 +63,8 @@ func TestPerformBootstrap(t *testing.T) {
 	}
 
 	opts := options{
-		outputPath: "fake-output-path",
-		cipdRoot:   "fake-cipd-root",
+		outputPath:   "fake-output-path",
+		packagesRoot: "fake-packages-root",
 	}
 
 	ctx := context.Background()
@@ -173,7 +173,7 @@ func TestPerformBootstrap(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(cmd, ShouldResemble, []string{
-				filepath.Join(opts.cipdRoot, "bootstrapped-exe", "fake-exe"),
+				filepath.Join(opts.packagesRoot, "cipd", "exe", "fake-exe"),
 				"--output",
 				opts.outputPath,
 			})
@@ -282,7 +282,7 @@ func TestPerformBootstrap(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(cmd, ShouldResemble, []string{
-				filepath.Join(opts.cipdRoot, "bootstrapped-exe", "fake-exe"),
+				filepath.Join(opts.packagesRoot, "cipd", "exe", "fake-exe"),
 				"--output",
 				opts.outputPath,
 			})

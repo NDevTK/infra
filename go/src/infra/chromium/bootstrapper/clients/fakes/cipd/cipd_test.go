@@ -169,14 +169,23 @@ func TestIntegration(t *testing.T) {
 
 		ctx := bscipd.UseCipdClientFactory(ctx, Factory(nil))
 
-		Convey("succeeds when calling DownloadPackage", func() {
+		Convey("succeeds when calling EnsurePackages", func() {
 			client, err := bscipd.NewClient(ctx, cipdRoot)
 			util.PanicOnError(err)
 
-			packagePath, err := client.DownloadPackage(ctx, "fake-package", "fake-version", "fake-subdir")
+			packagePaths, err := client.EnsurePackages(ctx, common.PinSliceBySubdir{
+				"fake-subdir": common.PinSlice{
+					common.Pin{
+						PackageName: "fake-package",
+						InstanceID:  "fake-version",
+					},
+				},
+			})
 
 			So(err, ShouldBeNil)
-			So(packagePath, ShouldNotBeEmpty)
+			So(packagePaths, ShouldResemble, map[string]string{
+				"fake-subdir": filepath.Join(cipdRoot, "fake-subdir"),
+			})
 		})
 
 	})

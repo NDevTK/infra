@@ -22,7 +22,7 @@ import (
 	"infra/chromium/bootstrapper/clients/gitiles"
 )
 
-type GclientGetter func() (*gclient.Client, error)
+type GclientGetter func(ctx context.Context) (*gclient.Client, error)
 
 // BuildBootstrapper provides the functionality for computing the build
 // that the bootstrapped executable receives as input.
@@ -180,7 +180,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		return nil, err
 	}
 
-	gclient, err := b.gclientGetter()
+	gclient, err := b.gclientGetter(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get gclient").Err()
 	}

@@ -82,16 +82,15 @@ func (c *Client) ResolveVersion(ctx context.Context, name, version string) (comm
 
 // DownloadPackage downloads and installs the CIPD package with the given name
 // and instance ID and returns the path to the deployed package.
-func (c *Client) DownloadPackage(ctx context.Context, name, instanceId, subdir string) (string, error) {
-	pin := common.Pin{
-		PackageName: name,
-		InstanceID:  instanceId,
-	}
-	packages := common.PinSliceBySubdir{subdir: common.PinSlice{pin}}
+func (c *Client) EnsurePackages(ctx context.Context, packages common.PinSliceBySubdir) (map[string]string, error) {
 	if _, err := c.client.EnsurePackages(ctx, packages, &cipd.EnsureOptions{
 		Paranoia: cipd.CheckIntegrity,
 	}); err != nil {
-		return "", err
+		return nil, err
 	}
-	return filepath.Join(c.cipdRoot, subdir), nil
+	paths := make(map[string]string, len(packages))
+	for subdir := range packages {
+		paths[subdir] = filepath.Join(c.cipdRoot, subdir)
+	}
+	return paths, nil
 }

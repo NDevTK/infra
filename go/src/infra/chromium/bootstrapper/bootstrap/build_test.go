@@ -83,7 +83,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 			}
 		}`)
 
-		bootstrapper := NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx), gclient.NewClientForTesting)
+		gclientClient, err := gclient.NewClientForTesting()
+		util.PanicOnError(err)
+
+		bootstrapper := NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx), func(ctx context.Context) (*gclient.Client, error) {
+			return gclientClient, nil
+		})
 
 		Convey("fails", func() {
 

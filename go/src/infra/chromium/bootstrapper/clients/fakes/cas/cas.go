@@ -20,7 +20,7 @@ type Instance struct {
 	// exists.
 	//
 	// Missing hashes will be treated as existing.
-	blobs map[string]bool
+	Blobs map[string]bool
 }
 
 // Client is the client that will serve fake data for a given instance
@@ -49,7 +49,7 @@ func Factory(fakes map[string]*Instance) bscas.CasClientFactory {
 }
 
 func (c *Client) DownloadDirectory(ctx context.Context, d digest.Digest, execRoot string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error) {
-	blobExists, ok := c.instance.blobs[d.Hash]
+	blobExists, ok := c.instance.Blobs[d.Hash]
 	if ok && !blobExists {
 		return nil, nil, errors.Reason("hash %s does not identify any blobs in instance %s", d.Hash, c.name).Err()
 	}
