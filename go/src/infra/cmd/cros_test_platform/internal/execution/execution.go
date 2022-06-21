@@ -21,7 +21,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 // Args bundles together the arguments for an execution.
@@ -49,7 +48,7 @@ func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.
 	ts := make(map[string]*RequestTaskSet)
 	for t, r := range args.Request.GetTaggedRequests() {
 		var err error
-		requestTaskSet, err := NewRequestTaskSet(
+		ts[t], err = NewRequestTaskSet(
 			t,
 			args.Build,
 			args.WorkerConfig,
@@ -66,32 +65,6 @@ func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.
 		if err != nil {
 			return nil, err
 		}
-		var validTest bool
-		for _, iid := range requestTaskSet.invocationIDs {
-			ts := requestTaskSet.getInvocationResponse(iid)
-			var image string
-			for _, dep := range r.RequestParams.SoftwareDependencies {
-				switch d := dep.Dep.(type) {
-				case *test_platform.Request_Params_SoftwareDependency_ChromeosBuild:
-					image = d.ChromeosBuild
-				}
-			}
-			board := ""
-			model := ""
-			if r.RequestParams.SoftwareAttributes != nil && r.RequestParams.SoftwareAttributes.BuildTarget != nil {
-				board = r.RequestParams.SoftwareAttributes.BuildTarget.Name
-			}
-			if r.RequestParams.HardwareAttributes != nil {
-				model = r.RequestParams.HardwareAttributes.Model
-			}
-			validTest, err = verifyFleetTestsPolicy(ctx, c, board, model, ts.Name, image)
-			if !validTest {
-				logging.Errorf(ctx, "Fleet Validation failed for test due to error %v for test request %v, failing test run.", requestTaskSet, err)
-				return nil, fmt.Errorf("Fleet Validation failed for test %v due to error %v", requestTaskSet, err)
-			}
-		}
-
-		ts[t] = requestTaskSet
 		defer ts[t].Close()
 
 		// A large number of tasks is created in the beginning as a new task is
@@ -238,25 +211,4 @@ func (r *runner) Responses() map[string]*steps.ExecuteResponse {
 
 func constructRequestUID(buildID int64, key string) string {
 	return fmt.Sprintf(ctpRequestUIDTemplate, buildID, key)
-}
-
-// verifyFleetTestsPolicy validate tests based on fleet-side permission check.
-//
-// This method calls UFS CheckFleetTestsPolicy RPC for a testName, board, image and model combination.
-func verifyFleetTestsPolicy(ctx context.Context, client trservice.Client, board string, model string,
-	testName string, image string) (bool, error) {
-	resp, err := client.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{
-		TestName: testName,
-		Board:    board,
-		Model:    model,
-		Image:    image,
-	})
-	if err != nil {
-		return false, err
-	}
-	if resp.TestStatus.Code == ufsapi.TestStatus_OK {
-		return true, nil
-	} else {
-		return false, fmt.Errorf("%s - %s", resp.TestStatus.Code.String(), resp.TestStatus.Message)
-	}
 }
