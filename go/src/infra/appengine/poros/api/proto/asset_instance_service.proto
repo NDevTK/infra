@@ -1,0 +1,81 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package poros;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "poros/api/proto/resources.proto";
+import "poros/api/proto/enums.proto";
+
+option go_package = "infra/appengine/poros/api/proto;proto";
+
+// Performs operations on AssetInstanceInstance.
+service AssetInstance {
+  // Creates the given AssetInstanceInstance.
+  rpc Create(CreateAssetInstanceRequest) returns (AssetInstanceModel);
+
+  // Retrieves an AssetInstance for a given unique value.
+  rpc Get(GetAssetInstanceRequest) returns (AssetInstanceModel);
+
+  // Update a single AssetInstance.
+  rpc Update(UpdateAssetInstanceRequest) returns (AssetInstanceModel);
+
+  // Deletes the given AssetInstance.
+  rpc Delete(DeleteAssetInstanceRequest) returns (.google.protobuf.Empty);
+
+  // Lists all AssetInstances.
+  rpc List(ListAssetInstancesRequest) returns (ListAssetInstancesResponse);
+
+}
+// Request to create a single AssetInstance
+message CreateAssetInstanceRequest {
+  // The new AssetInstance to add to the database.
+  string asset_id = 1;
+  DeploymentStatus status = 2;
+}
+
+// Gets a AssetInstance resource.
+message GetAssetInstanceRequest {
+  // The unique identifier of the AssetInstance to retrieve.
+  string asset_instance_id = 1;
+}
+
+// Request to update a single AssetInstance.
+message UpdateAssetInstanceRequest {
+  // The existing AssetInstance to update in the database.
+  AssetInstanceModel asset_instance = 1;
+  // The list of fields to update the AssetInstance.
+  .google.protobuf.FieldMask update_mask = 2;
+}
+
+// Request to delete a single AssetInstance.
+message DeleteAssetInstanceRequest {
+  // The unique identifier of the AssetInstance to delete from the database.
+  string asset_instance_id = 1;
+}
+
+// Request to list all AssetInstances.
+message ListAssetInstancesRequest {
+  // Fields to include on each result
+  .google.protobuf.FieldMask read_mask = 1;
+
+  // Number of results per page
+  int32 page_size = 2;
+
+  // Page token from a previous page's ListAssetInstancesResponse
+  string page_token = 3;
+}
+
+// Response to ListAssetInstancesRequest.
+message ListAssetInstancesResponse {
+  // The result set.
+  repeated AssetInstanceModel asset_instances = 1;
+
+  // A page token that can be passed into future requests to get the next page.
+  // Empty if there is no next page.
+  string next_page_token = 2;
+}

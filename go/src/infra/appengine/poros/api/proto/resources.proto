@@ -7,6 +7,7 @@ syntax = "proto3";
 package poros;
 
 import "google/protobuf/timestamp.proto";
+import "poros/api/proto/enums.proto";
 
 option go_package = "infra/appengine/poros/api/proto;proto";
 
@@ -70,4 +71,22 @@ message AssetResourceModel {
   google.protobuf.Timestamp modified_at = 7;
   // User who modified the record.
   string modified_by = 8;
+}
+
+message AssetInstanceModel {
+
+	// Unique identifier of the AssetInstance
+	string asset_instance_id = 1;
+	// AssetId associated with the AssetInstance
+	string asset_id = 2;
+	// Status of the AssetInstance
+	DeploymentStatus status = 3;
+	// User who created the record.
+	string created_by = 4;
+	// Timestamp for the creation of the record.
+	google.protobuf.Timestamp created_at = 5;
+	// Timestamp for the last update of the record.
+	google.protobuf.Timestamp modified_at = 6;
+	// User who modified the record.
+	string modified_by = 7;
 }

@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package poros;
+
+option go_package = "infra/appengine/poros/api/proto;proto";
+
+enum DeploymentStatus {
+    // Ready to start the deployment
+    STATUS_PENDING = 0;
+    // Deployment is going on
+    STATUS_RUNNING = 1;
+    // Deployment completed
+    STATUS_COMPLETED = 2;
+    // Ready for removing the machines
+    STATUS_READY_FOR_DESTROY = 3;
+    // MAchines are removed
+    STATUS_DESTROYED = 4;
+  }
