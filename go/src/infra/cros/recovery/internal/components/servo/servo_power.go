@@ -44,8 +44,15 @@ func ServodPdRoleValueSrc() string {
 	return servodPdRoleValueSrc
 }
 
-func BatteryChargePercentCmd() string {
-	return batteryChargePercentCmd
+// BatteryChargePercent obtains the current battery charge percentage
+// using servod controls, and returns the charge value or any error
+// encountered while obtaining the value of servod control.
+func BatteryChargePercent(ctx context.Context, servod components.Servod) (int32, error) {
+	batteryLevel, err := GetInt(ctx, servod, batteryChargePercentCmd)
+	if err != nil {
+		return 0, errors.Annotate(err, "battery charge percent").Err()
+	}
+	return batteryLevel, nil
 }
 
 type PDRole struct {
