@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8b3e3c7_cab4309e",
+        "filename": "go/src/infra/cros/karte/internal/frontend/persist.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-06-21T17:51:13Z",
+      "side": 1,
+      "message": "in this file you don\u0027t actually use any variables/functions belong to k? all functions here seems not a class-based function, which means you don\u0027t need to include \" (k *karteFrontend) \" in your functions in this file?",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 23
+      },
+      "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
