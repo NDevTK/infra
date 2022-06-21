@@ -49,7 +49,7 @@ func Run(ctx context.Context, args Args) error {
 	}
 
 	cfg := extractOneConfig(request.TaggedRequests)
-	skylab, err := trservice.NewClient(ctx, cfg, args.Build.CreatedBy)
+	skylab, err := trservice.NewClient(ctx, cfg)
 	if err != nil {
 		return err
 	}

@@ -31,7 +31,6 @@ import (
 	"infra/cmd/cros_test_platform/internal/execution/types"
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 // fakeSwarming implements skylab_api.Swarming.
@@ -436,65 +435,4 @@ func outputProperty(testCase string) *buildbucket_pb.Build_Output {
 			},
 		},
 	}
-}
-
-// fakeSwarming implements skylab_api.Swarming.
-type fakeUFS struct {
-	policyByBoard map[string]bool
-}
-
-func newFakeUFS() *fakeUFS {
-	return &fakeUFS{
-		policyByBoard: make(map[string]bool),
-	}
-}
-
-// CheckFleetTestsPolicy implements fleetClient interface.
-func (f *fakeUFS) CheckFleetTestsPolicy(_ context.Context, req *ufsapi.CheckFleetTestsPolicyRequest) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
-	status := ufsapi.TestStatus_OK
-	if !f.policyByBoard[req.Board] {
-		status = ufsapi.TestStatus_NOT_A_PUBLIC_BOARD
-	}
-	return &ufsapi.CheckFleetTestsPolicyResponse{
-		TestStatus: &ufsapi.TestStatus{
-			Code: status,
-		}}, nil
-}
-
-func (f *fakeUFS) addPolicy(board string) {
-	f.policyByBoard[board] = true
-}
-
-func TestFleetPolicyCheckFailed(t *testing.T) {
-	Convey("When Invalid arguments are passed to fleet check policy", t, func() {
-		ufs := newFakeUFS()
-		ufs.addPolicy("board1")
-		Convey("the validation fails.", func() {
-			policyResponse, err := ufs.CheckFleetTestsPolicy(context.Background(), &ufsapi.CheckFleetTestsPolicyRequest{
-				TestName: "testName",
-				Board:    "board",
-				Model:    "model",
-				Image:    "image",
-			})
-			So(err, ShouldBeNil)
-			So(policyResponse.TestStatus.Code, ShouldEqual, ufsapi.TestStatus_NOT_A_PUBLIC_BOARD)
-		})
-	})
-}
-
-func TestFleetPolicyCheckSucceeded(t *testing.T) {
-	Convey("When valid arguments are passed to fleet check policy", t, func() {
-		ufs := newFakeUFS()
-		ufs.addPolicy("board1")
-		Convey("the validation succeeds.", func() {
-			policyResponse, err := ufs.CheckFleetTestsPolicy(context.Background(), &ufsapi.CheckFleetTestsPolicyRequest{
-				TestName: "testName",
-				Board:    "board1",
-				Model:    "model",
-				Image:    "image",
-			})
-			So(err, ShouldBeNil)
-			So(policyResponse.TestStatus.Code, ShouldEqual, ufsapi.TestStatus_OK)
-		})
-	})
 }
