@@ -63,11 +63,15 @@ var defaultConfig = application.Config{
 		PartnerSuffix: ".vpython",
 	},
 	DefaultSpec: vpython.Spec{
-		PythonVersion: "2",
+		PythonVersion: "2.7",
 	},
 	VENVPackage: vpython.Spec_Package{
 		Name:    "infra/3pp/tools/virtualenv",
 		Version: "version:2@16.7.10.chromium.7",
+	},
+	RelativePathOverride: []string{
+		"2.7/bin",
+		"3.8/bin",
 	},
 	PruneThreshold:          7 * 24 * time.Hour, // One week.
 	MaxPrunesPerSweep:       3,
