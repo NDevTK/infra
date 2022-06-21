@@ -16,6 +16,7 @@ import ezt
 
 from businesslogic import work_env
 from features import savedqueries_helpers
+from framework import flaskservlet
 from framework import permissions
 from framework import jsonfeed
 from framework import servlet
@@ -26,7 +27,7 @@ class IssueExport(servlet.Servlet):
   """IssueExportControls let's an admin choose how to export issues."""
 
   _PAGE_TEMPLATE = 'tracker/issue-export-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page."""
@@ -69,8 +70,11 @@ class IssueExport(servlet.Servlet):
         'saved_queries': saved_query_views,
     }
 
+  # def GetIssueExport(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+
+# TODO: convert to FLaskJsonFeed while conver to flask
 class IssueExportJSON(jsonfeed.JsonFeed):
   """IssueExport shows a range of issues in JSON format."""
 
@@ -278,3 +282,9 @@ class IssueExportJSON(jsonfeed.JsonFeed):
       if merge.project_id == mr.project.project_id:
         issue_json['merged_into'] = merge.local_id
     return issue_json
+
+  # def GetIssueExportJSON(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostIssueExportJSON(self, **kwargs):
+  #   return self.handler(**kwargs)

@@ -17,6 +17,7 @@ import time
 import ezt
 
 from features import filterrules_helpers
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
@@ -35,7 +36,7 @@ class IssueImport(servlet.Servlet):
   """IssueImport loads a file of issues in JSON format."""
 
   _PAGE_TEMPLATE = 'tracker/issue-import-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page."""
@@ -303,6 +304,12 @@ class IssueImport(servlet.Servlet):
 
     self.services.issue.SetUsedLocalID(cnxn, project_id)
     event_log.append('Finished import')
+
+  # def GetIssueImport(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostIssueImport(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class JSONImportError(Exception):

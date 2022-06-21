@@ -72,7 +72,11 @@ from tracker import issueattachmenttext
 from tracker import issuebulkedit
 from tracker import issuedetailezt
 from tracker import issueentryafterlogin
+from tracker import issueexport
+from tracker import issueoriginal
 from tracker import issuetips
+from tracker import issueimport
+
 from tracker import webcomponentspage
 
 
@@ -351,6 +355,30 @@ class ServletRegistry(object):
         #     '/<string:project_name>/issues/detail',
         #     webcomponentspage.WebComponentsPage(
         #         services=service).GetWebComponentsIssueDetail, ['GET']),
+        # (
+        #     '/<string:project_name>/issues/export',
+        #     issueexport.IssueExport(services=service).GetIssueExport,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/issues/export/json',
+        #     issueexport.IssueExportJSON(services=service).GetIssueExportJSON,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/issues/export/json.do',
+        #     issueexport.IssueExportJSON(services=service).PostIssueExportJSON,
+        #     ['POST']),
+        # (
+        #     '/<string:project_name>/issues/import',
+        #     issueimport.IssueImport(services=service).GetIssueImport,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/issues/import.do',
+        #     issueimport.IssueImport(services=service).PostIssueImport, ['POST'
+        #                                                                ]),
+        # (
+        #     '/<string:project_name>/issues/original',
+        #     issueoriginal.IssueOriginal(services=service).GetIssueOriginal,
+        #     ['GET']),
         # (
         #     '/<string:project_name>/issues/list',
         #     webcomponentspage.WebComponentsPage(

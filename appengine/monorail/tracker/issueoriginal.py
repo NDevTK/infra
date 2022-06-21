@@ -17,6 +17,7 @@ import logging
 import ezt
 
 from businesslogic import work_env
+from framework import flaskservlet
 from framework import filecontent
 from framework import permissions
 from framework import servlet
@@ -96,3 +97,6 @@ class IssueOriginal(servlet.Servlet):
       self.abort(404, 'comment not found')
 
     return issue, comment
+
+  # def GetIssueOriginal(self, **kwargs):
+  #   return self.handler(**kwargs)
