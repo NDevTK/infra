@@ -174,6 +174,89 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 	})
 }
 
+func TestIsPublicGroupMember(t *testing.T) {
+	t.Parallel()
+	Convey("Is Public Group Member", t, func() {
+		Convey("happy path", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "eve",
+				Model:    "eve",
+				Image:    "eve-full/R100-14495.0.0-rc1",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				Identity:       "user:abc@def.com",
+				IdentityGroups: []string{"public-chromium-in-chromeos-builders"},
+			})
+
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeTrue)
+		})
+		Convey("Not a public group member", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "eve",
+				Model:    "eve",
+				Image:    "eve-full/R100-14495.0.0-rc1",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				Identity: "user:abc@def.com",
+			})
+
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeFalse)
+		})
+		Convey("Nil State - Returns false", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "eve",
+				Model:    "eve",
+				Image:    "eve-full/R100-14495.0.0-rc1",
+			}
+			ctx := auth.WithState(testingContext(), nil)
+
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeFalse)
+		})
+		Convey("Nil State DB - Returns false", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "eve",
+				Model:    "eve",
+				Image:    "eve-full/R100-14495.0.0-rc1",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				FakeDB: nil,
+			})
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeFalse)
+		})
+		Convey("No Identity - Returns false", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "eve",
+				Model:    "eve",
+				Image:    "eve-full/R100-14495.0.0-rc1",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				IdentityGroups: []string{"public-chromium-in-chromeos-builders"},
+			})
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeFalse)
+		})
+	})
+}
+
 func TestImportPublicBoardsAndModels(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

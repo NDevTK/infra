@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
@@ -64,9 +65,7 @@ func (e *InvalidTestError) Error() string {
 }
 
 func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) error {
-	logging.Infof(ctx, "Request to check from crosfleet: %s", req)
-	logging.Infof(ctx, "Service account being validated: %s", auth.CurrentIdentity(ctx).Email())
-	isMemberInPublicGroup, err := auth.IsMember(ctx, PublicUsersToChromeOSAuthGroup)
+	isMemberInPublicGroup, err := isPublicGroupMember(ctx, req)
 	if err != nil {
 		// Ignoring error for now till we validate the service account membership check is correct
 		logging.Errorf(ctx, "Request to check public chrome auth group membership failed: %s", err)
@@ -131,6 +130,36 @@ func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.Go
 		}
 	}
 	return nil
+}
+
+func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) (bool, error) {
+	email := auth.CurrentIdentity(ctx).Email()
+
+	logging.Infof(ctx, "CheckFleetTestsPolicyRequest: %s", req)
+	logging.Infof(ctx, "Service account being validated: %s", email)
+
+	state := auth.GetState(ctx)
+	if state == nil {
+		logging.Errorf(ctx, "Failed to check auth, no State in context.")
+		return false, nil
+	}
+	authDB := state.DB()
+	if authDB == nil {
+		logging.Errorf(ctx, "Failed to check auth, nil auth DB in State.")
+		return false, nil
+	}
+	ident, err := identity.MakeIdentity("user:" + email)
+	if err != nil {
+		logging.WithError(err).Errorf(ctx, "Failed to create identity for %q.", email)
+		return false, nil
+	}
+	isMemberInPublicGroup, err := authDB.IsMember(ctx, ident, []string{PublicUsersToChromeOSAuthGroup})
+	if err != nil {
+		// Ignoring error for now till we validate the service account membership check is correct
+		logging.Errorf(ctx, "Request to check public chrome auth group membership failed: %s", err)
+		return false, nil
+	}
+	return isMemberInPublicGroup, nil
 }
 
 func getValidPublicTestNames() []string {
