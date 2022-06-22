@@ -67,6 +67,8 @@ type schedulerRun struct {
 }
 
 func (run *schedulerRun) Run(e EventSink) []*Assignment {
+	run.precomputeRequestLabelHashes()
+
 	var output []*Assignment
 	// Proceed through multiple passes of the scheduling algorithm, from highest
 	// to lowest priority requests (high priority = low p).
@@ -97,6 +99,18 @@ func (run *schedulerRun) Run(e EventSink) []*Assignment {
 	run.updateExaminedTimes()
 
 	return output
+}
+
+// precomputeRequestLabelMatches sets each request's baseLabelsHash and
+// provisionableLabelsHash field. This must be done outside of any concurrent
+// goroutines to avoid race conditions.
+func (run *schedulerRun) precomputeRequestLabelHashes() {
+	for _, requestList := range run.matchableRequestsPerPriority {
+		for _, r := range requestList {
+			r.req.setBaseLabelsHash()
+			r.req.setProvisionableLabelsHash()
+		}
+	}
 }
 
 // assignRequestToWorker updates the information in scheduler pass to show that
@@ -184,15 +198,14 @@ func (m matchList) Swap(i, j int) {
 // computeMatch determines whether a request can run on a worker, and the quality
 // of the match.
 func computeMatch(w *Worker, r *TaskRequest) match {
-	if !w.Labels.HasAll(r.BaseLabels...) {
+	if !w.matchesBaseLabels(r) {
 		return match{match: false}
 	}
-	provisionMatch := w.Labels.HasAll(r.ProvisionableLabels...)
 	quality := len(r.BaseLabels)
 	return match{
 		match:          true,
 		quality:        quality,
-		provisionMatch: provisionMatch,
+		provisionMatch: w.matchesProvisionableLabels(r),
 	}
 }
 
@@ -283,7 +296,7 @@ func (run *schedulerRun) assignToIdleWorkers(priority Priority, matchesPerWorker
 					&metrics.TaskEvent_AssignedDetails{
 						Preempting:        false,
 						Priority:          int32(priority),
-						ProvisionRequired: !w.Labels.HasAll(r.ProvisionableLabels...),
+						ProvisionRequired: !match.provisionMatch,
 					}))
 			break
 		}
@@ -464,7 +477,7 @@ func (run *schedulerRun) preemptRunningTasks(priority Priority, events EventSink
 						PreemptionCost:    worker.runningTask.cost[:],
 						PreemptedTaskId:   string(worker.runningTask.request.ID),
 						Priority:          int32(priority),
-						ProvisionRequired: !worker.Labels.HasAll(r.ProvisionableLabels...),
+						ProvisionRequired: !m.match.provisionMatch,
 					}))
 			events.AddEvent(
 				eventPreempted(worker.runningTask.request, worker, state, state.lastUpdateTime,

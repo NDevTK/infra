@@ -85,7 +85,7 @@ func BenchmarkSchedulerSimulation(b *testing.B) {
 	params := SimulationParams{
 		Iterations: 100,
 		StateParams: StateParams{
-			LabelCorpusSize:     1000,
+			LabelCorpusSize:     100,
 			ProvisionableLabels: 50,
 
 			LabelsPerWorker: 50,

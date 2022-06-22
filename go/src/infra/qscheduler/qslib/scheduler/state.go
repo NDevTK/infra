@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"sort"
+	"strings"
 	"time"
 
 	"infra/qscheduler/qslib/protos"
@@ -66,6 +67,16 @@ type state struct {
 // the entire fanout group descriptor string.
 type fanoutGroup uint64
 
+// hashLabels takes a slice of labels, sorts it alphabetically, and hashes it to
+// an integer using the FNV-1a hash function.
+func hashLabels(labels []string) uint32 {
+	sortedLabels := sortLabels(labels)
+	joinedLabels := strings.Join(sortedLabels, ",")
+	h := fnv.New32a()
+	h.Write([]byte(joinedLabels))
+	return h.Sum32()
+}
+
 // TaskRequest represents a queued or running task TaskRequest.
 type TaskRequest struct {
 	// ID is the ID of this request.
@@ -80,8 +91,15 @@ type TaskRequest struct {
 	// ProvisionableLabels is the set of Provisionable Labels for this task.
 	ProvisionableLabels []string
 
+	// provisionableLabelsHash is the hashed identifier for the request's
+	// ProvisionableLabels set.
+	provisionableLabelsHash uint32
+
 	// BaseLabels is the set of base labels for this task.
 	BaseLabels []string
+
+	// baseLabelsHash is the hashed identifier for the request's baseLabels set.
+	baseLabelsHash uint32
 
 	// confirmedTime is the most recent time at which the Request state was
 	// provided or confirmed by external authority (via a call to Enforce or
@@ -97,6 +115,18 @@ type TaskRequest struct {
 	memoizedFanoutGroup   fanoutGroup
 }
 
+func (t *TaskRequest) setBaseLabelsHash() {
+	if t.baseLabelsHash == 0 {
+		t.baseLabelsHash = hashLabels(t.BaseLabels)
+	}
+}
+
+func (t *TaskRequest) setProvisionableLabelsHash() {
+	if t.provisionableLabelsHash == 0 {
+		t.provisionableLabelsHash = hashLabels(t.ProvisionableLabels)
+	}
+}
+
 // ConfirmedTime returns the latest time at which the task request's state was
 // confirmed by source of truth (swarming).
 func (t *TaskRequest) ConfirmedTime() time.Time {
@@ -107,12 +137,14 @@ func (t *TaskRequest) ConfirmedTime() time.Time {
 // Note: TaskRequest does not include the request's ID, so this conversion is lossy.
 func requestProto(r *TaskRequest, mb *mapBuilder) *protos.TaskRequest {
 	return &protos.TaskRequest{
-		AccountId:             string(r.AccountID),
-		ConfirmedTime:         tutils.TimestampProto(r.confirmedTime),
-		ExaminedTime:          tutils.TimestampProto(r.examinedTime),
-		EnqueueTime:           tutils.TimestampProto(r.EnqueueTime),
-		ProvisionableLabelIds: mb.ForSlice(r.ProvisionableLabels),
-		BaseLabelIds:          mb.ForSlice(r.BaseLabels),
+		AccountId:               string(r.AccountID),
+		ConfirmedTime:           tutils.TimestampProto(r.confirmedTime),
+		ExaminedTime:            tutils.TimestampProto(r.examinedTime),
+		EnqueueTime:             tutils.TimestampProto(r.EnqueueTime),
+		ProvisionableLabelIds:   mb.ForSlice(r.ProvisionableLabels),
+		ProvisionableLabelsHash: r.provisionableLabelsHash,
+		BaseLabelIds:            mb.ForSlice(r.BaseLabels),
+		BaseLabelsHash:          r.baseLabelsHash,
 	}
 }
 
@@ -165,6 +197,10 @@ type Worker struct {
 	// Labels represents the set of Labels that this worker possesses.
 	Labels stringset.Set
 
+	// labelMatchMatrix is a map indicating which unique request label sets
+	// match with the worker.
+	labelMatchMap map[uint32]bool
+
 	// runningTask is, if non-nil, the task that is currently running on the
 	// worker.
 	runningTask *taskRun
@@ -183,6 +219,33 @@ type Worker struct {
 // confirmed by source of truth (swarming).
 func (w *Worker) ConfirmedTime() time.Time {
 	return w.latestConfirmedTime()
+}
+
+// matchesBaseLabels checks whether the worker has all of the given
+// worker's base labels, and caches the match.
+func (w *Worker) matchesBaseLabels(r *TaskRequest) bool {
+	return w.lazyRequestLabelsMatch(r.baseLabelsHash, r.BaseLabels)
+
+}
+
+// matchesBaseLabels checks whether the worker has all of the given
+// worker's base labels, and caches the match.
+func (w *Worker) matchesProvisionableLabels(r *TaskRequest) bool {
+	return w.lazyRequestLabelsMatch(r.provisionableLabelsHash, r.ProvisionableLabels)
+}
+
+// lazyRequestLabelsMatch checks whether the worker has all of the given
+// base labels, caching the match if it wasn't already cached.
+func (w *Worker) lazyRequestLabelsMatch(hash uint32, labels []string) bool {
+	match, ok := w.labelMatchMap[hash]
+	if !ok {
+		match = w.Labels.HasAll(labels...)
+		if w.labelMatchMap == nil {
+			w.labelMatchMap = map[uint32]bool{}
+		}
+		w.labelMatchMap[hash] = match
+	}
+	return match
 }
 
 // addRequest enqueues a new task request with the given time, (or if the task
@@ -238,7 +301,7 @@ func (s *state) markIdle(workerID WorkerID, labels stringset.Set, t time.Time, e
 	w, ok := s.workers[workerID]
 	if !ok {
 		// This is a new worker, create it and return.
-		s.workers[workerID] = &Worker{ID: workerID, confirmedTime: t, modifiedTime: s.lastUpdateTime, Labels: labels}
+		s.workers[workerID] = &Worker{ID: workerID, confirmedTime: t, modifiedTime: s.lastUpdateTime, Labels: labels, labelMatchMap: map[uint32]bool{}}
 		return
 	}
 
@@ -249,6 +312,7 @@ func (s *state) markIdle(workerID WorkerID, labels stringset.Set, t time.Time, e
 
 	if !setEquals(w.Labels, labels) {
 		w.Labels = labels
+		w.labelMatchMap = map[uint32]bool{}
 		w.modifiedTime = s.lastUpdateTime
 	}
 
