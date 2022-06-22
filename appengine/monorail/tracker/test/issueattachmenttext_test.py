@@ -8,16 +8,18 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import mock
+import logging
 import unittest
+from mock import patch
 
 from google.appengine.ext import testbed
 
-from google.cloud import storage
+from third_party import cloudstorage
 import ezt
 
 import webapp2
 
+from framework import filecontent
 from framework import permissions
 from proto import tracker_pb2
 from services import service_manager
@@ -83,18 +85,12 @@ class IssueAttachmentTextTest(unittest.TestCase):
     services.issue.TestAddAttachment(
         self.attach1, self.comment1.id, self.issue.issue_id)
     # TODO(jrobbins): add tests for binary content
-
-    self.client = mock.MagicMock()
-    self.bucket = mock.MagicMock()
-    self.blob = mock.MagicMock()
-    self.client.get_bucket = mock.MagicMock(return_value=self.bucket)
-    self.bucket.get_blob = mock.MagicMock(return_value=self.blob)
-    self.blob.download_as_bytes = mock.MagicMock()
-    mock.patch.object(storage, 'Client', return_value=self.client).start()
+    self._old_gcs_open = cloudstorage.open
+    cloudstorage.open = fake.gcs_open
 
   def tearDown(self):
     self.testbed.deactivate()
-    mock.patch.stopall()
+    cloudstorage.open = self._old_gcs_open
 
   def testGatherPageData_CommentDeleted(self):
     """If the attachment's comment was deleted, give a 403."""
@@ -159,9 +155,6 @@ class IssueAttachmentTextTest(unittest.TestCase):
     self.assertEqual(404, cm.exception.code)
 
   def testGatherPageData_Normal(self):
-    self.blob.download_as_bytes = mock.MagicMock(
-        return_value='/app_default_bucket/pid/attachments/abcdefg')
-
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project,
         path='/p/proj/issues/attachmentText?id=1&aid=1234',
@@ -182,7 +175,7 @@ class IssueAttachmentTextTest(unittest.TestCase):
 
     self.assertEqual(None, page_data['code_reviews'])
 
-  @mock.patch('framework.filecontent.DecodeFileContents')
+  @patch('framework.filecontent.DecodeFileContents')
   def testGatherPageData_HugeFile(self, mock_DecodeFileContents):
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project,
