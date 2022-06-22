@@ -524,7 +524,8 @@ def CommonChecks(input_api, output_api):  # pragma: no cover
   output.extend(input_api.canned_checks.CheckGenderNeutral(
       input_api, output_api, source_file_filter=third_party_filter))
   output.extend(
-      input_api.canned_checks.CheckPatchFormatted(input_api, output_api))
+      input_api.canned_checks.CheckPatchFormatted(
+          input_api, output_api, check_clang_format=False))
 
   return output
 
