@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -92,6 +93,16 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 	}
 	response := &proto.CreateAssetResponse{}
 
+	var defaultResourcesToSave []*proto.AssetResourceModel
+	if entity.AssetType == "active_directory" {
+		defResources, err := defaultResources(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		defaultResourcesToSave = defResources
+	}
+
 	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
 		if err := validateEntity(entity); err != nil {
 			return err
@@ -101,6 +112,10 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		}
 		response.Asset = toModel(entity)
 		assetResourcesToSave := req.GetAssetResourcesToSave()
+		for _, defaultResource := range defaultResourcesToSave {
+			assetResourcesToSave = append(assetResourcesToSave, defaultResource)
+		}
+
 		for _, assetResourceModel := range assetResourcesToSave {
 			assetResourceModel.AssetResourceId = uuid.New().String()
 			assetResourceModel.AssetId = id
@@ -304,6 +319,45 @@ func (c *AssetHandler) GetHostConfiguration(ctx context.Context, in *proto.GetHo
 	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
 
 	return &proto.GetHostConfigurationResponse{Config: string(jsonBytes)}, nil
+}
+
+func defaultResources(ctx context.Context) ([]*proto.AssetResourceModel, error) {
+	query := datastore.NewQuery("ResourceEntity").Eq("Type", "network").Limit(1)
+	var networkEntities []*ResourceEntity
+	if err := datastore.GetAll(ctx, query, &networkEntities); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	query = datastore.NewQuery("ResourceEntity").Eq("Type", "ad_domain").Limit(1)
+	var adDomainEntities []*ResourceEntity
+	if err := datastore.GetAll(ctx, query, &adDomainEntities); err != nil {
+		return nil, err
+	}
+
+	query = datastore.NewQuery("ResourceEntity").Eq("Type", "domain_controller_machine").Limit(1)
+	var domainControllerMachineEntities []*ResourceEntity
+	if err := datastore.GetAll(ctx, query, &domainControllerMachineEntities); err != nil {
+		return nil, err
+	}
+
+	query = datastore.NewQuery("ResourceEntity").Eq("Type", "user").Limit(1)
+	var userEntities []*ResourceEntity
+	if err := datastore.GetAll(ctx, query, &userEntities); err != nil {
+		return nil, err
+	}
+
+	var defaultResourcesToSave []*proto.AssetResourceModel
+	defaultResourcesToSave = append(defaultResourcesToSave,
+		&proto.AssetResourceModel{ResourceId: networkEntities[0].ResourceId, AliasName: "primary"})
+	defaultResourcesToSave = append(defaultResourcesToSave,
+		&proto.AssetResourceModel{ResourceId: adDomainEntities[0].ResourceId, AliasName: "foo.example"})
+	defaultResourcesToSave = append(defaultResourcesToSave,
+		&proto.AssetResourceModel{ResourceId: domainControllerMachineEntities[0].ResourceId, AliasName: "win2008r2"})
+	defaultResourcesToSave = append(defaultResourcesToSave,
+		&proto.AssetResourceModel{ResourceId: userEntities[0].ResourceId, AliasName: "Joe"})
+
+	return defaultResourcesToSave, nil
 }
 
 func getById(ctx context.Context, id string) (*AssetEntity, error) {
