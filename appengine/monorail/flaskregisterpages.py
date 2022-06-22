@@ -20,6 +20,7 @@ from framework import warmup
 from framework import reap
 from framework import deleteusers
 from framework import excessiveactivity
+from framework import ts_mon_js
 from framework import trimvisitedpages
 from project import peopledetail
 from project import peoplelist
@@ -882,6 +883,12 @@ class ServletRegistry(object):
         #     '/clientmon.do',
         #     clientmon.ClientMonitor(services=service).PostClientMonitor,
         #     ['POST']),
+        # (
+        #     '/jstsmon.do',
+        #     ts_mon_js.FlaskMonorailTSMonJSHandler(
+        #         services=service).PostMonorailTSMonJSHandler,
+        #     ['POST'],
+        # )
     ]
 
     flaskapp_mon = self._AddFlaskUrlRules(flaskapp_mon, _MON_URL)
