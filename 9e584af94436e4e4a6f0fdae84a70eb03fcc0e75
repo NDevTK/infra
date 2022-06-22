@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb33d799_e68ff63e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2022-06-22T00:45:06Z",
+      "side": 1,
+      "message": "I\u0027m sure the monorail issue query needs some adjustments, but let me know if the overall approach looks useful. \n",
+      "revId": "9e584af94436e4e4a6f0fdae84a70eb03fcc0e75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
