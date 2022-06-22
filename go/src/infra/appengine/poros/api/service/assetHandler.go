@@ -92,7 +92,14 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 	}
 	response := &proto.CreateAssetResponse{}
 
-	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
+	var defaultResourcesToSave []*proto.AssetResourceModel
+	defResources, err := defaultResources(ctx, entity.AssetType)
+	if err != nil {
+		return nil, err
+	}
+	defaultResourcesToSave = defResources
+
+	err = datastore.RunInTransaction(ctx, func(ctx context.Context) error {
 		if err := validateEntity(entity); err != nil {
 			return err
 		}
@@ -101,6 +108,10 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		}
 		response.Asset = toModel(entity)
 		assetResourcesToSave := req.GetAssetResourcesToSave()
+		for _, defaultResource := range defaultResourcesToSave {
+			assetResourcesToSave = append(assetResourcesToSave, defaultResource)
+		}
+
 		for _, assetResourceModel := range assetResourcesToSave {
 			assetResourceModel.AssetResourceId = uuid.New().String()
 			assetResourceModel.AssetId = id
@@ -304,6 +315,36 @@ func (c *AssetHandler) GetHostConfiguration(ctx context.Context, in *proto.GetHo
 	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
 
 	return &proto.GetHostConfigurationResponse{Config: string(jsonBytes)}, nil
+}
+
+func defaultResources(ctx context.Context, assetType string) ([]*proto.AssetResourceModel, error) {
+	var resourceData [][]string
+	switch assetType {
+	case "active_directory":
+		resourceData = [][]string{
+			{"network", "primary"},
+			{"ad_domain", "foo.example"},
+			{"domain_controller_machine", "win2008r2"},
+			{"user", "Joe"},
+		}
+		break
+	default:
+		resourceData = [][]string{}
+	}
+
+	var defaultResourcesToSave []*proto.AssetResourceModel
+	for _, data := range resourceData {
+		query := datastore.NewQuery("ResourceEntity").Eq("Type", data[0]).Limit(1)
+		var resources []*ResourceEntity
+		if err := datastore.GetAll(ctx, query, &resources); err != nil {
+			return nil, err
+		}
+
+		defaultResourcesToSave = append(defaultResourcesToSave,
+			&proto.AssetResourceModel{ResourceId: resources[0].ResourceId, AliasName: data[1]})
+	}
+
+	return defaultResourcesToSave, nil
 }
 
 func getById(ctx context.Context, id string) (*AssetEntity, error) {
