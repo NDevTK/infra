@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d064766_dd49c9c5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2022-06-22T17:45:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0d2298c_470c13e3",
+      "revId": "50587d3486d88289aa0b8328a4dcabd854a36bda",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa060840_372f6771",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-06-22T16:57:34Z",
       "side": 1,
       "message": "Please add a newline between CL description and BugID",
+      "revId": "50587d3486d88289aa0b8328a4dcabd854a36bda",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4bf7033b_58a90134",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2022-06-22T17:45:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa060840_372f6771",
       "revId": "50587d3486d88289aa0b8328a4dcabd854a36bda",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
