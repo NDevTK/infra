@@ -2300,6 +2300,8 @@ message CheckFleetTestsPolicyRequest {
   string board = 2;
   string model = 3;
   string image = 4;
+  // Service account which is used to run the test from crosfleet cli. If this field is empty, service account is obtained from the context.
+  string test_service_account = 5;
 }
 
 message TestStatus {
