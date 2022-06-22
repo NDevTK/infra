@@ -156,8 +156,12 @@ func excludeBot(b *swarmingAPI.SwarmingRpcsBotInfo) bool {
 			}
 		}
 		// Exclude docker bots
-		if d.Key == "inside_docker" && len(d.Value) > 0 {
-			return true
+		if d.Key == "inside_docker" {
+			for _, v := range d.Value {
+				if v != "0" {
+					return true
+				}
+			}
 		}
 		if d.Key == "zone" {
 			hasZone = true
