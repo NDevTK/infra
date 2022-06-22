@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -193,6 +194,59 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(publicGroupMember, ShouldBeTrue)
+		})
+		Convey("happy path - request with test service account", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName:           "tast.lacros",
+				Board:              "eve",
+				Model:              "eve",
+				Image:              "eve-full/R100-14495.0.0-rc1",
+				TestServiceAccount: "abc@def.com",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				Identity: identity.AnonymousIdentity,
+				FakeDB: authtest.NewFakeDB(
+					authtest.MockMembership("user:abc@def.com", PublicUsersToChromeOSAuthGroup),
+				),
+			})
+
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeTrue)
+		})
+		Convey("Test service account not a public auth group member - Returns false", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName:           "tast.lacros",
+				Board:              "eve",
+				Model:              "eve",
+				Image:              "eve-full/R100-14495.0.0-rc1",
+				TestServiceAccount: "abc@def.com",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				Identity: identity.AnonymousIdentity,
+			})
+
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeFalse)
+		})
+		Convey("No Test service account and empty context - Returns false", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "eve",
+				Model:    "eve",
+				Image:    "eve-full/R100-14495.0.0-rc1",
+			}
+			ctx := auth.WithState(testingContext(), &authtest.FakeState{
+				Identity: identity.AnonymousIdentity,
+			})
+
+			publicGroupMember, err := isPublicGroupMember(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(publicGroupMember, ShouldBeFalse)
 		})
 		Convey("Not a public group member", func() {
 			req := &api.CheckFleetTestsPolicyRequest{

@@ -133,7 +133,10 @@ func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.Go
 }
 
 func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) (bool, error) {
-	email := auth.CurrentIdentity(ctx).Email()
+	email := req.GetTestServiceAccount()
+	if email == "" {
+		email = auth.CurrentIdentity(ctx).Email()
+	}
 
 	logging.Infof(ctx, "CheckFleetTestsPolicyRequest: %s", req)
 	logging.Infof(ctx, "Service account being validated: %s", email)
@@ -148,6 +151,7 @@ func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequ
 		logging.Errorf(ctx, "Failed to check auth, nil auth DB in State.")
 		return false, nil
 	}
+
 	ident, err := identity.MakeIdentity("user:" + email)
 	if err != nil {
 		logging.WithError(err).Errorf(ctx, "Failed to create identity for %q.", email)
