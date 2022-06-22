@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "45aa49aa_b50f2fc8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1181219
+      },
+      "writtenOn": "2022-06-22T06:34:35Z",
+      "side": 1,
+      "message": "The command is \"report\" in the source code, without \"-incoming\".",
+      "range": {
+        "startLine": 14,
+        "startChar": 16,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "9e584af94436e4e4a6f0fdae84a70eb03fcc0e75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "eb33d799_e68ff63e",
