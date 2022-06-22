@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0d2298c_470c13e3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1344230
+      },
+      "writtenOn": "2022-06-22T16:57:34Z",
+      "side": 1,
+      "message": "CAP A",
+      "revId": "50587d3486d88289aa0b8328a4dcabd854a36bda",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa060840_372f6771",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1344230
+      },
+      "writtenOn": "2022-06-22T16:57:34Z",
+      "side": 1,
+      "message": "Please add a newline between CL description and BugID",
+      "revId": "50587d3486d88289aa0b8328a4dcabd854a36bda",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
