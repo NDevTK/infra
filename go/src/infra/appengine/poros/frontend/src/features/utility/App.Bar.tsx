@@ -21,6 +21,7 @@ import Avatar from '@mui/material/Avatar';
 import ScienceIcon from '@mui/icons-material/Science';
 import HelpIcon from '@mui/icons-material/Help';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import { Drawer } from '@mui/material';
 import { Route, Routes, Link } from 'react-router-dom';
 
@@ -35,6 +36,7 @@ import {
   setRightSideDrawerClose,
 } from './utilitySlice';
 import { ResourceList } from '../resource/ResourceList';
+import { AssetInstanceList } from '../asset_instance/AssetInstanceList';
 
 const drawerWidth = 240;
 const rightSideDrawerWidth = 480;
@@ -170,6 +172,13 @@ export default function SideDrawerWithAppBar() {
       path: '/resources',
       entityIdentifier: 'resources',
       component: ResourceList,
+    },
+    {
+      text: 'AssetInstances',
+      icon: LibraryBooksIcon,
+      path: '/assetInstances',
+      entityIdentifier: 'assetInstances',
+      component: AssetInstanceList,
     },
   ];
 

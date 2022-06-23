@@ -7,12 +7,14 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import assetReducer from '../features/asset/assetSlice';
 import resourceReducer from '../features/resource/resourceSlice';
 import utilityReducer from '../features/utility/utilitySlice';
+import assetInstanceReducer from '../features/asset_instance/assetInstanceSlice';
 
 export const store = configureStore({
   reducer: {
     asset: assetReducer,
     resource: resourceReducer,
     utility: utilityReducer,
+    assetInstance: assetInstanceReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

@@ -163,6 +163,7 @@ export function AssetList() {
             <DataGrid
               autoHeight
               density="compact"
+              disableDensitySelector
               getRowId={(r) => r.assetId}
               rows={rows}
               columns={columns}

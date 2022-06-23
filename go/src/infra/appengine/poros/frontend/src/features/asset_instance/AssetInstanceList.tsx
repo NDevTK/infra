@@ -12,88 +12,56 @@ import {
   GridToolbarDensitySelector,
   GridCellParams,
   MuiEvent,
-  GridRenderCellParams,
   GridValueGetterParams,
 } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
-import CreateIcon from '@mui/icons-material/Create';
-import EditIcon from '@mui/icons-material/Edit';
 import { Card, CardContent, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import {
-  clearSelectedRecord,
-  onSelectRecord,
-  queryResourceAsync,
-} from './resourceSlice';
+import { queryAssetInstanceAsync } from './assetInstanceSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import {
-  setRightSideDrawerOpen,
-  setActiveEntity,
-} from '../utility/utilitySlice';
+import { setActiveEntity } from '../utility/utilitySlice';
+import { queryAssetAsync } from '../asset/assetSlice';
+import { AssetModel } from '../../api/asset_service';
 
-export function ResourceList() {
+export function AssetInstanceList() {
   const dispatch = useAppDispatch();
 
   // Calls only once when the component is loaded.
   React.useEffect(() => {
-    dispatch(setActiveEntity('resources'));
+    dispatch(setActiveEntity('assetInstances'));
   }, []);
-
+  React.useEffect(() => {
+    dispatch(queryAssetAsync({ pageSize: 100, pageToken: '' }));
+  }, []);
+  const assets: AssetModel[] = useAppSelector(
+    (state) => state.assetInstance.assets
+  );
   const rows: GridRowsProp = useAppSelector(
-    (state) => state.resource.resources
+    (state) => state.assetInstance.assetInstances
   );
   const columns: GridColDef[] = [
-    { field: 'resourceId', headerName: 'Id', flex: 0.5, hide: true },
-    { field: 'name', headerName: 'Name', flex: 0.5 },
-    { field: 'type', headerName: 'Type', flex: 0.5 },
-    { field: 'operatingSystem', headerName: 'Operating System', flex: 0.4 },
-    { field: 'description', headerName: 'Description', flex: 0.7 },
-    { field: 'image', headerName: 'Image', flex: 0.3 },
-    { field: 'createdBy', headerName: 'Created By', flex: 0.4 },
+    { field: 'assetInstanceId', headerName: 'Id', flex: 1, hide: true },
+    {
+      field: 'assetName',
+      headerName: 'Asset Name',
+      flex: 1,
+      valueGetter: getAssetName,
+    },
+    { field: 'assetId', headerName: 'AssetId', flex: 1 },
+    { field: 'status', headerName: 'Status', flex: 1 },
     {
       field: 'createdAt',
       headerName: 'Created At',
       flex: 0.5,
       valueGetter: getLocalTime,
     },
-    {
-      field: 'Edit',
-      renderCell: (cellValues) => {
-        return (
-          <IconButton
-            aria-label="delete"
-            size="small"
-            onClick={() => {
-              handleEditClick(cellValues);
-            }}
-          >
-            <EditIcon fontSize="inherit" />
-          </IconButton>
-        );
-      },
-    },
   ];
-  const handleEditClick = (cellValues: GridRenderCellParams) => {
-    const selectedRow = cellValues.row;
-    handleRightSideDrawerOpen();
-    dispatch(onSelectRecord({ resourceId: selectedRow.resourceId }));
-  };
-
-  const handleCreateClick = () => {
-    dispatch(clearSelectedRecord());
-    handleRightSideDrawerOpen();
-  };
-
-  const handleRightSideDrawerOpen = () => {
-    dispatch(setRightSideDrawerOpen());
-  };
 
   const handleRefreshClick = () => {
-    dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }));
+    dispatch(queryAssetInstanceAsync({ pageSize: 100, pageToken: '' }));
   };
 
   function CustomToolbar() {
@@ -112,6 +80,11 @@ export function ResourceList() {
     );
   }
 
+  function getAssetName(params: GridValueGetterParams) {
+    const assetId = params.row.assetId;
+    return assets.filter((asset) => asset.assetId == assetId)[0].name;
+  }
+
   return (
     <div>
       <Card>
@@ -126,7 +99,7 @@ export function ResourceList() {
               }}
               xs={8}
             >
-              <Typography variant="h6">Resources</Typography>
+              <Typography variant="h6">AssetInstances</Typography>
             </Grid>
             <Grid
               item
@@ -145,13 +118,6 @@ export function ResourceList() {
                 >
                   Refresh
                 </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleCreateClick}
-                  endIcon={<CreateIcon />}
-                >
-                  Create
-                </Button>
               </Stack>
             </Grid>
           </Grid>
@@ -165,7 +131,7 @@ export function ResourceList() {
               autoHeight
               density="compact"
               disableDensitySelector
-              getRowId={(r) => r.resourceId}
+              getRowId={(r) => r.assetInstanceId}
               rows={rows}
               columns={columns}
               components={{
