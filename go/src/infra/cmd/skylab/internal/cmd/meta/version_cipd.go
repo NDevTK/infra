@@ -6,7 +6,6 @@ package meta
 
 import (
 	"context"
-	"net/http"
 
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
@@ -16,14 +15,11 @@ const service = "https://chrome-infra-packages.appspot.com"
 
 // describe returns information about a package instances.
 func describe(ctx context.Context, pkg, version string) (*cipd.InstanceDescription, error) {
-	opts := cipd.ClientOptions{
-		ServiceURL:      service,
-		AnonymousClient: http.DefaultClient,
-	}
-	client, err := cipd.NewClient(opts)
+	client, err := cipd.NewClientFromEnv(ctx, cipd.ClientOptions{})
 	if err != nil {
 		return nil, errors.Annotate(err, "describe package").Err()
 	}
+	defer client.Close(ctx)
 	pin, err := client.ResolveVersion(ctx, pkg, version)
 	if err != nil {
 		return nil, errors.Annotate(err, "describe package").Err()

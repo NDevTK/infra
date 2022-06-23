@@ -20,7 +20,6 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 	cipdClient "go.chromium.org/luci/cipd/client/cipd"
-	"go.chromium.org/luci/cipd/client/cipd/plugin/host"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
@@ -79,14 +78,11 @@ var defaultConfig = application.Config{
 }
 
 func mainImpl(c context.Context, argv []string, env environ.Env, python3only bool) int {
-	// Enable plugins support. Important to call it before LoadFromEnv to make
-	// sure plugin related env vars are recognized.
-	cipdPackageLoader.Options.PluginHost = &host.Host{PluginsContext: c}
-
 	// Initialize our CIPD package loader from the environment.
 	//
 	// If we don't have an environment-specific CIPD cache directory, use one
 	// relative to the user's home directory.
+	cipdPackageLoader.Options.PluginsContext = c
 	if err := cipdPackageLoader.Options.LoadFromEnv(env.SetInCtx(c)); err != nil {
 		logging.Errorf(c, "Could not inialize CIPD package loader: %s", err)
 		return 1

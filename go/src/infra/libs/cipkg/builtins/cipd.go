@@ -58,10 +58,11 @@ func cipdEnsure(ctx context.Context, cmd *exec.Cmd) error {
 		ServiceURL: ef.ServiceURL,
 		UserAgent:  fmt.Sprintf("cipkg, %s", cipd.UserAgent),
 	}
-	clt, err := cipd.NewClient(opts)
+	clt, err := cipd.NewClientFromEnv(ctx, opts)
 	if err != nil {
 		return fmt.Errorf("failed to create cipd client: %w", err)
 	}
+	defer clt.Close(ctx)
 
 	expander := template.DefaultExpander()
 	for _, env := range cmd.Env {

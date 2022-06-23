@@ -6,7 +6,6 @@ package meta
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -73,18 +72,13 @@ func isCIPDRootDir(dir string) bool {
 	return fi.Mode().IsDir()
 }
 
-const service = "https://chrome-infra-packages.appspot.com"
-
 // describe returns information about a package instances.
 func describe(ctx context.Context, pkg, version string) (*luciCipd.InstanceDescription, error) {
-	opts := luciCipd.ClientOptions{
-		ServiceURL:      service,
-		AnonymousClient: http.DefaultClient,
-	}
-	client, err := luciCipd.NewClient(opts)
+	client, err := luciCipd.NewClientFromEnv(ctx, luciCipd.ClientOptions{})
 	if err != nil {
 		return nil, errors.Annotate(err, "describe package").Err()
 	}
+	defer client.Close(ctx)
 	pin, err := client.ResolveVersion(ctx, pkg, version)
 	if err != nil {
 		return nil, errors.Annotate(err, "resolve version").Err()
