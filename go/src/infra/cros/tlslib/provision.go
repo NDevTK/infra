@@ -138,6 +138,81 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		defer disconnect()
 		log.Printf("DUT came up after provisioning the OS.")
 
+		if req.UpdateFirmware {
+			// We need to wait for DUT fully stabliized to avoid a busy SPI cause firmware updater timeout.
+			fwUpdateCtx, cancel := context.WithTimeout(ctx, 360*time.Second)
+			defer cancel()
+			if err := p.waitForUIToStabilize(fwUpdateCtx, addr); err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to wait for UI to stabilize, %s", err),
+					tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+				return
+			}
+			currentFw, err := getCurrentFirmwareVersion(p.c)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to get firmware version from DUT before update, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			targetFw, err := getAvailableFirmwareVersion(p.c)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to get available firmware version, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			log.Printf(fmt.Sprintf("Current firmware on DUT: %s, available firmware from new OS: %s.", currentFw, targetFw))
+			if currentFw != targetFw {
+				log.Printf("Starting update firmware as current firmware doesn't match with available firmware.")
+				if err := p.updateFirmware(ctx); err != nil {
+					setError(newOperationError(
+						codes.Aborted,
+						fmt.Sprintf("provision: failed to update firmware, %s", err),
+						tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+					return
+				}
+				// Unless preventReboot requested, make sure DUT comes back after post update reboot and firmware version is updated.
+				if !req.PreventReboot {
+					fwRebootWaitCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+					defer cancel()
+					disconnect, err = p.connect(fwRebootWaitCtx, addr)
+					if err != nil {
+						setError(newOperationError(
+							codes.Aborted,
+							fmt.Sprintf("provision: failed to wait for DUT to come up after firmware update, %s", err),
+							tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+						return
+					}
+					defer disconnect()
+					log.Printf("DUT came up after updated firmware from the new OS.")
+					fwVersion, err := getCurrentFirmwareVersion(p.c)
+					if err != nil {
+						setError(newOperationError(
+							codes.Aborted,
+							fmt.Sprintf("provision: failed to get firmware version from DUT after update, %s", err),
+							tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+						return
+					}
+					if fwVersion != targetFw {
+						setError(newOperationError(
+							codes.Aborted,
+							fmt.Sprintf("provision: firmware version didn't change after update and reboot, %s", err),
+							tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+						return
+					}
+					log.Printf("Firmware update completed successfully.")
+				}
+			} else {
+				log.Printf("Skipping firmware update as current system firmware is matched with OS image.")
+			}
+		} else {
+			log.Printf("Skipping firmware update by request.")
+		}
+
 		// Shorten the time waiting for reboot to complete booting into the new OS.
 		// Follow through subsequent reboots until "ui" job is running.
 		uiStabilizeCtx, cancel := context.WithTimeout(ctx, 360*time.Second)
