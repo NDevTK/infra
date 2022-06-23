@@ -59,8 +59,8 @@ func validateAssetInstanceEntity(entity *AssetInstanceEntity) error {
 	if entity.AssetId == "" {
 		return errors.New("assetId cannot be empty")
 	}
-	if _, validStatus := proto.DeploymentStatus_name[int32(entity.Status)]; !validStatus {
-		return errors.New("status cannot be empty or invalid")
+	if _, validStatus := proto.DeploymentStatus_value[entity.Status]; !validStatus {
+		return errors.New("status is invalid")
 	}
 	return nil
 }

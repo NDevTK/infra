@@ -5,7 +5,6 @@
 package entities
 
 import (
-	"infra/appengine/poros/api/proto"
 	"time"
 )
 
@@ -16,7 +15,7 @@ type AssetInstanceEntity struct {
 	// AssetId associated with the AssetInstance
 	AssetId string
 	// Status of the AssetInstance
-	Status proto.DeploymentStatus
+	Status string
 	// User who created the record.
 	CreatedBy string
 	// Timestamp for the creation of the record.

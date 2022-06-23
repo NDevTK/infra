@@ -9,7 +9,6 @@ package poros;
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "poros/api/proto/resources.proto";
-import "poros/api/proto/enums.proto";
 
 option go_package = "infra/appengine/poros/api/proto;proto";
 
@@ -35,7 +34,7 @@ service AssetInstance {
 message CreateAssetInstanceRequest {
   // The new AssetInstance to add to the database.
   string asset_id = 1;
-  DeploymentStatus status = 2;
+  string status = 2;
 }
 
 // Gets a AssetInstance resource.

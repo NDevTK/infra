@@ -21,7 +21,7 @@ import (
 func mockCreateAssetInstanceRequest(assetId string, statusValue int32) *proto.CreateAssetInstanceRequest {
 	return &proto.CreateAssetInstanceRequest{
 		AssetId: assetId,
-		Status:  proto.DeploymentStatus(statusValue),
+		Status:  proto.DeploymentStatus_name[statusValue],
 	}
 }
 
@@ -33,8 +33,8 @@ func TestAssetInstanceCreateWithValidData(t *testing.T) {
 		handler := &AssetInstanceHandler{}
 		model, err := handler.Create(ctx, request)
 		So(err, ShouldBeNil)
-		want := []string{request.GetAssetId(), request.GetStatus().String()}
-		get := []string{model.GetAssetId(), model.GetStatus().String()}
+		want := []string{request.GetAssetId(), request.GetStatus()}
+		get := []string{model.GetAssetId(), model.GetStatus()}
 		So(get, ShouldResemble, want)
 	})
 }
@@ -72,7 +72,7 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 
 		// Update AssetInstance with some new value and the operation should not throw any error
 		entity.AssetId = "Test AssetId Updated"
-		entity.Status = proto.DeploymentStatus(1)
+		entity.Status = proto.DeploymentStatus(1).String()
 
 		updateRequest := &proto.UpdateAssetInstanceRequest{
 			AssetInstance: entity,
@@ -86,8 +86,8 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 			AssetInstanceId: entity.GetAssetInstanceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		want := []string{"Test AssetId Updated", proto.DeploymentStatus(1).String()}
-		get := []string{readEntity.GetAssetId(), readEntity.GetStatus().String()}
+		want := []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
+		get := []string{readEntity.GetAssetId(), readEntity.GetStatus()}
 		So(get, ShouldResemble, want)
 	})
 }
@@ -101,7 +101,7 @@ func TestAssetInstanceUpdateWithInvalidAssetId(t *testing.T) {
 		entity, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
 		entity.AssetId = ""
-		entity.Status = proto.DeploymentStatus(1)
+		entity.Status = proto.DeploymentStatus(1).String()
 
 		updateRequest := &proto.UpdateAssetInstanceRequest{
 			AssetInstance: entity,
@@ -122,7 +122,7 @@ func TestAssetInstanceUpdateWithInvalidStatus(t *testing.T) {
 		entity, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
 		entity.AssetId = "Test AssetId Updated"
-		entity.Status = proto.DeploymentStatus(-1)
+		entity.Status = proto.DeploymentStatus(-1).String()
 
 		updateRequest := &proto.UpdateAssetInstanceRequest{
 			AssetInstance: entity,
@@ -148,8 +148,8 @@ func TestGetAssetInstanceWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		So(err, ShouldBeNil)
 
-		want := []string{entity.GetAssetId(), entity.GetStatus().String()}
-		get := []string{readEntity.GetAssetId(), readEntity.GetStatus().String()}
+		want := []string{entity.GetAssetId(), entity.GetStatus()}
+		get := []string{readEntity.GetAssetId(), readEntity.GetStatus()}
 		So(get, ShouldResemble, want)
 	})
 }
@@ -176,7 +176,7 @@ func TestListAssetInstance(t *testing.T) {
 		sort.Strings(get)
 		So(get, ShouldResemble, want)
 		want = []string{"STATUS_PENDING", "STATUS_RUNNING"}
-		get = []string{asset_instances[0].GetStatus().String(), asset_instances[1].GetStatus().String()}
+		get = []string{asset_instances[0].GetStatus(), asset_instances[1].GetStatus()}
 		sort.Strings(get)
 		So(get, ShouldResemble, want)
 	})

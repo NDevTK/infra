@@ -7,7 +7,6 @@ syntax = "proto3";
 package poros;
 
 import "google/protobuf/timestamp.proto";
-import "poros/api/proto/enums.proto";
 
 option go_package = "infra/appengine/poros/api/proto;proto";
 
@@ -80,7 +79,7 @@ message AssetInstanceModel {
 	// AssetId associated with the AssetInstance
 	string asset_id = 2;
 	// Status of the AssetInstance
-	DeploymentStatus status = 3;
+	string status = 3;
 	// User who created the record.
 	string created_by = 4;
 	// Timestamp for the creation of the record.
