@@ -66,13 +66,7 @@ func NewClient(ctx context.Context) (Client, error) {
 func createDockerClient(ctx context.Context) (*client.Client, error) {
 	// If the dockerd socket exists, use the default option.
 	// Otherwise, try to use the tcp connection local host IP 192.168.231.1:2375
-	log.Debugf(ctx, "Check docker file by Lstat")
-	if info, err := os.Lstat(dockerSocketFilePath); err != nil {
-		log.Debugf(ctx, "Lstat error: %v", err)
-	} else {
-		log.Debugf(ctx, "Lstat info: %v", info)
-	}
-	if _, err := os.Stat(dockerSocketFilePath); err != nil {
+	if _, err := os.Lstat(dockerSocketFilePath); err != nil {
 		if !base_error.Is(err, os.ErrNotExist) {
 			log.Debugf(ctx, "Docker file is not exist: %v", err)
 			return nil, err
