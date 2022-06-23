@@ -195,8 +195,6 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		return nil, errors.Annotate(err, "getting dataset").Err()
 	}
 
-	x := int64(1)
-	opts.Thresholds.CriticalFailuresExonerated = &configpb.MetricThreshold{SevenDay: &x}
 	whereCriticalFailuresExonerated, cfeParams := whereThresholdsMet("critical_failures_exonerated", opts.Thresholds.CriticalFailuresExonerated)
 	whereFailures, failuresParams := whereThresholdsMet("failures", opts.Thresholds.TestResultsFailed)
 	whereTestRuns, testRunsParams := whereThresholdsMet("test_run_fails", opts.Thresholds.TestRunsFailed)
