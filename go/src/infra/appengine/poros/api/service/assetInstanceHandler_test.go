@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"sort"
 	"testing"
 
@@ -31,7 +32,9 @@ func TestAssetInstanceCreateWithValidData(t *testing.T) {
 	Convey("Create an AssetInstance in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		model, err := handler.Create(ctx, request)
+		response, err := handler.Create(ctx, request)
+		model := &proto.AssetInstanceModel{}
+		json.Unmarshal([]byte(response.Data), model)
 		So(err, ShouldBeNil)
 		want := []string{request.GetAssetId(), request.GetStatus()}
 		get := []string{model.GetAssetId(), model.GetStatus()}
@@ -67,8 +70,10 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 	Convey("Update an AssetInstance with valid data in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		entity, err := handler.Create(ctx, createRequest)
+		response, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
+		entity := &proto.AssetInstanceModel{}
+		json.Unmarshal([]byte(response.Data), entity)
 
 		// Update AssetInstance with some new value and the operation should not throw any error
 		entity.AssetId = "Test AssetId Updated"
@@ -98,8 +103,10 @@ func TestAssetInstanceUpdateWithInvalidAssetId(t *testing.T) {
 	Convey("Update an AssetInstance with invalid assetId in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		entity, err := handler.Create(ctx, createRequest)
+		response, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
+		entity := &proto.AssetInstanceModel{}
+		json.Unmarshal([]byte(response.Data), entity)
 		entity.AssetId = ""
 		entity.Status = proto.DeploymentStatus(1).String()
 
@@ -119,8 +126,10 @@ func TestAssetInstanceUpdateWithInvalidStatus(t *testing.T) {
 	Convey("Update an AssetInstance with invalid deployment status in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		entity, err := handler.Create(ctx, createRequest)
+		response, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
+		entity := &proto.AssetInstanceModel{}
+		json.Unmarshal([]byte(response.Data), entity)
 		entity.AssetId = "Test AssetId Updated"
 		entity.Status = proto.DeploymentStatus(-1).String()
 
@@ -140,8 +149,10 @@ func TestGetAssetInstanceWithValidData(t *testing.T) {
 	Convey("Get a AssetInstance based on id from datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		entity, err := handler.Create(ctx, createRequest)
+		response, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
+		entity := &proto.AssetInstanceModel{}
+		json.Unmarshal([]byte(response.Data), entity)
 		getRequest := &proto.GetAssetInstanceRequest{
 			AssetInstanceId: entity.GetAssetInstanceId(),
 		}

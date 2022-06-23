@@ -16,6 +16,8 @@ type AssetInstanceEntity struct {
 	AssetId string
 	// Status of the AssetInstance
 	Status string
+	// Project Id associated with the AssetInstance
+	ProjectId string
 	// User who created the record.
 	CreatedBy string
 	// Timestamp for the creation of the record.

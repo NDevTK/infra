@@ -80,12 +80,16 @@ message AssetInstanceModel {
 	string asset_id = 2;
 	// Status of the AssetInstance
 	string status = 3;
+  // Project Id associated with the asset instance
+  string project_id = 4;
+  // Project Prefix corresponding to the project id
+  string project_prefix = 5;
 	// User who created the record.
-	string created_by = 4;
+	string created_by = 6;
 	// Timestamp for the creation of the record.
-	google.protobuf.Timestamp created_at = 5;
+	google.protobuf.Timestamp created_at = 7;
 	// Timestamp for the last update of the record.
-	google.protobuf.Timestamp modified_at = 6;
+	google.protobuf.Timestamp modified_at = 8;
 	// User who modified the record.
-	string modified_by = 7;
+	string modified_by = 9;
 }

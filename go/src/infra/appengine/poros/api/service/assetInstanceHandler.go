@@ -6,7 +6,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"math/rand"
 	"reflect"
 	"time"
 
@@ -39,12 +41,14 @@ func toAssetInstanceEntity(model *proto.AssetInstanceModel) *AssetInstanceEntity
 	return nil
 }
 
-func toAssetIntanceModel(entity *AssetInstanceEntity) *proto.AssetInstanceModel {
+func toAssetIntanceModel(entity *AssetInstanceEntity, projectPrefix string) *proto.AssetInstanceModel {
 	if entity != nil {
 		return &proto.AssetInstanceModel{
 			AssetInstanceId: entity.AssetInstanceId,
 			AssetId:         entity.AssetId,
 			Status:          entity.Status,
+			ProjectId:       entity.ProjectId,
+			ProjectPrefix:   projectPrefix,
 			CreatedAt:       timestamppb.New(entity.CreatedAt),
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
@@ -66,12 +70,17 @@ func validateAssetInstanceEntity(entity *AssetInstanceEntity) error {
 }
 
 // Creates the given AssetInstance.
-func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
+func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAssetInstanceRequest) (*proto.CreateAssetInstanceResponse, error) {
 	id := uuid.New().String()
+	project, err := deploymentProject()
+	if err != nil {
+		return nil, err
+	}
 	entity := &AssetInstanceEntity{
 		AssetInstanceId: id,
 		AssetId:         req.GetAssetId(),
 		Status:          req.GetStatus(),
+		ProjectId:       project[1],
 		CreatedBy:       auth.CurrentUser(ctx).Email,
 		CreatedAt:       time.Now().UTC(),
 	}
@@ -81,14 +90,35 @@ func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAsse
 	if err := datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
-	return toAssetIntanceModel(entity), nil
+	jsonBytes, _ := json.MarshalIndent(toAssetIntanceModel(entity, project[0]), "", "    ")
+	return &proto.CreateAssetInstanceResponse{Data: string(jsonBytes)}, nil
+}
+
+// Returns a gcp project which will be used for deployment of resources by cel_ctl
+func deploymentProject() ([]string, error) {
+	projectList := [][]string{
+		{"celab-chromium-ci", "celab-chromium-ci-001"},
+		{"celab-chromium-ci", "celab-chromium-ci-002"},
+		{"celab-chromium-ci", "celab-chromium-ci-003"},
+		{"celab-chromium-ci", "celab-chromium-ci-004"},
+		{"celab-chromium-ci", "celab-chromium-ci-005"},
+		{"celab-chromium-ci", "celab-chromium-ci-006"},
+		{"celab-chromium-ci", "celab-chromium-ci-007"},
+		{"celab-chromium-ci", "celab-chromium-ci-008"},
+		{"celab-chromium-ci", "celab-chromium-ci-009"},
+		{"celab-chromium-ci", "celab-chromium-ci-010"},
+	}
+
+	// TODO: change the process of choosing project according to their availability in all other asset instances
+	randomIndex := rand.Intn(len(projectList))
+	return projectList[randomIndex], nil
 }
 
 // Retrieves an AssetInstance for a given unique value.
 func (e *AssetInstanceHandler) Get(ctx context.Context, req *proto.GetAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
 	entity, err := getAssetInstanceById(ctx, req.GetAssetInstanceId())
 	if err == nil {
-		return toAssetIntanceModel(entity), nil
+		return toAssetIntanceModel(entity, ""), nil
 	}
 	return nil, err
 }
@@ -126,7 +156,7 @@ func (e *AssetInstanceHandler) Update(ctx context.Context, req *proto.UpdateAsse
 	}, nil)
 
 	if err == nil {
-		return toAssetIntanceModel(asset_instance), nil
+		return toAssetIntanceModel(asset_instance, ""), nil
 	}
 	return nil, err
 }
@@ -149,7 +179,7 @@ func (e *AssetInstanceHandler) List(ctx context.Context, in *proto.ListAssetInst
 		return nil, err
 	}
 	for _, asset_instance := range asset_instances {
-		res.AssetInstances = append(res.AssetInstances, toAssetIntanceModel(asset_instance))
+		res.AssetInstances = append(res.AssetInstances, toAssetIntanceModel(asset_instance, ""))
 	}
 	return res, nil
 }

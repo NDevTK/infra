@@ -15,7 +15,7 @@ option go_package = "infra/appengine/poros/api/proto;proto";
 // Performs operations on AssetInstanceInstance.
 service AssetInstance {
   // Creates the given AssetInstanceInstance.
-  rpc Create(CreateAssetInstanceRequest) returns (AssetInstanceModel);
+  rpc Create(CreateAssetInstanceRequest) returns (CreateAssetInstanceResponse);
 
   // Retrieves an AssetInstance for a given unique value.
   rpc Get(GetAssetInstanceRequest) returns (AssetInstanceModel);
@@ -35,6 +35,11 @@ message CreateAssetInstanceRequest {
   // The new AssetInstance to add to the database.
   string asset_id = 1;
   string status = 2;
+}
+
+// Response to create asset instance request
+message CreateAssetInstanceResponse {
+  string data = 1;
 }
 
 // Gets a AssetInstance resource.
