@@ -581,5 +581,10 @@ func isFinal(status buildbucket_pb.Status) bool {
 
 func unmarshalString(s string, m proto.Message) error {
 	u := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	return u.Unmarshal(strings.NewReader(s), m)
+	err := u.Unmarshal(strings.NewReader(s), m)
+	if err != nil {
+		return fmt.Errorf("%s: %q", err, s)
+	}
+	return nil
+
 }
