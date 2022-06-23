@@ -6,7 +6,7 @@ package rpc
 
 import (
 	"context"
-	"time"
+	"regexp"
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
@@ -17,6 +17,8 @@ import (
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
 )
+
+var variantHashRe = regexp.MustCompile("^[0-9a-f]{16}$")
 
 // testVariantsServer implements pb.TestVariantServer.
 type testVariantsServer struct {
@@ -41,17 +43,17 @@ func (*testVariantsServer) QueryFailureRate(ctx context.Context, req *pb.QueryTe
 	}
 
 	opts := testresults.QueryFailureRateOptions{
-		Project:            req.Project,
-		TestVariants:       req.TestVariants,
-		AfterPartitionTime: failureRateQueryAfterTime(now),
+		Project:      req.Project,
+		TestVariants: req.TestVariants,
+		AsAtTime:     now,
 	}
-	results, err := testresults.QueryFailureRate(span.Single(ctx), opts)
+	ctx, cancel := span.ReadOnlyTransaction(ctx)
+	defer cancel()
+	response, err := testresults.QueryFailureRate(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.QueryTestVariantFailureRateResponse{
-		TestVariants: results,
-	}, nil
+	return response, nil
 }
 
 func validateQueryTestVariantFailureRateRequest(req *pb.QueryTestVariantFailureRateRequest) error {
@@ -79,47 +81,28 @@ func validateQueryTestVariantFailureRateRequest(req *pb.QueryTestVariantFailureR
 		if tv.GetTestId() == "" {
 			return errors.Reason("test_variants[%v]: test_id missing", i).Err()
 		}
-		// Variant may be nil as not all tests have variants.
+		var variantHash string
+		if tv.VariantHash != "" {
+			if !variantHashRe.MatchString(tv.VariantHash) {
+				return errors.Reason("test_variants[%v]: variant_hash is not valid", i).Err()
+			}
+			variantHash = tv.VariantHash
+		}
 
-		key := testVariant{testID: tv.TestId, variantHash: pbutil.VariantHash(tv.Variant)}
+		// Variant may be nil as not all tests have variants.
+		if tv.Variant != nil || tv.VariantHash == "" {
+			calculatedHash := pbutil.VariantHash(tv.Variant)
+			if tv.VariantHash != "" && calculatedHash != tv.VariantHash {
+				return errors.Reason("test_variants[%v]: variant and variant_hash mismatch, variant hashed to %s, expected %s", i, calculatedHash, tv.VariantHash).Err()
+			}
+			variantHash = calculatedHash
+		}
+
+		key := testVariant{testID: tv.TestId, variantHash: variantHash}
 		if _, ok := uniqueTestVariants[key]; ok {
 			return errors.Reason("test_variants[%v]: already requested in the same request", i).Err()
 		}
 		uniqueTestVariants[key] = struct{}{}
 	}
 	return nil
-}
-
-// failureRateQueryAfterTime identifies the "after partition time" to use for
-// the failure rate query. It calculates the start time of an interval
-// ending at now, such that the interval includes exactly 24 hours of weekday
-// data (in UTC).
-//
-// Rationale:
-// Many projects see reduced testing activity on weekends, as fewer CLs are
-// submitted. To try and increase the sample size of statistics returned
-// on these days, we extend the time interval queried to still capture 24
-// hours worth of weekday data.
-func failureRateQueryAfterTime(now time.Time) time.Time {
-	now = now.In(time.UTC)
-	var startTime time.Time
-	switch now.Weekday() {
-	case time.Saturday:
-		// Take us back to Saturday at 0:00.
-		startTime = now.Truncate(24 * time.Hour)
-		// Now take us back to Friday at 0:00.
-		startTime = startTime.Add(-24 * time.Hour)
-	case time.Sunday:
-		// Take us back to Sunday at 0:00.
-		startTime = now.Truncate(24 * time.Hour)
-		// Now take us back to Friday at 0:00.
-		startTime = startTime.Add(-2 * 24 * time.Hour)
-	case time.Monday:
-		// Take take us back to the same time on
-		// Friday.
-		startTime = now.Add(-3 * 24 * time.Hour)
-	default:
-		startTime = now.Add(-24 * time.Hour)
-	}
-	return startTime
 }

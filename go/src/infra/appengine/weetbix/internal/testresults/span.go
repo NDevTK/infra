@@ -21,9 +21,10 @@ import (
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
-const (
-	pageTokenTimeFormat = time.RFC3339Nano
-)
+const pageTokenTimeFormat = time.RFC3339Nano
+
+// The suffix used for all gerrit hostnames.
+const GerritHostnameSuffix = "-review.googlesource.com"
 
 var (
 	// minTimestamp is the minimum Timestamp value in Spanner.

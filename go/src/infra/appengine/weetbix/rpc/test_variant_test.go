@@ -7,7 +7,6 @@ package rpc
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -60,30 +59,46 @@ func TestTestVariantsServer(t *testing.T) {
 			So(response, ShouldBeNil)
 		})
 		Convey("QueryFailureRate", func() {
+			err := testresults.CreateQueryFailureRateTestData(ctx)
+			So(err, ShouldBeNil)
+
 			Convey("Valid input", func() {
-				// March 11, 2022 is a Friday.
-				referenceTime := time.Date(2022, time.March, 11, 12, 0, 0, 0, time.UTC)
-				err := testresults.CreateQueryFailureRateTestData(ctx, referenceTime)
-				So(err, ShouldBeNil)
-
-				// Perform the query on following the Monday, at 6 hours earlier.
-				queryTime := time.Date(2022, time.March, 14, 6, 0, 0, 0, time.UTC)
-				ctx, _ := testclock.UseTime(ctx, queryTime)
-
-				project, tvs := testresults.QueryFailureRateSampleRequest()
+				project, asAtTime, tvs := testresults.QueryFailureRateSampleRequest()
 				request := &pb.QueryTestVariantFailureRateRequest{
 					Project:      project,
 					TestVariants: tvs,
 				}
+				ctx, _ := testclock.UseTime(ctx, asAtTime)
 
 				response, err := server.QueryFailureRate(ctx, request)
 				st, _ := grpcStatus.FromError(err)
 				So(st.Code(), ShouldEqual, codes.OK)
 
-				expectedResult := testresults.QueryFailureRateSampleResponse(referenceTime)
-				So(response, ShouldResembleProto, &pb.QueryTestVariantFailureRateResponse{
-					TestVariants: expectedResult,
-				})
+				expectedResult := testresults.QueryFailureRateSampleResponse()
+				So(response, ShouldResembleProto, expectedResult)
+			})
+			Convey("Query by VariantHash", func() {
+				project, asAtTime, tvs := testresults.QueryFailureRateSampleRequest()
+				for _, tv := range tvs {
+					tv.VariantHash = pbutil.VariantHash(tv.Variant)
+					tv.Variant = nil
+				}
+				request := &pb.QueryTestVariantFailureRateRequest{
+					Project:      project,
+					TestVariants: tvs,
+				}
+				ctx, _ := testclock.UseTime(ctx, asAtTime)
+
+				response, err := server.QueryFailureRate(ctx, request)
+				st, _ := grpcStatus.FromError(err)
+				So(st.Code(), ShouldEqual, codes.OK)
+
+				expectedResult := testresults.QueryFailureRateSampleResponse()
+				for _, tv := range expectedResult.TestVariants {
+					tv.VariantHash = pbutil.VariantHash(tv.Variant)
+					tv.Variant = nil
+				}
+				So(response, ShouldResembleProto, expectedResult)
 			})
 			Convey("Invalid input", func() {
 				// This checks at least one case of invalid input is detected, sufficient to verify
@@ -104,69 +119,6 @@ func TestTestVariantsServer(t *testing.T) {
 				So(st.Message(), ShouldEqual, `project missing`)
 				So(response, ShouldBeNil)
 			})
-		})
-	})
-}
-
-func TestFailureRateQueryAfterTime(t *testing.T) {
-	Convey("failureRateQueryAfterTime", t, func() {
-		// Expect failureRateQueryAfterTime to go back in time just far enough that 24 workday hours
-		// are between the returned time and now.
-		Convey("Monday", func() {
-			// Given an input on a Monday (e.g. 14th of March 2022), expect
-			// failureRateQueryAfterTime to return the corresponding time
-			// on the previous Friday.
-
-			now := time.Date(2022, time.March, 14, 23, 59, 59, 999999999, time.UTC)
-			afterTime := failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, time.Date(2022, time.March, 11, 23, 59, 59, 999999999, time.UTC))
-
-			now = time.Date(2022, time.March, 14, 0, 0, 0, 0, time.UTC)
-			afterTime = failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, time.Date(2022, time.March, 11, 0, 0, 0, 0, time.UTC))
-		})
-		Convey("Sunday", func() {
-			// Given a time on a Sunday (e.g. 13th of March 2022), expect
-			// failureRateQueryAfterTime to return the start of the previous
-			// Friday.
-			startOfFriday := time.Date(2022, time.March, 11, 0, 0, 0, 0, time.UTC)
-
-			now := time.Date(2022, time.March, 13, 23, 59, 59, 999999999, time.UTC)
-			afterTime := failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, startOfFriday)
-
-			now = time.Date(2022, time.March, 13, 0, 0, 0, 0, time.UTC)
-			afterTime = failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, startOfFriday)
-		})
-		Convey("Saturday", func() {
-			// Given a time on a Saturday (e.g. 12th of March 2022), expect
-			// failureRateQueryAfterTime to return the start of the previous
-			// Friday.
-			startOfFriday := time.Date(2022, time.March, 11, 0, 0, 0, 0, time.UTC)
-
-			now := time.Date(2022, time.March, 12, 23, 59, 59, 999999999, time.UTC)
-			afterTime := failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, startOfFriday)
-
-			now = time.Date(2022, time.March, 12, 0, 0, 0, 0, time.UTC)
-			afterTime = failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, startOfFriday)
-		})
-		Convey("Tuesday to Friday", func() {
-			// Given an input on a Tuesday (e.g. 15th of March 2022), expect
-			// failureRateQueryAfterTime to return the corresponding time
-			// the previous day.
-			now := time.Date(2022, time.March, 15, 1, 2, 3, 4, time.UTC)
-			afterTime := failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, time.Date(2022, time.March, 14, 1, 2, 3, 4, time.UTC))
-
-			// Given an input on a Friday (e.g. 18th of March 2022), expect
-			// failureRateQueryAfterTime to return the corresponding time
-			// the previous day.
-			now = time.Date(2022, time.March, 18, 1, 2, 3, 4, time.UTC)
-			afterTime = failureRateQueryAfterTime(now)
-			So(afterTime, ShouldEqual, time.Date(2022, time.March, 17, 1, 2, 3, 4, time.UTC))
 		})
 	})
 }
@@ -225,6 +177,18 @@ func TestValidateQueryFailureRateRequest(t *testing.T) {
 			req.TestVariants[1].TestId = ""
 			err := validateQueryTestVariantFailureRateRequest(req)
 			So(err, ShouldErrLike, `test_variants[1]: test_id missing`)
+		})
+
+		Convey("variant_hash invalid", func() {
+			req.TestVariants[1].VariantHash = "invalid"
+			err := validateQueryTestVariantFailureRateRequest(req)
+			So(err, ShouldErrLike, `test_variants[1]: variant_hash is not valid`)
+		})
+
+		Convey("variant_hash mismatch with variant", func() {
+			req.TestVariants[1].VariantHash = "0123456789abcdef"
+			err := validateQueryTestVariantFailureRateRequest(req)
+			So(err, ShouldErrLike, `test_variants[1]: variant and variant_hash mismatch`)
 		})
 
 		Convey("duplicate test variants", func() {

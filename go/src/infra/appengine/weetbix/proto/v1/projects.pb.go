@@ -239,7 +239,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ProjectsClient interface {
-	// Lists Projects visible to the user.
+	// Lists LUCI Projects visible to the user.
 	//
 	// RPC compliant with https://google.aip.dev/132.
 	// This RPC is incomplete. Future breaking changes are
@@ -282,7 +282,7 @@ func (c *projectsClient) List(ctx context.Context, in *ListProjectsRequest, opts
 
 // ProjectsServer is the server API for Projects service.
 type ProjectsServer interface {
-	// Lists Projects visible to the user.
+	// Lists LUCI Projects visible to the user.
 	//
 	// RPC compliant with https://google.aip.dev/132.
 	// This RPC is incomplete. Future breaking changes are

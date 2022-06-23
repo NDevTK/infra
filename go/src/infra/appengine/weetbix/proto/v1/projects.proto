@@ -14,7 +14,7 @@ import "infra/appengine/weetbix/proto/v1/project.proto";
 // Provides methods to access the projects which are using Weetbix.
 service Projects {
 
-  // Lists Projects visible to the user.
+  // Lists LUCI Projects visible to the user.
   //
   // RPC compliant with https://google.aip.dev/132.
   // This RPC is incomplete. Future breaking changes are

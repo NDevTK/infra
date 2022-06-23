@@ -81,10 +81,10 @@ func extractIngestionContext(task *taskspb.IngestTestResults, build *bbpb.Build,
 	gerritChanges := build.GetInput().GetGerritChanges()
 	changelists := make([]testresults.Changelist, 0, len(gerritChanges))
 	for _, change := range gerritChanges {
-		if !strings.HasSuffix(change.Host, "-review.googlesource.com") {
-			return nil, nil, fmt.Errorf(`gerrit host %q does not end in expected suffix "-review.googlesource.com"`, change.Host)
+		if !strings.HasSuffix(change.Host, testresults.GerritHostnameSuffix) {
+			return nil, nil, fmt.Errorf(`gerrit host %q does not end in expected suffix %q`, change.Host, testresults.GerritHostnameSuffix)
 		}
-		host := strings.TrimSuffix(change.Host, "-review.googlesource.com")
+		host := strings.TrimSuffix(change.Host, testresults.GerritHostnameSuffix)
 		changelists = append(changelists, testresults.Changelist{
 			Host:     host,
 			Change:   change.Change,
