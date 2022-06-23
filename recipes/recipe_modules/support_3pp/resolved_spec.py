@@ -77,7 +77,8 @@ class ResolvedSpec(object):
   It has helper methods and properties to read the resolved data.
   """
   def __init__(self, api, cipd_spec_pool, package_prefix, source_cache_prefix,
-               cipd_pkg_name, platform, pkg_dir, spec, deps, unpinned_tools):
+               cipd_pkg_name, platform, pkg_dir, spec, deps, unpinned_tools,
+               external_tool_specs, external_dep_specs):
     self._api = api
     self._package_prefix = package_prefix.strip('/')
     self._source_cache_prefix = source_cache_prefix.strip('/')
@@ -91,6 +92,8 @@ class ResolvedSpec(object):
     self._spec_pb = spec                  # spec_pb2.Spec
     self._deps = deps                     # list[ResolvedSpec]
     self._unpinned_tools = unpinned_tools # list[ResolvedSpec]
+    self._external_tool_specs = external_tool_specs  # list[CIPDSpec]
+    self._external_dep_specs = external_dep_specs  # list[CIPDSpec]
 
     self._all_deps_and_tools = set()
     for d in self._deps:
@@ -201,6 +204,22 @@ class ResolvedSpec(object):
       name, version = parse_name_version(t)
       if version != 'latest':
         yield name, version
+
+  @property
+  def external_tool_specs(self):
+    """A list of CIPDSpec objects for external tool dependencies.
+
+    These packages must already exist on the CIPD server.
+    """
+    return self._external_tool_specs
+
+  @property
+  def external_dep_specs(self):
+    """A list of CIPDSpec objects for external build dependencies.
+
+    These packages must already exist on the CIPD server.
+    """
+    return self._external_dep_specs
 
   @property
   def all_possible_deps(self):

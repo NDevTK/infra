@@ -982,3 +982,37 @@ def GenTests(api):
       api.step_data('compute build plan') +
       api.post_process(post_process.StatusFailure))
   yield test
+
+  spec = '''
+  create {
+    source { script { name: "fetch.py" } }
+    build { external_tool: "infra/tools/external/${platform}@1.4.1" }
+  }
+  upload { pkg_prefix: "tools" }
+  '''
+  yield (api.test('external-tool') + api.platform('linux', 64) +
+         api.properties(GOOS='linux', GOARCH='arm64') +
+         api.properties(key_path=KEY_PATH) + api.step_data(
+             'find package specs',
+             api.file.glob_paths(['dir_build_tools/external_tool/3pp.pb'])) +
+         api.step_data(
+             mk_name("load package specs",
+                     "read 'dir_build_tools/external_tool/3pp.pb'"),
+             api.file.read_text(spec)))
+
+  spec = '''
+  create {
+    source { script { name: "fetch.py" } }
+    build { external_dep: "infra/libs/external/${platform}@1.4.1" }
+  }
+  upload { pkg_prefix: "tools" }
+  '''
+  yield (api.test('external-dep') + api.platform('linux', 64) +
+         api.properties(GOOS='linux', GOARCH='arm64') +
+         api.properties(key_path=KEY_PATH) + api.step_data(
+             'find package specs',
+             api.file.glob_paths(['dir_build_tools/external_dep/3pp.pb'])) +
+         api.step_data(
+             mk_name("load package specs",
+                     "read 'dir_build_tools/external_dep/3pp.pb'"),
+             api.file.read_text(spec)))

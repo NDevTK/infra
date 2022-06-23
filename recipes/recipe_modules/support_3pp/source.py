@@ -228,24 +228,23 @@ def fetch_source(api,
     for pkg in cipd_pkgs:
       pkg.deploy(root)
 
-  if spec.create_pb.build.tool:
+  if spec.create_pb.build.tool or spec.external_tool_specs:
     with api.step.nest('installing tools'):
       # ensure all our dependencies are built (should be handled by
       # ensure_uploaded, but just in case).
-      _ensure_installed(workdir.tools_prefix, [
-        ensure_built(tool, 'latest')
-        for tool in spec.unpinned_tools
-      ] + [
-        spec_lookup(tool, spec.tool_platform).cipd_spec(tool_version)
-        for tool, tool_version in spec.pinned_tool_info
-      ])
+      _ensure_installed(
+          workdir.tools_prefix,
+          [ensure_built(tool, 'latest') for tool in spec.unpinned_tools] + [
+              spec_lookup(tool, spec.tool_platform).cipd_spec(tool_version)
+              for tool, tool_version in spec.pinned_tool_info
+          ] + spec.external_tool_specs)
 
-  if spec.create_pb.build.dep:
+  if spec.create_pb.build.dep or spec.external_dep_specs:
     with api.step.nest('installing deps'):
-      _ensure_installed(workdir.deps_prefix, [
-        ensure_built(dep, 'latest')
-        for dep in spec.all_possible_deps
-      ])
+      _ensure_installed(
+          workdir.deps_prefix,
+          [ensure_built(dep, 'latest') for dep in spec.all_possible_deps] +
+          spec.external_dep_specs)
 
   # Building a CIPDSpec for source package at resolved version
   source_cipd_spec = spec.source_cipd_spec(version)

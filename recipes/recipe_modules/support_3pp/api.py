@@ -542,10 +542,23 @@ class Support3ppApi(recipe_api.RecipeApi):
       if tool_version == 'latest':
         unpinned_tools.append(self._resolve_for(tool_cipd_pkg_name, tool_plat))
 
-    ret = ResolvedSpec(
-      self.m, self._cipd_spec_pool, self.package_prefix(create_pb.experimental),
-      self._source_cache_prefix, cipd_pkg_name, platform, pkg_dir, spec, deps,
-      unpinned_tools)
+    # Parse external CIPD package specs.
+    external_tools = []
+    for tool in create_pb.build.external_tool:
+      name, version = parse_name_version(tool)
+      name = name.replace('${platform}', tool_plat)
+      external_tools.append(self._cipd_spec_pool.get(name, version))
+    external_deps = []
+    for dep in create_pb.build.external_dep:
+      name, version = parse_name_version(dep)
+      name = name.replace('${platform}', platform)
+      external_deps.append(self._cipd_spec_pool.get(name, version))
+
+    ret = ResolvedSpec(self.m, self._cipd_spec_pool,
+                       self.package_prefix(create_pb.experimental),
+                       self._source_cache_prefix, cipd_pkg_name, platform,
+                       pkg_dir, spec, deps, unpinned_tools, external_tools,
+                       external_deps)
     self._resolved_packages[key] = ret
     return ret
 

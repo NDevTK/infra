@@ -158,6 +158,20 @@ message Spec {
       // or unspecified, they may be built if they're not already in CIPD.
       repeated string tool = 2;
 
+      // (optional) List of non-3pp packages to be installed as tools.
+      //
+      // These may reference an arbitrary CIPD package, including a 3pp package
+      // from a different repo. A version tag is required, using the following
+      // format:
+      //
+      //  cipd/pkg/path@version
+      //
+      //  e.g. `infra/tools/foo@1.3.1`
+      //
+      // The package path may contain ${platform} which will be expanded for the
+      // host platform.
+      repeated string external_tool = 6;
+
       // (optional) List of other 3pp packages built for the target and passed
       // to the install command.
       //
@@ -167,6 +181,20 @@ message Spec {
       // the `source` of the indicated deps. If you want to update the deps,
       // update their source entry to pull a different version.
       repeated string dep = 3;
+
+      // (optional) List of non-3pp packages to be installed as deps.
+      //
+      // These may reference an arbitrary CIPD package, including a 3pp package
+      // from a different repo. A version tag is required, using the following
+      // format:
+      //
+      //  cipd/pkg/path@version
+      //
+      //  e.g. `infra/tools/foo@1.3.1`
+      //
+      // The package path may contain ${platform} which will be expanded for the
+      // target platform.
+      repeated string external_dep = 7;
 
       // TODO: options for controlling toolchain
 
