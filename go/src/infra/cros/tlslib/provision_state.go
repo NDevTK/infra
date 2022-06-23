@@ -319,7 +319,7 @@ func (p *provisionState) installStateful(ctx context.Context) error {
 	}
 	return runCmdRetry(ctx, p.c, 5, strings.Join([]string{
 		fmt.Sprintf("rm -rf %[1]s %[2]s/var_new %[2]s/dev_image_new", updateStatefulFilePath, statefulPath),
-		fmt.Sprintf("curl -S -s -v -# -C - --retry 3 --retry-delay 60 %s | tar --ignore-command-error --overwrite --directory=%s -xzf -", url, statefulPath),
+		fmt.Sprintf("curl -S -s -v -# -C - --retry 3 --retry-delay 60 %s | tar --ignore-command-error --overwrite --selinux --directory=%s -xzf -", url, statefulPath),
 		fmt.Sprintf("echo -n clobber > %s", updateStatefulFilePath),
 	}, " && "))
 }
