@@ -45,13 +45,13 @@ const FailuresTableHead = ({
           </TableSortLabel>
         </TableCell>
         <TableCell
-          sortDirection={sortMetric === 'testRunFailures' ? (isAscending ? 'asc' : 'desc') : false}
+          sortDirection={sortMetric === 'criticalFailuresExonerated' ? (isAscending ? 'asc' : 'desc') : false}
           sx={{ cursor: 'pointer' }}>
           <TableSortLabel
-            active={sortMetric === 'testRunFailures'}
+            active={sortMetric === 'criticalFailuresExonerated'}
             direction={isAscending ? 'asc' : 'desc'}
-            onClick={() => toggleSort('testRunFailures')}>
-              Test Runs Failed
+            onClick={() => toggleSort('criticalFailuresExonerated')}>
+              Presubmit-Blocking Failures Exonerated
           </TableSortLabel>
         </TableCell>
         <TableCell
@@ -61,7 +61,7 @@ const FailuresTableHead = ({
             active={sortMetric === 'failures'}
             direction={isAscending ? 'asc' : 'desc'}
             onClick={() => toggleSort('failures')}>
-              Unexpected Failures
+              Total Failures
           </TableSortLabel>
         </TableCell>
         <TableCell

@@ -27,8 +27,8 @@ describe('Test FailureTableHead', () => {
 
     expect(screen.getByText('User Cls Failed Presubmit')).toBeInTheDocument();
     expect(screen.getByText('Builds Failed')).toBeInTheDocument();
-    expect(screen.getByText('Test Runs Failed')).toBeInTheDocument();
-    expect(screen.getByText('Unexpected Failures')).toBeInTheDocument();
+    expect(screen.getByText('Presubmit-Blocking Failures Exonerated')).toBeInTheDocument();
+    expect(screen.getByText('Total Failures')).toBeInTheDocument();
     expect(screen.getByText('Latest Failure Time')).toBeInTheDocument();
   });
 });

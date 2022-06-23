@@ -165,6 +165,10 @@ message ImpactThreshold {
   // The number of presubmit runs that failed.
   MetricThreshold presubmit_runs_failed = 6;
 
+  // The number of test failures on critical builders that were exonerated,
+  // with an exoneration reason other than NOT_CRITICAL.
+  MetricThreshold critical_failures_exonerated = 7;
+
   // Deprecated. No longer has any effect. Retained for textproto
   // compatibility only.
   optional int64 unexpected_failures_1d = 1;

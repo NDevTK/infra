@@ -176,7 +176,7 @@ export class FailureTable extends LitElement {
         : group.presubmitRejects}
                 </td>
                 <td class="number">${group.invocationFailures}</td>
-                <td class="number">${group.testRunFailures}</td>
+                <td class="number">${group.criticalFailuresExonerated}</td>
                 <td class="number">${group.failures}</td>
                 <td>${DateTime.fromISO(group.latestFailureTime).toRelative()}</td>
             </tr>
@@ -221,12 +221,12 @@ export class FailureTable extends LitElement {
                             Builds Failed
                             ${this.sortMetric === 'invocationFailures' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
                         </th>
-                        <th class="sortable" @click=${() => this.toggleSort('testRunFailures')}>
-                            Test Runs Failed
-                            ${this.sortMetric === 'testRunFailures' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
+                        <th class="sortable" @click=${() => this.toggleSort('criticalFailuresExonerated')}>
+                            Presubmit-Blocking Failures Exonerated
+                            ${this.sortMetric === 'criticalFailuresExonerated' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
                         </th>
                         <th class="sortable" @click=${() => this.toggleSort('failures')}>
-                            Unexpected Failures
+                            Total Failures
                             ${this.sortMetric === 'failures' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
                         </th>
                         <th class="sortable" @click=${() => this.toggleSort('latestFailureTime')}>

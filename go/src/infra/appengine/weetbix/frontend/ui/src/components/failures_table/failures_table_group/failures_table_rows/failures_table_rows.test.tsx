@@ -24,7 +24,7 @@ describe('Test FailureTableRows component', () => {
         .withFailures(2)
         .withPresubmitRejects(3)
         .withInvocationFailures(4)
-        .withTestRunFailures(5)
+        .withCriticalFailuresExonerated(5)
         .build();
     render(
         <table>
@@ -40,7 +40,7 @@ describe('Test FailureTableRows component', () => {
 
     expect(screen.getByText(mockGroup.presubmitRejects)).toBeInTheDocument();
     expect(screen.getByText(mockGroup.invocationFailures)).toBeInTheDocument();
-    expect(screen.getByText(mockGroup.testRunFailures)).toBeInTheDocument();
+    expect(screen.getByText(mockGroup.criticalFailuresExonerated)).toBeInTheDocument();
     expect(screen.getByText(mockGroup.failures)).toBeInTheDocument();
     expect(screen.getByText(dayjs(mockGroup.latestFailureTime).fromNow())).toBeInTheDocument();
   });
@@ -51,7 +51,7 @@ describe('Test FailureTableRows component', () => {
         .withFailures(2)
         .withPresubmitRejects(3)
         .withInvocationFailures(4)
-        .withTestRunFailures(5)
+        .withCriticalFailuresExonerated(5)
         .build();
     render(
         <table>

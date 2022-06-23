@@ -182,6 +182,12 @@ func TestProjectConfigValidator(t *testing.T) {
 				bugFilingThres := cfg.BugFilingThreshold
 
 				// Test validation applies to all metrics.
+				Convey("critical test failures exonerated", func() {
+					bugFilingThres.CriticalFailuresExonerated = &configpb.MetricThreshold{OneDay: proto.Int64(70)}
+					lastPriority.Threshold.CriticalFailuresExonerated = nil
+					So(validate(cfg), ShouldErrLike, "critical_failures_exonerated / one_day): one_day threshold must be set, with a value of at most 70")
+				})
+
 				Convey("test results failed", func() {
 					bugFilingThres.TestResultsFailed = &configpb.MetricThreshold{OneDay: proto.Int64(100)}
 					lastPriority.Threshold.TestResultsFailed = nil
@@ -271,6 +277,7 @@ func TestProjectConfigValidator(t *testing.T) {
 
 		Convey("handles unset metric thresholds", func() {
 			threshold := cfg.BugFilingThreshold
+			threshold.CriticalFailuresExonerated = nil
 			threshold.TestResultsFailed = nil
 			threshold.TestRunsFailed = nil
 			threshold.PresubmitRunsFailed = nil
@@ -295,6 +302,11 @@ func TestProjectConfigValidator(t *testing.T) {
 			})
 
 			// Test by metric.
+			Convey("critical test failures exonerated", func() {
+				threshold.CriticalFailuresExonerated = &configpb.MetricThreshold{OneDay: proto.Int64(-1)}
+				So(validate(cfg), ShouldErrLike, "value must be non-negative")
+			})
+
 			Convey("test results failed", func() {
 				threshold.TestResultsFailed = &configpb.MetricThreshold{OneDay: proto.Int64(-1)}
 				So(validate(cfg), ShouldErrLike, "value must be non-negative")

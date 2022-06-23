@@ -17,6 +17,9 @@ export interface Cluster {
     clusterId: ClusterId;
     title: string;
     failureAssociationRule: string;
+    criticalFailuresExonerated1d: Counts;
+    criticalFailuresExonerated3d: Counts;
+    criticalFailuresExonerated7d: Counts;
     presubmitRejects1d: Counts;
     presubmitRejects3d: Counts;
     presubmitRejects7d: Counts;
@@ -30,11 +33,7 @@ export interface Cluster {
 
 export interface Counts {
     nominal: number;
-    preWeetbix: number;
-    preExoneration: number;
     residual: number;
-    residualPreWeetbix: number;
-    residualPreExoneration: number;
 }
 
 export interface ClusterId {

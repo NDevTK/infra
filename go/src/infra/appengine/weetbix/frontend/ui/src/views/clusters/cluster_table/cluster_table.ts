@@ -24,9 +24,6 @@ export class ClusterTable extends LitElement {
     @property({ type: Number })
     days: number = 1;
 
-    @property()
-    impactFilter: ImpactType = 'preWeetbix';
-
     @property({ type: Boolean })
     residual: boolean = true;
 
@@ -53,14 +50,6 @@ export class ClusterTable extends LitElement {
         const item = this.shadowRoot!.querySelector('#days [selected]');
         if (item) {
             this.days = parseInt(item.getAttribute('value') || '1');
-            this.requestUpdate();
-        }
-    }
-
-    onImpactFilterChanged() {
-        const item = this.shadowRoot!.querySelector('#impact-filter [selected]');
-        if (item) {
-            this.impactFilter = (item.getAttribute('value') || 'preWeetbix') as ImpactType;
             this.requestUpdate();
         }
     }
@@ -98,22 +87,13 @@ export class ClusterTable extends LitElement {
                 case 'failures':
                     counts = this.days === 1 ? c.failures1d : (this.days === 3 ? c.failures3d : c.failures7d);
                     break;
-                case 'testRunFailures':
-                    counts = this.days === 1 ? c.testRunFailures1d : (this.days === 3 ? c.testRunFailures3d : c.testRunFailures7d);
+                case 'criticalFailuresExonerated':
+                    counts = this.days === 1 ? c.criticalFailuresExonerated1d : (this.days === 3 ? c.criticalFailuresExonerated3d : c.criticalFailuresExonerated7d);
                     break;
                 default:
                     throw new Error('no such metric: ' + metric);
             }
-            switch (this.impactFilter) {
-                case 'nominal':
-                    return this.residual ? counts.residual : counts.nominal;
-                case 'preWeetbix':
-                    return this.residual ? counts.residualPreWeetbix : counts.preWeetbix;
-                case 'preExoneration':
-                    return this.residual ? counts.residualPreExoneration : counts.preExoneration;
-                default:
-                    throw new Error('no such impact filter: ' + this.impactFilter);
-            }
+            return this.residual ? counts.residual : counts.nominal;
         };
         const sortedClusters = [...this.clusters];
         sortedClusters.sort((c1, c2) => {
@@ -129,11 +109,6 @@ export class ClusterTable extends LitElement {
                 <mwc-list-item value="3">3 Days</mwc-list-item>
                 <mwc-list-item value="7">7 Days</mwc-list-item>
             </mwc-select>
-            <mwc-select id="impact-filter" outlined label="Impact" @change=${() => this.onImpactFilterChanged()}>
-                <mwc-list-item value="nominal">Actual Impact</mwc-list-item>
-                <mwc-list-item selected value="preWeetbix">Without Weetbix Exoneration</mwc-list-item>
-                <mwc-list-item value="preExoneration">Without All Exoneration</mwc-list-item>
-            </mwc-select>
             <mwc-formfield label="Exclude impact already counted against Bug Clusters from Suggested Clusters">
                 <mwc-checkbox checked class="child" @change=${() => {this.residual = !this.residual; this.requestUpdate();}} ?checked=${this.residual}></mwc-checkbox>
             </mwc-formfield>
@@ -146,12 +121,12 @@ export class ClusterTable extends LitElement {
                             User Cls Failed Presubmit
                             ${this.sortMetric === 'presubmitRejects' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
                         </th>
-                        <th class="sortable" @click=${() => this.sort('testRunFailures')}>
-                            Test Runs Failed
-                            ${this.sortMetric === 'testRunFailures' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
+                        <th class="sortable" @click=${() => this.sort('criticalFailuresExonerated')}>
+                            Presubmit-Blocking Failures Exonerated
+                            ${this.sortMetric === 'criticalFailuresExonerated' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
                         </th>
                         <th class="sortable" @click=${() => this.sort('failures')}>
-                            Unexpected Failures
+                            Total Failures
                             ${this.sortMetric === 'failures' ? html`<mwc-icon>${this.ascending ? 'expand_less' : 'expand_more'}</mwc-icon>` : null}
                         </th>
                     </tr>
@@ -174,7 +149,7 @@ export class ClusterTable extends LitElement {
                         </td>
                         <td class="number">
                             <a class="cluster-link" href=${clusterLink(c)}>
-                                ${metric(c, 'testRunFailures')}
+                                ${metric(c, 'criticalFailuresExonerated')}
                             </a>
                         </td>
                         <td class="number">
@@ -247,15 +222,16 @@ export class ClusterTable extends LitElement {
         `];
 }
 
-type ImpactType = 'nominal' | 'preWeetbix' | 'preExoneration';
-
-type MetricName = 'presubmitRejects' | 'testRunFailures' | 'failures';
+type MetricName = 'presubmitRejects' | 'criticalFailuresExonerated' | 'failures';
 
 // Cluster is the cluster information sent by the server.
 interface Cluster {
     clusterId: ClusterId;
     title: string;
     bugLink: BugLink;
+    criticalFailuresExonerated1d: Counts;
+    criticalFailuresExonerated3d: Counts;
+    criticalFailuresExonerated7d: Counts;
     presubmitRejects1d: Counts;
     presubmitRejects3d: Counts;
     presubmitRejects7d: Counts;
@@ -279,9 +255,5 @@ interface ClusterId {
 
 interface Counts {
     nominal: number;
-    preWeetbix: number;
-    preExoneration: number;
     residual: number;
-    residualPreWeetbix: number;
-    residualPreExoneration: number;
 }

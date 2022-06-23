@@ -70,7 +70,7 @@ describe('Test FailureTable component', () => {
     expect(allGroupCells[1]).toHaveTextContent('group2');
     expect(allGroupCells[2]).toHaveTextContent('group3');
 
-    await fireEvent.click(screen.getByText('Unexpected Failures'));
+    await fireEvent.click(screen.getByText('Total Failures'));
 
     allGroupCells = screen.getAllByTestId('failures_table_group_cell');
     expect(allGroupCells.length).toBe(3);
@@ -81,7 +81,7 @@ describe('Test FailureTable component', () => {
 
   it('when expanding then should show child groups', async () => {
     const mockFailures = [
-      newMockFailure().testRunBlocked().withTestId('group1').build(),
+      newMockFailure().withTestId('group1').build(),
       newMockFailure().withTestId('group1').build(),
       newMockFailure().withTestId('group1').build(),
     ];

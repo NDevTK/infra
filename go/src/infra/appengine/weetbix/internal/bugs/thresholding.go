@@ -20,9 +20,10 @@ import (
 // can never make a zero number non-zero or a non-zero number zero.
 func InflateThreshold(t *configpb.ImpactThreshold, inflationPercent int64) *configpb.ImpactThreshold {
 	return &configpb.ImpactThreshold{
-		PresubmitRunsFailed: inflateMetricThreshold(t.PresubmitRunsFailed, inflationPercent),
-		TestResultsFailed:   inflateMetricThreshold(t.TestResultsFailed, inflationPercent),
-		TestRunsFailed:      inflateMetricThreshold(t.TestRunsFailed, inflationPercent),
+		CriticalFailuresExonerated: inflateMetricThreshold(t.CriticalFailuresExonerated, inflationPercent),
+		PresubmitRunsFailed:        inflateMetricThreshold(t.PresubmitRunsFailed, inflationPercent),
+		TestResultsFailed:          inflateMetricThreshold(t.TestResultsFailed, inflationPercent),
+		TestRunsFailed:             inflateMetricThreshold(t.TestRunsFailed, inflationPercent),
 	}
 }
 
@@ -67,6 +68,9 @@ func inflateSingleThreshold(threshold *int64, inflationPercent int64) *int64 {
 // MeetsThreshold returns whether the nominal impact of the cluster meets
 // or exceeds the specified threshold.
 func (c *ClusterImpact) MeetsThreshold(t *configpb.ImpactThreshold) bool {
+	if c.CriticalFailuresExonerated.meetsThreshold(t.CriticalFailuresExonerated) {
+		return true
+	}
 	if c.TestResultsFailed.meetsThreshold(t.TestResultsFailed) {
 		return true
 	}
@@ -123,6 +127,7 @@ type ThresholdExplanation struct {
 // thresholds which would not have been met by the cluster's impact.
 func ExplainThresholdNotMet(threshold *configpb.ImpactThreshold) []ThresholdExplanation {
 	var results []ThresholdExplanation
+	results = append(results, explainMetricCriteriaNotMet("Presubmit-Blocking Failures Exonerated", threshold.CriticalFailuresExonerated)...)
 	results = append(results, explainMetricCriteriaNotMet("Presubmit Runs Failed", threshold.PresubmitRunsFailed)...)
 	results = append(results, explainMetricCriteriaNotMet("Test Runs Failed", threshold.TestRunsFailed)...)
 	results = append(results, explainMetricCriteriaNotMet("Test Results Failed", threshold.TestResultsFailed)...)
@@ -163,7 +168,11 @@ func explainMetricCriteriaNotMet(metric string, threshold *configpb.MetricThresh
 // its underlying thresholds, this returns an example of a threshold which a metric
 // value exceeded.
 func (c *ClusterImpact) ExplainThresholdMet(threshold *configpb.ImpactThreshold) ThresholdExplanation {
-	explanation := explainMetricThresholdMet("Presubmit Runs Failed", c.PresubmitRunsFailed, threshold.PresubmitRunsFailed)
+	explanation := explainMetricThresholdMet("Presubmit-Blocking Failures Exonerated", c.CriticalFailuresExonerated, threshold.CriticalFailuresExonerated)
+	if explanation != nil {
+		return *explanation
+	}
+	explanation = explainMetricThresholdMet("Presubmit Runs Failed", c.PresubmitRunsFailed, threshold.PresubmitRunsFailed)
 	if explanation != nil {
 		return *explanation
 	}

@@ -55,9 +55,15 @@ type ClusterSummary struct {
 	TestRunFails3d Counts `json:"testRunFailures3d"`
 	TestRunFails7d Counts `json:"testRunFailures7d"`
 	// Total test results with unexpected failures.
-	Failures1d           Counts              `json:"failures1d"`
-	Failures3d           Counts              `json:"failures3d"`
-	Failures7d           Counts              `json:"failures7d"`
+	Failures1d Counts `json:"failures1d"`
+	Failures3d Counts `json:"failures3d"`
+	Failures7d Counts `json:"failures7d"`
+	// Test failures exonerated on critical builders, and for an
+	// exoneration reason other than NOT_CRITICAL.
+	CriticalFailuresExonerated1d Counts `json:"criticalFailuresExonerated1d"`
+	CriticalFailuresExonerated3d Counts `json:"criticalFailuresExonerated3d"`
+	CriticalFailuresExonerated7d Counts `json:"criticalFailuresExonerated7d"`
+
 	ExampleFailureReason bigquery.NullString `json:"exampleFailureReason"`
 	// Top Test IDs included in the cluster, up to 5. Unless the cluster
 	// is empty, will always include at least one Test ID.
@@ -86,27 +92,11 @@ func (s *ClusterSummary) ExampleTestID() string {
 type Counts struct {
 	// The statistic value after impact has been reduced by exoneration.
 	Nominal int64 `json:"nominal"`
-	// The statistic value before impact has been reduced by Weetbix
-	// exoneration, but after it has been reduced by other exoneration.
-	PreWeetbix int64 `json:"preWeetbix"`
-	// The statistic value before impact has been reduced by any exoneration.
-	PreExoneration int64 `json:"preExoneration"`
 	// The statistic value:
 	// - excluding impact already counted under other higher-priority clusters
 	//   (I.E. bug clusters.)
 	// - after impact has been reduced by exoneration.
 	Residual int64 `json:"residual"`
-	// The statistic value:
-	// - excluding impact already counted under other higher-priority clusters
-	//   (I.E. bug clusters.)
-	// - before impact has been reduced by Weetbix exoneration, but after
-	//   it has been reduced by other exoneration.
-	ResidualPreWeetbix int64 `json:"residualPreWeetbix"`
-	// The statistic value:
-	// - excluding impact already counted under other higher-priority clusters
-	//   (I.E. bug clusters.)
-	// - before impact has been reduced by exoneration.
-	ResidualPreExoneration int64 `json:"residualPreExoneration"`
 }
 
 // TopCount captures the result of the APPROX_TOP_COUNT operator. See:
@@ -205,6 +195,9 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		return nil, errors.Annotate(err, "getting dataset").Err()
 	}
 
+	x := int64(1)
+	opts.Thresholds.CriticalFailuresExonerated = &configpb.MetricThreshold{SevenDay: &x}
+	whereCriticalFailuresExonerated, cfeParams := whereThresholdsMet("critical_failures_exonerated", opts.Thresholds.CriticalFailuresExonerated)
 	whereFailures, failuresParams := whereThresholdsMet("failures", opts.Thresholds.TestResultsFailed)
 	whereTestRuns, testRunsParams := whereThresholdsMet("test_run_fails", opts.Thresholds.TestRunsFailed)
 	wherePresubmits, presubmitParams := whereThresholdsMet("presubmit_rejects", opts.Thresholds.PresubmitRunsFailed)
@@ -212,6 +205,9 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 	q := c.client.Query(`
 		SELECT
 			STRUCT(cluster_algorithm AS Algorithm, cluster_id as ID) as ClusterID,` +
+		selectCounts("critical_failures_exonerated", "CriticalFailuresExonerated", "1d") +
+		selectCounts("critical_failures_exonerated", "CriticalFailuresExonerated", "3d") +
+		selectCounts("critical_failures_exonerated", "CriticalFailuresExonerated", "7d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "1d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "3d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "7d") +
@@ -224,10 +220,12 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 			example_failure_reason.primary_error_message as ExampleFailureReason,
 			top_test_ids as TopTestIDs
 		FROM cluster_summaries
-		WHERE (` + whereFailures + `) OR (` + whereTestRuns + `) OR (` + wherePresubmits + `)
+		WHERE (` + whereCriticalFailuresExonerated + `) OR (` + whereFailures + `) 
+		    OR (` + whereTestRuns + `) OR (` + wherePresubmits + `)
 		    OR (@alwaysIncludeBugClusters AND cluster_algorithm = @ruleAlgorithmName)
 		ORDER BY
 			presubmit_rejects_residual_1d DESC,
+			critical_failures_exonerated_residual_1d DESC,
 			test_run_fails_residual_1d DESC,
 			failures_residual_1d DESC
 	`)
@@ -243,6 +241,7 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 			Value: opts.AlwaysIncludeBugClusters,
 		},
 	}
+	params = append(params, cfeParams...)
 	params = append(params, failuresParams...)
 	params = append(params, testRunsParams...)
 	params = append(params, presubmitParams...)
@@ -320,11 +319,7 @@ func valueOrDefault(value *int64, defaultValue int64) int64 {
 func selectCounts(sqlPrefix, fieldPrefix, suffix string) string {
 	return `STRUCT(` +
 		sqlPrefix + `_` + suffix + ` AS Nominal,` +
-		sqlPrefix + `_pre_weetbix_` + suffix + ` AS PreWeetbix,` +
-		sqlPrefix + `_pre_exon_` + suffix + ` AS PreExoneration,` +
-		sqlPrefix + `_residual_` + suffix + ` AS Residual,` +
-		sqlPrefix + `_residual_pre_weetbix_` + suffix + ` AS ResidualPreWeetbix,` +
-		sqlPrefix + `_residual_pre_exon_` + suffix + ` AS ResidualPreExoneration` +
+		sqlPrefix + `_residual_` + suffix + ` AS Residual` +
 		`) AS ` + fieldPrefix + suffix + `,`
 }
 
@@ -334,9 +329,9 @@ func whereThresholdsMet(sqlPrefix string, threshold *configpb.MetricThreshold) (
 	if threshold == nil {
 		threshold = &configpb.MetricThreshold{}
 	}
-	sql := sqlPrefix + "_residual_pre_weetbix_1d >= @" + sqlPrefix + "_1d OR " +
-		sqlPrefix + "_residual_pre_weetbix_3d >= @" + sqlPrefix + "_3d OR " +
-		sqlPrefix + "_residual_pre_weetbix_7d >= @" + sqlPrefix + "_7d"
+	sql := sqlPrefix + "_residual_1d >= @" + sqlPrefix + "_1d OR " +
+		sqlPrefix + "_residual_3d >= @" + sqlPrefix + "_3d OR " +
+		sqlPrefix + "_residual_7d >= @" + sqlPrefix + "_7d"
 	parameters := []bigquery.QueryParameter{
 		{
 			Name:  sqlPrefix + "_1d",
@@ -364,6 +359,9 @@ func (c *Client) ReadCluster(ctx context.Context, luciProject string, clusterID 
 	q := c.client.Query(`
 		SELECT
 			STRUCT(cluster_algorithm AS Algorithm, cluster_id as ID) as ClusterID,` +
+		selectCounts("critical_failures_exonerated", "CriticalFailuresExonerated", "1d") +
+		selectCounts("critical_failures_exonerated", "CriticalFailuresExonerated", "3d") +
+		selectCounts("critical_failures_exonerated", "CriticalFailuresExonerated", "7d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "1d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "3d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "7d") +
@@ -424,8 +422,6 @@ type ClusterFailure struct {
 	IsBuildCritical             bigquery.NullBool      `json:"isBuildCritical"`
 	IngestedInvocationID        bigquery.NullString    `json:"ingestedInvocationId"`
 	IsIngestedInvocationBlocked bigquery.NullBool      `json:"isIngestedInvocationBlocked"`
-	TestRunIds                  []bigquery.NullString  `json:"testRunIds"`
-	IsTestRunBlocked            bigquery.NullBool      `json:"isTestRunBlocked"`
 	Count                       int32                  `json:"count"`
 }
 
@@ -486,11 +482,6 @@ func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, cl
 			ANY_VALUE(r.build_critical) as IsBuildCritical,
 			r.ingested_invocation_id as IngestedInvocationID,
 			ANY_VALUE(r.is_ingested_invocation_blocked) as IsIngestedInvocationBlocked,
-			ARRAY_AGG(DISTINCT r.test_run_id) as TestRunIds,
-			-- TODO: This is broken, is_test_run_blocked is not the same value for
-			-- every ingested_invocation_id as it is unique per test run per
-			-- ingested_invocation_id. This will behave non-deterministically.
-			ANY_VALUE(r.is_test_run_blocked) as IsTestRunBlocked,
 			count(*) as Count
 		FROM latest_failures_7d
 		WHERE cluster_algorithm = @clusterAlgorithm

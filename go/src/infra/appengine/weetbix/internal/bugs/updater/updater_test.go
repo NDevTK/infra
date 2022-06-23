@@ -217,14 +217,14 @@ func TestRun(t *testing.T) {
 			Convey("1d unexpected failures", func() {
 				Convey("Reason cluster", func() {
 					Convey("Above thresold", func() {
-						suggestedClusters[1].Failures1d.ResidualPreWeetbix = 100
+						suggestedClusters[1].Failures1d.Residual = 100
 						test()
 
 						// Further updates do nothing.
 						test()
 					})
 					Convey("Below threshold", func() {
-						suggestedClusters[1].Failures1d.ResidualPreWeetbix = 99
+						suggestedClusters[1].Failures1d.Residual = 99
 						expectCreate = false
 						test()
 					})
@@ -242,35 +242,35 @@ func TestRun(t *testing.T) {
 					// 34% more impact is required for a test name cluster to
 					// be filed, compared to a failure reason cluster.
 					Convey("Above thresold", func() {
-						suggestedClusters[1].Failures1d.ResidualPreWeetbix = 134
+						suggestedClusters[1].Failures1d.Residual = 134
 						test()
 
 						// Further updates do nothing.
 						test()
 					})
 					Convey("Below threshold", func() {
-						suggestedClusters[1].Failures1d.ResidualPreWeetbix = 133
+						suggestedClusters[1].Failures1d.Residual = 133
 						expectCreate = false
 						test()
 					})
 				})
 			})
 			Convey("3d unexpected failures", func() {
-				suggestedClusters[1].Failures3d.ResidualPreWeetbix = 300
+				suggestedClusters[1].Failures3d.Residual = 300
 				test()
 
 				// Further updates do nothing.
 				test()
 			})
 			Convey("7d unexpected failures", func() {
-				suggestedClusters[1].Failures7d.ResidualPreWeetbix = 700
+				suggestedClusters[1].Failures7d.Residual = 700
 				test()
 
 				// Further updates do nothing.
 				test()
 			})
 			Convey("With existing rule filed", func() {
-				suggestedClusters[1].Failures1d.ResidualPreWeetbix = 100
+				suggestedClusters[1].Failures1d.Residual = 100
 
 				createTime := time.Date(2021, time.January, 5, 12, 30, 0, 0, time.UTC)
 				rule := rules.NewRule(0).
@@ -308,7 +308,7 @@ func TestRun(t *testing.T) {
 				test()
 			})
 			Convey("With bug updates disabled", func() {
-				suggestedClusters[1].Failures1d.ResidualPreWeetbix = 100
+				suggestedClusters[1].Failures1d.Residual = 100
 
 				opts.enableBugUpdates = false
 
@@ -316,7 +316,7 @@ func TestRun(t *testing.T) {
 				test()
 			})
 			Convey("Without re-clustering caught up to latest algorithms", func() {
-				suggestedClusters[1].Failures1d.ResidualPreWeetbix = 100
+				suggestedClusters[1].Failures1d.Residual = 100
 
 				err = runs.SetRunsForTesting(ctx, []*runs.ReclusteringRun{
 					runs.NewRun(0).
@@ -332,7 +332,7 @@ func TestRun(t *testing.T) {
 				test()
 			})
 			Convey("Without re-clustering caught up to latest config", func() {
-				suggestedClusters[1].Failures1d.ResidualPreWeetbix = 100
+				suggestedClusters[1].Failures1d.Residual = 100
 
 				err = runs.SetRunsForTesting(ctx, []*runs.ReclusteringRun{
 					runs.NewRun(0).
@@ -351,13 +351,13 @@ func TestRun(t *testing.T) {
 		Convey("With both failure reason and test name clusters above bug-filing threshold", func() {
 			// Reason cluster above the 3-day failure threshold.
 			suggestedClusters[2] = makeReasonCluster(compiledCfg, 2)
-			suggestedClusters[2].Failures3d.ResidualPreWeetbix = 400
-			suggestedClusters[2].Failures7d.ResidualPreWeetbix = 400
+			suggestedClusters[2].Failures3d.Residual = 400
+			suggestedClusters[2].Failures7d.Residual = 400
 
 			// Test name cluster with 33% more impact.
 			suggestedClusters[1] = makeTestNameCluster(compiledCfg, 3)
-			suggestedClusters[1].Failures3d.ResidualPreWeetbix = 532
-			suggestedClusters[1].Failures7d.ResidualPreWeetbix = 532
+			suggestedClusters[1].Failures3d.Residual = 532
+			suggestedClusters[1].Failures7d.Residual = 532
 
 			// Limit to one bug filed each time, so that
 			// we test change throttling.
@@ -380,8 +380,8 @@ func TestRun(t *testing.T) {
 				// Reduce impact of the reason-based cluster so that the
 				// test name cluster has >34% more impact than the reason
 				// cluster.
-				suggestedClusters[2].Failures3d.ResidualPreWeetbix = 390
-				suggestedClusters[2].Failures7d.ResidualPreWeetbix = 390
+				suggestedClusters[2].Failures3d.Residual = 390
+				suggestedClusters[2].Failures7d.Residual = 390
 
 				err = updateAnalysisAndBugsForProject(ctx, opts)
 				So(err, ShouldBeNil)
@@ -404,14 +404,14 @@ func TestRun(t *testing.T) {
 			// Use a mix of test name and failure reason clusters for
 			// code path coverage.
 			suggestedClusters[0] = makeTestNameCluster(compiledCfg, 0)
-			suggestedClusters[0].Failures7d.ResidualPreWeetbix = 940
+			suggestedClusters[0].Failures7d.Residual = 940
 			suggestedClusters[1] = makeReasonCluster(compiledCfg, 1)
-			suggestedClusters[1].Failures3d.ResidualPreWeetbix = 300
-			suggestedClusters[1].Failures7d.ResidualPreWeetbix = 300
+			suggestedClusters[1].Failures3d.Residual = 300
+			suggestedClusters[1].Failures7d.Residual = 300
 			suggestedClusters[2] = makeReasonCluster(compiledCfg, 2)
-			suggestedClusters[2].Failures1d.ResidualPreWeetbix = 200
-			suggestedClusters[2].Failures3d.ResidualPreWeetbix = 200
-			suggestedClusters[2].Failures7d.ResidualPreWeetbix = 200
+			suggestedClusters[2].Failures1d.Residual = 200
+			suggestedClusters[2].Failures3d.Residual = 200
+			suggestedClusters[2].Failures7d.Residual = 200
 
 			// Limit to one bug filed each time, so that
 			// we test change throttling.
@@ -506,7 +506,7 @@ func TestRun(t *testing.T) {
 					originalStatus := issue.Status.Status
 					So(originalStatus, ShouldNotEqual, monorail.VerifiedStatus)
 
-					SetResidualPreWeetbixImpact(
+					SetResidualImpact(
 						bugClusters[1], monorail.ChromiumClosureImpact())
 					err = updateAnalysisAndBugsForProject(ctx, opts)
 					So(err, ShouldBeNil)
@@ -532,12 +532,12 @@ func TestRun(t *testing.T) {
 				bugClusters[2].Failures7d = suggestedClusters[2].Failures7d
 
 				// Clear residual impact on suggested clusters
-				suggestedClusters[0].Failures7d.ResidualPreWeetbix = 0
-				suggestedClusters[1].Failures3d.ResidualPreWeetbix = 0
-				suggestedClusters[1].Failures7d.ResidualPreWeetbix = 0
-				suggestedClusters[2].Failures1d.ResidualPreWeetbix = 0
-				suggestedClusters[2].Failures3d.ResidualPreWeetbix = 0
-				suggestedClusters[2].Failures7d.ResidualPreWeetbix = 0
+				suggestedClusters[0].Failures7d.Residual = 0
+				suggestedClusters[1].Failures3d.Residual = 0
+				suggestedClusters[1].Failures7d.Residual = 0
+				suggestedClusters[2].Failures1d.Residual = 0
+				suggestedClusters[2].Failures3d.Residual = 0
+				suggestedClusters[2].Failures7d.Residual = 0
 
 				// Mark reclustering complete.
 				err := runs.SetRunsForTesting(ctx, []*runs.ReclusteringRun{
@@ -562,7 +562,7 @@ func TestRun(t *testing.T) {
 					So(originalPriority, ShouldNotEqual, "0")
 
 					// Set P0 impact on the cluster.
-					SetResidualPreWeetbixImpact(
+					SetResidualImpact(
 						bugClusters[2], monorail.ChromiumP0Impact())
 					err = updateAnalysisAndBugsForProject(ctx, opts)
 					So(err, ShouldBeNil)
@@ -579,7 +579,7 @@ func TestRun(t *testing.T) {
 					So(issue.Name, ShouldEqual, "projects/chromium/issues/102")
 					So(monorail.ChromiumTestIssuePriority(issue), ShouldNotEqual, "0")
 
-					SetResidualPreWeetbixImpact(
+					SetResidualImpact(
 						bugClusters[2], monorail.ChromiumP0Impact())
 					err = updateAnalysisAndBugsForProject(ctx, opts)
 					So(err, ShouldBeNil)
@@ -596,7 +596,7 @@ func TestRun(t *testing.T) {
 					So(issue.Name, ShouldEqual, "projects/chromium/issues/102")
 					So(monorail.ChromiumTestIssuePriority(issue), ShouldNotEqual, "3")
 
-					SetResidualPreWeetbixImpact(
+					SetResidualImpact(
 						bugClusters[2], monorail.ChromiumP3Impact())
 					err = updateAnalysisAndBugsForProject(ctx, opts)
 					So(err, ShouldBeNil)
@@ -634,9 +634,9 @@ func makeTestNameCluster(config *compiledcfg.ProjectConfig, uniqifier int) *anal
 	testID := fmt.Sprintf("testname-%v", uniqifier)
 	return &analysis.ClusterSummary{
 		ClusterID:  testIDClusterID(config, testID),
-		Failures1d: analysis.Counts{ResidualPreWeetbix: 9},
-		Failures3d: analysis.Counts{ResidualPreWeetbix: 29},
-		Failures7d: analysis.Counts{ResidualPreWeetbix: 69},
+		Failures1d: analysis.Counts{Residual: 9},
+		Failures3d: analysis.Counts{Residual: 29},
+		Failures7d: analysis.Counts{Residual: 69},
 		TopTestIDs: []analysis.TopCount{{Value: testID, Count: 1}},
 	}
 }
@@ -653,9 +653,9 @@ func makeReasonCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analys
 
 	return &analysis.ClusterSummary{
 		ClusterID:  reasonClusterID(config, reason),
-		Failures1d: analysis.Counts{ResidualPreWeetbix: 9},
-		Failures3d: analysis.Counts{ResidualPreWeetbix: 29},
-		Failures7d: analysis.Counts{ResidualPreWeetbix: 69},
+		Failures1d: analysis.Counts{Residual: 9},
+		Failures3d: analysis.Counts{Residual: 29},
+		Failures7d: analysis.Counts{Residual: 69},
 		TopTestIDs: []analysis.TopCount{
 			{Value: fmt.Sprintf("testname-a-%v", uniqifier), Count: 1},
 			{Value: fmt.Sprintf("testname-b-%v", uniqifier), Count: 1},
@@ -667,9 +667,9 @@ func makeReasonCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analys
 func makeBugCluster(ruleID string) *analysis.ClusterSummary {
 	return &analysis.ClusterSummary{
 		ClusterID:  bugClusterID(ruleID),
-		Failures1d: analysis.Counts{ResidualPreWeetbix: 9},
-		Failures3d: analysis.Counts{ResidualPreWeetbix: 29},
-		Failures7d: analysis.Counts{ResidualPreWeetbix: 69},
+		Failures1d: analysis.Counts{Residual: 9},
+		Failures3d: analysis.Counts{Residual: 29},
+		Failures7d: analysis.Counts{Residual: 69},
 		TopTestIDs: []analysis.TopCount{{Value: "testname-0", Count: 1}},
 	}
 }
@@ -722,23 +722,29 @@ func (f *fakeAnalysisClient) ReadImpactfulClusters(ctx context.Context, opts ana
 	var results []*analysis.ClusterSummary
 	for _, c := range f.clusters {
 		include := opts.AlwaysIncludeBugClusters && c.ClusterID.IsBugCluster()
+		if opts.Thresholds.CriticalFailuresExonerated != nil {
+			include = include ||
+				meetsThreshold(c.CriticalFailuresExonerated1d.Residual, opts.Thresholds.CriticalFailuresExonerated.OneDay) ||
+				meetsThreshold(c.CriticalFailuresExonerated3d.Residual, opts.Thresholds.CriticalFailuresExonerated.ThreeDay) ||
+				meetsThreshold(c.CriticalFailuresExonerated7d.Residual, opts.Thresholds.CriticalFailuresExonerated.SevenDay)
+		}
 		if opts.Thresholds.TestResultsFailed != nil {
 			include = include ||
-				meetsThreshold(c.Failures1d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.OneDay) ||
-				meetsThreshold(c.Failures3d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.ThreeDay) ||
-				meetsThreshold(c.Failures7d.ResidualPreWeetbix, opts.Thresholds.TestResultsFailed.SevenDay)
+				meetsThreshold(c.Failures1d.Residual, opts.Thresholds.TestResultsFailed.OneDay) ||
+				meetsThreshold(c.Failures3d.Residual, opts.Thresholds.TestResultsFailed.ThreeDay) ||
+				meetsThreshold(c.Failures7d.Residual, opts.Thresholds.TestResultsFailed.SevenDay)
 		}
 		if opts.Thresholds.TestRunsFailed != nil {
 			include = include ||
-				meetsThreshold(c.TestRunFails1d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.OneDay) ||
-				meetsThreshold(c.TestRunFails3d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.ThreeDay) ||
-				meetsThreshold(c.TestRunFails7d.ResidualPreWeetbix, opts.Thresholds.TestRunsFailed.SevenDay)
+				meetsThreshold(c.TestRunFails1d.Residual, opts.Thresholds.TestRunsFailed.OneDay) ||
+				meetsThreshold(c.TestRunFails3d.Residual, opts.Thresholds.TestRunsFailed.ThreeDay) ||
+				meetsThreshold(c.TestRunFails7d.Residual, opts.Thresholds.TestRunsFailed.SevenDay)
 		}
 		if opts.Thresholds.PresubmitRunsFailed != nil {
 			include = include ||
-				meetsThreshold(c.PresubmitRejects1d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.OneDay) ||
-				meetsThreshold(c.PresubmitRejects3d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.ThreeDay) ||
-				meetsThreshold(c.PresubmitRejects7d.ResidualPreWeetbix, opts.Thresholds.PresubmitRunsFailed.SevenDay)
+				meetsThreshold(c.PresubmitRejects1d.Residual, opts.Thresholds.PresubmitRunsFailed.OneDay) ||
+				meetsThreshold(c.PresubmitRejects3d.Residual, opts.Thresholds.PresubmitRunsFailed.ThreeDay) ||
+				meetsThreshold(c.PresubmitRejects7d.Residual, opts.Thresholds.PresubmitRunsFailed.SevenDay)
 		}
 		if include {
 			results = append(results, c)

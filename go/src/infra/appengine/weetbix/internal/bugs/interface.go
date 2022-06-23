@@ -30,9 +30,10 @@ type CreateRequest struct {
 // ClusterImpact captures details of a cluster's impact, as needed
 // to control the priority and verified status of bugs.
 type ClusterImpact struct {
-	TestResultsFailed   MetricImpact
-	TestRunsFailed      MetricImpact
-	PresubmitRunsFailed MetricImpact
+	CriticalFailuresExonerated MetricImpact
+	TestResultsFailed          MetricImpact
+	TestRunsFailed             MetricImpact
+	PresubmitRunsFailed        MetricImpact
 }
 
 // MetricImpact captures impact measurements for one metric, over

@@ -29,21 +29,14 @@ class ClusterFailureBuilder {
       isBuildCritical: true,
       ingestedInvocationId: 'ingestedInvocationId',
       isIngestedInvocationBlocked: false,
-      testRunIds: ['testRunId'],
-      isTestRunBlocked: false,
       count: 1,
     };
   }
   build(): ClusterFailure {
     return this.failure;
   }
-  testRunBlocked() {
-    this.failure.isTestRunBlocked = true;
-    return this;
-  }
   ingestedInvocationBlocked() {
     this.failure.isIngestedInvocationBlocked = true;
-    this.failure.isTestRunBlocked = true;
     return this;
   }
   notPresubmitCritical() {
@@ -96,8 +89,8 @@ class FailureGroupBuilder {
       id: name,
       name,
       children: [],
+      criticalFailuresExonerated: 0,
       failures: 0,
-      testRunFailures: 0,
       invocationFailures: 0,
       presubmitRejects: 0,
       latestFailureTime: dayjs().toISOString(),
@@ -121,8 +114,8 @@ class FailureGroupBuilder {
     return this;
   }
 
-  withTestRunFailures(testRunFailures: number) {
-    this.failureGroup.testRunFailures = testRunFailures;
+  withCriticalFailuresExonerated(criticalFailuresExonerated: number) {
+    this.failureGroup.criticalFailuresExonerated = criticalFailuresExonerated;
     return this;
   }
 

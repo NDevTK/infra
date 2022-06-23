@@ -60,10 +60,14 @@ const clusterSummariesAnalysis = `
 	  r.is_included_with_high_priority,
 	  (ARRAY_LENGTH(r.exonerations) > 0) as is_exonerated,
 	  r.build_status = 'FAILURE' as build_failed,
-	  (EXISTS
-		(SELECT TRUE FROM UNNEST(r.exonerations) e
-	     WHERE e.Reason <> 'OCCURS_ON_MAINLINE'
-		   AND e.Reason <> 'OCCURS_ON_OTHER_CLS')) as is_exonerated_pre_weetbix,
+	  -- Presubmit run and tryjob is critical, and
+	  (r.build_critical AND
+		-- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
+		-- Passes are not ingested by Weetbix, but if a test has both an unexpected pass
+		-- and an unexpected failure, it will be exonerated for the unexpected pass.
+		(EXISTS
+		  (SELECT TRUE FROM UNNEST(r.exonerations) e
+		  WHERE e.Reason = 'OCCURS_ON_MAINLINE' OR e.Reason = 'OCCURS_ON_OTHER_CLS'))) as is_critical_and_exonerated,
 	  r.test_id,
 	  r.failure_reason,
 	  r.test_run_id,
@@ -89,63 +93,33 @@ const clusterSummariesAnalysis = `
 
 	  -- 1 day metrics.
 	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_weetbix_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_exon_1d,
 	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_weetbix_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_presubmit_reject AND is_included_with_high_priority, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_exon_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND NOT is_exonerated_pre_weetbix, test_run_id, NULL)) as test_run_fails_pre_weetbix_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail, test_run_id, NULL)) as  test_run_fails_pre_exon_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_residual_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, test_run_id, NULL)) as test_run_fails_residual_pre_weetbix_1d,
-	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND is_included_with_high_priority, test_run_id, NULL)) as  test_run_fails_residual_pre_exon_1d,
-	  COUNTIF(is_1d AND NOT is_exonerated) as failures_1d,
-	  COUNTIF(is_1d AND NOT is_exonerated_pre_weetbix) as failures_pre_weetbix_1d,
-	  COUNTIF(is_1d) AS failures_pre_exon_1d,
-	  COUNTIF(is_1d AND is_included_with_high_priority AND NOT is_exonerated) as failures_residual_1d,
-	  COUNTIF(is_1d AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix) as failures_residual_pre_weetbix_1d,
-	  COUNTIF(is_1d AND is_included_with_high_priority) as failures_residual_pre_exon_1d,
+	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail, test_run_id, NULL)) as test_run_fails_1d,
+	  COUNT(DISTINCT IF(is_1d AND is_test_run_fail AND is_included_with_high_priority, test_run_id, NULL)) as test_run_fails_residual_1d,
+	  COUNTIF(is_1d) as failures_1d,
+	  COUNTIF(is_1d AND is_included_with_high_priority) as failures_residual_1d,
+	  COUNTIF(is_1d AND is_critical_and_exonerated) as critical_failures_exonerated_1d,
+	  COUNTIF(is_1d AND is_critical_and_exonerated AND is_included_with_high_priority) as critical_failures_exonerated_residual_1d,
 
 	  -- 3 day metrics.
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_weetbix_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_exon_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_weetbix_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_exon_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND NOT is_exonerated_pre_weetbix, test_run_id, NULL)) as test_run_fails_pre_weetbix_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail, test_run_id, NULL)) as  test_run_fails_pre_exon_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_residual_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, test_run_id, NULL)) as test_run_fails_residual_pre_weetbix_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND is_included_with_high_priority, test_run_id, NULL)) as  test_run_fails_residual_pre_exon_3d,
 	  COUNTIF(is_3d AND NOT is_exonerated) as failures_3d,
-	  COUNTIF(is_3d AND NOT is_exonerated_pre_weetbix) as failures_pre_weetbix_3d,
-	  COUNTIF(is_3d) AS failures_pre_exon_3d,
 	  COUNTIF(is_3d AND is_included_with_high_priority AND NOT is_exonerated) as failures_residual_3d,
-	  COUNTIF(is_3d AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix) as failures_residual_pre_weetbix_3d,
-	  COUNTIF(is_3d AND is_included_with_high_priority) as failures_residual_pre_exon_3d,
+	  COUNTIF(is_3d AND is_critical_and_exonerated) as critical_failures_exonerated_3d,
+	  COUNTIF(is_3d AND is_critical_and_exonerated AND is_included_with_high_priority) as critical_failures_exonerated_residual_3d,
 
 	  -- 7 day metrics.
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_weetbix_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_pre_exon_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_weetbix_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_pre_exon_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND NOT is_exonerated_pre_weetbix, test_run_id, NULL)) as test_run_fails_pre_weetbix_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail, test_run_id, NULL)) as  test_run_fails_pre_exon_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_residual_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix, test_run_id, NULL)) as test_run_fails_residual_pre_weetbix_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND is_included_with_high_priority, test_run_id, NULL)) as  test_run_fails_residual_pre_exon_7d,
 	  COUNTIF(is_7d AND NOT is_exonerated) as failures_7d,
-	  COUNTIF(is_7d AND NOT is_exonerated_pre_weetbix) as failures_pre_weetbix_7d,
-	  COUNTIF(is_7d) AS failures_pre_exon_7d,
 	  COUNTIF(is_7d AND is_included_with_high_priority AND NOT is_exonerated) as failures_residual_7d,
-	  COUNTIF(is_7d AND is_included_with_high_priority AND NOT is_exonerated_pre_weetbix) as failures_residual_pre_weetbix_7d,
-	  COUNTIF(is_7d AND is_included_with_high_priority) as failures_residual_pre_exon_7d,
+	  COUNTIF(is_7d AND is_critical_and_exonerated) as critical_failures_exonerated_7d,
+	  COUNTIF(is_7d AND is_critical_and_exonerated AND is_included_with_high_priority) as critical_failures_exonerated_residual_7d,
 
 	  -- Other analysis.
 	  ANY_VALUE(failure_reason) as example_failure_reason,

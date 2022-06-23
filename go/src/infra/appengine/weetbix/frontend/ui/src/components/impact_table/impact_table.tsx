@@ -14,9 +14,9 @@ import { Cluster, Counts } from '../../services/cluster';
 import HelpTooltip from '../help_tooltip/help_tooltip';
 
 
-const userClsFailedPresubmitTooltipText = 'The number of distinct developer changelists that failed at least one CQ run because of failure(s) in this cluster.';
-const testRunsFailedTooltipText = 'The number of invocations (e.g. swarming tasks used to run tests) failed because of failures in this cluster. Invocations are usually expensive to setup and retry, so this is a measure of machine time wasted.';
-const unexpectedFailuresTooltipText = 'The total number of test results in this cluster.';
+const userClsFailedPresubmitTooltipText = 'The number of distinct developer changelists that failed at least one presubmit (CQ) run because of failure(s) in this cluster.';
+const criticalFailuresExoneratedTooltipText = 'The number of failures on test variants which were configured to be presubmit-blocking, which were exonerated (i.e. did not actually block presubmit) because infrastructure determined the test variant to be failing or too flaky at tip-of-tree. If this number is non-zero, it means a test variant which was configured to be presubmit-blocking is not stable enough to do so, and should be fixed or made non-blocking.';
+const totalFailuresTooltipText = 'The total number of test results in this cluster. Weetbix only clusters test results which are unexpected and have a status of crash, abort or fail.';
 
 interface Props {
     cluster: Cluster;
@@ -24,7 +24,7 @@ interface Props {
 
 const ImpactTable = ({ cluster }: Props) => {
   const metric = (counts: Counts): number => {
-    return counts.preWeetbix;
+    return counts.nominal;
   };
 
   return (
@@ -46,13 +46,13 @@ const ImpactTable = ({ cluster }: Props) => {
             <TableCell align="right">{metric(cluster.presubmitRejects7d)}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Test Runs Failed <HelpTooltip text={testRunsFailedTooltipText} /></TableCell>
-            <TableCell align="right">{metric(cluster.testRunFailures1d)}</TableCell>
-            <TableCell align="right">{metric(cluster.testRunFailures3d)}</TableCell>
-            <TableCell align="right">{metric(cluster.testRunFailures7d)}</TableCell>
+            <TableCell>Presubmit-Blocking Failures Exonerated <HelpTooltip text={criticalFailuresExoneratedTooltipText} /></TableCell>
+            <TableCell align="right">{metric(cluster.criticalFailuresExonerated1d)}</TableCell>
+            <TableCell align="right">{metric(cluster.criticalFailuresExonerated3d)}</TableCell>
+            <TableCell align="right">{metric(cluster.criticalFailuresExonerated7d)}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Unexpected Failures <HelpTooltip text={unexpectedFailuresTooltipText} /></TableCell>
+            <TableCell>Total Failures <HelpTooltip text={totalFailuresTooltipText} /></TableCell>
             <TableCell align="right">{metric(cluster.failures1d)}</TableCell>
             <TableCell align="right">{metric(cluster.failures3d)}</TableCell>
             <TableCell align="right">{metric(cluster.failures7d)}</TableCell>

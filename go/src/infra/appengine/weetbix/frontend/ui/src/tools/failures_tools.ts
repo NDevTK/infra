@@ -65,9 +65,9 @@ export const newGroup = (name: string, failureTime: string): FailureGroup => {
   return {
     id: name || nanoid(),
     name: name,
+    criticalFailuresExonerated: 0,
     failures: 0,
     invocationFailures: 0,
-    testRunFailures: 0,
     presubmitRejects: 0,
     children: [],
     isExpanded: false,
@@ -135,18 +135,36 @@ export const failureIdsExtractor = (): FeatureExtractor => {
   };
 };
 
-// Returns an extractor that returns the id of the test run that was rejected by this failure, if any.
-// The impact filter is taken into account in determining if the run was rejected by this failure.
-export const rejectedTestRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
+// criticalFailuresExoneratedIdsExtractor returns an extractor that returns
+// a unique failure id for each failure of a critical test that is exonerated.
+// As failures don't actually have ids, it just returns an incrementing integer.
+export const criticalFailuresExoneratedIdsExtractor = (): FeatureExtractor => {
+  let unique = 0;
   return (f) => {
     const values: Set<string> = new Set();
-    if (!impactFilter.ignoreTestRunBlocked && !f.isTestRunBlocked) {
+    if (!f.isBuildCritical) {
       return values;
     }
-    for (const testRunId of f.testRunIds) {
-      if (testRunId) {
-        values.add(testRunId);
+    let exoneratedByCQ = false;
+    if (f.exonerations != null) {
+      for (let i = 0; i < f.exonerations.length; i++) {
+        // Do not count the exoneration reason NOT_CRITICAL
+        // (as it implies the test is not critical), or the
+        // exoneration reason UNEXPECTED_PASS as the test is considered
+        // passing.
+        if (f.exonerations[i].reason == 'OCCURS_ON_MAINLINE' ||
+              f.exonerations[i].reason == 'OCCURS_ON_OTHER_CLS') {
+          exoneratedByCQ = true;
+        }
       }
+    }
+    if (!exoneratedByCQ) {
+      return values;
+    }
+
+    for (let i = 0; i < f.count; i++) {
+      unique += 1;
+      values.add('' + unique);
     }
     return values;
   };
@@ -191,9 +209,6 @@ export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilte
     if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
       return values;
     }
-    if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
-      return values;
-    }
     if (failure.ingestedInvocationId) {
       values.add(failure.ingestedInvocationId);
     }
@@ -223,9 +238,6 @@ export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): Fe
     if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
       return values;
     }
-    if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
-      return values;
-    }
     if (failure.changelist && failure.presubmitRunOwner == 'user' &&
         failure.isBuildCritical && failure.presubmitRunMode == 'FULL_RUN') {
       values.add(failure.changelist.host + '/' + failure.changelist.change.toFixed(0));
@@ -243,14 +255,14 @@ export const sortFailureGroups = (
   const cloneGroups = [...groups];
   const getMetric = (group: FailureGroup): number => {
     switch (metric) {
+      case 'criticalFailuresExonerated':
+        return group.criticalFailuresExonerated;
       case 'failures':
         return group.failures;
-      case 'presubmitRejects':
-        return group.presubmitRejects;
       case 'invocationFailures':
         return group.invocationFailures;
-      case 'testRunFailures':
-        return group.testRunFailures;
+      case 'presubmitRejects':
+        return group.presubmitRejects;
       case 'latestFailureTime':
         return dayjs(group.latestFailureTime).unix();
       default:
@@ -303,7 +315,7 @@ export const countAndSortFailures = (groups: FailureGroup[], impactFilter: Impac
         group, failureIdsExtractor(), (g, values) => g.failures = values.size,
     );
     treeDistinctValues(
-        group, rejectedTestRunIdsExtractor(impactFilter), (g, values) => g.testRunFailures = values.size,
+        group, criticalFailuresExoneratedIdsExtractor(), (g, values) => g.criticalFailuresExonerated = values.size,
     );
     treeDistinctValues(
         group, rejectedIngestedInvocationIdsExtractor(impactFilter), (g, values) => g.invocationFailures = values.size,
@@ -322,7 +334,6 @@ export interface ImpactFilter {
     ignoreWeetbixExoneration: boolean;
     ignoreAllExoneration: boolean;
     ignoreIngestedInvocationBlocked: boolean;
-    ignoreTestRunBlocked: boolean;
 }
 export const ImpactFilters: ImpactFilter[] = [
   {
@@ -330,35 +341,25 @@ export const ImpactFilters: ImpactFilter[] = [
     ignoreWeetbixExoneration: false,
     ignoreAllExoneration: false,
     ignoreIngestedInvocationBlocked: false,
-    ignoreTestRunBlocked: false,
   }, {
     name: 'Without Weetbix Exoneration',
     ignoreWeetbixExoneration: true,
     ignoreAllExoneration: false,
     ignoreIngestedInvocationBlocked: false,
-    ignoreTestRunBlocked: false,
   }, {
     name: 'Without All Exoneration',
     ignoreWeetbixExoneration: true,
     ignoreAllExoneration: true,
     ignoreIngestedInvocationBlocked: false,
-    ignoreTestRunBlocked: false,
-  }, {
-    name: 'Without Retrying Test Runs',
-    ignoreWeetbixExoneration: true,
-    ignoreAllExoneration: true,
-    ignoreIngestedInvocationBlocked: true,
-    ignoreTestRunBlocked: false,
   }, {
     name: 'Without Any Retries',
     ignoreWeetbixExoneration: true,
     ignoreAllExoneration: true,
     ignoreIngestedInvocationBlocked: true,
-    ignoreTestRunBlocked: true,
   },
 ];
 
-export const defaultImpactFilter: ImpactFilter = ImpactFilters[1];
+export const defaultImpactFilter: ImpactFilter = ImpactFilters[0];
 
 // The reason a test result was exonerated.
 type ExonerationReason =
@@ -398,8 +399,6 @@ export interface ClusterFailure {
     buildStatus: string | null;
     ingestedInvocationId: string | null;
     isIngestedInvocationBlocked: boolean | null;
-    testRunIds: Array<string | null>;
-    isTestRunBlocked: boolean | null;
     count: number;
 }
 
@@ -430,16 +429,16 @@ export interface Changelist {
 
 // Metrics that can be used for sorting FailureGroups.
 // Each value is a property of FailureGroup.
-export type MetricName = 'presubmitRejects' | 'invocationFailures' | 'testRunFailures' | 'failures' | 'latestFailureTime';
+export type MetricName = 'presubmitRejects' | 'invocationFailures' | 'criticalFailuresExonerated' | 'failures' | 'latestFailureTime';
 
 // FailureGroups are nodes in the failure tree hierarchy.
 export interface FailureGroup {
     id: string;
     name: string;
-    presubmitRejects: number;
-    invocationFailures: number;
-    testRunFailures: number;
+    criticalFailuresExonerated: number;
     failures: number;
+    invocationFailures: number;
+    presubmitRejects: number;
     latestFailureTime: string;
     level: number;
     children: FailureGroup[];

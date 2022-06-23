@@ -7,22 +7,22 @@ describe('Clusters Page', () => {
         cy.visit('/').contains('LOGIN').click();
         cy.get('body').contains('Logout');
         // The default project we will use will be `chromium`.
-        cy.visit("/p/chromium/clusters")
-    })
+        cy.visit("/p/chromium/clusters");
+    });
     it('loads bugs table', () => {
         // Navigate to the bug cluster page
         cy.contains('Bugs').click();
         // check for the header text in the bug cluster table.
         cy.get('bugs-table').contains('Source Cluster ID');
-    })
+    });
     it('loads cluster table', () => {
         // check for the header text in the cluster table.
-        cy.get('cluster-table').contains('Test Runs Failed');
-    })
+        cy.get('cluster-table').contains('Presubmit-Blocking Failures Exonerated');
+    });
     it('loads a cluster page', () => {
         cy.get('cluster-table').get('[data-cy=cluster-link]').first().click();
         cy.get('body').contains('Recent Failures');
         // Check that the analysis section is showing at least one group.
         cy.get('td.group');
-    })
+    });
 })

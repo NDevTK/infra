@@ -19,6 +19,9 @@ describe('Test ImpactTable component', () => {
 
     await screen.findByText('User Cls Failed Presubmit');
     // Check for 7d unexpected failures total.
-    expect(screen.getByText('15810')).toBeInTheDocument();
+    expect(screen.getByText('15800')).toBeInTheDocument();
+
+    // Check for 7d critical failures exonerated.
+    expect(screen.getByText('13800')).toBeInTheDocument();
   });
 });

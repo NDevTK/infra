@@ -19,6 +19,11 @@ func TestThresholding(t *testing.T) {
 
 	Convey("With Cluster", t, func() {
 		cl := &ClusterImpact{
+			CriticalFailuresExonerated: MetricImpact{
+				OneDay:   60,
+				ThreeDay: 180,
+				SevenDay: 420,
+			},
 			TestResultsFailed: MetricImpact{
 				OneDay:   100,
 				ThreeDay: 300,
@@ -38,6 +43,13 @@ func TestThresholding(t *testing.T) {
 		Convey("MeetsThreshold", func() {
 			t := &configpb.ImpactThreshold{}
 			Convey("No cluster meets empty threshold", func() {
+				So(cl.MeetsThreshold(t), ShouldBeFalse)
+			})
+			Convey("Critical failures exonerated thresholding", func() {
+				t.CriticalFailuresExonerated = &configpb.MetricThreshold{OneDay: proto.Int64(60)}
+				So(cl.MeetsThreshold(t), ShouldBeTrue)
+
+				t.CriticalFailuresExonerated = &configpb.MetricThreshold{OneDay: proto.Int64(61)}
 				So(cl.MeetsThreshold(t), ShouldBeFalse)
 			})
 			Convey("Test results failed thresholding", func() {
@@ -88,6 +100,13 @@ func TestThresholding(t *testing.T) {
 			Convey("Empty threshold", func() {
 				result := InflateThreshold(t, 15)
 				So(result, ShouldResembleProto, &configpb.ImpactThreshold{})
+			})
+			Convey("Critical test failures exonerated", func() {
+				t.CriticalFailuresExonerated = &configpb.MetricThreshold{OneDay: proto.Int64(100)}
+				result := InflateThreshold(t, 15)
+				So(result, ShouldResembleProto, &configpb.ImpactThreshold{
+					CriticalFailuresExonerated: &configpb.MetricThreshold{OneDay: proto.Int64(115)},
+				})
 			})
 			Convey("Test results failed", func() {
 				t.TestResultsFailed = &configpb.MetricThreshold{OneDay: proto.Int64(100)}
@@ -149,6 +168,9 @@ func TestThresholding(t *testing.T) {
 		})
 		Convey("ExplainThresholdNotMet", func() {
 			t := &configpb.ImpactThreshold{
+				CriticalFailuresExonerated: &configpb.MetricThreshold{
+					OneDay: proto.Int64(61), // Not met.
+				},
 				TestResultsFailed: &configpb.MetricThreshold{
 					OneDay: proto.Int64(101), // Not met.
 				},
@@ -161,6 +183,11 @@ func TestThresholding(t *testing.T) {
 			}
 			explanation := ExplainThresholdNotMet(t)
 			So(explanation, ShouldResemble, []ThresholdExplanation{
+				{
+					Metric:        "Presubmit-Blocking Failures Exonerated",
+					TimescaleDays: 1,
+					Threshold:     61,
+				},
 				{
 					Metric:        "Presubmit Runs Failed",
 					TimescaleDays: 7,

@@ -13,7 +13,7 @@ import { Ref } from 'react';
 import { Cluster, Counts } from '../../../../services/cluster';
 
 const metric = (counts: Counts): number => {
-    return counts.preWeetbix;
+    return counts.nominal;
 };
 
 @customElement('impact-table')
@@ -44,13 +44,13 @@ export class ImpactTable extends LitElement{
                     <td class="number">${metric(this.currentCluster.presubmitRejects7d)}</td>
                 </tr>
                 <tr>
-                    <th>Test Runs Failed</th>
-                    <td class="number">${metric(this.currentCluster.testRunFailures1d)}</td>
-                    <td class="number">${metric(this.currentCluster.testRunFailures3d)}</td>
-                    <td class="number">${metric(this.currentCluster.testRunFailures7d)}</td>
+                    <th>Presubmit-Blocking Failures Exonerated</th>
+                    <td class="number">${metric(this.currentCluster.criticalFailuresExonerated1d)}</td>
+                    <td class="number">${metric(this.currentCluster.criticalFailuresExonerated3d)}</td>
+                    <td class="number">${metric(this.currentCluster.criticalFailuresExonerated7d)}</td>
                 </tr>
                 <tr>
-                    <th>Unexpected Failures</th>
+                    <th>Total Failures</th>
                     <td class="number">${metric(this.currentCluster.failures1d)}</td>
                     <td class="number">${metric(this.currentCluster.failures3d)}</td>
                     <td class="number">${metric(this.currentCluster.failures7d)}</td>

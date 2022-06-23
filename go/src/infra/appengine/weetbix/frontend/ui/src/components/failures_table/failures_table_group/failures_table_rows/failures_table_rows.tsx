@@ -112,7 +112,7 @@ const FailuresTableRows = ({
           )}
         </TableCell>
         <TableCell className="number">{group.invocationFailures}</TableCell>
-        <TableCell className="number">{group.testRunFailures}</TableCell>
+        <TableCell className="number">{group.criticalFailuresExonerated}</TableCell>
         <TableCell className="number">{group.failures}</TableCell>
         <TableCell>{dayjs(group.latestFailureTime).fromNow()}</TableCell>
       </TableRow>

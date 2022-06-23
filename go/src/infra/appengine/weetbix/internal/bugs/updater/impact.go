@@ -9,40 +9,50 @@ import (
 	"infra/appengine/weetbix/internal/bugs"
 )
 
-// ExtractResidualPreWeetbixImpact extracts the residual,
-// pre-weetbix exoneration, impact from a cluster summary.
-func ExtractResidualPreWeetbixImpact(cs *analysis.ClusterSummary) *bugs.ClusterImpact {
+// ExtractResidualImpact extracts the residual impact from a
+// cluster summary. For suggested clusters, residual impact
+// is the impact of the cluster after failures that are already
+// part of a bug cluster are removed.
+func ExtractResidualImpact(cs *analysis.ClusterSummary) *bugs.ClusterImpact {
 	return &bugs.ClusterImpact{
+		CriticalFailuresExonerated: bugs.MetricImpact{
+			OneDay:   cs.CriticalFailuresExonerated1d.Residual,
+			ThreeDay: cs.CriticalFailuresExonerated3d.Residual,
+			SevenDay: cs.CriticalFailuresExonerated7d.Residual,
+		},
 		TestResultsFailed: bugs.MetricImpact{
-			OneDay:   cs.Failures1d.ResidualPreWeetbix,
-			ThreeDay: cs.Failures3d.ResidualPreWeetbix,
-			SevenDay: cs.Failures7d.ResidualPreWeetbix,
+			OneDay:   cs.Failures1d.Residual,
+			ThreeDay: cs.Failures3d.Residual,
+			SevenDay: cs.Failures7d.Residual,
 		},
 		TestRunsFailed: bugs.MetricImpact{
-			OneDay:   cs.TestRunFails1d.ResidualPreWeetbix,
-			ThreeDay: cs.TestRunFails3d.ResidualPreWeetbix,
-			SevenDay: cs.TestRunFails7d.ResidualPreWeetbix,
+			OneDay:   cs.TestRunFails1d.Residual,
+			ThreeDay: cs.TestRunFails3d.Residual,
+			SevenDay: cs.TestRunFails7d.Residual,
 		},
 		PresubmitRunsFailed: bugs.MetricImpact{
-			OneDay:   cs.PresubmitRejects1d.ResidualPreWeetbix,
-			ThreeDay: cs.PresubmitRejects3d.ResidualPreWeetbix,
-			SevenDay: cs.PresubmitRejects7d.ResidualPreWeetbix,
+			OneDay:   cs.PresubmitRejects1d.Residual,
+			ThreeDay: cs.PresubmitRejects3d.Residual,
+			SevenDay: cs.PresubmitRejects7d.Residual,
 		},
 	}
 }
 
-// SetResidualPreWeetbixImpact sets the residual, pre-weetbix exoneration
-// impact on a cluster summary.
-func SetResidualPreWeetbixImpact(cs *analysis.ClusterSummary, impact *bugs.ClusterImpact) {
-	cs.Failures1d.ResidualPreWeetbix = impact.TestResultsFailed.OneDay
-	cs.Failures3d.ResidualPreWeetbix = impact.TestResultsFailed.ThreeDay
-	cs.Failures7d.ResidualPreWeetbix = impact.TestResultsFailed.SevenDay
+// SetResidualImpact sets the residual impact on a cluster summary.
+func SetResidualImpact(cs *analysis.ClusterSummary, impact *bugs.ClusterImpact) {
+	cs.CriticalFailuresExonerated1d.Residual = impact.CriticalFailuresExonerated.OneDay
+	cs.CriticalFailuresExonerated3d.Residual = impact.CriticalFailuresExonerated.ThreeDay
+	cs.CriticalFailuresExonerated7d.Residual = impact.CriticalFailuresExonerated.SevenDay
 
-	cs.TestRunFails1d.ResidualPreWeetbix = impact.TestRunsFailed.OneDay
-	cs.TestRunFails3d.ResidualPreWeetbix = impact.TestRunsFailed.ThreeDay
-	cs.TestRunFails7d.ResidualPreWeetbix = impact.TestRunsFailed.SevenDay
+	cs.Failures1d.Residual = impact.TestResultsFailed.OneDay
+	cs.Failures3d.Residual = impact.TestResultsFailed.ThreeDay
+	cs.Failures7d.Residual = impact.TestResultsFailed.SevenDay
 
-	cs.PresubmitRejects1d.ResidualPreWeetbix = impact.PresubmitRunsFailed.OneDay
-	cs.PresubmitRejects3d.ResidualPreWeetbix = impact.PresubmitRunsFailed.ThreeDay
-	cs.PresubmitRejects7d.ResidualPreWeetbix = impact.PresubmitRunsFailed.SevenDay
+	cs.TestRunFails1d.Residual = impact.TestRunsFailed.OneDay
+	cs.TestRunFails3d.Residual = impact.TestRunsFailed.ThreeDay
+	cs.TestRunFails7d.Residual = impact.TestRunsFailed.SevenDay
+
+	cs.PresubmitRejects1d.Residual = impact.PresubmitRunsFailed.OneDay
+	cs.PresubmitRejects3d.Residual = impact.PresubmitRunsFailed.ThreeDay
+	cs.PresubmitRejects7d.Residual = impact.PresubmitRunsFailed.SevenDay
 }

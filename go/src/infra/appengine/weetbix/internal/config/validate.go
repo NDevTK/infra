@@ -263,6 +263,7 @@ func validatePrioritySatisfiedByBugFilingThreshold(ctx *validation.Context, p *c
 		// are already reported as errors elsewhere.
 		return
 	}
+	validateBugFilingThresholdSatisfiesMetricThresold(ctx, t.CriticalFailuresExonerated, bugFilingThres.CriticalFailuresExonerated, "critical_failures_exonerated")
 	validateBugFilingThresholdSatisfiesMetricThresold(ctx, t.TestResultsFailed, bugFilingThres.TestResultsFailed, "test_results_failed")
 	validateBugFilingThresholdSatisfiesMetricThresold(ctx, t.TestRunsFailed, bugFilingThres.TestRunsFailed, "test_runs_failed")
 	validateBugFilingThresholdSatisfiesMetricThresold(ctx, t.PresubmitRunsFailed, bugFilingThres.PresubmitRunsFailed, "presubmit_runs_failed")
@@ -289,6 +290,7 @@ func validateImpactThreshold(ctx *validation.Context, t *configpb.ImpactThreshol
 		return
 	}
 
+	validateMetricThreshold(ctx, t.CriticalFailuresExonerated, "critical_failures_exonerated")
 	validateMetricThreshold(ctx, t.TestResultsFailed, "test_results_failed")
 	validateMetricThreshold(ctx, t.TestRunsFailed, "test_runs_failed")
 	validateMetricThreshold(ctx, t.PresubmitRunsFailed, "presubmit_runs_failed")

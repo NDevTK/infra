@@ -151,7 +151,7 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 			if clusterSummary.ClusterID.Algorithm == rulesalgorithm.AlgorithmName {
 				// Use only impact from latest algorithm version.
 				ruleID := clusterSummary.ClusterID.ID
-				impactByRuleID[ruleID] = ExtractResidualPreWeetbixImpact(clusterSummary)
+				impactByRuleID[ruleID] = ExtractResidualImpact(clusterSummary)
 			}
 			// Never file another bug for a bug cluster.
 			continue
@@ -169,7 +169,7 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 		}
 
 		// Only file a bug if the residual impact exceeds the threshold.
-		impact := ExtractResidualPreWeetbixImpact(clusterSummary)
+		impact := ExtractResidualImpact(clusterSummary)
 		bugFilingThreshold := b.projectCfg.Config.BugFilingThreshold
 		if clusterSummary.ClusterID.IsTestNameCluster() {
 			// Use an inflated threshold for test name clusters to bias
@@ -282,8 +282,8 @@ func sortByBugFilingPreference(cs []*analysis.ClusterSummary) {
 }
 
 func rankByMetric(a, b *analysis.ClusterSummary, accessor func(*analysis.ClusterSummary) analysis.Counts) (equal bool, less bool) {
-	valueA := accessor(a).ResidualPreWeetbix
-	valueB := accessor(b).ResidualPreWeetbix
+	valueA := accessor(a).Residual
+	valueB := accessor(b).Residual
 	// If one cluster we are comparing with is a test name cluster,
 	// give the other cluster an impact boost in the comparison, so
 	// that we bias towards filing it (instead of the test name cluster).
@@ -342,7 +342,7 @@ func (b *BugUpdater) createBug(ctx context.Context, cs *analysis.ClusterSummary)
 
 	request := &bugs.CreateRequest{
 		Description: description,
-		Impact:      ExtractResidualPreWeetbixImpact(cs),
+		Impact:      ExtractResidualImpact(cs),
 	}
 
 	// For now, the only issue system supported is monorail.

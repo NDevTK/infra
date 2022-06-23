@@ -25,16 +25,19 @@ import (
 // ClusterCommon captures common cluster fields used in ClusterSummary
 // and Cluster.
 type ClusterCommon struct {
-	ClusterID          clustering.ClusterID `json:"clusterId"`
-	PresubmitRejects1d analysis.Counts      `json:"presubmitRejects1d"`
-	PresubmitRejects3d analysis.Counts      `json:"presubmitRejects3d"`
-	PresubmitRejects7d analysis.Counts      `json:"presubmitRejects7d"`
-	TestRunFails1d     analysis.Counts      `json:"testRunFailures1d"`
-	TestRunFails3d     analysis.Counts      `json:"testRunFailures3d"`
-	TestRunFails7d     analysis.Counts      `json:"testRunFailures7d"`
-	Failures1d         analysis.Counts      `json:"failures1d"`
-	Failures3d         analysis.Counts      `json:"failures3d"`
-	Failures7d         analysis.Counts      `json:"failures7d"`
+	ClusterID                    clustering.ClusterID `json:"clusterId"`
+	CriticalFailuresExonerated1d analysis.Counts      `json:"criticalFailuresExonerated1d"`
+	CriticalFailuresExonerated3d analysis.Counts      `json:"criticalFailuresExonerated3d"`
+	CriticalFailuresExonerated7d analysis.Counts      `json:"criticalFailuresExonerated7d"`
+	PresubmitRejects1d           analysis.Counts      `json:"presubmitRejects1d"`
+	PresubmitRejects3d           analysis.Counts      `json:"presubmitRejects3d"`
+	PresubmitRejects7d           analysis.Counts      `json:"presubmitRejects7d"`
+	TestRunFails1d               analysis.Counts      `json:"testRunFailures1d"`
+	TestRunFails3d               analysis.Counts      `json:"testRunFailures3d"`
+	TestRunFails7d               analysis.Counts      `json:"testRunFailures7d"`
+	Failures1d                   analysis.Counts      `json:"failures1d"`
+	Failures3d                   analysis.Counts      `json:"failures3d"`
+	Failures7d                   analysis.Counts      `json:"failures7d"`
 }
 
 // ClusterSummary provides a summary of a Weetbix cluster.
@@ -114,16 +117,19 @@ func (h *Handlers) listClustersInternal(ctx context.Context, projectID string, p
 
 func newClusterCommon(cs *analysis.ClusterSummary) ClusterCommon {
 	return ClusterCommon{
-		ClusterID:          cs.ClusterID,
-		PresubmitRejects1d: cs.PresubmitRejects1d,
-		PresubmitRejects3d: cs.PresubmitRejects3d,
-		PresubmitRejects7d: cs.PresubmitRejects7d,
-		TestRunFails1d:     cs.TestRunFails1d,
-		TestRunFails3d:     cs.TestRunFails3d,
-		TestRunFails7d:     cs.TestRunFails7d,
-		Failures1d:         cs.Failures1d,
-		Failures3d:         cs.Failures3d,
-		Failures7d:         cs.Failures7d,
+		ClusterID:                    cs.ClusterID,
+		CriticalFailuresExonerated1d: cs.CriticalFailuresExonerated1d,
+		CriticalFailuresExonerated3d: cs.CriticalFailuresExonerated3d,
+		CriticalFailuresExonerated7d: cs.CriticalFailuresExonerated7d,
+		PresubmitRejects1d:           cs.PresubmitRejects1d,
+		PresubmitRejects3d:           cs.PresubmitRejects3d,
+		PresubmitRejects7d:           cs.PresubmitRejects7d,
+		TestRunFails1d:               cs.TestRunFails1d,
+		TestRunFails3d:               cs.TestRunFails3d,
+		TestRunFails7d:               cs.TestRunFails7d,
+		Failures1d:                   cs.Failures1d,
+		Failures3d:                   cs.Failures3d,
+		Failures7d:                   cs.Failures7d,
 	}
 }
 
