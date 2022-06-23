@@ -79,17 +79,12 @@ func newStateFromProto(sp *protos.SchedulerState) *state {
 		if w.ModifiedTime != nil {
 			modifiedTime = tutils.Timestamp(w.ModifiedTime)
 		}
-		labelMatchMap := w.LabelMatchMap
-		if labelMatchMap == nil {
-			labelMatchMap = map[uint32]bool{}
-		}
 		s.workers[WorkerID(wid)] = &Worker{
 			ID:            WorkerID(wid),
 			confirmedTime: tutils.Timestamp(w.ConfirmedTime),
 			modifiedTime:  modifiedTime,
 			Labels:        toLabels(w.LabelIds, sp.LabelMap),
 			runningTask:   tr,
-			labelMatchMap: labelMatchMap,
 		}
 	}
 
@@ -109,15 +104,13 @@ func protoToTaskRequest(rid RequestID, p *protos.TaskRequest, labelMap map[uint6
 		examinedTime = tutils.Timestamp(p.ExaminedTime)
 	}
 	return &TaskRequest{
-		ID:                      rid,
-		AccountID:               AccountID(p.AccountId),
-		confirmedTime:           tutils.Timestamp(p.ConfirmedTime),
-		examinedTime:            examinedTime,
-		EnqueueTime:             tutils.Timestamp(p.EnqueueTime),
-		ProvisionableLabels:     toLabelsSlice(p.ProvisionableLabelIds, labelMap),
-		provisionableLabelsHash: p.ProvisionableLabelsHash,
-		BaseLabels:              toLabelsSlice(p.BaseLabelIds, labelMap),
-		baseLabelsHash:          p.BaseLabelsHash,
+		ID:                  rid,
+		AccountID:           AccountID(p.AccountId),
+		confirmedTime:       tutils.Timestamp(p.ConfirmedTime),
+		examinedTime:        examinedTime,
+		EnqueueTime:         tutils.Timestamp(p.EnqueueTime),
+		ProvisionableLabels: toLabelsSlice(p.ProvisionableLabelIds, labelMap),
+		BaseLabels:          toLabelsSlice(p.BaseLabelIds, labelMap),
 	}
 }
 
@@ -209,7 +202,6 @@ func (s *state) toProto() *protos.SchedulerState {
 			ModifiedTime:  tutils.TimestampProto(w.modifiedTime),
 			RunningTask:   rt,
 			LabelIds:      mb.ForSet(w.Labels),
-			LabelMatchMap: w.labelMatchMap,
 		}
 	}
 

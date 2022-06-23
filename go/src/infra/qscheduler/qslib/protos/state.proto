@@ -14,8 +14,6 @@
 syntax = "proto3";
 package protos;
 
-option go_package = "infra/qscheduler/qslib/protos";
-
 import "google/protobuf/timestamp.proto";
 
 // State represents the overall state of a quota scheduler worker pool,
@@ -81,9 +79,6 @@ message TaskRequest {
   repeated uint64 base_label_ids = 7;
 
   google.protobuf.Timestamp examined_time = 8;
-
-  uint32 base_labels_hash = 9;
-  uint32 provisionable_labels_hash = 10;
 }
 
 // TaskRun represents a task that has been assigned to a worker and is
@@ -125,6 +120,4 @@ message Worker {
   repeated uint64 label_ids = 4;
 
   google.protobuf.Timestamp modified_time = 5;
-
-  map<uint32, bool> label_match_map = 6;
 }
