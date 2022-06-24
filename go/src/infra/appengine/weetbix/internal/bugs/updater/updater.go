@@ -260,13 +260,13 @@ func sortByBugFilingPreference(cs []*analysis.ClusterSummary) {
 	// the first bug to meet the threshold will be filed.
 	sort.Slice(cs, func(i, j int) bool {
 		presubmitRejects := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.PresubmitRejects7d }
-		testRuns := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.TestRunFails7d }
+		criticalFailuresExonerated := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.CriticalFailuresExonerated7d }
 		failures := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.Failures7d }
 
 		if equal, less := rankByMetric(cs[i], cs[j], presubmitRejects); !equal {
 			return less
 		}
-		if equal, less := rankByMetric(cs[i], cs[j], testRuns); !equal {
+		if equal, less := rankByMetric(cs[i], cs[j], criticalFailuresExonerated); !equal {
 			return less
 		}
 		if equal, less := rankByMetric(cs[i], cs[j], failures); !equal {
