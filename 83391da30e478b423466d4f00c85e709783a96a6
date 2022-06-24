@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62ca5184_c20e32cb",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/queries.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-06-24T05:43:20Z",
+      "side": 0,
+      "message": "Removing this to align what I did for _1d metrics but accidentally did not apply to the others. Exonerations don\u0027t change the fact a failure occured or test run failed, they just absolve the test target (e.g. CL under test) from blame.",
+      "range": {
+        "startLine": 107,
+        "startChar": 47,
+        "endLine": 107,
+        "endChar": 69
+      },
+      "revId": "83391da30e478b423466d4f00c85e709783a96a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
