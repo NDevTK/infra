@@ -241,5 +241,5 @@ func registerUpdateShivasFlags(c *updateDUT) {
 	c.Flags.BoolVar(&c.audioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
 	c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
 
-	c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
+	c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow (dogfood).")
 }
