@@ -86,10 +86,12 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			}
 		}()
 	}
-	// Step 3. Turn power on
+	log.Debugf("Start power_state:rec.")
 	if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueRecoveryMode); err != nil {
-		return errors.Annotate(err, "boot in recovery mode").Err()
+		log.Debugf("Fail when try to set power_state:rec with error: %s", err)
+		// return errors.Annotate(err, "boot in recovery mode").Err()
 	}
+	log.Debugf("Waiting to device to be SSH-able.")
 	if err := WaitUntilSSHable(ctx, req.BootTimeout, req.BootInterval, dutRun, log); err != nil {
 		return errors.Annotate(err, "boot in recovery mode").Err()
 	}
