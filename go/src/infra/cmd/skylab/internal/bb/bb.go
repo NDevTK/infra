@@ -11,6 +11,7 @@ import (
 	"compress/zlib"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -580,11 +581,26 @@ func isFinal(status buildbucket_pb.Status) bool {
 }
 
 func unmarshalString(s string, m proto.Message) error {
+	if isJSONString(s) {
+		// Try to unwrap the string if it's "double encoded".
+		// See b/236975470.
+		var s2 string
+		err := json.Unmarshal([]byte(s), &s2)
+		if err == nil {
+			s = s2
+		}
+	}
 	u := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	err := u.Unmarshal(strings.NewReader(s), m)
 	if err != nil {
 		return fmt.Errorf("%s: %q", err, s)
 	}
 	return nil
+}
 
+// isJSONString returns true if the argument is an encoded JSON string.
+// This uses a very naive implementation as this is used as a
+// heuristic; see where this is used for context.
+func isJSONString(s string) bool {
+	return s[0] == '"'
 }
