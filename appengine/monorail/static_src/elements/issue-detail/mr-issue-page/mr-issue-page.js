@@ -8,6 +8,7 @@ import {LitElement, html} from 'lit-element';
 import 'elements/chops/chops-button/chops-button.js';
 import './mr-issue-header.js';
 import './mr-restriction-indicator';
+import './mr-migrated-banner';
 import '../mr-issue-details/mr-issue-details.js';
 import '../metadata/mr-metadata/mr-issue-metadata.js';
 import '../mr-launch-overview/mr-launch-overview.js';
@@ -245,6 +246,7 @@ export class MrIssuePage extends connectStore(LitElement) {
                 .userDisplayName=${this.userDisplayName}
               ></mr-issue-header>
               <mr-restriction-indicator></mr-restriction-indicator>
+              <mr-migrated-banner></mr-migrated-banner>
             </div>
             <div class="container-issue-content">
               <mr-issue-details
