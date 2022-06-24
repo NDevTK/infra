@@ -70,6 +70,30 @@
       },
       "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1b245e1_e30b3f64",
+        "filename": "go/src/infra/cros/karte/internal/frontend/persist.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-06-24T17:32:01Z",
+      "side": 1,
+      "message": "The two public methods `PersistAction(...)` and `PersistActionRange(...)` need to be attached to the Karte frontend object, even if this object has no fields.\n\nThis is because the Karte object is used to populate the RPC methods.\n\n```\nserver.Main(options, modules, func(srv *server.Server) error {\n\t\tlogging.Infof(srv.Context, \"Installing dependencies into context\")\n\t\tsrv.Context \u003d idstrategy.Use(srv.Context, idstrategy.NewDefault())\n\t\tlogging.Infof(srv.Context, \"Starting server.\")\n\t\tlogging.Infof(srv.Context, \"Installing Services.\")\n\t\tk :\u003d frontend.NewKarteFrontend()\n\t\tfrontend.InstallServices(k, srv.PRPC)\n\t\tlogging.Infof(srv.Context, \"Initialization finished.\")\n\t\treturn nil\n\t})\n```\n\nAnd in the implementation of `InstallServices` we do the simple thing and use the generated `Register[[NAME_OF_THING]]Server`. Except for the cron jobs. If the cron jobs get too numerous I\u0027m move them into a helper function and call it here.\n\n```\n// InstallServices takes a Karte frontend and exposes it to a LUCI prpc.Server.\nfunc InstallServices(k KarteFrontend, srv *prpc.Server) {\n        kartepb.RegisterKarteServer(srv, k)\n        kartepb.RegisterKarteCronServer(srv, k)\n        cron.RegisterHandler(\n                \"persist-to-bq\",\n                func(ctx context.Context) error {\n                        _, err :\u003d k.PersistToBigquery(\n                                ctx,\n                                \u0026kartepb.PersistToBigqueryRequest{},\n                        )\n                        err \u003d grpcutil.WrapIfTransient(err)\n                        err \u003d errors.Annotate(err, \"persist to bq cron\").Err()\n                        return err\n                },\n        )\n}\n```\n\nThe function `persistActionRangeImpl(...)` could be made into a free function rather than a method, but I think that kind of refactoring is out of scope for this CL, which is just about reorganizing the package `frontend` into different files.",
+      "parentUuid": "c2e03ea8_ccb93d86",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 23
+      },
+      "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
