@@ -6,6 +6,7 @@
 .*\.swp
 .*\#.*
 .*@.*
+._gae_py*
 .nyc_output
 REVISION
 .coverage
