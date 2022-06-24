@@ -100,7 +100,6 @@ func (c *planRun) innerRun(a subcommands.Application, args []string, env subcomm
 		bbClient:    ctpBBClient,
 		testPlan:    testPlan,
 		cliFlags:    &c.testCommonFlags,
-		exitEarly:   c.exitEarly,
 	}
 	return testLauncher.launchAndOutputTests(ctx)
 }

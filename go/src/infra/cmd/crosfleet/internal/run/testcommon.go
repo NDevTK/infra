@@ -37,8 +37,11 @@ const (
 	MinSwarmingPriority = int64(50)
 	// MaxSwarmingPriority is the highest-allowed priority for a Swarming task.
 	MaxSwarmingPriority = int64(255)
-	// imageArchiveBaseURL is the base url for the ChromeOS image archive.
-	imageArchiveBaseURL = "gs://chromeos-image-archive/"
+	// imageArchiveBaseURL is the base URL for the ChromeOS image archive.
+	imageArchiveBaseURL = "gs://chromeos-image-archive"
+	// containerMetadataURLSuffix is the URL suffix for the container metadata
+	// URL in the ChromeOS image archive.
+	containerMetadataURLSuffix = "metadata/containers.jsonpb"
 	// ctpExecuteStepName is the name of the test-execution step in any
 	// cros_test_platform Buildbucket build. This step is not started until
 	// all request-validation and setup steps are passed.
@@ -76,6 +79,7 @@ type testCommonFlags struct {
 	exitEarly            bool
 	lacrosPath           string
 	secondaryLacrosPaths []string
+	cft                  bool
 }
 
 type fleetValidationResults struct {
@@ -118,6 +122,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.BoolVar(&c.exitEarly, "exit-early", false, "Exit command as soon as test is scheduled. crosfleet will not notify on test validation failure.")
 	f.StringVar(&c.lacrosPath, "lacros-path", "", "Optional GCS path pointing to a lacros artifact.")
 	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
+	f.BoolVar(&c.cft, "cft", false, "Run via CFT.")
 }
 
 // validateAndAutocompleteFlags returns any errors after validating the CLI
@@ -280,7 +285,6 @@ type ctpRunLauncher struct {
 	bbClient    *buildbucket.Client
 	testPlan    *test_platform.Request_TestPlan
 	cliFlags    *testCommonFlags
-	exitEarly   bool
 }
 
 // launchAndOutputTests invokes the inner launchTestsAsync() function
@@ -308,7 +312,7 @@ func (l *ctpRunLauncher) launchTestsAsync(ctx context.Context) (*crosfleetpb.Bui
 			return buildLaunchList, fmt.Errorf(fullErrorMsg)
 		}
 	}
-	if l.exitEarly {
+	if l.cliFlags.exitEarly {
 		return buildLaunchList, nil
 	}
 	l.printer.WriteTextStderr(`Waiting to confirm %s run request validation...
@@ -441,6 +445,7 @@ func (l *ctpRunLauncher) testPlatformRequest(model string, buildTags map[string]
 	if err != nil {
 		return nil, err
 	}
+	gsPath := imageArchiveBaseURL + "/" + l.cliFlags.image
 
 	request := &test_platform.Request{
 		TestPlan: l.testPlan,
@@ -462,13 +467,15 @@ func (l *ctpRunLauncher) testPlatformRequest(model string, buildTags map[string]
 			},
 			Retry: l.cliFlags.retryParams(),
 			Metadata: &test_platform.Request_Params_Metadata{
-				TestMetadataUrl:        imageArchiveBaseURL + l.cliFlags.image,
-				DebugSymbolsArchiveUrl: imageArchiveBaseURL + l.cliFlags.image,
+				TestMetadataUrl:        gsPath,
+				DebugSymbolsArchiveUrl: gsPath,
+				ContainerMetadataUrl:   gsPath + "/" + containerMetadataURLSuffix,
 			},
 			Time: &test_platform.Request_Params_Time{
 				MaximumDuration: durationpb.New(
 					time.Duration(l.cliFlags.timeoutMins) * time.Minute),
 			},
+			RunViaCft: l.cliFlags.cft,
 		},
 	}
 	// Handling multi-DUTs use case if secondaryBoards provided.

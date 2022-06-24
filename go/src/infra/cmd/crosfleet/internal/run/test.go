@@ -96,7 +96,6 @@ func (c *testRun) innerRun(a subcommands.Application, args []string, env subcomm
 		bbClient:    ctpBBClient,
 		testPlan:    testPlanForTests(c.testArgs, args),
 		cliFlags:    &c.testCommonFlags,
-		exitEarly:   c.exitEarly,
 	}
 	return testLauncher.launchAndOutputTests(ctx)
 }

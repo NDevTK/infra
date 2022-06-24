@@ -397,6 +397,7 @@ func TestTestPlatformRequest(t *testing.T) {
 		provisionLabels: map[string]string{"cros-version": "foo-cros"},
 		addedDims:       map[string]string{"foo-dim": "bar-dim"},
 		keyvals:         map[string]string{"foo-key": "foo-val"},
+		cft:             true,
 	}
 	buildTags := map[string]string{"foo-tag": "bar-tag"}
 	wantRequest := &test_platform.Request{
@@ -430,11 +431,13 @@ func TestTestPlatformRequest(t *testing.T) {
 			Metadata: &test_platform.Request_Params_Metadata{
 				TestMetadataUrl:        "gs://chromeos-image-archive/sample-image",
 				DebugSymbolsArchiveUrl: "gs://chromeos-image-archive/sample-image",
+				ContainerMetadataUrl:   "gs://chromeos-image-archive/sample-image/metadata/containers.jsonpb",
 			},
 			Time: &test_platform.Request_Params_Time{
 				MaximumDuration: ptypes.DurationProto(
 					time.Duration(1800000000000)),
 			},
+			RunViaCft: true,
 		},
 	}
 	runLauncher := ctpRunLauncher{

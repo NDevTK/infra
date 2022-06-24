@@ -94,7 +94,6 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, env subcom
 		bbClient:    ctpBBClient,
 		testPlan:    testPlanForSuites(args),
 		cliFlags:    &c.testCommonFlags,
-		exitEarly:   c.exitEarly,
 	}
 	return testLauncher.launchAndOutputTests(ctx)
 }
