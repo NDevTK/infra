@@ -21,10 +21,12 @@ var ErrCreateSimulated = errors.New("CreateNew did not create a bug as the bug m
 // CreateRequest captures key details of a cluster and its impact,
 // as needed for filing new bugs.
 type CreateRequest struct {
-	// Description is a detailed description of the cluster.
+	// Description is the human-readable description of the cluster.
 	Description *clustering.ClusterDescription
 	// Impact describes the impact of cluster.
 	Impact *ClusterImpact
+	// The monorail components (if any) to use.
+	MonorailComponents []string
 }
 
 // ClusterImpact captures details of a cluster's impact, as needed

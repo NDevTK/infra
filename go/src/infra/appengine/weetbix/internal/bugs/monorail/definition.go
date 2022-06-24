@@ -77,9 +77,9 @@ func NewGenerator(impact *bugs.ClusterImpact, monorailCfg *configpb.MonorailProj
 	}, nil
 }
 
-// PrepareNew prepares a new bug from the given cluster. title and description
+// PrepareNew prepares a new bug from the given cluster. Title and description
 // are the cluster-specific bug title and description.
-func (g *Generator) PrepareNew(description *clustering.ClusterDescription) *mpb.MakeIssueRequest {
+func (g *Generator) PrepareNew(description *clustering.ClusterDescription, components []string) *mpb.MakeIssueRequest {
 	issue := &mpb.Issue{
 		Summary: fmt.Sprintf("Tests are failing: %v", sanitiseTitle(description.Title, 150)),
 		State:   mpb.IssueContentState_ACTIVE,
@@ -102,8 +102,13 @@ func (g *Generator) PrepareNew(description *clustering.ClusterDescription) *mpb.
 			Value: fv.Value,
 		})
 	}
+	for _, c := range components {
+		issue.Components = append(issue.Components, &mpb.Issue_ComponentValue{
+			Component: c,
+		})
+	}
 	if g.monorailCfg.Project == "chromium" {
-		// mwarton@chromium.org in both prod and staging monorail.
+		// Assign mwarton@chromium.org in both prod and staging monorail.
 		issue.Owner = &mpb.Issue_UserValue{User: ChromiumDefaultAssignee}
 	}
 

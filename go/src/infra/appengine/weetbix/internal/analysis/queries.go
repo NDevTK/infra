@@ -104,26 +104,27 @@ const clusterSummariesAnalysis = `
 	  -- 3 day metrics.
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_3d,
 	  COUNT(DISTINCT IF(is_3d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_3d,
-	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_residual_3d,
-	  COUNTIF(is_3d AND NOT is_exonerated) as failures_3d,
-	  COUNTIF(is_3d AND is_included_with_high_priority AND NOT is_exonerated) as failures_residual_3d,
+	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail, test_run_id, NULL)) as test_run_fails_3d,
+	  COUNT(DISTINCT IF(is_3d AND is_test_run_fail AND is_included_with_high_priority, test_run_id, NULL)) as test_run_fails_residual_3d,
+	  COUNTIF(is_3d) as failures_3d,
+	  COUNTIF(is_3d AND is_included_with_high_priority) as failures_residual_3d,
 	  COUNTIF(is_3d AND is_critical_and_exonerated) as critical_failures_exonerated_3d,
 	  COUNTIF(is_3d AND is_critical_and_exonerated AND is_included_with_high_priority) as critical_failures_exonerated_residual_3d,
 
 	  -- 7 day metrics.
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_7d,
 	  COUNT(DISTINCT IF(is_7d AND is_presubmit_reject AND is_included_with_high_priority AND NOT is_exonerated AND build_failed, presubmit_run_user_cl_id, NULL)) as presubmit_rejects_residual_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_7d,
-	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND is_included_with_high_priority AND NOT is_exonerated, test_run_id, NULL)) as test_run_fails_residual_7d,
-	  COUNTIF(is_7d AND NOT is_exonerated) as failures_7d,
-	  COUNTIF(is_7d AND is_included_with_high_priority AND NOT is_exonerated) as failures_residual_7d,
+	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail, test_run_id, NULL)) as test_run_fails_7d,
+	  COUNT(DISTINCT IF(is_7d AND is_test_run_fail AND is_included_with_high_priority, test_run_id, NULL)) as test_run_fails_residual_7d,
+	  COUNTIF(is_7d) as failures_7d,
+	  COUNTIF(is_7d AND is_included_with_high_priority) as failures_residual_7d,
 	  COUNTIF(is_7d AND is_critical_and_exonerated) as critical_failures_exonerated_7d,
 	  COUNTIF(is_7d AND is_critical_and_exonerated AND is_included_with_high_priority) as critical_failures_exonerated_residual_7d,
 
 	  -- Other analysis.
 	  ANY_VALUE(failure_reason) as example_failure_reason,
 	  APPROX_TOP_COUNT(test_id, 5) as top_test_ids,
+	  APPROX_TOP_COUNT(IF(bug_tracking_component.system = 'monorail', bug_tracking_component.component, NULL)) as top_monorail_components,
   FROM clustered_failures_extended
   WHERE is_included
   GROUP BY cluster_algorithm, cluster_id`
