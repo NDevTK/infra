@@ -83,12 +83,12 @@ func CreateUpdateDutRequest(dutID string, dut *tlw.Dut) (req *ufsAPI.UpdateDevic
 		}
 	}()
 	return &ufsAPI.UpdateDeviceRecoveryDataRequest{
-		ChromeosDeviceId: dutID,
-		Hostname:         dut.Name,
-		DutState:         getUFSDutComponentStateFromSpecs(dutID, dut),
-		DutData:          getUFSDutDataFromSpecs(dutID, dut),
-		LabData:          getUFSLabDataFromSpecs(dutID, dut),
-		ResourceState:    dutstate.ConvertToUFSState(dut.State),
+		DeviceId:      dutID,
+		Hostname:      dut.Name,
+		DutState:      getUFSDutComponentStateFromSpecs(dutID, dut),
+		DutData:       getUFSDutDataFromSpecs(dutID, dut),
+		LabData:       getUFSLabDataFromSpecs(dutID, dut),
+		ResourceState: dutstate.ConvertToUFSState(dut.State),
 	}, nil
 }
 

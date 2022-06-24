@@ -1746,7 +1746,7 @@ message UpdateDutStateRequest {
 // Next ID: 8
 message UpdateDeviceRecoveryDataRequest {
   // The id or asset tag for device.
-  string device_id = 7;
+  string device_id = 7 [(google.api.field_behavior) = REQUIRED];
   string chromeos_device_id = 1 [deprecated = true];
   // The hostname of the device.
   // Optional field but strongly recommended. If empty, hostname will be derived from device_id.
