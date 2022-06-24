@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4793b17c_a814fce6",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-issue.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-06-24T18:04:12Z",
+      "side": 1,
+      "message": "Yup, this is our standard method for adding CSS styles to LitElement components with shadowDOM disabled. Here\u0027s another example: https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/static_src/elements/mr-app/mr-app.js;l\u003d50",
+      "parentUuid": "e4ddc7e2_2d9ac28c",
+      "revId": "622ef3821abd585cf0fa1bb638a724e849cf365d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4141ff13_fa72becf",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8ccb23b_15ec737f",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-issue-page/mr-issue-page.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-06-24T18:04:12Z",
+      "side": 1,
+      "message": "This logic happens inside the banner itself. :D",
+      "parentUuid": "4141ff13_fa72becf",
+      "revId": "622ef3821abd585cf0fa1bb638a724e849cf365d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cc169ed7_a91747d7",
@@ -65,6 +101,30 @@
       "writtenOn": "2022-06-24T17:39:53Z",
       "side": 1,
       "message": "Could we add one test to explicitly show that we intend to only pick the first `migrated-to-b` label? Something like:\n```\n// We assume there\u0027s only one migrated-to-b-* label.\nassert.equal(issueV0.migratedId(wrapIssue({labelRefs: [\n  {label: \u0027migrated-to-b-1234\u0027},\n  {label: \u0027migrated-to-b-6789\u0027},\n]})), \u00271234\u0027);\n```",
+      "range": {
+        "startLine": 302,
+        "startChar": 0,
+        "endLine": 302,
+        "endChar": 26
+      },
+      "revId": "622ef3821abd585cf0fa1bb638a724e849cf365d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a9016fc_d88f1720",
+        "filename": "appengine/monorail/static_src/reducers/issueV0.test.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-06-24T18:04:12Z",
+      "side": 1,
+      "message": "Done, thank you!",
+      "parentUuid": "cc169ed7_a91747d7",
       "range": {
         "startLine": 302,
         "startChar": 0,
