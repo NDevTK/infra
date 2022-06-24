@@ -46,6 +46,30 @@
       },
       "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2e03ea8_ccb93d86",
+        "filename": "go/src/infra/cros/karte/internal/frontend/persist.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-06-24T06:04:00Z",
+      "side": 1,
+      "message": "I mean... the function in this file should be \nfunc PersistAction(...)\n\nfunc persistActionRangeImpl(...)\n\nfunc PersistActionRange(...)",
+      "parentUuid": "d18e87f7_5501b0bd",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 23
+      },
+      "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
