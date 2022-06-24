@@ -76,6 +76,10 @@ LIMIT
 	1000
 `
 
+const angleFailuresQuery = selectFromWhere + `
+"angle" in UNNEST(SheriffRotations)
+`
+
 func chromeBrowserFilterFunc(tree string) func(r failureRow) bool {
 	return func(r failureRow) bool {
 		return sliceContains(r.SheriffRotations, tree)
@@ -173,6 +177,9 @@ func generateSQLQuery(ctx context.Context, tree string, appID string) (string, e
 	}
 	if tree == "fuchsia" {
 		return fmt.Sprintf(fuchsiaFailuresQuery, appID, "fuchsia", bbProjectFilter), nil
+	}
+	if tree == "angle" {
+		return fmt.Sprintf(angleFailuresQuery, appID, "angle"), nil
 	}
 	return "", fmt.Errorf("invalid tree %q", tree)
 }
