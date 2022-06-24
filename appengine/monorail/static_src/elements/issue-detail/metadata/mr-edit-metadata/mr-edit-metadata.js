@@ -61,6 +61,9 @@ export class MrEditMetadata extends connectStore(LitElement) {
           display: block;
           font-size: var(--chops-main-font-size);
         }
+        mr-edit-metadata[hidden] {
+          display: none;
+        }
         mr-edit-metadata.edit-actions-right .edit-actions {
           flex-direction: row-reverse;
           text-align: right;

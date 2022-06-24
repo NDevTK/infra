@@ -299,6 +299,26 @@ describe('issue', () => {
     });
   });
 
+  it('migratedId', () => {
+    assert.equal(issueV0.migratedId(wrapIssue()), '');
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: []})), '');
+
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+      {label: 'IgnoreThis'},
+      {label: 'IgnoreThis2'},
+    ]})), '');
+
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+      {label: 'IgnoreThis'},
+      {label: 'IgnoreThis2'},
+      {label: 'migrated-to-b-6789'},
+    ]})), '6789');
+
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+      {label: 'migrated-to-b-1234'},
+    ]})), '1234');
+  });
+
   it('isOpen', () => {
     assert.isFalse(issueV0.isOpen(wrapIssue()));
     assert.isTrue(issueV0.isOpen(wrapIssue({statusRef: {meansOpen: true}})));
