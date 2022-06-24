@@ -94,6 +94,30 @@
       },
       "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0037c3b5_64891114",
+        "filename": "go/src/infra/cros/karte/internal/frontend/persist.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-06-24T18:27:37Z",
+      "side": 1,
+      "message": "ah I got it.Thanks for clarifying.",
+      "parentUuid": "a1b245e1_e30b3f64",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 23
+      },
+      "revId": "7ff1bae356c12f1f62a5931ca677682259762ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
