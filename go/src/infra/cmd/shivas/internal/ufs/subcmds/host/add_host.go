@@ -7,6 +7,7 @@ package host
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -14,11 +15,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/protobuf/proto"
 
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/jsonutil"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
@@ -113,8 +116,22 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 		//utils.GetMachinelseInteractiveInput(ctx, ic, &machinelse, false)
 	}
 	if c.newSpecsFile != "" {
-		if err = utils.ParseJSONFile(c.newSpecsFile, &machinelse); err != nil {
-			return err
+		contents, rErr := os.ReadFile(c.newSpecsFile)
+		if rErr != nil {
+			return rErr
+		}
+		machineLSEs, pErr := jsonutil.ParseJSONProto(contents, &ufspb.MachineLSE{})
+		if pErr != nil {
+			return pErr
+		}
+		switch len(machineLSEs) {
+		case 0:
+			return errors.New("specs file contains zero machines")
+		case 1:
+			// `go vet` does not like this change. However, explicit use of cloning makes it safe.
+			machinelse = *(proto.Clone(machineLSEs[0]).(*ufspb.MachineLSE))
+		default:
+			return fmt.Errorf("batch add not supported %d items provided", len(machineLSEs))
 		}
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
 			return errors.New(fmt.Sprintf("machines field is empty in json. It is a required parameter for json input."))
