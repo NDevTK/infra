@@ -57,7 +57,8 @@ def mk_checker(*tool_name):
           tool_cmd + ['.'],
           cwd=dpath,
           stdout=subprocess.PIPE,
-          stderr=subprocess.STDOUT)
+          stderr=subprocess.STDOUT,
+          universal_newlines=True)
       out = proc.communicate()[0].strip()
       if proc.returncode and 'build constraints exclude all Go files' in out:
         continue

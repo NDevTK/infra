@@ -70,8 +70,8 @@ def CommandInGoEnv(input_api, output_api, name, cmd, kwargs):
   else:
     error_type = output_api.PresubmitPromptWarning
   full_cmd = [
-    'vpython',
-    input_api.os_path.join(input_api.change.RepositoryRoot(), 'go', 'env.py'),
+      'vpython3',
+      input_api.os_path.join(input_api.change.RepositoryRoot(), 'go', 'env.py'),
   ]
   full_cmd.extend(cmd)
   return input_api.Command(
@@ -96,10 +96,10 @@ def GoCheckers(input_api, output_api):
   ret = []
   for tool_name in tool_names:
     cmd = [
-      input_api.python_executable,
-      input_api.os_path.join(input_api.change.RepositoryRoot(),
-                             'go', 'check.py'),
-      tool_name,
+        input_api.python3_executable,
+        input_api.os_path.join(input_api.change.RepositoryRoot(), 'go',
+                               'check.py'),
+        tool_name,
     ]
     if input_api.verbose:
       cmd.append("--verbose")
@@ -134,7 +134,7 @@ def GoCheckGoModTidy(input_api, output_api):
           output_api,
           name='Check go.mod tidiness',
           cmd=[
-              input_api.python_executable,
+              input_api.python3_executable,
               os.path.join(
                   root,
                   'go',
@@ -490,7 +490,7 @@ def GoChecks(input_api, output_api):  # pragma: no cover
           input_api.Command(
               name='bootstrap go env',
               cmd=[
-                  'vpython',
+                  'vpython3',
                   input_api.os_path.join(input_api.change.RepositoryRoot(),
                                          'go', 'bootstrap.py')
               ],
