@@ -295,4 +295,47 @@ describe('allowRemovedRestrictions', () => {
       {label: 'restrict-view-people'},
     ]));
   });
+
+  describe('migrated issue', () => {
+    it('does not show notice if issue not migrated', async () => {
+      element.migratedId = '';
+
+      await element.updateComplete;
+
+      assert.isNull(element.querySelector('.migrated-banner'));
+      assert.isNull(element.querySelector('.legacy-edit'));
+    });
+
+    it('shows notice if issue migrated', async () => {
+      element.migratedId = '1234';
+
+      await element.updateComplete;
+
+      assert.isNotNull(element.querySelector('.migrated-banner'));
+      assert.isNotNull(element.querySelector('.legacy-edit'));
+    });
+
+    it('hides edit form if issue migrated', async () => {
+      element.migratedId = '1234';
+
+      await element.updateComplete;
+
+      const editForm = element.querySelector('mr-edit-metadata');
+      assert.isTrue(editForm.hasAttribute('hidden'));
+    });
+
+    it('unhides edit form on button click', async () => {
+      element.migratedId = '1234';
+
+      await element.updateComplete;
+
+      const button = element.querySelector('.legacy-edit');
+      button.click();
+
+      await element.updateComplete;
+
+      const editForm = element.querySelector('mr-edit-metadata');
+      assert.isFalse(editForm.hasAttribute('hidden'));
+    });
+  });
 });

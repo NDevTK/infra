@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LitElement, html} from 'lit-element';
+import {LitElement, html, css} from 'lit-element';
 import debounce from 'debounce';
 
 import {store, connectStore} from 'reducers/base.js';
@@ -37,11 +37,66 @@ export class MrEditIssue extends connectStore(LitElement) {
       blockingRefs = blockingRefs.concat(issue.danglingBlockingRefs);
     }
 
+    let migratedNotice = html``;
+    if (this._isMigrated) {
+      migratedNotice = html`
+        <div class="migrated-banner">
+          <i
+            class="warning-icon material-icons"
+            icon="warning"
+          >warning</i>
+          <p>
+            This issue has moved to
+            ${this._migratedLink}. Updates should be posted in
+            ${this._migratedLink}.
+          </p>
+        </div>
+        <chops-button
+          class="legacy-edit"
+          @click=${this._allowLegacyEdits}
+        >
+          I want to edit the old version of this issue.
+        </chops-button>
+      `;
+    }
+
     return html`
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+      <style>
+        .migrated-banner {
+          width: 100%;
+          background-color: var(--chops-orange-50);
+          border: var(--chops-normal-border);
+          border-top: 0;
+          font-size: var(--chops-main-font-size);
+          padding: 0.25em 8px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          margin-bottom: 1em;
+        }
+        i.material-icons {
+          color: var(--chops-primary-icon-color);
+          font-size: var(--chops-icon-font-size);
+        }
+        .warning-icon {
+          margin-right: 4px;
+        }
+        .legacy-edit {
+          margin-bottom: 2em;
+        }
+      </style>
       <h2 id="makechanges" class="medium-heading">
         <a href="#makechanges">Add a comment and make changes</a>
       </h2>
+
+      ${migratedNotice}
+
       <mr-edit-metadata
+        ?hidden=${this._isMigrated && !this._editLegacyIssue}
         formName="Issue Edit"
         .ownerName=${this._ownerDisplayName(this.issue.ownerRef)}
         .cc=${issue.ccRefs}
@@ -68,6 +123,12 @@ export class MrEditIssue extends connectStore(LitElement) {
   /** @override */
   static get properties() {
     return {
+      /**
+       * ID of an Issue Tracker issue that the issue migrated to.
+       */
+      migratedId: {
+        type: String,
+      },
       /**
        * All comments, including descriptions.
        */
@@ -113,6 +174,9 @@ export class MrEditIssue extends connectStore(LitElement) {
       _fieldDefs: {
         type: Array,
       },
+      _editLegacyIssue: {
+        type: Boolean,
+      },
     };
   }
 
@@ -124,6 +188,8 @@ export class MrEditIssue extends connectStore(LitElement) {
     this.updateError = '';
 
     this.presubmitDebounceTimeOut = DEBOUNCED_PRESUBMIT_TIME_OUT;
+
+    this._editLegacyIssue = false;
   }
 
   /** @override */
@@ -144,6 +210,8 @@ export class MrEditIssue extends connectStore(LitElement) {
 
   /** @override */
   stateChanged(state) {
+    this.migratedId = issueV0.migratedId(state);
+
     this.issue = issueV0.viewedIssue(state);
     this.issueRef = issueV0.viewedIssueRef(state);
     this.comments = issueV0.comments(state);
@@ -269,6 +337,28 @@ export class MrEditIssue extends connectStore(LitElement) {
     if (!this.issue || !this.issue.labelRefs) return [];
     const labels = this.issue.labelRefs;
     return labels.filter((l) => l.isDerived).map((l) => l.label);
+  }
+
+  /**
+   * @return {boolean} Whether this issue is migrated or not.
+   */
+  get _isMigrated() {
+    return this.migratedId && this.migratedId !== '';
+  }
+
+  /**
+   * @return {string} the link of the issue in Issue Tracker.
+   */
+  get _migratedLink() {
+    return html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+  }
+
+  /**
+   * Let the user override th edit form being hidden, in case of mistakes or
+   * similar.
+   */
+  _allowLegacyEdits() {
+    this._editLegacyIssue = true;
   }
 
   /**
