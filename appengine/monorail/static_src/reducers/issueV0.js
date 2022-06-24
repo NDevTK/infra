@@ -493,6 +493,7 @@ export const reducer = combineReducers({
 const RESTRICT_VIEW_PREFIX = 'restrict-view-';
 const RESTRICT_EDIT_PREFIX = 'restrict-editissue-';
 const RESTRICT_COMMENT_PREFIX = 'restrict-addissuecomment-';
+const MIGRATED_ISSUE_PREFIX = 'migrated-to-b-';
 
 /**
  * Selector to retrieve all normalized Issue data in the Redux store,
@@ -701,6 +702,25 @@ export const restrictions = createSelector(
 
       return restrictions;
     },
+);
+
+// Gets the Issue Tracker ID of a moved issue.
+export const migratedId = createSelector(
+  labelRefs,
+  (labelRefs) => {
+    if (!labelRefs) return {};
+
+    // Assume that there's only one migrated-to-b-* label. Or at least drop any
+    // labels besides the first one.
+    const migrationLabel = labelRefs.find((labelRef) => {
+      return labelRef.label.toLowerCase().startsWith(MIGRATED_ISSUE_PREFIX);
+    });
+
+    if (migrationLabel) {
+      return migrationLabel.substring(MIGRATED_ISSUE_PREFIX);
+    }
+    return '';
+  },
 );
 
 export const isOpen = createSelector(
