@@ -20,6 +20,40 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e4ddc7e2_2d9ac28c",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-issue.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-06-24T17:58:57Z",
+      "side": 1,
+      "message": "just want to confirm this is the stander way for monorial UI.",
+      "revId": "622ef3821abd585cf0fa1bb638a724e849cf365d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4141ff13_fa72becf",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-issue-page/mr-issue-page.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-06-24T17:58:57Z",
+      "side": 1,
+      "message": "do we need to check if the banner should be show or not?",
+      "revId": "622ef3821abd585cf0fa1bb638a724e849cf365d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cc169ed7_a91747d7",
         "filename": "appengine/monorail/static_src/reducers/issueV0.test.js",
         "patchSetId": 7
