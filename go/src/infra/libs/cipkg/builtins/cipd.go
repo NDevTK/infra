@@ -5,9 +5,11 @@
 package builtins
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"infra/libs/cipkg"
@@ -15,6 +17,8 @@ import (
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/system/environ"
 )
 
 // CIPDEnsure is used for downloading CIPD packages. It behaves similar to
@@ -25,19 +29,57 @@ const CIPDEnsureBuilder = BuiltinBuilderPrefix + "cipdEnsure"
 type CIPDEnsure struct {
 	Name     string
 	Ensure   ensure.File
-	Expander []string
+	Expander template.Expander
+
+	CacheDir          string
+	MaxThreads        int
+	ParallelDownloads int
+	ServiceURL        string
 }
 
 func (c *CIPDEnsure) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	var w strings.Builder
-	if err := c.Ensure.Serialize(&w); err != nil {
-		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("failed to encode ensure file: %v: %w", c.Ensure, err)
+	// Expand template based on ctx.Platform.Host before pass it to cipd client
+	// for cross-compile
+	expander := c.Expander
+	if expander == nil {
+		// TODO: Replace with proper parser for platform
+		h := strings.Split(ctx.Platform.Host, "_")
+		expander = template.Platform{OS: cipdOS(h[0]), Arch: cipdArch(h[1])}.Expander()
 	}
+
+	ef, err := expandEnsureFile(&c.Ensure, expander)
+	if err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("failed to expand ensure file: %v: %w", c.Ensure, err)
+	}
+
+	var w strings.Builder
+	if err := ef.Serialize(&w); err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("failed to encode ensure file: %v: %w", ef, err)
+	}
+
+	// Construct environment variables for cipd client.
+	// Use cipd related host environment as default value.
+	var env []string
+	hostEnv := environ.FromCtx(ctx.Context)
+	addEnv := func(k, v string) {
+		if v == "" {
+			v = hostEnv.Get(k)
+		}
+		if v != "" {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
+	}
+
+	addEnv(cipd.EnvCacheDir, c.CacheDir)
+	addEnv(cipd.EnvMaxThreads, strconv.Itoa(c.MaxThreads))
+	addEnv(cipd.EnvParallelDownloads, strconv.Itoa(c.ParallelDownloads))
+	addEnv(cipd.EnvCIPDServiceURL, c.ServiceURL)
+
 	return cipkg.Derivation{
 		Name:    c.Name,
 		Builder: CIPDEnsureBuilder,
 		Args:    []string{w.String()},
-		Env:     c.Expander,
+		Env:     env,
 	}, cipkg.PackageMetadata{}, nil
 }
 
@@ -53,24 +95,20 @@ func cipdEnsure(ctx context.Context, cmd *exec.Cmd) error {
 		return fmt.Errorf("failed to parse argument: %#v: %w", cmd.Args[1], err)
 	}
 
+	ctxWithEnv := environ.New(cmd.Env).SetInCtx(ctx)
 	opts := cipd.ClientOptions{
 		Root:       out,
 		ServiceURL: ef.ServiceURL,
 		UserAgent:  fmt.Sprintf("cipkg, %s", cipd.UserAgent),
 	}
-	clt, err := cipd.NewClientFromEnv(ctx, opts)
+	clt, err := cipd.NewClientFromEnv(ctxWithEnv, opts)
 	if err != nil {
 		return fmt.Errorf("failed to create cipd client: %w", err)
 	}
 	defer clt.Close(ctx)
 
-	expander := template.DefaultExpander()
-	for _, env := range cmd.Env {
-		e := strings.SplitN(env, "=", 2)
-		expander[e[0]] = e[1]
-	}
 	resolver := cipd.Resolver{Client: clt}
-	resolved, err := resolver.Resolve(ctx, ef, expander)
+	resolved, err := resolver.Resolve(ctx, ef, template.Expander{})
 	if err != nil {
 		return fmt.Errorf("failed to resolve CIPD package: %w", err)
 	}
@@ -92,4 +130,51 @@ func cipdEnsure(ctx context.Context, cmd *exec.Cmd) error {
 		}
 	}
 	return nil
+}
+
+func cloneEnsureFile(ef *ensure.File) (*ensure.File, error) {
+	var s bytes.Buffer
+	if err := ef.Serialize(&s); err != nil {
+		return nil, err
+	}
+	return ensure.ParseFile(&s)
+}
+
+func expandEnsureFile(ef *ensure.File, expander template.Expander) (*ensure.File, error) {
+	ef, err := cloneEnsureFile(ef)
+	if err != nil {
+		return nil, err
+	}
+
+	for dir, slice := range ef.PackagesBySubdir {
+		var s ensure.PackageSlice
+		for _, p := range slice {
+			pkg, err := p.Expand(expander)
+			switch err {
+			case template.ErrSkipTemplate:
+				continue
+			case nil:
+			default:
+				return nil, errors.Annotate(err, "expanding %#v", pkg).Err()
+			}
+			p.PackageTemplate = pkg
+			s = append(s, p)
+		}
+		ef.PackagesBySubdir[dir] = s
+	}
+	return ef, nil
+}
+
+func cipdOS(os string) string {
+	if os == "darwin" {
+		return "mac"
+	}
+	return os
+}
+
+func cipdArch(arch string) string {
+	if arch == "arm" {
+		return "armv6l"
+	}
+	return arch
 }
