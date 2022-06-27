@@ -148,7 +148,12 @@ func (c *Client) DownloadDiff(ctx context.Context, host, project, revision, base
 		Base:       base,
 		Path:       path,
 	}
-	response, err := gitilesClient.DownloadDiff(ctx, request)
+	var response *gitilespb.DownloadDiffResponse
+	err = gob.Retry(ctx, "DownloadDiff", func() error {
+		var err error
+		response, err = gitilesClient.DownloadDiff(ctx, request)
+		return err
+	})
 	if err != nil {
 		return "", err
 	}
