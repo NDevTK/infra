@@ -7,6 +7,7 @@ syntax = "proto3";
 package recipes.infra.windows_image_builder.windows_image_builder;
 
 import "recipes/infra/windows_image_builder/offline_winpe_customization.proto";
+import "recipes/infra/windows_image_builder/online_windows_customization.proto";
 import "recipes/infra/windows_image_builder/sources.proto";
 import "recipes/infra/windows_image_builder/actions.proto";
 
@@ -29,6 +30,9 @@ message Customization{
   oneof customization{
     // Customize a WinPE image
     offline_winpe_customization.OfflineWinPECustomization offline_winpe_customization = 1;
+
+    // Customize an online windows image
+    online_windows_customization.OnlineWinCustomization online_windows_customization = 2;
   }
 }
 
