@@ -279,7 +279,12 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case tasknames.AuditStorage:
-		return nil, errors.Reason("setup type: audit storage not yet implemented").Err()
+		switch ds {
+		case tlw.DUTSetupTypeCros:
+			return config.CrosAuditStorageConfig(), nil
+		default:
+			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
+		}
 	case tasknames.AuditUSB:
 		return nil, errors.Reason("setup type: audit usb not yet implemented").Err()
 	case tasknames.Custom:

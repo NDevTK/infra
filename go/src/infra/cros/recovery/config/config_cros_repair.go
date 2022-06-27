@@ -48,6 +48,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_RUN_ONCE,
 		},
+		"Set state: needs_repair": {
+			Docs: []string{
+				"The action set devices with state means that repair tsk did not success to recover the devices.",
+			},
+			ExecName: "dut_set_state",
+			ExecExtraArgs: []string{
+				"state:needs_repair",
+			},
+			RunControl: RunControl_RUN_ONCE,
+		},
 		"Set state: repair_failed": {
 			Docs: []string{
 				"The action set devices with state means that repair tsk did not success to recover the devices.",
