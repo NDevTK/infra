@@ -36,7 +36,6 @@ deploy_prod:
 	@echo "---[Deploying prod instance $(APPID)]---"
 	$(GAE_PY) upload -A $(APPID) $(MODULES)
 
-
 # Note that we do not provide a command-line way to make the newly-uploaded
 # version the default version. This is for two reasons: a) You should be using
 # your browser to confirm that the new version works anyway, so just use the

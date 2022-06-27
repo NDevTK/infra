@@ -14,25 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import webapp2
+import flask
 
 import gae_ts_mon
-class MainHandler(webapp2.RequestHandler):
 
-  def get(self):
-    new_url = (
-        "https://www.google.com/accounts/ServiceLogin?service=ah&"
-        "passive=true&continue=https://appengine.google.com/_ah/conflogin%3F"
-        "continue=https://bugs.chromium.org/p/chromium/issues/entryafterlogin"
-        "&ltmpl=")
-    self.redirect(new_url)
+application = flask.Flask(__name__)
 
 
-application = webapp2.WSGIApplication(
-    [('/', MainHandler),
-     ('/wizard.html', MainHandler),
-     ('/wizard.do', MainHandler)],
-    debug=True)
+@application.route('/')
+@application.route('/wizard.html')
+@application.route('/wizard.do')
+def Main():
+  new_url = (
+      "https://www.google.com/accounts/ServiceLogin?service=ah&"
+      "passive=true&continue=https://appengine.google.com/_ah/conflogin%3F"
+      "continue=https://bugs.chromium.org/p/chromium/issues/entryafterlogin"
+      "&ltmpl=")
+  return flask.redirect(new_url, code=302)
 
 # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
 # service account and change to gae_ts_mon.initialize_prod()
