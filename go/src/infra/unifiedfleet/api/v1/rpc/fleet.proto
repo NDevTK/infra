@@ -1743,21 +1743,12 @@ message UpdateDutStateRequest {
   models.LabMeta lab_meta = 4;
 }
 
-// Next ID: 8
-message UpdateDeviceRecoveryDataRequest {
-  // The id or asset tag for device.
-  string device_id = 7 [(google.api.field_behavior) = REQUIRED];
-  string chromeos_device_id = 1 [deprecated = true];
-  // The hostname of the device.
-  // Optional field but strongly recommended. If empty, hostname will be derived from device_id.
-  string hostname = 2;
-  // The DUT state to update.
-  models.State resource_state = 3 [(google.api.field_behavior) = REQUIRED];
-
+// Next ID: 4
+message ChromeOsRecoveryData {
   // The state record to update.
-  // DutState.id is required and its value should be equal to device_id(tag 7)
-  // DutState.hostname is optional, if not empty it should be equal to hostname(tag 2)
-  models.chromeos.lab.DutState dut_state = 4 [(google.api.field_behavior) = REQUIRED];
+  // DutState.Id is required and its value should be equal to UpdateDeviceRecoveryDataRequest.DeviceId
+  // DutState.Hostname is optional. If set, it should be equal to UpdateDeviceRecoveryDataRequest.Hostname
+  models.chromeos.lab.DutState dut_state = 1;
 
   message DutData {
     string serial_number = 1;
@@ -1766,7 +1757,7 @@ message UpdateDeviceRecoveryDataRequest {
   }
 
   // Used for updating back essential configs from repair/deploy task.
-  DutData dut_data = 5;
+  DutData dut_data = 2;
 
   message WifiRouter {
     string hostname = 1;
@@ -1784,13 +1775,80 @@ message UpdateDeviceRecoveryDataRequest {
     models.chromeos.lab.ServoTopology servo_topology = 3;
     string servo_component = 4;
     repeated WifiRouter wifi_routers = 5;
+    repeated BluetoothPeer bluetooth_peers = 6;
+    // ServoUsbDrive contains details of the servo's plugged USB drive.
+    chromiumos.test.lab.api.UsbDrive servo_usb_drive = 7;
+  }
+
+  // Used for updating back essential configs from repair/deploy task.
+  LabData lab_data = 3;
+}
+
+// TODO(b/236170648): Cleanup UpdateDeviceRecoveryDataRequest proto and remove
+// deprecated fields and nested protos once integration of Android with PARIS is done.
+// Next ID: 10
+message UpdateDeviceRecoveryDataRequest {
+  // The id or asset tag for device.
+  string device_id = 7 [(google.api.field_behavior) = REQUIRED];
+  string chromeos_device_id = 1 [deprecated = true];
+  // Type of the device.
+  enum ResourceType {
+    RESOURCE_TYPE_UNSPECIFIED = 0;
+    RESOURCE_TYPE_CHROMEOS_DEVICE = 1;
+    RESOURCE_TYPE_ATTACHED_DEVICE = 2;
+  }
+  ResourceType resource_type = 8;
+  // The hostname of the device.
+  // Optional field but strongly recommended. If empty, hostname will be derived from device_id.
+  string hostname = 2;
+  // The DUT state to update.
+  models.State resource_state = 3 [(google.api.field_behavior) = REQUIRED];
+  // All device specific recovery data.
+  oneof device_recovery_data {
+    ChromeOsRecoveryData chromeos = 9;
+  }
+
+  // The state record to update.
+  // DutState.id is required and its value should be equal to device_id(tag 7)
+  // DutState.hostname is optional, if not empty it should be equal to hostname(tag 2)
+  models.chromeos.lab.DutState dut_state = 4 [deprecated = true];
+
+  message DutData {
+    option deprecated = true;
+    string serial_number = 1;
+    string hwID = 2;
+    string device_sku = 3;
+  }
+
+  // Used for updating back essential configs from repair/deploy task.
+  DutData dut_data = 5 [deprecated = true];
+
+  message WifiRouter {
+    option deprecated = true;
+    string hostname = 1;
+    models.chromeos.lab.PeripheralState state = 2;
+  }
+
+  message BluetoothPeer {
+    option deprecated = true;
+    string hostname = 1;
+    models.chromeos.lab.PeripheralState state = 2;
+  }
+
+  message LabData {
+    option deprecated = true;
+    string servo_type = 1;
+    bool smart_usbhub = 2;
+    models.chromeos.lab.ServoTopology servo_topology = 3;
+    string servo_component = 4;
+    repeated WifiRouter wifi_routers = 5;
     repeated BluetoothPeer blueooth_peers = 6;
     // ServoUsbDrive contains details of the servo's plugged USB drive.
     chromiumos.test.lab.api.UsbDrive servo_usb_drive = 7;
   }
 
   // Used for updating back essential configs from repair/deploy task.
-  LabData lab_data = 6;
+  LabData lab_data = 6 [deprecated = true];
 }
 
 message UpdateDeviceRecoveryDataResponse {
