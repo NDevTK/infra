@@ -64,7 +64,7 @@ export class MrEditIssue extends connectStore(LitElement) {
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
         rel="stylesheet">
       <style>
-        .migrated-banner {
+        mr-edit-issue .migrated-banner {
           width: 100%;
           background-color: var(--chops-orange-50);
           border: var(--chops-normal-border);
@@ -78,14 +78,14 @@ export class MrEditIssue extends connectStore(LitElement) {
           align-items: center;
           margin-bottom: 1em;
         }
-        i.material-icons {
+        mr-edit-issue i.material-icons {
           color: var(--chops-primary-icon-color);
           font-size: var(--chops-icon-font-size);
         }
-        .warning-icon {
+        mr-edit-issue .warning-icon {
           margin-right: 4px;
         }
-        .legacy-edit {
+        mr-edit-issue .legacy-edit {
           margin-bottom: 2em;
         }
       </style>
