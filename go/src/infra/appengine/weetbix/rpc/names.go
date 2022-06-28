@@ -22,8 +22,9 @@ var (
 	// ClusterNameRe performs partial validation of a
 	// cluster resource name. Cluster algorithm and
 	// ID must be further validated by ClusterID.Validate().
-	ClusterNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/clusters/(` + GenericKeyPattern + `)/(` + GenericKeyPattern + `)$`)
-	ProjectNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)$`)
+	ClusterNameRe              = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/clusters/(` + GenericKeyPattern + `)/(` + GenericKeyPattern + `)$`)
+	ProjectNameRe              = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)$`)
+	ReclusteringProgressNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/reclusteringProgress$`)
 )
 
 // parseRuleName parses a rule resource name into its constituent ID parts.
@@ -40,6 +41,16 @@ func parseProjectName(name string) (project string, err error) {
 	match := ProjectNameRe.FindStringSubmatch(name)
 	if match == nil {
 		return "", errors.New("invalid project name, expected format: projects/{project}")
+	}
+	return match[1], nil
+}
+
+// parseReclusteringProgressName parses a reclustering progress resource name
+// into its constituent project ID part.
+func parseReclusteringProgressName(name string) (project string, err error) {
+	match := ReclusteringProgressNameRe.FindStringSubmatch(name)
+	if match == nil {
+		return "", errors.New("invalid reclustering progress name, expected format: projects/{project}/reclusteringProgress")
 	}
 	return match[1], nil
 }

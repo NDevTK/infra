@@ -77,6 +77,13 @@ service Clusters {
     // Changes to this RPC should comply with https://google.aip.dev/231.
     rpc BatchGet(BatchGetClustersRequest)
         returns (BatchGetClustersResponse) {};
+
+    // Reads current progress re-clustering the given project. Re-clustering
+    // means updating the clusters each failure is in to reflect the latest
+    // failure association rules, suggested clustering algorithms and
+    // clustering configuration.
+    rpc GetReclusteringProgress(GetReclusteringProgressRequest)
+        returns (ReclusteringProgress) {};
 }
 
 message ClusterRequest {
@@ -143,7 +150,7 @@ message ClusterResponse {
 // the set of returned clusters should always be the same.
 message ClusteringVersion {
     // The version of clustering algorithms used.
-    int64 algorithms_version = 1;
+    int32 algorithms_version = 1;
 
     // The version of failure association rules used. This is the Spanner
     // commit timestamp of the last rule modification incorporated in the
@@ -218,4 +225,31 @@ message Cluster {
     // to retrieve the rule with ID matching the cluster ID.
     // Used to facilitate creating a new rule based on a suggested cluster.
     string equivalent_failure_association_rule = 7;
+}
+
+// Designed to conform with aip.dev/131.
+message GetReclusteringProgressRequest {
+    // The name of the reclustering progress resource to retrieve.
+    // Format: projects/{project}/reclusteringProgress.
+    string name = 1;
+}
+
+// ReclusteringProgress captures the progress re-clustering a
+// given LUCI project's test results using specific rules
+// versions or algorithms versions.
+message ReclusteringProgress {
+    // The name of the reclustering progress resource.
+    // Format: projects/{project}/reclusteringProgress.
+    string name = 1;
+    // ProgressPerMille is the progress of the current re-clustering run,
+    // measured in thousandths (per mille). As such, this value ranges
+    // from 0 (0% complete) to 1000 (100% complete).
+    int32 progress_per_mille = 2;
+    // The goal of the last completed re-clustering run.
+    ClusteringVersion last = 5;
+    // The goal of the current re-clustering run. (For which
+    // ProgressPerMille is specified.) This may be the same as the
+    // last completed re-clustering run the available algorithm versions,
+    // rules and configuration is unchanged.
+    ClusteringVersion next = 6;
 }

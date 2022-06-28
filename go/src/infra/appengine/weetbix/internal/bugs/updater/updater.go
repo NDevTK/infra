@@ -95,14 +95,14 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 		logging.Warningf(ctx, "Auto-bug filing paused for project %s as re-clustering to new configuration is in progress.", b.project)
 		return nil
 	}
-	if algorithms.AlgorithmsVersion != progress.LatestAlgorithmsVersion {
+	if algorithms.AlgorithmsVersion != progress.Next.AlgorithmsVersion {
 		logging.Warningf(ctx, "Auto-bug filing paused for project %s as bug-filing is running mismatched algorithms version %v (want %v).",
-			b.project, algorithms.AlgorithmsVersion, progress.LatestAlgorithmsVersion)
+			b.project, algorithms.AlgorithmsVersion, progress.Next.AlgorithmsVersion)
 		return nil
 	}
-	if !b.projectCfg.LastUpdated.Equal(progress.LatestConfigVersion) {
+	if !b.projectCfg.LastUpdated.Equal(progress.Next.ConfigVersion) {
 		logging.Warningf(ctx, "Auto-bug filing paused for project %s as bug-filing is running mismatched config version %v (want %v).",
-			b.project, b.projectCfg.LastUpdated, progress.LatestConfigVersion)
+			b.project, b.projectCfg.LastUpdated, progress.Next.ConfigVersion)
 		return nil
 	}
 

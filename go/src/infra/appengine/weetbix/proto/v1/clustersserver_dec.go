@@ -56,3 +56,20 @@ func (s *DecoratedClusters) BatchGet(ctx context.Context, req *BatchGetClustersR
 	}
 	return
 }
+
+func (s *DecoratedClusters) GetReclusteringProgress(ctx context.Context, req *GetReclusteringProgressRequest) (rsp *ReclusteringProgress, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetReclusteringProgress", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetReclusteringProgress(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetReclusteringProgress", rsp, err)
+	}
+	return
+}

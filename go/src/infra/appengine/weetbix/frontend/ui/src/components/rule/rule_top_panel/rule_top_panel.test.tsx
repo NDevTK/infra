@@ -22,7 +22,12 @@ describe('Test RuleTopPanel component', () => {
     mockFetchProjectConfig();
     mockFetchAuthState();
     const mockRule = createDefaultMockRule();
-    fetchMock.get('/api/projects/chromium/reclusteringProgress', createMockDoneProgress());
+    fetchMock.post('http://localhost/prpc/weetbix.v1.Clusters/GetReclusteringProgress', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\''+JSON.stringify(createMockDoneProgress()),
+    });
     fetchMock.post('https://api-dot-crbug.com/prpc/monorail.v3.Issues/GetIssue', {
       headers: {
         'X-Prpc-Grpc-Code': '0',

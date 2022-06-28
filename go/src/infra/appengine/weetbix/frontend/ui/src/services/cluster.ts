@@ -22,6 +22,10 @@ export class ClustersService {
   async batchGet(request: BatchGetClustersRequest): Promise<BatchGetClustersResponse> {
     return this.client.call(ClustersService.SERVICE, 'BatchGet', request);
   }
+
+  async getReclusteringProgress(request: GetReclusteringProgressRequest): Promise<ReclusteringProgress> {
+    return this.client.call(ClustersService.SERVICE, 'GetReclusteringProgress', request);
+  }
 }
 
 export interface BatchGetClustersRequest {
@@ -77,4 +81,33 @@ export interface Counts {
   // The value of the metric (summed over all failures).
   // 64-bit integer serialized as a string.
   nominal: string | undefined;
+}
+
+export interface GetReclusteringProgressRequest {
+  // The name of the reclustering progress resource.
+  // Format: projects/{project}/reclusteringProgress.
+  name: string;
+}
+
+// ReclusteringProgress captures the progress re-clustering a
+// given LUCI project's test results with a specific rules
+// version and/or algorithms version.
+export interface ReclusteringProgress {
+  // ProgressPerMille is the progress of the current re-clustering run,
+  // measured in thousandths (per mille).
+  progressPerMille: number | undefined;
+  // Last is the goal of the last completed re-clustering run.
+  last: ClusteringVersion;
+  // Next is the goal of the current re-clustering run. (For which
+  // ProgressPerMille is specified.)
+  // It may be the same as the goal of the last completed reclustering run.
+  next: ClusteringVersion;
+}
+
+// ClusteringVersion captures the rules and algorithms a re-clustering run
+// is re-clustering to.
+export interface ClusteringVersion {
+  rulesVersion: string; // RFC 3339 encoded date/time.
+  configVersion: string; // RFC 3339 encoded date/time.
+  algorithmsVersion: number;
 }

@@ -18,6 +18,7 @@ import (
 	"infra/appengine/weetbix/internal/clustering/algorithms"
 	"infra/appengine/weetbix/internal/clustering/reclustering"
 	"infra/appengine/weetbix/internal/clustering/rules/cache"
+	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -111,7 +112,7 @@ func (*clustersServer) Cluster(ctx context.Context, req *pb.ClusterRequest) (*pb
 	}
 
 	version := &pb.ClusteringVersion{
-		AlgorithmsVersion: results.AlgorithmsVersion,
+		AlgorithmsVersion: int32(results.AlgorithmsVersion),
 		RulesVersion:      timestamppb.New(results.RulesVersion),
 		ConfigVersion:     timestamppb.New(results.ConfigVersion),
 	}
@@ -262,4 +263,31 @@ func suggestedClusterTitle(cs *analysis.ClusterSummary, cfg *compiledcfg.Project
 		title = fmt.Sprintf("%s/%s", cs.ClusterID.Algorithm, cs.ClusterID.ID)
 	}
 	return title
+}
+
+func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.GetReclusteringProgressRequest) (*pb.ReclusteringProgress, error) {
+	project, err := parseReclusteringProgressName(req.Name)
+	if err != nil {
+		return nil, invalidArgumentError(errors.Annotate(err, "name").Err())
+	}
+
+	progress, err := runs.ReadReclusteringProgress(ctx, project)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ReclusteringProgress{
+		Name:             req.Name,
+		ProgressPerMille: int32(progress.ProgressPerMille),
+		Last: &pb.ClusteringVersion{
+			AlgorithmsVersion: int32(progress.Last.AlgorithmsVersion),
+			RulesVersion:      timestamppb.New(progress.Last.RulesVersion),
+			ConfigVersion:     timestamppb.New(progress.Last.ConfigVersion),
+		},
+		Next: &pb.ClusteringVersion{
+			AlgorithmsVersion: int32(progress.Next.AlgorithmsVersion),
+			RulesVersion:      timestamppb.New(progress.Next.RulesVersion),
+			ConfigVersion:     timestamppb.New(progress.Next.ConfigVersion),
+		},
+	}, nil
 }

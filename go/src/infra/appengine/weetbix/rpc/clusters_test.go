@@ -32,6 +32,7 @@ import (
 	"infra/appengine/weetbix/internal/clustering/algorithms/rulesalgorithm"
 	"infra/appengine/weetbix/internal/clustering/algorithms/testname"
 	"infra/appengine/weetbix/internal/clustering/rules"
+	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
 	"infra/appengine/weetbix/internal/testutil"
@@ -489,6 +490,78 @@ func TestClusters(t *testing.T) {
 					st, _ := grpcStatus.FromError(err)
 					So(st.Code(), ShouldEqual, codes.FailedPrecondition)
 					So(st.Message(), ShouldEqual, "project does not exist in Weetbix")
+					So(response, ShouldBeNil)
+				})
+			})
+		})
+		Convey("GetReclusteringProgress", func() {
+			request := &pb.GetReclusteringProgressRequest{
+				Name: "projects/testproject/reclusteringProgress",
+			}
+			Convey("With a valid request", func() {
+				rulesVersion := time.Date(2021, time.January, 1, 1, 0, 0, 0, time.UTC)
+				reference := time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC)
+				configVersion := time.Date(2019, time.March, 1, 1, 0, 0, 0, time.UTC)
+				rns := []*runs.ReclusteringRun{
+					runs.NewRun(0).
+						WithProject("testproject").
+						WithAttemptTimestamp(reference.Add(-5 * time.Minute)).
+						WithRulesVersion(rulesVersion).
+						WithAlgorithmsVersion(2).
+						WithConfigVersion(configVersion).
+						WithNoReportedProgress().
+						Build(),
+					runs.NewRun(1).
+						WithProject("testproject").
+						WithAttemptTimestamp(reference.Add(-10 * time.Minute)).
+						WithRulesVersion(rulesVersion).
+						WithAlgorithmsVersion(2).
+						WithConfigVersion(configVersion).
+						WithReportedProgress(500).
+						Build(),
+					runs.NewRun(2).
+						WithProject("testproject").
+						WithAttemptTimestamp(reference.Add(-20 * time.Minute)).
+						WithRulesVersion(rulesVersion.Add(-1 * time.Hour)).
+						WithAlgorithmsVersion(1).
+						WithConfigVersion(configVersion.Add(-1 * time.Hour)).
+						WithCompletedProgress().
+						Build(),
+				}
+				err := runs.SetRunsForTesting(ctx, rns)
+				So(err, ShouldBeNil)
+
+				// Run
+				response, err := server.GetReclusteringProgress(ctx, request)
+
+				// Verify.
+				So(err, ShouldBeNil)
+				So(response, ShouldResembleProto, &pb.ReclusteringProgress{
+					Name:             "projects/testproject/reclusteringProgress",
+					ProgressPerMille: 500,
+					Last: &pb.ClusteringVersion{
+						AlgorithmsVersion: 1,
+						ConfigVersion:     timestamppb.New(configVersion.Add(-1 * time.Hour)),
+						RulesVersion:      timestamppb.New(rulesVersion.Add(-1 * time.Hour)),
+					},
+					Next: &pb.ClusteringVersion{
+						AlgorithmsVersion: 2,
+						ConfigVersion:     timestamppb.New(configVersion),
+						RulesVersion:      timestamppb.New(rulesVersion),
+					},
+				})
+			})
+			Convey("With an invalid request", func() {
+				Convey("Invalid name", func() {
+					request.Name = "invalid"
+
+					// Run
+					response, err := server.GetReclusteringProgress(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.InvalidArgument)
+					So(st.Message(), ShouldEqual, "name: invalid reclustering progress name, expected format: projects/{project}/reclusteringProgress")
 					So(response, ShouldBeNil)
 				})
 			})

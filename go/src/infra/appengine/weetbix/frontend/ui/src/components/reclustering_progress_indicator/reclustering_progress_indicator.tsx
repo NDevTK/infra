@@ -23,7 +23,8 @@ import {
   progressToLatestAlgorithms,
   progressToLatestConfig,
   progressToRulesVersion,
-} from '../../services/progress';
+} from '../../tools/progress_tools';
+
 import CircularProgressWithLabel from '../circular_progress_with_label/circular_progress_with_label';
 import ErrorAlert from '../error_alert/error_alert';
 

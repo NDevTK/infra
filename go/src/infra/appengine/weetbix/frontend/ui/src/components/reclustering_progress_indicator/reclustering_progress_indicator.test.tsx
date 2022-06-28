@@ -15,6 +15,7 @@ import {
 } from '@testing-library/react';
 
 import { renderWithClient } from '../../testing_tools/libs/mock_rquery';
+import { mockFetchAuthState } from '../../testing_tools/mocks/authstate_mock';
 import {
   createMockDoneProgress,
   createMockProgress,
@@ -28,7 +29,13 @@ describe('Test ReclusteringProgressIndicator component', () => {
   });
 
   it('given an finished progress, then should not display', async () => {
-    fetchMock.get('/api/projects/chromium/reclusteringProgress', createMockDoneProgress());
+    mockFetchAuthState();
+    fetchMock.post('http://localhost/prpc/weetbix.v1.Clusters/GetReclusteringProgress', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\''+JSON.stringify(createMockDoneProgress()),
+    });
     renderWithClient(
         <ReclusteringProgressIndicator
           project='chromium'
@@ -40,7 +47,13 @@ describe('Test ReclusteringProgressIndicator component', () => {
   });
 
   it('given a progress, then should display percentage', async () => {
-    fetchMock.get('/api/projects/chromium/reclusteringProgress', createMockProgress(800));
+    mockFetchAuthState();
+    fetchMock.post('http://localhost/prpc/weetbix.v1.Clusters/GetReclusteringProgress', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\''+JSON.stringify(createMockProgress(800)),
+    });
     renderWithClient(
         <ReclusteringProgressIndicator
           project='chromium'
@@ -55,7 +68,13 @@ describe('Test ReclusteringProgressIndicator component', () => {
   });
 
   it('when progress is done after being on screen, then should display button to refresh analysis', async () => {
-    fetchMock.getOnce('/api/projects/chromium/reclusteringProgress', createMockProgress(800));
+    mockFetchAuthState();
+    fetchMock.postOnce('http://localhost/prpc/weetbix.v1.Clusters/GetReclusteringProgress', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\''+JSON.stringify(createMockProgress(800)),
+    });
     renderWithClient(
         <ReclusteringProgressIndicator
           project='chromium'
@@ -65,9 +84,12 @@ describe('Test ReclusteringProgressIndicator component', () => {
     await screen.findByRole('alert');
     await screen.findByText('80%');
 
-    fetchMock.getOnce('/api/projects/chromium/reclusteringProgress', createMockDoneProgress(), {
-      overwriteRoutes: false,
-    });
+    fetchMock.postOnce('http://localhost/prpc/weetbix.v1.Clusters/GetReclusteringProgress', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\''+JSON.stringify(createMockDoneProgress()),
+    }, { overwriteRoutes: false });
 
     await waitFor(() => fetchMock.calls.length == 2);
 

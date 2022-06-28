@@ -134,7 +134,7 @@ func TestSpan(t *testing.T) {
 				progress, err := ReadReclusteringProgress(ctx, testProject)
 				So(err, ShouldBeNil)
 
-				So(progress.LatestAlgorithmsVersion, ShouldEqual, algorithms.AlgorithmsVersion+1)
+				So(progress.Next.AlgorithmsVersion, ShouldEqual, algorithms.AlgorithmsVersion+1)
 				So(progress.IsReclusteringToNewAlgorithms(), ShouldBeTrue)
 			})
 			Convey(`Config Upgrading`, func() {
@@ -152,7 +152,7 @@ func TestSpan(t *testing.T) {
 				progress, err := ReadReclusteringProgress(ctx, testProject)
 				So(err, ShouldBeNil)
 
-				So(progress.LatestConfigVersion, ShouldEqual, configVersion)
+				So(progress.Next.ConfigVersion, ShouldEqual, configVersion)
 				So(progress.IsReclusteringToNewConfig(), ShouldBeTrue)
 			})
 			Convey(`Algorithms and Config Stable`, func() {
@@ -170,8 +170,8 @@ func TestSpan(t *testing.T) {
 				progress, err := ReadReclusteringProgress(ctx, testProject)
 				So(err, ShouldBeNil)
 
-				So(progress.LatestAlgorithmsVersion, ShouldEqual, algVersion)
-				So(progress.LatestConfigVersion, ShouldEqual, configVersion)
+				So(progress.Next.AlgorithmsVersion, ShouldEqual, algVersion)
+				So(progress.Next.ConfigVersion, ShouldEqual, configVersion)
 				So(progress.IsReclusteringToNewAlgorithms(), ShouldBeFalse)
 				So(progress.IsReclusteringToNewConfig(), ShouldBeFalse)
 			})

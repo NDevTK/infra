@@ -17,13 +17,14 @@ import {
 } from 'lit-element';
 import { DateTime } from 'luxon';
 
+import { ReclusteringProgress } from '../../../../services/cluster';
+
 import {
     fetchProgress,
     progressToLatestAlgorithms,
     progressToLatestConfig,
     progressToRulesVersion,
-    ReclusteringProgress
-} from '../../../../services/progress';
+} from '../../../../tools/progress_tools';
 
 /**
  * ReclusteringProgressIndicator displays the progress Weetbix is making

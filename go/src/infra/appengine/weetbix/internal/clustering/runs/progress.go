@@ -32,12 +32,6 @@ type ReclusteringProgress struct {
 	// ProgressPerMille is the progress of the current re-clustering run,
 	// measured in thousandths (per mille).
 	ProgressPerMille int `json:"progressPerMille"`
-	// LatestAlgorithmsVersion is the latest version of clustering algorithms
-	// used in a Weetbix re-clustering run.
-	LatestAlgorithmsVersion int64 `json:"latestAlgorithmsVersion"`
-	// LatestConfigVersion is the latest version of configuration used
-	// in a Weetbix re-clustering run.
-	LatestConfigVersion time.Time `json:"latestConfigVersion"`
 	// Next is the goal of the current re-clustering run. (For which
 	// ProgressPerMille is specified.)
 	Next ReclusteringTarget `json:"next"`
@@ -66,28 +60,23 @@ func ReadReclusteringProgress(ctx context.Context, project string) (*Reclusterin
 		return nil, err
 	}
 
-	// Scale run progress to being from 0 to 1000.
-	runProgress := int(lastWithProgress.Progress / lastWithProgress.ShardCount)
+	runProgress := 0
+	next := ReclusteringTarget{
+		RulesVersion:      last.RulesVersion,
+		ConfigVersion:     last.ConfigVersion,
+		AlgorithmsVersion: last.AlgorithmsVersion,
+	}
 
-	// The AlgorithmsVersion in each subsequent
-	// re-clustering run is guaranteed to be non-decreasing, so
-	// the AlgorithmsVersion in the latest run is guaranteed
-	// to be the highest of all runs so far.
-	latestAlgorithmsVersion := last.AlgorithmsVersion
-
-	// The ConfigVersion in each subsequent re-clustering run is
-	// guaranteed to be non-decreasing.
-	latestConfigVersion := last.ConfigVersion
+	if last.RulesVersion.Equal(lastWithProgress.RulesVersion) &&
+		last.AlgorithmsVersion == lastWithProgress.AlgorithmsVersion &&
+		last.ConfigVersion.Equal(lastWithProgress.ConfigVersion) {
+		// Scale run progress to being from 0 to 1000.
+		runProgress = int(lastWithProgress.Progress / lastWithProgress.ShardCount)
+	}
 
 	return &ReclusteringProgress{
-		ProgressPerMille:        runProgress,
-		LatestAlgorithmsVersion: latestAlgorithmsVersion,
-		LatestConfigVersion:     latestConfigVersion,
-		Next: ReclusteringTarget{
-			RulesVersion:      lastWithProgress.RulesVersion,
-			ConfigVersion:     lastWithProgress.ConfigVersion,
-			AlgorithmsVersion: lastWithProgress.AlgorithmsVersion,
-		},
+		ProgressPerMille: runProgress,
+		Next:             next,
 		Last: ReclusteringTarget{
 			RulesVersion:      lastCompleted.RulesVersion,
 			ConfigVersion:     lastCompleted.ConfigVersion,
@@ -101,7 +90,7 @@ func ReadReclusteringProgress(ctx context.Context, project string) (*Reclusterin
 // algorithms and is not yet stable. The algorithms version Weetbix
 // is re-clustering to is accessible via LatestAlgorithmsVersion.
 func (p *ReclusteringProgress) IsReclusteringToNewAlgorithms() bool {
-	return p.Last.AlgorithmsVersion < p.LatestAlgorithmsVersion
+	return p.Last.AlgorithmsVersion < p.Next.AlgorithmsVersion
 }
 
 // IsReclusteringToNewConfig returns whether Weetbix's
@@ -113,7 +102,7 @@ func (p *ReclusteringProgress) IsReclusteringToNewAlgorithms() bool {
 // the configuration version defined by LatestConfigVersion when
 // interpreting the output.
 func (p *ReclusteringProgress) IsReclusteringToNewConfig() bool {
-	return p.Last.ConfigVersion.Before(p.LatestConfigVersion)
+	return p.Last.ConfigVersion.Before(p.Next.ConfigVersion)
 }
 
 // IncorporatesRulesVersion returns returns whether Weetbix

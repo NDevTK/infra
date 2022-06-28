@@ -181,7 +181,7 @@ func updateAnalysisAndBugsForProject(ctx context.Context, opts updateOptions) er
 		return errors.Annotate(err, "read re-clustering progress").Err()
 	}
 
-	projectCfg, err := compiledcfg.Project(ctx, opts.project, progress.LatestConfigVersion)
+	projectCfg, err := compiledcfg.Project(ctx, opts.project, progress.Next.ConfigVersion)
 	if err != nil {
 		return errors.Annotate(err, "read project config").Err()
 	}
