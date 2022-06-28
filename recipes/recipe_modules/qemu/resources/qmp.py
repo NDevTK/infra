@@ -70,23 +70,31 @@ def main():
 
   args = parser.parse_args()
 
-  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  host, port = args.sock.split(':')
-  sock.connect((host, int(port)))
+  # return json format
+  res = {'return': {}}
+  try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host, port = args.sock.split(':')
+    sock.connect((host, int(port)))
 
-  # read the first response on connect and ignore it
-  resp(sock)
+    # read the first response on connect and ignore it
+    resp(sock)
 
-  # enable capabilities for qmp
-  send_cmd(sock, {'execute': 'qmp_capabilities'})
+    # enable capabilities for qmp
+    send_cmd(sock, {'execute': 'qmp_capabilities'})
 
-  # execute the given command and return the response
-  cmd = {'execute': args.cmd}
-  if args.args:
-    cmd['arguments'] = args.args
-  json.dump(send_cmd(sock, cmd), sys.stdout)
+    # execute the given command and return the response
+    cmd = {'execute': args.cmd}
+    if args.args:
+      cmd['arguments'] = args.args
+    res = send_cmd(sock, cmd)
 
-  sock.close()
+    sock.close()
+  except Exception as e:
+    # format as a QMP error
+    res['return']['Error'] = '{}'.format(e)
+
+  json.dump(res, sys.stdout)
 
 
 main()

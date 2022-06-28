@@ -17,6 +17,11 @@ QMP_HOST = 'localhost:4444'
 QMP_SOCKET = 'tcp:' + QMP_HOST + ',server,nowait'
 
 
+class QEMUError(Exception):
+  """ Base QEMU exception class """
+  pass
+
+
 class QEMUAPI(recipe_api.RecipeApi):
   """ API to manage qemu VMs """
 
@@ -254,3 +259,24 @@ class QEMUAPI(recipe_api.RecipeApi):
       # Failed to power down. Is it already powered down?
       # avoid raising exception
       return False
+
+  def vm_status(self, name):
+    """ vm_status returns a dict describing the status of the vm. The return
+    value is the QMP response to `query-status`
+
+    Args:
+      * name: name of the vm
+
+    Returns: QMP json response for status query
+    """
+    try:
+      res = self.m.step(
+          name='Status {}'.format(name),
+          cmd=[
+              'python3',
+              self.resource('qmp.py'), '-c', 'query-status', '-s', QMP_HOST
+          ],
+          stdout=self.m.json.output())
+      return res.stdout
+    except Exception as e:
+      raise QEMUError(e)
