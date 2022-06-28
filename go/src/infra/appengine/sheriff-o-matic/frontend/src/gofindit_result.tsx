@@ -31,6 +31,7 @@ interface HeuristicSuspect {
   reviewUrl: string;
   justification: string;
   score: number;
+  confidence_level: number;
 }
 
 export const GoFinditResult = (props: GoFinditResultProps) => {
@@ -58,8 +59,8 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
                 </IconButton>
               </span>
             </TableCell>
-            <TableCell align="left" sx={{ width: "50px"}}>
-              Score
+            <TableCell align="left" sx={{ width: "60px"}}>
+              Confidence
             </TableCell>
             <TableCell align="left">Justification</TableCell>
           </TableRow>
@@ -70,7 +71,7 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
               <TableCell align="left">
                 <Link href={s.reviewUrl} target="_blank" rel="noopener">{s.reviewUrl}</Link>
               </TableCell>
-              <TableCell align="left">{s.score}</TableCell>
+              <TableCell align="left">{confidenceText(s.confidence_level)}</TableCell>
               <TableCell align="left">
                 <pre style={{ whiteSpace: 'pre-wrap' }} >{shortenJustification(s.justification)}</pre>
               </TableCell>
@@ -92,6 +93,19 @@ function shortenJustification(justification: string) {
     return justification
   }
   return lines.slice(0, 3).join("\n") + "\n...";
+}
+
+function confidenceText(confidenceLevel: number) {
+  switch (confidenceLevel) {
+    case 1:
+      return "Low";
+    case 2:
+      return "Medium";
+    case 3:
+      return "High";
+    default:
+      return "N/A";
+  }
 }
 
 export class SomGoFinditResult extends HTMLElement {
