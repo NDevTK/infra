@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "308a95dd_da67f242",
+        "filename": "go/src/infra/cros/tlslib/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-28T23:53:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5a014b5_918375d2",
+      "range": {
+        "startLine": 44,
+        "startChar": 30,
+        "endLine": 44,
+        "endChar": 53
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6312252e_5bbc6ce9",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-06-28T20:24:43Z",
       "side": 1,
       "message": "nit: Create constant and reuse?",
+      "range": {
+        "startLine": 74,
+        "startChar": 24,
+        "endLine": 74,
+        "endChar": 57
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d964548_1547f8cd",
+        "filename": "go/src/infra/cros/tlslib/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-28T23:53:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6312252e_5bbc6ce9",
       "range": {
         "startLine": 74,
         "startChar": 24,
@@ -72,6 +120,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5bc82145_a5ecf4a8",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-28T23:53:57Z",
+      "side": 1,
+      "message": "I think if firmware update happens then there will be another reboot, so you might still want make sure the UI is stabilized after the new reboot?",
+      "parentUuid": "609628fb_d2f63715",
+      "range": {
+        "startLine": 142,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 4
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "12a1c041_4d8295bc",
         "filename": "go/src/infra/cros/tlslib/provision.go",
         "patchSetId": 2
@@ -83,6 +155,30 @@
       "writtenOn": "2022-06-28T20:24:43Z",
       "side": 1,
       "message": "There is no need to do this check?\n\nRunning firmware update will be update or no-op.",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74908891_babe96de",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-28T23:53:57Z",
+      "side": 1,
+      "message": "During the testing stage we found there is a failure pattern that firmware updater report success but firmware version doesn\u0027t change after reboot, so we\u0027ll need to make sure the firmware is actually updated and raise an error if it happens.",
+      "parentUuid": "12a1c041_4d8295bc",
       "range": {
         "startLine": 152,
         "startChar": 3,
