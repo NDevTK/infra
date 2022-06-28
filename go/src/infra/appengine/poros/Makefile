@@ -16,7 +16,7 @@ release:
 
 test:
 	go test -race -count 10 -failfast ./...
-	cd frontend && npm run test
+	cd frontend && npm test -- --watchAll=false
 
 emulator:
 	set DATASTORE_DATASET=$(DEV_CLOUD_PROJECT)

@@ -98,6 +98,7 @@ export const Resource = () => {
             <Select
               label="Type"
               id="type"
+              inputProps={{ "data-testid": "type" }}
               defaultValue="machine"
               value={type}
               onChange={(e) => {
@@ -105,7 +106,6 @@ export const Resource = () => {
                 dispatch(setType(e.target.value));
               }}
               fullWidth
-              inputProps={{ fullWidth: true }}
               variant="standard"
               placeholder="Type"
             >
@@ -126,18 +126,18 @@ export const Resource = () => {
             <InputLabel>Operating System</InputLabel>
             <Select
               label="OperatingSystem"
-              id="OperatingSystem"
+              id="operating-system"
+              inputProps={{ "data-testid": "operating-system" }}
               defaultValue="windows_machine"
               value={operatingSystem}
               onChange={(e) => {
                 dispatch(setOperatingSystem(e.target.value));
               }}
               fullWidth
-              inputProps={{ fullWidth: true }}
               variant="standard"
               placeholder="Type"
             >
-              <MenuItem value={'windows_machine'}>windows_machine</MenuItem>
+              <MenuItem id="os-option" data-testid="os-option" value={'windows_machine'}>windows_machine</MenuItem>
               <MenuItem value={'linux_machine'}>linux_machine</MenuItem>
               <MenuItem value={'chromeos_machine'}>chromeos_machine</MenuItem>
             </Select>
@@ -155,14 +155,14 @@ export const Resource = () => {
             <InputLabel>VM Images</InputLabel>
             <Select
               id="image"
+              inputProps={{ "data-testid": "image" }}
               value={image}
               onChange={(e) => dispatch(setImage(e.target.value))}
               fullWidth
-              inputProps={{ fullWidth: true }}
               variant="standard"
               placeholder="Type"
             >
-              <MenuItem value={'image-1'}>Image 1</MenuItem>
+              <MenuItem data-testid="image-option" value={'image-1'}>Image 1</MenuItem>
               <MenuItem value={'image-2'}>Image 2</MenuItem>
               <MenuItem value={'image-3'}>Image 3</MenuItem>
               <MenuItem value={'image-4'}>Image 4</MenuItem>
@@ -179,7 +179,8 @@ export const Resource = () => {
       <Grid container spacing={2} padding={1} paddingTop={6}>
         <Grid item xs={12}>
           <TextField
-            id="domainInfo"
+            id="domain-info"
+            inputProps={{ "data-testid": "domain-info" }}
             label="Domain Information"
             multiline
             rows={4}
@@ -190,7 +191,6 @@ export const Resource = () => {
             }}
             value={'some domain info'}
             fullWidth
-            InputProps={{ fullWidth: true }}
           />
         </Grid>
       </Grid>
@@ -215,7 +215,7 @@ export const Resource = () => {
           }}
           xs={8}
         >
-          <Typography variant="h5">Resource</Typography>
+          <Typography id="form-heading" data-testid="form-heading" variant="h5">Resource</Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2} padding={1}>
@@ -223,10 +223,10 @@ export const Resource = () => {
           <TextField
             label="Name"
             id="name"
+            inputProps={{ "data-testid": "name" }}
             value={name}
             onChange={(e) => dispatch(setName(e.target.value))}
             fullWidth
-            InputProps={{ fullWidth: true }}
             variant="standard"
           />
         </Grid>
@@ -240,9 +240,9 @@ export const Resource = () => {
             rows={4}
             variant="standard"
             onChange={(e) => dispatch(setDescription(e.target.value))}
+            inputProps={{ "data-testid": "description" }}
             value={description}
             fullWidth
-            InputProps={{ fullWidth: true }}
           />
         </Grid>
       </Grid>
@@ -258,11 +258,11 @@ export const Resource = () => {
           <TextField
             disabled
             label="Id"
-            id="resourceid"
+            id="resource-id"
             variant="standard"
+            inputProps={{ "data-testid": "resource-id" }}
             value={resourceId}
             fullWidth
-            InputProps={{ fullWidth: true }}
           />
         </Grid>
       </Grid>
@@ -278,6 +278,8 @@ export const Resource = () => {
         >
           <Stack direction="row" spacing={2}>
             <Button
+              id="cancel-button"
+              data-testid="cancel-button"
               variant="outlined"
               onClick={handleCancelClick}
               startIcon={<RefreshIcon />}
@@ -285,6 +287,8 @@ export const Resource = () => {
               Cancel
             </Button>
             <Button
+              id="save-button"
+              data-testid="save-button"
               variant="contained"
               onClick={() =>
                 handleSaveClick(

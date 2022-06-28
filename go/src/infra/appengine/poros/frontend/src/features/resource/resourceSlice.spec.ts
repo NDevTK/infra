@@ -10,7 +10,7 @@ describe('resource reducer', () => {
     resources: [],
     pageToken: undefined,
     pageNumber: 1,
-    pageSize: 10,
+    pageSize: 25,
     fetchStatus: 'idle',
     record: ResourceModel.defaultEntity(),
     savingStatus: 'idle',
