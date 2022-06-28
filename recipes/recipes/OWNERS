@@ -32,7 +32,6 @@ per-file luci*.py=vadimsh@chromium.org
 
 per-file recipe_autoroller.py=iannucci@chromium.org
 
-per-file recipe_roll_tryjob.py=martiniss@chromium.org
 
 per-file recipe_simulation.py=iannucci@chromium.org
 
