@@ -221,7 +221,7 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 			example_failure_reason.primary_error_message as ExampleFailureReason,
 			top_test_ids as TopTestIDs,
 			ARRAY(
-				SELECT value, count
+				SELECT AS STRUCT value, count
 				FROM UNNEST(top_monorail_components)
 				WHERE value IS NOT NULL
 			) as TopMonorailComponents
