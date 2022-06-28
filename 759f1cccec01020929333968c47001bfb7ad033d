@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "04bb345e_f82fdf7b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-06-28T03:11:39Z",
+      "side": 1,
+      "message": "Did you decide not to do the fallback component?",
+      "revId": "759f1cccec01020929333968c47001bfb7ad033d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "abfba56b_3447854c",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/queries.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-06-28T03:11:39Z",
+      "side": 1,
+      "message": "Do you need to give 5 as the second arg here?",
+      "range": {
+        "startLine": 127,
+        "startChar": 3,
+        "endLine": 127,
+        "endChar": 19
+      },
+      "revId": "759f1cccec01020929333968c47001bfb7ad033d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
