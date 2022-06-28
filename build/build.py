@@ -192,6 +192,15 @@ class PackageDef(collections.namedtuple(
       d['file'] for d in pkg_def['data'] if d.get('generate_bat_shim')
     ]
 
+    def process_cipd_export(ensure_contents,
+                            dest,
+                            pkg_vars=pkg_vars,
+                            cipd_exe=cipd_exe):
+      # Render target_platform in the ensure file.
+      ensure_contents = ensure_contents.replace('${target_platform}',
+                                                pkg_vars['platform'])
+      cipd_export(ensure_contents, dest, cipd_exe)
+
     if 'mac_bundle' in pkg_def:
       bundle_def = pkg_def['mac_bundle']
       bundle = create_mac_bundle(build_root, bundle_def)
@@ -201,11 +210,14 @@ class PackageDef(collections.namedtuple(
       })
 
       for d in bundle_def['data']:
-        file_path = render_path(d['file'], pkg_vars)
-        src = os.path.join(self.pkg_root, file_path)
-        dst = os.path.join(bundle['files_root'], d['path'],
-                           os.path.basename(file_path))
-        shutil.copy(src, dst)
+        if 'file' in d:
+          file_path = render_path(d['file'], pkg_vars)
+          src = os.path.join(self.pkg_root, file_path)
+          dst = os.path.join(bundle['files_root'], d['path'],
+                             os.path.basename(file_path))
+          shutil.copy(src, dst)
+        elif 'cipd_export' in d:
+          process_cipd_export(d['cipd_export'], bundle['root'])
 
       if 'codesign' in bundle_def:
         cmd = ['/usr/bin/codesign', '--deep', '--force']
@@ -234,11 +246,7 @@ class PackageDef(collections.namedtuple(
         bat_files.append(cp['dst'])
 
     if 'cipd_export' in pkg_def:
-      # Render target_platform in the ensure file.
-      ensure_contents = pkg_def['cipd_export'].replace(
-          '${target_platform}',
-          get_package_vars()['platform'])
-      cipd_export(ensure_contents, build_root, cipd_exe)
+      process_cipd_export(pkg_def['cipd_export'], build_root)
 
     # Copy all included files into build root if not existed. This must be after
     # steps generating files and before any steps referring a symbolic link.

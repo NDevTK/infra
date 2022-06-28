@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -50,6 +51,13 @@ var cipdPackageLoader = cipd.PackageLoader{
 	},
 }
 
+func pythonInterpreterPrefix() string {
+	if runtime.GOOS == "darwin" {
+		return "../Resources/"
+	}
+	return ""
+}
+
 var defaultConfig = application.Config{
 	PackageLoader: &cipdPackageLoader,
 	SpecLoader: spec.Loader{
@@ -69,8 +77,8 @@ var defaultConfig = application.Config{
 		Version: "version:2@16.7.10.chromium.7",
 	},
 	RelativePathOverride: []string{
-		"2.7/bin",
-		"3.8/bin",
+		pythonInterpreterPrefix() + "2.7/bin",
+		pythonInterpreterPrefix() + "3.8/bin",
 	},
 	PruneThreshold:          7 * 24 * time.Hour, // One week.
 	MaxPrunesPerSweep:       3,
