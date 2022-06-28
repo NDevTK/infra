@@ -40,19 +40,19 @@ func (s *DecoratedClusters) Cluster(ctx context.Context, req *ClusterRequest) (r
 	return
 }
 
-func (s *DecoratedClusters) BatchGetPresubmitImpact(ctx context.Context, req *BatchGetClusterPresubmitImpactRequest) (rsp *BatchGetClusterPresubmitImpactResponse, err error) {
+func (s *DecoratedClusters) BatchGet(ctx context.Context, req *BatchGetClustersRequest) (rsp *BatchGetClustersResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "BatchGetPresubmitImpact", req)
+		newCtx, err = s.Prelude(ctx, "BatchGet", req)
 		if err == nil {
 			ctx = newCtx
 		}
 	}
 	if err == nil {
-		rsp, err = s.Service.BatchGetPresubmitImpact(ctx, req)
+		rsp, err = s.Service.BatchGet(ctx, req)
 	}
 	if s.Postlude != nil {
-		err = s.Postlude(ctx, "BatchGetPresubmitImpact", rsp, err)
+		err = s.Postlude(ctx, "BatchGet", rsp, err)
 	}
 	return
 }

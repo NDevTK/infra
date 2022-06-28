@@ -15,12 +15,12 @@ import {
     LitElement,
     property,
     state,
-    TemplateResult
+    TemplateResult,
 } from 'lit-element';
 import { Ref } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
-import { Cluster, getCluster } from '../../../services/cluster';
+import { Cluster, BatchGetClustersRequest, getClustersService } from '../../../services/cluster';
 import { RuleChangedEvent } from './elements/rule_section';
 
 // ClusterPage lists the clusters tracked by Weetbix.
@@ -73,14 +73,14 @@ export class ClusterPage extends LitElement {
                 criteriaName = 'Failure reason-based clustering';
             }
             let newRuleButton: TemplateResult = html``;
-            if (currentCluster.failureAssociationRule) {
+            if (currentCluster.equivalentFailureAssociationRule) {
                 newRuleButton = html`<mwc-button class="new-rule-button" raised @click=${this.newRuleClicked}>New Rule from Cluster</mwc-button>`;
             }
 
             definitionSection = html`
             <h1>Cluster <span class="cluster-id">${this.clusterAlgorithm}/${this.clusterId}</span></h1>
             <div class="definition-box-container">
-                <pre class="definition-box">${currentCluster.title}</pre>
+                <pre class="definition-box">${currentCluster.hasExample ? currentCluster.title : '(cluster no longer exists)'}</pre>
             </div>
             <table class="definition-table">
                 <tbody>
@@ -125,7 +125,7 @@ export class ClusterPage extends LitElement {
             throw new Error('invariant violated: newRuleClicked cannot be called before cluster is loaded');
         }
         const projectEncoded = encodeURIComponent(this.project);
-        const ruleEncoded = encodeURIComponent(this.cluster.failureAssociationRule);
+        const ruleEncoded = encodeURIComponent(this.cluster.equivalentFailureAssociationRule || '');
         const sourceAlgEncoded = encodeURIComponent(this.clusterAlgorithm);
         const sourceIdEncoded = encodeURIComponent(this.clusterId);
 
@@ -144,7 +144,18 @@ export class ClusterPage extends LitElement {
     // is clicked at completion of re-clustering.
     async refreshAnalysis() {
         this.cluster = undefined;
-        this.cluster = await getCluster(this.project, this.clusterAlgorithm, this.clusterId);
+        const service = getClustersService();
+        const request: BatchGetClustersRequest = {
+            parent: `projects/${encodeURIComponent(this.project)}`,
+            names: [
+                `projects/${encodeURIComponent(this.project)}/clusters/${encodeURIComponent(this.clusterAlgorithm)}/${encodeURIComponent(this.clusterId)}`,
+            ],
+        };
+    
+        const response = await service.batchGet(request);
+    
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.cluster = response.clusters![0];
         this.requestUpdate();
     }
 

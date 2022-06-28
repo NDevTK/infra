@@ -24,10 +24,6 @@ import (
 // does not exist.
 var ProjectNotExistsErr = errors.New("project does not exist in Weetbix or analysis is not yet available")
 
-// NotExistsErr is returned if there is no data for the specified cluster in
-// Weetbix.
-var NotExistsErr = errors.New("cluster does not exist")
-
 // ImpactfulClusterReadOptions specifies options for ReadImpactfulClusters().
 type ImpactfulClusterReadOptions struct {
 	// Project is the LUCI Project for which analysis is being performed.
@@ -355,8 +351,8 @@ func whereThresholdsMet(sqlPrefix string, threshold *configpb.MetricThreshold) (
 	return sql, parameters
 }
 
-// ReadCluster reads information about a single cluster.
-func (c *Client) ReadCluster(ctx context.Context, luciProject string, clusterID clustering.ClusterID) (*ClusterSummary, error) {
+// ReadCluster reads information about a list of clusters.
+func (c *Client) ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) ([]*ClusterSummary, error) {
 	dataset, err := bqutil.DatasetForProject(luciProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "getting dataset").Err()
@@ -380,13 +376,11 @@ func (c *Client) ReadCluster(ctx context.Context, luciProject string, clusterID 
 			example_failure_reason.primary_error_message as ExampleFailureReason,
 			top_test_ids as TopTestIDs
 		FROM cluster_summaries
-		WHERE cluster_algorithm = @clusterAlgorithm
-		  AND cluster_id = @clusterID
+		WHERE STRUCT(cluster_algorithm AS Algorithm, cluster_id as ID) IN UNNEST(@clusterIDs)
 	`)
 	q.DefaultDatasetID = dataset
 	q.Parameters = []bigquery.QueryParameter{
-		{Name: "clusterAlgorithm", Value: clusterID.Algorithm},
-		{Name: "clusterID", Value: clusterID.ID},
+		{Name: "clusterIDs", Value: clusterIDs},
 	}
 	job, err := q.Run(ctx)
 	if err != nil {
@@ -408,10 +402,7 @@ func (c *Client) ReadCluster(ctx context.Context, luciProject string, clusterID 
 		}
 		clusters = append(clusters, row)
 	}
-	if len(clusters) == 0 {
-		return nil, NotExistsErr
-	}
-	return clusters[0], nil
+	return clusters, nil
 }
 
 type ClusterFailure struct {

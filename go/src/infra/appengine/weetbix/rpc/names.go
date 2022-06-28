@@ -19,11 +19,11 @@ import (
 var (
 	GenericKeyPattern = "[a-z0-9\\-]+"
 	RuleNameRe        = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/rules/(` + rules.RuleIDRePattern + `)$`)
-	// ClusterPresubmitImpactNameRe performs partial validation of a
-	// cluster presubmit impact resource name. Cluster algorithm and
+	// ClusterNameRe performs partial validation of a
+	// cluster resource name. Cluster algorithm and
 	// ID must be further validated by ClusterID.Validate().
-	ClusterPresubmitImpactNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/clusters/(` + GenericKeyPattern + `)/(` + GenericKeyPattern + `)/presubmitImpact$`)
-	ProjectNameRe                = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)$`)
+	ClusterNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/clusters/(` + GenericKeyPattern + `)/(` + GenericKeyPattern + `)$`)
+	ProjectNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)$`)
 )
 
 // parseRuleName parses a rule resource name into its constituent ID parts.
@@ -44,19 +44,18 @@ func parseProjectName(name string) (project string, err error) {
 	return match[1], nil
 }
 
-// parseClusterPresubmitImpactName parses a cluster presubmit impact resource
-// name into its constituent ID parts. Algorithm aliases are resolved
-// to concrete algorithm names.
-func parseClusterPresubmitImpactName(name string) (project string, clusterID clustering.ClusterID, err error) {
-	match := ClusterPresubmitImpactNameRe.FindStringSubmatch(name)
+// parseClusterName parses a cluster resource name into its constituent ID
+// parts. Algorithm aliases are resolved to concrete algorithm names.
+func parseClusterName(name string) (project string, clusterID clustering.ClusterID, err error) {
+	match := ClusterNameRe.FindStringSubmatch(name)
 	if match == nil {
-		return "", clustering.ClusterID{}, errors.New("invalid cluster presubmit impact name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}/presubmitImpact")
+		return "", clustering.ClusterID{}, errors.New("invalid cluster name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}")
 	}
 	algorithm := resolveAlgorithm(match[2])
 	id := match[3]
 	cID := clustering.ClusterID{Algorithm: algorithm, ID: id}
 	if err := cID.Validate(); err != nil {
-		return "", clustering.ClusterID{}, errors.Annotate(err, "invalid cluster presubmit impact name").Err()
+		return "", clustering.ClusterID{}, errors.Annotate(err, "invalid cluster name").Err()
 	}
 	return match[1], cID, nil
 }

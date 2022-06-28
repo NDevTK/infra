@@ -10,7 +10,6 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/appstatus"
-	"go.chromium.org/luci/server/span"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -19,7 +18,7 @@ import (
 	"infra/appengine/weetbix/internal/clustering/algorithms"
 	"infra/appengine/weetbix/internal/clustering/reclustering"
 	"infra/appengine/weetbix/internal/clustering/rules/cache"
-	"infra/appengine/weetbix/internal/clustering/runs"
+	"infra/appengine/weetbix/internal/config/compiledcfg"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -27,12 +26,12 @@ import (
 // one call to Cluster(...).
 const MaxClusterRequestSize = 1000
 
-// MaxPresubmitImpactRequestSize is the maximum number of clusters to obtain
-// impact for in one call to BatchGetPresubmitImpact().
-const MaxPresubmitImpactRequestSize = 1000
+// MaxBatchGetClustersRequestSize is the maximum number of clusters to obtain
+// impact for in one call to BatchGetClusters().
+const MaxBatchGetClustersRequestSize = 1000
 
 type AnalysisClient interface {
-	ReadClusterPresubmitImpact(ctx context.Context, project string, clusterIDs []clustering.ClusterID) ([]analysis.ClusterPresubmitImpact, error)
+	ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) ([]*analysis.ClusterSummary, error)
 }
 
 type clustersServer struct {
@@ -130,108 +129,137 @@ func validateTestResult(i int, tr *pb.ClusterRequest_TestResult) error {
 	return nil
 }
 
-func (c *clustersServer) BatchGetPresubmitImpact(ctx context.Context, req *pb.BatchGetClusterPresubmitImpactRequest) (*pb.BatchGetClusterPresubmitImpactResponse, error) {
+func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersRequest) (*pb.BatchGetClustersResponse, error) {
 	project, err := parseProjectName(req.Parent)
 	if err != nil {
 		return nil, invalidArgumentError(errors.Annotate(err, "parent").Err())
 	}
 
-	if len(req.Names) > MaxPresubmitImpactRequestSize {
+	if len(req.Names) > MaxBatchGetClustersRequestSize {
 		return nil, invalidArgumentError(fmt.Errorf(
-			"too many names: presubmit impact for at most %v clusters can be retrieved in one request", MaxPresubmitImpactRequestSize))
+			"too many names: at most %v clusters can be retrieved in one request", MaxBatchGetClustersRequestSize))
 	}
 	if len(req.Names) == 0 {
 		// Return INVALID_ARGUMENT if no names specified, as per google.aip.dev/231.
 		return nil, invalidArgumentError(errors.New("names must be specified"))
 	}
 
-	// Fetch the latest ruleset.
-	ruleset, err := reclustering.Ruleset(ctx, project, cache.StrongRead)
+	cfg, err := readProjectConfig(ctx, project)
 	if err != nil {
 		return nil, err
 	}
 
-	run, err := runs.ReadLastComplete(span.Single(ctx), project)
-	if err != nil {
-		return nil, err
-	}
-
-	// The cluster ID to read for each request item. If no cluster ID
-	// should be read, the entry is an empty cluster ID.
+	// The cluster ID requested in each request item.
 	clusterIDs := make([]clustering.ClusterID, 0, len(req.Names))
 
 	for i, name := range req.Names {
-		clusterProject, clusterID, err := parseClusterPresubmitImpactName(name)
+		clusterProject, clusterID, err := parseClusterName(name)
 		if err != nil {
 			return nil, invalidArgumentError(errors.Annotate(err, "name %v", i).Err())
 		}
 		if clusterProject != project {
 			return nil, invalidArgumentError(fmt.Errorf("name %v: project must match parent project (%q)", i, project))
 		}
-		if clusterID.IsBugCluster() {
-			rule, ok := ruleset.ActiveRulesByID[clusterID.ID]
-			if ok {
-				if run.RulesVersion.Before(rule.Rule.CreationTime) &&
-					!rule.Rule.SourceCluster.IsEmpty() {
-					// Re-clustering has not yet caught up to this new rule, and
-					// there is a source cluster.
-					// Use impact from the source cluster instead.
-					clusterID = rule.Rule.SourceCluster
-				}
-				// Else: read the bug cluster.
-			} else {
-				// Rule never existed, or is inactive.
-				// Read no cluster.
-				clusterID = clustering.ClusterID{}
-			}
-		}
 		clusterIDs = append(clusterIDs, clusterID)
 	}
 
-	clusterIDsToRead := make([]clustering.ClusterID, 0, len(clusterIDs))
-	for _, clusterID := range clusterIDs {
-		if !clusterID.IsEmpty() {
-			clusterIDsToRead = append(clusterIDsToRead, clusterID)
-		}
-	}
-
-	presubmitImpact, err := c.analysisClient.ReadClusterPresubmitImpact(ctx, project, clusterIDsToRead)
+	clusters, err := c.analysisClient.ReadClusters(ctx, project, clusterIDs)
 	if err != nil {
 		if err == analysis.ProjectNotExistsErr {
 			return nil, appstatus.Error(codes.NotFound,
-				"project does not exist in Weetbix or cluster analysis is not yet available")
+				"project dataset not provisioned in Weetbix or cluster analysis is not yet available")
 		}
 		return nil, err
 	}
 
-	presubmitImpactByCluster := make(map[string]analysis.ClusterPresubmitImpact)
-	for _, pi := range presubmitImpact {
-		presubmitImpactByCluster[pi.ClusterID.Key()] = pi
+	readClusterByID := make(map[clustering.ClusterID]*analysis.ClusterSummary)
+	for _, c := range clusters {
+		readClusterByID[c.ClusterID] = c
 	}
 
 	// As per google.aip.dev/231, the order of responses must be the
 	// same as the names in the request.
-	results := make([]*pb.ClusterPresubmitImpact, 0, len(clusterIDs))
+	results := make([]*pb.Cluster, 0, len(clusterIDs))
 	for i, clusterID := range clusterIDs {
-		name := req.Names[i]
-
-		impact, ok := presubmitImpactByCluster[clusterID.Key()]
+		cs, ok := readClusterByID[clusterID]
 		if !ok {
-			impact = analysis.ClusterPresubmitImpact{
+			cs = &analysis.ClusterSummary{
+				ClusterID: clusterID,
 				// No impact available for cluster (e.g. because no examples
-				// in BigQuery). Use suitable default values.
-				DistinctUserClTestRunsFailed12h: 0,
-				DistinctUserClTestRunsFailed1d:  0,
+				// in BigQuery). Use suitable default values (all zeros
+				// for impact).
 			}
 		}
 
-		results = append(results, &pb.ClusterPresubmitImpact{
-			Name:                         name,
-			DistinctClTestRunsFailed_12H: impact.DistinctUserClTestRunsFailed12h,
-			DistinctClTestRunsFailed_24H: impact.DistinctUserClTestRunsFailed1d,
-		})
+		result := &pb.Cluster{
+			Name:       req.Names[i],
+			HasExample: ok,
+			UserClsFailedPresubmit: &pb.Cluster_MetricValues{
+				OneDay:   newCounts(cs.PresubmitRejects1d),
+				ThreeDay: newCounts(cs.PresubmitRejects3d),
+				SevenDay: newCounts(cs.PresubmitRejects7d),
+			},
+			CriticalFailuresExonerated: &pb.Cluster_MetricValues{
+				OneDay:   newCounts(cs.CriticalFailuresExonerated1d),
+				ThreeDay: newCounts(cs.CriticalFailuresExonerated3d),
+				SevenDay: newCounts(cs.CriticalFailuresExonerated7d),
+			},
+			Failures: &pb.Cluster_MetricValues{
+				OneDay:   newCounts(cs.Failures1d),
+				ThreeDay: newCounts(cs.Failures3d),
+				SevenDay: newCounts(cs.Failures7d),
+			},
+		}
+
+		if !clusterID.IsBugCluster() && ok {
+			result.Title = suggestedClusterTitle(cs, cfg)
+
+			// Ignore error, it is only returned if algorithm cannot be found.
+			alg, _ := algorithms.SuggestingAlgorithm(clusterID.Algorithm)
+			if alg != nil {
+				example := &clustering.Failure{
+					TestID: cs.ExampleTestID(),
+					Reason: &pb.FailureReason{
+						PrimaryErrorMessage: cs.ExampleFailureReason.StringVal,
+					},
+				}
+				result.EquivalentFailureAssociationRule = alg.FailureAssociationRule(cfg, example)
+			}
+		}
+		results = append(results, result)
 	}
-	return &pb.BatchGetClusterPresubmitImpactResponse{
-		PresubmitImpact: results,
+	return &pb.BatchGetClustersResponse{
+		Clusters: results,
 	}, nil
+}
+
+func newCounts(counts analysis.Counts) *pb.Cluster_MetricValues_Counts {
+	return &pb.Cluster_MetricValues_Counts{Nominal: counts.Nominal}
+}
+
+func suggestedClusterTitle(cs *analysis.ClusterSummary, cfg *compiledcfg.ProjectConfig) string {
+	var title string
+
+	// Ignore error, it is only returned if algorithm cannot be found.
+	alg, _ := algorithms.SuggestingAlgorithm(cs.ClusterID.Algorithm)
+	switch {
+	case alg != nil:
+		example := &clustering.Failure{
+			TestID: cs.ExampleTestID(),
+			Reason: &pb.FailureReason{
+				PrimaryErrorMessage: cs.ExampleFailureReason.StringVal,
+			},
+		}
+		title = alg.ClusterTitle(cfg, example)
+	case cs.ClusterID.IsTestNameCluster():
+		// Fallback for old test name clusters.
+		title = cs.ExampleTestID()
+	case cs.ClusterID.IsFailureReasonCluster():
+		// Fallback for old reason-based clusters.
+		title = cs.ExampleFailureReason.StringVal
+	default:
+		// Fallback for all other cases.
+		title = fmt.Sprintf("%s/%s", cs.ClusterID.Algorithm, cs.ClusterID.ID)
+	}
+	return title
 }

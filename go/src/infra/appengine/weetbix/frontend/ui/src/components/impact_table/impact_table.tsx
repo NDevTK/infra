@@ -23,13 +23,13 @@ interface Props {
 }
 
 const ImpactTable = ({ cluster }: Props) => {
-  const metric = (counts: Counts): number => {
-    return counts.nominal;
+  const metric = (counts: Counts): string => {
+    return counts.nominal || '0';
   };
 
   return (
     <TableContainer component={Box}>
-      <Table data-testid="impact-table" size="small" sx={{ maxWidth: 500 }}>
+      <Table data-testid="impact-table" size="small" sx={{ maxWidth: 600 }}>
         <TableHead>
           <TableRow>
             <TableCell></TableCell>
@@ -41,21 +41,21 @@ const ImpactTable = ({ cluster }: Props) => {
         <TableBody>
           <TableRow>
             <TableCell>User Cls Failed Presubmit <HelpTooltip text={userClsFailedPresubmitTooltipText} /></TableCell>
-            <TableCell align="right">{metric(cluster.presubmitRejects1d)}</TableCell>
-            <TableCell align="right">{metric(cluster.presubmitRejects3d)}</TableCell>
-            <TableCell align="right">{metric(cluster.presubmitRejects7d)}</TableCell>
+            <TableCell align="right">{metric(cluster.userClsFailedPresubmit.oneDay)}</TableCell>
+            <TableCell align="right">{metric(cluster.userClsFailedPresubmit.threeDay)}</TableCell>
+            <TableCell align="right">{metric(cluster.userClsFailedPresubmit.sevenDay)}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Presubmit-Blocking Failures Exonerated <HelpTooltip text={criticalFailuresExoneratedTooltipText} /></TableCell>
-            <TableCell align="right">{metric(cluster.criticalFailuresExonerated1d)}</TableCell>
-            <TableCell align="right">{metric(cluster.criticalFailuresExonerated3d)}</TableCell>
-            <TableCell align="right">{metric(cluster.criticalFailuresExonerated7d)}</TableCell>
+            <TableCell align="right">{metric(cluster.criticalFailuresExonerated.oneDay)}</TableCell>
+            <TableCell align="right">{metric(cluster.criticalFailuresExonerated.threeDay)}</TableCell>
+            <TableCell align="right">{metric(cluster.criticalFailuresExonerated.sevenDay)}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Total Failures <HelpTooltip text={totalFailuresTooltipText} /></TableCell>
-            <TableCell align="right">{metric(cluster.failures1d)}</TableCell>
-            <TableCell align="right">{metric(cluster.failures3d)}</TableCell>
-            <TableCell align="right">{metric(cluster.failures7d)}</TableCell>
+            <TableCell align="right">{metric(cluster.failures.oneDay)}</TableCell>
+            <TableCell align="right">{metric(cluster.failures.threeDay)}</TableCell>
+            <TableCell align="right">{metric(cluster.failures.sevenDay)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

@@ -9,7 +9,7 @@ import Container from '@mui/material/Container';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 
-import { getCluster } from '../../services/cluster';
+import { getClustersService, BatchGetClustersRequest } from '../../services/cluster';
 import ErrorAlert from '../error_alert/error_alert';
 import FailuresTable from '../failures_table/failures_table';
 import ImpactTable from '../impact_table/impact_table';
@@ -20,9 +20,19 @@ const ImpactSection = () => {
   if (!currentAlgorithm) {
     currentAlgorithm = 'rules-v2';
   }
-  const { isLoading, isError, data: cluster, error } = useQuery(['cluster', `${currentAlgorithm}:${id}`], () => {
+  const clustersService = getClustersService();
+  const { isLoading, isError, data: cluster, error } = useQuery(['cluster', `${currentAlgorithm}:${id}`], async () => {
+    const request: BatchGetClustersRequest = {
+      parent: `projects/${encodeURIComponent(project || '')}`,
+      names: [
+        `projects/${encodeURIComponent(project || '')}/clusters/${encodeURIComponent(currentAlgorithm || '')}/${encodeURIComponent(id || '')}`,
+      ],
+    };
+
+    const response = await clustersService.batchGet(request);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return getCluster(project!, currentAlgorithm!, id!);
+    return response.clusters![0];
   });
 
   if (isLoading) {

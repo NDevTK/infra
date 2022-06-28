@@ -223,24 +223,24 @@ func (x *ClusteringVersion) GetConfigVersion() *timestamppb.Timestamp {
 	return nil
 }
 
-type BatchGetClusterPresubmitImpactRequest struct {
+type BatchGetClustersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The parent project resource shared by all cluster presubmit impact
-	// resources to retrieve. Required.
+	// The LUCI project shared by all clusters to retrieve.
+	// Required.
 	// Format: projects/{project}.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The resource name of the cluster presubmit impact to retrieve.
-	// Format: projects/{project}/clusters/{cluster_algorithm}/{cluster_id}/presubmitImpact.
+	// The resource name of the clusters retrieve.
+	// Format: projects/{project}/clusters/{cluster_algorithm}/{cluster_id}.
 	// Designed to conform to aip.dev/231.
-	// At most 1,000 items may be requested at a time.
+	// At most 1,000 clusters may be requested at a time.
 	Names []string `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
 }
 
-func (x *BatchGetClusterPresubmitImpactRequest) Reset() {
-	*x = BatchGetClusterPresubmitImpactRequest{}
+func (x *BatchGetClustersRequest) Reset() {
+	*x = BatchGetClustersRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -248,13 +248,13 @@ func (x *BatchGetClusterPresubmitImpactRequest) Reset() {
 	}
 }
 
-func (x *BatchGetClusterPresubmitImpactRequest) String() string {
+func (x *BatchGetClustersRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BatchGetClusterPresubmitImpactRequest) ProtoMessage() {}
+func (*BatchGetClustersRequest) ProtoMessage() {}
 
-func (x *BatchGetClusterPresubmitImpactRequest) ProtoReflect() protoreflect.Message {
+func (x *BatchGetClustersRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -266,36 +266,36 @@ func (x *BatchGetClusterPresubmitImpactRequest) ProtoReflect() protoreflect.Mess
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchGetClusterPresubmitImpactRequest.ProtoReflect.Descriptor instead.
-func (*BatchGetClusterPresubmitImpactRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use BatchGetClustersRequest.ProtoReflect.Descriptor instead.
+func (*BatchGetClustersRequest) Descriptor() ([]byte, []int) {
 	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *BatchGetClusterPresubmitImpactRequest) GetParent() string {
+func (x *BatchGetClustersRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
 	}
 	return ""
 }
 
-func (x *BatchGetClusterPresubmitImpactRequest) GetNames() []string {
+func (x *BatchGetClustersRequest) GetNames() []string {
 	if x != nil {
 		return x.Names
 	}
 	return nil
 }
 
-type BatchGetClusterPresubmitImpactResponse struct {
+type BatchGetClustersResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The cluster presubmit impact requested.
-	PresubmitImpact []*ClusterPresubmitImpact `protobuf:"bytes,1,rep,name=presubmit_impact,json=presubmitImpact,proto3" json:"presubmit_impact,omitempty"`
+	// The clusters requested.
+	Clusters []*Cluster `protobuf:"bytes,1,rep,name=clusters,proto3" json:"clusters,omitempty"`
 }
 
-func (x *BatchGetClusterPresubmitImpactResponse) Reset() {
-	*x = BatchGetClusterPresubmitImpactResponse{}
+func (x *BatchGetClustersResponse) Reset() {
+	*x = BatchGetClustersResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -303,13 +303,13 @@ func (x *BatchGetClusterPresubmitImpactResponse) Reset() {
 	}
 }
 
-func (x *BatchGetClusterPresubmitImpactResponse) String() string {
+func (x *BatchGetClustersResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BatchGetClusterPresubmitImpactResponse) ProtoMessage() {}
+func (*BatchGetClustersResponse) ProtoMessage() {}
 
-func (x *BatchGetClusterPresubmitImpactResponse) ProtoReflect() protoreflect.Message {
+func (x *BatchGetClustersResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -321,52 +321,51 @@ func (x *BatchGetClusterPresubmitImpactResponse) ProtoReflect() protoreflect.Mes
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchGetClusterPresubmitImpactResponse.ProtoReflect.Descriptor instead.
-func (*BatchGetClusterPresubmitImpactResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use BatchGetClustersResponse.ProtoReflect.Descriptor instead.
+func (*BatchGetClustersResponse) Descriptor() ([]byte, []int) {
 	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *BatchGetClusterPresubmitImpactResponse) GetPresubmitImpact() []*ClusterPresubmitImpact {
+func (x *BatchGetClustersResponse) GetClusters() []*Cluster {
 	if x != nil {
-		return x.PresubmitImpact
+		return x.Clusters
 	}
 	return nil
 }
 
-type ClusterPresubmitImpact struct {
+type Cluster struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of the cluster presubmit impact.
-	// Format: projects/{project}/clusters/{cluster_algorithm}/{cluster_id}/presubmitImpact.
+	// The resource name of the cluster.
+	// Format: projects/{project}/clusters/{cluster_algorithm}/{cluster_id}.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The number of distinct user CLs that had at least one test run
-	// fail because of this cluster, in the last 12 hours.
-	//
-	// A "test run failed because of this cluster" means one ResultDB invocation
-	// with only unexpected failures for the test variant, where at least one
-	// of those failures was contained in this cluster. (Which, were it not for,
-	// would have resulted in the test variant having an expected or flaky result.)
-	//
-	// For chromium, one ResultDB invocation typically corresponds to one swarming
-	// task to execute tests.
-	//
-	// (For the purposes of this metric, we only count the invocation a test
-	// result is immediately contained inside (e.g. the swarming
-	// task), not the parent invocation(s) it may also be included in
-	// (e.g. the invocation for the parent tryjob orchestrating the tests.)
-	//
-	// This metric excludes non-user CLs, i.e. CLs generated by automation
-	// (e.g. automatic rolls).
-	DistinctClTestRunsFailed_12H int64 `protobuf:"varint,2,opt,name=distinct_cl_test_runs_failed_12h,json=distinctClTestRunsFailed12h,proto3" json:"distinct_cl_test_runs_failed_12h,omitempty"`
-	// The number of distinct user CLs had at least one test run
-	// fail due to this cluster, in the last 24 hours.
-	DistinctClTestRunsFailed_24H int64 `protobuf:"varint,3,opt,name=distinct_cl_test_runs_failed_24h,json=distinctClTestRunsFailed24h,proto3" json:"distinct_cl_test_runs_failed_24h,omitempty"`
+	// Whether there is a recent example in the cluster.
+	HasExample bool `protobuf:"varint,2,opt,name=has_example,json=hasExample,proto3" json:"has_example,omitempty"`
+	// A human-readable name for the cluster.
+	// Only populated for suggested clusters where has_example = true.
+	// Not populated for rule-based clusters.
+	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	// The total number of user changelists which failed presubmit.
+	UserClsFailedPresubmit *Cluster_MetricValues `protobuf:"bytes,4,opt,name=user_cls_failed_presubmit,json=userClsFailedPresubmit,proto3" json:"user_cls_failed_presubmit,omitempty"`
+	// The total number of failures in the cluster that occurred on tryjobs
+	// that were critical (presubmit-blocking) and were exonerated for a
+	// reason other than NOT_CRITICAL or UNEXPECTED_PASS.
+	CriticalFailuresExonerated *Cluster_MetricValues `protobuf:"bytes,5,opt,name=critical_failures_exonerated,json=criticalFailuresExonerated,proto3" json:"critical_failures_exonerated,omitempty"`
+	// The total number of failures in the cluster.
+	Failures *Cluster_MetricValues `protobuf:"bytes,6,opt,name=failures,proto3" json:"failures,omitempty"`
+	// The failure association rule equivalent to the cluster. Populated only
+	// for suggested clusters where has_example = true.
+	// Not populated for rule-based clusters. If you need the failure
+	// association rule for a rule-based cluster, use weetbix.v1.Rules/Get
+	// to retrieve the rule with ID matching the cluster ID.
+	// Used to facilitate creating a new rule based on a suggested cluster.
+	EquivalentFailureAssociationRule string `protobuf:"bytes,7,opt,name=equivalent_failure_association_rule,json=equivalentFailureAssociationRule,proto3" json:"equivalent_failure_association_rule,omitempty"`
 }
 
-func (x *ClusterPresubmitImpact) Reset() {
-	*x = ClusterPresubmitImpact{}
+func (x *Cluster) Reset() {
+	*x = Cluster{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -374,13 +373,13 @@ func (x *ClusterPresubmitImpact) Reset() {
 	}
 }
 
-func (x *ClusterPresubmitImpact) String() string {
+func (x *Cluster) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ClusterPresubmitImpact) ProtoMessage() {}
+func (*Cluster) ProtoMessage() {}
 
-func (x *ClusterPresubmitImpact) ProtoReflect() protoreflect.Message {
+func (x *Cluster) ProtoReflect() protoreflect.Message {
 	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -392,30 +391,58 @@ func (x *ClusterPresubmitImpact) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ClusterPresubmitImpact.ProtoReflect.Descriptor instead.
-func (*ClusterPresubmitImpact) Descriptor() ([]byte, []int) {
+// Deprecated: Use Cluster.ProtoReflect.Descriptor instead.
+func (*Cluster) Descriptor() ([]byte, []int) {
 	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ClusterPresubmitImpact) GetName() string {
+func (x *Cluster) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *ClusterPresubmitImpact) GetDistinctClTestRunsFailed_12H() int64 {
+func (x *Cluster) GetHasExample() bool {
 	if x != nil {
-		return x.DistinctClTestRunsFailed_12H
+		return x.HasExample
 	}
-	return 0
+	return false
 }
 
-func (x *ClusterPresubmitImpact) GetDistinctClTestRunsFailed_24H() int64 {
+func (x *Cluster) GetTitle() string {
 	if x != nil {
-		return x.DistinctClTestRunsFailed_24H
+		return x.Title
 	}
-	return 0
+	return ""
+}
+
+func (x *Cluster) GetUserClsFailedPresubmit() *Cluster_MetricValues {
+	if x != nil {
+		return x.UserClsFailedPresubmit
+	}
+	return nil
+}
+
+func (x *Cluster) GetCriticalFailuresExonerated() *Cluster_MetricValues {
+	if x != nil {
+		return x.CriticalFailuresExonerated
+	}
+	return nil
+}
+
+func (x *Cluster) GetFailures() *Cluster_MetricValues {
+	if x != nil {
+		return x.Failures
+	}
+	return nil
+}
+
+func (x *Cluster) GetEquivalentFailureAssociationRule() string {
+	if x != nil {
+		return x.EquivalentFailureAssociationRule
+	}
+	return ""
 }
 
 // TestResult captures information about a test result, sufficient to
@@ -610,6 +637,120 @@ func (x *ClusterResponse_ClusteredTestResult_ClusterEntry) GetBug() *AssociatedB
 	return nil
 }
 
+type Cluster_MetricValues struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The metric value for the last day.
+	OneDay *Cluster_MetricValues_Counts `protobuf:"bytes,2,opt,name=one_day,json=oneDay,proto3" json:"one_day,omitempty"`
+	// The metric value for the last three days.
+	ThreeDay *Cluster_MetricValues_Counts `protobuf:"bytes,3,opt,name=three_day,json=threeDay,proto3" json:"three_day,omitempty"`
+	// The metric value for the last week.
+	SevenDay *Cluster_MetricValues_Counts `protobuf:"bytes,4,opt,name=seven_day,json=sevenDay,proto3" json:"seven_day,omitempty"`
+}
+
+func (x *Cluster_MetricValues) Reset() {
+	*x = Cluster_MetricValues{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Cluster_MetricValues) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Cluster_MetricValues) ProtoMessage() {}
+
+func (x *Cluster_MetricValues) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Cluster_MetricValues.ProtoReflect.Descriptor instead.
+func (*Cluster_MetricValues) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{5, 0}
+}
+
+func (x *Cluster_MetricValues) GetOneDay() *Cluster_MetricValues_Counts {
+	if x != nil {
+		return x.OneDay
+	}
+	return nil
+}
+
+func (x *Cluster_MetricValues) GetThreeDay() *Cluster_MetricValues_Counts {
+	if x != nil {
+		return x.ThreeDay
+	}
+	return nil
+}
+
+func (x *Cluster_MetricValues) GetSevenDay() *Cluster_MetricValues_Counts {
+	if x != nil {
+		return x.SevenDay
+	}
+	return nil
+}
+
+type Cluster_MetricValues_Counts struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The value of the metric (summed over all failures).
+	Nominal int64 `protobuf:"varint,1,opt,name=nominal,proto3" json:"nominal,omitempty"`
+}
+
+func (x *Cluster_MetricValues_Counts) Reset() {
+	*x = Cluster_MetricValues_Counts{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Cluster_MetricValues_Counts) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Cluster_MetricValues_Counts) ProtoMessage() {}
+
+func (x *Cluster_MetricValues_Counts) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Cluster_MetricValues_Counts.ProtoReflect.Descriptor instead.
+func (*Cluster_MetricValues_Counts) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{5, 0, 0}
+}
+
+func (x *Cluster_MetricValues_Counts) GetNominal() int64 {
+	if x != nil {
+		return x.Nominal
+	}
+	return 0
+}
+
 var File_infra_appengine_weetbix_proto_v1_clusters_proto protoreflect.FileDescriptor
 
 var file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDesc = []byte{
@@ -682,49 +823,73 @@ var file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
-	0x0d, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x55,
-	0x0a, 0x25, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65,
-	0x72, 0x50, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e,
-	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x12,
-	0x14, 0x0a, 0x05, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05,
-	0x6e, 0x61, 0x6d, 0x65, 0x73, 0x22, 0x77, 0x0a, 0x26, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65,
-	0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x50, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69,
-	0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x4d, 0x0a, 0x10, 0x70, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x5f, 0x69, 0x6d, 0x70,
-	0x61, 0x63, 0x74, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x77, 0x65, 0x65, 0x74,
-	0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x50, 0x72,
-	0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x52, 0x0f, 0x70,
-	0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x22, 0xba,
-	0x01, 0x0a, 0x16, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x50, 0x72, 0x65, 0x73, 0x75, 0x62,
-	0x6d, 0x69, 0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x45, 0x0a,
-	0x20, 0x64, 0x69, 0x73, 0x74, 0x69, 0x6e, 0x63, 0x74, 0x5f, 0x63, 0x6c, 0x5f, 0x74, 0x65, 0x73,
-	0x74, 0x5f, 0x72, 0x75, 0x6e, 0x73, 0x5f, 0x66, 0x61, 0x69, 0x6c, 0x65, 0x64, 0x5f, 0x31, 0x32,
-	0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x1b, 0x64, 0x69, 0x73, 0x74, 0x69, 0x6e, 0x63,
-	0x74, 0x43, 0x6c, 0x54, 0x65, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65,
-	0x64, 0x31, 0x32, 0x68, 0x12, 0x45, 0x0a, 0x20, 0x64, 0x69, 0x73, 0x74, 0x69, 0x6e, 0x63, 0x74,
-	0x5f, 0x63, 0x6c, 0x5f, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x75, 0x6e, 0x73, 0x5f, 0x66, 0x61,
-	0x69, 0x6c, 0x65, 0x64, 0x5f, 0x32, 0x34, 0x68, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x1b,
-	0x64, 0x69, 0x73, 0x74, 0x69, 0x6e, 0x63, 0x74, 0x43, 0x6c, 0x54, 0x65, 0x73, 0x74, 0x52, 0x75,
-	0x6e, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64, 0x32, 0x34, 0x68, 0x32, 0xd5, 0x01, 0x0a, 0x08,
-	0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x12, 0x44, 0x0a, 0x07, 0x43, 0x6c, 0x75, 0x73,
-	0x74, 0x65, 0x72, 0x12, 0x1a, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31,
-	0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x1b, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75,
-	0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x82,
-	0x01, 0x0a, 0x17, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x50, 0x72, 0x65, 0x73, 0x75,
-	0x62, 0x6d, 0x69, 0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x12, 0x31, 0x2e, 0x77, 0x65, 0x65,
-	0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74,
-	0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x50, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74,
-	0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x32, 0x2e,
-	0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68,
-	0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x50, 0x72, 0x65, 0x73, 0x75, 0x62,
-	0x6d, 0x69, 0x74, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70,
-	0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2f, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x0d, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x47,
+	0x0a, 0x17, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65,
+	0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x61, 0x72,
+	0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e,
+	0x74, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09,
+	0x52, 0x05, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x22, 0x4b, 0x0a, 0x18, 0x42, 0x61, 0x74, 0x63, 0x68,
+	0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x2f, 0x0a, 0x08, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e,
+	0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x08, 0x63, 0x6c, 0x75, 0x73,
+	0x74, 0x65, 0x72, 0x73, 0x22, 0xa5, 0x05, 0x0a, 0x07, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72,
+	0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x68, 0x61, 0x73, 0x5f, 0x65, 0x78, 0x61, 0x6d,
+	0x70, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x68, 0x61, 0x73, 0x45, 0x78,
+	0x61, 0x6d, 0x70, 0x6c, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x5b, 0x0a, 0x19, 0x75,
+	0x73, 0x65, 0x72, 0x5f, 0x63, 0x6c, 0x73, 0x5f, 0x66, 0x61, 0x69, 0x6c, 0x65, 0x64, 0x5f, 0x70,
+	0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20,
+	0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73,
+	0x74, 0x65, 0x72, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73,
+	0x52, 0x16, 0x75, 0x73, 0x65, 0x72, 0x43, 0x6c, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64, 0x50,
+	0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x12, 0x62, 0x0a, 0x1c, 0x63, 0x72, 0x69, 0x74,
+	0x69, 0x63, 0x61, 0x6c, 0x5f, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73, 0x5f, 0x65, 0x78,
+	0x6f, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20,
+	0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73,
+	0x74, 0x65, 0x72, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73,
+	0x52, 0x1a, 0x63, 0x72, 0x69, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72,
+	0x65, 0x73, 0x45, 0x78, 0x6f, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x12, 0x3c, 0x0a, 0x08,
+	0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20,
+	0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73,
+	0x74, 0x65, 0x72, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73,
+	0x52, 0x08, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73, 0x12, 0x4d, 0x0a, 0x23, 0x65, 0x71,
+	0x75, 0x69, 0x76, 0x61, 0x6c, 0x65, 0x6e, 0x74, 0x5f, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65,
+	0x5f, 0x61, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x72, 0x75, 0x6c,
+	0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x20, 0x65, 0x71, 0x75, 0x69, 0x76, 0x61, 0x6c,
+	0x65, 0x6e, 0x74, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x1a, 0x80, 0x02, 0x0a, 0x0c, 0x4d, 0x65,
+	0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x12, 0x40, 0x0a, 0x07, 0x6f, 0x6e,
+	0x65, 0x5f, 0x64, 0x61, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x77, 0x65,
+	0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72,
+	0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x2e, 0x43, 0x6f,
+	0x75, 0x6e, 0x74, 0x73, 0x52, 0x06, 0x6f, 0x6e, 0x65, 0x44, 0x61, 0x79, 0x12, 0x44, 0x0a, 0x09,
+	0x74, 0x68, 0x72, 0x65, 0x65, 0x5f, 0x64, 0x61, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x27, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75,
+	0x73, 0x74, 0x65, 0x72, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65,
+	0x73, 0x2e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x52, 0x08, 0x74, 0x68, 0x72, 0x65, 0x65, 0x44,
+	0x61, 0x79, 0x12, 0x44, 0x0a, 0x09, 0x73, 0x65, 0x76, 0x65, 0x6e, 0x5f, 0x64, 0x61, 0x79, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e,
+	0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69,
+	0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x52, 0x08,
+	0x73, 0x65, 0x76, 0x65, 0x6e, 0x44, 0x61, 0x79, 0x1a, 0x22, 0x0a, 0x06, 0x43, 0x6f, 0x75, 0x6e,
+	0x74, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x6c, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x03, 0x52, 0x07, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x6c, 0x32, 0xa9, 0x01, 0x0a,
+	0x08, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x12, 0x44, 0x0a, 0x07, 0x43, 0x6c, 0x75,
+	0x73, 0x74, 0x65, 0x72, 0x12, 0x1a, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76,
+	0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x1b, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c,
+	0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12,
+	0x57, 0x0a, 0x08, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x12, 0x23, 0x2e, 0x77, 0x65,
+	0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65,
+	0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x24, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72,
+	0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65, 0x65, 0x74,
+	0x62, 0x69, 0x78, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77, 0x65, 0x65,
+	0x74, 0x62, 0x69, 0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -739,42 +904,50 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP() []byte {
 	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescData
 }
 
-var file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_infra_appengine_weetbix_proto_v1_clusters_proto_goTypes = []interface{}{
 	(*ClusterRequest)(nil),                                   // 0: weetbix.v1.ClusterRequest
 	(*ClusterResponse)(nil),                                  // 1: weetbix.v1.ClusterResponse
 	(*ClusteringVersion)(nil),                                // 2: weetbix.v1.ClusteringVersion
-	(*BatchGetClusterPresubmitImpactRequest)(nil),            // 3: weetbix.v1.BatchGetClusterPresubmitImpactRequest
-	(*BatchGetClusterPresubmitImpactResponse)(nil),           // 4: weetbix.v1.BatchGetClusterPresubmitImpactResponse
-	(*ClusterPresubmitImpact)(nil),                           // 5: weetbix.v1.ClusterPresubmitImpact
+	(*BatchGetClustersRequest)(nil),                          // 3: weetbix.v1.BatchGetClustersRequest
+	(*BatchGetClustersResponse)(nil),                         // 4: weetbix.v1.BatchGetClustersResponse
+	(*Cluster)(nil),                                          // 5: weetbix.v1.Cluster
 	(*ClusterRequest_TestResult)(nil),                        // 6: weetbix.v1.ClusterRequest.TestResult
 	(*ClusterResponse_ClusteredTestResult)(nil),              // 7: weetbix.v1.ClusterResponse.ClusteredTestResult
 	(*ClusterResponse_ClusteredTestResult_ClusterEntry)(nil), // 8: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
-	(*timestamppb.Timestamp)(nil),                            // 9: google.protobuf.Timestamp
-	(*FailureReason)(nil),                                    // 10: weetbix.v1.FailureReason
-	(*ClusterId)(nil),                                        // 11: weetbix.v1.ClusterId
-	(*AssociatedBug)(nil),                                    // 12: weetbix.v1.AssociatedBug
+	(*Cluster_MetricValues)(nil),                             // 9: weetbix.v1.Cluster.MetricValues
+	(*Cluster_MetricValues_Counts)(nil),                      // 10: weetbix.v1.Cluster.MetricValues.Counts
+	(*timestamppb.Timestamp)(nil),                            // 11: google.protobuf.Timestamp
+	(*FailureReason)(nil),                                    // 12: weetbix.v1.FailureReason
+	(*ClusterId)(nil),                                        // 13: weetbix.v1.ClusterId
+	(*AssociatedBug)(nil),                                    // 14: weetbix.v1.AssociatedBug
 }
 var file_infra_appengine_weetbix_proto_v1_clusters_proto_depIdxs = []int32{
 	6,  // 0: weetbix.v1.ClusterRequest.test_results:type_name -> weetbix.v1.ClusterRequest.TestResult
 	7,  // 1: weetbix.v1.ClusterResponse.clustered_test_results:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult
 	2,  // 2: weetbix.v1.ClusterResponse.clustering_version:type_name -> weetbix.v1.ClusteringVersion
-	9,  // 3: weetbix.v1.ClusteringVersion.rules_version:type_name -> google.protobuf.Timestamp
-	9,  // 4: weetbix.v1.ClusteringVersion.config_version:type_name -> google.protobuf.Timestamp
-	5,  // 5: weetbix.v1.BatchGetClusterPresubmitImpactResponse.presubmit_impact:type_name -> weetbix.v1.ClusterPresubmitImpact
-	10, // 6: weetbix.v1.ClusterRequest.TestResult.failure_reason:type_name -> weetbix.v1.FailureReason
-	8,  // 7: weetbix.v1.ClusterResponse.ClusteredTestResult.clusters:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
-	11, // 8: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.cluster_id:type_name -> weetbix.v1.ClusterId
-	12, // 9: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.bug:type_name -> weetbix.v1.AssociatedBug
-	0,  // 10: weetbix.v1.Clusters.Cluster:input_type -> weetbix.v1.ClusterRequest
-	3,  // 11: weetbix.v1.Clusters.BatchGetPresubmitImpact:input_type -> weetbix.v1.BatchGetClusterPresubmitImpactRequest
-	1,  // 12: weetbix.v1.Clusters.Cluster:output_type -> weetbix.v1.ClusterResponse
-	4,  // 13: weetbix.v1.Clusters.BatchGetPresubmitImpact:output_type -> weetbix.v1.BatchGetClusterPresubmitImpactResponse
-	12, // [12:14] is the sub-list for method output_type
-	10, // [10:12] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	11, // 3: weetbix.v1.ClusteringVersion.rules_version:type_name -> google.protobuf.Timestamp
+	11, // 4: weetbix.v1.ClusteringVersion.config_version:type_name -> google.protobuf.Timestamp
+	5,  // 5: weetbix.v1.BatchGetClustersResponse.clusters:type_name -> weetbix.v1.Cluster
+	9,  // 6: weetbix.v1.Cluster.user_cls_failed_presubmit:type_name -> weetbix.v1.Cluster.MetricValues
+	9,  // 7: weetbix.v1.Cluster.critical_failures_exonerated:type_name -> weetbix.v1.Cluster.MetricValues
+	9,  // 8: weetbix.v1.Cluster.failures:type_name -> weetbix.v1.Cluster.MetricValues
+	12, // 9: weetbix.v1.ClusterRequest.TestResult.failure_reason:type_name -> weetbix.v1.FailureReason
+	8,  // 10: weetbix.v1.ClusterResponse.ClusteredTestResult.clusters:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
+	13, // 11: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.cluster_id:type_name -> weetbix.v1.ClusterId
+	14, // 12: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.bug:type_name -> weetbix.v1.AssociatedBug
+	10, // 13: weetbix.v1.Cluster.MetricValues.one_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
+	10, // 14: weetbix.v1.Cluster.MetricValues.three_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
+	10, // 15: weetbix.v1.Cluster.MetricValues.seven_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
+	0,  // 16: weetbix.v1.Clusters.Cluster:input_type -> weetbix.v1.ClusterRequest
+	3,  // 17: weetbix.v1.Clusters.BatchGet:input_type -> weetbix.v1.BatchGetClustersRequest
+	1,  // 18: weetbix.v1.Clusters.Cluster:output_type -> weetbix.v1.ClusterResponse
+	4,  // 19: weetbix.v1.Clusters.BatchGet:output_type -> weetbix.v1.BatchGetClustersResponse
+	18, // [18:20] is the sub-list for method output_type
+	16, // [16:18] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_infra_appengine_weetbix_proto_v1_clusters_proto_init() }
@@ -822,7 +995,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BatchGetClusterPresubmitImpactRequest); i {
+			switch v := v.(*BatchGetClustersRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -834,7 +1007,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BatchGetClusterPresubmitImpactResponse); i {
+			switch v := v.(*BatchGetClustersResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -846,7 +1019,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClusterPresubmitImpact); i {
+			switch v := v.(*Cluster); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -893,6 +1066,30 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 				return nil
 			}
 		}
+		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Cluster_MetricValues); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Cluster_MetricValues_Counts); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -900,7 +1097,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -946,8 +1143,7 @@ type ClustersClient interface {
 	// This RPC is a pure query API and does not lead to the ingestion of the
 	// test failures by Weetbix (e.g. for cluster impact calculations).
 	Cluster(ctx context.Context, in *ClusterRequest, opts ...grpc.CallOption) (*ClusterResponse, error)
-	// Reads cluster impact metrics relevant to presubmit. Intended for
-	// use by recipes to inform exoneration decisions.
+	// Reads summary information about the given clusters.
 	//
 	// Please consult Weetbix owners before adding additional calls to this
 	// RPC, as the implementation currently calls back to BigQuery and as
@@ -957,11 +1153,8 @@ type ClustersClient interface {
 	// the largest LUCI Project, which translates to a cost of 0.5 US cents
 	// per query at published pricing (US$5/TB analyzed for BigQuery).
 	//
-	// TODO(crbug.com/1314194): This is an experimental RPC implemented for
-	// Chrome CQ exoneration and is subject to change or removal.
-	//
 	// Changes to this RPC should comply with https://google.aip.dev/231.
-	BatchGetPresubmitImpact(ctx context.Context, in *BatchGetClusterPresubmitImpactRequest, opts ...grpc.CallOption) (*BatchGetClusterPresubmitImpactResponse, error)
+	BatchGet(ctx context.Context, in *BatchGetClustersRequest, opts ...grpc.CallOption) (*BatchGetClustersResponse, error)
 }
 type clustersPRPCClient struct {
 	client *prpc.Client
@@ -980,9 +1173,9 @@ func (c *clustersPRPCClient) Cluster(ctx context.Context, in *ClusterRequest, op
 	return out, nil
 }
 
-func (c *clustersPRPCClient) BatchGetPresubmitImpact(ctx context.Context, in *BatchGetClusterPresubmitImpactRequest, opts ...grpc.CallOption) (*BatchGetClusterPresubmitImpactResponse, error) {
-	out := new(BatchGetClusterPresubmitImpactResponse)
-	err := c.client.Call(ctx, "weetbix.v1.Clusters", "BatchGetPresubmitImpact", in, out, opts...)
+func (c *clustersPRPCClient) BatchGet(ctx context.Context, in *BatchGetClustersRequest, opts ...grpc.CallOption) (*BatchGetClustersResponse, error) {
+	out := new(BatchGetClustersResponse)
+	err := c.client.Call(ctx, "weetbix.v1.Clusters", "BatchGet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1006,9 +1199,9 @@ func (c *clustersClient) Cluster(ctx context.Context, in *ClusterRequest, opts .
 	return out, nil
 }
 
-func (c *clustersClient) BatchGetPresubmitImpact(ctx context.Context, in *BatchGetClusterPresubmitImpactRequest, opts ...grpc.CallOption) (*BatchGetClusterPresubmitImpactResponse, error) {
-	out := new(BatchGetClusterPresubmitImpactResponse)
-	err := c.cc.Invoke(ctx, "/weetbix.v1.Clusters/BatchGetPresubmitImpact", in, out, opts...)
+func (c *clustersClient) BatchGet(ctx context.Context, in *BatchGetClustersRequest, opts ...grpc.CallOption) (*BatchGetClustersResponse, error) {
+	out := new(BatchGetClustersResponse)
+	err := c.cc.Invoke(ctx, "/weetbix.v1.Clusters/BatchGet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1037,8 +1230,7 @@ type ClustersServer interface {
 	// This RPC is a pure query API and does not lead to the ingestion of the
 	// test failures by Weetbix (e.g. for cluster impact calculations).
 	Cluster(context.Context, *ClusterRequest) (*ClusterResponse, error)
-	// Reads cluster impact metrics relevant to presubmit. Intended for
-	// use by recipes to inform exoneration decisions.
+	// Reads summary information about the given clusters.
 	//
 	// Please consult Weetbix owners before adding additional calls to this
 	// RPC, as the implementation currently calls back to BigQuery and as
@@ -1048,11 +1240,8 @@ type ClustersServer interface {
 	// the largest LUCI Project, which translates to a cost of 0.5 US cents
 	// per query at published pricing (US$5/TB analyzed for BigQuery).
 	//
-	// TODO(crbug.com/1314194): This is an experimental RPC implemented for
-	// Chrome CQ exoneration and is subject to change or removal.
-	//
 	// Changes to this RPC should comply with https://google.aip.dev/231.
-	BatchGetPresubmitImpact(context.Context, *BatchGetClusterPresubmitImpactRequest) (*BatchGetClusterPresubmitImpactResponse, error)
+	BatchGet(context.Context, *BatchGetClustersRequest) (*BatchGetClustersResponse, error)
 }
 
 // UnimplementedClustersServer can be embedded to have forward compatible implementations.
@@ -1062,8 +1251,8 @@ type UnimplementedClustersServer struct {
 func (*UnimplementedClustersServer) Cluster(context.Context, *ClusterRequest) (*ClusterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Cluster not implemented")
 }
-func (*UnimplementedClustersServer) BatchGetPresubmitImpact(context.Context, *BatchGetClusterPresubmitImpactRequest) (*BatchGetClusterPresubmitImpactResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BatchGetPresubmitImpact not implemented")
+func (*UnimplementedClustersServer) BatchGet(context.Context, *BatchGetClustersRequest) (*BatchGetClustersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchGet not implemented")
 }
 
 func RegisterClustersServer(s prpc.Registrar, srv ClustersServer) {
@@ -1088,20 +1277,20 @@ func _Clusters_Cluster_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Clusters_BatchGetPresubmitImpact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BatchGetClusterPresubmitImpactRequest)
+func _Clusters_BatchGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetClustersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClustersServer).BatchGetPresubmitImpact(ctx, in)
+		return srv.(ClustersServer).BatchGet(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/weetbix.v1.Clusters/BatchGetPresubmitImpact",
+		FullMethod: "/weetbix.v1.Clusters/BatchGet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClustersServer).BatchGetPresubmitImpact(ctx, req.(*BatchGetClusterPresubmitImpactRequest))
+		return srv.(ClustersServer).BatchGet(ctx, req.(*BatchGetClustersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1115,8 +1304,8 @@ var _Clusters_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Clusters_Cluster_Handler,
 		},
 		{
-			MethodName: "BatchGetPresubmitImpact",
-			Handler:    _Clusters_BatchGetPresubmitImpact_Handler,
+			MethodName: "BatchGet",
+			Handler:    _Clusters_BatchGet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

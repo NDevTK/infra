@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/impl/memory"
@@ -31,7 +32,6 @@ import (
 	"infra/appengine/weetbix/internal/clustering/algorithms/rulesalgorithm"
 	"infra/appengine/weetbix/internal/clustering/algorithms/testname"
 	"infra/appengine/weetbix/internal/clustering/rules"
-	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
 	"infra/appengine/weetbix/internal/testutil"
@@ -58,17 +58,17 @@ func TestClusters(t *testing.T) {
 		server := NewClustersServer(analysisClient)
 
 		configVersion := time.Date(2025, time.August, 12, 0, 1, 2, 3, time.UTC)
-		projectChromium := config.CreatePlaceholderProjectConfig()
-		projectChromium.LastUpdated = timestamppb.New(configVersion)
-		projectChromium.Monorail.DisplayPrefix = "crbug.com"
-		projectChromium.Monorail.MonorailHostname = "bugs.chromium.org"
+		projectCfg := config.CreatePlaceholderProjectConfig()
+		projectCfg.LastUpdated = timestamppb.New(configVersion)
+		projectCfg.Monorail.DisplayPrefix = "crbug.com"
+		projectCfg.Monorail.MonorailHostname = "bugs.chromium.org"
 
 		configs := make(map[string]*configpb.ProjectConfig)
-		configs["chromium"] = projectChromium
+		configs["testproject"] = projectCfg
 		err := config.SetTestProjectConfig(ctx, configs)
 		So(err, ShouldBeNil)
 
-		compiledChromiumCfg, err := compiledcfg.NewConfig(projectChromium)
+		compiledTestProjectCfg, err := compiledcfg.NewConfig(projectCfg)
 		So(err, ShouldBeNil)
 
 		// Rules version is in microsecond granularity, consistent with
@@ -76,7 +76,7 @@ func TestClusters(t *testing.T) {
 		rulesVersion := time.Date(2021, time.February, 12, 1, 2, 4, 5000, time.UTC)
 		rs := []*rules.FailureAssociationRule{
 			rules.NewRule(0).
-				WithProject("chromium").
+				WithProject("testproject").
 				WithRuleDefinition(`test LIKE "%TestSuite.TestName%"`).
 				WithPredicateLastUpdated(rulesVersion.Add(-1 * time.Hour)).
 				WithBug(bugs.BugID{
@@ -84,7 +84,7 @@ func TestClusters(t *testing.T) {
 					ID:     "chromium/7654321",
 				}).Build(),
 			rules.NewRule(1).
-				WithProject("chromium").
+				WithProject("testproject").
 				WithRuleDefinition(`reason LIKE "my_file.cc(%): Check failed: false."`).
 				WithPredicateLastUpdated(rulesVersion).
 				WithBug(bugs.BugID{
@@ -92,7 +92,7 @@ func TestClusters(t *testing.T) {
 					ID:     "82828282",
 				}).Build(),
 			rules.NewRule(2).
-				WithProject("chromium").
+				WithProject("testproject").
 				WithRuleDefinition(`test LIKE "%Other%"`).
 				WithPredicateLastUpdated(rulesVersion.Add(-2 * time.Hour)).
 				WithBug(bugs.BugID{
@@ -114,7 +114,7 @@ func TestClusters(t *testing.T) {
 			// Make some request (the request should not matter, as
 			// a common decorator is used for all requests.)
 			request := &pb.ClusterRequest{
-				Project: "chromium",
+				Project: "testproject",
 			}
 
 			rule, err := server.Cluster(ctx, request)
@@ -125,7 +125,7 @@ func TestClusters(t *testing.T) {
 		})
 		Convey("Cluster", func() {
 			request := &pb.ClusterRequest{
-				Project: "chromium",
+				Project: "testproject",
 				TestResults: []*pb.ClusterRequest_TestResult{
 					{
 						RequestTag: "my tag 1",
@@ -175,8 +175,8 @@ func TestClusters(t *testing.T) {
 										Url:      "https://issuetracker.google.com/issues/82828282",
 									},
 								},
-								failureReasonClusterEntry(compiledChromiumCfg, "my_file.cc(123): Check failed: false."),
-								testNameClusterEntry(compiledChromiumCfg, "ninja://chrome/test:interactive_ui_tests/TestSuite.TestName"),
+								failureReasonClusterEntry(compiledTestProjectCfg, "my_file.cc(123): Check failed: false."),
+								testNameClusterEntry(compiledTestProjectCfg, "ninja://chrome/test:interactive_ui_tests/TestSuite.TestName"),
 							}),
 						},
 						{
@@ -194,7 +194,7 @@ func TestClusters(t *testing.T) {
 										Url:      "https://bugs.chromium.org/p/chromium/issues/detail?id=912345",
 									},
 								},
-								testNameClusterEntry(compiledChromiumCfg, "Other_test"),
+								testNameClusterEntry(compiledTestProjectCfg, "Other_test"),
 							}),
 						},
 					},
@@ -248,152 +248,105 @@ func TestClusters(t *testing.T) {
 				So(response, ShouldBeNil)
 			})
 		})
-		Convey("BatchGetPresubmitImpact", func() {
-			// The minimum rules version incorporated in all reclustering.
-			rulesVersionCompleted := time.Date(2020, time.April, 1, 2, 3, 4, 5, time.UTC)
-
-			rs := []*rules.FailureAssociationRule{
-				rules.NewRule(0).
-					WithProject("testproject").
-					WithRuleID("11111100000000000000000000000000").
-					WithSourceCluster(clustering.ClusterID{
-						Algorithm: "reason-v1",
-						ID:        "cccccc00000000000000000000000000",
-					}).
-					WithCreationTime(rulesVersionCompleted).
-					WithPredicateLastUpdated(rulesVersionCompleted.Add(time.Hour)).
-					Build(),
-				rules.NewRule(1).
-					WithProject("testproject").
-					WithRuleID("11111100000000000000000000000001").
-					WithSourceCluster(clustering.ClusterID{
-						Algorithm: "reason-v1",
-						ID:        "cccccc00000000000000000000000001",
-					}).
-					WithCreationTime(rulesVersionCompleted.Add(time.Second)).
-					WithPredicateLastUpdated(rulesVersionCompleted.Add(time.Second)).
-					Build(),
-				rules.NewRule(2).
-					WithProject("testproject").
-					WithRuleID("11111100000000000000000000000002").
-					WithSourceCluster(clustering.ClusterID{}).
-					WithCreationTime(rulesVersionCompleted.Add(time.Hour)).
-					WithPredicateLastUpdated(rulesVersionCompleted.Add(time.Hour)).
-					Build(),
-				rules.NewRule(3).
-					WithProject("testproject").
-					WithRuleID("11111100000000000000000000000003").
-					WithCreationTime(rulesVersionCompleted.Add(-1 * time.Hour)).
-					WithActive(false).
-					Build(),
-			}
-			err := rules.SetRulesForTesting(ctx, rs)
-			So(err, ShouldBeNil)
-
-			rns := []*runs.ReclusteringRun{
-				runs.NewRun(0).
-					WithProject("testproject").
-					WithRulesVersion(rulesVersionCompleted).
-					WithCompletedProgress().
-					Build(),
-			}
-			err = runs.SetRunsForTesting(ctx, rns)
-			So(err, ShouldBeNil)
-
-			analysisClient.clustersByProject["testproject"] = []analysis.ClusterPresubmitImpact{
+		Convey("BatchGet", func() {
+			analysisClient.clustersByProject["testproject"] = []*analysis.ClusterSummary{
 				{
 					ClusterID: clustering.ClusterID{
 						Algorithm: rulesalgorithm.AlgorithmName,
 						ID:        "11111100000000000000000000000000",
 					},
-					DistinctUserClTestRunsFailed12h: 1,
-					DistinctUserClTestRunsFailed1d:  2,
+					PresubmitRejects1d:           analysis.Counts{Nominal: 1},
+					PresubmitRejects3d:           analysis.Counts{Nominal: 2},
+					PresubmitRejects7d:           analysis.Counts{Nominal: 3},
+					CriticalFailuresExonerated1d: analysis.Counts{Nominal: 4},
+					CriticalFailuresExonerated3d: analysis.Counts{Nominal: 5},
+					CriticalFailuresExonerated7d: analysis.Counts{Nominal: 6},
+					Failures1d:                   analysis.Counts{Nominal: 7},
+					Failures3d:                   analysis.Counts{Nominal: 8},
+					Failures7d:                   analysis.Counts{Nominal: 9},
+					ExampleFailureReason:         bigquery.NullString{Valid: true, StringVal: "Example failure reason."},
+					TopTestIDs: []analysis.TopCount{
+						{Value: "TestID 1", Count: 2},
+						{Value: "TestID 2", Count: 1},
+					},
 				},
 				{
 					ClusterID: clustering.ClusterID{
-						Algorithm: "reason-v1",
+						Algorithm: "reason-v3",
 						ID:        "cccccc00000000000000000000000001",
 					},
-					DistinctUserClTestRunsFailed12h: 3,
-					DistinctUserClTestRunsFailed1d:  4,
-				},
-				{
-					ClusterID: clustering.ClusterID{
-						Algorithm: rulesalgorithm.AlgorithmName,
-						ID:        "11111100000000000000000000000002",
+					PresubmitRejects7d:   analysis.Counts{Nominal: 11},
+					ExampleFailureReason: bigquery.NullString{Valid: true, StringVal: "Example failure reason 2."},
+					TopTestIDs: []analysis.TopCount{
+						{Value: "TestID 3", Count: 2},
 					},
-					DistinctUserClTestRunsFailed12h: 5,
-					DistinctUserClTestRunsFailed1d:  6,
-				},
-				{
-					ClusterID: clustering.ClusterID{
-						Algorithm: rulesalgorithm.AlgorithmName,
-						ID:        "11111100000000000000000000000003",
-					},
-					DistinctUserClTestRunsFailed12h: 7,
-					DistinctUserClTestRunsFailed1d:  8,
 				},
 			}
 
-			request := &pb.BatchGetClusterPresubmitImpactRequest{
+			request := &pb.BatchGetClustersRequest{
 				Parent: "projects/testproject",
 				Names: []string{
-					// One bug cluster, initial (re-)clustering complete.
-					// Should use impact calculated for bug cluster.
-					"projects/testproject/clusters/rules/11111100000000000000000000000000/presubmitImpact",
+					// Rule for which data exists.
+					"projects/testproject/clusters/rules/11111100000000000000000000000000",
 
-					// One bug cluster, initial (re-)clustering not yet complete.
-					// Should use impact calculated for source cluster.
-					"projects/testproject/clusters/rules/11111100000000000000000000000001/presubmitImpact",
+					// Rule for which no data exists.
+					"projects/testproject/clusters/rules/1111110000000000000000000000ffff",
 
-					// Suggested cluster.
-					"projects/testproject/clusters/reason-v1/cccccc00000000000000000000000001/presubmitImpact",
+					// Suggested cluster for which data exists.
+					"projects/testproject/clusters/reason-v3/cccccc00000000000000000000000001",
 
-					// One bug cluster, initial (re-)clustering complete,
-					// but no source cluster. Should use impact for bug
-					// cluster.
-					"projects/testproject/clusters/rules/11111100000000000000000000000002/presubmitImpact",
-
-					// One bug cluster, initial (re-)clustering complete,
-					// but now inactive. Should have zero impact.
-					"projects/testproject/clusters/rules/11111100000000000000000000000003/presubmitImpact",
-
-					// Cluster for which no impact data exists.
-					"projects/testproject/clusters/reason-v1/cccccc0000000000000000000000ffff/presubmitImpact",
+					// Suggested cluster for which no impact data exists.
+					"projects/testproject/clusters/reason-v3/cccccc0000000000000000000000ffff",
 				},
 			}
 
-			expectedResponse := &pb.BatchGetClusterPresubmitImpactResponse{
-				PresubmitImpact: []*pb.ClusterPresubmitImpact{
+			expectedResponse := &pb.BatchGetClustersResponse{
+				Clusters: []*pb.Cluster{
 					{
-						Name:                         "projects/testproject/clusters/rules/11111100000000000000000000000000/presubmitImpact",
-						DistinctClTestRunsFailed_12H: 1,
-						DistinctClTestRunsFailed_24H: 2,
+						Name:       "projects/testproject/clusters/rules/11111100000000000000000000000000",
+						HasExample: true,
+						UserClsFailedPresubmit: &pb.Cluster_MetricValues{
+							OneDay:   &pb.Cluster_MetricValues_Counts{Nominal: 1},
+							ThreeDay: &pb.Cluster_MetricValues_Counts{Nominal: 2},
+							SevenDay: &pb.Cluster_MetricValues_Counts{Nominal: 3},
+						},
+						CriticalFailuresExonerated: &pb.Cluster_MetricValues{
+							OneDay:   &pb.Cluster_MetricValues_Counts{Nominal: 4},
+							ThreeDay: &pb.Cluster_MetricValues_Counts{Nominal: 5},
+							SevenDay: &pb.Cluster_MetricValues_Counts{Nominal: 6},
+						},
+						Failures: &pb.Cluster_MetricValues{
+							OneDay:   &pb.Cluster_MetricValues_Counts{Nominal: 7},
+							ThreeDay: &pb.Cluster_MetricValues_Counts{Nominal: 8},
+							SevenDay: &pb.Cluster_MetricValues_Counts{Nominal: 9},
+						},
 					},
 					{
-						Name:                         "projects/testproject/clusters/rules/11111100000000000000000000000001/presubmitImpact",
-						DistinctClTestRunsFailed_12H: 3,
-						DistinctClTestRunsFailed_24H: 4,
+						Name:                       "projects/testproject/clusters/rules/1111110000000000000000000000ffff",
+						HasExample:                 false,
+						UserClsFailedPresubmit:     emptyMetricValues(),
+						CriticalFailuresExonerated: emptyMetricValues(),
+						Failures:                   emptyMetricValues(),
 					},
 					{
-						Name:                         "projects/testproject/clusters/reason-v1/cccccc00000000000000000000000001/presubmitImpact",
-						DistinctClTestRunsFailed_12H: 3,
-						DistinctClTestRunsFailed_24H: 4,
+						Name:       "projects/testproject/clusters/reason-v3/cccccc00000000000000000000000001",
+						Title:      "Example failure reason 2.",
+						HasExample: true,
+						UserClsFailedPresubmit: &pb.Cluster_MetricValues{
+							OneDay:   &pb.Cluster_MetricValues_Counts{},
+							ThreeDay: &pb.Cluster_MetricValues_Counts{},
+							SevenDay: &pb.Cluster_MetricValues_Counts{Nominal: 11},
+						},
+						CriticalFailuresExonerated:       emptyMetricValues(),
+						Failures:                         emptyMetricValues(),
+						EquivalentFailureAssociationRule: `reason LIKE "Example failure reason %."`,
 					},
 					{
-						Name:                         "projects/testproject/clusters/rules/11111100000000000000000000000002/presubmitImpact",
-						DistinctClTestRunsFailed_12H: 5,
-						DistinctClTestRunsFailed_24H: 6,
-					},
-					{
-						Name:                         "projects/testproject/clusters/rules/11111100000000000000000000000003/presubmitImpact",
-						DistinctClTestRunsFailed_12H: 0,
-						DistinctClTestRunsFailed_24H: 0,
-					},
-					{
-						Name:                         "projects/testproject/clusters/reason-v1/cccccc0000000000000000000000ffff/presubmitImpact",
-						DistinctClTestRunsFailed_12H: 0,
-						DistinctClTestRunsFailed_24H: 0,
+						Name:                       "projects/testproject/clusters/reason-v3/cccccc0000000000000000000000ffff",
+						HasExample:                 false,
+						UserClsFailedPresubmit:     emptyMetricValues(),
+						CriticalFailuresExonerated: emptyMetricValues(),
+						Failures:                   emptyMetricValues(),
 					},
 				},
 			}
@@ -401,7 +354,7 @@ func TestClusters(t *testing.T) {
 			Convey("With a valid request", func() {
 				Convey("No duplciate requests", func() {
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					So(err, ShouldBeNil)
@@ -411,10 +364,10 @@ func TestClusters(t *testing.T) {
 					// Even if request items are duplicated, the request
 					// should still succeed and return correct results.
 					request.Names = append(request.Names, request.Names...)
-					expectedResponse.PresubmitImpact = append(expectedResponse.PresubmitImpact, expectedResponse.PresubmitImpact...)
+					expectedResponse.Clusters = append(expectedResponse.Clusters, expectedResponse.Clusters...)
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					So(err, ShouldBeNil)
@@ -426,7 +379,7 @@ func TestClusters(t *testing.T) {
 					request.Parent = "blah"
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
@@ -438,7 +391,7 @@ func TestClusters(t *testing.T) {
 					request.Names = []string{}
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
@@ -450,10 +403,10 @@ func TestClusters(t *testing.T) {
 					// Request asks for project "blah" but parent asks for
 					// project "testproject".
 					So(request.Parent, ShouldEqual, "projects/testproject")
-					request.Names[1] = "projects/blah/clusters/reason-v1/cccccc00000000000000000000000001/presubmitImpact"
+					request.Names[1] = "projects/blah/clusters/reason-v3/cccccc00000000000000000000000001"
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
@@ -465,69 +418,90 @@ func TestClusters(t *testing.T) {
 					request.Names[1] = "invalid"
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
 					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name 1: invalid cluster presubmit impact name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}/presubmitImpact")
+					So(st.Message(), ShouldEqual, "name 1: invalid cluster name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}")
 					So(response, ShouldBeNil)
 				})
 				Convey("Invalid cluster algorithm in name", func() {
-					request.Names[1] = "projects/blah/clusters/reason/cccccc00000000000000000000000001/presubmitImpact"
+					request.Names[1] = "projects/blah/clusters/reason/cccccc00000000000000000000000001"
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
 					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name 1: invalid cluster presubmit impact name: algorithm not valid")
+					So(st.Message(), ShouldEqual, "name 1: invalid cluster name: algorithm not valid")
 					So(response, ShouldBeNil)
 				})
 				Convey("Invalid cluster ID in name", func() {
-					request.Names[1] = "projects/blah/clusters/reason-v1/123/presubmitImpact"
+					request.Names[1] = "projects/blah/clusters/reason-v3/123"
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
 					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name 1: invalid cluster presubmit impact name: ID is not valid lowercase hexadecimal bytes")
+					So(st.Message(), ShouldEqual, "name 1: invalid cluster name: ID is not valid lowercase hexadecimal bytes")
 					So(response, ShouldBeNil)
 				})
 				Convey("Too many request items", func() {
 					var names []string
 					for i := 0; i < 1001; i++ {
-						names = append(names, "projects/testproject/clusters/rules/11111100000000000000000000000000/presubmitImpact")
+						names = append(names, "projects/testproject/clusters/rules/11111100000000000000000000000000")
 					}
 					request.Names = names
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
 					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "too many names: presubmit impact for at most 1000 clusters can be retrieved in one request")
+					So(st.Message(), ShouldEqual, "too many names: at most 1000 clusters can be retrieved in one request")
 					So(response, ShouldBeNil)
 				})
 				Convey("Dataset does not exist", func() {
 					delete(analysisClient.clustersByProject, "testproject")
 
 					// Run
-					response, err := server.BatchGetPresubmitImpact(ctx, request)
+					response, err := server.BatchGet(ctx, request)
 
 					// Verify
 					st, _ := grpcStatus.FromError(err)
 					So(st.Code(), ShouldEqual, codes.NotFound)
-					So(st.Message(), ShouldEqual, "project does not exist in Weetbix or cluster analysis is not yet available")
+					So(st.Message(), ShouldEqual, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+					So(response, ShouldBeNil)
+				})
+				Convey("With project not configured", func() {
+					request.Parent = "projects/not-exists"
+					request.Names = []string{"projects/not-exists/clusters/reason-v3/cccccc0000000000000000000000ffff"}
+
+					// Run
+					response, err := server.BatchGet(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.FailedPrecondition)
+					So(st.Message(), ShouldEqual, "project does not exist in Weetbix")
 					So(response, ShouldBeNil)
 				})
 			})
 		})
 	})
+}
+
+func emptyMetricValues() *pb.Cluster_MetricValues {
+	return &pb.Cluster_MetricValues{
+		OneDay:   &pb.Cluster_MetricValues_Counts{},
+		ThreeDay: &pb.Cluster_MetricValues_Counts{},
+		SevenDay: &pb.Cluster_MetricValues_Counts{},
+	}
 }
 
 func failureReasonClusterEntry(projectcfg *compiledcfg.ProjectConfig, primaryErrorMessage string) *pb.ClusterResponse_ClusteredTestResult_ClusterEntry {
@@ -572,22 +546,22 @@ func sortClusterEntries(entries []*pb.ClusterResponse_ClusteredTestResult_Cluste
 }
 
 type fakeAnalysisClient struct {
-	clustersByProject map[string][]analysis.ClusterPresubmitImpact
+	clustersByProject map[string][]*analysis.ClusterSummary
 }
 
 func newFakeAnalysisClient() *fakeAnalysisClient {
 	return &fakeAnalysisClient{
-		clustersByProject: make(map[string][]analysis.ClusterPresubmitImpact),
+		clustersByProject: make(map[string][]*analysis.ClusterSummary),
 	}
 }
 
-func (f *fakeAnalysisClient) ReadClusterPresubmitImpact(ctx context.Context, project string, clusterIDs []clustering.ClusterID) ([]analysis.ClusterPresubmitImpact, error) {
+func (f *fakeAnalysisClient) ReadClusters(ctx context.Context, project string, clusterIDs []clustering.ClusterID) ([]*analysis.ClusterSummary, error) {
 	clusters, ok := f.clustersByProject[project]
 	if !ok {
 		return nil, analysis.ProjectNotExistsErr
 	}
 
-	var results []analysis.ClusterPresubmitImpact
+	var results []*analysis.ClusterSummary
 	for _, c := range clusters {
 		include := false
 		for _, ci := range clusterIDs {

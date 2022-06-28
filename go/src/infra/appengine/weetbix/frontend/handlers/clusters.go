@@ -202,50 +202,6 @@ func newEmptyCluster(clusterID clustering.ClusterID) *Cluster {
 	return result
 }
 
-// GetCluster serves a GET request for
-// api/projects/:project/clusters/:algorithm/:id.
-func (h *Handlers) GetCluster(ctx *router.Context) {
-	projectID, projectCfg, ok := obtainProjectConfigOrError(ctx)
-	if !ok {
-		return
-	}
-	clusterID := clustering.ClusterID{
-		Algorithm: ctx.Params.ByName("algorithm"),
-		ID:        ctx.Params.ByName("id"),
-	}
-	if err := clusterID.Validate(); err != nil {
-		http.Error(ctx.Writer, "Please supply a valid cluster ID.", http.StatusBadRequest)
-		return
-	}
-	ac, err := analysis.NewClient(ctx.Context, h.cloudProject)
-	if err != nil {
-		logging.Errorf(ctx.Context, "Creating new analysis client: %v", err)
-		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
-		return
-	}
-	defer func() {
-		if err := ac.Close(); err != nil {
-			logging.Warningf(ctx.Context, "Closing analysis client: %v", err)
-		}
-	}()
-
-	cs, err := ac.ReadCluster(ctx.Context, projectID, clusterID)
-	if err != nil && err != analysis.NotExistsErr {
-		logging.Errorf(ctx.Context, "Reading Cluster from BigQuery: %s", err)
-		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
-		return
-	}
-	var response *Cluster
-	if err != analysis.NotExistsErr {
-		response = newCluster(cs, projectCfg)
-	} else {
-		// Return a placeholder cluster with zero impact.
-		response = newEmptyCluster(clusterID)
-	}
-
-	respondWithJSON(ctx, response)
-}
-
 // GetClusterFailures handles a GET request for
 // /api/projects/:project/clusters/:algorithm/:id/failures.
 func (h *Handlers) GetClusterFailures(ctx *router.Context) {
