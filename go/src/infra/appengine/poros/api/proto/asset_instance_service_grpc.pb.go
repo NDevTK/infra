@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AssetInstanceClient interface {
 	// Creates the given AssetInstanceInstance.
-	Create(ctx context.Context, in *CreateAssetInstanceRequest, opts ...grpc.CallOption) (*CreateAssetInstanceResponse, error)
+	Create(ctx context.Context, in *CreateAssetInstanceRequest, opts ...grpc.CallOption) (*AssetInstanceModel, error)
 	// Retrieves an AssetInstance for a given unique value.
 	Get(ctx context.Context, in *GetAssetInstanceRequest, opts ...grpc.CallOption) (*AssetInstanceModel, error)
 	// Update a single AssetInstance.
@@ -33,6 +33,7 @@ type AssetInstanceClient interface {
 	Delete(ctx context.Context, in *DeleteAssetInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all AssetInstances.
 	List(ctx context.Context, in *ListAssetInstancesRequest, opts ...grpc.CallOption) (*ListAssetInstancesResponse, error)
+	TriggerDeployment(ctx context.Context, in *TriggerDeploymentRequest, opts ...grpc.CallOption) (*TriggerDeploymentResponse, error)
 }
 
 type assetInstanceClient struct {
@@ -43,8 +44,8 @@ func NewAssetInstanceClient(cc grpc.ClientConnInterface) AssetInstanceClient {
 	return &assetInstanceClient{cc}
 }
 
-func (c *assetInstanceClient) Create(ctx context.Context, in *CreateAssetInstanceRequest, opts ...grpc.CallOption) (*CreateAssetInstanceResponse, error) {
-	out := new(CreateAssetInstanceResponse)
+func (c *assetInstanceClient) Create(ctx context.Context, in *CreateAssetInstanceRequest, opts ...grpc.CallOption) (*AssetInstanceModel, error) {
+	out := new(AssetInstanceModel)
 	err := c.cc.Invoke(ctx, "/poros.AssetInstance/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -88,12 +89,21 @@ func (c *assetInstanceClient) List(ctx context.Context, in *ListAssetInstancesRe
 	return out, nil
 }
 
+func (c *assetInstanceClient) TriggerDeployment(ctx context.Context, in *TriggerDeploymentRequest, opts ...grpc.CallOption) (*TriggerDeploymentResponse, error) {
+	out := new(TriggerDeploymentResponse)
+	err := c.cc.Invoke(ctx, "/poros.AssetInstance/TriggerDeployment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetInstanceServer is the server API for AssetInstance service.
 // All implementations must embed UnimplementedAssetInstanceServer
 // for forward compatibility
 type AssetInstanceServer interface {
 	// Creates the given AssetInstanceInstance.
-	Create(context.Context, *CreateAssetInstanceRequest) (*CreateAssetInstanceResponse, error)
+	Create(context.Context, *CreateAssetInstanceRequest) (*AssetInstanceModel, error)
 	// Retrieves an AssetInstance for a given unique value.
 	Get(context.Context, *GetAssetInstanceRequest) (*AssetInstanceModel, error)
 	// Update a single AssetInstance.
@@ -102,6 +112,7 @@ type AssetInstanceServer interface {
 	Delete(context.Context, *DeleteAssetInstanceRequest) (*emptypb.Empty, error)
 	// Lists all AssetInstances.
 	List(context.Context, *ListAssetInstancesRequest) (*ListAssetInstancesResponse, error)
+	TriggerDeployment(context.Context, *TriggerDeploymentRequest) (*TriggerDeploymentResponse, error)
 	mustEmbedUnimplementedAssetInstanceServer()
 }
 
@@ -109,7 +120,7 @@ type AssetInstanceServer interface {
 type UnimplementedAssetInstanceServer struct {
 }
 
-func (UnimplementedAssetInstanceServer) Create(context.Context, *CreateAssetInstanceRequest) (*CreateAssetInstanceResponse, error) {
+func (UnimplementedAssetInstanceServer) Create(context.Context, *CreateAssetInstanceRequest) (*AssetInstanceModel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedAssetInstanceServer) Get(context.Context, *GetAssetInstanceRequest) (*AssetInstanceModel, error) {
@@ -123,6 +134,9 @@ func (UnimplementedAssetInstanceServer) Delete(context.Context, *DeleteAssetInst
 }
 func (UnimplementedAssetInstanceServer) List(context.Context, *ListAssetInstancesRequest) (*ListAssetInstancesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedAssetInstanceServer) TriggerDeployment(context.Context, *TriggerDeploymentRequest) (*TriggerDeploymentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TriggerDeployment not implemented")
 }
 func (UnimplementedAssetInstanceServer) mustEmbedUnimplementedAssetInstanceServer() {}
 
@@ -227,6 +241,24 @@ func _AssetInstance_List_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AssetInstance_TriggerDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TriggerDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetInstanceServer).TriggerDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/poros.AssetInstance/TriggerDeployment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetInstanceServer).TriggerDeployment(ctx, req.(*TriggerDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetInstance_ServiceDesc is the grpc.ServiceDesc for AssetInstance service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -253,6 +285,10 @@ var AssetInstance_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _AssetInstance_List_Handler,
+		},
+		{
+			MethodName: "TriggerDeployment",
+			Handler:    _AssetInstance_TriggerDeployment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

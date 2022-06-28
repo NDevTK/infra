@@ -15,7 +15,7 @@ option go_package = "infra/appengine/poros/api/proto;proto";
 // Performs operations on AssetInstanceInstance.
 service AssetInstance {
   // Creates the given AssetInstanceInstance.
-  rpc Create(CreateAssetInstanceRequest) returns (CreateAssetInstanceResponse);
+  rpc Create(CreateAssetInstanceRequest) returns (AssetInstanceModel);
 
   // Retrieves an AssetInstance for a given unique value.
   rpc Get(GetAssetInstanceRequest) returns (AssetInstanceModel);
@@ -29,17 +29,13 @@ service AssetInstance {
   // Lists all AssetInstances.
   rpc List(ListAssetInstancesRequest) returns (ListAssetInstancesResponse);
 
+  rpc TriggerDeployment(TriggerDeploymentRequest) returns (TriggerDeploymentResponse);
 }
 // Request to create a single AssetInstance
 message CreateAssetInstanceRequest {
   // The new AssetInstance to add to the database.
   string asset_id = 1;
   string status = 2;
-}
-
-// Response to create asset instance request
-message CreateAssetInstanceResponse {
-  string data = 1;
 }
 
 // Gets a AssetInstance resource.
@@ -82,4 +78,19 @@ message ListAssetInstancesResponse {
   // A page token that can be passed into future requests to get the next page.
   // Empty if there is no next page.
   string next_page_token = 2;
+}
+
+message TriggerDeploymentRequest {
+  // The entity_type whether it's asset or asset instance
+  string entity_type = 1;
+
+  // The id of the specified entity
+  string entity_id = 2;
+}
+
+message TriggerDeploymentResponse {
+  string asset_id = 1;
+  string asset_instance_id = 2;
+  string project_id = 3;
+  string project_prefix = 4;
 }

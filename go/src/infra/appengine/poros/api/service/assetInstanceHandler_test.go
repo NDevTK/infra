@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"sort"
 	"testing"
 
@@ -26,15 +25,20 @@ func mockCreateAssetInstanceRequest(assetId string, statusValue int32) *proto.Cr
 	}
 }
 
+func mockTriggerDeploymentRequest(entityType string, entityId string) *proto.TriggerDeploymentRequest {
+	return &proto.TriggerDeploymentRequest{
+		EntityType: entityType,
+		EntityId:   entityId,
+	}
+}
+
 func TestAssetInstanceCreateWithValidData(t *testing.T) {
 	t.Parallel()
 	request := mockCreateAssetInstanceRequest("Test AssetId", 0)
 	Convey("Create an AssetInstance in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		response, err := handler.Create(ctx, request)
-		model := &proto.AssetInstanceModel{}
-		json.Unmarshal([]byte(response.Data), model)
+		model, err := handler.Create(ctx, request)
 		So(err, ShouldBeNil)
 		want := []string{request.GetAssetId(), request.GetStatus()}
 		get := []string{model.GetAssetId(), model.GetStatus()}
@@ -70,10 +74,8 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 	Convey("Update an AssetInstance with valid data in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		response, err := handler.Create(ctx, createRequest)
+		entity, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
-		entity := &proto.AssetInstanceModel{}
-		json.Unmarshal([]byte(response.Data), entity)
 
 		// Update AssetInstance with some new value and the operation should not throw any error
 		entity.AssetId = "Test AssetId Updated"
@@ -103,10 +105,8 @@ func TestAssetInstanceUpdateWithInvalidAssetId(t *testing.T) {
 	Convey("Update an AssetInstance with invalid assetId in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		response, err := handler.Create(ctx, createRequest)
+		entity, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
-		entity := &proto.AssetInstanceModel{}
-		json.Unmarshal([]byte(response.Data), entity)
 		entity.AssetId = ""
 		entity.Status = proto.DeploymentStatus(1).String()
 
@@ -126,10 +126,8 @@ func TestAssetInstanceUpdateWithInvalidStatus(t *testing.T) {
 	Convey("Update an AssetInstance with invalid deployment status in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		response, err := handler.Create(ctx, createRequest)
+		entity, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
-		entity := &proto.AssetInstanceModel{}
-		json.Unmarshal([]byte(response.Data), entity)
 		entity.AssetId = "Test AssetId Updated"
 		entity.Status = proto.DeploymentStatus(-1).String()
 
@@ -149,10 +147,8 @@ func TestGetAssetInstanceWithValidData(t *testing.T) {
 	Convey("Get a AssetInstance based on id from datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &AssetInstanceHandler{}
-		response, err := handler.Create(ctx, createRequest)
+		entity, err := handler.Create(ctx, createRequest)
 		So(err, ShouldBeNil)
-		entity := &proto.AssetInstanceModel{}
-		json.Unmarshal([]byte(response.Data), entity)
 		getRequest := &proto.GetAssetInstanceRequest{
 			AssetInstanceId: entity.GetAssetInstanceId(),
 		}
@@ -190,5 +186,62 @@ func TestListAssetInstance(t *testing.T) {
 		get = []string{asset_instances[0].GetStatus(), asset_instances[1].GetStatus()}
 		sort.Strings(get)
 		So(get, ShouldResemble, want)
+	})
+}
+
+func TestTriggerDeployment_TypeAssetInstance(t *testing.T) {
+	t.Parallel()
+	createRequest := mockCreateAssetInstanceRequest("Test AssetId", 0)
+	Convey("Test TriggerDeployment function for Type AssetInstance", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetInstanceHandler{}
+		entity, _ := handler.Create(ctx, createRequest)
+		So(entity.ProjectId, ShouldBeEmpty)
+		So(entity.Status, ShouldEqual, "STATUS_PENDING")
+		triggerRequest := mockTriggerDeploymentRequest("AssetInstance", entity.AssetInstanceId)
+		triggerDeploymentResponse, err := handler.TriggerDeployment(ctx, triggerRequest)
+		So(err, ShouldBeNil)
+
+		assetInstanceEntity, _ := getAssetInstanceById(ctx, entity.AssetInstanceId)
+		So(assetInstanceEntity.ProjectId, ShouldNotBeEmpty)
+		So(assetInstanceEntity.Status, ShouldEqual, "STATUS_RUNNING")
+
+		want := []string{"Test AssetId", assetInstanceEntity.AssetInstanceId}
+		get := []string{triggerDeploymentResponse.AssetId, triggerDeploymentResponse.AssetInstanceId}
+		So(get, ShouldResemble, want)
+		So(triggerDeploymentResponse.ProjectId, ShouldNotBeEmpty)
+		So(triggerDeploymentResponse.ProjectPrefix, ShouldNotBeEmpty)
+	})
+}
+
+func TestTriggerDeployment_TypeAsset(t *testing.T) {
+	t.Parallel()
+	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
+	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
+	Convey("Test TriggerDeployment function for Type Asset", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		err := createDefaultResources(ctx)
+		So(err, ShouldBeNil)
+		handler := &AssetHandler{}
+		asset, err := handler.Create(ctx, assetRequest)
+		So(err, ShouldBeNil)
+
+		assetInstanceHandler := &AssetInstanceHandler{}
+		triggerRequest := mockTriggerDeploymentRequest("Asset", asset.Asset.AssetId)
+		triggerDeploymentResponse, err := assetInstanceHandler.TriggerDeployment(ctx, triggerRequest)
+		So(err, ShouldBeNil)
+
+		assetInstance, err := getAssetInstanceById(ctx, triggerDeploymentResponse.AssetInstanceId)
+		So(err, ShouldBeNil)
+
+		So(assetInstance.ProjectId, ShouldNotBeEmpty)
+		So(assetInstance.Status, ShouldEqual, "STATUS_RUNNING")
+
+		want := []string{asset.Asset.AssetId, assetInstance.AssetInstanceId}
+		get := []string{triggerDeploymentResponse.AssetId, triggerDeploymentResponse.AssetInstanceId}
+		So(get, ShouldResemble, want)
+		So(triggerDeploymentResponse.ProjectId, ShouldNotBeEmpty)
+		So(triggerDeploymentResponse.ProjectPrefix, ShouldNotBeEmpty)
 	})
 }

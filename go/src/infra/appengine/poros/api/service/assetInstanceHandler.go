@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"math/rand"
 	"reflect"
@@ -41,14 +40,13 @@ func toAssetInstanceEntity(model *proto.AssetInstanceModel) *AssetInstanceEntity
 	return nil
 }
 
-func toAssetIntanceModel(entity *AssetInstanceEntity, projectPrefix string) *proto.AssetInstanceModel {
+func toAssetIntanceModel(entity *AssetInstanceEntity) *proto.AssetInstanceModel {
 	if entity != nil {
 		return &proto.AssetInstanceModel{
 			AssetInstanceId: entity.AssetInstanceId,
 			AssetId:         entity.AssetId,
 			Status:          entity.Status,
 			ProjectId:       entity.ProjectId,
-			ProjectPrefix:   projectPrefix,
 			CreatedAt:       timestamppb.New(entity.CreatedAt),
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
@@ -70,17 +68,12 @@ func validateAssetInstanceEntity(entity *AssetInstanceEntity) error {
 }
 
 // Creates the given AssetInstance.
-func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAssetInstanceRequest) (*proto.CreateAssetInstanceResponse, error) {
+func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
 	id := uuid.New().String()
-	project, err := deploymentProject()
-	if err != nil {
-		return nil, err
-	}
 	entity := &AssetInstanceEntity{
 		AssetInstanceId: id,
 		AssetId:         req.GetAssetId(),
 		Status:          req.GetStatus(),
-		ProjectId:       project[1],
 		CreatedBy:       auth.CurrentUser(ctx).Email,
 		CreatedAt:       time.Now().UTC(),
 	}
@@ -90,8 +83,7 @@ func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAsse
 	if err := datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
-	jsonBytes, _ := json.MarshalIndent(toAssetIntanceModel(entity, project[0]), "", "    ")
-	return &proto.CreateAssetInstanceResponse{Data: string(jsonBytes)}, nil
+	return toAssetIntanceModel(entity), nil
 }
 
 // Returns a gcp project which will be used for deployment of resources by cel_ctl
@@ -118,7 +110,7 @@ func deploymentProject() ([]string, error) {
 func (e *AssetInstanceHandler) Get(ctx context.Context, req *proto.GetAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
 	entity, err := getAssetInstanceById(ctx, req.GetAssetInstanceId())
 	if err == nil {
-		return toAssetIntanceModel(entity, ""), nil
+		return toAssetIntanceModel(entity), nil
 	}
 	return nil, err
 }
@@ -156,7 +148,7 @@ func (e *AssetInstanceHandler) Update(ctx context.Context, req *proto.UpdateAsse
 	}, nil)
 
 	if err == nil {
-		return toAssetIntanceModel(asset_instance, ""), nil
+		return toAssetIntanceModel(asset_instance), nil
 	}
 	return nil, err
 }
@@ -179,9 +171,56 @@ func (e *AssetInstanceHandler) List(ctx context.Context, in *proto.ListAssetInst
 		return nil, err
 	}
 	for _, asset_instance := range asset_instances {
-		res.AssetInstances = append(res.AssetInstances, toAssetIntanceModel(asset_instance, ""))
+		res.AssetInstances = append(res.AssetInstances, toAssetIntanceModel(asset_instance))
 	}
 	return res, nil
+}
+
+// Based on type, TriggerDeployment either creates or updates an asset instance
+// with an available project to carry out a deployment on. Returns the project
+// information like projectId, projectPrefix, etc.
+func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.TriggerDeploymentRequest) (*proto.TriggerDeploymentResponse, error) {
+	entityType := in.GetEntityType()
+	entityId := in.GetEntityId()
+
+	project, err := deploymentProject()
+	if err != nil {
+		return nil, err
+	}
+	var entity *AssetInstanceEntity
+	if entityType == "Asset" {
+		id := uuid.New().String()
+		entity = &AssetInstanceEntity{
+			AssetInstanceId: id,
+			AssetId:         entityId,
+			Status:          "STATUS_RUNNING",
+			ProjectId:       project[1],
+			CreatedBy:       auth.CurrentUser(ctx).Email,
+			CreatedAt:       time.Now().UTC(),
+		}
+	} else if entityType == "AssetInstance" {
+		entity, err = getAssetInstanceById(ctx, entityId)
+		if err != nil {
+			return nil, err
+		}
+		entity.Status = "STATUS_RUNNING"
+		entity.ProjectId = project[1]
+	}
+	if err := validateAssetInstanceEntity(entity); err != nil {
+		return nil, err
+	}
+	if err := datastore.Put(ctx, entity); err != nil {
+		return nil, err
+	}
+
+	response := &proto.TriggerDeploymentResponse{
+		AssetId:         entity.AssetId,
+		AssetInstanceId: entity.AssetInstanceId,
+		ProjectId:       project[1],
+		ProjectPrefix:   project[0],
+	}
+
+	return response, nil
 }
 
 func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity, error) {
