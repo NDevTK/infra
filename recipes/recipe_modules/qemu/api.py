@@ -213,9 +213,12 @@ class QEMUAPI(recipe_api.RecipeApi):
 
   def powerdown_vm(self, name):
     """ powerdown_vm sends a shutdown signal to the given VM. Similar to power
-        button on a physical device
-        Args:
-          name: name of the vm to shutdown
+    button on a physical device
+
+    Args:
+      * name: name of the vm to shutdown
+
+    Returns: True if powerdown signal was sent to VM. False otherwise
     """
     try:
       self.m.step(
@@ -223,6 +226,28 @@ class QEMUAPI(recipe_api.RecipeApi):
           cmd=[
               'python3',
               self.resource('qmp.py'), '-c', 'system_powerdown', '-s', QMP_HOST
+          ])
+      return True
+    except Exception:
+      # Failed to power down. Is it already powered down?
+      # avoid raising exception
+      return False
+
+  def quit_vm(self, name):
+    """ quit_vm sends a quit signal to the qemu process. Use this if your VM
+    doesn't respond to powerdown signal.
+
+    Args:
+      * name: name of the vm to quit
+
+    Returns: True if quit signal was sent to VM. False otherwise
+    """
+    try:
+      self.m.step(
+          name='Quit {}'.format(name),
+          cmd=[
+              'python3',
+              self.resource('qmp.py'), '-c', 'quit', '-s', QMP_HOST
           ])
       return True
     except Exception:
