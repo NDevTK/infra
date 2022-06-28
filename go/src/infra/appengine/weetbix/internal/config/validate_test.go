@@ -226,6 +226,20 @@ func TestProjectConfigValidator(t *testing.T) {
 					So(validate(cfg), ShouldErrLike, "test_results_failed / seven_day): value must be at most 700")
 				})
 
+				Convey("one day-filing threshold implies seven-day keep open threshold", func() {
+					// Verify implications work across time.
+					bugFilingThres.TestResultsFailed = &configpb.MetricThreshold{OneDay: proto.Int64(100)}
+					lastPriority.Threshold.TestResultsFailed = &configpb.MetricThreshold{SevenDay: proto.Int64(100)}
+					So(validate(cfg), ShouldBeNil)
+				})
+
+				Convey("seven day-filing threshold does not imply one-day keep open threshold", func() {
+					// This implication does not work.
+					bugFilingThres.TestResultsFailed = &configpb.MetricThreshold{SevenDay: proto.Int64(700)}
+					lastPriority.Threshold.TestResultsFailed = &configpb.MetricThreshold{OneDay: proto.Int64(700)}
+					So(validate(cfg), ShouldErrLike, "test_results_failed / seven_day): seven_day threshold must be set, with a value of at most 700")
+				})
+
 				Convey("metric threshold nil", func() {
 					bugFilingThres.TestResultsFailed = &configpb.MetricThreshold{OneDay: proto.Int64(100)}
 					lastPriority.Threshold.TestResultsFailed = nil

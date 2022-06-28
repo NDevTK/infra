@@ -64,16 +64,20 @@ type Generator struct {
 	impact *bugs.ClusterImpact
 	// The monorail configuration to use.
 	monorailCfg *configpb.MonorailProject
+	// The threshold at which bugs are filed. Used here as the threshold
+	// at which to re-open verified bugs.
+	bugFilingThreshold *configpb.ImpactThreshold
 }
 
 // NewGenerator initialises a new Generator.
-func NewGenerator(impact *bugs.ClusterImpact, monorailCfg *configpb.MonorailProject) (*Generator, error) {
-	if len(monorailCfg.Priorities) == 0 {
-		return nil, fmt.Errorf("invalid configuration for monorail project %q; no monorail priorities configured", monorailCfg.Project)
+func NewGenerator(impact *bugs.ClusterImpact, projectCfg *configpb.ProjectConfig) (*Generator, error) {
+	if len(projectCfg.Monorail.Priorities) == 0 {
+		return nil, fmt.Errorf("invalid configuration for monorail project %q; no monorail priorities configured", projectCfg.Monorail.Project)
 	}
 	return &Generator{
-		impact:      impact,
-		monorailCfg: monorailCfg,
+		impact:             impact,
+		monorailCfg:        projectCfg.Monorail,
+		bugFilingThreshold: projectCfg.BugFilingThreshold,
 	}, nil
 }
 
@@ -426,10 +430,10 @@ func (g *Generator) isCompatibleWithVerified(verified bool) bool {
 	hysteresisPerc := g.monorailCfg.PriorityHysteresisPercent
 	lowestPriority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
 	if verified {
-		// The issue is verified. Only reopen if there is enough impact
-		// to exceed the threshold with hysteresis.
-		inflatedThreshold := bugs.InflateThreshold(lowestPriority.Threshold, hysteresisPerc)
-		return !g.impact.MeetsThreshold(inflatedThreshold)
+		// The issue is verified. Only reopen if we satisfied the bug-filing
+		// criteria. Bug-filing criteria is guaranteed to imply the criteria
+		// of the lowest priority level.
+		return !g.impact.MeetsThreshold(g.bugFilingThreshold)
 	} else {
 		// The issue is not verified. Only close if the impact falls
 		// below the threshold with hysteresis.
