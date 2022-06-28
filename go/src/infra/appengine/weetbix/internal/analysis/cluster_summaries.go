@@ -68,6 +68,9 @@ type ClusterSummary struct {
 	// Top Test IDs included in the cluster, up to 5. Unless the cluster
 	// is empty, will always include at least one Test ID.
 	TopTestIDs []TopCount `json:"topTestIds"`
+	// Top Monorail Components indicates the top monorail components failures
+	// in the cluster are associated with by number of failures, up to 5.
+	TopMonorailComponents []TopCount `json:"topMonorailComponents"`
 }
 
 // ClusterPresubmitImpact represents a summary of the cluster's impact
@@ -216,7 +219,12 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		selectCounts("failures", "Failures", "3d") +
 		selectCounts("failures", "Failures", "7d") + `
 			example_failure_reason.primary_error_message as ExampleFailureReason,
-			top_test_ids as TopTestIDs
+			top_test_ids as TopTestIDs,
+			ARRAY(
+				SELECT value, count
+				FROM UNNEST(top_monorail_components)
+				WHERE value IS NOT NULL
+			) as TopMonorailComponents
 		FROM cluster_summaries
 		WHERE (` + whereCriticalFailuresExonerated + `) OR (` + whereFailures + `) 
 		    OR (` + whereTestRuns + `) OR (` + wherePresubmits + `)
