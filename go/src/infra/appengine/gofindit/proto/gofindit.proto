@@ -166,6 +166,8 @@ message HeuristicSuspect {
   string justification = 4;
   // Whether the suspect has been verified by the culprit verification component.
   bool verified = 5;
+  // The level of confidence we have for the suspect.
+  SuspectConfidenceLevel confidence_level = 6;
 }
 
 message NthSectionAnalysisResult {
@@ -304,4 +306,11 @@ enum RerunStatus {
   PASSED = 2;
   FAILED = 3;
   INFRA_FAILED = 4;
+}
+
+enum SuspectConfidenceLevel {
+  SUSPECT_CONFIDENCE_LEVEL_UNSPECIFIED = 0;
+  LOW = 1;
+  MEDIUM = 2;
+  HIGH = 3;
 }

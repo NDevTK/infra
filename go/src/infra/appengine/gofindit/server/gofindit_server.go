@@ -7,6 +7,7 @@ package server
 
 import (
 	"context"
+	"infra/appengine/gofindit/compilefailureanalysis/heuristic"
 	gfim "infra/appengine/gofindit/model"
 	gfipb "infra/appengine/gofindit/proto"
 
@@ -125,10 +126,11 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 	pbSuspects := make([]*gfipb.HeuristicSuspect, len(suspects))
 	for i, suspect := range suspects {
 		pbSuspects[i] = &gfipb.HeuristicSuspect{
-			GitilesCommit: &suspect.GitilesCommit,
-			ReviewUrl:     suspect.ReviewUrl,
-			Score:         int32(suspect.Score),
-			Justification: suspect.Justification,
+			GitilesCommit:   &suspect.GitilesCommit,
+			ReviewUrl:       suspect.ReviewUrl,
+			Score:           int32(suspect.Score),
+			Justification:   suspect.Justification,
+			ConfidenceLevel: heuristic.GetConfidenceLevel(suspect.Score),
 		}
 	}
 	heuristicResult := &gfipb.HeuristicAnalysisResult{

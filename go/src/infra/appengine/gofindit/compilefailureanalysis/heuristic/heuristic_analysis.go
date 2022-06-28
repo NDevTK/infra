@@ -170,3 +170,16 @@ func GetCompileLogs(c context.Context, bbid int64) (*model.CompileLogs, error) {
 
 	return nil, fmt.Errorf("Could not get compile log from build %d", bbid)
 }
+
+// GetConfidenceLevel returns a description of how likely a suspect to be the
+// real culprit.
+func GetConfidenceLevel(score int) gfipb.SuspectConfidenceLevel {
+	switch {
+	case score > 10:
+		return gfipb.SuspectConfidenceLevel_HIGH
+	case score > 5:
+		return gfipb.SuspectConfidenceLevel_MEDIUM
+	default:
+		return gfipb.SuspectConfidenceLevel_LOW
+	}
+}
