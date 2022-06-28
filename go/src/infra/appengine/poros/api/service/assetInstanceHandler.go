@@ -7,7 +7,6 @@ package service
 import (
 	"context"
 	"errors"
-	"math/rand"
 	"reflect"
 	"time"
 
@@ -87,23 +86,39 @@ func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAsse
 }
 
 // Returns a gcp project which will be used for deployment of resources by cel_ctl
-func deploymentProject() ([]string, error) {
-	projectList := [][]string{
-		{"celab-chromium-ci", "celab-chromium-ci-001"},
-		{"celab-chromium-ci", "celab-chromium-ci-002"},
-		{"celab-chromium-ci", "celab-chromium-ci-003"},
-		{"celab-chromium-ci", "celab-chromium-ci-004"},
-		{"celab-chromium-ci", "celab-chromium-ci-005"},
-		{"celab-chromium-ci", "celab-chromium-ci-006"},
-		{"celab-chromium-ci", "celab-chromium-ci-007"},
-		{"celab-chromium-ci", "celab-chromium-ci-008"},
-		{"celab-chromium-ci", "celab-chromium-ci-009"},
-		{"celab-chromium-ci", "celab-chromium-ci-010"},
+func deploymentProject(ctx context.Context) ([]string, error) {
+	projectList := gcpProjectList()
+
+	// get all projects that are already deployed
+	activeInstanceStatuses := []string{"STATUS_RUNNING", "STATUS_COMPLETED", "STATUS_READY_FOR_DESTROY"}
+	var activeProjects []string
+	for _, status := range activeInstanceStatuses {
+		query := datastore.NewQuery("AssetInstanceEntity").Eq("Status", status)
+		var asset_instances []*AssetInstanceEntity
+		if err := datastore.GetAll(ctx, query, &asset_instances); err != nil {
+			return nil, err
+		}
+		for _, asset_instance := range asset_instances {
+			activeProjects = append(activeProjects, asset_instance.ProjectId)
+		}
+	}
+	activeProjects = uniqueStrings(activeProjects)
+
+	// exclude the deployed projects from the list of
+	// projects that are available for being chosen
+	availableProjects := [][]string{}
+	for _, project := range projectList {
+		if !valueInSlice(project[1], activeProjects) {
+			availableProjects = append(availableProjects, project)
+		}
 	}
 
-	// TODO: change the process of choosing project according to their availability in all other asset instances
-	randomIndex := rand.Intn(len(projectList))
-	return projectList[randomIndex], nil
+	if len(availableProjects) == 0 { // no project is available for deployment
+		return nil, errors.New("No Projects available at the moment")
+	}
+
+	// return the first available project
+	return availableProjects[0], nil
 }
 
 // Retrieves an AssetInstance for a given unique value.
@@ -183,7 +198,7 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 	entityType := in.GetEntityType()
 	entityId := in.GetEntityId()
 
-	project, err := deploymentProject()
+	project, err := deploymentProject(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -221,6 +236,21 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 	}
 
 	return response, nil
+}
+
+func gcpProjectList() [][]string {
+	return [][]string{
+		{"celab-chromium-ci", "celab-chromium-ci-001"},
+		{"celab-chromium-ci", "celab-chromium-ci-002"},
+		{"celab-chromium-ci", "celab-chromium-ci-003"},
+		{"celab-chromium-ci", "celab-chromium-ci-004"},
+		{"celab-chromium-ci", "celab-chromium-ci-005"},
+		{"celab-chromium-ci", "celab-chromium-ci-006"},
+		{"celab-chromium-ci", "celab-chromium-ci-007"},
+		{"celab-chromium-ci", "celab-chromium-ci-008"},
+		{"celab-chromium-ci", "celab-chromium-ci-009"},
+		{"celab-chromium-ci", "celab-chromium-ci-010"},
+	}
 }
 
 func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity, error) {

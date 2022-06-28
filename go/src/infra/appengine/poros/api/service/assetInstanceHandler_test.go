@@ -6,16 +6,21 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"testing"
+	"time"
 
+	. "infra/appengine/poros/api/entities"
 	proto "infra/appengine/poros/api/proto"
 
+	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 )
 
 func mockCreateAssetInstanceRequest(assetId string, statusValue int32) *proto.CreateAssetInstanceRequest {
@@ -243,5 +248,66 @@ func TestTriggerDeployment_TypeAsset(t *testing.T) {
 		So(get, ShouldResemble, want)
 		So(triggerDeploymentResponse.ProjectId, ShouldNotBeEmpty)
 		So(triggerDeploymentResponse.ProjectPrefix, ShouldNotBeEmpty)
+	})
+}
+
+func TestDeploymentProject(t *testing.T) {
+	t.Parallel()
+	projectList := gcpProjectList()
+	createData := [][]string{
+		{"Test AssetId1", "STATUS_PENDING", ""},
+		{"Test AssetId2", "STATUS_RUNNING", projectList[0][1]},
+		{"Test AssetId3", "STATUS_COMPLETED", projectList[1][1]},
+		{"Test AssetId4", "STATUS_READY_FOR_DESTROY", projectList[2][1]},
+	}
+
+	Convey("Select a project for deployment", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		for _, data := range createData {
+			id := uuid.New().String()
+			entity := &AssetInstanceEntity{
+				AssetInstanceId: id,
+				AssetId:         data[0],
+				Status:          data[1],
+				ProjectId:       data[2],
+				CreatedBy:       auth.CurrentUser(ctx).Email,
+				CreatedAt:       time.Now().UTC(),
+			}
+			err := datastore.Put(ctx, entity)
+			So(err, ShouldBeNil)
+		}
+
+		project, err := deploymentProject(ctx)
+		So(err, ShouldBeNil)
+
+		So(project[1], ShouldEqual, projectList[3][1])
+		So(project[0], ShouldEqual, projectList[3][0])
+	})
+}
+
+func TestDeploymentProject_NoAvailableProject(t *testing.T) {
+	t.Parallel()
+	projectList := gcpProjectList()
+	Convey("Should throw an error since all projects are deployed at the moment", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		for i, project := range projectList {
+			id := uuid.New().String()
+			entity := &AssetInstanceEntity{
+				AssetInstanceId: id,
+				AssetId:         fmt.Sprintf("Test AssetId %v", i),
+				Status:          "STATUS_RUNNING",
+				ProjectId:       project[1],
+				CreatedBy:       auth.CurrentUser(ctx).Email,
+				CreatedAt:       time.Now().UTC(),
+			}
+			err := datastore.Put(ctx, entity)
+			So(err, ShouldBeNil)
+		}
+
+		project, err := deploymentProject(ctx)
+		So(project, ShouldBeNil)
+		So(err.Error(), ShouldEqual, "No Projects available at the moment")
 	})
 }
