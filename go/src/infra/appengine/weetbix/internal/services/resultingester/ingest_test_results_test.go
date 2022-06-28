@@ -697,31 +697,45 @@ func TestIngestTestResults(t *testing.T) {
 				So(a, ShouldResemble, e)
 			}
 
-			request := &bbpb.GetBuildRequest{
-				Id: bID,
-				Mask: &bbpb.BuildMask{
-					Fields: buildReadMask,
-				},
+			setupGetBuildMock := func(modifiers ...func(*bbpb.Build)) {
+				request := &bbpb.GetBuildRequest{
+					Id: bID,
+					Mask: &bbpb.BuildMask{
+						Fields: buildReadMask,
+					},
+				}
+				response := mockedGetBuildRsp(inv)
+				for _, modifier := range modifiers {
+					modifier(response)
+				}
+				mbc.GetBuild(request, response)
 			}
-			buildResponse := mockedGetBuildRsp(inv)
-			mbc.GetBuild(request, buildResponse)
 
-			invReq := &rdbpb.GetInvocationRequest{
-				Name: inv,
+			setupGetInvocationMock := func() {
+				invReq := &rdbpb.GetInvocationRequest{
+					Name: inv,
+				}
+				invRes := &rdbpb.Invocation{
+					Name:  inv,
+					Realm: realm,
+				}
+				mrc.GetInvocation(invReq, invRes)
 			}
-			invRes := &rdbpb.Invocation{
-				Name:  inv,
-				Realm: realm,
+
+			setupQueryTestVariantsMock := func(modifiers ...func(*rdbpb.QueryTestVariantsResponse)) {
+				tvReq := &rdbpb.QueryTestVariantsRequest{
+					Invocations: []string{inv},
+					PageSize:    10000,
+					ReadMask:    testVariantReadMask,
+					PageToken:   "expected_token",
+				}
+				tvRsp := mockedQueryTestVariantsRsp()
+				tvRsp.NextPageToken = "continuation_token"
+				for _, modifier := range modifiers {
+					modifier(tvRsp)
+				}
+				mrc.QueryTestVariants(tvReq, tvRsp)
 			}
-			mrc.GetInvocation(invReq, invRes)
-			tvReq := &rdbpb.QueryTestVariantsRequest{
-				Invocations: []string{inv},
-				PageSize:    10000,
-				ReadMask:    testVariantReadMask,
-				PageToken:   "expected_token",
-			}
-			tvRsp := mockedQueryTestVariantsRsp()
-			tvRsp.NextPageToken = "continuation_token"
 
 			// Prepare some existing analyzed test variants to update.
 			ms := []*spanner.Mutation{
@@ -769,13 +783,17 @@ func TestIngestTestResults(t *testing.T) {
 					Build()
 
 			Convey("First task", func() {
-				mrc.QueryTestVariants(tvReq, tvRsp)
+				setupGetBuildMock()
+				setupGetInvocationMock()
+				setupQueryTestVariantsMock()
 				_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
 				So(err, ShouldBeNil)
 
+				// Act
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
+				// Verify
 				verifyIngestedInvocation(expectedInvocation)
 				verifyGitReference(expectedGitReference)
 
@@ -794,15 +812,21 @@ func TestIngestTestResults(t *testing.T) {
 			Convey("Last task", func() {
 				payload.TaskIndex = 10
 				ingestionCtl.TaskCount = 11
-				tvRsp.NextPageToken = ""
 
-				mrc.QueryTestVariants(tvReq, tvRsp)
+				setupGetBuildMock()
+				setupGetInvocationMock()
+				setupQueryTestVariantsMock(func(rsp *rdbpb.QueryTestVariantsResponse) {
+					rsp.NextPageToken = ""
+				})
+
 				_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
 				So(err, ShouldBeNil)
 
+				// Act
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
+				// Verify
 				// Only the first task should create the ingested
 				// invocation record and git reference record (if any).
 				verifyIngestedInvocation(nil)
@@ -827,13 +851,17 @@ func TestIngestTestResults(t *testing.T) {
 				// its continuation.
 				ingestionCtl.TaskCount = 2
 
-				mrc.QueryTestVariants(tvReq, tvRsp)
+				setupGetBuildMock()
+				setupGetInvocationMock()
+				setupQueryTestVariantsMock()
 				_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
 				So(err, ShouldBeNil)
 
+				// Act
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
+				// Verify
 				verifyIngestedInvocation(expectedInvocation)
 				verifyGitReference(expectedGitReference)
 
@@ -853,16 +881,21 @@ func TestIngestTestResults(t *testing.T) {
 			Convey("No commit position", func() {
 				// Scenario: The build which completed did not include commit
 				// position data in its output or input.
-				buildResponse.Input.GitilesCommit = nil
-				buildResponse.Output.GitilesCommit = nil
 
-				mrc.QueryTestVariants(tvReq, tvRsp)
+				setupGetBuildMock(func(b *bbpb.Build) {
+					b.Input.GitilesCommit = nil
+					b.Output.GitilesCommit = nil
+				})
+				setupGetInvocationMock()
+				setupQueryTestVariantsMock()
 				_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
 				So(err, ShouldBeNil)
 
+				// Act
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
 
+				// Verify
 				// The ingested invocation record should not record
 				// the commit position.
 				expectedInvocation.CommitHash = ""
@@ -883,17 +916,77 @@ func TestIngestTestResults(t *testing.T) {
 				// analysis.
 				config.SetTestProjectConfig(ctx, map[string]*configpb.ProjectConfig{})
 
-				mrc.QueryTestVariants(tvReq, tvRsp)
+				setupGetBuildMock()
+				setupGetInvocationMock()
+				setupQueryTestVariantsMock()
 				_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
 				So(err, ShouldBeNil)
 
+				// Act
 				err = ri.ingestTestResults(ctx, payload)
 				So(err, ShouldBeNil)
+
+				// Verify
+				// Test results still ingested.
+				expectCommitPosition := true
+				verifyTestResults(expectCommitPosition)
 
 				// Confirm no chunks have been written to GCS.
 				So(len(chunkStore.Contents), ShouldEqual, 0)
 				// Confirm no clustering has occurred.
 				So(clusteredFailures.InsertionsByProject, ShouldHaveLength, 0)
+			})
+			Convey(`builds with ancestor IDs`, func() {
+				setupGetBuildMock(func(b *bbpb.Build) {
+					// 999324 is the immediate ancestor, 777121 is the
+					// ancestor's ancestor.
+					b.AncestorIds = []int64{777121, 999324}
+				})
+
+				// Setup response for the immediate ancestor build.
+				ancestorRequest := &bbpb.GetBuildRequest{
+					Id: 999324,
+					Mask: &bbpb.BuildMask{
+						Fields: buildReadMask,
+					},
+				}
+				ancestorResponse := mockedGetBuildRsp(inv)
+
+				Convey(`build not ingested if ancestor has ResultDB invocation`, func() {
+					mbc.GetBuild(ancestorRequest, ancestorResponse)
+
+					// Act
+					err := ri.ingestTestResults(ctx, payload)
+					So(err, ShouldBeNil)
+
+					// Verify no test results ingested into test history.
+					var actualTRs []*testresults.TestResult
+					err = testresults.ReadTestResults(span.Single(ctx), spanner.AllKeys(), func(tr *testresults.TestResult) error {
+						actualTRs = append(actualTRs, tr)
+						return nil
+					})
+					So(err, ShouldBeNil)
+					So(actualTRs, ShouldHaveLength, 0)
+				})
+				Convey(`build ingested if ancestor has no ResultDB invocation`, func() {
+					ancestorResponse.Infra.Resultdb = nil
+					mbc.GetBuild(ancestorRequest, ancestorResponse)
+
+					// Setup other mocks required to support test result
+					// ingestion.
+					setupGetInvocationMock()
+					setupQueryTestVariantsMock()
+					_, err := control.SetEntriesForTesting(ctx, ingestionCtl)
+					So(err, ShouldBeNil)
+
+					// Act
+					err = ri.ingestTestResults(ctx, payload)
+					So(err, ShouldBeNil)
+
+					// Verify test results still ingested.
+					expectCommitPosition := true
+					verifyTestResults(expectCommitPosition)
+				})
 			})
 		})
 	})

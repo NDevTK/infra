@@ -58,6 +58,7 @@ func mockedGetBuildRsp(inv string) *bbpb.Build {
 				Position: 111888,
 			},
 		},
+		AncestorIds: []int64{},
 	}
 
 	isFieldNameJSON := false

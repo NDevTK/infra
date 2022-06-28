@@ -66,7 +66,7 @@ var (
 		field.String("project"),
 		// "success", "failed_validation",
 		// "ignored_no_bb_access", "ignored_no_project_config",
-		// "ignored_no_invocation".
+		// "ignored_no_invocation", "ignored_has_ancestor".
 		field.String("outcome"))
 
 	testVariantReadMask = &fieldmaskpb.FieldMask{
@@ -88,7 +88,7 @@ var (
 	}
 
 	buildReadMask = &field_mask.FieldMask{
-		Paths: []string{"builder", "infra.resultdb", "status", "input", "output"},
+		Paths: []string{"builder", "infra.resultdb", "status", "input", "output", "ancestor_ids"},
 	}
 )
 
@@ -167,7 +167,7 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 	defer requestLimiter.Release(1)
 
 	// Buildbucket build only has builder, infra.resultdb, status populated.
-	build, err := retrieveBuild(ctx, payload)
+	build, err := retrieveBuild(ctx, payload.Build.Host, payload.Build.Id)
 	code := status.Code(err)
 	if code == codes.NotFound {
 		// Build not found, end the task gracefully.
@@ -177,7 +177,7 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		return nil
 	}
 	if err != nil {
-		return err
+		return transient.Tag.Apply(err)
 	}
 
 	if build.Infra.GetResultdb().GetInvocation() == "" {
@@ -186,6 +186,23 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 			payload.Build.Host, payload.Build.Id)
 		taskCounter.Add(ctx, 1, payload.Build.Project, "ignored_no_invocation")
 		return nil
+	}
+
+	if len(build.AncestorIds) > 0 {
+		// Retrieve the ancestor build.
+		rootBuild, err := retrieveBuild(ctx, payload.Build.Host, build.AncestorIds[len(build.AncestorIds)-1])
+		if err != nil {
+			return transient.Tag.Apply(errors.Annotate(err, "retrieving ancestor build").Err())
+		}
+		if rootBuild.Infra.GetResultdb().GetInvocation() != "" {
+			// The ancestor build also has a ResultDB invocation. This is what
+			// we expected. We will ingest the ancestor build only
+			// to avoid ingesting the same test results multiple times.
+			taskCounter.Add(ctx, 1, payload.Build.Project, "ignored_has_ancestor")
+			return nil
+		}
+		logging.Warningf(ctx, "Build %s-%d had ancestor build, but ancestor did not have ResultDB invocation, continuing ingestion.",
+			payload.Build.Host, payload.Build.Id)
 	}
 
 	rdbHost := build.Infra.Resultdb.Hostname
@@ -452,9 +469,7 @@ func validateRequest(ctx context.Context, payload *taskspb.IngestTestResults) er
 	return nil
 }
 
-func retrieveBuild(ctx context.Context, payload *taskspb.IngestTestResults) (*bbpb.Build, error) {
-	bbHost := payload.Build.Host
-	id := payload.Build.Id
+func retrieveBuild(ctx context.Context, bbHost string, id int64) (*bbpb.Build, error) {
 	bc, err := buildbucket.NewClient(ctx, bbHost)
 	if err != nil {
 		return nil, err
