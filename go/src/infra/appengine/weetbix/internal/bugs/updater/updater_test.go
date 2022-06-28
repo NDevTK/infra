@@ -145,6 +145,12 @@ func TestRun(t *testing.T) {
 				{Value: "network-test-1", Count: 10},
 				{Value: "network-test-2", Count: 10},
 			}
+			suggestedClusters[1].Failures7d.Nominal = 100
+			suggestedClusters[1].TopMonorailComponents = []analysis.TopCount{
+				{Value: "Blink>Layout", Count: 40},  // >30% of failures.
+				{Value: "Blink>Network", Count: 31}, // >30% of failures.
+				{Value: "Blink>Other", Count: 4},
+			}
 
 			ignoreRuleID := ""
 			expectCreate := true
@@ -206,6 +212,9 @@ func TestRun(t *testing.T) {
 				So(len(f.Issues), ShouldEqual, 1)
 				So(f.Issues[0].Issue.Name, ShouldEqual, "projects/chromium/issues/100")
 				So(f.Issues[0].Issue.Summary, ShouldContainSubstring, expectedBugSummary)
+				So(f.Issues[0].Issue.Components, ShouldHaveLength, 2)
+				So(f.Issues[0].Issue.Components[0].Component, ShouldEqual, "Blink>Layout")
+				So(f.Issues[0].Issue.Components[1].Component, ShouldEqual, "Blink>Network")
 				So(len(f.Issues[0].Comments), ShouldEqual, 2)
 				for _, expectedContent := range expectedBugContents {
 					So(f.Issues[0].Comments[0].Content, ShouldContainSubstring, expectedContent)

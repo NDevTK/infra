@@ -340,9 +340,18 @@ func (b *BugUpdater) createBug(ctx context.Context, cs *analysis.ClusterSummary)
 		return false, errors.Annotate(err, "prepare bug description").Err()
 	}
 
+	var monorailComponents []string
+	for _, tc := range cs.TopMonorailComponents {
+		// Any monorail component is associated for more than 30% of the
+		// failures in the cluster should be on the filed bug.
+		if tc.Count > ((cs.Failures7d.Nominal * 3) / 10) {
+			monorailComponents = append(monorailComponents, tc.Value)
+		}
+	}
 	request := &bugs.CreateRequest{
-		Description: description,
-		Impact:      ExtractResidualImpact(cs),
+		Description:        description,
+		Impact:             ExtractResidualImpact(cs),
+		MonorailComponents: monorailComponents,
 	}
 
 	// For now, the only issue system supported is monorail.

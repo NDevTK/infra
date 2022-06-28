@@ -23,6 +23,10 @@ func NewCreateRequest() *bugs.CreateRequest {
 			Title:       "ClusterID",
 			Description: "Tests are failing with reason: Some failure reason.",
 		},
+		MonorailComponents: []string{
+			"Blink>Layout",
+			"Blink>Network",
+		},
 	}
 	return cluster
 }
@@ -79,6 +83,10 @@ func TestManager(t *testing.T) {
 							Value: "1",
 						},
 					},
+					Components: []*mpb.Issue_ComponentValue{
+						{Component: "Blink>Layout"},
+						{Component: "Blink>Network"},
+					},
 					Labels: []*mpb.Issue_LabelValue{{
 						Label: "Restrict-View-Google",
 					}, {
@@ -120,6 +128,10 @@ func TestManager(t *testing.T) {
 							Field: "projects/chromium/fieldDefs/11",
 							Value: "1",
 						},
+					},
+					Components: []*mpb.Issue_ComponentValue{
+						{Component: "Blink>Layout"},
+						{Component: "Blink>Network"},
 					},
 					Labels: []*mpb.Issue_LabelValue{{
 						Label: "Restrict-View-Google",
