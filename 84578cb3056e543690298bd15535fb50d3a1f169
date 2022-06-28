@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c5a014b5_918375d2",
+        "filename": "go/src/infra/cros/tlslib/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-28T20:24:43Z",
+      "side": 1,
+      "message": "Full path?",
+      "range": {
+        "startLine": 44,
+        "startChar": 30,
+        "endLine": 44,
+        "endChar": 53
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6312252e_5bbc6ce9",
+        "filename": "go/src/infra/cros/tlslib/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-28T20:24:43Z",
+      "side": 1,
+      "message": "nit: Create constant and reuse?",
+      "range": {
+        "startLine": 74,
+        "startChar": 24,
+        "endLine": 74,
+        "endChar": 57
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "609628fb_d2f63715",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-28T20:24:43Z",
+      "side": 1,
+      "message": "This will always need to run before provisioning firmware.\n\nSo place this logic after \n```\nuiStabilizeCtx, cancel :\u003d context.WithTimeout(ctx, 360*time.Second)\n```",
+      "range": {
+        "startLine": 142,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 4
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12a1c041_4d8295bc",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-28T20:24:43Z",
+      "side": 1,
+      "message": "There is no need to do this check?\n\nRunning firmware update will be update or no-op.",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
