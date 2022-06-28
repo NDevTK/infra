@@ -14,6 +14,7 @@ import (
 
 	"infra/appengine/weetbix/internal/bugs"
 	"infra/appengine/weetbix/internal/clustering"
+	configpb "infra/appengine/weetbix/proto/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
 )
 
@@ -44,7 +45,12 @@ func TestManager(t *testing.T) {
 		cl, err := NewClient(UseFakeIssuesClient(ctx, f, user), "myhost")
 		So(err, ShouldBeNil)
 		monorailCfgs := ChromiumTestConfig()
-		bm := NewBugManager(cl, "chops-weetbix-test", "luciproject", monorailCfgs)
+		bugFilingThreshold := ChromiumTestBugFilingThreshold()
+		projectCfg := &configpb.ProjectConfig{
+			Monorail:           monorailCfgs,
+			BugFilingThreshold: bugFilingThreshold,
+		}
+		bm := NewBugManager(cl, "chops-weetbix-test", "luciproject", projectCfg)
 
 		Convey("Create", func() {
 			c := NewCreateRequest()
@@ -308,9 +314,9 @@ func TestManager(t *testing.T) {
 			Convey("If impact falls below lowest priority threshold", func() {
 				bugToUpdate.Impact = ChromiumClosureImpact()
 				Convey("Update leaves bug open if impact within hysteresis range", func() {
-					bugToUpdate.Impact = ChromiumClosureHighImpact()
+					bugToUpdate.Impact = ChromiumP3LowestBeforeClosureImpact()
 
-					// Update may reduce the priority from P1 to P3, but the
+					// Update may reduce the priority from P2 to P3, but the
 					// issue should be left open. This is because hysteresis on
 					// priority and issue verified state is applied separately.
 					err := bm.Update(ctx, bugsToUpdate)
@@ -334,7 +340,7 @@ func TestManager(t *testing.T) {
 					updateDoesNothing()
 
 					Convey("Does not reopen bug if impact within hysteresis range", func() {
-						bugToUpdate.Impact = ChromiumP3LowImpact()
+						bugToUpdate.Impact = ChromiumHighestNotFiledImpact()
 
 						updateDoesNothing()
 					})
@@ -355,7 +361,7 @@ func TestManager(t *testing.T) {
 							So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
 							expectedComment := "Because:\n" +
-								"- Test Results Failed (1-day) >= 55\n" +
+								"- Test Results Failed (1-day) >= 75\n" +
 								"Weetbix has re-opened the bug.\n\n" +
 								"Because:\n" +
 								"- Test Runs Failed (1-day) < 9, and\n" +
@@ -381,7 +387,7 @@ func TestManager(t *testing.T) {
 							So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
 							expectedComment := "Because:\n" +
-								"- Test Results Failed (1-day) >= 55\n" +
+								"- Test Results Failed (1-day) >= 75\n" +
 								"Weetbix has re-opened the bug.\n\n" +
 								"Because:\n" +
 								"- Test Runs Failed (1-day) < 9, and\n" +

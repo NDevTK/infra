@@ -38,8 +38,8 @@ type BugManager struct {
 	appID string
 	// The LUCI Project.
 	project string
-	// The snapshot of monorail configuration to use for the project.
-	monorailCfg *configpb.MonorailProject
+	// The snapshot of configuration to use for the project.
+	projectCfg *configpb.ProjectConfig
 	// Simulate, if set, tells BugManager not to make mutating changes
 	// to monorail but only log the changes it would make. Must be set
 	// when running locally as RPCs made from developer systems will
@@ -50,20 +50,20 @@ type BugManager struct {
 
 // NewBugManager initialises a new bug manager, using the specified
 // monorail client.
-func NewBugManager(client *Client, appID, project string, monorailCfg *configpb.MonorailProject) *BugManager {
+func NewBugManager(client *Client, appID, project string, projectCfg *configpb.ProjectConfig) *BugManager {
 	return &BugManager{
-		client:      client,
-		appID:       appID,
-		project:     project,
-		monorailCfg: monorailCfg,
-		Simulate:    false,
+		client:     client,
+		appID:      appID,
+		project:    project,
+		projectCfg: projectCfg,
+		Simulate:   false,
 	}
 }
 
 // Create creates a new bug for the given request, returning its name, or
 // any encountered error.
 func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (string, error) {
-	g, err := NewGenerator(request.Impact, m.monorailCfg)
+	g, err := NewGenerator(request.Impact, m.projectCfg)
 	if err != nil {
 		return "", errors.Annotate(err, "create issue generator").Err()
 	}
@@ -77,7 +77,7 @@ func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (s
 	var bugName string
 	if m.Simulate {
 		logging.Debugf(ctx, "Would create Monorail issue: %s", textPBMultiline.Format(makeReq))
-		bugName = fmt.Sprintf("%s/12345678", m.monorailCfg.Project)
+		bugName = fmt.Sprintf("%s/12345678", m.projectCfg.Monorail.Project)
 	} else {
 		// Save the issue in Monorail.
 		issue, err := m.client.MakeIssue(ctx, makeReq)
@@ -123,7 +123,7 @@ func (m *BugManager) Update(ctx context.Context, bugsToUpdate []*bugs.BugToUpdat
 		return err
 	}
 	for _, ci := range cis {
-		g, err := NewGenerator(ci.impact, m.monorailCfg)
+		g, err := NewGenerator(ci.impact, m.projectCfg)
 		if err != nil {
 			return errors.Annotate(err, "create issue generator").Err()
 		}

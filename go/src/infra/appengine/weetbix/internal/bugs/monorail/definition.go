@@ -64,16 +64,20 @@ type Generator struct {
 	impact *bugs.ClusterImpact
 	// The monorail configuration to use.
 	monorailCfg *configpb.MonorailProject
+	// The threshold at which bugs are filed. Used here as the threshold
+	// at which to re-open verified bugs.
+	bugFilingThreshold *configpb.ImpactThreshold
 }
 
 // NewGenerator initialises a new Generator.
-func NewGenerator(impact *bugs.ClusterImpact, monorailCfg *configpb.MonorailProject) (*Generator, error) {
-	if len(monorailCfg.Priorities) == 0 {
-		return nil, fmt.Errorf("invalid configuration for monorail project %q; no monorail priorities configured", monorailCfg.Project)
+func NewGenerator(impact *bugs.ClusterImpact, projectCfg *configpb.ProjectConfig) (*Generator, error) {
+	if len(projectCfg.Monorail.Priorities) == 0 {
+		return nil, fmt.Errorf("invalid configuration for monorail project %q; no monorail priorities configured", projectCfg.Monorail.Project)
 	}
 	return &Generator{
-		impact:      impact,
-		monorailCfg: monorailCfg,
+		impact:             impact,
+		monorailCfg:        projectCfg.Monorail,
+		bugFilingThreshold: projectCfg.BugFilingThreshold,
 	}, nil
 }
 
@@ -261,13 +265,8 @@ func (g *Generator) prepareBugVerifiedUpdate(issue *mpb.Issue, update *mpb.Issue
 			status = UntriagedStatus
 		}
 
-		// A priority index of len(g.monorailCfg.Priorities) indicates
-		// a priority lower than the lowest defined priority (i.e. bug verified.)
-		oldPriorityIndex := len(g.monorailCfg.Priorities)
-		newPriorityIndex := len(g.monorailCfg.Priorities) - 1
-
 		message.WriteString("Because:\n")
-		message.WriteString(g.priorityIncreaseJustification(oldPriorityIndex, newPriorityIndex))
+		message.WriteString(g.explainThresholdsMet(g.bugFilingThreshold))
 		message.WriteString("Weetbix has re-opened the bug.")
 	}
 	update.Issue.Status = &mpb.Issue_StatusValue{Status: status}
@@ -426,10 +425,10 @@ func (g *Generator) isCompatibleWithVerified(verified bool) bool {
 	hysteresisPerc := g.monorailCfg.PriorityHysteresisPercent
 	lowestPriority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
 	if verified {
-		// The issue is verified. Only reopen if there is enough impact
-		// to exceed the threshold with hysteresis.
-		inflatedThreshold := bugs.InflateThreshold(lowestPriority.Threshold, hysteresisPerc)
-		return !g.impact.MeetsThreshold(inflatedThreshold)
+		// The issue is verified. Only reopen if we satisfied the bug-filing
+		// criteria. Bug-filing criteria is guaranteed to imply the criteria
+		// of the lowest priority level.
+		return !g.impact.MeetsThreshold(g.bugFilingThreshold)
 	} else {
 		// The issue is not verified. Only close if the impact falls
 		// below the threshold with hysteresis.
@@ -466,9 +465,9 @@ func (g *Generator) isCompatibleWithPriority(issuePriority string) bool {
 //
 // priorityIndex(s) are indices into the per-project priority list:
 //   g.monorailCfg.Priorities
-// The special index len(g.monorailCfg.Priorities) indicates a verified
-// issue, i.e. an issue with so low priority that it does not deserve
-// to be open.
+// If newPriorityIndex = len(g.monorailCfg.Priorities), it indicates
+// the decrease being justified is to a priority lower than the lowest
+// configured, i.e. a closed/verified issue.
 //
 // Example output:
 // "- Presubmit Runs Failed (1-day) < 15, and
@@ -482,7 +481,6 @@ func (g *Generator) priorityDecreaseJustification(oldPriorityIndex, newPriorityI
 	// Priority decreased.
 	// To justify the decrease, it is sufficient to explain why we could no
 	// longer meet the criteria for the next-higher priority.
-
 	hysteresisPerc := g.monorailCfg.PriorityHysteresisPercent
 
 	// The next-higher priority level that we failed to meet.
@@ -493,9 +491,13 @@ func (g *Generator) priorityDecreaseJustification(oldPriorityIndex, newPriorityI
 		failedToMeetThreshold = bugs.InflateThreshold(failedToMeetThreshold, -hysteresisPerc)
 	}
 
-	var message strings.Builder
-	explanation := bugs.ExplainThresholdNotMet(failedToMeetThreshold)
+	return explainThresholdNotMet(failedToMeetThreshold)
+}
 
+func explainThresholdNotMet(thresoldNotMet *configpb.ImpactThreshold) string {
+	explanation := bugs.ExplainThresholdNotMet(thresoldNotMet)
+
+	var message strings.Builder
 	// As there may be multiple ways in which we could have met the
 	// threshold for the next-higher priority (due to the OR-
 	// disjunction of different metric thresholds), we must explain
@@ -516,9 +518,9 @@ func (g *Generator) priorityDecreaseJustification(oldPriorityIndex, newPriorityI
 //
 // priorityIndex(s) are indices into the per-project priority list:
 //   g.monorailCfg.Priorities
-// The special index len(g.monorailCfg.Priorities) indicates a verified
-// issue, i.e. an issue with so low priority that it does not deserve
-// to be open.
+// The special index len(g.monorailCfg.Priorities) indicates an issue
+// with a priority lower than the lowest priority configured to be
+// assigned by Weetbix.
 //
 // Example output:
 // "- Presubmit Runs Failed (1-day) >= 15"
@@ -531,11 +533,10 @@ func (g *Generator) priorityIncreaseJustification(oldPriorityIndex, newPriorityI
 	// Priority increased.
 	// To justify the increase, we must show that we met the criteria for
 	// each successively higher priority level.
-
 	hysteresisPerc := g.monorailCfg.PriorityHysteresisPercent
 
 	// Visit priorities in increasing priority order.
-	var explanations []bugs.ThresholdExplanation
+	var thresholdsMet []*configpb.ImpactThreshold
 	for i := oldPriorityIndex - 1; i >= newPriorityIndex; i-- {
 		metThreshold := g.monorailCfg.Priorities[i].Threshold
 		if i == oldPriorityIndex-1 {
@@ -543,12 +544,19 @@ func (g *Generator) priorityIncreaseJustification(oldPriorityIndex, newPriorityI
 			// hysteresis.
 			metThreshold = bugs.InflateThreshold(metThreshold, hysteresisPerc)
 		}
+		thresholdsMet = append(thresholdsMet, metThreshold)
+	}
+	return g.explainThresholdsMet(thresholdsMet...)
+}
 
+func (g *Generator) explainThresholdsMet(thresholds ...*configpb.ImpactThreshold) string {
+	var explanations []bugs.ThresholdExplanation
+	for _, t := range thresholds {
 		// There may be multiple ways in which we could have met the
 		// threshold for the next-higher priority (due to the OR-
 		// disjunction of different metric thresholds). This obtains
 		// just one of the ways in which we met it.
-		explanations = append(explanations, g.impact.ExplainThresholdMet(metThreshold))
+		explanations = append(explanations, g.impact.ExplainThresholdMet(t))
 	}
 
 	// Remove redundant explanations.
