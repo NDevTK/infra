@@ -331,6 +331,30 @@
       },
       "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93f05570_2ce40e7d",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T02:50:15Z",
+      "side": 1,
+      "message": "If you want to simplify more, you can even omit the version check.\n\nBut if you want to keep it as a hard check, I\u0027d recommend adding logs of the version when complete / erroring as well.\n\nThis will help debugging when fw updates fail from version X to Y, etc\n\nOtherwise LGTM.",
+      "parentUuid": "f4ab0783_822f52ab",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
