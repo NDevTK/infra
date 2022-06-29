@@ -24,7 +24,6 @@ import (
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/buildbucket/labpack"
-	"infra/libs/swarming"
 )
 
 type reserveDuts struct {
@@ -32,13 +31,16 @@ type reserveDuts struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	legacy         bool
+	comment        string
+	session        string
 	expirationMins int
+	// Configuration for reserve task.
+	config string
 }
 
 // ReserveDutsCmd contains reserve-dut command specification
 var ReserveDutsCmd = &subcommands.Command{
-	UsageLine: "reserve-duts",
+	UsageLine: "reserve-duts [-comment {comment}] [-session {admin-session}] [-expiration-mins 120] {HOST...}",
 	ShortDesc: "Reserve the DUT by name",
 	LongDesc: `Reserve the DUT by name.
 	./shivas reserve <dut_name>
@@ -49,7 +51,8 @@ var ReserveDutsCmd = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.IntVar(&c.expirationMins, "expiration-mins", 120, "The expiration minutes of the repair request.")
-		c.Flags.BoolVar(&c.legacy, "legacy", false, "Use legacy rather than paris flow.")
+		c.Flags.StringVar(&c.comment, "comment", "", "The comment for reserved devices.")
+		c.Flags.StringVar(&c.session, "session", "", "The admin session to group the tasks.")
 		return c
 	},
 }
@@ -67,63 +70,39 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	if len(args) == 0 {
 		return errors.Reason("at least one hostname has to be provided").Err()
 	}
-	user, err := user.Current()
-	if err != nil {
+	if c.comment == "" {
+		user, err := user.Current()
+		if err == nil && user != nil {
+			c.comment = fmt.Sprintf("Reserved by %s", user.Username)
+		}
+	}
+	if err := c.initConfig(); err != nil {
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
 	e := c.envFlags.Env()
-	creator, err := swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService)
+	bc, err := buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 	if err != nil {
 		return err
 	}
-
-	successMap := make(map[string]*swarming.TaskInfo)
-	errorMap := make(map[string]error)
-	var bc buildbucket.Client
-	var sessionTag string
-	if !c.legacy {
-		var err error
-		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		bc, err = buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
-		if err != nil {
-			return err
-		}
-		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())
+	if c.session == "" {
+		c.session = uuid.New().String()
 	}
+	c.session = fmt.Sprintf("admin-session:%s", c.session)
 	for _, host := range args {
 		// TODO(crbug/1128496): update state directly in the UFS without creating the swarming task
-		var task *swarming.TaskInfo
-		if c.legacy {
-			// Use legacy
-			task, err = creator.ReserveDUT(ctx, e.SwarmingServiceAccount, host, user.Username, c.expirationMins*60)
+		if taskID, err := c.scheduleReserveBuilder(ctx, bc, e, host); err != nil {
+			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
 		} else {
-			// Use PARIS.
-			fmt.Fprintf(a.GetErr(), "Using PARIS for %q\n", host)
-			task, err = scheduleReserveBuilder(ctx, bc, e, host, sessionTag)
-		}
-		if err != nil {
-			errorMap[host] = err
-		} else {
-			successMap[host] = task
+			fmt.Fprintf(a.GetErr(), "%s: %s\n", host, bc.BuildURL(taskID))
 		}
 	}
-	if c.legacy {
-		creator.PrintResults(a.GetOut(), successMap, errorMap)
-	} else {
-		utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
-	}
+	utils.PrintTasksBatchLink(a.GetErr(), e.SwarmingService, c.session)
 	return nil
 }
 
-// ScheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
-func scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, adminSession string) (*swarming.TaskInfo, error) {
-	rc := config.ReserveDutConfig()
-	jsonByte, err := json.Marshal(rc)
-	if err != nil {
-		return nil, errors.Annotate(err, "scheduleReserveBuilder json err:").Err()
-	}
-	config := base64.StdEncoding.EncodeToString(jsonByte)
+// scheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
+func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string) (int64, error) {
 	// TODO(b/229896419): refactor to hide labpack.Params struct.
 	v := labpack.CIPDProd
 	p := &labpack.Params{
@@ -135,23 +114,26 @@ func scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.E
 		NoStepper:        false,
 		NoMetrics:        false,
 		UpdateInventory:  true,
-		Configuration:    config,
+		Configuration:    c.config,
 		ExtraTags: []string{
-			adminSession,
+			c.session,
 			"task:reserve",
 			parisClientTag,
 			fmt.Sprintf("version:%s", v),
+			fmt.Sprintf("comment:%s", c.comment),
 		},
 	}
 	taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	return taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
+}
+
+// initConfig initializes config used for scheduling reserve tasks.
+func (c *reserveDuts) initConfig() error {
+	rc := config.ReserveDutConfig()
+	jsonByte, err := json.Marshal(rc)
 	if err != nil {
-		return nil, err
+		return errors.Annotate(err, "initConfig json err:").Err()
 	}
-	taskInfo := &swarming.TaskInfo{
-		// Use an ID format that makes it extremely obvious that we're dealing with a
-		// buildbucket invocation number rather than a swarming task.
-		ID:      fmt.Sprintf("buildbucket:%d", taskID),
-		TaskURL: bc.BuildURL(taskID),
-	}
-	return taskInfo, nil
+	c.config = base64.StdEncoding.EncodeToString(jsonByte)
+	return nil
 }
