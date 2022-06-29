@@ -149,6 +149,56 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
 			return
 		}
+
+		if req.UpdateFirmware {
+			fwChanged, err := p.updateFirmware(ctx)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to update firmware, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			// If firmware changed and reboot doesn't blocked by request, make sure DUT comes back after post update reboot.
+			if fwChanged && !req.PreventReboot {
+				fwRebootWaitCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+				defer cancel()
+				disconnect, err = p.connect(fwRebootWaitCtx, addr)
+				if err != nil {
+					setError(newOperationError(
+						codes.Aborted,
+						fmt.Sprintf("provision: failed to wait for DUT to come up after firmware update, %s", err),
+						tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+					return
+				}
+				defer disconnect()
+				log.Printf("DUT came up after updated firmware from the new OS.")
+			}
+			updated, err := isFirmwareUpdateToDate(p.c)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to check if firmware is update-to-date, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			// We expected the firmware on the DUT is updated at this point unless preventReboot is requested.
+			if !updated && !req.PreventReboot {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: firmware didn't updated to expected version, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			if fwChanged {
+				log.Printf("Firmware update completed successfully.")
+			} else {
+				log.Printf("Current system firmware is already matched with OS image.")
+			}
+		} else {
+			log.Printf("Skipping firmware update by request.")
+		}
+
 		log.Printf("provision: time to provision OS took %v", time.Since(t))
 
 		// To be safe, wait for kernel to be "sticky" right after installing the new partitions and booting into it.
