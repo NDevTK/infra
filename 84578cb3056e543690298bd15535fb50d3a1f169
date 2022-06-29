@@ -144,6 +144,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d579f120_79539fb9",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T00:01:14Z",
+      "side": 1,
+      "message": "Another reboot can happen, but then UI stablilizing isn\u0027t required after the first one as the OS isn\u0027t changing.",
+      "parentUuid": "5bc82145_a5ecf4a8",
+      "range": {
+        "startLine": 142,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 4
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "12a1c041_4d8295bc",
         "filename": "go/src/infra/cros/tlslib/provision.go",
         "patchSetId": 2
@@ -179,6 +203,30 @@
       "side": 1,
       "message": "During the testing stage we found there is a failure pattern that firmware updater report success but firmware version doesn\u0027t change after reboot, so we\u0027ll need to make sure the firmware is actually updated and raise an error if it happens.",
       "parentUuid": "12a1c041_4d8295bc",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ff11088_b27c3f8a",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T00:01:14Z",
+      "side": 1,
+      "message": "This can be done much easily, you can see if the slot switched + is the newer version.",
+      "parentUuid": "74908891_babe96de",
       "range": {
         "startLine": 152,
         "startChar": 3,
