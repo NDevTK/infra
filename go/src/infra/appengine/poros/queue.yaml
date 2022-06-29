@@ -1,0 +1,5 @@
+queue:
+# A queue for user tasks. Can have any name. There can be more queues like that.
+# See main.go.
+- name: spin-enterprise-resources-task
+  rate: 500/s

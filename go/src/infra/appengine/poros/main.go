@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
+	"go.chromium.org/luci/server/tq"
 
 	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 	"go.chromium.org/luci/server/router"
@@ -26,6 +27,7 @@ import (
 	"infra/appengine/poros/api/handlers"
 	"infra/appengine/poros/api/proto"
 	"infra/appengine/poros/api/service"
+	"infra/appengine/poros/taskspb"
 )
 
 // authGroup is the name of the LUCI Auth group that controls whether the user
@@ -94,12 +96,42 @@ func pageBase(srv *server.Server) router.MiddlewareChain {
 	)
 }
 
+func init() {
+	// RegisterTaskClass tells the TQ module how to serialize, route and execute
+	// a task of a particular proto type (*taskspb.CreateAssetTask in this case).
+	//
+	// It can be called any time before the serving loop (e.g. in an init,
+	// in main, in server.Main callback, etc).
+	tq.RegisterTaskClass(tq.TaskClass{
+		// This is a stable ID that identifies this particular kind of tasks.
+		// Changing it will essentially "break" all inflight tasks.
+		ID: "spin-enterprise-resources-task",
+		// This is used for deserialization and also for discovery of what ID to use
+		// when submitting tasks. Changing it is safe as long as the JSONPB
+		// representation of in-flight tasks still matches the new proto.
+		Prototype: (*taskspb.CreateAssetTask)(nil),
+		// This controls how AddTask calls behave with respect to transactions.
+		// FollowsContext means "enqueue transactionally if the context is
+		// transactional, or non-transactionally otherwise". Other possibilities are
+		// Transactional (always require a transaction) and NonTransactional
+		// (fail if called from a transaction).
+		Kind: tq.FollowsContext,
+		// What Cloud Tasks queue to use for these tasks. See queue.yaml.
+		Queue: "spin-enterprise-resources-task",
+		// Handler will be called to handle a previously submitted task. It can also
+		// be attached later (perhaps even in from a different package) via
+		// AttachHandler.
+		Handler: taskspb.CreateAssetHandler,
+	})
+}
+
 func main() {
 	modules := []module.Module{
 		cfgmodule.NewModuleFromFlags(),
 		encryptedcookies.NewModuleFromFlags(), // Required for auth sessions.
 		gaeemulation.NewModuleFromFlags(),     // Needed by cfgmodule.
 		secrets.NewModuleFromFlags(),          // Needed by encryptedcookies.
+		tq.NewModuleFromFlags(),               // transactionally submit Cloud Tasks
 	}
 
 	server.Main(nil, modules, func(srv *server.Server) error {
