@@ -17,7 +17,6 @@
 
  [include "people-detail-row-part.ezt" role_perms.DeleteAny member_perms.DeleteAny "DeleteAny" "Delete comments by anyone"]
  [include "people-detail-row-part.ezt" role_perms.EditAnyMemberNotes member_perms.EditAnyMemberNotes "EditAnyMemberNotes" "Edit anyone's member notes"]
- [include "people-detail-row-part.ezt" role_perms.ModerateSpam member_perms.ModerateSpam "ModerateSpam" "Mark or un-mark issues and comments as spam"]
 
 
 
