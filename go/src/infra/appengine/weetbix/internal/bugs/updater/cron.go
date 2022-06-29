@@ -194,10 +194,9 @@ func updateAnalysisAndBugsForProject(ctx context.Context, opts updateOptions) er
 		return nil
 	}
 
-	monorailCfg := projectCfg.Config.Monorail
 	mgrs := make(map[string]BugManager)
 
-	mbm := monorail.NewBugManager(opts.monorailClient, opts.appID, opts.project, monorailCfg)
+	mbm := monorail.NewBugManager(opts.monorailClient, opts.appID, opts.project, projectCfg.Config)
 	mbm.Simulate = opts.simulateBugUpdates
 	mgrs[bugs.MonorailSystem] = mbm
 

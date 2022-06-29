@@ -85,6 +85,16 @@ func ChromiumTestConfig() *configpb.MonorailProject {
 	return projectCfg
 }
 
+func ChromiumTestBugFilingThreshold() *configpb.ImpactThreshold {
+	return &configpb.ImpactThreshold{
+		// Should be equally or more onerous than the lowest
+		// priority threshold.
+		TestResultsFailed: &configpb.MetricThreshold{
+			OneDay: proto.Int64(75),
+		},
+	}
+}
+
 // ChromiumP0Impact returns cluster impact that is consistent with a P0 bug.
 func ChromiumP0Impact() *bugs.ClusterImpact {
 	return &bugs.ClusterImpact{
@@ -143,22 +153,21 @@ func ChromiumP3Impact() *bugs.ClusterImpact {
 	}
 }
 
-// ChromiumP3LowImpact returns cluster impact that is consistent with a P3
-// bug, but if hysteresis is applied, could also be compatible with a closed
-// (verified) bug.
-func ChromiumP3LowImpact() *bugs.ClusterImpact {
+// ChromiumHighestNotFiledImpact returns the highest cluster impact
+// that can be consistent with a bug not being filed.
+func ChromiumHighestNotFiledImpact() *bugs.ClusterImpact {
 	return &bugs.ClusterImpact{
-		// (50 * (1.0 + PriorityHysteresisPercent / 100.0)) - 1
+		// 75 - 1
 		TestResultsFailed: bugs.MetricImpact{
-			OneDay: 54,
+			OneDay: 74,
 		},
 	}
 }
 
-// ChromiumClosureHighImpact returns cluster impact that is consistent with a
-// closed (verified) bug, but if hysteresis is applied, could also be
-// compatible with a P3 bug.
-func ChromiumClosureHighImpact() *bugs.ClusterImpact {
+// ChromiumP3LowestBeforeClosureImpact returns cluster impact that
+// is the lowest impact that can be compatible with a P3 bug,
+// after including hysteresis.
+func ChromiumP3LowestBeforeClosureImpact() *bugs.ClusterImpact {
 	return &bugs.ClusterImpact{
 		// (50 / (1.0 + PriorityHysteresisPercent / 100.0)) + 1
 		TestResultsFailed: bugs.MetricImpact{

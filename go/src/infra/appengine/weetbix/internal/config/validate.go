@@ -344,9 +344,31 @@ func validateBugFilingThresholdSatisfiesMetricThresold(ctx *validation.Context, 
 		// based on this metric will stay open.
 		return
 	}
-	validateBugFilingThresholdSatisfiesThresold(ctx, threshold.OneDay, bugFilingThres.OneDay, "one_day")
-	validateBugFilingThresholdSatisfiesThresold(ctx, threshold.ThreeDay, bugFilingThres.ThreeDay, "three_day")
+
+	// If the bug-filing threshold is:
+	//  - Presubmit Runs Failed (1-day) > 3
+	// And the keep-open threshold is:
+	//  - Presubmit Runs Failed (7-day) > 1
+	// The former actually implies the latter, even though the time periods
+	// are different. Reflect that in the validation here, by calculating
+	// the effective thresholds for one and three days that are sufficient
+	// to keep a bug open.
+	oneDayThreshold := minOfThresholds(threshold.OneDay, threshold.ThreeDay, threshold.SevenDay)
+	threeDayThreshold := minOfThresholds(threshold.ThreeDay, threshold.SevenDay)
+
+	validateBugFilingThresholdSatisfiesThresold(ctx, oneDayThreshold, bugFilingThres.OneDay, "one_day")
+	validateBugFilingThresholdSatisfiesThresold(ctx, threeDayThreshold, bugFilingThres.ThreeDay, "three_day")
 	validateBugFilingThresholdSatisfiesThresold(ctx, threshold.SevenDay, bugFilingThres.SevenDay, "seven_day")
+}
+
+func minOfThresholds(thresholds ...*int64) *int64 {
+	var result *int64
+	for _, t := range thresholds {
+		if t != nil && (result == nil || *t < *result) {
+			result = t
+		}
+	}
+	return result
 }
 
 func validateBugFilingThresholdSatisfiesThresold(ctx *validation.Context, threshold *int64, bugFilingThres *int64, fieldName string) {
