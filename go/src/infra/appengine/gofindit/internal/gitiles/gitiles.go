@@ -59,6 +59,22 @@ func GetChangeLogs(c context.Context, repoUrl string, startRevision string, endR
 	return changeLogs, nil
 }
 
+// GetParentCommit queries gitiles for the parent commit of a particular commit.
+// Parent commit is the commit right before the child commit.
+func GetParentCommit(c context.Context, repoURL string, childCommit string) (string, error) {
+	startRevision := fmt.Sprintf("%s~2", childCommit)
+	endRevision := fmt.Sprintf("%s^", childCommit)
+	changeLogs, err := GetChangeLogs(c, repoURL, startRevision, endRevision)
+	if err != nil {
+		return "", err
+	}
+	// There should be exactly 1 element in changeLogs
+	if len(changeLogs) != 1 {
+		return "", fmt.Errorf("couldn't find parent for commit %s. Changelog has %d elements", childCommit, len(changeLogs))
+	}
+	return changeLogs[0].Commit, nil
+}
+
 func GetClient(c context.Context) Client {
 	if mockClient, ok := c.Value(MockedGitilesClientKey).(*MockedGitilesClient); ok {
 		return mockClient

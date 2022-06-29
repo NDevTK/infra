@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"infra/appengine/gofindit/compilefailureanalysis/heuristic"
 	"infra/appengine/gofindit/compilefailureanalysis/nthsection"
+	"infra/appengine/gofindit/culpritverification"
 	"infra/appengine/gofindit/internal/buildbucket"
 	gfim "infra/appengine/gofindit/model"
 	gfipb "infra/appengine/gofindit/proto"
@@ -66,6 +67,9 @@ func AnalyzeFailure(
 		return nil, e
 	}
 
+	// Verifies heuristic analysis result
+	verifyHeuristicResults(c, heuristicResult, first_failed_build_id)
+
 	// TODO: For now, just check heuristic analysis status
 	// We need to implement nth-section analysis as well
 	analysis.Status = heuristicResult.Status
@@ -76,6 +80,37 @@ func AnalyzeFailure(
 		return nil, fmt.Errorf("Failed saving analysis: %w", e)
 	}
 	return analysis, nil
+}
+
+func verifyHeuristicResults(c context.Context, heuristicAnalysis *gfim.CompileHeuristicAnalysis, failedBuildId int64) error {
+	suspects, err := getHeuristicSuspectsToVerify(c, heuristicAnalysis)
+	if err != nil {
+		return err
+	}
+	for _, suspect := range suspects {
+		culpritverification.VerifyCulprit(c, &suspect.GitilesCommit, failedBuildId)
+	}
+	return nil
+}
+
+// In case heuristic analysis returns too many results, we don't want to verify all of them.
+// Instead, we want to be selective in what we want to verify.
+// For now, we will just take top 3 results of heuristic analysis.
+func getHeuristicSuspectsToVerify(c context.Context, heuristicAnalysis *gfim.CompileHeuristicAnalysis) ([]*gfim.Suspect, error) {
+	// Getting the suspects for heuristic analysis
+	suspects := []*gfim.Suspect{}
+	q := datastore.NewQuery("Suspect").Ancestor(datastore.KeyForObj(c, heuristicAnalysis)).Order("-score")
+	err := datastore.GetAll(c, q, &suspects)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get top 3 suspects to verify
+	nSuspects := 3
+	if nSuspects > len(suspects) {
+		nSuspects = len(suspects)
+	}
+	return suspects[:nSuspects], nil
 }
 
 // findRegressionRange takes in the first failed and last passed buildID

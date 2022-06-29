@@ -23,6 +23,7 @@ import (
 	"infra/appengine/gofindit/internal/gitiles"
 	"infra/appengine/gofindit/internal/logdog"
 	"infra/appengine/gofindit/model"
+	gofindit "infra/appengine/gofindit/proto"
 )
 
 func TestAnalyzeFailure(t *testing.T) {
@@ -186,5 +187,47 @@ func TestFindRegressionRange(t *testing.T) {
 		}, cmp.Comparer(proto.Equal))
 		So(diff, ShouldEqual, "")
 	})
+}
 
+func TestVerifyCulprit(t *testing.T) {
+	t.Parallel()
+	c := memory.Use(context.Background())
+	datastore.GetTestable(c).AutoIndex(true)
+
+	Convey("getHeuristicSuspectsToVerify", t, func() {
+		heuristicAnalysis := &model.CompileHeuristicAnalysis{
+			Status: gofindit.AnalysisStatus_FOUND,
+		}
+
+		So(datastore.Put(c, heuristicAnalysis), ShouldBeNil)
+
+		suspect1 := &model.Suspect{
+			ParentAnalysis: datastore.KeyForObj(c, heuristicAnalysis),
+			Score:          1,
+		}
+		suspect2 := &model.Suspect{
+			ParentAnalysis: datastore.KeyForObj(c, heuristicAnalysis),
+			Score:          3,
+		}
+		suspect3 := &model.Suspect{
+			ParentAnalysis: datastore.KeyForObj(c, heuristicAnalysis),
+			Score:          4,
+		}
+		suspect4 := &model.Suspect{
+			ParentAnalysis: datastore.KeyForObj(c, heuristicAnalysis),
+			Score:          2,
+		}
+		So(datastore.Put(c, suspect1), ShouldBeNil)
+		So(datastore.Put(c, suspect2), ShouldBeNil)
+		So(datastore.Put(c, suspect3), ShouldBeNil)
+		So(datastore.Put(c, suspect4), ShouldBeNil)
+		datastore.GetTestable(c).CatchupIndexes()
+
+		suspects, err := getHeuristicSuspectsToVerify(c, heuristicAnalysis)
+		So(err, ShouldBeNil)
+		So(len(suspects), ShouldEqual, 3)
+		So(suspects[0].Score, ShouldEqual, 4)
+		So(suspects[1].Score, ShouldEqual, 3)
+		So(suspects[2].Score, ShouldEqual, 2)
+	})
 }
