@@ -34,7 +34,7 @@ const (
 	// The prefix of the badblocks command for verifying USB
 	// drives. The USB-drive path will be attached to it when
 	// badblocks needs to be executed on a drive.
-	badBlocksCommandPrefix = "badblocks -w -e 100 -b 4096 -t random %s"
+	badBlocksCommandPrefix = "badblocks -w -e 300 -b 4096 -t random %s"
 
 	// This parameter represents the configuration for minimum number
 	// of child servo devices to be verified-for.
