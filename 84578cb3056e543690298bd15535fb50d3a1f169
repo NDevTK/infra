@@ -283,6 +283,30 @@
       },
       "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f257ed99_2b458a3b",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T00:49:46Z",
+      "side": 1,
+      "message": "I guess what I\u0027m saying is easier is that:\n 1. Run fw updater\n  Success? Ok go on\n  Fail? Error out\n 2. Check if fw update is going to be tried on next reboot\n  Yes? reboot\n  No? don\u0027t reboot at all\n\nThis doesn\u0027t require version parsing at all, but checking that the slot switch after reboot.\n\n\"is the newer version\" \u003d\u003d newer slot ;)\n\nSorry for my lack of clarity.",
+      "parentUuid": "69ba072a_b9504a83",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
