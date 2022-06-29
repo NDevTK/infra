@@ -90,6 +90,7 @@ def builder(
         "server_host": "goma.chromium.org",
         "rpc_extra_params": "?prod",
         "enable_ats": enable_ats,
+        "use_luci_auth": True,
     }
 
     luci.builder(
