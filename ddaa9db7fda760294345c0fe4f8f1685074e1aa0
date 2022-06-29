@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "32013a07_8a58e3e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T23:25:36Z",
+      "side": 1,
+      "message": "We should monitor lab provisions as this rolls out after landing.",
+      "revId": "ddaa9db7fda760294345c0fe4f8f1685074e1aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2eabf8ca_3d43cb90",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T23:25:36Z",
+      "side": 1,
+      "message": "nit: \"doesn\u0027t get blocked\"",
+      "range": {
+        "startLine": 162,
+        "startChar": 37,
+        "endLine": 162,
+        "endChar": 52
+      },
+      "revId": "ddaa9db7fda760294345c0fe4f8f1685074e1aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9681f74a_8c050ac8",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T23:25:36Z",
+      "side": 1,
+      "message": "nit: (space), but in comment mentioned how it\u0027s a bit different of a situation in the postmortem.",
+      "range": {
+        "startLine": 177,
+        "startChar": 71,
+        "endLine": 177,
+        "endChar": 73
+      },
+      "revId": "ddaa9db7fda760294345c0fe4f8f1685074e1aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

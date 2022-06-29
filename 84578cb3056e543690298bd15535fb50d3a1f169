@@ -379,6 +379,30 @@
       },
       "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc4b94bd_7c99917c",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-06-29T23:25:36Z",
+      "side": 1,
+      "message": "Btw, that postmortem is quite different from the situation here.\n\nIf the next FW slot to try become sticky, it\u0027s stuck.\nThere isn\u0027t a rollback possible as it\u0027s locked with the already updated OS in this provisioning situation~\n\nFeel free to keep this check though as it\u0027s already being parsed and helps with debugging + logging information.",
+      "parentUuid": "04e2e07a_762e181b",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
