@@ -1,0 +1,37 @@
+indexes:
+
+- kind: AssetEntity
+  ancestor: no
+  properties:
+  - name: Name
+  - name: CreatedAt
+    direction: desc
+  - name: ModifiedAt
+    direction: desc
+
+- kind: AssetInstanceEntity
+  ancestor: no
+  properties:
+  - name: Status
+  - name: CreatedAt
+    direction: desc
+  - name: ModifiedAt
+    direction: desc
+
+- kind: AssetResourceEntity
+  ancestor: no
+  properties:
+  - name: AssetId
+  - name: CreatedAt
+    direction: desc
+  - name: ModifiedAt
+    direction: desc
+
+- kind: ResourceEntity
+  ancestor: no
+  properties:
+  - name: Name
+  - name: CreatedAt
+    direction: desc
+  - name: ModifiedAt
+    direction: desc
