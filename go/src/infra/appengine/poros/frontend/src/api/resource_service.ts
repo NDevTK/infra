@@ -72,8 +72,10 @@ export interface ResourceModel {
   description: string;
   /** if machine is selected then operating system */
   operatingSystem: string;
-  /** if machine is selected then type of machine */
-  image: string;
+  /** gcp project of image associated with resource */
+  imageProject: string;
+  /** gcp family of image associated with resource */
+  imageFamily: string;
   /** User who created the record */
   createdBy: string;
   /** Timestamp for the creation of the record */
@@ -92,7 +94,8 @@ export const ResourceModel = {
       type: 'machine',
       operatingSystem: '',
       description: '',
-      image: '',
+      imageProject: '',
+      imageFamily: '',
       createdBy: '',
       createdAt: undefined,
       modifiedBy: '',
@@ -108,8 +111,10 @@ export const ResourceModel = {
         ? String(object.operatingSystem)
         : '',
       description: isSet(object.description) ? String(object.description) : '',
-      image: isSet(object.image) ? String(object.image) : '',
-
+      imageProject: isSet(object.imageProject)
+        ? String(object.imageProject)
+        : '',
+      imageFamily: isSet(object.imageFamily) ? String(object.imageFamily) : '',
       createdBy: isSet(object.createdBy) ? String(object.createdBy) : '',
       createdAt: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
@@ -130,7 +135,10 @@ export const ResourceModel = {
       (obj.operatingSystem = message.operatingSystem);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.image !== undefined && (obj.image = message.image);
+    message.imageProject !== undefined &&
+      (obj.imageProject = message.imageProject);
+    message.imageFamily !== undefined &&
+      (obj.imageFamily = message.imageFamily);
     message.createdBy !== undefined && (obj.createdBy = message.createdBy);
     message.createdAt !== undefined &&
       (obj.createdAt = message.createdAt.toISOString());
@@ -151,8 +159,10 @@ export interface CreateResourceRequest {
   operatingSystem: string;
   /** Description of the resource */
   description: string;
-  /** if machine is selected then type of machine */
-  image: string;
+  /** gcp project of image associated with resource */
+  imageProject: string;
+  /** gcp family of image associated with resource */
+  imageFamily: string;
 }
 
 export const CreateResourceRequest = {
@@ -164,7 +174,10 @@ export const CreateResourceRequest = {
       (obj.operatingSystem = message.operatingSystem);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.image !== undefined && (obj.image = message.image);
+    message.imageProject !== undefined &&
+      (obj.imageProject = message.imageProject);
+    message.imageFamily !== undefined &&
+      (obj.imageFamily = message.imageFamily);
     return obj;
   },
 };

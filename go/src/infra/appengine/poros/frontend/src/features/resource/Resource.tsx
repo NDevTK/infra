@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import React from 'react';
-import CancelIcon from '@mui/icons-material/Cancel';
-import SaveIcon from '@mui/icons-material/Save';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Select,
   TextField,
@@ -23,8 +23,9 @@ import {
   setType,
   setOperatingSystem,
   setDescription,
-  setImage,
   updateResourceAsync,
+  setImageProject,
+  setImageFamily,
 } from './resourceSlice';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -40,7 +41,12 @@ export const Resource = () => {
   const description: string = useAppSelector(
     (state) => state.resource.record.description
   );
-  const image: string = useAppSelector((state) => state.resource.record.image);
+  const imageProject: string = useAppSelector(
+    (state) => state.resource.record.imageProject
+  );
+  const imageFamily: string = useAppSelector(
+    (state) => state.resource.record.imageFamily
+  );
   const resourceId: string = useAppSelector(
     (state) => state.resource.record.resourceId
   );
@@ -53,7 +59,8 @@ export const Resource = () => {
     type: string,
     operatingSystem: string,
     description: string,
-    image: string,
+    imageProject: string,
+    imageFamily: string,
     resourceId: string
   ) => {
     if (resourceId === '') {
@@ -63,7 +70,8 @@ export const Resource = () => {
           type,
           operatingSystem,
           description,
-          image,
+          imageProject,
+          imageFamily,
         })
       );
     } else {
@@ -75,7 +83,8 @@ export const Resource = () => {
             'description',
             'type',
             'operating_system',
-            'image',
+            'image_project',
+            'image_family',
           ],
         })
       );
@@ -87,8 +96,6 @@ export const Resource = () => {
   };
 
   // Render functions
-
-  // This function will be used once we give user the ability to select type of Resource
   const renderTypeDropdown = () => {
     return (
       <Grid container spacing={2} padding={1} paddingTop={3}>
@@ -98,7 +105,7 @@ export const Resource = () => {
             <Select
               label="Type"
               id="type"
-              inputProps={{ "data-testid": "type" }}
+              inputProps={{ 'data-testid': 'type' }}
               defaultValue="machine"
               value={type}
               onChange={(e) => {
@@ -110,7 +117,7 @@ export const Resource = () => {
               placeholder="Type"
             >
               <MenuItem value={'machine'}>Machine</MenuItem>
-              <MenuItem value={'domain'}>Domain</MenuItem>
+              {/* <MenuItem value={'domain'}>Domain</MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
@@ -127,7 +134,7 @@ export const Resource = () => {
             <Select
               label="OperatingSystem"
               id="operating-system"
-              inputProps={{ "data-testid": "operating-system" }}
+              inputProps={{ 'data-testid': 'operating-system' }}
               defaultValue="windows_machine"
               value={operatingSystem}
               onChange={(e) => {
@@ -137,36 +144,15 @@ export const Resource = () => {
               variant="standard"
               placeholder="Type"
             >
-              <MenuItem id="os-option" data-testid="os-option" value={'windows_machine'}>windows_machine</MenuItem>
+              <MenuItem
+                id="os-option"
+                data-testid="os-option"
+                value={'windows_machine'}
+              >
+                windows_machine
+              </MenuItem>
               <MenuItem value={'linux_machine'}>linux_machine</MenuItem>
               <MenuItem value={'chromeos_machine'}>chromeos_machine</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-      </Grid>
-    );
-  };
-
-  const renderMachineMetaDropdown = () => {
-    return (
-      <Grid container spacing={2} padding={1} paddingTop={6}>
-        <Grid item xs={12}>
-          <FormControl variant="standard" fullWidth>
-            <InputLabel>VM Images</InputLabel>
-            <Select
-              id="image"
-              inputProps={{ "data-testid": "image" }}
-              value={image}
-              onChange={(e) => dispatch(setImage(e.target.value))}
-              fullWidth
-              variant="standard"
-              placeholder="Type"
-            >
-              <MenuItem data-testid="image-option" value={'image-1'}>Image 1</MenuItem>
-              <MenuItem value={'image-2'}>Image 2</MenuItem>
-              <MenuItem value={'image-3'}>Image 3</MenuItem>
-              <MenuItem value={'image-4'}>Image 4</MenuItem>
-              <MenuItem value={'image-5'}>Image 5</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -180,7 +166,7 @@ export const Resource = () => {
         <Grid item xs={12}>
           <TextField
             id="domain-info"
-            inputProps={{ "data-testid": "domain-info" }}
+            inputProps={{ 'data-testid': 'domain-info' }}
             label="Domain Information"
             multiline
             rows={4}
@@ -191,6 +177,42 @@ export const Resource = () => {
             }}
             value={'some domain info'}
             fullWidth
+          />
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderImageProjectInput = () => {
+    return (
+      <Grid container spacing={2} padding={1}>
+        <Grid item xs={12}>
+          <TextField
+            label="Image Project"
+            id="image-project"
+            value={imageProject}
+            onChange={(e) => dispatch(setImageProject(e.target.value))}
+            fullWidth
+            inputProps={{ 'data-testid': 'image-project' }}
+            variant="standard"
+          />
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderImageFamilyInput = () => {
+    return (
+      <Grid container spacing={2} padding={1}>
+        <Grid item xs={12}>
+          <TextField
+            label="Image Family"
+            id="image-family"
+            value={imageFamily}
+            onChange={(e) => dispatch(setImageFamily(e.target.value))}
+            fullWidth
+            inputProps={{ 'data-testid': 'image-family' }}
+            variant="standard"
           />
         </Grid>
       </Grid>
@@ -215,7 +237,9 @@ export const Resource = () => {
           }}
           xs={8}
         >
-          <Typography id="form-heading" data-testid="form-heading" variant="h5">Resource</Typography>
+          <Typography id="form-heading" data-testid="form-heading" variant="h5">
+            Resource
+          </Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2} padding={1}>
@@ -223,7 +247,7 @@ export const Resource = () => {
           <TextField
             label="Name"
             id="name"
-            inputProps={{ "data-testid": "name" }}
+            inputProps={{ 'data-testid': 'name' }}
             value={name}
             onChange={(e) => dispatch(setName(e.target.value))}
             fullWidth
@@ -240,18 +264,20 @@ export const Resource = () => {
             rows={4}
             variant="standard"
             onChange={(e) => dispatch(setDescription(e.target.value))}
-            inputProps={{ "data-testid": "description" }}
+            inputProps={{ 'data-testid': 'description' }}
             value={description}
             fullWidth
           />
         </Grid>
       </Grid>
 
-      {activeResourceType == 'machine'
-        ? renderMachineMetaDropdown()
-        : renderDomainMetaInput()}
+      {renderTypeDropdown()}
 
       {activeResourceType == 'machine' ? renderOperatingSystemDropdown() : null}
+
+      {activeResourceType == 'machine' ? renderImageProjectInput() : null}
+
+      {activeResourceType == 'machine' ? renderImageFamilyInput() : null}
 
       <Grid container spacing={2} padding={1} paddingTop={6}>
         <Grid item xs={12}>
@@ -260,7 +286,7 @@ export const Resource = () => {
             label="Id"
             id="resource-id"
             variant="standard"
-            inputProps={{ "data-testid": "resource-id" }}
+            inputProps={{ 'data-testid': 'resource-id' }}
             value={resourceId}
             fullWidth
           />
@@ -282,7 +308,7 @@ export const Resource = () => {
               data-testid="cancel-button"
               variant="outlined"
               onClick={handleCancelClick}
-              endIcon={<CancelIcon />}
+              startIcon={<RefreshIcon />}
             >
               Cancel
             </Button>
@@ -296,11 +322,12 @@ export const Resource = () => {
                   type,
                   operatingSystem,
                   description,
-                  image,
+                  imageProject,
+                  imageFamily,
                   resourceId
                 )
               }
-              endIcon={<SaveIcon />}
+              endIcon={<DeleteIcon />}
             >
               Save
             </Button>

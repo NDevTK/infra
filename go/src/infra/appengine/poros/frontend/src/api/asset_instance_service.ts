@@ -84,7 +84,7 @@ export const AssetInstanceModel = {
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
         : undefined,
-        deleteAt: isSet(object.deleteAt)
+      deleteAt: isSet(object.deleteAt)
         ? fromJsonTimestamp(object.deleteAt)
         : undefined,
     };
