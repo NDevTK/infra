@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import React from 'react';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SaveIcon from '@mui/icons-material/Save';
 import { TextField, Grid, Box, Typography, Button, Stack } from '@mui/material';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -139,7 +139,7 @@ export const AssetInstance = () => {
             <Button
               variant="outlined"
               onClick={handleCancelClick}
-              startIcon={<RefreshIcon />}
+              endIcon={<CancelIcon />}
               id="cancel-button"
               data-testid="cancel-button"
             >
@@ -148,7 +148,7 @@ export const AssetInstance = () => {
             <Button
               variant="contained"
               onClick={() => handleSaveClick(assetInstanceId)}
-              endIcon={<DeleteIcon />}
+              endIcon={<SaveIcon />}
               id="save-button"
               data-testid="save-button"
             >

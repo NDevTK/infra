@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import React from 'react';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   Select,
   TextField,
@@ -282,7 +282,7 @@ export const Resource = () => {
               data-testid="cancel-button"
               variant="outlined"
               onClick={handleCancelClick}
-              startIcon={<RefreshIcon />}
+              endIcon={<CancelIcon />}
             >
               Cancel
             </Button>
@@ -300,7 +300,7 @@ export const Resource = () => {
                   resourceId
                 )
               }
-              endIcon={<DeleteIcon />}
+              endIcon={<SaveIcon />}
             >
               Save
             </Button>
