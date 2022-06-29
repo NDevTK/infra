@@ -986,7 +986,7 @@ def GenTests(api):
   spec = '''
   create {
     source { script { name: "fetch.py" } }
-    build { external_tool: "infra/tools/external/${platform}@1.4.1" }
+    build { external_tool: "infra/tools/external/${platform}@2@1.4.1" }
   }
   upload { pkg_prefix: "tools" }
   '''
@@ -1003,7 +1003,7 @@ def GenTests(api):
   spec = '''
   create {
     source { script { name: "fetch.py" } }
-    build { external_dep: "infra/libs/external/${platform}@1.4.1" }
+    build { external_dep: "infra/libs/external/${platform}@2@1.4.1" }
   }
   upload { pkg_prefix: "tools" }
   '''

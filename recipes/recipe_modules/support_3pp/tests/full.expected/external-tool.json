@@ -74,7 +74,7 @@
       "@@@STEP_LOG_LINE@3pp.pb@@@@",
       "@@@STEP_LOG_LINE@3pp.pb@  create {@@@",
       "@@@STEP_LOG_LINE@3pp.pb@    source { script { name: \"fetch.py\" } }@@@",
-      "@@@STEP_LOG_LINE@3pp.pb@    build { external_tool: \"infra/tools/external/${platform}@1.4.1\" }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    build { external_tool: \"infra/tools/external/${platform}@2@1.4.1\" }@@@",
       "@@@STEP_LOG_LINE@3pp.pb@  }@@@",
       "@@@STEP_LOG_LINE@3pp.pb@  upload { pkg_prefix: \"tools\" }@@@",
       "@@@STEP_LOG_LINE@3pp.pb@  @@@",
@@ -207,7 +207,7 @@
       "pkg-fetch",
       "infra/tools/external/linux-amd64",
       "-version",
-      "version:1.4.1",
+      "version:2@1.4.1",
       "-out",
       "[CLEANUP]/tmp_tmp_2",
       "-json-output",
@@ -225,10 +225,10 @@
     "name": "building tools/external_tool.fetch sources.installing tools.cipd pkg-fetch infra/tools/external/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_TEXT@infra/tools/external/linux-amd64 resolved-instance_id-of-version:1.4.1---@@@",
+      "@@@STEP_TEXT@infra/tools/external/linux-amd64 resolved-instance_id-of-version:2@1.4.1-@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version:1.4.1---\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version:2@1.4.1-\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"package\": \"infra/tools/external/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
@@ -271,7 +271,7 @@
       "/path/to/tmp/json",
       "move",
       "[CLEANUP]/tmp_tmp_2",
-      "[CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:1.4.1---"
+      "[CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:2@1.4.1-"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -292,7 +292,7 @@
     "cmd": [
       "cipd",
       "pkg-deploy",
-      "[CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:1.4.1---",
+      "[CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:2@1.4.1-",
       "-root",
       "[START_DIR]/3pp/wd/tools/external_tool/linux-arm64/2.0.0/tools_prefix",
       "-json-output",
@@ -307,13 +307,13 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
-    "name": "building tools/external_tool.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:1.4.1---",
+    "name": "building tools/external_tool.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:2@1.4.1-",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/resol\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-version:1.4.1---\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-version:2@1.4.1-\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
