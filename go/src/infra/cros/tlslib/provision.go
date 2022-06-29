@@ -149,6 +149,69 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
 			return
 		}
+
+		if req.UpdateFirmware {
+			fwChanged, err := p.updateFirmware(ctx)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to update firmware, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			// If firmware changed and reboot doesn't blocked by request, make sure DUT comes back after post update reboot.
+			if fwChanged && !req.PreventReboot {
+				fwRebootWaitCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+				defer cancel()
+				disconnect, err = p.connect(fwRebootWaitCtx, addr)
+				if err != nil {
+					setError(newOperationError(
+						codes.Aborted,
+						fmt.Sprintf("provision: failed to wait for DUT to come up after firmware update, %s", err),
+						tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+					return
+				}
+				defer disconnect()
+				log.Printf("DUT came up after updated firmware from the new OS.")
+			}
+			// Next we need to make sure firmware is updated to expected version.(See go/cros-fw-downdate-postmortem)
+			curFW, err := getCurrentFirmwareVersion(p.c)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to get current system firmware info, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			expectedFw, err := getAvailableFirmwareVersion(p.c)
+			if err != nil {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: failed to get available firmware version from the new OS, %s", err),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			// We expected the firmware on the DUT is updated at this point unless preventReboot is requested.
+			if curFW != expectedFw && !req.PreventReboot {
+				setError(newOperationError(
+					codes.Aborted,
+					fmt.Sprintf("provision: firmware didn't updated to expected version, current version: %s, expected version: %s", curFW, expectedFw),
+					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
+				return
+			}
+			if fwChanged {
+				if req.PreventReboot {
+					log.Printf("Firmware updated but prevent reboot is requested, expected firmware(in the next reboot): %s", expectedFw)
+				} else {
+					log.Printf("Firmware update completed successfully, it has been updated to %s.", curFW)
+				}
+			} else {
+				log.Printf("Current system firmware: %s is already matched with OS image.", curFW)
+			}
+		} else {
+			log.Printf("Skipping firmware update by request.")
+		}
+
 		log.Printf("provision: time to provision OS took %v", time.Since(t))
 
 		// To be safe, wait for kernel to be "sticky" right after installing the new partitions and booting into it.
