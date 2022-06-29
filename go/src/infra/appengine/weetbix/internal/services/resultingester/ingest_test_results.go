@@ -69,6 +69,17 @@ var (
 		// "ignored_no_invocation", "ignored_has_ancestor".
 		field.String("outcome"))
 
+	ancestorCounter = metric.NewCounter(
+		"weetbix/ingestion/ancestor_build_status",
+		"The status retrieving ancestor builds in ingestion tasks, by build project.",
+		nil,
+		// The LUCI Project.
+		field.String("project"),
+		// "no_bb_access_to_ancestor",
+		// "no_resultdb_invocation_on_ancestor",
+		// "ok".
+		field.String("ancestor_status"))
+
 	testVariantReadMask = &fieldmaskpb.FieldMask{
 		Paths: []string{
 			"test_id",
@@ -188,21 +199,25 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		return nil
 	}
 
-	if len(build.AncestorIds) > 0 {
-		// Retrieve the ancestor build.
-		rootBuild, err := retrieveBuild(ctx, payload.Build.Host, build.AncestorIds[len(build.AncestorIds)-1])
-		if err != nil {
-			return transient.Tag.Apply(errors.Annotate(err, "retrieving ancestor build").Err())
+	if payload.TaskIndex == 0 {
+		// Before ingesting any of the build. If we are already ingesting the
+		// build (TaskIndex > 0), we made it past this check before.
+		if len(build.AncestorIds) > 0 {
+			// If the build has an ancestor build, see if its immediate
+			// ancestor is accessible by Weetbix and has a ResultDB invocation
+			// (likely indicating it includes the test results from this
+			// build).
+			included, err := includedByAncestorBuild(ctx, payload.Build.Host, build.AncestorIds[len(build.AncestorIds)-1], payload.Build.Project)
+			if err != nil {
+				return transient.Tag.Apply(err)
+			}
+			if included {
+				// Yes. Do not ingest this build to avoid ingesting the same test
+				// results multiple times.
+				taskCounter.Add(ctx, 1, payload.Build.Project, "ignored_has_ancestor")
+				return nil
+			}
 		}
-		if rootBuild.Infra.GetResultdb().GetInvocation() != "" {
-			// The ancestor build also has a ResultDB invocation. This is what
-			// we expected. We will ingest the ancestor build only
-			// to avoid ingesting the same test results multiple times.
-			taskCounter.Add(ctx, 1, payload.Build.Project, "ignored_has_ancestor")
-			return nil
-		}
-		logging.Warningf(ctx, "Build %s-%d had ancestor build, but ancestor did not have ResultDB invocation, continuing ingestion.",
-			payload.Build.Host, payload.Build.Id)
 	}
 
 	rdbHost := build.Infra.Resultdb.Hostname
@@ -315,6 +330,34 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		taskCounter.Add(ctx, 1, payload.Build.Project, "success")
 	}
 	return nil
+}
+
+func includedByAncestorBuild(ctx context.Context, buildHost string, buildID int64, project string) (bool, error) {
+	// Retrieve the ancestor build.
+	rootBuild, err := retrieveBuild(ctx, buildHost, buildID)
+	code := status.Code(err)
+	if code == codes.NotFound {
+		logging.Warningf(ctx, "Buildbucket ancestor build %s/%d for project %s not found (or Weetbix does not have access to read it).",
+			buildHost, buildID, project)
+		// Weetbix won't be able to retrieve the ancestor build to ingest it,
+		// even if it did include the test results from this build.
+
+		ancestorCounter.Add(ctx, 1, project, "no_bb_access_to_ancestor")
+		return false, nil
+	}
+	if err != nil {
+		return false, errors.Annotate(err, "retrieving ancestor build").Err()
+	}
+	if rootBuild.Infra.GetResultdb().GetInvocation() == "" {
+		ancestorCounter.Add(ctx, 1, project, "no_resultdb_invocation_on_ancestor")
+		return false, nil
+	}
+
+	// The ancestor build also has a ResultDB invocation. This is what
+	// we expected. We will ingest the ancestor build only
+	// to avoid ingesting the same test results multiple times.
+	ancestorCounter.Add(ctx, 1, project, "ok")
+	return true, nil
 }
 
 // filterToTestVariantsWithUnexpectedFailures filters the given list of
