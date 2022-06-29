@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -48,6 +49,7 @@ func TestAssetInstanceCreateWithValidData(t *testing.T) {
 		want := []string{request.GetAssetId(), request.GetStatus()}
 		get := []string{model.GetAssetId(), model.GetStatus()}
 		So(get, ShouldResemble, want)
+		So(model.CreatedAt.AsTime().Add(time.Hour*6), ShouldEqual, model.DeleteAt.AsTime())
 	})
 }
 
@@ -85,10 +87,12 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 		// Update AssetInstance with some new value and the operation should not throw any error
 		entity.AssetId = "Test AssetId Updated"
 		entity.Status = proto.DeploymentStatus(1).String()
+		timestamp := time.Now().UTC()
+		entity.DeleteAt = timestamppb.New(timestamp)
 
 		updateRequest := &proto.UpdateAssetInstanceRequest{
 			AssetInstance: entity,
-			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"asset_id", "status"}},
+			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"asset_id", "status", "delete_at"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		So(err, ShouldBeNil)
@@ -101,6 +105,7 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 		want := []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
 		get := []string{readEntity.GetAssetId(), readEntity.GetStatus()}
 		So(get, ShouldResemble, want)
+		So(timestamp.Format(time.UnixDate), ShouldEqual, readEntity.DeleteAt.AsTime().Format(time.UnixDate))
 	})
 }
 

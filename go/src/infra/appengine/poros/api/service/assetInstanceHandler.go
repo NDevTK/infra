@@ -34,6 +34,7 @@ func toAssetInstanceEntity(model *proto.AssetInstanceModel) *AssetInstanceEntity
 			CreatedBy:       model.CreatedBy,
 			ModifiedAt:      model.ModifiedAt.AsTime(),
 			ModifiedBy:      model.ModifiedBy,
+			DeleteAt:        model.DeleteAt.AsTime(),
 		}
 	}
 	return nil
@@ -50,6 +51,7 @@ func toAssetIntanceModel(entity *AssetInstanceEntity) *proto.AssetInstanceModel 
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
 			ModifiedBy:      entity.ModifiedBy,
+			DeleteAt:        timestamppb.New(entity.DeleteAt),
 		}
 	}
 	return nil
@@ -69,12 +71,14 @@ func validateAssetInstanceEntity(entity *AssetInstanceEntity) error {
 // Creates the given AssetInstance.
 func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
 	id := uuid.New().String()
+	timestamp := time.Now().UTC()
 	entity := &AssetInstanceEntity{
 		AssetInstanceId: id,
 		AssetId:         req.GetAssetId(),
 		Status:          req.GetStatus(),
 		CreatedBy:       auth.CurrentUser(ctx).Email,
-		CreatedAt:       time.Now().UTC(),
+		CreatedAt:       timestamp,
+		DeleteAt:        timestamp.Add(time.Hour * 6),
 	}
 	if err := validateAssetInstanceEntity(entity); err != nil {
 		return nil, err
@@ -148,6 +152,10 @@ func (e *AssetInstanceHandler) Update(ctx context.Context, req *proto.UpdateAsse
 
 		// Set updated values for fields specified in Update Mask
 		for _, field := range mask.GetPaths() {
+			if field == "delete_at" {
+				asset_instance.DeleteAt = req.GetAssetInstance().GetDeleteAt().AsTime()
+				continue
+			}
 			newValue := reflect.ValueOf(req.GetAssetInstance()).Elem().FieldByName(snakeToPascalCase(field))
 			reflect.ValueOf(asset_instance).Elem().FieldByName(snakeToPascalCase(field)).Set(newValue)
 		}
@@ -205,13 +213,15 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 	var entity *AssetInstanceEntity
 	if entityType == "Asset" {
 		id := uuid.New().String()
+		timestamp := time.Now().UTC()
 		entity = &AssetInstanceEntity{
 			AssetInstanceId: id,
 			AssetId:         entityId,
 			Status:          "STATUS_RUNNING",
 			ProjectId:       project[1],
 			CreatedBy:       auth.CurrentUser(ctx).Email,
-			CreatedAt:       time.Now().UTC(),
+			CreatedAt:       timestamp,
+			DeleteAt:        timestamp.Add(time.Hour * 6),
 		}
 	} else if entityType == "AssetInstance" {
 		entity, err = getAssetInstanceById(ctx, entityId)

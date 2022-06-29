@@ -37,6 +37,7 @@ import {
 } from './utilitySlice';
 import { ResourceList } from '../resource/ResourceList';
 import { AssetInstanceList } from '../asset_instance/AssetInstanceList';
+import { AssetInstance } from '../asset_instance/AssetInstance';
 
 const drawerWidth = 240;
 const rightSideDrawerWidth = 480;
@@ -232,6 +233,8 @@ export default function SideDrawerWithAppBar() {
         return <Asset />;
       case 'resources':
         return <Resource />;
+      case 'assetInstances':
+        return <AssetInstance />;
     }
   };
 

@@ -13,18 +13,23 @@ import {
   GridCellParams,
   MuiEvent,
   GridValueGetterParams,
+  GridRenderCellParams,
 } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent, IconButton, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { queryAssetInstanceAsync } from './assetInstanceSlice';
+import { onSelectRecord, queryAssetInstanceAsync } from './assetInstanceSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { setActiveEntity } from '../utility/utilitySlice';
+import {
+  setActiveEntity,
+  setRightSideDrawerOpen,
+} from '../utility/utilitySlice';
 import { queryAssetAsync } from '../asset/assetSlice';
 import { AssetModel } from '../../api/asset_service';
+import EditIcon from '@mui/icons-material/Edit';
 
 export function AssetInstanceList() {
   const dispatch = useAppDispatch();
@@ -55,13 +60,41 @@ export function AssetInstanceList() {
     {
       field: 'createdAt',
       headerName: 'Created At',
-      flex: 0.5,
+      flex: 1,
       valueGetter: getLocalTime,
+    },
+    {
+      field: 'deleteAt',
+      headerName: 'Delete At',
+      flex: 1,
+      valueGetter: getLocalTime,
+    },
+    {
+      field: 'Edit',
+      renderCell: (cellValues) => {
+        return (
+          <IconButton
+            aria-label="delete"
+            size="small"
+            onClick={() => {
+              handleEditClick(cellValues);
+            }}
+          >
+            <EditIcon fontSize="inherit" />
+          </IconButton>
+        );
+      },
     },
   ];
 
   const handleRefreshClick = () => {
     dispatch(queryAssetInstanceAsync({ pageSize: 100, pageToken: '' }));
+  };
+
+  const handleEditClick = (cellValues: GridRenderCellParams) => {
+    const selectedRow = cellValues.row;
+    dispatch(setRightSideDrawerOpen());
+    dispatch(onSelectRecord({ assetInstanceId: selectedRow.assetInstanceId }));
   };
 
   function CustomToolbar() {
@@ -74,10 +107,14 @@ export function AssetInstanceList() {
   }
 
   function getLocalTime(params: GridValueGetterParams) {
-    return (
-      params.row.createdAt.toLocaleString('en-US', { timeZone: 'US/Pacific' }) +
-      ' PT'
-    );
+    if (params.field === 'createdAt') {
+      return params.row.createdAt.toLocaleString();
+    } else if (
+      params.field === 'deleteAt' &&
+      params.row.deleteAt !== undefined
+    ) {
+      return params.row.deleteAt.toLocaleString();
+    }
   }
 
   function getAssetName(params: GridValueGetterParams) {

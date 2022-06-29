@@ -8,14 +8,25 @@ import { fromJsonTimestamp, isSet } from './common/utils';
 
 /** Performs operations on AssetInstance. */
 export interface IAssetInstanceService {
+  /** Update the requested AssetInstanceModel. */
+  update(request: UpdateAssetInstanceRequest): Promise<AssetInstanceModel>;
   /** Lists all AssetInstances. */
   list(request: ListAssetInstancesRequest): Promise<ListAssetInstancesResponse>;
 }
 
 export class AssetInstanceService implements IAssetInstanceService {
   constructor() {
+    this.update = this.update.bind(this);
     this.list = this.list.bind(this);
   }
+
+  update = (
+    request: UpdateAssetInstanceRequest
+  ): Promise<AssetInstanceModel> => {
+    const data = UpdateAssetInstanceRequest.toJSON(request);
+    const promise = rpcClient.request('poros.AssetInstance', 'Update', data);
+    return promise.then((data) => AssetInstanceModel.fromJSON(data));
+  };
 
   list = (
     request: ListAssetInstancesRequest
@@ -41,6 +52,8 @@ export interface AssetInstanceModel {
   modifiedBy: string;
   /** Timestamp for the last update of the record */
   modifiedAt: Date | undefined;
+  /** Timestamp to delete the machines */
+  deleteAt: Date | undefined;
 }
 
 export const AssetInstanceModel = {
@@ -53,6 +66,7 @@ export const AssetInstanceModel = {
       createdAt: undefined,
       modifiedBy: '',
       modifiedAt: undefined,
+      deleteAt: undefined,
     };
   },
   fromJSON(object: any): AssetInstanceModel {
@@ -61,9 +75,7 @@ export const AssetInstanceModel = {
         ? String(object.assetInstanceId)
         : '',
       assetId: isSet(object.assetId) ? String(object.assetId) : '',
-      status: isSet(object.status)
-        ? String(object.status)
-        : '',
+      status: isSet(object.status) ? String(object.status) : '',
       createdBy: isSet(object.createdBy) ? String(object.createdBy) : '',
       createdAt: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
@@ -71,6 +83,9 @@ export const AssetInstanceModel = {
       modifiedBy: isSet(object.modifiedBy) ? String(object.modifiedBy) : '',
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
+        : undefined,
+        deleteAt: isSet(object.deleteAt)
+        ? fromJsonTimestamp(object.deleteAt)
         : undefined,
     };
   },
@@ -80,14 +95,15 @@ export const AssetInstanceModel = {
     message.assetInstanceId !== undefined &&
       (obj.assetInstanceId = message.assetInstanceId);
     message.assetId !== undefined && (obj.assetId = message.assetId);
-    message.status !== undefined &&
-      (obj.status = message.status);
+    message.status !== undefined && (obj.status = message.status);
     message.createdBy !== undefined && (obj.createdBy = message.createdBy);
     message.createdAt !== undefined &&
       (obj.createdAt = message.createdAt.toISOString());
     message.modifiedBy !== undefined && (obj.modifiedBy = message.modifiedBy);
     message.modifiedAt !== undefined &&
       (obj.modifiedAt = message.modifiedAt.toISOString());
+    message.deleteAt !== undefined &&
+      (obj.deleteAt = message.deleteAt.toISOString());
     return obj;
   },
 };
@@ -135,5 +151,26 @@ export const ListAssetInstancesResponse = {
         ? String(object.nextPageToken)
         : '',
     };
+  },
+};
+
+/** Request to update a single AssetInstance in poros. */
+export interface UpdateAssetInstanceRequest {
+  /** The existing AssetInstance to update in the database. */
+  assetInstance: AssetInstanceModel | undefined;
+  /** The list of fields to update. */
+  updateMask: string[] | undefined;
+}
+
+export const UpdateAssetInstanceRequest = {
+  toJSON(message: UpdateAssetInstanceRequest): unknown {
+    const obj: any = {};
+    message.assetInstance !== undefined &&
+      (obj.assetInstance = message.assetInstance
+        ? AssetInstanceModel.toJSON(message.assetInstance)
+        : undefined);
+    message.updateMask !== undefined &&
+      (obj.updateMask = FieldMask.toJSON(FieldMask.wrap(message.updateMask)));
+    return obj;
   },
 };

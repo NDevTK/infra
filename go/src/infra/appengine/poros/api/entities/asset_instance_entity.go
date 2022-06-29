@@ -26,4 +26,6 @@ type AssetInstanceEntity struct {
 	ModifiedAt time.Time
 	// User who modified the record.
 	ModifiedBy string
+	// Timestamp to delete the machines
+	DeleteAt time.Time
 }

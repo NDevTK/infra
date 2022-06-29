@@ -90,4 +90,6 @@ message AssetInstanceModel {
 	google.protobuf.Timestamp modified_at = 7;
 	// User who modified the record.
 	string modified_by = 8;
+    // Timestamp to delete the machines
+    google.protobuf.Timestamp delete_at = 9;
 }
