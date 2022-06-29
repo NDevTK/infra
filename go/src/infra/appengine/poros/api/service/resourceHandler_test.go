@@ -19,33 +19,34 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 )
 
-func mockCreateResourceRequest(name string, description string, Type string, operatingSystem string, image string) *proto.CreateResourceRequest {
+func mockCreateResourceRequest(name string, description string, Type string, operatingSystem string, imageProject string, imageFamily string) *proto.CreateResourceRequest {
 	return &proto.CreateResourceRequest{
 		Name:            name,
 		Description:     description,
 		Type:            Type,
 		OperatingSystem: operatingSystem,
-		Image:           image,
+		ImageProject:    imageProject,
+		ImageFamily:     imageFamily,
 	}
 }
 
 func TestResourceCreateWithValidData(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource description", "machine", "windows_machine", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource description", "machine", "windows_machine", "image-project", "image-family")
 	Convey("Create a resource in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
 		model, err := handler.Create(ctx, resourceRequest)
 		So(err, ShouldBeNil)
-		want := []string{resourceRequest.GetName(), resourceRequest.GetDescription(), resourceRequest.GetType(), resourceRequest.GetImage()}
-		get := []string{model.GetName(), model.GetDescription(), model.GetType(), model.GetImage()}
+		want := []string{resourceRequest.GetName(), resourceRequest.GetDescription(), resourceRequest.GetType(), resourceRequest.GetImageProject(), resourceRequest.GetImageFamily()}
+		get := []string{model.GetName(), model.GetDescription(), model.GetType(), model.GetImageProject(), model.GetImageFamily()}
 		So(get, ShouldResemble, want)
 	})
 }
 
 func TestResourceCreateWithInvalidName(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("", "Test Resource description", "machine", "windows_machine", "image-1")
+	resourceRequest := mockCreateResourceRequest("", "Test Resource description", "machine", "windows_machine", "image-project", "image-family")
 	Convey("Create a resource with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -56,7 +57,7 @@ func TestResourceCreateWithInvalidName(t *testing.T) {
 
 func TestResourceCreateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource", "", "machine", "windows_machine", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource", "", "machine", "windows_machine", "image-project", "image-family")
 	Convey("Create a resource with invalid description in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -67,7 +68,7 @@ func TestResourceCreateWithInvalidDescription(t *testing.T) {
 
 func TestResourceCreateWithInvalidType(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "", "windows_machine", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "", "windows_machine", "image-project", "image-family")
 	Convey("Create a resource with invalid type in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -78,7 +79,7 @@ func TestResourceCreateWithInvalidType(t *testing.T) {
 
 func TestResourceCreateOfTypeMachineWithInvalidOperatingSystem(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "machine", "", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "machine", "", "image-project", "image-family")
 	Convey("Create a resource with invalid operating system in datastore if type if machine", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -87,10 +88,21 @@ func TestResourceCreateOfTypeMachineWithInvalidOperatingSystem(t *testing.T) {
 	})
 }
 
-func TestResourceCreateOfTypeMachineWithInvalidImage(t *testing.T) {
+func TestResourceCreateOfTypeMachineWithInvalidImageProject(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "machine", "windows_machine", "")
-	Convey("Create a resource with invalid image in datastore if type if machine", t, func() {
+	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "machine", "windows_machine", "", "image-family")
+	Convey("Create a resource with invalid image project in datastore if type is machine", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &ResourceHandler{}
+		_, err := handler.Create(ctx, resourceRequest)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestResourceCreateOfTypeMachineWithInvalidImageFamily(t *testing.T) {
+	t.Parallel()
+	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource Description", "machine", "windows_machine", "image-project", "")
+	Convey("Create a resource with invalid image family in datastore if type is machine", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
 		_, err := handler.Create(ctx, resourceRequest)
@@ -100,7 +112,7 @@ func TestResourceCreateOfTypeMachineWithInvalidImage(t *testing.T) {
 
 func TestResourceUpdateWithValidData(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_machine", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_machine", "image-project", "image-family")
 	Convey("Update a resource with valid data in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -112,11 +124,12 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 		entity.Description = "Test Resource description Updated"
 		entity.Type = "machine"
 		entity.OperatingSystem = "linux_system"
-		entity.Image = "image-2"
+		entity.ImageProject = "image-project-updated"
+		entity.ImageFamily = "image-family-updated"
 
 		updateRequest := &proto.UpdateResourceRequest{
 			Resource:   entity,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image"}},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image_project", "image_family"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		So(err, ShouldBeNil)
@@ -126,15 +139,15 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 			ResourceId: entity.GetResourceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "machine", "linux_system", "image-2"}
-		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImage()}
+		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "machine", "linux_system", "image-project-updated", "image-family-updated"}
+		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
 		So(get, ShouldResemble, want)
 	})
 }
 
 func TestResourceUpdateWithInvalidName(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
 	Convey("Update a resource with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -144,11 +157,12 @@ func TestResourceUpdateWithInvalidName(t *testing.T) {
 		entity.Description = "Test Resource description Updated"
 		entity.Type = "machine"
 		entity.OperatingSystem = "windows_system"
-		entity.Image = "image-1"
+		entity.ImageProject = "image-project"
+		entity.ImageFamily = "image-family"
 
 		updateRequest := &proto.UpdateResourceRequest{
 			Resource:   entity,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image"}},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image_project", "image_family"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the resource as name is empty
@@ -158,7 +172,7 @@ func TestResourceUpdateWithInvalidName(t *testing.T) {
 
 func TestResourceUpdateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
 	Convey("Update a resource with invalid descriprion in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -168,11 +182,12 @@ func TestResourceUpdateWithInvalidDescription(t *testing.T) {
 		entity.Description = ""
 		entity.Type = "machine"
 		entity.OperatingSystem = "windows_system"
-		entity.Image = "image-1"
+		entity.ImageProject = "image-project"
+		entity.ImageFamily = "image-family"
 
 		updateRequest := &proto.UpdateResourceRequest{
 			Resource:   entity,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image"}},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image-project", "image-family"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the resource as description is empty
@@ -182,7 +197,7 @@ func TestResourceUpdateWithInvalidDescription(t *testing.T) {
 
 func TestResourceUpdateWithInvalidType(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
 	Convey("Update a resource with invalid type in datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -192,11 +207,12 @@ func TestResourceUpdateWithInvalidType(t *testing.T) {
 		entity.Description = "Test Resource description"
 		entity.Type = ""
 		entity.OperatingSystem = "windows_system"
-		entity.Image = "image-1"
+		entity.ImageProject = "image-project"
+		entity.ImageFamily = "image-family"
 
 		updateRequest := &proto.UpdateResourceRequest{
 			Resource:   entity,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image"}},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image-project", "image-family"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the resource as type is missing
@@ -206,7 +222,7 @@ func TestResourceUpdateWithInvalidType(t *testing.T) {
 
 func TestResourceUpdateOfTypeMachineWithInvalidOperatingSystem(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
 	Convey("Update a resource with invalid operating system in datastore if type is machine", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -216,11 +232,12 @@ func TestResourceUpdateOfTypeMachineWithInvalidOperatingSystem(t *testing.T) {
 		entity.Description = "Test Resource description"
 		entity.Type = "machine"
 		entity.OperatingSystem = ""
-		entity.Image = "image-1"
+		entity.ImageProject = "image-project"
+		entity.ImageFamily = "image-family"
 
 		updateRequest := &proto.UpdateResourceRequest{
 			Resource:   entity,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image"}},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image-project", "image-family"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the resource with type machine as operating system is missing
@@ -228,10 +245,10 @@ func TestResourceUpdateOfTypeMachineWithInvalidOperatingSystem(t *testing.T) {
 	})
 }
 
-func TestResourceUpdateOfTypeMachineWithInvalidImage(t *testing.T) {
+func TestResourceUpdateOfTypeMachineWithInvalidImageProject(t *testing.T) {
 	t.Parallel()
-	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-1")
-	Convey("Update a resource with invalid image in datastore if type is machine", t, func() {
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
+	Convey("Update a resource with invalid image project in datastore if type is machine", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
 		entity, err := handler.Create(ctx, resourceRequest)
@@ -240,20 +257,46 @@ func TestResourceUpdateOfTypeMachineWithInvalidImage(t *testing.T) {
 		entity.Description = "Test Resource description"
 		entity.Type = "machine"
 		entity.OperatingSystem = "windows_machine"
-		entity.Image = ""
+		entity.ImageProject = ""
+		entity.ImageFamily = "image-family"
 
 		updateRequest := &proto.UpdateResourceRequest{
 			Resource:   entity,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image"}},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image_project", "image_family"}},
 		}
 		_, err = handler.Update(ctx, updateRequest)
-		// should not save the resource with type machine as image is missing
+		// should not save the resource with type machine as image project is missing
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestResourceUpdateOfTypeMachineWithInvalidImageFamily(t *testing.T) {
+	t.Parallel()
+	resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
+	Convey("Update a resource with invalid image family in datastore if type is machine", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &ResourceHandler{}
+		entity, err := handler.Create(ctx, resourceRequest)
+		So(err, ShouldBeNil)
+		entity.Name = "Test Resource Name Updated"
+		entity.Description = "Test Resource description"
+		entity.Type = "machine"
+		entity.OperatingSystem = "windows_machine"
+		entity.ImageProject = "image-project"
+		entity.ImageFamily = ""
+
+		updateRequest := &proto.UpdateResourceRequest{
+			Resource:   entity,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image_project", "image_family"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the resource with type machine as image family is missing
 		So(err, ShouldNotBeNil)
 	})
 }
 
 func TestGetResourceWithValidData(t *testing.T) {
-	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource description", "machine", "windows_system", "image-1")
+	resourceRequest := mockCreateResourceRequest("Test Resource", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
 	Convey("Get a resource based on id from datastore", t, func() {
 		ctx := memory.Use(context.Background())
 		handler := &ResourceHandler{}
@@ -265,8 +308,8 @@ func TestGetResourceWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		So(err, ShouldBeNil)
 
-		want := []string{entity.GetName(), entity.GetDescription(), entity.GetType(), entity.GetOperatingSystem(), entity.GetImage()}
-		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImage()}
+		want := []string{entity.GetName(), entity.GetDescription(), entity.GetType(), entity.GetOperatingSystem(), entity.GetImageProject(), entity.GetImageFamily()}
+		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
 		So(get, ShouldResemble, want)
 	})
 }
@@ -274,8 +317,8 @@ func TestGetResourceWithValidData(t *testing.T) {
 func TestListResources(t *testing.T) {
 	t.Parallel()
 
-	resourceRequest1 := mockCreateResourceRequest("Test Resource1", "Test Resource description", "machine", "windows_system", "image-1")
-	resourceRequest2 := mockCreateResourceRequest("Test Resource2", "Test Resource description2", "machine", "linux_system", "image-5")
+	resourceRequest1 := mockCreateResourceRequest("Test Resource1", "Test Resource description", "machine", "windows_system", "image-project-1", "image-family-1")
+	resourceRequest2 := mockCreateResourceRequest("Test Resource2", "Test Resource description2", "machine", "linux_system", "image-project-2", "image-family-2")
 
 	Convey("Get all resources from datastore", t, func() {
 		ctx := memory.Use(context.Background())

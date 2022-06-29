@@ -22,6 +22,10 @@ type ResourceEntity struct {
 	// TODO: crbug/1328854 move the image info as part of property later phases
 	// image associated to the machine
 	Image string
+	// Gcp project where image resides
+	ImageProject string
+	// Family accociated with the gcp project where image resides
+	ImageFamily string
 	// User who created the record.
 	CreatedBy string
 	// Timestamp for the creation of the record.

@@ -381,14 +381,14 @@ func TestHostConfigWithValidDetails(t *testing.T) {
 func createDefaultResources(ctx context.Context) error {
 	resHandler := &ResourceHandler{}
 	resourceData := [][]string{
-		{"Network", "Resource of Type Network", "network", "", ""},
-		{"User", "Resource of Type User", "user", "", ""},
-		{"win2008r2", "Resource of Domain Controller Machine", "domain_controller_machine", "windows_machine", "win2008r2"},
-		{"Active Directory Domain", "Resource of Type Active Directory Domain", "ad_domain", "", ""},
+		{"Network", "Resource of Type Network", "network", "", "", ""},
+		{"User", "Resource of Type User", "user", "", "", ""},
+		{"win2008r2", "Resource of Domain Controller Machine", "domain_controller_machine", "windows_machine", "project-1", "family-1"},
+		{"Active Directory Domain", "Resource of Type Active Directory Domain", "ad_domain", "", "", ""},
 	}
 
 	for _, data := range resourceData {
-		resourceRequest := mockCreateResourceRequest(data[0], data[1], data[2], data[3], data[4])
+		resourceRequest := mockCreateResourceRequest(data[0], data[1], data[2], data[3], data[4], data[5])
 		_, err := resHandler.Create(ctx, resourceRequest)
 		if err != nil {
 			return err
@@ -400,7 +400,7 @@ func createDefaultResources(ctx context.Context) error {
 
 func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.AssetResourceModel, *proto.ResourceModel, error) {
 	resHandler := &ResourceHandler{}
-	resourceRequest := mockCreateResourceRequest("win2016mock", "mock windows machine", "machine", "windows_machine", "win-image-1")
+	resourceRequest := mockCreateResourceRequest("win2016mock", "mock windows machine", "machine", "windows_machine", "project-2", "family-2")
 	resource, err := resHandler.Create(ctx, resourceRequest)
 	if err != nil {
 		return nil, nil, nil, err

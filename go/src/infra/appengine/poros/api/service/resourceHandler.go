@@ -1,17 +1,15 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package service
 
 import (
 	"context"
 	"errors"
-	"reflect"
-	"time"
-
 	. "infra/appengine/poros/api/entities"
 	proto "infra/appengine/poros/api/proto"
+	"reflect"
+	"time"
 
 	"github.com/google/uuid"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -32,7 +30,8 @@ func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 			Description:     model.Description,
 			Type:            model.Type,
 			OperatingSystem: model.OperatingSystem,
-			Image:           model.Image,
+			ImageProject:    model.ImageProject,
+			ImageFamily:     model.ImageFamily,
 			CreatedAt:       model.CreatedAt.AsTime(),
 			CreatedBy:       model.CreatedBy,
 			ModifiedAt:      model.ModifiedAt.AsTime(),
@@ -41,7 +40,6 @@ func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 	}
 	return nil
 }
-
 func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 	if entity != nil {
 		return &proto.ResourceModel{
@@ -50,7 +48,8 @@ func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 			Description:     entity.Description,
 			Type:            entity.Type,
 			OperatingSystem: entity.OperatingSystem,
-			Image:           entity.Image,
+			ImageProject:    entity.ImageProject,
+			ImageFamily:     entity.ImageFamily,
 			CreatedAt:       timestamppb.New(entity.CreatedAt),
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
@@ -61,7 +60,7 @@ func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 }
 
 func validateResourceEntity(entity *ResourceEntity) error {
-	// validate name, description, type, Image
+	// validate name, description, type, ImageProject, ImageFamily
 	if entity.Name == "" {
 		return errors.New("name cannot be empty")
 	}
@@ -74,8 +73,11 @@ func validateResourceEntity(entity *ResourceEntity) error {
 	if entity.Type == "machine" && entity.OperatingSystem == "" {
 		return errors.New("Operating System cannot be empty")
 	}
-	if entity.Type == "machine" && entity.Image == "" {
-		return errors.New("VM Image needs to be specified")
+	if entity.Type == "machine" && entity.ImageProject == "" {
+		return errors.New("VM Image Project needs to be specified")
+	}
+	if entity.Type == "machine" && entity.ImageFamily == "" {
+		return errors.New("VM Image Family needs to be specified")
 	}
 	return nil
 }
@@ -89,7 +91,8 @@ func (e *ResourceHandler) Create(ctx context.Context, req *proto.CreateResourceR
 		Description:     req.GetDescription(),
 		Type:            req.GetType(),
 		OperatingSystem: req.GetOperatingSystem(),
-		Image:           req.GetImage(),
+		ImageProject:    req.GetImageProject(),
+		ImageFamily:     req.GetImageFamily(),
 		CreatedBy:       auth.CurrentUser(ctx).Email,
 		CreatedAt:       time.Now().UTC(),
 	}
