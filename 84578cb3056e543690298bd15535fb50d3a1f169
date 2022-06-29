@@ -355,6 +355,30 @@
       },
       "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04e2e07a_762e181b",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-29T23:06:32Z",
+      "side": 1,
+      "message": "We\u0027ll need the version check to catch failure like go/cros-fw-downdate-postmortem, added current/expected version info into logging and when erroring out.",
+      "parentUuid": "93f05570_2ce40e7d",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
