@@ -98,6 +98,7 @@ func (a *RunArgs) NewRunner(host string) Runner {
 			errCodeTagValue := errors.TagValue{Key: ErrCodeTag, Value: exitCode}
 			errAnnotator.Tag(errCodeTagValue)
 			errAnnotator.Tag(errors.TagValue{Key: StdErrTag, Value: r.Stderr})
+			log.Debugf(ctx, "Run stderr:\n%s", r.Stderr)
 			// different kinds of internal errors
 			if exitCode < 0 {
 				errAnnotator.Tag(SSHErrorInternal)
