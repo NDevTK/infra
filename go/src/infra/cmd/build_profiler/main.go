@@ -200,19 +200,35 @@ func main() {
 		fmt.Printf("cmd %s, cpu time %f\n", v.cmdline, v.cpuTimeStat.System+v.cpuTimeStat.User)
 	}
 
-	groupedProcessMap := make(map[string]float64)
+	type groupedByProcessKindValue struct {
+		totalSecond float64
+		count       int
+	}
+
+	groupedProcessMap := make(map[string]*groupedByProcessKindValue)
 	for _, v := range processValues {
-		groupedProcessMap[getProcessKind(v.cmdline)] += v.cpuTimeStat.System + v.cpuTimeStat.User
+		processKind := getProcessKind(v.cmdline)
+		cpuTime := v.cpuTimeStat.System + v.cpuTimeStat.User
+		if v, ok := groupedProcessMap[processKind]; ok {
+			v.totalSecond += cpuTime
+			v.count += 1
+		} else {
+			groupedProcessMap[processKind] = &groupedByProcessKindValue{
+				totalSecond: cpuTime,
+				count:       1,
+			}
+		}
+
 	}
 
 	type group struct {
 		name    string
-		cpuTime float64
+		cpuTime *groupedByProcessKindValue
 	}
 
 	var groupedProcesses []group
 	for k, v := range groupedProcessMap {
-		if v >= 1 {
+		if v.totalSecond >= 1 {
 			groupedProcesses = append(groupedProcesses, group{
 				name:    k,
 				cpuTime: v,
@@ -221,10 +237,10 @@ func main() {
 	}
 
 	sort.Slice(groupedProcesses, func(i, j int) bool {
-		return groupedProcesses[i].cpuTime > groupedProcesses[j].cpuTime
+		return groupedProcesses[i].cpuTime.totalSecond > groupedProcesses[j].cpuTime.totalSecond
 	})
 
 	for _, p := range groupedProcesses {
-		fmt.Printf("group %s, cpu time %f\n", p.name, p.cpuTime)
+		fmt.Printf("group %s, count %d, cpu time %f\n", p.name, p.cpuTime.count, p.cpuTime.totalSecond)
 	}
 }
