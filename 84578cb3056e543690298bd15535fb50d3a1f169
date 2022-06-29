@@ -403,6 +403,30 @@
       },
       "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f74c34f_60c1bccc",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-29T23:59:45Z",
+      "side": 1,
+      "message": "Maybe it\u0027s different than the PM, but we do discovered cases that firmware updater reported success but DUT firmware didn\u0027t change(silently rolled back?) after reboot, see this [example](https://ci.chromium.org/ui/p/chromeos/builders/test_runner/test_runner/b8810300103994648961/overview).\n\nCool, I\u0027ll keep this check since it can guard against these situation.",
+      "parentUuid": "bc4b94bd_7c99917c",
+      "range": {
+        "startLine": 152,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 115
+      },
+      "revId": "84578cb3056e543690298bd15535fb50d3a1f169",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "09da58f0_04e650d4",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-29T23:59:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2eabf8ca_3d43cb90",
+      "range": {
+        "startLine": 162,
+        "startChar": 37,
+        "endLine": 162,
+        "endChar": 52
+      },
+      "revId": "ddaa9db7fda760294345c0fe4f8f1685074e1aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9681f74a_8c050ac8",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-06-29T23:25:36Z",
       "side": 1,
       "message": "nit: (space), but in comment mentioned how it\u0027s a bit different of a situation in the postmortem.",
+      "range": {
+        "startLine": 177,
+        "startChar": 71,
+        "endLine": 177,
+        "endChar": 73
+      },
+      "revId": "ddaa9db7fda760294345c0fe4f8f1685074e1aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "699cfcb9_94f01c74",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-06-29T23:59:45Z",
+      "side": 1,
+      "message": "Rephrased the docstring and removed pm.",
+      "parentUuid": "9681f74a_8c050ac8",
       "range": {
         "startLine": 177,
         "startChar": 71,
