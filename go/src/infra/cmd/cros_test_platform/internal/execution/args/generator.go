@@ -332,8 +332,9 @@ func (g *Generator) displayName(ctx context.Context, kv map[string]string) strin
 }
 
 const (
-	suiteKey         = "suite"
-	defaultSuiteName = "cros_test_platform"
+	suiteKey                   = "suite"
+	defaultSuiteName           = "cros_test_platform"
+	ChromeOSImageBucketDefault = "chromeos-image-archive"
 )
 
 // This is a hack to satisfy tko/parse's insistence on parsing the display name
@@ -604,13 +605,17 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	}
 
 	imagePath := ""
+	imageBucket := ChromeOSImageBucketDefault
+	if builds.ChromeOSBucket != "" {
+		imageBucket = builds.ChromeOSBucket
+	}
 	if builds.LacrosGCSPath != "" {
 		imagePath = builds.LacrosGCSPath
-	} else if builds.ChromeOSBucket != "" && builds.ChromeOS != "" {
-		imagePath = fmt.Sprintf("gs://%s/%s", builds.ChromeOSBucket, builds.ChromeOS)
+	} else if builds.ChromeOS != "" {
+		imagePath = fmt.Sprintf("gs://%s/%s", imageBucket, builds.ChromeOS)
 	}
 	if imagePath == "" {
-		return nil, errors.Annotate(err, "create cft test runner request: imagePath").Err()
+		return nil, errors.NewMultiError(errors.Reason("create cft test runner request: empty imagePath").Err())
 	}
 
 	provsionState := &testapi.ProvisionState{
