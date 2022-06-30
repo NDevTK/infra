@@ -17,29 +17,18 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
-// servoVerifyV3Exec verifies whether the servo attached to the servo
-// host is of type V3.
+// servoVerifyV3Exec verifies whether the servo attached to the servo host is servo_v3.
 func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
-	// We first check that the servo host is not a labstation. The
-	// "-servo" suffix will exist only when the setup is for type V3,
+	// The "-servo" suffix will exist only when the setup is for type V3,
 	// (i.e. there is no labstation present).
-	servoSuffix := "-servo"
-	if !strings.Contains(info.GetChromeos().GetServo().GetName(), servoSuffix) {
-		return errors.Reason("servo verify v3: servo hostname does not carry suffix %q, this is not V3.", servoSuffix).Err()
+	if info.GetChromeos().GetServo().GetName() == "" {
+		return errors.Reason("servo verify v3: name is empty").Err()
 	}
-	// We further verify that the version detected for servo indeed
-	// matches that for "V3". This confirms that the entire setup is
-	// correct.
-	sType, err := WrappedServoType(ctx, info)
-	if err != nil {
-		log.Debugf(ctx, "Servo Verify V3: could not determine the servo type")
-		return errors.Annotate(err, "servo verify v3").Err()
-	}
-	if sType.IsV3() {
+	const servoSuffix = "-servo"
+	if strings.HasSuffix(info.GetChromeos().GetServo().GetName(), servoSuffix) {
 		return nil
 	}
-	log.Debugf(ctx, "Servo Verify V3: servo type is not V3.")
-	return errors.Reason("servo verify v3: servo type %q is not V3.", sType).Err()
+	return errors.Reason("servo verify v3: servo hostname does not carry suffix %q, this is not V3.", servoSuffix).Err()
 }
 
 // servoVerifyV4Exec verifies whether the servo attached to the servo
