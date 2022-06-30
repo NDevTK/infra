@@ -32,6 +32,7 @@ func TestValidateDutId(t *testing.T) {
 	reqCases := [2]*UpdateDeviceRecoveryDataRequest{
 		{
 			ChromeosDeviceId: "deviceId-1",
+			ResourceType:     UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_UNSPECIFIED,
 			DutState: &chromeosLab.DutState{
 				Id: &chromeosLab.ChromeOSDeviceID{
 					Value: "deviceId-1",

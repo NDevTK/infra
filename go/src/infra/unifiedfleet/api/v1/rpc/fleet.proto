@@ -1748,7 +1748,7 @@ message ChromeOsRecoveryData {
   // The state record to update.
   // DutState.Id is required and its value should be equal to UpdateDeviceRecoveryDataRequest.DeviceId
   // DutState.Hostname is optional. If set, it should be equal to UpdateDeviceRecoveryDataRequest.Hostname
-  models.chromeos.lab.DutState dut_state = 1;
+  models.chromeos.lab.DutState dut_state = 1 [(google.api.field_behavior) = REQUIRED];
 
   message DutData {
     string serial_number = 1;
@@ -1797,7 +1797,7 @@ message UpdateDeviceRecoveryDataRequest {
     RESOURCE_TYPE_CHROMEOS_DEVICE = 1;
     RESOURCE_TYPE_ATTACHED_DEVICE = 2;
   }
-  ResourceType resource_type = 8;
+  ResourceType resource_type = 8 [(google.api.field_behavior) = REQUIRED];
   // The hostname of the device.
   // Optional field but strongly recommended. If empty, hostname will be derived from device_id.
   string hostname = 2;

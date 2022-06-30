@@ -3172,6 +3172,7 @@ func TestUpdateRecoveryData(t *testing.T) {
 			req := &ufsAPI.UpdateDeviceRecoveryDataRequest{
 				ChromeosDeviceId: dutMachine,
 				Hostname:         dutName,
+				ResourceType:     ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_UNSPECIFIED,
 				DutState: &chromeosLab.DutState{
 					Id: &chromeosLab.ChromeOSDeviceID{
 						Value: dutMachine,
