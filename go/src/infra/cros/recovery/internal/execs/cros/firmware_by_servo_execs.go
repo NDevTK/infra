@@ -113,9 +113,6 @@ func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error {
-	const (
-		firmwareTarName = "firmware_from_source.tar.bz2"
-	)
 	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
 	if err != nil {
 		return errors.Annotate(err, "cros provision").Err()
@@ -138,19 +135,21 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	}
 	fwFileName := am.AsString(ctx, "fw_filename", firmwareTarName)
 	downloadFilename := fmt.Sprintf("%s/%s", downloadPath, fwFileName)
-	req := &firmware.InstallFwFromFwImageRequest{
+	servod := info.NewServod()
+	req := &firmware.InstallFirmwareImageRequest{
 		DownloadImagePath:    downloadFilename,
-		DownloadImageTimeout: am.AsDuration(ctx, "download_timeout", 600, time.Second),
+		DownloadImageTimeout: am.AsDuration(ctx, "download_timeout", 120, time.Second),
 		DownloadDir:          fwDownloadDir,
 		Board:                am.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                am.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
 		UpdateEC:             am.AsBool(ctx, "update_ec", false),
 		UpdateAP:             am.AsBool(ctx, "update_ap", false),
 		GBBFlags:             am.AsString(ctx, "gbb_flags", ""),
+		FlashThroughServo:    true,
+		Servod:               servod,
+		ServoHostRunner:      info.NewRunner(info.GetChromeos().GetServo().GetName()),
 	}
-	servod := info.NewServod()
-	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	err = firmware.InstallFwFromFwImage(ctx, req, run, servod, info.NewLogger())
+	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
 	return errors.Annotate(err, mn).Err()
 }
 

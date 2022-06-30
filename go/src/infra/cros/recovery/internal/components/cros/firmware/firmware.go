@@ -156,8 +156,8 @@ const (
 	ecMonitorFileName  = "npcx_monitor.bin"
 )
 
-// InstallFwFromFwImageRequest holds info for InstallFwFromFwImage method to flash EC/AP on the DUT.
-type InstallFwFromFwImageRequest struct {
+// InstallFirmwareImageRequest holds info for InstallFirmwareImage method to flash EC/AP on the DUT.
+type InstallFirmwareImageRequest struct {
 	// Board and model of the DUT.
 	Board string
 	Model string
@@ -172,65 +172,164 @@ type InstallFwFromFwImageRequest struct {
 	UpdateEC bool
 	// Specify that Update AP is is requested.
 	UpdateAP bool
+
 	// GBB flags value need to be set to AP.
 	// Example: 0x18
 	GBBFlags string
+
+	// Flash firmware via servo if true, otherwise flash firmware on DUT itself use chromeos-firmwareupdate.
+	FlashThroughServo bool
+
+	// Runner to execute command on the DUT side.
+	DutRunner components.Runner
+	// Runner to execute command on the servohost.
+	ServoHostRunner components.Runner
+
+	// servod instance will be used to collect firmware target info and/or flash image.
+	Servod components.Servod
+
+	// Indicates --mode flag used for chromeos-firwmareupdate, only has effect when flash on the DUT side.
+	// Possible values is: autoupdate, recovery, factory.
+	UpdaterMode string
+
+	// Timeout value for run firmware updater on the DUT, only has effect when flash on the DUT side.
+	UpdaterTimeout time.Duration
 }
 
-// InstallFwFromFwImage updates EC/AP on the DUT by servo from fw-image.
-func InstallFwFromFwImage(ctx context.Context, req *InstallFwFromFwImageRequest, run components.Runner, servod components.Servod, log logger.Logger) error {
-	if req == nil || req.Board == "" || req.Model == "" {
-		return errors.Reason("install fw from fw-image: request missed board/model data").Err()
+// getRunner determines which runner should be used based on FlashThroughServo flag.
+func (req *InstallFirmwareImageRequest) getRunner() components.Runner {
+	if req.FlashThroughServo {
+		return req.ServoHostRunner
+	}
+	return req.DutRunner
+}
+
+// Helper function to validate InstallFirmwareImage.
+func validateInstallFirmwareImageRequest(req *InstallFirmwareImageRequest) error {
+	prefix := "validate InstallFirmwareImageRequest: "
+	if req == nil {
+		return errors.Reason(prefix + "the request is nil").Err()
+	} else if req.Board == "" || req.Model == "" {
+		return errors.Reason(prefix + "both Board and Model needs to be provided.").Err()
+	} else if req.DownloadDir == "" || req.DownloadImagePath == "" || req.DownloadImageTimeout == 0 {
+		return errors.Reason(prefix + "both DownloadDir, DownloadImagePath and DownloadImageTimeout needs to be provided.").Err()
 	} else if !req.UpdateEC && !req.UpdateAP {
-		return errors.Reason("install fw from fw-image: at least ec or ap update need to be requested").Err()
+		return errors.Reason("validate InstallFirmwareImageRequest both EC and AP update flag are set to false, at least one need to be true.").Err()
+	}
+	if req.FlashThroughServo {
+		// Validating request in the case flash via servo.
+		template := prefix + "flash via servo selected but %s is not provided."
+		if req.Servod == nil {
+			return errors.Reason(fmt.Sprintf(template, "Servod")).Err()
+		} else if req.ServoHostRunner == nil {
+			return errors.Reason(fmt.Sprintf(template, "ServoHostRunner")).Err()
+		}
+	} else {
+		// Validating request in the case flash from the DUT itself.
+		template := prefix + "lash from the DUT selected but %s is not provided."
+		if req.UpdaterMode == "" {
+			return errors.Reason(fmt.Sprintf(template, "UpdaterMode")).Err()
+		} else if req.DutRunner == nil {
+			return errors.Reason(fmt.Sprintf(template, "DutRunner")).Err()
+		} else if req.UpdaterTimeout == 0 {
+			return errors.Reason(fmt.Sprintf(template, "UpdaterTimeout")).Err()
+		}
+	}
+	return nil
+}
+
+// InstallFirmwareImage updates a specific AP or/and EC firmware image on the DUT.
+func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest, log logger.Logger) error {
+	log.Debugf("Received request:\n%+v\n", req)
+	if err := validateInstallFirmwareImageRequest(req); err != nil {
+		return errors.Annotate(err, "install firmware image").Err()
 	}
 	const (
 		// Specify the name used for download file.
 		downloadFilename = "fw_image.tar.bz2"
 	)
+	run := req.getRunner()
 	clearDirectory := func() {
-		_, err := run(ctx, time.Minute, "rm", "-rf", req.DownloadDir)
-		log.Debugf("Failed to remove download directory %q, Error: %s", req.DownloadDir, err)
+		if _, err := run(ctx, time.Minute, "rm", "-rf", req.DownloadDir); err != nil {
+			log.Debugf("Failed to remove download directory %q, Error: %s", req.DownloadDir, err)
+		}
 	}
 	// Remove directory in case something left from last times.
 	clearDirectory()
 	if _, err := run(ctx, time.Minute, "mkdir", "-p", req.DownloadDir); err != nil {
-		return errors.Annotate(err, "install fw from fw-image").Err()
+		return errors.Annotate(err, "install firmware image").Err()
 	}
 	// Always clean up after creating folder as host has limit storage space.
-	defer func() { clearDirectory() }()
-	// Spicily filename for file to download.
+	defer clearDirectory()
+	// construct filename for file to download.
 	tarballPath := filepath.Join(req.DownloadDir, downloadFilename)
 	if out, err := run(ctx, req.DownloadImageTimeout, "curl", req.DownloadImagePath, "--output", tarballPath); err != nil {
 		log.Debugf("Output to download fw-image: %s", out)
-		return errors.Annotate(err, "install fw from fw-image").Err()
-	}
-	p, err := NewProgrammer(ctx, run, servod, log)
-	if err != nil {
-		return errors.Annotate(err, "install fw from fw-image").Err()
+		return errors.Annotate(err, "install firmware image").Err()
 	}
 	log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
+	if _, ok := getEcExemptedModels()[req.Model]; ok {
+		log.Debugf("Override UpdateEC to false as model %s doesn't have EC firmware", req.Model)
+		req.UpdateEC = false
+	}
+	if req.FlashThroughServo {
+		return installFirmwareViaServo(ctx, req, tarballPath, log)
+	}
+	return installFirmwareImageViaUpdater(ctx, req, tarballPath, log)
+}
+
+// installFirmwareImageViaUpdater extract AP or/and EC firmware image from provided tarball and install it via chromeos-firwmareupdate on DUT.
+func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) error {
+	updaterReq := FirmwareUpdaterRequest{
+		Mode:           req.UpdaterMode,
+		UpdaterTimeout: req.UpdaterTimeout,
+	}
 	if req.UpdateEC {
 		log.Debugf("Start extraction EC image from %q", tarballPath)
-		ecImage, err := extractECImage(ctx, tarballPath, run, servod, log, req.Board, req.Model)
+		ecImage, err := extractECImage(ctx, req, tarballPath, log)
 		if err != nil {
-			return errors.Annotate(err, "install fw from fw-image").Err()
+			return errors.Annotate(err, "install firmware via updater").Err()
+		}
+		updaterReq.EcImage = ecImage
+	}
+	if req.UpdateAP {
+		log.Debugf("Start extraction AP image from %q", tarballPath)
+		apImage, err := extractAPImage(ctx, req, tarballPath, log)
+		if err != nil {
+			return errors.Annotate(err, "install firmware via updater").Err()
+		}
+		updaterReq.ApImage = apImage
+	}
+	return RunFirmwareUpdater(ctx, &updaterReq, req.DutRunner, log)
+}
+
+// installFirmwareViaServo extract AP or/and EC firmware image from provided tarball and flash it via servo.
+func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) error {
+	p, err := NewProgrammer(ctx, req.ServoHostRunner, req.Servod, log)
+	if err != nil {
+		return errors.Annotate(err, "install firmware via servo").Err()
+	}
+	if req.UpdateEC {
+		log.Debugf("Start extraction EC image from %q", tarballPath)
+		ecImage, err := extractECImage(ctx, req, tarballPath, log)
+		if err != nil {
+			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Debugf("Start program EC image %q", ecImage)
 		if err := p.ProgramEC(ctx, ecImage); err != nil {
-			return errors.Annotate(err, "install fw from fw-image").Err()
+			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Infof("Finished program EC image %q", ecImage)
 	}
 	if req.UpdateAP {
 		log.Debugf("Start extraction AP image from %q", tarballPath)
-		apImage, err := extractAPImage(ctx, tarballPath, run, servod, log, req.Board, req.Model)
+		apImage, err := extractAPImage(ctx, req, tarballPath, log)
 		if err != nil {
-			return errors.Annotate(err, "install fw from fw-image").Err()
+			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Debugf("Start program AP image %q", apImage)
 		if err := p.ProgramAP(ctx, apImage, req.GBBFlags); err != nil {
-			return errors.Annotate(err, "install fw from fw-image").Err()
+			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Infof("Finished program AP image %q", apImage)
 	}
@@ -238,31 +337,38 @@ func InstallFwFromFwImage(ctx context.Context, req *InstallFwFromFwImageRequest,
 }
 
 // Helper function to extract EC image from downloaded tarball.
-func extractECImage(ctx context.Context, tarballPath string, run components.Runner, servod components.Servod, log logger.Logger, board, model string) (string, error) {
-	if board == "" || model == "" {
-		return "", errors.Reason("extract ec files: board or model is not provided").Err()
-	}
+func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "EC")
-	candidatesFiles := []string{
-		fmt.Sprintf("%s/ec.bin", model),
+	candidatesFiles := []string{}
+	// Handle special case where some model use non-regular firmware mapping.
+	if m, ok := getFwOverrideMap()[req.Model]; ok {
+		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
+		candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", m))
 	}
-	// TODO(b/226402941): Read existing ec image name using futility.
-	if model == "dragonair" {
-		candidatesFiles = append(candidatesFiles, "dratini/ec.bin")
-	}
-	if servod != nil {
-		fwBoard, err := servo.GetString(ctx, servod, "ec_board")
+	if req.Servod != nil {
+		fwBoard, err := servo.GetString(ctx, req.Servod, "ec_board")
 		if err != nil {
 			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
 		}
 		// Based on b:220157423 some board report name is upper case.
 		fwBoard = strings.ToLower(fwBoard)
-		if fwBoard != "" {
+		if fwBoard != "" && fwBoard != req.Model {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwBoard))
 		}
 	}
+	run := req.getRunner()
+	if !req.FlashThroughServo {
+		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
+		if err != nil {
+			log.Debugf("Failed to get firmware target info from DUT.")
+		}
+		if fwTarget != "" && fwTarget != req.Model {
+			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwTarget))
+		}
+	}
 	candidatesFiles = append(candidatesFiles,
-		fmt.Sprintf("%s/ec.bin", board),
+		fmt.Sprintf("%s/ec.bin", req.Model),
+		fmt.Sprintf("%s/ec.bin", req.Board),
 		"ec.bin",
 	)
 	imagePath, err := extractFromTarball(ctx, tarballPath, destDir, candidatesFiles, run, log)
@@ -282,31 +388,38 @@ func extractECImage(ctx context.Context, tarballPath string, run components.Runn
 }
 
 // Helper function to extract BIOS image from downloaded tarball.
-func extractAPImage(ctx context.Context, tarballPath string, run components.Runner, servod components.Servod, log logger.Logger, board, model string) (string, error) {
-	if board == "" || model == "" {
-		return "", errors.Reason("extract ap files: board or model is not provided").Err()
-	}
+func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "AP")
-	candidatesFiles := []string{
-		fmt.Sprintf("image-%s.bin", model),
+	candidatesFiles := []string{}
+	// Handle special case where some model use non-regular firmware mapping.
+	if m, ok := getFwOverrideMap()[req.Model]; ok {
+		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
+		candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", m))
 	}
-	// TODO(b/226402941): Read existing ec image name using futility.
-	if model == "dragonair" {
-		candidatesFiles = append(candidatesFiles, "image-dratini.bin")
-	}
-	if servod != nil {
-		fwBoard, err := servo.GetString(ctx, servod, "ec_board")
+	if req.Servod != nil {
+		fwBoard, err := servo.GetString(ctx, req.Servod, "ec_board")
 		if err != nil {
 			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
 		}
 		// Based on b:220157423 some board report name is upper case.
 		fwBoard = strings.ToLower(fwBoard)
-		if fwBoard != "" {
+		if fwBoard != "" && fwBoard != req.Model {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwBoard))
 		}
 	}
+	run := req.getRunner()
+	if !req.FlashThroughServo {
+		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
+		if err != nil {
+			log.Debugf("Failed to get firmware target info from DUT.")
+		}
+		if fwTarget != "" && fwTarget != req.Model {
+			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwTarget))
+		}
+	}
 	candidatesFiles = append(candidatesFiles,
-		fmt.Sprintf("image-%s.bin", board),
+		fmt.Sprintf("image-%s.bin", req.Model),
+		fmt.Sprintf("image-%s.bin", req.Board),
 		"image.bin",
 	)
 	imagePath, err := extractFromTarball(ctx, tarballPath, destDir, candidatesFiles, run, log)
@@ -355,4 +468,42 @@ func extractFromTarball(ctx context.Context, tarballPath, destDirPath string, ca
 		}
 	}
 	return "", errors.Reason("extract from tarball: no candidate file found").Err()
+}
+
+// getFirmwareTargetFromDUT determine firmware target based on output of crossystem from the DUT.
+func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
+	const (
+		// An example output of `crossystem fwid` is Google_Fizz.10139.172.0, and what we want is "Fizz" part.
+		getFirmwareTargetCmd = "crossystem fwid | awk -F. '{print $1}' | awk -F_ '{print $2}'"
+	)
+	out, err := run(ctx, time.Second*60, getFirmwareTargetCmd)
+	if err != nil {
+		return "", errors.Annotate(err, "get firmware target from DUT").Err()
+	}
+	log.Debugf("Firmware target info from DUT: %s", out)
+	// The first letter of firmware target read from DUT is capitalized, so convert to lower case here.
+	return strings.ToLower(out), nil
+}
+
+// getEcExemptedModels returns a map of models that doesn't have EC firmware.
+func getEcExemptedModels() map[string]bool {
+	return map[string]bool{
+		"drallion360": true,
+		"sarien":      true,
+		"arcada":      true,
+		"drallion":    true,
+	}
+}
+
+// getFwOverrideMap return a map of model that need to override its firmware target.
+func getFwOverrideMap() map[string]string {
+	return map[string]string{
+		// TODO(b/226402941): Read existing ec image name using futility.
+		"dragonair": "dratini",
+		// Models that use _signed version of firmware.
+		"drallion360": "drallion360_signed",
+		"sarien":      "sarien_signed",
+		"arcada":      "arcada_signed",
+		"drallion":    "drallion_signed",
+	}
 }

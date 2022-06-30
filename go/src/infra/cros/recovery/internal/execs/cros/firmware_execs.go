@@ -14,6 +14,7 @@ import (
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 )
 
 const (
@@ -27,8 +28,12 @@ const (
 	verifyFirmwareCmd = `vbutil_firmware --verify /tmp/verify_firmware/VBLOCK_%s` +
 		` --signpubkey /usr/share/vboot/devkeys/root_key.vbpubk` +
 		` --fv /tmp/verify_firmware/FW_MAIN_%s`
-	// remove the firmware related files we created before.
+	// Remove the firmware related files we created before.
 	removeFirmwareFileCmd = `rm -rf /tmp/verify_firmware`
+	// Firmware tarball filename in GS.
+	firmwareTarName = "firmware_from_source.tar.bz2"
+	// Default mode for chromeos-firmwareupdate when install firmware image.
+	defaultFirmwareImageUpdateMode = "recovery"
 )
 
 // isFirmwareInGoodState confirms that a host's firmware is in a good state.
@@ -137,6 +142,51 @@ func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("has dev signed firmware: dev signed key not found").Err()
 }
 
+// updateFirmwareFromFirmwareImage update RW/RO firmware to a given firmwarm image(stable_version by default).
+func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) error {
+	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	if err != nil {
+		return errors.Annotate(err, "update firmware image").Err()
+	}
+	actionArgs := info.GetActionArgs(ctx)
+	imageName := actionArgs.AsString(ctx, "version_name", sv.FwImage)
+	log.Debugf(ctx, "Used fw image name: %s", imageName)
+	gsBucket := actionArgs.AsString(ctx, "gs_bucket", gsCrOSImageBucket)
+	log.Debugf(ctx, "Used gs bucket name: %s", gsBucket)
+	gsImagePath := actionArgs.AsString(ctx, "gs_image_path", fmt.Sprintf("%s/%s", gsBucket, imageName))
+	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
+	fwDownloadDir := actionArgs.AsString(ctx, "fw_download_dir", defaultFwFolderPath(info.RunArgs.DUT))
+	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
+	// Requesting convert GC path to caches service path.
+	// Example: `http://Addr:8082/download/chromeos-image-archive/board-firmware/R99-XXXXX.XX.0`
+	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.RunArgs.DUT.Name, gsImagePath)
+	if err != nil {
+		return errors.Annotate(err, "update firmware image").Err()
+	}
+	fwFileName := actionArgs.AsString(ctx, "fw_filename", firmwareTarName)
+	downloadFilename := fmt.Sprintf("%s/%s", downloadPath, fwFileName)
+	run := info.DefaultRunner()
+	req := &firmware.InstallFirmwareImageRequest{
+		DownloadImagePath:    downloadFilename,
+		DownloadImageTimeout: actionArgs.AsDuration(ctx, "download_timeout", 120, time.Second),
+		DownloadDir:          fwDownloadDir,
+		DutRunner:            run,
+		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
+		Model:                actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
+		UpdateEC:             true,
+		UpdateAP:             true,
+		UpdaterMode:          defaultFirmwareImageUpdateMode,
+		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
+	}
+	if err := firmware.InstallFirmwareImage(ctx, req, info.NewLogger()); err != nil {
+		return errors.Annotate(err, "update firmware image").Err()
+	}
+	if _, err := run(ctx, time.Minute, "reboot && exit"); err != nil {
+		return errors.Annotate(err, "update firmware image").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_is_firmware_in_good_state", isFirmwareInGoodState)
 	execs.Register("cros_is_on_rw_firmware_stable_version", isOnRWFirmwareStableVersionExec)
@@ -144,4 +194,5 @@ func init() {
 	execs.Register("cros_has_dev_signed_firmware", hasDevSignedFirmwareExec)
 	execs.Register("cros_run_firmware_update", runFirmwareUpdaterExec)
 	execs.Register("cros_disable_fprom_write_protect", runDisableFPROMWriteProtectExec)
+	execs.Register("cros_update_firmware_from_firmware_image", updateFirmwareFromFirmwareImage)
 }

@@ -24,6 +24,19 @@ type FirmwareUpdaterRequest struct {
 	Force bool
 	// Time Specified to run firmware updater.
 	UpdaterTimeout time.Duration
+	// AP (host) firmware image (image.bin). If provided firmware updater will use this
+	// image instead of OS bundled firmware. Cannot be used together with FirmwareArchive.
+	ApImage string
+	// EC firmware image (i.e, ec.bin). If provided firmware updater will use this image
+	// instead of OS bundled firmware. Cannot be used together with FirmwareArchive.
+	EcImage string
+	// Firmware archive path. If provided firmware updater extract and use AP and EC image
+	// from the archieve. Cannot be used together with ApImage or EcImage.
+	FirmwareArchive string
+	// If provided it will override firmware target model, see --model option of chromeos-firmwareupdate.
+	Model string
+	// If update should proceed with write protection flag on, means "--wp=1".
+	WriteProtection bool
 }
 
 // RunFirmwareUpdater run chromeos-firmwareupdate to update firmware on the host.
@@ -35,6 +48,9 @@ func RunFirmwareUpdater(ctx context.Context, req *FirmwareUpdaterRequest, run co
 	default:
 		return errors.Reason("run firmware updater: mode %q is not supported", req.Mode).Err()
 	}
+	if req.FirmwareArchive != "" && (req.ApImage != "" || req.EcImage != "") {
+		return errors.Reason("run firmware updater: both FirmwareArchive and ApImage/EcImage are provided").Err()
+	}
 	log.Debugf("Run firmware updater: use %q mode.", req.Mode)
 	args := []string{
 		fmt.Sprintf("--mode=%s", req.Mode),
@@ -42,6 +58,26 @@ func RunFirmwareUpdater(ctx context.Context, req *FirmwareUpdaterRequest, run co
 	if req.Force {
 		log.Debugf("Run firmware updater: request to run with force.")
 		args = append(args, "--force")
+	}
+	if req.WriteProtection {
+		log.Debugf("Run firmware updater: request to run with write protection on.")
+		args = append(args, "--wp=1")
+	}
+	if req.ApImage != "" {
+		log.Debugf(fmt.Sprintf("Run firmware updater: request to install from provided AP image %s", req.ApImage))
+		args = append(args, fmt.Sprintf("--image=%s", req.ApImage))
+	}
+	if req.EcImage != "" {
+		log.Debugf(fmt.Sprintf("Run firmware updater: request to install from provided EC image %s", req.EcImage))
+		args = append(args, fmt.Sprintf("--ec_image=%s", req.EcImage))
+	}
+	if req.FirmwareArchive != "" {
+		log.Debugf(fmt.Sprintf("Run firmware updater: request to extract and install from provided archive %s", req.FirmwareArchive))
+		args = append(args, fmt.Sprintf("--archive=%s", req.FirmwareArchive))
+	}
+	if req.Model != "" {
+		log.Debugf(fmt.Sprintf("Run firmware updater: request to override target model to %s", req.Model))
+		args = append(args, fmt.Sprintf("--model=%s", req.Model))
 	}
 	out, err := run(ctx, req.UpdaterTimeout, "chromeos-firmwareupdate", args...)
 	log.Debugf("Run firmware updater stdout:\n%s", out)
