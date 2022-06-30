@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5264a452_27ede0d1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-06-30T23:31:23Z",
+      "side": 1,
+      "message": "The default is applied lower down in the stack. We do not need to take any explicit action at this level.",
+      "parentUuid": "8ff81261_a50013e2",
+      "revId": "7eab3b2ba799c43af2eff154cff86e45adfc1ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e8f482ee_ce293ddb",
