@@ -131,9 +131,6 @@ func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) err
 		if dutHostname != "" {
 			if c.full {
 				leaseInfo.DUT, allDutInfoFound, err = getDutInfo(ctx, ufsClient, dutHostname)
-				if err != nil {
-					return err
-				}
 			} else {
 				leaseInfo.DUT = &dutinfopb.DUTInfo{Hostname: dutHostname}
 			}
@@ -141,10 +138,14 @@ func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) err
 		// If outputting the command as JSON, collect all lease info in a proto
 		// message first, then print together as one JSON object.
 		// Otherwise, just print each separately from this loop.
+		// Swallow all errors from here on, since we have partial info to print.
 		leaseInfoList.Leases = append(leaseInfoList.Leases, leaseInfo)
 		c.printer.WriteTextStdout("%s\n", leaseInfoAsBashVariables(leaseInfo, leasesBBClient))
 		if !allDutInfoFound {
-			c.printer.WriteTextStdout("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s` to try again\n", dutHostname, leasesCmd)
+			c.printer.WriteTextStdout("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s` to try again", dutHostname, leasesCmd)
+		}
+		if err != nil {
+			c.printer.WriteTextStdout("RPC error: %s", err.Error())
 		}
 	}
 	c.printer.WriteJSONStdout(&leaseInfoList)

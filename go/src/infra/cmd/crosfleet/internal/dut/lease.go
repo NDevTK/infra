@@ -120,22 +120,19 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		host := buildbucket.FindDimValInFinalDims("dut_name", leaseInfo.Build)
 		endTime := time.Now().Add(time.Duration(c.durationMins) * time.Minute).Format(time.RFC822)
 		c.printer.WriteTextStdout("Leased %s until %s\n", host, endTime)
+
+		// Swallow all errors from here on, since the DUT is already leased.
+		allInfoFound := false
 		ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
-		if err != nil {
-			// Don't fail the command here, since the DUT is already leased.
-			c.printer.WriteTextStderr("Unable to contact UFS to print DUT info: %v", err)
-			return nil
-		}
-		var allInfoFound bool
-		leaseInfo.DUT, allInfoFound, err = getDutInfo(ctx, ufsClient, host)
-		if err != nil {
-			// Don't fail the command here, since the DUT is already leased.
-			c.printer.WriteTextStderr("Unable to print DUT info: %v", err)
-			return nil
+		if err == nil {
+			leaseInfo.DUT, allInfoFound, err = getDutInfo(ctx, ufsClient, host)
 		}
 		c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.DUT))
 		if !allInfoFound {
-			c.printer.WriteTextStderr("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again\n", host, infoCmdName, host)
+			c.printer.WriteTextStderr("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again", host, infoCmdName, host)
+		}
+		if err != nil {
+			c.printer.WriteTextStderr("RPC error: %s", err.Error())
 		}
 	}
 	c.printer.WriteJSONStdout(&leaseInfo)
