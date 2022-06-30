@@ -104,7 +104,12 @@ func runFirmwareUpdaterExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	logger.Debugf("Run firmware update: request to run with %q mode.", req.Mode)
 	if err := firmware.RunFirmwareUpdater(ctx, req, run, logger); err != nil {
-		return errors.Annotate(err, "run firmware update").Err()
+		logger.Debugf("Run firmware update: fail on run updater. Error: %s", err)
+		if am.AsBool(ctx, "no_strict_update", false) {
+			logger.Debugf("Run firmware update: continue as allowed updater to fail.")
+		} else {
+			return errors.Annotate(err, "run firmware update").Err()
+		}
 	}
 	switch am.AsString(ctx, "reboot", "") {
 	case "by_servo":

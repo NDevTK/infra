@@ -115,7 +115,7 @@ func deployActions() map[string]*Action {
 				"Device is SSHable",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
-				"Update FW with factory mode",
+				"Try to update FW with factory mode",
 				"Cold reset DUT by servo",
 				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
@@ -134,7 +134,7 @@ func deployActions() map[string]*Action {
 				"Device is SSHable",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
-				"Update FW with factory mode",
+				"Try to update FW with factory mode",
 				"Simple reboot",
 				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
@@ -142,10 +142,11 @@ func deployActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Update FW with factory mode": {
+		"Try to update FW with factory mode": {
 			Docs: []string{
 				"Run chromeos-firmware update with factory mode.",
 				"The reboot is not triggered as part of the action.",
+				"The action is not strict to not block repair actions.",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 900},
 			ExecName:    "cros_run_firmware_update",
@@ -153,6 +154,7 @@ func deployActions() map[string]*Action {
 				"mode:factory",
 				"force:true",
 				"updater_timeout:600",
+				"no_strict_update:true",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
