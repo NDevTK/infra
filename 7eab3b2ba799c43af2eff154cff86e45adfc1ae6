@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8f482ee_ce293ddb",
+        "filename": "go/src/infra/libs/skylab/buildbucket/labpack/labpack.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-06-30T22:27:08Z",
+      "side": 1,
+      "message": "do we need change it?",
+      "range": {
+        "startLine": 112,
+        "startChar": 2,
+        "endLine": 112,
+        "endChar": 42
+      },
+      "revId": "7eab3b2ba799c43af2eff154cff86e45adfc1ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
