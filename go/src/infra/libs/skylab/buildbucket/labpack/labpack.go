@@ -16,6 +16,12 @@ import (
 
 // Params are the parameters to the labpack job.
 type Params struct {
+	// BuilderProject -- treated as "chromeos" by default.
+	BuilderProject string
+	// BuilderBucket -- treated as "labpack_runner" by default.
+	BuilderBucket string
+	// BuilderName -- treated as "labpack_builder" by default
+	BuilderName string
 	// UnitName is the DUT or similar that we are scheduling against.
 	// For example, a DUT hostname is a valid UnitName.
 	UnitName string
@@ -44,6 +50,9 @@ type Params struct {
 }
 
 // AsMap takes the parameters and flattens it into a map with string keys.
+//
+// Note that some fields, for example "builder_name" and "expected_state" intentionally do NOT
+// end up as properties here.
 func (p *Params) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"unit_name":         p.UnitName,
@@ -87,6 +96,9 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 		return 0, err
 	}
 	p := &buildbucket.ScheduleLabpackTaskParams{
+		BuilderName:      params.BuilderName,
+		BuilderBucket:    params.BuilderBucket,
+		BuilderProject:   params.BuilderProject,
 		UnitName:         params.UnitName,
 		ExpectedDUTState: params.ExpectedState,
 		Props:            props,
