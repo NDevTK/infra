@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8ff81261_a50013e2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-06-30T23:21:59Z",
+      "side": 1,
+      "message": "i think right now we applied default and we need apply some other for them?",
+      "parentUuid": "bfcfc93c_55f7dfc5",
+      "revId": "7eab3b2ba799c43af2eff154cff86e45adfc1ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e8f482ee_ce293ddb",
         "filename": "go/src/infra/libs/skylab/buildbucket/labpack/labpack.go",
         "patchSetId": 1
