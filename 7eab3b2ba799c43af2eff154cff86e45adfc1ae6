@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bfcfc93c_55f7dfc5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-06-30T23:20:55Z",
+      "side": 1,
+      "message": "Which value should we apply to the newly-created task?",
+      "parentUuid": "cadf8d66_0b919ade",
+      "revId": "7eab3b2ba799c43af2eff154cff86e45adfc1ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e8f482ee_ce293ddb",
