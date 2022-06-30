@@ -149,7 +149,7 @@ export const Asset = () => {
           }}
         >
           <FormControl variant="standard" fullWidth>
-            <InputLabel>Image</InputLabel>
+            <InputLabel>Resource</InputLabel>
             <Select
               id={'image-' + index}
               onChange={(e) =>
