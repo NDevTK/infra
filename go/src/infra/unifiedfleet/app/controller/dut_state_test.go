@@ -24,13 +24,17 @@ func TestUpdateDutState(t *testing.T) {
 	ctx := testingContext()
 	osCtx, _ := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
 	Convey("UpdateDutState", t, func() {
+		Convey("Update dut state - missing state", func() {
+			_, err := UpdateDutState(ctx, nil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "dut state must not be null")
+		})
 		Convey("Update dut state with non-existing host in dut state storage", func() {
 			ds1 := mockDutState("update-dutstate-id1", "update-dutstate-hostname1")
 			_, err := UpdateDutState(ctx, ds1)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Entity not found")
 		})
-
 		Convey("Update dut state - happy path with existing dut state", func() {
 			ds1 := mockDutState("update-dutstate-id2", "update-dutstate-hostname2")
 			ds1.Servo = chromeosLab.PeripheralState_WORKING

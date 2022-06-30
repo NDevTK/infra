@@ -42,6 +42,9 @@ func ListDutStates(ctx context.Context, pageSize int32, pageToken, filter string
 // UpdateDutState updates the dut state for a ChromeOS DUT
 func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab.DutState, error) {
 	f := func(ctx context.Context) error {
+		if ds == nil {
+			return status.Errorf(codes.InvalidArgument, "dut state must not be null.")
+		}
 		// It's not ok that no such DUT (machine lse) exists in UFS.
 		_, err := inventory.GetMachineLSE(ctx, ds.GetHostname())
 		if err != nil {

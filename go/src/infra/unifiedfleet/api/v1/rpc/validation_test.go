@@ -29,21 +29,32 @@ func TestValidateHostnames(t *testing.T) {
 }
 
 func TestValidateDutId(t *testing.T) {
-	dutId := "deviceId-1"
-	req := &UpdateDeviceRecoveryDataRequest{
-		DutState: &chromeosLab.DutState{
-			Id: &chromeosLab.ChromeOSDeviceID{
-				Value: dutId,
+	reqCases := [2]*UpdateDeviceRecoveryDataRequest{
+		{
+			ChromeosDeviceId: "deviceId-1",
+			DutState: &chromeosLab.DutState{
+				Id: &chromeosLab.ChromeOSDeviceID{
+					Value: "deviceId-1",
+				},
+			},
+		},
+		{
+			DeviceId:     "deviceId-1",
+			ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
+			DeviceRecoveryData: &UpdateDeviceRecoveryDataRequest_Chromeos{
+				Chromeos: &ChromeOsRecoveryData{
+					DutState: &chromeosLab.DutState{
+						Id: &chromeosLab.ChromeOSDeviceID{
+							Value: "deviceId-1",
+						},
+					},
+				},
 			},
 		},
 	}
-	req.DeviceId = dutId
-	if err := req.validateDutId(); err != nil {
-		t.Errorf("validateDutId(%v) with DeviceId failed %v", req, err)
-	}
-	req.DeviceId = ""
-	req.ChromeosDeviceId = dutId
-	if err := req.validateDutId(); err != nil {
-		t.Errorf("validateDutId(%v) with ChromeosDeviceId failed %v", req, err)
+	for _, req := range reqCases {
+		if err := req.validateDutId(); err != nil {
+			t.Errorf("validateDutId(%v) has failed %v", req, err)
+		}
 	}
 }

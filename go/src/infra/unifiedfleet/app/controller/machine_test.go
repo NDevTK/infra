@@ -950,92 +950,106 @@ func TestUpdateDutMeta(t *testing.T) {
 func TestUpdateRecoveryDutData(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
+	machineId := 0
+	serialNumber := "serialNumber"
+	hwID := "hwID"
+	deviceSku := "deviceSku"
+	dutDataCases := map[string]ufsAPI.DutRecoveryDataInterface{
+		"legacy DutData": &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{
+			SerialNumber: serialNumber,
+			HwID:         hwID,
+			DeviceSku:    deviceSku,
+		},
+		"new DutData": &ufsAPI.ChromeOsRecoveryData_DutData{
+			SerialNumber: serialNumber,
+			HwID:         hwID,
+			DeviceSku:    deviceSku,
+		},
+	}
 	Convey("UpdateRecoveryDutData for an OS machine", t, func() {
-		Convey("Update a non-OS machine", func() {
-			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name: "machine-dutdata-1",
-				Device: &ufspb.Machine_ChromeBrowserMachine{
-					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
-				},
+		for dutDataType, dutData := range dutDataCases {
+			Convey("Update a non-OS machine - "+dutDataType, func() {
+				machineId++
+				machineName := fmt.Sprint("machine-dutdata-", machineId)
+				_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+					Name: machineName,
+					Device: &ufspb.Machine_ChromeBrowserMachine{
+						ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
+					},
+				})
+				So(err, ShouldBeNil)
+				asset := &ufspb.Asset{
+					Name: machineName,
+					Info: &ufspb.AssetInfo{
+						AssetTag: machineName,
+					},
+					Type:     ufspb.AssetType_DUT,
+					Location: &ufspb.Location{},
+				}
+				asset, err = registration.CreateAsset(ctx, asset)
+				So(err, ShouldBeNil)
+				So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
+				So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
+				So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+
+				err = updateRecoveryDutData(ctx, machineName, dutData)
+				// Update is skipped without error
+				So(err, ShouldBeNil)
+				req, err := registration.GetMachine(ctx, machineName)
+				So(req.GetSerialNumber(), ShouldBeEmpty)
+				So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
+				So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
+
+				asset, err = registration.GetAsset(ctx, machineName)
+				So(err, ShouldBeNil)
+				So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
+				So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
+				So(asset.GetInfo().GetSku(), ShouldBeEmpty)
 			})
-			So(err, ShouldBeNil)
-			asset := &ufspb.Asset{
-				Name: "machine-dutdata-1",
-				Info: &ufspb.AssetInfo{
-					AssetTag: "machine-dutdata-1",
-				},
-				Type:     ufspb.AssetType_DUT,
-				Location: &ufspb.Location{},
-			}
-			asset, err = registration.CreateAsset(ctx, asset)
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+			Convey("Update a OS machine - successful path - "+dutDataType, func() {
+				machineId++
+				machineName := fmt.Sprint("machine-dutdata-", machineId)
+				assetTag := fmt.Sprint("machine-testassetdata-", machineId)
+				machine := &ufspb.Machine{
+					Name: machineName,
+					Device: &ufspb.Machine_ChromeosMachine{
+						ChromeosMachine: &ufspb.ChromeOSMachine{},
+					},
+				}
+				req, err := registration.CreateMachine(ctx, machine)
+				So(err, ShouldBeNil)
+				So(req.GetSerialNumber(), ShouldBeEmpty)
+				So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
+				So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
+				asset := &ufspb.Asset{
+					Name: machineName,
+					Info: &ufspb.AssetInfo{
+						AssetTag: assetTag,
+					},
+					Type:     ufspb.AssetType_DUT,
+					Location: &ufspb.Location{},
+				}
+				asset, err = registration.CreateAsset(ctx, asset)
+				So(err, ShouldBeNil)
+				So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
+				So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
+				So(asset.GetInfo().GetSku(), ShouldBeEmpty)
 
-			err = updateRecoveryDutData(ctx, "machine-dutdata-1", &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{
-				SerialNumber: "fake-serial",
-				HwID:         "fake-hwid",
-				DeviceSku:    "fake-devicesku",
+				err = updateRecoveryDutData(ctx, machineName, dutData)
+				So(err, ShouldBeNil)
+				req, err = registration.GetMachine(ctx, machineName)
+				So(err, ShouldBeNil)
+				So(req.GetSerialNumber(), ShouldEqual, serialNumber)
+				So(req.GetChromeosMachine().GetHwid(), ShouldEqual, hwID)
+				So(req.GetChromeosMachine().GetSku(), ShouldEqual, deviceSku)
+
+				asset, err = registration.GetAsset(ctx, machineName)
+				So(err, ShouldBeNil)
+				So(asset.GetInfo().GetSerialNumber(), ShouldEqual, serialNumber)
+				So(asset.GetInfo().GetHwid(), ShouldEqual, hwID)
+				So(asset.GetInfo().GetSku(), ShouldEqual, deviceSku)
 			})
-			// Update is skipped without error
-			So(err, ShouldBeNil)
-			req, err := registration.GetMachine(ctx, "machine-dutdata-1")
-			So(req.GetSerialNumber(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
-
-			asset, err = registration.GetAsset(ctx, "machine-dutdata-1")
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
-		})
-
-		Convey("Update a OS machine - happy path", func() {
-			machine := &ufspb.Machine{
-				Name: "machine-dutdata-2",
-				Device: &ufspb.Machine_ChromeosMachine{
-					ChromeosMachine: &ufspb.ChromeOSMachine{},
-				},
-			}
-			req, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
-			asset := &ufspb.Asset{
-				Name: "machine-dutdata-2",
-				Info: &ufspb.AssetInfo{
-					AssetTag: "machine-testassetdata-2",
-				},
-				Type:     ufspb.AssetType_DUT,
-				Location: &ufspb.Location{},
-			}
-			asset, err = registration.CreateAsset(ctx, asset)
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
-
-			err = updateRecoveryDutData(ctx, "machine-dutdata-2", &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{
-				SerialNumber: "fake-serial",
-				HwID:         "fAke-hwid ",
-				DeviceSku:    "f!ke-devicesku",
-			})
-			So(err, ShouldBeNil)
-			req, err = registration.GetMachine(ctx, "machine-dutdata-2")
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldEqual, "fake-serial")
-			So(req.GetChromeosMachine().GetHwid(), ShouldEqual, "fAke-hwid ")
-			So(req.GetChromeosMachine().GetSku(), ShouldEqual, "f!ke-devicesku")
-
-			asset, err = registration.GetAsset(ctx, "machine-dutdata-2")
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldEqual, "fake-serial")
-			So(asset.GetInfo().GetHwid(), ShouldEqual, "fAke-hwid ")
-			So(asset.GetInfo().GetSku(), ShouldEqual, "f!ke-devicesku")
-		})
+		}
 	})
 }
 
