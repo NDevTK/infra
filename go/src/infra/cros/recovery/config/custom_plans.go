@@ -47,3 +47,28 @@ func ReserveDutConfig() *Configuration {
 		},
 	}
 }
+
+// DeepRepairConfig creates configuration to perform deep repair.
+//
+// Please look to the configuration to see all steps.
+// Configuration is not critical and do not update the state of the DUT.
+// Please do not apply close plan from repair to avoid unexpected state changes.
+func DeepRepairConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanServo,
+			PlanCrOS,
+		},
+		Plans: map[string]*Plan{
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+					"Download stable image to USB-key",
+					"Install OS in DEV mode by USB-drive",
+				},
+				Actions: crosRepairActions(),
+			},
+			PlanServo: servoRepairPlan(),
+		},
+	}
+}

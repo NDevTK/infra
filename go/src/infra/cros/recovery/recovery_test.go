@@ -150,9 +150,9 @@ var dutPlansCases = []struct {
 // TestLoadConfiguration tests default configuration used for recovery flow is loading right and parsibale without any issue.
 //
 // Goals:
-//  1) Parsed without any issue
-//  2) plan using only existing execs
-//  3) configuration contain all required plans in order.
+//  1. Parsed without any issue
+//  2. plan using only existing execs
+//  3. configuration contain all required plans in order.
 func TestLoadConfiguration(t *testing.T) {
 	t.Parallel()
 	for _, c := range dutPlansCases {
@@ -184,9 +184,9 @@ func TestLoadConfiguration(t *testing.T) {
 // TestParsedDefaultConfiguration tests default configurations are loading right and parsibale without any issue.
 //
 // Goals:
-//  1) Parsed without any issue
-//  2) plan using only existing execs
-//  3) configuration contain all required plans in order.
+//  1. Parsed without any issue
+//  2. plan using only existing execs
+//  3. configuration contain all required plans in order.
 func TestParsedDefaultConfiguration(t *testing.T) {
 	t.Parallel()
 	for _, c := range dutPlansCases {
@@ -436,6 +436,52 @@ func TestVerify(t *testing.T) {
 
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+// Test cases for TestDUTPlans
+var customConfigurationTestCases = []struct {
+	name      string
+	getConfig func() *config.Configuration
+}{
+	{
+		"Deep repair config",
+		func() *config.Configuration {
+			return config.DeepRepairConfig()
+		},
+	},
+	{
+		"Reserve DUT",
+		func() *config.Configuration {
+			return config.ReserveDutConfig()
+		},
+	},
+	{
+		"Custom dowload image to USB drive",
+		func() *config.Configuration {
+			return config.DownloadImageToServoUSBDrive("image_path", "image_name")
+		},
+	},
+}
+
+// TestOtherConfigurations tests other known configurations used anywhere.
+//
+// Goals:
+//  1. Parsed without any issue
+//  2. plan using only existing execs
+//  3. configuration contain all required plans in order.
+func TestOtherConfigurations(t *testing.T) {
+	t.Parallel()
+	for _, c := range customConfigurationTestCases {
+		cs := c
+		t.Run(cs.name, func(t *testing.T) {
+			ctx := context.Background()
+			configuration := cs.getConfig()
+			_, err := config.Validate(ctx, configuration, execs.Exist)
+			if err != nil {
+				t.Errorf("%q -> fail to validate configuration with error: %s", cs.name, err)
 			}
 		})
 	}

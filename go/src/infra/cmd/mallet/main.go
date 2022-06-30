@@ -50,6 +50,7 @@ func getApplication() *cli.Application {
 			tasks.RecoveryConfig,
 			tasks.CustomProvision,
 			tasks.DownloadToUsbDrive,
+			tasks.DeepRepair,
 		},
 	}
 }
