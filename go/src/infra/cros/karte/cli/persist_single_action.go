@@ -15,6 +15,7 @@ import (
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/client"
+	"infra/cros/karte/internal/commonflags"
 	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
@@ -27,6 +28,7 @@ var PersistSingleAction = &subcommands.Command{
 	LongDesc:  ``,
 	CommandRun: func() subcommands.CommandRun {
 		r := &persistSingleActionRun{}
+		r.commonFlags.Register(&r.Flags)
 		r.authFlags.Register(&r.Flags, site.DefaultAuthOptions)
 		return r
 	},
@@ -35,7 +37,8 @@ var PersistSingleAction = &subcommands.Command{
 // persistSingleActionRun runs the command.
 type persistSingleActionRun struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
+	authFlags   authcli.Flags
+	commonFlags commonflags.Flags
 }
 
 // Run logs an error message if there is one and returns an exit status.
@@ -60,7 +63,7 @@ func (c *persistSingleActionRun) innerRun(ctx context.Context, a subcommands.App
 	if err != nil {
 		return errors.Annotate(err, "inner run").Err()
 	}
-	kClient, err := client.NewClient(ctx, client.DevConfig(authOptions))
+	kClient, err := client.NewClient(ctx, c.commonFlags.MustSelectKarteConfig(authOptions))
 	if err != nil {
 		return errors.Annotate(err, "inner run").Err()
 	}
