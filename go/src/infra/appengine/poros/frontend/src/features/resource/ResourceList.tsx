@@ -106,10 +106,7 @@ export function ResourceList() {
   }
 
   function getLocalTime(params: GridValueGetterParams) {
-    return (
-      params.row.createdAt.toLocaleString('en-US', { timeZone: 'US/Pacific' }) +
-      ' PT'
-    );
+    return params.row.createdAt.toLocaleString();
   }
 
   return (
