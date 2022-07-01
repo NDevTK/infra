@@ -124,6 +124,22 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 	}
 	// TODO: migrate to use docker SDK.
 	// TODO: move logic to separate method with tests.
+	args := generateCommandArray(containerName, req)
+	res, err := runWithTimeout(ctx, timeout, "docker", args...)
+	log.Debugf(ctx, "Executing docker run command\ndocker ")
+	log.Debugf(ctx, "Run docker exec %q: exitcode: %v", containerName, res.ExitCode)
+	log.Debugf(ctx, "Run docker exec %q: stdout: %v", containerName, res.Stdout)
+	log.Debugf(ctx, "Run docker exec %q: stderr: %v", containerName, res.Stderr)
+	log.Debugf(ctx, "Run docker exec %q: err: %v", containerName, err)
+	return &StartResponse{
+		ExitCode: res.ExitCode,
+		Stdout:   res.Stdout,
+		Stderr:   res.Stderr,
+	}, errors.Annotate(err, "run docker image %q: %s", containerName, res.Stderr).Err()
+}
+
+// generateCommandArray takes the raw ContainerArgs we get and convert to an array of strings used to form the docker run command in Start
+func generateCommandArray(containerName string, req *ContainerArgs) []string {
 	args := []string{"run"}
 	if req.Detached {
 		args = append(args, "-d")
@@ -156,16 +172,8 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 	if len(req.Exec) > 0 {
 		args = append(args, req.Exec...)
 	}
-	res, err := runWithTimeout(ctx, timeout, "docker", args...)
-	log.Debugf(ctx, "Run docker exec %q: exitcode: %v", containerName, res.ExitCode)
-	log.Debugf(ctx, "Run docker exec %q: stdout: %v", containerName, res.Stdout)
-	log.Debugf(ctx, "Run docker exec %q: stderr: %v", containerName, res.Stderr)
-	log.Debugf(ctx, "Run docker exec %q: err: %v", containerName, err)
-	return &StartResponse{
-		ExitCode: res.ExitCode,
-		Stdout:   res.Stdout,
-		Stderr:   res.Stderr,
-	}, errors.Annotate(err, "run docker image %q: %s", containerName, res.Stderr).Err()
+
+	return args
 }
 
 // Remove removes existed container.
@@ -291,4 +299,10 @@ func (d *dockerClient) CopyFrom(ctx context.Context, containerName string, sourc
 		return errors.Reason("copy from %q: fail with exit code %v", containerName, res.ExitCode).Err()
 	}
 	return nil
+}
+
+// StartCommandString prints the command used in Start to spin up a container
+// Uses the same underlying logic as Start to ensure we always print an accurate string
+func StartCommandString(containerName string, req *ContainerArgs) string {
+	return fmt.Sprintf("docker %v", strings.Trim(fmt.Sprint(generateCommandArray(containerName, req)), "[]"))
 }

@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-// TestStartServodContainerStartsContainer tests solely for the execution of `docker.Start()` in various conditions
+// TestStartServodContainerStartsContainer tests for the execution of `docker.Start()` in various conditions and ensures we use the correct args to do so
 func TestStartServodContainerStartsContainer(t *testing.T) {
 	t.Parallel()
 
@@ -33,45 +33,66 @@ func TestStartServodContainerStartsContainer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		opts := ServodContainerOptions{
-			containerName: tc.containerName,
-			board:         "board",
-			model:         "model",
-			servoSerial:   "serial",
-		}
+		dockerArgs := buildServodContainerArgs(ServodContainerOptions{tc.containerName, "board", "model", "serial", true})
 
-		StartServodContainer(context.Background(), &tc.fc, opts)
+		startServodContainer(context.Background(), &tc.fc, tc.containerName, dockerArgs)
 		if tc.fc.containerLaunched != tc.expectContainerLaunch {
 			t.Errorf("Expected container launch: %t\nActual container launch: %t\n", tc.expectContainerLaunch, tc.fc.containerLaunched)
 			t.Errorf("Testcase: %v", tc)
 		}
+
+		if tc.fc.containerLaunched {
+			if diff := cmp.Diff(tc.fc.runningContainers[tc.containerName], *dockerArgs); diff != "" {
+				t.Errorf("Container launched with unexpected args: %s", diff)
+			}
+		}
 	}
 }
 
-// TestStartServodContainerArgs tests that when we start a docker container it does so with the expected ContainerArgs
-// Could ~likely~ do this in the same test as above but this keeps the test cases simpler
-func TestStartServodContainerArgs(t *testing.T) {
+// TestBuildServodDockerArgs tests that when we build the correct container args
+func TestBuildServodDockerArgs(t *testing.T) {
 	t.Setenv("SERVOD_CONTAINER_LABEL", "latest") // functionality under test relies on env
 
-	fc := NewFakeDockerClient(false, false)
-
-	opts := ServodContainerOptions{"testContainer", "board", "model", "serial", false}
-	StartServodContainer(context.Background(), &fc, opts)
-
-	expectedArgs := docker.ContainerArgs{
-		Detached:     true,
-		ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
-		PublishPorts: nil,
-		ExposePorts:  nil,
-		EnvVar:       []string{"BOARD=board", "MODEL=model", "SERVO_SERIAL=serial", "PORT=9999"},
-		Volumes:      []string{"/dev:/dev", "serial_log:/var/log/servod_9999/"},
-		Network:      "default_satlab",
-		Privileged:   true,
-		Exec:         []string{"tail", "-f", "/dev/null"},
+	type test struct {
+		opts               ServodContainerOptions
+		expectedDockerArgs *docker.ContainerArgs
 	}
 
-	if diff := cmp.Diff(fc.runningContainers["testContainer"], expectedArgs); diff != "" {
-		t.Errorf("unexpected diff: %s", diff)
+	tests := []test{
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false},
+			&docker.ContainerArgs{
+				Detached:     true,
+				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
+				PublishPorts: nil,
+				ExposePorts:  nil,
+				EnvVar:       []string{"BOARD=board", "MODEL=model", "SERVO_SERIAL=serial", "PORT=9999"},
+				Volumes:      []string{"/dev:/dev", "serial_log:/var/log/servod_9999/"},
+				Network:      "default_satlab",
+				Privileged:   true,
+				Exec:         []string{"tail", "-f", "/dev/null"},
+			},
+		},
+		{ServodContainerOptions{"test_container", "board2", "model2", "serial2", true},
+			&docker.ContainerArgs{
+				Detached:     true,
+				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
+				PublishPorts: nil,
+				ExposePorts:  nil,
+				EnvVar:       []string{"BOARD=board2", "MODEL=model2", "SERVO_SERIAL=serial2", "PORT=9999"},
+				Volumes:      []string{"/dev:/dev", "serial2_log:/var/log/servod_9999/"},
+				Network:      "default_satlab",
+				Privileged:   true,
+				Exec:         []string{"bash", "/start_servod.sh"},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		dockerArgs := buildServodContainerArgs(tc.opts)
+
+		if diff := cmp.Diff(dockerArgs, tc.expectedDockerArgs); diff != "" {
+			t.Errorf("Unexpected docker args created: %s", diff)
+		}
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"infra/cros/cmd/satlab/internal/site"
 	"infra/cros/recovery/docker"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsCros "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -78,22 +79,22 @@ func TestStartServodCmd(t *testing.T) {
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false},
 			"docker_servod",
-			*buildServodDockerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board"},
 			"ufsDockerContainerName",
-			*buildServodDockerArgs(ServodContainerOptions{"ufsDockerContainerName", "board", "ufsModel", "ufsSerial", true}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "ufsModel", "ufsSerial", true}),
 		},
 		{
 			&startServodRun{host: "eli"},
 			"ufsDockerContainerName",
-			*buildServodDockerArgs(ServodContainerOptions{"ufsDockerContainerName", "ufsBoard", "ufsModel", "ufsSerial", true}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "ufsBoard", "ufsModel", "ufsSerial", true}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: true},
 			"docker_servod",
-			*buildServodDockerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false}),
 		},
 	}
 
@@ -144,6 +145,7 @@ func TestValidate(t *testing.T) {
 	tests := []test{
 		{&startServodRun{host: ""}, []string{}, nil, true},
 		{&startServodRun{host: "eli"}, []string{}, &startServodRun{host: "satlab-1234-eli"}, false},
+		{&startServodRun{host: "eli", commonFlags: site.CommonFlags{SatlabID: "5678"}}, []string{}, &startServodRun{host: "satlab-5678-eli"}, false},
 		{&startServodRun{host: "satlab-1234-eli"}, []string{}, &startServodRun{host: "satlab-1234-eli"}, false},
 		{&startServodRun{host: "satlab-1234-eli"}, []string{"bad"}, nil, true},
 	}

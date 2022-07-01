@@ -39,6 +39,7 @@ var StartServodCmd = &subcommands.Command{
 
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
+		c.commonFlags.Register(&c.Flags)
 
 		return c
 	},
@@ -48,8 +49,9 @@ var StartServodCmd = &subcommands.Command{
 type startServodRun struct {
 	subcommands.CommandRunBase
 
-	authFlags authcli.Flags
-	envFlags  site.EnvFlags
+	authFlags   authcli.Flags
+	envFlags    site.EnvFlags
+	commonFlags site.CommonFlags
 
 	host string
 
@@ -58,8 +60,6 @@ type startServodRun struct {
 	servoSerial         string
 	servodContainerName string
 	noServodProcess     bool
-
-	// TODO(elijahtrexler) add verbose,
 }
 
 // Run is what is called when a user inputs the startServodRun command
@@ -119,6 +119,10 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 	if err := opts.Validate(); err != nil {
 		ufsMetadata, err := fetchMetadataFromUFS(ctx, ufs, c.host, &c.authFlags)
 
+		if c.commonFlags.Verbose {
+			fmt.Printf("Fetched metadata from UFS, recieved %+v", ufsMetadata)
+		}
+
 		if err != nil {
 			return errors.Reason("Failed to fetch metadata from UFS. If all of -board, -model, -servo-serial, -servo-hostname are provided UFS fetch will be skipped: %v", err).Err()
 		}
@@ -143,7 +147,12 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 		}
 	}
 
-	_, err := StartServodContainer(ctx, d, opts)
+	dockerArgs := buildServodContainerArgs(opts)
+	if c.commonFlags.Verbose {
+		fmt.Printf("Attempting to launch container with command:\n\t%s\n", docker.StartCommandString(opts.containerName, dockerArgs))
+	}
+	_, err := startServodContainer(ctx, d, opts.containerName, dockerArgs)
+
 	if err != nil {
 		return errors.Reason(fmt.Sprintf("Error launching docker container: %s", err)).Err()
 	}
@@ -192,7 +201,7 @@ type ufsMetadata struct {
 
 // validate validates input arguments
 // We primarily care that a) host is not empty and b) host is in the right format (satlab-<dhb_id>-<host>)
-func (c *startServodRun) validate(satlabID string, positionalArgs []string) error {
+func (c *startServodRun) validate(dhbSatlabID string, positionalArgs []string) error {
 	// ensures we did not recieve positional args
 	if len(positionalArgs) > 0 {
 		return errors.Reason("Got unexpected positional args, for usage see: satlab servo help start").Err()
@@ -205,7 +214,12 @@ func (c *startServodRun) validate(satlabID string, positionalArgs []string) erro
 
 	//uses either a user provided or automatically fetched Satlab ID to build the fully qualified host name
 	// no-op if the hostname is already in expected format
-	c.host = site.MaybePrepend(site.Satlab, satlabID, c.host)
+	var satlabIDToUse string
+	if satlabIDToUse = c.commonFlags.SatlabID; satlabIDToUse == "" {
+		satlabIDToUse = dhbSatlabID
+	}
+
+	c.host = site.MaybePrepend(site.Satlab, satlabIDToUse, c.host)
 
 	return nil
 }

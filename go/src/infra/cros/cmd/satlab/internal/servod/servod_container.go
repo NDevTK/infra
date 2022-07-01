@@ -41,17 +41,15 @@ func (opts *ServodContainerOptions) Validate() error {
 
 // startServodContainer is used to start the docker container for servod
 // If there is already a container running with the same name it will not start a new container
-func StartServodContainer(ctx context.Context, d DockerClient, opts ServodContainerOptions) (*docker.StartResponse, error) {
+func startServodContainer(ctx context.Context, d DockerClient, servoContainerName string, dockerArgs *docker.ContainerArgs) (*docker.StartResponse, error) {
 	// check presence of running container already
-	if up, err := d.IsUp(ctx, opts.containerName); err != nil {
+	if up, err := d.IsUp(ctx, servoContainerName); err != nil {
 		return nil, err
 	} else if up {
-		return nil, errors.Reason("Docker container with name %s is already running", opts.containerName).Err()
+		return nil, errors.Reason("Docker container with name %s is already running", servoContainerName).Err()
 	}
 
-	args := buildServodDockerArgs(opts)
-
-	res, err := d.Start(ctx, opts.containerName, args, time.Minute)
+	res, err := d.Start(ctx, servoContainerName, dockerArgs, time.Minute)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +58,8 @@ func StartServodContainer(ctx context.Context, d DockerClient, opts ServodContai
 	return res, nil
 }
 
-// buildServodDockerArgs produces ContainerArgs which has the full information needed to spin up a servod container via `docker run ...`
-func buildServodDockerArgs(opts ServodContainerOptions) *docker.ContainerArgs {
+// buildServodContainerArgs produces ContainerArgs which has the full information needed to spin up a servod container via `docker run ...`
+func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs {
 	exec := []string{"tail", "-f", "/dev/null"}
 	if opts.withServod {
 		exec = []string{"bash", "/start_servod.sh"}
