@@ -11,6 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/encoding/prototext"
 
 	"infra/appengine/weetbix/internal/bugs"
@@ -122,53 +123,165 @@ type clusterIssue struct {
 }
 
 // Update updates the specified list of bugs.
-func (m *BugManager) Update(ctx context.Context, bugsToUpdate []*bugs.BugToUpdate) error {
+func (m *BugManager) Update(ctx context.Context, request []bugs.BugUpdateRequest) ([]bugs.BugUpdateResponse, error) {
 	// Fetch issues for bugs to update.
-	cis, err := m.fetchIssues(ctx, bugsToUpdate)
+	issues, err := m.fetchIssues(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	var responses []bugs.BugUpdateResponse
+	for i, req := range request {
+		issue := issues[i]
+		isDuplicate := issue.Status.Status == DuplicateStatus
+		if !isDuplicate && req.ShouldUpdate {
+			g, err := NewGenerator(req.Impact, m.projectCfg)
+			if err != nil {
+				return nil, errors.Annotate(err, "create issue generator").Err()
+			}
+			if g.NeedsUpdate(issue) {
+				comments, err := m.client.ListComments(ctx, issue.Name)
+				if err != nil {
+					return nil, err
+				}
+				req := g.MakeUpdate(issue, comments)
+				if m.Simulate {
+					logging.Debugf(ctx, "Would update Monorail issue: %s", textPBMultiline.Format(req))
+				} else {
+					if err := m.client.ModifyIssues(ctx, req); err != nil {
+						return nil, errors.Annotate(err, "failed to update to issue %s", issue.Name).Err()
+					}
+					bugs.BugsUpdatedCounter.Add(ctx, 1, m.project, "monorail")
+				}
+			}
+		}
+		responses = append(responses, bugs.BugUpdateResponse{
+			IsDuplicate: isDuplicate,
+		})
+	}
+	return responses, nil
+}
+
+// GetMergedInto reads the bug (if any) the given bug was merged into.
+// If the given bug is not merged into another bug, this returns nil.
+func (m *BugManager) GetMergedInto(ctx context.Context, bug bugs.BugID) (*bugs.BugID, error) {
+	if bug.System != bugs.MonorailSystem {
+		// Indicates an implementation error with the caller.
+		panic("monorail bug manager can only deal with monorail bugs")
+	}
+	name, err := toMonorailIssueName(bug.ID)
+	if err != nil {
+		return nil, err
+	}
+	issue, err := m.client.GetIssue(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	result, err := mergedIntoBug(issue)
+	if err != nil {
+		return nil, errors.Annotate(err, "resolving canoncial merged into bug").Err()
+	}
+	return result, nil
+}
+
+// Unduplicate updates the given bug to no longer be marked as duplicating
+// another bug, posting the given message on the bug.
+func (m *BugManager) Unduplicate(ctx context.Context, bug bugs.BugID, message string) error {
+	if bug.System != bugs.MonorailSystem {
+		// Indicates an implementation error with the caller.
+		panic("monorail bug manager can only deal with monorail bugs")
+	}
+	name, err := toMonorailIssueName(bug.ID)
 	if err != nil {
 		return err
 	}
-	for _, ci := range cis {
-		g, err := NewGenerator(ci.impact, m.projectCfg)
-		if err != nil {
-			return errors.Annotate(err, "create issue generator").Err()
-		}
-		if g.NeedsUpdate(ci.issue) {
-			comments, err := m.client.ListComments(ctx, ci.issue.Name)
-			if err != nil {
-				return err
-			}
-			req := g.MakeUpdate(ci.issue, comments)
-			if m.Simulate {
-				logging.Debugf(ctx, "Would update Monorail issue: %s", textPBMultiline.Format(req))
-			} else {
-				if err := m.client.ModifyIssues(ctx, req); err != nil {
-					return errors.Annotate(err, "failed to update to issue %s", ci.issue.Name).Err()
-				}
-				bugs.BugsUpdatedCounter.Add(ctx, 1, m.project, "monorail")
-			}
+	delta := &mpb.IssueDelta{
+		Issue: &mpb.Issue{
+			Name: name,
+			Status: &mpb.Issue_StatusValue{
+				Status: "Available",
+			},
+		},
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"status"},
+		},
+	}
+	req := &mpb.ModifyIssuesRequest{
+		Deltas: []*mpb.IssueDelta{
+			delta,
+		},
+		NotifyType:     mpb.NotifyType_NO_NOTIFICATION,
+		CommentContent: message,
+	}
+	if m.Simulate {
+		logging.Debugf(ctx, "Would update Monorail issue: %s", textPBMultiline.Format(req))
+	} else {
+		if err := m.client.ModifyIssues(ctx, req); err != nil {
+			return errors.Annotate(err, "failed to unduplicate monorail issue %s", name).Err()
 		}
 	}
 	return nil
 }
 
-func (m *BugManager) fetchIssues(ctx context.Context, updates []*bugs.BugToUpdate) ([]*clusterIssue, error) {
+var buganizerExtRefRe = regexp.MustCompile(`^b/([1-9][0-9]{0,16})$`)
+
+// mergedIntoBug determines if the given bug is a duplicate of another
+// bug, and if so, what the identity of that bug is.
+func mergedIntoBug(issue *mpb.Issue) (*bugs.BugID, error) {
+	if issue.Status.Status == DuplicateStatus &&
+		issue.MergedIntoIssueRef != nil {
+		if issue.MergedIntoIssueRef.Issue != "" {
+			name, err := fromMonorailIssueName(issue.MergedIntoIssueRef.Issue)
+			if err != nil {
+				// This should not happen unless monorail or the
+				// implementation here is broken.
+				return nil, err
+			}
+			return &bugs.BugID{
+				System: bugs.MonorailSystem,
+				ID:     name,
+			}, nil
+		}
+		matches := buganizerExtRefRe.FindStringSubmatch(issue.MergedIntoIssueRef.ExtIdentifier)
+		if matches == nil {
+			// A non-buganizer external issue tracker was used. This is not
+			// supported by us, treat the issue as not duplicate of something
+			// else and let auto-updating kick the bug out of duplicate state
+			// if there is still impact. The user should manually resolve the
+			// situation.
+			return nil, fmt.Errorf("unsupported non-monorail non-buganizer bug reference: %s", issue.MergedIntoIssueRef.ExtIdentifier)
+		}
+		return &bugs.BugID{
+			System: bugs.BuganizerSystem,
+			ID:     matches[1],
+		}, nil
+	}
+	return nil, nil
+}
+
+// fetchIssues fetches monorail issues using the internal bug names like
+// {monorail_project}/{issue_id}.
+func (m *BugManager) fetchIssues(ctx context.Context, request []bugs.BugUpdateRequest) ([]*mpb.Issue, error) {
 	// Calculate the number of requests required, rounding up
 	// to the nearest page.
-	pages := (len(updates) + (monorailPageSize - 1)) / monorailPageSize
+	pages := (len(request) + (monorailPageSize - 1)) / monorailPageSize
 
-	var clusterIssues []*clusterIssue
+	response := make([]*mpb.Issue, 0, len(request))
 	for i := 0; i < pages; i++ {
-		// Divide bug clusters into pages of monorailPageSize.
-		pageEnd := i*monorailPageSize + (monorailPageSize - 1)
-		if pageEnd > len(updates) {
-			pageEnd = len(updates)
+		// Divide names into pages of monorailPageSize.
+		pageEnd := (i + 1) * monorailPageSize
+		if pageEnd > len(request) {
+			pageEnd = len(request)
 		}
-		updatesPage := updates[i*monorailPageSize : pageEnd]
+		requestPage := request[i*monorailPageSize : pageEnd]
 
 		var names []string
-		for _, upd := range updatesPage {
-			name, err := toMonorailIssueName(upd.BugName)
+		for _, requestItem := range requestPage {
+			if requestItem.Bug.System != bugs.MonorailSystem {
+				// Indicates an implementation error with the caller.
+				panic("monorail bug manager can only deal with monorail bugs")
+			}
+			name, err := toMonorailIssueName(requestItem.Bug.ID)
 			if err != nil {
 				return nil, err
 			}
@@ -179,14 +292,9 @@ func (m *BugManager) fetchIssues(ctx context.Context, updates []*bugs.BugToUpdat
 		if err != nil {
 			return nil, err
 		}
-		for i, upd := range updatesPage {
-			clusterIssues = append(clusterIssues, &clusterIssue{
-				impact: upd.Impact,
-				issue:  issues[i],
-			})
-		}
+		response = append(response, issues...)
 	}
-	return clusterIssues, nil
+	return response, nil
 }
 
 // toMonorailIssueName converts an internal bug name like

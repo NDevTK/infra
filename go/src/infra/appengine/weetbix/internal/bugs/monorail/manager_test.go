@@ -167,15 +167,21 @@ func TestManager(t *testing.T) {
 			So(len(f.Issues), ShouldEqual, 1)
 			So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "2")
 
-			bugToUpdate := &bugs.BugToUpdate{
-				BugName: bug,
-				Impact:  c.Impact,
+			bugsToUpdate := []bugs.BugUpdateRequest{
+				{
+					Bug:          bugs.BugID{System: bugs.MonorailSystem, ID: bug},
+					Impact:       c.Impact,
+					ShouldUpdate: true,
+				},
 			}
-			bugsToUpdate := []*bugs.BugToUpdate{bugToUpdate}
+			expectedResponse := []bugs.BugUpdateResponse{
+				{IsDuplicate: false},
+			}
 			updateDoesNothing := func() {
 				originalIssues := CopyIssuesStore(f)
-				err := bm.Update(ctx, bugsToUpdate)
+				response, err := bm.Update(ctx, bugsToUpdate)
 				So(err, ShouldBeNil)
+				So(response, ShouldResemble, expectedResponse)
 				So(f, ShouldResembleIssuesStore, originalIssues)
 			}
 			// Create a monorail client that interacts with monorail
@@ -189,17 +195,24 @@ func TestManager(t *testing.T) {
 				updateDoesNothing()
 			})
 			Convey("If impact changed", func() {
-				bugToUpdate.Impact = ChromiumP3Impact()
+				bugsToUpdate[0].Impact = ChromiumP3Impact()
 				Convey("Does not reduce priority if impact within hysteresis range", func() {
-					bugToUpdate.Impact = ChromiumHighP3Impact()
+					bugsToUpdate[0].Impact = ChromiumHighP3Impact()
+
+					updateDoesNothing()
+				})
+				Convey("Does not update bug if ShouldUpdate false", func() {
+					bugsToUpdate[0].Impact = ChromiumClosureImpact()
+					bugsToUpdate[0].ShouldUpdate = false
 
 					updateDoesNothing()
 				})
 				Convey("Reduces priority in response to reduced impact", func() {
-					bugToUpdate.Impact = ChromiumP3Impact()
+					bugsToUpdate[0].Impact = ChromiumP3Impact()
 					originalNotifyCount := f.Issues[0].NotifyCount
-					err := bm.Update(ctx, bugsToUpdate)
+					response, err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
+					So(response, ShouldResemble, expectedResponse)
 					So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
@@ -216,16 +229,17 @@ func TestManager(t *testing.T) {
 					updateDoesNothing()
 				})
 				Convey("Does not increase priority if impact within hysteresis range", func() {
-					bugToUpdate.Impact = ChromiumLowP1Impact()
+					bugsToUpdate[0].Impact = ChromiumLowP1Impact()
 
 					updateDoesNothing()
 				})
 				Convey("Increases priority in response to increased impact (single-step)", func() {
-					bugToUpdate.Impact = ChromiumP1Impact()
+					bugsToUpdate[0].Impact = ChromiumP1Impact()
 
 					originalNotifyCount := f.Issues[0].NotifyCount
-					err := bm.Update(ctx, bugsToUpdate)
+					response, err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
+					So(response, ShouldResemble, expectedResponse)
 					So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "1")
 
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
@@ -241,11 +255,12 @@ func TestManager(t *testing.T) {
 					updateDoesNothing()
 				})
 				Convey("Increases priority in response to increased impact (multi-step)", func() {
-					bugToUpdate.Impact = ChromiumP0Impact()
+					bugsToUpdate[0].Impact = ChromiumP0Impact()
 
 					originalNotifyCount := f.Issues[0].NotifyCount
-					err := bm.Update(ctx, bugsToUpdate)
+					response, err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
+					So(response, ShouldResemble, expectedResponse)
 					So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "0")
 
 					expectedComment := "Because:\n" +
@@ -258,6 +273,7 @@ func TestManager(t *testing.T) {
 					So(f.Issues[0].NotifyCount, ShouldEqual, originalNotifyCount+1)
 
 					// Verify repeated update has no effect.
+					updateDoesNothing()
 				})
 				Convey("Does not adjust priority if priority manually set", func() {
 					updateReq := updateBugPriorityRequest(f.Issues[0].Issue.Name, "0")
@@ -273,8 +289,9 @@ func TestManager(t *testing.T) {
 					SortLabels(expectedIssue.Labels)
 
 					So(f.Issues[0].NotifyCount, ShouldEqual, 1)
-					err = bm.Update(ctx, bugsToUpdate)
+					response, err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
+					So(response, ShouldResemble, expectedResponse)
 					So(f.Issues[0].Issue, ShouldResembleProto, expectedIssue)
 
 					// Does not notify.
@@ -289,7 +306,8 @@ func TestManager(t *testing.T) {
 						So(err, ShouldBeNil)
 						So(hasLabel(f.Issues[0].Issue, manualPriorityLabel), ShouldBeFalse)
 
-						err := bm.Update(ctx, bugsToUpdate)
+						response, err := bm.Update(ctx, bugsToUpdate)
+						So(response, ShouldResemble, expectedResponse)
 						So(err, ShouldBeNil)
 						So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
@@ -312,20 +330,22 @@ func TestManager(t *testing.T) {
 				})
 			})
 			Convey("If impact falls below lowest priority threshold", func() {
-				bugToUpdate.Impact = ChromiumClosureImpact()
+				bugsToUpdate[0].Impact = ChromiumClosureImpact()
 				Convey("Update leaves bug open if impact within hysteresis range", func() {
-					bugToUpdate.Impact = ChromiumP3LowestBeforeClosureImpact()
+					bugsToUpdate[0].Impact = ChromiumP3LowestBeforeClosureImpact()
 
 					// Update may reduce the priority from P2 to P3, but the
 					// issue should be left open. This is because hysteresis on
 					// priority and issue verified state is applied separately.
-					err := bm.Update(ctx, bugsToUpdate)
+					response, err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
+					So(response, ShouldResemble, expectedResponse)
 					So(f.Issues[0].Issue.Status.Status, ShouldEqual, UntriagedStatus)
 				})
 				Convey("Update closes bug", func() {
-					err := bm.Update(ctx, bugsToUpdate)
+					response, err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
+					So(response, ShouldResemble, expectedResponse)
 					So(f.Issues[0].Issue.Status.Status, ShouldEqual, VerifiedStatus)
 
 					expectedComment := "Because:\n" +
@@ -340,13 +360,13 @@ func TestManager(t *testing.T) {
 					updateDoesNothing()
 
 					Convey("Does not reopen bug if impact within hysteresis range", func() {
-						bugToUpdate.Impact = ChromiumHighestNotFiledImpact()
+						bugsToUpdate[0].Impact = ChromiumHighestNotFiledImpact()
 
 						updateDoesNothing()
 					})
 
 					Convey("If impact increases, bug is re-opened with correct priority", func() {
-						bugToUpdate.Impact = ChromiumP3Impact()
+						bugsToUpdate[0].Impact = ChromiumP3Impact()
 						Convey("Issue has owner", func() {
 							// Update issue owner.
 							updateReq := updateOwnerRequest(f.Issues[0].Issue.Name, "users/100")
@@ -355,8 +375,9 @@ func TestManager(t *testing.T) {
 							So(f.Issues[0].Issue.Owner.GetUser(), ShouldEqual, "users/100")
 
 							// Issue should return to "Assigned" status.
-							err := bm.Update(ctx, bugsToUpdate)
+							response, err := bm.Update(ctx, bugsToUpdate)
 							So(err, ShouldBeNil)
+							So(response, ShouldResemble, expectedResponse)
 							So(f.Issues[0].Issue.Status.Status, ShouldEqual, AssignedStatus)
 							So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
@@ -381,8 +402,9 @@ func TestManager(t *testing.T) {
 							So(f.Issues[0].Issue.Owner.GetUser(), ShouldEqual, "")
 
 							// Issue should return to "Untriaged" status.
-							err := bm.Update(ctx, bugsToUpdate)
+							response, err := bm.Update(ctx, bugsToUpdate)
 							So(err, ShouldBeNil)
+							So(response, ShouldResemble, expectedResponse)
 							So(f.Issues[0].Issue.Status.Status, ShouldEqual, UntriagedStatus)
 							So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
@@ -402,6 +424,88 @@ func TestManager(t *testing.T) {
 					})
 				})
 			})
+			Convey("If bug duplicate", func() {
+				f.Issues[0].Issue.Status.Status = DuplicateStatus
+
+				expectedResponse := []bugs.BugUpdateResponse{
+					{IsDuplicate: true},
+				}
+				originalIssues := CopyIssuesStore(f)
+				response, err := bm.Update(ctx, bugsToUpdate)
+				So(err, ShouldBeNil)
+				So(response, ShouldResemble, expectedResponse)
+				So(f, ShouldResembleIssuesStore, originalIssues)
+			})
+		})
+		Convey("GetMergedInto", func() {
+			c := NewCreateRequest()
+			c.Impact = ChromiumP2Impact()
+			bug, err := bm.Create(ctx, c)
+			So(err, ShouldBeNil)
+			So(bug, ShouldEqual, "chromium/100")
+			So(len(f.Issues), ShouldEqual, 1)
+
+			bugID := bugs.BugID{System: bugs.MonorailSystem, ID: "chromium/100"}
+			Convey("Merged into monorail bug", func() {
+				f.Issues[0].Issue.Status.Status = DuplicateStatus
+				f.Issues[0].Issue.MergedIntoIssueRef = &mpb.IssueRef{
+					Issue: "projects/testproject/issues/99",
+				}
+
+				result, err := bm.GetMergedInto(ctx, bugID)
+				So(err, ShouldEqual, nil)
+				So(result, ShouldResemble, &bugs.BugID{
+					System: bugs.MonorailSystem,
+					ID:     "testproject/99",
+				})
+			})
+			Convey("Merged into buganizer bug", func() {
+				f.Issues[0].Issue.Status.Status = DuplicateStatus
+				f.Issues[0].Issue.MergedIntoIssueRef = &mpb.IssueRef{
+					ExtIdentifier: "b/1234",
+				}
+
+				result, err := bm.GetMergedInto(ctx, bugID)
+				So(err, ShouldEqual, nil)
+				So(result, ShouldResemble, &bugs.BugID{
+					System: bugs.BuganizerSystem,
+					ID:     "1234",
+				})
+			})
+			Convey("Not merged into any bug", func() {
+				// While MergedIntoIssueRef is set, the bug status is not
+				// set to "Duplicate", so this value should be ignored.
+				f.Issues[0].Issue.Status.Status = UntriagedStatus
+				f.Issues[0].Issue.MergedIntoIssueRef = &mpb.IssueRef{
+					ExtIdentifier: "b/1234",
+				}
+
+				result, err := bm.GetMergedInto(ctx, bugID)
+				So(err, ShouldEqual, nil)
+				So(result, ShouldBeNil)
+			})
+		})
+		Convey("Unduplicate", func() {
+			c := NewCreateRequest()
+			c.Impact = ChromiumP2Impact()
+			bug, err := bm.Create(ctx, c)
+			So(err, ShouldBeNil)
+			So(bug, ShouldEqual, "chromium/100")
+			So(f.Issues, ShouldHaveLength, 1)
+			So(f.Issues[0].Comments, ShouldHaveLength, 2)
+
+			f.Issues[0].Issue.Status.Status = DuplicateStatus
+			f.Issues[0].Issue.MergedIntoIssueRef = &mpb.IssueRef{
+				Issue: "projects/testproject/issues/99",
+			}
+
+			bugID := bugs.BugID{System: bugs.MonorailSystem, ID: "chromium/100"}
+			err = bm.Unduplicate(ctx, bugID, "Some comment.")
+			So(err, ShouldBeNil)
+
+			So(f.Issues[0].Issue.Status, ShouldNotEqual, DuplicateStatus)
+			So(f.Issues[0].Comments, ShouldHaveLength, 3)
+			So(f.Issues[0].Comments[2].Content, ShouldContainSubstring, "Some comment.")
 		})
 	})
 }

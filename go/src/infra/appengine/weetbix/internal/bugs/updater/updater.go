@@ -40,6 +40,18 @@ import (
 // project_config.proto.
 const testnameThresholdInflationPercent = 34
 
+// mergeIntoCycleErr is the error returned if a cycle is detected in a bug's
+// merged-into graph when handling a bug marked as duplicate.
+var mergeIntoCycleErr = errors.New("a cycle was detected in the bug merged-into graph")
+
+// mergeIntoCycleMessage is the message posted on bugs when Weetbix cannot
+// deal with a bug marked as the duplicate of another.
+const mergeIntoCycleMessage = "Weetbix cannot merge the failure association" +
+	" rule for this bug into the rule for the merged-into bug, because a" +
+	" cycle was detected in the bug merged-into graph. Please manually" +
+	" resolve the cycle, or update rules manually and archive the rule" +
+	" for this bug."
+
 // BugManager implements bug creation and bug updates for a bug-tracking
 // system. The BugManager determines bug content and priority given a
 // cluster.
@@ -48,7 +60,16 @@ type BugManager interface {
 	// or any encountered error.
 	Create(ctx context.Context, cluster *bugs.CreateRequest) (string, error)
 	// Update updates the specified list of bugs.
-	Update(ctx context.Context, bugs []*bugs.BugToUpdate) error
+	Update(ctx context.Context, bugs []bugs.BugUpdateRequest) ([]bugs.BugUpdateResponse, error)
+	// GetMergedInto reads the bug the given bug is merged into (if any).
+	// This is to allow step-wise discovery of the canonical bug a bug
+	// is merged into (if it exists and there is no cycle in the bug
+	// merged-into graph).
+	GetMergedInto(ctx context.Context, bug bugs.BugID) (*bugs.BugID, error)
+	// Unduplicate updates a bug to no longer be a duplicate of
+	// another a bug. This provides a way for Weetbix to surface
+	// duplicate bugs it cannot deal with for human intervention.
+	Unduplicate(ctx context.Context, bug bugs.BugID, message string) error
 }
 
 // BugUpdater performs updates to Monorail bugs and failure association
@@ -87,82 +108,174 @@ func NewBugUpdater(project string, mgrs map[string]BugManager, ac AnalysisClient
 // The passed progress should reflect the progress of re-clustering as captured
 // in the latest analysis.
 func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgress) error {
-	if progress.IsReclusteringToNewAlgorithms() {
-		logging.Warningf(ctx, "Auto-bug filing paused for project %s as re-clustering to new algorithms is in progress.", b.project)
-		return nil
-	}
-	if progress.IsReclusteringToNewConfig() {
-		logging.Warningf(ctx, "Auto-bug filing paused for project %s as re-clustering to new configuration is in progress.", b.project)
-		return nil
-	}
-	if algorithms.AlgorithmsVersion != progress.Next.AlgorithmsVersion {
-		logging.Warningf(ctx, "Auto-bug filing paused for project %s as bug-filing is running mismatched algorithms version %v (want %v).",
-			b.project, algorithms.AlgorithmsVersion, progress.Next.AlgorithmsVersion)
-		return nil
-	}
-	if !b.projectCfg.LastUpdated.Equal(progress.Next.ConfigVersion) {
-		logging.Warningf(ctx, "Auto-bug filing paused for project %s as bug-filing is running mismatched config version %v (want %v).",
-			b.project, b.projectCfg.LastUpdated, progress.Next.ConfigVersion)
-		return nil
-	}
+	// Verify we are not currently reclustering to a new version of
+	// algorithms or project configuration. If we are, we should
+	// suspend bug creation, priority updates and auto-closure
+	// as cluster impact is unreliable.
+	impactValid := b.verifyClusterImpactValid(ctx, progress)
 
 	ruleByID, err := b.readActiveFailureAssociationRules(ctx)
 	if err != nil {
 		return errors.Annotate(err, "read active failure association rules").Err()
 	}
 
-	// blockedSourceClusterIDs is the set of source cluster IDs for which
-	// filing new bugs should be suspended.
-	blockedSourceClusterIDs := make(map[string]struct{})
-	for _, r := range ruleByID {
-		if !progress.IncorporatesRulesVersion(r.CreationTime) {
-			// If a bug cluster was recently filed for a source cluster, and
-			// re-clustering and analysis is not yet complete (to move the
-			// impact from the source cluster to the bug cluster), do not file
-			// another bug for the source cluster.
-			// (Of course, if a bug cluster was filed for a source cluster,
-			// but the bug cluster's failure association rule was subsequently
-			// modified (e.g. narrowed), it is allowed to file another bug
-			// if the residual impact justifies it.)
-			blockedSourceClusterIDs[r.SourceCluster.Key()] = struct{}{}
-		}
-	}
-
-	// We want to read analysis for two categories of clusters:
-	// - Bug Clusters: to update the priority of filed bugs.
-	// - Impactful Suggested Clusters: if any suggested clusters have
-	//    reached the threshold to file a new bug for, we want to read
-	//    them, so we can file a bug.
-	clusterSummaries, err := b.analysisClient.ReadImpactfulClusters(ctx, analysis.ImpactfulClusterReadOptions{
-		Project:                  b.project,
-		Thresholds:               b.projectCfg.Config.BugFilingThreshold,
-		AlwaysIncludeBugClusters: true,
-	})
-	if err != nil {
-		return errors.Annotate(err, "read impactful clusters").Err()
-	}
-
-	sortByBugFilingPreference(clusterSummaries)
-
-	var toCreateBugsFor []*analysis.ClusterSummary
 	impactByRuleID := make(map[string]*bugs.ClusterImpact)
-	for _, clusterSummary := range clusterSummaries {
-		if clusterSummary.ClusterID.IsBugCluster() {
+	if impactValid {
+		// We want to read analysis for two categories of clusters:
+		// - Bug Clusters: to update the priority of filed bugs.
+		// - Impactful Suggested Clusters: if any suggested clusters have
+		//    reached the threshold to file a new bug for, we want to read
+		//    them, so we can file a bug.
+		clusterSummaries, err := b.analysisClient.ReadImpactfulClusters(ctx, analysis.ImpactfulClusterReadOptions{
+			Project:                  b.project,
+			Thresholds:               b.projectCfg.Config.BugFilingThreshold,
+			AlwaysIncludeBugClusters: true,
+		})
+		if err != nil {
+			return errors.Annotate(err, "read impactful clusters").Err()
+		}
+
+		// blockedSourceClusterIDs is the set of source cluster IDs for which
+		// filing new bugs should be suspended.
+		blockedSourceClusterIDs := make(map[string]struct{})
+		for _, r := range ruleByID {
+			if !progress.IncorporatesRulesVersion(r.CreationTime) {
+				// If a bug cluster was recently filed for a source cluster, and
+				// re-clustering and analysis is not yet complete (to move the
+				// impact from the source cluster to the bug cluster), do not file
+				// another bug for the source cluster.
+				// (Of course, if a bug cluster was filed for a source cluster,
+				// but the bug cluster's failure association rule was subsequently
+				// modified (e.g. narrowed), it is allowed to file another bug
+				// if the residual impact justifies it.)
+				blockedSourceClusterIDs[r.SourceCluster.Key()] = struct{}{}
+			}
+		}
+
+		if err := b.fileNewBugs(ctx, clusterSummaries, blockedSourceClusterIDs); err != nil {
+			return err
+		}
+
+		for _, clusterSummary := range clusterSummaries {
 			if clusterSummary.ClusterID.Algorithm == rulesalgorithm.AlgorithmName {
 				// Use only impact from latest algorithm version.
 				ruleID := clusterSummary.ClusterID.ID
 				impactByRuleID[ruleID] = ExtractResidualImpact(clusterSummary)
 			}
+		}
+	}
+
+	// Prepare bug update requests.
+	bugUpdatesBySystem := make(map[string][]bugs.BugUpdateRequest)
+	for id, r := range ruleByID {
+		impact, ok := impactByRuleID[id]
+		if !ok {
+			// If there is no analysis, this means the cluster is
+			// empty or the analysis is invalid. Use empty impact.
+			impact = &bugs.ClusterImpact{}
+		}
+
+		// Only update the bug if re-clustering and analysis ran on the latest
+		// version of this failure association rule. This avoids bugs getting
+		// erroneous priority changes while impact information is incomplete.
+		ruleImpactValid := impactValid &&
+			progress.IncorporatesRulesVersion(r.PredicateLastUpdated)
+
+		bugUpdates := bugUpdatesBySystem[r.BugID.System]
+		bugUpdates = append(bugUpdates, bugs.BugUpdateRequest{
+			Bug:          r.BugID,
+			Impact:       impact,
+			ShouldUpdate: r.IsManagingBug && ruleImpactValid,
+		})
+		bugUpdatesBySystem[r.BugID.System] = bugUpdates
+	}
+
+	var duplicateBugs []bugs.BugID
+
+	// Perform bug updates.
+	for system, bugsToUpdate := range bugUpdatesBySystem {
+		if system == bugs.BuganizerSystem {
+			// Updating buganizer bugs is currently not supported. This is a
+			// known limitation.
+			continue
+		}
+		manager, ok := b.managers[system]
+		if !ok {
+			logging.Warningf(ctx, "Encountered bug(s) with an unrecognised manager: %q", system)
+			continue
+		}
+		responses, err := manager.Update(ctx, bugsToUpdate)
+		if err != nil {
+			return err
+		}
+
+		for i, rsp := range responses {
+			if rsp.IsDuplicate {
+				duplicateBugs = append(duplicateBugs, bugsToUpdate[i].Bug)
+			}
+		}
+	}
+
+	// Handle bugs marked as duplicate.
+	for _, bug := range duplicateBugs {
+		err := b.handleDuplicateBug(ctx, bug)
+		if err != nil && err != mergeIntoCycleErr {
+			return errors.Annotate(err, "handling bug (%s) marked as duplicate", bug).Err()
+		}
+		if err == mergeIntoCycleErr {
+			err := b.unduplicateBug(ctx, bug, mergeIntoCycleMessage)
+			if err != nil {
+				return errors.Annotate(err, "unduplicating bug %s", bug).Err()
+			}
+		}
+	}
+
+	return nil
+}
+
+func (b *BugUpdater) verifyClusterImpactValid(ctx context.Context, progress *runs.ReclusteringProgress) bool {
+	if progress.IsReclusteringToNewAlgorithms() {
+		logging.Warningf(ctx, "Auto-bug filing paused for project %s as re-clustering to new algorithms is in progress.", b.project)
+		return false
+	}
+	if progress.IsReclusteringToNewConfig() {
+		logging.Warningf(ctx, "Auto-bug filing paused for project %s as re-clustering to new configuration is in progress.", b.project)
+		return false
+	}
+	if algorithms.AlgorithmsVersion != progress.Next.AlgorithmsVersion {
+		logging.Warningf(ctx, "Auto-bug filing paused for project %s as bug-filing is running mismatched algorithms version %v (want %v).",
+			b.project, algorithms.AlgorithmsVersion, progress.Next.AlgorithmsVersion)
+		return false
+	}
+	if !b.projectCfg.LastUpdated.Equal(progress.Next.ConfigVersion) {
+		logging.Warningf(ctx, "Auto-bug filing paused for project %s as bug-filing is running mismatched config version %v (want %v).",
+			b.project, b.projectCfg.LastUpdated, progress.Next.ConfigVersion)
+		return false
+	}
+	return true
+}
+
+// fileNewBugs files new bugs for suggested clusters whose residual impact
+// exceed the configured bug-filing threshold. Clusters specified in
+// blockedClusterIDs will not have a bug filed. This can be used to
+// suppress bug-filing for suggested clusters that have recently had a
+// bug filed for them and re-clustering is not yet complete.
+func (b *BugUpdater) fileNewBugs(ctx context.Context, clusterSummaries []*analysis.ClusterSummary, blockedClusterIDs map[string]struct{}) error {
+	sortByBugFilingPreference(clusterSummaries)
+
+	var toCreateBugsFor []*analysis.ClusterSummary
+	for _, clusterSummary := range clusterSummaries {
+		if clusterSummary.ClusterID.IsBugCluster() {
 			// Never file another bug for a bug cluster.
 			continue
 		}
 
-		// Was a bug recently filed for this source cluster?
+		// Was a bug recently filed for this suggested cluster?
 		// We want to avoid race conditions whereby we file multiple bug
-		// clusters for the same source cluster, because re-clustering and
+		// clusters for the same suggested cluster, because re-clustering and
 		// re-analysis has not yet run and moved residual impact from the
-		// source (suggested) cluster to the bug cluster.
-		_, ok := blockedSourceClusterIDs[clusterSummary.ClusterID.Key()]
+		// suggested cluster to the bug cluster.
+		_, ok := blockedClusterIDs[clusterSummary.ClusterID.Key()]
 		if ok {
 			// Do not file a bug.
 			continue
@@ -185,6 +298,7 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 		toCreateBugsFor = append(toCreateBugsFor, clusterSummary)
 	}
 
+	// File new bugs.
 	bugsFiled := 0
 	for _, clusterSummary := range toCreateBugsFor {
 		// Throttle how many bugs may be filed each time.
@@ -199,53 +313,173 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 			bugsFiled++
 		}
 	}
+	return nil
+}
 
-	// Iterate over all active bug clusters (except those we just created).
-	bugUpdatesBySystem := make(map[string][]*bugs.BugToUpdate)
-	for id, r := range ruleByID {
-		impact, ok := impactByRuleID[id]
-		if !ok {
-			// If there is no analysis, this usually means the cluster is
-			// empty, so we should use empty impact.
-			impact = &bugs.ClusterImpact{}
-		}
-
-		// Only update the bug if it is managed by this rule.
-		if !r.IsManagingBug {
-			continue
-		}
-
-		// Only update the bug if re-clustering and analysis ran on the latest
-		// version of this failure association rule. This avoids bugs getting
-		// erroneous priority changes while impact information is incomplete.
-		if !progress.IncorporatesRulesVersion(r.PredicateLastUpdated) {
-			continue
-		}
-
-		bugUpdates := bugUpdatesBySystem[r.BugID.System]
-		bugUpdates = append(bugUpdates, &bugs.BugToUpdate{
-			BugName: r.BugID.ID,
-			Impact:  impact,
-		})
-		bugUpdatesBySystem[r.BugID.System] = bugUpdates
+// handleDuplicateBug handles a duplicate bug, merging its failure association
+// rule with the bug it is ultimately merged into (creating the rule if it does
+// not exist). The original rule is disabled.
+func (b *BugUpdater) handleDuplicateBug(ctx context.Context, bug bugs.BugID) error {
+	// Chase the bug merged-into graph until we find the sink of the graph.
+	// (The canonical bug of the chain of duplicate bugs.)
+	destBug, err := b.resolveMergedIntoBug(ctx, bug)
+	if err != nil {
+		// E.g. a cycle was found in the graph.
+		return err
 	}
+	f := func(ctx context.Context) error {
+		sourceRule, _, err := readRuleForBugAndProject(ctx, bug, b.project)
+		if err != nil {
+			return errors.Annotate(err, "reading rule for source bug").Err()
+		}
+		if !sourceRule.IsActive {
+			// The source rule is no longer active. This is a race condition
+			// as we only do bug updates for rules that exist at the time
+			// we start bug updates.
+			// An inactive rule does not match any failures so merging the
+			// it into another rule should have no effect anyway.
+			return nil
+		}
+		// Try and read the rule for the bug we are merging into.
+		destinationRule, anyRuleManagingDestBug, err :=
+			readRuleForBugAndProject(ctx, destBug, b.project)
+		if err != nil {
+			return errors.Annotate(err, "reading rule for destination bug").Err()
+		}
+		if destinationRule == nil {
+			// Simply update the source rule to point to the new bug.
+			sourceRule.BugID = destBug
 
-	for system, bugsToUpdate := range bugUpdatesBySystem {
-		if system == bugs.BuganizerSystem {
-			// Updating buganizer bugs is currently not supported. This is a
-			// known limitation.
-			continue
-		}
-		manager, ok := b.managers[system]
-		if !ok {
-			logging.Warningf(ctx, "Encountered bug(s) with an unrecognised manager: %q", manager)
-			continue
-		}
-		if err := manager.Update(ctx, bugsToUpdate); err != nil {
+			// Only one rule can manage a bug at a given time.
+			// Even if there is no rule in this project which manages
+			// the destination bug, there could a rule in a different project.
+			if anyRuleManagingDestBug {
+				sourceRule.IsManagingBug = false
+			}
+
+			updatePredicate := false
+			err = rules.Update(ctx, sourceRule, updatePredicate, rules.WeetbixSystem)
+			if err != nil {
+				// Indicates validation error. Should never happen.
+				return err
+			}
+			return nil
+		} else {
+			if destinationRule.IsActive {
+				// Merge the source and destination rules with an "OR".
+				// Note that this is only valid because OR is the operator
+				// with the lowest precedence in our language.
+				// Otherwise we would have to be concerned about inserting
+				// parentheses.
+				destinationRule.RuleDefinition =
+					destinationRule.RuleDefinition + " OR\n" + sourceRule.RuleDefinition
+				if err != nil {
+					return errors.Annotate(err, "merging rules").Err()
+				}
+			} else {
+				// Else: an inactive rule does not match any failures, so we should
+				// use only the rule from the source bug.
+				destinationRule.RuleDefinition = sourceRule.RuleDefinition
+			}
+
+			// Disable the source rule.
+			sourceRule.IsActive = false
+			updatePredicate := true
+			err = rules.Update(ctx, sourceRule, updatePredicate, rules.WeetbixSystem)
+
+			// Update the rule on the destination rule.
+			destinationRule.IsActive = true
+			err = rules.Update(ctx, destinationRule, updatePredicate, rules.WeetbixSystem)
 			return err
 		}
 	}
+	// Update source and destination rules in one transaction, to ensure
+	// consistency.
+	_, err = span.ReadWriteTransaction(ctx, f)
+	return err
+}
+
+// resolveMergedIntoBug resolves the bug the given bug is ultimately merged
+// into.
+func (b *BugUpdater) resolveMergedIntoBug(ctx context.Context, bug bugs.BugID) (bugs.BugID, error) {
+	isResolved := false
+	mergedIntoBug := bug
+	const maxResolutionSteps = 5
+	for i := 0; i < maxResolutionSteps; i++ {
+		system := mergedIntoBug.System
+		if system == bugs.BuganizerSystem {
+			// Resolving the canonical "merged into" bug for bugs in
+			// buganizer is not supported. We'll merge into the first
+			// buganizer bug we see.
+			isResolved = true
+			break
+		}
+		manager, ok := b.managers[system]
+		if !ok {
+			return bugs.BugID{}, fmt.Errorf("encountered unknown bug system: %q", system)
+		}
+		mergedInto, err := manager.GetMergedInto(ctx, mergedIntoBug)
+		if err != nil {
+			return bugs.BugID{}, err
+		}
+		if mergedInto == nil {
+			isResolved = true
+			break
+		} else {
+			mergedIntoBug = *mergedInto
+		}
+	}
+	if !isResolved {
+		return bugs.BugID{}, mergeIntoCycleErr
+	}
+	if mergedIntoBug == bug {
+		// This would normally never occur, but is possible in some
+		// exceptional scenarios like race conditions where a cycle
+		// is broken during the graph traversal, or a bug which
+		// was marked as duplicate but is no longer marked as duplicate
+		// now.
+		return bugs.BugID{}, fmt.Errorf("cannot deduplicate a bug into itself")
+	}
+	return mergedIntoBug, nil
+}
+
+// unduplicateBug attempts to unduplicate a bug, posting the given message
+// on the bug. This allows the system to push back and surface errors
+// when it cannot handle a bug being deduplicated into another and the user
+// needs to manually intervene.
+func (b *BugUpdater) unduplicateBug(ctx context.Context, bug bugs.BugID, message string) error {
+	manager, ok := b.managers[bug.System]
+	if !ok {
+		return fmt.Errorf("encountered unknown bug system: %q", bug.System)
+	}
+	err := manager.Unduplicate(ctx, bug, message)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+// readRuleForBugAndProject reads the failure association rule for the given
+// bug in the given project, if it exists. It additionally returns whether
+// there is any rule in the system that manages the given bug, even if in
+// a different project.
+// If the rule cannot be read, it returns nil.
+func readRuleForBugAndProject(ctx context.Context, bug bugs.BugID, project string) (rule *rules.FailureAssociationRule, anyRuleManaging bool, err error) {
+	rules, err := rules.ReadByBug(ctx, bug)
+	if err != nil {
+		return nil, false, err
+	}
+	rule = nil
+	anyRuleManaging = false
+	for _, r := range rules {
+		if r.IsManagingBug {
+			anyRuleManaging = true
+		}
+		if r.Project == project {
+			rule = r
+		}
+	}
+	return rule, anyRuleManaging, nil
 }
 
 // sortByBugFilingPreference sorts cluster summaries based on our preference
@@ -361,10 +595,10 @@ func (b *BugUpdater) createBug(ctx context.Context, cs *analysis.ClusterSummary)
 	if err == bugs.ErrCreateSimulated {
 		// Create did not do anything because it is in simulation mode.
 		// This is expected.
-		return false, nil
+		return true, nil
 	}
 	if err != nil {
-		return false, errors.Annotate(err, "create issue in %v", mgr).Err()
+		return false, errors.Annotate(err, "create issue in %v", system).Err()
 	}
 
 	// Create a failure association rule associating the failures with a bug.

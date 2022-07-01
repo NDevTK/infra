@@ -57,6 +57,9 @@ const AssignedStatus = "Assigned"
 // UntriagedStatus is the status of bugs that have just been opened.
 const UntriagedStatus = "Untriaged"
 
+// DuplicateStatus is the status of bugs which are closed as duplicate.
+const DuplicateStatus = "Duplicate"
+
 // Generator provides access to a methods to generate a new bug and/or bug
 // updates for a cluster.
 type Generator struct {

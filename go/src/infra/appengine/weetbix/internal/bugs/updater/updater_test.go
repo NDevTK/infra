@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -36,6 +37,7 @@ import (
 	"infra/appengine/weetbix/internal/testutil"
 	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
+	"infra/monorailv2/api/v3/api_proto"
 )
 
 func TestRun(t *testing.T) {
@@ -282,7 +284,7 @@ func TestRun(t *testing.T) {
 				suggestedClusters[1].Failures1d.Residual = 100
 
 				createTime := time.Date(2021, time.January, 5, 12, 30, 0, 0, time.UTC)
-				rule := rules.NewRule(0).
+				rule := rules.NewRule(1).
 					WithProject(project).
 					WithCreationTime(createTime).
 					WithPredicateLastUpdated(createTime.Add(1 * time.Hour)).
@@ -437,9 +439,42 @@ func TestRun(t *testing.T) {
 			err = updateAnalysisAndBugsForProject(ctx, opts)
 			So(err, ShouldBeNil)
 
-			expectFinalRules := func() {
+			expectedRules := []*rules.FailureAssociationRule{
+				{
+					Project:         "chromium",
+					RuleDefinition:  `test = "testname-0"`,
+					BugID:           bugs.BugID{System: "monorail", ID: "chromium/100"},
+					SourceCluster:   suggestedClusters[0].ClusterID,
+					IsActive:        true,
+					IsManagingBug:   true,
+					CreationUser:    rules.WeetbixSystem,
+					LastUpdatedUser: rules.WeetbixSystem,
+				},
+				{
+					Project:         "chromium",
+					RuleDefinition:  `reason LIKE "want foo, got bar"`,
+					BugID:           bugs.BugID{System: "monorail", ID: "chromium/101"},
+					SourceCluster:   suggestedClusters[1].ClusterID,
+					IsActive:        true,
+					IsManagingBug:   true,
+					CreationUser:    rules.WeetbixSystem,
+					LastUpdatedUser: rules.WeetbixSystem,
+				},
+				{
+					Project:         "chromium",
+					RuleDefinition:  `reason LIKE "want foofoo, got bar"`,
+					BugID:           bugs.BugID{System: "monorail", ID: "chromium/102"},
+					SourceCluster:   suggestedClusters[2].ClusterID,
+					IsActive:        true,
+					IsManagingBug:   true,
+					CreationUser:    rules.WeetbixSystem,
+					LastUpdatedUser: rules.WeetbixSystem,
+				},
+			}
+
+			expectRules := func(expectedRules []*rules.FailureAssociationRule) {
 				// Check final set of rules is as expected.
-				rs, err := rules.ReadActive(span.Single(ctx), project)
+				rs, err := rules.ReadAll(span.Single(ctx), "chromium")
 				So(err, ShouldBeNil)
 				for _, r := range rs {
 					So(r.RuleID, ShouldNotBeEmpty)
@@ -453,48 +488,25 @@ func TestRun(t *testing.T) {
 					r.PredicateLastUpdated = time.Time{}
 				}
 
-				So(rs, ShouldResemble, []*rules.FailureAssociationRule{
-					{
-						Project:         "chromium",
-						RuleDefinition:  `test = "testname-0"`,
-						BugID:           bugs.BugID{System: "monorail", ID: "chromium/100"},
-						SourceCluster:   suggestedClusters[0].ClusterID,
-						IsActive:        true,
-						IsManagingBug:   true,
-						CreationUser:    rules.WeetbixSystem,
-						LastUpdatedUser: rules.WeetbixSystem,
-					},
-					{
-						Project:         "chromium",
-						RuleDefinition:  `reason LIKE "want foo, got bar"`,
-						BugID:           bugs.BugID{System: "monorail", ID: "chromium/101"},
-						SourceCluster:   suggestedClusters[1].ClusterID,
-						IsActive:        true,
-						IsManagingBug:   true,
-						CreationUser:    rules.WeetbixSystem,
-						LastUpdatedUser: rules.WeetbixSystem,
-					},
-					{
-						Project:         "chromium",
-						RuleDefinition:  `reason LIKE "want foofoo, got bar"`,
-						BugID:           bugs.BugID{System: "monorail", ID: "chromium/102"},
-						SourceCluster:   suggestedClusters[2].ClusterID,
-						IsActive:        true,
-						IsManagingBug:   true,
-						CreationUser:    rules.WeetbixSystem,
-						LastUpdatedUser: rules.WeetbixSystem,
-					},
+				sortedExpected := make([]*rules.FailureAssociationRule, len(expectedRules))
+				copy(sortedExpected, expectedRules)
+				sort.Slice(sortedExpected, func(i, j int) bool {
+					return sortedExpected[i].BugID.System < sortedExpected[j].BugID.System ||
+						(sortedExpected[i].BugID.System == sortedExpected[j].BugID.System &&
+							sortedExpected[i].BugID.ID < sortedExpected[j].BugID.ID)
 				})
-				So(len(f.Issues), ShouldEqual, 3)
+
+				So(rs, ShouldResemble, sortedExpected)
+				So(len(f.Issues), ShouldEqual, len(sortedExpected))
 			}
-			expectFinalRules()
+			expectRules(expectedRules)
 
 			// Further updates do nothing.
 			originalIssues := monorail.CopyIssuesStore(f)
 			err = updateAnalysisAndBugsForProject(ctx, opts)
 			So(err, ShouldBeNil)
 			So(f, monorail.ShouldResembleIssuesStore, originalIssues)
-			expectFinalRules()
+			expectRules(expectedRules)
 
 			rs, err := rules.ReadActive(span.Single(ctx), project)
 			So(err, ShouldBeNil)
@@ -526,7 +538,7 @@ func TestRun(t *testing.T) {
 					So(monorail.ChromiumTestIssuePriority(issue), ShouldEqual, originalPriority)
 					So(issue.Status.Status, ShouldEqual, originalStatus)
 
-					expectFinalRules()
+					expectRules(expectedRules)
 				})
 			})
 			Convey("Re-clustering complete", func() {
@@ -598,7 +610,7 @@ func TestRun(t *testing.T) {
 					So(issue.Name, ShouldEqual, "projects/chromium/issues/102")
 					So(monorail.ChromiumTestIssuePriority(issue), ShouldEqual, "0")
 
-					expectFinalRules()
+					expectRules(expectedRules)
 				})
 				Convey("Decreasing cluster impact decreases issue priority", func() {
 					issue := f.Issues[2].Issue
@@ -616,7 +628,7 @@ func TestRun(t *testing.T) {
 					So(issue.Status.Status, ShouldEqual, monorail.UntriagedStatus)
 					So(monorail.ChromiumTestIssuePriority(issue), ShouldEqual, "3")
 
-					expectFinalRules()
+					expectRules(expectedRules)
 				})
 				Convey("Deleting cluster closes issue", func() {
 					issue := f.Issues[2].Issue
@@ -633,6 +645,108 @@ func TestRun(t *testing.T) {
 					issue = f.Issues[2].Issue
 					So(issue.Name, ShouldEqual, "projects/chromium/issues/102")
 					So(issue.Status.Status, ShouldEqual, monorail.VerifiedStatus)
+				})
+				Convey("Bug marked as duplicate of bug with rule", func() {
+					// Setup
+					issueOne := f.Issues[1].Issue
+					So(issueOne.Name, ShouldEqual, "projects/chromium/issues/101")
+
+					issueTwo := f.Issues[2].Issue
+					So(issueTwo.Name, ShouldEqual, "projects/chromium/issues/102")
+
+					issueOne.Status.Status = monorail.DuplicateStatus
+					issueOne.MergedIntoIssueRef = &api_proto.IssueRef{
+						Issue: issueTwo.Name,
+					}
+
+					// Act
+					err = updateAnalysisAndBugsForProject(ctx, opts)
+					So(err, ShouldBeNil)
+
+					// Verify
+					expectedRules[1].IsActive = false
+					expectedRules[2].RuleDefinition = "reason LIKE \"want foofoo, got bar\" OR\nreason LIKE \"want foo, got bar\""
+					expectRules(expectedRules)
+				})
+				Convey("Bug marked as duplicate of bug without a rule in this project", func() {
+					// Setup
+					issueOne := f.Issues[1].Issue
+					So(issueOne.Name, ShouldEqual, "projects/chromium/issues/101")
+
+					issueOne.Status.Status = monorail.DuplicateStatus
+					issueOne.MergedIntoIssueRef = &api_proto.IssueRef{
+						ExtIdentifier: "b/1234",
+					}
+
+					Convey("Bug managed by a rule in another project", func() {
+						extraRule := &rules.FailureAssociationRule{
+							Project:        "otherproject",
+							RuleDefinition: `reason LIKE "blah"`,
+							RuleID:         "1234567890abcdef1234567890abcdef",
+							BugID:          bugs.BugID{System: "buganizer", ID: "1234"},
+							IsActive:       true,
+							IsManagingBug:  true,
+						}
+						_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+							return rules.Create(ctx, extraRule, "user@chromium.org")
+						})
+						So(err, ShouldBeNil)
+
+						// Act
+						err = updateAnalysisAndBugsForProject(ctx, opts)
+						So(err, ShouldBeNil)
+
+						// Verify
+						expectedRules[1].BugID = bugs.BugID{System: "buganizer", ID: "1234"}
+						expectedRules[1].IsManagingBug = false // Let the other rule continue to manage the bug.
+						expectRules(expectedRules)
+					})
+					Convey("Bug not managed by a rule in another project", func() {
+						// Act
+						err = updateAnalysisAndBugsForProject(ctx, opts)
+						So(err, ShouldBeNil)
+
+						// Verify
+						expectedRules[1].BugID = bugs.BugID{System: "buganizer", ID: "1234"}
+						expectedRules[1].IsManagingBug = true
+						expectRules(expectedRules)
+					})
+				})
+				Convey("Bug marked as duplicate in a cycle", func() {
+					// Setup
+					// Note that this is a simple cycle with only two bugs.
+					// The implementation allows for larger cycles, however.
+					issueOne := f.Issues[1].Issue
+					So(issueOne.Name, ShouldEqual, "projects/chromium/issues/101")
+
+					issueTwo := f.Issues[2].Issue
+					So(issueTwo.Name, ShouldEqual, "projects/chromium/issues/102")
+
+					issueOne.Status.Status = monorail.DuplicateStatus
+					issueOne.MergedIntoIssueRef = &api_proto.IssueRef{
+						Issue: issueTwo.Name,
+					}
+
+					issueTwo.Status.Status = monorail.DuplicateStatus
+					issueTwo.MergedIntoIssueRef = &api_proto.IssueRef{
+						Issue: issueOne.Name,
+					}
+
+					// Act
+					err = updateAnalysisAndBugsForProject(ctx, opts)
+					So(err, ShouldBeNil)
+
+					// Verify
+					// Issue one kicked out of duplicate status.
+					So(issueOne.Status.Status, ShouldNotEqual, monorail.DuplicateStatus)
+					So(f.Issues[1].Comments, ShouldHaveLength, 3)
+					So(f.Issues[1].Comments[2].Content, ShouldContainSubstring, "a cycle was detected in the bug merged-into graph")
+
+					// As the cycle is now broken, issue two is merged into
+					// issue one.
+					expectedRules[1].RuleDefinition = "reason LIKE \"want foo, got bar\" OR\nreason LIKE \"want foofoo, got bar\""
+					expectedRules[2].IsActive = false
+					expectRules(expectedRules)
 				})
 			})
 		})

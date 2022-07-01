@@ -10,10 +10,20 @@ import (
 	"infra/appengine/weetbix/internal/clustering"
 )
 
-type BugToUpdate struct {
-	BugName string
+type BugUpdateRequest struct {
+	// The bug to update.
+	Bug BugID
 	// Cluster details for the given bug.
 	Impact *ClusterImpact
+	// Whether the bug should be updated. If this if false, only
+	// the BugUpdateRequest is only made to determine if the bug is
+	// the duplicate of another bug.
+	ShouldUpdate bool
+}
+
+type BugUpdateResponse struct {
+	// IsDuplicate is set if the bug is a duplicate of another.
+	IsDuplicate bool
 }
 
 var ErrCreateSimulated = errors.New("CreateNew did not create a bug as the bug manager is in simulation mode")

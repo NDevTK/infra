@@ -118,6 +118,20 @@ func Read(ctx context.Context, project string, id string) (*FailureAssociationRu
 	return rs[0], nil
 }
 
+// ReadAll reads all Weetbix failure association rules in a given project.
+// This method is not expected to scale -- for testing use only.
+func ReadAll(ctx context.Context, project string) ([]*FailureAssociationRule, error) {
+	whereClause := `Project = @project`
+	params := map[string]interface{}{
+		"project": project,
+	}
+	rs, err := readWhere(ctx, whereClause, params)
+	if err != nil {
+		return nil, errors.Annotate(err, "query all rules").Err()
+	}
+	return rs, nil
+}
+
 // ReadActive reads all active Weetbix failure association rules in the given LUCI project.
 func ReadActive(ctx context.Context, project string) ([]*FailureAssociationRule, error) {
 	whereClause := `Project = @project AND IsActive`

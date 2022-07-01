@@ -65,3 +65,7 @@ func (b *BugID) MonorailProjectAndID() (project, id string, err error) {
 	}
 	return m[1], m[2], nil
 }
+
+func (b BugID) String() string {
+	return fmt.Sprintf("%s:%s", b.System, b.ID)
+}

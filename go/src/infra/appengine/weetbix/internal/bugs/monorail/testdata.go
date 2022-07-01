@@ -7,12 +7,11 @@ package monorail
 import (
 	"fmt"
 
-	mpb "infra/monorailv2/api/v3/api_proto"
-
-	"go.chromium.org/luci/common/testing/assertions"
-
 	"github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/proto"
+
+	mpb "infra/monorailv2/api/v3/api_proto"
 )
 
 // IssueData is a representation of all data stored for an issue, used by
@@ -46,9 +45,12 @@ func NewIssueData(uniqifier int) *IssueData {
 // NewIssue returns a new monorail issue proto for testing.
 func NewIssue(uniqifier int) *mpb.Issue {
 	return &mpb.Issue{
-		Name:     fmt.Sprintf("projects/monorailproject/issues/%v", uniqifier),
-		Summary:  fmt.Sprintf("This is the summary of bug %v.", uniqifier),
-		State:    mpb.IssueContentState_ACTIVE,
+		Name:    fmt.Sprintf("projects/monorailproject/issues/%v", uniqifier),
+		Summary: fmt.Sprintf("This is the summary of bug %v.", uniqifier),
+		State:   mpb.IssueContentState_ACTIVE,
+		Status: &mpb.Issue_StatusValue{
+			Status: UntriagedStatus,
+		},
 		Reporter: "user@chromium.org",
 		FieldValues: []*mpb.FieldValue{
 			{
@@ -58,11 +60,6 @@ func NewIssue(uniqifier int) *mpb.Issue {
 			{
 				Field: ChromiumTestPriorityField,
 				Value: "1",
-			},
-		},
-		Labels: []*mpb.Issue_LabelValue{
-			{
-				Label: "Weetbix-Managed",
 			},
 		},
 	}
