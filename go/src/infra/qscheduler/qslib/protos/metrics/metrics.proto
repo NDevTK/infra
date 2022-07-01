@@ -14,6 +14,8 @@
 syntax = "proto3";
 package metrics;
 
+option go_package = "infra/qscheduler/qslib/protos/metrics";
+
 import "google/protobuf/timestamp.proto";
 
 // TaskEvent represents a quotascheduler event that happened to a particular
