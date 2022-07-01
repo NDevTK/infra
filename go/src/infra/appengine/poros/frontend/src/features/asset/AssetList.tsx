@@ -21,7 +21,14 @@ import Stack from '@mui/material/Stack';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateIcon from '@mui/icons-material/Create';
 import EditIcon from '@mui/icons-material/Edit';
-import { Card, CardContent, Typography } from '@mui/material';
+import LaunchIcon from '@mui/icons-material/Launch';
+import {
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import {
@@ -29,11 +36,15 @@ import {
   onSelectRecord,
   queryAssetAsync,
   queryAssetResourceAsync,
+  createAssetInstanceAsync,
+  setAssetSpinRecord,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   setRightSideDrawerOpen,
   setActiveEntity,
+  setSpinDialogClose,
+  setSpinDialogOpen,
 } from '../utility/utilitySlice';
 
 export function AssetList() {
@@ -44,6 +55,12 @@ export function AssetList() {
     dispatch(setActiveEntity('assets'));
   }, []);
 
+  const spinDialogOpen = useAppSelector(
+    (state) => state.utility.spinDialogOpen
+  );
+  const assetSpinRecord = useAppSelector(
+    (state) => state.asset.assetSpinRecord
+  );
   const rows: GridRowsProp = useAppSelector((state) => state.asset.assets);
   const columns: GridColDef[] = [
     { field: 'assetId', headerName: 'Id', flex: 0.5, hide: true },
@@ -73,6 +90,22 @@ export function AssetList() {
         );
       },
     },
+    {
+      field: 'Spin',
+      renderCell: (cellValues) => {
+        return (
+          <IconButton
+            aria-label="refresh"
+            size="small"
+            onClick={() => {
+              handleSpinClick(cellValues);
+            }}
+          >
+            <LaunchIcon fontSize="inherit" />
+          </IconButton>
+        );
+      },
+    },
   ];
   const handleEditClick = (cellValues: GridRenderCellParams) => {
     const selectedRow = cellValues.row;
@@ -95,6 +128,20 @@ export function AssetList() {
     dispatch(queryAssetAsync({ pageSize: 100, pageToken: '' }));
   };
 
+  const handleSpinClick = (celleValues: GridRenderCellParams) => {
+    dispatch(setSpinDialogOpen());
+    dispatch(setAssetSpinRecord(celleValues.row.assetId));
+  };
+
+  const handleSpinClose = () => {
+    dispatch(setSpinDialogClose());
+  };
+
+  const handleSpinConfirm = () => {
+    dispatch(createAssetInstanceAsync(assetSpinRecord));
+    dispatch(setSpinDialogClose());
+  };
+
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
@@ -110,6 +157,27 @@ export function AssetList() {
 
   return (
     <div>
+      <Dialog onClose={handleSpinClose} open={spinDialogOpen}>
+        <DialogTitle>Do you want to spin this asset?</DialogTitle>
+        <Stack
+          direction="row"
+          spacing={6}
+          sx={{
+            padding: 1,
+            margin: 1,
+            display: 'flex',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          <Button variant="outlined" size="small" onClick={handleSpinClose}>
+            Cancel
+          </Button>
+          <Button variant="contained" size="small" onClick={handleSpinConfirm}>
+            Confirm
+          </Button>
+        </Stack>
+      </Dialog>
       <Card>
         <CardContent>
           <Grid container spacing={2} padding={0}>

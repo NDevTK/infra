@@ -11,6 +11,7 @@ export interface UtilityState {
   userPicture: string;
   rightSideDrawerOpen: boolean;
   activeEntity: string;
+  spinDialogOpen: boolean;
 }
 
 const initialState: UtilityState = {
@@ -18,6 +19,7 @@ const initialState: UtilityState = {
   userPicture: '',
   rightSideDrawerOpen: false,
   activeEntity: '',
+  spinDialogOpen: false,
 };
 
 export const fetchUserPictureAsync = createAsyncThunk(
@@ -50,6 +52,12 @@ export const utilitySlice = createSlice({
     setActiveEntity: (state, action) => {
       state.activeEntity = action.payload;
     },
+    setSpinDialogClose: (state) => {
+      state.spinDialogOpen = false;
+    },
+    setSpinDialogOpen: (state) => {
+      state.spinDialogOpen = true;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserPictureAsync.fulfilled, (state, action) => {
@@ -68,6 +76,8 @@ export const {
   setRightSideDrawerClose,
   setRightSideDrawerOpen,
   setActiveEntity,
+  setSpinDialogClose,
+  setSpinDialogOpen,
 } = utilitySlice.actions;
 
 export default utilitySlice.reducer;

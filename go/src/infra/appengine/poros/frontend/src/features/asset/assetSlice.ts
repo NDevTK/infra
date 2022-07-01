@@ -4,6 +4,11 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
+  AssetInstanceService,
+  CreateAssetInstanceRequest,
+  IAssetInstanceService,
+} from '../../api/asset_instance_service';
+import {
   AssetResourceModel,
   AssetResourceService,
   IAssetResourceService,
@@ -36,6 +41,7 @@ export interface AssetState {
   resources: ResourceModel[];
   assetResourcesToSave: AssetResourceModel[];
   assetResourcesToDelete: AssetResourceModel[];
+  assetSpinRecord: string;
 }
 
 const initialState: AssetState = {
@@ -51,6 +57,7 @@ const initialState: AssetState = {
   resources: [],
   assetResourcesToSave: [AssetResourceModel.defaultEntity()],
   assetResourcesToDelete: [],
+  assetSpinRecord: '',
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -164,6 +171,18 @@ export const queryAssetResourceAsync = createAsyncThunk(
   }
 );
 
+export const createAssetInstanceAsync = createAsyncThunk(
+  'asset/createAssetInstance',
+  async (assetId: string) => {
+    const request: CreateAssetInstanceRequest = {
+      assetId: assetId,
+      status: 'STATUS_PENDING',
+    };
+    const service: IAssetInstanceService = new AssetInstanceService();
+    service.create(request);
+  }
+);
+
 export const assetSlice = createSlice({
   name: 'asset',
   initialState,
@@ -218,6 +237,9 @@ export const assetSlice = createSlice({
     },
     setState: (state, action) => {
       return action.payload;
+    },
+    setAssetSpinRecord: (state, action) => {
+      state.assetSpinRecord = action.payload;
     },
   },
 
@@ -277,6 +299,13 @@ export const assetSlice = createSlice({
       })
       .addCase(queryResourceAsync.fulfilled, (state, action) => {
         state.resources = action.payload.resources;
+      })
+      .addCase(createAssetInstanceAsync.pending, (state) => {
+        state.savingStatus = 'loading';
+      })
+      .addCase(createAssetInstanceAsync.fulfilled, (state) => {
+        state.savingStatus = 'idle';
+        state.assetSpinRecord = '';
       });
   },
 });
@@ -298,6 +327,7 @@ export const {
   setResourceId,
   setAlias,
   setState,
+  setAssetSpinRecord,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

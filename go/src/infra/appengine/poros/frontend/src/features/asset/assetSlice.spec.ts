@@ -20,6 +20,7 @@ describe('asset reducer', () => {
     resources: [],
     assetResourcesToSave: [AssetResourceModel.defaultEntity()],
     assetResourcesToDelete: [],
+    assetSpinRecord: '',
   };
   it('should handle initial state', () => {
     expect(assetReducer(undefined, { type: 'unknown' })).toEqual(initialState);

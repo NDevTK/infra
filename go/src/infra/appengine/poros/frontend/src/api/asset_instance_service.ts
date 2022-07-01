@@ -8,6 +8,8 @@ import { fromJsonTimestamp, isSet } from './common/utils';
 
 /** Performs operations on AssetInstance. */
 export interface IAssetInstanceService {
+  /** Creates the given AssetInstance. */
+  create(request: CreateAssetInstanceRequest): Promise<AssetInstanceModel>;
   /** Update the requested AssetInstanceModel. */
   update(request: UpdateAssetInstanceRequest): Promise<AssetInstanceModel>;
   /** Lists all AssetInstances. */
@@ -16,9 +18,18 @@ export interface IAssetInstanceService {
 
 export class AssetInstanceService implements IAssetInstanceService {
   constructor() {
+    this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.list = this.list.bind(this);
   }
+
+  create = (
+    request: CreateAssetInstanceRequest
+  ): Promise<AssetInstanceModel> => {
+    const data = CreateAssetInstanceRequest.toJSON(request);
+    const promise = rpcClient.request('poros.AssetInstance', 'Create', data);
+    return promise.then((data) => AssetInstanceModel.fromJSON(data));
+  };
 
   update = (
     request: UpdateAssetInstanceRequest
@@ -104,6 +115,23 @@ export const AssetInstanceModel = {
       (obj.modifiedAt = message.modifiedAt.toISOString());
     message.deleteAt !== undefined &&
       (obj.deleteAt = message.deleteAt.toISOString());
+    return obj;
+  },
+};
+
+/** Request to create a single AssetInstance in AssetInstanceServ */
+export interface CreateAssetInstanceRequest {
+  // Identifier of the asset associated with the entity
+  assetId: string;
+  // Status of the instance
+  status: string;
+}
+
+export const CreateAssetInstanceRequest = {
+  toJSON(message: CreateAssetInstanceRequest): unknown {
+    const obj: any = {};
+    message.assetId !== undefined && (obj.assetId = message.assetId);
+    message.status !== undefined && (obj.status = message.status);
     return obj;
   },
 };
