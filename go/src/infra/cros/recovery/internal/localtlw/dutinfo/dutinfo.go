@@ -83,16 +83,11 @@ func CreateUpdateDutRequest(dutID string, dut *tlw.Dut) (req *ufsAPI.UpdateDevic
 		}
 	}()
 	return &ufsAPI.UpdateDeviceRecoveryDataRequest{
-		DeviceId:     dutID,
-		ResourceType: ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
-		Hostname:     dut.Name,
-		DeviceRecoveryData: &ufsAPI.UpdateDeviceRecoveryDataRequest_Chromeos{
-			Chromeos: &ufsAPI.ChromeOsRecoveryData{
-				DutState: getUFSDutComponentStateFromSpecs(dutID, dut),
-				DutData:  getUFSDutDataFromSpecs(dutID, dut),
-				LabData:  getUFSLabDataFromSpecs(dutID, dut),
-			},
-		},
+		DeviceId:      dutID,
+		Hostname:      dut.Name,
+		DutState:      getUFSDutComponentStateFromSpecs(dutID, dut),
+		DutData:       getUFSDutDataFromSpecs(dutID, dut),
+		LabData:       getUFSLabDataFromSpecs(dutID, dut),
 		ResourceState: dutstate.ConvertToUFSState(dut.State),
 	}, nil
 }
@@ -325,8 +320,8 @@ func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature)
 	return false
 }
 
-func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_DutData {
-	dutData := &ufsAPI.ChromeOsRecoveryData_DutData{
+func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceRecoveryDataRequest_DutData {
+	dutData := &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{
 		SerialNumber: dut.GetChromeos().GetSerialNumber(),
 		HwID:         dut.GetChromeos().GetHwid(),
 		// TODO: update logic if required by b/184391605
@@ -335,9 +330,9 @@ func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecovery
 	return dutData
 }
 
-func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
-	labData := &ufsAPI.ChromeOsRecoveryData_LabData{
-		WifiRouters: []*ufsAPI.ChromeOsRecoveryData_WifiRouter{},
+func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceRecoveryDataRequest_LabData {
+	labData := &ufsAPI.UpdateDeviceRecoveryDataRequest_LabData{
+		WifiRouters: []*ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{},
 	}
 	if ch := dut.GetChromeos(); ch != nil {
 		if s := ch.GetServo(); s != nil {
@@ -347,13 +342,13 @@ func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecovery
 			labData.ServoUsbDrive = s.GetUsbDrive()
 		}
 		for _, router := range ch.GetWifiRouters() {
-			labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.ChromeOsRecoveryData_WifiRouter{
+			labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{
 				Hostname: router.GetName(),
 				State:    convertWifiRouterStateToUFS(router.GetState()),
 			})
 		}
 		for _, btp := range ch.GetBluetoothPeers() {
-			labData.BluetoothPeers = append(labData.BluetoothPeers, &ufsAPI.ChromeOsRecoveryData_BluetoothPeer{
+			labData.BlueoothPeers = append(labData.BlueoothPeers, &ufsAPI.UpdateDeviceRecoveryDataRequest_BluetoothPeer{
 				Hostname: btp.GetName(),
 				State:    convertBluetoothPeerStateToUFS(btp.GetState()),
 			})
