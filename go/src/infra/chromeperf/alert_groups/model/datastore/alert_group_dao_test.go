@@ -16,6 +16,7 @@ package datastore_dao
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -92,6 +93,12 @@ func TestAlertGroupModel(t *testing.T) {
 					So(err, ShouldBeNil)
 					So(len(datastoreGroup2.Anomalies), ShouldEqual, 1)
 					So(datastoreGroup2.Anomalies[0], ShouldResemble, datastore.MakeKey(ctx, "Anomaly", 2))
+					// See b:237724865 for details.
+					// This test flaked, so let's get some more information in the logs when we flake.
+					if ok := datastoreGroup2.Created.Before(datastoreGroup2.Updated); !ok {
+						fmt.Printf("created time: %d\n", datastoreGroup2.Created.Unix())
+						fmt.Printf("updated time: %d\n", datastoreGroup2.Updated.Unix())
+					}
 					So(datastoreGroup2.Created.Before(datastoreGroup2.Updated), ShouldBeTrue)
 				})
 			})
