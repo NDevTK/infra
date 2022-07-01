@@ -76,19 +76,24 @@ func TestStartServodCmd(t *testing.T) {
 
 	tests := []test{
 		{
-			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod"},
+			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false},
 			"docker_servod",
-			*buildServodDockerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial"}),
+			*buildServodDockerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board"},
 			"ufsDockerContainerName",
-			*buildServodDockerArgs(ServodContainerOptions{"ufsDockerContainerName", "board", "ufsModel", "ufsSerial"}),
+			*buildServodDockerArgs(ServodContainerOptions{"ufsDockerContainerName", "board", "ufsModel", "ufsSerial", true}),
 		},
 		{
 			&startServodRun{host: "eli"},
 			"ufsDockerContainerName",
-			*buildServodDockerArgs(ServodContainerOptions{"ufsDockerContainerName", "ufsBoard", "ufsModel", "ufsSerial"}),
+			*buildServodDockerArgs(ServodContainerOptions{"ufsDockerContainerName", "ufsBoard", "ufsModel", "ufsSerial", true}),
+		},
+		{
+			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: true},
+			"docker_servod",
+			*buildServodDockerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false}),
 		},
 	}
 

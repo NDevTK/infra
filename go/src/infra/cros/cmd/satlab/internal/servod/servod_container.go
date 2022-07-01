@@ -28,6 +28,7 @@ type ServodContainerOptions struct {
 	board         string
 	model         string
 	servoSerial   string
+	withServod    bool
 }
 
 func (opts *ServodContainerOptions) Validate() error {
@@ -61,6 +62,11 @@ func StartServodContainer(ctx context.Context, d DockerClient, opts ServodContai
 
 // buildServodDockerArgs produces ContainerArgs which has the full information needed to spin up a servod container via `docker run ...`
 func buildServodDockerArgs(opts ServodContainerOptions) *docker.ContainerArgs {
+	exec := []string{"tail", "-f", "/dev/null"}
+	if opts.withServod {
+		exec = []string{"bash", "/start_servod.sh"}
+	}
+
 	return &docker.ContainerArgs{
 		Detached:   true,
 		ImageName:  dockerServodImageName(),
@@ -68,7 +74,7 @@ func buildServodDockerArgs(opts ServodContainerOptions) *docker.ContainerArgs {
 		Volumes:    generateVols(opts.servoSerial),
 		Network:    "default_satlab",
 		Privileged: true,
-		Exec:       []string{"bash", "/start_servod.sh"},
+		Exec:       exec,
 	}
 }
 

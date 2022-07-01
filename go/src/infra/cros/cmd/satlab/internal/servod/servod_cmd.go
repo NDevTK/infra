@@ -58,6 +58,8 @@ type startServodRun struct {
 	servoSerial         string
 	servodContainerName string
 	noServodProcess     bool
+
+	// TODO(elijahtrexler) add verbose,
 }
 
 // Run is what is called when a user inputs the startServodRun command
@@ -110,6 +112,7 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 		board:         c.board,
 		model:         c.model,
 		servoSerial:   c.servoSerial,
+		withServod:    !c.noServodProcess, // notice negation here
 	}
 
 	// If user provides all needed data, we can skip the UFS fetch entirely which has utility for a DUT not deployed in UFS or when UFS is unreachable

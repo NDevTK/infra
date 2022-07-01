@@ -55,7 +55,7 @@ func TestStartServodContainerArgs(t *testing.T) {
 
 	fc := NewFakeDockerClient(false, false)
 
-	opts := ServodContainerOptions{"testContainer", "board", "model", "serial"}
+	opts := ServodContainerOptions{"testContainer", "board", "model", "serial", false}
 	StartServodContainer(context.Background(), &fc, opts)
 
 	expectedArgs := docker.ContainerArgs{
@@ -67,7 +67,7 @@ func TestStartServodContainerArgs(t *testing.T) {
 		Volumes:      []string{"/dev:/dev", "serial_log:/var/log/servod_9999/"},
 		Network:      "default_satlab",
 		Privileged:   true,
-		Exec:         []string{"bash", "/start_servod.sh"},
+		Exec:         []string{"tail", "-f", "/dev/null"},
 	}
 
 	if diff := cmp.Diff(fc.runningContainers["testContainer"], expectedArgs); diff != "" {
