@@ -180,4 +180,4 @@ def _build_impl(api, cipd_spec, is_latest, spec_lookup, force_build, recurse_fn,
             api.bcid_reporter.report_cipd(package_hash, cipd_spec.name,
                                           pin_result['instance_id'])
           except Exception:  # pragma: no cover
-            api.step.active_result.presentation.status = api.step.FAILURE
+            api.step.active_result.presentation.status = api.step.WARNING
