@@ -286,7 +286,12 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case tasknames.AuditUSB:
-		return nil, errors.Reason("setup type: audit usb not yet implemented").Err()
+		switch ds {
+		case tlw.DUTSetupTypeCros:
+			return config.CrosAuditUSBConfig(), nil
+		default:
+			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
+		}
 	case tasknames.Custom:
 		return nil, errors.Reason("Setup type: %q does not have default configuration for custom tasks", ds).Err()
 	default:
@@ -505,7 +510,6 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 //
 // Keep this type up to date with internal/execs/execs.go:RunArgs .
 // Also update recovery.go:runDUTPlans .
-//
 type RunArgs struct {
 	// Access to the lab TLW layer.
 	Access tlw.Access

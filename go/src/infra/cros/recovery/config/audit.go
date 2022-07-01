@@ -4,7 +4,7 @@
 
 package config
 
-// CrosAuditRPMConfig is only for ChromeOS DUTs.
+// CrosAuditRPMConfig audits the RPM information for ChromeOS DUTs only.
 func CrosAuditRPMConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
