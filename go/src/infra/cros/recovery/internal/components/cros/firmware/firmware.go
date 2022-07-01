@@ -34,6 +34,25 @@ type ReadAPInfoResponse struct {
 	Keys        []string
 }
 
+// ecExemptedModels holds a map of models that doesn't have EC firmware.
+var ecExemptedModels = map[string]bool{
+	"drallion360": true,
+	"sarien":      true,
+	"arcada":      true,
+	"drallion":    true,
+}
+
+// targetOverrideModels holds a map of models that need to override its firmware target.
+var targetOverrideModels = map[string]string{
+	// TODO(b/226402941): Read existing ec image name using futility.
+	"dragonair": "dratini",
+	// Models that use _signed version of firmware.
+	"drallion360": "drallion360_signed",
+	"sarien":      "sarien_signed",
+	"arcada":      "arcada_signed",
+	"drallion":    "drallion_signed",
+}
+
 // ReadAPInfoByServo read AP info from DUT.
 //
 // AP will be extracted from the DUT to flash back with changes.
@@ -268,7 +287,7 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 		return errors.Annotate(err, "install firmware image").Err()
 	}
 	log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
-	if _, ok := getEcExemptedModels()[req.Model]; ok {
+	if ecExemptedModels[req.Model] {
 		log.Debugf("Override UpdateEC to false as model %s doesn't have EC firmware", req.Model)
 		req.UpdateEC = false
 	}
@@ -341,7 +360,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	destDir := filepath.Join(filepath.Dir(tarballPath), "EC")
 	candidatesFiles := []string{}
 	// Handle special case where some model use non-regular firmware mapping.
-	if m, ok := getFwOverrideMap()[req.Model]; ok {
+	if m, ok := targetOverrideModels[req.Model]; ok {
 		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
 		candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", m))
 	}
@@ -392,7 +411,7 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	destDir := filepath.Join(filepath.Dir(tarballPath), "AP")
 	candidatesFiles := []string{}
 	// Handle special case where some model use non-regular firmware mapping.
-	if m, ok := getFwOverrideMap()[req.Model]; ok {
+	if m, ok := targetOverrideModels[req.Model]; ok {
 		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
 		candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", m))
 	}
@@ -483,27 +502,4 @@ func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log lo
 	log.Debugf("Firmware target info from DUT: %s", out)
 	// The first letter of firmware target read from DUT is capitalized, so convert to lower case here.
 	return strings.ToLower(out), nil
-}
-
-// getEcExemptedModels returns a map of models that doesn't have EC firmware.
-func getEcExemptedModels() map[string]bool {
-	return map[string]bool{
-		"drallion360": true,
-		"sarien":      true,
-		"arcada":      true,
-		"drallion":    true,
-	}
-}
-
-// getFwOverrideMap return a map of model that need to override its firmware target.
-func getFwOverrideMap() map[string]string {
-	return map[string]string{
-		// TODO(b/226402941): Read existing ec image name using futility.
-		"dragonair": "dratini",
-		// Models that use _signed version of firmware.
-		"drallion360": "drallion360_signed",
-		"sarien":      "sarien_signed",
-		"arcada":      "arcada_signed",
-		"drallion":    "drallion_signed",
-	}
 }
