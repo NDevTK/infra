@@ -62,6 +62,9 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, 
 		}
 		if c.HumanReadableSummary != "" {
 			tr.SummaryHtml = fmt.Sprintf("<pre>%s</pre>", html.EscapeString(c.HumanReadableSummary))
+			tr.FailureReason = &pb.FailureReason{
+				PrimaryErrorMessage: truncateString(c.HumanReadableSummary, maxPrimaryErrorBytes),
+			}
 		}
 
 		if !c.StartTime.IsZero() {

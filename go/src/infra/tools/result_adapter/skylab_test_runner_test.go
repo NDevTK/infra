@@ -129,22 +129,31 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					Expected:    false,
 					Status:      pb.TestStatus_FAIL,
 					SummaryHtml: "<pre>test failure</pre>",
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "test failure",
+					},
 				},
 				{
 					TestId:      "test4",
 					Expected:    false,
 					Status:      pb.TestStatus_CRASH,
 					SummaryHtml: "<pre>test error</pre>",
-					StartTime:   timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-					Duration:    &duration.Duration{Seconds: 4},
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "test error",
+					},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
 				},
 				{
 					TestId:      "test5",
 					Expected:    false,
 					Status:      pb.TestStatus_ABORT,
 					SummaryHtml: "<pre>test abort</pre>",
-					StartTime:   timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-					Duration:    &duration.Duration{Seconds: 4},
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "test abort",
+					},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
 				},
 			}
 			So(testResults, ShouldHaveLength, 5)
