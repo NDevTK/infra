@@ -693,9 +693,9 @@ Returns: QMP json response for status query
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-#### **class [RecipeAutorollerApi](/recipes/recipe_modules/recipe_autoroller/api.py#134)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [RecipeAutorollerApi](/recipes/recipe_modules/recipe_autoroller/api.py#139)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [roll\_projects](/recipes/recipe_modules/recipe_autoroller/api.py#135)(self, projects, db_gcs_bucket):**
+&mdash; **def [roll\_projects](/recipes/recipe_modules/recipe_autoroller/api.py#140)(self, projects, db_gcs_bucket):**
 
 Attempts to roll each project from the provided list.
 

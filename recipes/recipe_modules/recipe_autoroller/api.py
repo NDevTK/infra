@@ -59,7 +59,12 @@ Please review the expectation changes, and LGTM+CQ.
 """)
 
 COMMIT_MESSAGE_INFO = ("""
-More info is at https://goo.gl/zkKdpD. Use https://goo.gl/noib3a to file a bug.
+Please check the following references for more information:
+- autoroller, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/workflow.md#autoroller
+- rollback, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/workflow.md#rollback
+- cross-repo dependencies, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/cross_repo.md
+
+Use https://goo.gl/noib3a to file a bug.
 """)
 
 COMMIT_MESSAGE_FOOTER = ("""
