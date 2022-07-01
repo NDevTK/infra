@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"go.chromium.org/luci/common/trace"
 	"go.chromium.org/luci/grpc/grpcutil"
 	swarming "go.chromium.org/luci/swarming/proto/api"
 
@@ -51,7 +52,10 @@ func NewBatchedServer() *BatchedQSchedulerServer {
 // getOrCreateBatcher creates or returns the batcher for the given scheduler.
 //
 // Concurrency-safe.
-func (s *BatchedQSchedulerServer) getOrCreateBatcher(schedulerID string) *state.BatchRunner {
+func (s *BatchedQSchedulerServer) getOrCreateBatcher(ctx context.Context, schedulerID string) *state.BatchRunner {
+	ctx, span := trace.StartSpan(ctx, "batched_qscheduler.getOrCreateBatcher")
+	defer span.End(nil)
+
 	batcher, ok := s.getBatcher(schedulerID)
 	if ok {
 		return batcher
@@ -84,21 +88,25 @@ func (s *BatchedQSchedulerServer) getBatcher(schedulerID string) (*state.BatchRu
 
 // AssignTasks implements QSchedulerServer.
 func (s *BatchedQSchedulerServer) AssignTasks(ctx context.Context, r *swarming.AssignTasksRequest) (resp *swarming.AssignTasksResponse, err error) {
+	ctx, span := trace.StartSpan(ctx, "batched_qscheduler.AssignTasks")
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+		span.End(err)
 	}()
 	if err := r.Validate(); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
-	batcher := s.getOrCreateBatcher(r.SchedulerId)
+	batcher := s.getOrCreateBatcher(ctx, r.SchedulerId)
 	return batcher.TryAssign(ctx, r)
 }
 
 // GetCancellations implements QSchedulerServer.
 func (s *BatchedQSchedulerServer) GetCancellations(ctx context.Context, r *swarming.GetCancellationsRequest) (resp *swarming.GetCancellationsResponse, err error) {
+	ctx, span := trace.StartSpan(ctx, "batched_qscheduler.GetCancellations")
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+		span.End(err)
 	}()
 	if err = r.Validate(); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
@@ -120,21 +128,24 @@ func (s *BatchedQSchedulerServer) GetCancellations(ctx context.Context, r *swarm
 
 // NotifyTasks implements QSchedulerServer.
 func (s *BatchedQSchedulerServer) NotifyTasks(ctx context.Context, r *swarming.NotifyTasksRequest) (resp *swarming.NotifyTasksResponse, err error) {
+	ctx, span := trace.StartSpan(ctx, "batched_qscheduler.NotifyTasks")
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+		span.End(err)
 	}()
 	if err := r.Validate(); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
-
-	batcher := s.getOrCreateBatcher(r.SchedulerId)
+	batcher := s.getOrCreateBatcher(ctx, r.SchedulerId)
 	return batcher.TryNotify(ctx, r)
 }
 
 // GetCallbacks implements QSchedulerServer.
 func (s *BatchedQSchedulerServer) GetCallbacks(ctx context.Context, r *swarming.GetCallbacksRequest) (resp *swarming.GetCallbacksResponse, err error) {
+	ctx, span := trace.StartSpan(ctx, "batched_qscheduler.GetCallbacks")
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+		span.End(err)
 	}()
 
 	store := nodestore.For(r.SchedulerId)

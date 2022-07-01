@@ -15,11 +15,14 @@
 package scheduler
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"sort"
 
 	"infra/qscheduler/qslib/protos/metrics"
+
+	"go.chromium.org/luci/common/trace"
 )
 
 const max_sort_amount = 100000
@@ -66,33 +69,42 @@ type schedulerRun struct {
 	scheduler *Scheduler
 }
 
-func (run *schedulerRun) Run(e EventSink) []*Assignment {
+func (run *schedulerRun) Run(ctx context.Context, e EventSink) []*Assignment {
 	var output []*Assignment
+
 	// Proceed through multiple passes of the scheduling algorithm, from highest
 	// to lowest priority requests (high priority = low p).
-	for p := Priority(0); p < NumPriorities; p++ {
-		workerMatches := run.computeIdleWorkerMatches(p)
+	func() {
+		ctx, span := trace.StartSpan(ctx, "scheduler_run.Run.Priorities")
+		defer span.End(nil)
+		for p := Priority(0); p < NumPriorities; p++ {
+			workerMatches := run.computeIdleWorkerMatches(ctx, p)
 
-		// Step 1: Match any requests to idle workers that have matching
-		// provisionable labels.
-		output = append(output, run.assignToIdleWorkers(p, workerMatches, true, e)...)
-		// Step 2: Match request to any remaining idle workers, regardless of
-		// provisionable labels.
-		output = append(output, run.assignToIdleWorkers(p, workerMatches, false, e)...)
-		// Step 3: Demote (out of this level) or promote (into this level) any
-		// already running tasks that qualify.
-		run.reprioritizeRunningTasks(p, e)
-		// Step 4: Preempt any lower priority running tasks.
-		if !run.scheduler.config.DisablePreemption {
-			output = append(output, run.preemptRunningTasks(p, e)...)
+			// Step 1: Match any requests to idle workers that have matching
+			// provisionable labels.
+			output = append(output, run.assignToIdleWorkers(p, workerMatches, true, e)...)
+			// Step 2: Match request to any remaining idle workers, regardless of
+			// provisionable labels.
+			output = append(output, run.assignToIdleWorkers(p, workerMatches, false, e)...)
+			// Step 3: Demote (out of this level) or promote (into this level) any
+			// already running tasks that qualify.
+			run.reprioritizeRunningTasks(p, e)
+			// Step 4: Preempt any lower priority running tasks.
+			if !run.scheduler.config.DisablePreemption {
+				output = append(output, run.preemptRunningTasks(p, e)...)
+			}
 		}
-	}
+	}()
 
 	// A final pass matches free jobs (in the FreeBucket) to any remaining
 	// idle workers. The reprioritize and preempt stages do not apply here.
-	workerMatches := run.computeIdleWorkerMatches(FreeBucket)
-	output = append(output, run.assignToIdleWorkers(FreeBucket, workerMatches, true, e)...)
-	output = append(output, run.assignToIdleWorkers(FreeBucket, workerMatches, false, e)...)
+	func() {
+		ctx, span := trace.StartSpan(ctx, "scheduler_run.Run.Freebie")
+		defer span.End(nil)
+		workerMatches := run.computeIdleWorkerMatches(ctx, FreeBucket)
+		output = append(output, run.assignToIdleWorkers(FreeBucket, workerMatches, true, e)...)
+		output = append(output, run.assignToIdleWorkers(FreeBucket, workerMatches, false, e)...)
+	}()
 
 	run.updateExaminedTimes()
 
@@ -198,7 +210,11 @@ func computeMatch(w *Worker, r *TaskRequest) match {
 
 // computeIdleWorkerMatches computes the match lists for all idle workers, against
 // requests at the given priority.
-func (run *schedulerRun) computeIdleWorkerMatches(priority Priority) map[WorkerID]matchList {
+func (run *schedulerRun) computeIdleWorkerMatches(ctx context.Context, priority Priority) map[WorkerID]matchList {
+	ctx, span := trace.StartSpan(ctx, "scheduler_run.computeIdleWorkerMatches")
+	defer span.End(nil)
+	span.Attribute("priority", priority)
+
 	matchesPerWorker := make(map[WorkerID]matchList, len(run.idleWorkers))
 	type widAndItem struct {
 		wid     WorkerID

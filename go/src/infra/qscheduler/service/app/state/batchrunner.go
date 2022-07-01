@@ -22,6 +22,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/trace"
 	swarming "go.chromium.org/luci/swarming/proto/api"
 
 	"infra/qscheduler/qslib/scheduler"
@@ -109,12 +110,14 @@ func (b *BatchRunner) TryNotify(ctx context.Context, req *swarming.NotifyTasksRe
 }
 
 // TryAssign runs the given assign request in a batch.
-func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRequest) (*swarming.AssignTasksResponse, error) {
+func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRequest) (atr *swarming.AssignTasksResponse, err error) {
+	ctx, span := trace.StartSpan(ctx, "batchrunner.TryAssign")
+	defer span.End(err)
 	ba := &batchedAssign{
 		batchedRequest: newBatchedRequest(ctx),
 		req:            req,
 	}
-	if err := b.trySend(ctx, ba); err != nil {
+	if err = b.trySend(ctx, ba); err != nil {
 		return nil, err
 	}
 	select {
@@ -125,8 +128,10 @@ func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRe
 		// persisted.
 		// Fortunately, qscheduler's reconciler logic ensures that subsequent Assign
 		// calls will return the already-assigned task.
+		span.Attribute("batchrunner.Assign.HungUp", true)
 		return nil, ctx.Err()
 	case <-ba.Done():
+		span.Attribute("batchrunner.Assign.HungUp", false)
 		return ba.resp, ba.Err()
 	}
 }
@@ -158,12 +163,13 @@ func (b *BatchRunner) Close() {
 func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 	for r := range b.requests {
 		// Create a new batch that will run in r's context.
-		ctx := r.Ctx()
-		logging.Debugf(ctx, "request picked as batch master")
+		ctx, span := trace.StartSpan(r.Ctx(), "batchrunner.runRequestsInBatches")
+		defer span.End(nil)
+		logging.Debugf(ctx, "request picked as batch leader")
 
 		if ctx.Err() != nil {
-			// Request is already cancelled, don't use it as a master.
-			logging.Debugf(ctx, "request already cancelled, dropped as batch master")
+			// Request is already cancelled, don't use it as a leader.
+			logging.Debugf(ctx, "request already cancelled, dropped as batch leader")
 			continue
 		}
 
@@ -189,7 +195,10 @@ func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 	close(b.closed)
 }
 
-func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
+func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) (err error) {
+	ctx, span := trace.StartSpan(ctx, "batchrunner.collectForBatch")
+	defer span.End(err)
+
 	timer := clock.After(ctx, waitToCollect(ctx))
 	batchSize := int64(1000)
 	if bs := config.Get(ctx).GetQuotaScheduler().GetBatchMaxSize(); bs > 0 {
@@ -207,7 +216,7 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 				logging.Debugf(r.Ctx(), "request already cancelled, ignored for batch")
 				continue
 			}
-			logging.Debugf(r.Ctx(), "request picked up as batch slave, will eventually execute")
+			logging.Debugf(r.Ctx(), "request picked up in batch, will eventually execute")
 
 			nb.append(r)
 			// In test fixture, wait for a signal to continue after appending
@@ -224,6 +233,7 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 			// unwind when its context is cancelled.
 			return ctx.Err()
 		case tr := <-timer:
+			span.Attribute("batchrunner.collectForBatch.batchSize", nb.numOperations())
 			return tr.Err
 		case <-b.testonlyBatchStart:
 			// Stop collecting due to test fixture signal.
