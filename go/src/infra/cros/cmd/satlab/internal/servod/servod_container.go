@@ -23,19 +23,34 @@ type DockerClient interface {
 	IsUp(ctx context.Context, containerName string) (bool, error)
 }
 
-// StartServodContainer is used to start the docker container for servod
-// If there is already a container running with the same name it will not start a new container
-func StartServodContainer(d DockerClient, ctx context.Context, servoContainerName string, board string, model string, servoSerial string) (*docker.StartResponse, error) {
-	// check presence of running container already
-	if up, err := d.IsUp(ctx, servoContainerName); err != nil {
-		return nil, err
-	} else if up {
-		return nil, errors.Reason("Docker container with name %s is already running", servoContainerName).Err()
+type ServodContainerOptions struct {
+	containerName string
+	board         string
+	model         string
+	servoSerial   string
+}
+
+func (opts *ServodContainerOptions) Validate() error {
+	if opts.containerName == "" || opts.board == "" || opts.model == "" || opts.servoSerial == "" {
+		return errors.Reason("invalid container options, at least one non-nullable string is nil: %+v", opts).Err()
 	}
 
-	args := buildServodDockerArgs(servoContainerName, board, model, servoSerial)
+	return nil
+}
 
-	res, err := d.Start(ctx, servoContainerName, args, time.Minute)
+// startServodContainer is used to start the docker container for servod
+// If there is already a container running with the same name it will not start a new container
+func StartServodContainer(ctx context.Context, d DockerClient, opts ServodContainerOptions) (*docker.StartResponse, error) {
+	// check presence of running container already
+	if up, err := d.IsUp(ctx, opts.containerName); err != nil {
+		return nil, err
+	} else if up {
+		return nil, errors.Reason("Docker container with name %s is already running", opts.containerName).Err()
+	}
+
+	args := buildServodDockerArgs(opts)
+
+	res, err := d.Start(ctx, opts.containerName, args, time.Minute)
 	if err != nil {
 		return nil, err
 	}
@@ -45,12 +60,12 @@ func StartServodContainer(d DockerClient, ctx context.Context, servoContainerNam
 }
 
 // buildServodDockerArgs produces ContainerArgs which has the full information needed to spin up a servod container via `docker run ...`
-func buildServodDockerArgs(servoContainerName string, board string, model string, servoSerial string) *docker.ContainerArgs {
+func buildServodDockerArgs(opts ServodContainerOptions) *docker.ContainerArgs {
 	return &docker.ContainerArgs{
 		Detached:   true,
 		ImageName:  dockerServodImageName(),
-		EnvVar:     generateEnvVars(board, model, servoSerial),
-		Volumes:    generateVols(servoSerial),
+		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial),
+		Volumes:    generateVols(opts.servoSerial),
 		Network:    "default_satlab",
 		Privileged: true,
 		Exec:       []string{"bash", "/start_servod.sh"},

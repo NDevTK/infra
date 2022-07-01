@@ -24,6 +24,12 @@ const DevCrosAdmService = "staging-skylab-bot-fleet.appspot.com"
 // ProdCrosAdmService is the prod CrOSSkylabAdmin service.
 const ProdCrosAdmService = "chromeos-skylab-bot-fleet.appspot.com"
 
+// DevUFSService is the dev UFS service
+const DevUFSService = "staging.ufs.api.cr.dev"
+
+// ProdUFSService is the prod UFS service
+const ProdUFSService = "ufs.api.cr.dev"
+
 // Satlab is just the string "satlab". The literal string "satlab" is used in many
 // places to create resource names.
 const Satlab = "satlab"
@@ -98,6 +104,14 @@ func (f *EnvFlags) GetCrosAdmService() string {
 		return DevCrosAdmService
 	}
 	return ProdCrosAdmService
+}
+
+// GetUFSService returns the hostname of the UFS service appropriate for an environment
+func (f *EnvFlags) GetUFSService() string {
+	if f.dev {
+		return DevUFSService
+	}
+	return ProdUFSService
 }
 
 // DefaultZone is the default value for the zone command line flag.

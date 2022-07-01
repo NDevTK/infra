@@ -7,7 +7,6 @@ package servod
 import (
 	"context"
 	"infra/cros/recovery/docker"
-	"os"
 	"testing"
 	"time"
 
@@ -34,7 +33,14 @@ func TestStartServodContainerStartsContainer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		StartServodContainer(&tc.fc, context.Background(), tc.containerName, "board", "model", "serial")
+		opts := ServodContainerOptions{
+			containerName: tc.containerName,
+			board:         "board",
+			model:         "model",
+			servoSerial:   "serial",
+		}
+
+		StartServodContainer(context.Background(), &tc.fc, opts)
 		if tc.fc.containerLaunched != tc.expectContainerLaunch {
 			t.Errorf("Expected container launch: %t\nActual container launch: %t\n", tc.expectContainerLaunch, tc.fc.containerLaunched)
 			t.Errorf("Testcase: %v", tc)
@@ -45,12 +51,12 @@ func TestStartServodContainerStartsContainer(t *testing.T) {
 // TestStartServodContainerArgs tests that when we start a docker container it does so with the expected ContainerArgs
 // Could ~likely~ do this in the same test as above but this keeps the test cases simpler
 func TestStartServodContainerArgs(t *testing.T) {
+	t.Setenv("SERVOD_CONTAINER_LABEL", "latest") // functionality under test relies on env
+
 	fc := NewFakeDockerClient(false, false)
 
-	// intentionally set to non-default value to test that functionality
-	os.Setenv("SERVOD_CONTAINER_LABEL", "latest")
-
-	StartServodContainer(&fc, context.Background(), "testContainer", "board", "model", "serial")
+	opts := ServodContainerOptions{"testContainer", "board", "model", "serial"}
+	StartServodContainer(context.Background(), &fc, opts)
 
 	expectedArgs := docker.ContainerArgs{
 		Detached:     true,
