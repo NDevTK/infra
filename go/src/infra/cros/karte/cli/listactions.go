@@ -15,6 +15,7 @@ import (
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/client"
+	"infra/cros/karte/internal/commonflags"
 	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
@@ -29,6 +30,7 @@ var ListActions = &subcommands.Command{
 	LongDesc:  "List all actions on the karte server.",
 	CommandRun: func() subcommands.CommandRun {
 		r := &listActionsRun{}
+		r.commonFlags.Register(&r.Flags)
 		r.authFlags.Register(&r.Flags, site.DefaultAuthOptions)
 		r.Flags.StringVar(&r.filter, "filter", "", "Karte query command")
 		// TODO(gregorynisbet): add envFlags.
@@ -38,8 +40,10 @@ var ListActions = &subcommands.Command{
 
 type listActionsRun struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
-	filter    string
+	authFlags   authcli.Flags
+	commonFlags commonflags.Flags
+
+	filter string
 }
 
 // Run runs listactions and returns an exit status.
@@ -60,7 +64,7 @@ func (c *listActionsRun) innerRun(ctx context.Context, a subcommands.Application
 	if err != nil {
 		return errors.Annotate(err, "inner run").Err()
 	}
-	kClient, err := client.NewClient(ctx, client.ProdConfig(authOptions))
+	kClient, err := client.NewClient(ctx, c.commonFlags.MustSelectKarteConfig(authOptions))
 	if err != nil {
 		return errors.Annotate(err, "inner run").Err()
 	}
