@@ -38,6 +38,12 @@ message SchedulingUnit {
         (google.api.field_behavior) = OUTPUT_ONLY];
   // tags user can attach for easy querying/searching
   repeated string tags = 7;
+  // hostname of designated primary dut. primary dut is optional.
+  string primary_dut = 8 [
+      (google.api.resource_reference) = {
+            type: "unified-fleet-system.appspot.com/MachineLSE"
+      }
+  ];
 }
 
 enum SchedulingUnitType {
