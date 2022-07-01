@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 19
+// Next Tag: 21
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1;
@@ -41,6 +41,10 @@ message Config {
   string hwid_service_account = 17;
   // Limit for throttling traffic to HWID server
   float hwid_service_traffic_ratio = 18;
+  // Allowed clients for UFS
+  repeated UserAgent clients = 19;
+  // Allow unrecognized clients
+  bool allow_unrecognized_clients = 20;
 }
 
 message OSNetworkConfig {
@@ -64,4 +68,13 @@ message PubSub {
   // services have been known to fail for batch_size > 100. Changing this
   // value might disable HaRT updates.
   uint32 batch_size = 3;
+}
+
+// Next Tag: 3
+// UserAgent is used to configure what agents can talk to UFS
+message UserAgent {
+  // Name of the user agent, Ex: shivas, pRPC
+  string name = 1;
+  // Minimum version supported by UFS
+  string version = 2;
 }
