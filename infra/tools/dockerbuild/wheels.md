@@ -2252,6 +2252,20 @@ wheel: <
 
 * *universal*
 
+## **google-cloud-build-py3**
+
+### 3.8.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-build-py3"
+  version: "version:3.8.3"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-core**
 
 ### 0.28.0

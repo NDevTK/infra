@@ -1168,6 +1168,7 @@ SPECS.update({
         Universal('google-cloud-bigquery', '0.28.0'),
         Universal('google-cloud-bigquery', '2.7.0', pyversions=['py3']),
         Universal('google-cloud-bigtable', '0.28.1'),
+        Universal('google-cloud-build', '3.8.3', pyversions=['py3']),
         Universal('google-cloud-core', '0.28.0'),
         Universal('google-cloud-core', '1.5.0'),
         Universal('google-cloud-core', '2.2.2', pyversions=['py3']),
