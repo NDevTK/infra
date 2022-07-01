@@ -36,7 +36,9 @@ def create_frontend_app():  # pragma: no cover
   app = webapp2.WSGIApplication(
       handlers.get_frontend_routes(), debug=utils.is_local_dev_server()
   )
-  gae_ts_mon.initialize_prod(app)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(app)
   return app
 
 
@@ -44,7 +46,9 @@ def create_backend_app():  # pragma: no cover
   """Returns WSGI app for backend."""
   routes = handlers.get_backend_routes() + swarming.get_backend_routes()
   app = webapp2.WSGIApplication(routes, debug=utils.is_local_dev_server())
-  gae_ts_mon.initialize_prod(app)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(app)
   return app
 
 
