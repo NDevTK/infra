@@ -111,9 +111,9 @@ export const Asset = () => {
                 dispatch(setAssetType(e.target.value));
               }}
               fullWidth
-              inputProps={{ fullWidth: true }}
               variant="standard"
               placeholder="Type"
+              inputProps={{ 'data-testid': 'type' }}
             >
               <MenuItem value={'active_directory'}>Active Directory</MenuItem>
             </Select>
@@ -124,7 +124,15 @@ export const Asset = () => {
   };
 
   const renderMenuItem = (name: string, resourceId: string) => {
-    return <MenuItem value={resourceId}> {name} </MenuItem>;
+    return (
+      <MenuItem
+        value={resourceId}
+        data-testid={'resource-option-' + resourceId}
+        key={'resource-option-' + resourceId}
+      >
+        {name}
+      </MenuItem>
+    );
   };
 
   const renderRow = (index: number, aliasName: string, resourceId: string) => {
@@ -138,6 +146,7 @@ export const Asset = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
+        key={'row-' + index}
       >
         <Grid
           item
@@ -151,13 +160,15 @@ export const Asset = () => {
           <FormControl variant="standard" fullWidth>
             <InputLabel>Resource</InputLabel>
             <Select
-              id={'image-' + index}
+              id={'resource-' + index}
+              key={'resource-' + index}
               onChange={(e) =>
                 dispatch(setResourceId({ id: index, value: e.target.value }))
               }
               value={resourceId}
               variant="standard"
               placeholder="Type"
+              inputProps={{ 'data-testid': 'resource-' + index }}
             >
               {resources.map((resource) =>
                 renderMenuItem(resource.name, resource.resourceId)
@@ -183,6 +194,7 @@ export const Asset = () => {
             }
             variant="standard"
             fullWidth
+            inputProps={{ 'data-testid': 'alias-' + index }}
           />
         </Grid>
 
@@ -201,6 +213,7 @@ export const Asset = () => {
             onClick={() => {
               dispatch(addMachine());
             }}
+            data-testid={'add-button-' + index}
           >
             <AddIcon fontSize="inherit" />
           </IconButton>
@@ -220,6 +233,7 @@ export const Asset = () => {
             onClick={() => {
               dispatch(removeMachine(index));
             }}
+            data-testid={'delete-button-' + index}
           >
             <DeleteIcon fontSize="inherit"> Delete </DeleteIcon>
           </IconButton>
@@ -246,7 +260,9 @@ export const Asset = () => {
           }}
           xs={8}
         >
-          <Typography variant="h5">Asset</Typography>
+          <Typography variant="h5" data-testid="form-heading">
+            Asset
+          </Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2} padding={1}>
@@ -257,8 +273,8 @@ export const Asset = () => {
             value={name}
             onChange={(e) => dispatch(setName(e.target.value))}
             fullWidth
-            InputProps={{ fullWidth: true }}
             variant="standard"
+            inputProps={{ 'data-testid': 'name' }}
           />
         </Grid>
       </Grid>
@@ -273,7 +289,7 @@ export const Asset = () => {
             onChange={(e) => dispatch(setDescription(e.target.value))}
             value={description}
             fullWidth
-            InputProps={{ fullWidth: true }}
+            inputProps={{ 'data-testid': 'description' }}
           />
         </Grid>
       </Grid>
@@ -288,7 +304,9 @@ export const Asset = () => {
           }}
           xs={8}
         >
-          <Typography variant="inherit">Associated Machines</Typography>
+          <Typography variant="inherit" data-testid="machines-heading">
+            Associated Machines
+          </Typography>
         </Grid>
       </Grid>
 
@@ -301,11 +319,11 @@ export const Asset = () => {
           <TextField
             disabled
             label="Id"
-            id="assetid"
+            id="asset-id"
             variant="standard"
             value={assetId}
             fullWidth
-            InputProps={{ fullWidth: true }}
+            inputProps={{ 'data-testid': 'asset-id' }}
           />
         </Grid>
       </Grid>
@@ -325,6 +343,7 @@ export const Asset = () => {
               variant="outlined"
               onClick={handleCancelClick}
               endIcon={<CancelIcon />}
+              data-testid="cancel-button"
             >
               Cancel
             </Button>
@@ -341,6 +360,7 @@ export const Asset = () => {
                 );
               }}
               endIcon={<SaveIcon />}
+              data-testid="save-button"
             >
               Save
             </Button>

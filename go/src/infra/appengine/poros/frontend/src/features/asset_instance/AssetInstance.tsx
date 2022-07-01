@@ -74,7 +74,7 @@ export const AssetInstance = () => {
             variant="standard"
             value={assetInstanceId}
             fullWidth
-            inputProps={{ 'data-testid': 'asset_instance_id' }}
+            inputProps={{ 'data-testid': 'asset-instance-id' }}
           />
         </Grid>
       </Grid>
@@ -88,7 +88,7 @@ export const AssetInstance = () => {
             variant="standard"
             value={assetId}
             fullWidth
-            inputProps={{ 'data-testid': 'asset_id' }}
+            inputProps={{ 'data-testid': 'asset-id' }}
           />
         </Grid>
       </Grid>
@@ -120,7 +120,7 @@ export const AssetInstance = () => {
             InputLabelProps={{
               shrink: true,
             }}
-            inputProps={{ 'data-testid': 'delete_time' }}
+            inputProps={{ 'data-testid': 'delete-time' }}
           />
         </Grid>
       </Grid>

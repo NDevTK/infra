@@ -17,6 +17,10 @@ export const store = configureStore({
     assetInstance: assetInstanceReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 setupListeners(store.dispatch);
