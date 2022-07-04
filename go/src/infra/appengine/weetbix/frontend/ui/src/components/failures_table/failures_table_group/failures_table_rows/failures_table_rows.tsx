@@ -79,6 +79,7 @@ const FailuresTableRows = ({
               justifyContent="start"
               alignItems="baseline"
               columnGap={2}
+              flexWrap="nowrap"
             >
               <Grid item>
                 <IconButton
@@ -88,7 +89,7 @@ const FailuresTableRows = ({
                   {expanded ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
                 </IconButton>
               </Grid>
-              <Grid item>{group.name || 'none'}</Grid>
+              <Grid item sx={{ overflowWrap: 'anywhere' }}>{group.name || 'none'}</Grid>
             </Grid>
           )}
         </TableCell>
