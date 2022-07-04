@@ -66,7 +66,7 @@ func crosClosePlan() *Plan {
 			"Stop servod",
 		},
 		Actions: map[string]*Action{
-			"servo_state_is_working": {
+			"Is servo_state:working": {
 				Docs: []string{
 					"check the servo's state is ServoStateWorking.",
 				},
@@ -77,7 +77,7 @@ func crosClosePlan() *Plan {
 				Conditions: []string{
 					"Is not Flex device",
 					"dut_servo_host_present",
-					"servo_state_is_working",
+					"Is servo_state:working",
 				},
 				ExecName:               "cros_remove_reboot_request",
 				AllowFailAfterRecovery: true,

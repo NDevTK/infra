@@ -109,7 +109,7 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -128,8 +128,6 @@ func deployActions() map[string]*Action {
 				"Force update FW on the DUT by factory mode.",
 				"Reboot device by host",
 			},
-			// Allowed to try this repair action even when we fail with servo-reboot.
-			// Conditions: []string{"servo_state_is_not_working"},
 			Dependencies: []string{
 				"Device is SSHable",
 				"Disable software-controlled write-protect for 'host'",
@@ -212,7 +210,7 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			ExecName: "cros_verify_boot_in_recovery_mode",
 			ExecExtraArgs: []string{
@@ -240,7 +238,8 @@ func deployActions() map[string]*Action {
 				"Install OS on the device from USB-key when device is in DEV-mode.",
 			},
 			Conditions: []string{
-				"servo_state_is_working",
+				"dut_servo_host_present",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Install OS in DEV mode by USB-drive",
@@ -252,7 +251,8 @@ func deployActions() map[string]*Action {
 				"Download fresh usb image and Install OS from it in DEV-mode.",
 			},
 			Conditions: []string{
-				"servo_state_is_working",
+				"dut_servo_host_present",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Download stable image to USB-key",
@@ -265,7 +265,8 @@ func deployActions() map[string]*Action {
 				"Install OS on the device from USB-key when device is in DEV-mode.",
 			},
 			Conditions: []string{
-				"servo_state_is_working",
+				"dut_servo_host_present",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Set GBB flags to 0x18 by servo",
@@ -278,7 +279,8 @@ func deployActions() map[string]*Action {
 				"Second attempt to install image in DEV mode",
 			},
 			Conditions: []string{
-				"servo_state_is_working",
+				"dut_servo_host_present",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Update FW from fw-image by servo and set GBB to 0x18",

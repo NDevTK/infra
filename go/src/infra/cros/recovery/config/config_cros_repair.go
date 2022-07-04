@@ -384,7 +384,7 @@ func crosRepairActions() map[string]*Action {
 		"Verify servo keyboard firmware": {
 			Conditions: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 				"is_servo_keyboard_image_tool_present",
 			},
 			Dependencies: []string{
@@ -472,15 +472,6 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"state:WORKING",
 			},
-		},
-		"servo_state_is_not_working": {
-			Docs: []string{
-				"check the servo's state is not WORKING.",
-			},
-			Conditions: []string{
-				"servo_state_is_working",
-			},
-			ExecName: "sample_fail",
 		},
 		"RW Firmware version matches the recovery-version": {
 			Docs: []string{
@@ -1074,7 +1065,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			ExecName:    "servo_usbkey_has_stable_image",
 			ExecTimeout: &durationpb.Duration{Seconds: 120},
@@ -1344,7 +1335,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			ExecName: "cros_read_gbb_by_servo",
 			ExecExtraArgs: []string{
@@ -1526,7 +1517,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 				"Cold reset DUT by servo",
 				"Wait to be pingable (normal boot)",
 			},
@@ -1564,7 +1555,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -1707,7 +1698,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware version",
@@ -1777,7 +1768,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"dut_servo_host_present",
-				"servo_state_is_working",
+				"servod_echo",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware version",
@@ -1860,7 +1851,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"dut_servo_host_present",
 				"has_rpm_info",
-				"servo_state_is_working",
+				"servod_echo",
 				"Setup does't have Servo PD control",
 			},
 			ExecName: "sample_pass",
@@ -1912,6 +1903,16 @@ func crosRepairActions() map[string]*Action {
 				"timeout:120",
 				"wait_interval:5",
 			},
+		},
+		"Is servod started": {
+			Docs: []string{
+				"Verify that servo host specified in setup and servod is running.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+				"servod_echo",
+			},
+			ExecName: "sample_pass",
 		},
 	}
 }
