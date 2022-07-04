@@ -8,6 +8,7 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"infra/appengine/gofindit/compilefailuredetection"
 	"net/http"
 
@@ -79,7 +80,7 @@ func buildbucketPubSubHandlerImpl(c context.Context, r *http.Request) error {
 	}
 
 	_, err = compilefailuredetection.AnalyzeBuild(c, bbmsg.Build.Id)
-	return err
+	return fmt.Errorf("failure in analyzing build %d: %w", bbmsg.Build.Id, err)
 }
 
 func parseBBMessage(r *http.Request) (*buildBucketMessage, error) {

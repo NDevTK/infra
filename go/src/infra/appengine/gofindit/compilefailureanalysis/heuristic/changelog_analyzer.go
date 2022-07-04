@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	gfim "infra/appengine/gofindit/model"
+	"infra/appengine/gofindit/util"
 	"path/filepath"
 	"strings"
 
@@ -83,10 +84,18 @@ func AnalyzeOneChangeLog(c context.Context, signal *gfim.CompileFailureSignal, c
 		TouchedSameFile:    3,
 		TouchedRelatedFile: 1,
 	}
-	for _, edge := range signal.Edges {
-		for _, dependency := range edge.Dependencies {
-			for _, diff := range changelog.ChangeLogDiffs {
-				e := updateJustification(c, justification, dependency, []int{}, diff, criteria)
+
+	// Calculate the score for dependencies using the DependencyMap
+	for _, diff := range changelog.ChangeLogDiffs {
+		oldPathName := util.GetCanonicalFileName(diff.OldPath)
+		newPathName := util.GetCanonicalFileName(diff.NewPath)
+		// Only check the dependency if either the old file or new file exists in the map
+		oldPathDeps, oldPathOk := signal.DependencyMap[oldPathName]
+		newPathDeps, newPathOk := signal.DependencyMap[newPathName]
+		if oldPathOk || newPathOk {
+			deps := append(oldPathDeps, newPathDeps...)
+			for _, dep := range deps {
+				e := updateJustification(c, justification, dep, []int{}, diff, criteria)
 				if e != nil {
 					return nil, e
 				}
@@ -187,65 +196,11 @@ func IsRelated(fullFilePath string, fileInLog string) bool {
 		fileInLog = NormalizeObjectFilePath(fileInLog)
 	}
 
-	if IsSameFile(StripExtensionAndCommonSuffix(fullFilePath), StripExtensionAndCommonSuffix(fileInLog)) {
+	if IsSameFile(util.StripExtensionAndCommonSuffixFromFilePath(fullFilePath), util.StripExtensionAndCommonSuffixFromFilePath(fileInLog)) {
 		return true
 	}
 
 	return false
-}
-
-// Strips extension and common suffixes from file name to guess relation.
-// Examples:
-//file_impl.cc, file_unittest.cc, file_impl_mac.h -> file
-func StripExtensionAndCommonSuffix(filePath string) string {
-	dir := filepath.Dir(filePath)
-	name := filepath.Base(filePath)
-	name = strings.TrimSuffix(name, filepath.Ext(name))
-	commonSuffixes := []string{
-		"impl",
-		"browser_tests", // Those test suffixes are here for completeness, in compile analysis we will not use them
-		"browser_test",
-		"browsertest",
-		"browsertests",
-		"unittests",
-		"unittest",
-		"tests",
-		"test",
-		"gcc",
-		"msvc",
-		"arm",
-		"arm64",
-		"mips",
-		"portable",
-		"x86",
-		"android",
-		"ios",
-		"linux",
-		"mac",
-		"ozone",
-		"posix",
-		"win",
-		"aura",
-		"x",
-		"x11",
-	}
-	for true {
-		found := false
-		for _, suffix := range commonSuffixes {
-			suffix = "_" + suffix
-			if strings.HasSuffix(name, suffix) {
-				found = true
-				name = strings.TrimSuffix(name, suffix)
-			}
-		}
-		if !found {
-			break
-		}
-	}
-	if dir == "." {
-		return name
-	}
-	return fmt.Sprintf("%s/%s", dir, name)
 }
 
 // NormalizeObjectFilePath normalizes the file path to an c/c++ object file.

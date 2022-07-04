@@ -55,6 +55,7 @@ func Analyze(
 	if err != nil {
 		return nil, fmt.Errorf("Error extracting signals %w", err)
 	}
+	signal.CalculateDependencyMap(c)
 
 	analysisResult, err := AnalyzeChangeLogs(c, signal, changelogs)
 	if err != nil {

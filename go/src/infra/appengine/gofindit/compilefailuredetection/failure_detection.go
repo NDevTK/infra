@@ -36,6 +36,7 @@ func AnalyzeBuild(c context.Context, bbid int64) (bool, error) {
 
 	// We only care about builds with compile failure
 	if !hasCompileStepStatus(c, build, buildbucketpb.Status_FAILURE) {
+		logging.Infof(c, "No compile step for build %d", bbid)
 		return false, nil
 	}
 
@@ -54,6 +55,7 @@ func AnalyzeBuild(c context.Context, bbid int64) (bool, error) {
 	}
 	// We don't need to trigger a new analysis.
 	if !yes {
+		logging.Infof(c, "There is already an analysis for regression range (%d, %d). No new analysis will be triggered for build %d", lastPassedBuild.Id, firstFailedBuild.Id, bbid)
 		return false, nil
 	}
 

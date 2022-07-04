@@ -39,17 +39,6 @@ func TestChangeLogAnalyzer(t *testing.T) {
 		}
 	})
 
-	Convey("StripExtensionAndCommonSuffix", t, func() {
-		data := map[string]string{
-			"a_file_impl_mac_test.cc": "a_file",
-			"src/b_file_x11_ozone.h":  "src/b_file",
-			"c_file.cc":               "c_file",
-		}
-		for k, v := range data {
-			So(StripExtensionAndCommonSuffix(k), ShouldEqual, v)
-		}
-	})
-
 	Convey("AnalyzeOneChangeLog", t, func() {
 		c := context.Background()
 		signal := &gfim.CompileFailureSignal{
@@ -65,6 +54,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 				},
 			},
 		}
+		signal.CalculateDependencyMap(c)
 		Convey("Changelog from a non-blamable email", func() {
 			cl := &gfim.ChangeLog{
 				Author: gfim.ChangeLogActor{

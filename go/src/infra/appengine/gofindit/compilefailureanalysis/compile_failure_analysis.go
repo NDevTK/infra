@@ -28,10 +28,11 @@ import (
 func AnalyzeFailure(
 	c context.Context,
 	cf *gfim.CompileFailure,
-	first_failed_build_id int64,
-	last_passed_build_id int64,
+	firstFailedBuildID int64,
+	lastPassedBuildID int64,
 ) (*gfim.CompileFailureAnalysis, error) {
-	regression_range, e := findRegressionRange(c, first_failed_build_id, last_passed_build_id)
+	logging.Infof(c, "AnalyzeFailure firstFailed = %d", firstFailedBuildID)
+	regression_range, e := findRegressionRange(c, firstFailedBuildID, lastPassedBuildID)
 	if e != nil {
 		return nil, e
 	}
@@ -42,8 +43,8 @@ func AnalyzeFailure(
 		CompileFailure:         datastore.KeyForObj(c, cf),
 		CreateTime:             clock.Now(c),
 		Status:                 gfipb.AnalysisStatus_CREATED,
-		FirstFailedBuildId:     first_failed_build_id,
-		LastPassedBuildId:      last_passed_build_id,
+		FirstFailedBuildId:     firstFailedBuildID,
+		LastPassedBuildId:      lastPassedBuildID,
 		InitialRegressionRange: regression_range,
 	}
 	e = datastore.Put(c, analysis)
@@ -61,14 +62,14 @@ func AnalyzeFailure(
 	// Heuristic analysis
 	heuristicResult, e := heuristic.Analyze(c, analysis, regression_range)
 	if e != nil {
-		logging.Errorf(c, "Error during heuristic analysis: %v", e)
+		logging.Errorf(c, "Error during heuristic analysis for build %d: %v", e)
 		// As we only run heuristic analysis now, returns the error if heuristic
 		// analysis failed.
 		return nil, e
 	}
 
 	// Verifies heuristic analysis result
-	verifyHeuristicResults(c, heuristicResult, first_failed_build_id)
+	verifyHeuristicResults(c, heuristicResult, firstFailedBuildID)
 
 	// TODO: For now, just check heuristic analysis status
 	// We need to implement nth-section analysis as well

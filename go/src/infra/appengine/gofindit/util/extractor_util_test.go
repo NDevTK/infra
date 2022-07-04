@@ -24,4 +24,28 @@ func TestExtractorUtil(t *testing.T) {
 			So(NormalizeFilePath(fp), ShouldEqual, nfp)
 		}
 	})
+
+	Convey("GetCanonicalFileName", t, func() {
+		data := map[string]string{
+			"../a/b/c.cc":   "c",
+			"a/b/./d.dd":    "d",
+			"a/b/c.xx":      "c",
+			"a/b/c_impl.xx": "c",
+		}
+		for fp, name := range data {
+			So(GetCanonicalFileName(fp), ShouldEqual, name)
+		}
+	})
+
+	Convey("StripExtensionAndCommonSuffixFromFileName", t, func() {
+		data := map[string]string{
+			"a_file_impl_mac_test.cc": "a_file",
+			"src/b_file_x11_ozone.h":  "src/b_file",
+			"c_file.cc":               "c_file",
+		}
+		for k, v := range data {
+			So(StripExtensionAndCommonSuffixFromFileName(k), ShouldEqual, v)
+		}
+	})
+
 }

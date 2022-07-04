@@ -5,6 +5,7 @@
 package model
 
 import (
+	"context"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -25,5 +26,33 @@ func TestAddLine(t *testing.T) {
 		So(signal.Files, ShouldResemble, map[string][]int{"a/b": {12, 14}, "c/d": {8}, "x/y": {}})
 		signal.AddFilePath("x/y")
 		So(signal.Files, ShouldResemble, map[string][]int{"a/b": {12, 14}, "c/d": {8}, "x/y": {}})
+	})
+}
+
+func TestCalculateDependencyMap(t *testing.T) {
+	Convey("Calculate dependency map", t, func() {
+		signal := &CompileFailureSignal{
+			Edges: []*CompileFailureEdge{
+				{
+					Dependencies: []string{
+						"x/y/a.h",
+						"xx/yy/b.h",
+					},
+				},
+				{
+					Dependencies: []string{
+						"y/z/a.cc",
+						"zz/y/c.yy",
+						"x/y/a.h",
+					},
+				},
+			},
+		}
+		signal.CalculateDependencyMap(context.Background())
+		So(signal.DependencyMap, ShouldResemble, map[string][]string{
+			"a": {"x/y/a.h", "y/z/a.cc"},
+			"b": {"xx/yy/b.h"},
+			"c": {"zz/y/c.yy"},
+		})
 	})
 }
