@@ -12,11 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer/step"
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
-
 	"cloud.google.com/go/bigquery"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
@@ -27,6 +22,11 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
+
+	"infra/appengine/sheriff-o-matic/som/analyzer/step"
+	"infra/appengine/sheriff-o-matic/som/client"
+	"infra/appengine/sheriff-o-matic/som/model"
+	"infra/monitoring/messages"
 )
 
 const bqMemcacheFormat = "bq-%s"
@@ -38,9 +38,11 @@ SELECT
   Builder,
   BuilderGroup,
   SheriffRotations,
+  Critical,
   StepName,
   TestNamesFingerprint,
   TestNamesTrunc,
+  TestsTrunc,
   NumTests,
   BuildIdBegin,
   BuildIdEnd,
@@ -86,24 +88,28 @@ func chromeBrowserFilterFunc(tree string) func(r failureRow) bool {
 	}
 }
 
+// failureRow holds each row of the results of the selectFrom query above.
+// Please keep the fields in the same order as the query.
 type failureRow struct {
-	TestNamesFingerprint bigquery.NullInt64
-	TestNamesTrunc       bigquery.NullString
-	NumTests             bigquery.NullInt64
-	StepName             string
+	Project              string
+	Bucket               string
+	Builder              string
 	BuilderGroup         bigquery.NullString
 	SheriffRotations     []string
-	Builder              string
-	Bucket               string
-	Project              string
+	Critical             bigquery.NullString
+	StepName             string
+	TestNamesFingerprint bigquery.NullInt64
+	TestNamesTrunc       bigquery.NullString
+	TestsTrunc           []*TestFailure
+	NumTests             bigquery.NullInt64
 	BuildIDBegin         bigquery.NullInt64
 	BuildIDEnd           bigquery.NullInt64
 	BuildNumberBegin     bigquery.NullInt64
 	BuildNumberEnd       bigquery.NullInt64
-	CPRangeInputBegin    *GitCommit
-	CPRangeInputEnd      *GitCommit
 	CPRangeOutputBegin   *GitCommit
 	CPRangeOutputEnd     *GitCommit
+	CPRangeInputBegin    *GitCommit
+	CPRangeInputEnd      *GitCommit
 	CulpritIDRangeBegin  bigquery.NullInt64
 	CulpritIDRangeEnd    bigquery.NullInt64
 	StartTime            bigquery.NullTimestamp
@@ -117,6 +123,15 @@ type GitCommit struct {
 	Host     bigquery.NullString
 	ID       bigquery.NullString
 	Position bigquery.NullInt64
+}
+
+// TestFailure represents a struct column for a test failure in BQ results.
+type TestFailure struct {
+	TestName    bigquery.NullString
+	TestID      bigquery.NullString
+	Realm       bigquery.NullString
+	VariantHash bigquery.NullString
+	ClusterName bigquery.NullString
 }
 
 type bqBucket struct {
@@ -353,12 +368,15 @@ func processBQResults(ctx context.Context, failureRows []failureRow) ([]*message
 		}
 		if r.TestNamesFingerprint.Valid {
 			reason.kind = "test"
-			testNames := strings.Split(r.TestNamesTrunc.StringVal, "\n")
-			sort.Strings(testNames)
-			for _, testName := range testNames {
-				reason.Tests = append(reason.Tests, step.TestWithResult{
-					TestName: testName,
-				})
+			for _, test := range r.TestsTrunc {
+				result := step.TestWithResult{
+					TestName:    test.TestName.StringVal,
+					TestID:      test.TestID.StringVal,
+					Realm:       test.Realm.StringVal,
+					VariantHash: test.VariantHash.StringVal,
+					ClusterName: test.ClusterName.StringVal,
+				}
+				reason.Tests = append(reason.Tests, result)
 			}
 			reason.NumFailingTests = r.NumTests.Int64
 		}

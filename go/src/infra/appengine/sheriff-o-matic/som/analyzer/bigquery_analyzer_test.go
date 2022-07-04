@@ -9,21 +9,19 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/api/iterator"
-
-	"infra/appengine/sheriff-o-matic/som/analyzer/step"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
-
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/appengine/sheriff-o-matic/som/analyzer/step"
+	"infra/appengine/sheriff-o-matic/som/model"
+	"infra/monitoring/messages"
 )
 
 type mockResults struct {
@@ -127,9 +125,11 @@ func TestGenerateSQLQuery(t *testing.T) {
 			  Builder,
 			  BuilderGroup,
 			  SheriffRotations,
+			  Critical,
 			  StepName,
 			  TestNamesFingerprint,
 			  TestNamesTrunc,
+			  TestsTrunc,
 			  NumTests,
 			  BuildIdBegin,
 			  BuildIdEnd,
@@ -163,9 +163,11 @@ func TestGenerateSQLQuery(t *testing.T) {
 			  Builder,
 			  BuilderGroup,
 			  SheriffRotations,
+			  Critical,
 			  StepName,
 			  TestNamesFingerprint,
 			  TestNamesTrunc,
+			  TestsTrunc,
 			  NumTests,
 			  BuildIdBegin,
 			  BuildIdEnd,
@@ -205,9 +207,11 @@ func TestGenerateSQLQuery(t *testing.T) {
 			  Builder,
 			  BuilderGroup,
 			  SheriffRotations,
+			  Critical,
 			  StepName,
 			  TestNamesFingerprint,
 			  TestNamesTrunc,
+			  TestsTrunc,
 			  NumTests,
 			  BuildIdBegin,
 			  BuildIdEnd,
@@ -249,9 +253,11 @@ func TestGenerateSQLQuery(t *testing.T) {
 			  Builder,
 			  BuilderGroup,
 			  SheriffRotations,
+			  Critical,
 			  StepName,
 			  TestNamesFingerprint,
 			  TestNamesTrunc,
+			  TestsTrunc,
 			  NumTests,
 			  BuildIdBegin,
 			  BuildIdEnd,
@@ -543,10 +549,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("1"),
 				NumTests: bigquery.NullInt64{
 					Int64: 1,
 					Valid: true,
@@ -563,9 +566,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name",
-			}},
+			Tests:           makeTestWithResults("1"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 	})
@@ -593,10 +594,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("1"),
 				NumTests: bigquery.NullInt64{
 					Int64: 1,
 					Valid: true,
@@ -627,6 +625,7 @@ func TestProcessBQResults(t *testing.T) {
 					StringVal: "some/test/name",
 					Valid:     true,
 				},
+				TestsTrunc: makeTestFailures("1"),
 				NumTests: bigquery.NullInt64{
 					Int64: 1,
 					Valid: true,
@@ -643,9 +642,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name",
-			}},
+			Tests:           makeTestWithResults("1"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 		So(len(got[1].Builders), ShouldEqual, 1)
@@ -674,10 +671,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name/1\nsome/test/name/2",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("1", "2"),
 				NumTests: bigquery.NullInt64{
 					Int64: 2,
 					Valid: true,
@@ -704,10 +698,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 2,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name/3",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("3"),
 				NumTests: bigquery.NullInt64{
 					Int64: 1,
 					Valid: true,
@@ -726,12 +717,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name/1",
-			},
-				{
-					TestName: "some/test/name/2",
-				}},
+			Tests:           makeTestWithResults("1", "2"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 
@@ -742,9 +728,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name/3",
-			}},
+			Tests:           makeTestWithResults("3"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 	})
@@ -772,10 +756,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name/1\nsome/test/name/2",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("1", "2"),
 				NumTests: bigquery.NullInt64{
 					Int64: 2,
 					Valid: true,
@@ -802,10 +783,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 2,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name/3",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("3"),
 				NumTests: bigquery.NullInt64{
 					Int64: 1,
 					Valid: true,
@@ -824,12 +802,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name/1",
-			},
-				{
-					TestName: "some/test/name/2",
-				}},
+			Tests:           makeTestWithResults("1", "2"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 		So(got[0].Builders[0].Name, ShouldEqual, "builder 1")
@@ -841,9 +814,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name/3",
-			}},
+			Tests:           makeTestWithResults("3"),
 		})
 		So(len(got[1].Builders), ShouldEqual, 1)
 		So(got[1].Builders[0].Name, ShouldEqual, "builder 2")
@@ -872,10 +843,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "A1\nA2\nA3",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("A1", "A2", "A3"),
 				NumTests: bigquery.NullInt64{
 					Int64: 3,
 					Valid: true,
@@ -902,10 +870,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 2,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "B1\nB2\nB3",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("B1", "B2", "B3"),
 				NumTests: bigquery.NullInt64{
 					Int64: 3,
 					Valid: true,
@@ -924,17 +889,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
-			Tests: []step.TestWithResult{
-				{
-					TestName: "A1",
-				},
-				{
-					TestName: "A2",
-				},
-				{
-					TestName: "A3",
-				},
-			},
+			Tests:           makeTestWithResults("A1", "A2", "A3"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 		So(got[0].Builders[0].Name, ShouldEqual, "win-10-perf")
@@ -948,17 +903,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
-			Tests: []step.TestWithResult{
-				{
-					TestName: "B1",
-				},
-				{
-					TestName: "B2",
-				},
-				{
-					TestName: "B3",
-				},
-			},
+			Tests:           makeTestWithResults("B1", "B2", "B3"),
 		})
 		So(len(got[1].Builders), ShouldEqual, 1)
 		So(got[1].Builders[0].Name, ShouldEqual, "win-10-perf")
@@ -989,10 +934,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "A1\nA2\nA3",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("A1", "A2", "A3"),
 				NumTests: bigquery.NullInt64{
 					Int64: 3,
 					Valid: true,
@@ -1019,10 +961,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 2,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "A1\nA2\nA3",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("A1", "A2", "A3"),
 				NumTests: bigquery.NullInt64{
 					Int64: 3,
 					Valid: true,
@@ -1041,17 +980,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
-			Tests: []step.TestWithResult{
-				{
-					TestName: "A1",
-				},
-				{
-					TestName: "A2",
-				},
-				{
-					TestName: "A3",
-				},
-			},
+			Tests:           makeTestWithResults("A1", "A2", "A3"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 
@@ -1066,17 +995,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
-			Tests: []step.TestWithResult{
-				{
-					TestName: "A1",
-				},
-				{
-					TestName: "A2",
-				},
-				{
-					TestName: "A3",
-				},
-			},
+			Tests:           makeTestWithResults("A1", "A2", "A3"),
 		})
 		So(len(got[1].Builders), ShouldEqual, 1)
 		So(got[1].Builders[0].Name, ShouldEqual, "win-10-perf")
@@ -1107,10 +1026,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name/1\nsome/test/name/2",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("1", "2"),
 				NumTests: bigquery.NullInt64{
 					Int64: 2,
 					Valid: true,
@@ -1137,10 +1053,7 @@ func TestProcessBQResults(t *testing.T) {
 					Int64: 1,
 					Valid: true,
 				},
-				TestNamesTrunc: bigquery.NullString{
-					StringVal: "some/test/name/1\nsome/test/name/2",
-					Valid:     true,
-				},
+				TestsTrunc: makeTestFailures("1", "2"),
 				NumTests: bigquery.NullInt64{
 					Int64: 2,
 					Valid: true,
@@ -1158,12 +1071,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name/1",
-			},
-				{
-					TestName: "some/test/name/2",
-				}},
+			Tests:           makeTestWithResults("1", "2"),
 		})
 		So(len(got[0].Builders), ShouldEqual, 1)
 
@@ -1174,12 +1082,7 @@ func TestProcessBQResults(t *testing.T) {
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
-			Tests: []step.TestWithResult{{
-				TestName: "some/test/name/1",
-			},
-				{
-					TestName: "some/test/name/2",
-				}},
+			Tests:           makeTestWithResults("1", "2"),
 		})
 		So(len(got[1].Builders), ShouldEqual, 1)
 	})
@@ -1548,4 +1451,40 @@ func TestGetFilterFuncForTree(t *testing.T) {
 		_, err = getFilterFuncForTree("another")
 		So(err, ShouldNotBeNil)
 	})
+}
+
+func makeTestFailures(uniquifiers ...string) []*TestFailure {
+	failures := make([]*TestFailure, 0, len(uniquifiers))
+	for _, u := range uniquifiers {
+		failures = append(failures, makeTestFailure(u))
+	}
+	return failures
+}
+
+func makeTestFailure(uniquifier string) *TestFailure {
+	return &TestFailure{
+		TestName:    bigquery.NullString{StringVal: fmt.Sprintf("some/test/%s", uniquifier), Valid: true},
+		TestID:      bigquery.NullString{StringVal: fmt.Sprintf("ninja://some/test/%s", uniquifier), Valid: true},
+		Realm:       bigquery.NullString{StringVal: fmt.Sprintf("chromium:%s", uniquifier), Valid: true},
+		VariantHash: bigquery.NullString{StringVal: fmt.Sprintf("1234%s", uniquifier), Valid: true},
+		ClusterName: bigquery.NullString{StringVal: fmt.Sprintf("reason-v3/%s", uniquifier), Valid: true},
+	}
+}
+
+func makeTestWithResults(uniquifiers ...string) []step.TestWithResult {
+	failures := make([]step.TestWithResult, 0, len(uniquifiers))
+	for _, u := range uniquifiers {
+		failures = append(failures, makeTestWithResult(u))
+	}
+	return failures
+}
+
+func makeTestWithResult(uniquifier string) step.TestWithResult {
+	return step.TestWithResult{
+		TestName:    fmt.Sprintf("some/test/%s", uniquifier),
+		TestID:      fmt.Sprintf("ninja://some/test/%s", uniquifier),
+		VariantHash: fmt.Sprintf("1234%s", uniquifier),
+		ClusterName: fmt.Sprintf("reason-v3/%s", uniquifier),
+		Realm:       fmt.Sprintf("chromium:%s", uniquifier),
+	}
 }

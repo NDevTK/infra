@@ -165,13 +165,11 @@ and backend versions of the app.
 - Check https://viceroy.corp.google.com/chrome_infra/Appengine/sheriff_o_matic_staging?duration=1h
 and make sure everything is ok.
 
-Note: At the moment, the staging server uses build data from buildbucket prod,
-but test data from resultdb staging. Also, as staging and prod has different
-datastore, information like alert grouping, bug attached, ... may not match the
-data in prod.
+Note: As staging and prod has different datastore, information like alert grouping,
+bug attached, ... may not match the data in prod.
 
 Currently, the cron jobs to populate data from BigQuery to datastore is
-scheduled to run once a day, so if you want the latest data, you may want to
+scheduled to run every 30 minutes, so if you want the latest data, you may want to
 run the cron jobs manually.
 
 

@@ -34,18 +34,20 @@ WITH
   recent_tests AS (
     SELECT
     SUBSTR(r.ingested_invocation_id, 7) AS build_id,
+    r.test_id,
     r.realm,
     r.variant_hash,
     ANY_VALUE(COALESCE((SELECT value FROM UNNEST(r.tags) WHERE key = "test_name"), r.test_id)) AS test_name,
     ANY_VALUE((SELECT value FROM UNNEST(r.tags) WHERE key = "step_name" limit 1)) as step_name,
     -- we prefix 'rules' algorithms with 'a' and others with 'b' so that MIN chooses clusters in order of [rules, reason, testname].
-    SUBSTR(MIN(CONCAT(
+    CONCAT(ANY_VALUE(project), '/', SUBSTR(MIN(CONCAT(
         IF
           (STARTS_WITH(cluster_algorithm, 'rule'),
             'a',
-            'b'), cluster_algorithm, '/', cluster_id)), 2) AS cluster_names
+            'b'), cluster_algorithm, '/', cluster_id)), 2)) AS cluster_name
   FROM ((
       SELECT
+        'chromium' as project,
         cluster_algorithm,
         cluster_id,
         test_result_system,
@@ -64,8 +66,9 @@ WITH
       FROM `chops-weetbix.chromium.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-    UNION ALL (
+    UNION ALL ( -- TODO: should only query the Weetbix projects relevant to the tree rather than all of them.
       SELECT
+        'chrome' as project,
         cluster_algorithm,
         cluster_id,
         test_result_system,
@@ -82,6 +85,69 @@ WITH
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
       FROM `chops-weetbix.chrome.clustered_failures` cf
+      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
+      UNION ALL (
+      SELECT
+        'chromeos' as project,
+        cluster_algorithm,
+        cluster_id,
+        test_result_system,
+        test_result_id,
+        DATE(partition_time) as partition_time,
+        ARRAY_AGG(STRUCT(
+          ingested_invocation_id,
+          test_id,
+          is_ingested_invocation_blocked,
+          exonerations,
+          is_included,
+          tags,
+          realm,
+          variant_hash
+        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
+      FROM `chops-weetbix.chromeos.clustered_failures` cf
+      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
+      UNION ALL (
+      SELECT
+        'fuchsia' as project,
+        cluster_algorithm,
+        cluster_id,
+        test_result_system,
+        test_result_id,
+        DATE(partition_time) as partition_time,
+        ARRAY_AGG(STRUCT(
+          ingested_invocation_id,
+          test_id,
+          is_ingested_invocation_blocked,
+          exonerations,
+          is_included,
+          tags,
+          realm,
+          variant_hash
+        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
+      FROM `chops-weetbix.fuchsia.clustered_failures` cf
+      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
+      UNION ALL (
+      SELECT
+        'turquoise' as project,
+        cluster_algorithm,
+        cluster_id,
+        test_result_system,
+        test_result_id,
+        DATE(partition_time) as partition_time,
+        ARRAY_AGG(STRUCT(
+          ingested_invocation_id,
+          test_id,
+          is_ingested_invocation_blocked,
+          exonerations,
+          is_included,
+          tags,
+          realm,
+          variant_hash
+        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
+      FROM `chops-weetbix.turquoise.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
     )
@@ -109,26 +175,22 @@ SELECT
   FARM_FINGERPRINT(STRING_AGG(tr.test_name, "\n"
     ORDER BY
       tr.test_name)) AS test_names_fp,
+  -- TODO: remove test_names_trunc field once tests_trunc field is used in production.
   STRING_AGG(tr.test_name, "\n"
     ORDER BY
       tr.test_name
     LIMIT
       40) AS test_names_trunc,
-  STRING_AGG(tr.realm, "\n"
+  ARRAY_AGG(STRUCT(
+    tr.test_name as TestName,
+    tr.test_id as TestID,
+    tr.realm as Realm,
+    tr.variant_hash as VariantHash,
+    tr.cluster_name as ClusterName)
     ORDER BY
       tr.test_name
     LIMIT
-      40) AS test_realms_trunc,
-  STRING_AGG(tr.variant_hash, "\n"
-    ORDER BY
-      tr.test_name
-    LIMIT
-      40) AS test_variant_hashes_trunc,
-  ARRAY_AGG(COALESCE(cluster_names, '')
-    ORDER BY
-      tr.test_name
-    LIMIT
-      40) AS cluster_names,
+      40) AS tests_trunc,
   COUNT(tr.test_name) AS num_tests
 FROM
   latest_builds b,

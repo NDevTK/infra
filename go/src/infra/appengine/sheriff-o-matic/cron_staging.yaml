@@ -37,60 +37,60 @@ cron:
 
 - description: Update Android alerts
   url: /_cron/analyze/android
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Chromium alerts
   url: /_cron/analyze/chromium
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update ChromeOS Alerts
   url: /_cron/analyze/chromeos
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update iOS alerts
   url: /_cron/analyze/ios
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Chromium Perf alerts
   url: /_cron/analyze/chromium.perf
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Chromium GPU alerts
   url: /_cron/analyze/chromium.gpu
-  schedule: every 24 hours
+  schedule: every  30 minutes
   target: analyzer
 
 - description: Update Chromium Clang alerts
   url: /_cron/analyze/chromium.clang
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Lacros Skylab alerts
   url: /_cron/analyze/lacros_skylab
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Fuchsia alerts
   url: /_cron/analyze/fuchsia
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Release Branch alerts
   url: /_cron/analyze/chrome_browser_release
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Update Angle alerts
   url: /_cron/analyze/angle
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer
 
 - description: Query BigQuery Chrome Project
   url: /_cron/bq_query/chrome
-  schedule: every 24 hours
+  schedule: every 30 minutes
   target: analyzer

@@ -92,11 +92,11 @@ export interface AlertReasonJson {
 
 // TODO: AlertReasonTestJson fields were added based on example data.  There may be missing or incorrect fields.
 export interface AlertReasonTestJson {
-    artifacts: null;
-    expectations: null;
-    is_flaky: boolean;
-    suspected_cls: null;
     test_name: string;
+    test_id: string;
+    realm: string;
+    variant_hash: string;
+    cluster_name: string;
 }
 
 // TODO: RegressionRangeJson fields were added based on example data.  There may be missing or incorrect fields.

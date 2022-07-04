@@ -111,6 +111,7 @@ SELECT
   s.step AS StepName,
   s.test_names_fp as TestNamesFingerprint,
   s.test_names_trunc as TestNamesTrunc,
+  s.tests_trunc as TestsTrunc,
   s.num_tests as NumTests,
   t.latest.id AS BuildIdBegin,
   s.build_id AS BuildIdEnd,

@@ -3,8 +3,7 @@
 const codeSearchURL = 'https://cs.chromium.org/';
 const testResultsURL = 'https://test-results.appspot.com/';
 
-class SomExtensionBuildFailure extends Polymer.mixinBehaviors(
-    [LayoutTestBuilderConfigsBehavior], Polymer.Element) {
+class SomExtensionBuildFailure extends Polymer.Element {
   static get is() {
     return 'som-extension-build-failure';
   }
@@ -194,64 +193,6 @@ class SomExtensionBuildFailure extends Polymer.mixinBehaviors(
     return regression_ranges && regression_ranges.length > 0;
   }
 
-  _haveTests(tests) {
-    return tests && tests.length > 0;
-  }
-
-  _haveArtifacts(test) {
-    return test && test.artifacts;
-  }
-
-  _haveTestExpectations(test) {
-    return test && test.expectations && test.expectations.length > 0;
-  }
-
-  _editTestExpectationLink(test, expectation) {
-    return `/test-expectations/edit/${test.test_name}`;
-  }
-
-  _isFlaky(test) {
-    return test && test.is_flaky;
-  }
-
-  _linkForTest(reason, testName) {
-    return testResultsURL + 'dashboards/' +
-           'flakiness_dashboard.html#' +
-           'tests=' + encodeURIComponent(testName) +
-           '&testType=' + encodeURIComponent(reason.step);
-  }
-
-  _linkToCSForTest(testName) {
-    let url = codeSearchURL + 'search/?q=';
-    let query = testName;
-    if (testName.includes('#')) {
-      // Guessing that it's a java test; the format expected is
-      // test.package.TestClass#testMethod. For now, just split around the #
-      let split = testName.split('#');
-
-      if (split.length > 2) {
-        console.error('invalid java test name', testName);
-      } else {
-        query = split[0] + ' function:' + split[1];
-      }
-    }
-    return url + encodeURIComponent(query);
-  }
-
-  _linkToEditForTest(builders, testName) {
-    let modifiers = [];
-    builders.forEach((builder) => {
-      let config = this.getLayoutTestBuilderConfig(builder.name);
-      if (config && config.specifiers) {
-        config.specifiers.forEach((mod) => {
-          modifiers.push('modifiers='+ encodeURIComponent(mod));
-        });
-      }
-    });
-    return 'test-expectations/' + encodeURIComponent(testName) + '?' +
-        modifiers.join('&');
-  }
-
   _linkForCL(cl) {
     return 'https://crrev.com/' + cl;
   }
@@ -260,42 +201,11 @@ class SomExtensionBuildFailure extends Polymer.mixinBehaviors(
     return !!range;
   }
 
-  _sortTests(a, b) {
-    return a.test_name.localeCompare(b.test_name);
-  }
-
-  _testText(tests, numFailingTests) {
-    // NOTE: This really shouldn't happen; we should only be calling this
-    // function
-    // when tests is actually defined. We are though, for some reason, and it
-    // looks
-    // like it might be some weird dom-repeat/Polymer bug. So check that tests
-    // is ok here anyways.
-    if (tests == null) {
-      return '';
-    }
-
-    let len = tests.length;
-
-    if (len == 1) {
-      return '1 test failed';
-    }
-    if (numFailingTests && numFailingTests > len) {
-      return numFailingTests.toString() + ' tests failed, first ' +
-        len.toString();
-    }
-    return len.toString() + ' tests failed';
-  }
-
   _textForCL(commit_position, revision) {
     if (commit_position == null) {
       return revision.substring(0, 7);
     }
     return commit_position;
-  }
-
-  _hasSuspect(test) {
-    return test && test.suspected_cls;
   }
 }
 
