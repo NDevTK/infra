@@ -90,8 +90,8 @@ func TestManager(t *testing.T) {
 						},
 					},
 					Components: []*mpb.Issue_ComponentValue{
-						{Component: "Blink>Layout"},
-						{Component: "Blink>Network"},
+						{Component: "projects/chromium/componentDefs/Blink>Layout"},
+						{Component: "projects/chromium/componentDefs/Blink>Network"},
 					},
 					Labels: []*mpb.Issue_LabelValue{{
 						Label: "Restrict-View-Google",
@@ -136,8 +136,8 @@ func TestManager(t *testing.T) {
 						},
 					},
 					Components: []*mpb.Issue_ComponentValue{
-						{Component: "Blink>Layout"},
-						{Component: "Blink>Network"},
+						{Component: "projects/chromium/componentDefs/Blink>Layout"},
+						{Component: "projects/chromium/componentDefs/Blink>Network"},
 					},
 					Labels: []*mpb.Issue_LabelValue{{
 						Label: "Restrict-View-Google",

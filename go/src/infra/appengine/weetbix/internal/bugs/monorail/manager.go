@@ -69,12 +69,6 @@ func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (s
 		return "", errors.Annotate(err, "create issue generator").Err()
 	}
 	components := request.MonorailComponents
-	if m.appID == "chops-weetbix-dev" {
-		// Temporarily disable in dev until
-		// https://bugs.chromium.org/p/monorail/issues/detail?id=11055
-		// is fixed.
-		components = nil
-	}
 	if m.appID == "chops-weetbix" {
 		// In production, do not apply components to bugs as they are not yet
 		// ready to be surfaced widely.

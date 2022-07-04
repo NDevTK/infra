@@ -215,8 +215,8 @@ func TestRun(t *testing.T) {
 				So(f.Issues[0].Issue.Name, ShouldEqual, "projects/chromium/issues/100")
 				So(f.Issues[0].Issue.Summary, ShouldContainSubstring, expectedBugSummary)
 				So(f.Issues[0].Issue.Components, ShouldHaveLength, 2)
-				So(f.Issues[0].Issue.Components[0].Component, ShouldEqual, "Blink>Layout")
-				So(f.Issues[0].Issue.Components[1].Component, ShouldEqual, "Blink>Network")
+				So(f.Issues[0].Issue.Components[0].Component, ShouldEqual, "projects/chromium/componentDefs/Blink>Layout")
+				So(f.Issues[0].Issue.Components[1].Component, ShouldEqual, "projects/chromium/componentDefs/Blink>Network")
 				So(len(f.Issues[0].Comments), ShouldEqual, 2)
 				for _, expectedContent := range expectedBugContents {
 					So(f.Issues[0].Comments[0].Content, ShouldContainSubstring, expectedContent)

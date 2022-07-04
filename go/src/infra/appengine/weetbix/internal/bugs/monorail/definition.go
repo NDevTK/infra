@@ -38,6 +38,9 @@ var whitespaceRE = regexp.MustCompile(`[ \t\n]+`)
 // priorityRE matches chromium monorail priority values.
 var priorityRE = regexp.MustCompile(`^Pri-([0123])$`)
 
+// componentRE matches valid full monorail component names.
+var componentRE = regexp.MustCompile(`^[a-zA-Z]([-_]?[a-zA-Z0-9])+(\>[a-zA-Z]([-_]?[a-zA-Z0-9])+)*$`)
+
 // AutomationUsers are the identifiers of Weetbix automation users in monorail.
 var AutomationUsers = []string{
 	"users/3816576959", // chops-weetbix@appspot.gserviceaccount.com
@@ -110,8 +113,14 @@ func (g *Generator) PrepareNew(description *clustering.ClusterDescription, compo
 		})
 	}
 	for _, c := range components {
+		if !componentRE.MatchString(c) {
+			// Discard syntactically invalid components, test results
+			// cannot be trusted.
+			continue
+		}
 		issue.Components = append(issue.Components, &mpb.Issue_ComponentValue{
-			Component: c,
+			// E.g. projects/chromium/componentDefs/Blink>Workers.
+			Component: fmt.Sprintf("projects/%s/componentDefs/%s", g.monorailCfg.Project, c),
 		})
 	}
 	if g.monorailCfg.Project == "chromium" {
