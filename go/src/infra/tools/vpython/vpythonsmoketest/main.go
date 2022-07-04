@@ -17,6 +17,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+
+	"infra/tools/vpython"
 )
 
 // removeAll removes a tree, even for read-only directories.
@@ -37,6 +39,15 @@ func removeAll(root string) error {
 }
 
 func mainImpl(ctx context.Context) error {
+	const selfTestEnvvar = "VPYTHON_INVOKE_TEST"
+	if os.Getenv(selfTestEnvvar) != "" {
+		// Running inside the test, start vpython main.
+		vpython.Main(false)
+		panic("does not return")
+	}
+
+	os.Setenv(selfTestEnvvar, "1")
+
 	// Create a temporary directory, then run stuff in it.
 	root, err := ioutil.TempDir("", "vpythonsmoketest")
 	if err != nil {
@@ -52,7 +63,13 @@ func mainImpl(ctx context.Context) error {
 	// Use a test-local virtualenv.
 	os.Setenv("VPYTHON_VIRTUALENV_ROOT", filepath.Join(root, ".vpython"))
 
-	c := exec.CommandContext(ctx, "vpython", "main.py")
+	self, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	os.Setenv("VPYTHON_TEST_EXE", self)
+
+	c := exec.CommandContext(ctx, self, "main.py")
 	c.Dir = "testdata"
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
