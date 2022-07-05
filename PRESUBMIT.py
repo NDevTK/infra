@@ -70,7 +70,7 @@ def CommandInGoEnv(input_api, output_api, name, cmd, kwargs):
   else:
     error_type = output_api.PresubmitPromptWarning
   full_cmd = [
-      'vpython3',
+      input_api.python3_executable,
       input_api.os_path.join(input_api.change.RepositoryRoot(), 'go', 'env.py'),
   ]
   full_cmd.extend(cmd)
@@ -490,7 +490,7 @@ def GoChecks(input_api, output_api):  # pragma: no cover
           input_api.Command(
               name='bootstrap go env',
               cmd=[
-                  'vpython3',
+                  input_api.python3_executable,
                   input_api.os_path.join(input_api.change.RepositoryRoot(),
                                          'go', 'bootstrap.py')
               ],
