@@ -79,8 +79,10 @@ func buildbucketPubSubHandlerImpl(c context.Context, r *http.Request) error {
 		return nil
 	}
 
-	_, err = compilefailuredetection.AnalyzeBuild(c, bbmsg.Build.Id)
-	return fmt.Errorf("failure in analyzing build %d: %w", bbmsg.Build.Id, err)
+	if _, err = compilefailuredetection.AnalyzeBuild(c, bbmsg.Build.Id); err != nil {
+		return fmt.Errorf("failure in analyzing build %d: %w", bbmsg.Build.Id, err)
+	}
+	return nil
 }
 
 func parseBBMessage(r *http.Request) (*buildBucketMessage, error) {
