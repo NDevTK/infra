@@ -105,7 +105,7 @@ func TestTastConversions(t *testing.T) {
 			got, err := r.ToProtos(ctx, mockCollect)
 			So(err, ShouldBeNil)
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
-				TestId:   "lacros.Basic",
+				TestId:   "tast.lacros.Basic",
 				Expected: true,
 				Status:   pb.TestStatus_PASS,
 				Artifacts: map[string]*sinkpb.Artifact{
@@ -116,7 +116,7 @@ func TestTastConversions(t *testing.T) {
 				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
 					pbutil.StringPair("testKey", "testValue")},
 				TestMetadata: &pb.TestMetadata{
-					Name: "lacros.Basic",
+					Name: "tast.lacros.Basic",
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
@@ -134,7 +134,7 @@ func TestTastConversions(t *testing.T) {
 			got, err := r.ToProtos(ctx, mockCollect)
 			So(err, ShouldBeNil)
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
-				TestId:      "lacros.Basic",
+				TestId:      "tast.lacros.Basic",
 				Expected:    true,
 				Status:      pb.TestStatus_SKIP,
 				SummaryHtml: "<text-artifact artifact-id=\"Skip Reason\" />",
@@ -148,7 +148,7 @@ func TestTastConversions(t *testing.T) {
 				},
 				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com")},
 				TestMetadata: &pb.TestMetadata{
-					Name: "lacros.Basic",
+					Name: "tast.lacros.Basic",
 				},
 			})
 		})
@@ -164,7 +164,7 @@ func TestTastConversions(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(got[0].Duration, ShouldResemble, &duration.Duration{Seconds: 1})
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
-				TestId:      "lacros.Basic",
+				TestId:      "tast.lacros.Basic",
 				Expected:    false,
 				Status:      pb.TestStatus_FAIL,
 				SummaryHtml: "<text-artifact artifact-id=\"Test Log\" />",
@@ -181,7 +181,7 @@ func TestTastConversions(t *testing.T) {
 				},
 				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com")},
 				TestMetadata: &pb.TestMetadata{
-					Name: "lacros.Basic",
+					Name: "tast.lacros.Basic",
 				},
 				FailureReason: &pb.FailureReason{
 					PrimaryErrorMessage: "Failed due to dummy error",

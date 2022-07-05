@@ -23,6 +23,8 @@ const (
 	SkylabLxcJobFolder = "/usr/local/autotest/results/lxc_job_folder"
 	// The execution path for tests in CFT (F20) containers.
 	CFTJobFolder = "/tmp/test/results"
+	// The common name prefix for Tast test results.
+	TastNamePrefix = "tast."
 )
 
 type TastResults struct {
@@ -75,13 +77,14 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 	// Convert all tast cases to TestResult.
 	var ret []*sinkpb.TestResult
 	for _, c := range r.Cases {
+		testName := addTastPrefix(c.Name)
 		status := genCaseStatus(c)
 		tr := &sinkpb.TestResult{
-			TestId:       c.Name,
+			TestId:       testName,
 			Expected:     status == pb.TestStatus_SKIP || status == pb.TestStatus_PASS,
 			Status:       status,
 			Tags:         []*pb.StringPair{},
-			TestMetadata: &pb.TestMetadata{Name: c.Name},
+			TestMetadata: &pb.TestMetadata{Name: testName},
 		}
 
 		// Add Tags to test results.
@@ -139,6 +142,13 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 		ret = append(ret, tr)
 	}
 	return ret, nil
+}
+
+func addTastPrefix(testName string) string {
+	if strings.HasPrefix(testName, TastNamePrefix) {
+		return testName
+	}
+	return TastNamePrefix + testName
 }
 
 func genCaseStatus(c TastCase) pb.TestStatus {
