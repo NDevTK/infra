@@ -26,7 +26,9 @@ from handlers.flake.reporting import generate_report
 # For appengine pipeline running on backend module.
 pipeline_backend_application = pipeline_handlers._APP
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(pipeline_backend_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(pipeline_backend_application)
 
 # "waterfall-backend" module.
 waterfall_backend_web_pages_handler_mappings = [
@@ -45,7 +47,9 @@ waterfall_backend_web_pages_handler_mappings = [
 waterfall_backend_web_application = webapp2.WSGIApplication(
     waterfall_backend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(waterfall_backend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(waterfall_backend_web_application)
 
 # "disabled-test-backend" module.
 disabled_test_backend_web_pages_handler_mappings = [
@@ -61,7 +65,9 @@ disabled_test_backend_web_pages_handler_mappings = [
 disabled_test_backend_web_application = webapp2.WSGIApplication(
     disabled_test_backend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(disabled_test_backend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(disabled_test_backend_web_application)
 
 # "flake-detection-backend" module.
 flake_detection_backend_web_pages_handler_mappings = [
@@ -85,7 +91,9 @@ flake_detection_backend_web_pages_handler_mappings = [
 flake_detection_backend_web_application = webapp2.WSGIApplication(
     flake_detection_backend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(flake_detection_backend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(flake_detection_backend_web_application)
 
 # "auto-action-backend" module.
 auto_action_backend_web_pages_handler_mappings = [
@@ -97,4 +105,6 @@ auto_action_backend_web_pages_handler_mappings = [
 auto_action_backend_web_application = webapp2.WSGIApplication(
     auto_action_backend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(auto_action_backend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(auto_action_backend_web_application)
