@@ -50,7 +50,8 @@ func TestManager(t *testing.T) {
 			Monorail:           monorailCfgs,
 			BugFilingThreshold: bugFilingThreshold,
 		}
-		bm := NewBugManager(cl, "chops-weetbix-test", "luciproject", projectCfg)
+		bm, err := NewBugManager(cl, "chops-weetbix-test", "luciproject", projectCfg)
+		So(err, ShouldBeNil)
 
 		Convey("Create", func() {
 			c := NewCreateRequest()
@@ -216,11 +217,13 @@ func TestManager(t *testing.T) {
 					So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "3")
 
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
-					So(f.Issues[0].Comments[2].Content, ShouldEqual,
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
 						"Because:\n"+
 							"- Test Runs Failed (1-day) < 9, and\n"+
 							"- Test Results Failed (1-day) < 90\n"+
 							"Weetbix has decreased the bug priority from 2 to 3.")
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
+						"https://chops-weetbix-test.appspot.com/b/chromium/100")
 
 					// Does not notify.
 					So(f.Issues[0].NotifyCount, ShouldEqual, originalNotifyCount)
@@ -243,10 +246,12 @@ func TestManager(t *testing.T) {
 					So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "1")
 
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
-					So(f.Issues[0].Comments[2].Content, ShouldEqual,
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
 						"Because:\n"+
 							"- Test Results Failed (1-day) >= 550\n"+
 							"Weetbix has increased the bug priority from 2 to 1.")
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
+						"https://chops-weetbix-test.appspot.com/b/chromium/100")
 
 					// Notified the increase.
 					So(f.Issues[0].NotifyCount, ShouldEqual, originalNotifyCount+1)
@@ -267,7 +272,9 @@ func TestManager(t *testing.T) {
 						"- Test Results Failed (1-day) >= 1000\n" +
 						"Weetbix has increased the bug priority from 2 to 0."
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
-					So(f.Issues[0].Comments[2].Content, ShouldEqual, expectedComment)
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring, expectedComment)
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
+						"https://chops-weetbix-test.appspot.com/b/chromium/100")
 
 					// Notified the increase.
 					So(f.Issues[0].NotifyCount, ShouldEqual, originalNotifyCount+1)
@@ -354,7 +361,9 @@ func TestManager(t *testing.T) {
 						"- Test Results Failed (7-day) < 1\n" +
 						"Weetbix is marking the issue verified."
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
-					So(f.Issues[0].Comments[2].Content, ShouldEqual, expectedComment)
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring, expectedComment)
+					So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
+						"https://chops-weetbix-test.appspot.com/b/chromium/100")
 
 					// Verify repeated update has no effect.
 					updateDoesNothing()
@@ -389,7 +398,9 @@ func TestManager(t *testing.T) {
 								"- Test Results Failed (1-day) < 90\n" +
 								"Weetbix has decreased the bug priority from 2 to 3."
 							So(f.Issues[0].Comments, ShouldHaveLength, 5)
-							So(f.Issues[0].Comments[4].Content, ShouldEqual, expectedComment)
+							So(f.Issues[0].Comments[4].Content, ShouldContainSubstring, expectedComment)
+							So(f.Issues[0].Comments[4].Content, ShouldContainSubstring,
+								"https://chops-weetbix-test.appspot.com/b/chromium/100")
 
 							// Verify repeated update has no effect.
 							updateDoesNothing()
@@ -416,7 +427,9 @@ func TestManager(t *testing.T) {
 								"- Test Results Failed (1-day) < 90\n" +
 								"Weetbix has decreased the bug priority from 2 to 3."
 							So(f.Issues[0].Comments, ShouldHaveLength, 5)
-							So(f.Issues[0].Comments[4].Content, ShouldEqual, expectedComment)
+							So(f.Issues[0].Comments[4].Content, ShouldContainSubstring, expectedComment)
+							So(f.Issues[0].Comments[4].Content, ShouldContainSubstring,
+								"https://chops-weetbix-test.appspot.com/b/chromium/100")
 
 							// Verify repeated update has no effect.
 							updateDoesNothing()
@@ -506,6 +519,8 @@ func TestManager(t *testing.T) {
 			So(f.Issues[0].Issue.Status, ShouldNotEqual, DuplicateStatus)
 			So(f.Issues[0].Comments, ShouldHaveLength, 3)
 			So(f.Issues[0].Comments[2].Content, ShouldContainSubstring, "Some comment.")
+			So(f.Issues[0].Comments[2].Content, ShouldContainSubstring,
+				"https://chops-weetbix-test.appspot.com/b/chromium/100")
 		})
 	})
 }

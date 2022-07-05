@@ -66,8 +66,8 @@ const DuplicateStatus = "Duplicate"
 // Generator provides access to a methods to generate a new bug and/or bug
 // updates for a cluster.
 type Generator struct {
-	// The impact of the cluster to generate monorail changes for.
-	impact *bugs.ClusterImpact
+	// The GAE app id, e.g. "chops-weetbix".
+	appID string
 	// The monorail configuration to use.
 	monorailCfg *configpb.MonorailProject
 	// The threshold at which bugs are filed. Used here as the threshold
@@ -76,12 +76,12 @@ type Generator struct {
 }
 
 // NewGenerator initialises a new Generator.
-func NewGenerator(impact *bugs.ClusterImpact, projectCfg *configpb.ProjectConfig) (*Generator, error) {
+func NewGenerator(appID string, projectCfg *configpb.ProjectConfig) (*Generator, error) {
 	if len(projectCfg.Monorail.Priorities) == 0 {
 		return nil, fmt.Errorf("invalid configuration for monorail project %q; no monorail priorities configured", projectCfg.Monorail.Project)
 	}
 	return &Generator{
-		impact:             impact,
+		appID:              appID,
 		monorailCfg:        projectCfg.Monorail,
 		bugFilingThreshold: projectCfg.BugFilingThreshold,
 	}, nil
@@ -89,7 +89,7 @@ func NewGenerator(impact *bugs.ClusterImpact, projectCfg *configpb.ProjectConfig
 
 // PrepareNew prepares a new bug from the given cluster. Title and description
 // are the cluster-specific bug title and description.
-func (g *Generator) PrepareNew(description *clustering.ClusterDescription, components []string) *mpb.MakeIssueRequest {
+func (g *Generator) PrepareNew(impact *bugs.ClusterImpact, description *clustering.ClusterDescription, components []string) *mpb.MakeIssueRequest {
 	issue := &mpb.Issue{
 		Summary: fmt.Sprintf("Tests are failing: %v", sanitiseTitle(description.Title, 150)),
 		State:   mpb.IssueContentState_ACTIVE,
@@ -97,7 +97,7 @@ func (g *Generator) PrepareNew(description *clustering.ClusterDescription, compo
 		FieldValues: []*mpb.FieldValue{
 			{
 				Field: g.priorityFieldName(),
-				Value: g.clusterPriority(),
+				Value: g.clusterPriority(impact),
 			},
 		},
 		Labels: []*mpb.Issue_LabelValue{{
@@ -136,28 +136,21 @@ func (g *Generator) PrepareNew(description *clustering.ClusterDescription, compo
 	}
 }
 
-// LinkCommentRequest represents a request that adds links to Weetbix to
-// a monorail bug.
-type LinkCommentRequest struct {
-	// The GAE app id, e.g. "chops-weetbix".
-	AppID string
-	// The LUCI Project.
-	Project string
-	// The internal bug name, e.g. "chromium/100".
-	BugName string
+// linkToRuleComment returns a comment that links the user to the failure
+// association rule in Weetbix. bugName is the internal bug name,
+// e.g. "chromium/100".
+func (g *Generator) linkToRuleComment(bugName string) string {
+	bugLink := fmt.Sprintf("https://%s.appspot.com/b/%s", g.appID, bugName)
+	return fmt.Sprintf(LinkTemplate, bugLink)
 }
 
 // PrepareLinkComment prepares a request that adds links to Weetbix to
 // a monorail bug.
-func PrepareLinkComment(request LinkCommentRequest) (*mpb.ModifyIssuesRequest, error) {
-	issueName, err := toMonorailIssueName(request.BugName)
+func (g *Generator) PrepareLinkComment(bugName string) (*mpb.ModifyIssuesRequest, error) {
+	issueName, err := toMonorailIssueName(bugName)
 	if err != nil {
 		return nil, err
 	}
-
-	bugLink := fmt.Sprintf("https://%s.appspot.com/b/%s", request.AppID, request.BugName)
-
-	comment := fmt.Sprintf(LinkTemplate, bugLink)
 
 	result := &mpb.ModifyIssuesRequest{
 		Deltas: []*mpb.IssueDelta{
@@ -169,9 +162,38 @@ func PrepareLinkComment(request LinkCommentRequest) (*mpb.ModifyIssuesRequest, e
 			},
 		},
 		NotifyType:     mpb.NotifyType_NO_NOTIFICATION,
-		CommentContent: comment,
+		CommentContent: g.linkToRuleComment(bugName),
 	}
 	return result, nil
+}
+
+// MarkAvailable prepares a request that puts the bug in an
+// available state and adds the given message.
+func (g *Generator) MarkAvailable(bugName, message string) (*mpb.ModifyIssuesRequest, error) {
+	name, err := toMonorailIssueName(bugName)
+	if err != nil {
+		return nil, err
+	}
+
+	delta := &mpb.IssueDelta{
+		Issue: &mpb.Issue{
+			Name: name,
+			Status: &mpb.Issue_StatusValue{
+				Status: "Available",
+			},
+		},
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"status"},
+		},
+	}
+	req := &mpb.ModifyIssuesRequest{
+		Deltas: []*mpb.IssueDelta{
+			delta,
+		},
+		NotifyType:     mpb.NotifyType_EMAIL,
+		CommentContent: strings.Join([]string{message, g.linkToRuleComment(bugName)}, "\n\n"),
+	}
+	return req, nil
 }
 
 func (g *Generator) priorityFieldName() string {
@@ -179,18 +201,18 @@ func (g *Generator) priorityFieldName() string {
 }
 
 // NeedsUpdate determines if the bug for the given cluster needs to be updated.
-func (g *Generator) NeedsUpdate(issue *mpb.Issue) bool {
+func (g *Generator) NeedsUpdate(impact *bugs.ClusterImpact, issue *mpb.Issue) bool {
 	// Bugs must have restrict view label to be updated.
 	if !hasLabel(issue, restrictViewLabel) {
 		return false
 	}
 	// Cases that a bug may be updated follow.
 	switch {
-	case !g.isCompatibleWithVerified(issueVerified(issue)):
+	case !g.isCompatibleWithVerified(impact, issueVerified(issue)):
 		return true
 	case !hasLabel(issue, manualPriorityLabel) &&
 		!issueVerified(issue) &&
-		!g.isCompatibleWithPriority(g.IssuePriority(issue)):
+		!g.isCompatibleWithPriority(impact, g.IssuePriority(issue)):
 		// The priority has changed on a cluster which is not verified as fixed
 		// and the user isn't manually controlling the priority.
 		return true
@@ -201,7 +223,7 @@ func (g *Generator) NeedsUpdate(issue *mpb.Issue) bool {
 
 // MakeUpdate prepares an updated for the bug associated with a given cluster.
 // Must ONLY be called if NeedsUpdate(...) returns true.
-func (g *Generator) MakeUpdate(issue *mpb.Issue, comments []*mpb.Comment) *mpb.ModifyIssuesRequest {
+func (g *Generator) MakeUpdate(impact *bugs.ClusterImpact, issue *mpb.Issue, comments []*mpb.Comment) *mpb.ModifyIssuesRequest {
 	delta := &mpb.IssueDelta{
 		Issue: &mpb.Issue{
 			Name: issue.Name,
@@ -214,17 +236,17 @@ func (g *Generator) MakeUpdate(issue *mpb.Issue, comments []*mpb.Comment) *mpb.M
 	var commentary []string
 	notify := false
 	issueVerified := issueVerified(issue)
-	if !g.isCompatibleWithVerified(issueVerified) {
+	if !g.isCompatibleWithVerified(impact, issueVerified) {
 		// Verify or reopen the issue.
-		comment := g.prepareBugVerifiedUpdate(issue, delta)
+		comment := g.prepareBugVerifiedUpdate(impact, issue, delta)
 		commentary = append(commentary, comment)
 		notify = true
 		// After the update, whether the issue was verified will have changed.
-		issueVerified = g.clusterResolved()
+		issueVerified = g.clusterResolved(impact)
 	}
 	if !hasLabel(issue, manualPriorityLabel) &&
 		!issueVerified &&
-		!g.isCompatibleWithPriority(g.IssuePriority(issue)) {
+		!g.isCompatibleWithPriority(impact, g.IssuePriority(issue)) {
 
 		if hasManuallySetPriority(comments) {
 			// We were not the last to update the priority of this issue.
@@ -235,12 +257,21 @@ func (g *Generator) MakeUpdate(issue *mpb.Issue, comments []*mpb.Comment) *mpb.M
 		} else {
 			// We were the last to update the bug priority.
 			// Apply the priority update.
-			comment := g.preparePriorityUpdate(issue, delta)
+			comment := g.preparePriorityUpdate(impact, issue, delta)
 			commentary = append(commentary, comment)
 			// Notify if new priority is higher than existing priority.
-			notify = notify || g.isHigherPriority(g.clusterPriority(), g.IssuePriority(issue))
+			notify = notify || g.isHigherPriority(g.clusterPriority(impact), g.IssuePriority(issue))
 		}
 	}
+
+	bugName, err := fromMonorailIssueName(issue.Name)
+	if err != nil {
+		// This should never happen. It would mean monorail is feeding us
+		// invalid data.
+		panic("invalid monorail issue name: " + issue.Name)
+	}
+
+	commentary = append(commentary, g.linkToRuleComment(bugName))
 
 	update := &mpb.ModifyIssuesRequest{
 		Deltas: []*mpb.IssueDelta{
@@ -255,8 +286,8 @@ func (g *Generator) MakeUpdate(issue *mpb.Issue, comments []*mpb.Comment) *mpb.M
 	return update
 }
 
-func (g *Generator) prepareBugVerifiedUpdate(issue *mpb.Issue, update *mpb.IssueDelta) string {
-	resolved := g.clusterResolved()
+func (g *Generator) prepareBugVerifiedUpdate(impact *bugs.ClusterImpact, issue *mpb.Issue, update *mpb.IssueDelta) string {
+	resolved := g.clusterResolved(impact)
 	var status string
 	var message strings.Builder
 	if resolved {
@@ -278,7 +309,7 @@ func (g *Generator) prepareBugVerifiedUpdate(issue *mpb.Issue, update *mpb.Issue
 		}
 
 		message.WriteString("Because:\n")
-		message.WriteString(g.explainThresholdsMet(g.bugFilingThreshold))
+		message.WriteString(g.explainThresholdsMet(impact, g.bugFilingThreshold))
 		message.WriteString("Weetbix has re-opened the bug.")
 	}
 	update.Issue.Status = &mpb.Issue_StatusValue{Status: status}
@@ -294,8 +325,8 @@ func prepareManualPriorityUpdate(issue *mpb.Issue, update *mpb.IssueDelta) strin
 	return fmt.Sprintf("The bug priority has been manually set. To re-enable automatic priority updates by Weetbix, remove the %s label.", manualPriorityLabel)
 }
 
-func (g *Generator) preparePriorityUpdate(issue *mpb.Issue, update *mpb.IssueDelta) string {
-	newPriority := g.clusterPriority()
+func (g *Generator) preparePriorityUpdate(impact *bugs.ClusterImpact, issue *mpb.Issue, update *mpb.IssueDelta) string {
+	newPriority := g.clusterPriority(impact)
 
 	update.Issue.FieldValues = []*mpb.FieldValue{
 		{
@@ -312,7 +343,7 @@ func (g *Generator) preparePriorityUpdate(issue *mpb.Issue, update *mpb.IssueDel
 	if newPriorityIndex < oldPriorityIndex {
 		var message strings.Builder
 		message.WriteString("Because:\n")
-		message.WriteString(g.priorityIncreaseJustification(oldPriorityIndex, newPriorityIndex))
+		message.WriteString(g.priorityIncreaseJustification(impact, oldPriorityIndex, newPriorityIndex))
 		message.WriteString(fmt.Sprintf("Weetbix has increased the bug priority from %v to %v.", oldPriority, newPriority))
 		return message.String()
 	} else {
@@ -433,26 +464,26 @@ func (g *Generator) indexOfPriority(priority string) int {
 // isCompatibleWithVerified returns whether the impact of the current cluster
 // is compatible with the issue having the given verified status, based on
 // configured thresholds and hysteresis.
-func (g *Generator) isCompatibleWithVerified(verified bool) bool {
+func (g *Generator) isCompatibleWithVerified(impact *bugs.ClusterImpact, verified bool) bool {
 	hysteresisPerc := g.monorailCfg.PriorityHysteresisPercent
 	lowestPriority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
 	if verified {
 		// The issue is verified. Only reopen if we satisfied the bug-filing
 		// criteria. Bug-filing criteria is guaranteed to imply the criteria
 		// of the lowest priority level.
-		return !g.impact.MeetsThreshold(g.bugFilingThreshold)
+		return !impact.MeetsThreshold(g.bugFilingThreshold)
 	} else {
 		// The issue is not verified. Only close if the impact falls
 		// below the threshold with hysteresis.
 		deflatedThreshold := bugs.InflateThreshold(lowestPriority.Threshold, -hysteresisPerc)
-		return g.impact.MeetsThreshold(deflatedThreshold)
+		return impact.MeetsThreshold(deflatedThreshold)
 	}
 }
 
 // isCompatibleWithPriority returns whether the impact of the current cluster
 // is compatible with the issue having the given priority, based on
 // configured thresholds and hysteresis.
-func (g *Generator) isCompatibleWithPriority(issuePriority string) bool {
+func (g *Generator) isCompatibleWithPriority(impact *bugs.ClusterImpact, issuePriority string) bool {
 	index := g.indexOfPriority(issuePriority)
 	if index >= len(g.monorailCfg.Priorities) {
 		// Unknown priority in use. The priority should be updated to
@@ -460,8 +491,8 @@ func (g *Generator) isCompatibleWithPriority(issuePriority string) bool {
 		return false
 	}
 	hysteresisPerc := g.monorailCfg.PriorityHysteresisPercent
-	lowestAllowedPriority := g.clusterPriorityWithInflatedThresholds(hysteresisPerc)
-	highestAllowedPriority := g.clusterPriorityWithInflatedThresholds(-hysteresisPerc)
+	lowestAllowedPriority := g.clusterPriorityWithInflatedThresholds(impact, hysteresisPerc)
+	highestAllowedPriority := g.clusterPriorityWithInflatedThresholds(impact, -hysteresisPerc)
 
 	// Check the cluster has a priority no less than lowest priority
 	// and no greater than highest priority allowed by hysteresis.
@@ -536,7 +567,7 @@ func explainThresholdNotMet(thresoldNotMet *configpb.ImpactThreshold) string {
 //
 // Example output:
 // "- Presubmit Runs Failed (1-day) >= 15"
-func (g *Generator) priorityIncreaseJustification(oldPriorityIndex, newPriorityIndex int) string {
+func (g *Generator) priorityIncreaseJustification(impact *bugs.ClusterImpact, oldPriorityIndex, newPriorityIndex int) string {
 	if newPriorityIndex >= oldPriorityIndex {
 		// Priority did not change or decreased.
 		return ""
@@ -558,17 +589,17 @@ func (g *Generator) priorityIncreaseJustification(oldPriorityIndex, newPriorityI
 		}
 		thresholdsMet = append(thresholdsMet, metThreshold)
 	}
-	return g.explainThresholdsMet(thresholdsMet...)
+	return g.explainThresholdsMet(impact, thresholdsMet...)
 }
 
-func (g *Generator) explainThresholdsMet(thresholds ...*configpb.ImpactThreshold) string {
+func (g *Generator) explainThresholdsMet(impact *bugs.ClusterImpact, thresholds ...*configpb.ImpactThreshold) string {
 	var explanations []bugs.ThresholdExplanation
 	for _, t := range thresholds {
 		// There may be multiple ways in which we could have met the
 		// threshold for the next-higher priority (due to the OR-
 		// disjunction of different metric thresholds). This obtains
 		// just one of the ways in which we met it.
-		explanations = append(explanations, g.impact.ExplainThresholdMet(t))
+		explanations = append(explanations, impact.ExplainThresholdMet(t))
 	}
 
 	// Remove redundant explanations.
@@ -591,21 +622,21 @@ func (g *Generator) explainThresholdsMet(thresholds ...*configpb.ImpactThreshold
 
 // clusterPriority returns the desired priority of the bug, if no hysteresis
 // is applied.
-func (g *Generator) clusterPriority() string {
-	return g.clusterPriorityWithInflatedThresholds(0)
+func (g *Generator) clusterPriority(impact *bugs.ClusterImpact) string {
+	return g.clusterPriorityWithInflatedThresholds(impact, 0)
 }
 
 // clusterPriority returns the desired priority of the bug, if thresholds
 // are inflated or deflated with the given percentage.
 //
 // See bugs.InflateThreshold for the interpretation of inflationPercent.
-func (g *Generator) clusterPriorityWithInflatedThresholds(inflationPercent int64) string {
+func (g *Generator) clusterPriorityWithInflatedThresholds(impact *bugs.ClusterImpact, inflationPercent int64) string {
 	// Default to using the lowest priority.
 	priority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
 	for i := len(g.monorailCfg.Priorities) - 2; i >= 0; i-- {
 		p := g.monorailCfg.Priorities[i]
 		adjustedThreshold := bugs.InflateThreshold(p.Threshold, inflationPercent)
-		if !g.impact.MeetsThreshold(adjustedThreshold) {
+		if !impact.MeetsThreshold(adjustedThreshold) {
 			// A cluster cannot reach a higher priority unless it has
 			// met the thresholds for all lower priorities.
 			break
@@ -617,9 +648,9 @@ func (g *Generator) clusterPriorityWithInflatedThresholds(inflationPercent int64
 
 // clusterResolved returns the desired state of whether the cluster has been
 // verified, if no hysteresis has been applied.
-func (g *Generator) clusterResolved() bool {
+func (g *Generator) clusterResolved(impact *bugs.ClusterImpact) bool {
 	lowestPriority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
-	return !g.impact.MeetsThreshold(lowestPriority.Threshold)
+	return !impact.MeetsThreshold(lowestPriority.Threshold)
 }
 
 // sanitiseTitle removes tabs and line breaks from input, replacing them with

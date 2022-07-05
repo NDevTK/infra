@@ -114,7 +114,7 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 	// as cluster impact is unreliable.
 	impactValid := b.verifyClusterImpactValid(ctx, progress)
 
-	ruleByID, err := b.readActiveFailureAssociationRules(ctx)
+	rules, err := rules.ReadActive(span.Single(ctx), b.project)
 	if err != nil {
 		return errors.Annotate(err, "read active failure association rules").Err()
 	}
@@ -138,7 +138,7 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 		// blockedSourceClusterIDs is the set of source cluster IDs for which
 		// filing new bugs should be suspended.
 		blockedSourceClusterIDs := make(map[string]struct{})
-		for _, r := range ruleByID {
+		for _, r := range rules {
 			if !progress.IncorporatesRulesVersion(r.CreationTime) {
 				// If a bug cluster was recently filed for a source cluster, and
 				// re-clustering and analysis is not yet complete (to move the
@@ -167,8 +167,8 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 
 	// Prepare bug update requests.
 	bugUpdatesBySystem := make(map[string][]bugs.BugUpdateRequest)
-	for id, r := range ruleByID {
-		impact, ok := impactByRuleID[id]
+	for _, r := range rules {
+		impact, ok := impactByRuleID[r.RuleID]
 		if !ok {
 			// If there is no analysis, this means the cluster is
 			// empty or the analysis is invalid. Use empty impact.
@@ -661,17 +661,4 @@ func (b *BugUpdater) generateFailureAssociationRule(alg algorithms.Algorithm, fa
 			alg.Name(), failure.TestID, reason)
 	}
 	return rule, nil
-}
-
-func (b *BugUpdater) readActiveFailureAssociationRules(ctx context.Context) (map[string]*rules.FailureAssociationRule, error) {
-	rs, err := rules.ReadActive(span.Single(ctx), b.project)
-	if err != nil {
-		return nil, err
-	}
-
-	ruleByID := make(map[string]*rules.FailureAssociationRule)
-	for _, r := range rs {
-		ruleByID[r.RuleID] = r
-	}
-	return ruleByID, nil
 }

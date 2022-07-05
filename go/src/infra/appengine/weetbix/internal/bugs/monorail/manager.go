@@ -11,7 +11,6 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/encoding/prototext"
 
 	"infra/appengine/weetbix/internal/bugs"
@@ -41,6 +40,8 @@ type BugManager struct {
 	project string
 	// The snapshot of configuration to use for the project.
 	projectCfg *configpb.ProjectConfig
+	// The generator used to generate updates to monorail bugs.
+	generator *Generator
 	// Simulate, if set, tells BugManager not to make mutating changes
 	// to monorail but only log the changes it would make. Must be set
 	// when running locally as RPCs made from developer systems will
@@ -51,30 +52,31 @@ type BugManager struct {
 
 // NewBugManager initialises a new bug manager, using the specified
 // monorail client.
-func NewBugManager(client *Client, appID, project string, projectCfg *configpb.ProjectConfig) *BugManager {
+func NewBugManager(client *Client, appID, project string, projectCfg *configpb.ProjectConfig) (*BugManager, error) {
+	g, err := NewGenerator(appID, projectCfg)
+	if err != nil {
+		return nil, errors.Annotate(err, "create issue generator").Err()
+	}
 	return &BugManager{
 		client:     client,
 		appID:      appID,
 		project:    project,
 		projectCfg: projectCfg,
+		generator:  g,
 		Simulate:   false,
-	}
+	}, nil
 }
 
 // Create creates a new bug for the given request, returning its name, or
 // any encountered error.
 func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (string, error) {
-	g, err := NewGenerator(request.Impact, m.projectCfg)
-	if err != nil {
-		return "", errors.Annotate(err, "create issue generator").Err()
-	}
 	components := request.MonorailComponents
 	if m.appID == "chops-weetbix" {
 		// In production, do not apply components to bugs as they are not yet
 		// ready to be surfaced widely.
 		components = nil
 	}
-	makeReq := g.PrepareNew(request.Description, components)
+	makeReq := m.generator.PrepareNew(request.Impact, request.Description, components)
 	var bugName string
 	if m.Simulate {
 		logging.Debugf(ctx, "Would create Monorail issue: %s", textPBMultiline.Format(makeReq))
@@ -91,12 +93,7 @@ func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (s
 		}
 	}
 
-	linkReq := LinkCommentRequest{
-		AppID:   m.appID,
-		Project: m.project,
-		BugName: bugName,
-	}
-	modifyReq, err := PrepareLinkComment(linkReq)
+	modifyReq, err := m.generator.PrepareLinkComment(bugName)
 	if err != nil {
 		return "", errors.Annotate(err, "prepare link comment").Err()
 	}
@@ -129,21 +126,17 @@ func (m *BugManager) Update(ctx context.Context, request []bugs.BugUpdateRequest
 		issue := issues[i]
 		isDuplicate := issue.Status.Status == DuplicateStatus
 		if !isDuplicate && req.ShouldUpdate {
-			g, err := NewGenerator(req.Impact, m.projectCfg)
-			if err != nil {
-				return nil, errors.Annotate(err, "create issue generator").Err()
-			}
-			if g.NeedsUpdate(issue) {
+			if m.generator.NeedsUpdate(req.Impact, issue) {
 				comments, err := m.client.ListComments(ctx, issue.Name)
 				if err != nil {
 					return nil, err
 				}
-				req := g.MakeUpdate(issue, comments)
+				updateReq := m.generator.MakeUpdate(req.Impact, issue, comments)
 				if m.Simulate {
-					logging.Debugf(ctx, "Would update Monorail issue: %s", textPBMultiline.Format(req))
+					logging.Debugf(ctx, "Would update Monorail issue: %s", textPBMultiline.Format(updateReq))
 				} else {
-					if err := m.client.ModifyIssues(ctx, req); err != nil {
-						return nil, errors.Annotate(err, "failed to update to issue %s", issue.Name).Err()
+					if err := m.client.ModifyIssues(ctx, updateReq); err != nil {
+						return nil, errors.Annotate(err, "failed to update monorail issue %s", req.Bug.ID).Err()
 					}
 					bugs.BugsUpdatedCounter.Add(ctx, 1, m.project, "monorail")
 				}
@@ -185,33 +178,15 @@ func (m *BugManager) Unduplicate(ctx context.Context, bug bugs.BugID, message st
 		// Indicates an implementation error with the caller.
 		panic("monorail bug manager can only deal with monorail bugs")
 	}
-	name, err := toMonorailIssueName(bug.ID)
+	req, err := m.generator.MarkAvailable(bug.ID, message)
 	if err != nil {
-		return err
-	}
-	delta := &mpb.IssueDelta{
-		Issue: &mpb.Issue{
-			Name: name,
-			Status: &mpb.Issue_StatusValue{
-				Status: "Available",
-			},
-		},
-		UpdateMask: &field_mask.FieldMask{
-			Paths: []string{"status"},
-		},
-	}
-	req := &mpb.ModifyIssuesRequest{
-		Deltas: []*mpb.IssueDelta{
-			delta,
-		},
-		NotifyType:     mpb.NotifyType_NO_NOTIFICATION,
-		CommentContent: message,
+		return errors.Annotate(err, "mark issue as available").Err()
 	}
 	if m.Simulate {
 		logging.Debugf(ctx, "Would update Monorail issue: %s", textPBMultiline.Format(req))
 	} else {
 		if err := m.client.ModifyIssues(ctx, req); err != nil {
-			return errors.Annotate(err, "failed to unduplicate monorail issue %s", name).Err()
+			return errors.Annotate(err, "failed to unduplicate monorail issue %s", bug.ID).Err()
 		}
 	}
 	return nil
