@@ -543,7 +543,7 @@ function htmlForPopupForBuild(builderKey, index, opt_testName)
     var html = '';
     var builder = builders.builderFromKey(builderKey);
     var results = g_resultsByBuilder[builder.key()];
-    var time = result.secondsSinceEpoch[index];
+    var time = results.secondsSinceEpoch[index];
     if (time) {
         var date = new Date(time * 1000);
         html += date.toLocaleDateString() + ' ' +
