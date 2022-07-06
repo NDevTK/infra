@@ -178,9 +178,9 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		DutRunner:            run,
 		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
-		UpdateEC:             true,
-		UpdateAP:             true,
-		UpdaterMode:          defaultFirmwareImageUpdateMode,
+		UpdateEC:             actionArgs.AsBool(ctx, "update_ap", true),
+		UpdateAP:             actionArgs.AsBool(ctx, "update_ec", true),
+		UpdaterMode:          actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
 	}
 	if err := firmware.InstallFirmwareImage(ctx, req, info.NewLogger()); err != nil {

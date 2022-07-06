@@ -215,8 +215,10 @@ type InstallFirmwareImageRequest struct {
 	UpdaterTimeout time.Duration
 }
 
-// getRunner determines which runner should be used based on FlashThroughServo flag.
-func (req *InstallFirmwareImageRequest) getRunner() components.Runner {
+// targetHostRunner returns a runner should be used based on FlashThroughServo flag.
+// If flashed via servo, we download firmware and execute flash from servohost(labstation).
+// Otherwise we download firmware and execute flash from the DUT directly.
+func (req *InstallFirmwareImageRequest) targetHostRunner() components.Runner {
 	if req.FlashThroughServo {
 		return req.ServoHostRunner
 	}
@@ -267,7 +269,7 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 		// Specify the name used for download file.
 		downloadFilename = "fw_image.tar.bz2"
 	)
-	run := req.getRunner()
+	run := req.targetHostRunner()
 	clearDirectory := func() {
 		if _, err := run(ctx, time.Minute, "rm", "-rf", req.DownloadDir); err != nil {
 			log.Debugf("Failed to remove download directory %q, Error: %s", req.DownloadDir, err)
@@ -375,7 +377,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwBoard))
 		}
 	}
-	run := req.getRunner()
+	run := req.targetHostRunner()
 	if !req.FlashThroughServo {
 		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
 		if err != nil {
@@ -426,7 +428,7 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwBoard))
 		}
 	}
-	run := req.getRunner()
+	run := req.targetHostRunner()
 	if !req.FlashThroughServo {
 		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
 		if err != nil {
