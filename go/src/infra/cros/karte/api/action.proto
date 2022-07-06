@@ -88,4 +88,7 @@ message Action {
   // Modification_count returns the number of times that the Karte record has been modified. This field is managed by Karte.
   int32 modification_count = 16
       [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // model is the model of the DUT this event applies to.
+  string model = 17;
 }

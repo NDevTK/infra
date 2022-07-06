@@ -68,4 +68,7 @@ message Action {
 
   // The hostname is the hostname of the DUT in question.
   string hostname = 15;
+
+  // model is the model of the DUT this event applies to.
+  string model = 16;
 }
