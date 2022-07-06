@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/labstation"
 	"infra/cmd/shivas/internal/ufs/subcmds/machine"
 	"infra/cmd/shivas/internal/ufs/subcmds/nic"
+	"infra/cmd/shivas/internal/ufs/subcmds/rack"
 	"infra/cmd/shivas/internal/ufs/subcmds/switches"
 )
 
@@ -51,6 +52,7 @@ func (c renameApp) GetCommands() []*subcommands.Command {
 		machine.RenameMachineCmd,
 		nic.RenameNicCmd,
 		switches.RenameSwitchCmd,
+		rack.RenameRackCmd,
 	}
 }
 
