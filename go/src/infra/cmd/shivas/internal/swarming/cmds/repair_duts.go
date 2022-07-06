@@ -75,7 +75,7 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	successMap := make(map[string]*swarming.TaskInfo)
 	errorMap := make(map[string]error)
 	var bc buildbucket.Client
-	var sessionTag string
+	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	if c.paris {
 		var err error
 		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
@@ -83,7 +83,6 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		if err != nil {
 			return err
 		}
-		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())
 	}
 	for _, host := range args {
 		creator.GenerateLogdogTaskCode()
@@ -112,9 +111,13 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 
 	}
 	if c.paris {
-		utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
-	} else {
+		// If we're using paris, there is no batch link, so we don't print it.
 		creator.PrintResults(a.GetOut(), successMap, errorMap)
+	} else {
+		// If we aren't using paris, print the map first, then print the batch link
+		// at the end.
+		creator.PrintResults(a.GetOut(), successMap, errorMap)
+		utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
 	}
 	return nil
 }
@@ -148,7 +151,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +159,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 		// Use an ID format that makes it extremely obvious that we're dealing with a
 		// buildbucket invocation number rather than a swarming task.
 		ID:      fmt.Sprintf("buildbucket:%d", taskID),
-		TaskURL: bc.BuildURL(taskID),
+		TaskURL: url,
 	}
 	return taskInfo, nil
 }
