@@ -102,7 +102,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 		if c.latest {
 			v = labpack.CIPDLatest
 		}
-		taskID, err := labpack.ScheduleTask(
+		_, taskID, err := labpack.ScheduleTask(
 			ctx,
 			bc,
 			v,
