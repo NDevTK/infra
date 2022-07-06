@@ -118,7 +118,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 		if err != nil {
 			return errors.Annotate(err, "create audit task").Err()
 		}
-		taskID, err := labpack.ScheduleTask(
+		_, taskID, err := labpack.ScheduleTask(
 			ctx,
 			bc,
 			v,
