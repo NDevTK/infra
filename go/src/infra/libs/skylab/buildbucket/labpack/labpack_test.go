@@ -50,10 +50,10 @@ type FakeClient struct {
 	startID int64
 }
 
-func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams) (int64, error) {
+func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams) (string, int64, error) {
 	id := c.startID
 	c.startID++
-	return id, nil
+	return "", id, nil
 }
 
 func (c *FakeClient) BuildURL(buildID int64) string {
