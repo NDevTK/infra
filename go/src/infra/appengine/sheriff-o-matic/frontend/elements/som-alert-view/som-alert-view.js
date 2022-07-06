@@ -736,10 +736,13 @@ class SomAlertView extends Polymer.mixinBehaviors(
     return false;
   }
 
-  _searchNotes(notes, re) {
-    if (notes) {
-      for (let note of notes) {
-        if (note.match(re)) {
+  _searchTests(tests, re) {
+    if (tests) {
+      for (let test of tests) {
+        if (test.test_name && test.test_name.match(re)) {
+          return true;
+        }
+        if (test.test_id && test.test_id.match(re)) {
           return true;
         }
       }
@@ -758,7 +761,7 @@ class SomAlertView extends Polymer.mixinBehaviors(
       }
       if (extension.reason) {
         if ((extension.reason.name && extension.reason.name.match(re)) ||
-          this._searchNotes(extension.reason.test_names, re)) {
+          this._searchTests(extension.reason.tests, re)) {
           return true;
         }
       }
