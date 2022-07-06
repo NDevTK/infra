@@ -69,7 +69,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	e := c.envFlags.Env()
 	v := labpack.CIPDProd
 	configuration := b64.StdEncoding.EncodeToString([]byte(c.createPlan()))
-	taskID, err := labpack.ScheduleTask(
+	_, taskID, err := labpack.ScheduleTask(
 		ctx,
 		bc,
 		v,

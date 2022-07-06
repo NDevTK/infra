@@ -123,7 +123,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 			fmt.Sprintf("comment:%s", c.comment),
 		},
 	}
-	taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	_, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
 	return taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
 }
 
