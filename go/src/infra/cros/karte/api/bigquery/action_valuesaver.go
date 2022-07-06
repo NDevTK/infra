@@ -49,6 +49,7 @@ func (a *Action) Save() (row map[string]bigquery.Value, insertID string, err err
 	row["buildbucket_id"] = a.GetBuildbucketId()
 	row["hostname"] = a.GetHostname()
 	row["model"] = a.GetModel()
+	row["board"] = a.GetBoard()
 
 	return
 }

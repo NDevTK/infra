@@ -91,4 +91,7 @@ message Action {
 
   // model is the model of the DUT this event applies to.
   string model = 17;
+
+  // board is the board of the DUT this event applies to.
+  string board = 18;
 }

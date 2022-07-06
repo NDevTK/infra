@@ -18,12 +18,20 @@ func TestActionIsValueSaver(t *testing.T) {
 	var _ bigquery.ValueSaver = &Action{}
 }
 
-// TestActionSave tests saving an action.
+// TestActionSave tests saving an action. New subtests should be added here for new fields
+// to make sure that they are exported correctly.
 func TestActionSave(t *testing.T) {
 	t.Parallel()
 	Convey("test action save", t, func() {
-		m, _, err := (&Action{Name: "aaaaa", Model: "hi"}).Save()
-		So(err, ShouldBeNil)
-		So(m["model"], ShouldEqual, "hi")
+		Convey("model", func() {
+			m, _, err := (&Action{Name: "aaaaa", Model: "hi"}).Save()
+			So(err, ShouldBeNil)
+			So(m["model"], ShouldEqual, "hi")
+		})
+		Convey("board", func() {
+			m, _, err := (&Action{Name: "aaaaa", Board: "hi"}).Save()
+			So(err, ShouldBeNil)
+			So(m["board"], ShouldEqual, "hi")
+		})
 	})
 }
