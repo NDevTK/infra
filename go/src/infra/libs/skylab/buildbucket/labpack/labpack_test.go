@@ -66,7 +66,7 @@ func TestScheduleTask(t *testing.T) {
 	ctx := context.Background()
 	Convey("test schedule task", t, func() {
 		Convey("nil params", func() {
-			url, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
+			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "schedule task")
 		})
