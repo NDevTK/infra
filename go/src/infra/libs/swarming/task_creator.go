@@ -285,9 +285,5 @@ func (tc *TaskCreator) PrintResults(wr io.Writer, successMap map[string]*TaskInf
 		for host, task := range successMap {
 			fmt.Fprintf(wr, "%s: %s\n", host, task.TaskURL)
 		}
-		if len(successMap) > 1 {
-			fmt.Fprintln(wr, "\n### Batch tasks URL ###")
-			fmt.Fprintln(wr, tc.SessionTasksURL())
-		}
 	}
 }

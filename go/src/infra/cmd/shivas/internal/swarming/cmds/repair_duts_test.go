@@ -45,7 +45,7 @@ type fakeClient struct{}
 
 // ScheduleLabpackTask is a fake method that returns a fixed buildbucket ID of 1.
 func (c *fakeClient) ScheduleLabpackTask(ctx context.Context, _ *buildbucket.ScheduleLabpackTaskParams) (string, int64, error) {
-	return "", 1, nil
+	return fmt.Sprintf(buildbucket.BuildURLFmt, "chromeos", "labpack", "labpack", 1), 1, nil
 }
 
 // BuildURL returns the build URL.
