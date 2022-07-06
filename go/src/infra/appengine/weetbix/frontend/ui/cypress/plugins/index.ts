@@ -18,6 +18,6 @@ export default (
         integrationFolder: 'cypress/integration',
         screenshotsFolder: 'cypress/screenshots',
         videosFolder: 'cypress/videos',
-        supportFile: 'cypress/support/index.ts',
+        supportFile: 'cypress/support/index.js',
     });
 };

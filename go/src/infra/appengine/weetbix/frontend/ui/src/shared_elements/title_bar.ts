@@ -32,8 +32,7 @@ export class TitleBar extends LitElement {
       <div id="secondary-container">
         <ul>
           <li><a href="/p/${this.project}/clusters">Clusters</a></li>
-          <li><a href="/p/${this.project}/bugs">Bugs</a></li>
-          <li><a href="/p/${this.project}/rules/new" data-cy="new-rule-link">New Rule</a></li>
+          <li><a href="/p/${this.project}/rules">Rules</a></li>
         </ul>
       </div>
       `;

@@ -21,7 +21,7 @@ export function setupTestRule() {
             url:  '/prpc/weetbix.v1.Rules/Update',
             body: {
                 rule: {
-                    name: 'projects/chromium/rules/ac856b1827dc1cb845486edbf4b80cfa',
+                    name: 'projects/chromium/rules/4165d118c919a1016f42e80efe30db59',
                     ruleDefinition: 'test = "cypress test 1"',
                     bug: {
                         system: 'monorail',
@@ -30,7 +30,7 @@ export function setupTestRule() {
                     isActive: true,
                     isManagingBug: true,
                 },
-                updateMask: 'ruleDefinition,bug,isActive,isManagingBug'
+                updateMask: 'ruleDefinition,bug,isActive,isManagingBug',
             },
             headers: {
                 Authorization: 'Bearer ' + accessToken,

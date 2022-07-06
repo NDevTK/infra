@@ -65,7 +65,7 @@ const RuleInfo = ({ project, rule }: Props) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ pt: 2, pb: 2, mt: 1 }} >
+    <Paper data-cy="rule-info" elevation={3} sx={{ pt: 2, pb: 2, mt: 1 }} >
       <Container maxWidth={false}>
         <Typography sx={{
           fontWeight: 600,
@@ -78,10 +78,10 @@ const RuleInfo = ({ project, rule }: Props) => {
             <HelpTooltip text={definitionTooltipText} />
           </GridLabel>
           <Grid item xs={10} alignItems="center">
-            <IconButton onClick={() => setEditDialogOpen(true)} aria-label="edit" sx={{ float: 'right' }}>
+            <IconButton data-testid="rule-definition-edit" onClick={() => setEditDialogOpen(true)} aria-label="edit" sx={{ float: 'right' }}>
               <Edit />
             </IconButton>
-            <Box sx={{ display: 'grid' }}>
+            <Box data-testid="rule-definition" sx={{ display: 'grid' }}>
               <CodeBlock code={rule.ruleDefinition} />
             </Box>
           </Grid>
@@ -105,10 +105,11 @@ const RuleInfo = ({ project, rule }: Props) => {
             <HelpTooltip text={archivedTooltipText} />
           </GridLabel>
           <Grid item xs={10} alignItems="center" columnGap={1}>
-            <Box sx={{ display: 'inline-block' }} paddingTop={1} paddingRight={1}>
+            <Box data-testid="rule-archived" sx={{ display: 'inline-block' }} paddingTop={1} paddingRight={1}>
               {rule.isActive ? 'No' : 'Yes'}
             </Box>
             <LoadingButton
+              data-testid="rule-archived-toggle"
               loading={mutateRule.isLoading}
               variant="outlined"
               startIcon={rule.isActive ? (<Archive />) : (<Unarchive />)}

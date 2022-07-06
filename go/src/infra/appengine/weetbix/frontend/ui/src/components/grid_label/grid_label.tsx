@@ -10,6 +10,7 @@ interface Props {
     children?: React.ReactNode,
     xs?: number;
     lg?: number;
+    testid?: string;
 }
 
 const GridLabel = ({
@@ -17,9 +18,10 @@ const GridLabel = ({
   children,
   xs = 2,
   lg = xs,
+  testid,
 }: Props) => {
   return (
-    <Grid item xs={xs} lg={lg}>
+    <Grid item xs={xs} lg={lg} data-testid={testid}>
       <Box
         sx={{
           display: 'inline-block',

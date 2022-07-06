@@ -87,11 +87,13 @@ const RuleEditDialog = ({
       <DialogActions>
         <Button
           variant="outlined"
+          data-testid="rule-edit-dialog-cancel"
           onClick={handleClose}>
             Cancel
         </Button>
         <LoadingButton
           variant="contained"
+          data-testid="rule-edit-dialog-save"
           onClick={handleSave}
           loading={mutateRule.isLoading}>
             Save

@@ -4,71 +4,78 @@
 import { setupTestRule } from './test_data';
 
 describe('Rule Section', () => {
-    beforeEach(() => {
-        // Login.
-        cy.visit('/').contains('LOGIN').click();
+  beforeEach(() => {
+    // Login.
+    cy.visit('/').contains('LOGIN').click();
 
-        setupTestRule();
+    setupTestRule();
 
-        cy.visit('/p/chromium/rules/ac856b1827dc1cb845486edbf4b80cfa');
-    })
+    cy.visit('/p/chromium/rules/4165d118c919a1016f42e80efe30db59');
+  });
 
-    it('loads rule', () => {
-        cy.get('rule-section').get('[data-cy=rule-title]').contains('Weetbix Cypress Test Bug');
-        cy.get('rule-section').get('[data-cy=bug-status]').contains('Untriaged');
-        cy.get('rule-section').get('[data-cy=rule-definition]').contains('test = "cypress test 1"');
-        cy.get('rule-section').get('[data-cy=rule-archived]').contains('No');
-        cy.get('rule-section').get('[data-cy=bug-updates]').get('[type=checkbox]').should('be.checked');
-    })
+  it('loads rule', () => {
+    cy.get('[data-testid=bug-summary]').contains('Weetbix Cypress Test Bug');
+    cy.get('[data-testid=bug-status]').contains('Untriaged');
+    cy.get('[data-testid=rule-definition]').contains('test = "cypress test 1"');
+    cy.get('[data-testid=rule-archived]').contains('No');
+    cy.get('[data-testid=update-bug-toggle]').get('[type=checkbox]').should('be.checked');
+  });
 
-    it('edit rule definition', () => {
-        cy.get('rule-section').get('[data-cy=rule-definition-edit]').click();
-        cy.get('rule-section').get('[data-cy=rule-definition-textbox]').get('textarea').type('{selectall}test = "cypress test 2"');
-        cy.get('rule-section').get('[data-cy=rule-definition-save]').click();
-        cy.get('rule-section').get('[data-cy=rule-definition]').contains('test = "cypress test 2"');
-        cy.get('reclustering-progress-indicator').get('[data-cy=reclustering-progress-description]').contains('Weetbix is re-clustering test results');
-    })
+  it('edit rule definition', () => {
+    cy.get('[data-testid=rule-definition-edit]').click();
+    cy.get('[data-testid=rule-input]').type('{selectall}test = "cypress test 2"');
+    cy.get('[data-testid=rule-edit-dialog-save]').click();
+    cy.get('[data-testid=rule-definition]').contains('test = "cypress test 2"');
+    cy.get('[data-testid=reclustering-progress-description]').contains('Weetbix is re-clustering test results');
+  });
 
-    it('validation error while editing rule definition', () => {
-        cy.get('rule-section').get('[data-cy=rule-definition-edit]').click();
-        cy.get('rule-section').get('[data-cy=rule-definition-textbox]').get('textarea').type('{selectall}test = "cypress test 2"a');
-        cy.get('rule-section').get('[data-cy=rule-definition-save]').click();
-        cy.get('rule-section').get('[data-cy=rule-definition-validation-error]').contains('Validation error: rule definition is not valid: syntax error: 1:24: unexpected token "a"');
-        cy.get('rule-section').get('[data-cy=rule-definition-cancel]').click();
-        cy.get('rule-section').get('[data-cy=rule-definition]').contains('test = "cypress test 1"');
-    })
+  it('validation error while editing rule definition', () => {
+    cy.get('[data-testid=rule-definition-edit]').click();
+    cy.get('[data-testid=rule-input]').type('{selectall}test = "cypress test 2"a');
+    cy.get('[data-testid=rule-edit-dialog-save]').click();
+    cy.get('[data-testid=snackbar]').contains('rule definition is not valid: syntax error: 1:24: unexpected token "a"');
+    cy.get('[data-testid=rule-edit-dialog-cancel]').click();
+    cy.get('[data-testid=rule-definition]').contains('test = "cypress test 1"');
+  });
 
-    it('edit bug', () => {
-        cy.get('rule-section').get('[data-cy=bug-edit]').click();
-        cy.get('rule-section').get('[data-cy=bug-number-textbox]').get('[type=text]').type('{selectall}920869');
-        cy.get('rule-section').get('[data-cy=bug-save]').click();
-        cy.get('rule-section').get('[data-cy=bug]').contains('crbug.com/920869');
-        cy.get('rule-section').get('[data-cy=rule-title]').contains('Weetbix Cypress Alternate Test Bug');
-        cy.get('rule-section').get('[data-cy=bug-status]').contains('Fixed');
-    })
+  it('edit bug', () => {
+    cy.get('[data-testid=bug-edit]').click();
+    cy.get('[data-testid=bug-number').type('{selectall}920869');
+    cy.get('[data-testid=bug-edit-dialog-save]').click();
+    cy.get('[data-testid=bug]').contains('crbug.com/920869');
+    cy.get('[data-testid=bug-summary]').contains('Weetbix Cypress Alternate Test Bug');
+    cy.get('[data-testid=bug-status]').contains('Fixed');
+  });
 
-    it('validation error while editing bug', () => {
-        cy.get('rule-section').get('[data-cy=bug-edit]').click();
-        cy.get('rule-section').get('[data-cy=bug-number-textbox]').get('[type=text]').type('{selectall}125a');
-        cy.get('rule-section').get('[data-cy=bug-save]').click();
-        cy.get('rule-section').get('[data-cy=bug-validation-error]').contains('Validation error: not a valid monorail bug ID');
-        cy.get('rule-section').get('[data-cy=bug-cancel]').click();
-        cy.get('rule-section').get('[data-cy=bug]').contains('crbug.com/920867');
-    })
+  it('validation error while editing bug', () => {
+    cy.get('[data-testid=bug-edit]').click();
+    cy.get('[data-testid=bug-number').type('{selectall}125a');
+    cy.get('[data-testid=bug-edit-dialog-save]').click();
+    cy.get('[data-testid=snackbar]').contains('not a valid monorail bug ID');
+    cy.get('[data-testid=bug-edit-dialog-cancel]').click();
+    cy.get('[data-testid=bug]').contains('crbug.com/920867');
+  });
 
-    it('archive and restore', () => {
-        cy.get('rule-section').get('[data-cy=rule-archived-toggle]').contains('Archive').click()
-        cy.get('rule-section').get('[data-cy=rule-archived]').contains('Yes')
+  it('archive and restore', () => {
+    cy.get('[data-testid=rule-archived-toggle]').contains('Archive').click();
+    cy.get('[data-testid=confirm-dialog-cancel]').click();
+    cy.get('[data-testid=rule-archived]').contains('No');
 
-        cy.get('rule-section').get('[data-cy=rule-archived-toggle]').contains('Restore').click()
-        cy.get('rule-section').get('[data-cy=rule-archived]').contains('No')
-    })
+    cy.get('[data-testid=rule-archived-toggle]').contains('Archive').click();
+    cy.get('[data-testid=confirm-dialog-confirm]').click();
+    cy.get('[data-testid=rule-archived]').contains('Yes');
 
-    it('toggle bug updates', () => {
-        cy.get('rule-section').get('[data-cy=bug-updates-toggle]').get('mwc-switch').click();
-        cy.get('rule-section').get('[data-cy=bug-updates]').get('[type=checkbox]').should('not.be.checked');
+    cy.get('[data-testid=rule-archived-toggle]').contains('Restore').click();
+    cy.get('[data-testid=confirm-dialog-confirm]').click();
+    cy.get('[data-testid=rule-archived]').contains('No');
+  });
 
-        cy.get('rule-section').get('[data-cy=bug-updates-toggle]').get('mwc-switch').click();
-        cy.get('rule-section').get('[data-cy=bug-updates]').get('[type=checkbox]').should('be.checked');
-    })
-})
+  it('toggle bug updates', () => {
+    cy.get('[data-testid=update-bug-toggle]').click();
+    // Cypress assertion should('not.be.checked') does not work for MUI Switch.
+    cy.get('[data-testid=update-bug-toggle]').should('not.have.class', 'Mui-checked');
+
+    cy.get('[data-testid=update-bug-toggle]').click();
+    cy.get('[data-testid=update-bug-toggle]').should('have.class', 'Mui-checked');
+  });
+});

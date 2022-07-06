@@ -108,7 +108,7 @@ const BugInfo = ({
   };
 
   return (
-    <Paper elevation={3} sx={{ pt: 2, pb: 2, mt: 1 }}>
+    <Paper data-cy="bug-info" elevation={3} sx={{ pt: 2, pb: 2, mt: 1 }}>
       <Container maxWidth={false}>
         <Typography sx={{
           fontWeight: 600,
@@ -120,10 +120,10 @@ const BugInfo = ({
           <GridLabel xs={4} lg={2} text="Bug">
           </GridLabel>
           <Grid container item xs={8} lg={5} alignItems="center" columnGap={1}>
-            <Link target="_blank" href={rule.bug.url}>
+            <Link data-testid="bug" target="_blank" href={rule.bug.url}>
               {rule.bug.linkText}
             </Link>
-            <IconButton aria-label="edit" onClick={() => setEditDialogOpen(true)}>
+            <IconButton data-testid="bug-edit" aria-label="edit" onClick={() => setEditDialogOpen(true)}>
               <Edit />
             </IconButton>
           </Grid>
@@ -133,6 +133,7 @@ const BugInfo = ({
           <Grid container item xs={8} lg={2} alignItems="center">
             {mutateRule.isLoading && (<CircularProgress size="1rem" />)}
             <Switch
+              data-testid="update-bug-toggle"
               aria-label="receive bug status"
               checked={rule.isManagingBug}
               onChange={handleToggleUpdateBug}
@@ -161,11 +162,11 @@ const BugInfo = ({
           issue && (
             <Grid container rowGap={1}>
               <GridLabel xs={4} lg={2} text="Status" />
-              <Grid container item xs={8} lg={10}>
+              <Grid container item xs={8} lg={10} data-testid="bug-status">
                 <Chip label={issue.status.status} color={bugStatusColor(issue.status.status)} />
               </Grid>
               <GridLabel xs={4} lg={2} text="Summary" />
-              <GridLabel xs={8} lg={10} text={issue.summary} />
+              <GridLabel xs={8} lg={10} testid="bug-summary" text={issue.summary} />
             </Grid>
           )
         }

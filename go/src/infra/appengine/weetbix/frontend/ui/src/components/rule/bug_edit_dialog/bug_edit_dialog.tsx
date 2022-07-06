@@ -112,11 +112,13 @@ const BugEditDialog = ({
         <DialogActions>
           <Button
             variant="outlined"
+            data-testid="bug-edit-dialog-cancel"
             onClick={handleClose}>
               Cancel
           </Button>
           <LoadingButton
             variant="contained"
+            data-testid="bug-edit-dialog-save"
             onClick={handleSave}
             loading={mutateRule.isLoading}>
               Save

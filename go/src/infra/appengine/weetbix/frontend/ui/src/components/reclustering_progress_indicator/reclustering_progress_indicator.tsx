@@ -144,7 +144,7 @@ const ReclusteringProgressIndicator = ({
                   variant="determinate"
                   value={Math.max(0, progressPerMille / 10)}/>
               </Grid>
-              <Grid item>
+              <Grid item data-testid="reclustering-progress-description">
                 {progressContent()}
               </Grid>
               <Grid item>

@@ -34,8 +34,8 @@ const ConfirmDialog = ({
       )
       }
       <DialogActions>
-        <Button variant="outlined" onClick={onCancel}>Cancel</Button>
-        <Button variant="contained" onClick={onConfirm}>Confirm</Button>
+        <Button variant="outlined" onClick={onCancel} data-testid="confirm-dialog-cancel">Cancel</Button>
+        <Button variant="contained" onClick={onConfirm} data-testid="confirm-dialog-confirm">Confirm</Button>
       </DialogActions>
     </Dialog>
   );
