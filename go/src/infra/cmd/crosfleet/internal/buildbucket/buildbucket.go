@@ -109,7 +109,11 @@ func (c *Client) ScheduleBuild(ctx context.Context, props map[string]interface{}
 	// track the parent/child build relationship between the build with the token
 	// and this new build.
 	bbCtx := lucictx.GetBuildbucket(ctx)
-	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" {
+	// Do not attach the buildbucket token if it's empty or the build is a led build.
+	// Because led builds are not real Buildbucket builds and they don't have
+	// real buildbucket tokens, so we cannot make them any builds's parent,
+	// even for the builds they scheduled.
+	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" && bbCtx.GetScheduleBuildToken() != buildbucket.DummyBuildbucketToken {
 		ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
 	}
 
