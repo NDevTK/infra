@@ -39,7 +39,7 @@ type ScheduleLabpackTaskParams struct {
 // Client provides helper methods to interact with buildbucket builds.
 type Client interface {
 	// ScheduleLabpackTask schedules a labpack task.
-	ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (int64, error)
+	ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error)
 	// BuildURL constructs the URL to a build with the given ID.
 	BuildURL(buildID int64) string
 }
@@ -102,9 +102,9 @@ func NewHTTPClient(ctx context.Context, f *authcli.Flags) (*http.Client, error) 
 }
 
 // ScheduleLabpackTask creates new task in build bucket with labpack.
-func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (int64, error) {
+func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error) {
 	if params == nil {
-		return 0, errors.Reason("ScheduleLabpackTask: params cannot be nil").Err()
+		return "", 0, errors.Reason("ScheduleLabpackTask: params cannot be nil").Err()
 	}
 	dims := make(map[string]string)
 	dims["id"] = "crossk-" + params.UnitName
@@ -124,7 +124,7 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 
 	tagPairs, err := splitTagPairs(tags)
 	if err != nil {
-		return -1, err
+		return "", -1, err
 	}
 	b := &buildbucket_pb.BuilderID{
 		Project: "chromeos",
@@ -150,9 +150,10 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 
 	build, err := c.client.ScheduleBuild(ctx, bbReq)
 	if err != nil {
-		return -1, err
+		return "", -1, err
 	}
-	return build.Id, nil
+	url := fmt.Sprintf(BuildURLFmt, params.BuilderProject, params.BuilderBucket, params.BuilderName, build.Id)
+	return url, build.Id, nil
 }
 
 // BuildURLFmt is the format of a build URL.
