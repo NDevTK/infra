@@ -47,6 +47,7 @@ var AddSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
 		c.Flags.StringVar(&c.schedulingUnitType, "type", "all", "Type of SchedulingUnit. "+cmdhelp.SchedulingUnitTypesHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
+		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "primary dut hostname")
 		return c
 	},
 }
@@ -65,6 +66,7 @@ type addSchedulingUnit struct {
 	tags               []string
 	schedulingUnitType string
 	description        string
+	primaryDut         string
 }
 
 var mcsvFields = []string{
@@ -144,6 +146,7 @@ func (c *addSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 	su.Tags = c.tags
 	su.Type = ufsUtil.ToSchedulingUnitType(c.schedulingUnitType)
 	su.Description = c.description
+	su.PrimaryDut = c.primaryDut
 }
 
 func (c *addSchedulingUnit) validateArgs() error {
@@ -162,6 +165,9 @@ func (c *addSchedulingUnit) validateArgs() error {
 		}
 		if c.description != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-description' cannot be specified at the same time.")
+		}
+		if c.primaryDut != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-primary-dut' cannot be specified at the same time.")
 		}
 	}
 	if c.newSpecsFile == "" {

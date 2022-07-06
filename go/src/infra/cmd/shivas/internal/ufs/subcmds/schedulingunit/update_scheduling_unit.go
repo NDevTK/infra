@@ -51,6 +51,7 @@ var UpdateSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.Var(flag.StringSlice(&c.removeTags), "tag-to-remove", "Name(s) of tag(s) to be removed. Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.schedulingUnitType, "type", "", "Type of SchedulingUnit. "+cmdhelp.SchedulingUnitTypesHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
+		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "set primary dut. "+cmdhelp.ClearFieldHelpText)
 		return c
 	},
 }
@@ -72,6 +73,7 @@ type updateSchedulingUnit struct {
 	removeTags         []string
 	schedulingUnitType string
 	description        string
+	primaryDut         string
 }
 
 func (c *updateSchedulingUnit) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -124,6 +126,7 @@ func (c *updateSchedulingUnit) innerRun(a subcommands.Application, args []string
 			"tags-to-remove":  "tags.remove",
 			"type":            "type",
 			"desc":            "description",
+			"primary-dut":     "primary-dut",
 		}),
 	})
 	if err != nil {
@@ -164,6 +167,13 @@ func (c *updateSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 		su.Description = ""
 	} else {
 		su.Description = c.description
+	}
+	if c.primaryDut != "" {
+		if c.primaryDut == utils.ClearFieldValue {
+			su.PrimaryDut = ""
+		} else {
+			su.PrimaryDut = c.primaryDut
+		}
 	}
 }
 
