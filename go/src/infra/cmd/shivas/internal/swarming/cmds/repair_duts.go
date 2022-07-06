@@ -148,7 +148,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	_, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return nil, err
 	}
