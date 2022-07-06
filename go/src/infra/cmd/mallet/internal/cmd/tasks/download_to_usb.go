@@ -72,7 +72,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
-		taskID, err := labpack.ScheduleTask(
+		_, taskID, err := labpack.ScheduleTask(
 			ctx,
 			bc,
 			v,
