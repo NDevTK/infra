@@ -117,7 +117,11 @@ class SomAlertView extends Polymer.mixinBehaviors(
       _pageTitleCount: {
         type: Number,
         computed: '_computePageTitleCount(_alerts, _bugs)',
-        observer: '_pageTitleCountChanged',
+      },
+      _pageTitle: {
+        type: String,
+        computed: '_computePageTitle(_pageTitleCount, examinedAlertKey)',
+        observer: '_pageTitleChanged',
       },
       _sections: {
         type: Object,
@@ -173,12 +177,10 @@ class SomAlertView extends Polymer.mixinBehaviors(
 
   ////////////////////// Alerts and path ///////////////////////////
 
-  _pageTitleCountChanged(count) {
-    if (count > 0) {
-      document.title = '(' + count + ') Sheriff-o-Matic';
-    } else {
-      document.title = 'Sheriff-o-Matic';
-    }
+  _pageTitleChanged(title) {
+    // TODO: Page title should be set in som-app so that it updates when we go to a 
+    // non-alert view page.  Deferring this until UI is re-implemented in React.
+    document.title = title;
   }
 
   _computePageTitleCount(alerts, bugs) {
@@ -192,6 +194,22 @@ class SomAlertView extends Polymer.mixinBehaviors(
       return count;
     }
     return 0;
+  }
+
+  _computePageTitle(pageTitleCount, examinedAlertKey) {
+    if (examinedAlertKey) {
+      var parts = examinedAlertKey.split('$');
+      if (parts.length < 5) {
+        return 'Examine - Sheriff-o-Matic';
+      }
+      var builder = parts[3].slice(1);
+      var step = parts[4].slice(1);
+      return builder + ' - ' + step + ' - Sheriff-o-Matic';
+    }
+    if (pageTitleCount > 0) {
+      return '(' + pageTitleCount + ') Sheriff-o-Matic';
+    }
+    return 'Sheriff-o-Matic';
   }
 
   _treeChanged(tree) {
