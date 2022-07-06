@@ -14,9 +14,9 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/unifiedfleet/app/model/inventory"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/util"
 )
 
@@ -143,7 +143,7 @@ func validateCreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit)
 	return nil
 }
 
-// validateUpdateSchedulingUnit validates if an exsting SchedulingUnit can be updated.
+// validateUpdateSchedulingUnit validates if an existing SchedulingUnit can be updated.
 func validateUpdateSchedulingUnit(ctx context.Context, oldsu *ufspb.SchedulingUnit, su *ufspb.SchedulingUnit, mask *field_mask.FieldMask) error {
 	// Check if resources does not exist.
 	if err := ResourceExist(ctx, []*Resource{GetSchedulingUnitResource(su.Name)}, nil); err != nil {
@@ -202,6 +202,21 @@ func processSchedulingUnitUpdateMask(ctx context.Context, oldSu *ufspb.Schedulin
 			oldSu.Type = su.GetType()
 		case "description":
 			oldSu.Description = su.GetDescription()
+		case "primary-dut":
+			oldSu.PrimaryDut = su.GetPrimaryDut()
+		}
+	}
+	if oldSu.GetPrimaryDut() != "" {
+		// Check primary dut exists in SU machinelses
+		hasPrimaryDut := false
+		for _, dut := range oldSu.GetMachineLSEs() {
+			if dut == oldSu.GetPrimaryDut() {
+				hasPrimaryDut = true
+				break
+			}
+		}
+		if !hasPrimaryDut {
+			return oldSu, status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Primary dut %s is associated with SchedulingUnit's machinelses %s.", oldSu.GetPrimaryDut(), oldSu.GetMachineLSEs()))
 		}
 	}
 	// Return existing/old SchedulingUnit with new updated values.
@@ -226,6 +241,7 @@ func validateSchedulingUnitUpdateMask(ctx context.Context, su *ufspb.SchedulingU
 			case "machinelses":
 			case "machinelses.remove":
 			case "description":
+			case "primary-dut":
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)
