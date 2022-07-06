@@ -5,14 +5,28 @@ import { Provider } from 'react-redux';
 import { store } from '../../app/store';
 import { setRightSideDrawerOpen } from '../utility/utilitySlice';
 import userEvent from '@testing-library/user-event';
-import { setDefaultState } from './assetInstanceSlice';
+import { AssetInstanceState, setState } from './assetInstanceSlice';
+import { AssetInstanceModel } from '../../api/asset_instance_service';
+import { setDefaultState } from '../resource/resourceSlice';
+
+const testState: AssetInstanceState = {
+  assetInstances: [],
+  pageToken: undefined,
+  pageNumber: 1,
+  pageSize: 10,
+  fetchStatus: 'idle',
+  assets: [],
+  savingStatus: 'idle',
+  deleteAtBuffer: '',
+  record: AssetInstanceModel.defaultEntity(),
+};
 
 beforeAll(() => {
-  store.dispatch(setDefaultState());
+  store.dispatch(setState(testState));
 });
 
 afterAll(() => {
-  store.dispatch(setDefaultState());
+  store.dispatch(setState(testState));
 });
 
 test('Renders asset instance creation form', () => {
