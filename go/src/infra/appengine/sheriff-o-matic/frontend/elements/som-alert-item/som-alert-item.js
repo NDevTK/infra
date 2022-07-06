@@ -82,6 +82,10 @@ class SomAlertItem extends Polymer.mixinBehaviors(
         type: String,
         computed: '_calculateDuration(alert)'
       },
+      _expandCollapseText: {
+        type: String,
+        computed: '_computeExpandCollapseText(_isCollapsed)',
+      },
       _latestTime: {
         type: String,
         computed: '_formatTimestamp(alert.time)'
@@ -376,6 +380,11 @@ class SomAlertItem extends Polymer.mixinBehaviors(
       }
     }
     this.openState = this._isCollapsed ? 'opened' : 'closed';
+  }
+
+  _computeExpandCollapseText(isCollapsed) {
+    // Text to go on the button for the opposite action, so boolean is inverted.
+    return isCollapsed ? 'expand' : 'collapse';
   }
 }
 
