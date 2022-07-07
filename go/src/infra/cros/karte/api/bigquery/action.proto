@@ -74,4 +74,8 @@ message Action {
 
   // board is the board of the DUT this event applies to.
   string board = 17;
+
+  // The modification count is the number of times that the record has been updated.
+  // A complete action should be written to twice: once when it was created and once when it completed.
+  int32 modification_count = 18;
 }
