@@ -50,10 +50,10 @@ type FakeClient struct {
 	startID int64
 }
 
-func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams) (int64, error) {
+func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams) (string, int64, error) {
 	id := c.startID
 	c.startID++
-	return id, nil
+	return "", id, nil
 }
 
 func (c *FakeClient) BuildURL(buildID int64) string {
@@ -66,16 +66,18 @@ func TestScheduleTask(t *testing.T) {
 	ctx := context.Background()
 	Convey("test schedule task", t, func() {
 		Convey("nil params", func() {
-			_, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
+			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "schedule task")
 		})
 		Convey("audit-rpm", func() {
-			bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
+			url, bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
 				BuilderName: "audit-rpm",
 			})
 			So(err, ShouldBeNil)
 			So(bbid, ShouldEqual, 0)
+			So(url, ShouldContain, "chromeos")
+			So(url, ShouldContain, "labpack")
 		})
 	})
 }
