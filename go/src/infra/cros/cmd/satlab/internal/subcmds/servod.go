@@ -42,5 +42,6 @@ func (c servodApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,
 		servod.StartServodCmd,
+		servod.StopServodCmd,
 	}
 }
