@@ -33,6 +33,24 @@
       "message": "I\u0027m actually like it to be separated to make the CL small. LGTM but let Otabek do the final approve",
       "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18ebcbe0_44f2341c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-07T22:02:18Z",
+      "side": 1,
+      "message": "I want to land this CL first. After that happens, the corresponding code in the other CL will disappear when I rebase it.\n\nI am putting this CL in its own stack because it is not directly related to the other CLs in the other stack.\n\nThe other CL contains the code in this CL because that code is necessary to test it.",
+      "parentUuid": "dea94a09_375c2ea7",
+      "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
