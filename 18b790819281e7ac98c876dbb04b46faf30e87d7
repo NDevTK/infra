@@ -16,6 +16,23 @@
       "message": "this will be abandoned? the code is covered in https://chromium-review.googlesource.com/c/infra/infra/+/3750062",
       "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dea94a09_375c2ea7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-07-07T21:59:49Z",
+      "side": 1,
+      "message": "I\u0027m actually like it to be separated to make the CL small. LGTM but let Otabek do the final approve",
+      "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
