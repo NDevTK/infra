@@ -98,6 +98,18 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 	if params == nil {
 		return 0, errors.Reason("schedule task: params cannot be nil").Err()
 	}
+
+	// Apply defaults.
+	if params.BuilderName != "" {
+		params.BuilderName = "chromeos"
+	}
+	if params.BuilderProject != "" {
+		params.BuilderProject = "labpack"
+	}
+	if params.BuilderBucket != "" {
+		params.BuilderBucket = "labpack"
+	}
+
 	props, err := structbuilder.NewStruct(params.AsMap())
 	if err != nil {
 		return 0, err
