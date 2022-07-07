@@ -164,6 +164,9 @@ export const resourceSlice = createSlice({
     clearSelectedRecord: (state) => {
       state.record = ResourceModel.defaultEntity();
     },
+    setState: (state, action) => {
+      return action.payload;
+    },
     setDefaultState: () => {
       return initialState;
     },
@@ -228,6 +231,7 @@ export const {
   setImageFamily,
   setImageProject,
   setDefaultState,
+  setState,
 } = resourceSlice.actions;
 
 export default resourceSlice.reducer;

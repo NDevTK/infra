@@ -48,7 +48,7 @@ const testState: AssetState = {
   resources: [testResource],
   assetResourcesToSave: [testAssetResource, AssetResourceModel.defaultEntity()],
   assetResourcesToDelete: [],
-  assetSpinRecord:'',
+  assetSpinRecord: '',
 };
 
 beforeAll(() => {
