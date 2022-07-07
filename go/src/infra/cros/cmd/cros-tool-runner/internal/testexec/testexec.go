@@ -122,6 +122,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 		log.Printf("Get error while run cros-test: %v", err)
 	}
 
+	common.AddContentsToLog(services.InputFileName, crosTestDir, "Reading cros-test input file.")
 	resultFileName := path.Join(crosTestDir, "result.json")
 	if _, err := os.Stat(resultFileName); os.IsNotExist(err) {
 		return nil, errors.Reason("run test: result not found").Err()

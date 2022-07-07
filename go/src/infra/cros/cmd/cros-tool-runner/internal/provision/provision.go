@@ -122,6 +122,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	}()
 	log.Printf("--> Started cros-provision service for %q", dutName)
 
+	common.AddContentsToLog(services.InputFileName, crosProvisionResultsDir, "Reading cros-provision input file.")
 	resultFileName := path.Join(crosProvisionResultsDir, services.OutputFileName)
 	if _, err := os.Stat(resultFileName); os.IsNotExist(err) {
 		res.Err = errors.Reason("run provision: result not found").Err()
