@@ -139,7 +139,7 @@ func (c *auditRun) innerRunLegacy(ctx context.Context, a subcommands.Application
 			successMap[host] = task
 		}
 	}
-	creator.PrintResults(a.GetOut(), successMap, errorMap)
+	creator.PrintResults(a.GetOut(), successMap, errorMap, false)
 	return nil
 }
 

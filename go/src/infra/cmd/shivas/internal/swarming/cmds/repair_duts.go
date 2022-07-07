@@ -75,7 +75,7 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	successMap := make(map[string]*swarming.TaskInfo)
 	errorMap := make(map[string]error)
 	var bc buildbucket.Client
-	var sessionTag string
+	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	if c.paris {
 		var err error
 		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
@@ -83,7 +83,6 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		if err != nil {
 			return err
 		}
-		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())
 	}
 	for _, host := range args {
 		creator.GenerateLogdogTaskCode()
@@ -112,9 +111,13 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 
 	}
 	if c.paris {
-		utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
+		// If we're using paris, there is no batch link, so we don't print it.
+		creator.PrintResults(a.GetOut(), successMap, errorMap, false)
 	} else {
-		creator.PrintResults(a.GetOut(), successMap, errorMap)
+		// If we aren't using paris, print the map first, then print the batch link
+		// at the end.
+		creator.PrintResults(a.GetOut(), successMap, errorMap, false)
+		utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
 	}
 	return nil
 }
