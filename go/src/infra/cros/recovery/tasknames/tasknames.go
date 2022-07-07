@@ -30,6 +30,12 @@ const (
 	Custom TaskName = "custom"
 )
 
+var BuilderNameMap = map[TaskName]string{
+	AuditRPM:     "audit-rpm",
+	AuditStorage: "audit-storage",
+	AuditUSB:     "audit-usb",
+}
+
 // ValidateTaskName checks whether a task name is valid
 func ValidateTaskName(tn TaskName) error {
 	if tn == "" {

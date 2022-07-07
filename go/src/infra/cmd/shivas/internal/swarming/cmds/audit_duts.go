@@ -5,9 +5,11 @@
 package tasks
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/auth/client/authcli"
@@ -15,6 +17,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/shivas/site"
+	"infra/cros/recovery/tasknames"
+	"infra/libs/skylab/buildbucket"
+	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/worker"
 	"infra/libs/swarming"
 )
@@ -64,15 +69,54 @@ func (c *auditRun) Run(a subcommands.Application, args []string, env subcommands
 	return 0
 }
 
-func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
-	err = c.validateArgs(args)
-	if err != nil {
-		return errors.Annotate(err, "audit dut").Err()
+// innerRun runs paris. It validates the arguments and then hands control to legacy or paris as appropriate.
+func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	ctx := cli.GetContext(a, c, env)
+	if vErr := c.validateArgs(args); vErr != nil {
+		return errors.Annotate(vErr, "audit dut").Err()
 	}
 	if c.paris {
-		return errors.Reason("audit duts: paris not yet supported in shivas for audit duts").Err()
+		return errors.Annotate(c.innerRunParis(ctx, a, args, env), "audit dut").Err()
 	}
-	ctx := cli.GetContext(a, c, env)
+	return errors.Annotate(c.innerRunLegacy(ctx, a, args, env), "audit dut").Err()
+}
+
+// innerRunParis runs audit for a paris task.
+// We assume that the input parameters have been validated.
+//
+// Keep the behavior of this function consistent with innerRun.
+func (c *auditRun) innerRunParis(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	e := c.envFlags.Env()
+	creator, err := swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService)
+	bc, err := buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	if err != nil {
+		return errors.Annotate(err, "paris").Err()
+	}
+	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
+	taskNames, err := c.getTaskNames()
+	if err != nil {
+		return errors.Annotate(err, "paris").Err()
+	}
+	for _, host := range args {
+		for _, taskName := range taskNames {
+			creator.GenerateLogdogTaskCode()
+			cmd := &worker.Command{TaskName: taskName}
+			cmd.LogDogAnnotationURL = creator.LogdogURL()
+			taskInfo, err := scheduleAuditBuilder(ctx, bc, e, taskName, host, sessionTag)
+			if err != nil {
+				fmt.Fprintf(a.GetErr(), "Skipping %q for %q because %s\n", taskName, host, err.Error())
+			} else {
+				fmt.Fprintf(a.GetErr(), "%s: %s: %s\n", host, taskName, taskInfo.TaskURL)
+			}
+		}
+	}
+	return nil
+}
+
+// innerRun is the main entrypoint for audit duts.
+//
+// Keep the behavior of this function consistent with innerRunWithParis.
+func (c *auditRun) innerRunLegacy(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) (err error) {
 	e := c.envFlags.Env()
 	creator, err := swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService)
 	if err != nil {
@@ -131,4 +175,65 @@ func (c *auditRun) collectActions() (string, error) {
 		return "", errors.Reason("collect actions: no actions was specified to run").Err()
 	}
 	return strings.Join(a, ","), nil
+}
+
+// getTaskNames gets the names of the Paris tasks that are going to be executed, one at a time
+// in order to perform the audit tasks in question.
+func (c *auditRun) getTaskNames() ([]string, error) {
+	var a []string
+	if c.runVerifyDUTStorage {
+		a = append(a, tasknames.AuditStorage)
+	}
+	if c.runVerifyServoUSB {
+		a = append(a, tasknames.AuditUSB)
+	}
+	if c.runVerifyRpmConfig {
+		a = append(a, tasknames.AuditRPM)
+	}
+	if len(a) == 0 {
+		return nil, errors.Reason("get task names: no actions was specified to run").Err()
+	}
+	return a, nil
+}
+
+// scheduleAuditBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
+func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, taskName string, host string, adminSession string) (*swarming.TaskInfo, error) {
+	builder, ok := tasknames.BuilderNameMap[taskName]
+	if !ok {
+		return nil, errors.Reason(fmt.Sprintf("unrecognized name %q", taskName)).Err()
+	}
+	v := labpack.CIPDProd
+	p := &labpack.Params{
+		BuilderProject: "",
+		BuilderBucket:  "",
+		BuilderName:    builder,
+		UnitName:       host,
+		TaskName:       taskName,
+		EnableRecovery: false,
+		AdminService:   e.AdminService,
+		// Note: UFS service is inventory service for fleet.
+		InventoryService: e.UnifiedFleetService,
+		NoStepper:        false,
+		NoMetrics:        false,
+		UpdateInventory:  true,
+		// Note: Scheduled tasks are not expected custom configuration.
+		Configuration: "",
+		ExtraTags: []string{
+			adminSession,
+			fmt.Sprintf("shivas-audit-task:%s", taskName),
+			parisClientTag,
+			fmt.Sprintf("version:%s", v),
+		},
+	}
+	taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	if err != nil {
+		return nil, err
+	}
+	taskInfo := &swarming.TaskInfo{
+		// Use an ID format that makes it extremely obvious that we're dealing with a
+		// buildbucket invocation number rather than a swarming task.
+		ID:      fmt.Sprintf("buildbucket:%d", taskID),
+		TaskURL: bc.BuildURL(taskID),
+	}
+	return taskInfo, nil
 }
