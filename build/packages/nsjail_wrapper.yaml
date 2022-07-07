@@ -2,6 +2,8 @@ package: infra/tools/luci/nsjail_wrapper/${platform}
 description: nsjail wrapper for task isolation on linux
 platforms:
   - linux-amd64
+  - linux-arm64
+  - linux-armv6l
 go_packages:
   - infra/isolation/nsjail_wrapper
 root: ../../go/bin
