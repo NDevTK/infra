@@ -18,7 +18,12 @@ import (
 	"context"
 	"log"
 	"os"
+
+	"go.chromium.org/luci/provenance/client"
+	"go.chromium.org/luci/provenance/reporter"
 )
+
+const snoopy_addr = "http://localhost:11000"
 
 func main() {
 	ctx := context.Background()
@@ -34,7 +39,36 @@ func main() {
 	}
 	args = args[1:]
 
+	if err := reportPID(ctx, snoopy_addr); err != nil {
+		log.Fatalf("failed to report pid to snoopy: %v", err)
+	}
+
 	if err := RunInNsjail(ctx, args); err != nil {
 		log.Fatalf("running command: %s", err.Error())
 	}
+}
+
+// reportPID attempts to report pid before calling nsjail.
+//
+// This is used to track processes in snoopy. Self reported pid inside jail is
+// always 1 as process space is different inside jail.
+func reportPID(ctx context.Context, snoopy_url string) error {
+	reporterClient, err := client.MakeProvenanceClient(ctx, snoopy_url)
+	if err != nil {
+		log.Fatalf("failed to create snoopy client: %v", err)
+		return err
+	}
+
+	reporter := &reporter.Report{
+		RClient: reporterClient,
+	}
+
+	pid := os.Getpid()
+	log.Printf("trying to report pid: %d to snoopy", pid)
+	if _, err := reporter.ReportPID(ctx, int64(pid)); err != nil {
+		log.Fatalf("failed to report pid to snoopy: %v", err)
+		return err
+	}
+	log.Printf("successfully reported pid: %d to snoopy", pid)
+	return nil
 }
