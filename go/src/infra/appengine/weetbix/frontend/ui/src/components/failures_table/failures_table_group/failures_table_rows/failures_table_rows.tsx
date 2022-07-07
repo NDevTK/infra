@@ -42,7 +42,7 @@ const FailuresTableRows = ({
         .filter((v) => !v.isSelected)
         .map((v) => v.key);
     return unselectedVariants
-        .map((key) => failure.variant.filter((v) => v.key == key)?.[0])
+        .map((key) => failure.variant?.filter((v) => v.key == key)?.[0])
         .filter((v) => v);
   };
 
@@ -69,7 +69,8 @@ const FailuresTableRows = ({
               </Link>
               <small data-testid="ungrouped_variants">
                 {ungroupedVariants(group.failure)
-                    .map((v) => `${v.key}: ${v.value}`)
+                    .map((v) => v && `${v.key}: ${v.value}`)
+                    .filter(v => v)
                     .join(', ')}
               </small>
             </>

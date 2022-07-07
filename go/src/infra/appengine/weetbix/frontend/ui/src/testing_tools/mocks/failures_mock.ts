@@ -62,7 +62,7 @@ class ClusterFailureBuilder {
     return this;
   }
   withVariantGroups(key: string, value: string) {
-    this.failure.variant.push({ key, value });
+    this.failure.variant!.push({ key, value });
     return this;
   }
   withTestId(id: string) {

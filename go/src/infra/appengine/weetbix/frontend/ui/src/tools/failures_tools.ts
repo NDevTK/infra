@@ -17,7 +17,7 @@ export const countDistictVariantValues = (failures: ClusterFailure[]): VariantGr
   }
   const variantGroups: VariantGroup[] = [];
   failures.forEach((failure) => {
-    failure.variant.forEach((v) => {
+    failure.variant?.forEach((v) => {
       if (!v.key) {
         return;
       }
@@ -300,7 +300,7 @@ export const groupAndCountFailures = (
     }
     const groups = groupFailures(currentFailures, (failure) => {
       const variantValues = variantGroups.filter((v) => v.isSelected)
-          .map((v) => failure.variant.filter((fv) => fv.key === v.key)?.[0]?.value || '');
+          .map((v) => failure.variant?.filter((fv) => fv.key === v.key)?.[0]?.value || '');
       return [...variantValues, failure.testId || ''];
     });
     return groups;
@@ -388,7 +388,7 @@ type ExonerationReason =
 export interface ClusterFailure {
     realm: string | null;
     testId: string | null;
-    variant: Variant[];
+    variant: Variant[] | null;
     presubmitRunId: PresubmitRunId | null;
     presubmitRunOwner: string | null;
     presubmitRunMode: string | null;
