@@ -39,11 +39,11 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	_, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, _, err := labpack.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return errors.Annotate(err, "schedule deploy task").Err()
 	}
-	fmt.Printf("Triggered Deploy task %s. Follow the deploy job at %s\n", p.UnitName, bc.BuildURL(taskID))
+	fmt.Printf("Triggered Deploy task %s. Follow the deploy job at %s\n", p.UnitName, url)
 	return nil
 }
 
