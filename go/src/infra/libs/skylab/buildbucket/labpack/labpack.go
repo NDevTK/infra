@@ -100,13 +100,13 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 	}
 
 	// Apply defaults.
-	if params.BuilderName != "" {
+	if params.BuilderName == "" {
 		params.BuilderName = "chromeos"
 	}
-	if params.BuilderProject != "" {
+	if params.BuilderProject == "" {
 		params.BuilderProject = "labpack"
 	}
-	if params.BuilderBucket != "" {
+	if params.BuilderBucket == "" {
 		params.BuilderBucket = "labpack"
 	}
 
