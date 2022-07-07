@@ -15,7 +15,6 @@ Includes CI configs for the following subprojects:
   * Chromium Gerrit plugins.
   * Chromium tarball publisher.
   * Chromium LKGR finder cron.
-  * CrOS DUT flashing cron job.
   * https://chromium.googlesource.com/chromium/tools/build
   * https://chromium.googlesource.com/chromium/tools/depot_tools
   * https://chromium.googlesource.com/infra/infra
@@ -149,10 +148,8 @@ luci.bucket(
     acls = [
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
-            users = [
-                # Allow the cros-flash-scheduler to schedule other builders in
-                # the bucket, see //subprojects/cros_flash.star.
-                "cros-flash@chops-service-accounts.iam.gserviceaccount.com",
+            groups = [
+                "mdb/chrome-troopers",
             ],
         ),
     ],
