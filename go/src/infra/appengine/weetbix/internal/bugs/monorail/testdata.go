@@ -26,7 +26,10 @@ type IssueData struct {
 
 // FakeIssuesSystem stores the state of bugs for a fake implementation of monorail.
 type FakeIssuesStore struct {
-	Issues            []*IssueData
+	Issues []*IssueData
+	// Resource names of valid components.
+	// E.g. projects/chromium/componentDefs/Blink>Workers.
+	ComponentNames    []string
 	NextID            int
 	PriorityFieldName string
 }
@@ -83,8 +86,10 @@ func CopyIssuesStore(s *FakeIssuesStore) *FakeIssuesStore {
 		issues = append(issues, CopyIssueData(iss))
 	}
 	return &FakeIssuesStore{
-		Issues: issues,
-		NextID: s.NextID,
+		Issues:            issues,
+		ComponentNames:    append([]string{}, s.ComponentNames...),
+		NextID:            s.NextID,
+		PriorityFieldName: s.PriorityFieldName,
 	}
 }
 
@@ -148,6 +153,12 @@ func ShouldResembleIssuesStore(actual interface{}, expected ...interface{}) stri
 	}
 	if err := convey.ShouldEqual(as.NextID, es.NextID); err != "" {
 		return fmt.Sprintf("nextID: %s", err)
+	}
+	if err := convey.ShouldResemble(as.ComponentNames, es.ComponentNames); err != "" {
+		return fmt.Sprintf("components: %s", err)
+	}
+	if err := convey.ShouldResemble(as.PriorityFieldName, es.PriorityFieldName); err != "" {
+		return fmt.Sprintf("priorityFieldName: %s", err)
 	}
 	return ""
 }

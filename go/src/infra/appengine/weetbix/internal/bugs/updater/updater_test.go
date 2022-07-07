@@ -48,6 +48,11 @@ func TestRun(t *testing.T) {
 		f := &monorail.FakeIssuesStore{
 			NextID:            100,
 			PriorityFieldName: "projects/chromium/fieldDefs/11",
+			ComponentNames: []string{
+				"projects/chromium/componentDefs/Blink",
+				"projects/chromium/componentDefs/Blink>Layout",
+				"projects/chromium/componentDefs/Blink>Network",
+			},
 		}
 		user := monorail.AutomationUsers[0]
 		mc, err := monorail.NewClient(monorail.UseFakeIssuesClient(ctx, f, user), "myhost")

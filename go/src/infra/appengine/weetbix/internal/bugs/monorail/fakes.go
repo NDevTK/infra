@@ -14,7 +14,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/proto/mask"
+	"go.chromium.org/luci/grpc/appstatus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 
 	mpb "infra/monorailv2/api/v3/api_proto"
 )
@@ -34,8 +37,12 @@ type fakeIssuesClient struct {
 // it is used instead of making RPCs to monorail. The client will behave as if
 // the given user is authenticated.
 func UseFakeIssuesClient(ctx context.Context, store *FakeIssuesStore, user string) context.Context {
-	f := &fakeIssuesClient{store: store, user: user}
-	return context.WithValue(ctx, &testMonorailClientKey, mpb.IssuesClient(f))
+	issuesClient := &fakeIssuesClient{store: store, user: user}
+	projectsClient := &fakeProjectsClient{store: store}
+	return context.WithValue(ctx, &testMonorailClientKey, &Client{
+		issuesClient:   mpb.IssuesClient(issuesClient),
+		projectsClient: mpb.ProjectsClient(projectsClient),
+	})
 }
 
 func (f *fakeIssuesClient) GetIssue(ctx context.Context, in *mpb.GetIssueRequest, opts ...grpc.CallOption) (*mpb.Issue, error) {
@@ -340,4 +347,51 @@ func (f *fakeIssuesClient) MakeIssue(ctx context.Context, in *mpb.MakeIssueReque
 
 	// Copy the proto so that if the consumer modifies it, the saved proto is not changed.
 	return CopyIssue(saved), nil
+}
+
+type fakeProjectsClient struct {
+	store *FakeIssuesStore
+}
+
+// Creates a new FieldDef (custom field).
+func (f *fakeProjectsClient) CreateFieldDef(ctx context.Context, in *mpb.CreateFieldDefRequest, opts ...grpc.CallOption) (*mpb.FieldDef, error) {
+	return nil, errors.New("not implemented")
+}
+
+// Gets a ComponentDef given the reference.
+func (f *fakeProjectsClient) GetComponentDef(ctx context.Context, in *mpb.GetComponentDefRequest, opts ...grpc.CallOption) (*mpb.ComponentDef, error) {
+	for _, c := range f.store.ComponentNames {
+		if c == in.Name {
+			return &mpb.ComponentDef{
+				Name:  c,
+				State: mpb.ComponentDef_ACTIVE,
+			}, nil
+		}
+	}
+	return nil, appstatus.GRPCifyAndLog(ctx, appstatus.Error(codes.NotFound, "not found"))
+}
+
+// Creates a new ComponentDef.
+func (f *fakeProjectsClient) CreateComponentDef(ctx context.Context, in *mpb.CreateComponentDefRequest, opts ...grpc.CallOption) (*mpb.ComponentDef, error) {
+	return nil, errors.New("not implemented")
+}
+
+// Deletes a ComponentDef.
+func (f *fakeProjectsClient) DeleteComponentDef(ctx context.Context, in *mpb.DeleteComponentDefRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, errors.New("not implemented")
+}
+
+// Returns all templates for specified project.
+func (f *fakeProjectsClient) ListIssueTemplates(ctx context.Context, in *mpb.ListIssueTemplatesRequest, opts ...grpc.CallOption) (*mpb.ListIssueTemplatesResponse, error) {
+	return nil, errors.New("not implemented")
+}
+
+// Returns all field defs for specified project.
+func (f *fakeProjectsClient) ListComponentDefs(ctx context.Context, in *mpb.ListComponentDefsRequest, opts ...grpc.CallOption) (*mpb.ListComponentDefsResponse, error) {
+	return nil, errors.New("not implemented")
+}
+
+// Returns all projects hosted on Monorail.
+func (f *fakeProjectsClient) ListProjects(ctx context.Context, in *mpb.ListProjectsRequest, opts ...grpc.CallOption) (*mpb.ListProjectsResponse, error) {
+	return nil, errors.New("not implemented")
 }

@@ -22,6 +22,9 @@ import (
 // "monorail/{monorail_project}/{numeric_id}".
 var monorailRe = regexp.MustCompile(`^projects/([a-z0-9\-_]+)/issues/([0-9]+)$`)
 
+// componentRE matches valid full monorail component names.
+var componentRE = regexp.MustCompile(`^[a-zA-Z]([-_]?[a-zA-Z0-9])+(\>[a-zA-Z]([-_]?[a-zA-Z0-9])+)*$`)
+
 var textPBMultiline = prototext.MarshalOptions{
 	Multiline: true,
 }
@@ -76,6 +79,11 @@ func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (s
 		// ready to be surfaced widely.
 		components = nil
 	}
+	components, err := m.filterToValidComponents(ctx, components)
+	if err != nil {
+		return "", errors.Annotate(err, "validate components").Err()
+	}
+
 	makeReq := m.generator.PrepareNew(request.Impact, request.Description, components)
 	var bugName string
 	if m.Simulate {
@@ -106,6 +114,26 @@ func (m *BugManager) Create(ctx context.Context, request *bugs.CreateRequest) (s
 	}
 	bugs.BugsCreatedCounter.Add(ctx, 1, m.project, "monorail")
 	return bugName, nil
+}
+
+// filterToValidComponents limits the given list of components to only those
+// components which exist in monorail, and are active.
+func (m *BugManager) filterToValidComponents(ctx context.Context, components []string) ([]string, error) {
+	var result []string
+	for _, c := range components {
+		if !componentRE.MatchString(c) {
+			continue
+		}
+		existsAndActive, err := m.client.GetComponentExistsAndActive(ctx, m.projectCfg.Monorail.Project, c)
+		if err != nil {
+			return nil, err
+		}
+		if !existsAndActive {
+			continue
+		}
+		result = append(result, c)
+	}
+	return result, nil
 }
 
 type clusterIssue struct {

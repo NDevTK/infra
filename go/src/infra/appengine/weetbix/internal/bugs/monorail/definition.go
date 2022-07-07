@@ -38,9 +38,6 @@ var whitespaceRE = regexp.MustCompile(`[ \t\n]+`)
 // priorityRE matches chromium monorail priority values.
 var priorityRE = regexp.MustCompile(`^Pri-([0123])$`)
 
-// componentRE matches valid full monorail component names.
-var componentRE = regexp.MustCompile(`^[a-zA-Z]([-_]?[a-zA-Z0-9])+(\>[a-zA-Z]([-_]?[a-zA-Z0-9])+)*$`)
-
 // AutomationUsers are the identifiers of Weetbix automation users in monorail.
 var AutomationUsers = []string{
 	"users/3816576959", // chops-weetbix@appspot.gserviceaccount.com

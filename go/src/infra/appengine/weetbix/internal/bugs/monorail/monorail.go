@@ -9,13 +9,14 @@ import (
 	"fmt"
 	"net/http"
 
-	mpb "infra/monorailv2/api/v3/api_proto"
-
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/proto"
+
+	mpb "infra/monorailv2/api/v3/api_proto"
 )
 
 var testMonorailClientKey = "used in tests only for setting the monorail client test double"
@@ -24,11 +25,7 @@ var testMonorailClientKey = "used in tests only for setting the monorail client 
 // by Monorail in one go.
 const maxCommentPageSize = 100
 
-func newClient(ctx context.Context, host string) (mpb.IssuesClient, error) {
-	if testClient, ok := ctx.Value(&testMonorailClientKey).(mpb.IssuesClient); ok {
-		return testClient, nil
-	}
-
+func newClient(ctx context.Context, host string) (*prpc.Client, error) {
 	// Reference: go/dogfood-monorail-v3-api
 	apiHost := fmt.Sprintf("api-dot-%v", host)
 	audience := fmt.Sprintf("https://%v", host)
@@ -44,32 +41,38 @@ func newClient(ctx context.Context, host string) (mpb.IssuesClient, error) {
 		C:    httpClient,
 		Host: apiHost,
 	}
-	return mpb.NewIssuesPRPCClient(monorailPRPCClient), nil
+	return monorailPRPCClient, nil
 }
 
 // Creates a new Monorail client. Host is the monorail host to use,
 // e.g. monorail-prod.appspot.com.
 func NewClient(ctx context.Context, host string) (*Client, error) {
+	if testClient, ok := ctx.Value(&testMonorailClientKey).(*Client); ok {
+		return testClient, nil
+	}
+
 	client, err := newClient(ctx, host)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Client{
-		client: client,
+		issuesClient:   mpb.NewIssuesPRPCClient(client),
+		projectsClient: mpb.NewProjectsPRPCClient(client),
 	}, nil
 }
 
 // Client is a client to communicate with the Monorail issue tracker.
 type Client struct {
-	client mpb.IssuesClient
+	issuesClient   mpb.IssuesClient
+	projectsClient mpb.ProjectsClient
 }
 
 // GetIssue retrieves the details of a monorail issue. Name should
 // follow the format "projects/<projectid>/issues/<issueid>".
 func (c *Client) GetIssue(ctx context.Context, name string) (*mpb.Issue, error) {
 	req := mpb.GetIssueRequest{Name: name}
-	resp, err := c.client.GetIssue(ctx, &req)
+	resp, err := c.issuesClient.GetIssue(ctx, &req)
 	if err != nil {
 		return nil, errors.Annotate(err, "GetIssue %q", name).Err()
 	}
@@ -91,7 +94,7 @@ func (c *Client) BatchGetIssues(ctx context.Context, names []string) ([]*mpb.Iss
 		}
 	}
 	req := mpb.BatchGetIssuesRequest{Names: deduplicatedNames}
-	resp, err := c.client.BatchGetIssues(ctx, &req)
+	resp, err := c.issuesClient.BatchGetIssues(ctx, &req)
 	if err != nil {
 		return nil, errors.Annotate(err, "BatchGetIssues %v", deduplicatedNames).Err()
 	}
@@ -115,7 +118,7 @@ func (c *Client) BatchGetIssues(ctx context.Context, names []string) ([]*mpb.Iss
 // MakeIssue creates the given issue in monorail, adding the specified
 // description.
 func (c *Client) MakeIssue(ctx context.Context, req *mpb.MakeIssueRequest) (*mpb.Issue, error) {
-	issue, err := c.client.MakeIssue(ctx, req)
+	issue, err := c.issuesClient.MakeIssue(ctx, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "MakeIssue").Err()
 	}
@@ -136,7 +139,7 @@ func (c *Client) ListComments(ctx context.Context, name string) ([]*mpb.Comment,
 			PageSize:  maxCommentPageSize,
 			PageToken: pageToken,
 		}
-		resp, err := c.client.ListComments(ctx, &req)
+		resp, err := c.issuesClient.ListComments(ctx, &req)
 		if err != nil {
 			return nil, errors.Annotate(err, "ListComments %q", name).Err()
 		}
@@ -152,9 +155,25 @@ func (c *Client) ListComments(ctx context.Context, name string) ([]*mpb.Comment,
 
 // ModifyIssues modifies the given issue.
 func (c *Client) ModifyIssues(ctx context.Context, req *mpb.ModifyIssuesRequest) error {
-	_, err := c.client.ModifyIssues(ctx, req)
+	_, err := c.issuesClient.ModifyIssues(ctx, req)
 	if err != nil {
 		return errors.Annotate(err, "ModifyIssues").Err()
 	}
 	return nil
+}
+
+// GetComponentExistsAndActive returns true if the given component exists
+// and is active in monorail.
+func (c *Client) GetComponentExistsAndActive(ctx context.Context, project string, component string) (bool, error) {
+	request := &mpb.GetComponentDefRequest{
+		Name: fmt.Sprintf("projects/%s/componentDefs/%s", project, component),
+	}
+	response, err := c.projectsClient.GetComponentDef(ctx, request)
+	if err != nil {
+		if grpc.Code(err) == codes.NotFound {
+			return false, nil
+		}
+		return false, errors.Annotate(err, "fetching components").Err()
+	}
+	return response.State == mpb.ComponentDef_ACTIVE, nil
 }

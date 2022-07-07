@@ -27,6 +27,7 @@ func NewCreateRequest() *bugs.CreateRequest {
 		MonorailComponents: []string{
 			"Blink>Layout",
 			"Blink>Network",
+			"Blink>Invalid",
 		},
 	}
 	return cluster
@@ -40,6 +41,11 @@ func TestManager(t *testing.T) {
 		f := &FakeIssuesStore{
 			NextID:            100,
 			PriorityFieldName: "projects/chromium/fieldDefs/11",
+			ComponentNames: []string{
+				"projects/chromium/componentDefs/Blink",
+				"projects/chromium/componentDefs/Blink>Layout",
+				"projects/chromium/componentDefs/Blink>Network",
+			},
 		}
 		user := AutomationUsers[0]
 		cl, err := NewClient(UseFakeIssuesClient(ctx, f, user), "myhost")
