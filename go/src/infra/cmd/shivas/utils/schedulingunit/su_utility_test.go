@@ -232,6 +232,56 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 }
+func TestSchedulingUnitPrimaryDutDimensions(t *testing.T) {
+	Convey("Test with a primary dut dimensions", t, func() {
+		su := &ufspb.SchedulingUnit{
+			Name:       "schedulingunit/test-unit1",
+			Pools:      []string{"nearby_sharing"},
+			PrimaryDut: "host1",
+		}
+		dims := []swarming.Dimensions{
+			{
+				"dut_name":            {"host1"},
+				"label-board":         {"coral"},
+				"label-model":         {"babytiger"},
+				"dut_state":           {"ready"},
+				"random-label1":       {"123"},
+				"label-device-stable": {"True"},
+			},
+			{
+				"dut_name":            {"host2"},
+				"label-board":         {"nami"},
+				"label-model":         {"bard"},
+				"dut_state":           {"repair_failed"},
+				"random-label2":       {"abc"},
+				"label-device-stable": {"True"},
+			},
+			{
+				"dut_name":            {"host3"},
+				"label-board":         {"eve"},
+				"label-model":         {"eve"},
+				"dut_state":           {"ready"},
+				"random-label2":       {"!@#"},
+				"label-device-stable": {"True"},
+			},
+		}
+		expectedResult := map[string][]string{
+			"dut_name":            {"test-unit1"},
+			"dut_id":              {"test-unit1"},
+			"label-pool":          {"nearby_sharing"},
+			"label-dut_count":     {"3"},
+			"label-multiduts":     {"True"},
+			"label-managed_dut":   {"host1", "host2", "host3"},
+			"dut_state":           {"repair_failed"},
+			"label-board":         {"coral"},
+			"label-model":         {"babytiger"},
+			"label-device-stable": {"True"},
+			"random-label1":       {"123"},
+			"label-primary_dut":   {"host1"},
+		}
+		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+	})
+}
 
 func TestSchedulingUnitBotState(t *testing.T) {
 	Convey("Test scheduling unit bot state.", t, func() {
