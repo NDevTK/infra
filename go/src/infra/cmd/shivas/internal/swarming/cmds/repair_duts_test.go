@@ -44,8 +44,8 @@ func TestScheduleRepairBuilder(t *testing.T) {
 type fakeClient struct{}
 
 // ScheduleLabpackTask is a fake method that returns a fixed buildbucket ID of 1.
-func (c *fakeClient) ScheduleLabpackTask(ctx context.Context, _ *buildbucket.ScheduleLabpackTaskParams) (int64, error) {
-	return 1, nil
+func (c *fakeClient) ScheduleLabpackTask(ctx context.Context, _ *buildbucket.ScheduleLabpackTaskParams) (string, int64, error) {
+	return "", 1, nil
 }
 
 // BuildURL returns the build URL.

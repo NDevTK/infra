@@ -101,6 +101,7 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 
 	// Apply defaults.
 	if params.BuilderName == "" {
+<<<<<<< HEAD
 		params.BuilderName = "chromeos"
 	}
 	if params.BuilderProject == "" {
@@ -108,6 +109,15 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 	}
 	if params.BuilderBucket == "" {
 		params.BuilderBucket = "labpack"
+=======
+		params.BuilderName = "labpack_builder"
+	}
+	if params.BuilderProject == "" {
+		params.BuilderProject = "chromeos"
+	}
+	if params.BuilderBucket == "" {
+		params.BuilderBucket = "labpack_runner"
+>>>>>>> 2dcfbccfaa ([buildbucket] Add a URL return value to the ScheduleLabpackTask method.)
 	}
 
 	props, err := structbuilder.NewStruct(params.AsMap())
@@ -132,7 +142,7 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 	default:
 		return 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
 	}
-	taskID, err := client.ScheduleLabpackTask(ctx, p)
+	_, taskID, err := client.ScheduleLabpackTask(ctx, p)
 	if err != nil {
 		return 0, errors.Annotate(err, "scheduling task").Err()
 	}
