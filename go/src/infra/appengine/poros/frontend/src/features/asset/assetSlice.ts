@@ -23,6 +23,7 @@ import {
   ListAssetsRequest,
   AssetModel,
   UpdateAssetRequest,
+  GetDefaultResourcesRequest,
 } from '../../api/asset_service';
 import { ResourceModel } from '../../api/resource_service';
 import { RootState } from '../../app/store';
@@ -42,6 +43,8 @@ export interface AssetState {
   assetResourcesToSave: AssetResourceModel[];
   assetResourcesToDelete: AssetResourceModel[];
   assetSpinRecord: string;
+  defaultResources: ResourceModel[];
+  fetchResourceStatus: string;
 }
 
 const initialState: AssetState = {
@@ -58,6 +61,8 @@ const initialState: AssetState = {
   assetResourcesToSave: [AssetResourceModel.defaultEntity()],
   assetResourcesToDelete: [],
   assetSpinRecord: '',
+  defaultResources: [],
+  fetchResourceStatus: 'idle',
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -180,6 +185,18 @@ export const createAssetInstanceAsync = createAsyncThunk(
     };
     const service: IAssetInstanceService = new AssetInstanceService();
     service.create(request);
+  }
+);
+
+export const getDefaultResources = createAsyncThunk(
+  'asset/getDefaultResources',
+  async (assetType: string) => {
+    const request: GetDefaultResourcesRequest = {
+      assetType: assetType,
+    };
+    const service: IAssetService = new AssetService();
+    const response = await service.getDefaultResources(request);
+    return response;
   }
 );
 
@@ -306,6 +323,36 @@ export const assetSlice = createSlice({
       .addCase(createAssetInstanceAsync.fulfilled, (state) => {
         state.savingStatus = 'idle';
         state.assetSpinRecord = '';
+      })
+      .addCase(getDefaultResources.pending, (state) => {
+        state.fetchResourceStatus = 'loading';
+        let assetResourcesToSave: AssetResourceModel[] = [];
+        state.assetResourcesToSave.forEach(function(assetResource: AssetResourceModel){
+            if(!state.defaultResources.some(
+              (s: ResourceModel) => s.resourceId == assetResource.resourceId)){
+                assetResourcesToSave = [...assetResourcesToSave, assetResource]
+              } 
+            else {
+              // Need to delete this default AssetResource if it is already created
+              if(assetResource.assetResourceId !== ''){
+                state.assetResourcesToDelete = [...state.assetResourcesToDelete, assetResource];
+              }
+            }
+        });
+        state.assetResourcesToSave = assetResourcesToSave;
+      })
+      .addCase(getDefaultResources.fulfilled, (state, action) => {
+        state.fetchResourceStatus = 'idle';
+        state.defaultResources = action.payload.resources;
+        state.defaultResources.forEach(function(resource: ResourceModel){
+            if(!state.assetResourcesToSave.some(
+              (s: AssetResourceModel) => s.resourceId == resource.resourceId)){
+              const assetResource: AssetResourceModel = AssetResourceModel.defaultEntity();
+              assetResource.resourceId = resource.resourceId;
+              assetResource.aliasName = resource.name;
+              state.assetResourcesToSave = [assetResource, ...state.assetResourcesToSave];
+            }
+        });
       });
   },
 });

@@ -38,6 +38,7 @@ import {
   queryAssetResourceAsync,
   createAssetInstanceAsync,
   setAssetSpinRecord,
+  getDefaultResources,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -112,11 +113,13 @@ export function AssetList() {
     handleRightSideDrawerOpen();
     dispatch(onSelectRecord({ assetId: selectedRow.assetId }));
     dispatch(queryAssetResourceAsync());
+    dispatch(getDefaultResources(selectedRow.assetType));
     console.log(cellValues);
   };
 
   const handleCreateClick = () => {
     dispatch(clearSelectedRecord());
+    dispatch(getDefaultResources('active_directory'))
     handleRightSideDrawerOpen();
   };
 

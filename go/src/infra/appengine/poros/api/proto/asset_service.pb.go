@@ -1005,6 +1005,102 @@ func (x *HostConfiguration) GetResources() []*HostConfigurationResource {
 	return nil
 }
 
+type GetDefaultResourcesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The type of the given Asset.
+	AssetType string `protobuf:"bytes,1,opt,name=asset_type,json=assetType,proto3" json:"asset_type,omitempty"`
+}
+
+func (x *GetDefaultResourcesRequest) Reset() {
+	*x = GetDefaultResourcesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_poros_api_proto_asset_service_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetDefaultResourcesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDefaultResourcesRequest) ProtoMessage() {}
+
+func (x *GetDefaultResourcesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_poros_api_proto_asset_service_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDefaultResourcesRequest.ProtoReflect.Descriptor instead.
+func (*GetDefaultResourcesRequest) Descriptor() ([]byte, []int) {
+	return file_poros_api_proto_asset_service_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GetDefaultResourcesRequest) GetAssetType() string {
+	if x != nil {
+		return x.AssetType
+	}
+	return ""
+}
+
+type GetDefaultResourcesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The default Resources given an Asset type
+	Resources []*ResourceModel `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
+}
+
+func (x *GetDefaultResourcesResponse) Reset() {
+	*x = GetDefaultResourcesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_poros_api_proto_asset_service_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetDefaultResourcesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDefaultResourcesResponse) ProtoMessage() {}
+
+func (x *GetDefaultResourcesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_poros_api_proto_asset_service_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDefaultResourcesResponse.ProtoReflect.Descriptor instead.
+func (*GetDefaultResourcesResponse) Descriptor() ([]byte, []int) {
+	return file_poros_api_proto_asset_service_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetDefaultResourcesResponse) GetResources() []*ResourceModel {
+	if x != nil {
+		return x.Resources
+	}
+	return nil
+}
+
 var File_poros_api_proto_asset_service_proto protoreflect.FileDescriptor
 
 var file_poros_api_proto_asset_service_proto_rawDesc = []byte{
@@ -1150,8 +1246,17 @@ var file_poros_api_proto_asset_service_proto_rawDesc = []byte{
 	0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x20, 0x2e, 0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x48, 0x6f, 0x73, 0x74, 0x43, 0x6f,
 	0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x52, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x32, 0xfa,
-	0x03, 0x0a, 0x05, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x3f, 0x0a, 0x06, 0x43, 0x72, 0x65, 0x61,
+	0x72, 0x63, 0x65, 0x52, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x3b,
+	0x0a, 0x1a, 0x47, 0x65, 0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x52, 0x65, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a,
+	0x61, 0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x61, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x22, 0x51, 0x0a, 0x1b, 0x47,
+	0x65, 0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63,
+	0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x09, 0x72, 0x65,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e,
+	0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4d, 0x6f,
+	0x64, 0x65, 0x6c, 0x52, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x32, 0xd8,
+	0x04, 0x0a, 0x05, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x3f, 0x0a, 0x06, 0x43, 0x72, 0x65, 0x61,
 	0x74, 0x65, 0x12, 0x19, 0x2e, 0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e,
 	0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65,
@@ -1182,10 +1287,16 @@ var file_poros_api_proto_asset_service_proto_rawDesc = []byte{
 	0x73, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x47,
 	0x65, 0x74, 0x48, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x27, 0x5a, 0x25, 0x69,
-	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x70,
-	0x6f, 0x72, 0x6f, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5c, 0x0a, 0x13, 0x47,
+	0x65, 0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63,
+	0x65, 0x73, 0x12, 0x21, 0x2e, 0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x44, 0x65,
+	0x66, 0x61, 0x75, 0x6c, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x70, 0x6f, 0x72, 0x6f, 0x73, 0x2e, 0x47, 0x65,
+	0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x27, 0x5a, 0x25, 0x69, 0x6e, 0x66,
+	0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x70, 0x6f, 0x72,
+	0x6f, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1200,7 +1311,7 @@ func file_poros_api_proto_asset_service_proto_rawDescGZIP() []byte {
 	return file_poros_api_proto_asset_service_proto_rawDescData
 }
 
-var file_poros_api_proto_asset_service_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_poros_api_proto_asset_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_poros_api_proto_asset_service_proto_goTypes = []interface{}{
 	(*CreateAssetRequest)(nil),            // 0: poros.CreateAssetRequest
 	(*CreateAssetResponse)(nil),           // 1: poros.CreateAssetResponse
@@ -1218,45 +1329,51 @@ var file_poros_api_proto_asset_service_proto_goTypes = []interface{}{
 	(*GetHostConfigurationResponse)(nil),  // 13: poros.GetHostConfigurationResponse
 	(*HostConfigurationResource)(nil),     // 14: poros.HostConfigurationResource
 	(*HostConfiguration)(nil),             // 15: poros.HostConfiguration
-	(*AssetResourceModel)(nil),            // 16: poros.AssetResourceModel
-	(*AssetModel)(nil),                    // 17: poros.AssetModel
-	(*fieldmaskpb.FieldMask)(nil),         // 18: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),                 // 19: google.protobuf.Empty
+	(*GetDefaultResourcesRequest)(nil),    // 16: poros.GetDefaultResourcesRequest
+	(*GetDefaultResourcesResponse)(nil),   // 17: poros.GetDefaultResourcesResponse
+	(*AssetResourceModel)(nil),            // 18: poros.AssetResourceModel
+	(*AssetModel)(nil),                    // 19: poros.AssetModel
+	(*fieldmaskpb.FieldMask)(nil),         // 20: google.protobuf.FieldMask
+	(*ResourceModel)(nil),                 // 21: poros.ResourceModel
+	(*emptypb.Empty)(nil),                 // 22: google.protobuf.Empty
 }
 var file_poros_api_proto_asset_service_proto_depIdxs = []int32{
-	16, // 0: poros.CreateAssetRequest.asset_resources_to_save:type_name -> poros.AssetResourceModel
-	17, // 1: poros.CreateAssetResponse.asset:type_name -> poros.AssetModel
-	16, // 2: poros.CreateAssetResponse.asset_resources:type_name -> poros.AssetResourceModel
-	17, // 3: poros.UpdateAssetRequest.asset:type_name -> poros.AssetModel
-	18, // 4: poros.UpdateAssetRequest.asset_update_mask:type_name -> google.protobuf.FieldMask
-	18, // 5: poros.UpdateAssetRequest.asset_resource_update_mask:type_name -> google.protobuf.FieldMask
-	16, // 6: poros.UpdateAssetRequest.asset_resources_to_save:type_name -> poros.AssetResourceModel
-	16, // 7: poros.UpdateAssetRequest.asset_resources_to_delete:type_name -> poros.AssetResourceModel
-	17, // 8: poros.UpdateAssetResponse.asset:type_name -> poros.AssetModel
-	16, // 9: poros.UpdateAssetResponse.asset_resources:type_name -> poros.AssetResourceModel
-	18, // 10: poros.ListAssetsRequest.read_mask:type_name -> google.protobuf.FieldMask
-	17, // 11: poros.ListAssetsResponse.assets:type_name -> poros.AssetModel
+	18, // 0: poros.CreateAssetRequest.asset_resources_to_save:type_name -> poros.AssetResourceModel
+	19, // 1: poros.CreateAssetResponse.asset:type_name -> poros.AssetModel
+	18, // 2: poros.CreateAssetResponse.asset_resources:type_name -> poros.AssetResourceModel
+	19, // 3: poros.UpdateAssetRequest.asset:type_name -> poros.AssetModel
+	20, // 4: poros.UpdateAssetRequest.asset_update_mask:type_name -> google.protobuf.FieldMask
+	20, // 5: poros.UpdateAssetRequest.asset_resource_update_mask:type_name -> google.protobuf.FieldMask
+	18, // 6: poros.UpdateAssetRequest.asset_resources_to_save:type_name -> poros.AssetResourceModel
+	18, // 7: poros.UpdateAssetRequest.asset_resources_to_delete:type_name -> poros.AssetResourceModel
+	19, // 8: poros.UpdateAssetResponse.asset:type_name -> poros.AssetModel
+	18, // 9: poros.UpdateAssetResponse.asset_resources:type_name -> poros.AssetResourceModel
+	20, // 10: poros.ListAssetsRequest.read_mask:type_name -> google.protobuf.FieldMask
+	19, // 11: poros.ListAssetsResponse.assets:type_name -> poros.AssetModel
 	10, // 12: poros.AssetConfiguration.resources:type_name -> poros.AssetConfigurationResource
 	14, // 13: poros.HostConfiguration.resources:type_name -> poros.HostConfigurationResource
-	0,  // 14: poros.Asset.Create:input_type -> poros.CreateAssetRequest
-	2,  // 15: poros.Asset.Get:input_type -> poros.GetAssetRequest
-	3,  // 16: poros.Asset.Update:input_type -> poros.UpdateAssetRequest
-	5,  // 17: poros.Asset.Delete:input_type -> poros.DeleteAssetRequest
-	6,  // 18: poros.Asset.List:input_type -> poros.ListAssetsRequest
-	8,  // 19: poros.Asset.GetAssetConfiguration:input_type -> poros.GetAssetConfigurationRequest
-	12, // 20: poros.Asset.GetHostConfiguration:input_type -> poros.GetHostConfigurationRequest
-	1,  // 21: poros.Asset.Create:output_type -> poros.CreateAssetResponse
-	17, // 22: poros.Asset.Get:output_type -> poros.AssetModel
-	4,  // 23: poros.Asset.Update:output_type -> poros.UpdateAssetResponse
-	19, // 24: poros.Asset.Delete:output_type -> google.protobuf.Empty
-	7,  // 25: poros.Asset.List:output_type -> poros.ListAssetsResponse
-	9,  // 26: poros.Asset.GetAssetConfiguration:output_type -> poros.GetAssetConfigurationResponse
-	13, // 27: poros.Asset.GetHostConfiguration:output_type -> poros.GetHostConfigurationResponse
-	21, // [21:28] is the sub-list for method output_type
-	14, // [14:21] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	21, // 14: poros.GetDefaultResourcesResponse.resources:type_name -> poros.ResourceModel
+	0,  // 15: poros.Asset.Create:input_type -> poros.CreateAssetRequest
+	2,  // 16: poros.Asset.Get:input_type -> poros.GetAssetRequest
+	3,  // 17: poros.Asset.Update:input_type -> poros.UpdateAssetRequest
+	5,  // 18: poros.Asset.Delete:input_type -> poros.DeleteAssetRequest
+	6,  // 19: poros.Asset.List:input_type -> poros.ListAssetsRequest
+	8,  // 20: poros.Asset.GetAssetConfiguration:input_type -> poros.GetAssetConfigurationRequest
+	12, // 21: poros.Asset.GetHostConfiguration:input_type -> poros.GetHostConfigurationRequest
+	16, // 22: poros.Asset.GetDefaultResources:input_type -> poros.GetDefaultResourcesRequest
+	1,  // 23: poros.Asset.Create:output_type -> poros.CreateAssetResponse
+	19, // 24: poros.Asset.Get:output_type -> poros.AssetModel
+	4,  // 25: poros.Asset.Update:output_type -> poros.UpdateAssetResponse
+	22, // 26: poros.Asset.Delete:output_type -> google.protobuf.Empty
+	7,  // 27: poros.Asset.List:output_type -> poros.ListAssetsResponse
+	9,  // 28: poros.Asset.GetAssetConfiguration:output_type -> poros.GetAssetConfigurationResponse
+	13, // 29: poros.Asset.GetHostConfiguration:output_type -> poros.GetHostConfigurationResponse
+	17, // 30: poros.Asset.GetDefaultResources:output_type -> poros.GetDefaultResourcesResponse
+	23, // [23:31] is the sub-list for method output_type
+	15, // [15:23] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_poros_api_proto_asset_service_proto_init() }
@@ -1458,6 +1575,30 @@ func file_poros_api_proto_asset_service_proto_init() {
 				return nil
 			}
 		}
+		file_poros_api_proto_asset_service_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetDefaultResourcesRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_poros_api_proto_asset_service_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetDefaultResourcesResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1465,7 +1606,7 @@ func file_poros_api_proto_asset_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_poros_api_proto_asset_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

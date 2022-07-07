@@ -92,13 +92,7 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 	}
 	response := &proto.CreateAssetResponse{}
 
-	var defaultResourcesToSave []*proto.AssetResourceModel
-	defaultResourcesToSave, err := defaultResources(ctx, entity.AssetType)
-	if err != nil {
-		return nil, err
-	}
-
-	err = datastore.RunInTransaction(ctx, func(ctx context.Context) error {
+	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
 		if err := validateEntity(entity); err != nil {
 			return err
 		}
@@ -107,14 +101,13 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		}
 		response.Asset = toModel(entity)
 		assetResourcesToSave := req.GetAssetResourcesToSave()
-		for _, defaultResource := range defaultResourcesToSave {
-			assetResourcesToSave = append(assetResourcesToSave, defaultResource)
-		}
 
 		for _, assetResourceModel := range assetResourcesToSave {
 			assetResourceModel.AssetResourceId = uuid.New().String()
 			assetResourceModel.AssetId = id
 			assetResourceEntity := toAssetResourceEntity(assetResourceModel)
+			assetResourceEntity.CreatedAt = time.Now().UTC()
+			assetResourceEntity.CreatedBy = auth.CurrentUser(ctx).Email
 			if err := validateAssetResourceEntity(assetResourceEntity); err != nil {
 				return err
 			}
@@ -326,7 +319,8 @@ func (c *AssetHandler) GetHostConfiguration(ctx context.Context, in *proto.GetHo
 
 // Based on different asset types there may be additional resources that must be created by default
 // necessary to generate the asset & host configuration files in cel_ctl
-func defaultResources(ctx context.Context, assetType string) ([]*proto.AssetResourceModel, error) {
+func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDefaultResourcesRequest) (*proto.GetDefaultResourcesResponse, error) {
+	assetType := req.GetAssetType()
 	var resourceData [][]string
 	switch assetType {
 	case "active_directory":
@@ -337,23 +331,31 @@ func defaultResources(ctx context.Context, assetType string) ([]*proto.AssetReso
 			{"user", "Joe"},
 		}
 		break
+	case "active_directory_splunk":
+		resourceData = [][]string{
+			{"network", "primary"},
+			{"ad_domain", "foo.example"},
+			{"domain_controller_machine", "win2008r2"},
+			{"user", "Joe"},
+			{"win2016", "Splunk"},
+		}
+		break
 	default:
 		resourceData = [][]string{}
 	}
 
-	var defaultResourcesToSave []*proto.AssetResourceModel
+	var resources []*proto.ResourceModel
 	for _, data := range resourceData {
 		query := datastore.NewQuery("ResourceEntity").Eq("Type", data[0]).Limit(1)
-		var resources []*ResourceEntity
-		if err := datastore.GetAll(ctx, query, &resources); err != nil {
+		var entities []*ResourceEntity
+		if err := datastore.GetAll(ctx, query, &entities); err != nil {
 			return nil, err
 		}
-
-		defaultResourcesToSave = append(defaultResourcesToSave,
-			&proto.AssetResourceModel{ResourceId: resources[0].ResourceId, AliasName: data[1]})
+		resources = append(resources,
+			toResourceModel(entities[0]))
 	}
 
-	return defaultResourcesToSave, nil
+	return &proto.GetDefaultResourcesResponse{Resources: resources}, nil
 }
 
 func getById(ctx context.Context, id string) (*AssetEntity, error) {

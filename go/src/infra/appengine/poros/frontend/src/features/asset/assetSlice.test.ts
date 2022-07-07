@@ -36,6 +36,8 @@ const initialState: AssetState = {
   assetResourcesToSave: [AssetResourceModel.defaultEntity()],
   assetResourcesToDelete: [],
   assetSpinRecord: '',
+  fetchResourceStatus: 'idle',
+  defaultResources: [],
 };
 
 const testAsset: AssetModel = {

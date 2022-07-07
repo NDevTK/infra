@@ -36,6 +36,10 @@ service Asset {
   // Get HostConfiguration
   rpc GetHostConfiguration(GetHostConfigurationRequest)
       returns (GetHostConfigurationResponse);
+
+  // Get Default Resources
+  rpc GetDefaultResources(GetDefaultResourcesRequest)
+      returns (GetDefaultResourcesResponse);
 }
 // Request to create a single asset in AssetServ
 message CreateAssetRequest {
@@ -168,4 +172,14 @@ message HostConfigurationResource {
 
 message HostConfiguration {
   repeated HostConfigurationResource resources = 1;
+}
+
+message GetDefaultResourcesRequest {
+  // The type of the given Asset.
+  string asset_type = 1;
+}
+
+message GetDefaultResourcesResponse {
+  // The default Resources given an Asset type
+  repeated ResourceModel resources = 1;
 }

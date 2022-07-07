@@ -37,6 +37,8 @@ type AssetClient interface {
 	GetAssetConfiguration(ctx context.Context, in *GetAssetConfigurationRequest, opts ...grpc.CallOption) (*GetAssetConfigurationResponse, error)
 	// Get HostConfiguration
 	GetHostConfiguration(ctx context.Context, in *GetHostConfigurationRequest, opts ...grpc.CallOption) (*GetHostConfigurationResponse, error)
+	// Get Default Resources
+	GetDefaultResources(ctx context.Context, in *GetDefaultResourcesRequest, opts ...grpc.CallOption) (*GetDefaultResourcesResponse, error)
 }
 
 type assetClient struct {
@@ -110,6 +112,15 @@ func (c *assetClient) GetHostConfiguration(ctx context.Context, in *GetHostConfi
 	return out, nil
 }
 
+func (c *assetClient) GetDefaultResources(ctx context.Context, in *GetDefaultResourcesRequest, opts ...grpc.CallOption) (*GetDefaultResourcesResponse, error) {
+	out := new(GetDefaultResourcesResponse)
+	err := c.cc.Invoke(ctx, "/poros.Asset/GetDefaultResources", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetServer is the server API for Asset service.
 // All implementations must embed UnimplementedAssetServer
 // for forward compatibility
@@ -128,6 +139,8 @@ type AssetServer interface {
 	GetAssetConfiguration(context.Context, *GetAssetConfigurationRequest) (*GetAssetConfigurationResponse, error)
 	// Get HostConfiguration
 	GetHostConfiguration(context.Context, *GetHostConfigurationRequest) (*GetHostConfigurationResponse, error)
+	// Get Default Resources
+	GetDefaultResources(context.Context, *GetDefaultResourcesRequest) (*GetDefaultResourcesResponse, error)
 	mustEmbedUnimplementedAssetServer()
 }
 
@@ -155,6 +168,9 @@ func (UnimplementedAssetServer) GetAssetConfiguration(context.Context, *GetAsset
 }
 func (UnimplementedAssetServer) GetHostConfiguration(context.Context, *GetHostConfigurationRequest) (*GetHostConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHostConfiguration not implemented")
+}
+func (UnimplementedAssetServer) GetDefaultResources(context.Context, *GetDefaultResourcesRequest) (*GetDefaultResourcesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDefaultResources not implemented")
 }
 func (UnimplementedAssetServer) mustEmbedUnimplementedAssetServer() {}
 
@@ -295,6 +311,24 @@ func _Asset_GetHostConfiguration_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Asset_GetDefaultResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDefaultResourcesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServer).GetDefaultResources(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/poros.Asset/GetDefaultResources",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServer).GetDefaultResources(ctx, req.(*GetDefaultResourcesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Asset_ServiceDesc is the grpc.ServiceDesc for Asset service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -329,6 +363,10 @@ var Asset_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetHostConfiguration",
 			Handler:    _Asset_GetHostConfiguration_Handler,
+		},
+		{
+			MethodName: "GetDefaultResources",
+			Handler:    _Asset_GetDefaultResources_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

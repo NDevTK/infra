@@ -47,7 +47,7 @@ func mockGetHostConfigRequest(resourceIds []string) *proto.GetHostConfigurationR
 
 func TestAssetCreateWithValidData(t *testing.T) {
 	t.Parallel()
-	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
+	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "Test ResourceId", "Test Alias Name")}
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
 	Convey("Create an asset in datastore", t, func() {
 		ctx := memory.Use(context.Background())
@@ -60,11 +60,8 @@ func TestAssetCreateWithValidData(t *testing.T) {
 		want := []string{assetRequest.GetName(), assetRequest.GetDescription(), assetRequest.GetAssetType()}
 		get := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
 		So(get, ShouldResemble, want)
-		So(response.GetAssetResources(), ShouldHaveLength, 5)
-		createdResourceNames := []string{"primary", "foo.example", "win2008r2", "Joe", "Alias name"}
-		for _, res := range response.GetAssetResources() {
-			So(res.AliasName, ShouldBeIn, createdResourceNames)
-		}
+		So(response.GetAssetResources(), ShouldHaveLength, 1)
+		So(response.GetAssetResources(), ShouldResemble, assetResourcesToSave)
 	})
 }
 
@@ -350,7 +347,7 @@ func TestAssetConfigWithValidDetails(t *testing.T) {
 
 		So(assetConfig.AssetId, ShouldEqual, asset.AssetId)
 
-		So(len(assetConfig.Resources), ShouldEqual, 5)
+		So(len(assetConfig.Resources), ShouldEqual, 1)
 	})
 }
 
@@ -375,6 +372,29 @@ func TestHostConfigWithValidDetails(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		So(len(hostConfig.Resources), ShouldEqual, 1)
+	})
+}
+
+func TestDefaultResourcesWithActiveDirectory(t *testing.T) {
+	t.Parallel()
+
+	Convey("Test GetDefaultResources with Asset type active_directory", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		createDefaultResources(ctx)
+
+		_, _, _, err := generateAssetAndResources(ctx)
+		So(err, ShouldBeNil)
+
+		handler := &AssetHandler{}
+		resourceRequest := &proto.GetDefaultResourcesRequest{AssetType: "active_directory"}
+		response, err := handler.GetDefaultResources(ctx, resourceRequest)
+		defaultResources := response.GetResources()
+		So(err, ShouldBeNil)
+		want := []string{"Network", "Active Directory Domain", "win2008r2", "User"}
+		get := []string{defaultResources[0].GetName(), defaultResources[1].GetName(), defaultResources[2].GetName(), defaultResources[3].GetName()}
+		So(defaultResources, ShouldHaveLength, 4)
+		So(want, ShouldResemble, get)
 	})
 }
 

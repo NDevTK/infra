@@ -7,6 +7,7 @@ import { Empty } from './common/empty';
 import { FieldMask } from './common/field_mask';
 import { rpcClient } from './common/rpc_client';
 import { fromJsonTimestamp, isSet } from './common/utils';
+import { ResourceModel } from './resource_service';
 
 /** Performs operations on Assets. */
 export interface IAssetService {
@@ -20,6 +21,10 @@ export interface IAssetService {
   delete(request: DeleteAssetRequest): Promise<Empty>;
   /** Lists all Assets. */
   list(request: ListAssetsRequest): Promise<ListAssetsResponse>;
+  /** Get default resourced given asset type. */
+  getDefaultResources(
+    request: GetDefaultResourcesRequest
+  ): Promise<GetDefaultResourcesResponse>;
 }
 
 export class AssetService implements IAssetService {
@@ -29,6 +34,7 @@ export class AssetService implements IAssetService {
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
     this.list = this.list.bind(this);
+    this.getDefaultResources = this.getDefaultResources.bind(this);
   }
 
   create = (request: CreateAssetRequest): Promise<CreateAssetResponse> => {
@@ -59,6 +65,18 @@ export class AssetService implements IAssetService {
     const data = ListAssetsRequest.toJSON(request);
     const promise = rpcClient.request('poros.Asset', 'List', data);
     return promise.then((data) => ListAssetsResponse.fromJSON(data));
+  };
+
+  getDefaultResources = (
+    request: GetDefaultResourcesRequest
+  ): Promise<GetDefaultResourcesResponse> => {
+    const data = GetDefaultResourcesRequest.toJSON(request);
+    const promise = rpcClient.request(
+      'poros.Asset',
+      'GetDefaultResources',
+      data
+    );
+    return promise.then((data) => GetDefaultResourcesResponse.fromJSON(data));
   };
 }
 
@@ -297,6 +315,35 @@ export const UpdateAssetResponse = {
       asset: AssetModel.fromJSON(object.asset),
       assetResources: Array.isArray(object?.assetResources)
         ? object.assetResources.map((e: any) => AssetResourceModel.fromJSON(e))
+        : [],
+    };
+  },
+};
+
+/** Request to get the default Resources given Asset type */
+export interface GetDefaultResourcesRequest {
+  /** The type of the given Asset. */
+  assetType: string;
+}
+
+export interface GetDefaultResourcesResponse {
+  /** List of default Resources*/
+  resources: ResourceModel[];
+}
+
+export const GetDefaultResourcesRequest = {
+  toJSON(message: GetDefaultResourcesRequest): unknown {
+    const obj: any = {};
+    message.assetType !== undefined && (obj.assetType = message.assetType);
+    return obj;
+  },
+};
+
+export const GetDefaultResourcesResponse = {
+  fromJSON(object: any): GetDefaultResourcesResponse {
+    return {
+      resources: Array.isArray(object?.resources)
+        ? object.resources.map((e: any) => ResourceModel.fromJSON(e))
         : [],
     };
   },

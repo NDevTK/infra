@@ -23,7 +23,9 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import {
   addMachine,
+  clearSelectedRecord,
   createAssetAsync,
+  getDefaultResources,
   removeMachine,
   setAlias,
   setAssetType,
@@ -56,6 +58,9 @@ export const Asset = () => {
   );
   const resources: ResourceModel[] = useAppSelector(
     (state) => state.asset.resources
+  );
+  const defaultResources = useAppSelector(
+    (state) => state.asset.defaultResources
   );
   const dispatch = useAppDispatch();
   React.useEffect(() => {
@@ -93,6 +98,7 @@ export const Asset = () => {
   };
 
   const handleCancelClick = () => {
+    dispatch(clearSelectedRecord());
     dispatch(setRightSideDrawerClose());
   };
 
@@ -105,8 +111,10 @@ export const Asset = () => {
             <Select
               label="AssetType"
               id="assettype"
+              defaultValue="active_directory"
               value={assetType}
               onChange={(e) => {
+                dispatch(getDefaultResources(e.target.value));
                 setAssetType(e.target.value);
                 dispatch(setAssetType(e.target.value));
               }}
@@ -116,6 +124,9 @@ export const Asset = () => {
               inputProps={{ 'data-testid': 'type' }}
             >
               <MenuItem value={'active_directory'}>Active Directory</MenuItem>
+              <MenuItem value={'active_directory_splunk'}>
+                Active Directory with Splunk
+              </MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -136,6 +147,9 @@ export const Asset = () => {
   };
 
   const renderRow = (index: number, aliasName: string, resourceId: string) => {
+    const disabled = defaultResources.some(
+      (s: ResourceModel) => s.resourceId == resourceId
+    );
     return (
       <Grid
         container
@@ -169,6 +183,7 @@ export const Asset = () => {
               variant="standard"
               placeholder="Type"
               inputProps={{ 'data-testid': 'resource-' + index }}
+              disabled={disabled}
             >
               {resources.map((resource) =>
                 renderMenuItem(resource.name, resource.resourceId)
@@ -195,6 +210,7 @@ export const Asset = () => {
             variant="standard"
             fullWidth
             inputProps={{ 'data-testid': 'alias-' + index }}
+            disabled={disabled}
           />
         </Grid>
 
@@ -214,6 +230,7 @@ export const Asset = () => {
               dispatch(addMachine());
             }}
             data-testid={'add-button-' + index}
+            disabled={disabled}
           >
             <AddIcon fontSize="inherit" />
           </IconButton>
@@ -234,6 +251,7 @@ export const Asset = () => {
               dispatch(removeMachine(index));
             }}
             data-testid={'delete-button-' + index}
+            disabled={disabled}
           >
             <DeleteIcon fontSize="inherit"> Delete </DeleteIcon>
           </IconButton>
