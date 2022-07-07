@@ -97,9 +97,9 @@ export const ResourceModel = {
       imageProject: '',
       imageFamily: '',
       createdBy: '',
-      createdAt: undefined,
+      createdAt: new Date("2022-07-01T00:00:00-07:00"),
       modifiedBy: '',
-      modifiedAt: undefined,
+      modifiedAt: new Date("2022-07-01T00:00:00-07:00"),
     };
   },
   fromJSON(object: any): ResourceModel {
