@@ -1139,20 +1139,20 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#224)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#230)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
 Args:
   customizations: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#234)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#240)(self, custs):**
 
 Executes the windows image builder user config.
 Args:
   customizations: List of Customizations object from customizations.py
 
-&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#210)(self, customizations):**
+&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#216)(self, customizations):**
 
 filter_executable_customizations generates a list of customizations
 that need to be executed.
@@ -1167,6 +1167,7 @@ Args:
   customizations: List of Customizations object from customizations.py
 Example:
   Given an Image
+
     Image{
       arch: x86,
       name: "windows10_x86_GCE",
@@ -1195,7 +1196,9 @@ Example:
         }
       ]
     }
+
   Writes two configs: windows10_x86_GCE-winpe_networking.cfg with
+
     Image{
       arch: x86,
       name: "",
@@ -1212,7 +1215,9 @@ Example:
        }
       ]
     }
+
   and windows10_x86_GCE-winpe_diskpart.cfg with
+
     Image{
       arch: x86,
       name: "",
@@ -1231,12 +1236,13 @@ Example:
         }
       ]
     }
+
   to disk, calculates the hash for each config and sets the key for each
   of them. The strings representing name of the image, customization,...
   etc,. are set to empty before calculating the hash to maintain the
   uniqueness of the hash.
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#243)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#249)(self, custs):**
 
 get_executable_config takes list of customizations and returns a list
 of wib.Image proto objects that can be used to trigger other builders

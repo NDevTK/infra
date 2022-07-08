@@ -31,7 +31,7 @@ PROPERTIES = wib.Image
 def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
-  api.windows_scripts_executor.pin_customizations(custs)
+  api.windows_scripts_executor.process_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)
 
 
@@ -72,6 +72,6 @@ def GenTests(api):
           wib.ARCH_AARCH64,
           'test',
           vm_config=AARCH64_VM,
-          action_list=[ACTION_ADD_BOOTSTRAP])) + t.GIT_PIN_FILE_NOCUST(
+          action_list=[ACTION_ADD_BOOTSTRAP])) + t.GIT_PIN_FILE(
               api, 'test', 'HEAD', 'windows/artifacts/bootstrap.ps1', 'HEAD') +
          api.post_process(DropExpectation))
