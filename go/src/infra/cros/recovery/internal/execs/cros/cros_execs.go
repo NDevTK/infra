@@ -149,8 +149,9 @@ func runShellCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 // system status to read-only.  This checks that that hasn't happened.
 // The test covers the two file systems that need to be writable for
 // critical operations like AU:
-//     * The (unencrypted) stateful system which includes /mnt/stateful_partition.
-//     * The encrypted stateful partition, which includes /var.
+//   - The (unencrypted) stateful system which includes /mnt/stateful_partition.
+//   - The encrypted stateful partition, which includes /var.
+//
 // The test doesn't check various bind mounts; those are expected to
 // fail the same way as their underlying main mounts.  Whether the
 // Linux kernel can guarantee that is untested...
@@ -307,6 +308,25 @@ func updateCrossystemExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(cros.UpdateCrossystem(ctx, run, command, val, checkAfterUpdate), "update crossystem").Err()
 }
 
+// logTypeCStatus logs the type-C status from the DUT's perspective.
+func logTypeCStatus(ctx context.Context, info *execs.ExecInfo) error {
+	const status0 = "ectool typecstatus 0"
+	const status1 = "ectool typecstatus 1"
+	run := info.NewRunner(info.RunArgs.DUT.Name)
+	out, err := run(ctx, time.Minute, status0)
+	if err != nil {
+		return errors.Annotate(err, "log type C status").Err()
+	}
+	log.Infof(ctx, "(%s) %s", status0, out)
+	run(ctx, time.Minute, status0)
+	out, err = run(ctx, time.Minute, status1)
+	if err != nil {
+		return errors.Annotate(err, "log type C status").Err()
+	}
+	log.Infof(ctx, "(%s) %s", status1, out)
+	return nil
+}
+
 func init() {
 	execs.Register("cros_ping", pingExec)
 	execs.Register("cros_ssh", sshExec)
@@ -328,4 +348,5 @@ func init() {
 	execs.Register("cros_set_gbb_flags", crosSetGbbFlagsExec)
 	execs.Register("cros_switch_to_secure_mode", crosSwitchToSecureModeExec)
 	execs.Register("cros_update_crossystem", updateCrossystemExec)
+	execs.Register("cros_log_typec_status", logTypeCStatus)
 }
