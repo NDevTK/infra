@@ -136,6 +136,7 @@ export function ResourceList() {
             >
               <Stack direction="row" spacing={2}>
                 <Button
+                  data-testid="refresh-button"
                   variant="outlined"
                   endIcon={<RefreshIcon />}
                   onClick={handleRefreshClick}
@@ -143,6 +144,7 @@ export function ResourceList() {
                   Refresh
                 </Button>
                 <Button
+                  data-testid="create-button"
                   variant="contained"
                   onClick={handleCreateClick}
                   endIcon={<CreateIcon />}
@@ -174,6 +176,7 @@ export function ResourceList() {
               ) => {
                 event.defaultMuiPrevented = true;
               }}
+              disableVirtualization
             />
           </div>
         </CardContent>

@@ -117,6 +117,6 @@ test('Inputting delete time alters State', () => {
   expect(store.getState().assetInstance.record.deleteAt).toBe(undefined);
   userEvent.type(deleteAtField, '2022-07-01T00:00');
   expect(store.getState().assetInstance.record.deleteAt?.toISOString()).toBe(
-    new Date('2022-07-01T00:00:00-07:00').toISOString()
+    new Date('2022-07-01T00:00:00').toISOString()
   );
 });
