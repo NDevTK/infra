@@ -66,16 +66,18 @@ func TestScheduleTask(t *testing.T) {
 	ctx := context.Background()
 	Convey("test schedule task", t, func() {
 		Convey("nil params", func() {
-			_, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
+			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "schedule task")
 		})
 		Convey("audit-rpm", func() {
-			bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
+			url, bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
 				BuilderName: "audit-rpm",
 			})
 			So(err, ShouldBeNil)
 			So(bbid, ShouldEqual, 0)
+			So(url, ShouldContain, "chromeos")
+			So(url, ShouldContain, "labpack")
 		})
 	})
 }
