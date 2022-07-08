@@ -9,11 +9,14 @@ from . import regedit
 from . import add_windows_package
 from . import add_windows_driver
 
-from PB.recipes.infra.windows_image_builder import (offline_winpe_customization
-                                                    as winpe)
+from PB.recipes.infra.windows_image_builder import (online_windows_customization
+                                                    as onlinewc)
 from PB.recipes.infra.windows_image_builder import windows_image_builder as wib
 from PB.recipes.infra.windows_image_builder import sources as src_pb
 from PB.recipes.infra.windows_image_builder import dest as dest_pb
+from PB.recipes.infra.windows_image_builder import drive as drive_pb
+from PB.recipes.infra.windows_image_builder import vm as vm_pb
+from PB.recipes.infra.windows_image_builder import actions as act_pb
 
 
 class OnlineWindowsCustomization(customization.Customization):
@@ -56,3 +59,68 @@ class OnlineWindowsCustomization(customization.Customization):
       for online_action in boot.online_actions:
         for action in online_action.actions:
           self._source.download(helper.get_src_from_action(action))
+
+  def get_canonical_cfg(self):
+    """ get_canonical_cfg returns canonical config after removing name and dest
+        Example:
+          Given a config
+
+            Customization{
+              online_windows_customization: OnlineWindowsCustomization{
+                name: "win11_vanilla"
+                online_customization: [...]
+              }
+            }
+
+          returns config
+
+            Customization{
+              online_windows_customization: OnlineWindowsCustomization{
+                name: ""
+                online_customization: [...]
+              }
+            }
+
+    """
+    if not self._canon_cust:
+      owc = self.customization().online_windows_customization
+      # Generate customization without any names or dest refs. This will make
+      # customization deterministic to the generated image
+      cust = wib.Customization(
+          online_windows_customization=onlinewc.OnlineWinCustomization(
+              online_customizations=[
+                  self.get_canonical_online_customization(x)
+                  for x in owc.online_customizations
+              ],),)
+      self._canon_cust = cust
+    return self._canon_cust  # pragma: nocover
+
+  def get_canonical_online_customization(self, cust):
+    """ get_canonical_online_customization returns canonical
+    OnlineCustomization object.
+    Example:
+      Given a onlinewc.OnlineCustomization object
+
+      OnlineCustomization{
+        name: "install_bootstrap",
+        vm_config: vm.VM{...},
+        online_actions: [...],
+      }
+
+      returns a onlinewc.OnlineCustomization object
+
+      OnlineCustomization{
+        vm_config: vm.VM{...},
+        online_actions: [...],
+      }
+    """
+    # convert online_actions to canonical form
+    online_actions = [
+        act_pb.OnlineAction(
+            actions=[helper.get_build_actions(y)
+                     for y in x.actions])
+        for x in cust.online_actions
+    ]
+    # TODO(b/182061277): Add support for vm config
+    return onlinewc.OnlineCustomization(
+        vm_config=cust.vm_config, online_actions=online_actions)

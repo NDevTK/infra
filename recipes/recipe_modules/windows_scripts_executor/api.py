@@ -113,6 +113,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
           customizations: List of Customizations object from customizations.py
         Example:
           Given an Image
+
             Image{
               arch: x86,
               name: "windows10_x86_GCE",
@@ -141,7 +142,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 }
               ]
             }
+
           Writes two configs: windows10_x86_GCE-winpe_networking.cfg with
+
             Image{
               arch: x86,
               name: "",
@@ -158,7 +161,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                }
               ]
             }
+
           and windows10_x86_GCE-winpe_diskpart.cfg with
+
             Image{
               arch: x86,
               name: "",
@@ -177,6 +182,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 }
               ]
             }
+
           to disk, calculates the hash for each config and sets the key for each
           of them. The strings representing name of the image, customization,...
           etc,. are set to empty before calculating the hash to maintain the

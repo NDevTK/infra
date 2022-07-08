@@ -186,17 +186,6 @@ def GIT_PIN_FILE(api, cust, refs, path, data):
   )
 
 
-def GIT_PIN_FILE_NOCUST(api, cust, refs, path, data):
-  """ mock git pin file step """
-  return api.step_data(
-      NEST(
-          NEST_PIN_SRCS(cust),
-          'gitiles log: ' + '{}/{}'.format(refs, path),
-      ),
-      api.gitiles.make_log_test_data(data),
-  )
-
-
 def GCS_PIN_FILE(api, cust, url, pin_url='', success=True):
   """ mock gcs pin file action"""
   retcode = 1
