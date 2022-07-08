@@ -18,6 +18,12 @@ from PB.recipes.infra.windows_image_builder import dest as dest_pb
 COPYPE = 'Copy-PE.ps1'
 ADDFILE = 'robocopy'
 
+# map arch to microsofts version of arch
+# https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/copype-command-line-options?#copype-command-line-options-1
+COPYPE_ARCH = {'amd64': 'amd64',
+               'x86': 'x86',
+               'aarch64': 'arm64'}
+
 
 class OfflineWinPECustomization(customization.Customization):
   """ WinPE based customization support """
@@ -140,7 +146,7 @@ class OfflineWinPECustomization(customization.Customization):
         self._powershell(
             'Gen WinPE media for {}'.format(arch),
             self._scripts.join('Copy-PE.ps1'),
-            args=['-WinPeArch', arch, '-Destination',
+            args=['-WinPeArch', COPYPE_ARCH[arch], '-Destination',
                   str(self._workdir)])
       else:
         image_path = self._source.get_local_src(image)
