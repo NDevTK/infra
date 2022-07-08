@@ -7,6 +7,10 @@ from PB.recipes.infra.windows_image_builder import (offline_winpe_customization
 from PB.recipes.infra.windows_image_builder import actions
 from PB.recipes.infra.windows_image_builder import windows_image_builder as wib
 from PB.recipes.infra.windows_image_builder import sources
+from PB.recipes.infra.windows_image_builder import vm
+from PB.recipes.infra.windows_image_builder import drive
+from PB.recipes.infra.windows_image_builder import (online_windows_customization
+                                                    as owc)
 
 from recipe_engine.post_process import DropExpectation, StatusFailure
 from recipe_engine.post_process import StatusSuccess, StepCommandRE
@@ -175,6 +179,17 @@ def GIT_PIN_FILE(api, cust, refs, path, data):
   return api.step_data(
       NEST(
           NEST_PROCESS_CUST(),
+          NEST_PIN_SRCS(cust),
+          'gitiles log: ' + '{}/{}'.format(refs, path),
+      ),
+      api.gitiles.make_log_test_data(data),
+  )
+
+
+def GIT_PIN_FILE_NOCUST(api, cust, refs, path, data):
+  """ mock git pin file step """
+  return api.step_data(
+      NEST(
           NEST_PIN_SRCS(cust),
           'gitiles log: ' + '{}/{}'.format(refs, path),
       ),
@@ -378,3 +393,65 @@ def WPE_IMAGE(image,
                           name=sub_customization, actions=action_list)
                   ]))
       ])
+
+
+def WIN_IMAGE(image, arch, customization, vm_config, action_list):
+  """ generates a winpe customization image """
+  return wib.Image(
+      name=image,
+      arch=arch,
+      customizations=[
+          wib.Customization(
+              online_windows_customization=owc.OnlineWinCustomization(
+                  name=customization,
+                  online_customizations=[
+                      owc.OnlineCustomization(
+                          name='WinPEBoot',
+                          vm_config=vm_config,
+                          online_actions=[
+                              actions.OnlineAction(
+                                  name='work_block', actions=action_list)
+                          ])
+                  ]))
+      ])
+
+
+def VM_CONFIG(
+    name,
+    drives,
+    machine='virt,virulization=on,highmem=off',
+    cpu='cortex-a57',
+    smp='cores=8',
+    memory=8192,
+    extra_args=('-device usb-kbd', '--device usb-mouse'),
+):
+  return vm.VM(
+      qemu_vm=vm.QEMU_VM(
+          name=name,
+          drives=drives,
+          machine=machine,
+          cpu=cpu,
+          smp=smp,
+          memory=memory,
+          extra_args=list(extra_args)))
+
+
+def VM_DRIVE(name,
+             ip,
+             op,
+             interface='ide',
+             media='disk',
+             fmt='raw',
+             readonly=False,
+             size=65536,
+             filesystem='fat'):
+  return drive.Drive(
+      name=name,
+      input_src=ip,
+      output_dest=op,
+      interface=interface,
+      media=media,
+      fmt=fmt,
+      readonly=readonly,
+      size=size,
+      filesystem=filesystem)
