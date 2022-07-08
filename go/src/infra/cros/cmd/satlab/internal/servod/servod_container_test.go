@@ -142,3 +142,20 @@ func (fc *FakeDockerClient) IsUp(ctx context.Context, containerName string) (boo
 	_, keyFoundOk := fc.runningContainers[containerName]
 	return keyFoundOk, nil
 }
+
+// Fake implementation of `Remove` which simply attempts to remove `containerName` from `runningContainers`
+func (fc *FakeDockerClient) Remove(ctx context.Context, containerName string, force bool) error {
+	// docker rm with force will return a 0 exit code even if container doesnt exist so we do that
+	// https://github.com/docker/cli/issues/2677
+	delete(fc.runningContainers, containerName)
+	return nil
+}
+
+// getContainerNames returns a slice of all currently "running" containers' names
+func (fc *FakeDockerClient) getContainerNames() []string {
+	keys := make([]string, 0, len(fc.runningContainers))
+	for k := range fc.runningContainers {
+		keys = append(keys, k)
+	}
+	return keys
+}

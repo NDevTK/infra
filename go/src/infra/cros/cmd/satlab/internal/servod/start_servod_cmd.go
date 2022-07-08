@@ -212,14 +212,7 @@ func (c *startServodRun) validate(dhbSatlabID string, positionalArgs []string) e
 		return errors.Reason(fmt.Sprintf("-host <hostname> is required")).Err()
 	}
 
-	//uses either a user provided or automatically fetched Satlab ID to build the fully qualified host name
-	// no-op if the hostname is already in expected format
-	var satlabIDToUse string
-	if satlabIDToUse = c.commonFlags.SatlabID; satlabIDToUse == "" {
-		satlabIDToUse = dhbSatlabID
-	}
-
-	c.host = site.MaybePrepend(site.Satlab, satlabIDToUse, c.host)
+	c.host = site.GetFullyQualifiedHostname(c.commonFlags.SatlabID, dhbSatlabID, site.Satlab, c.host)
 
 	return nil
 }

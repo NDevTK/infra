@@ -21,6 +21,7 @@ import (
 type DockerClient interface {
 	Start(ctx context.Context, containerName string, req *docker.ContainerArgs, timeout time.Duration) (*docker.StartResponse, error)
 	IsUp(ctx context.Context, containerName string) (bool, error)
+	Remove(ctx context.Context, containerName string, force bool) error
 }
 
 type ServodContainerOptions struct {

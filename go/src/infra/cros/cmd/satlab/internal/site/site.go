@@ -130,6 +130,18 @@ func MaybePrepend(prefix string, satlabID string, content string) string {
 	return fmt.Sprintf("%s-%s", satlabPrefix, content)
 }
 
+// GetFullyQualifiedHostname takes in primitives used to create the fully qualified hostname and produces that hostname
+// specifiedSatlabID refers to a user specified ID which should take precedence over the fetchedSatlabID which should be fetched in an automated fashion
+func GetFullyQualifiedHostname(specifiedSatlabID string, fetchedSatlabID, prefix string, content string) string {
+	//uses either a user provided or automatically fetched Satlab ID to build the fully qualified host name
+	// no-op if the hostname is already in expected format
+	satlabIDToUse := specifiedSatlabID
+	if satlabIDToUse == "" {
+		satlabIDToUse = fetchedSatlabID
+	}
+	return MaybePrepend(prefix, satlabIDToUse, content)
+}
+
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
 var DefaultAuthOptions = chromeinfra.SetDefaultAuthOptions(auth.Options{
