@@ -141,6 +141,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "befa2dec_83248c93",
+        "filename": "go/src/infra/cmd/shivas/internal/swarming/cmds/repair_duts.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-08T22:02:03Z",
+      "side": 1,
+      "message": "Paris does not have an \"admin session\"-style group link.",
+      "parentUuid": "bd64f63e_90ea2a50",
+      "range": {
+        "startLine": 113,
+        "startChar": 1,
+        "endLine": 121,
+        "endChar": 2
+      },
+      "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0a4288c_739e334f",
