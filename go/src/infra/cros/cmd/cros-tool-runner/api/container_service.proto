@@ -1,0 +1,53 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package ctrv2.api;
+
+option go_package = "infra/cros/cmd/cros-tool-runner/api";
+
+// Exposes common docker commands as services
+service CrosToolRunnerContainerService {
+  // Creates a docker network
+  rpc CreateNetwork(CreateNetworkRequest)
+    returns (CreateNetworkResponse);
+
+  // Retrieves info of a docker network
+  rpc GetNetwork(GetNetworkRequest)
+    returns (GetNetworkResponse);
+
+  // Shuts down CTR container service
+  rpc Shutdown(ShutdownRequest)
+    returns (ShutdownResponse);
+}
+
+// Represents basic info of a docker network
+message Network {
+  // Network name
+  string name = 1;
+  // Network ID assigned by docker
+  string id = 2;
+  // Indicates if the network was created the running container service.
+  bool owned = 3;
+}
+
+message CreateNetworkRequest {
+  string name = 1;
+}
+
+message CreateNetworkResponse {
+  Network network = 1;
+}
+
+message GetNetworkRequest {
+  string name = 1;
+}
+
+message GetNetworkResponse {
+  Network network = 1;
+}
+
+message ShutdownRequest {}
+message ShutdownResponse {}
