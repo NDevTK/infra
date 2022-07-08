@@ -34,7 +34,7 @@ type Network struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Network ID assigned by docker
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	// Indicates if the network was created the running container service.
+	// Indicates if the network was created by the current container service.
 	Owned bool `protobuf:"varint,3,opt,name=owned,proto3" json:"owned,omitempty"`
 }
 
@@ -91,6 +91,73 @@ func (x *Network) GetOwned() bool {
 	return false
 }
 
+// Represents basic info of a docker container
+type Container struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Container name
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Container ID assigned by docker
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// Indicates if the container was started by the current container service.
+	Owned bool `protobuf:"varint,3,opt,name=owned,proto3" json:"owned,omitempty"`
+}
+
+func (x *Container) Reset() {
+	*x = Container{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Container) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Container) ProtoMessage() {}
+
+func (x *Container) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Container.ProtoReflect.Descriptor instead.
+func (*Container) Descriptor() ([]byte, []int) {
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Container) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Container) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Container) GetOwned() bool {
+	if x != nil {
+		return x.Owned
+	}
+	return false
+}
+
 type CreateNetworkRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -102,7 +169,7 @@ type CreateNetworkRequest struct {
 func (x *CreateNetworkRequest) Reset() {
 	*x = CreateNetworkRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[1]
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -115,7 +182,7 @@ func (x *CreateNetworkRequest) String() string {
 func (*CreateNetworkRequest) ProtoMessage() {}
 
 func (x *CreateNetworkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[1]
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -128,7 +195,7 @@ func (x *CreateNetworkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateNetworkRequest.ProtoReflect.Descriptor instead.
 func (*CreateNetworkRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{1}
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateNetworkRequest) GetName() string {
@@ -149,7 +216,7 @@ type CreateNetworkResponse struct {
 func (x *CreateNetworkResponse) Reset() {
 	*x = CreateNetworkResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[2]
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -162,7 +229,7 @@ func (x *CreateNetworkResponse) String() string {
 func (*CreateNetworkResponse) ProtoMessage() {}
 
 func (x *CreateNetworkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[2]
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -175,7 +242,7 @@ func (x *CreateNetworkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateNetworkResponse.ProtoReflect.Descriptor instead.
 func (*CreateNetworkResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{2}
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateNetworkResponse) GetNetwork() *Network {
@@ -196,7 +263,7 @@ type GetNetworkRequest struct {
 func (x *GetNetworkRequest) Reset() {
 	*x = GetNetworkRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[3]
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -209,7 +276,7 @@ func (x *GetNetworkRequest) String() string {
 func (*GetNetworkRequest) ProtoMessage() {}
 
 func (x *GetNetworkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[3]
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,7 +289,7 @@ func (x *GetNetworkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNetworkRequest.ProtoReflect.Descriptor instead.
 func (*GetNetworkRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{3}
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetNetworkRequest) GetName() string {
@@ -243,7 +310,7 @@ type GetNetworkResponse struct {
 func (x *GetNetworkResponse) Reset() {
 	*x = GetNetworkResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[4]
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -256,7 +323,7 @@ func (x *GetNetworkResponse) String() string {
 func (*GetNetworkResponse) ProtoMessage() {}
 
 func (x *GetNetworkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[4]
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -269,7 +336,7 @@ func (x *GetNetworkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNetworkResponse.ProtoReflect.Descriptor instead.
 func (*GetNetworkResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{4}
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetNetworkResponse) GetNetwork() *Network {
@@ -288,7 +355,7 @@ type ShutdownRequest struct {
 func (x *ShutdownRequest) Reset() {
 	*x = ShutdownRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[5]
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -301,7 +368,7 @@ func (x *ShutdownRequest) String() string {
 func (*ShutdownRequest) ProtoMessage() {}
 
 func (x *ShutdownRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[5]
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -314,7 +381,7 @@ func (x *ShutdownRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShutdownRequest.ProtoReflect.Descriptor instead.
 func (*ShutdownRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{5}
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{6}
 }
 
 type ShutdownResponse struct {
@@ -326,7 +393,7 @@ type ShutdownResponse struct {
 func (x *ShutdownResponse) Reset() {
 	*x = ShutdownResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[6]
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -339,7 +406,7 @@ func (x *ShutdownResponse) String() string {
 func (*ShutdownResponse) ProtoMessage() {}
 
 func (x *ShutdownResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[6]
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -352,7 +419,204 @@ func (x *ShutdownResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShutdownResponse.ProtoReflect.Descriptor instead.
 func (*ShutdownResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{6}
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{7}
+}
+
+type StartContainerRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Unique name given to the container that will be used later to retrieve
+	// container info.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Location of image that can be directly pulled by docker. Note that start
+	// container assumes docker is already authenticated.
+	// e.g. us-docker.pkg.dev/cros-registry/test-services/cros-dut:latest
+	ContainerImage string `protobuf:"bytes,2,opt,name=container_image,json=containerImage,proto3" json:"container_image,omitempty"`
+	// Additional options for `docker run`.
+	AdditionalOptions *StartContainerRequest_Options `protobuf:"bytes,3,opt,name=additional_options,json=additionalOptions,proto3" json:"additional_options,omitempty"`
+	// Command to run the server in a container.
+	// e.g. ["cros-dut", "-port", "80", ...]
+	StartCommand []string `protobuf:"bytes,4,rep,name=start_command,json=startCommand,proto3" json:"start_command,omitempty"`
+}
+
+func (x *StartContainerRequest) Reset() {
+	*x = StartContainerRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StartContainerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartContainerRequest) ProtoMessage() {}
+
+func (x *StartContainerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartContainerRequest.ProtoReflect.Descriptor instead.
+func (*StartContainerRequest) Descriptor() ([]byte, []int) {
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *StartContainerRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StartContainerRequest) GetContainerImage() string {
+	if x != nil {
+		return x.ContainerImage
+	}
+	return ""
+}
+
+func (x *StartContainerRequest) GetAdditionalOptions() *StartContainerRequest_Options {
+	if x != nil {
+		return x.AdditionalOptions
+	}
+	return nil
+}
+
+func (x *StartContainerRequest) GetStartCommand() []string {
+	if x != nil {
+		return x.StartCommand
+	}
+	return nil
+}
+
+type StartContainerResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Container *Container `protobuf:"bytes,1,opt,name=container,proto3" json:"container,omitempty"`
+}
+
+func (x *StartContainerResponse) Reset() {
+	*x = StartContainerResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StartContainerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartContainerResponse) ProtoMessage() {}
+
+func (x *StartContainerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartContainerResponse.ProtoReflect.Descriptor instead.
+func (*StartContainerResponse) Descriptor() ([]byte, []int) {
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *StartContainerResponse) GetContainer() *Container {
+	if x != nil {
+		return x.Container
+	}
+	return nil
+}
+
+// Supported options match corresponding `docker run` flags.
+type StartContainerRequest_Options struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Expose port. see docker run --expose. All exposed ports will be published
+	// to a random port on the host. Currently only support one exposed port.
+	// e.g. 80
+	Expose []string `protobuf:"bytes,1,rep,name=expose,proto3" json:"expose,omitempty"`
+	// Volume mounting. see docker run --volume
+	// e.g. /tmp/host-src/cros-test:/tmp/container-dest/cros-test
+	Volume []string `protobuf:"bytes,2,rep,name=volume,proto3" json:"volume,omitempty"`
+	// Connect to the named docker network. see docker run --network
+	// e.g. bridge
+	Network string `protobuf:"bytes,3,opt,name=network,proto3" json:"network,omitempty"`
+}
+
+func (x *StartContainerRequest_Options) Reset() {
+	*x = StartContainerRequest_Options{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StartContainerRequest_Options) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartContainerRequest_Options) ProtoMessage() {}
+
+func (x *StartContainerRequest_Options) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartContainerRequest_Options.ProtoReflect.Descriptor instead.
+func (*StartContainerRequest_Options) Descriptor() ([]byte, []int) {
+	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZIP(), []int{8, 0}
+}
+
+func (x *StartContainerRequest_Options) GetExpose() []string {
+	if x != nil {
+		return x.Expose
+	}
+	return nil
+}
+
+func (x *StartContainerRequest_Options) GetVolume() []string {
+	if x != nil {
+		return x.Volume
+	}
+	return nil
+}
+
+func (x *StartContainerRequest_Options) GetNetwork() string {
+	if x != nil {
+		return x.Network
+	}
+	return ""
 }
 
 var File_infra_cros_cmd_cros_tool_runner_api_container_service_proto protoreflect.FileDescriptor
@@ -366,43 +630,76 @@ var file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDesc = [
 	0x6f, 0x72, 0x6b, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x64,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x64, 0x22, 0x2a, 0x0a,
-	0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x64, 0x22, 0x45, 0x0a,
+	0x09, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14,
+	0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x6f,
+	0x77, 0x6e, 0x65, 0x64, 0x22, 0x2a, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x22, 0x45, 0x0a, 0x15, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x6e, 0x65, 0x74,
+	0x77, 0x6f, 0x72, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x63, 0x74, 0x72,
+	0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x07,
+	0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x22, 0x27, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x4e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x22, 0x42, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x07, 0x6e, 0x65, 0x74,
+	0x77, 0x6f, 0x72, 0x6b, 0x22, 0x11, 0x0a, 0x0f, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x12, 0x0a, 0x10, 0x53, 0x68, 0x75, 0x74, 0x64,
+	0x6f, 0x77, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xa7, 0x02, 0x0a, 0x15,
+	0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x45, 0x0a, 0x15, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
-	0x22, 0x27, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x42, 0x0a, 0x12, 0x47, 0x65, 0x74,
-	0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x2c, 0x0a, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x12, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x65, 0x74,
-	0x77, 0x6f, 0x72, 0x6b, 0x52, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x22, 0x11, 0x0a,
-	0x0f, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x22, 0x12, 0x0a, 0x10, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x32, 0x84, 0x02, 0x0a, 0x1e, 0x43, 0x72, 0x6f, 0x73, 0x54, 0x6f, 0x6f,
-	0x6c, 0x52, 0x75, 0x6e, 0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72,
-	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x52, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x1f, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x63, 0x6f, 0x6e,
+	0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0e, 0x63, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x49, 0x6d, 0x61,
+	0x67, 0x65, 0x12, 0x57, 0x0a, 0x12, 0x61, 0x64, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x61, 0x6c,
+	0x5f, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28,
+	0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x2e, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x11, 0x61, 0x64, 0x64, 0x69, 0x74, 0x69,
+	0x6f, 0x6e, 0x61, 0x6c, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x73,
+	0x74, 0x61, 0x72, 0x74, 0x5f, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x18, 0x04, 0x20, 0x03,
+	0x28, 0x09, 0x52, 0x0c, 0x73, 0x74, 0x61, 0x72, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64,
+	0x1a, 0x53, 0x0a, 0x07, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x65,
+	0x78, 0x70, 0x6f, 0x73, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06, 0x65, 0x78, 0x70,
+	0x6f, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x76, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x06, 0x76, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6e,
+	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x22, 0x4c, 0x0a, 0x16, 0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x6f,
+	0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x32, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x14, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43,
+	0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x61, 0x69,
+	0x6e, 0x65, 0x72, 0x32, 0xdb, 0x02, 0x0a, 0x1e, 0x43, 0x72, 0x6f, 0x73, 0x54, 0x6f, 0x6f, 0x6c,
+	0x52, 0x75, 0x6e, 0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x52, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x1f, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32,
 	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x63, 0x74, 0x72, 0x76,
-	0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x49, 0x0a, 0x0a, 0x47,
-	0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x1c, 0x2e, 0x63, 0x74, 0x72, 0x76,
-	0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x08, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f,
-	0x77, 0x6e, 0x12, 0x1a, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53,
-	0x68, 0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b,
-	0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x68, 0x75, 0x74, 0x64,
-	0x6f, 0x77, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x25, 0x5a, 0x23, 0x69,
-	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x63, 0x6d, 0x64, 0x2f, 0x63, 0x72,
-	0x6f, 0x73, 0x2d, 0x74, 0x6f, 0x6f, 0x6c, 0x2d, 0x72, 0x75, 0x6e, 0x6e, 0x65, 0x72, 0x2f, 0x61,
-	0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x49, 0x0a, 0x0a, 0x47, 0x65,
+	0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x1c, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x08, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f, 0x77,
+	0x6e, 0x12, 0x1a, 0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x68,
+	0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e,
+	0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f,
+	0x77, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x55, 0x0a, 0x0e, 0x53, 0x74,
+	0x61, 0x72, 0x74, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x12, 0x20, 0x2e, 0x63,
+	0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x6f,
+	0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21,
+	0x2e, 0x63, 0x74, 0x72, 0x76, 0x32, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x42, 0x25, 0x5a, 0x23, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f,
+	0x63, 0x6d, 0x64, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2d, 0x74, 0x6f, 0x6f, 0x6c, 0x2d, 0x72, 0x75,
+	0x6e, 0x6e, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -417,30 +714,38 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescGZI
 	return file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDescData
 }
 
-var file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_goTypes = []interface{}{
-	(*Network)(nil),               // 0: ctrv2.api.Network
-	(*CreateNetworkRequest)(nil),  // 1: ctrv2.api.CreateNetworkRequest
-	(*CreateNetworkResponse)(nil), // 2: ctrv2.api.CreateNetworkResponse
-	(*GetNetworkRequest)(nil),     // 3: ctrv2.api.GetNetworkRequest
-	(*GetNetworkResponse)(nil),    // 4: ctrv2.api.GetNetworkResponse
-	(*ShutdownRequest)(nil),       // 5: ctrv2.api.ShutdownRequest
-	(*ShutdownResponse)(nil),      // 6: ctrv2.api.ShutdownResponse
+	(*Network)(nil),                       // 0: ctrv2.api.Network
+	(*Container)(nil),                     // 1: ctrv2.api.Container
+	(*CreateNetworkRequest)(nil),          // 2: ctrv2.api.CreateNetworkRequest
+	(*CreateNetworkResponse)(nil),         // 3: ctrv2.api.CreateNetworkResponse
+	(*GetNetworkRequest)(nil),             // 4: ctrv2.api.GetNetworkRequest
+	(*GetNetworkResponse)(nil),            // 5: ctrv2.api.GetNetworkResponse
+	(*ShutdownRequest)(nil),               // 6: ctrv2.api.ShutdownRequest
+	(*ShutdownResponse)(nil),              // 7: ctrv2.api.ShutdownResponse
+	(*StartContainerRequest)(nil),         // 8: ctrv2.api.StartContainerRequest
+	(*StartContainerResponse)(nil),        // 9: ctrv2.api.StartContainerResponse
+	(*StartContainerRequest_Options)(nil), // 10: ctrv2.api.StartContainerRequest.Options
 }
 var file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_depIdxs = []int32{
-	0, // 0: ctrv2.api.CreateNetworkResponse.network:type_name -> ctrv2.api.Network
-	0, // 1: ctrv2.api.GetNetworkResponse.network:type_name -> ctrv2.api.Network
-	1, // 2: ctrv2.api.CrosToolRunnerContainerService.CreateNetwork:input_type -> ctrv2.api.CreateNetworkRequest
-	3, // 3: ctrv2.api.CrosToolRunnerContainerService.GetNetwork:input_type -> ctrv2.api.GetNetworkRequest
-	5, // 4: ctrv2.api.CrosToolRunnerContainerService.Shutdown:input_type -> ctrv2.api.ShutdownRequest
-	2, // 5: ctrv2.api.CrosToolRunnerContainerService.CreateNetwork:output_type -> ctrv2.api.CreateNetworkResponse
-	4, // 6: ctrv2.api.CrosToolRunnerContainerService.GetNetwork:output_type -> ctrv2.api.GetNetworkResponse
-	6, // 7: ctrv2.api.CrosToolRunnerContainerService.Shutdown:output_type -> ctrv2.api.ShutdownResponse
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: ctrv2.api.CreateNetworkResponse.network:type_name -> ctrv2.api.Network
+	0,  // 1: ctrv2.api.GetNetworkResponse.network:type_name -> ctrv2.api.Network
+	10, // 2: ctrv2.api.StartContainerRequest.additional_options:type_name -> ctrv2.api.StartContainerRequest.Options
+	1,  // 3: ctrv2.api.StartContainerResponse.container:type_name -> ctrv2.api.Container
+	2,  // 4: ctrv2.api.CrosToolRunnerContainerService.CreateNetwork:input_type -> ctrv2.api.CreateNetworkRequest
+	4,  // 5: ctrv2.api.CrosToolRunnerContainerService.GetNetwork:input_type -> ctrv2.api.GetNetworkRequest
+	6,  // 6: ctrv2.api.CrosToolRunnerContainerService.Shutdown:input_type -> ctrv2.api.ShutdownRequest
+	8,  // 7: ctrv2.api.CrosToolRunnerContainerService.StartContainer:input_type -> ctrv2.api.StartContainerRequest
+	3,  // 8: ctrv2.api.CrosToolRunnerContainerService.CreateNetwork:output_type -> ctrv2.api.CreateNetworkResponse
+	5,  // 9: ctrv2.api.CrosToolRunnerContainerService.GetNetwork:output_type -> ctrv2.api.GetNetworkResponse
+	7,  // 10: ctrv2.api.CrosToolRunnerContainerService.Shutdown:output_type -> ctrv2.api.ShutdownResponse
+	9,  // 11: ctrv2.api.CrosToolRunnerContainerService.StartContainer:output_type -> ctrv2.api.StartContainerResponse
+	8,  // [8:12] is the sub-list for method output_type
+	4,  // [4:8] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() }
@@ -462,7 +767,7 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			}
 		}
 		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateNetworkRequest); i {
+			switch v := v.(*Container); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -474,7 +779,7 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			}
 		}
 		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateNetworkResponse); i {
+			switch v := v.(*CreateNetworkRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -486,7 +791,7 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			}
 		}
 		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetNetworkRequest); i {
+			switch v := v.(*CreateNetworkResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -498,7 +803,7 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			}
 		}
 		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetNetworkResponse); i {
+			switch v := v.(*GetNetworkRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -510,7 +815,7 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			}
 		}
 		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ShutdownRequest); i {
+			switch v := v.(*GetNetworkResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -522,7 +827,55 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			}
 		}
 		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ShutdownRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ShutdownResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartContainerRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartContainerResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartContainerRequest_Options); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -540,7 +893,7 @@ func file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_cros_cmd_cros_tool_runner_api_container_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

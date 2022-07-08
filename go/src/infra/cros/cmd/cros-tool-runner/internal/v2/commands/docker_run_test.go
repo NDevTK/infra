@@ -1,0 +1,104 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands
+
+import (
+	"strings"
+	"testing"
+
+	"infra/cros/cmd/cros-tool-runner/api"
+)
+
+func TestDockerRun_noImage(t *testing.T) {
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{},
+	}
+	_, err := dockerRun.compose()
+	if err == nil {
+		t.Fatalf("Exepected an error of missing image")
+	}
+}
+
+func TestDockerRun_basic(t *testing.T) {
+	image := "hello-world:latest"
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P hello-world:latest"
+	check(t, args, expect)
+}
+
+func TestDockerRun_withName(t *testing.T) {
+	image := "hello-world:latest"
+	name := "my-hello-world"
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image, Name: name},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P --name my-hello-world hello-world:latest"
+	check(t, args, expect)
+}
+
+func TestDockerRun_withStartCommand(t *testing.T) {
+	image := "cros-dut:latest"
+	command := []string{"cros-dut", "-port 80"}
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image, StartCommand: command},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P cros-dut:latest cros-dut -port 80"
+	check(t, args, expect)
+}
+
+func TestDockerRun_withNetwork(t *testing.T) {
+	image := "cros-dut:latest"
+	command := []string{"cros-dut", "-port 80"}
+	network := "mynet"
+	options := &api.StartContainerRequest_Options{Network: network}
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image, StartCommand: command,
+			AdditionalOptions: options},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P --network mynet cros-dut:latest cros-dut -port 80"
+	check(t, args, expect)
+}
+
+func TestDockerRun_withExpose(t *testing.T) {
+	image := "cros-dut:latest"
+	command := []string{"cros-dut", "-port 80"}
+	options := &api.StartContainerRequest_Options{Expose: []string{"80", "22"}}
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image, StartCommand: command,
+			AdditionalOptions: options},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P --expose 80 --expose 22 cros-dut:latest cros-dut -port 80"
+	check(t, args, expect)
+}
+
+func TestDockerRun_withVolume(t *testing.T) {
+	image := "cros-test:latest"
+	command := []string{"cros-test"}
+	options := &api.StartContainerRequest_Options{
+		Volume: []string{
+			"/tmp/build123/test:/cros-test",
+		}}
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image, StartCommand: command,
+			AdditionalOptions: options},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P --volume /tmp/build123/test:/cros-test cros-test:latest cros-test"
+	check(t, args, expect)
+}
+
+func check(t *testing.T, actual []string, expectStr string) {
+	actualStr := strings.Join(actual, " ")
+	if actualStr != expectStr {
+		t.Fatalf("Arguments do not match.\nExpect: %s\nActual: %s\n", expectStr, actualStr)
+	}
+}

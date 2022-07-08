@@ -21,6 +21,14 @@ service CrosToolRunnerContainerService {
   // Shuts down CTR container service
   rpc Shutdown(ShutdownRequest)
     returns (ShutdownResponse);
+
+  // Runs a docker container with the provided start command.
+  // This assumes docker is already authenticated to pull the supplied image.
+  // The container will run in detached mode (-d); all exposed ports will be
+  // published to a random port on host (-P); and the container will be removed
+  // after it stops (--rm).
+  rpc StartContainer(StartContainerRequest)
+    returns (StartContainerResponse);
 }
 
 // Represents basic info of a docker network
@@ -29,7 +37,17 @@ message Network {
   string name = 1;
   // Network ID assigned by docker
   string id = 2;
-  // Indicates if the network was created the running container service.
+  // Indicates if the network was created by the current container service.
+  bool owned = 3;
+}
+
+// Represents basic info of a docker container
+message Container {
+  // Container name
+  string name = 1;
+  // Container ID assigned by docker
+  string id = 2;
+  // Indicates if the container was started by the current container service.
   bool owned = 3;
 }
 
@@ -51,3 +69,35 @@ message GetNetworkResponse {
 
 message ShutdownRequest {}
 message ShutdownResponse {}
+
+message StartContainerRequest {
+  // Unique name given to the container that will be used later to retrieve
+  // container info.
+  string name = 1;
+  // Location of image that can be directly pulled by docker. Note that start
+  // container assumes docker is already authenticated.
+  // e.g. us-docker.pkg.dev/cros-registry/test-services/cros-dut:latest
+  string container_image = 2;
+  // Supported options match corresponding `docker run` flags.
+  message Options {
+    // Expose port. see docker run --expose. All exposed ports will be published
+    // to a random port on the host. Currently only support one exposed port.
+    // e.g. 80
+    repeated string expose = 1;
+    // Volume mounting. see docker run --volume
+    // e.g. /tmp/host-src/cros-test:/tmp/container-dest/cros-test
+    repeated string volume = 2;
+    // Connect to the named docker network. see docker run --network
+    // e.g. bridge
+    string network = 3;
+  }
+  // Additional options for `docker run`.
+  Options additional_options = 3;
+  // Command to run the server in a container.
+  // e.g. ["cros-dut", "-port", "80", ...]
+  repeated string start_command = 4;
+}
+
+message StartContainerResponse {
+  Container container = 1;
+}

@@ -5,6 +5,7 @@
 package server
 
 import (
+	"strings"
 	"testing"
 
 	"google.golang.org/grpc/codes"
@@ -105,5 +106,34 @@ func TestMapToCode_Unknown(t *testing.T) {
 	code := utils.mapToCode(errMsg)
 	if code != codes.Unknown {
 		t.Fatalf("code is incorrect: %v", code)
+	}
+}
+
+func TestReverse(t *testing.T) {
+	s := []string{"a", "b", "c"}
+	expect := []string{"c", "b", "a"}
+	reversed := utils.reverse(s)
+	check(t, reversed, expect)
+}
+
+func TestReverse_empty(t *testing.T) {
+	s := make([]string, 0)
+	expect := make([]string, 0)
+	reversed := utils.reverse(s)
+	check(t, reversed, expect)
+}
+
+func TestReverse_oneElement(t *testing.T) {
+	s := []string{"a"}
+	expect := []string{"a"}
+	reversed := utils.reverse(s)
+	check(t, reversed, expect)
+}
+
+func check(t *testing.T, actual []string, expect []string) {
+	actualStr := strings.Join(actual, ",")
+	expectStr := strings.Join(expect, ",")
+	if actualStr != expectStr {
+		t.Fatalf("Slices do not match expect\nExpect: %v\nActual: %v", expect, actual)
 	}
 }

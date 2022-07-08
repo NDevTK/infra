@@ -32,11 +32,20 @@ $ grpc_cli ls localhost:8082 ctrv2.api.CrosToolRunnerContainerService --channel_
 CreateNetwork
 GetNetwork
 Shutdown
+StartContainer
 $ grpc_cli call localhost:8082 ctrv2.api.CrosToolRunnerContainerService.GetNetwork "name: 'bridge'" --channel_creds_type insecure
 connecting to localhost:8082
 network {
   name: "bridge"
   id: "55be43ae262d69f75750675c9f6491a11271e8afbcc80d3c21a162d8b7d24831"
+}
+Rpc succeeded with OK status
+$ grpc_cli call localhost:8082 ctrv2.api.CrosToolRunnerContainerService.StartContainer "name: 'my_container' container_image: 'us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457' start_command: ['cros-dut', '-cache_address', 'localhost:7443', '-dut_address', 'dut_address:2222']" --channel_creds_type insecure
+connecting to localhost:8082
+container {
+  name: "my_container"
+  id: "3d67e5d71e55f16e7535d0a21f766e9daf919b280232dd3d05faddeb574aaa27"
+  owned: true
 }
 Rpc succeeded with OK status
 ```

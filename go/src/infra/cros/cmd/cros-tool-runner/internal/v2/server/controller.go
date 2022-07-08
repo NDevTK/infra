@@ -23,7 +23,7 @@ func NewContainerServer() (*grpc.Server, func()) {
 		networks: make([]string, 0),
 	}
 	s := grpc.NewServer()
-	destructor := func() { containerServer.removeNetworks() }
+	destructor := func() { containerServer.cleanup() }
 	api.RegisterCrosToolRunnerContainerServiceServer(s, containerServer)
 	reflection.Register(s)
 	return s, destructor

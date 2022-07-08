@@ -22,6 +22,13 @@ type Command interface {
 	Execute(context.Context) (string, string, error)
 }
 
+// argumentsComposer is the interface to be implemented by more complicated
+// commands to separate composing command from execution.
+type argumentsComposer interface {
+	// compose returns an array of arguments, error is returned if not composable
+	compose() ([]string, error)
+}
+
 // execute runs blocking command and returns stdout and stderr as strings.
 func execute(ctx context.Context, name string, args []string) (string, string, error) {
 	cmd := exec.CommandContext(ctx, name, args...)

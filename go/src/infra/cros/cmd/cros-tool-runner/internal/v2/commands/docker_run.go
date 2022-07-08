@@ -1,0 +1,67 @@
+package commands
+
+import (
+	"context"
+	"errors"
+
+	"infra/cros/cmd/cros-tool-runner/api"
+)
+
+// DockerRun represents `docker run` and is an alias to StartContainerRequest
+type DockerRun struct {
+	*api.StartContainerRequest
+}
+
+// compose implements argumentsComposer
+func (c *DockerRun) compose() ([]string, error) {
+	if c.ContainerImage == "" {
+		return nil, errors.New("ContainerImage is mandatory")
+	}
+	args := []string{"run", "-d", "--rm", "-P"}
+	if c.Name != "" {
+		args = append(args, "--name", c.Name)
+	}
+	if c.AdditionalOptions != nil {
+		options := c.AdditionalOptions
+		if options.Network != "" {
+			args = append(args, "--network", options.Network)
+		}
+		if options.Expose != nil {
+			for _, port := range options.Expose {
+				if port == "" {
+					continue
+				}
+				args = append(args, "--expose", port)
+			}
+		}
+		if options.Volume != nil {
+			for _, volume := range options.Volume {
+				if volume == "" {
+					continue
+				}
+				args = append(args, "--volume", volume)
+			}
+		}
+	}
+	args = append(args, c.ContainerImage)
+	args = append(args, c.StartCommand...)
+	return args, nil
+}
+
+func (c *DockerRun) Execute(ctx context.Context) (string, string, error) {
+	args, err := c.compose()
+	if err != nil {
+		return "", "", err
+	}
+	return execute(ctx, "docker", args)
+}
+
+// DockerPull represents `docker pull`
+type DockerPull struct {
+	ContainerImage string // ContainerImage is the full location of an image that can directly pulled by docker
+}
+
+func (c *DockerPull) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"pull", c.ContainerImage}
+	return execute(ctx, "docker", args)
+}

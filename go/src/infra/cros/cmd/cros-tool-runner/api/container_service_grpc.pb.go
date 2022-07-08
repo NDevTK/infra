@@ -24,6 +24,12 @@ type CrosToolRunnerContainerServiceClient interface {
 	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*GetNetworkResponse, error)
 	// Shuts down CTR container service
 	Shutdown(ctx context.Context, in *ShutdownRequest, opts ...grpc.CallOption) (*ShutdownResponse, error)
+	// Runs a docker container with the provided start command.
+	// This assumes docker is already authenticated to pull the supplied image.
+	// The container will run in detached mode (-d); all exposed ports will be
+	// published to a random port on host (-P); and the container will be removed
+	// after it stops (--rm).
+	StartContainer(ctx context.Context, in *StartContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error)
 }
 
 type crosToolRunnerContainerServiceClient struct {
@@ -61,6 +67,15 @@ func (c *crosToolRunnerContainerServiceClient) Shutdown(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *crosToolRunnerContainerServiceClient) StartContainer(ctx context.Context, in *StartContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error) {
+	out := new(StartContainerResponse)
+	err := c.cc.Invoke(ctx, "/ctrv2.api.CrosToolRunnerContainerService/StartContainer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CrosToolRunnerContainerServiceServer is the server API for CrosToolRunnerContainerService service.
 // All implementations must embed UnimplementedCrosToolRunnerContainerServiceServer
 // for forward compatibility
@@ -71,6 +86,12 @@ type CrosToolRunnerContainerServiceServer interface {
 	GetNetwork(context.Context, *GetNetworkRequest) (*GetNetworkResponse, error)
 	// Shuts down CTR container service
 	Shutdown(context.Context, *ShutdownRequest) (*ShutdownResponse, error)
+	// Runs a docker container with the provided start command.
+	// This assumes docker is already authenticated to pull the supplied image.
+	// The container will run in detached mode (-d); all exposed ports will be
+	// published to a random port on host (-P); and the container will be removed
+	// after it stops (--rm).
+	StartContainer(context.Context, *StartContainerRequest) (*StartContainerResponse, error)
 	mustEmbedUnimplementedCrosToolRunnerContainerServiceServer()
 }
 
@@ -86,6 +107,9 @@ func (UnimplementedCrosToolRunnerContainerServiceServer) GetNetwork(context.Cont
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) Shutdown(context.Context, *ShutdownRequest) (*ShutdownResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Shutdown not implemented")
+}
+func (UnimplementedCrosToolRunnerContainerServiceServer) StartContainer(context.Context, *StartContainerRequest) (*StartContainerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartContainer not implemented")
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) mustEmbedUnimplementedCrosToolRunnerContainerServiceServer() {
 }
@@ -155,6 +179,24 @@ func _CrosToolRunnerContainerService_Shutdown_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CrosToolRunnerContainerService_StartContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartContainerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CrosToolRunnerContainerServiceServer).StartContainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ctrv2.api.CrosToolRunnerContainerService/StartContainer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrosToolRunnerContainerServiceServer).StartContainer(ctx, req.(*StartContainerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CrosToolRunnerContainerService_ServiceDesc is the grpc.ServiceDesc for CrosToolRunnerContainerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -173,6 +215,10 @@ var CrosToolRunnerContainerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Shutdown",
 			Handler:    _CrosToolRunnerContainerService_Shutdown_Handler,
+		},
+		{
+			MethodName: "StartContainer",
+			Handler:    _CrosToolRunnerContainerService_StartContainer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

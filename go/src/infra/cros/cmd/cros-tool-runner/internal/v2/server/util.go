@@ -33,7 +33,17 @@ func (*serverUtils) contains(s []string, e string) bool {
 	return false
 }
 
-// mapToCode maps an error message to a corresponding gRPC status code.
+// reverse flips the order of elements in a slice.
+func (*serverUtils) reverse(s []string) []string {
+	size := len(s)
+	result := make([]string, size)
+	for i := range s {
+		result[i] = s[size-i-1]
+	}
+	return result
+}
+
+// mapToCode maps common docker error messages to gRPC status codes.
 func (*serverUtils) mapToCode(errMsg string) codes.Code {
 	switch {
 	// TODO(mingkong): add "No such container"
@@ -52,7 +62,22 @@ func (*serverUtils) mapToCode(errMsg string) codes.Code {
 
 // toStatusError converts stderr output string to gRPC status error
 func (u *serverUtils) toStatusError(stderrOutput string) error {
+	return u.toStatusErrorWithMapper(stderrOutput, u.mapToCode)
+}
+
+// toStatusErrorWithMapper converts stderr output string to gRPC status error using a custom code mapping function
+func (u *serverUtils) toStatusErrorWithMapper(stderrOutput string, mapper func(string) codes.Code) error {
 	errMsg := u.firstLine(stderrOutput)
 	log.Println("first line from stderr:", errMsg)
-	return status.Error(u.mapToCode(errMsg), errMsg)
+	return status.Error(mapper(errMsg), errMsg)
+}
+
+// invalidArgument returns an InvalidArgument gRPC status error
+func (*serverUtils) invalidArgument(reason string) error {
+	return status.Error(codes.InvalidArgument, reason)
+}
+
+// unimplemented returns an Unimplemented gRPC status error
+func (*serverUtils) unimplemented(reason string) error {
+	return status.Error(codes.Unimplemented, reason)
 }
