@@ -40,6 +40,10 @@ service CrosToolRunnerContainerService {
   // StartContainer endpoint, and returns the generic StartContainerResponse.
   rpc StartTemplatedContainer(StartTemplatedContainerRequest)
     returns (StartContainerResponse);
+
+  // Executes a stack of commands in order. Only certain commands are supported.
+  rpc StackCommands(StackCommandsRequest)
+    returns (StackCommandsResponse);
 }
 
 // Represents basic info of a docker network
@@ -126,4 +130,25 @@ message StartTemplatedContainerRequest {
   string container_image = 2;
   // Container-specific template
   Template template = 3;
+}
+
+message StackCommandsRequest {
+  message Stackable {
+    oneof command {
+      StartContainerRequest start_container = 1;
+      StartTemplatedContainerRequest start_templated_container = 2;
+      CreateNetworkRequest create_network = 3;
+    }
+  }
+  repeated Stackable requests = 1;
+}
+
+message StackCommandsResponse {
+  message Stackable {
+    oneof output {
+      StartContainerResponse start_container = 1;
+      CreateNetworkResponse create_network = 2;
+    }
+  }
+  repeated Stackable responses = 1;
 }

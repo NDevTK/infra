@@ -15,12 +15,14 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"infra/cros/cmd/cros-tool-runner/api"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )
 
 // NewContainerServer returns a new gRPC server for container services.
 func NewContainerServer() (*grpc.Server, func()) {
 	containerServer := &ContainerServerImpl{
-		networks: make([]string, 0),
+		executor:          &DefaultCommandExecutor{},
+		templateProcessor: &templates.RequestRouter{},
 	}
 	s := grpc.NewServer()
 	destructor := func() { containerServer.cleanup() }

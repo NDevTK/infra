@@ -21,14 +21,16 @@ import (
 // mapping errors to proper gRPC status codes.
 type ContainerServerImpl struct {
 	api.UnimplementedCrosToolRunnerContainerServiceServer
-	networks   []string // TODO(mingkong) use a map
-	containers []string
+	networks          []string // TODO(mingkong) use a map
+	containers        []string
+	executor          CommandExecutor
+	templateProcessor templates.TemplateProcessor
 }
 
 // CreateNetwork creates a new docker network with the given name.
 func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.CreateNetworkRequest) (*api.CreateNetworkResponse, error) {
 	cmd := commands.NetworkCreate{Name: request.Name}
-	stdout, stderr, err := cmd.Execute(ctx)
+	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
 	if stderr != "" {
 		return nil, utils.toStatusError(stderr)
 	}
@@ -44,7 +46,7 @@ func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.Cr
 // GetNetwork retrieves information of given docker network.
 func (s *ContainerServerImpl) GetNetwork(ctx context.Context, request *api.GetNetworkRequest) (*api.GetNetworkResponse, error) {
 	cmd := commands.NetworkInspect{Names: []string{request.Name}, Format: "{{.Id}}"}
-	stdout, stderr, err := cmd.Execute(ctx)
+	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
 	if stderr != "" {
 		return nil, utils.toStatusError(stderr)
 	}
@@ -70,14 +72,14 @@ func (s *ContainerServerImpl) Shutdown(context.Context, *api.ShutdownRequest) (*
 // StartContainer pulls image and then calls docker run to start a container.
 func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.StartContainerRequest) (*api.StartContainerResponse, error) {
 	if request.Name == "" {
-		return nil, utils.invalidArgument("A unique name must be specified")
+		return nil, utils.invalidArgument("Missing name")
 	}
 	if request.ContainerImage == "" {
-		return nil, utils.invalidArgument("A container image must be specified")
+		return nil, utils.invalidArgument("Missing container_image")
 	}
 	// TODO(mingkong): define behavior of existing name in containers[]
 	if request.StartCommand == nil || len(request.StartCommand) == 0 {
-		return nil, utils.invalidArgument("A start command must be specified")
+		return nil, utils.invalidArgument("Missing start_command")
 	}
 	if request.AdditionalOptions != nil {
 		options := request.AdditionalOptions
@@ -91,7 +93,7 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	}
 
 	cmd := commands.DockerRun{StartContainerRequest: request}
-	stdout, stderr, err := cmd.Execute(ctx)
+	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
 	if stderr != "" {
 		return nil, utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
@@ -115,7 +117,7 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 // pullImage pulls docker image and handles error mapping specifically
 func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error {
 	pullCmd := commands.DockerPull{ContainerImage: image}
-	_, stderr, _ := pullCmd.Execute(ctx)
+	_, stderr, _ := s.executor.Execute(ctx, &pullCmd)
 	if stderr != "" {
 		return utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
@@ -128,18 +130,57 @@ func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error
 			}
 		})
 	}
+	log.Println("success: pulled image", image)
 	return nil
 }
 
 // StartTemplatedContainer delegates to template processors to populate templates into valid StartContainerRequest,
 // and then passes over to the generic endpoint.
 func (s *ContainerServerImpl) StartTemplatedContainer(ctx context.Context, request *api.StartTemplatedContainerRequest) (*api.StartContainerResponse, error) {
-	router := templates.RequestRouter{}
-	processedRequest, err := router.Process(request)
+	processedRequest, err := s.templateProcessor.Process(request)
 	if err != nil {
 		return nil, err
 	}
 	return s.StartContainer(ctx, processedRequest)
+}
+
+// StackCommands provides a scripting mechanism to execute a series of commands in order.
+func (s *ContainerServerImpl) StackCommands(ctx context.Context, request *api.StackCommandsRequest) (*api.StackCommandsResponse, error) {
+	outputs := make([]*api.StackCommandsResponse_Stackable, 0)
+	for _, r := range request.Requests {
+		switch t := r.Command.(type) {
+		case *api.StackCommandsRequest_Stackable_CreateNetwork:
+			output, err := s.CreateNetwork(ctx, r.GetCreateNetwork())
+			if err != nil {
+				return &api.StackCommandsResponse{Responses: outputs}, err
+			}
+			outputs = append(outputs, &api.StackCommandsResponse_Stackable{
+				Output: &api.StackCommandsResponse_Stackable_CreateNetwork{
+					CreateNetwork: output,
+				}})
+		case *api.StackCommandsRequest_Stackable_StartContainer:
+			output, err := s.StartContainer(ctx, r.GetStartContainer())
+			if err != nil {
+				return &api.StackCommandsResponse{Responses: outputs}, err
+			}
+			outputs = append(outputs, &api.StackCommandsResponse_Stackable{
+				Output: &api.StackCommandsResponse_Stackable_StartContainer{
+					StartContainer: output,
+				}})
+		case *api.StackCommandsRequest_Stackable_StartTemplatedContainer:
+			output, err := s.StartTemplatedContainer(ctx, r.GetStartTemplatedContainer())
+			if err != nil {
+				return &api.StackCommandsResponse{Responses: outputs}, err
+			}
+			outputs = append(outputs, &api.StackCommandsResponse_Stackable{
+				Output: &api.StackCommandsResponse_Stackable_StartContainer{
+					StartContainer: output,
+				}})
+		default:
+			return &api.StackCommandsResponse{Responses: outputs}, utils.unimplemented(fmt.Sprintf("Unimplemented request type %v", t))
+		}
+	}
+	return &api.StackCommandsResponse{Responses: outputs}, nil
 }
 
 // stopContainers removes containers that are owned by current CTRv2 service in the reverse order of how they are started.
@@ -150,7 +191,7 @@ func (s *ContainerServerImpl) stopContainers() {
 	}
 	log.Println("stopping containers")
 	cmd := commands.ContainerStop{Names: utils.reverse(s.containers)}
-	stdout, stderr, _ := cmd.Execute(context.Background())
+	stdout, stderr, _ := s.executor.Execute(context.Background(), &cmd)
 	if stdout != "" {
 		log.Println("received stdout:", stdout)
 	}
@@ -169,7 +210,7 @@ func (s *ContainerServerImpl) removeNetworks() {
 	}
 	log.Println("removing networks")
 	cmd := commands.NetworkRemove{Names: s.networks}
-	stdout, stderr, _ := cmd.Execute(context.Background())
+	stdout, stderr, _ := s.executor.Execute(context.Background(), &cmd)
 	if stdout != "" {
 		log.Println("received stdout:", stdout)
 	}
