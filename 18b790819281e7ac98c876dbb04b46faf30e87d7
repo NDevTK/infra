@@ -53,6 +53,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "27e785ad_2c4fa74e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-08T21:51:57Z",
+      "side": 1,
+      "message": "I added another parameter to control whether to print the batch link.",
+      "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b5471100_3e14ddf6",
@@ -76,6 +93,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2aed333_21802530",
+        "filename": "go/src/infra/cmd/shivas/internal/swarming/cmds/repair_duts.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-08T21:51:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5471100_3e14ddf6",
+      "range": {
+        "startLine": 113,
+        "startChar": 1,
+        "endLine": 121,
+        "endChar": 2
+      },
+      "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0a4288c_739e334f",
@@ -89,6 +130,30 @@
       "writtenOn": "2022-07-08T00:28:20Z",
       "side": 1,
       "message": "i think we need add `utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)` everywhere when we called this function before.",
+      "range": {
+        "startLine": 274,
+        "startChar": 23,
+        "endLine": 274,
+        "endChar": 35
+      },
+      "revId": "18b790819281e7ac98c876dbb04b46faf30e87d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2d4d694_c0a217de",
+        "filename": "go/src/infra/libs/swarming/task_creator.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-08T21:51:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0a4288c_739e334f",
       "range": {
         "startLine": 274,
         "startChar": 23,
