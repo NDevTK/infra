@@ -31,6 +31,7 @@ func crosRepairPlan() *Plan {
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
+			"Record type C status",
 		},
 		Actions: crosRepairActions(),
 	}
@@ -1913,6 +1914,16 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			ExecName: "sample_pass",
+		},
+		"Record type C status": {
+			Docs: []string{
+				"Record the type C status reported by the DUT",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName:               "cros_log_typec_status",
+			AllowFailAfterRecovery: true,
 		},
 	}
 }
