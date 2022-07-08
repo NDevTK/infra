@@ -55,6 +55,9 @@ export function AssetList() {
   React.useEffect(() => {
     dispatch(setActiveEntity('assets'));
   }, []);
+  React.useEffect(() => {
+    dispatch(queryAssetAsync({ pageSize: 100, pageToken: '' }));
+  }, []);
 
   const spinDialogOpen = useAppSelector(
     (state) => state.utility.spinDialogOpen
