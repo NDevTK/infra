@@ -42,6 +42,9 @@ export function ResourceList() {
   React.useEffect(() => {
     dispatch(setActiveEntity('resources'));
   }, []);
+  React.useEffect(() => {
+    dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }));
+  }, []);
 
   const rows: GridRowsProp = useAppSelector(
     (state) => state.resource.resources

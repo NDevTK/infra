@@ -41,6 +41,9 @@ export function AssetInstanceList() {
   React.useEffect(() => {
     dispatch(queryAssetAsync({ pageSize: 100, pageToken: '' }));
   }, []);
+  React.useEffect(() => {
+    dispatch(queryAssetInstanceAsync({ pageSize: 100, pageToken: '' }));
+  }, []);
   const assets: AssetModel[] = useAppSelector(
     (state) => state.assetInstance.assets
   );
