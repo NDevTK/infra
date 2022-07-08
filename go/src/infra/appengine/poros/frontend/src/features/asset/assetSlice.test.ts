@@ -90,6 +90,8 @@ const testState: AssetState = {
   assetResourcesToSave: [testAssetResource, AssetResourceModel.defaultEntity()],
   assetResourcesToDelete: [],
   assetSpinRecord: '',
+  fetchResourceStatus: 'idle',
+  defaultResources: [],
 };
 test('should return the initial state', () => {
   expect(store.getState().asset).toEqual(initialState);
