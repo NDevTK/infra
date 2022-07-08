@@ -30,6 +30,13 @@ type CrosToolRunnerContainerServiceClient interface {
 	// published to a random port on host (-P); and the container will be removed
 	// after it stops (--rm).
 	StartContainer(ctx context.Context, in *StartContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error)
+	// Runs a docker container that has a template implemented. A template
+	// simplifies the data required in the request, and provides placeholders to
+	// populate information that is only known at runtime. E.g. dynamically mapped
+	// port number, IP address of a container.
+	// A template implementation converts the request to the generic
+	// StartContainer endpoint, and returns the generic StartContainerResponse.
+	StartTemplatedContainer(ctx context.Context, in *StartTemplatedContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error)
 }
 
 type crosToolRunnerContainerServiceClient struct {
@@ -76,6 +83,15 @@ func (c *crosToolRunnerContainerServiceClient) StartContainer(ctx context.Contex
 	return out, nil
 }
 
+func (c *crosToolRunnerContainerServiceClient) StartTemplatedContainer(ctx context.Context, in *StartTemplatedContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error) {
+	out := new(StartContainerResponse)
+	err := c.cc.Invoke(ctx, "/ctrv2.api.CrosToolRunnerContainerService/StartTemplatedContainer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CrosToolRunnerContainerServiceServer is the server API for CrosToolRunnerContainerService service.
 // All implementations must embed UnimplementedCrosToolRunnerContainerServiceServer
 // for forward compatibility
@@ -92,6 +108,13 @@ type CrosToolRunnerContainerServiceServer interface {
 	// published to a random port on host (-P); and the container will be removed
 	// after it stops (--rm).
 	StartContainer(context.Context, *StartContainerRequest) (*StartContainerResponse, error)
+	// Runs a docker container that has a template implemented. A template
+	// simplifies the data required in the request, and provides placeholders to
+	// populate information that is only known at runtime. E.g. dynamically mapped
+	// port number, IP address of a container.
+	// A template implementation converts the request to the generic
+	// StartContainer endpoint, and returns the generic StartContainerResponse.
+	StartTemplatedContainer(context.Context, *StartTemplatedContainerRequest) (*StartContainerResponse, error)
 	mustEmbedUnimplementedCrosToolRunnerContainerServiceServer()
 }
 
@@ -110,6 +133,9 @@ func (UnimplementedCrosToolRunnerContainerServiceServer) Shutdown(context.Contex
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) StartContainer(context.Context, *StartContainerRequest) (*StartContainerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartContainer not implemented")
+}
+func (UnimplementedCrosToolRunnerContainerServiceServer) StartTemplatedContainer(context.Context, *StartTemplatedContainerRequest) (*StartContainerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartTemplatedContainer not implemented")
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) mustEmbedUnimplementedCrosToolRunnerContainerServiceServer() {
 }
@@ -197,6 +223,24 @@ func _CrosToolRunnerContainerService_StartContainer_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CrosToolRunnerContainerService_StartTemplatedContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartTemplatedContainerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CrosToolRunnerContainerServiceServer).StartTemplatedContainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ctrv2.api.CrosToolRunnerContainerService/StartTemplatedContainer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrosToolRunnerContainerServiceServer).StartTemplatedContainer(ctx, req.(*StartTemplatedContainerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CrosToolRunnerContainerService_ServiceDesc is the grpc.ServiceDesc for CrosToolRunnerContainerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -219,6 +263,10 @@ var CrosToolRunnerContainerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartContainer",
 			Handler:    _CrosToolRunnerContainerService_StartContainer_Handler,
+		},
+		{
+			MethodName: "StartTemplatedContainer",
+			Handler:    _CrosToolRunnerContainerService_StartTemplatedContainer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

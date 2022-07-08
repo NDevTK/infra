@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package ctrv2.api;
 
+import "infra/cros/cmd/cros-tool-runner/api/templates.proto";
+
 option go_package = "infra/cros/cmd/cros-tool-runner/api";
 
 // Exposes common docker commands as services
@@ -28,6 +30,15 @@ service CrosToolRunnerContainerService {
   // published to a random port on host (-P); and the container will be removed
   // after it stops (--rm).
   rpc StartContainer(StartContainerRequest)
+    returns (StartContainerResponse);
+
+  // Runs a docker container that has a template implemented. A template
+  // simplifies the data required in the request, and provides placeholders to
+  // populate information that is only known at runtime. E.g. dynamically mapped
+  // port number, IP address of a container.
+  // A template implementation converts the request to the generic
+  // StartContainer endpoint, and returns the generic StartContainerResponse.
+  rpc StartTemplatedContainer(StartTemplatedContainerRequest)
     returns (StartContainerResponse);
 }
 
@@ -100,4 +111,19 @@ message StartContainerRequest {
 
 message StartContainerResponse {
   Container container = 1;
+}
+
+// StartTemplatedContainerRequest does not use additional_options or
+// start_command as in StartContainerRequest. Instead, container-specific
+// template is used to provide instructions on how to start the container.
+message StartTemplatedContainerRequest {
+  // Unique name given to the container that will be used later to retrieve
+  // container info.
+  string name = 1;
+  // Location of image that can be directly pulled by docker. Note that start
+  // container assumes docker is already authenticated.
+  // e.g. us-docker.pkg.dev/cros-registry/test-services/cros-dut:latest
+  string container_image = 2;
+  // Container-specific template
+  Template template = 3;
 }

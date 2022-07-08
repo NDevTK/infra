@@ -14,10 +14,10 @@ Use `go generate` to generate code for go.
 - `commands` package adopts command design pattern to provide an abstraction
   layer to interact with CLI tools.
 - `server` package hosts the service implementation.
-- TBD: `extensions` package implements extensions to the generic services.
+- `templates` package implements extensions to the generic services.
   Namely, easy-to-use "templated" APIs for commonly used containers.
 - Within a package, utility methods are grouped under a struct to be
-  differentiated from other more "important" methods.
+  namespaced from other more "important" methods.
 
 ## Run locally
 ```shell

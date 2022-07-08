@@ -1,0 +1,23 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package ctrv2.api;
+
+option go_package = "infra/cros/cmd/cros-tool-runner/api";
+
+message Template {
+  oneof container {
+    CrosDutTemplate cros_dut = 1;
+    CrosProvisionTemplate cros_provision = 2;
+    CrosTestTemplate cros_test = 3;
+  }
+}
+
+message CrosDutTemplate {}
+
+message CrosProvisionTemplate {}
+
+message CrosTestTemplate {}

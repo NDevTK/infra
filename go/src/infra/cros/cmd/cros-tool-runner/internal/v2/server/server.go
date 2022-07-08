@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"infra/cros/cmd/cros-tool-runner/api"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )
 
 // ContainerServerImpl implements the gRPC services by running commands and
@@ -128,6 +129,17 @@ func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error
 		})
 	}
 	return nil
+}
+
+// StartTemplatedContainer delegates to template processors to populate templates into valid StartContainerRequest,
+// and then passes over to the generic endpoint.
+func (s *ContainerServerImpl) StartTemplatedContainer(ctx context.Context, request *api.StartTemplatedContainerRequest) (*api.StartContainerResponse, error) {
+	router := templates.RequestRouter{}
+	processedRequest, err := router.Process(request)
+	if err != nil {
+		return nil, err
+	}
+	return s.StartContainer(ctx, processedRequest)
 }
 
 // stopContainers removes containers that are owned by current CTRv2 service in the reverse order of how they are started.
