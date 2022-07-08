@@ -41,9 +41,7 @@ pipeline_status_handler_mappings = [
 pipeline_status_application = webapp2.WSGIApplication(
     pipeline_status_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-  # service account and change to gae_ts_mon.initialize_prod()
-  gae_ts_mon.initialize_adhoc(pipeline_status_application)
+  gae_ts_mon.initialize_prod(pipeline_status_application)
 
 # waterfall frontend.
 waterfall_frontend_web_pages_handler_mappings = [
@@ -66,9 +64,7 @@ waterfall_frontend_web_pages_handler_mappings = [
 waterfall_frontend_web_application = webapp2.WSGIApplication(
     waterfall_frontend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-  # service account and change to gae_ts_mon.initialize_prod()
-  gae_ts_mon.initialize_adhoc(waterfall_frontend_web_application)
+  gae_ts_mon.initialize_prod(waterfall_frontend_web_application)
 
 # Flake frontend.
 flake_detection_frontend_web_pages_handler_mappings = [
@@ -88,9 +84,7 @@ flake_detection_frontend_web_pages_handler_mappings = [
 flake_detection_frontend_web_application = webapp2.WSGIApplication(
     flake_detection_frontend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-  # service account and change to gae_ts_mon.initialize_prod()
-  gae_ts_mon.initialize_adhoc(flake_detection_frontend_web_application)
+  gae_ts_mon.initialize_prod(flake_detection_frontend_web_application)
 
 # disabled test dashboard frontend.
 disabled_test_detection_frontend_web_pages_handler_mappings = [
@@ -100,6 +94,4 @@ disabled_test_detection_frontend_web_pages_handler_mappings = [
 disabled_test_detection_frontend_web_application = webapp2.WSGIApplication(
     disabled_test_detection_frontend_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-  # service account and change to gae_ts_mon.initialize_prod()
-  gae_ts_mon.initialize_adhoc(disabled_test_detection_frontend_web_application)
+  gae_ts_mon.initialize_prod(disabled_test_detection_frontend_web_application)
