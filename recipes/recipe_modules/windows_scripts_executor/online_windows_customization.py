@@ -43,3 +43,16 @@ class OnlineWindowsCustomization(customization.Customization):
       for online_action in boot.online_actions:
         for action in online_action.actions:
           helper.pin_src_from_action(action, self._source)
+
+  def download_sources(self):
+    """ download_sources downloads the sources in the given config to disk"""
+    # pin the input images
+    owc = self.customization().online_windows_customization
+    for boot in owc.online_customizations:
+      for drive in boot.vm_config.qemu_vm.drives:
+        if drive.input_src.WhichOneof('src'):
+          self._source.download(drive.input_src)
+      # pin the refs in the actions
+      for online_action in boot.online_actions:
+        for action in online_action.actions:
+          self._source.download(helper.get_src_from_action(action))

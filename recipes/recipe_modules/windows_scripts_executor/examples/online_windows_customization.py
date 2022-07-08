@@ -32,6 +32,7 @@ def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
   api.windows_scripts_executor.pin_customizations(custs)
+  api.windows_scripts_executor.download_all_packages(custs)
 
 
 def GenTests(api):
@@ -65,7 +66,7 @@ def GenTests(api):
 
   AARCH64_VM = t.VM_CONFIG(name='WinArm', drives=[SYSTEM, INSTALL])
 
-  yield (api.test('pin_all_deps') + api.properties(
+  yield (api.test('pin_download_all_deps') + api.properties(
       t.WIN_IMAGE(
           'WinArm',
           wib.ARCH_AARCH64,
