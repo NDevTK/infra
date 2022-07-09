@@ -82,8 +82,9 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	if sh == nil {
 		return errors.Reason("init servod: servo-host or servo is not specified").Err()
 	}
+	actionArgs := info.GetActionArgs(ctx)
 	o := &tlw.ServodOptions{
-		RecoveryMode:  true,
+		RecoveryMode:  actionArgs.AsBool(ctx, "recovery_mode", true),
 		DutBoard:      chromeos.GetBoard(),
 		DutModel:      chromeos.GetModel(),
 		ServodPort:    int32(sh.GetServodPort()),

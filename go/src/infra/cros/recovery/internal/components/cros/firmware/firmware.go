@@ -51,6 +51,26 @@ var targetOverrideModels = map[string]string{
 	"sarien":      "sarien_signed",
 	"arcada":      "arcada_signed",
 	"drallion":    "drallion_signed",
+	"foob360":     "foob",
+	"blooglet":    "bloog",
+	"garg360":     "garg",
+	"laser14":     "phaser",
+	"bluebird":    "casta",
+	"vorticon":    "meep",
+	"dorp":        "meep",
+	"orbatrix":    "fleex",
+	"blooguard":   "bloog",
+	"grabbiter":   "fleex",
+	"apel":        "ampton",
+	"nospike":     "ampton",
+	"phaser360":   "phaser",
+	"blorb":       "bobba",
+	"droid":       "bobba",
+	"garfour":     "garg",
+	"vortininja":  "meep",
+	"sparky360":   "bobba",
+	"bobba360":    "bobba",
+	"mimrock":     "meep",
 }
 
 // ReadAPInfoByServo read AP info from DUT.
@@ -189,8 +209,13 @@ type InstallFirmwareImageRequest struct {
 
 	// Specify that Update EC is is requested.
 	UpdateEC bool
+	// Specify how many time to retry when update EC via servo. When recover a DUT from corrupted EC, there
+	// may be flakiness and we may need flash a couple of times to get a success.
+	UpdateECRetry int
 	// Specify that Update AP is is requested.
 	UpdateAP bool
+	// Specify how many time to retry when update AP via servo.
+	UpdateAPRetry int
 
 	// GBB flags value need to be set to AP.
 	// Example: 0x18
@@ -337,8 +362,20 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Debugf("Start program EC image %q", ecImage)
-		if err := p.ProgramEC(ctx, ecImage); err != nil {
-			return errors.Annotate(err, "install firmware via servo").Err()
+		ecRetryCount := req.UpdateECRetry
+		var ecErr error
+		for ecRetryCount > 0 {
+			ecRetryCount -= 1
+			log.Debugf("Program EC attempt %d, maximum retry: %d", req.UpdateECRetry-ecRetryCount, req.UpdateECRetry)
+			ecErr = p.ProgramEC(ctx, ecImage)
+			if ecErr == nil {
+				break
+			} else if ecRetryCount > 0 {
+				time.Sleep(10 * time.Second)
+			}
+		}
+		if ecErr != nil {
+			return errors.Annotate(ecErr, "install firmware via servo").Err()
 		}
 		log.Infof("Finished program EC image %q", ecImage)
 	}
@@ -349,7 +386,19 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Debugf("Start program AP image %q", apImage)
-		if err := p.ProgramAP(ctx, apImage, req.GBBFlags); err != nil {
+		apRetryCount := req.UpdateAPRetry
+		var apErr error
+		for apRetryCount > 0 {
+			apRetryCount -= 1
+			log.Debugf("Program AP attempt %d, maximum retry: %d", req.UpdateAPRetry-apRetryCount, req.UpdateAPRetry)
+			apErr = p.ProgramAP(ctx, apImage, req.GBBFlags)
+			if apErr == nil {
+				break
+			} else if apRetryCount > 0 {
+				time.Sleep(10 * time.Second)
+			}
+		}
+		if apErr != nil {
 			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Infof("Finished program AP image %q", apImage)

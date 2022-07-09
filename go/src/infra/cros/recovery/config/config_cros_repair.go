@@ -1716,6 +1716,29 @@ func crosRepairActions() map[string]*Action {
 			// Allowed to fail as part of b/236417969 to check affect of it.
 			AllowFailAfterRecovery: true,
 		},
+		"Flash EC (FW) by servo": {
+			Docs: []string{
+				"Flash EC firmware via servo for recovery purpose.",
+				"We will retry up to 5 times since there is flakiness on flash EC.",
+			},
+			Conditions: []string{
+				"dut_servo_host_present",
+				"servod_echo",
+			},
+			Dependencies: []string{
+				"Recovery version has firmware version",
+			},
+			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
+			ExecExtraArgs: []string{
+				"update_ec:true",
+				"update_ec_retry:5",
+				"update_ap:false",
+				"download_timeout:600",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 1800,
+			},
+		},
 		"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP only to the DUT by servo",
@@ -1735,6 +1758,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"update_ec:false",
 				"update_ap:true",
+				"update_ap_retry:3",
 				"download_timeout:600",
 				"gbb_flags:0x18",
 			},
