@@ -93,13 +93,15 @@ func TestAlertGroupModel(t *testing.T) {
 					So(err, ShouldBeNil)
 					So(len(datastoreGroup2.Anomalies), ShouldEqual, 1)
 					So(datastoreGroup2.Anomalies[0], ShouldResemble, datastore.MakeKey(ctx, "Anomaly", 2))
-					// See b:237724865 for details.
-					// This test flaked, so let's get some more information in the logs when we flake.
-					if ok := datastoreGroup2.Created.Before(datastoreGroup2.Updated); !ok {
+					// This test should succeed if and only if the create time <= the update time.
+					// Note that the comparison is weak. See b:237724865 comment #2 for details.
+
+					// If the test flakes, let's get some more information in the logs.
+					if datastoreGroup2.Created.After(datastoreGroup2.Updated) {
 						fmt.Printf("created time: %d\n", datastoreGroup2.Created.Unix())
 						fmt.Printf("updated time: %d\n", datastoreGroup2.Updated.Unix())
 					}
-					So(datastoreGroup2.Created.Before(datastoreGroup2.Updated), ShouldBeTrue)
+					So(datastoreGroup2.Created.After(datastoreGroup2.Updated), ShouldBeFalse)
 				})
 			})
 
