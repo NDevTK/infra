@@ -66,6 +66,8 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		// TODO(gregorynisbet): Create a helper function to make this more compact.
 		defer (func() {
 			// Keep this call up to date with NewMetric in execs.go.
+			// Keep this up to date with runPlan in engine.go
+			// Keep this up to date with runAction in engine.go
 			action := &metrics.Action{
 				ActionKind:     metrics.RunLibraryKind,
 				StartTime:      start,

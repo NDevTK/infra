@@ -88,7 +88,11 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 	var restartTally int64
 	var forgivenFailureTally int64
 	if r.args != nil && r.args.Metrics != nil {
-		action := &metrics.Action{}
+		// Keep this up to date with recovery.go
+		action := &metrics.Action{
+			SwarmingTaskID: r.args.SwarmingTaskID,
+			BuildbucketID:  r.args.BuildbucketID,
+		}
 		closer, mErr := r.args.NewMetric(
 			ctx,
 			fmt.Sprintf("plan:%s", r.planName),
@@ -172,7 +176,11 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	}()
 	var step *build.Step
 	if r.args != nil {
-		action := &metrics.Action{}
+		// Keep this up to date with recovery.go
+		action := &metrics.Action{
+			SwarmingTaskID: r.args.SwarmingTaskID,
+			BuildbucketID:  r.args.BuildbucketID,
+		}
 		if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
 			defer actionCloser(rErr)
 		}
