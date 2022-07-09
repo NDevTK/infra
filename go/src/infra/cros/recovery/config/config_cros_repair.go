@@ -1706,8 +1706,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
-				"update_ec:true",
-				"update_ap:true",
+				"update_ec_attempt_count:1",
+				"update_ap_attempt_count:1",
 				"download_timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{
@@ -1730,9 +1730,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
-				"update_ec:true",
-				"update_ec_retry:5",
-				"update_ap:false",
+				"update_ec_attempt_count:5",
+				"update_ap_attempt_count:0",
 				"download_timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{
@@ -1756,9 +1755,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
-				"update_ec:false",
-				"update_ap:true",
-				"update_ap_retry:3",
+				"update_ec_attempt_count:0",
+				"update_ap_attempt_count:3",
 				"download_timeout:600",
 				"gbb_flags:0x18",
 			},
@@ -1800,8 +1798,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
-				"update_ec:true",
-				"update_ap:true",
+				"update_ec_attempt_count:1",
+				"update_ap_attempt_count:1",
 				"download_timeout:600",
 				"gbb_flags:0x18",
 			},
