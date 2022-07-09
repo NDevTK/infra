@@ -144,7 +144,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 		// Use an ID format that makes it extremely obvious that we're dealing with a
 		// buildbucket invocation number rather than a swarming task.
 		ID:      fmt.Sprintf("buildbucket:%d", taskID),
-		TaskURL: bc.BuildURL(taskID),
+		TaskURL: url,
 	}
 	return taskInfo, nil
 }
