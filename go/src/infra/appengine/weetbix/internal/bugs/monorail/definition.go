@@ -60,6 +60,30 @@ const UntriagedStatus = "Untriaged"
 // DuplicateStatus is the status of bugs which are closed as duplicate.
 const DuplicateStatus = "Duplicate"
 
+// FixedStatus is the status of bugs which have been fixed, but not verified.
+const FixedStatus = "Fixed"
+
+// ClosedStatuses is the status of bugs which are closed.
+// Comprises statuses configured on chromium and fuchsia projects. Ideally
+// this would be configuration, but given the coming monorail deprecation,
+// there is limited value.
+var ClosedStatuses = map[string]struct{}{
+	"Fixed":           {},
+	"Verified":        {},
+	"WontFix":         {},
+	"Done":            {},
+	"NotReproducible": {},
+	"Archived":        {},
+	"Obsolete":        {},
+}
+
+// ArchivedStatuses is the subset of closed statuses that indicate a bug
+// that should no longer be used.
+var ArchivedStatuses = map[string]struct{}{
+	"Archived": {},
+	"Obsolete": {},
+}
+
 // Generator provides access to a methods to generate a new bug and/or bug
 // updates for a cluster.
 type Generator struct {

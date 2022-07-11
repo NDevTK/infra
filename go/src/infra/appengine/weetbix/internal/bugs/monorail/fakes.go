@@ -12,12 +12,14 @@ import (
 	"strconv"
 	"strings"
 
+	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/proto/mask"
 	"go.chromium.org/luci/grpc/appstatus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	mpb "infra/monorailv2/api/v3/api_proto"
 )
@@ -174,6 +176,12 @@ func (f *fakeIssuesClient) ModifyIssues(ctx context.Context, in *mpb.ModifyIssue
 			return nil, errors.Annotate(err, "failed to merge for issue %q", name).Err()
 		}
 
+		// If the status was modified.
+		if mergedDelta.Status != nil {
+			now := clock.Now(ctx)
+			issue.Issue.StatusModifyTime = timestamppb.New(now)
+		}
+
 		// Currently only some amendments are created. Support for other
 		// amendments can be added if needed.
 		amendments := f.createAmendments(filteredDelta.Labels, delta.LabelsRemove, filteredDelta.FieldValues)
@@ -316,10 +324,14 @@ func (f *fakeIssuesClient) MakeIssue(ctx context.Context, in *mpb.MakeIssueReque
 	if !projectsRE.MatchString(in.Parent) {
 		return nil, errors.New("parent project must be specified and match the form 'projects/{project_id}'")
 	}
+
+	now := clock.Now(ctx)
+
 	// Copy the proto so that if the request proto is later modified, the save proto is not changed.
 	saved := CopyIssue(in.Issue)
 	saved.Name = fmt.Sprintf("%s/issues/%v", in.Parent, f.store.NextID)
 	saved.Reporter = f.user
+	saved.StatusModifyTime = timestamppb.New(now)
 
 	// Ensure data is stored in sorted order, to ensure comparisons in test code are stable.
 	SortFieldValues(saved.FieldValues)
