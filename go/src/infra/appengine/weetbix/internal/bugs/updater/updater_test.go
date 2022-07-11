@@ -16,6 +16,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/config/validation"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/span"
@@ -108,6 +109,12 @@ func TestRun(t *testing.T) {
 				WithCompletedProgress().Build(),
 		})
 		So(err, ShouldBeNil)
+
+		// Mock current time. This is needed to control behaviours like
+		// automatic archiving of rules after 30 days of bug being marked
+		// Closed (Verified).
+		now := time.Date(2055, time.May, 5, 5, 5, 5, 5, time.UTC)
+		ctx, tc := testclock.UseTime(ctx, now)
 
 		Convey("Configuration used for testing is valid", func() {
 			c := validation.Context{Context: context.Background()}
@@ -645,6 +652,25 @@ func TestRun(t *testing.T) {
 					issue = f.Issues[2].Issue
 					So(issue.Name, ShouldEqual, "projects/chromium/issues/102")
 					So(issue.Status.Status, ShouldEqual, monorail.VerifiedStatus)
+
+					expectRules(expectedRules)
+
+					Convey("Rule automatically archived after 30 days", func() {
+						tc.Add(time.Hour * 24 * 30)
+
+						// Act
+						err = updateAnalysisAndBugsForProject(ctx, opts)
+						So(err, ShouldBeNil)
+
+						// Verify
+						expectedRules[2].IsActive = false
+						expectRules(expectedRules)
+
+						So(len(f.Issues), ShouldEqual, 3)
+						issue = f.Issues[2].Issue
+						So(issue.Name, ShouldEqual, "projects/chromium/issues/102")
+						So(issue.Status.Status, ShouldEqual, monorail.VerifiedStatus)
+					})
 				})
 				Convey("Bug marked as duplicate of bug with rule", func() {
 					// Setup
@@ -746,6 +772,19 @@ func TestRun(t *testing.T) {
 					// issue one.
 					expectedRules[1].RuleDefinition = "reason LIKE \"want foo, got bar\" OR\nreason LIKE \"want foofoo, got bar\""
 					expectedRules[2].IsActive = false
+					expectRules(expectedRules)
+				})
+				Convey("Bug marked as archived should archive rule", func() {
+					issueOne := f.Issues[1].Issue
+					So(issueOne.Name, ShouldEqual, "projects/chromium/issues/101")
+					issueOne.Status = &api_proto.Issue_StatusValue{Status: "Archived"}
+
+					// Act
+					err = updateAnalysisAndBugsForProject(ctx, opts)
+					So(err, ShouldBeNil)
+
+					// Assert
+					expectedRules[1].IsActive = false
 					expectRules(expectedRules)
 				})
 			})

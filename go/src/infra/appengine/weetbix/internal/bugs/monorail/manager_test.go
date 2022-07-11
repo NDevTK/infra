@@ -7,10 +7,13 @@ package monorail
 import (
 	"context"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/clock/testclock"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/internal/bugs"
 	"infra/appengine/weetbix/internal/clustering"
@@ -53,6 +56,9 @@ func TestManager(t *testing.T) {
 		bm, err := NewBugManager(cl, "chops-weetbix-test", "luciproject", projectCfg)
 		So(err, ShouldBeNil)
 
+		now := time.Date(2040, time.January, 1, 2, 3, 4, 5, time.UTC)
+		ctx, tc := testclock.UseTime(ctx, now)
+
 		Convey("Create", func() {
 			c := NewCreateRequest()
 			c.Impact = ChromiumLowP1Impact()
@@ -72,12 +78,13 @@ func TestManager(t *testing.T) {
 				issue := f.Issues[0]
 
 				So(issue.Issue, ShouldResembleProto, &mpb.Issue{
-					Name:     "projects/chromium/issues/100",
-					Summary:  "Tests are failing: Expected equality of these values: \"Expected_Value\" my_expr.evaluate(123) Which is: \"Unexpected_Value\"",
-					Reporter: AutomationUsers[0],
-					Owner:    &mpb.Issue_UserValue{User: ChromiumDefaultAssignee},
-					State:    mpb.IssueContentState_ACTIVE,
-					Status:   &mpb.Issue_StatusValue{Status: "Untriaged"},
+					Name:             "projects/chromium/issues/100",
+					Summary:          "Tests are failing: Expected equality of these values: \"Expected_Value\" my_expr.evaluate(123) Which is: \"Unexpected_Value\"",
+					Reporter:         AutomationUsers[0],
+					Owner:            &mpb.Issue_UserValue{User: ChromiumDefaultAssignee},
+					State:            mpb.IssueContentState_ACTIVE,
+					Status:           &mpb.Issue_StatusValue{Status: "Untriaged"},
+					StatusModifyTime: timestamppb.New(now),
 					FieldValues: []*mpb.FieldValue{
 						{
 							// Type field.
@@ -118,12 +125,13 @@ func TestManager(t *testing.T) {
 				issue := f.Issues[0]
 
 				So(issue.Issue, ShouldResembleProto, &mpb.Issue{
-					Name:     "projects/chromium/issues/100",
-					Summary:  "Tests are failing: ninja://:blink_web_tests/media/my-suite/my-test.html",
-					Reporter: AutomationUsers[0],
-					Owner:    &mpb.Issue_UserValue{User: ChromiumDefaultAssignee},
-					State:    mpb.IssueContentState_ACTIVE,
-					Status:   &mpb.Issue_StatusValue{Status: "Untriaged"},
+					Name:             "projects/chromium/issues/100",
+					Summary:          "Tests are failing: ninja://:blink_web_tests/media/my-suite/my-test.html",
+					Reporter:         AutomationUsers[0],
+					Owner:            &mpb.Issue_UserValue{User: ChromiumDefaultAssignee},
+					State:            mpb.IssueContentState_ACTIVE,
+					Status:           &mpb.Issue_StatusValue{Status: "Untriaged"},
+					StatusModifyTime: timestamppb.New(now),
 					FieldValues: []*mpb.FieldValue{
 						{
 							// Type field.
@@ -170,9 +178,9 @@ func TestManager(t *testing.T) {
 
 			bugsToUpdate := []bugs.BugUpdateRequest{
 				{
-					Bug:          bugs.BugID{System: bugs.MonorailSystem, ID: bug},
-					Impact:       c.Impact,
-					ShouldUpdate: true,
+					Bug:           bugs.BugID{System: bugs.MonorailSystem, ID: bug},
+					Impact:        c.Impact,
+					IsManagingBug: true,
 				},
 			}
 			expectedResponse := []bugs.BugUpdateResponse{
@@ -202,9 +210,16 @@ func TestManager(t *testing.T) {
 
 					updateDoesNothing()
 				})
-				Convey("Does not update bug if ShouldUpdate false", func() {
+				Convey("Does not update bug if IsManagingBug false", func() {
 					bugsToUpdate[0].Impact = ChromiumClosureImpact()
-					bugsToUpdate[0].ShouldUpdate = false
+					bugsToUpdate[0].IsManagingBug = false
+
+					updateDoesNothing()
+				})
+				Convey("Does not update bug if Impact unset", func() {
+					// Simulate valid impact not being available, e.g. due
+					// to ongoing reclustering.
+					bugsToUpdate[0].Impact = nil
 
 					updateDoesNothing()
 				})
@@ -374,6 +389,21 @@ func TestManager(t *testing.T) {
 						updateDoesNothing()
 					})
 
+					Convey("Rules for verified bugs archived after 30 days", func() {
+						tc.Add(time.Hour * 24 * 30)
+
+						expectedResponse := []bugs.BugUpdateResponse{
+							{
+								ShouldArchive: true,
+							},
+						}
+						originalIssues := CopyIssuesStore(f)
+						response, err := bm.Update(ctx, bugsToUpdate)
+						So(err, ShouldBeNil)
+						So(response, ShouldResemble, expectedResponse)
+						So(f, ShouldResembleIssuesStore, originalIssues)
+					})
+
 					Convey("If impact increases, bug is re-opened with correct priority", func() {
 						bugsToUpdate[0].Impact = ChromiumP3Impact()
 						Convey("Issue has owner", func() {
@@ -441,7 +471,51 @@ func TestManager(t *testing.T) {
 				f.Issues[0].Issue.Status.Status = DuplicateStatus
 
 				expectedResponse := []bugs.BugUpdateResponse{
-					{IsDuplicate: true},
+					{
+						IsDuplicate: true,
+					},
+				}
+				originalIssues := CopyIssuesStore(f)
+				response, err := bm.Update(ctx, bugsToUpdate)
+				So(err, ShouldBeNil)
+				So(response, ShouldResemble, expectedResponse)
+				So(f, ShouldResembleIssuesStore, originalIssues)
+			})
+			Convey("Rule not managing a bug archived after 30 days of the bug being in any closed state", func() {
+				tc.Add(time.Hour * 24 * 30)
+
+				bugsToUpdate[0].IsManagingBug = false
+				f.Issues[0].Issue.Status.Status = FixedStatus
+
+				expectedResponse := []bugs.BugUpdateResponse{
+					{
+						ShouldArchive: true,
+					},
+				}
+				originalIssues := CopyIssuesStore(f)
+				response, err := bm.Update(ctx, bugsToUpdate)
+				So(err, ShouldBeNil)
+				So(response, ShouldResemble, expectedResponse)
+				So(f, ShouldResembleIssuesStore, originalIssues)
+			})
+			Convey("Rule managing a bug not archived after 30 days of the bug being in fixed state", func() {
+				tc.Add(time.Hour * 24 * 30)
+
+				// If Weetbix is mangaging the bug state, the fixed state
+				// means the bug is still not verified. Do not archive the
+				// rule.
+				bugsToUpdate[0].IsManagingBug = true
+				f.Issues[0].Issue.Status.Status = FixedStatus
+
+				updateDoesNothing()
+			})
+			Convey("Rules archived immediately if bug archived", func() {
+				f.Issues[0].Issue.Status.Status = "Archived"
+
+				expectedResponse := []bugs.BugUpdateResponse{
+					{
+						ShouldArchive: true,
+					},
 				}
 				originalIssues := CopyIssuesStore(f)
 				response, err := bm.Update(ctx, bugsToUpdate)
