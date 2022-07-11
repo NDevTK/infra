@@ -156,7 +156,7 @@ message Issue {
   // A possibly rule-derived component for the issue.
   // Next available tag: 3
   message ComponentValue {
-    // The component.
+    // AIP resource name of the component.
     string component = 1 [
       (google.api.resource_reference) = { type: "api.crbug.com/ComponentDef" }
     ];
