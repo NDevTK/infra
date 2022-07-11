@@ -84,7 +84,7 @@ func generateEnvVars(board string, model string, servoSerial string) []string {
 
 	envVars = append(envVars, fmt.Sprintf("BOARD=%s", board))
 	envVars = append(envVars, fmt.Sprintf("MODEL=%s", model))
-	envVars = append(envVars, fmt.Sprintf("SERVO_SERIAL=%s", servoSerial))
+	envVars = append(envVars, fmt.Sprintf("SERIAL=%s", servoSerial))
 	envVars = append(envVars, fmt.Sprintf("PORT=%d", port))
 
 	return envVars
