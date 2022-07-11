@@ -7,12 +7,15 @@ package monorail
 import (
 	"context"
 	"testing"
-
-	mpb "infra/monorailv2/api/v3/api_proto"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/clock/testclock"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	mpb "infra/monorailv2/api/v3/api_proto"
 )
 
 func TestClient(t *testing.T) {
@@ -27,6 +30,9 @@ func TestClient(t *testing.T) {
 			NextID: 4,
 		}
 		ctx := UseFakeIssuesClient(context.Background(), f, "user@chromium.org")
+
+		now := time.Date(2044, time.April, 4, 4, 4, 4, 4, time.UTC)
+		ctx, _ = testclock.UseTime(ctx, now)
 
 		Convey("Get issue", func() {
 			c, err := NewClient(ctx, "monorailhost")
@@ -63,7 +69,9 @@ func TestClient(t *testing.T) {
 			So(err, ShouldBeNil)
 			result, err := c.MakeIssue(ctx, req)
 			So(err, ShouldBeNil)
-			So(result, ShouldResembleProto, NewIssue(4))
+			expectedResult := NewIssue(4)
+			expectedResult.StatusModifyTime = timestamppb.New(now)
+			So(result, ShouldResembleProto, expectedResult)
 
 			comments, err := c.ListComments(ctx, result.Name)
 			So(err, ShouldBeNil)
@@ -105,7 +113,8 @@ func TestClient(t *testing.T) {
 				Deltas: []*mpb.IssueDelta{
 					{
 						Issue: &mpb.Issue{
-							Name: issue1.Issue.Name,
+							Name:   issue1.Issue.Name,
+							Status: &mpb.Issue_StatusValue{Status: VerifiedStatus},
 							Labels: []*mpb.Issue_LabelValue{
 								{
 									Label: "Test-Label2",
@@ -113,11 +122,11 @@ func TestClient(t *testing.T) {
 							},
 						},
 						UpdateMask: &field_mask.FieldMask{
-							Paths: []string{"labels"},
+							Paths: []string{"labels", "status"},
 						},
 					},
 				},
-				CommentContent: "Changing priority.",
+				CommentContent: "Changing status and labels.",
 			}
 			err = c.ModifyIssues(ctx, req)
 			So(err, ShouldBeNil)
@@ -127,6 +136,8 @@ func TestClient(t *testing.T) {
 				{Label: "Test-Label1"},
 				{Label: "Test-Label2"},
 			}
+			expectedData.Issue.Status = &mpb.Issue_StatusValue{Status: VerifiedStatus}
+			expectedData.Issue.StatusModifyTime = timestamppb.New(now)
 
 			read, err := c.GetIssue(ctx, issue1.Issue.Name)
 			So(err, ShouldBeNil)
@@ -136,7 +147,7 @@ func TestClient(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(len(comments), ShouldEqual, 2)
 			So(comments[0], ShouldResembleProto, expectedData.Comments[0])
-			So(comments[1].Content, ShouldEqual, "Changing priority.")
+			So(comments[1].Content, ShouldEqual, "Changing status and labels.")
 		})
 	})
 }
