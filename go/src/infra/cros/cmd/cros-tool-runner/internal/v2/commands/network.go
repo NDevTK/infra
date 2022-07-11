@@ -15,7 +15,7 @@ type NetworkCreate struct {
 
 func (c *NetworkCreate) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"network", "create", c.Name}
-	return execute(ctx, "docker", args)
+	return execute(ctx, dockerCmd, args)
 }
 
 // NetworkRemove represents `docker network remove`.
@@ -26,7 +26,7 @@ type NetworkRemove struct {
 func (c *NetworkRemove) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"network", "remove"}
 	args = append(args, c.Names...)
-	return execute(ctx, "docker", args)
+	return execute(ctx, dockerCmd, args)
 }
 
 // NetworkInspect represents `docker network inspect`.
@@ -41,5 +41,22 @@ func (c *NetworkInspect) Execute(ctx context.Context) (string, string, error) {
 		args = append(args, "-f", c.Format)
 	}
 	args = append(args, c.Names...)
-	return execute(ctx, "docker", args)
+	return execute(ctx, dockerCmd, args)
+}
+
+// NetworkList represents `docker network ls`.
+type NetworkList struct {
+	Names  []string // names of network to be listed
+	Format string   // value for the --format option. e.g. {{.ID}}
+}
+
+func (c *NetworkList) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"network", "ls"}
+	if utils.trim(c.Format) != "" {
+		args = append(args, "--format", c.Format)
+	}
+	for _, name := range c.Names {
+		args = append(args, "--filter", "name="+name)
+	}
+	return execute(ctx, dockerCmd, args)
 }

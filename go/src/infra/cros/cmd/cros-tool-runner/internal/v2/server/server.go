@@ -29,15 +29,23 @@ type ContainerServerImpl struct {
 
 // CreateNetwork creates a new docker network with the given name.
 func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.CreateNetworkRequest) (*api.CreateNetworkResponse, error) {
+	if request.Name == "" {
+		return nil, utils.invalidArgument("Missing name")
+	}
 	cmd := commands.NetworkCreate{Name: request.Name}
-	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
+	_, stderr, err := s.executor.Execute(ctx, &cmd)
 	if stderr != "" {
 		return nil, utils.toStatusError(stderr)
 	}
 	if err != nil {
 		return nil, err
 	}
-	id := utils.firstLine(stdout)
+
+	id, err := s.getNetworkId(ctx, request.Name)
+	if err != nil {
+		return nil, err
+	}
+
 	log.Println("success: created network", id)
 	s.networks = append(s.networks, request.Name)
 	return &api.CreateNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: true}}, nil
@@ -45,17 +53,27 @@ func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.Cr
 
 // GetNetwork retrieves information of given docker network.
 func (s *ContainerServerImpl) GetNetwork(ctx context.Context, request *api.GetNetworkRequest) (*api.GetNetworkResponse, error) {
-	cmd := commands.NetworkInspect{Names: []string{request.Name}, Format: "{{.Id}}"}
-	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
-	if stderr != "" {
-		return nil, utils.toStatusError(stderr)
-	}
+	id, err := s.getNetworkId(ctx, request.Name)
 	if err != nil {
 		return nil, err
 	}
-	id := utils.firstLine(stdout)
 	log.Println("success: found network", id)
 	return &api.GetNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: utils.contains(s.networks, request.Name)}}, nil
+}
+
+func (s *ContainerServerImpl) getNetworkId(ctx context.Context, name string) (string, error) {
+	getNetworkIdCmd := compatibleLookupNetworkIdCommand(name)
+	id, stderr, err := s.executor.Execute(ctx, getNetworkIdCmd)
+	if id == "" {
+		return "", utils.notFound(fmt.Sprintf("Cannot retrieve network ID with name %s", name))
+	}
+	if stderr != "" {
+		return "", utils.toStatusError(stderr)
+	}
+	if err != nil {
+		return "", err
+	}
+	return id, nil
 }
 
 // Shutdown signals to shut down the CTRv2 gRPC server.
@@ -93,11 +111,15 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	}
 
 	cmd := commands.DockerRun{StartContainerRequest: request}
-	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
+	id, stderr, err := s.executor.Execute(ctx, &cmd)
 	if stderr != "" {
 		return nil, utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
-			case strings.Contains(s, fmt.Sprintf("The container name \"/%s\" is already in use", request.Name)):
+			// docker error
+			case strings.Contains(s, fmt.Sprintf("container name \"/%s\" is already in use", request.Name)):
+				return codes.AlreadyExists
+			// podman error
+			case strings.Contains(s, fmt.Sprintf("container name \"%s\" is already in use", request.Name)):
 				return codes.AlreadyExists
 			default:
 				return codes.Unknown
@@ -108,7 +130,6 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 		return nil, err
 	}
 	// TODO(mingkong): handle edge case where id is returned but container has immediately stopped: e.g. cros-dut cannot connect to dut
-	id := utils.firstLine(stdout)
 	log.Println("success: started container", id)
 	s.containers = append(s.containers, request.Name)
 	return &api.StartContainerResponse{Container: &api.Container{Name: request.Name, Id: id, Owned: true}}, nil
@@ -117,13 +138,19 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 // pullImage pulls docker image and handles error mapping specifically
 func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error {
 	pullCmd := commands.DockerPull{ContainerImage: image}
-	_, stderr, _ := s.executor.Execute(ctx, &pullCmd)
-	if stderr != "" {
+	stdout, stderr, _ := s.executor.Execute(ctx, &pullCmd)
+	// podman has stderr even when success
+	if stdout == "" && stderr != "" {
 		return utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
+			// docker error
 			case strings.Contains(s, "Permission \"artifactregistry.repositories.downloadArtifacts\" denied on resource"):
 				return codes.PermissionDenied
-			case strings.Contains(s, fmt.Sprintf("manifest for %s not found", image)):
+			// podman error
+			case strings.Contains(s, "unable to retrieve auth token: invalid username/password: unauthorized: failed authentication"):
+				return codes.PermissionDenied
+			// common error string
+			case strings.Contains(s, "manifest unknown: Failed to fetch"):
 				return codes.NotFound
 			default:
 				return codes.Unknown
