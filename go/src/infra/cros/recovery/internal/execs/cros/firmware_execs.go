@@ -178,8 +178,8 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		DutRunner:            run,
 		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
-		UpdateEC:             actionArgs.AsBool(ctx, "update_ap", true),
-		UpdateAP:             actionArgs.AsBool(ctx, "update_ec", true),
+		UpdateEcAttemptCount: actionArgs.AsInt(ctx, "update_ec_attempt_count", 0),
+		UpdateApAttemptCount: actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
 		UpdaterMode:          actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
 	}

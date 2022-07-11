@@ -207,15 +207,14 @@ type InstallFirmwareImageRequest struct {
 	DownloadImagePath    string
 	DownloadImageTimeout time.Duration
 
-	// Specify that Update EC is is requested.
-	UpdateEC bool
-	// Specify how many time to retry when update EC via servo. When recover a DUT from corrupted EC, there
-	// may be flakiness and we may need flash a couple of times to get a success.
-	UpdateECRetry int
-	// Specify that Update AP is is requested.
-	UpdateAP bool
-	// Specify how many time to retry when update AP via servo.
-	UpdateAPRetry int
+	// Specify how many time to attempt when update EC, where 0 means don't not update EC firmware.
+	// Please note attempt count more than 1 only applies when flash via servo.
+	// When recover a DUT from corrupted EC use servo, there may be flakiness and we may need flash a couple of times to get a success.
+	UpdateEcAttemptCount int
+	// Specify how many time to attempt when update AP, where 0 means don't not update AP firmware.
+	// Please note attempt count more than 1 only applies when flash via servo.
+	// When recover a DUT from corrupted AP use servo, there may be flakiness and we may need flash a couple of times to get a success.
+	UpdateApAttemptCount int
 
 	// GBB flags value need to be set to AP.
 	// Example: 0x18
@@ -259,8 +258,8 @@ func validateInstallFirmwareImageRequest(req *InstallFirmwareImageRequest) error
 		return errors.Reason(prefix + "both Board and Model needs to be provided.").Err()
 	} else if req.DownloadDir == "" || req.DownloadImagePath == "" || req.DownloadImageTimeout == 0 {
 		return errors.Reason(prefix + "both DownloadDir, DownloadImagePath and DownloadImageTimeout needs to be provided.").Err()
-	} else if !req.UpdateEC && !req.UpdateAP {
-		return errors.Reason("validate InstallFirmwareImageRequest both EC and AP update flag are set to false, at least one need to be true.").Err()
+	} else if req.UpdateEcAttemptCount == 0 && req.UpdateApAttemptCount == 0 {
+		return errors.Reason("validate InstallFirmwareImageRequest both EC and AP attempt count are set to 0, at least one need to be larger than 0.").Err()
 	}
 	if req.FlashThroughServo {
 		// Validating request in the case flash via servo.
@@ -315,8 +314,8 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 	}
 	log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
 	if ecExemptedModels[req.Model] {
-		log.Debugf("Override UpdateEC to false as model %s doesn't have EC firmware", req.Model)
-		req.UpdateEC = false
+		log.Debugf("Override UpdateEcAttemptCount to 0 as model %s doesn't have EC firmware", req.Model)
+		req.UpdateEcAttemptCount = 0
 	}
 	if req.FlashThroughServo {
 		return installFirmwareViaServo(ctx, req, tarballPath, log)
@@ -330,7 +329,7 @@ func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareIma
 		Mode:           req.UpdaterMode,
 		UpdaterTimeout: req.UpdaterTimeout,
 	}
-	if req.UpdateEC {
+	if req.UpdateEcAttemptCount > 0 {
 		log.Debugf("Start extraction EC image from %q", tarballPath)
 		ecImage, err := extractECImage(ctx, req, tarballPath, log)
 		if err != nil {
@@ -338,7 +337,7 @@ func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareIma
 		}
 		updaterReq.EcImage = ecImage
 	}
-	if req.UpdateAP {
+	if req.UpdateApAttemptCount > 0 {
 		log.Debugf("Start extraction AP image from %q", tarballPath)
 		apImage, err := extractAPImage(ctx, req, tarballPath, log)
 		if err != nil {
@@ -355,18 +354,18 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 	if err != nil {
 		return errors.Annotate(err, "install firmware via servo").Err()
 	}
-	if req.UpdateEC {
+	if req.UpdateEcAttemptCount > 0 {
 		log.Debugf("Start extraction EC image from %q", tarballPath)
 		ecImage, err := extractECImage(ctx, req, tarballPath, log)
 		if err != nil {
 			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Debugf("Start program EC image %q", ecImage)
-		ecRetryCount := req.UpdateECRetry
+		ecRetryCount := req.UpdateEcAttemptCount
 		var ecErr error
 		for ecRetryCount > 0 {
 			ecRetryCount -= 1
-			log.Debugf("Program EC attempt %d, maximum retry: %d", req.UpdateECRetry-ecRetryCount, req.UpdateECRetry)
+			log.Debugf("Program EC attempt %d, maximum retry: %d", req.UpdateEcAttemptCount-ecRetryCount, req.UpdateEcAttemptCount)
 			ecErr = p.ProgramEC(ctx, ecImage)
 			if ecErr == nil {
 				break
@@ -379,18 +378,18 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 		}
 		log.Infof("Finished program EC image %q", ecImage)
 	}
-	if req.UpdateAP {
+	if req.UpdateApAttemptCount > 0 {
 		log.Debugf("Start extraction AP image from %q", tarballPath)
 		apImage, err := extractAPImage(ctx, req, tarballPath, log)
 		if err != nil {
 			return errors.Annotate(err, "install firmware via servo").Err()
 		}
 		log.Debugf("Start program AP image %q", apImage)
-		apRetryCount := req.UpdateAPRetry
+		apRetryCount := req.UpdateApAttemptCount
 		var apErr error
 		for apRetryCount > 0 {
 			apRetryCount -= 1
-			log.Debugf("Program AP attempt %d, maximum retry: %d", req.UpdateAPRetry-apRetryCount, req.UpdateAPRetry)
+			log.Debugf("Program AP attempt %d, maximum retry: %d", req.UpdateApAttemptCount-apRetryCount, req.UpdateApAttemptCount)
 			apErr = p.ProgramAP(ctx, apImage, req.GBBFlags)
 			if apErr == nil {
 				break
