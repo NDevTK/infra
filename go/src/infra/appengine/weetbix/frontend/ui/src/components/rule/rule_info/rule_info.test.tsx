@@ -49,7 +49,7 @@ describe('Test RuleInfo component', () => {
     fireEvent.click(screen.getByText('Archive'));
     await screen.findByText('Are you sure?');
 
-    expect(screen.getByText('Are you sure you want to archive this rule?')).toBeInTheDocument();
+    expect(screen.getByText('Confirm')).toBeInTheDocument();
   });
 
   it('when confirming the archival, then should send archival request', async () => {
@@ -65,7 +65,7 @@ describe('Test RuleInfo component', () => {
     fireEvent.click(screen.getByText('Archive'));
     await screen.findByText('Are you sure?');
 
-    expect(screen.getByText('Are you sure you want to archive this rule?')).toBeInTheDocument();
+    expect(screen.getByText('Confirm')).toBeInTheDocument();
 
     const updatedRule: Rule = {
       ...mockRule,
