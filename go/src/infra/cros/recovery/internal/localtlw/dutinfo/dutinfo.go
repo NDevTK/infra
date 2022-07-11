@@ -82,19 +82,30 @@ func CreateUpdateDutRequest(dutID string, dut *tlw.Dut) (req *ufsAPI.UpdateDevic
 			err = errors.Reason("update dut specs: %v\n%s", r, debug.Stack()).Err()
 		}
 	}()
-	return &ufsAPI.UpdateDeviceRecoveryDataRequest{
-		DeviceId:     dutID,
-		ResourceType: ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
-		Hostname:     dut.Name,
-		DeviceRecoveryData: &ufsAPI.UpdateDeviceRecoveryDataRequest_Chromeos{
-			Chromeos: &ufsAPI.ChromeOsRecoveryData{
-				DutState: getUFSDutComponentStateFromSpecs(dutID, dut),
-				DutData:  getUFSDutDataFromSpecs(dutID, dut),
-				LabData:  getUFSLabDataFromSpecs(dutID, dut),
+	if dut.GetChromeos() != nil {
+		return &ufsAPI.UpdateDeviceRecoveryDataRequest{
+			DeviceId:      dutID,
+			Hostname:      dut.Name,
+			ResourceType:  ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
+			ResourceState: dutstate.ConvertToUFSState(dut.State),
+			DeviceRecoveryData: &ufsAPI.UpdateDeviceRecoveryDataRequest_Chromeos{
+				Chromeos: &ufsAPI.ChromeOsRecoveryData{
+					DutState: getUFSDutComponentStateFromSpecs(dutID, dut),
+					DutData:  getUFSDutDataFromSpecs(dut),
+					LabData:  getUFSLabDataFromSpecs(dut),
+				},
 			},
-		},
-		ResourceState: dutstate.ConvertToUFSState(dut.State),
-	}, nil
+		}, nil
+	}
+	if dut.GetAndroid() != nil {
+		return &ufsAPI.UpdateDeviceRecoveryDataRequest{
+			DeviceId:      dutID,
+			Hostname:      dut.Name,
+			ResourceType:  ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_ATTACHED_DEVICE,
+			ResourceState: dutstate.ConvertToUFSState(dut.State),
+		}, nil
+	}
+	return nil, errors.Reason("Unknown DUT type: %+v", dut).Err()
 }
 
 func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
@@ -325,7 +336,7 @@ func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature)
 	return false
 }
 
-func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_DutData {
+func getUFSDutDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_DutData {
 	dutData := &ufsAPI.ChromeOsRecoveryData_DutData{
 		SerialNumber: dut.GetChromeos().GetSerialNumber(),
 		HwID:         dut.GetChromeos().GetHwid(),
@@ -335,7 +346,7 @@ func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecovery
 	return dutData
 }
 
-func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
+func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 	labData := &ufsAPI.ChromeOsRecoveryData_LabData{
 		WifiRouters: []*ufsAPI.ChromeOsRecoveryData_WifiRouter{},
 	}
@@ -368,8 +379,8 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		Id:       &ufslab.ChromeOSDeviceID{Value: dutID},
 		Hostname: dut.Name,
 	}
-	// Set all default state first and update later.
-	// If component missing the this will reset the state.
+	// Set all components states to default.
+	// The state is updated later if component is present.
 	state.Servo = ufslab.PeripheralState_MISSING_CONFIG
 	state.ServoUsbState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.RpmState = ufslab.PeripheralState_MISSING_CONFIG

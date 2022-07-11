@@ -54,17 +54,17 @@ type CSAClient interface {
 	GetStableVersion(ctx context.Context, in *fleet.GetStableVersionRequest, opts ...grpc.CallOption) (*fleet.GetStableVersionResponse, error)
 }
 
-// hostType provides information which type of the host.
-type hostType string
+type hostType int64
 
 const (
-	hostTypeCros      hostType = "cros-host"
-	hostTypeServo     hostType = "servo-host"
-	hostTypeBtPeer    hostType = "bluetooth-peer-host"
-	hostTypeRouter    hostType = "router-host"
-	hostTypeChameleon hostType = "chameleon-host"
+	hostTypeChromeOs hostType = iota
+	hostTypeAndroid
+	hostTypeServo
+	hostTypeBtPeer
+	hostTypeRouter
+	hostTypeChameleon
 
-	deafultBluetoothPeerServerPort = 9992
+	defaultBluetoothPeerServerPort = 9992
 )
 
 // tlwClient holds data and represents the local implementation of TLW Access interface.
@@ -529,7 +529,7 @@ func (c *tlwClient) CallBluetoothPeer(ctx context.Context, req *tlw.CallBluetoot
 	}
 	s, err := c.servodPool.Get(
 		localproxy.BuildAddr(req.GetResource()),
-		int32(deafultBluetoothPeerServerPort),
+		int32(defaultBluetoothPeerServerPort),
 		func() ([]string, error) { return nil, nil })
 	if err != nil {
 		return fail(err)
@@ -785,31 +785,33 @@ func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
 		// Skip as DUT not found.
 		return
 	}
-	name := dut.Name
-	c.devices[name] = dut
-	c.hostToParents[name] = name
-	c.hostTypes[dut.Name] = hostTypeCros
-	if chromeos := dut.GetChromeos(); chromeos != nil {
-		if s := chromeos.GetServo(); s.GetName() != "" {
-			c.hostTypes[s.GetName()] = hostTypeServo
-			c.hostToParents[s.GetName()] = name
-		}
-		for _, bt := range chromeos.GetBluetoothPeers() {
-			c.hostTypes[bt.GetName()] = hostTypeBtPeer
-			c.hostToParents[bt.GetName()] = name
-		}
-		for _, router := range chromeos.GetWifiRouters() {
-			c.hostTypes[router.GetName()] = hostTypeRouter
-			c.hostToParents[router.GetName()] = name
-		}
-		if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
-			c.hostTypes[chameleon.GetName()] = hostTypeChameleon
-			c.hostToParents[chameleon.GetName()] = name
-		}
+	c.devices[dut.Name] = dut
+	c.hostToParents[dut.Name] = dut.Name
+	if dut.GetAndroid() != nil {
+		c.hostTypes[dut.Name] = hostTypeAndroid
+		return
+	}
+	c.hostTypes[dut.Name] = hostTypeChromeOs
+	chromeos := dut.GetChromeos()
+	if s := chromeos.GetServo(); s.GetName() != "" {
+		c.hostTypes[s.GetName()] = hostTypeServo
+		c.hostToParents[s.GetName()] = dut.Name
+	}
+	for _, bt := range chromeos.GetBluetoothPeers() {
+		c.hostTypes[bt.GetName()] = hostTypeBtPeer
+		c.hostToParents[bt.GetName()] = dut.Name
+	}
+	for _, router := range chromeos.GetWifiRouters() {
+		c.hostTypes[router.GetName()] = hostTypeRouter
+		c.hostToParents[router.GetName()] = dut.Name
+	}
+	if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
+		c.hostTypes[chameleon.GetName()] = hostTypeChameleon
+		c.hostToParents[chameleon.GetName()] = dut.Name
 	}
 }
 
-// cacheDevice puts device to local cache and set list host name knows for DUT.
+// unCacheDevice removes device from the local cache.
 func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 	if dut == nil {
 		// Skip as DUT not provided.
