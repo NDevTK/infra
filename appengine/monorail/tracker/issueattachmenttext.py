@@ -14,12 +14,9 @@ from __future__ import absolute_import
 
 import logging
 
-import webapp2
-
-from google.appengine.api import app_identity
-
-from third_party import cloudstorage
 import ezt
+from google.appengine.api import app_identity
+from google.cloud import storage
 
 from features import prettify
 from framework import exceptions
@@ -59,13 +56,21 @@ class AttachmentText(servlet.Servlet):
       except exceptions.NoSuchCommentException:
         self.abort(404, 'comment not found')
 
-    content = []
+    content = b''
     if attachment.gcs_object_id:
       bucket_name = app_identity.get_default_gcs_bucket_name()
       full_path = '/' + bucket_name + attachment.gcs_object_id
       logging.info("reading gcs: %s" % full_path)
-      with cloudstorage.open(full_path, 'r') as f:
-        content = f.read()
+
+      # Strip leading slash from object ID for backwards compatibility.
+      blob_name = attachment.gcs_object_id
+      if blob_name.startswith('/'):
+        blob_name = blob_name[1:]
+
+      client = storage.Client()
+      bucket = client.get_bucket(bucket_name)
+      blob = bucket.get_blob(blob_name)
+      content = blob.download_as_bytes()
 
     filesize = len(content)
 
