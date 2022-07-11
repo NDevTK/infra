@@ -264,6 +264,9 @@ func (s *testCaseStack) ParseLine(line string) {
 		return
 	}
 
+	// The last part of a line is a failure summary for final events and status
+	// update events.
+	failureSummary := parts[len(parts)-1]
 	switch {
 	case isStartingEvent(parts[0]):
 		testCaseName := parts[2] // Declared test name if any.
@@ -279,10 +282,16 @@ func (s *testCaseStack) ParseLine(line string) {
 		if len(s.testCases) > 0 && s.testCases[len(s.testCases)-1].Verdict == skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT {
 			return
 		}
+
+		// Sets the failure summary if it exists in the ABORT final event.
+		if strings.Contains(parts[0], "ABORT") && len(failureSummary) > 0 {
+			s.addSummary(failureSummary)
+		}
+
 		s.setVerdict(parseVerdict(parts[0]))
 
 	case isStatusUpdateEvent(parts[0]):
-		s.addSummary(parts[len(parts)-1])
+		s.addSummary(failureSummary)
 
 		// ABORT status might be recorded in the nested reboot.verify job.
 		if parts[0] == "ABORT" && parts[2] == rebootVerifyTestName {
