@@ -125,6 +125,7 @@ func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneR
 	if err := datastore.Put(ctx, newDUTs); err != nil {
 		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
 	}
+	updateAgentLoad(d, agentLoad{hive: hive, totalCapacity: int(li.GetDutCapacity()), usedCapacity: len(currentDUTs)})
 	return currentDUTs, nil
 }
 
@@ -197,6 +198,7 @@ func PruneExpiredDrones(ctx context.Context, now time.Time) error {
 		if err := datastore.Delete(ctx, &d); err != nil {
 			return errors.Annotate(err, "prune expired drones: delete drone %v", d.ID).Err()
 		}
+		deleteAgentLoad(d.ID)
 	}
 	return nil
 }
