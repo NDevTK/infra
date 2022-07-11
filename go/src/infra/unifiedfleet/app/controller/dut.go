@@ -1095,20 +1095,30 @@ func GetDUTConnectedToServo(ctx context.Context, servo *chromeosLab.Servo) (*ufs
 // UpdateRecoveryData updates data from recovery
 // It updates machine/asset, Peripherals(servo, wifirouter,...) and Dut's resourceState
 func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDataRequest) error {
-	if err := checkDutIdAndHostnameAreAssociated(ctx, ufsAPI.GetDutId(req), req.GetHostname()); err != nil {
+	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {
 		logging.Errorf(ctx, "updateRecoveryData chrome device id and hostname are not associated: %s", err.Error())
 	}
-	if err := updateRecoveryDutData(ctx, ufsAPI.GetDutId(req), ufsAPI.GetDutRecoveryData(req)); err != nil {
-		logging.Errorf(ctx, "updateRecoveryData unable to update dut data", err.Error())
-		return err
-	}
-	if err := updateRecoveryLabData(ctx, req.GetHostname(), req.GetResourceState(), ufsAPI.GetLabData(req)); err != nil {
-		logging.Errorf(ctx, "updateRecoveryData unable to update lab data", err.Error())
-		return err
-	}
-	if _, err := UpdateDutState(ctx, ufsAPI.GetChromeOsDutState(req)); err != nil {
-		logging.Errorf(ctx, "updateRecoveryData unable to update dut state", err.Error())
-		return err
+	switch req.GetResourceType() {
+	case ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_ATTACHED_DEVICE:
+		if err := updateRecoveryResourceState(ctx, req.GetHostname(), req.GetResourceState()); err != nil {
+			logging.Errorf(ctx, "updateRecoveryData unable to update resource state", err.Error())
+			return err
+		}
+	case ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		if err := updateRecoveryDutData(ctx, req.GetDeviceId(), req.GetChromeos().GetDutData()); err != nil {
+			logging.Errorf(ctx, "updateRecoveryData unable to update dut data", err.Error())
+			return err
+		}
+		if err := updateRecoveryLabData(ctx, req.GetHostname(), req.GetResourceState(), req.GetChromeos().GetLabData()); err != nil {
+			logging.Errorf(ctx, "updateRecoveryData unable to update lab data", err.Error())
+			return err
+		}
+		if _, err := UpdateDutState(ctx, req.GetChromeos().GetDutState()); err != nil {
+			logging.Errorf(ctx, "updateRecoveryData unable to update dut state", err.Error())
+			return err
+		}
+	default:
+		return errors.Reason("updateRecoveryData: unknown resource type (%s)", req.GetResourceType()).Err()
 	}
 	return nil
 }

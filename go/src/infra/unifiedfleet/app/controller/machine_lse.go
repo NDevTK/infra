@@ -1605,8 +1605,31 @@ func UpdateLabMeta(ctx context.Context, meta *ufspb.LabMeta) error {
 	return nil
 }
 
+// updateRecoveryResourceState updates resource state for a given DUT.
+func updateRecoveryResourceState(ctx context.Context, hostname string, resourceState ufspb.State) error {
+	f := func(ctx context.Context) error {
+		lse, err := inventory.GetMachineLSE(ctx, hostname)
+		if err != nil {
+			return err
+		}
+		hc := getHostHistoryClient(lse)
+		oldLSE := proto.Clone(lse).(*ufspb.MachineLSE)
+		lse.ResourceState = resourceState
+		if _, err = inventory.BatchUpdateMachineLSEs(ctx, []*ufspb.MachineLSE{lse}); err != nil {
+			return errors.Annotate(err, "unable to update resource state for %s", lse.Name).Err()
+		}
+		hc.LogMachineLSEChanges(oldLSE, lse)
+		return hc.SaveChangeEvents(ctx)
+	}
+	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
+		logging.Errorf(ctx, "updateRecoveryResourceState  (%s) - %s", hostname, err)
+		return err
+	}
+	return nil
+}
+
 // UpdateRecoveryLabdata updates only labdata and resource state for a given ChromeOS DUT.
-func updateRecoveryLabData(ctx context.Context, hostname string, resourceState ufspb.State, labData ufsAPI.LabDataInterface) error {
+func updateRecoveryLabData(ctx context.Context, hostname string, resourceState ufspb.State, labData *ufsAPI.ChromeOsRecoveryData_LabData) error {
 	f := func(ctx context.Context) error {
 		lse, err := inventory.GetMachineLSE(ctx, hostname)
 		if err != nil {
@@ -1632,25 +1655,12 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				// Copy for logging
 				// Apply smart usb hub edits
 				peri.SmartUsbhub = labData.GetSmartUsbhub()
-
-				// Servo cannot be nil for valid DUT
-				if peri.GetServo() == nil {
-					peri.Servo = &chromeosLab.Servo{}
-				}
-				// Apply servo edits
-				if err = editRecoveryPeripheralServo(peri.GetServo(), labData); err != nil {
-					return err
-				}
-				peri.Servo.UsbDrive = labData.GetServoUsbDrive()
-				// Wifi cannot be nil for valid DUT
-				if peri.GetWifi() == nil {
-					peri.Wifi = &chromeosLab.Wifi{}
-				}
-				// Apply wifirouters edits
-				if err = editRecoveryPeripheralWifi(ctx, peri.GetWifi(), ufsAPI.GetWifiRouters(labData)); err != nil {
-					return err
-				}
-				if err = updateBluetoothPeerStates(peri, ufsAPI.GetBluetoothPeers(labData)); err != nil {
+				// Update servo
+				updateRecoveryPeripheralServo(peri, labData)
+				// Update WiFi routers
+				updateRecoveryPeripheralWifi(ctx, peri, labData.GetWifiRouters())
+				// Update Bluetooth peers
+				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err
 				}
 			}
@@ -1660,7 +1670,6 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 		}
 		hc.LogMachineLSEChanges(oldLSE, lse)
 		return hc.SaveChangeEvents(ctx)
-
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		logging.Errorf(ctx, "updateRecoveryDataDeviceLSE  (%s) - %s", hostname, err)
@@ -1671,7 +1680,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 
 // updateBluetoothPeerStates updates p.BluetoothPeers with state from btps. It returns an error if a hostname
 // that is not part of p is sent in btps. It handles nil btps.
-func updateBluetoothPeerStates(p *chromeosLab.Peripherals, btps []ufsAPI.PeripheralInterface) error {
+func updateBluetoothPeerStates(p *chromeosLab.Peripherals, btps []*ufsAPI.ChromeOsRecoveryData_BluetoothPeer) error {
 	if len(btps) == 0 {
 		return nil
 	}
@@ -1686,23 +1695,33 @@ func updateBluetoothPeerStates(p *chromeosLab.Peripherals, btps []ufsAPI.Periphe
 	for _, btp := range btps {
 		b, ok := ufsBTPs[btp.GetHostname()]
 		if !ok {
-			return errors.Reason("unknown BTP with hostname %q recieved from lab", btp.GetHostname()).Err()
+			return errors.Reason("unknown BTP with hostname %q received from lab", btp.GetHostname()).Err()
 		}
 		b.GetRaspberryPi().State = btp.GetState()
 	}
 	return nil
 }
 
-// editRecoveryPeripheralServo edits peripherals servo
-func editRecoveryPeripheralServo(servo *chromeosLab.Servo, labData ufsAPI.LabDataInterface) error {
+// updateRecoveryPeripheralServo updates peripherals servo
+func updateRecoveryPeripheralServo(p *chromeosLab.Peripherals, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
+	// Servo cannot be nil for valid DUT
+	if p.GetServo() == nil {
+		p.Servo = &chromeosLab.Servo{}
+	}
+	servo := p.GetServo()
 	servo.ServoType = labData.GetServoType()
 	servo.ServoTopology = labData.GetServoTopology()
 	servo.ServoComponent = extractServoComponents(labData.GetServoType())
-	return nil
+	servo.UsbDrive = labData.GetServoUsbDrive()
 }
 
-// editRecoveryPeripheralWifi edits peripherals Wifi
-func editRecoveryPeripheralWifi(ctx context.Context, wifi *chromeosLab.Wifi, wifiRouters []ufsAPI.PeripheralInterface) error {
+// updateRecoveryPeripheralWifi edits peripherals Wifi
+func updateRecoveryPeripheralWifi(ctx context.Context, p *chromeosLab.Peripherals, wifiRouters []*ufsAPI.ChromeOsRecoveryData_WifiRouter) {
+	// Wifi cannot be nil for valid DUT
+	if p.GetWifi() == nil {
+		p.Wifi = &chromeosLab.Wifi{}
+	}
+	wifi := p.GetWifi()
 	// labDataRouterStateMap is hostname-> wifirouter state hashmap for easier individual Wi-Fi router update
 	labDataRouterStateMap := make(map[string]chromeosLab.PeripheralState)
 	for _, wifiRouter := range wifiRouters {
@@ -1731,7 +1750,6 @@ func editRecoveryPeripheralWifi(ctx context.Context, wifi *chromeosLab.Wifi, wif
 	}
 	// assign updated routers to Wifi
 	wifi.WifiRouters = newRouters
-	return nil
 }
 
 // extractServoComponents extracts servo components based on servo_type.

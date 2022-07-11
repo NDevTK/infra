@@ -767,48 +767,60 @@ func (r *UpdateDutStateRequest) Validate() error {
 
 // Validate validates input requests of UpdateDeviceRecoveryData
 func (r *UpdateDeviceRecoveryDataRequest) Validate() error {
-	if GetChromeOsDutState(r) == nil {
-		return status.Errorf(codes.InvalidArgument, NilEntity)
-	}
 	if err := r.validateDutId(); err != nil {
 		return err
 	}
-	if err := r.validateHostnames(); err != nil {
+	if err := r.validateHostname(); err != nil {
 		return err
 	}
-	if err := r.validateDutWifiRouterHostnames(); err != nil {
-		return err
-	}
-	if err := r.validateBluetoothPeerHostnames(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *UpdateDeviceRecoveryDataRequest) validateHostnames() error {
-	dutHostname := strings.TrimSpace(GetChromeOsDutState(r).GetHostname())
-	// Hostnames are required. And request hostname should match dut state hostname
-	if r.GetHostname() == "" {
-		return status.Errorf(codes.InvalidArgument, "Empty request hostname (%q)", r.GetHostname())
-	}
-	if dutHostname == "" {
-		return status.Errorf(codes.InvalidArgument, "Empty dut state hostname (%q)", dutHostname)
-	}
-	if r.GetHostname() != dutHostname {
-		return status.Errorf(codes.InvalidArgument, "Mismatched request hostname (%q) with dut state hostname %q", r.GetHostname(), dutHostname)
+	if r.GetResourceType() == UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE {
+		if err := r.validateDutWifiRouterHostnames(); err != nil {
+			return err
+		}
+		if err := r.validateBluetoothPeerHostnames(); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 func (r *UpdateDeviceRecoveryDataRequest) validateDutId() error {
-	dutID := strings.TrimSpace(GetChromeOsDutState(r).GetId().GetValue())
-	if dutID == "" {
-		return status.Errorf(codes.InvalidArgument, "Empty dut state id. %s", EmptyID)
-	} else if dutID != GetDutId(r) {
-		return status.Errorf(codes.InvalidArgument, "Mismatched device id(%q) with dut state id: %q", GetDutId(r), dutID)
+	dutId := r.GetDeviceId()
+	if dutId == "" {
+		return status.Errorf(codes.InvalidArgument, "Empty dut id. %s", EmptyID)
 	}
-	if !IDRegex.MatchString(dutID) {
-		return status.Errorf(codes.InvalidArgument, "Invalid dut state id(%q). %s ", dutID, InvalidCharacters)
+	if !IDRegex.MatchString(dutId) {
+		return status.Errorf(codes.InvalidArgument, "Invalid dut id(%q). %s", dutId, InvalidCharacters)
+	}
+	if r.GetResourceType() == UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE {
+		if r.GetChromeos().GetDutState() == nil {
+			return status.Errorf(codes.InvalidArgument, NilEntity)
+		}
+		// Request device id should match the dut state id
+		if dutStateId := strings.TrimSpace(r.GetChromeos().GetDutState().GetId().GetValue()); dutStateId != dutId {
+			return status.Errorf(codes.InvalidArgument, "Mismatched device id(%q) with dut state id: %q", dutId, dutStateId)
+		}
+	}
+	return nil
+}
+
+func (r *UpdateDeviceRecoveryDataRequest) validateHostname() error {
+	dutHostname := r.GetHostname()
+	if dutHostname == "" {
+		return status.Errorf(codes.InvalidArgument, "Empty request hostname (%q)", r.GetHostname())
+	}
+	if r.GetResourceType() == UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE {
+		if r.GetChromeos().GetDutState() == nil {
+			return status.Errorf(codes.InvalidArgument, NilEntity)
+		}
+		// Request hostname has to match the dut state hostname
+		dutStateHostname := strings.TrimSpace(r.GetChromeos().GetDutState().GetHostname())
+		if dutStateHostname == "" {
+			return status.Errorf(codes.InvalidArgument, "Empty dut state hostname (%q)", dutHostname)
+		}
+		if dutStateHostname != dutHostname {
+			return status.Errorf(codes.InvalidArgument, "Mismatched request hostname (%q) with dut state hostname %q", dutHostname, dutStateHostname)
+		}
 	}
 	return nil
 }
@@ -829,22 +841,22 @@ func validateHostnames(hostnames []string, typ string) error {
 }
 
 func (r *UpdateDeviceRecoveryDataRequest) validateDutWifiRouterHostnames() error {
-	if GetLabData(r) == nil {
+	if r.GetChromeos().GetLabData() == nil {
 		return nil
 	}
 	var hostnames []string
-	for _, router := range GetWifiRouters(GetLabData(r)) {
+	for _, router := range r.GetChromeos().GetLabData().GetWifiRouters() {
 		hostnames = append(hostnames, router.GetHostname())
 	}
 	return validateHostnames(hostnames, "WiFi")
 }
 
 func (r *UpdateDeviceRecoveryDataRequest) validateBluetoothPeerHostnames() error {
-	if GetLabData(r) == nil {
+	if r.GetChromeos().GetLabData() == nil {
 		return nil
 	}
 	var hostnames []string
-	for _, peer := range GetBluetoothPeers(GetLabData(r)) {
+	for _, peer := range r.GetChromeos().GetLabData().GetBluetoothPeers() {
 		hostnames = append(hostnames, peer.GetHostname())
 	}
 	return validateHostnames(hostnames, "Bluetooth peers")

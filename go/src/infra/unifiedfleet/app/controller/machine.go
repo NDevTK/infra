@@ -292,7 +292,7 @@ func UpdateDutMeta(ctx context.Context, meta *ufspb.DutMeta) error {
 //
 // It's a temporary method to correct serial number & HWID.
 // Will remove once HaRT could provide us the correct info.
-func updateRecoveryDutData(ctx context.Context, dutId string, dutData ufsAPI.DutRecoveryDataInterface) error {
+func updateRecoveryDutData(ctx context.Context, dutId string, dutData *ufsAPI.ChromeOsRecoveryData_DutData) error {
 	if dutData == nil {
 		logging.Warningf(ctx, "Empty dut data (%s)", dutId)
 		return nil
@@ -330,7 +330,7 @@ func updateRecoveryDutData(ctx context.Context, dutId string, dutData ufsAPI.Dut
 }
 
 // updateRecoveryMachineHelper is a helper function to update machine
-func updateRecoveryMachineHelper(ctx context.Context, machine *ufspb.Machine, dutData ufsAPI.DutRecoveryDataInterface) error {
+func updateRecoveryMachineHelper(ctx context.Context, machine *ufspb.Machine, dutData *ufsAPI.ChromeOsRecoveryData_DutData) error {
 	hc := GetMachineHistoryClient(machine)
 	// Copy for logging
 	oldMachine := proto.Clone(machine).(*ufspb.Machine)
@@ -354,7 +354,7 @@ func updateRecoveryMachineHelper(ctx context.Context, machine *ufspb.Machine, du
 }
 
 // updateRecoveryAssetHelper is a helper function to update asset
-func updateRecoveryAssetHelper(ctx context.Context, asset *ufspb.Asset, dutData ufsAPI.DutRecoveryDataInterface) error {
+func updateRecoveryAssetHelper(ctx context.Context, asset *ufspb.Asset, dutData *ufsAPI.ChromeOsRecoveryData_DutData) error {
 	hc := &HistoryClient{}
 	// Copy for logging
 	oldAsset := proto.Clone(asset).(*ufspb.Asset)
