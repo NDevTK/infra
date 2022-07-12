@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -153,7 +154,8 @@ func (m *BugManager) Update(ctx context.Context, request []bugs.BugUpdateRequest
 	for i, req := range request {
 		issue := issues[i]
 		isDuplicate := issue.Status.Status == DuplicateStatus
-		if !isDuplicate && req.ShouldUpdate {
+		shouldArchive := shouldArchiveRule(ctx, issue, req.IsManagingBug)
+		if !isDuplicate && !shouldArchive && req.IsManagingBug && req.Impact != nil {
 			if m.generator.NeedsUpdate(req.Impact, issue) {
 				comments, err := m.client.ListComments(ctx, issue.Name)
 				if err != nil {
@@ -171,10 +173,34 @@ func (m *BugManager) Update(ctx context.Context, request []bugs.BugUpdateRequest
 			}
 		}
 		responses = append(responses, bugs.BugUpdateResponse{
-			IsDuplicate: isDuplicate,
+			IsDuplicate:   isDuplicate,
+			ShouldArchive: shouldArchive && !isDuplicate,
 		})
 	}
 	return responses, nil
+}
+
+// shouldArchiveRule determines if the rule managing the given issue should
+// be archived.
+func shouldArchiveRule(ctx context.Context, issue *mpb.Issue, isManaging bool) bool {
+	// If the bug is set to a status like "Archived", immediately archive
+	// the rule as well. We should not re-open such a bug.
+	if _, ok := ArchivedStatuses[issue.Status.Status]; ok {
+		return true
+	}
+	now := clock.Now(ctx)
+	if isManaging {
+		// If Weetbix is managing the bug,
+		// more than 30 days since the issue was verified.
+		return issue.Status.Status == VerifiedStatus &&
+			now.Sub(issue.StatusModifyTime.AsTime()).Hours() >= 30*24
+	} else {
+		// If the user is managing the bug,
+		// more than 30 days since the issue was closed.
+		_, ok := ClosedStatuses[issue.Status.Status]
+		return ok &&
+			now.Sub(issue.StatusModifyTime.AsTime()).Hours() >= 30*24
+	}
 }
 
 // GetMergedInto reads the bug (if any) the given bug was merged into.

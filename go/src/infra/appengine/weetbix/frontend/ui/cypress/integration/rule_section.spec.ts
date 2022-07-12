@@ -15,7 +15,7 @@ describe('Rule Section', () => {
 
   it('loads rule', () => {
     cy.get('[data-testid=bug-summary]').contains('Weetbix Cypress Test Bug');
-    cy.get('[data-testid=bug-status]').contains('Untriaged');
+    cy.get('[data-testid=bug-status]').contains('Verified');
     cy.get('[data-testid=rule-definition]').contains('test = "cypress test 1"');
     cy.get('[data-testid=rule-archived]').contains('No');
     cy.get('[data-testid=update-bug-toggle]').get('[type=checkbox]').should('be.checked');

@@ -168,29 +168,39 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 	// Prepare bug update requests.
 	bugUpdatesBySystem := make(map[string][]bugs.BugUpdateRequest)
 	for _, r := range rules {
-		impact, ok := impactByRuleID[r.RuleID]
-		if !ok {
-			// If there is no analysis, this means the cluster is
-			// empty or the analysis is invalid. Use empty impact.
-			impact = &bugs.ClusterImpact{}
-		}
+		var impact *bugs.ClusterImpact
 
-		// Only update the bug if re-clustering and analysis ran on the latest
+		// Impact is valid if re-clustering and analysis ran on the latest
 		// version of this failure association rule. This avoids bugs getting
 		// erroneous priority changes while impact information is incomplete.
 		ruleImpactValid := impactValid &&
 			progress.IncorporatesRulesVersion(r.PredicateLastUpdated)
 
+		if ruleImpactValid {
+			var ok bool
+			impact, ok = impactByRuleID[r.RuleID]
+			if !ok {
+				// If there is no analysis, this means the cluster is
+				// empty. Use empty impact.
+				impact = &bugs.ClusterImpact{}
+			}
+		}
+		// Else leave impact as nil. Bug-updating code takes this as an
+		// indication valid impact is not available and will not attempt
+		// priority updates/auto-closure.
+
 		bugUpdates := bugUpdatesBySystem[r.BugID.System]
 		bugUpdates = append(bugUpdates, bugs.BugUpdateRequest{
-			Bug:          r.BugID,
-			Impact:       impact,
-			ShouldUpdate: r.IsManagingBug && ruleImpactValid,
+			Bug:           r.BugID,
+			Impact:        impact,
+			IsManagingBug: r.IsManagingBug,
+			RuleID:        r.RuleID,
 		})
 		bugUpdatesBySystem[r.BugID.System] = bugUpdates
 	}
 
 	var duplicateBugs []bugs.BugID
+	var ruleIDsToArchive []string
 
 	// Perform bug updates.
 	for system, bugsToUpdate := range bugUpdatesBySystem {
@@ -212,8 +222,18 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 		for i, rsp := range responses {
 			if rsp.IsDuplicate {
 				duplicateBugs = append(duplicateBugs, bugsToUpdate[i].Bug)
+			} else if rsp.ShouldArchive {
+				ruleIDsToArchive = append(ruleIDsToArchive, bugsToUpdate[i].RuleID)
 			}
 		}
+	}
+
+	// Handle rules which need to be archived because the bugs were:
+	// - Verified for >30 days and managed by Weetbix, OR
+	// - In any closed state for > 30 days and not managed by Weetbix, OR
+	// -
+	if err := b.archiveRules(ctx, ruleIDsToArchive); err != nil {
+		return errors.Annotate(err, "archive rules").Err()
 	}
 
 	// Handle bugs marked as duplicate.
@@ -314,6 +334,38 @@ func (b *BugUpdater) fileNewBugs(ctx context.Context, clusterSummaries []*analys
 		}
 	}
 	return nil
+}
+
+// archiveRules archives the given list of rules.
+func (b *BugUpdater) archiveRules(ctx context.Context, ruleIDs []string) error {
+	if len(ruleIDs) == 0 {
+		return nil
+	}
+	// Limit the number of rules that can be archived at once to stay
+	// well within Spanner mutation limits. The rest will be handled
+	// in the next bug-filing run.
+	if len(ruleIDs) > 100 {
+		ruleIDs = ruleIDs[:100]
+	}
+	f := func(ctx context.Context) error {
+		// Perform atomic read-update of rule.
+		rs, err := rules.ReadMany(ctx, b.project, ruleIDs)
+		if err != nil {
+			return errors.Annotate(err, "read rules to archive").Err()
+		}
+		for _, r := range rs {
+			r.IsActive = false
+			updatePredicate := true
+			if err := rules.Update(ctx, r, updatePredicate, rules.WeetbixSystem); err != nil {
+				// Validation error. Actual save happens upon transaction
+				// commit.
+				return errors.Annotate(err, "update rules").Err()
+			}
+		}
+		return nil
+	}
+	_, err := span.ReadWriteTransaction(ctx, f)
+	return err
 }
 
 // handleDuplicateBug handles a duplicate bug, merging its failure association
