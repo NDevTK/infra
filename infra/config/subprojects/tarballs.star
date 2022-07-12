@@ -7,17 +7,31 @@
 load("//lib/build.star", "build")
 load("//lib/infra.star", "infra")
 
-def builder(name, cores = 8, **kwargs):
+def builder(name, builderless = True, cores = 8, **kwargs):
+    """Defines a infra.cron tarball builder.
+
+    Args:
+      name: name of the builder
+      builderless: whether to request a builderless machine or not
+      cores: CPU cores to request in the build
+      **kwargs: additional dimensions to request
+    """
+    dimensions = {
+        "pool": "luci.infra.cron",
+        "os": "Ubuntu-18.04",
+        "cpu": "x86-64",
+    }
+    if builderless:
+        dimensions["builderless"] = "1"
+    else:
+        dimensions["builder"] = name
+    if cores:
+        dimensions["cores"] = str(cores)
     luci.builder(
         name = name,
         bucket = "cron",
         service_account = "chromium-tarball-builder@chops-service-accounts.iam.gserviceaccount.com",
-        dimensions = {
-            "pool": "luci.infra.cron",
-            "os": "Ubuntu-18.04",
-            "cpu": "x86-64",
-            "cores": str(cores),
-        },
+        dimensions = dimensions,
         **kwargs
     )
     luci.list_view_entry(
@@ -47,7 +61,8 @@ builder(
         max_batch_size = 1,
         max_concurrent_invocations = 4,
     ),
-    cores = 16,
+    builderless = False,
+    cores = None,
     triggers = ["Build From Tarball"],
     experiments = {
         "luci.recipes.use_python3": 100,
