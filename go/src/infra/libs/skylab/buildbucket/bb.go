@@ -41,8 +41,6 @@ type Client interface {
 	// ScheduleLabpackTask schedules a labpack task.
 	// TODO(gregorynisbet): refactor this method to return a structured result.
 	ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error)
-	// BuildURL constructs the URL to a build with the given ID.
-	BuildURL(buildID int64) string
 }
 
 // ClientImpl is the implementation of the Client interface.
