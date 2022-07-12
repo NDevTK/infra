@@ -1078,6 +1078,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Download lab stable image on servo USB-key",
 				"Download the image can take longer if labstation download parallel a few images.",
+				"This step is allowed to complete successfully even if some",
+				" errors happen during download because the image can already",
+				" be present on the USB-drive.",
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
@@ -1085,9 +1088,10 @@ func crosRepairActions() map[string]*Action {
 				// Present of DUT connection is not critical.
 				"servo_servod_echo_host",
 			},
-			ExecName:    "servo_download_image_to_usb",
-			ExecTimeout: &durationpb.Duration{Seconds: 3000},
-			RunControl:  RunControl_ALWAYS_RUN,
+			ExecName:               "servo_download_image_to_usb",
+			ExecTimeout:            &durationpb.Duration{Seconds: 3000},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"cros_is_time_to_force_download_image_to_usbkey": {
 			Docs: []string{
