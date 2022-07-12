@@ -25,8 +25,8 @@ cros-tool-runner$ go build .
 cros-tool-runner$ ./cros-tool-runner serve
 server listening at [::]:8082
 ```
-Once the server has started, you may use `grpc_cli` to interact with the
-services. Example:
+Once the server has started, you may use [`grpc_cli`](http://go/grpc_cli) to
+interact with the services. Example:
 ```shell
 $ grpc_cli ls localhost:8082 ctrv2.api.CrosToolRunnerContainerService --channel_creds_type insecure
 CreateNetwork
@@ -34,6 +34,8 @@ GetNetwork
 Shutdown
 LoginRegistry
 StartContainer
+StartTemplatedContainer
+StackCommands
 $ grpc_cli call localhost:8082 ctrv2.api.CrosToolRunnerContainerService.GetNetwork "name: 'bridge'" --channel_creds_type insecure
 connecting to localhost:8082
 network {
@@ -56,3 +58,5 @@ Rpc succeeded with OK status
 ```
 * Depending on your setup, you may need to run `gcloud auth login` to be able to
   call the LoginRegistry endpoint.
+* You may use the `--infile` flag of grpc_cli to read request data from a
+  textproto file. See data/v2_example.textproto
