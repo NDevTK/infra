@@ -62,9 +62,11 @@ func TestPerformBootstrap(t *testing.T) {
 		Instances: map[string]*fakecipd.PackageInstance{},
 	}
 
+	fakePackagesRoot := filepath.Join(t.TempDir(), "fake-packages-root")
+
 	opts := options{
 		outputPath:   "fake-output-path",
-		packagesRoot: "fake-packages-root",
+		packagesRoot: fakePackagesRoot,
 	}
 
 	ctx := context.Background()

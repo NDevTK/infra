@@ -25,6 +25,8 @@ func TestDownloadPackages(t *testing.T) {
 
 	ctx := context.Background()
 
+	fakePackagesRoot := filepath.Join(t.TempDir(), "fake-packages-root")
+
 	Convey("DownloadPackages", t, func() {
 
 		exePkg := &fakecipd.Package{
@@ -45,7 +47,7 @@ func TestDownloadPackages(t *testing.T) {
 		packageChannels := map[string]chan<- string{}
 
 		Convey("fails on nil input", func() {
-			exe, cmd, err := DownloadPackages(ctx, nil, "fake-packages-root", nil)
+			exe, cmd, err := DownloadPackages(ctx, nil, fakePackagesRoot, nil)
 
 			So(err, ShouldErrLike, "nil input provided")
 			So(exe, ShouldBeNil)
@@ -63,7 +65,7 @@ func TestDownloadPackages(t *testing.T) {
 		Convey("fails when provided channel for exe", func() {
 			packageChannels[ExeId] = make(chan string, 1)
 
-			exe, cmd, err := DownloadPackages(ctx, &Input{}, "fake-packages-root", packageChannels)
+			exe, cmd, err := DownloadPackages(ctx, &Input{}, fakePackagesRoot, packageChannels)
 
 			So(err, ShouldErrLike, "channel provided for ExeId")
 			So(exe, ShouldBeNil)
@@ -73,7 +75,7 @@ func TestDownloadPackages(t *testing.T) {
 		Convey("fails when provided channel for unknown ID", func() {
 			packageChannels["foo"] = make(chan string, 1)
 
-			exe, cmd, err := DownloadPackages(ctx, &Input{}, "fake-packages-root", packageChannels)
+			exe, cmd, err := DownloadPackages(ctx, &Input{}, fakePackagesRoot, packageChannels)
 
 			So(err, ShouldErrLike, "channel provided for unknown package ID foo")
 			So(exe, ShouldBeNil)
@@ -83,7 +85,7 @@ func TestDownloadPackages(t *testing.T) {
 		Convey("fails when provided an unbuffer channel", func() {
 			packageChannels[DepotToolsId] = make(chan string)
 
-			exe, cmd, err := DownloadPackages(ctx, &Input{}, "fake-packages-root", packageChannels)
+			exe, cmd, err := DownloadPackages(ctx, &Input{}, fakePackagesRoot, packageChannels)
 
 			So(err, ShouldErrLike, "channel for package ID depot-tools is unbuffered")
 			So(exe, ShouldBeNil)
@@ -116,7 +118,7 @@ func TestDownloadPackages(t *testing.T) {
 			Convey("fails if ensuring packages fails", func() {
 				exePkg.Refs["fake-exe-version"] = ""
 
-				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
+				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				So(err, ShouldErrLike, "unknown version")
 				So(exe, ShouldBeNil)
@@ -126,7 +128,7 @@ func TestDownloadPackages(t *testing.T) {
 			Convey("returns exe info and command on success", func() {
 				exePkg.Refs["fake-exe-version"] = "fake-exe-instance"
 
-				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
+				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				So(err, ShouldBeNil)
 				So(exe, ShouldResembleProtoJSON, `{
@@ -142,7 +144,7 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg2"
 					]
 				}`)
-				So(cmd, ShouldResemble, []string{filepath.Join("fake-packages-root", "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"})
+				So(cmd, ShouldResemble, []string{filepath.Join(fakePackagesRoot, "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"})
 			})
 
 			Convey("downloads depot_tools for dependent project", func() {
@@ -163,12 +165,12 @@ func TestDownloadPackages(t *testing.T) {
 				depotToolsCh := make(chan string, 1)
 				packageChannels[DepotToolsId] = depotToolsCh
 
-				_, _, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
+				_, _, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				So(err, ShouldBeNil)
 				So(len(depotToolsCh), ShouldEqual, 1)
 				depotToolsPackagePath := <-depotToolsCh
-				So(depotToolsPackagePath, ShouldEqual, filepath.Join("fake-packages-root", "cipd", "depot-tools"))
+				So(depotToolsPackagePath, ShouldEqual, filepath.Join(fakePackagesRoot, "cipd", "depot-tools"))
 			})
 
 		})
@@ -206,7 +208,7 @@ func TestDownloadPackages(t *testing.T) {
 			Convey("fails if downloading from CAS fails", func() {
 				fakeCas.Blobs["fake-cas-hash"] = false
 
-				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
+				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				So(err, ShouldErrLike, "hash fake-cas-hash does not identify any blobs")
 				So(exe, ShouldBeNil)
@@ -214,7 +216,7 @@ func TestDownloadPackages(t *testing.T) {
 			})
 
 			Convey("returns exe info and command on success", func() {
-				exe, cmd, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
+				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				So(err, ShouldBeNil)
 				So(exe, ShouldResembleProtoJSON, `{
@@ -231,7 +233,7 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg2"
 					]
 				}`)
-				So(cmd, ShouldResemble, []string{filepath.Join("fake-packages-root", "cas", "fake-binary"), "fake-arg1", "fake-arg2"})
+				So(cmd, ShouldResemble, []string{filepath.Join(fakePackagesRoot, "cas", "fake-binary"), "fake-arg1", "fake-arg2"})
 			})
 
 			Convey("downloads depot_tools for dependent project", func() {
@@ -252,12 +254,12 @@ func TestDownloadPackages(t *testing.T) {
 				depotToolsCh := make(chan string, 1)
 				packageChannels[DepotToolsId] = depotToolsCh
 
-				_, _, err := DownloadPackages(ctx, input, "fake-packages-root", packageChannels)
+				_, _, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				So(err, ShouldBeNil)
 				So(len(depotToolsCh), ShouldEqual, 1)
 				depotToolsPackagePath := <-depotToolsCh
-				So(depotToolsPackagePath, ShouldEqual, filepath.Join("fake-packages-root", "cipd", "depot-tools"))
+				So(depotToolsPackagePath, ShouldEqual, filepath.Join(fakePackagesRoot, "cipd", "depot-tools"))
 			})
 
 		})
