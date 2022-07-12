@@ -16,6 +16,24 @@
       "message": "Will we implement an easier login command where providing the file (what we provide to ctrv1), ctrv2 will derive all the info it needs and will do the login?",
       "revId": "638700ad83ff9cedc25997f1ac3942ac724feea0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "068a991e_cfca86af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2022-07-12T21:16:36Z",
+      "side": 1,
+      "message": "We can decide when design the API for templates.\nFor the generic endpoints, I have been trying to avoid optimizing for specific use cases, like assuming the registry is gcr.",
+      "parentUuid": "8ade0ceb_02696f24",
+      "revId": "638700ad83ff9cedc25997f1ac3942ac724feea0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
