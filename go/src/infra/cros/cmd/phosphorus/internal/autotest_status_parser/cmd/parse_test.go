@@ -368,6 +368,27 @@ END FAIL	----	ActuallyAbort
 	})
 }
 
+func TestInnerAbortedStep(t *testing.T) {
+	Convey("When status.log contains an inner ABORT step, a test failure with a comment is returned.", t, func() {
+		input := `
+START	cheets_CTS_P.internal.arm.CtsTheme	cheets_CTS_P.internal.arm.CtsTheme	timestamp=1655978455	localtime=Jun 23 03:00:55
+	START	----	reboot	timestamp=1655978465	localtime=Jun 23 03:01:05
+		GOOD	----	reboot.start	timestamp=1655978465	localtime=Jun 23 03:01:05
+		GOOD	----	reboot.verify	timestamp=1655978495	localtime=Jun 23 03:01:35
+	END GOOD	----	reboot	kernel=5.10.123-16746-g919ef5ff27e4	timestamp=1655978495	localtime=Jun 23 03:01:35
+	END ABORT	----	----	timestamp=1655979120	localtime=Jun 23 03:12:00	Autotest client terminated unexpectedly: DUT is pingable, SSHable and did NOT restart un-expectedly. We probably lost connectivity during the test.
+	ERROR	cheets_CTS_P.internal.arm.CtsTheme	cheets_CTS_P.internal.arm.CtsTheme	timestamp=1655979124	localtime=Jun 23 03:12:04	Failed to login to Chrome
+END ERROR	cheets_CTS_P.internal.arm.CtsTheme	cheets_CTS_P.internal.arm.CtsTheme	timestamp=1655979124	localtime=Jun 23 03:12:04
+`
+		got := parseResultsFile(input)
+
+		want := []*skylab_test_runner.Result_Autotest_TestCase{
+			testCase("cheets_CTS_P.internal.arm.CtsTheme", verdictAbort, "Autotest client terminated unexpectedly: DUT is pingable, SSHable and did NOT restart un-expectedly. We probably lost connectivity during the test.\n"),
+		}
+		So(got, ShouldResemble, want)
+	})
+}
+
 func TestFailedToParseExitCode(t *testing.T) {
 	Convey("When the exit code is not an integer, report exit error.",
 		t, func() {
