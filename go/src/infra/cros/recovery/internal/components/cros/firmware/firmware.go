@@ -68,6 +68,7 @@ var targetOverrideModels = map[string]string{
 	"droid":       "bobba",
 	"garfour":     "garg",
 	"vortininja":  "meep",
+	"sparky":      "bobba",
 	"sparky360":   "bobba",
 	"bobba360":    "bobba",
 	"mimrock":     "meep",
