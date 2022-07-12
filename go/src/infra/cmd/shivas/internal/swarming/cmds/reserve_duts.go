@@ -91,10 +91,10 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	c.session = fmt.Sprintf("admin-session:%s", c.session)
 	for _, host := range args {
 		// TODO(crbug/1128496): update state directly in the UFS without creating the swarming task
-		if taskID, err := c.scheduleReserveBuilder(ctx, bc, e, host); err != nil {
+		if url, _, err := c.scheduleReserveBuilder(ctx, bc, e, host); err != nil {
 			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
 		} else {
-			fmt.Fprintf(a.GetErr(), "%s: %s\n", host, bc.BuildURL(taskID))
+			fmt.Fprintf(a.GetErr(), "%s: %s\n", host, url)
 		}
 	}
 	utils.PrintTasksBatchLink(a.GetErr(), e.SwarmingService, c.session)
@@ -102,7 +102,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 }
 
 // scheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
-func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string) (int64, error) {
+func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string) (string, int64, error) {
 	// TODO(b/229896419): refactor to hide labpack.Params struct.
 	v := labpack.CIPDProd
 	p := &labpack.Params{
@@ -123,8 +123,8 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 			fmt.Sprintf("comment:%s", c.comment),
 		},
 	}
-	_, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
-	return taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
+	url, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
 }
 
 // initConfig initializes config used for scheduling reserve tasks.
