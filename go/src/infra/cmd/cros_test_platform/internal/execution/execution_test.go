@@ -18,6 +18,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
 
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
@@ -38,6 +39,7 @@ import (
 	"infra/cmd/cros_test_platform/internal/execution"
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 	"infra/libs/skylab/request"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestLaunchAndWaitTest(t *testing.T) {
@@ -181,6 +183,61 @@ func TestTaskURL(t *testing.T) {
 		resp := extractSingleResponse(resps)
 		So(resp.TaskResults, ShouldHaveLength, 1)
 		So(resp.TaskResults[0].TaskUrl, ShouldEqual, "foo-url")
+	})
+}
+
+type fleetPolicyFailureClient struct {
+	trservice.StubClient
+}
+
+// CheckFleetTestsPolicy implements Client interface.
+func (c fleetPolicyFailureClient) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest, opt ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return &ufsapi.CheckFleetTestsPolicyResponse{
+		IsTestValid: false,
+		TestStatus: &ufsapi.TestStatus{
+			Code:    ufsapi.TestStatus_NOT_A_PUBLIC_BOARD,
+			Message: "Not a Public Board",
+		},
+	}, nil
+}
+
+func TestCheckFleetPolicyError(t *testing.T) {
+	Convey("Error in Fleet Policy fails the run", t, func() {
+		responses, err := runWithDefaults(
+			context.Background(),
+			fleetPolicyFailureClient{},
+			[]*steps.EnumerationResponse_AutotestInvocation{clientTestInvocation("", "")},
+		)
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldContainSubstring, ufsapi.TestStatus_NOT_A_PUBLIC_BOARD.String())
+		So(responses, ShouldBeNil)
+	})
+}
+
+type fleetPolicyValidClient struct {
+	trservice.StubClient
+}
+
+// CheckFleetTestsPolicy implements Client interface.
+func (c fleetPolicyValidClient) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest, opt ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return &ufsapi.CheckFleetTestsPolicyResponse{
+		IsTestValid: true,
+		TestStatus: &ufsapi.TestStatus{
+			Code: ufsapi.TestStatus_OK,
+		},
+	}, nil
+}
+
+func TestCheckFleetPolicyValid(t *testing.T) {
+	Convey("Valid Fleet Policy continues normal test run flow", t, func() {
+		responses, err := runWithDefaults(
+			context.Background(),
+			fleetPolicyValidClient{},
+			[]*steps.EnumerationResponse_AutotestInvocation{clientTestInvocation("", "")},
+		)
+		So(err, ShouldBeNil)
+		So(responses, ShouldNotBeNil)
+		So(len(responses), ShouldEqual, 1)
 	})
 }
 
