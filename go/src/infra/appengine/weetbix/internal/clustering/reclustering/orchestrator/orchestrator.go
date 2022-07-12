@@ -32,6 +32,15 @@ import (
 )
 
 var (
+	chunkGauge = metric.NewInt("weetbix/clustering/reclustering/chunk_count",
+		"The estimated number of chunks, by LUCI Project.",
+		&types.MetricMetadata{
+			Units: "chunks",
+		},
+		// The LUCI project.
+		field.String("project"),
+	)
+
 	workersGauge = metric.NewInt("weetbix/clustering/reclustering/worker_count",
 		"The number of workers performing reclustering, by LUCI Project.",
 		&types.MetricMetadata{
@@ -86,7 +95,7 @@ func init() {
 	tsmon.RegisterGlobalCallback(func(ctx context.Context) {
 		// Do nothing -- the metrics will be populated by the cron
 		// job itself and does not need to be triggered externally.
-	}, workersGauge, progressGauge, lastCompletedGauge, statusGauge)
+	}, chunkGauge, workersGauge, progressGauge, lastCompletedGauge, statusGauge)
 }
 
 func orchestrate(ctx context.Context) error {
@@ -187,6 +196,8 @@ func projectWorkerCounts(ctx context.Context, projects []string, workers int) (m
 		}
 		chunksByProject[project] = int64(estimate)
 		totalChunks += int64(estimate)
+
+		chunkGauge.Set(ctx, int64(estimate), project)
 	}
 
 	// Each project gets at least one worker. The rest can be divided up
