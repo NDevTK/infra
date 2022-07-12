@@ -232,4 +232,5 @@ TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS = {
     'chromeos-base/screen-capture-utils',
     'chromeos-base/update_engine',
     'chromeos-base/mtpd',
+    'net-wireless/floss',
 }
