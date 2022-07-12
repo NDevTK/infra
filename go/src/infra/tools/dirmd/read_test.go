@@ -346,6 +346,23 @@ func TestRead(t *testing.T) {
 			})
 		})
 
+		Convey(`Sparse, from a symlink`, func() {
+			if runtime.GOOS == "windows" {
+				return
+			}
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, "testdata/sym_root")
+			So(err, ShouldBeNil)
+			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					rootKey: {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+					},
+				},
+				Repos: dummyRepos,
+			})
+		})
+
 		Convey(`Reduced`, func() {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_REDUCED, "testdata/root")
 			So(err, ShouldBeNil)

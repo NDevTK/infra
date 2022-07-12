@@ -184,12 +184,14 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, dirs ...string) 
 		// Trim down the mapping.
 		ret := NewMapping(len(dirs))
 		ret.Repos = r.Repos
-		for _, dir := range dirs {
-			key, err := r.DirKey(dir)
-			if err != nil {
-				panic(err) // Impossible: we have just used these paths above.
+		for _, repo := range repos {
+			for _, dir := range repo.dirs {
+				key, err := r.DirKey(dir)
+				if err != nil {
+					panic(err) // Impossible: we have just used these paths above.
+				}
+				ret.Dirs[key] = r.Mapping.Dirs[key]
 			}
-			ret.Dirs[key] = r.Mapping.Dirs[key]
 		}
 		return ret, nil
 
