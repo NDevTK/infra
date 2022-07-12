@@ -16,6 +16,24 @@
       "message": "Maybe explicitly mention that the rest will be handled on the next bug filing run.",
       "revId": "8ecc3758852f47dcdf4cc25ee941ef5d80894adb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ed0cc96_1a416adc",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugs/updater/updater.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 345,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-07-12T07:12:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4833e291_624de6e2",
+      "revId": "8ecc3758852f47dcdf4cc25ee941ef5d80894adb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
