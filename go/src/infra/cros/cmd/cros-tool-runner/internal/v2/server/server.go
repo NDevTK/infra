@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"infra/cros/cmd/cros-tool-runner/api"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
@@ -85,6 +86,47 @@ func (s *ContainerServerImpl) Shutdown(context.Context, *api.ShutdownRequest) (*
 	}
 	log.Println("interrupt signal sent")
 	return &api.ShutdownResponse{}, err
+}
+
+// LoginRegistry logs in a docker image registry server
+func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.LoginRegistryRequest) (*api.LoginRegistryResponse, error) {
+	if request.Username == "" {
+		return nil, utils.invalidArgument("Missing username")
+	}
+	if request.Password == "" {
+		return nil, utils.invalidArgument("Missing password")
+	}
+	if request.Registry == "" {
+		return nil, utils.invalidArgument("Missing registry")
+	}
+	if request.Password == "$(gcloud auth print-access-token)" {
+		password, stderr, err := s.executor.Execute(ctx, &commands.GcloudAuthTokenPrint{})
+		if err != nil {
+			return nil, errors.Annotate(err, stderr).Err()
+		}
+		request.Password = password
+	}
+	cmd := commands.DockerLogin{LoginRegistryRequest: request}
+	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
+	// docker always has stderr warning
+	if stdout == "" && stderr != "" {
+		return nil, utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
+			switch {
+			// docker error
+			case strings.Contains(s, "unauthorized: failed authentication"):
+				return codes.PermissionDenied
+			// podman error
+			case strings.Contains(s, "invalid username/password"):
+				return codes.PermissionDenied
+			default:
+				return codes.Unknown
+			}
+		})
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &api.LoginRegistryResponse{Message: stdout}, nil
 }
 
 // StartContainer pulls image and then calls docker run to start a container.
@@ -202,6 +244,15 @@ func (s *ContainerServerImpl) StackCommands(ctx context.Context, request *api.St
 			outputs = append(outputs, &api.StackCommandsResponse_Stackable{
 				Output: &api.StackCommandsResponse_Stackable_StartContainer{
 					StartContainer: output,
+				}})
+		case *api.StackCommandsRequest_Stackable_LoginRegistry:
+			output, err := s.LoginRegistry(ctx, r.GetLoginRegistry())
+			if err != nil {
+				return &api.StackCommandsResponse{Responses: outputs}, err
+			}
+			outputs = append(outputs, &api.StackCommandsResponse_Stackable{
+				Output: &api.StackCommandsResponse_Stackable_LoginRegistry{
+					LoginRegistry: output,
 				}})
 		default:
 			return &api.StackCommandsResponse{Responses: outputs}, utils.unimplemented(fmt.Sprintf("Unimplemented request type %v", t))

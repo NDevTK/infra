@@ -24,6 +24,16 @@ service CrosToolRunnerContainerService {
   rpc Shutdown(ShutdownRequest)
     returns (ShutdownResponse);
 
+  // Logs in a docker image registry server
+  // Call LoginRegistry before StartContainer to avoid permission denied errors.
+  // For login GCR, a client is required to run proper `gcloud auth` command to
+  // generate a token. For service account, the command is `gcloud auth
+  // activate-service-account`; for local development, the command is `gcloud
+  // auth login`.
+  // Note that the token is short lived for an hour.
+  rpc LoginRegistry(LoginRegistryRequest)
+    returns (LoginRegistryResponse);
+
   // Runs a docker container with the provided start command.
   // This assumes docker is already authenticated to pull the supplied image.
   // The container will run in detached mode (-d); all exposed ports will be
@@ -85,6 +95,20 @@ message GetNetworkResponse {
 message ShutdownRequest {}
 message ShutdownResponse {}
 
+message LoginRegistryRequest {
+  // User name. For gcloud, this should be `oauth2accesstoken`
+  string username = 1;
+  // Password value or a command substitution. E.g. actual token value or
+  // $(gcloud auth print-access-token)
+  string password = 2;
+  // Registry server name. E.g. us-docker.pkg.dev
+  string registry = 3;
+}
+message LoginRegistryResponse {
+  // Message returned by docker login command
+  string message = 1;
+}
+
 message StartContainerRequest {
   // Unique name given to the container that will be used later to retrieve
   // container info.
@@ -138,6 +162,7 @@ message StackCommandsRequest {
       StartContainerRequest start_container = 1;
       StartTemplatedContainerRequest start_templated_container = 2;
       CreateNetworkRequest create_network = 3;
+      LoginRegistryRequest login_registry = 4;
     }
   }
   repeated Stackable requests = 1;
@@ -148,6 +173,7 @@ message StackCommandsResponse {
     oneof output {
       StartContainerResponse start_container = 1;
       CreateNetworkResponse create_network = 2;
+      LoginRegistryResponse login_registry = 3;
     }
   }
   repeated Stackable responses = 1;

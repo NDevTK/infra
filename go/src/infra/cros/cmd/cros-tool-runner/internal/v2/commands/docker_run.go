@@ -65,3 +65,22 @@ func (c *DockerPull) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"pull", c.ContainerImage}
 	return execute(ctx, dockerCmd, args)
 }
+
+// DockerLogin represents `docker login` and is an alias to LoginRegistryRequest
+type DockerLogin struct {
+	*api.LoginRegistryRequest
+}
+
+func (c *DockerLogin) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"login", "-u", c.Username, "-p", c.Password, c.Registry}
+	return execute(ctx, dockerCmd, args)
+}
+
+// GcloudAuthTokenPrint represents `gcloud auth print-access-token`
+type GcloudAuthTokenPrint struct {
+}
+
+func (c *GcloudAuthTokenPrint) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"auth", "print-access-token"}
+	return execute(ctx, "gcloud", args)
+}
