@@ -32,6 +32,43 @@ func (m *mockExecutor) Execute(ctx context.Context, cmd commands.Command) (strin
 	return fmt.Sprintf("mockExecutor: %s executed", cmdType), "", nil
 }
 
+func TestCreateNetwork_invalidArgument_missingName(t *testing.T) {
+	service := getService(&mockExecutor{})
+	_, err := service.CreateNetwork(context.Background(), &api.CreateNetworkRequest{})
+	if err == nil {
+		t.Fatalf("Expect invalidArgument error")
+	}
+}
+
+func TestCreateNetwork_cannotRetrieveId(t *testing.T) {
+	errorMapping := make(map[string]string)
+	errorMapping["*commands.NetworkList"] = "Some unknown error"
+	executor := mockExecutor{commandsToThrowError: errorMapping}
+	service := getService(&executor)
+	_, err := service.CreateNetwork(context.Background(), &api.CreateNetworkRequest{Name: "mynet"})
+	if err == nil {
+		t.Fatalf("Expect notFound error")
+	}
+}
+
+func TestCreateNetwork_success(t *testing.T) {
+	executor := mockExecutor{}
+	service := getService(&executor)
+	_, err := service.CreateNetwork(context.Background(), &api.CreateNetworkRequest{Name: "mynet"})
+	if err != nil {
+		t.Fatalf("Expect success")
+	}
+	if len(executor.commandsExecuted) != 2 {
+		t.Fatalf("Expect 2 commands have been executed")
+	}
+	if executor.commandsExecuted[0] != "*commands.NetworkCreate" {
+		t.Fatalf("Expect network create have been executed")
+	}
+	if executor.commandsExecuted[1] != "*commands.NetworkList" {
+		t.Fatalf("Expect network list have been executed")
+	}
+}
+
 func TestStartContainer_invalidArgument_missingName(t *testing.T) {
 	service := getService(&mockExecutor{})
 	_, err := service.StartContainer(context.Background(), &api.StartContainerRequest{})
@@ -157,11 +194,6 @@ func TestStackCommands(t *testing.T) {
 				},
 			},
 			{
-				Command: &api.StackCommandsRequest_Stackable_CreateNetwork{
-					CreateNetwork: &api.CreateNetworkRequest{Name: "bridge3"},
-				},
-			},
-			{
 				Command: &api.StackCommandsRequest_Stackable_StartContainer{
 					StartContainer: &api.StartContainerRequest{
 						Name:           "my-container",
@@ -180,8 +212,8 @@ func TestStackCommands(t *testing.T) {
 	if executor.commandsExecuted[0] != "*commands.NetworkCreate" {
 		t.Fatalf("Expect docker network create have been executed")
 	}
-	if executor.commandsExecuted[1] != "*commands.NetworkCreate" {
-		t.Fatalf("Expect docker network create have been executed")
+	if executor.commandsExecuted[1] != "*commands.NetworkList" {
+		t.Fatalf("Expect docker network list have been executed")
 	}
 	if executor.commandsExecuted[2] != "*commands.DockerPull" {
 		t.Fatalf("Expect docker pull have been executed")
