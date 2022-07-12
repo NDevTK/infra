@@ -244,12 +244,12 @@ func createBuildbucketRepairTask(ctx context.Context, params createBuildBucketRe
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}
-	_, taskID, err := labpack.ScheduleTask(ctx, bc, params.taskType, p)
+	url, _, err := labpack.ScheduleTask(ctx, bc, params.taskType, p)
 	if err != nil {
 		logging.Errorf(ctx, "error scheduling task: %q", err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
-	return bc.BuildURL(taskID), nil
+	return url, nil
 }
 
 // CreateLegacyRepairTask creates a legacy repair task for a labstation.
