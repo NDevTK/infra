@@ -9,16 +9,11 @@ from __future__ import division
 from __future__ import absolute_import
 
 import os
-import sys
 
-# Enable third-party imports
 from google.appengine.ext import vendor
-vendor.add(os.path.join(os.path.dirname(__file__), 'third_party'))
 
-# Set path to your libraries folder.
+# Add libraries installed in the lib/ folder.
 lib_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
-
-# Add libraries installed in the path folder.
 vendor.add(lib_path)
 # Add libraries to pkg_resources working set to find the distribution.
 import pkg_resources

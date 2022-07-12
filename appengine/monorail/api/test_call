@@ -57,14 +57,8 @@ import argparse
 import errno
 import json
 import logging
-import os
 import sys
 
-
-monorail_dir = os.path.dirname(os.path.abspath(__file__ + '/..'))
-third_party_path = os.path.join(monorail_dir, 'third_party')
-if third_party_path not in sys.path:
-  sys.path.insert(0, third_party_path)
 
 import httplib2
 from oauth2client.client import GoogleCredentials

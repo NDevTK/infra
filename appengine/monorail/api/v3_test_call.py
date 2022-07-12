@@ -4,11 +4,6 @@
 
 #!/usr/bin/env python
 """
-This script requires `google-auth` 1.15.0 or higher.
-To update this for monorail's third_party run the following from
-monorail/third_party/google:
-bash ./update.sh 1.15.0
-
 This is an example of how a script might make calls to monorail's v3  pRPC API.
 
 Usage example:
@@ -24,13 +19,8 @@ import argparse
 import json
 import logging
 import os
-import sys
 import requests
 
-monorail_dir = os.path.dirname(os.path.abspath(__file__ + '/..'))
-third_party_path = os.path.join(monorail_dir, 'third_party')
-if third_party_path not in sys.path:
-  sys.path.insert(0, third_party_path)
 
 # Older versions of https://github.com/googleapis/google-auth-library-python
 # do not have the fetch_id_token() method called below.
