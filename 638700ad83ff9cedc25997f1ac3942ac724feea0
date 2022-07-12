@@ -34,6 +34,24 @@
       "parentUuid": "8ade0ceb_02696f24",
       "revId": "638700ad83ff9cedc25997f1ac3942ac724feea0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16a7403c_1fdcdd6d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2022-07-12T22:00:36Z",
+      "side": 1,
+      "message": "SG. Was just curious if there is a plan. Thanks!",
+      "parentUuid": "068a991e_cfca86af",
+      "revId": "638700ad83ff9cedc25997f1ac3942ac724feea0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
