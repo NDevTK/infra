@@ -24,7 +24,30 @@ export interface ResourceState {
   deletingStatus: string;
   pageNumber: number;
   pageSize: number;
+  recordValidation: ResourceRecordValidation;
 }
+
+export interface ResourceRecordValidation {
+  nameValid: boolean;
+  descriptionValid: boolean;
+  operatingSystemValid: boolean;
+  imageProjectValid: boolean;
+  imageFamilyValid: boolean;
+  typeValid: boolean;
+}
+
+export const ResourceRecordValidation = {
+  defaultEntity(): ResourceRecordValidation {
+    return {
+      nameValid: true,
+      descriptionValid: true,
+      operatingSystemValid: true,
+      imageProjectValid: true,
+      imageFamilyValid: true,
+      typeValid: true,
+    };
+  },
+};
 
 const initialState: ResourceState = {
   resources: [],
@@ -35,6 +58,7 @@ const initialState: ResourceState = {
   record: ResourceModel.defaultEntity(),
   savingStatus: 'idle',
   deletingStatus: 'idle',
+  recordValidation: ResourceRecordValidation.defaultEntity(),
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -140,21 +164,49 @@ export const resourceSlice = createSlice({
     },
     setName: (state, action) => {
       state.record.name = action.payload;
+      if (state.record.name === '') {
+        state.recordValidation.nameValid = false;
+      } else {
+        state.recordValidation.nameValid = true;
+      }
     },
     setType: (state, action) => {
       state.record.type = action.payload;
     },
     setOperatingSystem: (state, action) => {
       state.record.operatingSystem = action.payload;
+      if (
+        state.record.type === 'machine' &&
+        state.record.operatingSystem === ''
+      ) {
+        state.recordValidation.operatingSystemValid = false;
+      } else {
+        state.recordValidation.operatingSystemValid = true;
+      }
     },
     setDescription: (state, action) => {
       state.record.description = action.payload;
+      if (state.record.description === '') {
+        state.recordValidation.descriptionValid = false;
+      } else {
+        state.recordValidation.descriptionValid = true;
+      }
     },
     setImageProject: (state, action) => {
       state.record.imageProject = action.payload;
+      if (state.record.type === 'machine' && state.record.imageProject === '') {
+        state.recordValidation.imageProjectValid = false;
+      } else {
+        state.recordValidation.imageProjectValid = true;
+      }
     },
     setImageFamily: (state, action) => {
       state.record.imageFamily = action.payload;
+      if (state.record.type === 'machine' && state.record.imageFamily === '') {
+        state.recordValidation.imageFamilyValid = false;
+      } else {
+        state.recordValidation.imageFamilyValid = true;
+      }
     },
     onSelectRecord: (state, action) => {
       state.record = state.resources.filter(
@@ -163,12 +215,31 @@ export const resourceSlice = createSlice({
     },
     clearSelectedRecord: (state) => {
       state.record = ResourceModel.defaultEntity();
+      state.recordValidation = ResourceRecordValidation.defaultEntity();
     },
     setState: (state, action) => {
       return action.payload;
     },
     setDefaultState: () => {
       return initialState;
+    },
+    setNameValidFalse: (state) => {
+      state.recordValidation.nameValid = false;
+    },
+    setDescriptionValidFalse: (state) => {
+      state.recordValidation.descriptionValid = false;
+    },
+    setOperatingSystemValidFalse: (state) => {
+      state.recordValidation.operatingSystemValid = false;
+    },
+    setImageProjectValidFalse: (state) => {
+      state.recordValidation.imageProjectValid = false;
+    },
+    setImageFamilyValidFalse: (state) => {
+      state.recordValidation.imageFamilyValid = false;
+    },
+    setTypeValidFalse: (state) => {
+      state.recordValidation.typeValid = false;
     },
   },
 
@@ -232,6 +303,12 @@ export const {
   setImageProject,
   setDefaultState,
   setState,
+  setNameValidFalse,
+  setDescriptionValidFalse,
+  setOperatingSystemValidFalse,
+  setImageFamilyValidFalse,
+  setImageProjectValidFalse,
+  setTypeValidFalse,
 } = resourceSlice.actions;
 
 export default resourceSlice.reducer;

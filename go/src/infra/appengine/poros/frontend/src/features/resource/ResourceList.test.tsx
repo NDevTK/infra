@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { ResourceList } from './ResourceList';
 import userEvent from '@testing-library/user-event';
 import { ResourceModel } from '../../api/resource_service';
-import { ResourceState, setState } from './resourceSlice';
+import { ResourceRecordValidation, ResourceState, setState } from './resourceSlice';
 
 const testState: ResourceState = {
   resources: [],
@@ -16,6 +16,7 @@ const testState: ResourceState = {
   record: ResourceModel.defaultEntity(),
   savingStatus: 'idle',
   deletingStatus: 'idle',
+  recordValidation: ResourceRecordValidation.defaultEntity(),
 };
 
 const testResourceList: ResourceModel[] = [

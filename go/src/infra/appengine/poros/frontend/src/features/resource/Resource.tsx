@@ -16,6 +16,7 @@ import {
   Stack,
   InputLabel,
   FormControl,
+  FormHelperText,
 } from '@mui/material';
 import {
   createResourceAsync,
@@ -26,6 +27,13 @@ import {
   updateResourceAsync,
   setImageProject,
   setImageFamily,
+  ResourceRecordValidation,
+  setOperatingSystemValidFalse,
+  setDescriptionValidFalse,
+  setNameValidFalse,
+  setImageProjectValidFalse,
+  setImageFamilyValidFalse,
+  setTypeValidFalse,
 } from './resourceSlice';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -50,6 +58,9 @@ export const Resource = () => {
   const resourceId: string = useAppSelector(
     (state) => state.resource.record.resourceId
   );
+  const recordValidation: ResourceRecordValidation = useAppSelector(
+    (state) => state.resource.recordValidation
+  );
   const resource = useAppSelector((state) => state.resource.record);
   const dispatch = useAppDispatch();
 
@@ -63,6 +74,9 @@ export const Resource = () => {
     imageFamily: string,
     resourceId: string
   ) => {
+    if (!validateInput()) {
+      return;
+    }
     if (resourceId === '') {
       dispatch(
         createResourceAsync({
@@ -89,6 +103,36 @@ export const Resource = () => {
         })
       );
     }
+  };
+
+  const validateInput = () => {
+    let valid = true;
+    if (name === '') {
+      dispatch(setNameValidFalse());
+      valid = false;
+    }
+    if (description === '') {
+      dispatch(setDescriptionValidFalse());
+      valid = false;
+    }
+    if (type === 'machine' && operatingSystem === '') {
+      dispatch(setOperatingSystemValidFalse());
+      valid = false;
+    }
+    if (type === 'machine' && imageProject === '') {
+      dispatch(setImageProjectValidFalse());
+      valid = false;
+    }
+    if (type === 'machine' && imageFamily === '') {
+      dispatch(setImageFamilyValidFalse());
+      valid = false;
+    }
+    if (type === '') {
+      dispatch(setTypeValidFalse());
+      valid = false;
+    }
+
+    return valid;
   };
 
   const handleCancelClick = () => {
@@ -119,6 +163,12 @@ export const Resource = () => {
               <MenuItem value={'machine'}>Machine</MenuItem>
               {/* <MenuItem value={'domain'}>Domain</MenuItem> */}
             </Select>
+            {!recordValidation.typeValid && (
+              <FormHelperText style={{ color: 'red' }}>
+                {' '}
+                Resource type is required
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
       </Grid>
@@ -154,6 +204,12 @@ export const Resource = () => {
               <MenuItem value={'linux_machine'}>linux_machine</MenuItem>
               <MenuItem value={'chromeos_machine'}>chromeos_machine</MenuItem>
             </Select>
+            {!recordValidation.operatingSystemValid && (
+              <FormHelperText style={{ color: 'red' }}>
+                {' '}
+                Operating system is required
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
       </Grid>
@@ -195,6 +251,12 @@ export const Resource = () => {
             fullWidth
             inputProps={{ 'data-testid': 'image-project' }}
             variant="standard"
+            helperText={
+              !recordValidation.imageProjectValid
+                ? 'Image project is required'
+                : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
       </Grid>
@@ -213,6 +275,12 @@ export const Resource = () => {
             fullWidth
             inputProps={{ 'data-testid': 'image-family' }}
             variant="standard"
+            helperText={
+              !recordValidation.imageFamilyValid
+                ? 'Image family is required'
+                : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
       </Grid>
@@ -252,6 +320,10 @@ export const Resource = () => {
             onChange={(e) => dispatch(setName(e.target.value))}
             fullWidth
             variant="standard"
+            helperText={
+              !recordValidation.nameValid ? 'Resource name is required' : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
       </Grid>
@@ -267,6 +339,12 @@ export const Resource = () => {
             inputProps={{ 'data-testid': 'description' }}
             value={description}
             fullWidth
+            helperText={
+              !recordValidation.descriptionValid
+                ? 'Resource description is required'
+                : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
       </Grid>

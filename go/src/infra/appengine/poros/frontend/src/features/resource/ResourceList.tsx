@@ -83,6 +83,7 @@ export function ResourceList() {
   const handleEditClick = (cellValues: GridRenderCellParams) => {
     const selectedRow = cellValues.row;
     handleRightSideDrawerOpen();
+    dispatch(clearSelectedRecord());
     dispatch(onSelectRecord({ resourceId: selectedRow.resourceId }));
   };
 

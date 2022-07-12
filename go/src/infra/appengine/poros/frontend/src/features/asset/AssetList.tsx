@@ -114,6 +114,7 @@ export function AssetList() {
   const handleEditClick = (cellValues: GridRenderCellParams) => {
     const selectedRow = cellValues.row;
     handleRightSideDrawerOpen();
+    dispatch(clearSelectedRecord());
     dispatch(onSelectRecord({ assetId: selectedRow.assetId }));
     dispatch(queryAssetResourceAsync());
     dispatch(getDefaultResources(selectedRow.assetType));
@@ -122,7 +123,7 @@ export function AssetList() {
 
   const handleCreateClick = () => {
     dispatch(clearSelectedRecord());
-    dispatch(getDefaultResources('active_directory'))
+    dispatch(getDefaultResources('active_directory'));
     handleRightSideDrawerOpen();
   };
 

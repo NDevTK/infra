@@ -45,7 +45,26 @@ export interface AssetState {
   assetSpinRecord: string;
   defaultResources: ResourceModel[];
   fetchResourceStatus: string;
+  recordValidation: AssetRecordValidation;
 }
+
+export interface AssetRecordValidation {
+  nameValid: boolean;
+  descriptionValid: boolean;
+  resourceIdValid: boolean[];
+  aliasNameValid: boolean[];
+}
+
+export const AssetRecordValidation = {
+  defaultEntity(): AssetRecordValidation {
+    return {
+      nameValid: true,
+      descriptionValid: true,
+      resourceIdValid: [true],
+      aliasNameValid: [true],
+    };
+  },
+};
 
 const initialState: AssetState = {
   assets: [],
@@ -63,6 +82,7 @@ const initialState: AssetState = {
   assetSpinRecord: '',
   defaultResources: [],
   fetchResourceStatus: 'idle',
+  recordValidation: AssetRecordValidation.defaultEntity(),
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -209,9 +229,19 @@ export const assetSlice = createSlice({
     },
     setName: (state, action) => {
       state.record.name = action.payload;
+      if (state.record.name === '') {
+        state.recordValidation.nameValid = false;
+      } else {
+        state.recordValidation.nameValid = true;
+      }
     },
     setDescription: (state, action) => {
       state.record.description = action.payload;
+      if (state.record.description === '') {
+        state.recordValidation.descriptionValid = false;
+      } else {
+        state.recordValidation.descriptionValid = true;
+      }
     },
     setAssetType: (state, action) => {
       state.record.assetType = action.payload;
@@ -225,12 +255,15 @@ export const assetSlice = createSlice({
       state.record = AssetModel.defaultEntity();
       state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
       state.assetResourcesToDelete = [];
+      state.recordValidation = AssetRecordValidation.defaultEntity();
     },
     addMachine: (state) => {
       state.assetResourcesToSave = [
         ...state.assetResourcesToSave,
         AssetResourceModel.defaultEntity(),
       ];
+      state.recordValidation.resourceIdValid.push(true);
+      state.recordValidation.aliasNameValid.push(true);
     },
     removeMachine: (state, action) => {
       if (state.assetResourcesToSave.length > 1) {
@@ -242,21 +275,49 @@ export const assetSlice = createSlice({
         state.assetResourcesToSave = state.assetResourcesToSave.filter(
           (_, index) => index !== action.payload
         );
+        state.recordValidation.resourceIdValid = state.recordValidation.resourceIdValid.filter(
+          (_, index) => index !== action.payload
+        );
+        state.recordValidation.aliasNameValid = state.recordValidation.aliasNameValid.filter(
+          (_, index) => index !== action.payload
+        );
       }
     },
     setResourceId: (state, action) => {
       state.assetResourcesToSave[action.payload.id].resourceId =
         action.payload.value;
+      if (state.assetResourcesToSave[action.payload.id].resourceId === '') {
+        state.recordValidation.resourceIdValid[action.payload.id] = false;
+      } else {
+        state.recordValidation.resourceIdValid[action.payload.id] = true;
+      }
     },
     setAlias: (state, action) => {
       state.assetResourcesToSave[action.payload.id].aliasName =
         action.payload.value;
+      if (state.assetResourcesToSave[action.payload.id].aliasName === '') {
+        state.recordValidation.aliasNameValid[action.payload.id] = false;
+      } else {
+        state.recordValidation.aliasNameValid[action.payload.id] = true;
+      }
     },
     setState: (state, action) => {
       return action.payload;
     },
     setAssetSpinRecord: (state, action) => {
       state.assetSpinRecord = action.payload;
+    },
+    setNameValidFalse: (state) => {
+      state.recordValidation.nameValid = false;
+    },
+    setDescriptionValidFalse: (state) => {
+      state.recordValidation.descriptionValid = false;
+    },
+    setResourceIdValidFalse: (state, action) => {
+      state.recordValidation.resourceIdValid[action.payload.index] = false;
+    },
+    setAliasNameValidFalse: (state, action) => {
+      state.recordValidation.aliasNameValid[action.payload.index] = false;
     },
   },
 
@@ -313,6 +374,12 @@ export const assetSlice = createSlice({
           ),
           AssetResourceModel.defaultEntity(),
         ];
+        state.recordValidation.resourceIdValid = new Array(
+          state.assetResourcesToSave.length
+        ).fill(true);
+        state.recordValidation.aliasNameValid = new Array(
+          state.assetResourcesToSave.length
+        ).fill(true);
       })
       .addCase(queryResourceAsync.fulfilled, (state, action) => {
         state.resources = action.payload.resources;
@@ -326,32 +393,59 @@ export const assetSlice = createSlice({
       })
       .addCase(getDefaultResources.pending, (state) => {
         state.fetchResourceStatus = 'loading';
-        let assetResourcesToSave: AssetResourceModel[] = [];
-        state.assetResourcesToSave.forEach(function(assetResource: AssetResourceModel){
-            if(!state.defaultResources.some(
-              (s: ResourceModel) => s.resourceId == assetResource.resourceId)){
-                assetResourcesToSave = [...assetResourcesToSave, assetResource]
-              } 
-            else {
-              // Need to delete this default AssetResource if it is already created
-              if(assetResource.assetResourceId !== ''){
-                state.assetResourcesToDelete = [...state.assetResourcesToDelete, assetResource];
-              }
+        const assetResourcesToSave: AssetResourceModel[] = [];
+        const resourceIdValid: boolean[] = [];
+        const aliasNameValid: boolean[] = [];
+        state.assetResourcesToSave.forEach(function (
+          assetResource: AssetResourceModel
+        ) {
+          if (
+            !state.defaultResources.some(
+              (s: ResourceModel) => s.resourceId == assetResource.resourceId
+            )
+          ) {
+            assetResourcesToSave.push(assetResource);
+            resourceIdValid.push(true);
+            aliasNameValid.push(true);
+          } else {
+            // Need to delete this default AssetResource if it is already created
+            if (assetResource.assetResourceId !== '') {
+              state.assetResourcesToDelete = [
+                ...state.assetResourcesToDelete,
+                assetResource,
+              ];
             }
+          }
         });
         state.assetResourcesToSave = assetResourcesToSave;
+        state.recordValidation.resourceIdValid = resourceIdValid;
+        state.recordValidation.aliasNameValid = aliasNameValid;
       })
       .addCase(getDefaultResources.fulfilled, (state, action) => {
         state.fetchResourceStatus = 'idle';
         state.defaultResources = action.payload.resources;
-        state.defaultResources.forEach(function(resource: ResourceModel){
-            if(!state.assetResourcesToSave.some(
-              (s: AssetResourceModel) => s.resourceId == resource.resourceId)){
-              const assetResource: AssetResourceModel = AssetResourceModel.defaultEntity();
-              assetResource.resourceId = resource.resourceId;
-              assetResource.aliasName = resource.name;
-              state.assetResourcesToSave = [assetResource, ...state.assetResourcesToSave];
-            }
+        state.defaultResources.forEach(function (resource: ResourceModel) {
+          if (
+            !state.assetResourcesToSave.some(
+              (s: AssetResourceModel) => s.resourceId == resource.resourceId
+            )
+          ) {
+            const assetResource: AssetResourceModel = AssetResourceModel.defaultEntity();
+            assetResource.resourceId = resource.resourceId;
+            assetResource.aliasName = resource.name;
+            state.assetResourcesToSave = [
+              assetResource,
+              ...state.assetResourcesToSave,
+            ];
+            state.recordValidation.resourceIdValid = [
+              true,
+              ...state.recordValidation.resourceIdValid,
+            ];
+            state.recordValidation.aliasNameValid = [
+              true,
+              ...state.recordValidation.aliasNameValid,
+            ];
+          }
         });
       });
   },
@@ -375,6 +469,10 @@ export const {
   setAlias,
   setState,
   setAssetSpinRecord,
+  setNameValidFalse,
+  setDescriptionValidFalse,
+  setResourceIdValidFalse,
+  setAliasNameValidFalse,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

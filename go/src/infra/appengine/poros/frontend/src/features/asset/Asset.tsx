@@ -12,6 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import {
   FormControl,
+  FormHelperText,
   IconButton,
   InputLabel,
   MenuItem,
@@ -26,6 +27,7 @@ import {
   clearSelectedRecord,
   createAssetAsync,
   getDefaultResources,
+  AssetRecordValidation,
   removeMachine,
   setAlias,
   setAssetType,
@@ -33,6 +35,10 @@ import {
   setName,
   setResourceId,
   updateAssetAsync,
+  setNameValidFalse,
+  setDescriptionValidFalse,
+  setResourceIdValidFalse,
+  setAliasNameValidFalse,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { AssetResourceModel } from '../../api/asset_resource_service';
@@ -62,6 +68,9 @@ export const Asset = () => {
   const defaultResources = useAppSelector(
     (state) => state.asset.defaultResources
   );
+  const recordValidation: AssetRecordValidation = useAppSelector(
+    (state) => state.asset.recordValidation
+  );
   const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }));
@@ -75,6 +84,9 @@ export const Asset = () => {
     assetResourcesToSave: AssetResourceModel[],
     assetResourcesToDelete: AssetResourceModel[]
   ) => {
+    if (!validateInput()) {
+      return;
+    }
     if (assetId === '') {
       dispatch(
         createAssetAsync({
@@ -95,6 +107,30 @@ export const Asset = () => {
         })
       );
     }
+  };
+
+  const validateInput = () => {
+    let valid = true;
+    if (name === '') {
+      dispatch(setNameValidFalse());
+      valid = false;
+    }
+    if (description === '') {
+      dispatch(setDescriptionValidFalse());
+      valid = false;
+    }
+    assetResourcesToSave.forEach((assetResource, index) => {
+      if (assetResource.resourceId === '') {
+        dispatch(setResourceIdValidFalse({ index: index }));
+        valid = false;
+      }
+      if (assetResource.aliasName === '') {
+        dispatch(setAliasNameValidFalse({ index: index }));
+        valid = false;
+      }
+    });
+
+    return valid;
   };
 
   const handleCancelClick = () => {
@@ -189,6 +225,12 @@ export const Asset = () => {
                 renderMenuItem(resource.name, resource.resourceId)
               )}
             </Select>
+            {!recordValidation.resourceIdValid[index] && (
+              <FormHelperText style={{ color: 'red' }}>
+                {' '}
+                Resource is required
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
         <Grid
@@ -211,6 +253,12 @@ export const Asset = () => {
             fullWidth
             inputProps={{ 'data-testid': 'alias-' + index }}
             disabled={disabled}
+            helperText={
+              !recordValidation.aliasNameValid[index]
+                ? 'Alias name is required'
+                : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
 
@@ -293,6 +341,10 @@ export const Asset = () => {
             fullWidth
             variant="standard"
             inputProps={{ 'data-testid': 'name' }}
+            helperText={
+              !recordValidation.nameValid ? 'Asset name is required' : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
       </Grid>
@@ -308,6 +360,12 @@ export const Asset = () => {
             value={description}
             fullWidth
             inputProps={{ 'data-testid': 'description' }}
+            helperText={
+              !recordValidation.descriptionValid
+                ? 'Asset description is required'
+                : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
           />
         </Grid>
       </Grid>

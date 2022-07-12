@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from '../../app/store';
 import { setRightSideDrawerOpen } from '../utility/utilitySlice';
 import userEvent from '@testing-library/user-event';
-import { AssetState, setState } from './assetSlice';
+import { AssetState, AssetRecordValidation, setState } from './assetSlice';
 import { AssetResourceModel } from '../../api/asset_resource_service';
 import { AssetModel } from '../../api/asset_service';
 import { ResourceModel } from '../../api/resource_service';
@@ -51,6 +51,7 @@ const testState: AssetState = {
   assetSpinRecord: '',
   fetchResourceStatus: '',
   defaultResources: [],
+  recordValidation: AssetRecordValidation.defaultEntity(),
 };
 
 beforeAll(() => {
@@ -166,6 +167,7 @@ test('Selecting resource alters state', async () => {
       <Asset />
     </Provider>
   );
+  store.dispatch(setState(testState));
 
   expect(store.getState().asset.resources[0].resourceId).toBe(
     'test resource id'

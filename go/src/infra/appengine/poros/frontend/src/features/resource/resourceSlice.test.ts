@@ -6,6 +6,7 @@ import { ResourceModel } from '../../api/resource_service';
 import { store } from '../../app/store';
 import {
   clearSelectedRecord,
+  ResourceRecordValidation,
   ResourceState,
   setDefaultState,
   setDescription,
@@ -26,6 +27,7 @@ const initialState: ResourceState = {
   record: ResourceModel.defaultEntity(),
   savingStatus: 'idle',
   deletingStatus: 'idle',
+  recordValidation: ResourceRecordValidation.defaultEntity(),
 };
 
 test('should return the initial state', () => {
