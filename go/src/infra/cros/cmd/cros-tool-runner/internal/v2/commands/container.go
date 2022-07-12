@@ -16,5 +16,5 @@ type ContainerStop struct {
 func (c *ContainerStop) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"container", "stop"}
 	args = append(args, c.Names...)
-	return execute(ctx, "docker", args)
+	return execute(ctx, dockerCmd, args)
 }

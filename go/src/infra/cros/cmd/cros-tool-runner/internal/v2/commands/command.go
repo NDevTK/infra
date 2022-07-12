@@ -16,6 +16,11 @@ import (
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
+// dockerCmd is the name of docker command. To mimic drone environment locally
+// the value can be changed to podman, which is the underlying command on drones
+// (docker is an alias to podman on drones).
+const dockerCmd = "docker"
+
 // Command is the interface of the command pattern. Only support blocking
 // execution for now.
 type Command interface {

@@ -53,7 +53,7 @@ func (c *DockerRun) Execute(ctx context.Context) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	return execute(ctx, "docker", args)
+	return execute(ctx, dockerCmd, args)
 }
 
 // DockerPull represents `docker pull`
@@ -63,5 +63,5 @@ type DockerPull struct {
 
 func (c *DockerPull) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"pull", c.ContainerImage}
-	return execute(ctx, "docker", args)
+	return execute(ctx, dockerCmd, args)
 }
