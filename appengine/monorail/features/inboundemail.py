@@ -72,14 +72,14 @@ class InboundEmail(object):
     logging.info('\n\n\nGET for InboundEmail and project_addr is %r',
                  project_addr)
     self.Handler(
-        mail.InboundEmailMessage(self.request.values),
+        mail.InboundEmailMessage(self.request.get_data()),
         urllib.parse.unquote(project_addr))
 
   def post(self, project_addr=None):
     logging.info('\n\n\nPOST for InboundEmail and project_addr is %r',
                  project_addr)
     self.Handler(
-        mail.InboundEmailMessage(self.request.values),
+        mail.InboundEmailMessage(self.request.get_data()),
         urllib.parse.unquote(project_addr))
 
   def Handler(self, inbound_email_message, project_addr):
