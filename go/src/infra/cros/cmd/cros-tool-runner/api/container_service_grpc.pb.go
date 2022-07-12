@@ -24,6 +24,14 @@ type CrosToolRunnerContainerServiceClient interface {
 	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*GetNetworkResponse, error)
 	// Shuts down CTR container service
 	Shutdown(ctx context.Context, in *ShutdownRequest, opts ...grpc.CallOption) (*ShutdownResponse, error)
+	// Logs in a docker image registry server
+	// Call LoginRegistry before StartContainer to avoid permission denied errors.
+	// For login GCR, a client is required to run proper `gcloud auth` command to
+	// generate a token. For service account, the command is `gcloud auth
+	// activate-service-account`; for local development, the command is `gcloud
+	// auth login`.
+	// Note that the token is short lived for an hour.
+	LoginRegistry(ctx context.Context, in *LoginRegistryRequest, opts ...grpc.CallOption) (*LoginRegistryResponse, error)
 	// Runs a docker container with the provided start command.
 	// This assumes docker is already authenticated to pull the supplied image.
 	// The container will run in detached mode (-d); all exposed ports will be
@@ -76,6 +84,15 @@ func (c *crosToolRunnerContainerServiceClient) Shutdown(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *crosToolRunnerContainerServiceClient) LoginRegistry(ctx context.Context, in *LoginRegistryRequest, opts ...grpc.CallOption) (*LoginRegistryResponse, error) {
+	out := new(LoginRegistryResponse)
+	err := c.cc.Invoke(ctx, "/ctrv2.api.CrosToolRunnerContainerService/LoginRegistry", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *crosToolRunnerContainerServiceClient) StartContainer(ctx context.Context, in *StartContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error) {
 	out := new(StartContainerResponse)
 	err := c.cc.Invoke(ctx, "/ctrv2.api.CrosToolRunnerContainerService/StartContainer", in, out, opts...)
@@ -113,6 +130,14 @@ type CrosToolRunnerContainerServiceServer interface {
 	GetNetwork(context.Context, *GetNetworkRequest) (*GetNetworkResponse, error)
 	// Shuts down CTR container service
 	Shutdown(context.Context, *ShutdownRequest) (*ShutdownResponse, error)
+	// Logs in a docker image registry server
+	// Call LoginRegistry before StartContainer to avoid permission denied errors.
+	// For login GCR, a client is required to run proper `gcloud auth` command to
+	// generate a token. For service account, the command is `gcloud auth
+	// activate-service-account`; for local development, the command is `gcloud
+	// auth login`.
+	// Note that the token is short lived for an hour.
+	LoginRegistry(context.Context, *LoginRegistryRequest) (*LoginRegistryResponse, error)
 	// Runs a docker container with the provided start command.
 	// This assumes docker is already authenticated to pull the supplied image.
 	// The container will run in detached mode (-d); all exposed ports will be
@@ -143,6 +168,9 @@ func (UnimplementedCrosToolRunnerContainerServiceServer) GetNetwork(context.Cont
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) Shutdown(context.Context, *ShutdownRequest) (*ShutdownResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Shutdown not implemented")
+}
+func (UnimplementedCrosToolRunnerContainerServiceServer) LoginRegistry(context.Context, *LoginRegistryRequest) (*LoginRegistryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginRegistry not implemented")
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) StartContainer(context.Context, *StartContainerRequest) (*StartContainerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartContainer not implemented")
@@ -221,6 +249,24 @@ func _CrosToolRunnerContainerService_Shutdown_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CrosToolRunnerContainerService_LoginRegistry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRegistryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CrosToolRunnerContainerServiceServer).LoginRegistry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ctrv2.api.CrosToolRunnerContainerService/LoginRegistry",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrosToolRunnerContainerServiceServer).LoginRegistry(ctx, req.(*LoginRegistryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CrosToolRunnerContainerService_StartContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StartContainerRequest)
 	if err := dec(in); err != nil {
@@ -293,6 +339,10 @@ var CrosToolRunnerContainerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Shutdown",
 			Handler:    _CrosToolRunnerContainerService_Shutdown_Handler,
+		},
+		{
+			MethodName: "LoginRegistry",
+			Handler:    _CrosToolRunnerContainerService_LoginRegistry_Handler,
 		},
 		{
 			MethodName: "StartContainer",
