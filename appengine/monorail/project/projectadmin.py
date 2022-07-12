@@ -10,15 +10,13 @@ from __future__ import absolute_import
 
 import time
 
+from google.cloud import exceptions
 from six import string_types
-from third_party import cloudstorage
 import ezt
 
 from businesslogic import work_env
 from framework import emailfmt
 from framework import flaskservlet
-from framework import framework_bizobj
-from framework import framework_constants
 from framework import framework_helpers
 from framework import gcs_helpers
 from framework import permissions
@@ -138,7 +136,7 @@ class ProjectAdmin(servlet.Servlet):
       if post_data.get('delete_logo'):
         try:
           gcs_helpers.DeleteObjectFromGCS(logo_gcs_id)
-        except cloudstorage.NotFoundError:
+        except exceptions.NotFound:
           pass
         # Reset the GCS ID and file name.
         logo_gcs_id = ''

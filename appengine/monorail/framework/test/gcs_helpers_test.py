@@ -10,143 +10,123 @@ from __future__ import absolute_import
 
 import mock
 import unittest
-import uuid
 
-import mox
-
-from google.appengine.api import app_identity
-from google.appengine.api import images
 from google.appengine.api import urlfetch
 from google.appengine.ext import testbed
-from third_party import cloudstorage
+from google.cloud import storage
 
-from framework import filecontent
 from framework import gcs_helpers
-from testing import fake
 from testing import testing_helpers
 
 
 class GcsHelpersTest(unittest.TestCase):
 
   def setUp(self):
-    self.mox = mox.Mox()
     self.testbed = testbed.Testbed()
     self.testbed.activate()
     self.testbed.init_memcache_stub()
+    self.testbed.init_app_identity_stub()
+
+    self.test_storage_client = mock.create_autospec(
+        storage.Client, instance=True)
+    mock.patch.object(
+        storage, 'Client', return_value=self.test_storage_client).start()
 
   def tearDown(self):
-    self.mox.UnsetStubs()
-    self.mox.ResetAll()
     self.testbed.deactivate()
+    self.test_storage_client = None
+    mock.patch.stopall()
 
   def testDeleteObjectFromGCS(self):
     object_id = 'aaaaa'
-    bucket_name = 'test_bucket'
-    object_path = '/' + bucket_name + object_id
-
-    self.mox.StubOutWithMock(app_identity, 'get_default_gcs_bucket_name')
-    app_identity.get_default_gcs_bucket_name().AndReturn(bucket_name)
-
-    self.mox.StubOutWithMock(cloudstorage, 'delete')
-    cloudstorage.delete(object_path)
-
-    self.mox.ReplayAll()
-
     gcs_helpers.DeleteObjectFromGCS(object_id)
-    self.mox.VerifyAll()
+    # Verify order of client calls.
+    self.test_storage_client.assert_has_calls(
+        [
+            mock.call.bucket().get_blob(object_id),
+            mock.call.bucket().get_blob().delete()
+        ])
 
-  def testStoreObjectInGCS_ResizableMimeType(self):
+  def testDeleteLegacyObjectFromGCS(self):
+    # A previous python module expected object ids with leading '/'
+    object_id = '/aaaaa'
+    object_id_without_leading_slash = 'aaaaa'
+    gcs_helpers.DeleteObjectFromGCS(object_id)
+    # Verify order of client calls.
+    self.test_storage_client.assert_has_calls(
+        [
+            mock.call.bucket().get_blob(object_id_without_leading_slash),
+            mock.call.bucket().get_blob().delete()
+        ])
+
+  @mock.patch(
+      'google.appengine.api.images.resize', return_value=mock.MagicMock())
+  @mock.patch('uuid.uuid4')
+  def testStoreObjectInGCS_ResizableMimeType(self, mock_uuid4, mock_resize):
     guid = 'aaaaa'
+    mock_uuid4.return_value = guid
     project_id = 100
-    object_id = '/%s/attachments/%s' % (project_id, guid)
-    bucket_name = 'test_bucket'
-    object_path = '/' + bucket_name + object_id
+    blob_name = '%s/attachments/%s' % (project_id, guid)
+    thumb_blob_name = '%s/attachments/%s-thumbnail' % (project_id, guid)
     mime_type = 'image/png'
     content = 'content'
-    thumb_content = 'thumb_content'
-
-    self.mox.StubOutWithMock(app_identity, 'get_default_gcs_bucket_name')
-    app_identity.get_default_gcs_bucket_name().AndReturn(bucket_name)
-
-    self.mox.StubOutWithMock(uuid, 'uuid4')
-    uuid.uuid4().AndReturn(guid)
-
-    self.mox.StubOutWithMock(cloudstorage, 'open')
-    cloudstorage.open(
-        object_path, 'w', mime_type, options={}
-        ).AndReturn(fake.FakeFile())
-    cloudstorage.open(object_path + '-thumbnail', 'w', mime_type).AndReturn(
-        fake.FakeFile())
-
-    self.mox.StubOutWithMock(images, 'resize')
-    images.resize(content, gcs_helpers.DEFAULT_THUMB_WIDTH,
-                  gcs_helpers.DEFAULT_THUMB_HEIGHT).AndReturn(thumb_content)
-
-    self.mox.ReplayAll()
 
     ret_id = gcs_helpers.StoreObjectInGCS(
         content, mime_type, project_id, gcs_helpers.DEFAULT_THUMB_WIDTH,
         gcs_helpers.DEFAULT_THUMB_HEIGHT)
-    self.mox.VerifyAll()
-    self.assertEqual(object_id, ret_id)
+    self.assertEqual('/%s' % blob_name, ret_id)
+    self.test_storage_client.assert_has_calls(
+        [
+            mock.call.bucket().blob(blob_name),
+            mock.call.bucket().blob().upload_from_string(
+                content, content_type=mime_type),
+            mock.call.bucket().blob(thumb_blob_name),
+        ])
+    mock_resize.assert_called()
 
-  def testStoreObjectInGCS_NotResizableMimeType(self):
+  @mock.patch(
+      'google.appengine.api.images.resize', return_value=mock.MagicMock())
+  @mock.patch('uuid.uuid4')
+  def testStoreObjectInGCS_NotResizableMimeType(self, mock_uuid4, mock_resize):
     guid = 'aaaaa'
+    mock_uuid4.return_value = guid
     project_id = 100
-    object_id = '/%s/attachments/%s' % (project_id, guid)
-    bucket_name = 'test_bucket'
-    object_path = '/' + bucket_name + object_id
+    blob_name = '%s/attachments/%s' % (project_id, guid)
     mime_type = 'not_resizable_mime_type'
     content = 'content'
 
-    self.mox.StubOutWithMock(app_identity, 'get_default_gcs_bucket_name')
-    app_identity.get_default_gcs_bucket_name().AndReturn(bucket_name)
-
-    self.mox.StubOutWithMock(uuid, 'uuid4')
-    uuid.uuid4().AndReturn(guid)
-
-    self.mox.StubOutWithMock(cloudstorage, 'open')
-    options = {'Content-Disposition': 'inline; filename="file.ext"'}
-    cloudstorage.open(
-        object_path, 'w', mime_type, options=options
-        ).AndReturn(fake.FakeFile())
-
-    self.mox.ReplayAll()
-
     ret_id = gcs_helpers.StoreObjectInGCS(
         content, mime_type, project_id, gcs_helpers.DEFAULT_THUMB_WIDTH,
-        gcs_helpers.DEFAULT_THUMB_HEIGHT, filename='file.ext')
-    self.mox.VerifyAll()
-    self.assertEqual(object_id, ret_id)
+        gcs_helpers.DEFAULT_THUMB_HEIGHT)
+    self.assertEqual('/%s' % blob_name, ret_id)
+    self.test_storage_client.assert_has_calls(
+        [
+            mock.call.bucket().blob(blob_name),
+            mock.call.bucket().blob().upload_from_string(
+                content, content_type=mime_type),
+        ])
+    mock_resize.assert_not_called()
 
-  def testCheckMemeTypeResizable(self):
+  def testCheckMimeTypeResizable(self):
     for resizable_mime_type in gcs_helpers.RESIZABLE_MIME_TYPES:
       gcs_helpers.CheckMimeTypeResizable(resizable_mime_type)
 
     with self.assertRaises(gcs_helpers.UnsupportedMimeType):
       gcs_helpers.CheckMimeTypeResizable('not_resizable_mime_type')
 
-  def testStoreLogoInGCS(self):
-    file_name = 'test_file.png'
+  @mock.patch('framework.filecontent.GuessContentTypeFromFilename')
+  @mock.patch('framework.gcs_helpers.StoreObjectInGCS')
+  def testStoreLogoInGCS(self, mock_store_object, mock_guess_content):
+    blob_name = 123
+    mock_store_object.return_value = blob_name
     mime_type = 'image/png'
+    mock_guess_content.return_value = mime_type
+    file_name = 'test_file.png'
     content = 'test content'
     project_id = 100
-    object_id = 123
-
-    self.mox.StubOutWithMock(filecontent, 'GuessContentTypeFromFilename')
-    filecontent.GuessContentTypeFromFilename(file_name).AndReturn(mime_type)
-
-    self.mox.StubOutWithMock(gcs_helpers, 'StoreObjectInGCS')
-    gcs_helpers.StoreObjectInGCS(
-        content, mime_type, project_id,
-        thumb_width=gcs_helpers.LOGO_THUMB_WIDTH,
-        thumb_height=gcs_helpers.LOGO_THUMB_HEIGHT).AndReturn(object_id)
-
-    self.mox.ReplayAll()
 
     ret_id = gcs_helpers.StoreLogoInGCS(file_name, content, project_id)
-    self.mox.VerifyAll()
-    self.assertEqual(object_id, ret_id)
+    self.assertEqual(blob_name, ret_id)
 
   @mock.patch('google.appengine.api.urlfetch.fetch')
   def testFetchSignedURL_Success(self, mock_fetch):
