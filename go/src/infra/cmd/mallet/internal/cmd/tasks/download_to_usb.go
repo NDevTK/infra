@@ -72,7 +72,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
-		_, taskID, err := labpack.ScheduleTask(
+		url, _, err := labpack.ScheduleTask(
 			ctx,
 			bc,
 			v,
@@ -95,7 +95,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 		if err != nil {
 			fmt.Fprintf(a.GetErr(), "Created recovery task for %q fail: %s\n", unit, err)
 		} else {
-			fmt.Fprintf(a.GetOut(), "Created recovery task for %q: %s\n", unit, bc.BuildURL(taskID))
+			fmt.Fprintf(a.GetOut(), "Created recovery task for %q: %s\n", unit, url)
 		}
 	}
 	return nil

@@ -118,7 +118,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 		if err != nil {
 			return errors.Annotate(err, "create audit task").Err()
 		}
-		_, taskID, err := labpack.ScheduleTask(
+		url, _, err := labpack.ScheduleTask(
 			ctx,
 			bc,
 			v,
@@ -143,7 +143,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 		if err != nil {
 			return errors.Annotate(err, "create audit task").Err()
 		}
-		fmt.Fprintf(a.GetOut(), "Created audit task for %s: %s\n", unit, bc.BuildURL(taskID))
+		fmt.Fprintf(a.GetOut(), "Created audit task for %s: %s\n", unit, url)
 	}
 	fmt.Fprintf(a.GetOut(), "Created tasks: %s\n", swarming.TaskListURLForTags(e.SwarmingService, []string{sessionTag}))
 	return nil

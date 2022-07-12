@@ -83,7 +83,7 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
-		_, taskID, err := labpack.ScheduleTask(
+		url, _, err := labpack.ScheduleTask(
 			ctx,
 			bc,
 			v,
@@ -107,7 +107,7 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 		if err != nil {
 			fmt.Fprintf(a.GetErr(), "Created task for %q fail: %s\n", unit, err)
 		} else {
-			fmt.Fprintf(a.GetOut(), "Created task for %q: %s\n", unit, bc.BuildURL(taskID))
+			fmt.Fprintf(a.GetOut(), "Created task for %q: %s\n", unit, url)
 		}
 	}
 	// For run with more than one DUTs we provide a grouped tasks link for user to track all of them.

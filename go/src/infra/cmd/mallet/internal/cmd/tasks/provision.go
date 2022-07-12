@@ -69,7 +69,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	e := c.envFlags.Env()
 	v := labpack.CIPDProd
 	configuration := b64.StdEncoding.EncodeToString([]byte(c.createPlan()))
-	_, taskID, err := labpack.ScheduleTask(
+	url, _, err := labpack.ScheduleTask(
 		ctx,
 		bc,
 		v,
@@ -92,7 +92,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	if err != nil {
 		return errors.Annotate(err, "create recovery task").Err()
 	}
-	fmt.Fprintf(a.GetOut(), "Created recovery task for %s: %s\n", unit, bc.BuildURL(taskID))
+	fmt.Fprintf(a.GetOut(), "Created recovery task for %s: %s\n", unit, url)
 	return nil
 }
 
