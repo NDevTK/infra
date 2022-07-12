@@ -6,6 +6,7 @@ package cli
 
 import (
 	"context"
+	"os"
 	"strings"
 
 	"github.com/maruel/subcommands"
@@ -87,7 +88,13 @@ func (r *readRun) run(ctx context.Context, dirs []string) error {
 
 	// Canonicalize paths.
 	for i, d := range dirs {
-		var err error
+		fileInfo, err := os.Stat(d)
+		if err != nil {
+			return errors.Annotate(err, "failed to get info of %q", d).Err()
+		}
+		if !fileInfo.IsDir() {
+			return errors.Reason("%q is not a directory", d).Err()
+		}
 		if dirs[i], err = canonicalFSPath(d); err != nil {
 			return errors.Annotate(err, "failed to canonicalize %q", d).Err()
 		}
