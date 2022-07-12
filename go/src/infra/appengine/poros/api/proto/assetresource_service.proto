@@ -41,6 +41,8 @@ message CreateAssetResourceRequest {
   string resource_id = 3;
   // Alias name of the entity
   string alias_name = 4;
+  // Flag to denote whether this AssetResource is default
+  bool default = 5;
 }
 
 // Gets an AssetResource.

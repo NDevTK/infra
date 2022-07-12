@@ -33,6 +33,7 @@ const testAssetResource: AssetResourceModel = {
   createdBy: '',
   modifiedAt: undefined,
   modifiedBy: '',
+  default: false,
 };
 
 const testState: AssetState = {
@@ -50,7 +51,7 @@ const testState: AssetState = {
   assetResourcesToDelete: [],
   assetSpinRecord: '',
   fetchResourceStatus: '',
-  defaultResources: [],
+  defaultAssetResources: [],
   recordValidation: AssetRecordValidation.defaultEntity(),
 };
 

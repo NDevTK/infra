@@ -117,8 +117,6 @@ export function AssetList() {
     dispatch(clearSelectedRecord());
     dispatch(onSelectRecord({ assetId: selectedRow.assetId }));
     dispatch(queryAssetResourceAsync());
-    dispatch(getDefaultResources(selectedRow.assetType));
-    console.log(cellValues);
   };
 
   const handleCreateClick = () => {

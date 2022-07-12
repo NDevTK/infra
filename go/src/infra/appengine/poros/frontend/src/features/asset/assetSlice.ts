@@ -43,7 +43,7 @@ export interface AssetState {
   assetResourcesToSave: AssetResourceModel[];
   assetResourcesToDelete: AssetResourceModel[];
   assetSpinRecord: string;
-  defaultResources: ResourceModel[];
+  defaultAssetResources: AssetResourceModel[];
   fetchResourceStatus: string;
   recordValidation: AssetRecordValidation;
 }
@@ -80,7 +80,7 @@ const initialState: AssetState = {
   assetResourcesToSave: [AssetResourceModel.defaultEntity()],
   assetResourcesToDelete: [],
   assetSpinRecord: '',
-  defaultResources: [],
+  defaultAssetResources: [],
   fetchResourceStatus: 'idle',
   recordValidation: AssetRecordValidation.defaultEntity(),
 };
@@ -253,6 +253,7 @@ export const assetSlice = createSlice({
     },
     clearSelectedRecord: (state) => {
       state.record = AssetModel.defaultEntity();
+      state.defaultAssetResources = [];
       state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
       state.assetResourcesToDelete = [];
       state.recordValidation = AssetRecordValidation.defaultEntity();
@@ -338,7 +339,13 @@ export const assetSlice = createSlice({
       .addCase(createAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload.asset;
-        state.assetResourcesToSave = action.payload.assetResources;
+        state.assetResourcesToSave = action.payload.assetResources.filter(
+          (entity) => entity.default === false
+        );
+        state.defaultAssetResources = action.payload.assetResources.filter(
+          (entity) => entity.default === true
+        );
+        state.assetResourcesToDelete = [];
       })
       .addCase(updateAssetAsync.pending, (state) => {
         state.savingStatus = 'loading';
@@ -346,7 +353,13 @@ export const assetSlice = createSlice({
       .addCase(updateAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload.asset;
-        state.assetResourcesToSave = action.payload.assetResources;
+        state.assetResourcesToSave = action.payload.assetResources.filter(
+          (entity) => entity.default === false
+        );
+        state.defaultAssetResources = action.payload.assetResources.filter(
+          (entity) => entity.default === true
+        );
+        state.assetResourcesToDelete = [];
       })
       .addCase(queryAssetAsync.pending, (state) => {
         state.fetchAssetStatus = 'loading';
@@ -370,9 +383,17 @@ export const assetSlice = createSlice({
         state.fetchAssetResourceStatus = 'idle';
         state.assetResourcesToSave = [
           ...action.payload.assetResources.filter(
-            (entity) => entity.assetId === state.record.assetId
+            (entity) =>
+              entity.assetId === state.record.assetId &&
+              entity.default === false
           ),
           AssetResourceModel.defaultEntity(),
+        ];
+        state.defaultAssetResources = [
+          ...action.payload.assetResources.filter(
+            (entity) =>
+              entity.assetId === state.record.assetId && entity.default === true
+          ),
         ];
         state.recordValidation.resourceIdValid = new Array(
           state.assetResourcesToSave.length
@@ -393,59 +414,31 @@ export const assetSlice = createSlice({
       })
       .addCase(getDefaultResources.pending, (state) => {
         state.fetchResourceStatus = 'loading';
-        const assetResourcesToSave: AssetResourceModel[] = [];
-        const resourceIdValid: boolean[] = [];
-        const aliasNameValid: boolean[] = [];
-        state.assetResourcesToSave.forEach(function (
+
+        state.defaultAssetResources.forEach(function (
           assetResource: AssetResourceModel
         ) {
-          if (
-            !state.defaultResources.some(
-              (s: ResourceModel) => s.resourceId == assetResource.resourceId
-            )
-          ) {
-            assetResourcesToSave.push(assetResource);
-            resourceIdValid.push(true);
-            aliasNameValid.push(true);
-          } else {
-            // Need to delete this default AssetResource if it is already created
-            if (assetResource.assetResourceId !== '') {
-              state.assetResourcesToDelete = [
-                ...state.assetResourcesToDelete,
-                assetResource,
-              ];
-            }
+          // Need to delete this default AssetResource if it is already created
+          if (assetResource.assetResourceId !== '') {
+            state.assetResourcesToDelete = [
+              ...state.assetResourcesToDelete,
+              assetResource,
+            ];
           }
         });
-        state.assetResourcesToSave = assetResourcesToSave;
-        state.recordValidation.resourceIdValid = resourceIdValid;
-        state.recordValidation.aliasNameValid = aliasNameValid;
+        state.defaultAssetResources = [];
       })
       .addCase(getDefaultResources.fulfilled, (state, action) => {
         state.fetchResourceStatus = 'idle';
-        state.defaultResources = action.payload.resources;
-        state.defaultResources.forEach(function (resource: ResourceModel) {
-          if (
-            !state.assetResourcesToSave.some(
-              (s: AssetResourceModel) => s.resourceId == resource.resourceId
-            )
-          ) {
-            const assetResource: AssetResourceModel = AssetResourceModel.defaultEntity();
-            assetResource.resourceId = resource.resourceId;
-            assetResource.aliasName = resource.name;
-            state.assetResourcesToSave = [
-              assetResource,
-              ...state.assetResourcesToSave,
-            ];
-            state.recordValidation.resourceIdValid = [
-              true,
-              ...state.recordValidation.resourceIdValid,
-            ];
-            state.recordValidation.aliasNameValid = [
-              true,
-              ...state.recordValidation.aliasNameValid,
-            ];
-          }
+        action.payload.resources.forEach(function (resource: ResourceModel) {
+          const assetResource: AssetResourceModel = AssetResourceModel.defaultEntity();
+          assetResource.resourceId = resource.resourceId;
+          assetResource.aliasName = resource.name;
+          assetResource.default = true;
+          state.defaultAssetResources = [
+            assetResource,
+            ...state.defaultAssetResources,
+          ];
         });
       });
   },

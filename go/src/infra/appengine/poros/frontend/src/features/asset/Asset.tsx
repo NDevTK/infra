@@ -65,8 +65,8 @@ export const Asset = () => {
   const resources: ResourceModel[] = useAppSelector(
     (state) => state.asset.resources
   );
-  const defaultResources = useAppSelector(
-    (state) => state.asset.defaultResources
+  const defaultAssetResources: AssetResourceModel[] = useAppSelector(
+    (state) => state.asset.defaultAssetResources
   );
   const recordValidation: AssetRecordValidation = useAppSelector(
     (state) => state.asset.recordValidation
@@ -82,11 +82,16 @@ export const Asset = () => {
     assetType: string,
     assetId: string,
     assetResourcesToSave: AssetResourceModel[],
-    assetResourcesToDelete: AssetResourceModel[]
+    assetResourcesToDelete: AssetResourceModel[],
+    defaultAssetResources: AssetResourceModel[]
   ) => {
     if (!validateInput()) {
       return;
     }
+    assetResourcesToSave = [
+      ...assetResourcesToSave,
+      ...defaultAssetResources,
+    ];
     if (assetId === '') {
       dispatch(
         createAssetAsync({
@@ -151,7 +156,6 @@ export const Asset = () => {
               value={assetType}
               onChange={(e) => {
                 dispatch(getDefaultResources(e.target.value));
-                setAssetType(e.target.value);
                 dispatch(setAssetType(e.target.value));
               }}
               fullWidth
@@ -183,9 +187,6 @@ export const Asset = () => {
   };
 
   const renderRow = (index: number, aliasName: string, resourceId: string) => {
-    const disabled = defaultResources.some(
-      (s: ResourceModel) => s.resourceId == resourceId
-    );
     return (
       <Grid
         container
@@ -219,7 +220,6 @@ export const Asset = () => {
               variant="standard"
               placeholder="Type"
               inputProps={{ 'data-testid': 'resource-' + index }}
-              disabled={disabled}
             >
               {resources.map((resource) =>
                 renderMenuItem(resource.name, resource.resourceId)
@@ -252,7 +252,6 @@ export const Asset = () => {
             variant="standard"
             fullWidth
             inputProps={{ 'data-testid': 'alias-' + index }}
-            disabled={disabled}
             helperText={
               !recordValidation.aliasNameValid[index]
                 ? 'Alias name is required'
@@ -278,7 +277,6 @@ export const Asset = () => {
               dispatch(addMachine());
             }}
             data-testid={'add-button-' + index}
-            disabled={disabled}
           >
             <AddIcon fontSize="inherit" />
           </IconButton>
@@ -299,8 +297,90 @@ export const Asset = () => {
               dispatch(removeMachine(index));
             }}
             data-testid={'delete-button-' + index}
-            disabled={disabled}
           >
+            <DeleteIcon fontSize="inherit"> Delete </DeleteIcon>
+          </IconButton>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderDefaultMachines = (aliasName: string, resourceId: string) => {
+    return (
+      <Grid
+        container
+        spacing={2}
+        padding={1}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Grid
+          item
+          xs={5}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <FormControl variant="standard" fullWidth>
+            <InputLabel>Resource</InputLabel>
+            <Select
+              value={resourceId}
+              variant="standard"
+              placeholder="Type"
+              disabled
+            >
+              {resources.map((resource) =>
+                renderMenuItem(resource.name, resource.resourceId)
+              )}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid
+          item
+          xs={5}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <TextField
+            label="AliasName"
+            value={aliasName}
+            variant="standard"
+            fullWidth
+            disabled
+          />
+        </Grid>
+
+        <Grid
+          item
+          xs={1}
+          style={{
+            display: 'bottom',
+            justifyContent: 'flex-end',
+            alignItems: 'bottom',
+          }}
+        >
+          <IconButton aria-label="add" size="small" disabled>
+            <AddIcon fontSize="inherit" />
+          </IconButton>
+        </Grid>
+        <Grid
+          item
+          xs={1}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}
+        >
+          <IconButton aria-label="delete" size="small" disabled>
             <DeleteIcon fontSize="inherit"> Delete </DeleteIcon>
           </IconButton>
         </Grid>
@@ -386,6 +466,9 @@ export const Asset = () => {
         </Grid>
       </Grid>
 
+      {defaultAssetResources.map((entity, index) =>
+        renderDefaultMachines(entity.aliasName, entity.resourceId)
+      )}
       {assetResourcesToSave.map((entity, index) =>
         renderRow(index, entity.aliasName, entity.resourceId)
       )}
@@ -432,7 +515,8 @@ export const Asset = () => {
                   assetType,
                   assetId,
                   assetResourcesToSave,
-                  assetResourcesToDelete
+                  assetResourcesToDelete,
+                  defaultAssetResources
                 );
               }}
               endIcon={<SaveIcon />}

@@ -25,4 +25,6 @@ type AssetResourceEntity struct {
 	ModifiedAt time.Time
 	// User who modified the record.
 	ModifiedBy string
+	// Flag to denote whether this AssetResource is default
+	Default bool
 }

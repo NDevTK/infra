@@ -35,6 +35,7 @@ func toAssetResourceEntity(model *proto.AssetResourceModel) *AssetResourceEntity
 			CreatedBy:       model.CreatedBy,
 			ModifiedAt:      model.ModifiedAt.AsTime(),
 			ModifiedBy:      model.ModifiedBy,
+			Default:         model.Default,
 		}
 	}
 	return nil
@@ -51,6 +52,7 @@ func toAssetResourceModel(entity *AssetResourceEntity) *proto.AssetResourceModel
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
 			ModifiedBy:      entity.ModifiedBy,
+			Default:         entity.Default,
 		}
 	}
 	return nil

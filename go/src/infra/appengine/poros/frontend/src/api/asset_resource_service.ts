@@ -84,6 +84,8 @@ export interface AssetResourceModel {
   modifiedAt: Date | undefined;
   // User who modified the record.
   modifiedBy: string;
+  // Flag to denote whether a given AssetResource is default
+  default: boolean;
 }
 
 export const AssetResourceModel = {
@@ -97,6 +99,7 @@ export const AssetResourceModel = {
       createdAt: undefined,
       modifiedBy: '',
       modifiedAt: undefined,
+      default: false,
     };
   },
   fromJSON(object: any): AssetResourceModel {
@@ -115,6 +118,7 @@ export const AssetResourceModel = {
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
         : undefined,
+      default: isSet(object.default) ? Boolean(object.assetId) : false,
     };
   },
 
@@ -131,6 +135,7 @@ export const AssetResourceModel = {
     message.modifiedBy !== undefined && (obj.modifiedBy = message.modifiedBy);
     message.modifiedAt !== undefined &&
       (obj.modifiedAt = message.modifiedAt.toISOString());
+    message.default !== undefined && (obj.default = message.default);
     return obj;
   },
 };
@@ -143,6 +148,8 @@ export interface CreateAssetResourceRequest {
   resourceId: string;
   // Alias name of the entity
   aliasName: string;
+  // Flag to denote whether a given AssetResource is default
+  default: boolean;
 }
 
 export const CreateAssetResourceRequest = {
@@ -151,6 +158,7 @@ export const CreateAssetResourceRequest = {
     message.assetId !== undefined && (obj.assetId = message.assetId);
     message.resourceId !== undefined && (obj.resourceId = message.resourceId);
     message.aliasName !== undefined && (obj.aliasName = message.aliasName);
+    message.default !== undefined && (obj.default = message.default);
     return obj;
   },
 };

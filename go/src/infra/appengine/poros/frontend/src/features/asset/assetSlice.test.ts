@@ -37,7 +37,7 @@ const initialState: AssetState = {
   assetResourcesToDelete: [],
   assetSpinRecord: '',
   fetchResourceStatus: 'idle',
-  defaultResources: [],
+  defaultAssetResources: [],
   recordValidation: AssetRecordValidation.defaultEntity(),
 };
 
@@ -75,6 +75,7 @@ const testAssetResource: AssetResourceModel = {
   createdBy: '',
   modifiedAt: undefined,
   modifiedBy: '',
+  default: false,
 };
 
 const testState: AssetState = {
@@ -92,7 +93,7 @@ const testState: AssetState = {
   assetResourcesToDelete: [],
   assetSpinRecord: '',
   fetchResourceStatus: 'idle',
-  defaultResources: [],
+  defaultAssetResources: [],
   recordValidation: AssetRecordValidation.defaultEntity(),
 };
 test('should return the initial state', () => {
