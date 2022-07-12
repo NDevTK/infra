@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -21,6 +22,7 @@ import (
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/buildbucket/labpack"
+	"infra/libs/skylab/swarming"
 )
 
 // Recovery subcommand: Deep repair task
@@ -32,6 +34,8 @@ var DeepRepair = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.gbbFlag, "flag", "0x18", "GBB flag")
+		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
+		c.Flags.StringVar(&c.adminSession, "admin-session", "", "Admin session used to group created tasks. By default generated.")
 		return c
 	},
 }
@@ -41,7 +45,9 @@ type fwUpdateRun struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	gbbFlag string
+	gbbFlag      string
+	latest       bool
+	adminSession string
 }
 
 func (c *fwUpdateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -66,6 +72,14 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 		return errors.Reason("deep repair: unit is not specified").Err()
 	}
 	v := labpack.CIPDProd
+	if c.latest {
+		v = labpack.CIPDLatest
+	}
+	// Admin session used to created common tag across created tasks.
+	if c.adminSession == "" {
+		c.adminSession = uuid.New().String()
+	}
+	sessionTag := fmt.Sprintf("admin-session:%s", c.adminSession)
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
@@ -83,9 +97,10 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 				// We do not update as this is just manual action.
 				UpdateInventory: false,
 				ExtraTags: []string{
-					"task:download_to_usb",
+					"task:deep_repair",
 					site.ClientTag,
 					fmt.Sprintf("version:%s", v),
+					sessionTag,
 				},
 			},
 		)
@@ -94,6 +109,10 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 		} else {
 			fmt.Fprintf(a.GetOut(), "Created task for %q: %s\n", unit, bc.BuildURL(taskID))
 		}
+	}
+	// For run with more than one DUTs we provide a grouped tasks link for user to track all of them.
+	if len(args) > 1 {
+		fmt.Fprintf(a.GetOut(), "Created tasks: %s\n", swarming.TaskListURLForTags(c.envFlags.Env().SwarmingService, []string{sessionTag}))
 	}
 	return nil
 }

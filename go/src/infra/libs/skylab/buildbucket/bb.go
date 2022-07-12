@@ -54,10 +54,10 @@ type clientImpl struct {
 // NewClient returns a new client to interact with buildbucket builds.
 //
 // Deprecated:
-//   This function takes authcli.Flags parameters directly instead of an http.Client.
-//   This is too inflexible when it comes to authentication strategies.
-//   Replace calls to this function with calls to NewClient2 and then rename NewClient2 to NewClient.
 //
+//	This function takes authcli.Flags parameters directly instead of an http.Client.
+//	This is too inflexible when it comes to authentication strategies.
+//	Replace calls to this function with calls to NewClient2 and then rename NewClient2 to NewClient.
 func NewClient(ctx context.Context, f authcli.Flags, options *prpc.Options, project string, bucket string, builder string) (Client, error) {
 	hc, err := NewHTTPClient(ctx, &f)
 	if err != nil {
@@ -132,13 +132,13 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 		Bucket:  "labpack_runner",
 		Builder: "labpack_builder",
 	}
-	if params.BuilderName == "" {
+	if params.BuilderName != "" {
 		b.Builder = params.BuilderName
 	}
-	if params.BuilderProject == "" {
+	if params.BuilderProject != "" {
 		b.Project = params.BuilderProject
 	}
-	if params.BuilderBucket == "" {
+	if params.BuilderBucket != "" {
 		b.Bucket = params.BuilderBucket
 	}
 	bbReq := &buildbucket_pb.ScheduleBuildRequest{
