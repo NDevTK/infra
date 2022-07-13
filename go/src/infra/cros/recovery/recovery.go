@@ -206,7 +206,7 @@ func loadConfiguration(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rc *co
 		i.Indent()
 		defer func() { i.Dedent() }()
 	}
-	cr := args.ConfigReader
+	cr := args.configReader
 	if cr == nil {
 		if args.TaskName == tasknames.Custom {
 			return nil, errors.Reason("load configuration: expected config to be provided for custom tasks").Err()
@@ -521,7 +521,7 @@ type RunArgs struct {
 	// The unit can be represented as a single DUT or group of the DUTs registered in inventory as single unit.
 	UnitName string
 	// Provide access to read custom plans outside recovery. The default plans with actions will be ignored.
-	ConfigReader io.Reader
+	configReader io.Reader
 	// Logger prints message to the logs.
 	Logger logger.Logger
 	// Option to use steps.
@@ -556,7 +556,7 @@ func (a *RunArgs) UseConfigBase64(blob string) error {
 	if err != nil {
 		return err
 	}
-	a.ConfigReader = bytes.NewReader(dc)
+	a.configReader = bytes.NewReader(dc)
 	return nil
 }
 
@@ -567,7 +567,7 @@ func (a *RunArgs) UseConfigFile(path string) error {
 		return nil
 	}
 	cr, oErr := os.Open(path)
-	a.ConfigReader = cr
+	a.configReader = cr
 	return errors.Annotate(oErr, "use config file").Err()
 }
 
