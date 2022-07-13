@@ -125,7 +125,7 @@ func ensureRecords(content string, newRecords map[string]string) error {
 		if seen[host] {
 			// Do nothing, line already added.
 		} else {
-			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s", host)
+			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s\n", host)
 			newContent = append(newContent, fmt.Sprintf("%s\t%s\n", addr, host))
 		}
 	}
