@@ -86,14 +86,14 @@ class GroupList(servlet.Servlet):
   #   return self.handler(**kwargs)
 
 
-class FlaskGroupList(flaskservlet.FlaskServlet):
+class GroupDelete(flaskservlet.FlaskServlet):
   """Shows a page with a simple form to create a user group."""
 
   _PAGE_TEMPLATE = 'sitewide/group-list-page.ezt'
 
   def AssertBasePermission(self, mr):
     """Assert that the user has the permissions needed to view this page."""
-    super(FlaskGroupList, self).AssertBasePermission(mr)
+    super(GroupDelete, self).AssertBasePermission(mr)
 
     if not mr.perms.HasPerm(permissions.VIEW_GROUP, None, None):
       raise permissions.PermissionException(
@@ -149,7 +149,4 @@ class FlaskGroupList(flaskservlet.FlaskServlet):
     return self.handler(**kwargs)
 
   def PostGroupDelete(self, **kwargs):
-    return self.handler(**kwargs)
-
-  def GetGroupList(self, **kwargs):
     return self.handler(**kwargs)

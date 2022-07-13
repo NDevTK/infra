@@ -31,7 +31,8 @@ class GroupDetailTest(unittest.TestCase):
     self.services.user.TestAddUser('c@example.com', 333)
     self.services.user.TestAddUser('group@example.com', 888)
     self.services.usergroup.TestAddGroupSettings(888, 'group@example.com')
-    self.servlet = groupdetail.GroupDetail(services=self.services)
+    self.servlet = groupdetail.GroupDetail(
+        'req', 'res', services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest()
     self.mr.viewed_username = 'group@example.com'
     self.mr.viewed_user_auth.user_id = 888
@@ -141,3 +142,5 @@ class GroupDetailTest(unittest.TestCase):
     self.assertRaises(
         exceptions.NoSuchGroupException,
         self.servlet.GatherPageData, self.mr)
+
+
