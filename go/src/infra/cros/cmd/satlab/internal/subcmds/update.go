@@ -8,7 +8,7 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/cmd/satlab/internal/components/dut"
+	"infra/cros/cmd/satlab/internal/commands/dns"
 )
 
 // UpdateBase is the type for the add placeholder command.
@@ -40,6 +40,9 @@ func (c *updateBase) Run(a subcommands.Application, args []string, env subcomman
 func (c updateApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,
-		dut.UpdateDUTCmd,
+		// TODO(gregorynisbet): Satlab update DUT is currently disabled. Please uncomment this line
+		//                      once updating DUTs is supported on satlab.
+		// dut.UpdateDUTCmd,
+		dns.UpdateDNSCmd,
 	}
 }
