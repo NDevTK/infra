@@ -14,6 +14,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Patchset is the fake data for a patchset of a change.
@@ -81,13 +83,13 @@ func (c *Client) getChange(projectName string, changeNumber int64) (*Change, err
 	if !ok {
 		project = &Project{}
 	} else if project == nil {
-		return nil, errors.Reason("unknown project %#v on host %#v", projectName, c.hostname).Err()
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown project %#v on host %#v", projectName, c.hostname))
 	}
 	change, ok := project.Changes[changeNumber]
 	if !ok {
 		change = &Change{Ref: fmt.Sprintf("fake-ref|%s|%s|%d", c.hostname, projectName, changeNumber)}
 	} else if change == nil {
-		return nil, errors.Reason("change %d does not exist for project %#v on host %#v", changeNumber, projectName, c.hostname).Err()
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("change %d does not exist for project %#v on host %#v", changeNumber, projectName, c.hostname))
 	}
 	return change, nil
 }

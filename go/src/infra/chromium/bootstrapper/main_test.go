@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"infra/chromium/bootstrapper/bootstrap"
 	"infra/chromium/bootstrapper/clients/cipd"
@@ -358,9 +359,10 @@ func TestBootstrapMain(t *testing.T) {
 		record, updateBuild := testUpdateBuildFn(nil)
 
 		Convey("does not update build on success", func() {
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldBeNil)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldBeNil)
 		})
 
@@ -371,9 +373,10 @@ func TestBootstrapMain(t *testing.T) {
 			}
 			execute := testExecuteCmdFn(cmdErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, cmdErr)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldBeNil)
 		})
 
@@ -381,45 +384,70 @@ func TestBootstrapMain(t *testing.T) {
 			cmdErr := errors.New("test cmd execution failure")
 			execute := testExecuteCmdFn(cmdErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, cmdErr)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test cmd execution failure</pre>"
 			}`)
 		})
 
-		Convey("updates build for bootstrap failure", func() {
+		Convey("updates build for generic bootstrap failure", func() {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test bootstrap failure</pre>"
 			}`)
+		})
 
-			Convey("with failure_type set for patch rejected failure", func() {
-				bootstrapErr := bootstrap.PatchRejected.Apply(bootstrapErr)
-				performBootstrap := testBootstrapFn(bootstrapErr)
+		Convey("updates build for patch rejected failure", func() {
+			bootstrapErr := errors.New("test bootstrap failure")
+			bootstrapErr = bootstrap.PatchRejected.Apply(bootstrapErr)
+			performBootstrap := testBootstrapFn(bootstrapErr)
 
-				err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
-				So(err, ShouldErrLike, bootstrapErr)
-				So(record.build, ShouldResembleProtoJSON, `{
-					"status": "INFRA_FAILURE",
-					"summary_markdown": "<pre>test bootstrap failure</pre>",
-					"output": {
-						"properties": {
-							"failure_type": "PATCH_FAILURE"
-						}
+			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
+			So(record.build, ShouldResembleProtoJSON, `{
+				"status": "INFRA_FAILURE",
+				"summary_markdown": "<pre>test bootstrap failure</pre>",
+				"output": {
+					"properties": {
+						"failure_type": "PATCH_FAILURE"
 					}
-				}`)
-			})
+				}
+			}`)
+		})
 
+		Convey("updates build for dependency properties file not found", func() {
+			bootstrapErr := errors.New("dependency properties file not found")
+			commit := &bootstrap.GitilesCommit{
+				GitilesCommit: &buildbucketpb.GitilesCommit{
+					Host:    "fake-host",
+					Project: "fake-project",
+					Id:      "fake-commit",
+				},
+			}
+			bootstrapErr = bootstrap.DependencyPropertiesFileNotFound.With("fake-props-file", commit, "fake-top-level-repo").Apply(bootstrapErr)
+			performBootstrap := testBootstrapFn(bootstrapErr)
+
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+
+			So(err, ShouldBeNil)
+			So(sleepDuration, ShouldEqual, 10*time.Minute)
+			So(record.build, ShouldResembleProtoJSON, `{
+				"status": "CANCELED",
+				"summary_markdown": "<pre>properties file fake-props-file does not exist in pinned revision fake-host/fake-project/+/fake-commit</pre><br/><pre>This should resolve once the CL that adds this builder rolls into fake-top-level-repo</pre><br/><pre>If you believe you are seeing this message in error, please contact a trooper</pre><br/><pre>This build will sleep for 10 minutes to avoid the builder cycling too quickly</pre><br/>"
+			}`)
 		})
 
 		Convey("returns original error if updating build fails", func() {
@@ -428,9 +456,10 @@ func TestBootstrapMain(t *testing.T) {
 			updateBuildErr := errors.New("test update build failure")
 			_, updateBuild := testUpdateBuildFn(updateBuildErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
 		})
 
 	})

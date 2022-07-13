@@ -11,6 +11,7 @@ import (
 	"infra/chromium/bootstrapper/clients/gclient"
 	"infra/chromium/bootstrapper/clients/gerrit"
 	"infra/chromium/bootstrapper/clients/gitiles"
+	"infra/chromium/bootstrapper/clients/gob"
 	"infra/chromium/util"
 	"testing"
 
@@ -24,6 +25,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
+	ctx = gob.UseTestClock(ctx)
 
 	Convey("BuildBootstrapper.GetBootstrapConfig", t, func() {
 
@@ -991,6 +993,39 @@ func TestGetBootstrapConfig(t *testing.T) {
 					So(config.skipAnalysisReasons, ShouldBeEmpty)
 				})
 
+				Convey("fails with a tagged error when the properties file does not exist at pinned revision", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@refs/heads/dependency',
+							}`),
+						},
+					}
+					dependencyGitiles.Refs["refs/heads/dependency"] = "dependency-dependency-head"
+					dependencyGitiles.Revisions["dependency-dependency-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"": strPtr("fake-root-contents"),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldNotBeNil)
+					propsFile, commit, upstreamRepo, tagFound := DependencyPropertiesFileNotFound.In(err)
+					So(tagFound, ShouldBeTrue)
+					So(propsFile, ShouldEqual, "infra/config/fake-bucket/fake-builder/properties.textpb")
+					So(commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/dependency",
+						"id": "dependency-dependency-head"
+					}`)
+					So(upstreamRepo, ShouldEqual, "chromium.googlesource.com/top/level")
+					So(config, ShouldBeNil)
+				})
+
 			})
 
 		})
@@ -1005,7 +1040,7 @@ func TestUpdateBuild(t *testing.T) {
 
 		Convey("updates build with gitiles commit, builder properties, $build/chromium_bootstrap module properties and build properties", func() {
 			config := &BootstrapConfig{
-				commit: &gitilesCommit{&buildbucketpb.GitilesCommit{
+				commit: &GitilesCommit{&buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
 					Project: "fake-project",
 					Ref:     "fake-ref",
@@ -1028,7 +1063,7 @@ func TestUpdateBuild(t *testing.T) {
 					"skip-analysis-reason1",
 					"skip-analysis-reason2",
 				},
-				additionalCommits: []*gitilesCommit{
+				additionalCommits: []*GitilesCommit{
 					{&buildbucketpb.GitilesCommit{
 						Host:    "fake-host2",
 						Project: "fake-project2",
@@ -1212,7 +1247,7 @@ func TestUpdateBuild(t *testing.T) {
 
 		Convey("does not update gitiles commit for different repo", func() {
 			config := &BootstrapConfig{
-				commit: &gitilesCommit{&buildbucketpb.GitilesCommit{
+				commit: &GitilesCommit{&buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
 					Project: "fake-project",
 					Ref:     "fake-ref",

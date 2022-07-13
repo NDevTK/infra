@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"infra/chromium/bootstrapper/bootstrap"
@@ -212,7 +213,7 @@ func updateBuild(ctx context.Context, build *buildbucketpb.Build) (err error) {
 	return
 }
 
-func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap bootstrapFn, executeCmd executeCmdFn, updateBuild updateBuildFn) error {
+func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap bootstrapFn, executeCmd executeCmdFn, updateBuild updateBuildFn) (time.Duration, error) {
 	opts := getOpts()
 	cmd, input, err := performBootstrap(ctx, os.Stdin, opts)
 	if err == nil {
@@ -221,13 +222,28 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 	}
 
 	if err != nil {
+		var sleepDuration time.Duration
 		logging.Errorf(ctx, err.Error())
-		// An ExitError indicates that we were able to bootstrap the
-		// executable and that it failed, as opposed to being unable to
-		// launch the bootstrapped executable
+		// An ExitError indicates that we were able to bootstrap the executable and that it
+		// failed, as opposed to being unable to launch the bootstrapped executable. In that
+		// case, the recipe will have run and we don't need to make any modifications to the
+		// build.
 		var exitErr *exec.ExitError
-		if !stderrors.As(err, &exitErr) {
-			build := &buildbucketpb.Build{}
+		if stderrors.As(err, &exitErr) {
+			return 0, err
+		}
+
+		build := &buildbucketpb.Build{}
+		if propsFile, commit, topLevelRepo, ok := bootstrap.DependencyPropertiesFileNotFound.In(err); ok {
+			build.SummaryMarkdown = strings.Replace(fmt.Sprintf(`<pre>properties file %s does not exist in pinned revision %s</pre>
+<pre>This should resolve once the CL that adds this builder rolls into %s</pre>
+<pre>If you believe you are seeing this message in error, please contact a trooper</pre>
+<pre>This build will sleep for 10 minutes to avoid the builder cycling too quickly</pre>
+`, propsFile, commit, topLevelRepo), "\n", "<br/>", -1)
+			build.Status = buildbucketpb.Status_CANCELED
+			sleepDuration = 10 * time.Minute
+			err = nil
+		} else {
 			build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", err)
 			build.Status = buildbucketpb.Status_INFRA_FAILURE
 			if bootstrap.PatchRejected.In(err) {
@@ -239,14 +255,14 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 					},
 				}
 			}
-			if err := updateBuild(ctx, build); err != nil {
-				logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
-			}
 		}
-		return err
+		if err := updateBuild(ctx, build); err != nil {
+			logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
+		}
+		return sleepDuration, err
 	}
 
-	return nil
+	return 0, nil
 }
 
 func main() {
@@ -260,7 +276,11 @@ func main() {
 	ctx, shutdown := lucictx.TrackSoftDeadline(ctx, 500*time.Millisecond)
 	defer shutdown()
 
-	if err := bootstrapMain(ctx, parseFlags, performBootstrap, executeCmd, updateBuild); err != nil {
+	sleepDuration, err := bootstrapMain(ctx, parseFlags, performBootstrap, executeCmd, updateBuild)
+	if sleepDuration != 0 {
+		time.Sleep(sleepDuration)
+	}
+	if err != nil {
 		os.Exit(1)
 	}
 }

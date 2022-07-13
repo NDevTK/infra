@@ -12,7 +12,9 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/luciexe/exe"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -20,6 +22,7 @@ import (
 	"infra/chromium/bootstrapper/clients/gclient"
 	"infra/chromium/bootstrapper/clients/gerrit"
 	"infra/chromium/bootstrapper/clients/gitiles"
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 type GclientGetter func(ctx context.Context) (*gclient.Client, error)
@@ -36,13 +39,13 @@ func NewBuildBootstrapper(gitiles *gitiles.Client, gerrit *gerrit.Client, gclien
 	return &BuildBootstrapper{gitiles: gitiles, gerrit: gerrit, gclientGetter: gclientGetter}
 }
 
-// gitilesCommit is a simple wrapper around *buildbucketpb.GitilesCommit with
+// GitilesCommit is a simple wrapper around *buildbucketpb.GitilesCommit with
 // the gitiles URI as the string representation.
-type gitilesCommit struct {
+type GitilesCommit struct {
 	*buildbucketpb.GitilesCommit
 }
 
-func (c *gitilesCommit) String() string {
+func (c *GitilesCommit) String() string {
 	revision := c.Ref
 	if c.Id != "" {
 		revision = c.Id
@@ -50,28 +53,34 @@ func (c *gitilesCommit) String() string {
 	return fmt.Sprintf("%s/%s/+/%s", c.Host, c.Project, revision)
 }
 
-// gerritChange is a wrapper around *buildbucketpb.GerritChange with the gerrit URI as the string
+// GerritChange is a wrapper around *buildbucketpb.GerritChange with the gerrit URI as the string
 // representation and information retrieved from gerrit about the change.
-type gerritChange struct {
+type GerritChange struct {
 	*buildbucketpb.GerritChange
 
 	gitilesRevision string
 }
 
-func (c *gerritChange) String() string {
+func (c *GerritChange) String() string {
 	return fmt.Sprintf("%s/c/%s/+/%d/%d", c.Host, c.Project, c.Change, c.Patchset)
 }
 
 type BootstrapConfig struct {
 	// commit is the gitiles commit to read the properties file from.
-	commit *gitilesCommit
+	commit *GitilesCommit
 	// change is gerrit change that may potentially modify the properties
 	// file.
 	//
 	// nil indicates that the build does not contain any gerrit changes that
 	// may modify the properties file.
-	change *gerritChange
+	change *GerritChange
 
+	// diagnosePropertiesFileNotFound causes NotFound errors to be treated differently when
+	// downloading the properties file. For projects with config defined in a dependency
+	// project, the properties file won't exist in the pinned revision of the top-level project
+	// until some time later when a roll happens. This will cause additional work to be done to
+	// distinguish this case from replication lag.
+	diagnosePropertiesFileNotFound bool
 	// preferBuildProperties causes properties set in buildProperties to override the properties
 	// set in builderProperties instead of the other way around
 	preferBuildProperties bool
@@ -89,7 +98,7 @@ type BootstrapConfig struct {
 	skipAnalysisReasons []string
 	// additionalCommits are any additional commits that were retrieved
 	// while determining the commit to read the properties file from.
-	additionalCommits []*gitilesCommit
+	additionalCommits []*GitilesCommit
 }
 
 // GetBootstrapConfig does the necessary work to extract the properties from the
@@ -215,7 +224,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		}
 	}
 
-	configCommit := &gitilesCommit{&buildbucketpb.GitilesCommit{
+	configCommit := &GitilesCommit{&buildbucketpb.GitilesCommit{
 		Host:    dependency.ConfigRepo.Host,
 		Project: dependency.ConfigRepo.Project,
 		// We don't know if the revision is a commit hash or a ref, so just set it as ref.
@@ -228,9 +237,10 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 	}
 
 	return &BootstrapConfig{
-		commit:              configCommit,
-		additionalCommits:   []*gitilesCommit{commit},
-		skipAnalysisReasons: skipAnalysisReasons,
+		diagnosePropertiesFileNotFound: true,
+		commit:                         configCommit,
+		additionalCommits:              []*GitilesCommit{commit},
+		skipAnalysisReasons:            skipAnalysisReasons,
 	}, nil
 }
 
@@ -239,7 +249,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 // one will be constructed using the project and host of repo and the provided
 // ref. If a non-nill commit is returned, its ID is guaranteed to be populated.
 // The returned change will be nil if there is no change for the repo.
-func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input, repo *GitilesRepo, ref string) (*gitilesCommit, *gerritChange, error) {
+func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input, repo *GitilesRepo, ref string) (*GitilesCommit, *GerritChange, error) {
 	change := findMatchingGerritChange(input.changes, repo)
 	if change != nil {
 		logging.Infof(ctx, "getting change info for config change %s", change)
@@ -255,7 +265,7 @@ func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input
 		if ref == "" {
 			return nil, nil, nil
 		}
-		commit = &gitilesCommit{&buildbucketpb.GitilesCommit{
+		commit = &GitilesCommit{&buildbucketpb.GitilesCommit{
 			Host:    repo.Host,
 			Project: repo.Project,
 			Ref:     ref,
@@ -280,7 +290,7 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 		}
 	}
 
-	contents, err := b.downloadFile(ctx, config.commit, propsFile)
+	contents, err := b.downloadPropertiesFile(ctx, propsFile, config)
 	if err != nil {
 		return err
 	}
@@ -303,7 +313,48 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 	return nil
 }
 
-func (b *BuildBootstrapper) downloadFile(ctx context.Context, commit *gitilesCommit, file string) (string, error) {
+func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFile string, config *BootstrapConfig) (string, error) {
+	if !config.diagnosePropertiesFileNotFound {
+		return b.downloadFile(ctx, config.commit, propsFile)
+	}
+
+	var contents string
+	revisionExists := false
+
+	err := gob.Execute(ctx, "download properties file", func() error {
+		ctx := gob.DisableRetries(ctx)
+		var err error
+		contents, err = b.downloadFile(ctx, config.commit, propsFile)
+		if grpcutil.Code(err) == codes.NotFound {
+			if revisionExists {
+				// We already know the revision exists, so the file doesn't
+				// exist at the revision. Apply tags to prevent gob from
+				// retrying it and signal to the top-level code.
+				err = gob.DontRetry.Apply(err)
+				topLevelCommit := config.additionalCommits[0]
+				topLevelRepo := fmt.Sprintf("%s/%s", topLevelCommit.Host, topLevelCommit.Project)
+				err = DependencyPropertiesFileNotFound.With(propsFile, config.commit, topLevelRepo).Apply(err)
+			} else {
+				// Try to "download" the root: if it succeeds then we know the
+				// revision exists, but let it retry one more time in case it was
+				// replication lag
+				_, rootErr := b.downloadFile(ctx, config.commit, "")
+				if rootErr == nil {
+					revisionExists = true
+				} else if !gob.ErrorIsRetriable(rootErr) {
+					return rootErr
+				}
+			}
+		}
+		return err
+	})
+	if err != nil {
+		return "", err
+	}
+	return contents, nil
+}
+
+func (b *BuildBootstrapper) downloadFile(ctx context.Context, commit *GitilesCommit, file string) (string, error) {
 	if commit.Id == "" {
 		return "", errors.New("commit ID not set for download")
 	}
@@ -315,7 +366,7 @@ func (b *BuildBootstrapper) downloadFile(ctx context.Context, commit *gitilesCom
 	return contents, nil
 }
 
-func (b *BuildBootstrapper) getDiffForMaybeAffectedFile(ctx context.Context, change *gerritChange, file string) (string, error) {
+func (b *BuildBootstrapper) getDiffForMaybeAffectedFile(ctx context.Context, change *GerritChange, file string) (string, error) {
 	logging.Infof(ctx, "getting diff for %s", change)
 	diff, err := b.gitiles.DownloadDiff(ctx, convertGerritHostToGitilesHost(change.Host), change.Project, change.gitilesRevision, gitiles.PARENT, file)
 	if err != nil {
@@ -329,14 +380,14 @@ func (b *BuildBootstrapper) getDiffForMaybeAffectedFile(ctx context.Context, cha
 	return diff, nil
 }
 
-func (b *BuildBootstrapper) populateCommitId(ctx context.Context, commit *gitilesCommit) (*gitilesCommit, error) {
+func (b *BuildBootstrapper) populateCommitId(ctx context.Context, commit *GitilesCommit) (*GitilesCommit, error) {
 	if commit.Id == "" {
 		logging.Infof(ctx, "getting revision for %s", commit)
 		revision, err := b.gitiles.FetchLatestRevision(ctx, commit.Host, commit.Project, commit.Ref)
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to populate commit ID for %s", commit).Err()
 		}
-		commit = &gitilesCommit{proto.Clone(commit.GitilesCommit).(*buildbucketpb.GitilesCommit)}
+		commit = &GitilesCommit{proto.Clone(commit.GitilesCommit).(*buildbucketpb.GitilesCommit)}
 		if revision == commit.Ref {
 			commit.Ref = ""
 		}
@@ -345,19 +396,19 @@ func (b *BuildBootstrapper) populateCommitId(ctx context.Context, commit *gitile
 	return commit, nil
 }
 
-func findMatchingGitilesCommit(commits []*buildbucketpb.GitilesCommit, repo *GitilesRepo) *gitilesCommit {
+func findMatchingGitilesCommit(commits []*buildbucketpb.GitilesCommit, repo *GitilesRepo) *GitilesCommit {
 	for _, commit := range commits {
 		if commit.Host == repo.Host && commit.Project == repo.Project {
-			return &gitilesCommit{commit}
+			return &GitilesCommit{commit}
 		}
 	}
 	return nil
 }
 
-func findMatchingGerritChange(changes []*buildbucketpb.GerritChange, repo *GitilesRepo) *gerritChange {
+func findMatchingGerritChange(changes []*buildbucketpb.GerritChange, repo *GitilesRepo) *GerritChange {
 	for _, change := range changes {
 		if convertGerritHostToGitilesHost(change.Host) == repo.Host && change.Project == repo.Project {
-			return &gerritChange{GerritChange: change}
+			return &GerritChange{GerritChange: change}
 		}
 	}
 	return nil
@@ -431,7 +482,7 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 	return nil
 }
 
-func shouldUpdateGitilesCommit(build *buildbucketpb.Build, commit *gitilesCommit) bool {
+func shouldUpdateGitilesCommit(build *buildbucketpb.Build, commit *GitilesCommit) bool {
 	if commit == nil {
 		return false
 	}
