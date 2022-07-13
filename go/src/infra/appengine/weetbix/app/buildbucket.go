@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"regexp"
 	"strings"
 
 	bbv1 "go.chromium.org/luci/common/api/buildbucket/buildbucket/v1"
@@ -39,10 +38,6 @@ var (
 		field.String("project"),
 		// "success", "ignored", "transient-failure" or "permanent-failure".
 		field.String("status"))
-
-	// chromiumMilestoneProjectPrefix is the LUCI project prefix
-	// of chromium milestone projects, e.g. chromium-m100.
-	chromiumMilestoneProjectRE = regexp.MustCompile(`^(chrome|chromium)-m[0-9]+$`)
 )
 
 // BuildbucketPubSubHandler accepts and process buildbucket Pub/Sub messages.
@@ -113,11 +108,6 @@ func processBBMessage(ctx context.Context, message *buildBucketMessage) (process
 	}
 	if message.Build.CreatedTs == 0 {
 		return false, errors.New("build did not have created timestamp specified")
-	}
-
-	if chromiumMilestoneProjectRE.MatchString(message.Build.Project) {
-		// Chromium milestone projects are currently not supported.
-		return false, nil
 	}
 
 	userAgents := extractTagValues(message.Build.Tags, userAgentTagKey)

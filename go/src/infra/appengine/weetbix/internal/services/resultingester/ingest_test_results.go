@@ -7,6 +7,7 @@ package resultingester
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"time"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -101,6 +102,10 @@ var (
 	buildReadMask = &field_mask.FieldMask{
 		Paths: []string{"builder", "infra.resultdb", "status", "input", "output", "ancestor_ids"},
 	}
+
+	// chromiumMilestoneProjectPrefix is the LUCI project prefix
+	// of chromium milestone projects, e.g. chromium-m100.
+	chromiumMilestoneProjectRE = regexp.MustCompile(`^(chrome|chromium)-m[0-9]+$`)
 )
 
 // Options configures test result ingestion.
@@ -284,6 +289,12 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		// If any transaction failed, the task will be retried and the tables will be
 		// eventual-consistent.
 		return errors.Annotate(err, "record test results").Err()
+	}
+
+	// Clustering and test variant analysis currently don't support chromium
+	// milestone projects.
+	if chromiumMilestoneProjectRE.MatchString(payload.Build.Project) {
+		return nil
 	}
 
 	failingTVs := filterToTestVariantsWithUnexpectedFailures(rsp.TestVariants)
