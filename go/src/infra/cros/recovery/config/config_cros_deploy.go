@@ -14,6 +14,7 @@ func crosDeployPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Set state: needs_deploy",
+			"Check stable versions exist",
 			"Clean up",
 			"Servo has USB-key with require image",
 			"Device is pingable before deploy",
@@ -320,6 +321,39 @@ func deployActions() map[string]*Action {
 			},
 			ExecName:               "servo_update_servo_type_label",
 			AllowFailAfterRecovery: true,
+		},
+		"Check stable versions exist": {
+			Docs: []string{
+				"Check the DUT has model specific cros, firmware and faft stable_version configured.",
+			},
+			Dependencies: []string{
+				"has_stable_version_cros_image",
+				"Check stable firmware version exists",
+				"Check stable faft version exists",
+			},
+			ExecName: "sample_pass",
+		},
+		"Check stable firmware version exists": {
+			Docs: []string{
+				"Check the DUT has model specific firmware stable_version configured.",
+				"Flex device are exampted from this check as they don't run cros firmware",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
+			ExecName: "has_stable_version_fw_version",
+		},
+		"Check stable faft version exists": {
+			Docs: []string{
+				"Check the DUT has model specific faft stable_version configured.",
+				"Flex device are exampted from this check as they don't run cros firmware",
+				"Satlab DUTs are exampted from this check given some early stage device don't have firmware branch GS bucket setup yet.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+				"Not Satlab device",
+			},
+			ExecName: "has_stable_version_fw_image",
 		},
 	}
 }
