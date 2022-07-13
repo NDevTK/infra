@@ -9,6 +9,7 @@ package main
 import (
 	"archive/tar"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"infra/cros/internal/gs"
@@ -285,7 +286,7 @@ func TestGenerateConfigs(t *testing.T) {
 	// Init global variables and
 	mockCrash := initCrashConnectionMock("google.com", "1234", map[string]string{"google.com/symbols:checkStatuses?key=1234": string(mockResponseBody)})
 
-	tasks, err := generateConfigs(mockPaths, 0, false, mockCrash)
+	tasks, err := generateConfigs(context.Background(), mockPaths, 0, false, mockCrash)
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}

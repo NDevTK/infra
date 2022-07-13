@@ -15,7 +15,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/internal/gs"
 	"io"
 	"io/ioutil"
 	"log"
@@ -27,6 +26,9 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"infra/cros/internal/gs"
+	"infra/cros/internal/shared"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
@@ -485,7 +487,7 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 // unpacked symbol files. It will return a list of generated task configs
 // alongside the communication channels to be used.
 
-func generateConfigs(symbolFiles []string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
+func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
 	LogOut("Generating %d task configs", len(symbolFiles))
 
 	// The task should only sleep on retry.
@@ -530,7 +532,7 @@ func generateConfigs(symbolFiles []string, retryQuota uint64, dryRun bool, crash
 	}
 
 	// Filter out already uploaded debug symbols.
-	tasks, err := filterTasksAlreadyUploaded(tasks, dryRun, crash)
+	tasks, err := filterTasksAlreadyUploaded(ctx, tasks, dryRun, crash)
 	if err != nil {
 		return nil, err
 	}
@@ -544,7 +546,7 @@ func generateConfigs(symbolFiles []string, retryQuota uint64, dryRun bool, crash
 // uploaded, reducing our upload time.
 // Variable name formatting comes from API definition.
 
-func filterTasksAlreadyUploaded(tasks []taskConfig, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
+func filterTasksAlreadyUploaded(ctx context.Context, tasks []taskConfig, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
 	LogOut("Filtering out previously uploaded symbol files.")
 
 	var responseInfo filterResponseBody
@@ -561,13 +563,28 @@ func filterTasksAlreadyUploaded(tasks []taskConfig, dryRun bool, crash crashConn
 
 	header := http.Header{}
 	header.Add("Content-Type", "application/json")
-	response, err := httpRequest(fmt.Sprintf(crash.url+"/symbols:checkStatuses?key=%s", crash.key), http.MethodPost, bytes.NewReader(postBody), nil, crash.client)
+
+	requestUrlWithoutKey := crash.url + "/symbols:checkStatuses"
+	requestUrlWithKey := fmt.Sprintf("%s?key=%s", requestUrlWithoutKey, crash.key)
+
+	ch := make(chan *http.Response, 1)
+
+	opts := shared.DefaultOpts
+	err = shared.DoWithRetry(ctx, opts, func() error {
+		response, err := httpRequest(requestUrlWithKey, http.MethodPost, bytes.NewReader(postBody), nil, crash.client)
+		if err != nil {
+			return err
+		}
+		if response.StatusCode != 200 {
+			return fmt.Errorf("request to %s failed with status %d", requestUrlWithoutKey, response.StatusCode)
+		}
+		ch <- response
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	if response.StatusCode != 200 {
-		return tasks, fmt.Errorf("request to %s failed with status %d", crash.client, response.StatusCode)
-	}
+	response := <-ch
 
 	// Parse the response from the API.
 	body, err := ioutil.ReadAll(response.Body)
@@ -790,7 +807,7 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 		return 1
 	}
 
-	tasks, err := generateConfigs(symbolFiles, b.retryQuota, b.dryRun, crash)
+	tasks, err := generateConfigs(ctx, symbolFiles, b.retryQuota, b.dryRun, crash)
 	if err != nil {
 		LogErr(&crash, err.Error())
 		return 1
