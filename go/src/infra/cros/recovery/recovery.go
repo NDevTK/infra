@@ -6,7 +6,9 @@
 package recovery
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -542,6 +544,20 @@ type RunArgs struct {
 	// JumpHost is the host to use as a SSH proxy between ones dev environment and the lab,
 	// if necessary. An empty JumpHost means do not use a jump host.
 	DevJumpHost string
+}
+
+// UseConfigBase64 attaches a base64 encoded string as a config
+// reader.
+func (a *RunArgs) UseConfigBase64(blob string) error {
+	if a == nil || blob == "" {
+		return nil
+	}
+	dc, err := base64.StdEncoding.DecodeString(blob)
+	if err != nil {
+		return err
+	}
+	a.ConfigReader = bytes.NewReader(dc)
+	return nil
 }
 
 // UseConfigFile attaches a config file to the current recovery object.

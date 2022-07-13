@@ -273,10 +273,6 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 			lg.Errorf("internal run: failed to instantiate karte client: %s", err)
 		}
 	}
-	cr, err := getConfiguration(in.GetConfiguration(), lg)
-	if err != nil {
-		return errors.Annotate(err, "internal run").Err()
-	}
 
 	runArgs := &recovery.RunArgs{
 		UnitName:              in.GetUnitName(),
@@ -287,11 +283,14 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 		Metrics:               metrics,
 		EnableRecovery:        in.GetEnableRecovery(),
 		EnableUpdateInventory: in.GetUpdateInventory(),
-		ConfigReader:          cr,
 		SwarmingTaskID:        state.Infra().GetSwarming().GetTaskId(),
 		BuildbucketID:         state.Infra().GetBackend().GetTask().GetId().GetId(),
 		LogRoot:               logRoot,
 	}
+	if uErr := runArgs.UseConfigBase64(in.GetConfiguration()); uErr != nil {
+		return uErr
+	}
+
 	lg.Debugf("Labpack: started recovery engine.")
 	if err := recovery.Run(ctx, runArgs); err != nil {
 		lg.Debugf("Labpack: finished recovery run with error: %v", err)
