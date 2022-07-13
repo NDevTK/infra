@@ -9,7 +9,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// fakeDBHGetter emulates behavior of fetching satlab ID with a constant return value
+// noopUpdateRecord is UpdateRecord with no side effects for testing other functionality
+func noopUpdateRecord(host string, address string) (string, error) {
+	return "", nil
+}
+
+// fakeDHBGetter emulates fetching SatlabID with a constant value
 func fakeDHBGetter() (string, error) {
 	return "123", nil
 }
@@ -61,7 +66,7 @@ func TestRunCommandValidates(t *testing.T) {
 			t.Parallel()
 
 			i, o := tc.input, tc.output
-			err := i.command.runCmdInjected(i.args, i.satlabIDFetcher)
+			err := i.command.runCmdInjected(i.args, i.satlabIDFetcher, noopUpdateRecord)
 
 			if o.errored != (err != nil) {
 				t.Errorf("Testing(%+v) failed. Got error: %t, expected error: %t", tc, err, o.errored)
@@ -70,5 +75,29 @@ func TestRunCommandValidates(t *testing.T) {
 				t.Errorf("Testing(%+v) failed with diff in host of command: %s", tc, diff)
 			}
 		})
+	}
+}
+
+// fakeUpdateRecord produces a function that emulates UpdateRecord but stores the latest results in a records map passed in
+func fakeUpdateRecord(records map[string]string) HostfileUpdater {
+	return func(host, address string) (string, error) {
+		records[host] = address
+		return "", nil
+	}
+}
+
+// TestRunCmdUpdatesRecords tests that when we call `runCmdInjected` it calls UpdateRecord function with expected args
+func TestRunCmdUpdatesRecords(t *testing.T) {
+	t.Parallel()
+
+	callMap := make(map[string]string)
+	updateRecord := fakeUpdateRecord(callMap)
+	cmd := &updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}
+	expectedCallMap := map[string]string{"satlab-123-eli": "127.0.0.1"}
+
+	cmd.runCmdInjected([]string{}, fakeDHBGetter, updateRecord)
+
+	if diff := cmp.Diff(callMap, expectedCallMap); diff != "" {
+		t.Errorf("got diff %s for final state of records with input %+v", diff, cmd)
 	}
 }
