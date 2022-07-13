@@ -7,6 +7,9 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/satlab/internal/site"
 )
 
 // UpdateDNSCmd is the command to upsert a hostname-ip pairing in /etc/dut_hosts/hosts used in DNS container
@@ -41,4 +44,20 @@ func (c *updateDNSRun) Run(a subcommands.Application, args []string, env subcomm
 // innerRun contains the actual logic of the updateDNSRun command
 func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	return fmt.Errorf("not implemented yet")
+}
+
+// validate checks for required and unexpected args + formats hostname
+func (c *updateDNSRun) validate(args []string, satlabId string) error {
+	if c.host == "" {
+		return errors.Reason("host must be specified").Err()
+	}
+	if c.address == "" {
+		return errors.Reason("address must be specified").Err()
+	}
+	if len(args) > 0 {
+		return errors.Reason("unrecognized positional argument(s): %+v", args).Err()
+	}
+
+	c.host = site.MaybePrepend(site.Satlab, satlabId, c.host)
+	return nil
 }
