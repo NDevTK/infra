@@ -40,11 +40,6 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-// LuciexeProtocolPassthru should always be set to false in checked-in code.
-// Only set it to true for development purposes.
-const LuciexeProtocolPassthru = false
-
-//
 // DescribeMyDirectoryAndEnvironment controls whether labpack should write information
 // about where it was run (cwd), what files are near it, and the contents of the environment.
 const DescribeMyDirectoryAndEnvironment = true
@@ -62,30 +57,25 @@ func main() {
 	input := &steps.LabpackInput{}
 	var writeOutputProps ResponseUpdater
 	var mergeOutputProps ResponseUpdater
-	if LuciexeProtocolPassthru {
-		log.Printf("Bypassing luciexe.")
-		log.Fatalf("Bypassing luciexe not yet supported.")
-	} else {
-		build.Main(input, &writeOutputProps, &mergeOutputProps,
-			func(ctx context.Context, args []string, state *build.State) error {
-				// Right after instantiating the logger, but inside build.Main's callback,
-				// make sure that we log what our environment looks like.
-				if DescribeMyDirectoryAndEnvironment {
-					describeEnvironment(os.Stderr)
-					// Describe the contents of the directory once on the way out too.
-					// We will use this information to decide what to persist.
-					defer describeEnvironment(os.Stderr)
-				}
+	build.Main(input, &writeOutputProps, &mergeOutputProps,
+		func(ctx context.Context, args []string, state *build.State) error {
+			// Right after instantiating the logger, but inside build.Main's callback,
+			// make sure that we log what our environment looks like.
+			if DescribeMyDirectoryAndEnvironment {
+				describeEnvironment(os.Stderr)
+				// Describe the contents of the directory once on the way out too.
+				// We will use this information to decide what to persist.
+				defer describeEnvironment(os.Stderr)
+			}
 
-				// Set the log (via the Go standard library's log package) to Stderr, since we know that stderr is collected
-				// for the process as a whole.
-				log.SetOutput(os.Stderr)
+			// Set the log (via the Go standard library's log package) to Stderr, since we know that stderr is collected
+			// for the process as a whole.
+			log.SetOutput(os.Stderr)
 
-				err := mainRunInternal(ctx, input, state, writeOutputProps)
-				return errors.Annotate(err, "main").Err()
-			},
-		)
-	}
+			err := mainRunInternal(ctx, input, state, writeOutputProps)
+			return errors.Annotate(err, "main").Err()
+		},
+	)
 	log.Printf("Labpack done!")
 }
 
