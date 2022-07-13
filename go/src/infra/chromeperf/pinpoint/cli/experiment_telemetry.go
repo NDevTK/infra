@@ -243,6 +243,7 @@ var (
 		"android-pixel4_weblayer-perf":     "performance_weblayer_test_suite",
 		"android-pixel4_weblayer-perf-pgo": "performance_weblayer_test_suite",
 		"lacros-eve-perf":                  "performance_test_suite_eve",
+		"lacros-x86-perf":                  "performance_test_suite_octopus",
 	}
 )
 
