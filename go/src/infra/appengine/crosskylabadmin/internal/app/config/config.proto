@@ -312,6 +312,15 @@ message Paris {
   // For expected state needs_manual_repair.
   RolloutConfig dut_repair_on_needs_manual_repair = 10;
 
+  // AuditRPM controls the rollout settings for audit RPM tasks.
+  RolloutConfig audit_rpm = 11;
+
+  // AuditStorage controls the rollout settings for audit storage tasks.
+  RolloutConfig audit_storage = 12;
+
+  // AuditUSB controls the rollout settings for audit USB tasks.
+  RolloutConfig audit_usb = 13;
+
   // DUT_verify controls the verify task for DUTs.
   RolloutConfig dut_verify = 6;
 
