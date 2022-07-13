@@ -12,45 +12,32 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// TestReplaceLineContents tests replacing lines in a DNS hosts file.
-func TestReplaceLineContents(t *testing.T) {
+// TestMakeNewContent tests updating lines in a DNS file
+func TestMakeNewContent(t *testing.T) {
 	t.Parallel()
 
-	expected := []string{
-		tabify("addr1-NEW host1"),
-		tabify("addr2-NEW host2"),
-		tabify("addr3 host3"),
-	}
+	expected := strings.Join([]string{
+		tabify("addr1-UPDATE host1"),
+		tabify("addr2 host2"),
+		tabify("addr3-NEW host3"),
+	}, "\n") + string("\n")
 
 	newRecords := map[string]string{
-		"host1": "addr1-NEW",
-		"host2": "addr2-NEW",
-	}
-	classifier := makeClassifier(newRecords)
-
-	replacer := func(line string) string {
-		words := strings.Fields(line)
-		if len(words) < 2 {
-			return ""
-		}
-		return fmt.Sprintf("%s\t%s", newRecords[words[1]], words[1])
+		"host1": "addr1-UPDATE",
+		"host3": "addr3-NEW",
 	}
 
-	input := []string{
+	input := strings.Join([]string{
 		tabify("addr1 host1"),
 		tabify("addr2 host2"),
-		tabify("addr3 host3"),
-	}
-	actual, err := replaceLineContents(
-		make(map[string]bool),
-		input,
-		classifier,
-		replacer,
-	)
+	}, "\n")
+	actual, err := makeNewContent(input, newRecords)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 	if diff := cmp.Diff(expected, actual); diff != "" {
+		fmt.Printf("new: %s\n", actual)
+		fmt.Printf("exp: %s\n", expected)
 		t.Errorf("unexpected diff: %s", diff)
 	}
 }

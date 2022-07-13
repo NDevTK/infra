@@ -103,6 +103,22 @@ func ensureRecords(content string, newRecords map[string]string) error {
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
 
+	newContent, err := makeNewContent(content, newRecords)
+	if err != nil {
+		return errors.Annotate(err, "ensure dns records").Err()
+	}
+
+	if err := SetDNSFileContent(newContent); err != nil {
+		return errors.Annotate(err, "ensure dns records").Err()
+	}
+	if err := ForceReloadDNSMasqProcess(); err != nil {
+		return errors.Annotate(err, "ensure dns records").Err()
+	}
+	return nil
+}
+
+// makeNewContent takes in existing hostfile-like string and outputs a hostfile-like string with changes in newRecords
+func makeNewContent(content string, newRecords map[string]string) (string, error) {
 	seen := make(map[string]bool)
 
 	classifier := makeClassifier(newRecords)
@@ -114,32 +130,26 @@ func ensureRecords(content string, newRecords map[string]string) error {
 		return fmt.Sprintf("%s\t%s", newRecords[words[1]], words[1])
 	}
 
-	newContent, err := replaceLineContents(
+	newContentArr, err := replaceLineContents(
 		seen,
 		strings.Split(content, "\n"),
 		classifier,
 		replacer,
 	)
+	if err != nil {
+		return "", errors.Annotate(err, "make new content").Err()
+	}
 
 	for host, addr := range newRecords {
 		if seen[host] {
 			// Do nothing, line already added.
 		} else {
 			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s\n", host)
-			newContent = append(newContent, fmt.Sprintf("%s\t%s\n", addr, host))
+			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s\n", addr, host))
 		}
 	}
 
-	if err != nil {
-		return errors.Annotate(err, "ensure dns records").Err()
-	}
-	if err := SetDNSFileContent(strings.Join(newContent, "\n")); err != nil {
-		return errors.Annotate(err, "ensure dns records").Err()
-	}
-	if err := ForceReloadDNSMasqProcess(); err != nil {
-		return errors.Annotate(err, "ensure dns records").Err()
-	}
-	return nil
+	return strings.Join(newContentArr, "\n"), nil
 }
 
 // MakeClassifier makes a classifier that determines whether to modify a given addr, host line or not.
