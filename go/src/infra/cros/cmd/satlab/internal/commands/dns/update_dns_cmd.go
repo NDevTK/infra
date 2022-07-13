@@ -9,8 +9,13 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/cmd/satlab/internal/commands"
 	"infra/cros/cmd/satlab/internal/site"
 )
+
+// DockerHostBoxIdentifierGetter is a function type fulfilled by GetDockerHostBoxIdentifier
+// we do this because the function assumes we are in a real Satlab env and we can't unit test using this func
+type DockerHostBoxIdentifierGetter func() (string, error)
 
 // UpdateDNSCmd is the command to upsert a hostname-ip pairing in /etc/dut_hosts/hosts used in DNS container
 var UpdateDNSCmd = &subcommands.Command{
@@ -41,9 +46,25 @@ func (c *updateDNSRun) Run(a subcommands.Application, args []string, env subcomm
 	return 0
 }
 
-// innerRun contains the actual logic of the updateDNSRun command
+// innerRun gathers all needed function and interface implementations and calls the business logic
 func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return fmt.Errorf("not implemented yet")
+	return c.runCmdInjected(args, commands.GetDockerHostBoxIdentifier)
+}
+
+// runCmdInjected executes actual logic of command
+// it takes in mockable functions and interfaces to make it easier to unit test the logic of the update dns cmd
+func (c *updateDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIdentifierGetter) error {
+	satlabID, err := dhbIDFunc()
+	if err != nil {
+		return err
+	}
+
+	err = c.validate(args, satlabID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // validate checks for required and unexpected args + formats hostname

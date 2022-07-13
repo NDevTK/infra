@@ -9,14 +9,19 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// TestValidate tests various flows
-func TestValidate(t *testing.T) {
+// fakeDBHGetter emulates behavior of fetching satlab ID with a constant return value
+func fakeDHBGetter() (string, error) {
+	return "123", nil
+}
+
+// TestRunCommandValidates tests various inputs to our runCmdInjected function
+func TestRunCommandValidates(t *testing.T) {
 	t.Parallel()
 
 	type input struct {
-		command  *updateDNSRun
-		args     []string
-		satlabID string
+		command         *updateDNSRun
+		args            []string
+		satlabIDFetcher DockerHostBoxIdentifierGetter
 	}
 	type output struct {
 		errored bool
@@ -30,23 +35,23 @@ func TestValidate(t *testing.T) {
 
 	tests := []test{{
 		"happy path",
-		input{&updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}, make([]string, 0), "123"},
+		input{&updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}, make([]string, 0), fakeDHBGetter},
 		output{false, &updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}},
 	}, {
 		"no host",
-		input{&updateDNSRun{address: "127.0.0.1"}, make([]string, 0), "123"},
+		input{&updateDNSRun{address: "127.0.0.1"}, make([]string, 0), fakeDHBGetter},
 		output{true, &updateDNSRun{host: "", address: "127.0.0.1"}},
 	}, {
 		"no address",
-		input{&updateDNSRun{host: "satlab-123-eli"}, make([]string, 0), "123"},
+		input{&updateDNSRun{host: "satlab-123-eli"}, make([]string, 0), fakeDHBGetter},
 		output{true, &updateDNSRun{host: "satlab-123-eli", address: ""}},
 	}, {
 		"positional args",
-		input{&updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}, []string{"hi"}, "123"},
+		input{&updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}, []string{"hi"}, fakeDHBGetter},
 		output{true, &updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}},
 	}, {
 		"prepend host",
-		input{&updateDNSRun{host: "eli", address: "127.0.0.1"}, make([]string, 0), "123"},
+		input{&updateDNSRun{host: "eli", address: "127.0.0.1"}, make([]string, 0), fakeDHBGetter},
 		output{false, &updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}},
 	}}
 
@@ -56,7 +61,7 @@ func TestValidate(t *testing.T) {
 			t.Parallel()
 
 			i, o := tc.input, tc.output
-			err := i.command.validate(i.args, i.satlabID)
+			err := i.command.runCmdInjected(i.args, i.satlabIDFetcher)
 
 			if o.errored != (err != nil) {
 				t.Errorf("Testing(%+v) failed. Got error: %t, expected error: %t", tc, err, o.errored)
