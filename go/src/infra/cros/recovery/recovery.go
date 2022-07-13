@@ -554,7 +554,7 @@ func (a *RunArgs) UseConfigBase64(blob string) error {
 	}
 	dc, err := base64.StdEncoding.DecodeString(blob)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "original input %q", blob).Err()
 	}
 	a.configReader = bytes.NewReader(dc)
 	return nil

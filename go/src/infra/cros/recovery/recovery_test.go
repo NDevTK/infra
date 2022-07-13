@@ -6,6 +6,9 @@ package recovery
 
 import (
 	"context"
+	"encoding/base64"
+	"errors"
+	"io"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -482,6 +485,73 @@ func TestOtherConfigurations(t *testing.T) {
 			_, err := config.Validate(ctx, configuration, execs.Exist)
 			if err != nil {
 				t.Errorf("%q -> fail to validate configuration with error: %s", cs.name, err)
+			}
+		})
+	}
+}
+
+// Testing dutPlans method.
+func TestGetConfiguration(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		in     string
+		isNull bool
+	}{
+		{
+			"no Data",
+			"",
+			true,
+		},
+		{
+			"Some data",
+			`{
+			"Field":"something",
+			"number': 765
+		}`,
+			false,
+		},
+		{
+			"strange data",
+			"!@#$%^&*()__)(*&^%$#retyuihjo{:>\"?{",
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+			a := &RunArgs{}
+			b64 := base64.StdEncoding
+			buf := make([]byte, b64.EncodedLen(len(c.in)))
+			b64.Encode(buf, []byte(c.in))
+			err := a.UseConfigBase64(string(buf))
+			if err != nil {
+				panic(err.Error())
+			}
+			r := a.configReader
+
+			if err != nil {
+				t.Errorf("Case %s: %s", c.name, err)
+			}
+			if c.isNull {
+				if r != nil {
+					t.Errorf("Case %s: expected nil", c.name)
+				}
+			} else {
+				got := []byte{}
+				err := errors.New("config reader cannot be nil")
+				if r != nil {
+					got, err = io.ReadAll(r)
+				}
+				if err != nil {
+					t.Errorf("Case %s: %s", c.name, err)
+				}
+				if !cmp.Equal(string(got), c.in) {
+					t.Errorf("got: %v\nwant: %v", string(got), c.in)
+				}
 			}
 		})
 	}
