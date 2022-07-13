@@ -252,7 +252,8 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 		// Decide if the child can outlive its parent or not.
 		// For details see https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/buildbucket/proto/builds_service.proto;l=458;drc=79232ce0a0af1f7ab9ae78efa9ab3931a520d2bc.
 		if req.GetCanOutliveParent() == buildbucketpb.Trinary_UNSET {
-			req.CanOutliveParent = buildbucketpb.Trinary_YES
+			// We do not want test_runner runs to outrun parent CTP.
+			req.CanOutliveParent = buildbucketpb.Trinary_NO
 			if req.GetSwarming().GetParentRunId() != "" {
 				req.CanOutliveParent = buildbucketpb.Trinary_NO
 			}

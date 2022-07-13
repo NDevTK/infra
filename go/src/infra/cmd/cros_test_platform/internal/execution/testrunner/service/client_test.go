@@ -178,7 +178,7 @@ func TestLaunchRequest(t *testing.T) {
 				So(len(buildToks), ShouldEqual, 1)
 				So(buildToks[0], ShouldEqual, "parent-token")
 
-				So(r.CanOutliveParent, ShouldEqual, buildbucket_pb.Trinary_YES)
+				So(r.CanOutliveParent, ShouldEqual, buildbucket_pb.Trinary_NO)
 			},
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
 		tf.ctx = lucictx.SetBuildbucket(tf.ctx, &lucictx.Buildbucket{
