@@ -17,7 +17,10 @@ import (
 
 // CreateAuditTask kicks off an audit job.
 func CreateAuditTask(ctx context.Context, botID string, taskname string, actions string, randFloat float64) (string, error) {
-	logging.Infof(ctx, "Creating audit task for %q with random input %f", botID, randFloat)
+	// The actions field is a little bit tricky and consists of a comma-delimited list of actions.
+	// We're also using Paris in a slightly different way than legacy.
+	// Each audit action will correspond to one paris job, always.
+	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q", botID, randFloat, actions)
 	return createLegacyAuditTask(ctx, botID, taskname, actions)
 }
 
