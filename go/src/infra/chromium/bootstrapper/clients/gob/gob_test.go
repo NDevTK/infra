@@ -7,6 +7,7 @@ package gob
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -29,68 +30,98 @@ func (c *fakeClient) op() error {
 	return nil
 }
 
-func TestRetry(t *testing.T) {
+func messageForCode(code codes.Code) string {
+	return fmt.Sprintf("fake %s error", code)
+}
+
+func TestExecute(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	ctx = CtxForTest(ctx)
+	ctx = UseTestClock(ctx)
 
-	Convey("Retry", t, func() {
+	Convey("Execute", t, func() {
 
-		Convey("retries not found errors", func() {
+		var retriableErrors = []codes.Code{
+			codes.NotFound,
+			codes.Unavailable,
+			codes.DeadlineExceeded,
+		}
+
+		Convey("does not retry on errors without status code", func() {
 			client := &fakeClient{
-				err: status.Error(codes.NotFound, "fake not found failure"),
+				err: errors.New("fake error without code"),
 				max: 1,
 			}
 
-			err := Retry(ctx, "fake op", client.op)
+			err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldBeNil)
+			So(err, ShouldErrLike, "fake error without code")
 		})
 
-		Convey("retries service not available errors", func() {
+		Convey("does not retry on errors with non-retriable code", func() {
 			client := &fakeClient{
-				err: status.Error(codes.Unavailable, "fake unavailable failure"),
+				err: status.Error(codes.InvalidArgument, "fake error with non-retriable code"),
 				max: 1,
 			}
 
-			err := Retry(ctx, "fake op", client.op)
+			err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldBeNil)
+			So(err, ShouldErrLike, "fake error with non-retriable code")
 		})
 
-		Convey("retries deadline exceeded errors", func() {
-			client := &fakeClient{
-				err: status.Error(codes.DeadlineExceeded, "fake deadline exceeded failure"),
-				max: 1,
-			}
+		for _, code := range retriableErrors {
+			Convey(fmt.Sprintf("retries on %s errors", code), func() {
+				message := messageForCode(code)
+				client := &fakeClient{
+					err: status.Error(code, message),
+					max: 1,
+				}
 
-			err := Retry(ctx, "fake op", client.op)
+				err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldBeNil)
-		})
+				So(err, ShouldBeNil)
+
+				Convey("unless retries are disabled", func() {
+					client.count = 0
+					ctx := DisableRetries(ctx)
+
+					err := Execute(ctx, "fake op", client.op)
+
+					So(err, ShouldErrLike, message)
+				})
+
+				Convey("when retries are re-enabled", func() {
+					client.count = 0
+					ctx := EnableRetries(DisableRetries(ctx))
+
+					err := Execute(ctx, "fake op", client.op)
+
+					So(err, ShouldBeNil)
+				})
+
+				Convey("unless the error has the DontRetry tag", func() {
+					client.count = 0
+					client.err = DontRetry.Apply(client.err)
+
+					err := Execute(ctx, "fake op", client.op)
+
+					So(err, ShouldErrLike, message)
+				})
+			})
+		}
 
 		Convey("fails if operation does not succeed within max time", func() {
+			code := retriableErrors[0]
+			message := messageForCode(code)
 			client := &fakeClient{
-				err: status.Error(codes.NotFound, "fake not found failure"),
+				err: status.Error(code, message),
 				max: -1,
 			}
 
-			err := Retry(ctx, "fake op", client.op)
+			err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldErrLike, "fake not found failure")
-		})
-
-		Convey("does not retry other errors", func() {
-			client := &fakeClient{
-				err: errors.New("non-retriable error"),
-				max: 1,
-			}
-
-			err := Retry(ctx, "fake op", client.op)
-
-			So(err, ShouldErrLike, "non-retriable error")
-			So(client.count, ShouldEqual, 1)
+			So(err, ShouldErrLike, message)
 		})
 
 	})
