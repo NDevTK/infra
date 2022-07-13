@@ -2864,6 +2864,10 @@ class PostData(object):
     """Return all values, assume that the value at key is already a list."""
     return self.dictionary.get(key, [])
 
+  def getlist(self, key):
+    """Return all values, assume that the value at key is already a list."""
+    return self.dictionary.get(key, [])
+
   def get(self, key, default=None):
     """Return first value, assume that the value at key is already a list."""
     return self.dictionary.get(key, [default])[0]
