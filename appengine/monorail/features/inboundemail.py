@@ -302,27 +302,27 @@ class BouncedEmail(object):
 
   def __init__(self, services=None):
     self.request = flask.request
-    self.form_list = None
+    self.form_dict = None
     self.services = services or flask.current_app.config['services']
 
   def postBouncedEmail(self):
-    if self.form_list is None:
+    if self.form_dict is None:
       logging.info(self.request)
-      self.form_list = dict(self.request.form.lists())
+      self.form_dict = dict(self.request.form)
     try:
-      bounce_message = mail.BounceNotification(self.form_list)
+      # Context: https://crbug.com/monorail/11083
+      bounce_message = mail.BounceNotification(self.form_dict)
       self.receive(bounce_message)
     except AttributeError:
-      # Work-around for
-      # https://code.google.com/p/googleappengine/issues/detail?id=13512
-      raw_message = self.form_list.get('raw-message')
+      # Context: https://crbug.com/monorail/2105
+      raw_message = self.form_dict.get('raw-message')
       logging.info('raw_message %r', raw_message)
       raw_message = BAD_WRAP_RE.sub('', raw_message)
       raw_message = BAD_EQ_RE.sub('=', raw_message)
       logging.info('fixed raw_message %r', raw_message)
       mime_message = email.message_from_string(raw_message)
       logging.info('get_payload gives %r', mime_message.get_payload())
-      self.form_list['raw-message'] = mime_message
+      self.form_dict['raw-message'] = mime_message
       self.postBouncedEmail()  # Retry with mime_message
 
 
