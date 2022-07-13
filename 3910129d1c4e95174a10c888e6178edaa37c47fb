@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c5f7def_dec91adf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-13T23:00:13Z",
+      "side": 1,
+      "message": "Xixuan, I chose you using a script. (The script picked Justin first and then Gowri, but they are OOO)",
+      "revId": "3910129d1c4e95174a10c888e6178edaa37c47fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
