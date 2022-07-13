@@ -85,15 +85,13 @@ get_affected_paths() {
 # Print CrOS golang commits pending release to production.
 cros_golang_pending() {
   log_fmt="%C(bold blue)%h %C(bold green)[%al]%C(auto)%d %C(reset)%s"
-  cmd=(git -C "${cros_golang_root}" log --color --graph --decorate \
-      --pretty=format:"${log_fmt}" "${latest_prod_sha}".."${earliest_staging_sha}")
   if  [[ "$verbose" == "no" ]]; then
-    cmd+=(-- "${cros_golang_root}/internal" "$(get_affected_paths)")
+    paths="-- ${cros_golang_root}/internal $(get_affected_paths)"
   else
-    cmd+=(-- "${cros_golang_root}"/../../..)
+    paths="-- ${cros_golang_root}/../../.."
   fi
-  changes=$("${cmd[@]}")
-
+  changes=$(git -C "${cros_golang_root}" log --color --graph --decorate \
+      --pretty=format:"${log_fmt}" "${latest_prod_sha}".."${earliest_staging_sha}" ${paths})
   if [ -z "${changes}" ]; then
       echo "${no_changes}"
   else
