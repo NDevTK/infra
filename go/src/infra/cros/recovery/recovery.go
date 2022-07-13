@@ -544,6 +544,17 @@ type RunArgs struct {
 	DevJumpHost string
 }
 
+// UseConfigFile attaches a config file to the current recovery object.
+// We successfully do nothing when the path is empty.
+func (a *RunArgs) UseConfigFile(path string) error {
+	if path == "" || a == nil {
+		return nil
+	}
+	cr, oErr := os.Open(path)
+	a.ConfigReader = cr
+	return errors.Annotate(oErr, "use config file").Err()
+}
+
 // verify verifies input arguments.
 func (a *RunArgs) verify() error {
 	switch {

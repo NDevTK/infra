@@ -190,11 +190,8 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		LogRoot:               logRoot,
 		DevJumpHost:           c.devJumpHost,
 	}
-	if c.configFile != "" {
-		in.ConfigReader, err = os.Open(c.configFile)
-		if err != nil {
-			return errors.Annotate(err, "local recovery: open config file").Err()
-		}
+	if uErr := in.UseConfigFile(c.configFile); uErr != nil {
+		return errors.Annotate(err, "local recovery").Err()
 	}
 	if err = recovery.Run(ctx, in); err != nil {
 		return errors.Annotate(err, "local recovery").Err()
