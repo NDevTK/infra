@@ -318,10 +318,9 @@ def _download_pypi_archive(fd, meta):
 
   url = 'https://pypi.org/pypi/%s/%s/json' % (name, version)
   content = util.download_json(url)
-  release = content.get('releases', {}).get(version)
+  release = content.get('urls', {})
   if not release:
-    raise ValueError('No PyPi release for package %r at version %r' % (
-        name, version))
+    raise ValueError('No urls for package %r at version %r' % (name, version))
 
   entry = None
   for entry in release:

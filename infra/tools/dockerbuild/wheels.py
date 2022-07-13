@@ -216,6 +216,11 @@ SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'SourceOrPrebuilt',
         SourceOrPrebuilt(
+            'Brotli',
+            '1.0.9',
+            packaged=(),
+        ),
+        SourceOrPrebuilt(
             'MarkupSafe',
             '1.1.1',
             packaged=(),
