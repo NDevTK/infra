@@ -225,7 +225,7 @@ export const Resource = () => {
             inputProps={{ 'data-testid': 'domain-info' }}
             label="Domain Information"
             multiline
-            rows={4}
+            rows={2}
             variant="standard"
             // TODO: when we allow user to select type domain, edit the onchange and value
             onChange={(e) => {
@@ -333,7 +333,7 @@ export const Resource = () => {
             id="description"
             label="Description"
             multiline
-            rows={4}
+            rows={2}
             variant="standard"
             onChange={(e) => dispatch(setDescription(e.target.value))}
             inputProps={{ 'data-testid': 'description' }}

@@ -23,7 +23,7 @@ import HelpIcon from '@mui/icons-material/Help';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import { Drawer } from '@mui/material';
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes, Link, Navigate } from 'react-router-dom';
 
 import { Asset } from '../asset/Asset';
 import { Resource } from '../resource/Resource';
@@ -122,6 +122,7 @@ const CustomBox = styled(Box, {
   paddingTop: theme.spacing(0),
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
   spacing: theme.spacing(2),
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
@@ -355,6 +356,7 @@ export default function SideDrawerWithAppBar() {
           {renderRightSideDrawerContents(getActiveEntity)}
         </Drawer>
         <Routes>
+          <Route path='/' element={<Navigate to='/lab' />}></Route>
           {routes.map((route) => (
             <Route
               key={route.text}

@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import {
+  Divider,
   FormControl,
   FormHelperText,
   IconButton,
@@ -434,7 +435,7 @@ export const Asset = () => {
             id="description"
             label="Description"
             multiline
-            rows={4}
+            rows={2}
             variant="standard"
             onChange={(e) => dispatch(setDescription(e.target.value))}
             value={description}
@@ -450,6 +451,7 @@ export const Asset = () => {
         </Grid>
       </Grid>
       {renderAssetTypeDropdown()}
+      <Divider />
       <Grid container spacing={2} padding={1}>
         <Grid
           item

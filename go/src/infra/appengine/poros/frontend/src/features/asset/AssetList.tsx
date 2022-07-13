@@ -46,7 +46,9 @@ import {
   setActiveEntity,
   setSpinDialogClose,
   setSpinDialogOpen,
+  setRightSideDrawerClose,
 } from '../utility/utilitySlice';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 export function AssetList() {
   const dispatch = useAppDispatch();
@@ -145,6 +147,7 @@ export function AssetList() {
   const handleSpinConfirm = () => {
     dispatch(createAssetInstanceAsync(assetSpinRecord));
     dispatch(setSpinDialogClose());
+    dispatch(setRightSideDrawerClose());
   };
 
   function CustomToolbar() {
@@ -178,7 +181,7 @@ export function AssetList() {
           <Button variant="outlined" size="small" onClick={handleSpinClose}>
             Cancel
           </Button>
-          <Button variant="contained" size="small" onClick={handleSpinConfirm}>
+          <Button variant="contained" size="small" onClick={handleSpinConfirm} component={Link} to="/assetInstances">
             Confirm
           </Button>
         </Stack>
