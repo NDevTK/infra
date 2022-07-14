@@ -5,7 +5,6 @@
 package dns
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -16,30 +15,66 @@ import (
 func TestMakeNewContent(t *testing.T) {
 	t.Parallel()
 
-	expected := strings.Join([]string{
-		tabify("addr1-UPDATE host1"),
-		tabify("addr2 host2"),
-		tabify("addr3-NEW host3"),
-	}, "\n") + string("\n")
-
-	newRecords := map[string]string{
-		"host1": "addr1-UPDATE",
-		"host3": "addr3-NEW",
+	type input struct {
+		content    string
+		newRecords map[string]string
+	}
+	type test struct {
+		name   string
+		input  input
+		output string
 	}
 
-	input := strings.Join([]string{
-		tabify("addr1 host1"),
-		tabify("addr2 host2"),
-	}, "\n")
-	actual, err := makeNewContent(input, newRecords)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
+	tests := []test{{
+		name: "test new add to end",
+		input: input{
+			content: strings.Join([]string{
+				tabify("addr1 host1"),
+				tabify("addr2 host2"),
+			}, "\n"),
+			newRecords: map[string]string{
+				"host1": "addr1-UPDATE",
+				"host3": "addr3-NEW",
+				"host4": "addr4-NEW",
+			},
+		},
+		output: strings.Join([]string{
+			tabify("addr1-UPDATE host1"),
+			tabify("addr2 host2"),
+			tabify("addr3-NEW host3"),
+			tabify("addr4-NEW host4"),
+		}, "\n") + "\n"}, {
+		name: "test update records end unchanged",
+		input: input{
+			content: strings.Join([]string{
+				tabify("addr1 host1"),
+				tabify("addr2 host2"),
+			}, "\n"),
+			newRecords: map[string]string{
+				"host1": "addr1-UPDATE",
+			},
+		},
+		output: strings.Join([]string{
+			tabify("addr1-UPDATE host1"),
+			tabify("addr2 host2"),
+		}, "\n") + "\n"},
 	}
-	if diff := cmp.Diff(expected, actual); diff != "" {
-		fmt.Printf("new: %s\n", actual)
-		fmt.Printf("exp: %s\n", expected)
-		t.Errorf("unexpected diff: %s", diff)
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			actual, err := makeNewContent(tc.input.content, tc.input.newRecords)
+			if err != nil {
+				t.Errorf("unexpected error: %s", err)
+			}
+			if diff := cmp.Diff(tc.output, actual); diff != "" {
+				t.Errorf("unexpected diff. got: %s,\n expected: %s,\ninput: %+v", actual, tc.output, tc.input)
+			}
+		})
 	}
+
 }
 
 // Tabify replaces arbitrary whitespace with tabs.
