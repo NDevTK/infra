@@ -30,8 +30,15 @@ func RouteTask(ctx context.Context, taskType string, botID string, expectedState
 	switch taskType {
 	case "repair":
 		return routeRepairTask(ctx, botID, expectedState, pools, randFloat)
+	case "audit_rpm":
+		return routeAuditRPMTask()
 	}
 	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", taskType)
+}
+
+// routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.
+func routeAuditRPMTask() (heuristics.TaskType, error) {
+	return heuristics.LegacyTaskType, errors.New("route audit rpm task: not yet implemented")
 }
 
 // routeRepairTask routes a repair task for a given bot.
