@@ -7,15 +7,20 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
 	. "infra/appengine/poros/api/entities"
 	proto "infra/appengine/poros/api/proto"
 
+	"infra/appengine/poros/taskspb"
+
 	"github.com/google/uuid"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/tq"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -86,7 +91,13 @@ func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAsse
 	if err := datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
-	return toAssetIntanceModel(entity), nil
+	assetInstance := toAssetIntanceModel(entity)
+	err := EnqueueAssetAdditionOrDeletion(ctx, assetInstance.AssetInstanceId, "deploy", 100)
+	if err != nil {
+		logging.Errorf(ctx, "Error adding the task to the queue: %s", err.Error())
+	}
+
+	return assetInstance, nil
 }
 
 // Returns a gcp project which will be used for deployment of resources by cel_ctl
@@ -269,4 +280,16 @@ func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity,
 		return nil, err
 	}
 	return asset_instance, nil
+}
+
+// EnqueueAssetInstance enqueues a asset instance creattion/deletion task.
+func EnqueueAssetAdditionOrDeletion(ctx context.Context, assetInstanceId string, operation string, delay int64) error {
+	return tq.AddTask(ctx, &tq.Task{
+		// The body of the task. Also identifies what TaskClass to use.
+		Payload: &taskspb.AssetAdditionOrDeletionTask{AssetInstanceId: assetInstanceId, Operation: operation},
+		// Title appears in logs and URLs, useful for debugging.
+		Title: fmt.Sprintf("AssetInstanceId-%v--Operation-%v", assetInstanceId, operation),
+		// How long to wait before executing this task. Not super precise.
+		Delay: time.Duration(delay) * time.Millisecond,
+	})
 }
