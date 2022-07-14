@@ -13,7 +13,8 @@ import logging
 from framework import jsonfeed
 
 
-class Warmup(jsonfeed.FlaskInternalTask):
+# TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
+class Warmup(jsonfeed.InternalTask):
   """Placeholder for warmup work.  Used only to enable min_idle_instances."""
 
   def HandleRequest(self, _mr):
@@ -25,11 +26,12 @@ class Warmup(jsonfeed.FlaskInternalTask):
       'success': 1,
       }
 
-  def GetWarmup(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetWarmup(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class Start(jsonfeed.FlaskInternalTask):
+# TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
+class Start(jsonfeed.InternalTask):
   """Placeholder for start work.  Used only to enable manual_scaling."""
 
   def HandleRequest(self, _mr):
@@ -41,11 +43,12 @@ class Start(jsonfeed.FlaskInternalTask):
       'success': 1,
       }
 
-  def GetStart(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetStart(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class Stop(jsonfeed.FlaskInternalTask):
+# TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
+class Stop(jsonfeed.InternalTask):
   """Placeholder for stop work.  Used only to enable manual_scaling."""
 
   def HandleRequest(self, _mr):
@@ -57,5 +60,5 @@ class Stop(jsonfeed.FlaskInternalTask):
       'success': 1,
       }
 
-  def GetStop(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetStop(self, **kwargs):
+  #   return self.handler(**kwargs)

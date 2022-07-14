@@ -24,7 +24,7 @@ class WarmupTest(unittest.TestCase):
     #self.services = service_manager.Services(
     #    cache_manager=self.cache_manager)
     self.services = service_manager.Services()
-    self.servlet = warmup.Warmup(services=self.services)
+    self.servlet = warmup.Warmup('req', 'res', services=self.services)
 
 
   def testHandleRequest_NothingToDo(self):

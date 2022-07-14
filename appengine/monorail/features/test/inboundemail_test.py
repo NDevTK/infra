@@ -9,11 +9,14 @@ from __future__ import division
 from __future__ import absolute_import
 
 import unittest
+import webapp2
+from mock import patch
 
 import mox
 import time
 
 from google.appengine.api import mail
+from google.appengine.ext.webapp.mail_handlers import BounceNotificationHandler
 
 import settings
 from businesslogic import work_env
@@ -55,7 +58,8 @@ class InboundEmailTest(unittest.TestCase):
     self.msg = testing_helpers.MakeMessage(
         testing_helpers.HEADER_LINES, 'awesome!')
 
-    self.inbound = inboundemail.InboundEmail(self.services)
+    request, _ = testing_helpers.GetRequestObjects()
+    self.inbound = inboundemail.InboundEmail(request, None, self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):
@@ -344,7 +348,10 @@ class BouncedEmailTest(unittest.TestCase):
         user=fake.UserService())
     self.user = self.services.user.TestAddUser('user@example.com', 111)
 
-    self.servlet = inboundemail.BouncedEmail(self.services)
+    app = webapp2.WSGIApplication(config={'services': self.services})
+    app.set_globals(app=app)
+
+    self.servlet = inboundemail.BouncedEmail()
     self.mox = mox.Mox()
 
   def tearDown(self):
@@ -362,6 +369,8 @@ class BouncedEmailTest(unittest.TestCase):
 
   def testReceive_NoSuchUser(self):
     """When not found, log it and ignore without creating a user record."""
+    self.servlet.request = webapp2.Request.blank(
+        '/', POST={'raw-message': 'this is an email message'})
     bounce_message = testing_helpers.Blank(
         original={'to': 'nope@example.com'},
         notification='notification')
