@@ -5,6 +5,10 @@
 package config
 
 // CrosAuditRPMConfig audits the RPM information for ChromeOS DUTs only.
+//
+// This is a port of VerifyRPMConfig.
+//
+// https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/verifiers.py#245 .
 func CrosAuditRPMConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
