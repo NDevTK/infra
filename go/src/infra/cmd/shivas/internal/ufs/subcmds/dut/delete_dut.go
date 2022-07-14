@@ -38,6 +38,7 @@ Deletes the DUT(s).`,
 		c := &deleteDUT{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
+		c.Flags.BoolVar(&c.skipYes, "yes", true, "Skip yes option by saying yes.")
 		return c
 	},
 }
@@ -46,6 +47,8 @@ type deleteDUT struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
+
+	skipYes bool
 }
 
 func (c *deleteDUT) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -72,9 +75,11 @@ func (c *deleteDUT) innerRun(a subcommands.Application, args []string, env subco
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions,
 	})
-	prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)
-	if prompt != nil && !prompt(fmt.Sprintf("Are you sure you want to delete the dut(s): %s", args)) {
-		return nil
+	if !c.skipYes {
+		prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)
+		if prompt != nil && !prompt(fmt.Sprintf("Are you sure you want to delete the dut(s): %s", args)) {
+			return nil
+		}
 	}
 	duts := utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	fmt.Fprintln(a.GetOut(), "\nDUT(s) before deletion:")
