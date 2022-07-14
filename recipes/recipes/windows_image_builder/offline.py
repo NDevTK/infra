@@ -14,8 +14,6 @@ from PB.go.chromium.org.luci.buildbucket.proto \
   import builds_service as bs_pb2
 from PB.go.chromium.org.luci.buildbucket.proto \
   import build as b_pb2
-from PB.go.chromium.org.luci.buildbucket.proto \
-  import builder as builder_pb2
 
 from RECIPE_MODULES.infra.windows_scripts_executor \
     import test_helper as t
