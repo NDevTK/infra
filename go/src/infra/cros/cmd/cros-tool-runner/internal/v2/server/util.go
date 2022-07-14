@@ -23,26 +23,6 @@ func (*serverUtils) firstLine(s string) string {
 	return strings.Split(s, "\n")[0]
 }
 
-// contains check if an element string exists in a slice.
-func (*serverUtils) contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
-// reverse flips the order of elements in a slice.
-func (*serverUtils) reverse(s []string) []string {
-	size := len(s)
-	result := make([]string, size)
-	for i := range s {
-		result[i] = s[size-i-1]
-	}
-	return result
-}
-
 // mapToCode maps common docker error messages to gRPC status codes.
 func (*serverUtils) mapToCode(errMsg string) codes.Code {
 	switch {

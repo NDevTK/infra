@@ -13,7 +13,9 @@ import (
 
 func getService(executor CommandExecutor) *ContainerServerImpl {
 	return &ContainerServerImpl{
-		executor: executor,
+		executor:   executor,
+		containers: newOwnershipState(),
+		networks:   newOwnershipState(),
 	}
 }
 

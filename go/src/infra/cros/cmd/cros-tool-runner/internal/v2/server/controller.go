@@ -23,6 +23,8 @@ func NewContainerServer() (*grpc.Server, func()) {
 	containerServer := &ContainerServerImpl{
 		executor:          &DefaultCommandExecutor{},
 		templateProcessor: &templates.RequestRouter{},
+		containers:        newOwnershipState(),
+		networks:          newOwnershipState(),
 	}
 	s := grpc.NewServer()
 	destructor := func() { containerServer.cleanup() }

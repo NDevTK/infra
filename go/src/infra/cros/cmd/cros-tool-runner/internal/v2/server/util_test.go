@@ -47,33 +47,6 @@ func TestFirstLine_empty(t *testing.T) {
 	}
 }
 
-func TestContains(t *testing.T) {
-	slice := []string{"a", "b", "c"}
-	element := "b"
-	contains := utils.contains(slice, element)
-	if !contains {
-		t.Fatalf("contains is incorrect: %t", contains)
-	}
-}
-
-func TestContains_false(t *testing.T) {
-	slice := []string{"a", "b", "c"}
-	element := "e"
-	contains := utils.contains(slice, element)
-	if contains {
-		t.Fatalf("contains is incorrect: %t", contains)
-	}
-}
-
-func TestContains_emptySlice(t *testing.T) {
-	slice := make([]string, 0)
-	element := "e"
-	contains := utils.contains(slice, element)
-	if contains {
-		t.Fatalf("contains is incorrect: %t", contains)
-	}
-}
-
 func TestMapToCode_NotFound(t *testing.T) {
 	// docker network inspect a
 	errMsg := "Error: No such network: a"
@@ -107,27 +80,6 @@ func TestMapToCode_Unknown(t *testing.T) {
 	if code != codes.Unknown {
 		t.Fatalf("code is incorrect: %v", code)
 	}
-}
-
-func TestReverse(t *testing.T) {
-	s := []string{"a", "b", "c"}
-	expect := []string{"c", "b", "a"}
-	reversed := utils.reverse(s)
-	check(t, reversed, expect)
-}
-
-func TestReverse_empty(t *testing.T) {
-	s := make([]string, 0)
-	expect := make([]string, 0)
-	reversed := utils.reverse(s)
-	check(t, reversed, expect)
-}
-
-func TestReverse_oneElement(t *testing.T) {
-	s := []string{"a"}
-	expect := []string{"a"}
-	reversed := utils.reverse(s)
-	check(t, reversed, expect)
 }
 
 func check(t *testing.T, actual []string, expect []string) {

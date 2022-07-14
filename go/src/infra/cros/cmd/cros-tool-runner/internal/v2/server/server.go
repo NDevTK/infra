@@ -22,8 +22,8 @@ import (
 // mapping errors to proper gRPC status codes.
 type ContainerServerImpl struct {
 	api.UnimplementedCrosToolRunnerContainerServiceServer
-	networks          []string // TODO(mingkong) use a map
-	containers        []string
+	networks          ownershipRecorder
+	containers        ownershipRecorder
 	executor          CommandExecutor
 	templateProcessor templates.TemplateProcessor
 }
@@ -48,7 +48,7 @@ func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.Cr
 	}
 
 	log.Println("success: created network", id)
-	s.networks = append(s.networks, request.Name)
+	s.networks.recordOwnership(request.Name, id)
 	return &api.CreateNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: true}}, nil
 }
 
@@ -59,7 +59,7 @@ func (s *ContainerServerImpl) GetNetwork(ctx context.Context, request *api.GetNe
 		return nil, err
 	}
 	log.Println("success: found network", id)
-	return &api.GetNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: utils.contains(s.networks, request.Name)}}, nil
+	return &api.GetNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: s.networks.hasOwnership(request.Name, id)}}, nil
 }
 
 func (s *ContainerServerImpl) getNetworkId(ctx context.Context, name string) (string, error) {
@@ -82,7 +82,7 @@ func (s *ContainerServerImpl) Shutdown(context.Context, *api.ShutdownRequest) (*
 	log.Println("processing shutdown request")
 	p, err := os.FindProcess(os.Getpid())
 	if err == nil {
-		p.Signal(os.Interrupt)
+		err = p.Signal(os.Interrupt)
 	}
 	log.Println("interrupt signal sent")
 	return &api.ShutdownResponse{}, err
@@ -137,7 +137,6 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	if request.ContainerImage == "" {
 		return nil, utils.invalidArgument("Missing container_image")
 	}
-	// TODO(mingkong): define behavior of existing name in containers[]
 	if request.StartCommand == nil || len(request.StartCommand) == 0 {
 		return nil, utils.invalidArgument("Missing start_command")
 	}
@@ -171,9 +170,8 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	if err != nil {
 		return nil, err
 	}
-	// TODO(mingkong): handle edge case where id is returned but container has immediately stopped: e.g. cros-dut cannot connect to dut
 	log.Println("success: started container", id)
-	s.containers = append(s.containers, request.Name)
+	s.containers.recordOwnership(request.Name, id)
 	return &api.StartContainerResponse{Container: &api.Container{Name: request.Name, Id: id, Owned: true}}, nil
 }
 
@@ -263,12 +261,13 @@ func (s *ContainerServerImpl) StackCommands(ctx context.Context, request *api.St
 
 // stopContainers removes containers that are owned by current CTRv2 service in the reverse order of how they are started.
 func (s *ContainerServerImpl) stopContainers() {
-	if len(s.containers) == 0 {
+	containerIds := s.containers.getIdsToClearOwnership()
+	if len(containerIds) == 0 {
 		log.Println("no containers to clean up")
 		return
 	}
 	log.Println("stopping containers")
-	cmd := commands.ContainerStop{Names: utils.reverse(s.containers)}
+	cmd := commands.ContainerStop{Names: containerIds}
 	stdout, stderr, _ := cmd.Execute(context.Background())
 	if stdout != "" {
 		log.Println("received stdout:", stdout)
@@ -276,18 +275,18 @@ func (s *ContainerServerImpl) stopContainers() {
 	if stderr != "" {
 		log.Println("received stderr", stderr)
 	}
-	// TODO(mingkong) define the behavior of stop container error.
-	s.containers = make([]string, 0)
+	s.containers.clear()
 }
 
 // removeNetworks removes networks that were created by current CTRv2 service.
 func (s *ContainerServerImpl) removeNetworks() {
-	if len(s.networks) == 0 {
+	networkIds := s.networks.getIdsToClearOwnership()
+	if len(networkIds) == 0 {
 		log.Println("no networks to clean up")
 		return
 	}
 	log.Println("removing networks")
-	cmd := commands.NetworkRemove{Names: s.networks}
+	cmd := commands.NetworkRemove{Names: networkIds}
 	stdout, stderr, _ := cmd.Execute(context.Background())
 	if stdout != "" {
 		log.Println("received stdout:", stdout)
@@ -295,8 +294,7 @@ func (s *ContainerServerImpl) removeNetworks() {
 	if stderr != "" {
 		log.Println("received stderr", stderr)
 	}
-	// TODO(mingkong) define the behavior of remove network error.
-	s.networks = make([]string, 0)
+	s.networks.clear()
 }
 
 // cleanup removes containers and networks in order to allow graceful shutdown of the CTRv2 service.
