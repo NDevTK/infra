@@ -14,7 +14,6 @@ require (
 	cloud.google.com/go/pubsub v1.21.1
 	cloud.google.com/go/spanner v1.32.0
 	cloud.google.com/go/storage v1.22.1
-	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
@@ -27,7 +26,6 @@ require (
 	github.com/danjacques/gofslock v0.0.0-20220131014315-6e321f4509c8
 	github.com/docker/docker v20.10.8+incompatible
 	github.com/dustin/go-humanize v1.0.0
-	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/cel-go v0.7.3
@@ -45,7 +43,6 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/linkedin/goavro/v2 v2.11.0
 	github.com/maruel/subcommands v1.1.1
-	github.com/mattes/migrate v3.0.1+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/opencontainers/image-spec v1.0.1
 	github.com/otiai10/copy v1.6.0
