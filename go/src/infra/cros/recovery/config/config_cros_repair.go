@@ -1879,6 +1879,8 @@ func crosRepairActions() map[string]*Action {
 				"dut_servo_host_present",
 				"has_rpm_info",
 				"servod_echo",
+				// The servo setup has PD control if and only if
+				// it supports GSC (Google Security Chip) firmware (e.g. cr50, ti50).
 				"Setup does't have Servo PD control",
 			},
 			ExecName: "sample_pass",
