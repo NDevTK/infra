@@ -160,7 +160,9 @@ type SetApInfoByServoRequest struct {
 	FilePath string
 	// Force extract AP from the DUT.
 	ForceExtractAPFile bool
-	UpdateGBBFlags     bool
+	// Indicates if --force flag should be specified when invoke AP programmer.
+	ForceUpdate    bool
+	UpdateGBBFlags bool
 	// GBB flags value need to be set to AP.
 	// Example: 0x18
 	GBBFlags string
@@ -187,7 +189,7 @@ func SetApInfoByServo(ctx context.Context, req *SetApInfoByServoRequest, run com
 		return errors.Annotate(err, "set ap info").Err()
 	}
 	log.Debugf("Set AP info: starting flashing AP to the DUT")
-	err = p.ProgramAP(ctx, req.FilePath, req.GBBFlags)
+	err = p.ProgramAP(ctx, req.FilePath, req.GBBFlags, req.ForceUpdate)
 	return errors.Annotate(err, "set ap info: read flags").Err()
 }
 
@@ -207,6 +209,9 @@ type InstallFirmwareImageRequest struct {
 	// Path to the fw-Image file and timeout to download it.
 	DownloadImagePath    string
 	DownloadImageTimeout time.Duration
+
+	// Indicates if --force flag should be specified when invoke chromeos-firmwareupdate or AP programmer.
+	ForceUpdate bool
 
 	// Specify how many time to attempt when update EC, where 0 means don't not update EC firmware.
 	// Please note attempt count more than 1 only applies when flash via servo.
@@ -329,6 +334,7 @@ func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareIma
 	updaterReq := FirmwareUpdaterRequest{
 		Mode:           req.UpdaterMode,
 		UpdaterTimeout: req.UpdaterTimeout,
+		Force:          req.ForceUpdate,
 	}
 	if req.UpdateEcAttemptCount > 0 {
 		log.Debugf("Start extraction EC image from %q", tarballPath)
@@ -391,7 +397,7 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 		for apRetryCount > 0 {
 			apRetryCount -= 1
 			log.Debugf("Program AP attempt %d, maximum retry: %d", req.UpdateApAttemptCount-apRetryCount, req.UpdateApAttemptCount)
-			apErr = p.ProgramAP(ctx, apImage, req.GBBFlags)
+			apErr = p.ProgramAP(ctx, apImage, req.GBBFlags, req.ForceUpdate)
 			if apErr == nil {
 				break
 			} else if apRetryCount > 0 {

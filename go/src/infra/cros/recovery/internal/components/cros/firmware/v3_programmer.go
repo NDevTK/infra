@@ -44,9 +44,10 @@ const (
 	ecProgrammerStm32CmdGlob = "flash_ec --chip=%s --image=%s --port=%d --bitbang_rate=57600 --verify --verbose"
 
 	// Tools and commands used for flashing AP.
-	apProgrammerToolName  = "futility"
-	apProgrammerCmdGlob   = "futility update -i %s --servo_port=%d"
-	apProgrammerWithParam = " --gbb_flags=%d"
+	apProgrammerToolName    = "futility"
+	apProgrammerCmdGlob     = "futility update -i %s --servo_port=%d"
+	apProgrammerWithGbbFlag = "--gbb_flags=%d"
+	apProgrammerWithForce   = "--force"
 )
 
 // ProgramEC programs EC firmware to devices by servo.
@@ -82,28 +83,33 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 //
 // To set/update GBB flags please provide value in hex representation.
 // E.g. 0x18 to set force boot in DEV-mode and allow to boot from USB-drive in DEV-mode.
-func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string) error {
+// When force enabled, programmer will do force update (skip checking contents).
+func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool) error {
 	if err := isFileExist(ctx, imagePath, p.run); err != nil {
-		return errors.Annotate(err, "program ec").Err()
+		return errors.Annotate(err, "program ap").Err()
 	}
-	return p.programAP(ctx, imagePath, gbbHex)
+	return p.programAP(ctx, imagePath, gbbHex, force)
 }
 
 // programAP programs AP firmware to devices by servo.
 // Extracted for test purpose to avoid file present check.
-func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string) error {
+func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, force bool) error {
 	if err := isToolPresent(ctx, apProgrammerToolName, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
 	}
 	cmd := fmt.Sprintf(apProgrammerCmdGlob, imagePath, p.servod.Port())
+	optionalArgs := []string{}
 	if gbbHex != "" {
 		if v, err := gbbToInt(gbbHex); err != nil {
 			return errors.Annotate(err, "program ap").Err()
 		} else {
-			cmd += fmt.Sprintf(apProgrammerWithParam, v)
+			optionalArgs = append(optionalArgs, fmt.Sprintf(apProgrammerWithGbbFlag, v))
 		}
 	}
-	out, err := p.run(ctx, firmwareProgramTimeout, cmd)
+	if force {
+		optionalArgs = append(optionalArgs, apProgrammerWithForce)
+	}
+	out, err := p.run(ctx, firmwareProgramTimeout, cmd, optionalArgs...)
 	p.log.Debugf("Program AP output:\n%s", out)
 	return errors.Annotate(err, "program ap").Err()
 }

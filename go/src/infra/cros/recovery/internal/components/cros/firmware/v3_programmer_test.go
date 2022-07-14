@@ -81,7 +81,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programAP(ctx, imagePath, "")
+		err := p.programAP(ctx, imagePath, "", false)
 		So(err, ShouldBeNil)
 	})
 	Convey("Happy path with GBB 18", t, func() {
@@ -98,7 +98,24 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programAP(ctx, imagePath, "0x18")
+		err := p.programAP(ctx, imagePath, "0x18", false)
+		So(err, ShouldBeNil)
+	})
+	Convey("Happy path with force update", t, func() {
+		runRequest := map[string]string{
+			"which futility": "",
+			"futility update -i image-board.bin --servo_port=97 --force": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Port().Return(97).Times(1)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programAP(ctx, imagePath, "", true)
 		So(err, ShouldBeNil)
 	})
 }
