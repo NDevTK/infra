@@ -6,8 +6,6 @@ package entities
 
 import (
 	"time"
-
-	"go.chromium.org/luci/gae/service/datastore"
 )
 
 type AssetEntity struct {
@@ -28,6 +26,4 @@ type AssetEntity struct {
 	ModifiedAt time.Time
 	// User who modified the record.
 	ModifiedBy string
-
-	Parent *datastore.Key `gae:"$parent"`
 }

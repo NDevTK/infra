@@ -25,7 +25,7 @@ type AssetHandler struct {
 	proto.UnimplementedAssetServer
 }
 
-func toEntity(model *proto.AssetModel, ancestorKey *datastore.Key) *AssetEntity {
+func toEntity(model *proto.AssetModel) *AssetEntity {
 	if model != nil {
 		return &AssetEntity{
 			AssetId:     model.AssetId,
@@ -36,7 +36,6 @@ func toEntity(model *proto.AssetModel, ancestorKey *datastore.Key) *AssetEntity 
 			CreatedBy:   model.CreatedBy,
 			ModifiedAt:  model.ModifiedAt.AsTime(),
 			ModifiedBy:  model.ModifiedBy,
-			Parent:      ancestorKey,
 		}
 	}
 	return nil
@@ -88,7 +87,6 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		AssetType:   req.GetAssetType(),
 		CreatedBy:   auth.CurrentUser(ctx).Email,
 		CreatedAt:   time.Now().UTC(),
-		Parent:      fakeAncestorKey(ctx),
 	}
 	response := &proto.CreateAssetResponse{}
 
@@ -233,8 +231,7 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 // Deletes the given Asset.
 func (e *AssetHandler) Delete(ctx context.Context, req *proto.DeleteAssetRequest) (*emptypb.Empty, error) {
 	if err := datastore.Delete(ctx, &AssetEntity{
-		AssetId: req.GetAssetId(),
-		Parent:  fakeAncestorKey(ctx)}); err != nil {
+		AssetId: req.GetAssetId()}); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
@@ -244,7 +241,7 @@ func (e *AssetHandler) Delete(ctx context.Context, req *proto.DeleteAssetRequest
 func (e *AssetHandler) List(ctx context.Context, in *proto.ListAssetsRequest) (*proto.ListAssetsResponse, error) {
 	// TODO: crbug/1318606 - Implement Asset List functionality with filter,
 	// orderby & paging.
-	query := datastore.NewQuery("AssetEntity").Ancestor(fakeAncestorKey(ctx))
+	query := datastore.NewQuery("AssetEntity")
 	var assetEntities []*AssetEntity
 	res := &proto.ListAssetsResponse{}
 	if err := datastore.GetAll(ctx, query, &assetEntities); err != nil {
@@ -359,7 +356,7 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 }
 
 func getById(ctx context.Context, id string) (*AssetEntity, error) {
-	asset := &AssetEntity{AssetId: id, Parent: fakeAncestorKey(ctx)}
+	asset := &AssetEntity{AssetId: id}
 	if err := datastore.Get(ctx, asset); err != nil {
 		return nil, err
 	}
