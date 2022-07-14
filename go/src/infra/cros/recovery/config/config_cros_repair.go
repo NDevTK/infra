@@ -530,7 +530,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Provision OS if needed": {
 			Docs: []string{
-				"Perfrom provision OS if device is not running on it.",
+				"Perform provision OS if device is not running on it.",
 			},
 			Conditions: []string{
 				"Recovery version has OS image path",
@@ -1378,7 +1378,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Power cycle DUT by RPM and wait": {
 			Docs: []string{
-				"Perfrom RPM cycle and wait to device to boot back.",
+				"Perform RPM cycle and wait to device to boot back.",
 			},
 			Conditions: []string{
 				"has_rpm_info",
@@ -1870,7 +1870,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 2000},
 		},
-		"Perfrom RPM config verification": {
+		"Perform RPM config verification": {
 			Docs: []string{
 				"Verify if RPM verification is required fo setup",
 				"Setup with PD control temprarely excluded from testing.",
@@ -1910,7 +1910,7 @@ func crosRepairActions() map[string]*Action {
 				"Action is not critical as it updates own state.",
 			},
 			Conditions: []string{
-				"Perfrom RPM config verification",
+				"Perform RPM config verification",
 				"No Battery is present on device",
 			},
 			ExecName:    "rpm_audit_without_battery",
@@ -1923,7 +1923,7 @@ func crosRepairActions() map[string]*Action {
 				"Action is not critical as it updates own state.",
 			},
 			Conditions: []string{
-				"Perfrom RPM config verification",
+				"Perform RPM config verification",
 				"Battery is present on device",
 			},
 			ExecName:    "rpm_audit_with_battery",

@@ -64,7 +64,7 @@ func Run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (resu
 	return
 }
 
-// createSessionAndExecute creates ssh session and perfrom execution by ssh.
+// createSessionAndExecute creates ssh session and perform execution by ssh.
 //
 // The function also aborted execution if context canceled.
 func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client) (result *tlw.RunResult) {
