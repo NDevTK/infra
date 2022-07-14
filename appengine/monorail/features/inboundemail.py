@@ -15,10 +15,8 @@ import re
 import time
 from six.moves import urllib
 
-import flask
 import ezt
 
-from google.appengine.api import mail
 from google.appengine.ext.webapp.mail_handlers import BounceNotificationHandler
 
 import webapp2
