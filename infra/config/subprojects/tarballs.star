@@ -55,11 +55,8 @@ builder(
     executable = build.recipe("publish_tarball"),
     execution_timeout = 8 * time.hour,
     # Each trigger from 'publish_tarball_dispatcher' should result in a build.
-    # TODO(crbug.com/1341418): Drop max_concurrent_invocations back down to one
-    # and cores back down to 8 once the backlog is cleared.
     triggering_policy = scheduler.greedy_batching(
         max_batch_size = 1,
-        max_concurrent_invocations = 4,
     ),
     builderless = False,
     cores = None,
