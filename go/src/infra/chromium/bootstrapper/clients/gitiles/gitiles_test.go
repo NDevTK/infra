@@ -26,7 +26,7 @@ func TestClient(t *testing.T) {
 
 	ctx := context.Background()
 
-	ctx = gob.CtxForTest(ctx)
+	ctx = gob.UseTestClock(ctx)
 
 	Convey("Client", t, func() {
 
