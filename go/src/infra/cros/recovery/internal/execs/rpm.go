@@ -12,7 +12,7 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
-// RPMAction perfrom RPM action on RPM outlet.
+// RPMAction perform RPM action on RPM outlet.
 // If the outlet missing the state will set to missing config state.
 func (ei *ExecInfo) RPMAction(ctx context.Context, hostname string, o *tlw.RPMOutlet, action tlw.RunRPMActionRequest_Action) error {
 	if o.GetHostname() == "" || o.GetOutlet() == "" {
