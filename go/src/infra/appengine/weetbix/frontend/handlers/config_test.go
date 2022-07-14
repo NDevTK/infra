@@ -25,12 +25,12 @@ func TestConfig(t *testing.T) {
 	Convey("With Router", t, func() {
 		ctx := memory.Use(context.Background())
 
-		router := routerForTesting(ctx)
+		router := routerForTesting()
 
 		Convey("Get", func() {
 			get := func() *http.Response {
 				url := fmt.Sprintf("/api/projects/%s/config", testProject)
-				request, err := http.NewRequest("GET", url, nil)
+				request, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 				So(err, ShouldBeNil)
 
 				response := httptest.NewRecorder()

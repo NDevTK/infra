@@ -5,8 +5,6 @@
 package handlers
 
 import (
-	"context"
-
 	"go.chromium.org/luci/server/router"
 )
 
@@ -14,8 +12,8 @@ const testProject = "testproject"
 
 // routerForTesting returns a *router.Router to use for testing
 // handlers.
-func routerForTesting(ctx context.Context) *router.Router {
-	router := router.NewWithRootContext(ctx)
+func routerForTesting() *router.Router {
+	router := router.New()
 	prod := true
 	h := NewHandlers("cloud-project", prod)
 	h.RegisterRoutes(router, nil)
