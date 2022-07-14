@@ -138,6 +138,10 @@ node_deps:
 dev_deps:
 	python -m pip install --no-deps -r requirements.dev.txt
 
+generate_requirements_txt:
+	vpython3 -m pip freeze > requirements.txt
+	printf "# This file is generated from the .vpython3 spec file.\n# Use \`make generate_requirements_txt\` to update.\n$$(cat requirements.txt)" > requirements.txt
+
 karma:
 	npx karma start --debug --coverage
 
