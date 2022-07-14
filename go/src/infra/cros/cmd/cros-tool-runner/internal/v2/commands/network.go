@@ -6,6 +6,7 @@ package commands
 
 import (
 	"context"
+	"strings"
 )
 
 // NetworkCreate represents `docker network create`.
@@ -20,7 +21,7 @@ func (c *NetworkCreate) Execute(ctx context.Context) (string, string, error) {
 
 // NetworkRemove represents `docker network remove`.
 type NetworkRemove struct {
-	Names []string // names of network to be removed
+	Names []string // names (or ids) of network to be removed
 }
 
 func (c *NetworkRemove) Execute(ctx context.Context) (string, string, error) {
@@ -31,13 +32,13 @@ func (c *NetworkRemove) Execute(ctx context.Context) (string, string, error) {
 
 // NetworkInspect represents `docker network inspect`.
 type NetworkInspect struct {
-	Names  []string // names of network to be inspected
+	Names  []string // names (or ids) of network to be inspected
 	Format string   // value for the --format option
 }
 
 func (c *NetworkInspect) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"network", "inspect"}
-	if utils.trim(c.Format) != "" {
+	if strings.TrimSpace(c.Format) != "" {
 		args = append(args, "-f", c.Format)
 	}
 	args = append(args, c.Names...)
@@ -46,13 +47,13 @@ func (c *NetworkInspect) Execute(ctx context.Context) (string, string, error) {
 
 // NetworkList represents `docker network ls`.
 type NetworkList struct {
-	Names  []string // names of network to be listed
+	Names  []string // names (or ids) of network to be listed
 	Format string   // value for the --format option. e.g. {{.ID}}
 }
 
 func (c *NetworkList) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"network", "ls"}
-	if utils.trim(c.Format) != "" {
+	if strings.TrimSpace(c.Format) != "" {
 		args = append(args, "--format", c.Format)
 	}
 	for _, name := range c.Names {

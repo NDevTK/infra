@@ -10,7 +10,6 @@ package commands
 import (
 	"context"
 	"os/exec"
-	"strings"
 	"time"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
@@ -39,15 +38,4 @@ func execute(ctx context.Context, name string, args []string) (string, string, e
 	cmd := exec.CommandContext(ctx, name, args...)
 	// TODO(mingkong) update RunWithTimeout since timeout is part of ctx
 	return common.RunWithTimeout(ctx, cmd, time.Minute, true)
-}
-
-var utils = commandUtils{}
-
-// commandUtils groups all utility methods for the package.
-type commandUtils struct {
-}
-
-// trim removes leading and tailing whitespaces.
-func (*commandUtils) trim(s string) string {
-	return strings.TrimSpace(s)
 }

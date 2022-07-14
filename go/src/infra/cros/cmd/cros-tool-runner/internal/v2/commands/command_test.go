@@ -9,6 +9,7 @@ package commands
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 )
@@ -27,7 +28,7 @@ func TestExecute_stdout(t *testing.T) {
 	expect := "CTRv2"
 	cmd := &genericCommand{name: "echo", args: []string{expect}}
 	stdout, stderr, err := cmd.Execute(ctx)
-	trimmed := utils.trim(stdout)
+	trimmed := strings.TrimSpace(stdout)
 	if trimmed != expect {
 		t.Fatalf("stdout %s doesn't match expected %s", trimmed, expect)
 	}
@@ -96,14 +97,5 @@ func TestExecute_cancel(t *testing.T) {
 	}
 	if ctx.Err() != err {
 		t.Fatalf("ctx.Err() is not correct: %v", ctx.Err())
-	}
-}
-
-func TestUtilTrim(t *testing.T) {
-	original := " \t  first line\n - second line\n\n"
-	expect := "first line\n - second line"
-	trimmed := utils.trim(original)
-	if trimmed != expect {
-		t.Fatalf("output %s doesn't match expected %s", trimmed, expect)
 	}
 }
