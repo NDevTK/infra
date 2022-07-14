@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import React from 'react';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
+  Dialog,
+  DialogTitle,
   Select,
   TextField,
   Grid,
@@ -34,10 +37,15 @@ import {
   setImageProjectValidFalse,
   setImageFamilyValidFalse,
   setTypeValidFalse,
+  deleteResourceAsync,
 } from './resourceSlice';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { setRightSideDrawerClose } from '../utility/utilitySlice';
+import {
+  setRightSideDrawerClose,
+  setDeleteResourceDialogClose,
+  setDeleteResourceDialogOpen,
+} from '../utility/utilitySlice';
 
 export const Resource = () => {
   const [activeResourceType, setActiveResourceType] = React.useState('machine');
@@ -62,6 +70,9 @@ export const Resource = () => {
     (state) => state.resource.recordValidation
   );
   const resource = useAppSelector((state) => state.resource.record);
+  const deleteResourceDialogOpen: boolean = useAppSelector(
+    (state) => state.utility.deleteResourceDialogOpen
+  );
   const dispatch = useAppDispatch();
 
   // Event Handlers
@@ -137,6 +148,17 @@ export const Resource = () => {
 
   const handleCancelClick = () => {
     dispatch(setRightSideDrawerClose());
+  };
+
+  const handleDeleteResourceConfirm = () => {
+    dispatch(deleteResourceAsync(resourceId));
+    dispatch(setDeleteResourceDialogClose());
+  };
+
+  const handleDeleteResourceClick = () => {
+    if (resourceId !== '') {
+      dispatch(setDeleteResourceDialogOpen());
+    }
   };
 
   // Render functions
@@ -288,130 +310,187 @@ export const Resource = () => {
   };
 
   return (
-    <Box
-      sx={{
-        width: 465,
-        maxWidth: '100%',
-        padding: 1,
-      }}
-    >
-      <Grid container spacing={2} padding={1}>
-        <Grid
-          item
-          style={{
+    <div>
+      <Dialog
+        onClose={() => dispatch(setDeleteResourceDialogClose())}
+        open={deleteResourceDialogOpen}
+      >
+        <DialogTitle>Do you want to delete this resource?</DialogTitle>
+        <Stack
+          direction="row"
+          spacing={6}
+          sx={{
+            padding: 1,
+            margin: 1,
             display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
+            marginLeft: 'auto',
+            marginRight: 'auto',
           }}
-          xs={8}
         >
-          <Typography id="form-heading" data-testid="form-heading" variant="h5">
-            Resource
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} padding={1}>
-        <Grid item xs={12}>
-          <TextField
-            label="Name"
-            id="name"
-            inputProps={{ 'data-testid': 'name' }}
-            value={name}
-            onChange={(e) => dispatch(setName(e.target.value))}
-            fullWidth
-            variant="standard"
-            helperText={
-              !recordValidation.nameValid ? 'Resource name is required' : ''
-            }
-            FormHelperTextProps={{ style: { color: 'red' } }}
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} padding={1}>
-        <Grid item xs={12}>
-          <TextField
-            id="description"
-            label="Description"
-            multiline
-            rows={2}
-            variant="standard"
-            onChange={(e) => dispatch(setDescription(e.target.value))}
-            inputProps={{ 'data-testid': 'description' }}
-            value={description}
-            fullWidth
-            helperText={
-              !recordValidation.descriptionValid
-                ? 'Resource description is required'
-                : ''
-            }
-            FormHelperTextProps={{ style: { color: 'red' } }}
-          />
-        </Grid>
-      </Grid>
-
-      {renderTypeDropdown()}
-
-      {activeResourceType == 'machine' ? renderOperatingSystemDropdown() : null}
-
-      {activeResourceType == 'machine' ? renderImageProjectInput() : null}
-
-      {activeResourceType == 'machine' ? renderImageFamilyInput() : null}
-
-      <Grid container spacing={2} padding={1} paddingTop={6}>
-        <Grid item xs={12}>
-          <TextField
-            disabled
-            label="Id"
-            id="resource-id"
-            variant="standard"
-            inputProps={{ 'data-testid': 'resource-id' }}
-            value={resourceId}
-            fullWidth
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} padding={1}>
-        <Grid
-          item
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'right',
-          }}
-          xs={12}
-        >
-          <Stack direction="row" spacing={2}>
-            <Button
-              id="cancel-button"
-              data-testid="cancel-button"
-              variant="outlined"
-              onClick={handleCancelClick}
-              startIcon={<RefreshIcon />}
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => dispatch(setDeleteResourceDialogClose())}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleDeleteResourceConfirm}
+          >
+            Confirm
+          </Button>
+        </Stack>
+      </Dialog>
+      <Box
+        sx={{
+          width: 465,
+          maxWidth: '100%',
+          padding: 1,
+        }}
+      >
+        <Grid container spacing={2} padding={1}>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'left',
+            }}
+            xs={8}
+          >
+            <Typography
+              id="form-heading"
+              data-testid="form-heading"
+              variant="h5"
             >
-              Cancel
-            </Button>
+              Resource
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'end',
+              alignItems: 'right',
+            }}
+            xs={4}
+          >
             <Button
-              id="save-button"
-              data-testid="save-button"
-              variant="contained"
-              onClick={() =>
-                handleSaveClick(
-                  name,
-                  type,
-                  operatingSystem,
-                  description,
-                  imageProject,
-                  imageFamily,
-                  resourceId
-                )
-              }
+              variant="outlined"
+              onClick={handleDeleteResourceClick}
               endIcon={<DeleteIcon />}
             >
-              Save
+              Delete
             </Button>
-          </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+        <Grid container spacing={2} padding={1}>
+          <Grid item xs={12}>
+            <TextField
+              label="Name"
+              id="name"
+              inputProps={{ 'data-testid': 'name' }}
+              value={name}
+              onChange={(e) => dispatch(setName(e.target.value))}
+              fullWidth
+              variant="standard"
+              helperText={
+                !recordValidation.nameValid ? 'Resource name is required' : ''
+              }
+              FormHelperTextProps={{ style: { color: 'red' } }}
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} padding={1}>
+          <Grid item xs={12}>
+            <TextField
+              id="description"
+              label="Description"
+              multiline
+              rows={2}
+              variant="standard"
+              onChange={(e) => dispatch(setDescription(e.target.value))}
+              inputProps={{ 'data-testid': 'description' }}
+              value={description}
+              fullWidth
+              helperText={
+                !recordValidation.descriptionValid
+                  ? 'Resource description is required'
+                  : ''
+              }
+              FormHelperTextProps={{ style: { color: 'red' } }}
+            />
+          </Grid>
+        </Grid>
+
+        {renderTypeDropdown()}
+
+        {activeResourceType == 'machine'
+          ? renderOperatingSystemDropdown()
+          : null}
+
+        {activeResourceType == 'machine' ? renderImageProjectInput() : null}
+
+        {activeResourceType == 'machine' ? renderImageFamilyInput() : null}
+
+        <Grid container spacing={2} padding={1} paddingTop={6}>
+          <Grid item xs={12}>
+            <TextField
+              disabled
+              label="Id"
+              id="resource-id"
+              variant="standard"
+              inputProps={{ 'data-testid': 'resource-id' }}
+              value={resourceId}
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} padding={1}>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'right',
+            }}
+            xs={12}
+          >
+            <Stack direction="row" spacing={2}>
+              <Button
+                id="cancel-button"
+                data-testid="cancel-button"
+                variant="outlined"
+                onClick={handleCancelClick}
+                endIcon={<CancelIcon />}
+              >
+                Cancel
+              </Button>
+              <Button
+                id="save-button"
+                data-testid="save-button"
+                variant="contained"
+                onClick={() =>
+                  handleSaveClick(
+                    name,
+                    type,
+                    operatingSystem,
+                    description,
+                    imageProject,
+                    imageFamily,
+                    resourceId
+                  )
+                }
+                endIcon={<SaveIcon />}
+              >
+                Save
+              </Button>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Box>
+    </div>
   );
 };

@@ -34,4 +34,6 @@ type ResourceEntity struct {
 	ModifiedAt time.Time
 	// User who modified the record.
 	ModifiedBy string
+	// Flag to denote whether this Resource is deleted
+	Deleted bool
 }

@@ -36,6 +36,7 @@ func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 			CreatedBy:       model.CreatedBy,
 			ModifiedAt:      model.ModifiedAt.AsTime(),
 			ModifiedBy:      model.ModifiedBy,
+			Deleted:         model.Deleted,
 		}
 	}
 	return nil
@@ -54,6 +55,7 @@ func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
 			ModifiedBy:      entity.ModifiedBy,
+			Deleted:         entity.Deleted,
 		}
 	}
 	return nil
@@ -95,6 +97,7 @@ func (e *ResourceHandler) Create(ctx context.Context, req *proto.CreateResourceR
 		ImageFamily:     req.GetImageFamily(),
 		CreatedBy:       auth.CurrentUser(ctx).Email,
 		CreatedAt:       time.Now().UTC(),
+		Deleted:         false,
 	}
 	if err := validateResourceEntity(entity); err != nil {
 		return nil, err
@@ -155,8 +158,16 @@ func (e *ResourceHandler) Update(ctx context.Context, req *proto.UpdateResourceR
 
 // Deletes the given Resource.
 func (e *ResourceHandler) Delete(ctx context.Context, req *proto.DeleteResourceRequest) (*emptypb.Empty, error) {
-	if err := datastore.Delete(ctx, &ResourceEntity{
-		ResourceId: req.GetResourceId()}); err != nil {
+	entity, err := getResourceById(ctx, req.GetResourceId())
+	if err != nil {
+		return nil, err
+	}
+	entity.Deleted = true
+	// TODO: When the test data is cleared, add validation for ResourceEntity.
+	// if err = validateResourceEntity(entity); err != nil {
+	// 	return nil, err
+	// }
+	if err = datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil

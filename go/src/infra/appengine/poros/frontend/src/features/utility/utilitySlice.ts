@@ -12,6 +12,7 @@ export interface UtilityState {
   rightSideDrawerOpen: boolean;
   activeEntity: string;
   spinDialogOpen: boolean;
+  deleteResourceDialogOpen: boolean;
 }
 
 const initialState: UtilityState = {
@@ -20,6 +21,7 @@ const initialState: UtilityState = {
   rightSideDrawerOpen: false,
   activeEntity: '',
   spinDialogOpen: false,
+  deleteResourceDialogOpen: false,
 };
 
 export const fetchUserPictureAsync = createAsyncThunk(
@@ -58,6 +60,12 @@ export const utilitySlice = createSlice({
     setSpinDialogOpen: (state) => {
       state.spinDialogOpen = true;
     },
+    setDeleteResourceDialogClose: (state) => {
+      state.deleteResourceDialogOpen = false;
+    },
+    setDeleteResourceDialogOpen: (state) => {
+      state.deleteResourceDialogOpen = true;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserPictureAsync.fulfilled, (state, action) => {
@@ -78,6 +86,8 @@ export const {
   setActiveEntity,
   setSpinDialogClose,
   setSpinDialogOpen,
+  setDeleteResourceDialogClose,
+  setDeleteResourceDialogOpen,
 } = utilitySlice.actions;
 
 export default utilitySlice.reducer;

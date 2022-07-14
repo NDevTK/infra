@@ -118,7 +118,7 @@ export const AssetResourceModel = {
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
         : undefined,
-      default: isSet(object.default) ? Boolean(object.assetId) : false,
+      default: isSet(object.default) ? Boolean(object.default) : false,
     };
   },
 

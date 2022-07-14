@@ -70,7 +70,7 @@ export const fetchResourceAsync = createAsyncThunk(
   'resource/fetchResource',
   async (resourceId: string) => {
     const request: GetResourceRequest = {
-      id: resourceId,
+      resourceId: resourceId,
     };
     const service: IResourceService = new ResourceService();
     const response = await service.get(request);
@@ -147,10 +147,10 @@ export const deleteResourceAsync = createAsyncThunk(
   'resource/deleteResource',
   async (resourceId: string) => {
     const request: DeleteResourceRequest = {
-      id: resourceId,
+      resourceId: resourceId,
     };
     const service: IResourceService = new ResourceService();
-    const response = await service.get(request);
+    const response = await service.delete(request);
     return response;
   }
 );
@@ -273,7 +273,8 @@ export const resourceSlice = createSlice({
       })
       .addCase(queryResourceAsync.fulfilled, (state, action) => {
         state.fetchStatus = 'idle';
-        state.resources = action.payload.resources;
+        state.resources = action.payload.resources.filter(
+          (resource) => resource.deleted === false);
         state.pageToken = action.payload.nextPageToken;
       })
       .addCase(deleteResourceAsync.pending, (state) => {

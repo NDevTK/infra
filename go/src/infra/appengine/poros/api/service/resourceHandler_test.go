@@ -41,6 +41,7 @@ func TestResourceCreateWithValidData(t *testing.T) {
 		want := []string{resourceRequest.GetName(), resourceRequest.GetDescription(), resourceRequest.GetType(), resourceRequest.GetImageProject(), resourceRequest.GetImageFamily()}
 		get := []string{model.GetName(), model.GetDescription(), model.GetType(), model.GetImageProject(), model.GetImageFamily()}
 		So(get, ShouldResemble, want)
+		So(model.Deleted, ShouldEqual, false)
 	})
 }
 
@@ -337,5 +338,23 @@ func TestListResources(t *testing.T) {
 		get := []string{resources[0].GetName(), resources[1].GetName()}
 		sort.Strings(get)
 		So(get, ShouldResemble, want)
+	})
+}
+
+func TestResourceDeleteWithValidData(t *testing.T) {
+	t.Parallel()
+	createRequest := mockCreateResourceRequest("Test Resource", "Test Resource description", "machine", "windows_machine", "image-project", "image-family")
+	Convey("Create a resource in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &ResourceHandler{}
+		model, err := handler.Create(ctx, createRequest)
+		So(err, ShouldBeNil)
+		deleteRequest := &proto.DeleteResourceRequest{ResourceId: model.ResourceId}
+		_, err = handler.Delete(ctx, deleteRequest)
+		So(err, ShouldBeNil)
+		getRequest := &proto.GetResourceRequest{ResourceId: model.ResourceId}
+		readEntity, err := handler.Get(ctx, getRequest)
+		So(err, ShouldBeNil)
+		So(readEntity.Deleted, ShouldEqual, true)
 	})
 }

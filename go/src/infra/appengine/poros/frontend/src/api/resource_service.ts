@@ -84,6 +84,8 @@ export interface ResourceModel {
   modifiedBy: string;
   /** Timestamp for the last update of the record */
   modifiedAt: Date | undefined;
+  /** Flag to denote whether this Resource is deleted */
+  deleted: boolean;
 }
 
 export const ResourceModel = {
@@ -100,6 +102,7 @@ export const ResourceModel = {
       createdAt: new Date('2022-07-01T00:00:00-07:00'),
       modifiedBy: '',
       modifiedAt: new Date('2022-07-01T00:00:00-07:00'),
+      deleted: false,
     };
   },
   fromJSON(object: any): ResourceModel {
@@ -123,6 +126,7 @@ export const ResourceModel = {
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
         : undefined,
+      deleted: isSet(object.deleted) ? Boolean(object.deleted) : false,
     };
   },
 
@@ -145,6 +149,7 @@ export const ResourceModel = {
     message.modifiedBy !== undefined && (obj.modifiedBy = message.modifiedBy);
     message.modifiedAt !== undefined &&
       (obj.modifiedAt = message.modifiedAt.toISOString());
+    message.deleted !== undefined && (obj.deleted = message.deleted);
     return obj;
   },
 };
@@ -185,13 +190,13 @@ export const CreateResourceRequest = {
 // Request to delete a single resource from poros.
 export interface DeleteResourceRequest {
   /** Unique identifier of the resource */
-  id: string;
+  resourceId: string;
 }
 
 export const DeleteResourceRequest = {
   toJSON(message: DeleteResourceRequest): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.name = message.id);
+    message.resourceId !== undefined && (obj.resourceId = message.resourceId);
     return obj;
   },
 };
@@ -202,13 +207,13 @@ export interface GetResourceRequest {
    * The name of the resource to retrieve.
    * Format: publishers/{publisher}/resources/{resource}
    */
-  id: string;
+  resourceId: string;
 }
 
 export const GetResourceRequest = {
   toJSON(message: GetResourceRequest): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
+    message.resourceId !== undefined && (obj.resourceId = message.resourceId);
     return obj;
   },
 };

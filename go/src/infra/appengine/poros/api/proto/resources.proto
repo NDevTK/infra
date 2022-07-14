@@ -53,6 +53,8 @@ message ResourceModel {
   google.protobuf.Timestamp modified_at = 10;
   // User who modified the record.
   string modified_by = 11;
+  // Flag to denote whether this Resource is deleted
+  bool deleted = 12;
 }
 
 message AssetResourceModel {

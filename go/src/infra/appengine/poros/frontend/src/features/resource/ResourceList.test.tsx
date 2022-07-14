@@ -5,7 +5,11 @@ import { Provider } from 'react-redux';
 import { ResourceList } from './ResourceList';
 import userEvent from '@testing-library/user-event';
 import { ResourceModel } from '../../api/resource_service';
-import { ResourceRecordValidation, ResourceState, setState } from './resourceSlice';
+import {
+  ResourceRecordValidation,
+  ResourceState,
+  setState,
+} from './resourceSlice';
 
 const testState: ResourceState = {
   resources: [],

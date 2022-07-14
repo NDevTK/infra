@@ -64,6 +64,7 @@ const testResource: ResourceModel = {
   createdBy: '',
   modifiedAt: undefined,
   modifiedBy: '',
+  deleted: false,
 };
 
 const testAssetResource: AssetResourceModel = {
