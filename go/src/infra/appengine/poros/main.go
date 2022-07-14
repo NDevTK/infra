@@ -109,7 +109,7 @@ func init() {
 		// This is used for deserialization and also for discovery of what ID to use
 		// when submitting tasks. Changing it is safe as long as the JSONPB
 		// representation of in-flight tasks still matches the new proto.
-		Prototype: (*taskspb.CreateAssetTask)(nil),
+		Prototype: (*taskspb.AssetAdditionOrDeletionTask)(nil),
 		// This controls how AddTask calls behave with respect to transactions.
 		// FollowsContext means "enqueue transactionally if the context is
 		// transactional, or non-transactionally otherwise". Other possibilities are

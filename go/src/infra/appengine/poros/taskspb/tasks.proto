@@ -8,4 +8,7 @@ package infra.appengine.poros.taskspb;
 
 option go_package = "infra/appengine/poros/taskspb";
 
-message CreateAssetTask { string asset_id = 1; }
+message AssetAdditionOrDeletionTask {
+  string asset_instance_id = 1;
+  string operation = 2;
+}

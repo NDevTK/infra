@@ -16,6 +16,10 @@ type AssetInstanceEntity struct {
 	AssetId string
 	// Status of the AssetInstance
 	Status string
+	// Deployment Errors
+	Errors string `gae:",noindex"`
+	// Deployment Logs
+	Logs string `gae:",noindex"`
 	// Project Id associated with the AssetInstance
 	ProjectId string
 	// User who created the record.
