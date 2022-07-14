@@ -298,8 +298,8 @@ message InventoryProvider{
 //        This step requires checking both `optin_all_labstations` and `optin_labstation_prefix`.
 // 3) With probability p, use the new flow, where p is determined from the config file.
 message Paris {
-  reserved 1, 2, 3, 4;
-  reserved "enable_labstation_recovery", "optin_all_labstations", "optin_labstation_pool", "labstation_recovery_permille";
+  reserved 1, 2, 3, 4, 7;
+  reserved "enable_labstation_recovery", "optin_all_labstations", "optin_labstation_pool", "labstation_recovery_permille", "dut_audit";
   // DUT_repair controls the repair task for DUTs.
   // For expected state needs_repair.
   RolloutConfig dut_repair = 5;
@@ -323,9 +323,6 @@ message Paris {
 
   // DUT_verify controls the verify task for DUTs.
   RolloutConfig dut_verify = 6;
-
-  // DUT_audit controls the audit task for DUTs.
-  RolloutConfig dut_audit = 7;
 
   // Labstation_repair controls the rollout of repair for labstations.
   RolloutConfig labstation_repair = 8;
