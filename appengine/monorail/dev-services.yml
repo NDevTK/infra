@@ -9,11 +9,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
       MYSQL_DATABASE: 'monorail'
     command: mysqld --sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
-  redis:
-    image: 'redis:alpine'
-    container_name: 'redis'
-    ports:
-      - '6379:6379'
   cloud-tasks-emulator:
     # As of 9/18/2020 latest tag is built from source at
     # https://github.com/aertje/cloud-tasks-emulator/commit/ff9a1afc8f3aeedbc6ca1f468b2c53b74c18a6e6

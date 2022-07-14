@@ -191,11 +191,6 @@ user_cache_max_size = 150 * 1000
 # sometimes useful to run a tainted version on staging that has a separate
 # memcache namespace.  E.g., os.environ.get('CURRENT_VERSION_ID')
 memcache_namespace = None  # Should be None when committed.
-redis_namespace = None
-
-# Default Redis host and port
-redis_host = 'localhost'
-redis_port = '6379'
 
 # Recompute derived issue fields via work items rather than while
 # the user is waiting for a page to load.
@@ -319,14 +314,6 @@ else:
     db_cloud_project = app_id
     branded_domains = branded_domains_staging
     domain_to_default_project = domain_to_default_project_staging
-    # For each of these redis_hosts, they must match the corresponding
-    # HOST address of the redis instance for the environment. You can use
-    # the following command to find it.
-    # ```
-    # gcloud redis instances list --project monorail-staging \
-    #   --region us-central1
-    # ````
-    redis_host = '10.228.109.51'
 
   elif app_id == 'monorail-dev':
     site_name = 'Monorail Dev'
@@ -335,8 +322,6 @@ else:
     db_cloud_project = app_id
     branded_domains = branded_domains_dev
     domain_to_default_project = domain_to_default_project_dev
-    # See comment above on how to find this address.
-    redis_host = '10.150.170.251'
     # Use replicas created when testing the restore procedures on 2021-02-24
     db_replica_prefix = 'replica-2'
 
@@ -347,13 +332,10 @@ else:
     analytics_id = 'UA-55762617-14'
     branded_domains = branded_domains_prod
     domain_to_default_project = domain_to_default_project_prod
-    # See comment above on how to find this address.
-    redis_host = '10.190.48.180'
 
 if local_mode:
   site_name = 'Monorail Local'
   num_logical_shards = 10
-  redis_host = 'localhost'
   # Run cloud tasks emulator at port 9090
   CLOUD_TASKS_EMULATOR_ADDRESS = '127.0.0.1:9090'
 

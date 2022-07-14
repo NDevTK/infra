@@ -8,13 +8,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import fakeredis
 import unittest
 
 from google.appengine.api import memcache
 from google.appengine.ext import testbed
 
-import settings
 from services import caches
 from testing import fake
 
@@ -145,21 +143,9 @@ class ShardedRamCacheTest(unittest.TestCase):
 
 class TestableTwoLevelCache(caches.AbstractTwoLevelCache):
 
-  def __init__(
-      self,
-      cache_manager,
-      kind,
-      max_size=None,
-      use_redis=False,
-      redis_client=None):
+  def __init__(self, cache_manager, kind, max_size=None):
     super(TestableTwoLevelCache, self).__init__(
-        cache_manager,
-        kind,
-        'testable:',
-        None,
-        max_size=max_size,
-        use_redis=use_redis,
-        redis_client=redis_client)
+        cache_manager, kind, 'testable:', None, max_size=max_size)
 
   # pylint: disable=unused-argument
   def FetchItems(self, cnxn, keys, **kwargs):
@@ -280,127 +266,6 @@ class AbstractTwoLevelCacheTest_Memcache(unittest.TestCase):
     self.assertEqual(
         self.cache_manager.last_call,
         ('StoreInvalidateRows', self.cnxn, 'issue', [124]))
-
-  def testGetAllAlreadyInRam(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.testable_2lc.CacheItem(124, 12400)
-    hits, misses = self.testable_2lc.GetAllAlreadyInRam(
-        [123, 124, 333, 444, 999])
-    self.assertEqual({123: 12300, 124: 12400}, hits)
-    self.assertEqual([333, 444, 999], misses)
-
-  def testInvalidateAllRamEntries(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.testable_2lc.CacheItem(124, 12400)
-    self.testable_2lc.InvalidateAllRamEntries(self.cnxn)
-    self.assertFalse(self.testable_2lc.HasItem(123))
-    self.assertFalse(self.testable_2lc.HasItem(124))
-
-
-class AbstractTwoLevelCacheTest_Redis(unittest.TestCase):
-
-  def setUp(self):
-    self.cnxn = 'fake connection'
-    self.cache_manager = fake.CacheManager()
-
-    self.server = fakeredis.FakeServer()
-    self.fake_redis_client = fakeredis.FakeRedis(server=self.server)
-    self.testable_2lc = TestableTwoLevelCache(
-        self.cache_manager,
-        'issue',
-        use_redis=True,
-        redis_client=self.fake_redis_client)
-
-  def tearDown(self):
-    self.fake_redis_client.flushall()
-
-  def testCacheItem(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.assertEqual(12300, self.testable_2lc.cache.cache[123])
-
-  def testHasItem(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.assertTrue(self.testable_2lc.HasItem(123))
-    self.assertFalse(self.testable_2lc.HasItem(444))
-    self.assertFalse(self.testable_2lc.HasItem(999))
-
-  def testWriteToRedis_Normal(self):
-    retrieved_dict = {123: 12300, 124: 12400}
-    self.testable_2lc._WriteToRedis(retrieved_dict)
-    actual_123, _ = self.testable_2lc._ReadFromRedis([123])
-    self.assertEqual(12300, actual_123[123])
-    actual_124, _ = self.testable_2lc._ReadFromRedis([124])
-    self.assertEqual(12400, actual_124[124])
-
-  def testWriteToRedis_str(self):
-    retrieved_dict = {111: 'foo', 222: 'bar'}
-    self.testable_2lc._WriteToRedis(retrieved_dict)
-    actual_111, _ = self.testable_2lc._ReadFromRedis([111])
-    self.assertEqual('foo', actual_111[111])
-    actual_222, _ = self.testable_2lc._ReadFromRedis([222])
-    self.assertEqual('bar', actual_222[222])
-
-  def testWriteToRedis_ProtobufInt(self):
-    self.testable_2lc.pb_class = int
-    retrieved_dict = {123: 12300, 124: 12400}
-    self.testable_2lc._WriteToRedis(retrieved_dict)
-    actual_123, _ = self.testable_2lc._ReadFromRedis([123])
-    self.assertEqual(12300, actual_123[123])
-    actual_124, _ = self.testable_2lc._ReadFromRedis([124])
-    self.assertEqual(12400, actual_124[124])
-
-  def testWriteToRedis_List(self):
-    retrieved_dict = {123: [1, 2, 3], 124: [1, 2, 4]}
-    self.testable_2lc._WriteToRedis(retrieved_dict)
-    actual_123, _ = self.testable_2lc._ReadFromRedis([123])
-    self.assertEqual([1, 2, 3], actual_123[123])
-    actual_124, _ = self.testable_2lc._ReadFromRedis([124])
-    self.assertEqual([1, 2, 4], actual_124[124])
-
-  def testWriteToRedis_Dict(self):
-    retrieved_dict = {123: {'ham': 2, 'spam': 3}, 124: {'eggs': 2, 'bean': 4}}
-    self.testable_2lc._WriteToRedis(retrieved_dict)
-    actual_123, _ = self.testable_2lc._ReadFromRedis([123])
-    self.assertEqual({'ham': 2, 'spam': 3}, actual_123[123])
-    actual_124, _ = self.testable_2lc._ReadFromRedis([124])
-    self.assertEqual({'eggs': 2, 'bean': 4}, actual_124[124])
-
-  def testGetAll_FetchGetsIt(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.testable_2lc.CacheItem(124, 12400)
-    # Clear the RAM cache so that we find items in redis.
-    self.testable_2lc.cache.LocalInvalidateAll()
-    self.testable_2lc.CacheItem(125, 12500)
-    hits, misses = self.testable_2lc.GetAll(self.cnxn, [123, 124, 333, 444])
-    self.assertEqual({123: 12300, 124: 12400, 333: 333, 444: 444}, hits)
-    self.assertEqual([], misses)
-    # The RAM cache now has items found in redis and DB.
-    self.assertItemsEqual(
-        [123, 124, 125, 333, 444], list(self.testable_2lc.cache.cache.keys()))
-
-  def testGetAll_FetchGetsItFromDB(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.testable_2lc.CacheItem(124, 12400)
-    hits, misses = self.testable_2lc.GetAll(self.cnxn, [123, 124, 333, 444])
-    self.assertEqual({123: 12300, 124: 12400, 333: 333, 444: 444}, hits)
-    self.assertEqual([], misses)
-
-  def testGetAll_FetchDoesNotFindIt(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.testable_2lc.CacheItem(124, 12400)
-    hits, misses = self.testable_2lc.GetAll(self.cnxn, [123, 124, 999])
-    self.assertEqual({123: 12300, 124: 12400}, hits)
-    self.assertEqual([999], misses)
-
-  def testInvalidateKeys(self):
-    self.testable_2lc.CacheItem(123, 12300)
-    self.testable_2lc.CacheItem(124, 12400)
-    self.testable_2lc.CacheItem(125, 12500)
-    self.testable_2lc.InvalidateKeys(self.cnxn, [124])
-    self.assertEqual(2, len(self.testable_2lc.cache.cache))
-    self.assertNotIn(124, self.testable_2lc.cache.cache)
-    self.assertEqual(self.cache_manager.last_call,
-                     ('StoreInvalidateRows', self.cnxn, 'issue', [124]))
 
   def testGetAllAlreadyInRam(self):
     self.testable_2lc.CacheItem(123, 12300)

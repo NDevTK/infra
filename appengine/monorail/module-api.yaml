@@ -17,20 +17,6 @@ automatic_scaling:
 # values of ${...} vars.
 # Reference: https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/examples/appengine/helloworld_v2/app.yaml
 
-luci_gae_vars:
-  monorail-dev:
-    MIN_IDLE_INSTANCES: "5"
-    MAX_PENDING_LATENCY: "automatic"
-    VPC_ACCESS_CONNECTOR: "projects/monorail-dev/locations/us-central1/connectors/redis-connector"
-  monorail-staging:
-    MIN_IDLE_INSTANCES: "5"
-    MAX_PENDING_LATENCY: "0.2s"
-    VPC_ACCESS_CONNECTOR: "projects/monorail-staging/locations/us-central1/connectors/redis-connector"
-  monorail-prod:
-    MIN_IDLE_INSTANCES: "25"
-    MAX_PENDING_LATENCY: "0.2s"
-    VPC_ACCESS_CONNECTOR: "projects/monorail-prod/locations/us-central1/connectors/redis-connector"
-
 handlers:
 - url: /prpc/.*
   script: monorailapp.app
