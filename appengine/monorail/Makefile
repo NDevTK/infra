@@ -97,7 +97,7 @@ test_coverage:
 # to impersonate monorail-staging in the local environment.
 serve:
 	@echo "---[Starting SDK AppEngine Server]---"
-	$(GAE_PY) devserver -A monorail-staging -- $(DEV_APPSERVER_FLAGS)\
+	$(GAE_PY) devserver -A monorail-staging -- $(DEV_APPSERVER_FLAGS) 2>&1 | grep -a -v 'AccessTokenRefreshError' | grep -a -v 'csp.do' \
 	& $(WEBPACK_PATH) --watch\
 	& $(RUN_CLOUD_TASKS)
 
