@@ -91,7 +91,7 @@ func (c *Client) GetChangeInfo(ctx context.Context, host, project string, change
 	}
 
 	info := &ChangeInfo{}
-	err = gob.Retry(ctx, "GetChange", func() error {
+	err = gob.Execute(ctx, "GetChange", func() error {
 		changeInfo, err := gerritClient.GetChange(ctx, &gerritpb.GetChangeRequest{
 			Project: project,
 			Number:  change,

@@ -74,7 +74,8 @@ func TestGetChangeInfo(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	ctx = gob.CtxForTest(ctx)
+
+	ctx = gob.UseTestClock(ctx)
 
 	Convey("Client.getChangeInfo", t, func() {
 

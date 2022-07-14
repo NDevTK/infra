@@ -94,7 +94,7 @@ func (c *Client) FetchLatestRevision(ctx context.Context, host, project, ref str
 	}
 
 	var response *gitilespb.LogResponse
-	err = gob.Retry(ctx, "Log", func() error {
+	err = gob.Execute(ctx, "Log", func() error {
 		var err error
 		response, err = gitilesClient.Log(ctx, request)
 		return err
@@ -120,7 +120,7 @@ func (c *Client) DownloadFile(ctx context.Context, host, project, revision, path
 	}
 
 	var response *gitilespb.DownloadFileResponse
-	err = gob.Retry(ctx, "DownloadFile", func() error {
+	err = gob.Execute(ctx, "DownloadFile", func() error {
 		var err error
 		response, err = gitilesClient.DownloadFile(ctx, request)
 		return err
@@ -149,7 +149,7 @@ func (c *Client) DownloadDiff(ctx context.Context, host, project, revision, base
 		Path:       path,
 	}
 	var response *gitilespb.DownloadDiffResponse
-	err = gob.Retry(ctx, "DownloadDiff", func() error {
+	err = gob.Execute(ctx, "DownloadDiff", func() error {
 		var err error
 		response, err = gitilesClient.DownloadDiff(ctx, request)
 		return err
