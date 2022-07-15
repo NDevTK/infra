@@ -51,7 +51,7 @@ type AnalysisClient interface {
 	RebuildAnalysis(ctx context.Context, project string) error
 	// ReadImpactfulClusters reads analysis for clusters matching the
 	// specified criteria.
-	ReadImpactfulClusters(ctx context.Context, opts analysis.ImpactfulClusterReadOptions) ([]*analysis.ClusterSummary, error)
+	ReadImpactfulClusters(ctx context.Context, opts analysis.ImpactfulClusterReadOptions) ([]*analysis.Cluster, error)
 }
 
 func init() {
@@ -187,7 +187,7 @@ func updateAnalysisAndBugsForProject(ctx context.Context, opts updateOptions) er
 	}
 
 	if err := opts.analysisClient.RebuildAnalysis(ctx, opts.project); err != nil {
-		return errors.Annotate(err, "update cluster summaries").Err()
+		return errors.Annotate(err, "update cluster summary analysis").Err()
 	}
 
 	if !opts.enableBugUpdates {

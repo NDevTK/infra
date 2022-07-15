@@ -64,7 +64,7 @@ service Clusters {
     // test failures by Weetbix (e.g. for cluster impact calculations).
     rpc Cluster(ClusterRequest) returns (ClusterResponse) {};
 
-    // Reads summary information about the given clusters.
+    // Reads information about the given clusters.
     //
     // Please consult Weetbix owners before adding additional calls to this
     // RPC, as the implementation currently calls back to BigQuery and as
@@ -84,6 +84,30 @@ service Clusters {
     // clustering configuration.
     rpc GetReclusteringProgress(GetReclusteringProgressRequest)
         returns (ReclusteringProgress) {};
+
+    // Queries summary information about top clusters.
+    //
+    // The set of test failures used as input to the clustering can be
+    // specified using the failure_filter field on the request.
+    // The returned clusters include only the impact derived from the
+    // filtered failures.
+    //
+    // This allows investigation of the highest impact clusters for some
+    // subset of the failure data in a project. For example, a filter string
+    // of "failure_reason:ssh" would find all of the clusters where any test
+    // results mention "ssh" in their failure reason, and show how big the
+    // impact from these ssh failures is in each cluster. This is useful when
+    // investigating specific problems, or ownership areas of the tests.
+    //
+    // Please consult Weetbix owners before adding additional calls to this
+    // RPC, as the implementation currently calls back to BigQuery and as
+    // such, is not cost-optimised if many queries are to be made.
+    //
+    // As of writing (April 13, 2022) this query reads up to 10 GB per call for
+    // the largest LUCI Project, which translates to a cost of up to 5 US cents
+    // per query at published pricing (US$5/TB analyzed for BigQuery).
+    rpc QueryClusterSummaries(QueryClusterSummariesRequest)
+        returns (QueryClusterSummariesResponse) {};
 }
 
 message ClusterRequest {
@@ -241,15 +265,104 @@ message ReclusteringProgress {
     // The name of the reclustering progress resource.
     // Format: projects/{project}/reclusteringProgress.
     string name = 1;
+
     // ProgressPerMille is the progress of the current re-clustering run,
     // measured in thousandths (per mille). As such, this value ranges
     // from 0 (0% complete) to 1000 (100% complete).
     int32 progress_per_mille = 2;
+
     // The goal of the last completed re-clustering run.
     ClusteringVersion last = 5;
+
     // The goal of the current re-clustering run. (For which
     // ProgressPerMille is specified.) This may be the same as the
     // last completed re-clustering run the available algorithm versions,
     // rules and configuration is unchanged.
     ClusteringVersion next = 6;
+}
+
+message QueryClusterSummariesRequest {
+    // The LUCI Project.
+    string project = 1;
+
+    // An AIP-160 style filter to select test failures in the project
+    // to cluster and calculate metrics for.
+    //
+    // Filtering supports a subset of [AIP-160 filtering](https://google.aip.dev/160).
+    //
+    // All values are case-sensitive.
+    //
+    // A bare value is searched for in the columns test_id and
+    // failure_reason. E.g. ninja or "test failed".
+    //
+    // You can use AND, OR and NOT (case sensitive) logical operators, along
+    // with grouping. '-' is equivalent to NOT. Multiple bare values are
+    // considered to be AND separated.  E.g. These are equivalent:
+    // hello world
+    // and:
+    // hello AND world
+    //
+    // More examples:
+    // a OR b
+    // a AND NOT(b or -c)
+    //
+    // You can filter particular columns with '=', '!=' and ':' (has) operators.
+    // The right hand side of the operator must be a simple value. E.g:
+    // test_id:telemetry
+    // -failure_reason:Timeout
+    // ingested_invocation_id="build-8822963500388678513"
+    //
+    // Supported columns to search on:
+    // - test_id
+    // - failure_reason
+    // - realm
+    // - ingested_invocation_id
+    // - cluster_algorithm
+    // - cluster_id
+    // - variant_hash
+    // - test_run_id
+    string failure_filter = 2;
+
+    // A comma-seperated list of fields to order the response by.
+    // Valid fields are "presubmit_rejects", "critical_failures_exonerated"
+    // and "failures".
+    // The default sorting order is ascending, to specify descending order
+    // for a field append a " desc" suffix.
+    // E.g. "presubmit_rejects desc, failures desc".
+    // See the order by section on aip.dev/132 for more details.
+    string order_by = 3;
+}
+
+message QueryClusterSummariesResponse {
+    // The clusters and impact metrics from the filtered failures.
+    repeated ClusterSummary cluster_summaries = 1;
+}
+
+message ClusterSummary {
+    // The cluster ID of this cluster.
+    weetbix.v1.ClusterId cluster_id = 1;
+
+    // Title is a one-line description of the cluster.
+    string title = 2;
+
+    // The bug associated with the cluster. This will only be present for
+    // rules algorithm clusters.
+    weetbix.v1.AssociatedBug bug = 3;
+
+    // The number of distinct developer changelists that failed at least one
+    // presubmit (CQ) run because of failure(s) in this cluster.
+    int64 presubmit_rejects = 4;
+
+    // The number of failures on test variants which were configured to be
+    // presubmit-blocking, which were exonerated (i.e. did not actually block
+    // presubmit) because infrastructure determined the test variant to be
+    // failing or too flaky at tip-of-tree. If this number is non-zero, it
+    // means a test variant which was configured to be presubmit-blocking is
+    // not stable enough to do so, and should be fixed or made non-blocking.
+    int64 critical_failures_exonerated = 5;
+
+    // The total number of test results in this cluster. Weetbix only
+    // clusters test results which are unexpected and have a status of crash,
+    // abort or fail.
+    int64 failures = 6;
 }

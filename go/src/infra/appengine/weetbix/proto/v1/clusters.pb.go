@@ -579,6 +579,263 @@ func (x *ReclusteringProgress) GetNext() *ClusteringVersion {
 	return nil
 }
 
+type QueryClusterSummariesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The LUCI Project.
+	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	// An AIP-160 style filter to select test failures in the project
+	// to cluster and calculate metrics for.
+	//
+	// Filtering supports a subset of [AIP-160 filtering](https://google.aip.dev/160).
+	//
+	// All values are case-sensitive.
+	//
+	// A bare value is searched for in the columns test_id and
+	// failure_reason. E.g. ninja or "test failed".
+	//
+	// You can use AND, OR and NOT (case sensitive) logical operators, along
+	// with grouping. '-' is equivalent to NOT. Multiple bare values are
+	// considered to be AND separated.  E.g. These are equivalent:
+	// hello world
+	// and:
+	// hello AND world
+	//
+	// More examples:
+	// a OR b
+	// a AND NOT(b or -c)
+	//
+	// You can filter particular columns with '=', '!=' and ':' (has) operators.
+	// The right hand side of the operator must be a simple value. E.g:
+	// test_id:telemetry
+	// -failure_reason:Timeout
+	// ingested_invocation_id="build-8822963500388678513"
+	//
+	// Supported columns to search on:
+	// - test_id
+	// - failure_reason
+	// - realm
+	// - ingested_invocation_id
+	// - cluster_algorithm
+	// - cluster_id
+	// - variant_hash
+	// - test_run_id
+	FailureFilter string `protobuf:"bytes,2,opt,name=failure_filter,json=failureFilter,proto3" json:"failure_filter,omitempty"`
+	// A comma-seperated list of fields to order the response by.
+	// Valid fields are "presubmit_rejects", "critical_failures_exonerated"
+	// and "failures".
+	// The default sorting order is ascending, to specify descending order
+	// for a field append a " desc" suffix.
+	// E.g. "presubmit_rejects desc, failures desc".
+	// See the order by section on aip.dev/132 for more details.
+	OrderBy string `protobuf:"bytes,3,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+}
+
+func (x *QueryClusterSummariesRequest) Reset() {
+	*x = QueryClusterSummariesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryClusterSummariesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryClusterSummariesRequest) ProtoMessage() {}
+
+func (x *QueryClusterSummariesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryClusterSummariesRequest.ProtoReflect.Descriptor instead.
+func (*QueryClusterSummariesRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *QueryClusterSummariesRequest) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+func (x *QueryClusterSummariesRequest) GetFailureFilter() string {
+	if x != nil {
+		return x.FailureFilter
+	}
+	return ""
+}
+
+func (x *QueryClusterSummariesRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+type QueryClusterSummariesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The clusters and impact metrics from the filtered failures.
+	ClusterSummaries []*ClusterSummary `protobuf:"bytes,1,rep,name=cluster_summaries,json=clusterSummaries,proto3" json:"cluster_summaries,omitempty"`
+}
+
+func (x *QueryClusterSummariesResponse) Reset() {
+	*x = QueryClusterSummariesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryClusterSummariesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryClusterSummariesResponse) ProtoMessage() {}
+
+func (x *QueryClusterSummariesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryClusterSummariesResponse.ProtoReflect.Descriptor instead.
+func (*QueryClusterSummariesResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *QueryClusterSummariesResponse) GetClusterSummaries() []*ClusterSummary {
+	if x != nil {
+		return x.ClusterSummaries
+	}
+	return nil
+}
+
+type ClusterSummary struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The cluster ID of this cluster.
+	ClusterId *ClusterId `protobuf:"bytes,1,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
+	// Title is a one-line description of the cluster.
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The bug associated with the cluster. This will only be present for
+	// rules algorithm clusters.
+	Bug *AssociatedBug `protobuf:"bytes,3,opt,name=bug,proto3" json:"bug,omitempty"`
+	// The number of distinct developer changelists that failed at least one
+	// presubmit (CQ) run because of failure(s) in this cluster.
+	PresubmitRejects int64 `protobuf:"varint,4,opt,name=presubmit_rejects,json=presubmitRejects,proto3" json:"presubmit_rejects,omitempty"`
+	// The number of failures on test variants which were configured to be
+	// presubmit-blocking, which were exonerated (i.e. did not actually block
+	// presubmit) because infrastructure determined the test variant to be
+	// failing or too flaky at tip-of-tree. If this number is non-zero, it
+	// means a test variant which was configured to be presubmit-blocking is
+	// not stable enough to do so, and should be fixed or made non-blocking.
+	CriticalFailuresExonerated int64 `protobuf:"varint,5,opt,name=critical_failures_exonerated,json=criticalFailuresExonerated,proto3" json:"critical_failures_exonerated,omitempty"`
+	// The total number of test results in this cluster. Weetbix only
+	// clusters test results which are unexpected and have a status of crash,
+	// abort or fail.
+	Failures int64 `protobuf:"varint,6,opt,name=failures,proto3" json:"failures,omitempty"`
+}
+
+func (x *ClusterSummary) Reset() {
+	*x = ClusterSummary{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClusterSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterSummary) ProtoMessage() {}
+
+func (x *ClusterSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterSummary.ProtoReflect.Descriptor instead.
+func (*ClusterSummary) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ClusterSummary) GetClusterId() *ClusterId {
+	if x != nil {
+		return x.ClusterId
+	}
+	return nil
+}
+
+func (x *ClusterSummary) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *ClusterSummary) GetBug() *AssociatedBug {
+	if x != nil {
+		return x.Bug
+	}
+	return nil
+}
+
+func (x *ClusterSummary) GetPresubmitRejects() int64 {
+	if x != nil {
+		return x.PresubmitRejects
+	}
+	return 0
+}
+
+func (x *ClusterSummary) GetCriticalFailuresExonerated() int64 {
+	if x != nil {
+		return x.CriticalFailuresExonerated
+	}
+	return 0
+}
+
+func (x *ClusterSummary) GetFailures() int64 {
+	if x != nil {
+		return x.Failures
+	}
+	return 0
+}
+
 // TestResult captures information about a test result, sufficient to
 // cluster it. The fields requested here may be expanded over time.
 // For example, variant information may be requested in future.
@@ -601,7 +858,7 @@ type ClusterRequest_TestResult struct {
 func (x *ClusterRequest_TestResult) Reset() {
 	*x = ClusterRequest_TestResult{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[8]
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -614,7 +871,7 @@ func (x *ClusterRequest_TestResult) String() string {
 func (*ClusterRequest_TestResult) ProtoMessage() {}
 
 func (x *ClusterRequest_TestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[8]
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -667,7 +924,7 @@ type ClusterResponse_ClusteredTestResult struct {
 func (x *ClusterResponse_ClusteredTestResult) Reset() {
 	*x = ClusterResponse_ClusteredTestResult{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9]
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -680,7 +937,7 @@ func (x *ClusterResponse_ClusteredTestResult) String() string {
 func (*ClusterResponse_ClusteredTestResult) ProtoMessage() {}
 
 func (x *ClusterResponse_ClusteredTestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9]
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -728,7 +985,7 @@ type ClusterResponse_ClusteredTestResult_ClusterEntry struct {
 func (x *ClusterResponse_ClusteredTestResult_ClusterEntry) Reset() {
 	*x = ClusterResponse_ClusteredTestResult_ClusterEntry{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10]
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -741,7 +998,7 @@ func (x *ClusterResponse_ClusteredTestResult_ClusterEntry) String() string {
 func (*ClusterResponse_ClusteredTestResult_ClusterEntry) ProtoMessage() {}
 
 func (x *ClusterResponse_ClusteredTestResult_ClusterEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10]
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -787,7 +1044,7 @@ type Cluster_MetricValues struct {
 func (x *Cluster_MetricValues) Reset() {
 	*x = Cluster_MetricValues{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[11]
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -800,7 +1057,7 @@ func (x *Cluster_MetricValues) String() string {
 func (*Cluster_MetricValues) ProtoMessage() {}
 
 func (x *Cluster_MetricValues) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[11]
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -849,7 +1106,7 @@ type Cluster_MetricValues_Counts struct {
 func (x *Cluster_MetricValues_Counts) Reset() {
 	*x = Cluster_MetricValues_Counts{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[12]
+		mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -862,7 +1119,7 @@ func (x *Cluster_MetricValues_Counts) String() string {
 func (*Cluster_MetricValues_Counts) ProtoMessage() {}
 
 func (x *Cluster_MetricValues_Counts) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[12]
+	mi := &file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1025,27 +1282,66 @@ var file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDesc = []byte{
 	0x12, 0x31, 0x0a, 0x04, 0x6e, 0x65, 0x78, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d,
 	0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73,
 	0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x04, 0x6e,
-	0x65, 0x78, 0x74, 0x32, 0x94, 0x02, 0x0a, 0x08, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73,
-	0x12, 0x44, 0x0a, 0x07, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x12, 0x1a, 0x2e, 0x77, 0x65,
+	0x65, 0x78, 0x74, 0x22, 0x7a, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x75, 0x73,
+	0x74, 0x65, 0x72, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x25, 0x0a,
+	0x0e, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x46, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x62, 0x79,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x42, 0x79, 0x22,
+	0x68, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x53,
+	0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x47, 0x0a, 0x11, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x5f, 0x73, 0x75, 0x6d, 0x6d,
+	0x61, 0x72, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x77, 0x65,
 	0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69,
-	0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x08, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47,
-	0x65, 0x74, 0x12, 0x23, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69,
-	0x78, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75,
-	0x73, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12,
-	0x69, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x52, 0x65, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x69,
-	0x6e, 0x67, 0x50, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2a, 0x2e, 0x77, 0x65, 0x65,
-	0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x63, 0x6c, 0x75,
-	0x73, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78,
-	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67,
-	0x50, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e,
-	0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65,
-	0x65, 0x74, 0x62, 0x69, 0x78, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77,
-	0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x10, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72,
+	0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x22, 0x94, 0x02, 0x0a, 0x0e, 0x43, 0x6c,
+	0x75, 0x73, 0x74, 0x65, 0x72, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x34, 0x0a, 0x0a,
+	0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x15, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c,
+	0x75, 0x73, 0x74, 0x65, 0x72, 0x49, 0x64, 0x52, 0x09, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x2b, 0x0a, 0x03, 0x62, 0x75, 0x67, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e,
+	0x76, 0x31, 0x2e, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x65, 0x64, 0x42, 0x75, 0x67,
+	0x52, 0x03, 0x62, 0x75, 0x67, 0x12, 0x2b, 0x0a, 0x11, 0x70, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d,
+	0x69, 0x74, 0x5f, 0x72, 0x65, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x10, 0x70, 0x72, 0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x52, 0x65, 0x6a, 0x65, 0x63,
+	0x74, 0x73, 0x12, 0x40, 0x0a, 0x1c, 0x63, 0x72, 0x69, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x5f, 0x66,
+	0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73, 0x5f, 0x65, 0x78, 0x6f, 0x6e, 0x65, 0x72, 0x61, 0x74,
+	0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x1a, 0x63, 0x72, 0x69, 0x74, 0x69, 0x63,
+	0x61, 0x6c, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73, 0x45, 0x78, 0x6f, 0x6e, 0x65, 0x72,
+	0x61, 0x74, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73,
+	0x32, 0x84, 0x03, 0x0a, 0x08, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x12, 0x44, 0x0a,
+	0x07, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x12, 0x1a, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62,
+	0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76,
+	0x31, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x08, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x12,
+	0x23, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74,
+	0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76,
+	0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65,
+	0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x69, 0x0a, 0x17,
+	0x47, 0x65, 0x74, 0x52, 0x65, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x50,
+	0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2a, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69,
+	0x78, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65,
+	0x72, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31,
+	0x2e, 0x52, 0x65, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x6f,
+	0x67, 0x72, 0x65, 0x73, 0x73, 0x22, 0x00, 0x12, 0x6e, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73,
+	0x12, 0x28, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72,
+	0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x77, 0x65, 0x65,
+	0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x75,
+	0x73, 0x74, 0x65, 0x72, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65, 0x65, 0x74, 0x62,
+	0x69, 0x78, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77, 0x65, 0x65, 0x74,
+	0x62, 0x69, 0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1060,7 +1356,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescGZIP() []byte {
 	return file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDescData
 }
 
-var file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_infra_appengine_weetbix_proto_v1_clusters_proto_goTypes = []interface{}{
 	(*ClusterRequest)(nil),                                   // 0: weetbix.v1.ClusterRequest
 	(*ClusterResponse)(nil),                                  // 1: weetbix.v1.ClusterResponse
@@ -1070,46 +1366,54 @@ var file_infra_appengine_weetbix_proto_v1_clusters_proto_goTypes = []interface{}
 	(*Cluster)(nil),                                          // 5: weetbix.v1.Cluster
 	(*GetReclusteringProgressRequest)(nil),                   // 6: weetbix.v1.GetReclusteringProgressRequest
 	(*ReclusteringProgress)(nil),                             // 7: weetbix.v1.ReclusteringProgress
-	(*ClusterRequest_TestResult)(nil),                        // 8: weetbix.v1.ClusterRequest.TestResult
-	(*ClusterResponse_ClusteredTestResult)(nil),              // 9: weetbix.v1.ClusterResponse.ClusteredTestResult
-	(*ClusterResponse_ClusteredTestResult_ClusterEntry)(nil), // 10: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
-	(*Cluster_MetricValues)(nil),                             // 11: weetbix.v1.Cluster.MetricValues
-	(*Cluster_MetricValues_Counts)(nil),                      // 12: weetbix.v1.Cluster.MetricValues.Counts
-	(*timestamppb.Timestamp)(nil),                            // 13: google.protobuf.Timestamp
-	(*FailureReason)(nil),                                    // 14: weetbix.v1.FailureReason
-	(*ClusterId)(nil),                                        // 15: weetbix.v1.ClusterId
-	(*AssociatedBug)(nil),                                    // 16: weetbix.v1.AssociatedBug
+	(*QueryClusterSummariesRequest)(nil),                     // 8: weetbix.v1.QueryClusterSummariesRequest
+	(*QueryClusterSummariesResponse)(nil),                    // 9: weetbix.v1.QueryClusterSummariesResponse
+	(*ClusterSummary)(nil),                                   // 10: weetbix.v1.ClusterSummary
+	(*ClusterRequest_TestResult)(nil),                        // 11: weetbix.v1.ClusterRequest.TestResult
+	(*ClusterResponse_ClusteredTestResult)(nil),              // 12: weetbix.v1.ClusterResponse.ClusteredTestResult
+	(*ClusterResponse_ClusteredTestResult_ClusterEntry)(nil), // 13: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
+	(*Cluster_MetricValues)(nil),                             // 14: weetbix.v1.Cluster.MetricValues
+	(*Cluster_MetricValues_Counts)(nil),                      // 15: weetbix.v1.Cluster.MetricValues.Counts
+	(*timestamppb.Timestamp)(nil),                            // 16: google.protobuf.Timestamp
+	(*ClusterId)(nil),                                        // 17: weetbix.v1.ClusterId
+	(*AssociatedBug)(nil),                                    // 18: weetbix.v1.AssociatedBug
+	(*FailureReason)(nil),                                    // 19: weetbix.v1.FailureReason
 }
 var file_infra_appengine_weetbix_proto_v1_clusters_proto_depIdxs = []int32{
-	8,  // 0: weetbix.v1.ClusterRequest.test_results:type_name -> weetbix.v1.ClusterRequest.TestResult
-	9,  // 1: weetbix.v1.ClusterResponse.clustered_test_results:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult
+	11, // 0: weetbix.v1.ClusterRequest.test_results:type_name -> weetbix.v1.ClusterRequest.TestResult
+	12, // 1: weetbix.v1.ClusterResponse.clustered_test_results:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult
 	2,  // 2: weetbix.v1.ClusterResponse.clustering_version:type_name -> weetbix.v1.ClusteringVersion
-	13, // 3: weetbix.v1.ClusteringVersion.rules_version:type_name -> google.protobuf.Timestamp
-	13, // 4: weetbix.v1.ClusteringVersion.config_version:type_name -> google.protobuf.Timestamp
+	16, // 3: weetbix.v1.ClusteringVersion.rules_version:type_name -> google.protobuf.Timestamp
+	16, // 4: weetbix.v1.ClusteringVersion.config_version:type_name -> google.protobuf.Timestamp
 	5,  // 5: weetbix.v1.BatchGetClustersResponse.clusters:type_name -> weetbix.v1.Cluster
-	11, // 6: weetbix.v1.Cluster.user_cls_failed_presubmit:type_name -> weetbix.v1.Cluster.MetricValues
-	11, // 7: weetbix.v1.Cluster.critical_failures_exonerated:type_name -> weetbix.v1.Cluster.MetricValues
-	11, // 8: weetbix.v1.Cluster.failures:type_name -> weetbix.v1.Cluster.MetricValues
+	14, // 6: weetbix.v1.Cluster.user_cls_failed_presubmit:type_name -> weetbix.v1.Cluster.MetricValues
+	14, // 7: weetbix.v1.Cluster.critical_failures_exonerated:type_name -> weetbix.v1.Cluster.MetricValues
+	14, // 8: weetbix.v1.Cluster.failures:type_name -> weetbix.v1.Cluster.MetricValues
 	2,  // 9: weetbix.v1.ReclusteringProgress.last:type_name -> weetbix.v1.ClusteringVersion
 	2,  // 10: weetbix.v1.ReclusteringProgress.next:type_name -> weetbix.v1.ClusteringVersion
-	14, // 11: weetbix.v1.ClusterRequest.TestResult.failure_reason:type_name -> weetbix.v1.FailureReason
-	10, // 12: weetbix.v1.ClusterResponse.ClusteredTestResult.clusters:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
-	15, // 13: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.cluster_id:type_name -> weetbix.v1.ClusterId
-	16, // 14: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.bug:type_name -> weetbix.v1.AssociatedBug
-	12, // 15: weetbix.v1.Cluster.MetricValues.one_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
-	12, // 16: weetbix.v1.Cluster.MetricValues.three_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
-	12, // 17: weetbix.v1.Cluster.MetricValues.seven_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
-	0,  // 18: weetbix.v1.Clusters.Cluster:input_type -> weetbix.v1.ClusterRequest
-	3,  // 19: weetbix.v1.Clusters.BatchGet:input_type -> weetbix.v1.BatchGetClustersRequest
-	6,  // 20: weetbix.v1.Clusters.GetReclusteringProgress:input_type -> weetbix.v1.GetReclusteringProgressRequest
-	1,  // 21: weetbix.v1.Clusters.Cluster:output_type -> weetbix.v1.ClusterResponse
-	4,  // 22: weetbix.v1.Clusters.BatchGet:output_type -> weetbix.v1.BatchGetClustersResponse
-	7,  // 23: weetbix.v1.Clusters.GetReclusteringProgress:output_type -> weetbix.v1.ReclusteringProgress
-	21, // [21:24] is the sub-list for method output_type
-	18, // [18:21] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	10, // 11: weetbix.v1.QueryClusterSummariesResponse.cluster_summaries:type_name -> weetbix.v1.ClusterSummary
+	17, // 12: weetbix.v1.ClusterSummary.cluster_id:type_name -> weetbix.v1.ClusterId
+	18, // 13: weetbix.v1.ClusterSummary.bug:type_name -> weetbix.v1.AssociatedBug
+	19, // 14: weetbix.v1.ClusterRequest.TestResult.failure_reason:type_name -> weetbix.v1.FailureReason
+	13, // 15: weetbix.v1.ClusterResponse.ClusteredTestResult.clusters:type_name -> weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry
+	17, // 16: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.cluster_id:type_name -> weetbix.v1.ClusterId
+	18, // 17: weetbix.v1.ClusterResponse.ClusteredTestResult.ClusterEntry.bug:type_name -> weetbix.v1.AssociatedBug
+	15, // 18: weetbix.v1.Cluster.MetricValues.one_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
+	15, // 19: weetbix.v1.Cluster.MetricValues.three_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
+	15, // 20: weetbix.v1.Cluster.MetricValues.seven_day:type_name -> weetbix.v1.Cluster.MetricValues.Counts
+	0,  // 21: weetbix.v1.Clusters.Cluster:input_type -> weetbix.v1.ClusterRequest
+	3,  // 22: weetbix.v1.Clusters.BatchGet:input_type -> weetbix.v1.BatchGetClustersRequest
+	6,  // 23: weetbix.v1.Clusters.GetReclusteringProgress:input_type -> weetbix.v1.GetReclusteringProgressRequest
+	8,  // 24: weetbix.v1.Clusters.QueryClusterSummaries:input_type -> weetbix.v1.QueryClusterSummariesRequest
+	1,  // 25: weetbix.v1.Clusters.Cluster:output_type -> weetbix.v1.ClusterResponse
+	4,  // 26: weetbix.v1.Clusters.BatchGet:output_type -> weetbix.v1.BatchGetClustersResponse
+	7,  // 27: weetbix.v1.Clusters.GetReclusteringProgress:output_type -> weetbix.v1.ReclusteringProgress
+	9,  // 28: weetbix.v1.Clusters.QueryClusterSummaries:output_type -> weetbix.v1.QueryClusterSummariesResponse
+	25, // [25:29] is the sub-list for method output_type
+	21, // [21:25] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_infra_appengine_weetbix_proto_v1_clusters_proto_init() }
@@ -1217,7 +1521,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClusterRequest_TestResult); i {
+			switch v := v.(*QueryClusterSummariesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1229,7 +1533,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClusterResponse_ClusteredTestResult); i {
+			switch v := v.(*QueryClusterSummariesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1241,7 +1545,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClusterResponse_ClusteredTestResult_ClusterEntry); i {
+			switch v := v.(*ClusterSummary); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1253,7 +1557,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Cluster_MetricValues); i {
+			switch v := v.(*ClusterRequest_TestResult); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1265,6 +1569,42 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ClusterResponse_ClusteredTestResult); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ClusterResponse_ClusteredTestResult_ClusterEntry); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Cluster_MetricValues); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_proto_v1_clusters_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Cluster_MetricValues_Counts); i {
 			case 0:
 				return &v.state
@@ -1283,7 +1623,7 @@ func file_infra_appengine_weetbix_proto_v1_clusters_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_weetbix_proto_v1_clusters_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -1329,7 +1669,7 @@ type ClustersClient interface {
 	// This RPC is a pure query API and does not lead to the ingestion of the
 	// test failures by Weetbix (e.g. for cluster impact calculations).
 	Cluster(ctx context.Context, in *ClusterRequest, opts ...grpc.CallOption) (*ClusterResponse, error)
-	// Reads summary information about the given clusters.
+	// Reads information about the given clusters.
 	//
 	// Please consult Weetbix owners before adding additional calls to this
 	// RPC, as the implementation currently calls back to BigQuery and as
@@ -1346,6 +1686,28 @@ type ClustersClient interface {
 	// failure association rules, suggested clustering algorithms and
 	// clustering configuration.
 	GetReclusteringProgress(ctx context.Context, in *GetReclusteringProgressRequest, opts ...grpc.CallOption) (*ReclusteringProgress, error)
+	// Queries summary information about top clusters.
+	//
+	// The set of test failures used as input to the clustering can be
+	// specified using the failure_filter field on the request.
+	// The returned clusters include only the impact derived from the
+	// filtered failures.
+	//
+	// This allows investigation of the highest impact clusters for some
+	// subset of the failure data in a project. For example, a filter string
+	// of "failure_reason:ssh" would find all of the clusters where any test
+	// results mention "ssh" in their failure reason, and show how big the
+	// impact from these ssh failures is in each cluster. This is useful when
+	// investigating specific problems, or ownership areas of the tests.
+	//
+	// Please consult Weetbix owners before adding additional calls to this
+	// RPC, as the implementation currently calls back to BigQuery and as
+	// such, is not cost-optimised if many queries are to be made.
+	//
+	// As of writing (April 13, 2022) this query reads up to 10 GB per call for
+	// the largest LUCI Project, which translates to a cost of up to 5 US cents
+	// per query at published pricing (US$5/TB analyzed for BigQuery).
+	QueryClusterSummaries(ctx context.Context, in *QueryClusterSummariesRequest, opts ...grpc.CallOption) (*QueryClusterSummariesResponse, error)
 }
 type clustersPRPCClient struct {
 	client *prpc.Client
@@ -1376,6 +1738,15 @@ func (c *clustersPRPCClient) BatchGet(ctx context.Context, in *BatchGetClustersR
 func (c *clustersPRPCClient) GetReclusteringProgress(ctx context.Context, in *GetReclusteringProgressRequest, opts ...grpc.CallOption) (*ReclusteringProgress, error) {
 	out := new(ReclusteringProgress)
 	err := c.client.Call(ctx, "weetbix.v1.Clusters", "GetReclusteringProgress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clustersPRPCClient) QueryClusterSummaries(ctx context.Context, in *QueryClusterSummariesRequest, opts ...grpc.CallOption) (*QueryClusterSummariesResponse, error) {
+	out := new(QueryClusterSummariesResponse)
+	err := c.client.Call(ctx, "weetbix.v1.Clusters", "QueryClusterSummaries", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1417,6 +1788,15 @@ func (c *clustersClient) GetReclusteringProgress(ctx context.Context, in *GetRec
 	return out, nil
 }
 
+func (c *clustersClient) QueryClusterSummaries(ctx context.Context, in *QueryClusterSummariesRequest, opts ...grpc.CallOption) (*QueryClusterSummariesResponse, error) {
+	out := new(QueryClusterSummariesResponse)
+	err := c.cc.Invoke(ctx, "/weetbix.v1.Clusters/QueryClusterSummaries", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ClustersServer is the server API for Clusters service.
 type ClustersServer interface {
 	// Identifies the cluster(s) for one or more test failure(s).
@@ -1439,7 +1819,7 @@ type ClustersServer interface {
 	// This RPC is a pure query API and does not lead to the ingestion of the
 	// test failures by Weetbix (e.g. for cluster impact calculations).
 	Cluster(context.Context, *ClusterRequest) (*ClusterResponse, error)
-	// Reads summary information about the given clusters.
+	// Reads information about the given clusters.
 	//
 	// Please consult Weetbix owners before adding additional calls to this
 	// RPC, as the implementation currently calls back to BigQuery and as
@@ -1456,6 +1836,28 @@ type ClustersServer interface {
 	// failure association rules, suggested clustering algorithms and
 	// clustering configuration.
 	GetReclusteringProgress(context.Context, *GetReclusteringProgressRequest) (*ReclusteringProgress, error)
+	// Queries summary information about top clusters.
+	//
+	// The set of test failures used as input to the clustering can be
+	// specified using the failure_filter field on the request.
+	// The returned clusters include only the impact derived from the
+	// filtered failures.
+	//
+	// This allows investigation of the highest impact clusters for some
+	// subset of the failure data in a project. For example, a filter string
+	// of "failure_reason:ssh" would find all of the clusters where any test
+	// results mention "ssh" in their failure reason, and show how big the
+	// impact from these ssh failures is in each cluster. This is useful when
+	// investigating specific problems, or ownership areas of the tests.
+	//
+	// Please consult Weetbix owners before adding additional calls to this
+	// RPC, as the implementation currently calls back to BigQuery and as
+	// such, is not cost-optimised if many queries are to be made.
+	//
+	// As of writing (April 13, 2022) this query reads up to 10 GB per call for
+	// the largest LUCI Project, which translates to a cost of up to 5 US cents
+	// per query at published pricing (US$5/TB analyzed for BigQuery).
+	QueryClusterSummaries(context.Context, *QueryClusterSummariesRequest) (*QueryClusterSummariesResponse, error)
 }
 
 // UnimplementedClustersServer can be embedded to have forward compatible implementations.
@@ -1470,6 +1872,9 @@ func (*UnimplementedClustersServer) BatchGet(context.Context, *BatchGetClustersR
 }
 func (*UnimplementedClustersServer) GetReclusteringProgress(context.Context, *GetReclusteringProgressRequest) (*ReclusteringProgress, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReclusteringProgress not implemented")
+}
+func (*UnimplementedClustersServer) QueryClusterSummaries(context.Context, *QueryClusterSummariesRequest) (*QueryClusterSummariesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryClusterSummaries not implemented")
 }
 
 func RegisterClustersServer(s prpc.Registrar, srv ClustersServer) {
@@ -1530,6 +1935,24 @@ func _Clusters_GetReclusteringProgress_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Clusters_QueryClusterSummaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClusterSummariesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClustersServer).QueryClusterSummaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/weetbix.v1.Clusters/QueryClusterSummaries",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClustersServer).QueryClusterSummaries(ctx, req.(*QueryClusterSummariesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Clusters_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "weetbix.v1.Clusters",
 	HandlerType: (*ClustersServer)(nil),
@@ -1545,6 +1968,10 @@ var _Clusters_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReclusteringProgress",
 			Handler:    _Clusters_GetReclusteringProgress_Handler,
+		},
+		{
+			MethodName: "QueryClusterSummaries",
+			Handler:    _Clusters_QueryClusterSummaries_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

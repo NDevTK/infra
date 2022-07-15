@@ -13,6 +13,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/errors"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/auth"
@@ -250,7 +251,7 @@ func TestClusters(t *testing.T) {
 			})
 		})
 		Convey("BatchGet", func() {
-			analysisClient.clustersByProject["testproject"] = []*analysis.ClusterSummary{
+			analysisClient.clustersByProject["testproject"] = []*analysis.Cluster{
 				{
 					ClusterID: clustering.ClusterID{
 						Algorithm: rulesalgorithm.AlgorithmName,
@@ -494,6 +495,158 @@ func TestClusters(t *testing.T) {
 				})
 			})
 		})
+		Convey("QueryClusterSummaries", func() {
+			analysisClient.clusterMetricsByProject["testproject"] = []*analysis.ClusterSummary{
+				{
+					ClusterID: clustering.ClusterID{
+						Algorithm: rulesalgorithm.AlgorithmName,
+						ID:        rs[0].RuleID,
+					},
+					PresubmitRejects:           1,
+					CriticalFailuresExonerated: 2,
+					Failures:                   3,
+					ExampleFailureReason:       bigquery.NullString{Valid: true, StringVal: "Example failure reason."},
+					ExampleTestID:              "TestID 1",
+				},
+				{
+					ClusterID: clustering.ClusterID{
+						Algorithm: "reason-v3",
+						ID:        "cccccc00000000000000000000000001",
+					},
+					PresubmitRejects:           4,
+					CriticalFailuresExonerated: 5,
+					Failures:                   6,
+					ExampleFailureReason:       bigquery.NullString{Valid: true, StringVal: "Example failure reason 2."},
+					ExampleTestID:              "TestID 3",
+				},
+			}
+
+			request := &pb.QueryClusterSummariesRequest{
+				Project:       "testproject",
+				FailureFilter: "test_id:\"pita.Boot\" failure_reason:\"failed to boot\"",
+				OrderBy:       "presubmit_rejects desc, critical_failures_exonerated, failures desc",
+			}
+			Convey("Valid request", func() {
+				expectedResponse := &pb.QueryClusterSummariesResponse{
+					ClusterSummaries: []*pb.ClusterSummary{
+						{
+							ClusterId: &pb.ClusterId{
+								Algorithm: "rules",
+								Id:        rs[0].RuleID,
+							},
+							Title: rs[0].RuleDefinition,
+							Bug: &pb.AssociatedBug{
+								System:   "monorail",
+								Id:       "chromium/7654321",
+								LinkText: "crbug.com/7654321",
+								Url:      "https://bugs.chromium.org/p/chromium/issues/detail?id=7654321",
+							},
+							PresubmitRejects:           1,
+							CriticalFailuresExonerated: 2,
+							Failures:                   3,
+						},
+						{
+							ClusterId: &pb.ClusterId{
+								Algorithm: "reason-v3",
+								Id:        "cccccc00000000000000000000000001",
+							},
+							Title:                      `reason LIKE "Example failure reason %."`,
+							PresubmitRejects:           4,
+							CriticalFailuresExonerated: 5,
+							Failures:                   6,
+						},
+					},
+				}
+
+				Convey("With filters and order by", func() {
+					response, err := server.QueryClusterSummaries(ctx, request)
+					So(err, ShouldBeNil)
+					So(response, ShouldResembleProto, expectedResponse)
+				})
+				Convey("Without filters or order", func() {
+					request.FailureFilter = ""
+					request.OrderBy = ""
+
+					response, err := server.QueryClusterSummaries(ctx, request)
+					So(err, ShouldBeNil)
+					So(response, ShouldResembleProto, expectedResponse)
+				})
+			})
+			Convey("Invalid request", func() {
+				Convey("Dataset does not exist", func() {
+					delete(analysisClient.clusterMetricsByProject, "testproject")
+
+					// Run
+					response, err := server.QueryClusterSummaries(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.NotFound)
+					So(st.Message(), ShouldEqual, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+					So(response, ShouldBeNil)
+				})
+				Convey("Failure filter syntax is invalid", func() {
+					request.FailureFilter = "test_id::"
+
+					// Run
+					response, err := server.QueryClusterSummaries(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.InvalidArgument)
+					So(st.Message(), ShouldEqual, "failure_filter: expected arg after :")
+					So(response, ShouldBeNil)
+				})
+				Convey("Failure filter references non-existant column", func() {
+					request.FailureFilter = `test:"pita.Boot"`
+
+					// Run
+					response, err := server.QueryClusterSummaries(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.InvalidArgument)
+					So(st.Message(), ShouldStartWith, `failure_filter: no filterable field named "test"`)
+					So(response, ShouldBeNil)
+				})
+				Convey("Failure filter references unimplemented feature", func() {
+					request.FailureFilter = "test<=\"blah\""
+
+					// Run
+					response, err := server.QueryClusterSummaries(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.InvalidArgument)
+					So(st.Message(), ShouldEqual, "failure_filter: comparator operator not implemented yet")
+					So(response, ShouldBeNil)
+				})
+				Convey("Order by syntax invalid", func() {
+					request.OrderBy = "presubmit_rejects asc"
+
+					// Run
+					response, err := server.QueryClusterSummaries(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.InvalidArgument)
+					So(st.Message(), ShouldEqual, `order_by: invalid ordering "presubmit_rejects asc"`)
+					So(response, ShouldBeNil)
+				})
+				Convey("Order by syntax references invalid column", func() {
+					request.OrderBy = "not_exists desc"
+
+					// Run
+					response, err := server.QueryClusterSummaries(ctx, request)
+
+					// Verify
+					st, _ := grpcStatus.FromError(err)
+					So(st.Code(), ShouldEqual, codes.InvalidArgument)
+					So(st.Message(), ShouldStartWith, `order_by: no sortable field named "not_exists"`)
+					So(response, ShouldBeNil)
+				})
+			})
+		})
 		Convey("GetReclusteringProgress", func() {
 			request := &pb.GetReclusteringProgressRequest{
 				Name: "projects/testproject/reclusteringProgress",
@@ -619,22 +772,24 @@ func sortClusterEntries(entries []*pb.ClusterResponse_ClusteredTestResult_Cluste
 }
 
 type fakeAnalysisClient struct {
-	clustersByProject map[string][]*analysis.ClusterSummary
+	clustersByProject       map[string][]*analysis.Cluster
+	clusterMetricsByProject map[string][]*analysis.ClusterSummary
 }
 
 func newFakeAnalysisClient() *fakeAnalysisClient {
 	return &fakeAnalysisClient{
-		clustersByProject: make(map[string][]*analysis.ClusterSummary),
+		clustersByProject:       make(map[string][]*analysis.Cluster),
+		clusterMetricsByProject: make(map[string][]*analysis.ClusterSummary),
 	}
 }
 
-func (f *fakeAnalysisClient) ReadClusters(ctx context.Context, project string, clusterIDs []clustering.ClusterID) ([]*analysis.ClusterSummary, error) {
+func (f *fakeAnalysisClient) ReadClusters(ctx context.Context, project string, clusterIDs []clustering.ClusterID) ([]*analysis.Cluster, error) {
 	clusters, ok := f.clustersByProject[project]
 	if !ok {
 		return nil, analysis.ProjectNotExistsErr
 	}
 
-	var results []*analysis.ClusterSummary
+	var results []*analysis.Cluster
 	for _, c := range clusters {
 		include := false
 		for _, ci := range clusterIDs {
@@ -645,6 +800,28 @@ func (f *fakeAnalysisClient) ReadClusters(ctx context.Context, project string, c
 		if include {
 			results = append(results, c)
 		}
+	}
+	return results, nil
+}
+
+func (f *fakeAnalysisClient) QueryClusterSummaries(ctx context.Context, project string, options *analysis.QueryClusterSummariesOptions) ([]*analysis.ClusterSummary, error) {
+	clusters, ok := f.clusterMetricsByProject[project]
+	if !ok {
+		return nil, analysis.ProjectNotExistsErr
+	}
+
+	_, _, err := analysis.ClusteredFailuresTable.WhereClause(options.FailureFilter, "w_")
+	if err != nil {
+		return nil, analysis.InvalidArgumentTag.Apply(errors.Annotate(err, "failure_filter").Err())
+	}
+	_, err = analysis.ClusterSummariesTable.OrderByClause(options.OrderBy)
+	if err != nil {
+		return nil, analysis.InvalidArgumentTag.Apply(errors.Annotate(err, "order_by").Err())
+	}
+
+	var results []*analysis.ClusterSummary
+	for _, c := range clusters {
+		results = append(results, c)
 	}
 	return results, nil
 }

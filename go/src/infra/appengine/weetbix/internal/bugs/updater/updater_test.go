@@ -84,7 +84,7 @@ func TestRun(t *testing.T) {
 		compiledCfg, err := compiledcfg.NewConfig(projectCfg)
 		So(err, ShouldBeNil)
 
-		suggestedClusters := []*analysis.ClusterSummary{
+		suggestedClusters := []*analysis.Cluster{
 			makeReasonCluster(compiledCfg, 0),
 			makeReasonCluster(compiledCfg, 1),
 			makeReasonCluster(compiledCfg, 2),
@@ -523,7 +523,7 @@ func TestRun(t *testing.T) {
 			rs, err := rules.ReadActive(span.Single(ctx), project)
 			So(err, ShouldBeNil)
 
-			bugClusters := []*analysis.ClusterSummary{
+			bugClusters := []*analysis.Cluster{
 				makeBugCluster(rs[0].RuleID),
 				makeBugCluster(rs[1].RuleID),
 				makeBugCluster(rs[2].RuleID),
@@ -797,9 +797,9 @@ func TestRun(t *testing.T) {
 	})
 }
 
-func makeTestNameCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analysis.ClusterSummary {
+func makeTestNameCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analysis.Cluster {
 	testID := fmt.Sprintf("testname-%v", uniqifier)
-	return &analysis.ClusterSummary{
+	return &analysis.Cluster{
 		ClusterID:  testIDClusterID(config, testID),
 		Failures1d: analysis.Counts{Residual: 9},
 		Failures3d: analysis.Counts{Residual: 29},
@@ -808,7 +808,7 @@ func makeTestNameCluster(config *compiledcfg.ProjectConfig, uniqifier int) *anal
 	}
 }
 
-func makeReasonCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analysis.ClusterSummary {
+func makeReasonCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analysis.Cluster {
 	// Because the failure reason clustering algorithm removes numbers
 	// when clustering failure reasons, it is better not to use the
 	// uniqifier directly in the reason, to avoid cluster ID collisions.
@@ -818,7 +818,7 @@ func makeReasonCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analys
 	}
 	reason := fmt.Sprintf("want %s, got bar", foo.String())
 
-	return &analysis.ClusterSummary{
+	return &analysis.Cluster{
 		ClusterID:  reasonClusterID(config, reason),
 		Failures1d: analysis.Counts{Residual: 9},
 		Failures3d: analysis.Counts{Residual: 29},
@@ -831,8 +831,8 @@ func makeReasonCluster(config *compiledcfg.ProjectConfig, uniqifier int) *analys
 	}
 }
 
-func makeBugCluster(ruleID string) *analysis.ClusterSummary {
-	return &analysis.ClusterSummary{
+func makeBugCluster(ruleID string) *analysis.Cluster {
+	return &analysis.Cluster{
 		ClusterID:  bugClusterID(ruleID),
 		Failures1d: analysis.Counts{Residual: 9},
 		Failures3d: analysis.Counts{Residual: 29},
@@ -874,7 +874,7 @@ func bugClusterID(ruleID string) clustering.ClusterID {
 
 type fakeAnalysisClient struct {
 	analysisBuilt bool
-	clusters      []*analysis.ClusterSummary
+	clusters      []*analysis.Cluster
 }
 
 func (f *fakeAnalysisClient) RebuildAnalysis(ctx context.Context, project string) error {
@@ -882,11 +882,11 @@ func (f *fakeAnalysisClient) RebuildAnalysis(ctx context.Context, project string
 	return nil
 }
 
-func (f *fakeAnalysisClient) ReadImpactfulClusters(ctx context.Context, opts analysis.ImpactfulClusterReadOptions) ([]*analysis.ClusterSummary, error) {
+func (f *fakeAnalysisClient) ReadImpactfulClusters(ctx context.Context, opts analysis.ImpactfulClusterReadOptions) ([]*analysis.Cluster, error) {
 	if !f.analysisBuilt {
 		return nil, errors.New("cluster_summaries does not exist")
 	}
-	var results []*analysis.ClusterSummary
+	var results []*analysis.Cluster
 	for _, c := range f.clusters {
 		include := opts.AlwaysIncludeBugClusters && c.ClusterID.IsBugCluster()
 		if opts.Thresholds.CriticalFailuresExonerated != nil {

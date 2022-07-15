@@ -73,3 +73,20 @@ func (s *DecoratedClusters) GetReclusteringProgress(ctx context.Context, req *Ge
 	}
 	return
 }
+
+func (s *DecoratedClusters) QueryClusterSummaries(ctx context.Context, req *QueryClusterSummariesRequest) (rsp *QueryClusterSummariesResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "QueryClusterSummaries", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.QueryClusterSummaries(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "QueryClusterSummaries", rsp, err)
+	}
+	return
+}

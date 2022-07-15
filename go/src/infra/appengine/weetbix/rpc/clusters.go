@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"infra/appengine/weetbix/internal/aip"
 	"infra/appengine/weetbix/internal/analysis"
 	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/clustering/algorithms"
@@ -32,7 +33,8 @@ const MaxClusterRequestSize = 1000
 const MaxBatchGetClustersRequestSize = 1000
 
 type AnalysisClient interface {
-	ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) ([]*analysis.ClusterSummary, error)
+	ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) ([]*analysis.Cluster, error)
+	QueryClusterSummaries(ctx context.Context, luciProject string, options *analysis.QueryClusterSummariesOptions) ([]*analysis.ClusterSummary, error)
 }
 
 type clustersServer struct {
@@ -173,7 +175,7 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 		return nil, err
 	}
 
-	readClusterByID := make(map[clustering.ClusterID]*analysis.ClusterSummary)
+	readClusterByID := make(map[clustering.ClusterID]*analysis.Cluster)
 	for _, c := range clusters {
 		readClusterByID[c.ClusterID] = c
 	}
@@ -182,9 +184,9 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 	// same as the names in the request.
 	results := make([]*pb.Cluster, 0, len(clusterIDs))
 	for i, clusterID := range clusterIDs {
-		cs, ok := readClusterByID[clusterID]
+		c, ok := readClusterByID[clusterID]
 		if !ok {
-			cs = &analysis.ClusterSummary{
+			c = &analysis.Cluster{
 				ClusterID: clusterID,
 				// No impact available for cluster (e.g. because no examples
 				// in BigQuery). Use suitable default values (all zeros
@@ -196,34 +198,34 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 			Name:       req.Names[i],
 			HasExample: ok,
 			UserClsFailedPresubmit: &pb.Cluster_MetricValues{
-				OneDay:   newCounts(cs.PresubmitRejects1d),
-				ThreeDay: newCounts(cs.PresubmitRejects3d),
-				SevenDay: newCounts(cs.PresubmitRejects7d),
+				OneDay:   newCounts(c.PresubmitRejects1d),
+				ThreeDay: newCounts(c.PresubmitRejects3d),
+				SevenDay: newCounts(c.PresubmitRejects7d),
 			},
 			CriticalFailuresExonerated: &pb.Cluster_MetricValues{
-				OneDay:   newCounts(cs.CriticalFailuresExonerated1d),
-				ThreeDay: newCounts(cs.CriticalFailuresExonerated3d),
-				SevenDay: newCounts(cs.CriticalFailuresExonerated7d),
+				OneDay:   newCounts(c.CriticalFailuresExonerated1d),
+				ThreeDay: newCounts(c.CriticalFailuresExonerated3d),
+				SevenDay: newCounts(c.CriticalFailuresExonerated7d),
 			},
 			Failures: &pb.Cluster_MetricValues{
-				OneDay:   newCounts(cs.Failures1d),
-				ThreeDay: newCounts(cs.Failures3d),
-				SevenDay: newCounts(cs.Failures7d),
+				OneDay:   newCounts(c.Failures1d),
+				ThreeDay: newCounts(c.Failures3d),
+				SevenDay: newCounts(c.Failures7d),
 			},
 		}
 
 		if !clusterID.IsBugCluster() && ok {
-			result.Title = suggestedClusterTitle(cs, cfg)
+			example := &clustering.Failure{
+				TestID: c.ExampleTestID(),
+				Reason: &pb.FailureReason{
+					PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
+				},
+			}
+			result.Title = suggestedClusterTitle(c.ClusterID, example, cfg)
 
 			// Ignore error, it is only returned if algorithm cannot be found.
 			alg, _ := algorithms.SuggestingAlgorithm(clusterID.Algorithm)
 			if alg != nil {
-				example := &clustering.Failure{
-					TestID: cs.ExampleTestID(),
-					Reason: &pb.FailureReason{
-						PrimaryErrorMessage: cs.ExampleFailureReason.StringVal,
-					},
-				}
 				result.EquivalentFailureAssociationRule = alg.FailureAssociationRule(cfg, example)
 			}
 		}
@@ -238,29 +240,23 @@ func newCounts(counts analysis.Counts) *pb.Cluster_MetricValues_Counts {
 	return &pb.Cluster_MetricValues_Counts{Nominal: counts.Nominal}
 }
 
-func suggestedClusterTitle(cs *analysis.ClusterSummary, cfg *compiledcfg.ProjectConfig) string {
+func suggestedClusterTitle(clusterID clustering.ClusterID, exampleFailure *clustering.Failure, cfg *compiledcfg.ProjectConfig) string {
 	var title string
 
 	// Ignore error, it is only returned if algorithm cannot be found.
-	alg, _ := algorithms.SuggestingAlgorithm(cs.ClusterID.Algorithm)
+	alg, _ := algorithms.SuggestingAlgorithm(clusterID.Algorithm)
 	switch {
 	case alg != nil:
-		example := &clustering.Failure{
-			TestID: cs.ExampleTestID(),
-			Reason: &pb.FailureReason{
-				PrimaryErrorMessage: cs.ExampleFailureReason.StringVal,
-			},
-		}
-		title = alg.ClusterTitle(cfg, example)
-	case cs.ClusterID.IsTestNameCluster():
+		title = alg.ClusterTitle(cfg, exampleFailure)
+	case clusterID.IsTestNameCluster():
 		// Fallback for old test name clusters.
-		title = cs.ExampleTestID()
-	case cs.ClusterID.IsFailureReasonCluster():
+		title = exampleFailure.TestID
+	case clusterID.IsFailureReasonCluster():
 		// Fallback for old reason-based clusters.
-		title = cs.ExampleFailureReason.StringVal
+		title = exampleFailure.Reason.PrimaryErrorMessage
 	default:
 		// Fallback for all other cases.
-		title = fmt.Sprintf("%s/%s", cs.ClusterID.Algorithm, cs.ClusterID.ID)
+		title = fmt.Sprintf("%s/%s", clusterID.Algorithm, clusterID.ID)
 	}
 	return title
 }
@@ -290,4 +286,70 @@ func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.Ge
 			ConfigVersion:     timestamppb.New(progress.Next.ConfigVersion),
 		},
 	}, nil
+}
+
+func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.QueryClusterSummariesRequest) (*pb.QueryClusterSummariesResponse, error) {
+	// Fetch a recent project configuration.
+	// (May be a recent value that was cached.)
+	cfg, err := readProjectConfig(ctx, req.Project)
+	if err != nil {
+		return nil, err
+	}
+
+	opts := &analysis.QueryClusterSummariesOptions{}
+	opts.FailureFilter, err = aip.ParseFilter(req.FailureFilter)
+	if err != nil {
+		return nil, invalidArgumentError(errors.Annotate(err, "failure_filter").Err())
+	}
+	opts.OrderBy, err = aip.ParseOrderBy(req.OrderBy)
+	if err != nil {
+		return nil, invalidArgumentError(errors.Annotate(err, "order_by").Err())
+	}
+
+	// Fetch a recent ruleset.
+	// Do this before Querying clusters as it is a much cheaper operation, so if
+	// it fails we want to bail out early.
+	ruleset, err := reclustering.Ruleset(ctx, req.Project, cache.StrongRead)
+	if err != nil {
+		return nil, err
+	}
+
+	clusters, err := c.analysisClient.QueryClusterSummaries(ctx, req.Project, opts)
+	if err != nil {
+		if err == analysis.ProjectNotExistsErr {
+			return nil, appstatus.Error(codes.NotFound,
+				"project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+		}
+		if analysis.InvalidArgumentTag.In(err) {
+			return nil, invalidArgumentError(err)
+		}
+		return nil, errors.Annotate(err, "query clusters for failures").Err()
+	}
+
+	result := []*pb.ClusterSummary{}
+	for _, c := range clusters {
+		cs := &pb.ClusterSummary{
+			ClusterId:                  createClusterIdPB(c.ClusterID),
+			PresubmitRejects:           c.PresubmitRejects,
+			CriticalFailuresExonerated: c.CriticalFailuresExonerated,
+			Failures:                   c.Failures,
+		}
+		if c.ClusterID.IsBugCluster() {
+			ruleID := c.ClusterID.ID
+			rule := ruleset.ActiveRulesByID[ruleID]
+			cs.Title = rule.Rule.RuleDefinition
+			cs.Bug = createAssociatedBugPB(rule.Rule.BugID, cfg.Config)
+		} else {
+			example := &clustering.Failure{
+				TestID: c.ExampleTestID,
+				Reason: &pb.FailureReason{
+					PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
+				},
+			}
+			cs.Title = suggestedClusterTitle(c.ClusterID, example, cfg)
+		}
+
+		result = append(result, cs)
+	}
+	return &pb.QueryClusterSummariesResponse{ClusterSummaries: result}, nil
 }

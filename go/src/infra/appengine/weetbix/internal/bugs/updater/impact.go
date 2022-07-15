@@ -10,36 +10,36 @@ import (
 )
 
 // ExtractResidualImpact extracts the residual impact from a
-// cluster summary. For suggested clusters, residual impact
+// cluster. For suggested clusters, residual impact
 // is the impact of the cluster after failures that are already
 // part of a bug cluster are removed.
-func ExtractResidualImpact(cs *analysis.ClusterSummary) *bugs.ClusterImpact {
+func ExtractResidualImpact(c *analysis.Cluster) *bugs.ClusterImpact {
 	return &bugs.ClusterImpact{
 		CriticalFailuresExonerated: bugs.MetricImpact{
-			OneDay:   cs.CriticalFailuresExonerated1d.Residual,
-			ThreeDay: cs.CriticalFailuresExonerated3d.Residual,
-			SevenDay: cs.CriticalFailuresExonerated7d.Residual,
+			OneDay:   c.CriticalFailuresExonerated1d.Residual,
+			ThreeDay: c.CriticalFailuresExonerated3d.Residual,
+			SevenDay: c.CriticalFailuresExonerated7d.Residual,
 		},
 		TestResultsFailed: bugs.MetricImpact{
-			OneDay:   cs.Failures1d.Residual,
-			ThreeDay: cs.Failures3d.Residual,
-			SevenDay: cs.Failures7d.Residual,
+			OneDay:   c.Failures1d.Residual,
+			ThreeDay: c.Failures3d.Residual,
+			SevenDay: c.Failures7d.Residual,
 		},
 		TestRunsFailed: bugs.MetricImpact{
-			OneDay:   cs.TestRunFails1d.Residual,
-			ThreeDay: cs.TestRunFails3d.Residual,
-			SevenDay: cs.TestRunFails7d.Residual,
+			OneDay:   c.TestRunFails1d.Residual,
+			ThreeDay: c.TestRunFails3d.Residual,
+			SevenDay: c.TestRunFails7d.Residual,
 		},
 		PresubmitRunsFailed: bugs.MetricImpact{
-			OneDay:   cs.PresubmitRejects1d.Residual,
-			ThreeDay: cs.PresubmitRejects3d.Residual,
-			SevenDay: cs.PresubmitRejects7d.Residual,
+			OneDay:   c.PresubmitRejects1d.Residual,
+			ThreeDay: c.PresubmitRejects3d.Residual,
+			SevenDay: c.PresubmitRejects7d.Residual,
 		},
 	}
 }
 
 // SetResidualImpact sets the residual impact on a cluster summary.
-func SetResidualImpact(cs *analysis.ClusterSummary, impact *bugs.ClusterImpact) {
+func SetResidualImpact(cs *analysis.Cluster, impact *bugs.ClusterImpact) {
 	cs.CriticalFailuresExonerated1d.Residual = impact.CriticalFailuresExonerated.OneDay
 	cs.CriticalFailuresExonerated3d.Residual = impact.CriticalFailuresExonerated.ThreeDay
 	cs.CriticalFailuresExonerated7d.Residual = impact.CriticalFailuresExonerated.SevenDay

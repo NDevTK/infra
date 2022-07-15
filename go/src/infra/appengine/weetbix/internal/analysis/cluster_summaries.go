@@ -11,9 +11,11 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 
+	"infra/appengine/weetbix/internal/aip"
 	"infra/appengine/weetbix/internal/bqutil"
 	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/clustering/algorithms/rulesalgorithm"
@@ -23,6 +25,10 @@ import (
 // ProjectNotExistsErr is returned if the dataset for the given project
 // does not exist.
 var ProjectNotExistsErr = errors.New("project does not exist in Weetbix or analysis is not yet available")
+
+// InvalidArgumentTag is used to indicate that one of the query options
+// is invalid.
+var InvalidArgumentTag = errors.BoolTag{Key: errors.NewTagKey("invalid argument")}
 
 // ImpactfulClusterReadOptions specifies options for ReadImpactfulClusters().
 type ImpactfulClusterReadOptions struct {
@@ -38,9 +44,9 @@ type ImpactfulClusterReadOptions struct {
 	AlwaysIncludeBugClusters bool
 }
 
-// ClusterSummary represents a statistical summary of a cluster's failures,
-// and their impact.
-type ClusterSummary struct {
+// Cluster contains detailed information about a cluster, including
+// a statistical summary of a cluster's failures, and their impact.
+type Cluster struct {
 	ClusterID clustering.ClusterID `json:"clusterId"`
 	// Distinct user CLs with presubmit rejects.
 	PresubmitRejects1d Counts `json:"presubmitRejects1d"`
@@ -69,17 +75,9 @@ type ClusterSummary struct {
 	TopMonorailComponents []TopCount `json:"topMonorailComponents"`
 }
 
-// ClusterPresubmitImpact represents a summary of the cluster's impact
-// on presubmit runs. Values are prior to any exoneration being applied.
-type ClusterPresubmitImpact struct {
-	ClusterID                       clustering.ClusterID
-	DistinctUserClTestRunsFailed12h int64
-	DistinctUserClTestRunsFailed1d  int64
-}
-
 // ExampleTestID returns an example Test ID that is part of the cluster, or
 // "" if the cluster is empty.
-func (s *ClusterSummary) ExampleTestID() string {
+func (s *Cluster) ExampleTestID() string {
 	if len(s.TopTestIDs) > 0 {
 		return s.TopTestIDs[0].Value
 	}
@@ -184,7 +182,11 @@ func (c *Client) RebuildAnalysis(ctx context.Context, project string) error {
 
 // ReadImpactfulClusters reads clusters exceeding specified impact metrics, or are otherwise
 // nominated to be read.
-func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulClusterReadOptions) ([]*ClusterSummary, error) {
+func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulClusterReadOptions) (cs []*Cluster, err error) {
+	_, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/analysis/ReadImpactfulClusters")
+	s.Attribute("project", opts.Project)
+	defer func() { s.End(err) }()
+
 	if opts.Thresholds == nil {
 		return nil, errors.New("thresholds must be specified")
 	}
@@ -251,63 +253,25 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 
 	job, err := q.Run(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "querying cluster summaries").Err()
+		return nil, errors.Annotate(err, "querying clusters").Err()
 	}
 	it, err := job.Read(ctx)
 	if err != nil {
 		return nil, handleJobReadError(err)
 	}
-	clusters := []*ClusterSummary{}
+	clusters := []*Cluster{}
 	for {
-		row := &ClusterSummary{}
+		row := &Cluster{}
 		err := it.Next(row)
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			return nil, errors.Annotate(err, "obtain next cluster summary row").Err()
+			return nil, errors.Annotate(err, "obtain next cluster row").Err()
 		}
 		clusters = append(clusters, row)
 	}
 	return clusters, nil
-}
-
-func (c *Client) ReadClusterPresubmitImpact(ctx context.Context, project string, clusterIDs []clustering.ClusterID) ([]ClusterPresubmitImpact, error) {
-	dataset, err := bqutil.DatasetForProject(project)
-	if err != nil {
-		return nil, errors.Annotate(err, "getting dataset").Err()
-	}
-
-	q := c.client.Query(clusterPresubmitAnalysis)
-	q.DefaultDatasetID = dataset
-	q.Parameters = []bigquery.QueryParameter{
-		{
-			Name:  "clusterIDs",
-			Value: clusterIDs,
-		},
-	}
-
-	job, err := q.Run(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "querying cluster presubmit impact").Err()
-	}
-	it, err := job.Read(ctx)
-	if err != nil {
-		return nil, handleJobReadError(err)
-	}
-	results := make([]ClusterPresubmitImpact, 0, len(clusterIDs))
-	for {
-		var row ClusterPresubmitImpact
-		err := it.Next(&row)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, errors.Annotate(err, "obtain next presubmit impact row").Err()
-		}
-		results = append(results, row)
-	}
-	return results, nil
 }
 
 func valueOrDefault(value *int64, defaultValue int64) int64 {
@@ -352,7 +316,12 @@ func whereThresholdsMet(sqlPrefix string, threshold *configpb.MetricThreshold) (
 }
 
 // ReadCluster reads information about a list of clusters.
-func (c *Client) ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) ([]*ClusterSummary, error) {
+// If the dataset for the LUCI project does not exist, returns ProjectNotExistsErr.
+func (c *Client) ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) (cs []*Cluster, err error) {
+	_, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/analysis/ReadClusters")
+	s.Attribute("project", luciProject)
+	defer func() { s.End(err) }()
+
 	dataset, err := bqutil.DatasetForProject(luciProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "getting dataset").Err()
@@ -384,7 +353,161 @@ func (c *Client) ReadClusters(ctx context.Context, luciProject string, clusterID
 	}
 	job, err := q.Run(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "querying cluster summary").Err()
+		return nil, errors.Annotate(err, "querying cluster").Err()
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		return nil, handleJobReadError(err)
+	}
+	clusters := []*Cluster{}
+	for {
+		row := &Cluster{}
+		err := it.Next(row)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, errors.Annotate(err, "obtain next cluster row").Err()
+		}
+		clusters = append(clusters, row)
+	}
+	return clusters, nil
+}
+
+var ClusteredFailuresTable = aip.NewTable().WithColumns(
+	aip.NewColumn().WithName("test_id").WithDatabaseName("test_id").FilterableImplicitly().Build(),
+	aip.NewColumn().WithName("failure_reason").WithDatabaseName("failure_reason.primary_error_message").FilterableImplicitly().Build(),
+	aip.NewColumn().WithName("realm").WithDatabaseName("realm").Filterable().Build(),
+	aip.NewColumn().WithName("ingested_invocation_id").WithDatabaseName("ingested_invocation_id").Filterable().Build(),
+	aip.NewColumn().WithName("cluster_algorithm").WithDatabaseName("cluster_algorithm").Filterable().Build(),
+	aip.NewColumn().WithName("cluster_id").WithDatabaseName("cluster_id").Filterable().Build(),
+	aip.NewColumn().WithName("variant_hash").WithDatabaseName("variant_hash").Filterable().Build(),
+	aip.NewColumn().WithName("test_run_id").WithDatabaseName("test_run_id").Filterable().Build(),
+).Build()
+
+var ClusterSummariesTable = aip.NewTable().WithColumns(
+	aip.NewColumn().WithName("presubmit_rejects").WithDatabaseName("PresubmitRejects").Sortable().Build(),
+	aip.NewColumn().WithName("critical_failures_exonerated").WithDatabaseName("CriticalFailuresExonerated").Sortable().Build(),
+	aip.NewColumn().WithName("failures").WithDatabaseName("Failures").Sortable().Build(),
+).Build()
+
+var ClusterSummariesDefaultOrder = []aip.OrderBy{
+	{Name: "presubmit_rejects", Descending: true},
+	{Name: "critical_failures_exonerated", Descending: true},
+	{Name: "failures", Descending: true},
+}
+
+type QueryClusterSummariesOptions struct {
+	// A filter on the underlying failures to include in the clusters.
+	FailureFilter *aip.Filter
+	OrderBy       []aip.OrderBy
+}
+
+// ClusterSummary represents a summary of the cluster's failures
+// and their impact.
+type ClusterSummary struct {
+	ClusterID                  clustering.ClusterID `json:"clusterId"`
+	PresubmitRejects           int64                `json:"presubmitRejects"`
+	CriticalFailuresExonerated int64                `json:"criticalFailuresExonerated"`
+	Failures                   int64                `json:"failures"`
+	ExampleFailureReason       bigquery.NullString  `json:"exampleFailureReason"`
+	ExampleTestID              string               `json:"exampleTestId"`
+}
+
+// Queries a summary of clusters in the project.
+// The subset of failures included in the clustering may be filtered.
+// If the dataset for the LUCI project does not exist, returns
+// ProjectNotExistsErr.
+// If options.FailuresFilter or options.OrderBy is invalid with respect to the
+// query schema, returns an error tagged with InvalidArgumentTag so that the
+// appropriate gRPC error can be returned to the client (if applicable).
+func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, options *QueryClusterSummariesOptions) (cs []*ClusterSummary, err error) {
+	_, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/analysis/QueryClusterSummaries")
+	s.Attribute("project", luciProject)
+	defer func() { s.End(err) }()
+
+	// Note that the content of the filter and order_by clause is untrusted
+	// user input and is validated as part of the Where/OrderBy clause
+	// generation here.
+	const parameterPrefix = "w_"
+	whereClause, parameters, err := ClusteredFailuresTable.WhereClause(options.FailureFilter, parameterPrefix)
+	if err != nil {
+		return nil, errors.Annotate(err, "failure_filter").Tag(InvalidArgumentTag).Err()
+	}
+
+	order := aip.MergeWithDefaultOrder(ClusterSummariesDefaultOrder, options.OrderBy)
+	orderByClause, err := ClusterSummariesTable.OrderByClause(order)
+	if err != nil {
+		return nil, errors.Annotate(err, "order_by").Tag(InvalidArgumentTag).Err()
+	}
+
+	dataset, err := bqutil.DatasetForProject(luciProject)
+	if err != nil {
+		return nil, errors.Annotate(err, "getting dataset").Err()
+	}
+
+	sql := `
+	SELECT
+		STRUCT(cluster_algorithm AS Algorithm,
+			cluster_id AS ID) AS ClusterID,
+		ANY_VALUE(failure_reason.primary_error_message) AS ExampleFailureReason,
+		ANY_VALUE(test_id) AS ExampleTestID, 
+		APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
+		COUNTIF(is_critical_and_exonerated) AS CriticalFailuresExonerated,
+		COUNT(1) AS Failures,
+		FROM (
+			SELECT
+				cluster_algorithm,
+				cluster_id,
+				r.test_id,
+				r.failure_reason, 
+				(r.build_critical AND
+					-- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
+					-- Passes are not ingested by Weetbix, but if a test has both an unexpected pass
+					-- and an unexpected failure, it will be exonerated for the unexpected pass.
+					(STRUCT('OCCURS_ON_MAINLINE' as Reason) in UNNEST(r.exonerations) OR
+						STRUCT('OCCURS_ON_OTHER_CLS' as Reason) in UNNEST(r.exonerations)))
+					AS is_critical_and_exonerated,
+				IF(r.is_ingested_invocation_blocked AND r.build_critical AND r.presubmit_run_mode = 'FULL_RUN' AND
+					ARRAY_LENGTH(r.exonerations) = 0 AND r.build_status = 'FAILURE' AND r.presubmit_run_owner = 'user',
+						IF(ARRAY_LENGTH(r.changelists)>0 AND r.presubmit_run_owner='user',
+							CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
+							NULL),
+						NULL)
+					AS presubmit_cl_blocked,
+			FROM (
+				SELECT
+					cluster_algorithm,
+					cluster_id,
+					test_result_system,
+					test_result_id,
+					ARRAY_AGG(cf ORDER BY cf.last_updated DESC LIMIT 1)[OFFSET(0)] AS r
+				FROM clustered_failures cf
+				WHERE
+					cf.partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+					AND ` + whereClause + `
+				GROUP BY
+					cluster_algorithm,
+					cluster_id,
+					test_result_system,
+					test_result_id )
+				-- Only return failures which are still included in the cluster.
+			WHERE
+				r.is_included_with_high_priority)
+		GROUP BY
+			cluster_algorithm,
+			cluster_id
+		` + orderByClause + `
+		LIMIT 1000
+	`
+
+	q := c.client.Query(sql)
+	q.DefaultDatasetID = dataset
+	q.Parameters = toBigQueryParameters(parameters)
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "querying cluster summaries").Err()
 	}
 	it, err := job.Read(ctx)
 	if err != nil {
@@ -403,6 +526,17 @@ func (c *Client) ReadClusters(ctx context.Context, luciProject string, clusterID
 		clusters = append(clusters, row)
 	}
 	return clusters, nil
+}
+
+func toBigQueryParameters(pars []aip.QueryParameter) []bigquery.QueryParameter {
+	result := make([]bigquery.QueryParameter, 0, len(pars))
+	for _, p := range pars {
+		result = append(result, bigquery.QueryParameter{
+			Name:  p.Name,
+			Value: p.Value,
+		})
+	}
+	return result
 }
 
 type ClusterFailure struct {
@@ -446,7 +580,11 @@ type Changelist struct {
 // ReadClusterFailures reads the latest 2000 groups of failures for a single cluster for the last 7 days.
 // A group of failures are failures that would be grouped together in MILO display, i.e.
 // same ingested_invocation_id, test_id and variant.
-func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, clusterID clustering.ClusterID) ([]*ClusterFailure, error) {
+func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, clusterID clustering.ClusterID) (cfs []*ClusterFailure, err error) {
+	_, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/analysis/ReadClusterFailures")
+	s.Attribute("project", luciProject)
+	defer func() { s.End(err) }()
+
 	dataset, err := bqutil.DatasetForProject(luciProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "getting dataset").Err()

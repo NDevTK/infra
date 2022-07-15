@@ -126,7 +126,7 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 		// - Impactful Suggested Clusters: if any suggested clusters have
 		//    reached the threshold to file a new bug for, we want to read
 		//    them, so we can file a bug.
-		clusterSummaries, err := b.analysisClient.ReadImpactfulClusters(ctx, analysis.ImpactfulClusterReadOptions{
+		clusters, err := b.analysisClient.ReadImpactfulClusters(ctx, analysis.ImpactfulClusterReadOptions{
 			Project:                  b.project,
 			Thresholds:               b.projectCfg.Config.BugFilingThreshold,
 			AlwaysIncludeBugClusters: true,
@@ -152,15 +152,15 @@ func (b *BugUpdater) Run(ctx context.Context, progress *runs.ReclusteringProgres
 			}
 		}
 
-		if err := b.fileNewBugs(ctx, clusterSummaries, blockedSourceClusterIDs); err != nil {
+		if err := b.fileNewBugs(ctx, clusters, blockedSourceClusterIDs); err != nil {
 			return err
 		}
 
-		for _, clusterSummary := range clusterSummaries {
-			if clusterSummary.ClusterID.Algorithm == rulesalgorithm.AlgorithmName {
+		for _, cluster := range clusters {
+			if cluster.ClusterID.Algorithm == rulesalgorithm.AlgorithmName {
 				// Use only impact from latest algorithm version.
-				ruleID := clusterSummary.ClusterID.ID
-				impactByRuleID[ruleID] = ExtractResidualImpact(clusterSummary)
+				ruleID := cluster.ClusterID.ID
+				impactByRuleID[ruleID] = ExtractResidualImpact(cluster)
 			}
 		}
 	}
@@ -280,12 +280,12 @@ func (b *BugUpdater) verifyClusterImpactValid(ctx context.Context, progress *run
 // blockedClusterIDs will not have a bug filed. This can be used to
 // suppress bug-filing for suggested clusters that have recently had a
 // bug filed for them and re-clustering is not yet complete.
-func (b *BugUpdater) fileNewBugs(ctx context.Context, clusterSummaries []*analysis.ClusterSummary, blockedClusterIDs map[string]struct{}) error {
-	sortByBugFilingPreference(clusterSummaries)
+func (b *BugUpdater) fileNewBugs(ctx context.Context, clusters []*analysis.Cluster, blockedClusterIDs map[string]struct{}) error {
+	sortByBugFilingPreference(clusters)
 
-	var toCreateBugsFor []*analysis.ClusterSummary
-	for _, clusterSummary := range clusterSummaries {
-		if clusterSummary.ClusterID.IsBugCluster() {
+	var toCreateBugsFor []*analysis.Cluster
+	for _, cluster := range clusters {
+		if cluster.ClusterID.IsBugCluster() {
 			// Never file another bug for a bug cluster.
 			continue
 		}
@@ -295,16 +295,16 @@ func (b *BugUpdater) fileNewBugs(ctx context.Context, clusterSummaries []*analys
 		// clusters for the same suggested cluster, because re-clustering and
 		// re-analysis has not yet run and moved residual impact from the
 		// suggested cluster to the bug cluster.
-		_, ok := blockedClusterIDs[clusterSummary.ClusterID.Key()]
+		_, ok := blockedClusterIDs[cluster.ClusterID.Key()]
 		if ok {
 			// Do not file a bug.
 			continue
 		}
 
 		// Only file a bug if the residual impact exceeds the threshold.
-		impact := ExtractResidualImpact(clusterSummary)
+		impact := ExtractResidualImpact(cluster)
 		bugFilingThreshold := b.projectCfg.Config.BugFilingThreshold
-		if clusterSummary.ClusterID.IsTestNameCluster() {
+		if cluster.ClusterID.IsTestNameCluster() {
 			// Use an inflated threshold for test name clusters to bias
 			// bug creation towards failure reason clusters.
 			bugFilingThreshold =
@@ -315,17 +315,17 @@ func (b *BugUpdater) fileNewBugs(ctx context.Context, clusterSummaries []*analys
 			continue
 		}
 
-		toCreateBugsFor = append(toCreateBugsFor, clusterSummary)
+		toCreateBugsFor = append(toCreateBugsFor, cluster)
 	}
 
 	// File new bugs.
 	bugsFiled := 0
-	for _, clusterSummary := range toCreateBugsFor {
+	for _, cluster := range toCreateBugsFor {
 		// Throttle how many bugs may be filed each time.
 		if bugsFiled >= b.MaxBugsFiledPerRun {
 			break
 		}
-		created, err := b.createBug(ctx, clusterSummary)
+		created, err := b.createBug(ctx, cluster)
 		if err != nil {
 			return err
 		}
@@ -534,9 +534,9 @@ func readRuleForBugAndProject(ctx context.Context, bug bugs.BugID, project strin
 	return rule, anyRuleManaging, nil
 }
 
-// sortByBugFilingPreference sorts cluster summaries based on our preference
+// sortByBugFilingPreference sorts clusters based on our preference
 // to file bugs for these clusters.
-func sortByBugFilingPreference(cs []*analysis.ClusterSummary) {
+func sortByBugFilingPreference(cs []*analysis.Cluster) {
 	// The current ranking approach prefers filing bugs for clusters with more
 	// impact, with a bias towards reason clusters.
 	//
@@ -545,9 +545,9 @@ func sortByBugFilingPreference(cs []*analysis.ClusterSummary) {
 	// As bug filing runs relatively often, except in cases of contention,
 	// the first bug to meet the threshold will be filed.
 	sort.Slice(cs, func(i, j int) bool {
-		presubmitRejects := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.PresubmitRejects7d }
-		criticalFailuresExonerated := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.CriticalFailuresExonerated7d }
-		failures := func(cs *analysis.ClusterSummary) analysis.Counts { return cs.Failures7d }
+		presubmitRejects := func(cs *analysis.Cluster) analysis.Counts { return cs.PresubmitRejects7d }
+		criticalFailuresExonerated := func(cs *analysis.Cluster) analysis.Counts { return cs.CriticalFailuresExonerated7d }
+		failures := func(cs *analysis.Cluster) analysis.Counts { return cs.Failures7d }
 
 		if equal, less := rankByMetric(cs[i], cs[j], presubmitRejects); !equal {
 			return less
@@ -567,7 +567,7 @@ func sortByBugFilingPreference(cs []*analysis.ClusterSummary) {
 	})
 }
 
-func rankByMetric(a, b *analysis.ClusterSummary, accessor func(*analysis.ClusterSummary) analysis.Counts) (equal bool, less bool) {
+func rankByMetric(a, b *analysis.Cluster, accessor func(*analysis.Cluster) analysis.Counts) (equal bool, less bool) {
 	valueA := accessor(a).Residual
 	valueB := accessor(b).Residual
 	// If one cluster we are comparing with is a test name cluster,
@@ -581,7 +581,7 @@ func rankByMetric(a, b *analysis.ClusterSummary, accessor func(*analysis.Cluster
 	}
 	equal = (valueA == valueB)
 	// a less than b in the sort order is defined as a having more impact
-	// than b, so that cluster summaries are sorted in descending impact order.
+	// than b, so that clusters are sorted in descending impact order.
 	less = (valueA > valueB)
 	return equal, less
 }
@@ -589,7 +589,7 @@ func rankByMetric(a, b *analysis.ClusterSummary, accessor func(*analysis.Cluster
 // createBug files a new bug for the given suggested cluster,
 // and stores the association from bug to failures through a new
 // failure association rule.
-func (b *BugUpdater) createBug(ctx context.Context, cs *analysis.ClusterSummary) (created bool, err error) {
+func (b *BugUpdater) createBug(ctx context.Context, cs *analysis.Cluster) (created bool, err error) {
 	alg, err := algorithms.SuggestingAlgorithm(cs.ClusterID.Algorithm)
 	if err == algorithms.ErrAlgorithmNotExist {
 		// The cluster is for an old algorithm that no longer exists, or
@@ -674,17 +674,17 @@ func (b *BugUpdater) createBug(ctx context.Context, cs *analysis.ClusterSummary)
 	return true, nil
 }
 
-func clusterSummaryFromAnalysis(cs *analysis.ClusterSummary) *clustering.ClusterSummary {
+func clusterSummaryFromAnalysis(c *analysis.Cluster) *clustering.ClusterSummary {
 	example := clustering.Failure{
-		TestID: cs.ExampleTestID(),
+		TestID: c.ExampleTestID(),
 	}
-	if cs.ExampleFailureReason.Valid {
-		example.Reason = &pb.FailureReason{PrimaryErrorMessage: cs.ExampleFailureReason.StringVal}
+	if c.ExampleFailureReason.Valid {
+		example.Reason = &pb.FailureReason{PrimaryErrorMessage: c.ExampleFailureReason.StringVal}
 	}
 	// A list of 5 commonly occuring tests are included in bugs created
 	// for failure reason clusters, to improve searchability by test name.
 	var topTests []string
-	for _, tt := range cs.TopTestIDs {
+	for _, tt := range c.TopTestIDs {
 		topTests = append(topTests, tt.Value)
 	}
 	return &clustering.ClusterSummary{

@@ -96,7 +96,7 @@ func (h *Handlers) listClustersInternal(ctx context.Context, projectID string, p
 	}
 	var ruleIndex int
 
-	var result []*ClusterSummary
+	result := []*ClusterSummary{}
 	for _, c := range clusters {
 		cs := &ClusterSummary{}
 		cs.ClusterCommon = newClusterCommon(c)
@@ -115,7 +115,7 @@ func (h *Handlers) listClustersInternal(ctx context.Context, projectID string, p
 	return result, nil
 }
 
-func newClusterCommon(cs *analysis.ClusterSummary) ClusterCommon {
+func newClusterCommon(cs *analysis.Cluster) ClusterCommon {
 	return ClusterCommon{
 		ClusterID:                    cs.ClusterID,
 		CriticalFailuresExonerated1d: cs.CriticalFailuresExonerated1d,
@@ -133,29 +133,29 @@ func newClusterCommon(cs *analysis.ClusterSummary) ClusterCommon {
 	}
 }
 
-func suggestedClusterTitle(cs *analysis.ClusterSummary, cfg *compiledcfg.ProjectConfig) string {
+func suggestedClusterTitle(c *analysis.Cluster, cfg *compiledcfg.ProjectConfig) string {
 	var title string
 
 	// Ignore error, it is only returned if algorithm cannot be found.
-	alg, _ := algorithms.SuggestingAlgorithm(cs.ClusterID.Algorithm)
+	alg, _ := algorithms.SuggestingAlgorithm(c.ClusterID.Algorithm)
 	switch {
 	case alg != nil:
 		example := &clustering.Failure{
-			TestID: cs.ExampleTestID(),
+			TestID: c.ExampleTestID(),
 			Reason: &weetbixpb.FailureReason{
-				PrimaryErrorMessage: cs.ExampleFailureReason.StringVal,
+				PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
 			},
 		}
 		title = alg.ClusterTitle(cfg, example)
-	case cs.ClusterID.IsTestNameCluster():
+	case c.ClusterID.IsTestNameCluster():
 		// Fallback for old test name clusters.
-		title = cs.ExampleTestID()
-	case cs.ClusterID.IsFailureReasonCluster():
+		title = c.ExampleTestID()
+	case c.ClusterID.IsFailureReasonCluster():
 		// Fallback for old reason-based clusters.
-		title = cs.ExampleFailureReason.StringVal
+		title = c.ExampleFailureReason.StringVal
 	default:
 		// Fallback for all other cases.
-		title = fmt.Sprintf("%s/%s", cs.ClusterID.Algorithm, cs.ClusterID.ID)
+		title = fmt.Sprintf("%s/%s", c.ClusterID.Algorithm, c.ClusterID.ID)
 	}
 	return title
 }
@@ -172,19 +172,19 @@ type Cluster struct {
 	FailureAssociationRule string `json:"failureAssociationRule"`
 }
 
-func newCluster(cs *analysis.ClusterSummary, cfg *compiledcfg.ProjectConfig) *Cluster {
+func newCluster(c *analysis.Cluster, cfg *compiledcfg.ProjectConfig) *Cluster {
 	result := &Cluster{}
-	result.ClusterCommon = newClusterCommon(cs)
-	if !cs.ClusterID.IsBugCluster() {
-		result.Title = suggestedClusterTitle(cs, cfg)
+	result.ClusterCommon = newClusterCommon(c)
+	if !c.ClusterID.IsBugCluster() {
+		result.Title = suggestedClusterTitle(c, cfg)
 
 		// Ignore error, it is only returned if algorithm cannot be found.
-		alg, _ := algorithms.SuggestingAlgorithm(cs.ClusterID.Algorithm)
+		alg, _ := algorithms.SuggestingAlgorithm(c.ClusterID.Algorithm)
 		if alg != nil {
 			example := &clustering.Failure{
-				TestID: cs.ExampleTestID(),
+				TestID: c.ExampleTestID(),
 				Reason: &weetbixpb.FailureReason{
-					PrimaryErrorMessage: cs.ExampleFailureReason.StringVal,
+					PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
 				},
 			}
 			result.FailureAssociationRule = alg.FailureAssociationRule(cfg, example)
