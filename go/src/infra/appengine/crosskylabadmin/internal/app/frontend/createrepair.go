@@ -91,7 +91,16 @@ func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, e
 func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (string, error) {
 	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", botID, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
-	taskType, err := RouteTask(ctx, "repair", botID, expectedState, pools, randFloat)
+	taskType, err := RouteTask(
+		ctx,
+		RouteTaskParams{
+			taskType:      "repair",
+			botID:         botID,
+			expectedState: expectedState,
+			pools:         pools,
+		},
+		randFloat,
+	)
 	if err != nil {
 		logging.Infof(ctx, "Create repair task: falling back to legacy repair by default: %s", err)
 		return createLegacyRepairTask(ctx, botID, expectedState)

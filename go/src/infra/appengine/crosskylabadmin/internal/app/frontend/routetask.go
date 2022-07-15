@@ -16,6 +16,17 @@ import (
 	"infra/libs/skylab/common/heuristics"
 )
 
+// RouteTaskParams are the parameters needed to route a task between legacy and paris
+// and between the paris prod version and paris prod canary.
+//
+// RouteTaskParams deliberately excludes the context and randFloat, the entropy required.
+type RouteTaskParams struct {
+	taskType      string
+	botID         string
+	expectedState string
+	pools         []string
+}
+
 // RouteTask routes a task for a given bot.
 //
 // The possible return values are:
@@ -23,18 +34,17 @@ import (
 // -       ""  (indicates an error, should be treated as equivalent to "legacy" by callers)
 // -  "paris"  (for PARIS, which is new)
 // -  "latest" (indicates the latest version of paris)
-//
-func RouteTask(ctx context.Context, taskType string, botID string, expectedState string, pools []string, randFloat float64) (heuristics.TaskType, error) {
-	if taskType == "" {
+func RouteTask(ctx context.Context, p RouteTaskParams, randFloat float64) (heuristics.TaskType, error) {
+	if p.taskType == "" {
 		return heuristics.LegacyTaskType, errors.New("route task: task type cannot be empty")
 	}
-	switch taskType {
+	switch p.taskType {
 	case "repair":
-		return routeRepairTask(ctx, botID, expectedState, pools, randFloat)
+		return routeRepairTask(ctx, p.botID, p.expectedState, p.pools, randFloat)
 	case "audit_rpm":
 		return routeAuditRPMTask(ctx)
 	}
-	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", taskType)
+	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", p.taskType)
 }
 
 // routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.

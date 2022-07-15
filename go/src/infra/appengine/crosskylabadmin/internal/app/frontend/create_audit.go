@@ -27,7 +27,16 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 	// Log, but do not otherwise use the chosen task result.
 	// RouteTask returning an error does NOT imply that the surrounding task
 	// should fail.
-	taskType, err := RouteTask(ctx, taskname, botID, "", nil, randFloat)
+	taskType, err := RouteTask(
+		ctx,
+		RouteTaskParams{
+			taskType:      taskname,
+			botID:         botID,
+			expectedState: "",
+			pools:         nil,
+		},
+		randFloat,
+	)
 	logging.Infof(ctx, "RouteTask picked the taskType %d", int(taskType))
 	if err == nil {
 		logging.Infof(ctx, "RouteTask succeeded.")
