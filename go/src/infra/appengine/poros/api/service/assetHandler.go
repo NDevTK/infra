@@ -36,6 +36,7 @@ func toEntity(model *proto.AssetModel) *AssetEntity {
 			CreatedBy:   model.CreatedBy,
 			ModifiedAt:  model.ModifiedAt.AsTime(),
 			ModifiedBy:  model.ModifiedBy,
+			Deleted:     model.Deleted,
 		}
 	}
 	return nil
@@ -52,6 +53,7 @@ func toModel(entity *AssetEntity) *proto.AssetModel {
 			CreatedBy:   entity.CreatedBy,
 			ModifiedAt:  timestamppb.New(entity.ModifiedAt),
 			ModifiedBy:  entity.ModifiedBy,
+			Deleted:     entity.Deleted,
 		}
 	}
 	return nil
@@ -87,6 +89,7 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		AssetType:   req.GetAssetType(),
 		CreatedBy:   auth.CurrentUser(ctx).Email,
 		CreatedAt:   time.Now().UTC(),
+		Deleted:     false,
 	}
 	response := &proto.CreateAssetResponse{}
 
@@ -230,8 +233,12 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 
 // Deletes the given Asset.
 func (e *AssetHandler) Delete(ctx context.Context, req *proto.DeleteAssetRequest) (*emptypb.Empty, error) {
-	if err := datastore.Delete(ctx, &AssetEntity{
-		AssetId: req.GetAssetId()}); err != nil {
+	entity, err := getById(ctx, req.GetAssetId())
+	if err != nil {
+		return nil, err
+	}
+	entity.Deleted = true
+	if err = datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil

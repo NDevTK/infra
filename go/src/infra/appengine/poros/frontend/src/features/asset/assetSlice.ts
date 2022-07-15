@@ -94,7 +94,7 @@ export const fetchAssetAsync = createAsyncThunk(
   'asset/fetchAsset',
   async (assetId: string) => {
     const request: GetAssetRequest = {
-      id: assetId,
+      assetId: assetId,
     };
     const service: IAssetService = new AssetService();
     const response = await service.get(request);
@@ -174,10 +174,10 @@ export const deleteAssetAsync = createAsyncThunk(
   'asset/deleteAsset',
   async (assetId: string) => {
     const request: DeleteAssetRequest = {
-      id: assetId,
+      assetId: assetId,
     };
     const service: IAssetService = new AssetService();
-    const response = await service.get(request);
+    const response = await service.delete(request);
     return response;
   }
 );
@@ -366,7 +366,9 @@ export const assetSlice = createSlice({
       })
       .addCase(queryAssetAsync.fulfilled, (state, action) => {
         state.fetchAssetStatus = 'idle';
-        state.assets = action.payload.assets;
+        state.assets = action.payload.assets.filter(
+          (asset) => asset.deleted === false
+        );
         state.pageToken = action.payload.nextPageToken;
       })
       .addCase(deleteAssetAsync.pending, (state) => {
@@ -374,7 +376,12 @@ export const assetSlice = createSlice({
       })
       .addCase(deleteAssetAsync.fulfilled, (state) => {
         state.deletingStatus = 'idle';
+        state.assets = state.assets.filter(
+          (asset) => asset.assetId !== state.record.assetId
+        );
         state.record = AssetModel.defaultEntity();
+        state.assetResourcesToDelete = [];
+        state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
       })
       .addCase(queryAssetResourceAsync.pending, (state) => {
         state.fetchAssetResourceStatus = 'loading';
@@ -403,7 +410,9 @@ export const assetSlice = createSlice({
         ).fill(true);
       })
       .addCase(queryResourceAsync.fulfilled, (state, action) => {
-        state.resources = action.payload.resources;
+        state.resources = action.payload.resources.filter(
+          (resource) => resource.deleted === false
+        );
       })
       .addCase(createAssetInstanceAsync.pending, (state) => {
         state.savingStatus = 'loading';

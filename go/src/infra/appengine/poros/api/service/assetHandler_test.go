@@ -444,3 +444,21 @@ func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.A
 
 	return asset.Asset, assetResource, resource, nil
 }
+
+func TestAssetDeleteWithValidData(t *testing.T) {
+	t.Parallel()
+	createRequest := mockCreateAssetRequest("Test Asset1", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
+	Convey("Create an asset in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		handler := &AssetHandler{}
+		model, err := handler.Create(ctx, createRequest)
+		So(err, ShouldBeNil)
+		deleteRequest := &proto.DeleteAssetRequest{AssetId: model.Asset.AssetId}
+		_, err = handler.Delete(ctx, deleteRequest)
+		So(err, ShouldBeNil)
+		getRequest := &proto.GetAssetRequest{AssetId: model.Asset.AssetId}
+		readEntity, err := handler.Get(ctx, getRequest)
+		So(err, ShouldBeNil)
+		So(readEntity.Deleted, ShouldEqual, true)
+	})
+}

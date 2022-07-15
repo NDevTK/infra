@@ -181,7 +181,13 @@ export function AssetList() {
           <Button variant="outlined" size="small" onClick={handleSpinClose}>
             Cancel
           </Button>
-          <Button variant="contained" size="small" onClick={handleSpinConfirm} component={Link} to="/assetInstances">
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleSpinConfirm}
+            component={Link}
+            to="/assetInstances"
+          >
             Confirm
           </Button>
         </Stack>

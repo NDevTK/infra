@@ -97,6 +97,8 @@ export interface AssetModel {
   modifiedBy: string;
   /** Timestamp for the last update of the record */
   modifiedAt: Date | undefined;
+  /** Flag to denote whether this Asset is deleted */
+  deleted: boolean;
 }
 
 export const AssetModel = {
@@ -110,6 +112,7 @@ export const AssetModel = {
       createdAt: undefined,
       modifiedBy: '',
       modifiedAt: undefined,
+      deleted: false,
     };
   },
   fromJSON(object: any): AssetModel {
@@ -126,6 +129,7 @@ export const AssetModel = {
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
         : undefined,
+      deleted: isSet(object.deleted) ? Boolean(object.deleted) : false,
     };
   },
 
@@ -142,6 +146,7 @@ export const AssetModel = {
     message.modifiedBy !== undefined && (obj.modifiedBy = message.modifiedBy);
     message.modifiedAt !== undefined &&
       (obj.modifiedAt = message.modifiedAt.toISOString());
+    message.deleted !== undefined && (obj.deleted = message.deleted);
     return obj;
   },
 };
@@ -192,13 +197,13 @@ export const CreateAssetResponse = {
 // Request to delete a single asset from poros.
 export interface DeleteAssetRequest {
   /** Unique identifier of the asset */
-  id: string;
+  assetId: string;
 }
 
 export const DeleteAssetRequest = {
   toJSON(message: DeleteAssetRequest): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.name = message.id);
+    message.assetId !== undefined && (obj.assetId = message.assetId);
     return obj;
   },
 };
@@ -209,13 +214,13 @@ export interface GetAssetRequest {
    * The name of the asset to retrieve.
    * Format: publishers/{publisher}/assets/{asset}
    */
-  id: string;
+  assetId: string;
 }
 
 export const GetAssetRequest = {
   toJSON(message: GetAssetRequest): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
+    message.assetId !== undefined && (obj.assetId = message.assetId);
     return obj;
   },
 };

@@ -11,6 +11,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import {
+  Dialog,
+  DialogTitle,
   Divider,
   FormControl,
   FormHelperText,
@@ -40,12 +42,17 @@ import {
   setDescriptionValidFalse,
   setResourceIdValidFalse,
   setAliasNameValidFalse,
+  deleteAssetAsync,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { AssetResourceModel } from '../../api/asset_resource_service';
 import { ResourceModel } from '../../api/resource_service';
 import { queryResourceAsync } from '../resource/resourceSlice';
-import { setRightSideDrawerClose } from '../utility/utilitySlice';
+import {
+  setRightSideDrawerClose,
+  setDeleteAssetDialogClose,
+  setDeleteAssetDialogOpen,
+} from '../utility/utilitySlice';
 
 export const Asset = () => {
   const name: string = useAppSelector((state) => state.asset.record.name);
@@ -72,6 +79,9 @@ export const Asset = () => {
   const recordValidation: AssetRecordValidation = useAppSelector(
     (state) => state.asset.recordValidation
   );
+  const deleteAssetDialogOpen: boolean = useAppSelector(
+    (state) => state.utility.deleteAssetDialogOpen
+  );
   const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }));
@@ -89,10 +99,7 @@ export const Asset = () => {
     if (!validateInput()) {
       return;
     }
-    assetResourcesToSave = [
-      ...assetResourcesToSave,
-      ...defaultAssetResources,
-    ];
+    assetResourcesToSave = [...assetResourcesToSave, ...defaultAssetResources];
     if (assetId === '') {
       dispatch(
         createAssetAsync({
@@ -142,6 +149,17 @@ export const Asset = () => {
   const handleCancelClick = () => {
     dispatch(clearSelectedRecord());
     dispatch(setRightSideDrawerClose());
+  };
+
+  const handleDeleteAssetConfirm = () => {
+    dispatch(deleteAssetAsync(assetId));
+    dispatch(setDeleteAssetDialogClose());
+  };
+
+  const handleDeleteAssetClick = () => {
+    if (assetId !== '') {
+      dispatch(setDeleteAssetDialogOpen());
+    }
   };
 
   const renderAssetTypeDropdown = () => {
@@ -390,145 +408,196 @@ export const Asset = () => {
   };
 
   return (
-    <Box
-      sx={{
-        width: 465,
-        maxWidth: '100%',
-        padding: 1,
-      }}
-    >
-      <Grid container spacing={2} padding={1}>
-        <Grid
-          item
-          style={{
+    <div>
+      <Dialog
+        onClose={() => dispatch(setDeleteAssetDialogClose())}
+        open={deleteAssetDialogOpen}
+      >
+        <DialogTitle>Do you want to delete this asset?</DialogTitle>
+        <Stack
+          direction="row"
+          spacing={6}
+          sx={{
+            padding: 1,
+            margin: 1,
             display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
+            marginLeft: 'auto',
+            marginRight: 'auto',
           }}
-          xs={8}
         >
-          <Typography variant="h5" data-testid="form-heading">
-            Asset
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} padding={1}>
-        <Grid item xs={12}>
-          <TextField
-            label="Name"
-            id="name"
-            value={name}
-            onChange={(e) => dispatch(setName(e.target.value))}
-            fullWidth
-            variant="standard"
-            inputProps={{ 'data-testid': 'name' }}
-            helperText={
-              !recordValidation.nameValid ? 'Asset name is required' : ''
-            }
-            FormHelperTextProps={{ style: { color: 'red' } }}
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} padding={1}>
-        <Grid item xs={12}>
-          <TextField
-            id="description"
-            label="Description"
-            multiline
-            rows={2}
-            variant="standard"
-            onChange={(e) => dispatch(setDescription(e.target.value))}
-            value={description}
-            fullWidth
-            inputProps={{ 'data-testid': 'description' }}
-            helperText={
-              !recordValidation.descriptionValid
-                ? 'Asset description is required'
-                : ''
-            }
-            FormHelperTextProps={{ style: { color: 'red' } }}
-          />
-        </Grid>
-      </Grid>
-      {renderAssetTypeDropdown()}
-      <Divider />
-      <Grid container spacing={2} padding={1}>
-        <Grid
-          item
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-          }}
-          xs={8}
-        >
-          <Typography variant="inherit" data-testid="machines-heading">
-            Associated Machines
-          </Typography>
-        </Grid>
-      </Grid>
-
-      {defaultAssetResources.map((entity, index) =>
-        renderDefaultMachines(entity.aliasName, entity.resourceId)
-      )}
-      {assetResourcesToSave.map((entity, index) =>
-        renderRow(index, entity.aliasName, entity.resourceId)
-      )}
-
-      <Grid container spacing={2} padding={1}>
-        <Grid item xs={12}>
-          <TextField
-            disabled
-            label="Id"
-            id="asset-id"
-            variant="standard"
-            value={assetId}
-            fullWidth
-            inputProps={{ 'data-testid': 'asset-id' }}
-          />
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={2} padding={1}>
-        <Grid
-          item
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'right',
-          }}
-          xs={12}
-        >
-          <Stack direction="row" spacing={2}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => dispatch(setDeleteAssetDialogClose())}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleDeleteAssetConfirm}
+          >
+            Confirm
+          </Button>
+        </Stack>
+      </Dialog>
+      <Box
+        sx={{
+          width: 465,
+          maxWidth: '100%',
+          padding: 1,
+        }}
+      >
+        <Grid container spacing={2} padding={1}>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'left',
+            }}
+            xs={8}
+          >
+            <Typography variant="h5" data-testid="form-heading">
+              Asset
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'end',
+              alignItems: 'right',
+            }}
+            xs={4}
+          >
             <Button
               variant="outlined"
-              onClick={handleCancelClick}
-              endIcon={<CancelIcon />}
-              data-testid="cancel-button"
+              onClick={handleDeleteAssetClick}
+              endIcon={<DeleteIcon />}
             >
-              Cancel
+              Delete
             </Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                handleSaveClick(
-                  name,
-                  description,
-                  assetType,
-                  assetId,
-                  assetResourcesToSave,
-                  assetResourcesToDelete,
-                  defaultAssetResources
-                );
-              }}
-              endIcon={<SaveIcon />}
-              data-testid="save-button"
-            >
-              Save
-            </Button>
-          </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+        <Grid container spacing={2} padding={1}>
+          <Grid item xs={12}>
+            <TextField
+              label="Name"
+              id="name"
+              value={name}
+              onChange={(e) => dispatch(setName(e.target.value))}
+              fullWidth
+              variant="standard"
+              inputProps={{ 'data-testid': 'name' }}
+              helperText={
+                !recordValidation.nameValid ? 'Asset name is required' : ''
+              }
+              FormHelperTextProps={{ style: { color: 'red' } }}
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} padding={1}>
+          <Grid item xs={12}>
+            <TextField
+              id="description"
+              label="Description"
+              multiline
+              rows={2}
+              variant="standard"
+              onChange={(e) => dispatch(setDescription(e.target.value))}
+              value={description}
+              fullWidth
+              inputProps={{ 'data-testid': 'description' }}
+              helperText={
+                !recordValidation.descriptionValid
+                  ? 'Asset description is required'
+                  : ''
+              }
+              FormHelperTextProps={{ style: { color: 'red' } }}
+            />
+          </Grid>
+        </Grid>
+        {renderAssetTypeDropdown()}
+        <Divider />
+        <Grid container spacing={2} padding={1}>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+            xs={8}
+          >
+            <Typography variant="inherit" data-testid="machines-heading">
+              Associated Machines
+            </Typography>
+          </Grid>
+        </Grid>
+
+        {defaultAssetResources.map((entity, index) =>
+          renderDefaultMachines(entity.aliasName, entity.resourceId)
+        )}
+        {assetResourcesToSave.map((entity, index) =>
+          renderRow(index, entity.aliasName, entity.resourceId)
+        )}
+
+        <Grid container spacing={2} padding={1}>
+          <Grid item xs={12}>
+            <TextField
+              disabled
+              label="Id"
+              id="asset-id"
+              variant="standard"
+              value={assetId}
+              fullWidth
+              inputProps={{ 'data-testid': 'asset-id' }}
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2} padding={1}>
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'right',
+            }}
+            xs={12}
+          >
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                onClick={handleCancelClick}
+                endIcon={<CancelIcon />}
+                data-testid="cancel-button"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  handleSaveClick(
+                    name,
+                    description,
+                    assetType,
+                    assetId,
+                    assetResourcesToSave,
+                    assetResourcesToDelete,
+                    defaultAssetResources
+                  );
+                }}
+                endIcon={<SaveIcon />}
+                data-testid="save-button"
+              >
+                Save
+              </Button>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Box>
+    </div>
   );
 };
