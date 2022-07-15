@@ -32,6 +32,7 @@ type BaseSelectRun struct {
 	Out                string
 	TargetChangeRecall float64
 	IgnoreExceptions   bool
+	GenerateInverse    bool
 
 	// Indirect input.
 
@@ -109,6 +110,22 @@ func WriteFilterFile(fileName string, toSkip []string) error {
 	for _, name := range toSkip {
 		name = testNameReplacer.Replace(name)
 		if _, err := fmt.Fprintf(f, "-%s\n", name); err != nil {
+			return err
+		}
+	}
+	return f.Close()
+}
+
+func WriteInvertedFilterFile(fileName string, toSkip []string) error {
+	f, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	for _, name := range toSkip {
+		name = testNameReplacer.Replace(name)
+		if _, err := fmt.Fprintf(f, "%s\n", name); err != nil {
 			return err
 		}
 	}

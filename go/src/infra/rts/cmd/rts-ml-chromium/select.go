@@ -54,6 +54,7 @@ func cmdSelect() *subcommands.Command {
 				It must be a value in (0.0, 1.0) range.
 			`))
 			r.Flags.BoolVar(&r.IgnoreExceptions, "ignore-exceptions", false, "For debugging. Whether we should ignore exceptions.")
+			r.Flags.BoolVar(&r.GenerateInverse, "gen-inverse", false, "Generates the inverse filter files.")
 			return r
 		},
 	}
@@ -127,6 +128,14 @@ func (r *selectRun) writeFilterFiles(ctx context.Context) error {
 			return errors.Annotate(err, "failed to write %q", fileName).Err()
 		}
 		fmt.Printf("wrote %s\n", fileName)
+
+		if r.GenerateInverse {
+			invertedFileName := filepath.Join(r.Out, target+"_inverted.filter")
+			if err := chromium.WriteInvertedFilterFile(invertedFileName, testNames); err != nil {
+				return errors.Annotate(err, "failed to write %q", invertedFileName).Err()
+			}
+			fmt.Printf("wrote %s\n", fileName)
+		}
 	}
 	return nil
 }
