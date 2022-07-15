@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c3a6d1f_dd1fc8ad",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1904,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-15T23:25:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd38ce58_341621d2",
+      "range": {
+        "startLine": 1904,
+        "startChar": 3,
+        "endLine": 1904,
+        "endChar": 49
+      },
+      "revId": "be58c43690c3a7c16a41e30eb342e38ed4e54dc1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7d7164bc_38bfcea9",
@@ -101,6 +125,30 @@
       "writtenOn": "2022-07-14T16:18:42Z",
       "side": 1,
       "message": "that is not longer is true as action is critical.",
+      "range": {
+        "startLine": 1916,
+        "startChar": 4,
+        "endLine": 1916,
+        "endChar": 54
+      },
+      "revId": "be58c43690c3a7c16a41e30eb342e38ed4e54dc1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "175ac9f5_aa6aa34e",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1916,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-15T23:25:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6febd4b9_bd3968d7",
       "range": {
         "startLine": 1916,
         "startChar": 4,
