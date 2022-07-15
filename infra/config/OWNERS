@@ -1,6 +1,7 @@
 per-file recipes.cfg=recipe-mega-autoroller@chops-service-accounts.iam.gserviceaccount.com
 per-file *.star=vadimsh@chromium.org
 
+chanli@chromium.org
 iannucci@chromium.org
-nodir@chromium.org
 yiwzhang@google.com
+yuanjunh@google.com
