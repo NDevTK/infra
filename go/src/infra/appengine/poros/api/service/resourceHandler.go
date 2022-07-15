@@ -121,18 +121,16 @@ func (e *ResourceHandler) Get(ctx context.Context, req *proto.GetResourceRequest
 func (e *ResourceHandler) Update(ctx context.Context, req *proto.UpdateResourceRequest) (*proto.ResourceModel, error) {
 	id := req.GetResource().GetResourceId()
 	mask := req.GetUpdateMask()
-	resource := &ResourceEntity{}
+	resource, err := getResourceById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 
 	if mask == nil || len(mask.GetPaths()) == 0 || !mask.IsValid(req.GetResource()) {
 		return nil, errors.New("Update Mask can't be empty or invalid")
 	}
 	// In a transaction load resource, set fields based on field mask.
-	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
-		resource, err := getResourceById(ctx, id)
-		if err != nil {
-			return err
-		}
-
+	err = datastore.RunInTransaction(ctx, func(ctx context.Context) error {
 		// Set updated values for fields specified in Update Mask
 		for _, field := range mask.GetPaths() {
 			newValue := reflect.ValueOf(req.GetResource()).Elem().FieldByName(snakeToPascalCase(field))

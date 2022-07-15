@@ -132,16 +132,19 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 			Resource:   entity,
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "description", "type", "operating_system", "image_project", "image_family"}},
 		}
-		_, err = handler.Update(ctx, updateRequest)
+		updatedEntity, err := handler.Update(ctx, updateRequest)
 		So(err, ShouldBeNil)
+		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "machine", "linux_system", "image-project-updated", "image-family-updated"}
+		get := []string{updatedEntity.GetName(), updatedEntity.GetDescription(), updatedEntity.GetType(), updatedEntity.GetOperatingSystem(), updatedEntity.GetImageProject(), updatedEntity.GetImageFamily()}
+		So(get, ShouldResemble, want)
 
 		// Retrieve the updated resource and make sure that the values were correctly updated
 		getRequest := &proto.GetResourceRequest{
 			ResourceId: entity.GetResourceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "machine", "linux_system", "image-project-updated", "image-family-updated"}
-		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
+		want = []string{"Test Resource Name Updated", "Test Resource description Updated", "machine", "linux_system", "image-project-updated", "image-family-updated"}
+		get = []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
 		So(get, ShouldResemble, want)
 	})
 }
