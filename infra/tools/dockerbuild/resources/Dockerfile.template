@@ -105,6 +105,7 @@ RUN ARCHIVE_PATH=$$(basename ${mysql_relpath}) \
 && rm -rf $${SETUP_ROOT}/mysql
 
 ENV PATH=/usr/local/mysql/bin:$${PATH}
+ENV LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:/usr/local/mysql/lib
 
 # Part of Python's binary distribution directly calls "cc", ignoring the
 # environment variable overrides. We will use the alternatives system to set
