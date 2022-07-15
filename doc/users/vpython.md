@@ -535,9 +535,14 @@ A list of wheels that Chrome Operations produces using a wheel production
 script, `dockerbuild`, can be found
 [here](/infra/tools/dockerbuild/wheels.md).
 
-`vpython` wheels are stored in CIPD. The raw index of all ChOPS-provided
-wheel CIPD packages space can be viewed
-[here](https://chrome-infra-packages.appspot.com/p/infra/python/wheels).
+`vpython` wheels are stored in CIPD. The raw index of all ChOPS-provided wheel
+CIPD packages space can be viewed
+[here](https://chrome-infra-packages.appspot.com/p/infra/python/wheels), or via
+CLI:
+
+```shell
+cipd ls infra/python/wheels
+```
 
 If a wheel is needed, but is not in this list, please
 [contact Chrome Operations](#Contact).
