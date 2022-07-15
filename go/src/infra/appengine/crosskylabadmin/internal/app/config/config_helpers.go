@@ -83,10 +83,10 @@ func (x *RolloutConfig) getLastMatch(hostname string) (*PermilleData, error) {
 
 // ComputeProdPermille computes the most applicable prod permille
 // for a device.
-func (x *RolloutConfig) ComputePermilleData(ctx context.Context, hostname string) (*PermilleData, error) {
+func (x *RolloutConfig) ComputePermilleData(ctx context.Context, hostname string) *PermilleData {
 	d, err := x.getLastMatch(hostname)
 	if err != nil {
 		logging.WithError(err).Errorf(ctx, "malformed config file")
 	}
-	return d, nil
+	return d
 }

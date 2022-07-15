@@ -161,10 +161,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 		}
 	}
 
-	d, err := r.ComputePermilleData(ctx, info.hostname)
-	if err != nil {
-		return routing.Legacy, routing.ErrorExtractingPermilleInfo
-	}
+	d := r.ComputePermilleData(ctx, info.hostname)
 
 	// threshold is the chance of using Paris at all, which is equal to prod + latest.
 	threshold := d.Prod + d.Latest
