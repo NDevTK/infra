@@ -5,13 +5,21 @@
 package frontend
 
 import (
+	"context"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 )
 
+// TestRouteAuditTaskImpl tests routing audit tasks.
 func TestRouteAuditTaskImpl(t *testing.T) {
-	if taskType, _ := routeAuditTaskImpl(nil); taskType != routing.Legacy {
-		t.Errorf("route audit task should always return legacy")
-	}
+	t.Parallel()
+	ctx := context.Background()
+	Convey("no config", t, func() {
+		tt, r := routeAuditTaskImpl(ctx, nil)
+		So(tt, ShouldEqual, routing.Legacy)
+		So(r, ShouldEqual, routing.ParisNotEnabled)
+	})
 }

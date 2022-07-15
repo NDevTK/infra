@@ -54,6 +54,10 @@ func createLegacyAuditTask(ctx context.Context, botID string, taskname string, a
 	return taskURL, nil
 }
 
-func routeAuditTaskImpl(r *config.RolloutConfig) (heuristics.TaskType, routing.Reason) {
+// routeAuditTaskImpl routes an audit task (storage, rpm, USB) based on the rollout config that's tied to that specific task.
+func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig) (heuristics.TaskType, routing.Reason) {
+	if r == nil {
+		return routing.Legacy, routing.ParisNotEnabled
+	}
 	return routing.Legacy, routing.NotImplemented
 }
