@@ -97,13 +97,13 @@ func ForceReloadDNSMasqProcess() error {
 
 // EnsureRecords ensures that the given DNS records in question are up to date with respect to
 // a map mapping hostnames to addresses.
-func ensureRecords(content string, newRecords map[string]string) error {
+func ensureRecords(content string, newRecords map[string]string, deletedRecords map[string]bool) error {
 	// Set the backup DNS file so that the user can see the previous state.
 	if err := writeBackup(content); err != nil {
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
 
-	newContent, err := makeNewContent(content, newRecords)
+	newContent, err := makeNewContent(content, newRecords, deletedRecords)
 	if err != nil {
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
@@ -118,10 +118,12 @@ func ensureRecords(content string, newRecords map[string]string) error {
 }
 
 // makeNewContent takes in existing hostfile-like string and outputs a hostfile-like string with changes in newRecords
-func makeNewContent(content string, newRecords map[string]string) (string, error) {
+// note that there is no check for overlap between newRecords and deletedRecords
+// deletedRecords will take precedence (a hostname in both new and deleted records will be deleted)
+func makeNewContent(content string, newRecords map[string]string, deletedRecords map[string]bool) (string, error) {
 	seen := make(map[string]bool)
 
-	classifier := makeClassifier(newRecords)
+	classifier := makeClassifier(newRecords, deletedRecords)
 	replacer := func(line string) string {
 		words := strings.Fields(line)
 		if len(words) < 2 {
@@ -141,8 +143,8 @@ func makeNewContent(content string, newRecords map[string]string) (string, error
 	}
 
 	for host, addr := range newRecords {
-		if seen[host] {
-			// Do nothing, line already added.
+		if seen[host] || deletedRecords[host] {
+			// Do nothing, line already added or deleted
 		} else {
 			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s\n", host)
 			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s", addr, host))
@@ -153,7 +155,7 @@ func makeNewContent(content string, newRecords map[string]string) (string, error
 }
 
 // MakeClassifier makes a classifier that determines whether to modify a given addr, host line or not.
-func makeClassifier(newRecords map[string]string) classifier {
+func makeClassifier(newRecords map[string]string, deletedRecords map[string]bool) classifier {
 	// Nth takes the elements and the given index and safely accesses the string
 	// at that index or returns "" if no such string exists.
 	nth := func(els []string, idx int) string {
@@ -175,11 +177,16 @@ func makeClassifier(newRecords map[string]string) classifier {
 		if strings.HasPrefix(nth(words, 0), "#") {
 			return commands.Keep
 		}
+		host := nth(words, 1)
+		// If host selected to be deleted, reject the line
+		if _, ok := deletedRecords[host]; ok {
+			fmt.Printf("Deleting DNS entry for host %s\n", host)
+			return commands.Reject
+		}
 		// Modify lines of the form: addr host.
 		// Discard lines of this form after the first one has been
 		// processed.
-		if _, ok := newRecords[nth(words, 1)]; ok {
-			host := nth(words, 1)
+		if _, ok := newRecords[host]; ok {
 			if _, alreadySeen := seen[host]; !alreadySeen {
 				seen[host] = true
 				return commands.Modify
@@ -230,7 +237,7 @@ func UpdateRecord(host string, addr string) (string, error) {
 	if err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
-	if err := ensureRecords(content, map[string]string{host: addr}); err != nil {
+	if err := ensureRecords(content, map[string]string{host: addr}, map[string]bool{}); err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
 	return content, nil
