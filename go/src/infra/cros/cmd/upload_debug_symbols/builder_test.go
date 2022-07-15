@@ -269,13 +269,13 @@ func TestGenerateConfigs(t *testing.T) {
 	defer os.RemoveAll(testDir)
 
 	mockPaths := []string{}
-	for filename, symbolStatus := range mockResponses {
-		mockPath := filepath.Join(testDir, filename)
-		err = ioutil.WriteFile(mockPath, []byte("MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid"), 0644)
+	for f, symbolStatus := range mockResponses {
+		mockPath := filepath.Join(testDir, f)
+		err = ioutil.WriteFile(mockPath, []byte("MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 "+filepath.Base(f)), 0644)
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}
-		task := taskConfig{mockPath, filename, "F4F6FA6CCBDEF455039C8DE869C8A2F40", false, false}
+		task := taskConfig{mockPath, f, "F4F6FA6CCBDEF455039C8DE869C8A2F40", false, false}
 
 		if symbolStatus != "FOUND" {
 			expectedTasks[task] = false

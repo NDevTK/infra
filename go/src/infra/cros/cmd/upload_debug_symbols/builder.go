@@ -320,17 +320,6 @@ func upload(task *taskConfig, crash crashConnectionInfo) bool {
 	return true
 }
 
-// getFilename takes a file path, relative or full, and returns the filename.
-func getFilename(filePath string) (string, error) {
-	basePath := filepath.Base(filePath)
-
-	if basePath == "." {
-		return filePath, fmt.Errorf("error: given filepath %s is invalid", filePath)
-	}
-
-	return basePath, nil
-}
-
 // getCmdUploadDebugSymbols builds the CLI command and captures flags.
 func getCmdUploadDebugSymbols(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
@@ -456,15 +445,11 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 		// symbol file.
 		if header.FileInfo().Mode().IsRegular() {
 			// Check if the file is a symbol file.
-			filename, err := getFilename(header.Name)
-			if err != nil {
-				return nil, err
-			}
-			if filepath.Ext(filename) != ".sym" {
+			if !strings.HasSuffix(header.Name, ".sym") {
 				continue
 			}
-
-			destFilePath := filepath.Join(outputDir, filename)
+			symBase := filepath.Base(header.Name)
+			destFilePath := filepath.Join(outputDir, symBase)
 			destFile, err := os.Create(destFilePath)
 			if err != nil {
 				return nil, err
@@ -498,12 +483,7 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 	// Generate task configurations.
 	for index, filepath := range symbolFiles {
 		var debugId string
-
-		// debugFile is used in the body of the call to the crash service.
-		debugFilename, err := getFilename(filepath)
-		if err != nil {
-			return nil, err
-		}
+		var debugFile string
 
 		// Get id from from the first line of the file.
 		file, err := os.Open(filepath)
@@ -518,17 +498,18 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 			// 	The first line of the syms file will read like:
 			// 	  MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid
 			if len(line) != 5 {
-				return nil, fmt.Errorf("error: incorrect first line format for symbol file %s", debugFilename)
+				return nil, fmt.Errorf("error: incorrect first line format for symbol file %s", debugFile)
 			}
 
 			debugId = strings.ReplaceAll(line[3], "-", "")
+			debugFile = line[4]
 		}
 		err = file.Close()
 		if err != nil {
 			return nil, err
 		}
 
-		tasks[index] = taskConfig{filepath, debugFilename, debugId, dryRun, shouldSleep}
+		tasks[index] = taskConfig{filepath, debugFile, debugId, dryRun, shouldSleep}
 	}
 
 	// Filter out already uploaded debug symbols.
