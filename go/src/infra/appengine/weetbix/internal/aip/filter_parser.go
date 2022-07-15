@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package filter
+// Package aip contains utilities used to comply with API Improvement
+// Proposals (AIPs) from https://google.aip.dev/. This includes
+// an AIP-160 filter parser and AIP-132 order by clause parser.
+package aip
 
-// This file contains a lever and parser for the EBNF at https://google.aip.dev/assets/misc/ebnf-filtering.txt
+// This file contains a lexer and parser for AIP-160 filter expressions.
+// The EBNF is at https://google.aip.dev/assets/misc/ebnf-filtering.txt
 // The function call syntax is not supported which simplifies the parser.
 //
 // Implemented EBNF (in terms of lexer tokens):
@@ -406,7 +410,7 @@ func (v *Member) String() string {
 }
 
 // Parse an AIP-160 filter string into an AST.
-func Parse(filter string) (*Filter, error) {
+func ParseFilter(filter string) (*Filter, error) {
 	return newParser(filter).filter()
 }
 

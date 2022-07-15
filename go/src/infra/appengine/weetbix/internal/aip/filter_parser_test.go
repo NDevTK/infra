@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package filter
+package aip
 
 import "testing"
 
@@ -139,6 +139,7 @@ func TestFullParse(t *testing.T) {
 		{input: "value=21", ast: "filter{expression{sequence{factor{term{simple{restriction{comparable{member{\"value\"}}},\"=\",arg{comparable{member{\"21\"}}}}}}}}}}}"},
 		{input: "value!=21", ast: "filter{expression{sequence{factor{term{simple{restriction{comparable{member{\"value\"}}},\"!=\",arg{comparable{member{\"21\"}}}}}}}}}}}"},
 		{input: "value:21", ast: "filter{expression{sequence{factor{term{simple{restriction{comparable{member{\"value\"}}},\":\",arg{comparable{member{\"21\"}}}}}}}}}}}"},
+		{input: "value=(composite)", ast: "filter{expression{sequence{factor{term{simple{restriction{comparable{member{\"value\"}}},\"=\",arg{expression{sequence{factor{term{simple{restriction{comparable{member{\"composite\"}}}}}}}}}}}}}}}}}"},
 		// Note: although this parses correctly as a "global" restriction, the implementation doesn't handle this type of restriction, so an error will be returned higher in the stack.
 		{input: "member.field", ast: "filter{expression{sequence{factor{term{simple{restriction{comparable{member{\"member\", {\"field\"}}}}}}}}}}"},
 		{input: " member.field > 4 ", ast: "filter{expression{sequence{factor{term{simple{restriction{comparable{member{\"member\", {\"field\"}}},\">\",arg{comparable{member{\"4\"}}}}}}}}}}}"},
@@ -148,7 +149,7 @@ func TestFullParse(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			filter, err := Parse(test.input)
+			filter, err := ParseFilter(test.input)
 			if test.expectErr {
 				if err == nil {
 					t.Fatalf("expected error but no error produced from input: %q\nparsed as:%q", test.input, filter.String())
