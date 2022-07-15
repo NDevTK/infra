@@ -29,7 +29,7 @@ func CrosAuditRPMConfig() *Configuration {
 					// See the link below for the python labpack equivalent.
 					//   _check_rpm_power_delivery_without_battery
 					//   https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#110
-					"Verify RPM config (without battery)",
+					"Audit RPM config (without battery)",
 					// See the link below for the python labpack equivalent.
 					//   _check_rpm_power_delivery_with_battery
 					//   https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#69

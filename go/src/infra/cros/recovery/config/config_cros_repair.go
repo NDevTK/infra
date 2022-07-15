@@ -1926,6 +1926,28 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
+		"Audit RPM config (without battery)": {
+			Docs: []string{
+				"Verify RPM configs and set RPM state",
+				// For audit tasks, run the RPM config check regardless of whether
+				// the servo uses a cr50 or not.
+				//
+				// This matches the behavior of '_check_rpm_power_delivery_without_battery' in
+				// python labpack.
+				//
+				// https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#69
+				//
+				// "Not applicable for cr50 servos based on b/205728276",
+			},
+			Dependencies: []string{
+				"Perform RPM config verification for audit tasks",
+			},
+			Conditions: []string{
+				"No Battery is present on device",
+			},
+			ExecName:    "rpm_audit_without_battery",
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
+		},
 		"Verify RPM config (without battery)": {
 			Docs: []string{
 				"Verify RPM configs and set RPM state",
