@@ -1885,6 +1885,29 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Perform RPM config verification for audit tasks": {
+			Docs: []string{
+				"Verify when the RPM verification is required for setup",
+			},
+			Dependencies: []string{
+				// For audit tasks, we should consider making RPM info
+				// a necessary condition for running this check.
+				// For right now, let's let the audit task fail if the RPM info is absent.
+				"has_rpm_info",
+
+				// For audit, we don't need a servo host.
+				// - "dut_servo_host_present"
+				// - "servod_echo"
+				//
+				// For audit tests, we do not require the servo to have PD control.
+				// For that reason, the dependency below is excluded.
+				// - "Setup doesn't have Servo PD control"
+			},
+			Conditions: []string{
+				// Since we're performing an audit task, this action is always applicable.
+			},
+			ExecName: "sample_pass",
+		},
 		"Setup has Servo PD control": {
 			Docs: []string{
 				"Verify that servo has build in PD control.",
