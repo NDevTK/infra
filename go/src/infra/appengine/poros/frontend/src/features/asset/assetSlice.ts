@@ -339,6 +339,7 @@ export const assetSlice = createSlice({
       .addCase(createAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload.asset;
+        state.assets = [action.payload.asset, ...state.assets];
         state.assetResourcesToSave = action.payload.assetResources.filter(
           (entity) => entity.default === false
         );
@@ -353,6 +354,11 @@ export const assetSlice = createSlice({
       .addCase(updateAssetAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload.asset;
+        state.assets[
+          state.assets.findIndex(function (asset: AssetModel) {
+            return asset.assetId === action.payload.asset.assetId;
+          })
+        ] = action.payload.asset;
         state.assetResourcesToSave = action.payload.assetResources.filter(
           (entity) => entity.default === false
         );
@@ -377,7 +383,7 @@ export const assetSlice = createSlice({
       .addCase(deleteAssetAsync.fulfilled, (state) => {
         state.deletingStatus = 'idle';
         state.assets = state.assets.filter(
-          (asset) => asset.assetId !== state.record.assetId
+          (asset: AssetModel) => asset.assetId !== state.record.assetId
         );
         state.record = AssetModel.defaultEntity();
         state.assetResourcesToDelete = [];

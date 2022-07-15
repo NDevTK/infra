@@ -260,6 +260,7 @@ export const resourceSlice = createSlice({
       .addCase(createResourceAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload;
+        state.resources = [action.payload, ...state.resources];
       })
       .addCase(updateResourceAsync.pending, (state) => {
         state.savingStatus = 'loading';
@@ -267,6 +268,11 @@ export const resourceSlice = createSlice({
       .addCase(updateResourceAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
         state.record = action.payload;
+        state.resources[
+          state.resources.findIndex(function (resource: ResourceModel) {
+            return resource.resourceId === action.payload.resourceId;
+          })
+        ] = action.payload;
       })
       .addCase(queryResourceAsync.pending, (state) => {
         state.fetchStatus = 'loading';
@@ -283,6 +289,10 @@ export const resourceSlice = createSlice({
       })
       .addCase(deleteResourceAsync.fulfilled, (state) => {
         state.deletingStatus = 'idle';
+        state.resources = state.resources.filter(
+          (resource: ResourceModel) =>
+            resource.resourceId !== state.record.resourceId
+        );
         state.record = ResourceModel.defaultEntity();
       });
   },
