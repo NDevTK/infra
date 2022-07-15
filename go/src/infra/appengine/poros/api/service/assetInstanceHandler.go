@@ -260,6 +260,18 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 	return response, nil
 }
 
+// Fetch the Deployment Logs associated with Asset Instance Id
+func (e *AssetInstanceHandler) FetchLogs(ctx context.Context, req *proto.FetchLogsRequest) (*proto.FetchLogsResponse, error) {
+	entity, err := getAssetInstanceById(ctx, req.GetAssetInstanceId())
+	if err != nil {
+		return nil, err
+	}
+	response := &proto.FetchLogsResponse{
+		Logs: entity.Logs,
+	}
+	return response, nil
+}
+
 func gcpProjectList() [][]string {
 	return [][]string{
 		{"celab-chrome-ci", "celab-chrome-ci-004"},

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   DataGrid,
   GridRowsProp,
@@ -24,12 +24,16 @@ import Grid from '@mui/material/Grid';
 import { onSelectRecord, queryAssetInstanceAsync } from './assetInstanceSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
+  fetchLogsAsync,
   setActiveEntity,
+  setActiveLogAssetDetails,
   setRightSideDrawerOpen,
 } from '../utility/utilitySlice';
 import { queryAssetAsync } from '../asset/assetSlice';
 import { AssetModel } from '../../api/asset_service';
 import EditIcon from '@mui/icons-material/Edit';
+import NotesIcon from '@mui/icons-material/Notes';
+import { AssetInstanceLogs } from './AssetInstanceLogs';
 
 export function AssetInstanceList() {
   const dispatch = useAppDispatch();
@@ -50,6 +54,11 @@ export function AssetInstanceList() {
   const rows: GridRowsProp = useAppSelector(
     (state) => state.assetInstance.assetInstances
   );
+
+  const showLogs: boolean = useAppSelector((state) => state.utility.showLogs);
+
+  const ref = useRef<HTMLDivElement>(null);
+
   const columns: GridColDef[] = [
     { field: 'assetInstanceId', headerName: 'Id', flex: 1, hide: true },
     {
@@ -88,6 +97,22 @@ export function AssetInstanceList() {
         );
       },
     },
+    {
+      field: 'Logs',
+      renderCell: (cellValues) => {
+        return (
+          <IconButton
+            aria-label="delete"
+            size="small"
+            onClick={() => {
+              handleShowLogsClick(cellValues);
+            }}
+          >
+            <NotesIcon fontSize="inherit" />
+          </IconButton>
+        );
+      },
+    },
   ];
 
   const handleRefreshClick = () => {
@@ -98,6 +123,24 @@ export function AssetInstanceList() {
     const selectedRow = cellValues.row;
     dispatch(setRightSideDrawerOpen());
     dispatch(onSelectRecord({ assetInstanceId: selectedRow.assetInstanceId }));
+  };
+
+  const handleShowLogsClick = async (cellValues: GridRenderCellParams) => {
+    const selectedRow = cellValues.row;
+    dispatch(
+      setActiveLogAssetDetails({
+        name: getAssetName(cellValues),
+        createdAt: selectedRow.createdAt.toLocaleString(),
+        status: selectedRow.status,
+      })
+    );
+    await dispatch(
+      fetchLogsAsync({ assetInstanceId: selectedRow.assetInstanceId })
+    );
+    ref.current?.scrollIntoView({
+      block: 'center',
+      inline: 'center',
+    });
   };
 
   function CustomToolbar() {
@@ -187,6 +230,14 @@ export function AssetInstanceList() {
           </div>
         </CardContent>
       </Card>
+      <hr style={{ height: 1, visibility: 'hidden' }} />
+      <div ref={ref}>
+        {showLogs ? (
+          <Card>
+            <AssetInstanceLogs></AssetInstanceLogs>
+          </Card>
+        ) : null}
+      </div>
     </div>
   );
 }

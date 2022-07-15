@@ -14,6 +14,8 @@ export interface IAssetInstanceService {
   update(request: UpdateAssetInstanceRequest): Promise<AssetInstanceModel>;
   /** Lists all AssetInstances. */
   list(request: ListAssetInstancesRequest): Promise<ListAssetInstancesResponse>;
+  /** Fetch the latest deployment logs associated with asset instance id */
+  fetchLogs(request: FetchLogsRequest): Promise<FetchLogsResponse>;
 }
 
 export class AssetInstanceService implements IAssetInstanceService {
@@ -21,6 +23,7 @@ export class AssetInstanceService implements IAssetInstanceService {
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.list = this.list.bind(this);
+    this.fetchLogs = this.fetchLogs.bind(this);
   }
 
   create = (
@@ -45,6 +48,12 @@ export class AssetInstanceService implements IAssetInstanceService {
     const data = ListAssetInstancesRequest.toJSON(request);
     const promise = rpcClient.request('poros.AssetInstance', 'List', data);
     return promise.then((data) => ListAssetInstancesResponse.fromJSON(data));
+  };
+
+  fetchLogs = (request: FetchLogsRequest): Promise<FetchLogsResponse> => {
+    const data = FetchLogsRequest.toJSON(request);
+    const promise = rpcClient.request('poros.AssetInstance', 'FetchLogs', data);
+    return promise.then((data) => FetchLogsResponse.fromJSON(data));
   };
 }
 
@@ -157,6 +166,16 @@ export interface ListAssetInstancesResponse {
   nextPageToken: string;
 }
 
+/** Request to fetch deployment logs for an asset instance */
+export interface FetchLogsRequest {
+  assetInstanceId: string;
+}
+
+/** Response to FetchLogsRequest. */
+export interface FetchLogsResponse {
+  logs: string;
+}
+
 export const ListAssetInstancesRequest = {
   toJSON(message: ListAssetInstancesRequest): unknown {
     const obj: any = {};
@@ -178,6 +197,23 @@ export const ListAssetInstancesResponse = {
       nextPageToken: isSet(object.nextPageToken)
         ? String(object.nextPageToken)
         : '',
+    };
+  },
+};
+
+export const FetchLogsRequest = {
+  toJSON(message: FetchLogsRequest): unknown {
+    const obj: any = {};
+    message.assetInstanceId !== undefined &&
+      (obj.assetInstanceId = message.assetInstanceId);
+    return obj;
+  },
+};
+
+export const FetchLogsResponse = {
+  fromJSON(object: any): FetchLogsResponse {
+    return {
+      logs: isSet(object.logs) ? object.logs : '',
     };
   },
 };

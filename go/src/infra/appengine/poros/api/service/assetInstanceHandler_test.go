@@ -38,6 +38,12 @@ func mockTriggerDeploymentRequest(entityType string, entityId string) *proto.Tri
 	}
 }
 
+func mockFetchLogsRequest(assetInstanceId string) *proto.FetchLogsRequest {
+	return &proto.FetchLogsRequest{
+		AssetInstanceId: assetInstanceId,
+	}
+}
+
 func TestAssetInstanceCreateWithValidData(t *testing.T) {
 	t.Parallel()
 	request := mockCreateAssetInstanceRequest("Test AssetId", 0)
@@ -314,5 +320,32 @@ func TestDeploymentProject_NoAvailableProject(t *testing.T) {
 		project, err := deploymentProject(ctx)
 		So(project, ShouldBeNil)
 		So(err.Error(), ShouldEqual, "No Projects available at the moment")
+	})
+}
+
+func TestFetchLogs(t *testing.T) {
+	t.Parallel()
+	Convey("Fetch Asset Logs", t, func() {
+		id := uuid.New().String()
+		timestamp := time.Now().UTC()
+		entity := &AssetInstanceEntity{
+			AssetInstanceId: id,
+			AssetId:         "Test Asset Id",
+			Status:          "STATUS_RUNNING",
+			Logs:            "My Test Logs",
+			CreatedBy:       "test@test.com",
+			CreatedAt:       timestamp,
+			DeleteAt:        timestamp.Add(time.Hour * 6),
+		}
+
+		ctx := memory.Use(context.Background())
+		err := datastore.Put(ctx, entity)
+		So(err, ShouldBeNil)
+
+		request := mockFetchLogsRequest(id)
+		handler := &AssetInstanceHandler{}
+		logs, err := handler.FetchLogs(ctx, request)
+		So(err, ShouldBeNil)
+		So(logs.Logs, ShouldEqual, "My Test Logs")
 	})
 }

@@ -5,6 +5,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { IUtilityService, UtilityService } from '../../api/utility_service';
+import {
+  AssetInstanceService,
+  FetchLogsRequest,
+  IAssetInstanceService,
+} from '../../api/asset_instance_service';
 
 export interface UtilityState {
   userEmail: string;
@@ -14,6 +19,10 @@ export interface UtilityState {
   spinDialogOpen: boolean;
   deleteResourceDialogOpen: boolean;
   deleteAssetDialogOpen: boolean;
+  showLogs: boolean;
+  logs: string;
+  activeLogsAssetInstanceId: string;
+  activeLogsAssetDetails: object;
 }
 
 const initialState: UtilityState = {
@@ -24,6 +33,10 @@ const initialState: UtilityState = {
   spinDialogOpen: false,
   deleteResourceDialogOpen: false,
   deleteAssetDialogOpen: false,
+  showLogs: false,
+  logs: '',
+  activeLogsAssetInstanceId: '',
+  activeLogsAssetDetails: { name: '', createdAt: '', status: '' },
 };
 
 export const fetchUserPictureAsync = createAsyncThunk(
@@ -31,6 +44,18 @@ export const fetchUserPictureAsync = createAsyncThunk(
   async () => {
     const service: IUtilityService = new UtilityService();
     const response = await service.getUserPicture();
+    return response;
+  }
+);
+
+export const fetchLogsAsync = createAsyncThunk(
+  'asset/logs',
+  async ({ assetInstanceId }: { assetInstanceId: string }) => {
+    const service: IAssetInstanceService = new AssetInstanceService();
+    const fetchLogsReq: FetchLogsRequest = {
+      assetInstanceId,
+    };
+    const response = await service.fetchLogs(fetchLogsReq);
     return response;
   }
 );
@@ -74,6 +99,14 @@ export const utilitySlice = createSlice({
     setDeleteAssetDialogOpen: (state) => {
       state.deleteAssetDialogOpen = true;
     },
+    hideLogs: (state) => {
+      state.showLogs = false;
+      state.logs = '';
+      state.activeLogsAssetInstanceId = '';
+    },
+    setActiveLogAssetDetails: (state, action) => {
+      state.activeLogsAssetDetails = { ...action.payload };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserPictureAsync.fulfilled, (state, action) => {
@@ -81,6 +114,14 @@ export const utilitySlice = createSlice({
     });
     builder.addCase(logoutAsync.fulfilled, () => {
       window.location.href = window.logoutUrl;
+    });
+    builder.addCase(fetchLogsAsync.pending, (state, action) => {
+      state.showLogs = true;
+      state.logs = 'Loading...';
+      state.activeLogsAssetInstanceId = action.meta.arg.assetInstanceId;
+    });
+    builder.addCase(fetchLogsAsync.fulfilled, (state, action) => {
+      state.logs = action.payload.logs;
     });
   },
 });
@@ -98,6 +139,8 @@ export const {
   setDeleteResourceDialogOpen,
   setDeleteAssetDialogClose,
   setDeleteAssetDialogOpen,
+  hideLogs,
+  setActiveLogAssetDetails,
 } = utilitySlice.actions;
 
 export default utilitySlice.reducer;

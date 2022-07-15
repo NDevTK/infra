@@ -30,6 +30,8 @@ service AssetInstance {
   rpc List(ListAssetInstancesRequest) returns (ListAssetInstancesResponse);
 
   rpc TriggerDeployment(TriggerDeploymentRequest) returns (TriggerDeploymentResponse);
+
+  rpc FetchLogs(FetchLogsRequest) returns (FetchLogsResponse);
 }
 // Request to create a single AssetInstance
 message CreateAssetInstanceRequest {
@@ -93,4 +95,12 @@ message TriggerDeploymentResponse {
   string asset_instance_id = 2;
   string project_id = 3;
   string project_prefix = 4;
+}
+
+message FetchLogsRequest {
+  string asset_instance_id = 1;
+}
+
+message FetchLogsResponse {
+  string logs = 1;
 }

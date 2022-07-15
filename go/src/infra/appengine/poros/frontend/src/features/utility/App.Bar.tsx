@@ -356,7 +356,7 @@ export default function SideDrawerWithAppBar() {
           {renderRightSideDrawerContents(getActiveEntity)}
         </Drawer>
         <Routes>
-          <Route path='/' element={<Navigate to='/lab' />}></Route>
+          <Route path="/" element={<Navigate to="/lab" />}></Route>
           {routes.map((route) => (
             <Route
               key={route.text}

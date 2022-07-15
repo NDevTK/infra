@@ -274,7 +274,8 @@ export const resourceSlice = createSlice({
       .addCase(queryResourceAsync.fulfilled, (state, action) => {
         state.fetchStatus = 'idle';
         state.resources = action.payload.resources.filter(
-          (resource) => resource.deleted === false);
+          (resource) => resource.deleted === false
+        );
         state.pageToken = action.payload.nextPageToken;
       })
       .addCase(deleteResourceAsync.pending, (state) => {
