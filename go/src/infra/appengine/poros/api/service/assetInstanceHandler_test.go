@@ -100,16 +100,20 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 			AssetInstance: entity,
 			UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"asset_id", "status", "delete_at"}},
 		}
-		_, err = handler.Update(ctx, updateRequest)
+		updatedEntity, err := handler.Update(ctx, updateRequest)
 		So(err, ShouldBeNil)
+		want := []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
+		get := []string{updatedEntity.GetAssetId(), updatedEntity.GetStatus()}
+		So(get, ShouldResemble, want)
+		So(timestamp.Format(time.UnixDate), ShouldEqual, updatedEntity.DeleteAt.AsTime().Format(time.UnixDate))
 
 		// Retrieve the updated AssetInstance and make sure that the values were correctly updated
 		getRequest := &proto.GetAssetInstanceRequest{
 			AssetInstanceId: entity.GetAssetInstanceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		want := []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
-		get := []string{readEntity.GetAssetId(), readEntity.GetStatus()}
+		want = []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
+		get = []string{readEntity.GetAssetId(), readEntity.GetStatus()}
 		So(get, ShouldResemble, want)
 		So(timestamp.Format(time.UnixDate), ShouldEqual, readEntity.DeleteAt.AsTime().Format(time.UnixDate))
 	})

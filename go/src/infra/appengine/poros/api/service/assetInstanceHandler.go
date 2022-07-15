@@ -150,18 +150,16 @@ func (e *AssetInstanceHandler) Get(ctx context.Context, req *proto.GetAssetInsta
 func (e *AssetInstanceHandler) Update(ctx context.Context, req *proto.UpdateAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
 	id := req.GetAssetInstance().GetAssetInstanceId()
 	mask := req.GetUpdateMask()
-	asset_instance := &AssetInstanceEntity{}
+	asset_instance, err := getAssetInstanceById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 
 	if mask == nil || len(mask.GetPaths()) == 0 || !mask.IsValid(req.GetAssetInstance()) {
 		return nil, errors.New("Update Mask can't be empty or invalid")
 	}
 	// In a transaction load AssetInstance, set fields based on field mask.
-	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
-		asset_instance, err := getAssetInstanceById(ctx, id)
-		if err != nil {
-			return err
-		}
-
+	err = datastore.RunInTransaction(ctx, func(ctx context.Context) error {
 		// Set updated values for fields specified in Update Mask
 		for _, field := range mask.GetPaths() {
 			if field == "delete_at" {

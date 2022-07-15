@@ -110,7 +110,7 @@ export const assetInstanceSlice = createSlice({
         state.fetchStatus = 'idle';
         state.assetInstances = action.payload.assetInstances;
         state.pageToken = action.payload.nextPageToken;
-        state.assetInstances.forEach(function (assetInstance) {
+        state.assetInstances.forEach(function (assetInstance: AssetInstanceModel) {
           if (
             assetInstance.deleteAt?.toUTCString() ===
             'Mon, 01 Jan 0001 00:00:00 GMT'
@@ -127,6 +127,11 @@ export const assetInstanceSlice = createSlice({
       })
       .addCase(updateAssetInstanceAsync.fulfilled, (state, action) => {
         state.savingStatus = 'idle';
+        state.assetInstances[
+          state.assetInstances.findIndex(function (assetInstance: AssetInstanceModel) {
+            return assetInstance.assetInstanceId === action.payload.assetInstanceId;
+          })
+        ] = action.payload;
         state.record = action.payload;
       });
   },

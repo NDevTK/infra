@@ -17,6 +17,8 @@ enum DeploymentStatus {
     STATUS_COMPLETED = 2;
     // Ready for removing the machines
     STATUS_READY_FOR_DESTROY = 3;
-    // MAchines are removed
+    // Machines are removed
     STATUS_DESTROYED = 4;
+    // Deployment has failed
+    STATUS_FAILED = 5;
   }
