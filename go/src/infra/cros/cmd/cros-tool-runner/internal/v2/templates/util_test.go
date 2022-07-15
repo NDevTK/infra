@@ -2,6 +2,8 @@ package templates
 
 import (
 	"testing"
+
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func TestParsePortBindingString(t *testing.T) {
@@ -33,5 +35,16 @@ func TestParseMultilinePortBindings(t *testing.T) {
 	}
 	if len(parsed) != len(expect) || *parsed[0] != *expect[0] || *parsed[1] != *expect[1] {
 		t.Fatalf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
+	}
+}
+
+func TestEndpointToAddress(t *testing.T) {
+	endpoint := &api.IpEndpoint{
+		Address: "xyz",
+		Port:    123,
+	}
+	address := TemplateUtils.endpointToAddress(endpoint)
+	if address != "xyz:123" {
+		t.Fatalf("Incorrect address conversion %s", address)
 	}
 }

@@ -2,10 +2,16 @@ package templates
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/errors"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
@@ -99,4 +105,22 @@ func (*templateUtils) LookupContainerIpAddress(name string) (string, error) {
 		return "", nil
 	}
 	return strings.TrimSpace(stdout), err
+}
+
+// endpointToAddress converts an endpoint to an address string
+func (*templateUtils) endpointToAddress(endpoint *api.IpEndpoint) string {
+	return fmt.Sprintf("%s:%d", endpoint.Address, endpoint.Port)
+}
+
+// writeToFile writes proto message to a file
+func (*templateUtils) writeToFile(file string, content proto.Message) error {
+	f, err := os.Create(file)
+	if err != nil {
+		return errors.Annotate(err, "fail to create file %v", file).Err()
+	}
+	m := jsonpb.Marshaler{}
+	if err := m.Marshal(f, content); err != nil {
+		return errors.Annotate(err, "fail to marshal request to file %v", file).Err()
+	}
+	return nil
 }

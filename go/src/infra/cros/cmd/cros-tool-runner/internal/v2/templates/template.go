@@ -18,50 +18,21 @@ type TemplateProcessor interface {
 	Process(*api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error)
 }
 
-type RequestRouter struct{}
+// RequestRouter is the entry point to template processing.
+type RequestRouter struct{ TemplateProcessor }
 
 func (*RequestRouter) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
 	switch t := request.Template.Container.(type) {
 	case *api.Template_CrosDut:
-		actualProcessor := CrosDutProcessor{}
+		actualProcessor := newCrosDutProcessor()
 		return actualProcessor.Process(request)
 	case *api.Template_CrosProvision:
-		actualProcessor := CrosProvisionProcessor{}
+		actualProcessor := newCrosProvisionProcessor()
 		return actualProcessor.Process(request)
 	case *api.Template_CrosTest:
-		actualProcessor := CrosTestProcessor{}
+		actualProcessor := newCrosTestProcessor()
 		return actualProcessor.Process(request)
 	default:
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", t))
 	}
-}
-
-type CrosDutProcessor struct{}
-
-func (*CrosDutProcessor) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
-	// TODO(b/237695921) implement template processor for cros-dut, create new file if necessary
-	if request.Template.GetCrosDut() == nil {
-		return nil, status.Error(codes.Internal, "unable to process")
-	}
-	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage}, nil
-}
-
-type CrosProvisionProcessor struct{}
-
-func (*CrosProvisionProcessor) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
-	// TODO(b/237696880) implement template processor for cros-provision, create new file if necessary
-	if request.Template.GetCrosProvision() == nil {
-		return nil, status.Error(codes.Internal, "unable to process")
-	}
-	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage}, nil
-}
-
-type CrosTestProcessor struct{}
-
-func (*CrosTestProcessor) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
-	// TODO(b/237696881) implement template processor for cros-test, create new file if necessary
-	if request.Template.GetCrosTest() == nil {
-		return nil, status.Error(codes.Internal, "unable to process")
-	}
-	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage}, nil
 }

@@ -6,8 +6,12 @@ syntax = "proto3";
 
 package ctrv2.api;
 
+import "chromiumos/test/api/cros_provision_cli.proto";
+import "chromiumos/test/lab/api/ip_endpoint.proto";
+
 option go_package = "infra/cros/cmd/cros-tool-runner/api";
 
+// Wrapper message of one of container-specific templates
 message Template {
   oneof container {
     CrosDutTemplate cros_dut = 1;
@@ -16,8 +20,39 @@ message Template {
   }
 }
 
-message CrosDutTemplate {}
+// Plain template to demonstrate the usage of cros-dut container. All fields are
+// required.
+message CrosDutTemplate {
+  // Name of an existing network to join
+  string network = 1;
+  // Host directory to be mounted into the container for logs and other artifacts
+  string artifact_dir = 2;
+  // Cache server address
+  chromiumos.test.lab.api.IpEndpoint cache_server = 3;
+  // Dut ssh address
+  chromiumos.test.lab.api.IpEndpoint dut_address = 4;
+}
 
-message CrosProvisionTemplate {}
+// Plain template to demonstrate the usage of cros-provision container. All
+// fields are required.
+message CrosProvisionTemplate {
+  // Name of an existing network to join
+  string network = 1;
+  // Host directory to be mounted into the container for logs and other artifacts
+  string artifact_dir = 2;
+  // CrosProvisionRequest payload can have template placeholders, to be populated
+  // and write to a json file inside the artifact directory and pass along to
+  // cros-provision server. Note that inventory_server is no longer needed
+  chromiumos.test.api.CrosProvisionRequest input_request = 3;
+}
 
-message CrosTestTemplate {}
+// Plain template to demonstrate the usage of cros-test container. All fields
+// are required.
+message CrosTestTemplate {
+  // Name of an existing network to join
+  string network = 1;
+  // Host directory, two sub-directories will be created and mounted into the
+  // container. `<artifact_dir>/cros-test/cros-test` for logs and
+  // `<artifact_dir>/cros-test/results` for result artifacts to be published
+  string artifact_dir = 2;
+}

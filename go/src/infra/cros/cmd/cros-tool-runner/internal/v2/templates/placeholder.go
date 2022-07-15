@@ -36,6 +36,10 @@ type populatorRouter struct {
 	containerLookuper ContainerLookuper
 }
 
+func newPopulatorRouter() *populatorRouter {
+	return &populatorRouter{containerLookuper: &TemplateUtils}
+}
+
 // extract returns scheme, a copy of IpEndpoint with address replaced by
 // container name
 func (pr *populatorRouter) extract(endpoint api.IpEndpoint) (string, api.IpEndpoint, error) {
