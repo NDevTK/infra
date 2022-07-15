@@ -178,16 +178,21 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		DutRunner:            run,
 		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
+		Servod:               info.NewServod(),
+		ForceUpdate:          actionArgs.AsBool(ctx, "force", false),
 		UpdateEcAttemptCount: actionArgs.AsInt(ctx, "update_ec_attempt_count", 0),
 		UpdateApAttemptCount: actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
 		UpdaterMode:          actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
 	}
-	if err := firmware.InstallFirmwareImage(ctx, req, info.NewLogger()); err != nil {
-		return errors.Annotate(err, "update firmware image").Err()
-	}
-	if _, err := run(ctx, time.Minute, "reboot && exit"); err != nil {
-		return errors.Annotate(err, "update firmware image").Err()
+	logger := info.NewLogger()
+	if err := firmware.InstallFirmwareImage(ctx, req, logger); err != nil {
+		logger.Debugf("Update firmware image: failed to run updater. Error: %s", err)
+		if actionArgs.AsBool(ctx, "no_strict_update", false) {
+			logger.Debugf("Update firmware image: continue as allowed updater return non-zero exit code.")
+		} else {
+			return errors.Annotate(err, "update firmware image").Err()
+		}
 	}
 	return nil
 }

@@ -116,7 +116,8 @@ func deployActions() map[string]*Action {
 				"Device is SSHable",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
-				"Try to update FW with factory mode",
+				"Try to update FW from firmware image with factory mode",
+				"Try to update FW from OS image with factory mode",
 				"Cold reset DUT by servo",
 				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
@@ -133,7 +134,8 @@ func deployActions() map[string]*Action {
 				"Device is SSHable",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
-				"Try to update FW with factory mode",
+				"Try to update FW from firmware image with factory mode",
+				"Try to update FW from OS image with factory mode",
 				"Simple reboot",
 				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
@@ -141,11 +143,35 @@ func deployActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Try to update FW with factory mode": {
+		"Try to update FW from firmware image with factory mode": {
 			Docs: []string{
-				"Run chromeos-firmware update with factory mode.",
+				"Update firmware from faft stable image with chromeos-firmwareupdate tool",
+				"--mode=facotry will be specified when run chromeos-firmwareupdate",
+			},
+			Conditions: []string{
+				"has_stable_version_fw_image",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			ExecExtraArgs: []string{
+				"mode:factory",
+				"force:true",
+				"updater_timeout:600",
+				"update_ec_attempt_count:1",
+				"update_ap_attempt_count:1",
+				"no_strict_update:true",
+			},
+			ExecName:   "cros_update_firmware_from_firmware_image",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Try to update FW from OS image with factory mode": {
+			Docs: []string{
+				"Run chromeos-firmwareupdate with factory mode.",
 				"The reboot is not triggered as part of the action.",
 				"The action is not strict to not block repair actions.",
+				"Only runs when the DUT doesn't have a model specific faft stable_version, e.g. it's an early stage device use satlab or flex device.",
+			},
+			Conditions: []string{
+				"Missing stable fw image",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 900},
 			ExecName:    "cros_run_firmware_update",
@@ -354,6 +380,15 @@ func deployActions() map[string]*Action {
 				"Not Satlab device",
 			},
 			ExecName: "has_stable_version_fw_image",
+		},
+		"Missing stable fw image": {
+			Docs: []string{
+				"Verify that the DUT doesn't have model specific stable_version record in faft section",
+			},
+			Conditions: []string{
+				"has_stable_version_fw_image",
+			},
+			ExecName: "sample_fail",
 		},
 	}
 }

@@ -161,11 +161,11 @@ type SetApInfoByServoRequest struct {
 	// Force extract AP from the DUT.
 	ForceExtractAPFile bool
 	// Indicates if --force flag should be specified when invoke AP programmer.
-	ForceUpdate    bool
-	UpdateGBBFlags bool
+	ForceUpdate bool
 	// GBB flags value need to be set to AP.
 	// Example: 0x18
-	GBBFlags string
+	GBBFlags       string
+	UpdateGBBFlags bool
 }
 
 // SetApInfoByServo sets info to AP on the DUT by servo.
