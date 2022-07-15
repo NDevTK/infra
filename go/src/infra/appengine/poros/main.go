@@ -142,8 +142,9 @@ func main() {
 
 		srv.Routes.Static("/static/", mw, http.Dir("./static"))
 
+		// TODO: crbug/1344662 Redirect to a default page if route does not exist
 		// Anything that is not found, serve app html and let the client side router handle it.
-		srv.Routes.NotFound(mw, handler.IndexPage)
+		// srv.Routes.NotFound(mw, handler.IndexPage)
 
 		// Register pPRC servers.
 		srv.PRPC.AccessControl = prpc.AllowOriginAll

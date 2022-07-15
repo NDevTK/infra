@@ -1,6 +1,13 @@
 runtime: go116
 service: default
 
+env: standard
+instance_class: B2
+
+basic_scaling:
+  max_instances: 3
+  idle_timeout: 60m
+
 # Note: this is interpreted by gae.py, it maps the app ID being deployed to
 # values of ${...} vars.
 # Reference: https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/examples/appengine/helloworld_v2/app.yaml

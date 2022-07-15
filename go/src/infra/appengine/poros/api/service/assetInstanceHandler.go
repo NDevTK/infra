@@ -132,8 +132,9 @@ func deploymentProject(ctx context.Context) ([]string, error) {
 		return nil, errors.New("No Projects available at the moment")
 	}
 
+	// TODO: crbug/1344675 Change this once the GCP projects are finalized
 	// return the first available project
-	return availableProjects[0], nil
+	return []string{"celab-chrome-ci", "celab-chrome-ci-001"}, nil
 }
 
 // Retrieves an AssetInstance for a given unique value.
@@ -261,16 +262,11 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 
 func gcpProjectList() [][]string {
 	return [][]string{
-		{"celab-chromium-ci", "celab-chromium-ci-001"},
-		{"celab-chromium-ci", "celab-chromium-ci-002"},
-		{"celab-chromium-ci", "celab-chromium-ci-003"},
-		{"celab-chromium-ci", "celab-chromium-ci-004"},
-		{"celab-chromium-ci", "celab-chromium-ci-005"},
-		{"celab-chromium-ci", "celab-chromium-ci-006"},
-		{"celab-chromium-ci", "celab-chromium-ci-007"},
-		{"celab-chromium-ci", "celab-chromium-ci-008"},
-		{"celab-chromium-ci", "celab-chromium-ci-009"},
-		{"celab-chromium-ci", "celab-chromium-ci-010"},
+		{"celab-chrome-ci", "celab-chrome-ci-004"},
+		{"celab-chrome-ci", "celab-chrome-ci-002"},
+		{"celab-chrome-ci", "celab-chrome-ci-003"},
+		{"celab-chrome-ci", "celab-chrome-ci-001"},
+		{"celab-chrome-ci", "celab-chrome-ci-005"},
 	}
 }
 
