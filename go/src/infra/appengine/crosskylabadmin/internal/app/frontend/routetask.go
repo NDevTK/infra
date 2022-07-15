@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -31,13 +32,15 @@ func RouteTask(ctx context.Context, taskType string, botID string, expectedState
 	case "repair":
 		return routeRepairTask(ctx, botID, expectedState, pools, randFloat)
 	case "audit_rpm":
-		return routeAuditRPMTask()
+		return routeAuditRPMTask(config.Get(ctx).GetParis().GetAuditRpm())
+
 	}
 	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", taskType)
 }
 
 // routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.
-func routeAuditRPMTask() (heuristics.TaskType, error) {
+func routeAuditRPMTask(cfg *config.RolloutConfig) (heuristics.TaskType, error) {
+	_, _ = routeAuditTaskImpl(cfg)
 	return heuristics.LegacyTaskType, errors.New("route audit rpm task: not yet implemented")
 }
 

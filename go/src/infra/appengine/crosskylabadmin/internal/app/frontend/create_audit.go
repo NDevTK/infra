@@ -12,7 +12,9 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // CreateAuditTask kicks off an audit job.
@@ -50,4 +52,8 @@ func createLegacyAuditTask(ctx context.Context, botID string, taskname string, a
 		return "", errors.Annotate(err, "fail to create audit task for %s", botID).Err()
 	}
 	return taskURL, nil
+}
+
+func routeAuditTaskImpl(r *config.RolloutConfig) (heuristics.TaskType, routing.Reason) {
+	return routing.Legacy, routing.NotImplemented
 }

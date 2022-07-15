@@ -32,6 +32,7 @@ const (
 	NilArgument
 	NotALabstation
 	ErrorExtractingPermilleInfo
+	NotImplemented
 )
 
 // ReasonMessageMap maps each reason to a readable description.
