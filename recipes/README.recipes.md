@@ -1785,11 +1785,11 @@ This recipe runs legacy analyzers for the infra repo.
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [GetSubmodules](/recipes/recipes/update_submodules_mirror.py#221)(api, deps, source_checkout_name, overlays):**
+&mdash; **def [GetSubmodules](/recipes/recipes/update_submodules_mirror.py#219)(api, deps, source_checkout_name, overlays):**
 
-&mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#215)(ref):**
+&mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#213)(ref):**
 
-&mdash; **def [RunSteps](/recipes/recipes/update_submodules_mirror.py#66)(api, source_repo, target_repo, extra_submodules, refs, overlays, internal, with_tags, ref_patterns):**
+&mdash; **def [RunSteps](/recipes/recipes/update_submodules_mirror.py#64)(api, source_repo, target_repo, extra_submodules, overlays, internal, with_tags, ref_patterns):**
 ### *recipes* / [windows\_adk:examples/ensure](/recipes/recipe_modules/windows_adk/examples/ensure.py)
 
 [DEPS](/recipes/recipe_modules/windows_adk/examples/ensure.py#7): [windows\_adk](#recipe_modules-windows_adk), [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]

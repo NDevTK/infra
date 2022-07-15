@@ -33,10 +33,6 @@ PROPERTIES = {
             default=[],
             help='A list of <path>=<url> strings, indicating extra submodules '
             'to add to the mirror repo.'),
-    'refs':
-        Property(
-            default=['refs/heads/main'],
-            help='A list of refs that should be added.'),
     'overlays':
         Property(
             default=[],
@@ -48,6 +44,8 @@ PROPERTIES = {
         Property(default="", help="If should fetch internal source"),
     'with_tags':
         Property(default=True, help='Whether to clone, fetch and push tags.'),
+    # Note: ref_patterns require a `git ls-remote` call. If performance becomes
+    # a concern, we may add a `refs` for complete names of refs we care about.
     'ref_patterns':
         Property(
             default=['refs/heads/main'],
@@ -63,7 +61,7 @@ COMMIT_EMAIL_ADDRESS = \
 SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
 
 
-def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
+def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
              internal, with_tags, ref_patterns):
   _, source_project = api.gitiles.parse_repo_url(source_repo)
 
@@ -100,7 +98,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
   # This is implicitly used as the cwd by all the git steps below.
   api.m.path['checkout'] = source_checkout_dir
 
-  refs_to_mirror_set = set(refs)
+  refs_to_mirror_set = set()
 
   for ref_pattern in ref_patterns:
     resp = api.git(
@@ -337,6 +335,11 @@ def GenTests(api):
              # Checkout doesn't exist.
              api.raw_io.stream_output_text('', stream='stdout')) +
          api.step_data(
+             'git ls-remote',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) +
+         api.step_data(
              'Process refs/heads/main.gclient evaluate DEPS',
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
 
@@ -345,13 +348,22 @@ def GenTests(api):
       target_repo='https://chromium.googlesource.com/codesearch/src_mirror') +
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
-         api.step_data('git fetch', retcode=128))
+         api.step_data(
+             'git ls-remote',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) + api.step_data('git fetch', retcode=128))
 
   yield (api.test('existing_checkout_new_commits') + api.properties(
       source_repo='https://chromium.googlesource.com/chromium/src',
       target_repo='https://chromium.googlesource.com/codesearch/src_mirror') +
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
+         api.step_data(
+             'git ls-remote',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) +
          api.step_data(
              'Process refs/heads/main.'
              'gclient evaluate DEPS',
@@ -364,6 +376,11 @@ def GenTests(api):
       + api.step_data('Check for existing source checkout dir',
                       api.raw_io.stream_output_text('src', stream='stdout')) +
       api.step_data(
+          'git ls-remote',
+          api.raw_io.stream_output_text(
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+              stream='stdout')) +
+      api.step_data(
           'Process refs/heads/main.gclient evaluate DEPS',
           api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
 
@@ -373,9 +390,13 @@ def GenTests(api):
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
          api.step_data(
-             'Process refs/heads/main.gclient evaluate DEPS',
+             'git ls-remote',
              api.raw_io.stream_output_text(
-                 fake_deps_with_symbolic_ref, stream='stdout')) +
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) + api.step_data(
+                     'Process refs/heads/main.gclient evaluate DEPS',
+                     api.raw_io.stream_output_text(
+                         fake_deps_with_symbolic_ref, stream='stdout')) +
          api.step_data(
              'Process refs/heads/main.git ls-remote',
              api.raw_io.stream_output_text(
@@ -388,9 +409,13 @@ def GenTests(api):
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
          api.step_data(
-             'Process refs/heads/main.gclient evaluate DEPS',
+             'git ls-remote',
              api.raw_io.stream_output_text(
-                 fake_deps_with_nested_dep, stream='stdout')))
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) + api.step_data(
+                     'Process refs/heads/main.gclient evaluate DEPS',
+                     api.raw_io.stream_output_text(
+                         fake_deps_with_nested_dep, stream='stdout')))
 
   yield (api.test('trailing_slash') + api.properties(
       source_repo='https://chromium.googlesource.com/chromium/src',
@@ -398,9 +423,13 @@ def GenTests(api):
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
          api.step_data(
-             'Process refs/heads/main.gclient evaluate DEPS',
+             'git ls-remote',
              api.raw_io.stream_output_text(
-                 fake_deps_with_trailing_slash, stream='stdout')))
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) + api.step_data(
+                     'Process refs/heads/main.gclient evaluate DEPS',
+                     api.raw_io.stream_output_text(
+                         fake_deps_with_trailing_slash, stream='stdout')))
 
   yield (api.test('extra_submodule') + api.properties(
       source_repo='https://chromium.googlesource.com/chromium/src',
@@ -409,27 +438,43 @@ def GenTests(api):
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
          api.step_data(
+             'git ls-remote',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) +
+         api.step_data(
              'Process refs/heads/main.gclient evaluate DEPS',
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
          api.step_data(
              'Process refs/heads/main.git ls-remote',
              api.raw_io.stream_output_text(
-                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
                  stream='stdout')))
 
-  yield (api.test('extra_branches') + api.properties(
-      source_repo='https://chromium.googlesource.com/chromium/src',
-      target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
-      refs=['refs/heads/main', 'refs/branch-heads/4044'],
-  ) + api.step_data(
-      'Check for existing source checkout dir',
-      # Checkout doesn't exist.
-      api.raw_io.stream_output_text('', stream='stdout')) + api.step_data(
+  yield (
+      api.test('extra_branches') + api.properties(
+          source_repo='https://chromium.googlesource.com/chromium/src',
+          target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
+          ref_patterns=['refs/heads/main', 'refs/branch-heads/4044'],
+      ) + api.step_data(
+          'Check for existing source checkout dir',
+          # Checkout doesn't exist.
+          api.raw_io.stream_output_text('', stream='stdout')) + api.step_data(
+              'git ls-remote',
+              api.raw_io.stream_output_text(
+                  'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                  stream='stdout')) +
+      api.step_data(
+          'git ls-remote (2)',
+          api.raw_io.stream_output_text(
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/4044',
+              stream='stdout')) +
+      api.step_data(
           'Process refs/heads/main.gclient evaluate DEPS',
           api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
-         api.step_data(
-             'Process refs/branch-heads/4044.gclient evaluate DEPS',
-             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
+      api.step_data(
+          'Process refs/branch-heads/4044.gclient evaluate DEPS',
+          api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
 
   yield (api.test('overlays') + api.properties(
       source_repo='https://chromium.googlesource.com/chromium/src',
@@ -437,6 +482,11 @@ def GenTests(api):
       overlays=['tooling']) +
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('src', stream='stdout')) +
+         api.step_data(
+             'git ls-remote',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) +
          api.step_data(
              'Process refs/heads/main.gclient evaluate DEPS',
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
@@ -448,8 +498,13 @@ def GenTests(api):
           'Check for existing source checkout dir',
           # Checkout doesn't exist.
           api.raw_io.stream_output_text('', stream='stdout')) + api.step_data(
-              'Process refs/heads/main.gclient evaluate DEPS',
-              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
+              'git ls-remote',
+              api.raw_io.stream_output_text(
+                  'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                  stream='stdout')) +
+         api.step_data(
+             'Process refs/heads/main.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
 
   yield (api.test('with_tags_false') + api.properties(
       source_repo='https://chromium.googlesource.com/chromium/src',
@@ -459,34 +514,43 @@ def GenTests(api):
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('', stream='stdout')) +
          api.step_data(
+             'git ls-remote',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                 stream='stdout')) +
+         api.step_data(
              'Process refs/heads/main.gclient evaluate DEPS',
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
 
-  yield (api.test('with_ref_patterns') + api.properties(
-      source_repo='https://chromium.googlesource.com/chromium/src',
-      target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
-      refs=['refs/heads/main'],
-      ref_patterns=['refs/branch-heads/517*'],
-  ) + api.step_data(
-      'Check for existing source checkout dir',
-      # Checkout doesn't exist.
-      api.raw_io.stream_output_text('', stream='stdout')
-  ) + api.step_data(
-      'git ls-remote',
-      api.raw_io.stream_output_text(
-          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5172\n' +
-          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5173\n' +
-          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5174\n',
-          stream='stdout')) +
-         api.step_data(
-             'Process refs/branch-heads/5172.gclient evaluate DEPS',
-             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
-         api.step_data(
-             'Process refs/branch-heads/5174.gclient evaluate DEPS',
-              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
-         api.step_data(
-             'Process refs/branch-heads/5173.gclient evaluate DEPS',
-             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
-         api.step_data(
-             'Process refs/heads/main.gclient evaluate DEPS',
-             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
+  yield (
+      api.test('with_ref_patterns') + api.properties(
+          source_repo='https://chromium.googlesource.com/chromium/src',
+          target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
+          ref_patterns=['refs/heads/main', 'refs/branch-heads/517*']) +
+      api.step_data(
+          'Check for existing source checkout dir',
+          # Checkout doesn't exist.
+          api.raw_io.stream_output_text('', stream='stdout')) + api.step_data(
+              'git ls-remote',
+              api.raw_io.stream_output_text(
+                  'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+                  stream='stdout')) +
+      api.step_data(
+          'git ls-remote (2)',
+          api.raw_io.stream_output_text(
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5172\n' +
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5173\n' +
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5174\n',
+              stream='stdout')) +
+      api.step_data(
+          'Process refs/branch-heads/5172.gclient evaluate DEPS',
+          api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+      api.step_data(
+          'Process refs/branch-heads/5174.gclient evaluate DEPS',
+          api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+      api.step_data(
+          'Process refs/branch-heads/5173.gclient evaluate DEPS',
+          api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+      api.step_data(
+          'Process refs/heads/main.gclient evaluate DEPS',
+          api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
