@@ -68,9 +68,6 @@ func AnalyzeFailure(
 		return nil, e
 	}
 
-	// Verifies heuristic analysis result
-	verifyHeuristicResults(c, heuristicResult, firstFailedBuildID)
-
 	// TODO: For now, just check heuristic analysis status
 	// We need to implement nth-section analysis as well
 	analysis.Status = heuristicResult.Status
@@ -80,10 +77,17 @@ func AnalyzeFailure(
 	if e != nil {
 		return nil, fmt.Errorf("Failed saving analysis: %w", e)
 	}
+
+	// Verifies heuristic analysis result.
+	// TODO (nqmtuan): Enable verifyHeuristicResults when we fully implemented
+	// the culprit verification. Enabling it now will create a lot of noises.
+	// verifyHeuristicResults(c, heuristicResult, firstFailedBuildID)
+
 	return analysis, nil
 }
 
 func verifyHeuristicResults(c context.Context, heuristicAnalysis *gfim.CompileHeuristicAnalysis, failedBuildId int64) error {
+	// TODO (nqmtuan): Move the verification into a task queue
 	suspects, err := getHeuristicSuspectsToVerify(c, heuristicAnalysis)
 	if err != nil {
 		return err

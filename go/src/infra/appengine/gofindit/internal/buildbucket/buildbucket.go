@@ -66,6 +66,10 @@ func (c *Client) SearchBuild(ctx context.Context, req *bbpb.SearchBuildsRequest)
 	return c.Client.SearchBuilds(ctx, req)
 }
 
+func (c *Client) ScheduleBuild(ctx context.Context, req *bbpb.ScheduleBuildRequest) (*bbpb.Build, error) {
+	return c.Client.ScheduleBuild(ctx, req)
+}
+
 func GetBuild(c context.Context, bbid int64, mask *bbpb.BuildMask) (*bbpb.Build, error) {
 	q := &bbpb.GetBuildRequest{
 		Id:   bbid,
@@ -75,6 +79,7 @@ func GetBuild(c context.Context, bbid int64, mask *bbpb.BuildMask) (*bbpb.Build,
 	cl, err := NewClient(c, bbHost)
 	if err != nil {
 		logging.Errorf(c, "Cannot create Buildbucket client")
+		return nil, err
 	}
 	return cl.GetBuild(c, q)
 }
@@ -98,6 +103,7 @@ func SearchOlderBuilds(c context.Context, refBuild *bbpb.Build, mask *bbpb.Build
 	cl, err := NewClient(c, bbHost)
 	if err != nil {
 		logging.Errorf(c, "Cannot create Buildbucket client")
+		return nil, "", err
 	}
 
 	// Execute query for older builds
@@ -107,4 +113,14 @@ func SearchOlderBuilds(c context.Context, refBuild *bbpb.Build, mask *bbpb.Build
 	}
 
 	return res.Builds, res.NextPageToken, nil
+}
+
+func ScheduleBuild(c context.Context, req *bbpb.ScheduleBuildRequest) (*bbpb.Build, error) {
+	// Create a new buildbucket client
+	cl, err := NewClient(c, bbHost)
+	if err != nil {
+		logging.Errorf(c, "Cannot create Buildbucket client")
+		return nil, err
+	}
+	return cl.ScheduleBuild(c, req)
 }

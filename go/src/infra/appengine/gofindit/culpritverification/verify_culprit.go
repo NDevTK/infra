@@ -8,13 +8,13 @@ package culpritverification
 import (
 	"context"
 	"infra/appengine/gofindit/internal/gitiles"
+	"infra/appengine/gofindit/rerun"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/logging"
 )
 
 // VerifyCulprit checks if a commit is the culprit of a build failure.
-func VerifyCulprit(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildId int64) error {
+func VerifyCulprit(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildID int64) error {
 	// Query Gitiles to get parent commit
 	repoUrl := gitiles.GetRepoUrl(c, commit)
 	p, err := gitiles.GetParentCommit(c, repoUrl, commit.Id)
@@ -29,12 +29,7 @@ func VerifyCulprit(c context.Context, commit *buildbucketpb.GitilesCommit, faile
 	}
 
 	// Trigger a rerun with commit and parent commit
-	triggerRerun(c, commit, failedBuildId)
-	triggerRerun(c, parentCommit, failedBuildId)
+	rerun.TriggerRerun(c, commit, failedBuildID)
+	rerun.TriggerRerun(c, parentCommit, failedBuildID)
 	return nil
-}
-
-func triggerRerun(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildId int64) {
-	// TODO (nqmtuan): Trigger the rerun build for the commit
-	logging.Infof(c, "triggerRerun with commit %s", commit.Id)
 }
