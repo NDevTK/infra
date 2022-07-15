@@ -46,7 +46,7 @@ func Provision(authOpts auth.Options) *subcommands.Command {
 		ShortDesc: "Run provisioning for ChromeOS devices",
 		LongDesc: `Run provisioning for ChromeOS devices
 
-Tool used to perfrom provisioning OS, components and FW to ChromeOS device specified by ProvisionState.
+Tool used to perform provisioning OS, components and FW to ChromeOS device specified by ProvisionState.
 
 Example:
 cros-tool-runner provision -images docker-images.json -input provision_request.json -output provision_result.json
