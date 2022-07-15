@@ -145,11 +145,11 @@ func makeNewContent(content string, newRecords map[string]string) (string, error
 			// Do nothing, line already added.
 		} else {
 			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s\n", host)
-			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s", addr, host))
+			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s\n", addr, host))
 		}
 	}
 
-	return strings.Join(newContentArr, "\n") + "\n", nil
+	return strings.Join(newContentArr, "\n"), nil
 }
 
 // MakeClassifier makes a classifier that determines whether to modify a given addr, host line or not.
