@@ -36,7 +36,7 @@ PROPERTIES = {
     'refs':
         Property(
             default=['refs/heads/main'],
-            help='A list of refs for which submodules should be added.'),
+            help='A list of refs that should be added.'),
     'overlays':
         Property(
             default=[],
@@ -48,6 +48,12 @@ PROPERTIES = {
         Property(default="", help="If should fetch internal source"),
     'with_tags':
         Property(default=True, help='Whether to clone, fetch and push tags.'),
+    'ref_patterns':
+        Property(
+            default=['refs/heads/main'],
+            help='A list of patterns for which matching refs should be added. '
+            'Git supported pattern syntax: '
+            'https://man7.org/linux/man-pages/man7/glob.7.html'),
 }
 
 COMMIT_USERNAME = 'Submodules bot'
@@ -58,7 +64,7 @@ SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
 
 
 def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
-             internal, with_tags):
+             internal, with_tags, ref_patterns):
   _, source_project = api.gitiles.parse_repo_url(source_repo)
 
   # NOTE: This name must match the definition in cr-buildbucket.cfg. Do not
@@ -94,9 +100,20 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
   # This is implicitly used as the cwd by all the git steps below.
   api.m.path['checkout'] = source_checkout_dir
 
+  refs_to_mirror_set = set(refs)
+
+  for ref_pattern in ref_patterns:
+    resp = api.git(
+        'ls-remote', source_repo, ref_pattern,
+        stdout=api.raw_io.output_text()).stdout.splitlines()
+    for line in resp:
+      refs_to_mirror_set.add(line.split()[1])
+
+  refs_to_mirror = sorted(refs_to_mirror_set)
+
   try:
     api.git('fetch', '-t' if with_tags else '-n')
-    for ref in refs:
+    for ref in refs_to_mirror:
       if not ref.startswith('refs/heads'):
         api.git('fetch', 'origin', ref + ':' + RefToRemoteRef(ref))
   except api.step.StepFailure:
@@ -107,7 +124,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
                         api.path.abspath(source_checkout_dir))
     raise
 
-  for ref in refs:
+  for ref in refs_to_mirror:
     with api.step.nest('Process ' + ref):
       api.git('checkout', RefToRemoteRef(ref))
 
@@ -134,6 +151,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
               '--spec',
               gclient_spec_repr,
           ])
+
         deps = json.loads(
             api.gclient(
                 'evaluate DEPS', [
@@ -440,6 +458,35 @@ def GenTests(api):
       with_tags=False) +
          api.step_data('Check for existing source checkout dir',
                        api.raw_io.stream_output_text('', stream='stdout')) +
+         api.step_data(
+             'Process refs/heads/main.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
+
+  yield (api.test('with_ref_patterns') + api.properties(
+      source_repo='https://chromium.googlesource.com/chromium/src',
+      target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
+      refs=['refs/heads/main'],
+      ref_patterns=['refs/branch-heads/517*'],
+  ) + api.step_data(
+      'Check for existing source checkout dir',
+      # Checkout doesn't exist.
+      api.raw_io.stream_output_text('', stream='stdout')
+  ) + api.step_data(
+      'git ls-remote',
+      api.raw_io.stream_output_text(
+          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5172\n' +
+          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5173\n' +
+          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/5174\n',
+          stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/5172.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/5174.gclient evaluate DEPS',
+              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/5173.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
          api.step_data(
              'Process refs/heads/main.gclient evaluate DEPS',
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))

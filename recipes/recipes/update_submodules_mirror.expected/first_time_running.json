@@ -45,6 +45,17 @@
   {
     "cmd": [
       "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/heads/main"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "infra_step": true,
+    "name": "git ls-remote"
+  },
+  {
+    "cmd": [
+      "git",
       "fetch",
       "-t"
     ],
