@@ -165,7 +165,7 @@ def _build_impl(api, cipd_spec, is_latest, spec_lookup, skip_upload, recurse_fn,
                 '/p/%(package)s/+/%(instance_id)s' % pin_result)
 
         # Report package info to server to trigger provenance generation.
-        if not api.tryserver.is_tryserver:
+        if not api.tryserver.is_tryserver and not api.runtime.is_experimental:
           # Attach provenance after the package has been uploaded.
           package_hash = api.file.file_hash(cipd_spec.local_pkg_path(),
                                             test_data='deadbeef')
