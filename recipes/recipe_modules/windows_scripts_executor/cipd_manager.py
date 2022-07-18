@@ -92,9 +92,14 @@ class CIPDManager:
         Args:
           cipd_src: sources.CIPDSrc object representing cipd package
     """
-    key = '/'.join([cipd_src.refs, cipd_src.package, cipd_src.platform])
+    # package is always provided with unix path. Ensure this will work on both
+    # windows and linux.
+    package = cipd_src.package.split('/')
+    if cipd_src.platform:
+      # platform is typically added to the package name in cipd.
+      package.append(cipd_src.platform)
     # return the deref
-    return self._cache.join(helper.conv_to_win_path(key))
+    return self._cache.join(cipd_src.refs, *package)
 
   def get_cipd_url(self, cipd_src):
     """ get_url returns string containing an url referencing the given src

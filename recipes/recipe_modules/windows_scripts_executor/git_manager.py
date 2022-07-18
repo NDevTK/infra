@@ -87,5 +87,6 @@ class GITManager:
         Args:
           git_src: sources.GITSrc object
     """
-    f_path = self._cache.join(git_src.ref, helper.conv_to_win_path(git_src.src))
-    return f_path
+    # src is usually given as a unix path. Ensure this works on windows too
+    src = git_src.src.split('/')
+    return self._cache.join(git_src.ref, *src)

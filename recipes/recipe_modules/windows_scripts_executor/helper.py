@@ -6,14 +6,6 @@ from PB.recipes.infra.windows_image_builder import windows_image_builder as wib
 from PB.recipes.infra.windows_image_builder import actions
 
 
-def conv_to_win_path(path):
-  """ Converts unix paths to windows ones
-      Args:
-        path: string representing a unix path (partial)
-  """
-  return '\\'.join(path.split('/'))
-
-
 def get_src_from_action(action):
   """ get_src_from_action returns src ref in action if any
       Args:
