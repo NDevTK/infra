@@ -15,11 +15,22 @@ import (
 
 // isSmartHubExpectedExec checks if SmartHub is expected to be present in setup.
 func isSmartHubExpectedExec(ctx context.Context, info *execs.ExecInfo) error {
-	if info.GetChromeos().GetServo().GetSmartUsbhubPresent() {
-		log.Debugf(ctx, "SmartHub expected: specified in servo info.")
-		return nil
+	argsMap := info.GetActionArgs(ctx)
+	reserveAction := argsMap.AsBool(ctx, "reverse", false)
+	smartUSBhubpresent := info.GetChromeos().GetServo().GetSmartUsbhubPresent()
+	if reserveAction {
+		if !smartUSBhubpresent {
+			log.Debugf(ctx, "SmartHub expected: specified in servo info.")
+			return nil
+		}
+		return errors.Reason("smart-hub expected: specified in servo info").Err()
+	} else {
+		if smartUSBhubpresent {
+			log.Debugf(ctx, "SmartHub expected: specified in servo info.")
+			return nil
+		}
+		return errors.Reason("smart-hub expected: not specified in servo info").Err()
 	}
-	return errors.Reason("smart-hub expected: not specified in servo info").Err()
 }
 
 func init() {

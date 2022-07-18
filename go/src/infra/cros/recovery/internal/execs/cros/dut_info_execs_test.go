@@ -11,6 +11,7 @@ import (
 var isSmartHubExpectedExecTests = []struct {
 	testName    string
 	chromeos    *tlw.ChromeOS
+	actions     []string
 	expectedErr bool
 }{
 	{
@@ -20,11 +21,29 @@ var isSmartHubExpectedExecTests = []struct {
 				SmartUsbhubPresent: true,
 			},
 		},
+		[]string{},
 		false,
 	},
 	{
 		"SmartHub is not",
 		nil,
+		[]string{},
+		true,
+	},
+	{
+		"SmartHub is specified (reverse)",
+		nil,
+		[]string{"reverse:true"},
+		false,
+	},
+	{
+		"SmartHub is not (reverse)",
+		&tlw.ChromeOS{
+			Servo: &tlw.ServoHost{
+				SmartUsbhubPresent: true,
+			},
+		},
+		[]string{"reverse:true"},
 		true,
 	},
 }
@@ -42,6 +61,7 @@ func TestIsSmartHubExpectedExec(t *testing.T) {
 						Chromeos: tt.chromeos,
 					},
 				},
+				ActionArgs: tt.actions,
 			}
 			err := isSmartHubExpectedExec(ctx, info)
 			if err == nil && tt.expectedErr {
