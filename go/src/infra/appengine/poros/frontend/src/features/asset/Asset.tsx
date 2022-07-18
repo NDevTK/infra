@@ -519,7 +519,7 @@ export const Asset = () => {
           </Grid>
         </Grid>
         {renderAssetTypeDropdown()}
-        <Divider />
+        <Divider sx={{ padding: 1 }}/>
         <Grid container spacing={2} padding={1}>
           <Grid
             item

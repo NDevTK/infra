@@ -400,8 +400,10 @@ export const assetSlice = createSlice({
               entity.assetId === state.record.assetId &&
               entity.default === false
           ),
-          AssetResourceModel.defaultEntity(),
         ];
+        if(state.assetResourcesToSave.length == 0){
+          state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
+        }
         state.defaultAssetResources = [
           ...action.payload.assetResources.filter(
             (entity) =>
