@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1fa24725_7104777f",
+        "filename": "go/src/infra/appengine/poros/taskspb/createasset_handler.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1344230
+      },
+      "writtenOn": "2022-07-18T23:17:38Z",
+      "side": 1,
+      "message": "I\u0027m trying to understand this change better. Could you give some example values for log, timeoutIndex? I think updateStatusLogs will put new log into the datastore. So basically normalizeLogs should remove the expected 10mins timeout log from the log? This function split the log and take from line 0 to line timeoutIndex? Will it still contains the line of OnHost Configuration timed out?",
+      "revId": "daa19de9dc20e0e0e8dae10e8dda67e67062235b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
