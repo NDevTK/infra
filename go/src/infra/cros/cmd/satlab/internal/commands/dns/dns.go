@@ -148,11 +148,11 @@ func makeNewContent(content string, newRecords map[string]string) (string, error
 		} else {
 			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s\n", host)
 			addr := newRecords[host]
-			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s\n", addr, host))
+			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s", addr, host))
 		}
 	}
 
-	return strings.Join(newContentArr, "\n"), nil
+	return strings.Join(newContentArr, "\n") + "\n", nil
 }
 
 func orderedKeys(m map[string]string) []string {
