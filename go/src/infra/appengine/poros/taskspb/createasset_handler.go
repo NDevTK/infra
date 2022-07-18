@@ -168,8 +168,7 @@ func executeCommand(ctx context.Context, binaryDir string, operation string, ass
 	}
 
 	logging.Infof(ctx, "Deployment Successful!!")
-	outStr, errStr := string(stdout), string(stderr)
-	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", fmt.Sprintf("%s\n%s\n", outStr, errStr), nil)
+	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", "Deployment completed successfully\n", nil)
 }
 
 func enqueueWaitForTask(ctx context.Context, assetInstanceId string, operation string) error {
@@ -194,11 +193,28 @@ func updateStatusLogs(ctx context.Context, assetInstanceId string, status string
 	if errors != nil {
 		assetInstance.Errors = errors.Error()
 	}
-	assetInstance.Logs = assetInstance.Logs + log
+	assetInstance.Logs = assetInstance.Logs + normalizeLogs(log)
 	if err := datastore.Put(ctx, assetInstance); err != nil {
 		return err
 	}
 	return nil
+}
+
+func normalizeLogs(log string) string {
+	var logList []string = strings.Split(log, "\n")
+	timeoutIndex := -1
+	for index, logLine := range logList {
+		if strings.Contains(logLine, "OnHost configuration timed out") {
+			timeoutIndex = index
+			break
+		}
+	}
+
+	if timeoutIndex != -1 {
+		return strings.Join(logList[0:timeoutIndex], "\n")
+	}
+
+	return log
 }
 
 func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
