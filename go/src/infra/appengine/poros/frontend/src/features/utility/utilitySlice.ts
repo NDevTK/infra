@@ -117,7 +117,6 @@ export const utilitySlice = createSlice({
     });
     builder.addCase(fetchLogsAsync.pending, (state, action) => {
       state.showLogs = true;
-      state.logs = 'Loading...';
       state.activeLogsAssetInstanceId = action.meta.arg.assetInstanceId;
     });
     builder.addCase(fetchLogsAsync.fulfilled, (state, action) => {

@@ -130,7 +130,7 @@ func executeCommand(ctx context.Context, binaryDir string, operation string, ass
 	err := cmd.Start()
 
 	if err != nil {
-		logging.Infof(ctx, "Command failed to start: %v", err)
+		logging.Errorf(ctx, "Command failed to start: %s", err.Error())
 		updateStatusLogs(ctx, assetInstanceId, "STATUS_FAILED", "cel_ctl command failed to start", err)
 	}
 
@@ -139,40 +139,39 @@ func executeCommand(ctx context.Context, binaryDir string, operation string, ass
 	// wg ensures that we finish
 	var wg sync.WaitGroup
 	wg.Add(1)
+
 	go func() {
 		stdout, errStdout = copyAndCapture(os.Stdout, stdoutIn)
 		wg.Done()
 	}()
 
 	stderr, errStderr = copyAndCapture(os.Stderr, stderrIn)
+	updateStatusLogs(ctx, assetInstanceId, "STATUS_RUNNING", fmt.Sprintf("%s\n%s\n", string(stdout), string(stderr)), nil)
 
 	wg.Wait()
 
 	err = cmd.Wait()
 	if err != nil {
-		// In this case the command timed out as expected because we set
-		// the timeout flag. Call the waitfor command which will be shorter
-		// in duration and won't hold the cloud task for long.
-		if strings.Contains(string(stdout), "OnHost configuration timed out") {
+		if strings.Contains(string(stderr), "OnHost configuration timed out") {
+			logging.Infof(ctx, "Calling the waitfor command")
 			enqueueWaitForTask(ctx, assetInstanceId, "waitfor")
 			return
 		}
-
-		updateStatusLogs(ctx, assetInstanceId, "STATUS_FAILED", "cel_ctl command failed to run", err)
-		logging.Infof(ctx, "cmd.Run() failed with %s\n", err.Error())
+		logging.Errorf(ctx, "cmd.Run() failed with %s\n", err.Error())
+		updateStatusLogs(ctx, assetInstanceId, "STATUS_FAILED", "cel_ctl command failed to run\n", err)
 		return
 	}
-
 	if errStdout != nil || errStderr != nil {
-		updateStatusLogs(ctx, assetInstanceId, "STATUS_FAILED", "failed to capture stdout or stderr", err)
+		logging.Errorf(ctx, "failed to capture stdout or stderr")
+		updateStatusLogs(ctx, assetInstanceId, "STATUS_FAILED", "failed to capture stdout or stderr\n", err)
 		return
 	}
+
+	logging.Infof(ctx, "Deployment Successful!!")
 	outStr, errStr := string(stdout), string(stderr)
-	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", fmt.Sprintf("\nout:\n%s\nerr:\n%s\n", outStr, errStr), nil)
+	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", fmt.Sprintf("%s\n%s\n", outStr, errStr), nil)
 }
 
-// Enqueues a task to execute waitfor command. This command is run with a timeout to
-// avoid holding the queue for a long time.
 func enqueueWaitForTask(ctx context.Context, assetInstanceId string, operation string) error {
 	uniqId := uuid.New().String()
 	return tq.AddTask(ctx, &tq.Task{
@@ -195,7 +194,7 @@ func updateStatusLogs(ctx context.Context, assetInstanceId string, status string
 	if errors != nil {
 		assetInstance.Errors = errors.Error()
 	}
-	assetInstance.Logs = log
+	assetInstance.Logs = assetInstance.Logs + log
 	if err := datastore.Put(ctx, assetInstance); err != nil {
 		return err
 	}
@@ -211,7 +210,9 @@ func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
 			d := buf[:n]
 			out = append(out, d...)
 			_, err := w.Write(d)
-			return out, err
+			if err != nil {
+				return out, err
+			}
 		}
 		if err != nil {
 			// Read returns io.EOF at the end of file, which is not an error for us

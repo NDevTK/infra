@@ -135,10 +135,12 @@ export function AssetInstanceLogs() {
               paragraph={true}
               padding={2}
               style={{
-                maxHeight: 500,
+                height: 500,
                 overflow: 'scroll',
                 whiteSpace: 'pre',
                 textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column-reverse'
               }}
             >
               {logs}
