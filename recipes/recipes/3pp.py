@@ -28,51 +28,59 @@ DEPS = [
 
 
 PROPERTIES = {
-  'package_locations': Property(
-      help=('URL of repo containing package definitions.'
-            'Cross-compiling requires docker on $PATH.'),
-      kind=ConfigList(
-        lambda: ConfigGroup(
-          repo=Single(str),
-          ref=Single(str, required=False),
-          subdir=Single(str, required=False),
+    'package_locations':
+        Property(
+            help=('URL of repo containing package definitions.'
+                  'Cross-compiling requires docker on $PATH.'),
+            kind=ConfigList(
+                lambda: ConfigGroup(
+                    repo=Single(str),
+                    ref=Single(str, required=False),
+                    subdir=Single(str, required=False),
+                ),)),
+    'to_build':
+        Property(
+            help=(
+                'The names (and optionally versions) of the packages to build '
+                'and upload. Leave empty to build and upload all known '
+                'packages. If you want to specify a version other than '
+                '"latest", pass the package name like "some_package@1.3.4".'),
+            kind=List(str),
+            default=(),
         ),
-      )
-  ),
-  'to_build': Property(
-    help=(
-      'The names (and optionally versions) of the packages to build and upload.'
-      ' Leave empty to build and upload all known packages. If you want to '
-      'specify a version other than "latest", pass the package name like '
-      '"some_package@1.3.4".'),
-    kind=List(str),
-    default=(),
-  ),
-  'platform': Property(
-      kind=str, default=None,
-      help=(
-        'Target platform. Must be a valid CIPD ${platform}. Cross-compiling '
-        'requires docker on $PATH.')),
-  'force_build': Property(
-      kind=bool, default=False,
-      help=(
-        'Forces building packages, even if they\'re available on the CIPD '
-        'server already. Doing this disables uploads.')),
-  'package_prefix': Property(
-      kind=str,
-      help=(
-        'Joins this CIPD namespace before all downloaded/uploaded packages. '
-        'Allows comprehensive testing of the entire packaging process without '
-        'uploading into the prod namespace. If this recipe is run in '
-        'experimental mode (according to the `runtime` module), then '
-        'this will default to "experimental/support_3pp/".')),
-  'source_cache_prefix': Property(
-      kind=str, default='sources',
-      help=(
-        'Joins this CIPD namespace after the package_prefix to store the '
-        'source of all downloaded/uploaded packages. This gives the '
-        'flexibility to use different prefixes for different repos '
-        '(Default to "sources").')),
+    'platform':
+        Property(
+            kind=str,
+            default=None,
+            help=('Target platform. Must be a valid CIPD ${platform}. '
+                  'Cross-compiling requires docker on $PATH.')),
+    'force_build':
+        Property(
+            kind=bool,
+            default=False,
+            help=(
+                'Forces building the packages given in to_build, even if they '
+                'are available on the CIPD server already. Doing this disables '
+                'uploads.')),
+    'package_prefix':
+        Property(
+            kind=str,
+            help=(
+                'Joins this CIPD namespace before all downloaded/uploaded '
+                'packages. Allows comprehensive testing of the entire '
+                'packaging process without uploading into the prod namespace. '
+                'If this recipe is run in experimental mode (according to the '
+                '`runtime` module), then this will default to '
+                '"experimental/support_3pp/".')),
+    'source_cache_prefix':
+        Property(
+            kind=str,
+            default='sources',
+            help=(
+                'Joins this CIPD namespace after the package_prefix to store '
+                'the source of all downloaded/uploaded packages. This gives '
+                'the flexibility to use different prefixes for different repos '
+                '(Default to "sources").')),
 }
 
 
@@ -87,7 +95,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
     try:
       api.bcid_reporter.report_stage("start")
     except Exception:  # pragma: no cover
-            api.step.active_result.presentation.status = api.step.FAILURE
+      api.step.active_result.presentation.status = api.step.FAILURE
 
   # NOTE: We essentially ignore the on-machine CIPD cache here. We do this in
   # order to make sure this builder always operates with the current set of tags
@@ -168,7 +176,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
       try:
         api.bcid_reporter.report_stage("upload-complete")
       except Exception:  # pragma: no cover
-            api.step.active_result.presentation.status = api.step.FAILURE
+        api.step.active_result.presentation.status = api.step.FAILURE
 
     if unsupported:
       api.step.empty(

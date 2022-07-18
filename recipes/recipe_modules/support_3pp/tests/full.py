@@ -839,6 +839,7 @@ def GenTests(api):
           a='''
     create {
       source { script { name: "fetch.py" } }
+      build { dep: 'prefix/deps/not_rebuilt' }
     }
     upload { pkg_prefix: "prefix/deps" }
     ''',
@@ -863,6 +864,12 @@ def GenTests(api):
     }
     upload { pkg_prefix: "prefix/deps" }
     ''',
+          not_rebuilt='''
+    create {
+      source { script { name: "fetch.py" } }
+    }
+    upload { pkg_prefix: "prefix/deps" }
+    ''',
       ).items())
   test = (
       api.test('tryjob') + api.platform('linux', 64) + api.properties(
@@ -878,6 +885,13 @@ def GenTests(api):
     test += api.step_data(
         mk_name('load package specs', 'read \'%s/3pp.pb\'' % pkg),
         api.file.read_text(spec))
+  test += api.override_step_data(
+      mk_name('building prefix/deps/not_rebuilt',
+              'cipd describe 3pp/prefix/deps/not_rebuilt/linux-amd64'),
+      api.cipd.example_describe(
+          '3pp/prefix/deps/not_rebuilt/linux-amd64',
+          version='version:1.5.0-rc1',
+          test_data_tags=['version:1.5.0-rc1']))
   yield test
 
   pkgs = sorted(

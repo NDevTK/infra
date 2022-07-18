@@ -19,8 +19,8 @@ from .workdir import Workdir
 from PB.recipe_modules.infra.support_3pp.spec import Spec
 
 
-def build_resolved_spec(api, spec_lookup, cache, force_build, spec, version,
-                        ecosystem_hash):
+def build_resolved_spec(api, spec_lookup, cache, force_build_packages,
+                        skip_upload, spec, version, ecosystem_hash):
   """Builds a resolved spec at a specific version, then uploads it.
 
   Args:
@@ -31,9 +31,9 @@ def build_resolved_spec(api, spec_lookup, cache, force_build, spec, version,
     * cache (dict) - A map of (package_name, version, platform) -> CIPDSpec.
       The `build_resolved_spec` function fully manages the content of this
       dictionary.
-    * force_build (bool) - If True, don't consult CIPD server to see if the
-      package is already built. This also disables uploading the source and
-      built results, to avoid attempting to upload a duplicately-tagged package.
+    * force_build_packages (set[str]) - Packages to build even if they already
+      exist in CIPD.
+    * skip_upload (bool) - If True, never upload built packages to CIPD.
     * spec (ResolvedSpec) - The resolved spec to build.
     * version (str) - The symver (or 'latest') version of the package to build.
     * ecosystem_hash(str) - If specified, tells 3pp hash used for this build.
@@ -100,34 +100,27 @@ def build_resolved_spec(api, spec_lookup, cache, force_build, spec, version,
 
       cipd_spec = spec.cipd_spec(version)
       # See if the specific version is uploaded
-      if force_build or not cipd_spec.exists_in_cipd():
+      if (spec.cipd_pkg_name in force_build_packages or
+          not cipd_spec.exists_in_cipd()):
         # Otherwise, build it
-        _build_impl(
-            api, cipd_spec, is_latest, spec_lookup, force_build,
-            (lambda spec, version: build_resolved_spec(
-                api, spec_lookup, cache, force_build, spec, version,
-                ecosystem_hash)),
-            spec, version, git_hash, ecosystem_hash)
+        _build_impl(api, cipd_spec, is_latest, spec_lookup, skip_upload,
+                    (lambda spec, version: build_resolved_spec(
+                        api, spec_lookup, cache, force_build_packages,
+                        skip_upload, spec, version, ecosystem_hash)), spec,
+                    version, git_hash, ecosystem_hash)
 
       return set_cache(cipd_spec)
 
 
-def _build_impl(api, cipd_spec, is_latest, spec_lookup, force_build, recurse_fn,
+def _build_impl(api, cipd_spec, is_latest, spec_lookup, skip_upload, recurse_fn,
                 spec, version, git_hash, ecosystem_hash):
   workdir = Workdir(api, spec, version)
   with api.context(env={'_3PP_VERSION': version}):
     api.file.ensure_directory('mkdir -p [workdir]', workdir.base)
 
     with api.step.nest('fetch sources'):
-      source.fetch_source(
-          api,
-          workdir,
-          spec,
-          version,
-          git_hash,
-          spec_lookup,
-          recurse_fn,
-          skip_upload=force_build)
+      source.fetch_source(api, workdir, spec, version, git_hash, spec_lookup,
+                          recurse_fn, skip_upload)
 
     if spec.create_pb.HasField("build"):
       with api.step.nest('run installation'):
@@ -150,7 +143,7 @@ def _build_impl(api, cipd_spec, is_latest, spec_lookup, force_build, recurse_fn,
       with api.step.nest('run test'):
         verify.run_test(api, workdir, spec, cipd_spec)
 
-    if not force_build:
+    if not skip_upload:
       with api.step.nest('do upload') as upload_presentation:
         extra_tags = {'3pp_ecosystem_hash': ecosystem_hash}
         if spec.create_pb.package.alter_version_re:

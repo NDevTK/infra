@@ -270,8 +270,8 @@ including:
 #### Dry runs / experiments
 
 If the recipe is run with `force_build` it will always build all packages
-indicated (and their dependencies), and will not upload any of them to the
-central server.
+indicated. Dependencies will be built if they do not exist in CIPD. None
+of the built packages will be uploaded to CIPD.
 
 The recipe must always be run with a package_prefix (by assigning to the
 .package_prefix property on the Support3ppApi). If the recipe is run in
@@ -566,20 +566,24 @@ class Support3ppApi(recipe_api.RecipeApi):
     self._resolved_packages[key] = ret
     return ret
 
-  def _build_resolved_spec(self, spec, version, force_build):
+  def _build_resolved_spec(self, spec, version, force_build_packages,
+                           skip_upload):
     """Builds the resolved spec. All dependencies for this spec must already be
     built.
 
     Args:
       * spec (ResolvedSpec) - The spec to build.
       * version (str) - The symver of the package that we want to build.
-      * force_build (bool) - If True, ignore remote server checks.
+      * force_build_packages (set[str]) - Packages to build even if they already
+        exist in CIPD.
+      * skip_upload (bool) - If True, never upload built packages to CIPD.
 
     Returns CIPDSpec for the built package.
     """
-    return create.build_resolved_spec(
-        self.m, self._resolve_for, self._built_packages, force_build,
-        spec, version, self._infra_3pp_hash.hexdigest())
+    return create.build_resolved_spec(self.m, self._resolve_for,
+                                      self._built_packages,
+                                      force_build_packages, skip_upload, spec,
+                                      version, self._infra_3pp_hash.hexdigest())
 
   def load_packages_from_path(self,
                               base_path,
@@ -797,6 +801,7 @@ class Support3ppApi(recipe_api.RecipeApi):
 
     explicit_build_plan = []
     packages = packages or list(self._loaded_specs.keys())
+    force_build_packages = set(packages) if force_build else set()
     platform = platform or platform_for_host(self.m)
     with self.m.step.nest('compute build plan'):
       for pkg in packages:
@@ -822,5 +827,7 @@ class Support3ppApi(recipe_api.RecipeApi):
     ret = []
     with self.m.step.defer_results():
       for spec, version in sorted(expanded_build_plan):
-        ret.append(self._build_resolved_spec(spec, version, force_build))
+        ret.append(
+            self._build_resolved_spec(spec, version, force_build_packages,
+                                      force_build))
     return ret, unsupported

@@ -985,8 +985,8 @@ including:
 #### Dry runs / experiments
 
 If the recipe is run with `force_build` it will always build all packages
-indicated (and their dependencies), and will not upload any of them to the
-central server.
+indicated. Dependencies will be built if they do not exist in CIPD. None
+of the built packages will be uploaded to CIPD.
 
 The recipe must always be run with a package_prefix (by assigning to the
 .package_prefix property on the Support3ppApi). If the recipe is run in
@@ -1011,7 +1011,7 @@ This module uses the following named caches:
 
 #### **class [Support3ppApi](/recipes/recipe_modules/support_3pp/api.py#384)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [ensure\_uploaded](/recipes/recipe_modules/support_3pp/api.py#761)(self, packages=(), platform='', force_build=False, tryserver_affected_files=()):**
+&mdash; **def [ensure\_uploaded](/recipes/recipe_modules/support_3pp/api.py#765)(self, packages=(), platform='', force_build=False, tryserver_affected_files=()):**
 
 Executes entire {fetch,build,package,verify,upload} pipeline for all the
 packages listed, targeting the given platform.
@@ -1039,7 +1039,7 @@ and their tagged versions, as well as a list of unsupported packages.
 
 &mdash; **def [initialize](/recipes/recipe_modules/support_3pp/api.py#418)(self):**
 
-&mdash; **def [load\_packages\_from\_path](/recipes/recipe_modules/support_3pp/api.py#584)(self, base_path, glob_pattern='\*\*/3pp.pb', check_dup=True):**
+&mdash; **def [load\_packages\_from\_path](/recipes/recipe_modules/support_3pp/api.py#588)(self, base_path, glob_pattern='\*\*/3pp.pb', check_dup=True):**
 
 Loads all package definitions from the given base_path and glob pattern.
 
@@ -1380,7 +1380,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 This recipe builds and packages third party software, such as Git.
 
-&mdash; **def [RunSteps](/recipes/recipes/3pp.py#79)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix):**
+&mdash; **def [RunSteps](/recipes/recipes/3pp.py#87)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix):**
 ### *recipes* / [build\_conda\_cipd\_pkg](/recipes/recipes/build_conda_cipd_pkg.py)
 
 [DEPS](/recipes/recipes/build_conda_cipd_pkg.py#22): [conda](#recipe_modules-conda), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
