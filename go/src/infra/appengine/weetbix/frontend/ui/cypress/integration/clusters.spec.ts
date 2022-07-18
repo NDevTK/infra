@@ -6,8 +6,8 @@ describe('Clusters Page', () => {
   beforeEach(() => {
     cy.visit('/').contains('LOGIN').click();
     cy.get('body').contains('Logout');
-    // The default project we will use will be `chromium`.
-    cy.visit('/p/chromium/clusters');
+    // Use fuchsia for now as the loading time is faster.
+    cy.visit('/p/fuchsia/clusters');
   });
   it('loads rules table', () => {
     // Navigate to the bug cluster page
@@ -16,11 +16,11 @@ describe('Clusters Page', () => {
     cy.contains('Rule Definition');
   });
   it('loads cluster table', () => {
-    // check for the header text in the cluster table.
-    cy.get('cluster-table').contains('Presubmit-Blocking Failures Exonerated');
+    // check for an entry in the cluster table.
+    cy.get('[data-testid=clusters_table_body]').contains('test = ');
   });
   it('loads a cluster page', () => {
-    cy.get('cluster-table').get('[data-cy=cluster-link]').first().click();
+    cy.get('[data-testid=clusters_table_title] > a').first().click();
     cy.get('body').contains('Recent Failures');
     // Check that the analysis section is showing at least one group.
     cy.get('[data-testid=failures_table_group_cell]');

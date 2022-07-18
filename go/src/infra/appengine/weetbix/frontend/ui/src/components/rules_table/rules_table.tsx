@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './styles.css';
-
 import dayjs from 'dayjs';
 
 import { useQuery } from 'react-query';
@@ -16,6 +14,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import LinearProgress from '@mui/material/LinearProgress';
+import Link from '@mui/material/Link';
 
 import { getRulesService, ListRulesRequest } from '../../services/rules';
 import { linkToRule } from '../../tools/urlHandling/links';
@@ -69,8 +68,8 @@ const RulesTable = ({ project } : Props ) => {
           {
             rules.map((rule) => (
               <TableRow key={rule.ruleId}>
-                <TableCell><a className='rule-table-link' href={linkToRule(rule.project, rule.ruleId)}>{rule.ruleDefinition}</a></TableCell>
-                <TableCell><a className='rule-table-link' href={rule.bug.url}>{rule.bug.linkText}</a></TableCell>
+                <TableCell><Link href={linkToRule(rule.project, rule.ruleId)} underline="hover">{rule.ruleDefinition}</Link></TableCell>
+                <TableCell><Link href={rule.bug.url} underline="hover">{rule.bug.linkText}</Link></TableCell>
                 <TableCell>{dayjs.utc(rule.lastUpdateTime).local().fromNow()}</TableCell>
               </TableRow>
             ))

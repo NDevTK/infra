@@ -6,7 +6,6 @@ import './styles/style.css';
 import './src/views/home/home_page';
 import './src/views/bug/bug_page/bug_page.ts';
 import './src/views/clusters/cluster/cluster_page.ts';
-import './src/views/clusters/cluster_table/cluster_table.ts';
 import './src/views/new_rule/new_rule_page.ts';
 import './src/views/clusters/cluster/elements/impact_table';
 
@@ -23,7 +22,7 @@ import {
 import BaseLayout from './src/layouts/base';
 import BugPageWrapper from './src/views/bug/bug_page/bug_page_wrapper';
 import ClusterPageWrapper from './src/views/clusters/cluster/cluster_page_wrapper';
-import ClusterTableWrapper from './src/views/clusters/cluster_table/cluster_table_wrapper';
+import ClustersPage from './src/views/clusters/clusters_page';
 import NotFoundPage from './src/views/errors/not_found_page';
 import HomePageWrapper from './src/views/home/home_page_wrapper';
 import NewRulePageWrapper from './src/views/new_rule/new_rule_page_wrapper';
@@ -57,7 +56,7 @@ const App = () => {
                 <Route path=':id' element={<Rule />} />
               </Route>
               <Route path='clusters'>
-                <Route index element={<ClusterTableWrapper />} />
+                <Route index element={<ClustersPage />} />
                 <Route path=':algorithm/:id' element={<ClusterPageWrapper />} />
               </Route>
             </Route>

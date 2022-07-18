@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { AuthorizedPrpcClient } from '../clients/authorized_client';
+import { AssociatedBug, ClusterId } from './shared_models';
 
 export const getRulesService = () : RulesService => {
   const client = new AuthorizedPrpcClient();
@@ -62,18 +63,6 @@ export interface Rule {
     lastUpdateUser: string;
     predicateLastUpdateTime: string; // RFC 3339 encoded date/time.
     etag: string;
-}
-
-export interface AssociatedBug {
-    system: string;
-    id: string;
-    linkText: string;
-    url: string;
-}
-
-export interface ClusterId {
-    algorithm: string;
-    id: string;
 }
 
 export interface ListRulesRequest {

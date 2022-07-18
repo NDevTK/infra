@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { ClusterId } from '../../services/rules';
+import { ClusterId } from '../../services/shared_models';
 import { Changelist, ClusterFailure } from '../failures_tools';
 
 export const linkToCluster = (project: string, c: ClusterId): string => {
-  if (c.algorithm.startsWith('rules-')) {
+  if (c.algorithm.startsWith('rules-') || c.algorithm == 'rules') {
     return linkToRule(project, c.id);
   } else {
     const projectEncoded = encodeURIComponent(project);

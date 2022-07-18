@@ -20,13 +20,13 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
 import { useMutateRule } from '../../../hooks/useMutateRule';
+import { AssociatedBug } from '../../../services/shared_models';
 import {
   GetIssueRequest,
   getIssuesService,
 } from '../../../services/monorail';
 import {
   Rule,
-  AssociatedBug,
   UpdateRuleRequest,
 } from '../../../services/rules';
 import { MuiDefaultColor } from '../../../types/mui_types';

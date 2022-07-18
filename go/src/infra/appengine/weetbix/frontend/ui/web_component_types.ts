@@ -10,7 +10,6 @@ import { TitleBar } from './src/shared_elements/title_bar';
 import { BugPage } from './src/views/bug/bug_page/bug_page';
 import { ClusterPage } from './src/views/clusters/cluster/cluster_page';
 import { ImpactTable } from './src/views/clusters/cluster/elements/impact_table';
-import { ClusterTable } from './src/views/clusters/cluster_table/cluster_table';
 import { HomePage } from './src/views/home/home_page';
 import { NewRulePage } from './src/views/new_rule/new_rule_page';
 
@@ -24,7 +23,6 @@ declare global {
             ['title-bar']: CustomElement<TitleBar>;
             ['new-rule-page']: CustomElement<NewRulePage>;
             ['cluster-page']: CustomElement<ClusterPage>;
-            ['cluster-table']: CustomElement<ClusterTable>;
             ['bug-page']: CustomElement<BugPage>;
             ['impact-table']: CustomElement<ImpactTable>,
             ['failure-table']: CustomElement<FailureTable>,

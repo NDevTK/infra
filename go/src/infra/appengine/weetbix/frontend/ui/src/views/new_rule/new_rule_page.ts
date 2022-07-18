@@ -25,8 +25,8 @@ import {
 import { Snackbar } from '@material/mwc-snackbar';
 import { TextArea } from '@material/mwc-textarea';
 
+import { ClusterId } from '../../services/shared_models';
 import {
-    ClusterId,
     CreateRuleRequest,
     getRulesService
 } from '../../services/rules';

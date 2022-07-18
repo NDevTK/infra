@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { AuthorizedPrpcClient } from '../clients/authorized_client';
+import { AssociatedBug, ClusterId } from './shared_models';
 
 export const getClustersService = () => {
   const client = new AuthorizedPrpcClient();
@@ -25,6 +26,10 @@ export class ClustersService {
 
   async getReclusteringProgress(request: GetReclusteringProgressRequest): Promise<ReclusteringProgress> {
     return this.client.call(ClustersService.SERVICE, 'GetReclusteringProgress', request);
+  }
+
+  async queryClusterSummaries(request: QueryClusterSummariesRequest): Promise<QueryClusterSummariesResponse> {
+    return this.client.call(ClustersService.SERVICE, 'QueryClusterSummaries', request);
   }
 }
 
@@ -110,4 +115,44 @@ export interface ClusteringVersion {
   rulesVersion: string; // RFC 3339 encoded date/time.
   configVersion: string; // RFC 3339 encoded date/time.
   algorithmsVersion: number;
+}
+
+export interface QueryClusterSummariesRequest {
+  // The LUCI project.
+  project: string;
+
+  // An AIP-160 style filter on the failures that are used as input to
+  // clustering.
+  failureFilter: string;
+
+  // An AIP-132 style order_by clause, which specifies the sort order
+  // of the result.
+  orderBy: string;
+}
+
+export type SortableMetricName = 'presubmit_rejects' | 'critical_failures_exonerated' | 'failures';
+
+export interface QueryClusterSummariesResponse {
+  clusterSummaries: ClusterSummary[] | null;
+}
+
+export interface ClusterSummary {
+  // The identity of the cluster.
+  clusterId: ClusterId;
+  // A one-line description of the cluster.
+  title: string;
+  // The bug associated with the cluster. This is only present for
+  // clusters defined by failure association rules.
+  bug: AssociatedBug | undefined;
+  // The number of distinct user CLs rejected by the cluster.
+  // 64-bit integer serialized as a string.
+  presubmitRejects: string | undefined;
+  // The number of failures that were critical (on builders critical
+  // to CQ succeeding and not exonerated for non-criticality)
+  // and exonerated.
+  // 64-bit integer serialized as a string.
+  criticalFailuresExonerated: string | undefined;
+  // The total number of test results in the cluster.
+  // 64-bit integer serialized as a string.
+  failures: string | undefined;
 }

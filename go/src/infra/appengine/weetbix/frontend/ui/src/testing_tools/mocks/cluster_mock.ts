@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Cluster } from '../../services/cluster';
+import fetchMock from 'fetch-mock-jest';
+
+import { Cluster, ClusterSummary, QueryClusterSummariesRequest, QueryClusterSummariesResponse } from '../../services/cluster';
 
 export const getMockCluster = (id: string): Cluster => {
   return {
@@ -26,4 +28,49 @@ export const getMockCluster = (id: string): Cluster => {
     },
     'equivalentFailureAssociationRule': '',
   };
+};
+
+export const getMockRuleClusterSummary = (id: string): ClusterSummary => {
+  return {
+    'clusterId': {
+      'algorithm': 'rules-v2',
+      'id': id,
+    },
+    'title': 'reason LIKE "blah%"',
+    'bug': {
+      'system': 'buganizer',
+      'id': '123456789',
+      'linkText': 'b/123456789',
+      'url': 'https://buganizer/123456789',
+    },
+    'presubmitRejects': '27',
+    'criticalFailuresExonerated': '918',
+    'failures': '1871',
+  };
+};
+
+export const getMockSuggestedClusterSummary = (id: string): ClusterSummary => {
+  return {
+    'clusterId': {
+      'algorithm': 'reason-v3',
+      'id': id,
+    },
+    'bug': undefined,
+    'title': 'reason LIKE "blah%"',
+    'presubmitRejects': '29',
+    'criticalFailuresExonerated': '919',
+    'failures': '1872',
+  };
+};
+
+export const mockQueryClusterSummaries = (request: QueryClusterSummariesRequest, response: QueryClusterSummariesResponse) => {
+  fetchMock.post({
+    url: 'http://localhost/prpc/weetbix.v1.Clusters/QueryClusterSummaries',
+    body: request,
+  }, {
+    headers: {
+      'X-Prpc-Grpc-Code': '0',
+    },
+    body: ')]}\'' + JSON.stringify(response),
+  }, { overwriteRoutes: true });
 };
