@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package cros
+
+import (
+	"context"
+
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
+)
+
+// isSmartHubExpectedExec checks if SmartHub is expected to be present in setup.
+func isSmartHubExpectedExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetServo().GetSmartUsbhubPresent() {
+		log.Debugf(ctx, "SmartHub expected: specified in servo info.")
+		return nil
+	}
+	return errors.Reason("smart-hub expected: not specified in servo info").Err()
+}
+
+func init() {
+	execs.Register("servo_is_smarthub_expected", isSmartHubExpectedExec)
+}
