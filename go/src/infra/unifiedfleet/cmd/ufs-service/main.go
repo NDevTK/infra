@@ -9,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"go.chromium.org/luci/common/logging"
@@ -24,18 +23,12 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
+	version_compare "infra/libs/version"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/frontend"
 	"infra/unifiedfleet/app/util"
 )
-
-// SupportedClientMajorVersionNumber indicates the minimum client version
-// supported by this server
-//
-// any client with major version number lower than this number will get an
-// error to update their client to this major version or above.
-const SupportedClientMajorVersionNumber = 3
 
 // flag to control erroring out if namespace is not provided
 const rejectCallforNamespace = false
@@ -126,7 +119,7 @@ func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "Retrieving metadata failed.")
 	}
-	user, userAgentExists, userAgentErr := validateUserAgent(md)
+	user, userAgentExists, userAgentErr := validateUserAgent(ctx, md)
 	if userAgentExists && userAgentErr != nil {
 		return nil, userAgentErr
 	}
@@ -144,7 +137,7 @@ func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 		logging.Infof(ctx, "Blocking useragent: %s RPC: %s", user, info.FullMethod)
 		return nil, status.Errorf(codes.PermissionDenied, "blocking skylab writes to UFS MachineLSE")
 	}
-	logging.Debugf(ctx, "Successfully pass user-agent version check for user %s, major version %d", user, SupportedClientMajorVersionNumber)
+	logging.Debugf(ctx, "Successfully pass user-agent version check for user %s", user)
 	resp, err = handler(ctx, req)
 	return
 }
@@ -153,28 +146,43 @@ func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 var versionRegex = regexp.MustCompile(`[0-9]{1,3}`)
 
 // validateUserAgent returns a tuple
-//     (if user-agent exists, if user-agent is valid)
-func validateUserAgent(md metadata.MD) (string, bool, error) {
+//	(if user-agent exists, if user-agent is valid)
+func validateUserAgent(ctx context.Context, md metadata.MD) (string, bool, error) {
+	cfg := config.Get(ctx)
+	if cfg == nil {
+		return "", false, status.Errorf(codes.Unavailable,
+			"Config not found, Try again in a few minutes")
+	}
 	version, ok := md["user-agent"]
 	// Only check version for skylab commands which already set user-agent
 	if ok {
+		if len(version) == 0 || version[0] == "" {
+			return version[0], ok, status.Errorf(codes.FailedPrecondition, "User agent doesn't advertise itself")
+		}
 		// TODO(xixuan): remove this check
 		// Traffic from trawler has a default userAgent "Googlebot/2.1" if no special userAgent is approved yet.
 		// So before b/179652204 is approved, temporarily allow all traffic from trawler.
 		if strings.Contains(version[0], "Googlebot") {
 			return version[0], ok, nil
 		}
-		majors := versionRegex.FindAllString(version[0], 1)
-		if len(majors) != 1 {
-			return "", ok, status.Errorf(codes.InvalidArgument, "user-agent %s doesn't contain major version", version[0])
+		for _, client := range cfg.Clients {
+			if strings.Contains(
+				strings.ToLower(version[0]),
+				strings.ToLower(client.GetName())) {
+				if version_compare.GEQ(version[0], client.GetVersion()) {
+					return version[0], ok, nil
+				} else {
+					return "", ok, status.Errorf(codes.FailedPrecondition,
+						fmt.Sprintf("Unsupported client version %s, Please update %s to %s or above", version[0], client.GetName(), client.GetVersion()))
+				}
+			}
 		}
-		major, err := strconv.ParseInt(majors[0], 10, 32)
-		if err != nil {
-			return "", ok, status.Errorf(codes.InvalidArgument, "user-agent %s has wrong major version format", version[0])
-		}
-		if major < SupportedClientMajorVersionNumber {
-			return "", ok, status.Errorf(codes.FailedPrecondition,
-				fmt.Sprintf("Unsupported client version %d, Please update your client version to v%d.X.X or above.", major, SupportedClientMajorVersionNumber))
+		// Default action
+		if cfg.AllowUnrecognizedClients {
+			logging.Warningf(ctx, "Allow client %s", version)
+			return "", ok, nil
+		} else {
+			return "", ok, status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Unsupported client %s", version[0]))
 		}
 	}
 	return version[0], ok, nil
