@@ -19,7 +19,7 @@ func TestParseOwners(t *testing.T) {
 
 	Convey(`ParseOwners`, t, func() {
 		Convey(`Works`, func() {
-			actual, filtered, err := parseOwners(strings.NewReader(`
+			actual, filtered, err := ParseOwners(strings.NewReader(`
 # TEAM: team-email@chromium.org
 someone@example.com
 
@@ -52,7 +52,7 @@ someone@example.com
 		})
 
 		Convey(`ChromeOS`, func() {
-			actual, filtered, err := parseOwners(strings.NewReader(`# OS: ChromeOS`))
+			actual, filtered, err := ParseOwners(strings.NewReader(`# OS: ChromeOS`))
 			So(err, ShouldBeNil)
 			So(filtered, ShouldEqual, []string(nil))
 			So(actual.Os, ShouldEqual, dirmdpb.OS_CHROME_OS)

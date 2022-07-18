@@ -42,11 +42,11 @@ func ReadOwners(dir string) (md *dirmdpb.Metadata, ignored []string, err error) 
 	}
 	defer f.Close()
 
-	return parseOwners(f)
+	return ParseOwners(f)
 }
 
-// parseOwners extracts metadata from a content of an OWNERS file.
-func parseOwners(r io.Reader) (md *dirmdpb.Metadata, ignored []string, err error) {
+// ParseOwners extracts metadata from a content of an OWNERS file.
+func ParseOwners(r io.Reader) (md *dirmdpb.Metadata, ignored []string, err error) {
 	md = &dirmdpb.Metadata{}
 
 	scan := bufio.NewScanner(r)
