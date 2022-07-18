@@ -94,6 +94,9 @@ type clientImpl struct {
 // Ensure we satisfy the promised interface.
 var _ Client = &clientImpl{}
 
+// VersionNumber is the service version number for the cros-test-platform binary.
+const VersionNumber = 4
+
 type swarmingClient interface {
 	BotExists(context.Context, []*swarmingapi.SwarmingRpcsStringPair) (bool, error)
 }
@@ -184,7 +187,7 @@ func NewUFSClient(ctx context.Context) (ufsapi.FleetClient, error) {
 	}
 
 	options := *prpc.DefaultOptions()
-	options.UserAgent = "cros_test_platform"
+	options.UserAgent = fmt.Sprintf("cros_test_platform/%d", VersionNumber)
 
 	return ufsapi.NewFleetPRPCClient(&prpc.Client{
 		C: hClient,
