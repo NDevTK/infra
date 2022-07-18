@@ -19,11 +19,13 @@ func TestMakeNewContent(t *testing.T) {
 	expected := strings.Join([]string{
 		tabify("addr1-UPDATE host1"),
 		tabify("addr2 host2"),
-		tabify("addr3-NEW host3"),
+		tabify("addr3-NEW host3") + "\n", // temporarily "strange" newline behavior resolved in next CL
+		tabify("addr4-NEW host4"),
 	}, "\n") + string("\n")
 
 	newRecords := map[string]string{
 		"host1": "addr1-UPDATE",
+		"host4": "addr4-NEW",
 		"host3": "addr3-NEW",
 	}
 

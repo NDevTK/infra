@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 
 	"infra/cros/cmd/satlab/internal/commands"
@@ -140,16 +141,27 @@ func makeNewContent(content string, newRecords map[string]string) (string, error
 		return "", errors.Annotate(err, "make new content").Err()
 	}
 
-	for host, addr := range newRecords {
+	// specifically order map iteration to ensure deterministic behavior
+	for _, host := range orderedKeys(newRecords) {
 		if seen[host] {
 			// Do nothing, line already added.
 		} else {
 			fmt.Fprintf(os.Stderr, "Adding new DNS entry for %s\n", host)
+			addr := newRecords[host]
 			newContentArr = append(newContentArr, fmt.Sprintf("%s\t%s\n", addr, host))
 		}
 	}
 
 	return strings.Join(newContentArr, "\n"), nil
+}
+
+func orderedKeys(m map[string]string) []string {
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 // MakeClassifier makes a classifier that determines whether to modify a given addr, host line or not.
