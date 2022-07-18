@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -118,10 +119,17 @@ func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error
 	if err != nil {
 		return nil, err
 	}
-	featureFileName := featuresFile.Name()
+	featureFileName, err := filepath.Abs(featuresFile.Name())
+	if err != nil {
+		return nil, err
+	}
 	defer os.Remove(featureFileName)
 
-	predictionsFileName := strings.Replace(featureFileName, ".csv", "_predict.csv", -1)
+	predictionsFileName, err := filepath.Abs(strings.Replace(featureFileName, ".csv", "_predict.csv", -1))
+	if err != nil {
+		return nil, err
+	}
+
 	err = os.MkdirAll("predictions", os.ModePerm)
 	if err != nil {
 		return nil, err
