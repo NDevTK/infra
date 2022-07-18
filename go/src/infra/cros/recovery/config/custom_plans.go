@@ -79,7 +79,7 @@ func DeepRepairConfig() *Configuration {
 					"Servo serial is specified",
 					"Device is pingable",
 					"Device is SSHable",
-					"servo_power_cycle_root_servo",
+					"Power-cycle by smart-hub",
 					"Mark labstation as servod is in-use",
 					"Start servod daemon without recovery",
 					"Servod is responsive to dut-control",
@@ -130,13 +130,14 @@ func DeepRepairConfig() *Configuration {
 						ExecName:    "cros_ssh",
 						RunControl:  RunControl_ALWAYS_RUN,
 					},
-					"servo_power_cycle_root_servo": {
+					"Power-cycle by smart-hub": {
 						Docs: []string{
 							"Try to reset(power-cycle) the servo via smart usbhub.",
 						},
 						Conditions: []string{
 							"Is not servo_v3",
 						},
+						ExecName: "servo_power_cycle_root_servo",
 						ExecExtraArgs: []string{
 							"reset_timeout:60",
 							"wait_timeout:20",

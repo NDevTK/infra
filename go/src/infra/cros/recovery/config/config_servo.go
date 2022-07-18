@@ -22,7 +22,7 @@ func servoRepairPlan() *Plan {
 			"Device is pingable",
 			"Device is SSHable",
 			"Servo_v3 uptime is not long",
-			"servo_power_cycle_root_servo",
+			"Power-cycle by smart-hub",
 			"Set state:SERVO_HOST_ISSUE",
 			"Mark labstation as servod is in-use",
 			"Set state:BROKEN",
@@ -1487,13 +1487,14 @@ func servoRepairPlan() *Plan {
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"servo_power_cycle_root_servo": {
+			"Power-cycle by smart-hub": {
 				Docs: []string{
 					"Try to reset(power-cycle) the servo via smart usbhub.",
 				},
 				Conditions: []string{
 					"Is not servo_v3",
 				},
+				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
 					"reset_timeout:60",
 					"wait_timeout:20",
