@@ -46,6 +46,7 @@ export interface AssetState {
   defaultAssetResources: AssetResourceModel[];
   fetchResourceStatus: string;
   recordValidation: AssetRecordValidation;
+  showDefaultMachines: boolean;
 }
 
 export interface AssetRecordValidation {
@@ -83,6 +84,7 @@ const initialState: AssetState = {
   defaultAssetResources: [],
   fetchResourceStatus: 'idle',
   recordValidation: AssetRecordValidation.defaultEntity(),
+  showDefaultMachines: false,
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -257,6 +259,7 @@ export const assetSlice = createSlice({
       state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
       state.assetResourcesToDelete = [];
       state.recordValidation = AssetRecordValidation.defaultEntity();
+      state.showDefaultMachines = false;
     },
     addMachine: (state) => {
       state.assetResourcesToSave = [
@@ -319,6 +322,9 @@ export const assetSlice = createSlice({
     },
     setAliasNameValidFalse: (state, action) => {
       state.recordValidation.aliasNameValid[action.payload.index] = false;
+    },
+    changeShowDefaultMachines: (state, action) => {
+      state.showDefaultMachines = action.payload;
     },
   },
 
@@ -401,7 +407,7 @@ export const assetSlice = createSlice({
               entity.default === false
           ),
         ];
-        if(state.assetResourcesToSave.length == 0){
+        if (state.assetResourcesToSave.length == 0) {
           state.assetResourcesToSave = [AssetResourceModel.defaultEntity()];
         }
         state.defaultAssetResources = [
@@ -483,6 +489,7 @@ export const {
   setDescriptionValidFalse,
   setResourceIdValidFalse,
   setAliasNameValidFalse,
+  changeShowDefaultMachines,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

@@ -54,6 +54,7 @@ const testState: AssetState = {
   fetchResourceStatus: '',
   defaultAssetResources: [],
   recordValidation: AssetRecordValidation.defaultEntity(),
+  showDefaultMachines: false,
 };
 
 beforeAll(() => {

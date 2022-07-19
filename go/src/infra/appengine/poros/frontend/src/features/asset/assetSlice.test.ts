@@ -39,6 +39,7 @@ const initialState: AssetState = {
   fetchResourceStatus: 'idle',
   defaultAssetResources: [],
   recordValidation: AssetRecordValidation.defaultEntity(),
+  showDefaultMachines: false,
 };
 
 const testAsset: AssetModel = {
@@ -97,6 +98,7 @@ const testState: AssetState = {
   fetchResourceStatus: 'idle',
   defaultAssetResources: [],
   recordValidation: AssetRecordValidation.defaultEntity(),
+  showDefaultMachines: false,
 };
 test('should return the initial state', () => {
   expect(store.getState().asset).toEqual(initialState);

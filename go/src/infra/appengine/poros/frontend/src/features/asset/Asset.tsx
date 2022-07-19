@@ -11,15 +11,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import {
+  Collapse,
   Dialog,
   DialogTitle,
   Divider,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   IconButton,
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -43,6 +46,7 @@ import {
   setResourceIdValidFalse,
   setAliasNameValidFalse,
   deleteAssetAsync,
+  changeShowDefaultMachines,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { AssetResourceModel } from '../../api/asset_resource_service';
@@ -81,6 +85,9 @@ export const Asset = () => {
   );
   const deleteAssetDialogOpen: boolean = useAppSelector(
     (state) => state.utility.deleteAssetDialogOpen
+  );
+  const showDefaultMachines: boolean = useAppSelector(
+    (state) => state.asset.showDefaultMachines
   );
   const dispatch = useAppDispatch();
   React.useEffect(() => {
@@ -332,8 +339,8 @@ export const Asset = () => {
         padding={1}
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          justifyContent: 'flex-start',
+          alignItems: 'left',
         }}
       >
         <Grid
@@ -352,6 +359,7 @@ export const Asset = () => {
               variant="standard"
               placeholder="Type"
               disabled
+              hidden
             >
               {resources.map((resource) =>
                 renderMenuItem(resource.name, resource.resourceId)
@@ -375,33 +383,6 @@ export const Asset = () => {
             fullWidth
             disabled
           />
-        </Grid>
-
-        <Grid
-          item
-          xs={1}
-          style={{
-            display: 'bottom',
-            justifyContent: 'flex-end',
-            alignItems: 'bottom',
-          }}
-        >
-          <IconButton aria-label="add" size="small" disabled>
-            <AddIcon fontSize="inherit" />
-          </IconButton>
-        </Grid>
-        <Grid
-          item
-          xs={1}
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-          }}
-        >
-          <IconButton aria-label="delete" size="small" disabled>
-            <DeleteIcon fontSize="inherit"> Delete </DeleteIcon>
-          </IconButton>
         </Grid>
       </Grid>
     );
@@ -519,8 +500,8 @@ export const Asset = () => {
           </Grid>
         </Grid>
         {renderAssetTypeDropdown()}
-        <Divider sx={{ padding: 1 }}/>
-        <Grid container spacing={2} padding={1}>
+        <Divider sx={{ padding: 1 }} />
+        <Grid container spacing={2} padding={1} paddingRight={0}>
           <Grid
             item
             style={{
@@ -528,17 +509,44 @@ export const Asset = () => {
               justifyContent: 'flex-start',
               alignItems: 'center',
             }}
-            xs={8}
+            xs={6}
           >
             <Typography variant="inherit" data-testid="machines-heading">
               Associated Machines
             </Typography>
           </Grid>
+
+          <Grid
+            item
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'right',
+            }}
+            xs={6}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showDefaultMachines}
+                  onChange={(e) => {
+                    dispatch(changeShowDefaultMachines(e.target.checked));
+                  }}
+                />
+              }
+              label={
+                <Typography fontSize={12}>Show default machines</Typography>
+              }
+              // labelPlacement="bottom"
+            />
+          </Grid>
         </Grid>
 
-        {defaultAssetResources.map((entity, index) =>
-          renderDefaultMachines(entity.aliasName, entity.resourceId)
-        )}
+        <Collapse in={showDefaultMachines}>
+          {defaultAssetResources.map((entity, index) =>
+            renderDefaultMachines(entity.aliasName, entity.resourceId)
+          )}
+        </Collapse>
         {assetResourcesToSave.map((entity, index) =>
           renderRow(index, entity.aliasName, entity.resourceId)
         )}
