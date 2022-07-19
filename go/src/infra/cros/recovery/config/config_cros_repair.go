@@ -1628,6 +1628,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "has_stable_version_fw_version",
 		},
+		"Recovery version has firmware image path": {
+			Docs: []string{
+				"Verify that recovery version has firmware image path.",
+			},
+			ExecName: "has_stable_version_fw_image",
+		},
 		"Recovery version has OS image path": {
 			Docs: []string{
 				"Verify that recovery version has OS image path.",
@@ -1707,7 +1713,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			Dependencies: []string{
-				"Recovery version has firmware version",
+				"Recovery version has firmware image path",
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
@@ -1731,7 +1737,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			Dependencies: []string{
-				"Recovery version has firmware version",
+				"Recovery version has firmware image path",
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
@@ -1756,7 +1762,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			Dependencies: []string{
-				"Recovery version has firmware version",
+				"Recovery version has firmware image path",
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
@@ -1799,7 +1805,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			Dependencies: []string{
-				"Recovery version has firmware version",
+				"Recovery version has firmware image path",
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
