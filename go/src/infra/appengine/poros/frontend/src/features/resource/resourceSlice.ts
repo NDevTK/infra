@@ -29,6 +29,7 @@ export interface ResourceState {
 
 export interface ResourceRecordValidation {
   nameValid: boolean;
+  nameUnique: boolean;
   descriptionValid: boolean;
   operatingSystemValid: boolean;
   imageProjectValid: boolean;
@@ -40,6 +41,7 @@ export const ResourceRecordValidation = {
   defaultEntity(): ResourceRecordValidation {
     return {
       nameValid: true,
+      nameUnique: true,
       descriptionValid: true,
       operatingSystemValid: true,
       imageProjectValid: true,
@@ -163,6 +165,13 @@ export const resourceSlice = createSlice({
       state.pageSize = action.payload.pageSize;
     },
     setName: (state, action) => {
+      if (
+        state.resources.some((resource) => resource.name === action.payload)
+      ) {
+        state.recordValidation.nameUnique = false;
+      } else {
+        state.recordValidation.nameUnique = true;
+      }
       state.record.name = action.payload;
       if (state.record.name === '') {
         state.recordValidation.nameValid = false;
@@ -283,6 +292,14 @@ export const resourceSlice = createSlice({
           (resource) => resource.deleted === false
         );
         state.pageToken = action.payload.nextPageToken;
+        if (
+          state.record.name !== '' &&
+          state.resources.some(
+            (resource: ResourceModel) => resource.name === state.record.name
+          )
+        ) {
+          state.recordValidation.nameUnique = false;
+        }
       })
       .addCase(deleteResourceAsync.pending, (state) => {
         state.deletingStatus = 'loading';

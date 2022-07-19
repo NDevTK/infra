@@ -149,6 +149,9 @@ export const Asset = () => {
         valid = false;
       }
     });
+    if (recordValidation.aliasNameUnique.some((unique) => unique === false)) {
+      valid = false;
+    }
 
     return valid;
   };
@@ -281,6 +284,8 @@ export const Asset = () => {
             helperText={
               !recordValidation.aliasNameValid[index]
                 ? 'Alias name is required'
+                : !recordValidation.aliasNameUnique[index]
+                ? 'Alias name must be unique'
                 : ''
             }
             FormHelperTextProps={{ style: { color: 'red' } }}

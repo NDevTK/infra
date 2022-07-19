@@ -102,6 +102,15 @@ func (e *ResourceHandler) Create(ctx context.Context, req *proto.CreateResourceR
 	if err := validateResourceEntity(entity); err != nil {
 		return nil, err
 	}
+	query := datastore.NewQuery("ResourceEntity").Eq("Name", entity.Name)
+	count, err := datastore.Count(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	if count > 0 {
+		return nil, errors.New("Resource name must be unique")
+	}
+
 	if err := datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
@@ -129,6 +138,20 @@ func (e *ResourceHandler) Update(ctx context.Context, req *proto.UpdateResourceR
 	if mask == nil || len(mask.GetPaths()) == 0 || !mask.IsValid(req.GetResource()) {
 		return nil, errors.New("Update Mask can't be empty or invalid")
 	}
+	// If name is to be updated, needs to check if the updated name would be unique among all resources
+	for _, field := range mask.GetPaths() {
+		if field == "name" {
+			query := datastore.NewQuery("ResourceEntity").Eq("Name", req.Resource.Name)
+			count, err := datastore.Count(ctx, query)
+			if err != nil {
+				return nil, err
+			}
+			if count > 0 {
+				return nil, errors.New("Resource name must be unique")
+			}
+		}
+	}
+
 	// In a transaction load resource, set fields based on field mask.
 	err = datastore.RunInTransaction(ctx, func(ctx context.Context) error {
 		// Set updated values for fields specified in Update Mask
@@ -161,10 +184,6 @@ func (e *ResourceHandler) Delete(ctx context.Context, req *proto.DeleteResourceR
 		return nil, err
 	}
 	entity.Deleted = true
-	// TODO: When the test data is cleared, add validation for ResourceEntity.
-	// if err = validateResourceEntity(entity); err != nil {
-	// 	return nil, err
-	// }
 	if err = datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}

@@ -50,9 +50,20 @@ func TestResourceCreateWithInvalidName(t *testing.T) {
 	resourceRequest := mockCreateResourceRequest("", "Test Resource description", "machine", "windows_machine", "image-project", "image-family")
 	Convey("Create a resource with invalid name in datastore", t, func() {
 		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
 		handler := &ResourceHandler{}
 		_, err := handler.Create(ctx, resourceRequest)
 		So(err, ShouldNotBeNil)
+
+		resourceRequest := mockCreateResourceRequest("Test Resource Name", "Test Resource description", "machine", "windows_machine", "image-project", "image-family")
+		entity, err := handler.Create(ctx, resourceRequest)
+		So(err, ShouldBeNil)
+		So(entity.Name, ShouldEqual, "Test Resource Name")
+
+		// Creating another resource with duplicate name; the Create operation should fail
+		_, err = handler.Create(ctx, resourceRequest)
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldEqual, "Resource name must be unique")
 	})
 }
 
@@ -171,6 +182,31 @@ func TestResourceUpdateWithInvalidName(t *testing.T) {
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the resource as name is empty
 		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestResourceUpdateWithDuplicateName(t *testing.T) {
+	t.Parallel()
+	createRequest1 := mockCreateResourceRequest("Test Resource Name1", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
+	createRequest2 := mockCreateResourceRequest("Test Resource Name2", "Test Resource description", "machine", "windows_system", "image-project", "image-family")
+	Convey("Update a resource with duplicate name in datastore", t, func() {
+		ctx := memory.Use(context.Background())
+		datastore.GetTestable(ctx).Consistent(true)
+		handler := &ResourceHandler{}
+		entity, err := handler.Create(ctx, createRequest1)
+		So(err, ShouldBeNil)
+		_, err = handler.Create(ctx, createRequest2)
+		So(err, ShouldBeNil)
+		entity.Name = "Test Resource Name2"
+
+		updateRequest := &proto.UpdateResourceRequest{
+			Resource:   entity,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+		}
+		_, err = handler.Update(ctx, updateRequest)
+		// should not save the resource as name is not unique
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldEqual, "Resource name must be unique")
 	})
 }
 

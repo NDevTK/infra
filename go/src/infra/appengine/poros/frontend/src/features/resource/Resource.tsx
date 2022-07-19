@@ -142,6 +142,9 @@ export const Resource = () => {
       dispatch(setTypeValidFalse());
       valid = false;
     }
+    if (!recordValidation.nameUnique) {
+      valid = false;
+    }
 
     return valid;
   };
@@ -397,7 +400,11 @@ export const Resource = () => {
               fullWidth
               variant="standard"
               helperText={
-                !recordValidation.nameValid ? 'Resource name is required' : ''
+                !recordValidation.nameValid
+                  ? 'Resource name is required'
+                  : !recordValidation.nameUnique
+                  ? 'Resource name must be unique'
+                  : ''
               }
               FormHelperTextProps={{ style: { color: 'red' } }}
             />

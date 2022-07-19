@@ -54,6 +54,7 @@ export interface AssetRecordValidation {
   descriptionValid: boolean;
   resourceIdValid: boolean[];
   aliasNameValid: boolean[];
+  aliasNameUnique: boolean[];
 }
 
 export const AssetRecordValidation = {
@@ -63,6 +64,7 @@ export const AssetRecordValidation = {
       descriptionValid: true,
       resourceIdValid: [true],
       aliasNameValid: [true],
+      aliasNameUnique: [true],
     };
   },
 };
@@ -268,6 +270,7 @@ export const assetSlice = createSlice({
       ];
       state.recordValidation.resourceIdValid.push(true);
       state.recordValidation.aliasNameValid.push(true);
+      state.recordValidation.aliasNameUnique.push(true);
     },
     removeMachine: (state, action) => {
       if (state.assetResourcesToSave.length > 1) {
@@ -285,6 +288,9 @@ export const assetSlice = createSlice({
         state.recordValidation.aliasNameValid = state.recordValidation.aliasNameValid.filter(
           (_, index) => index !== action.payload
         );
+        state.recordValidation.aliasNameUnique = state.recordValidation.aliasNameUnique.filter(
+          (_, index) => index !== action.payload
+        );
       }
     },
     setResourceId: (state, action) => {
@@ -297,6 +303,18 @@ export const assetSlice = createSlice({
       }
     },
     setAlias: (state, action) => {
+      if (
+        state.assetResourcesToSave.some(
+          (assetResource) => assetResource.aliasName === action.payload.value
+        ) ||
+        state.defaultAssetResources.some(
+          (assetResource) => assetResource.aliasName === action.payload.value
+        )
+      ) {
+        state.recordValidation.aliasNameUnique[action.payload.id] = false;
+      } else {
+        state.recordValidation.aliasNameUnique[action.payload.id] = true;
+      }
       state.assetResourcesToSave[action.payload.id].aliasName =
         action.payload.value;
       if (state.assetResourcesToSave[action.payload.id].aliasName === '') {
@@ -420,6 +438,9 @@ export const assetSlice = createSlice({
           state.assetResourcesToSave.length
         ).fill(true);
         state.recordValidation.aliasNameValid = new Array(
+          state.assetResourcesToSave.length
+        ).fill(true);
+        state.recordValidation.aliasNameUnique = new Array(
           state.assetResourcesToSave.length
         ).fill(true);
       })
