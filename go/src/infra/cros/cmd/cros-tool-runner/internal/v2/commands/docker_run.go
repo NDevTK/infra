@@ -84,3 +84,14 @@ func (c *GcloudAuthTokenPrint) Execute(ctx context.Context) (string, string, err
 	args := []string{"auth", "print-access-token"}
 	return execute(ctx, "gcloud", args)
 }
+
+// GcloudAuthServiceAccount represents `gcloud auth activate-service-account`
+type GcloudAuthServiceAccount struct {
+	Args []string
+}
+
+func (c *GcloudAuthServiceAccount) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"auth", "activate-service-account"}
+	args = append(args, c.Args...)
+	return execute(ctx, "gcloud", args)
+}

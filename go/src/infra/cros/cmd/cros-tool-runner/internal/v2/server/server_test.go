@@ -224,3 +224,78 @@ func TestStackCommands(t *testing.T) {
 		t.Fatalf("Expect docker run have been executed")
 	}
 }
+
+func TestLoginRegistry_withActualTokenValue(t *testing.T) {
+	executor := mockExecutor{}
+	service := getService(&executor)
+	_, err := service.LoginRegistry(context.Background(), &api.LoginRegistryRequest{
+		Username: "oauth2accesstoken",
+		Password: "someGibberishTOkEnVaLUe",
+		Registry: "gcr.io",
+	})
+	if err != nil {
+		t.Fatalf("Expect success")
+	}
+	if len(executor.commandsExecuted) != 1 || executor.commandsExecuted[0] != "*commands.DockerLogin" {
+		t.Fatalf("Expect only login command to be executed")
+	}
+}
+
+func TestLoginRegistry_withCommandSubstitution(t *testing.T) {
+	executor := mockExecutor{}
+	service := getService(&executor)
+	_, err := service.LoginRegistry(context.Background(), &api.LoginRegistryRequest{
+		Username: "oauth2accesstoken",
+		Password: "$(gcloud auth print-access-token)",
+		Registry: "gcr.io",
+	})
+	if err != nil {
+		t.Fatalf("Expect success")
+	}
+	if len(executor.commandsExecuted) != 2 || executor.commandsExecuted[0] != "*commands.GcloudAuthTokenPrint" {
+		t.Fatalf("Expect gcloud token and docker login commands to be executed")
+	}
+}
+
+func TestLoginRegistry_withExtension(t *testing.T) {
+	executor := mockExecutor{}
+	service := getService(&executor)
+	_, err := service.LoginRegistry(context.Background(), &api.LoginRegistryRequest{
+		Username: "oauth2accesstoken",
+		Password: "$(gcloud auth print-access-token)",
+		Registry: "gcr.io",
+		Extensions: &api.LoginRegistryExtensions{
+			GcloudAuthServiceAccountArgs: []string{"--key-file=path/to/key.json"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Expect success")
+	}
+	if len(executor.commandsExecuted) != 3 || executor.commandsExecuted[0] != "*commands.GcloudAuthServiceAccount" {
+		t.Fatalf("Expect gcloud activate-service-account, gcloud token and docker login commands to be executed")
+	}
+}
+
+func TestLoginRegistry_withExtensionError(t *testing.T) {
+	errorMapping := make(map[string]string)
+	errorMapping["*commands.GcloudAuthServiceAccount"] = "Some unknown error"
+	executor := mockExecutor{commandsToThrowError: errorMapping}
+	service := getService(&executor)
+	response, err := service.LoginRegistry(context.Background(), &api.LoginRegistryRequest{
+		Username: "oauth2accesstoken",
+		Password: "$(gcloud auth print-access-token)",
+		Registry: "gcr.io",
+		Extensions: &api.LoginRegistryExtensions{
+			GcloudAuthServiceAccountArgs: []string{"--key-file=path/to/key.json"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Expect success")
+	}
+	if response.ExtensionsOutput[0] != "Some unknown error" {
+		t.Fatalf("Expect extension error output to be in the response %v %v", response.ExtensionsOutput, executor.commandsExecuted)
+	}
+	if response.Message == "" {
+		t.Fatalf("Expect message in the response")
+	}
+}

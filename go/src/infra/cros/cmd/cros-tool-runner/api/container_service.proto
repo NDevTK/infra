@@ -6,6 +6,7 @@ syntax = "proto3";
 
 package ctrv2.api;
 
+import "infra/cros/cmd/cros-tool-runner/api/extensions.proto";
 import "infra/cros/cmd/cros-tool-runner/api/templates.proto";
 
 option go_package = "infra/cros/cmd/cros-tool-runner/api";
@@ -103,10 +104,14 @@ message LoginRegistryRequest {
   string password = 2;
   // Registry server name. E.g. us-docker.pkg.dev
   string registry = 3;
+  // Optional extensions to change behavior before the login action
+  LoginRegistryExtensions extensions = 4;
 }
 message LoginRegistryResponse {
   // Message returned by docker login command
   string message = 1;
+  // Messages returned by extensions
+  repeated string extensions_output = 2;
 }
 
 message StartContainerRequest {

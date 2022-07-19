@@ -99,6 +99,7 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 	if request.Registry == "" {
 		return nil, utils.invalidArgument("Missing registry")
 	}
+	extensionOutput := s.handleLoginRegistryExtension(ctx, request)
 	if request.Password == "$(gcloud auth print-access-token)" {
 		password, stderr, err := s.executor.Execute(ctx, &commands.GcloudAuthTokenPrint{})
 		if err != nil {
@@ -126,7 +127,27 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 	if err != nil {
 		return nil, err
 	}
-	return &api.LoginRegistryResponse{Message: stdout}, nil
+	return &api.LoginRegistryResponse{Message: stdout, ExtensionsOutput: extensionOutput}, nil
+}
+
+// handleLoginRegistryExtension processes extensions with best-effort support
+// and never throws errors.
+// If there are more extensions, the handling should be moved to a new module.
+func (s *ContainerServerImpl) handleLoginRegistryExtension(ctx context.Context, request *api.LoginRegistryRequest) []string {
+	var extensionOutput []string
+	if request.Extensions != nil && len(request.Extensions.GcloudAuthServiceAccountArgs) > 0 {
+		stdout, stderr, err := s.executor.Execute(ctx, &commands.GcloudAuthServiceAccount{Args: request.Extensions.GcloudAuthServiceAccountArgs})
+		if stdout != "" {
+			extensionOutput = append(extensionOutput, stdout)
+		}
+		if err != nil || stderr != "" {
+			log.Printf("warning: gcloud activate service account exit with error: %s", stderr)
+			if stderr != "" {
+				extensionOutput = append(extensionOutput, stderr)
+			}
+		}
+	}
+	return extensionOutput
 }
 
 // StartContainer pulls image and then calls docker run to start a container.
