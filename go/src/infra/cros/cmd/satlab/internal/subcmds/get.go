@@ -8,6 +8,7 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
+	"infra/cros/cmd/satlab/internal/commands/dns"
 	"infra/cros/cmd/satlab/internal/components/dut"
 )
 
@@ -41,5 +42,6 @@ func (c getApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,
 		dut.GetDUTCmd,
+		dns.GetDNSCmd,
 	}
 }
