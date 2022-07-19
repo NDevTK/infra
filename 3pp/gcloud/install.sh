@@ -34,6 +34,7 @@ fi
     app-engine-python-extras \
     docker-credential-gcr \
     kubectl \
+    gke-gcloud-auth-plugin \
     $LINUX_EXTRAS
 
 # This is just a dead weight in the package, we won't rollback.
