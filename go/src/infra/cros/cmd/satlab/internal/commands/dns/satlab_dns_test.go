@@ -5,6 +5,7 @@
 package dns
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 
@@ -105,4 +106,51 @@ func containIdenticalLines(x string, y string) bool {
 
 	diff := cmp.Diff(xArr, yArr, cmpopts.SortSlices(func(a, b string) bool { return a < b }))
 	return diff == ""
+}
+
+// makeFakeHostsfilesReader provides ability to echo any string desired.
+func makeFakeHostsfileReader(content string) hostsfileReaderFunc {
+	return func() (string, error) {
+		return content, nil
+	}
+}
+
+// ensureRecordCall is bag of items that are params to ensureRecord.
+type ensureRecordCall struct {
+	content        string
+	newRecords     map[string]string
+	deletedRecords map[string]bool
+}
+
+// makeFakeRecordEnsurer provides a no-op implementation that tracks all function calls.
+func makeFakeRecordEnsurer(calls *[]ensureRecordCall) recordEnsurer {
+	return func(content string, newRecords map[string]string, deletedRecords map[string]bool) error {
+		*calls = append(*calls, ensureRecordCall{content: content, newRecords: newRecords, deletedRecords: deletedRecords})
+		return nil
+	}
+}
+
+// TestDeleteRecord verifies we are passing along correct args to ensureRecords.
+func TestDeleteRecord(t *testing.T) {
+	t.Parallel()
+
+	recordEnsurerCalls := make([]ensureRecordCall, 0)
+	fakeRecordEnsurer := makeFakeRecordEnsurer(&recordEnsurerCalls)
+	fakeHostsfileReader := makeFakeHostsfileReader("content")
+	toDelete := "test"
+
+	expectedReturn := "content"
+	expectedRecordEnsurerCalls := []ensureRecordCall{{"content", map[string]string{}, map[string]bool{"test": true}}}
+
+	result, err := DeleteRecord(fakeRecordEnsurer, fakeHostsfileReader, toDelete)
+	if result != expectedReturn {
+		t.Errorf("diff in return val, expected: %s, got: %s", "content", result)
+	}
+	if err != nil {
+		t.Errorf("unexpected err %+v", err)
+	}
+	// cmp.Diff needs us to export a way to compare maps, so we stick with reflect here
+	if !reflect.DeepEqual(expectedRecordEnsurerCalls, recordEnsurerCalls) {
+		t.Errorf("unexpected diff in calls to ensure record. got: %+v, diff: %+v", recordEnsurerCalls[0], expectedRecordEnsurerCalls)
+	}
 }
