@@ -44,6 +44,18 @@ message SchedulingUnit {
             type: "unified-fleet-system.appspot.com/MachineLSE"
       }
   ];
+  // ExposeType determines label dimensions for a scheduling unit
+  enum ExposeType {
+      UNKNOWN = 0;
+      // default expose board and model of all duts and labels that are intersection of all duts.
+      DEFAULT = 1;
+      // default_plus_primary expose board and model of all duts plus all other labels of primary dut.
+      DEFAULT_PLUS_PRIMARY = 2;
+      // default_primary_only expose all labels of primary dut execpt for dut_name.
+      STRICTLY_PRIMARY_ONLY = 3;
+  };
+  // expose type of scheduling unit labels.
+  ExposeType expose_type = 9;
 }
 
 enum SchedulingUnitType {
