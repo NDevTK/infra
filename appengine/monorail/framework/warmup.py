@@ -10,55 +10,43 @@ from __future__ import absolute_import
 
 import logging
 
-from framework import jsonfeed
+import webapp2
 
 
 # TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
-class Warmup(jsonfeed.InternalTask):
+class Warmup(webapp2.RequestHandler):
   """Placeholder for warmup work.  Used only to enable min_idle_instances."""
 
-  def HandleRequest(self, _mr):
+  def get(self):
     """Don't do anything that could cause a jam when many instances start."""
     logging.info('/_ah/startup does nothing in Monorail.')
     logging.info('However it is needed for min_idle_instances in app.yaml.')
-
-    return {
-      'success': 1,
-      }
 
   # def GetWarmup(self, **kwargs):
   #   return self.handler(**kwargs)
 
 
 # TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
-class Start(jsonfeed.InternalTask):
+class Start(webapp2.RequestHandler):
   """Placeholder for start work.  Used only to enable manual_scaling."""
 
-  def HandleRequest(self, _mr):
+  def get(self):
     """Don't do anything that could cause a jam when many instances start."""
     logging.info('/_ah/start does nothing in Monorail.')
     logging.info('However it is needed for manual_scaling in app.yaml.')
-
-    return {
-      'success': 1,
-      }
 
   # def GetStart(self, **kwargs):
   #   return self.handler(**kwargs)
 
 
 # TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
-class Stop(jsonfeed.InternalTask):
+class Stop(webapp2.RequestHandler):
   """Placeholder for stop work.  Used only to enable manual_scaling."""
 
-  def HandleRequest(self, _mr):
+  def get(self):
     """Don't do anything that could cause a jam when many instances start."""
     logging.info('/_ah/stop does nothing in Monorail.')
     logging.info('However it is needed for manual_scaling in app.yaml.')
-
-    return {
-      'success': 1,
-      }
 
   # def GetStop(self, **kwargs):
   #   return self.handler(**kwargs)
