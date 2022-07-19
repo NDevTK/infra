@@ -10,26 +10,36 @@ from __future__ import absolute_import
 
 import unittest
 
-from testing import testing_helpers
+import webapp2
 
-from framework import sql
 from framework import warmup
-from services import service_manager
 
 
 class WarmupTest(unittest.TestCase):
 
-  def setUp(self):
-    #self.cache_manager = cachemanager_svc.CacheManager()
-    #self.services = service_manager.Services(
-    #    cache_manager=self.cache_manager)
-    self.services = service_manager.Services()
-    self.servlet = warmup.Warmup('req', 'res', services=self.services)
+  def testHandleWarmup(self):
+    app = webapp2.WSGIApplication([('/', warmup.Warmup)])
 
+    request = webapp2.Request.blank('/')
+    response = request.get_response(app)
 
-  def testHandleRequest_NothingToDo(self):
-    mr = testing_helpers.MakeMonorailRequest()
-    actual_json_data = self.servlet.HandleRequest(mr)
-    self.assertEqual(
-        {'success': 1},
-        actual_json_data)
+    self.assertEqual(response.status_int, 200)
+    self.assertEqual(response.body, '')
+
+  def testHandleStart(self):
+    app = webapp2.WSGIApplication([('/', warmup.Start)])
+
+    request = webapp2.Request.blank('/')
+    response = request.get_response(app)
+
+    self.assertEqual(response.status_int, 200)
+    self.assertEqual(response.body, '')
+
+  def testHandleStop(self):
+    app = webapp2.WSGIApplication([('/', warmup.Stop)])
+
+    request = webapp2.Request.blank('/')
+    response = request.get_response(app)
+
+    self.assertEqual(response.status_int, 200)
+    self.assertEqual(response.body, '')
