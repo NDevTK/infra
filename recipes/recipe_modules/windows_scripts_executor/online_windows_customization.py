@@ -121,6 +121,58 @@ class OnlineWindowsCustomization(customization.Customization):
                      for y in x.actions])
         for x in cust.online_actions
     ]
-    # TODO(b/182061277): Add support for vm config
     return onlinewc.OnlineCustomization(
-        vm_config=cust.vm_config, online_actions=online_actions)
+        vm_config=self.get_cannonical_vm_config(cust.vm_config),
+        online_actions=online_actions)
+
+  def get_cannonical_vm_config(self, vm_config):
+    """ get_canonical_vm_config takes a vm_pb.VM object and returns a canonical
+    vm_pb.VM object.
+    Example:
+      Given a VM config object
+
+      VM{
+        qemu_vm: QEMU_VM{
+          name: "Win10AARCH64"
+          machine: "virt,virtualization=on,highmem=off"
+          cpu: "cortex-a57"
+          smp: "cpus=4,cores=8"
+          memory: 3072
+          device: ['nec-usb-xhci','usb-kbd', 'usb-mouse']
+          extra_args: ['--accel tcg,thread=multi']
+          drives: [...]
+        }
+      }
+
+      returns a vm_pb.VM object
+
+      VM{
+        qemu_vm: QEMU_VM{
+          machine: "virt,virtualization=on,highmem=off"
+          cpu: "cortex-a57"
+          smp: "cpus=4,cores=8"
+          memory: 3072
+          device: ['nec-usb-xhci','usb-kbd', 'usb-mouse']
+          extra_args: ['--accel tcg,thread=multi']
+          drives: [...]
+        }
+      }
+    """
+    cfg = vm_config.qemu_vm
+    machine = cfg.machine
+    cpu = cfg.cpu
+    smp = cfg.smp
+    memory = cfg.memory
+    device = cfg.device
+    extra_args = cfg.extra_args
+    # TODO(b/182061277): Add support for drives
+    drives = cfg.drives
+    return vm_pb.VM(
+        qemu_vm=vm_pb.QEMU_VM(
+            machine=machine,
+            cpu=cpu,
+            smp=smp,
+            memory=memory,
+            device=device,
+            extra_args=extra_args,
+            drives=drives))
