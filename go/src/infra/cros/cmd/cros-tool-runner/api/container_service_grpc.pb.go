@@ -47,6 +47,8 @@ type CrosToolRunnerContainerServiceClient interface {
 	StartTemplatedContainer(ctx context.Context, in *StartTemplatedContainerRequest, opts ...grpc.CallOption) (*StartContainerResponse, error)
 	// Executes a stack of commands in order. Only certain commands are supported.
 	StackCommands(ctx context.Context, in *StackCommandsRequest, opts ...grpc.CallOption) (*StackCommandsResponse, error)
+	// Retrieves information of a container
+	GetContainer(ctx context.Context, in *GetContainerRequest, opts ...grpc.CallOption) (*GetContainerResponse, error)
 }
 
 type crosToolRunnerContainerServiceClient struct {
@@ -120,6 +122,15 @@ func (c *crosToolRunnerContainerServiceClient) StackCommands(ctx context.Context
 	return out, nil
 }
 
+func (c *crosToolRunnerContainerServiceClient) GetContainer(ctx context.Context, in *GetContainerRequest, opts ...grpc.CallOption) (*GetContainerResponse, error) {
+	out := new(GetContainerResponse)
+	err := c.cc.Invoke(ctx, "/ctrv2.api.CrosToolRunnerContainerService/GetContainer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CrosToolRunnerContainerServiceServer is the server API for CrosToolRunnerContainerService service.
 // All implementations must embed UnimplementedCrosToolRunnerContainerServiceServer
 // for forward compatibility
@@ -153,6 +164,8 @@ type CrosToolRunnerContainerServiceServer interface {
 	StartTemplatedContainer(context.Context, *StartTemplatedContainerRequest) (*StartContainerResponse, error)
 	// Executes a stack of commands in order. Only certain commands are supported.
 	StackCommands(context.Context, *StackCommandsRequest) (*StackCommandsResponse, error)
+	// Retrieves information of a container
+	GetContainer(context.Context, *GetContainerRequest) (*GetContainerResponse, error)
 	mustEmbedUnimplementedCrosToolRunnerContainerServiceServer()
 }
 
@@ -180,6 +193,9 @@ func (UnimplementedCrosToolRunnerContainerServiceServer) StartTemplatedContainer
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) StackCommands(context.Context, *StackCommandsRequest) (*StackCommandsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StackCommands not implemented")
+}
+func (UnimplementedCrosToolRunnerContainerServiceServer) GetContainer(context.Context, *GetContainerRequest) (*GetContainerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContainer not implemented")
 }
 func (UnimplementedCrosToolRunnerContainerServiceServer) mustEmbedUnimplementedCrosToolRunnerContainerServiceServer() {
 }
@@ -321,6 +337,24 @@ func _CrosToolRunnerContainerService_StackCommands_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CrosToolRunnerContainerService_GetContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContainerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CrosToolRunnerContainerServiceServer).GetContainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ctrv2.api.CrosToolRunnerContainerService/GetContainer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrosToolRunnerContainerServiceServer).GetContainer(ctx, req.(*GetContainerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CrosToolRunnerContainerService_ServiceDesc is the grpc.ServiceDesc for CrosToolRunnerContainerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -355,6 +389,10 @@ var CrosToolRunnerContainerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StackCommands",
 			Handler:    _CrosToolRunnerContainerService_StackCommands_Handler,
+		},
+		{
+			MethodName: "GetContainer",
+			Handler:    _CrosToolRunnerContainerService_GetContainer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

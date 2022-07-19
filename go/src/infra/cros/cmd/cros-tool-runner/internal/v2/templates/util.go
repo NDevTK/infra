@@ -10,24 +10,16 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/chromiumos/config/go/test/lab/api"
+	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	"infra/cros/cmd/cros-tool-runner/api"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 // ContainerLookuper provides interface to lookup information for a container
 type ContainerLookuper interface {
-	LookupContainerPortBindings(name string) ([]*PortBinding, error)
+	LookupContainerPortBindings(name string) ([]*api.Container_PortBinding, error)
 	LookupContainerIpAddress(name string) (string, error)
-}
-
-// PortBinding represents a port mapping set by `docker run --publish`
-// HostPort is the only information we are interested in.
-type PortBinding struct {
-	ContainerPort int
-	Protocol      string
-	HostIp        string
-	HostPort      int
 }
 
 // templateUtils implements ContainerLookuper
@@ -39,7 +31,7 @@ var TemplateUtils = templateUtils{}
 
 // parsePortBindingString parses the output from `docker container port` command
 // The input string example: `81/tcp -> 0.0.0.0:42223`
-func (*templateUtils) parsePortBindingString(input string) (*PortBinding, error) {
+func (*templateUtils) parsePortBindingString(input string) (*api.Container_PortBinding, error) {
 	r := regexp.MustCompile(`(?P<ContainerPort>\d+)/(?P<Protocol>\w+) -> (?P<HostIp>[\d\\.]+):(?P<HostPort>\d+)`)
 	match := r.FindStringSubmatch(input)
 	containerPort, err := strconv.Atoi(match[1])
@@ -50,19 +42,19 @@ func (*templateUtils) parsePortBindingString(input string) (*PortBinding, error)
 	if err != nil {
 		return nil, err
 	}
-	return &PortBinding{
-		ContainerPort: containerPort,
+	return &api.Container_PortBinding{
+		ContainerPort: int32(containerPort),
 		Protocol:      match[2],
 		HostIp:        match[3],
-		HostPort:      hostPort,
+		HostPort:      int32(hostPort),
 	}, nil
 }
 
 // parseMultilinePortBindings parses multiline output from `docker container
 // port` command since Docker allows multiple ports to be published in one
 // container. However, the CTRv2 server only allows one port to be published.
-func (u *templateUtils) parseMultilinePortBindings(multiline string) ([]*PortBinding, error) {
-	result := make([]*PortBinding, 0)
+func (u *templateUtils) parseMultilinePortBindings(multiline string) ([]*api.Container_PortBinding, error) {
+	result := make([]*api.Container_PortBinding, 0)
 	for _, line := range strings.Split(multiline, "\n") {
 		if line == "" {
 			continue
@@ -86,7 +78,7 @@ func (*templateUtils) retrieveContainerPortOutputFromCommand(name string) (strin
 }
 
 // LookupContainerPortBindings is the API to get port bindings for a container
-func (u *templateUtils) LookupContainerPortBindings(name string) ([]*PortBinding, error) {
+func (u *templateUtils) LookupContainerPortBindings(name string) ([]*api.Container_PortBinding, error) {
 	output, err := u.retrieveContainerPortOutputFromCommand(name)
 	if err != nil {
 		return nil, err
@@ -108,7 +100,7 @@ func (*templateUtils) LookupContainerIpAddress(name string) (string, error) {
 }
 
 // endpointToAddress converts an endpoint to an address string
-func (*templateUtils) endpointToAddress(endpoint *api.IpEndpoint) string {
+func (*templateUtils) endpointToAddress(endpoint *labApi.IpEndpoint) string {
 	return fmt.Sprintf("%s:%d", endpoint.Address, endpoint.Port)
 }
 

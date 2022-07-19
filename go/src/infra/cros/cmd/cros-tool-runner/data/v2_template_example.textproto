@@ -12,7 +12,7 @@ requests: { create_network: { name: "mynet" } }
 requests: {
   start_templated_container: {
     name: "my-cros-dut"
-    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8808284912578165185"
     template: {
       cros_dut: {
         network: "mynet"
@@ -50,8 +50,8 @@ requests: {
             }
           }
           dut_server: {
-            address: "ctr-host-port://my-cros-dut" # placeholder provides instructions to template processors
-            port: 80 # port number will be replaced by template processor
+            address: "ctr-container-port://my-cros-dut" # placeholder provides instructions to template processors
+            port: 0 # port number 0 will be replaced by template processor
           }
         }
       }

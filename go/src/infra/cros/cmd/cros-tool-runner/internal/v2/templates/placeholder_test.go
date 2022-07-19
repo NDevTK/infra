@@ -4,16 +4,17 @@ import (
 	"errors"
 	"testing"
 
-	"go.chromium.org/chromiumos/config/go/test/lab/api"
+	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"infra/cros/cmd/cros-tool-runner/api"
 )
 
 type mockLookuper struct {
 	ContainerLookuper
-	portLookupFunc func(string) ([]*PortBinding, error)
+	portLookupFunc func(string) ([]*api.Container_PortBinding, error)
 	ipLookupFunc   func(string) (string, error)
 }
 
-func (m *mockLookuper) LookupContainerPortBindings(name string) ([]*PortBinding, error) {
+func (m *mockLookuper) LookupContainerPortBindings(name string) ([]*api.Container_PortBinding, error) {
 	return m.portLookupFunc(name)
 }
 
@@ -23,7 +24,7 @@ func (m *mockLookuper) LookupContainerIpAddress(name string) (string, error) {
 
 func TestExtract_invalid(t *testing.T) {
 	router := populatorRouter{containerLookuper: &mockLookuper{}}
-	endpoint := api.IpEndpoint{Address: "test"}
+	endpoint := labApi.IpEndpoint{Address: "test"}
 	scheme, _, err := router.extract(endpoint)
 	if scheme != "" {
 		t.Fatalf("scheme should be empty for invalid endpoint")
@@ -33,12 +34,12 @@ func TestExtract_invalid(t *testing.T) {
 	}
 }
 
-func TestExtract_hostPort(t *testing.T) {
+func TestExtract_containerPort(t *testing.T) {
 	router := populatorRouter{containerLookuper: &mockLookuper{}}
-	endpoint := api.IpEndpoint{Address: "ctr-host-port://container-name", Port: 1}
-	expectedEndpoint := api.IpEndpoint{Address: "container-name", Port: 1}
+	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
+	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
 	scheme, returnedEndpoint, err := router.extract(endpoint)
-	if scheme != "ctr-host-port" {
+	if scheme != "ctr-container-port" {
 		t.Fatalf("scheme does not match")
 	}
 	if err != nil {
@@ -47,53 +48,39 @@ func TestExtract_hostPort(t *testing.T) {
 	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
 }
 
-func TestExtract_containerIp(t *testing.T) {
-	router := populatorRouter{containerLookuper: &mockLookuper{}}
-	endpoint := api.IpEndpoint{Address: "ctr-container-ip://container-name", Port: 1}
-	expectedEndpoint := api.IpEndpoint{Address: "container-name", Port: 1}
-	scheme, returnedEndpoint, err := router.extract(endpoint)
-	if scheme != "ctr-container-ip" {
-		t.Fatalf("scheme does not match")
-	}
-	if err != nil {
-		t.Fatalf("unexpectedError")
-	}
-	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
-}
-
-func TestPopulate_hostPort(t *testing.T) {
-	expectedAddress := "localhost"
-	expectedPort := 42222
+func TestPopulate_containerPort(t *testing.T) {
+	expectedAddress := "container-name"
+	expectedPort := 4222
 	expectedContainerName := "container-name"
-	expectedEndpoint := api.IpEndpoint{
+	expectedEndpoint := labApi.IpEndpoint{
 		Address: expectedAddress,
 		Port:    int32(expectedPort),
 	}
 	router := populatorRouter{containerLookuper: &mockLookuper{
-		portLookupFunc: func(s string) ([]*PortBinding, error) {
+		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			if s != expectedContainerName {
 				t.Fatalf("container name does not match\nexpect: %s\nactual: %s",
 					expectedContainerName, s)
 			}
-			return []*PortBinding{{HostPort: expectedPort}}, nil
+			return []*api.Container_PortBinding{{ContainerPort: int32(expectedPort)}}, nil
 		}}}
-	endpoint := api.IpEndpoint{Address: "ctr-host-port://container-name", Port: 1}
+	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
 	if err != nil {
-		t.Fatalf("unexpectedError")
+		t.Fatalf("unexpectedError %v", err)
 	}
 	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
 }
 
-func TestPopulate_hostPort_error(t *testing.T) {
-	expectedEndpoint := api.IpEndpoint{Address: "container-name", Port: 1}
+func TestPopulate_containerPort_error(t *testing.T) {
+	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
-		portLookupFunc: func(s string) ([]*PortBinding, error) {
+		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return nil, errors.New("command throw error")
 		}}}
-	endpoint := api.IpEndpoint{Address: "ctr-host-port://container-name", Port: 1}
+	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -103,13 +90,13 @@ func TestPopulate_hostPort_error(t *testing.T) {
 	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
 }
 
-func TestPopulate_hostPort_multiplePorts(t *testing.T) {
-	expectedEndpoint := api.IpEndpoint{Address: "container-name", Port: 1}
+func TestPopulate_containerPort_multiplePorts(t *testing.T) {
+	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
-		portLookupFunc: func(s string) ([]*PortBinding, error) {
-			return []*PortBinding{{HostPort: 42}, {HostPort: 43}}, nil
+		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
+			return []*api.Container_PortBinding{{ContainerPort: 42}, {ContainerPort: 43}}, nil
 		}}}
-	endpoint := api.IpEndpoint{Address: "ctr-host-port://container-name", Port: 1}
+	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -119,45 +106,13 @@ func TestPopulate_hostPort_multiplePorts(t *testing.T) {
 	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
 }
 
-func TestPopulate_containerIp(t *testing.T) {
-	expectedAddress := "192.168.10.2"
-	expectedPort := 1
-	expectedContainerName := "container-name"
-	expectedEndpoint := api.IpEndpoint{
-		Address: expectedAddress,
-		Port:    int32(expectedPort),
-	}
+func TestPopulate_containerPort_nonZeroPortInput(t *testing.T) {
+	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 1}
 	router := populatorRouter{containerLookuper: &mockLookuper{
-		ipLookupFunc: func(s string) (string, error) {
-			if s != expectedContainerName {
-				t.Fatalf("container name does not match\nexpect: %s\nactual: %s",
-					expectedContainerName, s)
-			}
-			return expectedAddress, nil
+		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
+			return []*api.Container_PortBinding{{ContainerPort: 42}}, nil
 		}}}
-	endpoint := api.IpEndpoint{
-		Address: "ctr-container-ip://container-name",
-		Port:    1,
-	}
-
-	returnedEndpoint, err := router.populate(endpoint)
-
-	if err != nil {
-		t.Fatalf("unexpectedError")
-	}
-	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
-}
-
-func TestPopulate_containerIp_error(t *testing.T) {
-	expectedEndpoint := api.IpEndpoint{Address: "container-name", Port: 1}
-	router := populatorRouter{containerLookuper: &mockLookuper{
-		ipLookupFunc: func(s string) (string, error) {
-			return "", errors.New("command throw error")
-		}}}
-	endpoint := api.IpEndpoint{
-		Address: "ctr-container-ip://container-name",
-		Port:    1,
-	}
+	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 1}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -167,26 +122,7 @@ func TestPopulate_containerIp_error(t *testing.T) {
 	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
 }
 
-func TestPopulate_containerIp_empty(t *testing.T) {
-	expectedEndpoint := api.IpEndpoint{Address: "container-name", Port: 1}
-	router := populatorRouter{containerLookuper: &mockLookuper{
-		ipLookupFunc: func(s string) (string, error) {
-			return "", nil
-		}}}
-	endpoint := api.IpEndpoint{
-		Address: "ctr-container-ip://container-name",
-		Port:    1,
-	}
-
-	returnedEndpoint, err := router.populate(endpoint)
-
-	if err == nil {
-		t.Fatalf("expect error to be returned")
-	}
-	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
-}
-
-func checkEndpoint(t *testing.T, actual api.IpEndpoint, expect api.IpEndpoint) {
+func checkEndpoint(t *testing.T, expect labApi.IpEndpoint, actual labApi.IpEndpoint) {
 	if actual.Address != expect.Address || actual.Port != expect.Port {
 		t.Fatalf("returned endpoint doesn't match\nexpect: %v\nactual: %v",
 			expect, actual)

@@ -55,6 +55,10 @@ service CrosToolRunnerContainerService {
   // Executes a stack of commands in order. Only certain commands are supported.
   rpc StackCommands(StackCommandsRequest)
     returns (StackCommandsResponse);
+
+  // Retrieves information of a container
+  rpc GetContainer(GetContainerRequest)
+    returns (GetContainerResponse);
 }
 
 // Represents basic info of a docker network
@@ -75,6 +79,24 @@ message Container {
   string id = 2;
   // Indicates if the container was started by the current container service.
   bool owned = 3;
+  // A port binding is the mapping between the port used in the container and
+  // the port published on the host. Port bindings are defined through
+  // StartContainerRequest.options.expose and are retrieved through `docker
+  // container port` command. Example of the command output:
+  // `80/tcp -> 0.0.0.0:42356` 80 is the exposed port, 42356 is the published
+  // random port on the host
+  message PortBinding {
+    // The exposed port in the container, a.k.a the port a service listens to.
+    int32 container_port = 1;
+    // Always `tcp` for our use cases.
+    string protocol = 2;
+    // Host IP as returned by the command; we don't use this value.
+    string host_ip = 3;
+    // The published port on the host; each time `docker run` command assigns a
+    // random port available on the host is assigned.
+    int32 host_port = 4;
+  }
+  repeated PortBinding port_bindings = 4;
 }
 
 message CreateNetworkRequest {
@@ -182,4 +204,12 @@ message StackCommandsResponse {
     }
   }
   repeated Stackable responses = 1;
+}
+
+message GetContainerRequest {
+  string name = 1;
+}
+
+message GetContainerResponse {
+  Container container = 1;
 }

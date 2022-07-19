@@ -26,6 +26,7 @@ type ContainerServerImpl struct {
 	containers        ownershipRecorder
 	executor          CommandExecutor
 	templateProcessor templates.TemplateProcessor
+	containerLookuper templates.ContainerLookuper
 }
 
 // CreateNetwork creates a new docker network with the given name.
@@ -278,6 +279,39 @@ func (s *ContainerServerImpl) StackCommands(ctx context.Context, request *api.St
 		}
 	}
 	return &api.StackCommandsResponse{Responses: outputs}, nil
+}
+
+// GetContainer retrieves information of a container.
+func (s *ContainerServerImpl) GetContainer(ctx context.Context, request *api.GetContainerRequest) (*api.GetContainerResponse, error) {
+	id, err := s.getContainerId(ctx, request.Name)
+	if err != nil {
+		return nil, err
+	}
+	portBindings, err := s.getPortBindings(ctx, request.Name)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("success: found container", id)
+	return &api.GetContainerResponse{Container: &api.Container{Name: request.Name, Id: id, Owned: s.containers.hasOwnership(request.Name, id), PortBindings: portBindings}}, nil
+}
+
+func (s *ContainerServerImpl) getContainerId(ctx context.Context, name string) (string, error) {
+	getContainerIdCmd := commands.ContainerInspect{Names: []string{name}, Format: "{{.Id}}"}
+	id, stderr, err := s.executor.Execute(ctx, &getContainerIdCmd)
+	if id == "" {
+		return "", utils.notFound(fmt.Sprintf("Cannot retrieve container ID with name %s", name))
+	}
+	if stderr != "" {
+		return "", utils.toStatusError(stderr)
+	}
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func (s *ContainerServerImpl) getPortBindings(ctx context.Context, name string) ([]*api.Container_PortBinding, error) {
+	return s.containerLookuper.LookupContainerPortBindings(name)
 }
 
 // stopContainers removes containers that are owned by current CTRv2 service in the reverse order of how they are started.
