@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	sync "sync"
 	"time"
@@ -168,8 +169,7 @@ func executeCommand(ctx context.Context, binaryDir string, operation string, ass
 	}
 
 	logging.Infof(ctx, "Deployment Successful!!")
-	outStr, errStr := string(stdout), string(stderr)
-	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", fmt.Sprintf("%s\n%s\n", outStr, errStr), nil)
+	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", "Deployment completed successfully\n", nil)
 }
 
 func enqueueWaitForTask(ctx context.Context, assetInstanceId string, operation string) error {
@@ -194,11 +194,39 @@ func updateStatusLogs(ctx context.Context, assetInstanceId string, status string
 	if errors != nil {
 		assetInstance.Errors = errors.Error()
 	}
-	assetInstance.Logs = assetInstance.Logs + log
+	assetInstance.Logs = assetInstance.Logs + normalizeLogs(log)
 	if err := datastore.Put(ctx, assetInstance); err != nil {
 		return err
 	}
 	return nil
+}
+
+func normalizeLogs(log string) string {
+	// Replace all lines containing the following pattern
+	matcher := regexp.MustCompile(`(?m)^.*OnHost configuration timed out.*$`)
+	log = matcher.ReplaceAllString(log, "")
+
+	// for each pattern below only remove the first occuring line for the patter
+	// below.
+	patterns := []string{
+		`(?m)^.*See instance console logs for more info:*$`,
+		`(?m)^.*https://console\.cloud\.google\.com/compute/instances\?project=.*$`,
+	}
+
+	for _, pattern := range patterns {
+		matcher := regexp.MustCompile(pattern)
+		count := 1
+		log = matcher.ReplaceAllStringFunc(log, func(s string) string {
+			if count == 0 {
+				return s
+			}
+
+			count -= 1
+			return matcher.ReplaceAllString(s, "")
+		})
+	}
+
+	return log
 }
 
 func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
