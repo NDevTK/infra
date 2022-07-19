@@ -1959,6 +1959,9 @@ func crosRepairActions() map[string]*Action {
 				"Perform RPM config verification",
 				"No Battery is present on device",
 			},
+			Dependencies: []string{
+				"Wait to be SSHable (normal boot)",
+			},
 			ExecName:    "rpm_audit_without_battery",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
@@ -1971,6 +1974,9 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Perform RPM config verification",
 				"Battery is present on device",
+			},
+			Dependencies: []string{
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:    "rpm_audit_with_battery",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},

@@ -207,6 +207,7 @@ func deployActions() map[string]*Action {
 				"Verify boot in recovery mode",
 				"Verify RPM config (without battery)",
 				"Verify RPM config with battery",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
 		},
@@ -220,6 +221,9 @@ func deployActions() map[string]*Action {
 				"Is not in audio box",
 				"Battery is expected on device",
 				"Battery is present on device",
+			},
+			Dependencies: []string{
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "cros_battery_changable_to_expected_level",
 			ExecExtraArgs: []string{
@@ -238,6 +242,7 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"dut_servo_host_present",
 				"servod_echo",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "cros_verify_boot_in_recovery_mode",
 			ExecExtraArgs: []string{
