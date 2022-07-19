@@ -165,8 +165,7 @@ class OnlineWindowsCustomization(customization.Customization):
     memory = cfg.memory
     device = cfg.device
     extra_args = cfg.extra_args
-    # TODO(b/182061277): Add support for drives
-    drives = cfg.drives
+    drives = [self.get_canonical_drive_config(x) for x in cfg.drives]
     return vm_pb.VM(
         qemu_vm=vm_pb.QEMU_VM(
             machine=machine,
@@ -176,3 +175,37 @@ class OnlineWindowsCustomization(customization.Customization):
             device=device,
             extra_args=extra_args,
             drives=drives))
+
+  def get_canonical_drive_config(self, drive):
+    """ get_canonical_drive_config takes a drive_pb.Drive object and returns a
+    canonical drive_pb.Drive object
+    Example:
+      Given a Drive object
+
+      Drive{
+        name: "win10_vanilla_iso"
+        input_src: Src(...)
+        output_dest: Dest(...)
+        interface: "none"
+        media: "cdrom"
+        fmt: "raw"
+      }
+
+      returns a drive_pb.Drive object
+
+      Drive{
+        input_src: Src(...)
+        interface: "none"
+        media: "cdrom"
+        fmt: "raw"
+      }
+    """
+    return drive_pb.Drive(
+        input_src=drive.input_src,
+        interface=drive.interface,
+        index=drive.index,
+        media=drive.media,
+        fmt=drive.fmt,
+        readonly=drive.readonly,
+        size=drive.size,
+        filesystem=drive.filesystem)
