@@ -445,55 +445,48 @@ func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, 
 	if err != nil {
 		return nil, errors.Annotate(err, "getting dataset").Err()
 	}
-
+	// The following query does not take into account removals of test failures
+	// from clusters as this dramatically slows down the query. Instead, we
+	// rely upon a periodic job to purge these results from the table.
+	// We avoid double-counting the test failures (e.g. in case of addition
+	// deletion, re-addition) by using APPROX_COUNT_DISTINCT to count the
+	// number of distinct failures in the cluster.
 	sql := `
-	SELECT
-		STRUCT(cluster_algorithm AS Algorithm,
-			cluster_id AS ID) AS ClusterID,
-		ANY_VALUE(failure_reason.primary_error_message) AS ExampleFailureReason,
-		ANY_VALUE(test_id) AS ExampleTestID, 
-		APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
-		COUNTIF(is_critical_and_exonerated) AS CriticalFailuresExonerated,
-		COUNT(1) AS Failures,
+		SELECT
+			STRUCT(cluster_algorithm AS Algorithm,
+				cluster_id AS ID) AS ClusterID,
+			ANY_VALUE(failure_reason.primary_error_message) AS ExampleFailureReason,
+			ANY_VALUE(test_id) AS ExampleTestID,
+			APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
+			APPROX_COUNT_DISTINCT(IF(is_critical_and_exonerated,unique_test_result_id, NULL)) AS CriticalFailuresExonerated,
+			APPROX_COUNT_DISTINCT(unique_test_result_id) AS Failures,
 		FROM (
 			SELECT
 				cluster_algorithm,
 				cluster_id,
-				r.test_id,
-				r.failure_reason, 
-				(r.build_critical AND
-					-- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
-					-- Passes are not ingested by Weetbix, but if a test has both an unexpected pass
-					-- and an unexpected failure, it will be exonerated for the unexpected pass.
-					(STRUCT('OCCURS_ON_MAINLINE' as Reason) in UNNEST(r.exonerations) OR
-						STRUCT('OCCURS_ON_OTHER_CLS' as Reason) in UNNEST(r.exonerations)))
-					AS is_critical_and_exonerated,
-				IF(r.is_ingested_invocation_blocked AND r.build_critical AND r.presubmit_run_mode = 'FULL_RUN' AND
-					ARRAY_LENGTH(r.exonerations) = 0 AND r.build_status = 'FAILURE' AND r.presubmit_run_owner = 'user',
-						IF(ARRAY_LENGTH(r.changelists)>0 AND r.presubmit_run_owner='user',
-							CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
-							NULL),
-						NULL)
-					AS presubmit_cl_blocked,
-			FROM (
-				SELECT
-					cluster_algorithm,
-					cluster_id,
-					test_result_system,
-					test_result_id,
-					ARRAY_AGG(cf ORDER BY cf.last_updated DESC LIMIT 1)[OFFSET(0)] AS r
-				FROM clustered_failures cf
-				WHERE
-					cf.partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-					AND ` + whereClause + `
-				GROUP BY
-					cluster_algorithm,
-					cluster_id,
-					test_result_system,
-					test_result_id )
-				-- Only return failures which are still included in the cluster.
+				test_id,
+				failure_reason,
+				CONCAT(chunk_id, '/', chunk_index) as unique_test_result_id,
+				(build_critical AND
+				-- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
+				-- Passes are not ingested by Weetbix, but if a test has both an unexpected pass
+				-- and an unexpected failure, it will be exonerated for the unexpected pass.
+				(STRUCT('OCCURS_ON_MAINLINE' as Reason) in UNNEST(exonerations) OR
+					STRUCT('OCCURS_ON_OTHER_CLS' as Reason) in UNNEST(exonerations)))
+				AS is_critical_and_exonerated,
+				IF(is_ingested_invocation_blocked AND build_critical AND presubmit_run_mode = 'FULL_RUN' AND
+				ARRAY_LENGTH(exonerations) = 0 AND build_status = 'FAILURE' AND presubmit_run_owner = 'user',
+					IF(ARRAY_LENGTH(changelists)>0 AND presubmit_run_owner='user',
+					CONCAT(changelists[OFFSET(0)].host, changelists[OFFSET(0)].change),
+					NULL),
+					NULL)
+				AS presubmit_cl_blocked,
+			FROM clustered_failures cf
 			WHERE
-				r.is_included_with_high_priority)
+				is_included_with_high_priority
+				AND partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+				AND ` + whereClause + `
+		)
 		GROUP BY
 			cluster_algorithm,
 			cluster_id
