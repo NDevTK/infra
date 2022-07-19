@@ -7,6 +7,10 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/satlab/internal/commands"
+	"infra/cros/cmd/satlab/internal/site"
 )
 
 // DeleteDNSCmd is the command to delete a hostname from the hostsfile of the DNS container
@@ -36,7 +40,37 @@ func (c *deleteDNSRun) Run(a subcommands.Application, args []string, env subcomm
 	return 0
 }
 
-// innerRun executes actual logic
+// innerRun calls underlying business logic with appropriate functions and interfaces injected
+// extra abstraction layer allows us to test `runCmdInjected` with fake implementations
 func (c *deleteDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return fmt.Errorf("not implemented yet")
+	return c.runCmdInjected(args, commands.GetDockerHostBoxIdentifier)
+}
+
+// runCmdInjected executes business logic
+func (c *deleteDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIdentifierGetter) error {
+	satlabID, err := dhbIDFunc()
+	if err != nil {
+		return err
+	}
+
+	err = c.validate(args, satlabID)
+	if err != nil {
+		return err
+	}
+
+	_, err = DeleteRecord(ensureRecords, readContents, c.host)
+	return err
+}
+
+// validate checks for required and unexpected args + formats hostname
+func (c *deleteDNSRun) validate(args []string, satlabId string) error {
+	if c.host == "" {
+		return errors.Reason("host must be specified").Err()
+	}
+	if len(args) > 0 {
+		return errors.Reason("unrecognized positional argument(s): %+v", args).Err()
+	}
+
+	c.host = site.MaybePrepend(site.Satlab, satlabId, c.host)
+	return nil
 }
