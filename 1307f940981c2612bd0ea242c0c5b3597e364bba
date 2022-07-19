@@ -16,6 +16,46 @@
       "message": "please make an action with docs for `has_stable_version_fw_image` so user will see something with better name and description. I am good with other parts.",
       "revId": "1307f940981c2612bd0ea242c0c5b3597e364bba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3193f144_c71feb44",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-07-19T00:57:51Z",
+      "side": 1,
+      "message": "convert message to the comment to have option to resolve it 😊",
+      "revId": "1307f940981c2612bd0ea242c0c5b3597e364bba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa950cdf_be8bc5ff",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1709,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-07-19T00:57:51Z",
+      "side": 1,
+      "message": "please make an action with docs for  has_stable_version_fw_image  so user will see something with better name and description\n\nhere and other place.",
+      "range": {
+        "startLine": 1709,
+        "startChar": 4,
+        "endLine": 1709,
+        "endChar": 34
+      },
+      "revId": "1307f940981c2612bd0ea242c0c5b3597e364bba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
