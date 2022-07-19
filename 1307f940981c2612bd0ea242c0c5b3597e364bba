@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41b253ab_70d2d3f7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-07-19T00:57:10Z",
+      "side": 1,
+      "message": "please make an action with docs for `has_stable_version_fw_image` so user will see something with better name and description. I am good with other parts.",
+      "revId": "1307f940981c2612bd0ea242c0c5b3597e364bba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
