@@ -26,6 +26,7 @@ func crosRepairPlan() *Plan {
 			"Firmware validations",
 			"Login UI is up",
 			"Verify keys of RW_VPD",
+			"Verify RO_VPD sku_number",
 			"Update Servo NIC mac address",
 			"Match provision labels",
 			"Set state: ready",
@@ -1996,6 +1997,36 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 			},
 			ExecName:               "cros_log_typec_status",
+			AllowFailAfterRecovery: true,
+		},
+		"Verify RO_VPD sku_number": {
+			Docs: []string{
+				"Verify that sku_number is present in RO_VPD, if required.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+				"RO_VPD sku_number is required",
+			},
+			ExecName: "cros_verify_ro_vpd_sku_number",
+			RecoveryActions: []string{
+				"Set fake RO_VPD sku_number",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"RO_VPD sku_number is required": {
+			Docs: []string{
+				"Verifies if RO_VPD sku_number is required on this device.",
+			},
+			ExecName: "cros_is_ro_vpd_sku_number_required",
+		},
+		"Set fake RO_VPD sku_number": {
+			Docs: []string{
+				"Set a fake sku_number in RO_VPD",
+			},
+			ExecName: "cros_set_fake_ro_vpd_sku_number",
+			ExecExtraArgs: []string{
+				"sku_number:FAKE-SKU",
+			},
 			AllowFailAfterRecovery: true,
 		},
 	}
