@@ -1,25 +1,9 @@
 application: chromiumbugs-hr
-version: use-make-deploy-to-set
-runtime: python27
-api_version: 1
-threadsafe: yes
-
-default_expiration: "1h"
+runtime: python38
+app_engine_apis: false
 
 handlers:
-- url: /static
-  static_dir: static
-
-- url: /ajah
-  static_dir: html/ajah
 
 - url: /.*
-  script: main.application
+  script: main.app
   secure: always
-
-libraries:
-- name: flask
-  version: "0.12"
-
-includes:
-- gae_ts_mon  # handles /internal/cron/ts_mon/send

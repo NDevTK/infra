@@ -3,7 +3,8 @@
 
 APPID?= `cat app.yaml | sed -n 's/^application: *//p'`
 
-GAE_PY?= python gae.py
+GAE_PY?= ../../ENV/bin/python gae.py
+
 DEV_APPSERVER_FLAGS?=
 
 MODULES?= default

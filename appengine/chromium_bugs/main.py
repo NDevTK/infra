@@ -16,14 +16,12 @@
 
 import flask
 
-import gae_ts_mon
-
-application = flask.Flask(__name__)
+app = flask.Flask(__name__)
 
 
-@application.route('/')
-@application.route('/wizard.html')
-@application.route('/wizard.do')
+@app.route('/')
+@app.route('/wizard.html')
+@app.route('/wizard.do')
 def Main():
   new_url = (
       "https://www.google.com/accounts/ServiceLogin?service=ah&"
@@ -32,6 +30,3 @@ def Main():
       "&ltmpl=")
   return flask.redirect(new_url, code=302)
 
-# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-# service account and change to gae_ts_mon.initialize_prod()
-gae_ts_mon.initialize_adhoc(application)
