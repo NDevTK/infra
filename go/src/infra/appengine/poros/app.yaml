@@ -1,5 +1,6 @@
 runtime: go116
 service: default
+app_engine_apis: true
 
 env: standard
 instance_class: B2

@@ -21,6 +21,7 @@ import (
 	"github.com/google/uuid"
 	client "go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/mailer"
 	"go.chromium.org/luci/server/tq"
 
 	"infra/appengine/poros/api/entities"
@@ -198,7 +199,35 @@ func updateStatusLogs(ctx context.Context, assetInstanceId string, status string
 	if err := datastore.Put(ctx, assetInstance); err != nil {
 		return err
 	}
+	sendStatusUpdateEmail(ctx, assetInstance)
 	return nil
+}
+
+func sendStatusUpdateEmail(ctx context.Context, assetInstance *entities.AssetInstanceEntity) {
+	if assetInstance.Status != "STATUS_FAILED" && assetInstance.Status != "STATUS_COMPLETED" {
+		return
+	}
+
+	asset := &entities.AssetEntity{AssetId: assetInstance.AssetId}
+	if err := datastore.Get(ctx, asset); err != nil {
+		logging.Errorf(ctx, "Cannot find asset when sending status update email Error: %s\n", err.Error())
+	}
+
+	emailTemplate, err := os.ReadFile("./taskspb/template/deployment-status.email.textpb")
+	if err != nil {
+		logging.Errorf(ctx, "Failed to read email template. Error: %s\n", err.Error())
+		return
+	}
+
+	err = mailer.Send(ctx, &mailer.Mail{
+		To:       []string{assetInstance.CreatedBy},
+		Subject:  fmt.Sprintf("POROS -- Asset: %v", asset.Name),
+		TextBody: fmt.Sprintf(string(emailTemplate), asset.Name, assetInstance.ProjectId, assetInstance.Status),
+	})
+
+	if err != nil {
+		logging.Errorf(ctx, "Failed to send email. Error: %s\n", err.Error())
+	}
 }
 
 func normalizeLogs(log string) string {

@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/encryptedcookies"
 	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/mailer"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 	"go.chromium.org/luci/server/tq"
@@ -132,6 +133,7 @@ func main() {
 		gaeemulation.NewModuleFromFlags(),     // Needed by cfgmodule.
 		secrets.NewModuleFromFlags(),          // Needed by encryptedcookies.
 		tq.NewModuleFromFlags(),               // transactionally submit Cloud Tasks
+		mailer.NewModuleFromFlags(),           // Needed for sending emails
 	}
 
 	server.Main(nil, modules, func(srv *server.Server) error {
