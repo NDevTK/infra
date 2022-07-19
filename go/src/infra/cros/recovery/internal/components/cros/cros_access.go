@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"infra/cros/recovery/internal/components/linux"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/retry"
@@ -38,6 +39,25 @@ func IsNotPingable(ctx context.Context, count int, ping components.Pinger, log l
 func IsSSHable(ctx context.Context, run components.Runner) error {
 	_, err := run(ctx, time.Minute, "true")
 	return errors.Annotate(err, "is sshable").Err()
+}
+
+// IsFileSystemWritable confirms the stateful file systems are writable.
+//
+// The standard linux response to certain unexpected file system errors
+// (including hardware errors in block devices) is to change the file
+// system status to read-only.  This checks that it hasn't happened.
+//
+// The test doesn't check various bind mounts; those are expected to
+// fail the same way as their underlying main mounts.  Whether the
+// Linux kernel can guarantee that is untested...
+func IsFileSystemWritable(ctx context.Context, run components.Runner, log logger.Logger, testDirs []string) error {
+	for _, testDir := range testDirs {
+		if err := linux.IsPathWritable(ctx, run, testDir); err != nil {
+			errors.Annotate(err, "file system writable").Err()
+		}
+		log.Debugf("Directory %s is writable.", testDir)
+	}
+	return nil
 }
 
 const (

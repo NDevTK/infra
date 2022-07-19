@@ -40,6 +40,19 @@ func GetDevicePath(ctx context.Context, run components.Runner, log logger.Logger
 	return path, nil
 }
 
+// IsDeviceAccessible verifies that DUT is accessible through the associated host.
+func IsDeviceAccessible(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	state, err := GetDeviceState(ctx, run, log, serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "dut is accessible").Err()
+	}
+	log.Debugf("Attached DUT %q: state %q", serialNumber, state)
+	if state != "device" {
+		return errors.Reason("invalid attached dut %q state %q", serialNumber, state).Err()
+	}
+	return nil
+}
+
 // IsDeviceRooted validates whether device is rooted. Refer to go/abp-security/rooted-devices for info on device rooting.
 func IsDeviceRooted(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
 	const adbIsDeviceRootedCmd = "adb -s %s shell su root whoami>/dev/null 2>&1; echo $?"

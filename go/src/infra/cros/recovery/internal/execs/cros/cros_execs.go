@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package cros
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -142,37 +141,15 @@ func runShellCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// isFileSystemWritable confirms the stateful file systems are writable.
-//
-// The standard linux response to certain unexpected file system errors
-// (including hardware errors in block devices) is to change the file
-// system status to read-only.  This checks that that hasn't happened.
-// The test covers the two file systems that need to be writable for
-// critical operations like AU:
-//   - The (unencrypted) stateful system which includes /mnt/stateful_partition.
-//   - The encrypted stateful partition, which includes /var.
-//
-// The test doesn't check various bind mounts; those are expected to
-// fail the same way as their underlying main mounts.  Whether the
-// Linux kernel can guarantee that is untested...
+// isFileSystemWritable checks whether the stateful file systems are writable.
 func isFileSystemWritableExec(ctx context.Context, info *execs.ExecInfo) error {
 	// N.B. Order matters here:  Encrypted stateful is loop-mounted from a file in unencrypted stateful,
 	// so we don't test for errors in encrypted stateful if unencrypted fails.
 	testDirs := []string{"/mnt/stateful_partition", "/var/tmp"}
-	for _, testDir := range testDirs {
-		filename := filepath.Join(testDir, "writable_my_test_file")
-		command := fmt.Sprintf("touch %s && rm %s", filename, filename)
-		run := info.DefaultRunner()
-		_, err := run(ctx, time.Minute, command)
-		if err != nil {
-			log.Debugf(ctx, "Cannot create a file in %s! \n Probably the FS is read-only", testDir)
-			return errors.Annotate(err, "file system writtable").Err()
-		}
-	}
-	return nil
+	return cros.IsFileSystemWritable(ctx, info.DefaultRunner(), info.NewLogger(), testDirs)
 }
 
-// hasPythonInterpreterExec confirm the presence of a working Python interpreter.
+// hasPythonInterpreterExec confirms the presence of a working Python interpreter.
 func hasPythonInterpreterExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	_, err := run(ctx, time.Minute, `python -c "import json"`)

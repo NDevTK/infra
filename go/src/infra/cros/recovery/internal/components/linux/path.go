@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -24,6 +25,21 @@ func IsPathExist(ctx context.Context, run execs.Runner, path string) error {
 	_, err := run(ctx, time.Minute, fmt.Sprintf(`test -e "%s"`, path))
 	if err != nil {
 		return errors.Annotate(err, "path exist").Err()
+	}
+	return nil
+}
+
+// IsPathWritable checks whether a given path is writable.
+func IsPathWritable(ctx context.Context, run execs.Runner, testDir string) error {
+	if err := IsPathExist(ctx, run, testDir); err != nil {
+		return errors.Annotate(err, "path writable").Err()
+	}
+	const testFileName = "writable_my_test_file"
+	filename := filepath.Join(testDir, testFileName)
+	command := fmt.Sprintf("touch %s && rm %s", filename, filename)
+	if _, err := run(ctx, time.Minute, command); err != nil {
+		log.Debugf(ctx, "Failed to create a file in %s! \n Probably the path is read-only", testDir)
+		return errors.Annotate(err, "path writable").Err()
 	}
 	return nil
 }
