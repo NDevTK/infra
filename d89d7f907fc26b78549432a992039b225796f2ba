@@ -16,6 +16,23 @@
       "message": "Hi it looks great. I\u0027ll have a closer look at the CL tomorrow.",
       "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7df054ef_fff0c551",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-07-20T07:40:48Z",
+      "side": 1,
+      "message": "This is feedback purely from looking at the UI, and it is opinions, not requirements, feel free to ignore if you do not agree.  Most of this will be for follow up CLs, but I wanted to capture it:\n\n1. Why are there square brackets around the culprit range?\n2. Bugs should be in the standard format, eg. crbug.com/1234 instead of cr/1234\n3. Headings probably shouldn\u0027t be bold: are you using the Typography mui component?\n4. Related bugs should probably be listed horizontally rather than vertically\n5. Descriptions/keys should be de-emphasized from values, eg https://screenshot.googleplex.com/4nfgSAQ2mpxN23C\n6. Hard to tell at the moment, but maybe \"suspect summary\" should be put as a tab and drop the suspect summary and analysis components headings.  This will be difficult to decide until there is real data here.\n7. GOFINDIT link at the top should be more emphasized than the other links, larger font, not capitalized etc. https://screenshot.googleplex.com/6ZCop6vyaXN7dGm\n\n\noverall it looks really good, thanks!",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
