@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6283d649_c9b66e22",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusters.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-07-20T06:33:42Z",
+      "side": 1,
+      "message": "Are we able to easily rebuild the data if this query goes wrong and deletes all data for the last 7 days?\n\n(no need to write code, but it would be good to add an outline in either a comment here or to the playbook)",
+      "revId": "6eafcf8ce4c42c57d58750472c099f9a91173f3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
