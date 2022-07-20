@@ -102,31 +102,30 @@ def RunSteps(api):
           # 'zlib',
       ]
 
-      api.python(
-          'Download sysroot.',
+      api.step('Download sysroot.', [
           api.path.join(src_dir, 'build', 'linux', 'sysroot_scripts',
-                        'install-sysroot.py'), ['--arch=amd64'])
+                        'install-sysroot.py'), '--arch=amd64'
+      ])
 
-      api.python(
-          'Build clang.',
+      api.step('Build clang.', [
           api.path.join(src_dir, 'tools', 'clang', 'scripts', 'build.py'),
-          ['--skip-checkout', '--without-android', '--without-fuchsia'])
+          '--skip-checkout', '--without-android', '--without-fuchsia'
+      ])
 
       with api.context(env=gn_bootstrap_env):
-        api.python(
-            'Bootstrap gn.',
+        api.step('Bootstrap gn.', [
             api.path.join(src_dir, 'tools', 'gn', 'bootstrap', 'bootstrap.py'),
-            ['--gn-gen-args=%s' % ' '.join(gn_args), '--use-custom-libcxx'])
+            '--gn-gen-args=%s' % ' '.join(gn_args), '--use-custom-libcxx'
+        ])
 
       api.step('Download nodejs.', [
           api.path.join(src_dir, 'third_party', 'node', 'update_node_binaries')
       ])
 
-      api.python(
-          'Unbundle libraries.',
+      api.step('Unbundle libraries.', [
           api.path.join(src_dir, 'build', 'linux', 'unbundle',
-                        'replace_gn_files.py'),
-          ['--system-libraries'] + unbundle_libs)
+                        'replace_gn_files.py'), '--system-libraries'
+      ] + unbundle_libs)
 
       api.step('Build chrome.',
                ['ninja', '-C', 'out/Release', 'chrome/installer/linux'])

@@ -26,7 +26,6 @@
   },
   {
     "cmd": [
-      "python",
       "[START_DIR]/build_dir/chromium-80.0.3987.76/build/linux/sysroot_scripts/install-sysroot.py",
       "--arch=amd64"
     ],
@@ -40,7 +39,6 @@
   },
   {
     "cmd": [
-      "python",
       "[START_DIR]/build_dir/chromium-80.0.3987.76/tools/clang/scripts/build.py",
       "--skip-checkout",
       "--without-android",
@@ -56,7 +54,6 @@
   },
   {
     "cmd": [
-      "python",
       "[START_DIR]/build_dir/chromium-80.0.3987.76/tools/gn/bootstrap/bootstrap.py",
       "--gn-gen-args=is_debug=false enable_nacl=false is_official_build=true enable_distro_version_check=false use_system_libjpeg=true use_v8_context_snapshot=false",
       "--use-custom-libcxx"
@@ -89,7 +86,6 @@
   },
   {
     "cmd": [
-      "python",
       "[START_DIR]/build_dir/chromium-80.0.3987.76/build/linux/unbundle/replace_gn_files.py",
       "--system-libraries",
       "fontconfig",
