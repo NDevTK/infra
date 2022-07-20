@@ -166,9 +166,18 @@ func TestChooseImplementation(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	Convey("test choose implementation", t, func() {
-		impl, err := (&PermilleData{Prod: 0.0, Latest: 0.0}).ChooseImplementation(ctx, 0.0)
-		So(err, ShouldBeNil)
-		So(impl, ShouldEqual, heuristics.LatestTaskType)
+		Convey("nil permille data", func() {
+			var pd *PermilleData
+			impl, err := pd.ChooseImplementation(ctx, 0.0)
+			So(impl, ShouldEqual, heuristics.LegacyTaskType)
+			So(err, ShouldBeNil)
+		})
+		Convey("zeroes", func() {
+			pd := &PermilleData{Prod: 0.0, Latest: 0.0}
+			impl, err := pd.ChooseImplementation(ctx, 0.0)
+			So(impl, ShouldEqual, heuristics.LegacyTaskType)
+			So(err, ShouldErrLike, "not yet implemented")
+		})
 	})
 }
 
