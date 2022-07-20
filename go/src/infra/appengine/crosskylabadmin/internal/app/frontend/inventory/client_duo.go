@@ -131,22 +131,6 @@ func (client *duoClient) deleteDUTsFromFleet(ctx context.Context, ids []string) 
 	return
 }
 
-func (client *duoClient) selectDutsFromInventory(ctx context.Context, sel *fleet.DutSelector) (duts []*inventory.DeviceUnderTest, err error) {
-	if !client.inventoryV2Only {
-		duts, err = client.gc.selectDutsFromInventory(ctx, sel)
-	}
-	if client.willWriteToV2() {
-		duts, err = client.ic.selectDutsFromInventory(ctx, sel)
-		logging.Infof(ctx, "[v2] select duts by %v", sel)
-		if len(duts) > 0 {
-			logging.Infof(ctx, "[v2] selecting returns '%s'...(total %d duts)", duts[0].GetCommon().GetHostname(), len(duts))
-		} else {
-			logging.Infof(ctx, "[v2] selecting returns 0 duts")
-		}
-	}
-	return
-}
-
 func (client *duoClient) commitBalancePoolChanges(ctx context.Context, changes []*fleet.PoolChange) (u string, err error) {
 	if !client.inventoryV2Only {
 		u, err = client.gc.commitBalancePoolChanges(ctx, changes)

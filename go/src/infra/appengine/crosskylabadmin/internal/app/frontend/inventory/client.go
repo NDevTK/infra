@@ -31,7 +31,6 @@ type inventoryClient interface {
 	updateAssetsInRegistration(ctx context.Context, assetList *api.AssetList) (*api.AssetResponse, error)
 	updateDUTSpecs(context.Context, *inventory.CommonDeviceSpecs, *inventory.CommonDeviceSpecs, bool) (string, error)
 	deleteDUTsFromFleet(context.Context, []string) (string, []string, error)
-	selectDutsFromInventory(context.Context, *fleet.DutSelector) ([]*inventory.DeviceUnderTest, error)
 	commitBalancePoolChanges(context.Context, []*fleet.PoolChange) (string, error)
 	getDutInfo(context.Context, *fleet.GetDutInfoRequest) ([]byte, time.Time, error)
 	deviceConfigsExists(context.Context, []*device.ConfigId) (map[int32]bool, error)
@@ -67,10 +66,6 @@ func (client *gitStoreClient) updateDUTSpecs(ctx context.Context, od, nd *invent
 
 func (client *gitStoreClient) deleteDUTsFromFleet(ctx context.Context, ids []string) (string, []string, error) {
 	return deleteDUTsFromFleet(ctx, client.store, ids)
-}
-
-func (client *gitStoreClient) selectDutsFromInventory(ctx context.Context, sel *fleet.DutSelector) ([]*inventory.DeviceUnderTest, error) {
-	return selectDutsFromInventory(ctx, client.store, sel)
 }
 
 func (client *gitStoreClient) commitBalancePoolChanges(ctx context.Context, changes []*fleet.PoolChange) (string, error) {
@@ -242,37 +237,6 @@ func deleteDUTsFromFleet(ctx context.Context, s *gitstore.InventoryStore, ids []
 	}
 	err := retry.Retry(ctx, transientErrorRetries(), f, retry.LogCallback(ctx, "DeleteDut"))
 	return changeURL, removedIDs, err
-}
-
-func selectDutsFromInventory(ctx context.Context, store *gitstore.InventoryStore, sel *fleet.DutSelector) ([]*inventory.DeviceUnderTest, error) {
-	if err := store.Refresh(ctx); err != nil {
-		return nil, err
-	}
-	duts, err := GetDutsByEnvironment(ctx, store)
-	if err != nil {
-		return nil, nil
-	}
-	var filteredDuts []*inventory.DeviceUnderTest
-	for _, d := range duts {
-		if sel == nil || dutMatchesSelector(d, sel) {
-			filteredDuts = append(filteredDuts, d)
-		}
-	}
-	return filteredDuts, nil
-}
-
-func dutMatchesSelector(d *inventory.DeviceUnderTest, sel *fleet.DutSelector) bool {
-	c := d.GetCommon()
-	if sel.Id != "" && sel.Id != c.GetId() {
-		return false
-	}
-	if sel.Hostname != "" && sel.Hostname != c.GetHostname() {
-		return false
-	}
-	if sel.Model != "" && sel.Model != c.GetLabels().GetModel() {
-		return false
-	}
-	return true
 }
 
 func commitBalancePoolChanges(ctx context.Context, store *gitstore.InventoryStore, changes []*fleet.PoolChange) (string, error) {

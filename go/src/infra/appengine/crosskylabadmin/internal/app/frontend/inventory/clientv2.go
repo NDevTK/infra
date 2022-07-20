@@ -23,10 +23,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	invV1Api "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/libs/skylab/inventory"
+
+	"go.chromium.org/chromiumos/infra/proto/go/lab"
 )
 
 type invServiceClient struct {
@@ -189,49 +190,6 @@ func (c *invServiceClient) deleteDUTsFromFleet(ctx context.Context, ids []string
 	}()
 
 	return "fake delete URL", []string{}, nil
-}
-
-func (c *invServiceClient) selectDutsFromInventory(ctx context.Context, sel *invV1Api.DutSelector) ([]*inventory.DeviceUnderTest, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			logging.Errorf(ctx, "Recovered in deleteDUTsFromFleet(%s)", r)
-		}
-	}()
-
-	var rsp *api.GetCrosDevicesResponse
-	f := func() (err error) {
-		ids := []*api.DeviceID{}
-
-		if sel.GetHostname() != "" {
-			ids = append(ids, &api.DeviceID{
-				Id: &api.DeviceID_Hostname{Hostname: sel.GetHostname()},
-			})
-		}
-		if sel.GetId() != "" {
-			ids = append(ids, &api.DeviceID{
-				Id: &api.DeviceID_ChromeosDeviceId{ChromeosDeviceId: sel.GetId()},
-			})
-		}
-		var models []string
-		if sel.GetModel() != "" {
-			models = append(models, sel.GetModel())
-		}
-		rsp, err = c.client.GetCrosDevices(ctx, &api.GetCrosDevicesRequest{Ids: ids, Models: models})
-		return
-	}
-	err := retry.Retry(ctx, transientErrorRetries(), f, retry.LogCallback(ctx, "selectorDutsFromInventory v2"))
-	if err != nil {
-		return nil, nil
-	}
-	result := []*inventory.DeviceUnderTest{}
-	for _, d := range rsp.GetData() {
-		if r, err := api.AdaptToV1DutSpec(d); err != nil {
-			continue
-		} else {
-			result = append(result, r)
-		}
-	}
-	return result, nil
 }
 
 func (c *invServiceClient) commitBalancePoolChanges(ctx context.Context, changes []*invV1Api.PoolChange) (string, error) {
