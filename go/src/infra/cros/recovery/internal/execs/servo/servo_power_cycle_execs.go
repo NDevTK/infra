@@ -10,6 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
@@ -66,6 +67,18 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	return nil
 }
 
+// servoV4P1NetResetExec reset servo_v4p1 network controller.
+func servoV4P1NetResetExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	// Timeout between off/on reset steps.
+	resetTimeout := argsMap.AsDuration(ctx, "reset_timeout", 1, time.Second)
+	servod := info.NewServod()
+	logger := info.NewLogger()
+	err := servo.ResetServoV4p1EthernetController(ctx, servod, logger, resetTimeout)
+	return errors.Annotate(err, "servo_v4p1 net reset").Err()
+}
+
 func init() {
 	execs.Register("servo_power_cycle_root_servo", servoPowerCycleRootServoExec)
+	execs.Register("servo_v4p1_network_reset", servoV4P1NetResetExec)
 }
