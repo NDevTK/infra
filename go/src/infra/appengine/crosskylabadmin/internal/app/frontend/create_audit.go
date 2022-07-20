@@ -71,6 +71,9 @@ func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname s
 	if !(0.0 <= randFloat && randFloat <= 1.0) {
 		return routing.Legacy, routing.InvalidRangeArgument
 	}
+	if !r.GetEnable() {
+		return routing.Legacy, routing.ParisNotEnabled
+	}
 	d := r.ComputePermilleData(ctx, hostname)
 	if d == nil {
 		return routing.Legacy, routing.MalformedPolicy

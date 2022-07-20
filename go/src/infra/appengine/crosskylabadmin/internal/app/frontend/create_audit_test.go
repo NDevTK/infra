@@ -12,6 +12,7 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // TestRouteAuditTaskImpl tests routing audit tasks.
@@ -36,5 +37,11 @@ func TestRouteAuditTaskImpl(t *testing.T) {
 		}
 		res := pat.ComputePermilleData(ctx, "hostname")
 		So(res, ShouldBeNil)
+	})
+	Convey("routing not enabled", t, func() {
+		ctx := context.Background()
+		tt, r := routeAuditTaskImpl(ctx, &config.RolloutConfig{Enable: false}, "", 0.0)
+		So(tt, ShouldEqual, heuristics.LegacyTaskType)
+		So(r, ShouldEqual, routing.ParisNotEnabled)
 	})
 }
