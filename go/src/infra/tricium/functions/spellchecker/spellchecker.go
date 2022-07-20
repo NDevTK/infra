@@ -86,6 +86,7 @@ var (
 		"hart",          // person name
 		"havent",        // contraction, may appear in variable names
 		"hist",          // abbr. for histogram
+		"jaques",        // person name, different than Jacques
 		"lightening",    // present participle of "to lighten"
 		"longe",         // person name
 		"maks",          // person name
