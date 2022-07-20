@@ -11,6 +11,7 @@ threadsafe: no
 instance_class: F4
 automatic_scaling:
   min_idle_instances: ${MIN_IDLE_INSTANCES}
+  max_instances: ${MAX_INSTANCES}
   max_pending_latency: ${MAX_PENDING_LATENCY}
 
 # Note: this is interpreted by gae.py, it maps the app ID being deployed to
@@ -20,12 +21,15 @@ automatic_scaling:
 luci_gae_vars:
   monorail-dev:
     MIN_IDLE_INSTANCES: "1"
+    MAX_INSTANCES: "20"
     MAX_PENDING_LATENCY: "automatic"
   monorail-staging:
     MIN_IDLE_INSTANCES: "1"
+    MAX_INSTANCES: "50"
     MAX_PENDING_LATENCY: "0.2s"
   monorail-prod:
     MIN_IDLE_INSTANCES: "25"
+    MAX_INSTANCES: "800"
     MAX_PENDING_LATENCY: "0.2s"
 
 handlers:
