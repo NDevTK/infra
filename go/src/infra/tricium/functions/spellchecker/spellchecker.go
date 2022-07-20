@@ -91,8 +91,9 @@ var (
 		"maks",          // person name
 		"minimise",      // valid UK spelling
 		"optin",         // alternative of opt-in
-		"parameterize",  // valid spelling
 		"parameterizes", // valid spelling
+		"parameterize",  // valid spelling
+		"patten",        // person name
 		"reenable",      // alternative of re-enable
 		"referers",      // HTTP referer header uses one 'r'
 		"sargent",       // person name
