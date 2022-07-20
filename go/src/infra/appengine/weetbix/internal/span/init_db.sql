@@ -646,13 +646,7 @@ CREATE TABLE IngestedInvocations (
 -- dropped before the associated TestResults.
 , ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 100 DAY));
 
--- Serves three purposes:
--- - Permits listing of distinct tests observed for a project, filtered by Realm.
---   Tests may be duplicated many times in this table because there is one entry
---   per test variant and realm. If this creates performance issues we can
---   create a table with only distinct TestId entries at the cost of some
---   additional complexity.
---
+-- Serves two purposes:
 -- - Permits listing of distinct variants observed for a test in a project,
 --   filtered by Realm.
 --
@@ -694,6 +688,32 @@ CREATE TABLE TestVariantRealms (
   -- reducing strategies.
   LastIngestionTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
 ) PRIMARY KEY(Project, TestId, VariantHash, SubRealm)
+-- Use a slightly longer retention period to prevent the invocation being
+-- dropped before the associated TestResults.
+, ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 100 DAY));
+
+-- Permits listing of distinct tests observed for a project, filtered by Realm.
+-- This table is created to support test ID substring search, which can often
+-- lead to a full table scan, which will be significantly slower in the
+-- TestVariantRealms table.
+CREATE TABLE TestRealms (
+  -- The LUCI Project in which the variant was observed.
+  Project STRING(40) NOT NULL,
+
+  -- Unique identifier of the test from which the variant was observed,
+  -- This has the same value as luci.resultdb.v1.TestResult.test_id.
+  TestId STRING(MAX) NOT NULL,
+
+  -- The realm of the test result from which the variant was observed, excluding
+  -- project. 62 as ResultDB allows at most 64 characters for the construction
+  -- "<project>:<realm>" and project must be at least one character.
+  SubRealm STRING(62) NOT NULL,
+
+  -- Last (ingestion) time this test variant was observed in the realm.
+  -- This value may be out of date by up to 24 hours to allow for contention-
+  -- reducing strategies.
+  LastIngestionTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
+) PRIMARY KEY(Project, TestId, SubRealm)
 -- Use a slightly longer retention period to prevent the invocation being
 -- dropped before the associated TestResults.
 , ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 100 DAY));
