@@ -204,6 +204,8 @@ func processSchedulingUnitUpdateMask(ctx context.Context, oldSu *ufspb.Schedulin
 			oldSu.Description = su.GetDescription()
 		case "primary-dut":
 			oldSu.PrimaryDut = su.GetPrimaryDut()
+		case "expose-type":
+			oldSu.ExposeType = su.GetExposeType()
 		}
 	}
 	if oldSu.GetPrimaryDut() != "" {
@@ -242,6 +244,7 @@ func validateSchedulingUnitUpdateMask(ctx context.Context, su *ufspb.SchedulingU
 			case "machinelses.remove":
 			case "description":
 			case "primary-dut":
+			case "expose-type":
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)
