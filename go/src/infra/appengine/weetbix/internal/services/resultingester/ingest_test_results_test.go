@@ -492,6 +492,70 @@ func TestIngestTestResults(t *testing.T) {
 					expectedTVR.LastIngestionTime = tvr.LastIngestionTime
 					So(tvr, ShouldResemble, expectedTVR)
 				}
+
+				// Validate TestRealms table is populated.
+				testRealms := make([]*testresults.TestRealm, 0)
+				err = testresults.ReadTestRealms(span.Single(ctx), spanner.AllKeys(), func(tvr *testresults.TestRealm) error {
+					testRealms = append(testRealms, tvr)
+					return nil
+				})
+				So(err, ShouldBeNil)
+
+				expectedTestRealms := []*testresults.TestRealm{
+					{
+						Project:  "project",
+						TestID:   "ninja://test_consistent_failure",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_expected",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_has_unexpected",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_known_flake",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_new_failure",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_new_flake",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_no_new_results",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_skip",
+						SubRealm: "ci",
+					},
+					{
+						Project:  "project",
+						TestID:   "ninja://test_unexpected_pass",
+						SubRealm: "ci",
+					},
+				}
+
+				So(testRealms, ShouldHaveLength, len(expectedTestRealms))
+				for i, tr := range testRealms {
+					expectedTR := expectedTestRealms[i]
+					So(tr.LastIngestionTime, ShouldNotBeZeroValue)
+					expectedTR.LastIngestionTime = tr.LastIngestionTime
+					So(tr, ShouldResemble, expectedTR)
+				}
 			}
 
 			verifyClustering := func() {

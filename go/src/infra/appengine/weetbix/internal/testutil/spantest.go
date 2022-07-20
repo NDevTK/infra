@@ -31,6 +31,7 @@ func cleanupDatabase(ctx context.Context, client *spanner.Client) error {
 		spanner.Delete("TestResults", spanner.AllKeys()),
 		spanner.Delete("IngestedInvocations", spanner.AllKeys()),
 		spanner.Delete("TestVariantRealms", spanner.AllKeys()),
+		spanner.Delete("TestRealms", spanner.AllKeys()),
 	})
 	return err
 }
