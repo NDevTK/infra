@@ -33,6 +33,7 @@ const (
 	NotALabstation
 	ErrorExtractingPermilleInfo
 	NotImplemented
+	InvalidRangeArgument
 )
 
 // ReasonMessageMap maps each reason to a readable description.

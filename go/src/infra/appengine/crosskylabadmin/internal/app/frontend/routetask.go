@@ -42,14 +42,14 @@ func RouteTask(ctx context.Context, p RouteTaskParams, randFloat float64) (heuri
 	case "repair":
 		return routeRepairTask(ctx, p.botID, p.expectedState, p.pools, randFloat)
 	case "audit_rpm":
-		return routeAuditRPMTask(ctx)
+		return routeAuditRPMTask(ctx, p.botID, randFloat)
 	}
 	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", p.taskType)
 }
 
 // routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.
-func routeAuditRPMTask(ctx context.Context) (heuristics.TaskType, error) {
-	_, _ = routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm())
+func routeAuditRPMTask(ctx context.Context, botID string, randFloat float64) (heuristics.TaskType, error) {
+	_, _ = routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm(), heuristics.NormalizeBotNameToDeviceName(botID), randFloat)
 	return heuristics.LegacyTaskType, errors.New("route audit rpm task: not yet implemented")
 }
 
