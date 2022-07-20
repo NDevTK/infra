@@ -5,10 +5,14 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"infra/libs/skylab/common/heuristics"
 )
 
 // TestValidatePattern tests that validating accepts the correct strings.
@@ -155,4 +159,14 @@ func TestComputePermilleData(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestChooseImplementation(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("test choose implementation", t, func() {
+		impl, err := (&PermilleData{Prod: 0.0, Latest: 0.0}).ChooseImplementation(ctx, 0.0)
+		So(err, ShouldBeNil)
+		So(impl, ShouldEqual, heuristics.LatestTaskType)
+	})
 }

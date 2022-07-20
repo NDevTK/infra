@@ -6,10 +6,13 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/libs/skylab/common/heuristics"
 )
 
 // PermilleData contains information on what portion of traffic to opt
@@ -18,6 +21,20 @@ type PermilleData struct {
 	Source string
 	Prod   float64
 	Latest float64
+}
+
+// ChooseImplementation picks an implementation for the task. It fails if and only if randFloat is out of range.
+func (d *PermilleData) ChooseImplementation(ctx context.Context, randFloat float64) (heuristics.TaskType, error) {
+	if randFloat < 0.0 || randFloat > 1.0 {
+		return heuristics.LegacyTaskType, fmt.Errorf("rand float out of range %f", randFloat)
+	}
+	if randFloat >= d.Prod+d.Latest {
+		return heuristics.LatestTaskType, nil
+	}
+	if randFloat >= d.Prod {
+		return heuristics.ProdTaskType, nil
+	}
+	return heuristics.LegacyTaskType, nil
 }
 
 func validatePattern(pattern string) error {
