@@ -75,6 +75,10 @@ func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname s
 	if !r.GetEnable() {
 		return routing.Legacy, routing.ParisNotEnabled
 	}
+	if err := r.ValidateNoRepairOnlyFields(); err != nil {
+		logging.Errorf(ctx, "repair-only field detected for audit task: %s", err.Error())
+		return routing.Legacy, routing.RepairOnlyField
+	}
 	d := r.ComputePermilleData(ctx, hostname)
 	if d == nil {
 		return routing.Legacy, routing.MalformedPolicy

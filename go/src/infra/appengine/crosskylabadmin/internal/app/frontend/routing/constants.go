@@ -34,6 +34,7 @@ const (
 	ErrorExtractingPermilleInfo
 	NotImplemented
 	InvalidRangeArgument
+	RepairOnlyField
 )
 
 // ReasonMessageMap maps each reason to a readable description.

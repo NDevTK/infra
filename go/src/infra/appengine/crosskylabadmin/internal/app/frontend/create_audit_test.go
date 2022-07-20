@@ -57,4 +57,10 @@ func TestRouteAuditTaskImpl(t *testing.T) {
 			So(r, ShouldEqual, routing.ScoreBelowThreshold)
 		})
 	})
+	Convey("Repair-only field", t, func() {
+		pd := &config.RolloutConfig{Enable: true, OptinAllDuts: true}
+		tt, r := routeAuditTaskImpl(ctx, pd, "", 0.24)
+		So(tt, ShouldEqual, routing.Legacy)
+		So(r, ShouldEqual, routing.RepairOnlyField)
+	})
 }
