@@ -49,8 +49,12 @@ func RouteTask(ctx context.Context, p RouteTaskParams, randFloat float64) (heuri
 
 // routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.
 func routeAuditRPMTask(ctx context.Context, botID string, randFloat float64) (heuristics.TaskType, error) {
-	_, _ = routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm(), heuristics.NormalizeBotNameToDeviceName(botID), randFloat)
-	return heuristics.LegacyTaskType, errors.New("route audit rpm task: not yet implemented")
+	provider, reason := routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm(), heuristics.NormalizeBotNameToDeviceName(botID), randFloat)
+	logging.Infof(ctx, "Routing audit RPM task for bot %q with random input %f using provider %q for reason %d", botID, randFloat, provider, reason)
+	if reason == routing.NotImplemented {
+		return heuristics.LegacyTaskType, errors.New("route audit rpm task: not yet implemented")
+	}
+	return provider, nil
 }
 
 // routeRepairTask routes a repair task for a given bot.
