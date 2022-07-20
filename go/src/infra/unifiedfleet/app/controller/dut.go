@@ -882,7 +882,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	if useCachedHwidManufacturingConfig {
 		hwidData, err = getHwidData(ctx, hwid)
 	} else {
-		hwidData, err = getHwidDataFromInvV2(ctx, invV2Client, hwid)
+		err = status.Errorf(codes.Internal, "Getting HWID data from Inv v2 has been deprecated. Please use the new service via UFS.")
 	}
 	if err != nil {
 		logging.Warningf(ctx, "Hwid data for %s not found. Error: %s", hwid, err)
@@ -944,21 +944,6 @@ func getManufacturingConfig(ctx context.Context, inv2Client external.CrosInvento
 	proto.UnmarshalText(s, &mfgConfig)
 	logging.Debugf(ctx, "InvV2 manufacturing config:\n %+v\nUFS manufacturing config:\n %+v ", resp, &mfgConfig)
 	return &mfgConfig, err
-}
-
-// getHwidDataFromInvV2 get hwid data from InvV2
-func getHwidDataFromInvV2(ctx context.Context, inv2Client external.CrosInventoryClient, id string) (*ufspb.HwidData, error) {
-	resp, err := inv2Client.GetHwidData(ctx, &iv2api.GetHwidDataRequest{
-		Name: id,
-	})
-	if err != nil {
-		return nil, err
-	}
-	s := proto.MarshalTextString(resp)
-	var hwidData ufspb.HwidData
-	proto.UnmarshalText(s, &hwidData)
-	logging.Debugf(ctx, "InvV2 hwid data:\n %+v\nUFS hwid data:\n %+v ", resp, &hwidData)
-	return &hwidData, err
 }
 
 func getStability(ctx context.Context, model string) (bool, error) {
