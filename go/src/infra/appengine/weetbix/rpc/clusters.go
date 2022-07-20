@@ -7,8 +7,11 @@ package rpc
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/grpc/appstatus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -289,41 +292,74 @@ func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.Ge
 }
 
 func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.QueryClusterSummariesRequest) (*pb.QueryClusterSummariesResponse, error) {
-	// Fetch a recent project configuration.
-	// (May be a recent value that was cached.)
-	cfg, err := readProjectConfig(ctx, req.Project)
+	var cfg *compiledcfg.ProjectConfig
+	var ruleset *cache.Ruleset
+	var clusters []*analysis.ClusterSummary
+	var bqErr error
+	// Parallelise call to Biquery (slow call)
+	// with the datastore/spanner calls to reduce the critical path.
+	err := parallel.FanOutIn(func(ch chan<- func() error) {
+		ch <- func() error {
+			start := time.Now()
+			var err error
+			// Fetch a recent project configuration.
+			// (May be a recent value that was cached.)
+			cfg, err = readProjectConfig(ctx, req.Project)
+			if err != nil {
+				return err
+			}
+
+			// Fetch a recent ruleset.
+			ruleset, err = reclustering.Ruleset(ctx, req.Project, cache.StrongRead)
+			if err != nil {
+				return err
+			}
+			logging.Infof(ctx, "QueryClusterSummaries: Ruleset part took %v", time.Since(start))
+			return nil
+		}
+		ch <- func() error {
+			start := time.Now()
+			// To avoid the error returned from the service being non-deterministic
+			// if both goroutines error, populate any error encountered here
+			// into bqErr and return no error.
+			opts := &analysis.QueryClusterSummariesOptions{}
+			var err error
+			opts.FailureFilter, err = aip.ParseFilter(req.FailureFilter)
+			if err != nil {
+				bqErr = invalidArgumentError(errors.Annotate(err, "failure_filter").Err())
+				return nil
+			}
+			opts.OrderBy, err = aip.ParseOrderBy(req.OrderBy)
+			if err != nil {
+				bqErr = invalidArgumentError(errors.Annotate(err, "order_by").Err())
+				return nil
+			}
+
+			clusters, err = c.analysisClient.QueryClusterSummaries(ctx, req.Project, opts)
+			if err != nil {
+				if err == analysis.ProjectNotExistsErr {
+					bqErr = appstatus.Error(codes.NotFound,
+						"project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+					return nil
+				}
+				if analysis.InvalidArgumentTag.In(err) {
+					bqErr = invalidArgumentError(err)
+					return nil
+				}
+				bqErr = errors.Annotate(err, "query clusters for failures").Err()
+				return nil
+			}
+			logging.Infof(ctx, "QueryClusterSummaries: BigQuery part took %v", time.Since(start))
+			return nil
+		}
+	})
 	if err != nil {
 		return nil, err
 	}
-
-	opts := &analysis.QueryClusterSummariesOptions{}
-	opts.FailureFilter, err = aip.ParseFilter(req.FailureFilter)
-	if err != nil {
-		return nil, invalidArgumentError(errors.Annotate(err, "failure_filter").Err())
-	}
-	opts.OrderBy, err = aip.ParseOrderBy(req.OrderBy)
-	if err != nil {
-		return nil, invalidArgumentError(errors.Annotate(err, "order_by").Err())
-	}
-
-	// Fetch a recent ruleset.
-	// Do this before Querying clusters as it is a much cheaper operation, so if
-	// it fails we want to bail out early.
-	ruleset, err := reclustering.Ruleset(ctx, req.Project, cache.StrongRead)
-	if err != nil {
-		return nil, err
-	}
-
-	clusters, err := c.analysisClient.QueryClusterSummaries(ctx, req.Project, opts)
-	if err != nil {
-		if err == analysis.ProjectNotExistsErr {
-			return nil, appstatus.Error(codes.NotFound,
-				"project dataset not provisioned in Weetbix or cluster analysis is not yet available")
-		}
-		if analysis.InvalidArgumentTag.In(err) {
-			return nil, invalidArgumentError(err)
-		}
-		return nil, errors.Annotate(err, "query clusters for failures").Err()
+	// To avoid the error returned from the service being non-deterministic
+	// if both goroutines error, return error from bigQuery part after any other errors.
+	if bqErr != nil {
+		return nil, bqErr
 	}
 
 	result := []*pb.ClusterSummary{}

@@ -8,6 +8,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 
 import ImpactSection from '../../components/impact_section/impact_section';
+import RecentFailuresSection from '../../components/recent_failures_section/recent_failures_section';
 import RuleTopPanel from '../../components/rule/rule_top_panel/rule_top_panel';
 
 const Rule = () => {
@@ -23,6 +24,9 @@ const Rule = () => {
         </Grid>
         <Grid item xs={12}>
           <ImpactSection />
+        </Grid>
+        <Grid item xs={12}>
+          <RecentFailuresSection />
         </Grid>
       </Grid>
     </Container>

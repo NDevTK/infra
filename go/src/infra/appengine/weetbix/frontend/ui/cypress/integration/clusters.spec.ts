@@ -6,8 +6,7 @@ describe('Clusters Page', () => {
   beforeEach(() => {
     cy.visit('/').contains('LOGIN').click();
     cy.get('body').contains('Logout');
-    // Use fuchsia for now as the loading time is faster.
-    cy.visit('/p/fuchsia/clusters');
+    cy.visit('/p/chromium/clusters');
   });
   it('loads rules table', () => {
     // Navigate to the bug cluster page
