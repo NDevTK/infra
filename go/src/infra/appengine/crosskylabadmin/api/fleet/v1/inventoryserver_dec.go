@@ -91,23 +91,6 @@ func (s *DecoratedInventory) DeleteDuts(ctx context.Context, req *DeleteDutsRequ
 	return
 }
 
-func (s *DecoratedInventory) ResizePool(ctx context.Context, req *ResizePoolRequest) (rsp *ResizePoolResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ResizePool", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ResizePool(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ResizePool", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) RemoveDutsFromDrones(ctx context.Context, req *RemoveDutsFromDronesRequest) (rsp *RemoveDutsFromDronesResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
