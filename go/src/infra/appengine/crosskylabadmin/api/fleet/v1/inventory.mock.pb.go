@@ -305,26 +305,6 @@ func (mr *MockInventoryClientMockRecorder) GetStableVersion(ctx, in interface{},
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).GetStableVersion), varargs...)
 }
 
-// ListRemovedDuts mocks base method.
-func (m *MockInventoryClient) ListRemovedDuts(ctx context.Context, in *ListRemovedDutsRequest, opts ...grpc.CallOption) (*ListRemovedDutsResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListRemovedDuts", varargs...)
-	ret0, _ := ret[0].(*ListRemovedDutsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListRemovedDuts indicates an expected call of ListRemovedDuts.
-func (mr *MockInventoryClientMockRecorder) ListRemovedDuts(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRemovedDuts", reflect.TypeOf((*MockInventoryClient)(nil).ListRemovedDuts), varargs...)
-}
-
 // ListServers mocks base method.
 func (m *MockInventoryClient) ListServers(ctx context.Context, in *ListServersRequest, opts ...grpc.CallOption) (*ListServersResponse, error) {
 	m.ctrl.T.Helper()
@@ -696,21 +676,6 @@ func (m *MockInventoryServer) GetStableVersion(arg0 context.Context, arg1 *GetSt
 func (mr *MockInventoryServerMockRecorder) GetStableVersion(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).GetStableVersion), arg0, arg1)
-}
-
-// ListRemovedDuts mocks base method.
-func (m *MockInventoryServer) ListRemovedDuts(arg0 context.Context, arg1 *ListRemovedDutsRequest) (*ListRemovedDutsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListRemovedDuts", arg0, arg1)
-	ret0, _ := ret[0].(*ListRemovedDutsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListRemovedDuts indicates an expected call of ListRemovedDuts.
-func (mr *MockInventoryServerMockRecorder) ListRemovedDuts(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRemovedDuts", reflect.TypeOf((*MockInventoryServer)(nil).ListRemovedDuts), arg0, arg1)
 }
 
 // ListServers mocks base method.

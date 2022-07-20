@@ -31,7 +31,6 @@ type inventoryClient interface {
 	updateAssetsInRegistration(ctx context.Context, assetList *api.AssetList) (*api.AssetResponse, error)
 	updateDUTSpecs(context.Context, *inventory.CommonDeviceSpecs, *inventory.CommonDeviceSpecs, bool) (string, error)
 	deleteDUTsFromFleet(context.Context, []string) (string, []string, error)
-	commitBalancePoolChanges(context.Context, []*fleet.PoolChange) (string, error)
 	getDutInfo(context.Context, *fleet.GetDutInfoRequest) ([]byte, time.Time, error)
 	deviceConfigsExists(context.Context, []*device.ConfigId) (map[int32]bool, error)
 }
@@ -66,10 +65,6 @@ func (client *gitStoreClient) updateDUTSpecs(ctx context.Context, od, nd *invent
 
 func (client *gitStoreClient) deleteDUTsFromFleet(ctx context.Context, ids []string) (string, []string, error) {
 	return deleteDUTsFromFleet(ctx, client.store, ids)
-}
-
-func (client *gitStoreClient) commitBalancePoolChanges(ctx context.Context, changes []*fleet.PoolChange) (string, error) {
-	return commitBalancePoolChanges(ctx, client.store, changes)
 }
 
 func (client *gitStoreClient) deviceConfigsExists(ctx context.Context, configIds []*device.ConfigId) (map[int32]bool, error) {
@@ -237,97 +232,4 @@ func deleteDUTsFromFleet(ctx context.Context, s *gitstore.InventoryStore, ids []
 	}
 	err := retry.Retry(ctx, transientErrorRetries(), f, retry.LogCallback(ctx, "DeleteDut"))
 	return changeURL, removedIDs, err
-}
-
-func commitBalancePoolChanges(ctx context.Context, store *gitstore.InventoryStore, changes []*fleet.PoolChange) (string, error) {
-	if len(changes) == 0 {
-		// No inventory changes are required.
-		// TODO(pprabhu) add a unittest enforcing this.
-		return "", nil
-	}
-	if err := applyChanges(ctx, store.Lab, changes); err != nil {
-		return "", errors.Annotate(err, "apply balance pool changes").Err()
-	}
-	return store.Commit(ctx, "balance pool")
-}
-
-func applyChanges(ctx context.Context, lab *inventory.Lab, changes []*fleet.PoolChange) error {
-	logging.Infof(ctx, "%v", changes)
-	oldPool := make(map[string]inventory.SchedulableLabels_DUTPool)
-	oldSelfServePool := make(map[string]string)
-	newPool := make(map[string]inventory.SchedulableLabels_DUTPool)
-	newSelfServePool := make(map[string]string)
-	for _, c := range changes {
-		// Check if oldpool is a critical pool or a normal string self-serve pool.
-		// Same check for newpool below.
-		op, ok := inventory.SchedulableLabels_DUTPool_value[c.OldPool]
-		if ok {
-			oldPool[c.DutId] = inventory.SchedulableLabels_DUTPool(op)
-		} else {
-			logging.Debugf(ctx, "old pool: %s, not a known critical pool", c.OldPool)
-			oldSelfServePool[c.DutId] = c.OldPool
-		}
-		np, ok := inventory.SchedulableLabels_DUTPool_value[c.NewPool]
-		if ok {
-			newPool[c.DutId] = inventory.SchedulableLabels_DUTPool(np)
-		} else {
-			logging.Debugf(ctx, "new pool: %s, not a known critical pool", c.NewPool)
-			newSelfServePool[c.DutId] = c.NewPool
-		}
-	}
-
-	for _, d := range lab.Duts {
-		id := d.GetCommon().GetId()
-		np, hasNewCPool := newPool[id]
-		nsp, hasNewSSPool := newSelfServePool[id]
-		if hasNewCPool || hasNewSSPool {
-			// New pool is assigned. Remove old pool.
-			lcp := d.GetCommon().GetLabels().GetCriticalPools()
-			lsp := d.GetCommon().GetLabels().GetSelfServePools()
-			if op, ok := oldPool[id]; ok {
-				lcp = removeOld(lcp, op)
-			}
-			if osp, ok := oldSelfServePool[id]; ok {
-				lsp = removeOldSelfServePool(lsp, osp)
-			}
-			if hasNewCPool {
-				lcp = append(lcp, np)
-				d.GetCommon().GetLabels().CriticalPools = lcp
-				d.GetCommon().GetLabels().SelfServePools = lsp
-			} else {
-				lsp = append(lsp, nsp)
-				d.GetCommon().GetLabels().SelfServePools = lsp
-				d.GetCommon().GetLabels().CriticalPools = lcp
-			}
-		}
-	}
-	return nil
-}
-
-// Remove an old self serve pool from given pool list.
-// Return the new list of self serve pool after removal.
-// The first parameter is invalidated.
-func removeOldSelfServePool(ls []string, old string) []string {
-	for i, l := range ls {
-		if l == old {
-			copy(ls[i:], ls[i+1:])
-			ls[len(ls)-1] = ""
-			return ls[:len(ls)-1]
-		}
-	}
-	return ls
-}
-
-// Remove an old critical pool from given pool list.
-// Return the new list of critical pool after removal.
-// The first parameter is invalidated.
-func removeOld(ls []inventory.SchedulableLabels_DUTPool, old inventory.SchedulableLabels_DUTPool) []inventory.SchedulableLabels_DUTPool {
-	for i, l := range ls {
-		if l == old {
-			copy(ls[i:], ls[i+1:])
-			ls[len(ls)-1] = inventory.SchedulableLabels_DUT_POOL_INVALID
-			return ls[:len(ls)-1]
-		}
-	}
-	return ls
 }

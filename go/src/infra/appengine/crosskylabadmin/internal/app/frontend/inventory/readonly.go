@@ -99,11 +99,6 @@ func (is *ServerImpl) GetDroneConfig(ctx context.Context, req *fleet.GetDroneCon
 	return resp, nil
 }
 
-// ListRemovedDuts implements the method from fleet.InventoryServer interface.
-func (is *ServerImpl) ListRemovedDuts(ctx context.Context, req *fleet.ListRemovedDutsRequest) (resp *fleet.ListRemovedDutsResponse, err error) {
-	return nil, nil
-}
-
 // GetStableVersion implements the method from fleet.InventoryServer interface
 func (is *ServerImpl) GetStableVersion(ctx context.Context, req *fleet.GetStableVersionRequest) (resp *fleet.GetStableVersionResponse, err error) {
 	defer func() {

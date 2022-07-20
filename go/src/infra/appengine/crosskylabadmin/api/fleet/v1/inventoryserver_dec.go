@@ -176,23 +176,6 @@ func (s *DecoratedInventory) GetDroneConfig(ctx context.Context, req *GetDroneCo
 	return
 }
 
-func (s *DecoratedInventory) ListRemovedDuts(ctx context.Context, req *ListRemovedDutsRequest) (rsp *ListRemovedDutsResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ListRemovedDuts", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ListRemovedDuts(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ListRemovedDuts", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) PushInventoryToQueen(ctx context.Context, req *PushInventoryToQueenRequest) (rsp *PushInventoryToQueenResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

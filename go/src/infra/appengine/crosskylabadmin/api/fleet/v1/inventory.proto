@@ -12,7 +12,7 @@ package crosskylabadmin.fleet;
 option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 
 
-// Inventory service helps manage ChromeOS Dut Pools.
+// Inventory service helps manage ChromeOS DUTs.
 service Inventory {
   // ///////////////////////////////////////////////////////////////////////////
   // DUT addition / update RPCs
@@ -80,11 +80,6 @@ service Inventory {
   //
   // This RPC returns possibly cached data.
   rpc GetDroneConfig(GetDroneConfigRequest) returns (GetDroneConfigResponse);
-
-  // ListRemovedDuts lists removed DUTs (DUTs not assigned to any drone).
-  rpc ListRemovedDuts(ListRemovedDutsRequest) returns (ListRemovedDutsResponse) {
-    option deprecated = true;
-  };
 
   // ///////////////////////////////////////////////////////////////////////////
   // RPCs used internally by the infrastructure. Not for end-user tools.
@@ -297,112 +292,6 @@ message DutDeploymentOptions {
   bool assign_servo_port_if_missing = 1;
 }
 
-message EnsurePoolHealthyRequest {
-  option deprecated = true;
-  // dut_selectors filters the set of DUTs considered by EnsurePoolHealthy.
-  //
-  // All pool changes occurs within this selected set of DUTs.
-  // It is an error to omit dut_selector because that would allow
-  // unconstrained DUT reallocation between pools, disregarding all other
-  // labels.
-  DutSelector dut_selector = 1;
-
-  // target_pool is the pool that should contain healthy DUTs.
-  string target_pool = 2;
-
-  // spare_pool is the pool from which healthy DUTs will be swapped into
-  // target_pool.
-  string spare_pool = 3;
-
-  // max_unhealthy_duts is the maximum number of DUTs that may be unhealthy in
-  // the target pool before any action is taken.
-  //
-  // max_unhealthy_duts is meaningful only when it has a positive value (> 0).
-  //
-  // If the total number of unhealthy DUTs is above this threshold,
-  // EnsurePoolHealthy does not change DUT pools and returns a
-  // NOT_ENOUGH_HEALTHY_SPARES failure.
-  int32 max_unhealthy_duts = 4;
-
-  message Options {
-    // If dryrun is true, no inventory changes are made. Proposed changes are
-    // returned.
-    bool dryrun = 1;
-  }
-  Options options = 5;
-}
-
-message EnsurePoolHealthyResponse {
-  enum Failure {
-    FAILURE_INVALID = 0;
-
-    // Target pool had more than max_unhealthy_duts unhealthy duts before any
-    // action was taken.
-    TOO_MANY_UNHEALTHY_DUTS = 1;
-
-    // Spare pool did not have enough healthy DUTs to make sure all DUTs in
-    // target pool are healthy. In this failure mode, the available healthy
-    // spare DUTs do get transferred to the target pool.
-    NOT_ENOUGH_HEALTHY_SPARES = 2;
-  }
-
-  // Failures encountered during pool balancing.
-  //
-  // All the remaining fields of the response are still valid in the presence of
-  // failures.
-  repeated Failure failures = 1;
-
-  // target_pool_status summarizes the target pool after the required
-  // inventory changes are executed.
-  //
-  // Within the pool, only DUTs selected via dut_selector are summarized.
-  PoolStatus target_pool_status = 2;
-
-  // spare_pool_status summarizes the spare pool after the required
-  // inventory changes are executed.
-  //
-  // Within the pool, only DUTs selected via dut_selector are summarized.
-  PoolStatus spare_pool_status = 3;
-
-  // url is an opaque URL for this inventory change.
-  //
-  // It is intended to be the gerrit CL corresponding to the change, or the
-  // gitiles path for a committed changelist for the change.
-  //
-  // url is empty in dryrun mode.
-  string url = 4;
-
-  // changes correspond to the proposed or executed pool changes to ensure
-  // inventory in response to various API methods calls.
-  repeated PoolChange changes = 5;
-}
-
-message EnsurePoolHealthyForAllModelsRequest {
-  option deprecated = true;
-  // target_pool is the pool that should contain healthy DUTs.
-  string target_pool = 1;
-
-  // spare_pool is the pool from which healthy DUTs will be swapped into
-  // target_pool.
-  string spare_pool = 2;
-
-  // max_unhealthy_duts is the maximum number of DUTs that may be unhealthy in
-  // the target pool before any action is taken.
-  //
-  // max_unhealthy_duts is meaningful only when it has a positive value (> 0).
-  //
-  // If the total number of unhealthy DUTs is above this threshold,
-  // EnsurePoolHealthy does not change DUT pools and returns a
-  // NOT_ENOUGH_HEALTHY_SPARES failure.
-  int32 max_unhealthy_duts = 3;
-}
-
-message EnsurePoolHealthyForAllModelsResponse {
-  option deprecated = true;
-  // model_result maps a model to the EnsurePoolHealthyResponse for that model.
-  map<string, EnsurePoolHealthyResponse> model_result = 1;
-}
-
 // NEXT TAG: 4
 message DutSelector {
   string hostname = 2;
@@ -411,26 +300,6 @@ message DutSelector {
   string id = 3;
 
   string model = 1;
-}
-
-message PoolStatus {
-  // size is the number of DUTs in this pool.
-  int32 size = 1;
-
-  // healthy_count is the number of healthy DUTs in this pool.
-  int32 healthy_count = 2;
-}
-
-// PoolChange is a single change of DUT pools in the inventory.
-message PoolChange {
-  // dut_id is the inventory ID of the DUT whose pool was modified.
-  string dut_id = 1;
-
-  // old_pool is the pool the DUT was removed from.
-  string old_pool = 2;
-
-  // new_pool is the pool the DUT was moved to.
-  string new_pool = 3;
 }
 
 message RemoveDutsFromDronesRequest {
@@ -580,28 +449,6 @@ message GetDroneConfigResponse {
     string hostname = 2;
   }
   // duts assigned to the drone.
-  repeated Dut duts = 1;
-}
-
-message ListRemovedDutsRequest {}
-
-message ListRemovedDutsResponse {
-  message Dut {
-    // id of the DUT.
-    string id = 1;
-    // hostname of the DUT.
-    string hostname = 2;
-    // bug is a link to a bug explaining why the DUT is removed.
-    string bug = 3;
-    // comment is a short comment explaining why the DUT is removed.
-    string comment = 4;
-    // expire_time indicates when the removal bug should be revisited
-    // so the DUT is not forgotten.
-    google.protobuf.Timestamp expire_time = 5;
-    // model of the DUT.
-    string model = 6;
-  }
-  // duts that are removed.
   repeated Dut duts = 1;
 }
 

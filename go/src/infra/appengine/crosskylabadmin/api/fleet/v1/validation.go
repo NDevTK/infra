@@ -22,34 +22,6 @@ import (
 )
 
 // Validate returns an error if r is invalid.
-func (r *EnsurePoolHealthyRequest) Validate() error {
-	if r.DutSelector == nil {
-		return errors.New("must set dut_selector")
-	}
-	if err := r.DutSelector.Validate(); err != nil {
-		return err
-	}
-	if r.SparePool == "" {
-		return errors.New("must set spare_pool")
-	}
-	if r.TargetPool == "" {
-		return errors.New("must set target_pool")
-	}
-	return nil
-}
-
-// Validate returns an error if r is invalid.
-func (r *EnsurePoolHealthyForAllModelsRequest) Validate() error {
-	if r.SparePool == "" {
-		return errors.New("must set spare_pool")
-	}
-	if r.TargetPool == "" {
-		return errors.New("must set target_pool")
-	}
-	return nil
-}
-
-// Validate returns an error if r is invalid.
 func (r *RemoveDutsFromDronesRequest) Validate() error {
 	for _, item := range r.Removals {
 		if item.DutId == "" && item.DutHostname == "" {

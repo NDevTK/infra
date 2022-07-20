@@ -131,17 +131,6 @@ func (client *duoClient) deleteDUTsFromFleet(ctx context.Context, ids []string) 
 	return
 }
 
-func (client *duoClient) commitBalancePoolChanges(ctx context.Context, changes []*fleet.PoolChange) (u string, err error) {
-	if !client.inventoryV2Only {
-		u, err = client.gc.commitBalancePoolChanges(ctx, changes)
-	}
-	if client.willWriteToV2() {
-		u, err = client.ic.commitBalancePoolChanges(ctx, changes)
-		logging.Infof(ctx, "[v2] Commit balancing pool result: %s: %s", u, err)
-	}
-	return
-}
-
 func (client *duoClient) getDutInfo(ctx context.Context, req *fleet.GetDutInfoRequest) ([]byte, time.Time, error) {
 	if client.willReadFromV2(req) {
 		dut, now, err := client.ic.getDutInfo(ctx, req)
