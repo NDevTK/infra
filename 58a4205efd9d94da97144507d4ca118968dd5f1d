@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63fda39a_179543e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-07-20T06:45:45Z",
+      "side": 1,
+      "message": "Wait for Patrick as well",
+      "revId": "58a4205efd9d94da97144507d4ca118968dd5f1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ae4305e_f939f235",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 697,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-07-20T06:45:45Z",
+      "side": 1,
+      "message": "?",
+      "range": {
+        "startLine": 697,
+        "startChar": 68,
+        "endLine": 697,
+        "endChar": 77
+      },
+      "revId": "58a4205efd9d94da97144507d4ca118968dd5f1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
