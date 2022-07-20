@@ -83,8 +83,8 @@ type TopCount struct {
 
 // RebuildAnalysis re-builds the cluster summaries analysis from
 // clustered test results.
-func (c *Client) RebuildAnalysis(ctx context.Context, project string) error {
-	datasetID, err := bqutil.DatasetForProject(project)
+func (c *Client) RebuildAnalysis(ctx context.Context, luciProject string) error {
+	datasetID, err := bqutil.DatasetForProject(luciProject)
 	if err != nil {
 		return errors.Annotate(err, "getting dataset").Err()
 	}
@@ -111,6 +111,75 @@ func (c *Client) RebuildAnalysis(ctx context.Context, project string) error {
 	}
 	if js.Err() != nil {
 		return errors.Annotate(err, "cluster summary analysis failed").Err()
+	}
+	return nil
+}
+
+// PurgeStaleClusteredFailures purges stale clustered failure rows from the table.
+// Stale rows are those rows which have been superseded by a new row with a later
+// version, or where the latest version of the row has the row not included in a
+// cluster.
+// This is necessary for:
+// - Our QueryClusterSummaries query, which for performance reasons (UI-interactive)
+//   does not do filtering to fetch the latest version of rows and instead uses all
+//   rows.
+// - Keeping the size of the BigQuery table to a minimum.
+// We currently only purge the last 7 days to keep purging costs to a minimum and
+// as this is as far as QueryClusterSummaries looks back.
+func (c *Client) PurgeStaleRows(ctx context.Context, luciProject string) error {
+	datasetID, err := bqutil.DatasetForProject(luciProject)
+	if err != nil {
+		return errors.Annotate(err, "getting dataset").Err()
+	}
+	dataset := c.client.Dataset(datasetID)
+
+	q := c.client.Query(`
+		DELETE FROM clustered_failures cf1
+		WHERE
+			cf1.partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY) AND
+			-- Not in the streaming buffer. Streaming buffer keeps up to
+			-- 30 minutes of data. We use 40 minutes here to allow some
+			-- margin as our last_updated timestamp is the timestamp
+			-- the chunk was committed in Spanner and export to BigQuery
+			-- can be delayed from that.
+			cf1.last_updated < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 40 MINUTE) AND
+			(
+				-- Not the latest (cluster, test result) entry.
+				cf1.last_updated < (SELECT MAX(cf2.last_updated)
+								FROM clustered_failures cf2 
+								WHERE cf2.partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+									AND cf2.partition_time = cf1.partition_time  
+									AND cf2.cluster_algorithm = cf1.cluster_algorithm
+									AND cf2.cluster_id = cf1.cluster_id
+									AND cf2.chunk_id = cf1.chunk_id
+									AND cf2.chunk_index = cf1.chunk_index
+									)
+				-- Or is the latest (cluster, test result) entry, but test result
+				-- is no longer in cluster.
+				OR NOT cf1.is_included
+			)
+	`)
+	q.DefaultDatasetID = dataset.DatasetID
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		return errors.Annotate(err, "purge stale rows").Err()
+	}
+
+	waitCtx, cancel := context.WithTimeout(ctx, time.Minute*5)
+	defer cancel()
+
+	// If we get an error like:
+	// "UPDATE or DELETE statement over table project.dataset.table would affect rows
+	//  in the streaming buffer, which is not supported".
+	// We may have to increase how long we hold-off deleting a row, or
+	// simply discard the error knowing we will retry later.
+	js, err := job.Wait(waitCtx)
+	if err != nil {
+		return errors.Annotate(err, "waiting for stalw row purge to complete").Err()
+	}
+	if js.Err() != nil {
+		return errors.Annotate(err, "purge stale rows failed").Err()
 	}
 	return nil
 }
