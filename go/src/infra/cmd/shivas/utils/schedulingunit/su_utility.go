@@ -34,6 +34,12 @@ var suStateMap = map[int]string{
 	5: "reserved",
 }
 
+var dutToSULabelMap = map[string]string{
+	"label-board": "label-board",
+	"label-model": "label-model",
+	"dut_name":    "label-managed_dut",
+}
+
 func schedulingUnitDutState(states []string) string {
 	record := 0
 	for _, s := range states {
@@ -61,11 +67,13 @@ func joinSingleValueLabel(labels []string) []string {
 	return res
 }
 
-func joinDutLabelsToSU(singleValueLabels map[string]string, dutsDims []swarming.Dimensions, suDims map[string][]string) {
-	for dutLabelName, suLabelName := range singleValueLabels {
-		joinedLabels := joinSingleValueLabel(dutLabelValues(dutLabelName, dutsDims))
-		if len(joinedLabels) > 0 {
-			suDims[suLabelName] = joinedLabels
+func joinDutLabelsToSU(dutLabels []string, dutsDims []swarming.Dimensions, suDims map[string][]string) {
+	for _, dutLabelName := range dutLabels {
+		if suLabelName, ok := dutToSULabelMap[dutLabelName]; ok {
+			joinedLabels := joinSingleValueLabel(dutLabelValues(dutLabelName, dutsDims))
+			if len(joinedLabels) > 0 {
+				suDims[suLabelName] = joinedLabels
+			}
 		}
 	}
 }
@@ -110,10 +118,7 @@ func labelIntersection(label string, dims []swarming.Dimensions) []string {
 }
 
 func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dimensions) map[string][]string {
-	if su.GetPrimaryDut() != "" {
-		// primary dut mode dimensions
-		return SchedulingUnitPrimaryDutDimensions(su, dutsDims)
-	}
+	// Add label from scheduling unit
 	suDims := map[string][]string{
 		"dut_name":        {ufsUtil.RemovePrefix(su.GetName())},
 		"dut_id":          {ufsUtil.RemovePrefix(su.GetName())},
@@ -122,55 +127,48 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 		"label-multiduts": {"True"},
 		"dut_state":       {schedulingUnitDutState(dutLabelValues("dut_state", dutsDims))},
 	}
-	singleValueLabels := map[string]string{
-		"label-board": "label-board",
-		"label-model": "label-model",
-		"dut_name":    "label-managed_dut",
+	if su.GetPrimaryDut() != "" {
+		suDims["label-primary_dut"] = []string{su.GetPrimaryDut()}
 	}
-	joinDutLabelsToSU(singleValueLabels, dutsDims, suDims)
+	var dutLabels, conjunctionLabels []string
+	var detailedLabelDut string
+	switch su.GetExposeType() {
+	case ufspb.SchedulingUnit_DEFAULT:
+		dutLabels = []string{"label-board", "label-model", "dut_name"}
+		conjunctionLabels = []string{"label-device-stable"}
+	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
+		dutLabels = []string{"label-board", "label-model", "dut_name"}
+		detailedLabelDut = su.GetPrimaryDut()
+	case ufspb.SchedulingUnit_STRICTLY_PRIMARY_ONLY:
+		// For the strict primary dut mode, we will only expose primary dut labels scheduling unit.
+		dutLabels = []string{"dut_name"}
+		detailedLabelDut = su.GetPrimaryDut()
+	}
+	// Add join labels. SU label is the union of all dut's label
+	joinDutLabelsToSU(dutLabels, dutsDims, suDims)
 	// conjunctionLabels define labels we want present it in SU only if all
 	// their devices has the given label, and SU will only inherit values that
 	// are common among all devices under the SU.
-	conjunctionLabels := []string{"label-device-stable"}
 	for _, label := range conjunctionLabels {
 		values := labelIntersection(label, dutsDims)
 		if len(values) > 0 {
 			suDims[label] = values
 		}
 	}
-	return suDims
-}
-
-func SchedulingUnitPrimaryDutDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dimensions) map[string][]string {
-	// Add label from scheduling unit
-	suDims := map[string][]string{
-		"dut_name":          {ufsUtil.RemovePrefix(su.GetName())},
-		"dut_id":            {ufsUtil.RemovePrefix(su.GetName())},
-		"label-pool":        su.GetPools(),
-		"label-dut_count":   {fmt.Sprintf("%d", len(dutsDims))},
-		"label-multiduts":   {"True"},
-		"dut_state":         {schedulingUnitDutState(dutLabelValues("dut_state", dutsDims))},
-		"label-primary_dut": {su.GetPrimaryDut()},
-	}
-
-	// Add label from all duts
-	singleValueLabels := map[string]string{
-		"dut_name": "label-managed_dut",
-	}
-	joinDutLabelsToSU(singleValueLabels, dutsDims, suDims)
-	// Add label from primary dut.
-	// For the strict primary dut mode, we will only expose primary dut labels scheduling unit.
-	// No conjunctionLabels for strict primary mode. We will introduce -expose-type flag to let user customize the exposed labels, including conjunctionLabels.
-	var primeDim swarming.Dimensions
-	for _, dim := range dutsDims {
-		if dim["dut_name"][0] == su.GetPrimaryDut() {
-			primeDim = dim
-			break
+	if detailedLabelDut != "" {
+		// Add label from detailedLabelDut to suDims.
+		// detailedLabelDut labels that are not already in suDims are added.
+		var detailDim swarming.Dimensions
+		for _, dim := range dutsDims {
+			if dim["dut_name"][0] == detailedLabelDut {
+				detailDim = dim
+				break
+			}
 		}
-	}
-	for key, val := range primeDim {
-		if _, ok := suDims[key]; !ok {
-			suDims[key] = val
+		for key, val := range detailDim {
+			if _, ok := suDims[key]; !ok {
+				suDims[key] = val
+			}
 		}
 	}
 	return suDims
