@@ -48,6 +48,7 @@ var AddSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.schedulingUnitType, "type", "all", "Type of SchedulingUnit. "+cmdhelp.SchedulingUnitTypesHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
 		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "primary dut hostname")
+		c.Flags.StringVar(&c.exposeType, "expose-type", "default", "type of labels to expose to scheduling unit"+cmdhelp.SchedulingUnitExposeTypesHelpText)
 		return c
 	},
 }
@@ -67,6 +68,7 @@ type addSchedulingUnit struct {
 	schedulingUnitType string
 	description        string
 	primaryDut         string
+	exposeType         string
 }
 
 var mcsvFields = []string{
@@ -147,6 +149,8 @@ func (c *addSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 	su.Type = ufsUtil.ToSchedulingUnitType(c.schedulingUnitType)
 	su.Description = c.description
 	su.PrimaryDut = c.primaryDut
+	val := ufspb.SchedulingUnit_ExposeType_value[c.exposeType]
+	su.ExposeType = ufspb.SchedulingUnit_ExposeType(val)
 }
 
 func (c *addSchedulingUnit) validateArgs() error {
@@ -169,6 +173,9 @@ func (c *addSchedulingUnit) validateArgs() error {
 		if c.primaryDut != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-primary-dut' cannot be specified at the same time.")
 		}
+		if c.exposeType != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-expose-type' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" {
 		if c.name == "" {
@@ -176,6 +183,12 @@ func (c *addSchedulingUnit) validateArgs() error {
 		}
 		if c.schedulingUnitType != "" && !ufsUtil.IsSchedulingUnitType(c.schedulingUnitType) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid SchedulingUnitType name, please check help info for '-type'.", c.schedulingUnitType)
+		}
+		if c.exposeType != "" {
+			c.exposeType = strings.ToUpper(c.exposeType)
+			if val, ok := ufspb.SchedulingUnit_ExposeType_value[c.exposeType]; !ok || val == 0 {
+				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not valid exposeType name, please check help info for 'expose-type'.", c.exposeType)
+			}
 		}
 	}
 	return nil

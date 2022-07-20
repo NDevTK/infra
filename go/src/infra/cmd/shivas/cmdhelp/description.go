@@ -1646,6 +1646,9 @@ Operation will be faster as only name/id will be retrieved from the service.`
 	// SchedulingUnitTypesHelpText help text for asset type filters
 	SchedulingUnitTypesHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidSchedulingUnitTypeStr(), ", "))
 
+	// SchedulingUnitExposeTypesHelpText help text for asset type filters
+	SchedulingUnitExposeTypesHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidSchedulingUnitExposeTypeStr(), ", "))
+
 	// AttachedDeviceTypeHelpText help text for attached device type filters
 	AttachedDeviceTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidAttachedDeviceTypeStr(), ", "))
 

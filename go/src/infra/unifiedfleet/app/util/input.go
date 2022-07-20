@@ -807,6 +807,37 @@ func ToSchedulingUnitType(schedulingUnitType string) ufspb.SchedulingUnitType {
 	return ufspb.SchedulingUnitType(ufspb.SchedulingUnitType_value[v])
 }
 
+// StrToSchedulingUnitExposeType refers a map between a string to a UFS defined map.
+var StrToSchedulingUnitExposeType = map[string]string{
+	"default":               "SchedulingUnit_DEFAULT",
+	"default_plus_primary":  "SchedulingUnit_DEFAULT_PLUS_PRIMARY",
+	"strictly_primary_only": "SchedulingUnit_STRICTLY_PRIMARY_ONLY`",
+}
+
+// ValidSchedulingUnitExposeTypeStr returns a valid str list for SchedulingUnit_ExposeType strings.
+func ValidSchedulingUnitExposeTypeStr() []string {
+	ks := make([]string, 0, len(StrToSchedulingUnitExposeType))
+	for k := range StrToSchedulingUnitExposeType {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+// IsSchedulingUnitExposeType checks if a string refers to a valid SchedulingUnit_ExposeType.
+func IsSchedulingUnitExposeType(schedulingUnitExposeType string) bool {
+	_, ok := StrToSchedulingUnitExposeType[schedulingUnitExposeType]
+	return ok
+}
+
+// ToSchedulingUnitExposeType converts SchedulingUnitExposeType string to a UFS SchedulingUnit_ExposeType enum.
+func ToSchedulingUnitExposeType(schedulingUnitExposeType string) ufspb.SchedulingUnit_ExposeType {
+	v, ok := StrToSchedulingUnitExposeType[schedulingUnitExposeType]
+	if !ok {
+		return ufspb.SchedulingUnit_UNKNOWN
+	}
+	return ufspb.SchedulingUnit_ExposeType(ufspb.SchedulingUnit_ExposeType_value[v])
+}
+
 // List of regexps for recognizing assets stored with googlers or out of lab.
 var googlers = []*regexp.Regexp{
 	regexp.MustCompile(`container`),

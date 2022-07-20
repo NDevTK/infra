@@ -52,6 +52,7 @@ var UpdateSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.schedulingUnitType, "type", "", "Type of SchedulingUnit. "+cmdhelp.SchedulingUnitTypesHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
 		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "set primary dut. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.exposeType, "expose-type", "", "set type of labels to expose. "+cmdhelp.SchedulingUnitExposeTypesHelpText+" "+cmdhelp.ClearFieldHelpText)
 		return c
 	},
 }
@@ -74,6 +75,7 @@ type updateSchedulingUnit struct {
 	schedulingUnitType string
 	description        string
 	primaryDut         string
+	exposeType         string
 }
 
 func (c *updateSchedulingUnit) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -127,6 +129,7 @@ func (c *updateSchedulingUnit) innerRun(a subcommands.Application, args []string
 			"type":            "type",
 			"desc":            "description",
 			"primary-dut":     "primary-dut",
+			"expose-type":     "expose-type",
 		}),
 	})
 	if err != nil {
@@ -175,6 +178,9 @@ func (c *updateSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 			su.PrimaryDut = c.primaryDut
 		}
 	}
+	if c.exposeType != "" {
+		su.ExposeType = ufsUtil.ToSchedulingUnitExposeType(c.exposeType)
+	}
 }
 
 func (c *updateSchedulingUnit) validateArgs() error {
@@ -206,6 +212,9 @@ func (c *updateSchedulingUnit) validateArgs() error {
 		if c.description != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-description' cannot be specified at the same time.")
 		}
+		if c.primaryDut != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-primary-dut' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" {
 		if c.name == "" {
@@ -226,6 +235,9 @@ func (c *updateSchedulingUnit) validateArgs() error {
 		if c.name == "" && c.schedulingUnitType == "" && c.description == "" && len(c.duts) == 0 && len(c.removeDuts) == 0 &&
 			len(c.tags) == 0 && len(c.removeTags) == 0 && len(c.pools) == 0 && len(c.removePools) == 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
+		}
+		if c.exposeType != "" && !ufsUtil.IsSchedulingUnitExposeType(c.exposeType) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not valid exposeType name, please check help info for 'expose-type'.", c.exposeType)
 		}
 	}
 	return nil
