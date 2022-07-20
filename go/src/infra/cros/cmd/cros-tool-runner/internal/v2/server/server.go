@@ -321,14 +321,19 @@ func (s *ContainerServerImpl) stopContainers() {
 		log.Println("no containers to clean up")
 		return
 	}
-	log.Println("stopping containers")
-	cmd := commands.ContainerStop{Names: containerIds}
-	stdout, stderr, _ := cmd.Execute(context.Background())
-	if stdout != "" {
-		log.Println("received stdout:", stdout)
-	}
-	if stderr != "" {
-		log.Println("received stderr", stderr)
+	log.Printf("stopping containers: %v", s.containers.getMapping())
+
+	// Need to stop container one by one because podman doesn't process a bulk if one of them is dead.
+	for _, id := range containerIds {
+		log.Printf("stopping container: %s", id)
+		cmd := commands.ContainerStop{Names: []string{id}}
+		stdout, stderr, _ := cmd.Execute(context.Background())
+		if stdout != "" {
+			log.Printf("received stdout: %s", stdout)
+		}
+		if stderr != "" {
+			log.Printf("received stderr: %s", stderr)
+		}
 	}
 	s.containers.clear()
 }
@@ -340,14 +345,14 @@ func (s *ContainerServerImpl) removeNetworks() {
 		log.Println("no networks to clean up")
 		return
 	}
-	log.Println("removing networks")
+	log.Printf("removing networks: %v", s.networks.getMapping())
 	cmd := commands.NetworkRemove{Names: networkIds}
 	stdout, stderr, _ := cmd.Execute(context.Background())
 	if stdout != "" {
-		log.Println("received stdout:", stdout)
+		log.Printf("received stdout: %s", stdout)
 	}
 	if stderr != "" {
-		log.Println("received stderr", stderr)
+		log.Printf("received stderr: %s", stderr)
 	}
 	s.networks.clear()
 }

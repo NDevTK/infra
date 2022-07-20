@@ -12,7 +12,7 @@ requests: { create_network: { name: "mynet" } }
 requests: {
   start_templated_container: {
     name: "my-cros-dut"
-    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8808284912578165185"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8808284912578165185" # you will need to update the tag to a newer version if there is docker pull not_found error
     template: {
       cros_dut: {
         network: "mynet"
@@ -32,7 +32,7 @@ requests: {
 requests: {
   start_templated_container: {
     name: "my-cros-provision"
-    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-provision:8808569482210925713"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-provision:8808284912578165185"
     template: {
       cros_provision: {
         network: "mynet"
@@ -65,7 +65,7 @@ requests: {
     template: {
       cros_test: {
         network: "mynet"
-        artifact_dir: "/tmp"
+        artifact_dir: "/tmp/local-test"
       }
     }
   }

@@ -26,6 +26,8 @@ type ownershipRecorder interface {
 	// getIdsToClearOwnership returns current IDs in reverse order of
 	// declarations. The IDs can be used to recycle entities.
 	getIdsToClearOwnership() []string
+	// getMapping returns a copy of name to ID mapping.
+	getMapping() map[string]string
 	// clear reset the state.
 	clear()
 }
@@ -82,6 +84,10 @@ func (o *ownershipState) getIdsToClearOwnership() []string {
 		}
 	}
 	return result
+}
+
+func (o *ownershipState) getMapping() map[string]string {
+	return o.mapping
 }
 
 func (o *ownershipState) clear() {

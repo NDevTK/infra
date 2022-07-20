@@ -6,6 +6,8 @@ package templates
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"path"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -30,6 +32,9 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	crosTestDir := path.Join(t.ArtifactDir, "cros-test", "cros-test")
 	// All test result artifacts will be in <artifact_dir>/cros-test/results.
 	resultDir := path.Join(t.ArtifactDir, "cros-test", "results")
+	// Setting up directories. Required as podman doesn't create directories for volume mounting.
+	p.createDir(crosTestDir)
+	p.createDir(resultDir)
 	volumes := []string{
 		fmt.Sprintf("%s:%s", crosTestDir, "/tmp/test/cros-test"),
 		fmt.Sprintf("%s:%s", resultDir, "/tmp/test/results"),
@@ -46,4 +51,13 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	cmd := fmt.Sprintf("sudo --non-interactive chown -R chromeos-test:chromeos-test %s && cros-test server", "/tmp/test")
 	startCommand := []string{"bash", "-c", cmd}
 	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage, AdditionalOptions: additionalOptions, StartCommand: startCommand}, nil
+}
+
+// createDir creates artifact subdirectories for the given path.
+func (p *crosTestProcessor) createDir(dirPath string) {
+	err := os.MkdirAll(dirPath, 0755)
+	if err != nil {
+		log.Printf("warning: cros-test template processor received error when creating directory %s: %v", dirPath, err)
+	}
+	log.Printf("cros-test template processor has created directory %s", dirPath)
 }

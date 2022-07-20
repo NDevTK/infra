@@ -20,7 +20,7 @@ func TestCrosTestPopulate(t *testing.T) {
 			Container: &api.Template_CrosTest{
 				CrosTest: &api.CrosTestTemplate{
 					Network:     "mynet",
-					ArtifactDir: "/tmp",
+					ArtifactDir: "/tmp/unit-tests",
 				}}}}
 
 	convertedRequest, err := processor.Process(request)

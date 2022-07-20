@@ -47,7 +47,7 @@ func (p *crosProvisionProcessor) Process(request *api.StartTemplatedContainerReq
 	startCommand := []string{
 		"cros-provision",
 		"server",
-		"-input", path.Join(p.dockerArtifactDirName, p.inputFileName),
+		"-metadata", path.Join(p.dockerArtifactDirName, p.inputFileName), // input file flag for cros-provision v2 is metadata
 	}
 	p.processPlaceholders(request)
 	err := p.writeInputFile(request)
