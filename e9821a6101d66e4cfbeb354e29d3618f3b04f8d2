@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4c2e209_979a8728",
+        "filename": "appengine/monorail/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-07-20T17:07:09Z",
+      "side": 1,
+      "message": "My home directory\u0027s .my.cnf file looks like:\n```\n[mysqld]\nsql_mode \u003d \"\"\n```\nto clear the SQL mode per https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html.\n\nIs explicitly setting the mode to `NO_ENGINE_SUBSTITUTION` better?",
+      "range": {
+        "startLine": 183,
+        "startChar": 142,
+        "endLine": 183,
+        "endChar": 214
+      },
+      "revId": "e9821a6101d66e4cfbeb354e29d3618f3b04f8d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d9fdb80_786387ea",
+        "filename": "appengine/monorail/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-07-20T17:07:09Z",
+      "side": 1,
+      "message": "The solution to this seems to be listed on line 193. Should we delete that solution and replace it with `pip install six.moves` or should we list both of them?",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 114
+      },
+      "revId": "e9821a6101d66e4cfbeb354e29d3618f3b04f8d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
