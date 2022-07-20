@@ -550,7 +550,7 @@ func TestClusters(t *testing.T) {
 								Algorithm: "reason-v3",
 								Id:        "cccccc00000000000000000000000001",
 							},
-							Title:                      `reason LIKE "Example failure reason %."`,
+							Title:                      `Example failure reason 2.`,
 							PresubmitRejects:           4,
 							CriticalFailuresExonerated: 5,
 							Failures:                   6,

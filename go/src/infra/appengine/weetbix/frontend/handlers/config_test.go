@@ -38,13 +38,14 @@ func TestConfig(t *testing.T) {
 				return response.Result()
 			}
 
-			config.SetTestProjectConfig(ctx, map[string]*configpb.ProjectConfig{
+			err := config.SetTestProjectConfig(ctx, map[string]*configpb.ProjectConfig{
 				testProject: {
 					Monorail: &configpb.MonorailProject{
 						DisplayPrefix: "mybug.com",
 					},
 				},
 			})
+			So(err, ShouldBeNil)
 
 			response := get()
 			So(response.StatusCode, ShouldEqual, 200)
