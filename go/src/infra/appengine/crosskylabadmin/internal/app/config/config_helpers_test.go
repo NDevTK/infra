@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/libs/skylab/common/heuristics"
@@ -168,5 +169,21 @@ func TestChooseImplementation(t *testing.T) {
 		impl, err := (&PermilleData{Prod: 0.0, Latest: 0.0}).ChooseImplementation(ctx, 0.0)
 		So(err, ShouldBeNil)
 		So(impl, ShouldEqual, heuristics.LatestTaskType)
+	})
+}
+
+func TestValidateNoRepairOnlyFields(t *testing.T) {
+	t.Parallel()
+	Convey("optin_all_duts", t, func() {
+		pd := &RolloutConfig{Enable: true, OptinAllDuts: true}
+		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "optin_all_duts")
+	})
+	Convey("optin_all_duts", t, func() {
+		pd := &RolloutConfig{Enable: true, OptinDutPool: []string{"aaa"}}
+		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "optin_dut_pool")
+	})
+	Convey("ufs_error_policy", t, func() {
+		pd := &RolloutConfig{Enable: true, UfsErrorPolicy: "strict"}
+		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "ufs_error_policy")
 	})
 }
