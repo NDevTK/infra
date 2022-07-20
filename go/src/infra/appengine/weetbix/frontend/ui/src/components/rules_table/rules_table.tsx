@@ -5,6 +5,7 @@
 import dayjs from 'dayjs';
 
 import { useQuery } from 'react-query';
+import { Link as RouterLink } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -68,7 +69,7 @@ const RulesTable = ({ project } : Props ) => {
           {
             rules.map((rule) => (
               <TableRow key={rule.ruleId}>
-                <TableCell><Link href={linkToRule(rule.project, rule.ruleId)} underline="hover">{rule.ruleDefinition}</Link></TableCell>
+                <TableCell><Link component={RouterLink} to={linkToRule(rule.project, rule.ruleId)} underline="hover">{rule.ruleDefinition}</Link></TableCell>
                 <TableCell><Link href={rule.bug.url} underline="hover">{rule.bug.linkText}</Link></TableCell>
                 <TableCell>{dayjs.utc(rule.lastUpdateTime).local().fromNow()}</TableCell>
               </TableRow>

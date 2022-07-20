@@ -5,7 +5,6 @@
 import '@testing-library/jest-dom';
 
 import {
-  render,
   screen,
 } from '@testing-library/react';
 
@@ -13,12 +12,13 @@ import {
   getMockRuleClusterSummary,
   getMockSuggestedClusterSummary,
 } from '../../../testing_tools/mocks/cluster_mock';
+import { renderWithRouterAndClient } from '../../../testing_tools/libs/mock_router';
 import ClustersTableRow from './clusters_table_row';
 
 describe('Test ClustersTableRow component', () => {
   it('given a rule cluster', async () => {
     const mockCluster = getMockRuleClusterSummary('abcdef1234567890abcdef1234567890');
-    render(
+    renderWithRouterAndClient(
         <table>
           <tbody>
             <ClustersTableRow
@@ -38,7 +38,7 @@ describe('Test ClustersTableRow component', () => {
 
   it('given a suggested cluster', async () => {
     const mockCluster = getMockSuggestedClusterSummary('abcdef1234567890abcdef1234567890');
-    render(
+    renderWithRouterAndClient(
         <table>
           <tbody>
             <ClustersTableRow

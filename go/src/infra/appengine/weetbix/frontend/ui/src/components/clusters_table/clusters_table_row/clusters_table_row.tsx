@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -20,7 +21,9 @@ const ClustersTableRow = ({
 }: Props) => {
   return (
     <TableRow>
-      <TableCell data-testid="clusters_table_title"><Link href={linkToCluster(project, cluster.clusterId)} underline="hover">{cluster.title}</Link></TableCell>
+      <TableCell data-testid="clusters_table_title">
+        <Link component={RouterLink} to={linkToCluster(project, cluster.clusterId)} underline="hover">{cluster.title}</Link>
+      </TableCell>
       <TableCell data-testid="clusters_table_bug">
         {
           cluster.bug &&
