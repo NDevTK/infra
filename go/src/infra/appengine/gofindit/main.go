@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"infra/appengine/gofindit/compilefailureanalysis"
+	"infra/appengine/gofindit/frontend/handlers"
 	"infra/appengine/gofindit/model"
 	gfipb "infra/appengine/gofindit/proto"
 	"infra/appengine/gofindit/pubsub"
@@ -120,10 +121,11 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		mwc := pageMiddlewareChain(srv)
 
-		srv.Routes.GET("/", mwc, func(c *router.Context) {
-			text := fmt.Sprintf("You are logged in as %s", auth.CurrentUser(c.Context).Identity.Email())
-			c.Writer.Write([]byte(text))
-		})
+		h := handlers.NewHandlers(srv.Options.CloudProject, srv.Options.Prod)
+		h.RegisterRoutes(srv.Routes, mwc)
+		srv.Routes.Static("/static/", mwc, http.Dir("./frontend/ui/dist"))
+		// Anything that is not found, serve app html and let the client side router handle it.
+		srv.Routes.NotFound(mwc, h.IndexPage)
 
 		// Pubsub handler
 		pubsubMwc := router.NewMiddlewareChain(
