@@ -125,26 +125,6 @@ func (mr *MockInventoryClientMockRecorder) AssignDutsToDrones(ctx, in interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignDutsToDrones", reflect.TypeOf((*MockInventoryClient)(nil).AssignDutsToDrones), varargs...)
 }
 
-// BalancePools mocks base method.
-func (m *MockInventoryClient) BalancePools(ctx context.Context, in *BalancePoolsRequest, opts ...grpc.CallOption) (*BalancePoolsResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "BalancePools", varargs...)
-	ret0, _ := ret[0].(*BalancePoolsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// BalancePools indicates an expected call of BalancePools.
-func (mr *MockInventoryClientMockRecorder) BalancePools(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalancePools", reflect.TypeOf((*MockInventoryClient)(nil).BalancePools), varargs...)
-}
-
 // BatchUpdateDuts mocks base method.
 func (m *MockInventoryClient) BatchUpdateDuts(ctx context.Context, in *BatchUpdateDutsRequest, opts ...grpc.CallOption) (*BatchUpdateDutsResponse, error) {
 	m.ctrl.T.Helper()
@@ -601,21 +581,6 @@ func (m *MockInventoryServer) AssignDutsToDrones(arg0 context.Context, arg1 *Ass
 func (mr *MockInventoryServerMockRecorder) AssignDutsToDrones(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignDutsToDrones", reflect.TypeOf((*MockInventoryServer)(nil).AssignDutsToDrones), arg0, arg1)
-}
-
-// BalancePools mocks base method.
-func (m *MockInventoryServer) BalancePools(arg0 context.Context, arg1 *BalancePoolsRequest) (*BalancePoolsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BalancePools", arg0, arg1)
-	ret0, _ := ret[0].(*BalancePoolsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// BalancePools indicates an expected call of BalancePools.
-func (mr *MockInventoryServerMockRecorder) BalancePools(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalancePools", reflect.TypeOf((*MockInventoryServer)(nil).BalancePools), arg0, arg1)
 }
 
 // BatchUpdateDuts mocks base method.

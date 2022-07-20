@@ -91,23 +91,6 @@ func (s *DecoratedInventory) DeleteDuts(ctx context.Context, req *DeleteDutsRequ
 	return
 }
 
-func (s *DecoratedInventory) BalancePools(ctx context.Context, req *BalancePoolsRequest) (rsp *BalancePoolsResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "BalancePools", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.BalancePools(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "BalancePools", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) ResizePool(ctx context.Context, req *ResizePoolRequest) (rsp *ResizePoolResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
