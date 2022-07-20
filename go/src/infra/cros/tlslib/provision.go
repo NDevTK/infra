@@ -32,7 +32,8 @@ const (
 	provisionFailed       = "/var/tmp/provision_failed"
 	provisionFailedMarker = "/mnt/stateful_partition/unencrypted/provision_failed"
 
-	verificationTimeout = 120 * time.Second
+	verificationTimeout        = 120 * time.Second
+	postProvisionRebootTimeout = 360 * time.Second
 )
 
 func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
@@ -125,7 +126,8 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 
 		// Wait for DUT to come up after provisioning the OS.
 		// Can continue as soon as a connection can be established.
-		rebootWaitCtx, cancel := context.WithTimeout(ctx, 120*time.Second)
+		// Give extra time in case of firmware updates prior to UI spawning.
+		rebootWaitCtx, cancel := context.WithTimeout(ctx, postProvisionRebootTimeout)
 		defer cancel()
 		disconnect, err = p.connect(rebootWaitCtx, addr)
 		if err != nil {
