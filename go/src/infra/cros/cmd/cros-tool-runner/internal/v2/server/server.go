@@ -11,9 +11,9 @@ import (
 	"os"
 	"strings"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
-	"infra/cros/cmd/cros-tool-runner/api"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )

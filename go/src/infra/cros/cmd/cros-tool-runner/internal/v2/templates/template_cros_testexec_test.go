@@ -1,10 +1,14 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package templates
 
 import (
 	"strings"
 	"testing"
 
-	"infra/cros/cmd/cros-tool-runner/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestCrosTestPopulate(t *testing.T) {

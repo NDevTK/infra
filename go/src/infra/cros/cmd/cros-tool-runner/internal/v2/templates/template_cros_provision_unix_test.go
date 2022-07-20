@@ -1,3 +1,7 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 //go:build !windows
 // +build !windows
 
@@ -7,9 +11,8 @@ import (
 	"testing"
 
 	_go "go.chromium.org/chromiumos/config/go"
-	testApi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"infra/cros/cmd/cros-tool-runner/api"
 )
 
 func TestCrosProvisionPopulate(t *testing.T) {
@@ -24,10 +27,10 @@ func TestCrosProvisionPopulate(t *testing.T) {
 				CrosProvision: &api.CrosProvisionTemplate{
 					Network:     "mynet",
 					ArtifactDir: "/tmp",
-					InputRequest: &testApi.CrosProvisionRequest{
+					InputRequest: &api.CrosProvisionRequest{
 						DutServer: &labApi.IpEndpoint{Address: "ctr-host-port://dut-name", Port: 0},
 						Dut:       &labApi.Dut{Id: &labApi.Dut_Id{Value: "chromeos6-row4-rack5-host14"}},
-						ProvisionState: &testApi.ProvisionState{SystemImage: &testApi.ProvisionState_SystemImage{
+						ProvisionState: &api.ProvisionState{SystemImage: &api.ProvisionState_SystemImage{
 							SystemImagePath: &_go.StoragePath{
 								Path:     "gs://chromeos-image-archive/kevin-cq/R104-14895.0.0-66173-8812350496939596961",
 								HostType: _go.StoragePath_GS,

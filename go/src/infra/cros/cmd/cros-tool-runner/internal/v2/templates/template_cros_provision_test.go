@@ -1,12 +1,15 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package templates
 
 import (
 	"errors"
 	"testing"
 
-	testApi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"infra/cros/cmd/cros-tool-runner/api"
 )
 
 type mockPlaceholderPopulator struct {
@@ -40,7 +43,7 @@ func TestProcessPlaceholders(t *testing.T) {
 		Template: &api.Template{
 			Container: &api.Template_CrosProvision{
 				CrosProvision: &api.CrosProvisionTemplate{
-					InputRequest: &testApi.CrosProvisionRequest{
+					InputRequest: &api.CrosProvisionRequest{
 						DutServer: &labApi.IpEndpoint{Address: "ctr-host-port://dut-name", Port: 0},
 					}}}}}
 
@@ -60,7 +63,7 @@ func TestProcessPlaceholders_errorIgnored(t *testing.T) {
 		Template: &api.Template{
 			Container: &api.Template_CrosProvision{
 				CrosProvision: &api.CrosProvisionTemplate{
-					InputRequest: &testApi.CrosProvisionRequest{
+					InputRequest: &api.CrosProvisionRequest{
 						DutServer: &labApi.IpEndpoint{Address: "dut-name", Port: 0},
 					}}}}}
 	processor.processPlaceholders(request)

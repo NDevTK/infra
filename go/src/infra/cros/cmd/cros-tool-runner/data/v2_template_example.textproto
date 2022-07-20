@@ -1,6 +1,6 @@
 # This is the textproto example that can be used by grpc_cli to call the
 # StackCommands endpoint. For more information please refer to v2/README.md
-# `grpc_cli call localhost:8082 ctrv2.api.CrosToolRunnerContainerService.StackCommands --infile=data/v2_template_example.textproto --channel_creds_type insecure`
+# `grpc_cli call localhost:8082 chromiumos.test.api.CrosToolRunnerContainerService.StackCommands --infile=data/v2_template_example.textproto --channel_creds_type insecure`
 requests: {
   login_registry: {
     username: "oauth2accesstoken"

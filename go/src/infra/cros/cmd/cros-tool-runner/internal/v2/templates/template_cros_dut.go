@@ -1,11 +1,15 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package templates
 
 import (
 	"fmt"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/cmd/cros-tool-runner/api"
 )
 
 type crosDutProcessor struct {

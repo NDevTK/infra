@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/cmd/cros-tool-runner/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestDockerRun_noImage(t *testing.T) {

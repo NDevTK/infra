@@ -1,3 +1,7 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package templates
 
 import (
@@ -10,9 +14,9 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"infra/cros/cmd/cros-tool-runner/api"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
