@@ -124,7 +124,7 @@ func (r *selectRun) writeFilterFiles() error {
 			if err := chromium.WriteInvertedFilterFile(invertedFileName, testNames); err != nil {
 				return errors.Annotate(err, "failed to write %q", invertedFileName).Err()
 			}
-			fmt.Printf("wrote %s\n", fileName)
+			fmt.Printf("wrote %s\n", invertedFileName)
 		}
 	}
 	return nil
