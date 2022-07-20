@@ -223,10 +223,10 @@ func TestIngest(t *testing.T) {
 				opts.PresubmitRun = nil
 				for _, cf := range expectedCFs {
 					cf.PresubmitRunId = nil
-					cf.PresubmitRunMode = nil
-					cf.PresubmitRunOwner = nil
-					cf.PresubmitRunStatus = nil
-					cf.BuildCritical = nil
+					cf.PresubmitRunMode = ""
+					cf.PresubmitRunOwner = ""
+					cf.PresubmitRunStatus = ""
+					cf.BuildCritical = false
 				}
 
 				testIngestion(tvs, expectedCFs)
@@ -460,10 +460,6 @@ func newTestResult(uniqifier, testRunNum, resultNum int) *rdbpb.TestResult {
 
 func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTestRun, resultNum int) *bqpb.ClusteredFailureRow {
 	resultID := fmt.Sprintf("result-%v-%v", testRunNum, resultNum)
-	presubmitRunOwner := "automation"
-	presubmitRunMode := "FULL_RUN" // pb.PresubmitRunMode_FULL_RUN
-	presubmitRunStatus := "FAILED" // pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED
-	buildCritical := true
 	return &bqpb.ClusteredFailureRow{
 		ClusterAlgorithm: "", // Determined by clustering algorithm.
 		ClusterId:        "", // Determined by clustering algorithm.
@@ -496,15 +492,15 @@ func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTes
 		FailureReason:        &pb.FailureReason{PrimaryErrorMessage: "Failure reason."},
 		BugTrackingComponent: &pb.BugTrackingComponent{System: "monorail", Component: "Component>MyComponent"},
 		StartTime:            timestamppb.New(time.Date(2022, time.February, 12, 0, 0, 0, 0, time.UTC)),
-		Duration:             durationpb.New(time.Second * 10),
+		Duration:             10.0,
 		Exonerations:         nil,
 
 		PresubmitRunId:     &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
-		PresubmitRunOwner:  &presubmitRunOwner,
-		PresubmitRunMode:   &presubmitRunMode,
-		PresubmitRunStatus: &presubmitRunStatus,
-		BuildStatus:        "FAILURE", // pb.BuildStatus_BUILD_STATUS_FAILURE
-		BuildCritical:      &buildCritical,
+		PresubmitRunOwner:  "automation",
+		PresubmitRunMode:   "FULL_RUN", // pb.PresubmitRunMode_FULL_RUN
+		PresubmitRunStatus: "FAILED",   // pb.PresubmitRunStatus_PRESUBMIT_RUN_STATUS_FAILED,
+		BuildStatus:        "FAILURE",  // pb.BuildStatus_BUILD_STATUS_FAILURE
+		BuildCritical:      true,
 		Changelists: []*pb.Changelist{
 			{
 				Host:     "chromium-review.googlesource.com",

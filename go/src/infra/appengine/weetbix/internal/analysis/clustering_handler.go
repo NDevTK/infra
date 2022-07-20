@@ -155,11 +155,11 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 		FailureReason:        failure.FailureReason,
 		BugTrackingComponent: failure.BugTrackingComponent,
 		StartTime:            failure.StartTime,
-		Duration:             failure.Duration,
+		Duration:             failure.Duration.AsDuration().Seconds(),
 		Exonerations:         exonerations,
 
 		BuildStatus:                   strings.TrimPrefix(failure.BuildStatus.String(), "BUILD_STATUS_"),
-		BuildCritical:                 failure.BuildCritical,
+		BuildCritical:                 failure.BuildCritical != nil && *failure.BuildCritical,
 		Changelists:                   failure.Changelists,
 		IngestedInvocationId:          failure.IngestedInvocationId,
 		IngestedInvocationResultIndex: failure.IngestedInvocationResultIndex,
@@ -172,11 +172,10 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 	}
 	if failure.PresubmitRun != nil {
 		entry.PresubmitRunId = failure.PresubmitRun.PresubmitRunId
-		entry.PresubmitRunOwner = &failure.PresubmitRun.Owner
-		presubmitRunMode := failure.PresubmitRun.Mode.String()
-		entry.PresubmitRunMode = &presubmitRunMode
+		entry.PresubmitRunOwner = failure.PresubmitRun.Owner
+		entry.PresubmitRunMode = failure.PresubmitRun.Mode.String()
 		presubmitRunStatus := strings.TrimPrefix(failure.PresubmitRun.Status.String(), "PRESUBMIT_RUN_STATUS_")
-		entry.PresubmitRunStatus = &presubmitRunStatus
+		entry.PresubmitRunStatus = presubmitRunStatus
 	}
 	return entry
 }

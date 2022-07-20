@@ -6,7 +6,6 @@ syntax = "proto3";
 
 package weetbix.bq;
 
-import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "infra/appengine/weetbix/proto/v1/common.proto";
 import "infra/appengine/weetbix/proto/v1/changelist.proto";
@@ -98,6 +97,7 @@ message ClusteredFailureRow {
 
   // Whether the test result is included in the cluster. Set to false if
   // the test result has been removed from the cluster.
+  // False values appear in BigQuery as NULL.
   bool is_included = 7;
 
   // Whether the test result is included in the cluster with high priority.
@@ -106,6 +106,7 @@ message ClusteredFailureRow {
   //    association rule), OR
   // 2. this cluster is a suggested cluster, and the test result is NOT
   //    also in a bug cluster.
+  // False values appear in BigQuery as NULL.
   bool is_included_with_high_priority = 8;
 
   // The chunk this failure was processed and stored in. Assigned by
@@ -150,8 +151,8 @@ message ClusteredFailureRow {
   // The point in time when the test case started to execute.
   google.protobuf.Timestamp start_time = 17;
 
-  // The amount of time the test case took to execute.
-  google.protobuf.Duration duration = 18;
+  // The amount of time the test case took to execute, in seconds.
+  double duration = 18;
 
   reserved 19;
 
@@ -188,20 +189,23 @@ message ClusteredFailureRow {
   // There is scope for this field to become an email address if privacy
   // approval is obtained, until then it is "automation" (for automation
   // service accounts) and "user" otherwise.
-  optional string presubmit_run_owner = 29;
+  string presubmit_run_owner = 29;
 
   // The mode of the presubmit run (if any).
   // E.g. DRY_RUN, FULL_RUN, QUICK_DRY_RUN.
-  // Use a optional string rather than optional enum as BQ exporter
-  // does not support optional enum types.
-  optional string presubmit_run_mode = 34;
+  // If this test result does not relate to a presubmit run, this field
+  // is left as its default value (""). In BigQuery, this results in a
+  // NULL value.
+  string presubmit_run_mode = 34;
 
   // The presubmit run's ending status.
   // Notionally weetbix.v1.PresubmitRunStatus, but string so that
   // we can chop off the "PRESUBMIT_RUN_STATUS_" prefix and have
   // only the status, e.g. SUCCESS, FAILURE, CANCELED.
-  // Also string because BQ exporter does not support optional enum types.
-  optional string presubmit_run_status = 35;
+  // If this test result does not relate to a presubmit run, this field
+  // is left as its default value (""). In BigQuery, this results in a
+  // NULL value.
+  string presubmit_run_status = 35;
 
   reserved 30;
 
@@ -215,8 +219,14 @@ message ClusteredFailureRow {
   string build_status = 36;
 
   // Whether the build was critical to a presubmit run succeeding.
-  // If the build was not a tryjob for a presubmit run, this is null.
-  optional bool build_critical = 37;
+  // If the build did not relate presubmit run (i.e. because it was a tryjob
+  // for a presubmit run), this is false.
+  // Note that both possible false values (from the build is not critical
+  // or because the build was not part of a presubmit run) appear in
+  // BigQuery as NULL.
+  // You can identify which of these cases applies by
+  // checking if presubmit_run_id is populated.
+  bool build_critical = 37;
 
   // The unsubmitted changelists that were tested (if any).
   // Changelists are sorted in ascending (host, change, patchset) order.

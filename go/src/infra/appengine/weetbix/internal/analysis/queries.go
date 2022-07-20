@@ -58,7 +58,7 @@ const clusterSummariesAnalysis = `
 	  cluster_id,
 	  r.is_included,
 	  r.is_included_with_high_priority,
-	  (ARRAY_LENGTH(r.exonerations) > 0) as is_exonerated,
+	  COALESCE(ARRAY_LENGTH(r.exonerations) > 0, FALSE) as is_exonerated,
 	  r.build_status = 'FAILURE' as build_failed,
 	  -- Presubmit run and tryjob is critical, and
 	  (r.build_critical AND

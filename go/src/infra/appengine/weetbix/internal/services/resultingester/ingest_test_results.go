@@ -134,10 +134,18 @@ func RegisterTaskHandler(srv *server.Server) error {
 	if err != nil {
 		return err
 	}
-	srv.RegisterCleanup(func(ctx context.Context) {
+	srv.RegisterCleanup(func(context.Context) {
 		chunkStore.Close()
 	})
-	cf := clusteredfailures.NewClient(srv.Options.CloudProject)
+
+	cf, err := clusteredfailures.NewClient(ctx, srv.Options.CloudProject)
+	if err != nil {
+		return err
+	}
+	srv.RegisterCleanup(func(context.Context) {
+		cf.Close()
+	})
+
 	analysis := analysis.NewClusteringHandler(cf)
 	ri := &resultIngester{
 		clustering: ingestion.New(chunkStore, analysis),

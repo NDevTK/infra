@@ -524,14 +524,11 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 		}
 	}
 
-	presubmitRunOwner := fmt.Sprintf("owner-%v", b.uniqifier)
-	presubmitRunMode := pb.PresubmitRunMode(1 + b.uniqifier%3).String()
 	presubmitRunStatus := pb.PresubmitRunStatus(3 - b.uniqifier%3).String()
 	if !strings.HasPrefix(presubmitRunStatus, "PRESUBMIT_RUN_STATUS_") {
 		panic("PresubmitRunStatus does not have expected prefix: " + presubmitRunStatus)
 	}
 	presubmitRunStatus = strings.TrimPrefix(presubmitRunStatus, "PRESUBMIT_RUN_STATUS_")
-	buildCritical := b.uniqifier%2 == 0
 
 	var results []*bqpb.ClusteredFailureRow
 	for _, cID := range clusterIDs {
@@ -561,7 +558,7 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 			FailureReason:        b.failureReason,
 			BugTrackingComponent: &pb.BugTrackingComponent{System: "monorail", Component: "Component>MyComponent"},
 			StartTime:            timestamppb.New(time.Date(2025, time.March, 2, 2, 2, 2, b.uniqifier, time.UTC)),
-			Duration:             durationpb.New(time.Duration(b.uniqifier) * time.Second),
+			Duration:             float64(b.uniqifier * 1.0),
 			Exonerations: []*bqpb.ClusteredFailureRow_TestExoneration{
 				{
 					Reason: pb.ExonerationReason(1 + (b.uniqifier % 3)),
@@ -571,11 +568,11 @@ func (b *testResultBuilder) buildBQExport(clusterIDs []clustering.ClusterID) []*
 				System: "luci-cv",
 				Id:     fmt.Sprintf("run-%v", b.uniqifier),
 			},
-			PresubmitRunOwner:  &presubmitRunOwner,
-			PresubmitRunMode:   &presubmitRunMode,
-			PresubmitRunStatus: &presubmitRunStatus,
+			PresubmitRunOwner:  fmt.Sprintf("owner-%v", b.uniqifier),
+			PresubmitRunMode:   pb.PresubmitRunMode(1 + b.uniqifier%3).String(),
+			PresubmitRunStatus: presubmitRunStatus,
 			BuildStatus:        strings.TrimPrefix(pb.BuildStatus(1+b.uniqifier%4).String(), "BUILD_STATUS_"),
-			BuildCritical:      &buildCritical,
+			BuildCritical:      b.uniqifier%2 == 0,
 			Changelists: []*pb.Changelist{
 				{
 					Host:     "chromium",

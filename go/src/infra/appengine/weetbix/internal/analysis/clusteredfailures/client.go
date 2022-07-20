@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,72 +6,168 @@ package clusteredfailures
 
 import (
 	"context"
-
-	"cloud.google.com/go/bigquery"
-	"go.chromium.org/luci/common/bq"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/server/caching"
-
+	"fmt"
 	"infra/appengine/weetbix/internal/bqutil"
 	bqpb "infra/appengine/weetbix/proto/bq"
+	"time"
+
+	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/bigquery/storage/managedwriter"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/grpcmon"
+	"go.chromium.org/luci/server/auth"
 )
 
-// The maximum number of rows to insert at a time. With each row not exceeding ~2KB,
-// this should keep us clear of the 10MB HTTP request size limit and other limits.
-// https://cloud.google.com/bigquery/quotas#all_streaming_inserts
+// batchSize is the number of rows to write to BigQuery in one go.
 const batchSize = 1000
 
-// tableName is the name of the exported BigQuery table.
-const tableName = "clustered_failures"
+// NewClient creates a new client for exporting clustered failures
+// via the BigQuery Write API.
+func NewClient(ctx context.Context, projectID string) (s *Client, reterr error) {
+	if projectID == "" {
+		return nil, errors.New("GCP Project must be specified")
+	}
 
-// schemaApplyer ensures BQ schema matches the row proto definitions.
-var schemaApplyer = bq.NewSchemaApplyer(caching.RegisterLRUCache(50))
+	bqClient, err := bqutil.Client(ctx, projectID)
+	if err != nil {
+		return nil, errors.Annotate(err, "creating BQ client").Err()
+	}
+	defer func() {
+		if reterr != nil {
+			bqClient.Close()
+		}
+	}()
 
-// NewClient creates a new client for exporting clustered failures.
-func NewClient(projectID string) *Client {
+	// Create shared client for all writes.
+	// This will ensure a shared connection pool is used for all writes,
+	// as recommended by:
+	// https://cloud.google.com/bigquery/docs/write-api-best-practices#limit_the_number_of_concurrent_connections
+	creds, err := auth.GetPerRPCCredentials(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to initialize credentials").Err()
+	}
+	mwClient, err := managedwriter.NewClient(ctx, projectID,
+		option.WithGRPCDialOption(grpcmon.WithClientRPCStatsMonitor()),
+		option.WithGRPCDialOption(grpc.WithPerRPCCredentials(creds)),
+		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time: time.Minute,
+		})))
+	if err != nil {
+		return nil, errors.Annotate(err, "create managed writer client").Err()
+	}
+
 	return &Client{
 		projectID: projectID,
-	}
+		bqClient:  bqClient,
+		mwClient:  mwClient,
+	}, nil
 }
 
-// Client provides methods to export clustered failures to BigQuery.
+// Close releases resources held by the client.
+func (s *Client) Close() (reterr error) {
+	// Ensure all Close() methods are called, even if one panics or fails.
+	defer func() {
+		err := s.mwClient.Close()
+		if reterr == nil {
+			reterr = err
+		}
+	}()
+	return s.bqClient.Close()
+}
+
+// Client provides methods to export clustered failures to BigQuery
+// via the BigQuery Write API.
 type Client struct {
 	// projectID is the name of the GCP project that contains Weetbix datasets.
 	projectID string
+	bqClient  *bigquery.Client
+	mwClient  *managedwriter.Client
+}
+
+func (s *Client) ensureSchema(ctx context.Context, datasetID string) error {
+	// Dataset for the project may have to be manually created.
+	table := s.bqClient.Dataset(datasetID).Table(tableName)
+	if err := schemaApplyer.EnsureTable(ctx, table, tableMetadata); err != nil {
+		return errors.Annotate(err, "ensuring clustered failures table in dataset %q", datasetID).Err()
+	}
+	return nil
 }
 
 // Insert inserts the given rows in BigQuery.
-func (c *Client) Insert(ctx context.Context, luciProject string, rows []*bqpb.ClusteredFailureRow) error {
-	client, err := bqutil.Client(ctx, c.projectID)
-	if err != nil {
-		return errors.Annotate(err, "creating BQ client").Err()
-	}
-	defer client.Close()
-
+func (s *Client) Insert(ctx context.Context, luciProject string, rows []*bqpb.ClusteredFailureRow) error {
 	dataset, err := bqutil.DatasetForProject(luciProject)
 	if err != nil {
 		return errors.Annotate(err, "getting dataset").Err()
 	}
 
-	// Dataset for the project may have to be manually created.
-	table := client.Dataset(dataset).Table(tableName)
-	if err := schemaApplyer.EnsureTable(ctx, table, tableMetadata); err != nil {
-		return errors.Annotate(err, "ensuring clustered failures table in dataset %q", dataset).Err()
+	if err := s.ensureSchema(ctx, dataset); err != nil {
+		return errors.Annotate(err, "ensure schema").Err()
 	}
 
-	bqRows := make([]*bq.Row, 0, len(rows))
-	for _, r := range rows {
-		// bq.Row implements ValueSaver for arbitrary protos.
-		bqRow := &bq.Row{
-			Message:  r,
-			InsertID: bigquery.NoDedupeID,
+	tableName := fmt.Sprintf("projects/%s/datasets/%s/tables/%s", s.projectID, dataset, tableName)
+
+	// Write to the default stream. This does not provide exactly-once
+	// semantics (it provides at leas once), but this should be generally
+	// fine for our needs. The at least once semantic is similar to the
+	// legacy streaming API.
+	ms, err := s.mwClient.NewManagedStream(ctx,
+		managedwriter.WithSchemaDescriptor(tableSchemaDescriptor),
+		managedwriter.WithDestinationTable(tableName))
+	defer ms.Close()
+
+	batches := batch(rows)
+	results := make([]*managedwriter.AppendResult, 0, len(batches))
+
+	for _, batch := range batches {
+		encoded := make([][]byte, 0, len(batch))
+		for _, r := range batch {
+			b, err := proto.Marshal(r)
+			if err != nil {
+				return errors.Annotate(err, "marshal proto").Err()
+			}
+			encoded = append(encoded, b)
 		}
-		bqRows = append(bqRows, bqRow)
-	}
 
-	inserter := bqutil.NewInserter(table, batchSize)
-	if err := inserter.Put(ctx, bqRows); err != nil {
-		return errors.Annotate(err, "inserting clustered failures").Err()
+		result, err := ms.AppendRows(ctx, encoded)
+		if err != nil {
+			return errors.Annotate(err, "start appending rows").Err()
+		}
+
+		// Defer waiting on AppendRows until after all batches sent out.
+		// https://cloud.google.com/bigquery/docs/write-api-best-practices#do_not_block_on_appendrows_calls
+		results = append(results, result)
+	}
+	for _, result := range results {
+		// TODO: In future, we might need to apply some sort of retry
+		// logic around batches as we did for legacy streaming writes
+		// for quota issues.
+		// That said, the client library here should deal with standard
+		// BigQuery retries and backoffs.
+		_, err = result.GetResult(ctx)
+		if err != nil {
+			return errors.Annotate(err, "appending rows").Err()
+		}
 	}
 	return nil
+}
+
+// batch divides the rows to be inserted into batches of at most batchSize.
+func batch(rows []*bqpb.ClusteredFailureRow) [][]*bqpb.ClusteredFailureRow {
+	var result [][]*bqpb.ClusteredFailureRow
+	pages := (len(rows) + (batchSize - 1)) / batchSize
+	for p := 0; p < pages; p++ {
+		start := p * batchSize
+		end := start + batchSize
+		if end > len(rows) {
+			end = len(rows)
+		}
+		page := rows[start:end]
+		result = append(result, page)
+	}
+	return result
 }
