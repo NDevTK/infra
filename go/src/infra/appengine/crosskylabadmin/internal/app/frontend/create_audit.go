@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"math"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -77,6 +78,21 @@ func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname s
 	d := r.ComputePermilleData(ctx, hostname)
 	if d == nil {
 		return routing.Legacy, routing.MalformedPolicy
+	}
+	// threshold is the chance of using Paris at all, which is equal to prod + latest.
+	threshold := d.Prod + d.Latest
+	// latestThreshold is a smaller threshold for using latest specifically.
+	latestThreshold := d.Latest
+	myValue := math.Round(1000.0 * randFloat)
+	// If the threshold is zero, let's reject all possible values of myValue.
+	// This way a threshold of zero actually means 0.0% instead of 0.1%.
+	valueBelowThreshold := threshold != 0 && myValue <= threshold
+	valueBelowLatestThreshold := latestThreshold != 0 && myValue <= latestThreshold
+	switch {
+	case valueBelowLatestThreshold:
+		return routing.ParisLatest, routing.ScoreBelowThreshold
+	case valueBelowThreshold:
+		return routing.Paris, routing.ScoreBelowThreshold
 	}
 	return routing.Legacy, routing.NotImplemented
 }

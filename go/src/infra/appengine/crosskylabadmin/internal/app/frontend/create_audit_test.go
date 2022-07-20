@@ -44,4 +44,17 @@ func TestRouteAuditTaskImpl(t *testing.T) {
 		So(tt, ShouldEqual, heuristics.LegacyTaskType)
 		So(r, ShouldEqual, routing.ParisNotEnabled)
 	})
+	Convey("25-25 split", t, func() {
+		pd := &config.RolloutConfig{Enable: true, ProdPermille: 250, LatestPermille: 250}
+		Convey("0.24", func() {
+			tt, r := routeAuditTaskImpl(ctx, pd, "", 0.24)
+			So(tt, ShouldEqual, routing.ParisLatest)
+			So(r, ShouldEqual, routing.ScoreBelowThreshold)
+		})
+		Convey("0.26", func() {
+			tt, r := routeAuditTaskImpl(ctx, pd, "", 0.26)
+			So(tt, ShouldEqual, routing.Paris)
+			So(r, ShouldEqual, routing.ScoreBelowThreshold)
+		})
+	})
 }
