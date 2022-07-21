@@ -73,3 +73,20 @@ func (s *DecoratedTestHistory) QueryVariants(ctx context.Context, req *QueryVari
 	}
 	return
 }
+
+func (s *DecoratedTestHistory) QueryTests(ctx context.Context, req *QueryTestsRequest) (rsp *QueryTestsResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "QueryTests", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.QueryTests(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "QueryTests", rsp, err)
+	}
+	return
+}

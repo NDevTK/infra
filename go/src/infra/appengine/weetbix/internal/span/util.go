@@ -6,6 +6,7 @@ package span
 
 import (
 	"bytes"
+	"strings"
 	"text/template"
 
 	"cloud.google.com/go/spanner"
@@ -20,4 +21,13 @@ func GenerateStatement(tmpl *template.Template, name string, input interface{}) 
 		return spanner.Statement{}, errors.Annotate(err, "failed to generate statement: %s", name).Err()
 	}
 	return spanner.NewStatement(sql.String()), nil
+}
+
+// EscapePattern escapes all the special characters ('\', '_', '%') in the given
+// string.
+func EscapePattern(value string) string {
+	value = strings.ReplaceAll(value, "\\", "\\\\")
+	value = strings.ReplaceAll(value, "%", "\\%")
+	value = strings.ReplaceAll(value, "_", "\\_")
+	return value
 }

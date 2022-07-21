@@ -954,3 +954,93 @@ func TestReadVariants(t *testing.T) {
 		})
 	})
 }
+
+func TestQueryTests(t *testing.T) {
+	Convey("QueryTests", t, func() {
+		ctx := testutil.SpannerTestContext(t)
+
+		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+			insertTest := func(subRealm string, testID string) {
+				span.BufferWrite(ctx, (&TestRealm{
+					Project:  "project",
+					TestID:   testID,
+					SubRealm: subRealm,
+				}).SaveUnverified())
+			}
+
+			insertTest("realm1", "test-id00")
+			insertTest("realm2", "test-id01")
+			insertTest("realm3", "test-id02")
+
+			insertTest("realm1", "test-id10")
+			insertTest("realm2", "test-id11")
+			insertTest("realm3", "test-id12")
+
+			insertTest("realm1", "test-id20")
+			insertTest("realm2", "test-id21")
+			insertTest("realm3", "test-id22")
+
+			insertTest("realm1", "special%_characters")
+			insertTest("realm1", "specialxxcharacters")
+
+			return nil
+		})
+		So(err, ShouldBeNil)
+
+		Convey("pagination works", func() {
+			opts := QueryTestsOptions{PageSize: 2}
+			testIDs, nextPageToken, err := QueryTests(span.Single(ctx), "project", "id1", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(testIDs, ShouldResemble, []string{
+				"test-id10",
+				"test-id11",
+			})
+
+			opts.PageToken = nextPageToken
+			testIDs, nextPageToken, err = QueryTests(span.Single(ctx), "project", "id1", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(testIDs, ShouldResemble, []string{
+				"test-id12",
+			})
+		})
+
+		Convey("multi-realm works", func() {
+			opts := QueryTestsOptions{SubRealms: []string{"realm1", "realm2"}}
+			testIDs, nextPageToken, err := QueryTests(span.Single(ctx), "project", "test-id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(testIDs, ShouldResemble, []string{
+				"test-id00",
+				"test-id01",
+				"test-id10",
+				"test-id11",
+				"test-id20",
+				"test-id21",
+			})
+		})
+
+		Convey("single-realm works", func() {
+			opts := QueryTestsOptions{SubRealms: []string{"realm3"}}
+			testIDs, nextPageToken, err := QueryTests(span.Single(ctx), "project", "test-id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(testIDs, ShouldResemble, []string{
+				"test-id02",
+				"test-id12",
+				"test-id22",
+			})
+		})
+
+		Convey("special character works", func() {
+			opts := QueryTestsOptions{}
+			testIDs, nextPageToken, err := QueryTests(span.Single(ctx), "project", "special%_characters", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(testIDs, ShouldResemble, []string{
+				"special%_characters",
+			})
+		})
+	})
+}

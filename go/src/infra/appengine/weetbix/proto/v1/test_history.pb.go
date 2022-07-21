@@ -513,6 +513,163 @@ func (x *QueryVariantsResponse) GetNextPageToken() string {
 	return ""
 }
 
+// A request message for the `QueryTests` RPC.
+type QueryTestsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The LUCI project to query the tests from.
+	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	// Required. Only tests that contain the substring will be returned.
+	TestIdSubstring string `protobuf:"bytes,2,opt,name=test_id_substring,json=testIdSubstring,proto3" json:"test_id_substring,omitempty"`
+	// Optional. The project-scoped realm to query the variants from.
+	// This is the realm without the "<project>:" prefix.
+	//
+	// When specified, only the tests found in the matching realm will be
+	// returned.
+	SubRealm string `protobuf:"bytes,3,opt,name=sub_realm,json=subRealm,proto3" json:"sub_realm,omitempty"`
+	// The maximum number of test IDs to return.
+	//
+	// The service may return fewer than this value.
+	// If unspecified, at most 100 test IDs will be returned.
+	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	PageSize int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// A page token, received from a previous `QueryTests` call.
+	// Provide this to retrieve the subsequent page.
+	//
+	// When paginating, all other parameters provided to `QueryTests` MUST
+	// match the call that provided the page token.
+	PageToken string `protobuf:"bytes,5,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+}
+
+func (x *QueryTestsRequest) Reset() {
+	*x = QueryTestsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryTestsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryTestsRequest) ProtoMessage() {}
+
+func (x *QueryTestsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryTestsRequest.ProtoReflect.Descriptor instead.
+func (*QueryTestsRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_test_history_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *QueryTestsRequest) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+func (x *QueryTestsRequest) GetTestIdSubstring() string {
+	if x != nil {
+		return x.TestIdSubstring
+	}
+	return ""
+}
+
+func (x *QueryTestsRequest) GetSubRealm() string {
+	if x != nil {
+		return x.SubRealm
+	}
+	return ""
+}
+
+func (x *QueryTestsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *QueryTestsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// A response message for the `QueryTests` RPC.
+type QueryTestsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// A list of test Ids. Ordered alphabetically.
+	TestIds []string `protobuf:"bytes,1,rep,name=test_ids,json=testIds,proto3" json:"test_ids,omitempty"`
+	// A token, which can be sent as `page_token` to retrieve the next page.
+	// If this field is omitted, there were no subsequent pages at the time of
+	// request.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+}
+
+func (x *QueryTestsResponse) Reset() {
+	*x = QueryTestsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryTestsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryTestsResponse) ProtoMessage() {}
+
+func (x *QueryTestsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryTestsResponse.ProtoReflect.Descriptor instead.
+func (*QueryTestsResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_proto_v1_test_history_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *QueryTestsResponse) GetTestIds() []string {
+	if x != nil {
+		return x.TestIds
+	}
+	return nil
+}
+
+func (x *QueryTestsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
 type QueryTestHistoryStatsResponse_Group struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -541,7 +698,7 @@ type QueryTestHistoryStatsResponse_Group struct {
 func (x *QueryTestHistoryStatsResponse_Group) Reset() {
 	*x = QueryTestHistoryStatsResponse_Group{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[6]
+		mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -554,7 +711,7 @@ func (x *QueryTestHistoryStatsResponse_Group) String() string {
 func (*QueryTestHistoryStatsResponse_Group) ProtoMessage() {}
 
 func (x *QueryTestHistoryStatsResponse_Group) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[6]
+	mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -641,7 +798,7 @@ type QueryVariantsResponse_VariantInfo struct {
 func (x *QueryVariantsResponse_VariantInfo) Reset() {
 	*x = QueryVariantsResponse_VariantInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[7]
+		mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -654,7 +811,7 @@ func (x *QueryVariantsResponse_VariantInfo) String() string {
 func (*QueryVariantsResponse_VariantInfo) ProtoMessage() {}
 
 func (x *QueryVariantsResponse_VariantInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[7]
+	mi := &file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -806,29 +963,51 @@ var file_infra_appengine_weetbix_proto_v1_test_history_proto_rawDesc = []byte{
 	0x09, 0x52, 0x0b, 0x76, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x2d,
 	0x0a, 0x07, 0x76, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x13, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x56, 0x61, 0x72,
-	0x69, 0x61, 0x6e, 0x74, 0x52, 0x07, 0x76, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x32, 0xa0, 0x02,
-	0x0a, 0x0b, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x54, 0x0a,
-	0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x23, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69, 0x73,
-	0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x77, 0x65,
-	0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65,
-	0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x63, 0x0a, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x74, 0x61, 0x74,
-	0x73, 0x12, 0x28, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x53,
-	0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x77, 0x65,
-	0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65,
-	0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x56, 0x0a, 0x0d, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x20, 0x2e, 0x77, 0x65, 0x65, 0x74,
-	0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x56, 0x61, 0x72, 0x69,
-	0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x77, 0x65,
-	0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x56, 0x61,
-	0x72, 0x69, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
-	0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
-	0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2f, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x70, 0x62, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x61, 0x6e, 0x74, 0x52, 0x07, 0x76, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x22, 0xbc, 0x01,
+	0x0a, 0x11, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x12, 0x2f, 0x0a, 0x11, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x5f, 0x73, 0x75,
+	0x62, 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0,
+	0x41, 0x02, 0x52, 0x0f, 0x74, 0x65, 0x73, 0x74, 0x49, 0x64, 0x53, 0x75, 0x62, 0x73, 0x74, 0x72,
+	0x69, 0x6e, 0x67, 0x12, 0x1b, 0x0a, 0x09, 0x73, 0x75, 0x62, 0x5f, 0x72, 0x65, 0x61, 0x6c, 0x6d,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x75, 0x62, 0x52, 0x65, 0x61, 0x6c, 0x6d,
+	0x12, 0x1b, 0x0a, 0x09, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x08, 0x70, 0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x1d, 0x0a,
+	0x0a, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x09, 0x70, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x57, 0x0a, 0x12,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x01,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x74, 0x65, 0x73, 0x74, 0x49, 0x64, 0x73, 0x12, 0x26, 0x0a,
+	0x0f, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x6e, 0x65, 0x78, 0x74, 0x50, 0x61, 0x67, 0x65,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x32, 0xef, 0x02, 0x0a, 0x0b, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69,
+	0x73, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x54, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x23,
+	0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72,
+	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x63, 0x0a, 0x0a, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x53, 0x74, 0x61, 0x74, 0x73, 0x12, 0x28, 0x2e, 0x77, 0x65, 0x65, 0x74,
+	0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74,
+	0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72,
+	0x79, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x12, 0x56, 0x0a, 0x0d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74,
+	0x73, 0x12, 0x20, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x4d, 0x0a, 0x0a, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x54, 0x65, 0x73, 0x74, 0x73, 0x12, 0x1d, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x73, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e,
+	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x65, 0x73, 0x74, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x77, 0x65, 0x65, 0x74, 0x62,
+	0x69, 0x78, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x77, 0x65, 0x65, 0x74,
+	0x62, 0x69, 0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -843,7 +1022,7 @@ func file_infra_appengine_weetbix_proto_v1_test_history_proto_rawDescGZIP() []by
 	return file_infra_appengine_weetbix_proto_v1_test_history_proto_rawDescData
 }
 
-var file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_infra_appengine_weetbix_proto_v1_test_history_proto_goTypes = []interface{}{
 	(*QueryTestHistoryRequest)(nil),             // 0: weetbix.v1.QueryTestHistoryRequest
 	(*QueryTestHistoryResponse)(nil),            // 1: weetbix.v1.QueryTestHistoryResponse
@@ -851,33 +1030,37 @@ var file_infra_appengine_weetbix_proto_v1_test_history_proto_goTypes = []interfa
 	(*QueryTestHistoryStatsResponse)(nil),       // 3: weetbix.v1.QueryTestHistoryStatsResponse
 	(*QueryVariantsRequest)(nil),                // 4: weetbix.v1.QueryVariantsRequest
 	(*QueryVariantsResponse)(nil),               // 5: weetbix.v1.QueryVariantsResponse
-	(*QueryTestHistoryStatsResponse_Group)(nil), // 6: weetbix.v1.QueryTestHistoryStatsResponse.Group
-	(*QueryVariantsResponse_VariantInfo)(nil),   // 7: weetbix.v1.QueryVariantsResponse.VariantInfo
-	(*TestVerdictPredicate)(nil),                // 8: weetbix.v1.TestVerdictPredicate
-	(*TestVerdict)(nil),                         // 9: weetbix.v1.TestVerdict
-	(*VariantPredicate)(nil),                    // 10: weetbix.v1.VariantPredicate
-	(*timestamppb.Timestamp)(nil),               // 11: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                 // 12: google.protobuf.Duration
-	(*Variant)(nil),                             // 13: weetbix.v1.Variant
+	(*QueryTestsRequest)(nil),                   // 6: weetbix.v1.QueryTestsRequest
+	(*QueryTestsResponse)(nil),                  // 7: weetbix.v1.QueryTestsResponse
+	(*QueryTestHistoryStatsResponse_Group)(nil), // 8: weetbix.v1.QueryTestHistoryStatsResponse.Group
+	(*QueryVariantsResponse_VariantInfo)(nil),   // 9: weetbix.v1.QueryVariantsResponse.VariantInfo
+	(*TestVerdictPredicate)(nil),                // 10: weetbix.v1.TestVerdictPredicate
+	(*TestVerdict)(nil),                         // 11: weetbix.v1.TestVerdict
+	(*VariantPredicate)(nil),                    // 12: weetbix.v1.VariantPredicate
+	(*timestamppb.Timestamp)(nil),               // 13: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                 // 14: google.protobuf.Duration
+	(*Variant)(nil),                             // 15: weetbix.v1.Variant
 }
 var file_infra_appengine_weetbix_proto_v1_test_history_proto_depIdxs = []int32{
-	8,  // 0: weetbix.v1.QueryTestHistoryRequest.predicate:type_name -> weetbix.v1.TestVerdictPredicate
-	9,  // 1: weetbix.v1.QueryTestHistoryResponse.verdicts:type_name -> weetbix.v1.TestVerdict
-	8,  // 2: weetbix.v1.QueryTestHistoryStatsRequest.predicate:type_name -> weetbix.v1.TestVerdictPredicate
-	6,  // 3: weetbix.v1.QueryTestHistoryStatsResponse.groups:type_name -> weetbix.v1.QueryTestHistoryStatsResponse.Group
-	10, // 4: weetbix.v1.QueryVariantsRequest.variant_predicate:type_name -> weetbix.v1.VariantPredicate
-	7,  // 5: weetbix.v1.QueryVariantsResponse.variants:type_name -> weetbix.v1.QueryVariantsResponse.VariantInfo
-	11, // 6: weetbix.v1.QueryTestHistoryStatsResponse.Group.partition_time:type_name -> google.protobuf.Timestamp
-	12, // 7: weetbix.v1.QueryTestHistoryStatsResponse.Group.passed_avg_duration:type_name -> google.protobuf.Duration
-	13, // 8: weetbix.v1.QueryVariantsResponse.VariantInfo.variant:type_name -> weetbix.v1.Variant
+	10, // 0: weetbix.v1.QueryTestHistoryRequest.predicate:type_name -> weetbix.v1.TestVerdictPredicate
+	11, // 1: weetbix.v1.QueryTestHistoryResponse.verdicts:type_name -> weetbix.v1.TestVerdict
+	10, // 2: weetbix.v1.QueryTestHistoryStatsRequest.predicate:type_name -> weetbix.v1.TestVerdictPredicate
+	8,  // 3: weetbix.v1.QueryTestHistoryStatsResponse.groups:type_name -> weetbix.v1.QueryTestHistoryStatsResponse.Group
+	12, // 4: weetbix.v1.QueryVariantsRequest.variant_predicate:type_name -> weetbix.v1.VariantPredicate
+	9,  // 5: weetbix.v1.QueryVariantsResponse.variants:type_name -> weetbix.v1.QueryVariantsResponse.VariantInfo
+	13, // 6: weetbix.v1.QueryTestHistoryStatsResponse.Group.partition_time:type_name -> google.protobuf.Timestamp
+	14, // 7: weetbix.v1.QueryTestHistoryStatsResponse.Group.passed_avg_duration:type_name -> google.protobuf.Duration
+	15, // 8: weetbix.v1.QueryVariantsResponse.VariantInfo.variant:type_name -> weetbix.v1.Variant
 	0,  // 9: weetbix.v1.TestHistory.Query:input_type -> weetbix.v1.QueryTestHistoryRequest
 	2,  // 10: weetbix.v1.TestHistory.QueryStats:input_type -> weetbix.v1.QueryTestHistoryStatsRequest
 	4,  // 11: weetbix.v1.TestHistory.QueryVariants:input_type -> weetbix.v1.QueryVariantsRequest
-	1,  // 12: weetbix.v1.TestHistory.Query:output_type -> weetbix.v1.QueryTestHistoryResponse
-	3,  // 13: weetbix.v1.TestHistory.QueryStats:output_type -> weetbix.v1.QueryTestHistoryStatsResponse
-	5,  // 14: weetbix.v1.TestHistory.QueryVariants:output_type -> weetbix.v1.QueryVariantsResponse
-	12, // [12:15] is the sub-list for method output_type
-	9,  // [9:12] is the sub-list for method input_type
+	6,  // 12: weetbix.v1.TestHistory.QueryTests:input_type -> weetbix.v1.QueryTestsRequest
+	1,  // 13: weetbix.v1.TestHistory.Query:output_type -> weetbix.v1.QueryTestHistoryResponse
+	3,  // 14: weetbix.v1.TestHistory.QueryStats:output_type -> weetbix.v1.QueryTestHistoryStatsResponse
+	5,  // 15: weetbix.v1.TestHistory.QueryVariants:output_type -> weetbix.v1.QueryVariantsResponse
+	7,  // 16: weetbix.v1.TestHistory.QueryTests:output_type -> weetbix.v1.QueryTestsResponse
+	13, // [13:17] is the sub-list for method output_type
+	9,  // [9:13] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -965,7 +1148,7 @@ func file_infra_appengine_weetbix_proto_v1_test_history_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryTestHistoryStatsResponse_Group); i {
+			switch v := v.(*QueryTestsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -977,6 +1160,30 @@ func file_infra_appengine_weetbix_proto_v1_test_history_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryTestsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryTestHistoryStatsResponse_Group); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_proto_v1_test_history_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryVariantsResponse_VariantInfo); i {
 			case 0:
 				return &v.state
@@ -995,7 +1202,7 @@ func file_infra_appengine_weetbix_proto_v1_test_history_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_weetbix_proto_v1_test_history_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -1029,9 +1236,12 @@ type TestHistoryClient interface {
 	// and in a given range of times.
 	// Accepts a test variant predicate to filter the verdicts.
 	QueryStats(ctx context.Context, in *QueryTestHistoryStatsRequest, opts ...grpc.CallOption) (*QueryTestHistoryStatsResponse, error)
-	// Reterives variants for a given test ID in a given project that were
+	// Retrieves variants for a given test ID in a given project that were
 	// recorded in the past 90 days.
 	QueryVariants(ctx context.Context, in *QueryVariantsRequest, opts ...grpc.CallOption) (*QueryVariantsResponse, error)
+	// Finds test IDs that contain the given substring in a given project that
+	// were recorded in the past 90 days.
+	QueryTests(ctx context.Context, in *QueryTestsRequest, opts ...grpc.CallOption) (*QueryTestsResponse, error)
 }
 type testHistoryPRPCClient struct {
 	client *prpc.Client
@@ -1062,6 +1272,15 @@ func (c *testHistoryPRPCClient) QueryStats(ctx context.Context, in *QueryTestHis
 func (c *testHistoryPRPCClient) QueryVariants(ctx context.Context, in *QueryVariantsRequest, opts ...grpc.CallOption) (*QueryVariantsResponse, error) {
 	out := new(QueryVariantsResponse)
 	err := c.client.Call(ctx, "weetbix.v1.TestHistory", "QueryVariants", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *testHistoryPRPCClient) QueryTests(ctx context.Context, in *QueryTestsRequest, opts ...grpc.CallOption) (*QueryTestsResponse, error) {
+	out := new(QueryTestsResponse)
+	err := c.client.Call(ctx, "weetbix.v1.TestHistory", "QueryTests", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1103,6 +1322,15 @@ func (c *testHistoryClient) QueryVariants(ctx context.Context, in *QueryVariants
 	return out, nil
 }
 
+func (c *testHistoryClient) QueryTests(ctx context.Context, in *QueryTestsRequest, opts ...grpc.CallOption) (*QueryTestsResponse, error) {
+	out := new(QueryTestsResponse)
+	err := c.cc.Invoke(ctx, "/weetbix.v1.TestHistory/QueryTests", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TestHistoryServer is the server API for TestHistory service.
 type TestHistoryServer interface {
 	// Retrieves test verdicts for a given test ID in a given project and in a
@@ -1113,9 +1341,12 @@ type TestHistoryServer interface {
 	// and in a given range of times.
 	// Accepts a test variant predicate to filter the verdicts.
 	QueryStats(context.Context, *QueryTestHistoryStatsRequest) (*QueryTestHistoryStatsResponse, error)
-	// Reterives variants for a given test ID in a given project that were
+	// Retrieves variants for a given test ID in a given project that were
 	// recorded in the past 90 days.
 	QueryVariants(context.Context, *QueryVariantsRequest) (*QueryVariantsResponse, error)
+	// Finds test IDs that contain the given substring in a given project that
+	// were recorded in the past 90 days.
+	QueryTests(context.Context, *QueryTestsRequest) (*QueryTestsResponse, error)
 }
 
 // UnimplementedTestHistoryServer can be embedded to have forward compatible implementations.
@@ -1130,6 +1361,9 @@ func (*UnimplementedTestHistoryServer) QueryStats(context.Context, *QueryTestHis
 }
 func (*UnimplementedTestHistoryServer) QueryVariants(context.Context, *QueryVariantsRequest) (*QueryVariantsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryVariants not implemented")
+}
+func (*UnimplementedTestHistoryServer) QueryTests(context.Context, *QueryTestsRequest) (*QueryTestsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTests not implemented")
 }
 
 func RegisterTestHistoryServer(s prpc.Registrar, srv TestHistoryServer) {
@@ -1190,6 +1424,24 @@ func _TestHistory_QueryVariants_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TestHistory_QueryTests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTestsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TestHistoryServer).QueryTests(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/weetbix.v1.TestHistory/QueryTests",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TestHistoryServer).QueryTests(ctx, req.(*QueryTestsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _TestHistory_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "weetbix.v1.TestHistory",
 	HandlerType: (*TestHistoryServer)(nil),
@@ -1205,6 +1457,10 @@ var _TestHistory_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryVariants",
 			Handler:    _TestHistory_QueryVariants_Handler,
+		},
+		{
+			MethodName: "QueryTests",
+			Handler:    _TestHistory_QueryTests_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

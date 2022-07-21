@@ -29,9 +29,13 @@ service TestHistory {
   rpc QueryStats(QueryTestHistoryStatsRequest) returns (
     QueryTestHistoryStatsResponse) {};
 
-  // Reterives variants for a given test ID in a given project that were
+  // Retrieves variants for a given test ID in a given project that were
   // recorded in the past 90 days.
   rpc QueryVariants(QueryVariantsRequest) returns (QueryVariantsResponse) {};
+
+  // Finds test IDs that contain the given substring in a given project that
+  // were recorded in the past 90 days.
+  rpc QueryTests(QueryTestsRequest) returns (QueryTestsResponse) {};
 }
 
 // A request message for `TestHistory.Query` RPC.
@@ -198,6 +202,49 @@ message QueryVariantsResponse {
 
   // A list of variants. Ordered by variant hash.
   repeated VariantInfo variants = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there were no subsequent pages at the time of
+  // request.
+  string next_page_token = 2;
+}
+
+// A request message for the `QueryTests` RPC.
+message QueryTestsRequest {
+  // Required. The LUCI project to query the tests from.
+  string project = 1
+    [(google.api.field_behavior) = REQUIRED];
+
+  // Required. Only tests that contain the substring will be returned.
+  string test_id_substring = 2
+    [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The project-scoped realm to query the variants from.
+  // This is the realm without the "<project>:" prefix.
+  //
+  // When specified, only the tests found in the matching realm will be
+  // returned.
+  string sub_realm = 3;
+
+  // The maximum number of test IDs to return.
+  //
+  // The service may return fewer than this value.
+  // If unspecified, at most 100 test IDs will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 4;
+
+  // A page token, received from a previous `QueryTests` call.
+  // Provide this to retrieve the subsequent page.
+  //
+  // When paginating, all other parameters provided to `QueryTests` MUST
+  // match the call that provided the page token.
+  string page_token = 5;
+}
+
+// A response message for the `QueryTests` RPC.
+message QueryTestsResponse {
+  // A list of test Ids. Ordered alphabetically.
+  repeated string test_ids = 1;
 
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there were no subsequent pages at the time of
