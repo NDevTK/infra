@@ -221,11 +221,11 @@ type createBuildbucketTaskRequest struct {
 // Err should be non-nil if and only if a task was created.
 // We rely on this signal to decide whether to fall back to the legacy flow.
 func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequest) (string, error) {
-	switch params.taskName {
-	case "":
+	if params.taskName == "" {
 		params.taskName = tasknames.Recovery
-	default:
-		return "", fmt.Errorf("create buildbucket task: unsupported task name: %q", params.taskName)
+	}
+	if err := tasknames.ValidateTaskName(params.taskName); err != nil {
+		return "", errors.Annotate(err, "create buildbucket task: unsupported task name: %q", params.taskName).Err()
 	}
 	if err := params.taskType.Validate(); err != nil {
 		return "", errors.Annotate(err, "create buildbucket repair task: invalid task type %v", params.taskType).Err()
@@ -245,7 +245,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 	}
 	p := &labpack.Params{
 		UnitName:       heuristics.NormalizeBotNameToDeviceName(params.botID),
-		TaskName:       string(tasknames.Recovery),
+		TaskName:       params.taskName,
 		EnableRecovery: true,
 		// TODO(gregorynisbet): This is our own name, move it to the config.
 		AdminService: "chromeos-skylab-bot-fleet.appspot.com",
