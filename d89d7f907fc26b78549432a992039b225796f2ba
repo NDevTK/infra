@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "ddff41f5_95e2d2aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Let\u0027s add the BUG here: 1295566",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 9
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "924f471c_99772e58",
@@ -31,6 +54,143 @@
       "writtenOn": "2022-07-20T07:40:48Z",
       "side": 1,
       "message": "This is feedback purely from looking at the UI, and it is opinions, not requirements, feel free to ignore if you do not agree.  Most of this will be for follow up CLs, but I wanted to capture it:\n\n1. Why are there square brackets around the culprit range?\n2. Bugs should be in the standard format, eg. crbug.com/1234 instead of cr/1234\n3. Headings probably shouldn\u0027t be bold: are you using the Typography mui component?\n4. Related bugs should probably be listed horizontally rather than vertically\n5. Descriptions/keys should be de-emphasized from values, eg https://screenshot.googleplex.com/4nfgSAQ2mpxN23C\n6. Hard to tell at the moment, but maybe \"suspect summary\" should be put as a tab and drop the suspect summary and analysis components headings.  This will be difficult to decide until there is real data here.\n7. GOFINDIT link at the top should be more emphasized than the other links, larger font, not capitalized etc. https://screenshot.googleplex.com/6ZCop6vyaXN7dGm\n\n\noverall it looks really good, thanks!",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a47f46b_46c7dbcd",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/analysis_details.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Nits: It should be \"ID\", not \"Id\", per go/go-style/decisions#initialisms. There are some older place in the code that we should change too, but as this is new, we\u0027d better use ID",
+      "range": {
+        "startLine": 18,
+        "startChar": 1,
+        "endLine": 18,
+        "endChar": 3
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfcb488c_48d0f6ca",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/analysis_details.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Nits: I think \"bbid\" will make the URL a bit shorter.",
+      "range": {
+        "startLine": 48,
+        "startChar": 45,
+        "endLine": 48,
+        "endChar": 58
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d15ed289_dddc2613",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/handlers.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Nits: I think we should put a comment for the package, per https://go.dev/doc/comment",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 7
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db644dda_aeb71a5b",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/handlers.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Are you planning to use \"cloudProject\" and \"prod\" anywhere?",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d272dc4_ae06bad6",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/package.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Do you also want to update the README file about running the app, etc...?",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "891e7eef_86232f37",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Is there a reason you don\u0027t use the MUI table here https://mui.com/material-ui/react-table/#main-content, but use the html table?",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eee3df6f_2b47e675",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/heuristic_analysis_table/heuristic_analysis_table_row/heuristic_analysis_table_row.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-21T00:31:39Z",
+      "side": 1,
+      "message": "Currently in datastore we are storing the \"total score\" for each suspect only, not the individual score for each file (e.g. https://screenshot.googleplex.com/3mK2ZhmwCyJ87WE). Are you planning to change how we store in datastore?",
       "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
