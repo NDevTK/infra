@@ -15,6 +15,8 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
+	"infra/cros/recovery/tasknames"
+	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/common/heuristics"
 )
 
@@ -25,10 +27,8 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 	// Each audit action will correspond to one paris job, always.
 	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q", botID, randFloat, actions)
 
-	// Log, but do not otherwise use the chosen task result.
-	// RouteTask returning an error does NOT imply that the surrounding task
-	// should fail.
-	taskType, err := RouteTask(
+	// Determine the implementation to use.
+	taskType, rErr := RouteTask(
 		ctx,
 		RouteTaskParams{
 			taskType:      taskname,
@@ -39,12 +39,26 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 		randFloat,
 	)
 	logging.Infof(ctx, "RouteTask picked the taskType %d", int(taskType))
-	if err == nil {
-		logging.Infof(ctx, "RouteTask succeeded.")
-	} else {
-		logging.Infof(ctx, "RouteTask failed with error %q.", err.Error())
+	logging.Infof(ctx, "RouteTask produced error %q", rErr)
+
+	// Attempt to launch new repair.
+	bbURL := ""
+	cErr := errors.New("create audit task: no action taken")
+	if rErr == nil && taskType == heuristics.ProdTaskType {
+		logging.Infof(ctx, "Attempting to launch audit task")
+		bbURL, cErr = createBuildbucketTask(ctx, createBuildbucketTaskRequest{
+			// TODO(b:195583069, b:187879790): generalize this to all audit tasks.
+			taskName: tasknames.AuditRPM,
+			taskType: labpack.CIPDProd,
+			botID:    botID,
+		})
+	}
+	if cErr == nil {
+		logging.Infof(ctx, "Successfully launched audit task %q for bot %q", bbURL, botID)
+		return bbURL, nil
 	}
 
+	// Fall back to legacy repair if we failed.
 	return createLegacyAuditTask(ctx, botID, taskname, actions)
 }
 
