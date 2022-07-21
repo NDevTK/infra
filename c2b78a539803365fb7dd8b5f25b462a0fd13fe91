@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a34af0e9_e63b77c1",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/package-lock.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "Remove the `package-lock` file from git, that",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "896fe6e6_643917d9",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/change_list_overview/change_list_overview.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "use MUI table",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "185767c6_0fd23681",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/heuristic_analysis_table/heuristic_analysis_table_row/heuristic_analysis_table_row.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "The extra class for the cell seems unnecessary",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "046703e7_cc81bfe9",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/suspects_overview/suspects_overview.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "do we need to wrap it in a string?",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16631643_790f0b57",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/store/custom_hooks.ts",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "Delete Redux related files.",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9954346_8bddd2ab",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/tools/react_shim.ts",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "What is the need for this file?",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b897db7_1c20d63f",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/views/analysis_details/analysis_details.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "prop spreading is an anti pattern for react as it obscures the props being passed as well as having a performance impact, specify the props directly.",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14e10a8b_5e5ffe01",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/views/analysis_details/analysis_details.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "move tab names to a string enum for better reuse and modifiability.",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfd43210_ca064b54",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/views/analysis_details/analysis_details.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "nit extra line, I thought eslint would detect this.",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "628fb15a_bb2d929a",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/styles/style.css",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2022-07-21T07:08:28Z",
+      "side": 1,
+      "message": "nit: extra space",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
