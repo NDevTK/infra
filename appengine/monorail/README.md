@@ -180,11 +180,11 @@ dev_appserver wants to reload source files that you have changed in the editor, 
 
 *   `IntegrityError: (1364, "Field 'comment_id' doesn't have a default value")` happens when trying to file or update an issue
 
-In some versions of SQL, the `STRICT_TRANS_TABLES` option is set by default. You'll have to disable this option to stop this error.
+In some versions of SQL, the `STRICT_TRANS_TABLES` option is set by default. You'll have to disable this option to stop this error by running `mysql --user=root -e "SET GLOBAL sql_mode = '';"`.
 
 *   `ImportError: No module named six.moves`
 
-You may not have six.moves in your virtual environment and you may need to install it.
+You may not have six.moves in your virtual environment and you may need to install it with `pip install six.moves`
 
 1.  Determine that python and pip versions are possibly in vpython-root
     1.  `which python`
