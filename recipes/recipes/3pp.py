@@ -89,7 +89,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
              package_prefix, source_cache_prefix):
   if api.tryserver.is_tryserver:
     revision = api.tryserver.gerrit_change_fetch_ref
-    api.support_3pp._experimental = True
+    force_build = True  # Disallow uploading packages from tryjobs
   else:
     revision = 'refs/heads/main'
     # Report task stage to snoopy.
