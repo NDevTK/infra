@@ -23,57 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) DeployDut(ctx context.Context, req *DeployDutRequest) (rsp *DeployDutResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "DeployDut", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.DeployDut(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "DeployDut", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) RedeployDut(ctx context.Context, req *RedeployDutRequest) (rsp *RedeployDutResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "RedeployDut", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.RedeployDut(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "RedeployDut", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) GetDeploymentStatus(ctx context.Context, req *GetDeploymentStatusRequest) (rsp *GetDeploymentStatusResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetDeploymentStatus", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetDeploymentStatus(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetDeploymentStatus", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) DeleteDuts(ctx context.Context, req *DeleteDutsRequest) (rsp *DeleteDutsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

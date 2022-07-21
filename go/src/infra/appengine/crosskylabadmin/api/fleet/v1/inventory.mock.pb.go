@@ -185,26 +185,6 @@ func (mr *MockInventoryClientMockRecorder) DeleteSatlabStableVersion(ctx, in int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSatlabStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).DeleteSatlabStableVersion), varargs...)
 }
 
-// DeployDut mocks base method.
-func (m *MockInventoryClient) DeployDut(ctx context.Context, in *DeployDutRequest, opts ...grpc.CallOption) (*DeployDutResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DeployDut", varargs...)
-	ret0, _ := ret[0].(*DeployDutResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeployDut indicates an expected call of DeployDut.
-func (mr *MockInventoryClientMockRecorder) DeployDut(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeployDut", reflect.TypeOf((*MockInventoryClient)(nil).DeployDut), varargs...)
-}
-
 // DumpStableVersionToDatastore mocks base method.
 func (m *MockInventoryClient) DumpStableVersionToDatastore(ctx context.Context, in *DumpStableVersionToDatastoreRequest, opts ...grpc.CallOption) (*DumpStableVersionToDatastoreResponse, error) {
 	m.ctrl.T.Helper()
@@ -223,26 +203,6 @@ func (mr *MockInventoryClientMockRecorder) DumpStableVersionToDatastore(ctx, in 
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DumpStableVersionToDatastore", reflect.TypeOf((*MockInventoryClient)(nil).DumpStableVersionToDatastore), varargs...)
-}
-
-// GetDeploymentStatus mocks base method.
-func (m *MockInventoryClient) GetDeploymentStatus(ctx context.Context, in *GetDeploymentStatusRequest, opts ...grpc.CallOption) (*GetDeploymentStatusResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetDeploymentStatus", varargs...)
-	ret0, _ := ret[0].(*GetDeploymentStatusResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDeploymentStatus indicates an expected call of GetDeploymentStatus.
-func (mr *MockInventoryClientMockRecorder) GetDeploymentStatus(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeploymentStatus", reflect.TypeOf((*MockInventoryClient)(nil).GetDeploymentStatus), varargs...)
 }
 
 // GetDroneConfig mocks base method.
@@ -343,26 +303,6 @@ func (mr *MockInventoryClientMockRecorder) PushInventoryToQueen(ctx, in interfac
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushInventoryToQueen", reflect.TypeOf((*MockInventoryClient)(nil).PushInventoryToQueen), varargs...)
-}
-
-// RedeployDut mocks base method.
-func (m *MockInventoryClient) RedeployDut(ctx context.Context, in *RedeployDutRequest, opts ...grpc.CallOption) (*RedeployDutResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "RedeployDut", varargs...)
-	ret0, _ := ret[0].(*RedeployDutResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RedeployDut indicates an expected call of RedeployDut.
-func (mr *MockInventoryClientMockRecorder) RedeployDut(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RedeployDut", reflect.TypeOf((*MockInventoryClient)(nil).RedeployDut), varargs...)
 }
 
 // RemoveDutsFromDrones mocks base method.
@@ -588,21 +528,6 @@ func (mr *MockInventoryServerMockRecorder) DeleteSatlabStableVersion(arg0, arg1 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSatlabStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).DeleteSatlabStableVersion), arg0, arg1)
 }
 
-// DeployDut mocks base method.
-func (m *MockInventoryServer) DeployDut(arg0 context.Context, arg1 *DeployDutRequest) (*DeployDutResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeployDut", arg0, arg1)
-	ret0, _ := ret[0].(*DeployDutResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeployDut indicates an expected call of DeployDut.
-func (mr *MockInventoryServerMockRecorder) DeployDut(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeployDut", reflect.TypeOf((*MockInventoryServer)(nil).DeployDut), arg0, arg1)
-}
-
 // DumpStableVersionToDatastore mocks base method.
 func (m *MockInventoryServer) DumpStableVersionToDatastore(arg0 context.Context, arg1 *DumpStableVersionToDatastoreRequest) (*DumpStableVersionToDatastoreResponse, error) {
 	m.ctrl.T.Helper()
@@ -616,21 +541,6 @@ func (m *MockInventoryServer) DumpStableVersionToDatastore(arg0 context.Context,
 func (mr *MockInventoryServerMockRecorder) DumpStableVersionToDatastore(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DumpStableVersionToDatastore", reflect.TypeOf((*MockInventoryServer)(nil).DumpStableVersionToDatastore), arg0, arg1)
-}
-
-// GetDeploymentStatus mocks base method.
-func (m *MockInventoryServer) GetDeploymentStatus(arg0 context.Context, arg1 *GetDeploymentStatusRequest) (*GetDeploymentStatusResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDeploymentStatus", arg0, arg1)
-	ret0, _ := ret[0].(*GetDeploymentStatusResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDeploymentStatus indicates an expected call of GetDeploymentStatus.
-func (mr *MockInventoryServerMockRecorder) GetDeploymentStatus(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeploymentStatus", reflect.TypeOf((*MockInventoryServer)(nil).GetDeploymentStatus), arg0, arg1)
 }
 
 // GetDroneConfig mocks base method.
@@ -706,21 +616,6 @@ func (m *MockInventoryServer) PushInventoryToQueen(arg0 context.Context, arg1 *P
 func (mr *MockInventoryServerMockRecorder) PushInventoryToQueen(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushInventoryToQueen", reflect.TypeOf((*MockInventoryServer)(nil).PushInventoryToQueen), arg0, arg1)
-}
-
-// RedeployDut mocks base method.
-func (m *MockInventoryServer) RedeployDut(arg0 context.Context, arg1 *RedeployDutRequest) (*RedeployDutResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RedeployDut", arg0, arg1)
-	ret0, _ := ret[0].(*RedeployDutResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RedeployDut indicates an expected call of RedeployDut.
-func (mr *MockInventoryServerMockRecorder) RedeployDut(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RedeployDut", reflect.TypeOf((*MockInventoryServer)(nil).RedeployDut), arg0, arg1)
 }
 
 // RemoveDutsFromDrones mocks base method.

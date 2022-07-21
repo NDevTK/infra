@@ -64,59 +64,6 @@ func (r *DutSelector) Validate() error {
 }
 
 // Validate returns an error if r is invalid.
-func (r *DeployDutRequest) Validate() error {
-	if r.NewSpecs == nil {
-		return status.Errorf(codes.InvalidArgument, "new_specs must be set")
-	}
-	a := r.Actions
-	if a.GetSkipDeployment() {
-		if a.GetInstallTestImage() {
-			return status.Errorf(codes.InvalidArgument, "skip-deployment and install-test-image are incompatible")
-		}
-		if a.GetInstallFirmware() {
-			return status.Errorf(codes.InvalidArgument, "skip-deployment and install-firmware are incompatible")
-		}
-		if a.GetStageImageToUsb() {
-			return status.Errorf(codes.InvalidArgument, "skip-deployment and stage-image-to-usb are incompatible")
-		}
-		if a.GetSetupLabstation() {
-			return status.Errorf(codes.InvalidArgument, "skip-deployment and setup-labstation are incompatible")
-		}
-	}
-	if a.GetSetupLabstation() {
-		if a.GetInstallTestImage() {
-			return status.Errorf(codes.InvalidArgument, "setup-labstation and install-test-image are incompatible")
-		}
-		if a.GetInstallFirmware() {
-			return status.Errorf(codes.InvalidArgument, "setup-labstation and install-firmware are incompatible")
-		}
-		if a.GetStageImageToUsb() {
-			return status.Errorf(codes.InvalidArgument, "setup-labstation and stage-image-to-usb are incompatible")
-		}
-	}
-	return nil
-}
-
-// Validate returns an error if r is invalid.
-func (r *RedeployDutRequest) Validate() error {
-	if r.OldSpecs == nil {
-		return status.Errorf(codes.InvalidArgument, "old_specs must be set")
-	}
-	if r.NewSpecs == nil {
-		return status.Errorf(codes.InvalidArgument, "new_specs must be set")
-	}
-	return nil
-}
-
-// Validate returns an error if r is invalid.
-func (r *GetDeploymentStatusRequest) Validate() error {
-	if r.DeploymentId == "" {
-		return status.Errorf(codes.InvalidArgument, "deployment_id is required")
-	}
-	return nil
-}
-
-// Validate returns an error if r is invalid.
 func (r *DeleteDutsRequest) Validate() error {
 	if len(r.Hostnames) == 0 {
 		return status.Errorf(codes.InvalidArgument, "must specify at least one hostname")
