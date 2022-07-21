@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7a013eb_41acd122",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 716,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-07-21T01:47:55Z",
+      "side": 1,
+      "message": "It\u0027s not wrong, but have you considered/experimented making this table just (Project, TestId) and relying on a join to the TestVariantRealms table to do the ACL check?\n\nI suspect that this design will be faster in most of the relevant use cases.\n\nFor the chromium project, most TestIDs would be publically visible and exist in both chromium:try + chromium:ci, so this choice of table design would multiply the table size by 2x compared to not including the realm. (Thus a 1s query time could turn into 2s.)\n\nFor ChromeOS, there are less TestIDs but it is expected they will be replicated to hundreds of realms over time.\n\nThe main case where the join is expensive is if the TestID criteria is not very restrictive and the ACL criteria is restrictive. Then a lot of rows which match by TestId in this first table must be pushed to the server(s) with the TestVariantRealms table to do the ACL check until we satisfy the number of rows specified in the LIMIT clause.\n\nGiven most (basically all?) tests in chromium exist in all realms (same for ChromeOS?), the ACL check seems unlikely to fail if we can verify the user has access to at least one test result.",
+      "range": {
+        "startLine": 716,
+        "startChar": 2,
+        "endLine": 716,
+        "endChar": 40
+      },
+      "revId": "b0354f2a06d64cbf4d92053e1bec624bd6d36733",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
