@@ -23,9 +23,10 @@ func GenerateStatement(tmpl *template.Template, name string, input interface{}) 
 	return spanner.NewStatement(sql.String()), nil
 }
 
-// EscapePattern escapes all the special characters ('\', '_', '%') in the given
-// string.
-func EscapePattern(value string) string {
+// QuoteLike turns a literal string into an escaped like expression.
+// This means strings like test_name will only match as expected, rather than
+// also matching test3name.
+func QuoteLike(value string) string {
 	value = strings.ReplaceAll(value, "\\", "\\\\")
 	value = strings.ReplaceAll(value, "%", "\\%")
 	value = strings.ReplaceAll(value, "_", "\\_")

@@ -812,7 +812,7 @@ func QueryTests(ctx context.Context, project, testIDSubstring string, opts Query
 	}
 	params := map[string]interface{}{
 		"project":       project,
-		"testIdPattern": "%" + spanutil.EscapePattern(testIDSubstring) + "%",
+		"testIdPattern": "%" + spanutil.QuoteLike(testIDSubstring) + "%",
 		"subRealms":     opts.SubRealms,
 
 		// Control pagination.

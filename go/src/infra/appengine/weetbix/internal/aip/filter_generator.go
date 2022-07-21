@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	spanutil "infra/appengine/weetbix/internal/span"
 )
 
 // whereClause constructs Standard SQL WHERE clause parts from
@@ -237,7 +239,7 @@ func (w *whereClause) likeComparableValue(comparable *Comparable) (string, error
 		return "", fmt.Errorf("fields are not allowed on the RHS of has (:) operator")
 	}
 	// Bind unsanitised user input to a parameter to protect against SQL injection.
-	return w.bind("%" + quoteLike(comparable.Member.Value) + "%"), nil
+	return w.bind("%" + spanutil.QuoteLike(comparable.Member.Value) + "%"), nil
 }
 
 // bind binds a new query parameter with the given value, and returns
@@ -248,13 +250,4 @@ func (q *whereClause) bind(value string) string {
 	q.nextValueName += 1
 	q.parameters = append(q.parameters, QueryParameter{Name: name, Value: value})
 	return "@" + name
-}
-
-// quoteLike turns a literal string into an escaped like expression.
-// This means strings like test_name will only match as expected, rahter than also matching test3name.
-func quoteLike(value string) string {
-	value = strings.ReplaceAll(value, "\\", "\\\\")
-	value = strings.ReplaceAll(value, "%", "\\%")
-	value = strings.ReplaceAll(value, "_", "\\_")
-	return value
 }
