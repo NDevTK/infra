@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "29d6bf6e_85c55fc3",
+        "filename": "appengine/monorail/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2022-07-21T19:15:47Z",
+      "side": 1,
+      "message": "I don\u0027t know if it is, so I\u0027ve modified the command.",
+      "parentUuid": "c4c2e209_979a8728",
+      "range": {
+        "startLine": 183,
+        "startChar": 142,
+        "endLine": 183,
+        "endChar": 214
+      },
+      "revId": "e9821a6101d66e4cfbeb354e29d3618f3b04f8d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d9fdb80_786387ea",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-07-20T17:07:09Z",
       "side": 1,
       "message": "The solution to this seems to be listed on line 193. Should we delete that solution and replace it with `pip install six.moves` or should we list both of them?",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 114
+      },
+      "revId": "e9821a6101d66e4cfbeb354e29d3618f3b04f8d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba9d66ea_1c3cab61",
+        "filename": "appengine/monorail/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2022-07-21T19:15:47Z",
+      "side": 1,
+      "message": "I think it might be more convenient to list it twice.",
+      "parentUuid": "6d9fdb80_786387ea",
       "range": {
         "startLine": 187,
         "startChar": 0,
