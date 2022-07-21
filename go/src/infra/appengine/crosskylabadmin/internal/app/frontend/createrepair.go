@@ -115,7 +115,7 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		cipdVersion = labpack.CIPDLatest
 	}
 
-	url, err := createBuildbucketRepairTask(ctx, createBuildBucketRepairTaskRequest{
+	url, err := createBuildbucketTask(ctx, createBuildbucketTaskRequest{
 		taskType:      cipdVersion,
 		botID:         botID,
 		expectedState: expectedState,
@@ -207,18 +207,26 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 	}
 }
 
-// createBuildBucketRepairTaskRequest consists of the parameters needed to schedule a buildbucket repair task.
-type createBuildBucketRepairTaskRequest struct {
+// createBuildbucketTaskRequest consists of the parameters needed to schedule a buildbucket repair task.
+type createBuildbucketTaskRequest struct {
+	// taskName is the name of the task, e.g. taskname.Recovery
+	taskName tasknames.TaskName
 	taskType labpack.CIPDVersion
 	// botID is the ID of the bot, for example, "crossk-chromeos...".
 	botID         string
 	expectedState string
 }
 
-// CreateBuildbucketRepairTask creates a new repair task for a labstation.
+// CreateBuildbucketTask creates a new task (repair by default) for the provided DUT.
 // Err should be non-nil if and only if a task was created.
 // We rely on this signal to decide whether to fall back to the legacy flow.
-func createBuildbucketRepairTask(ctx context.Context, params createBuildBucketRepairTaskRequest) (string, error) {
+func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequest) (string, error) {
+	switch params.taskName {
+	case "":
+		params.taskName = tasknames.Recovery
+	default:
+		return "", fmt.Errorf("create buildbucket task: unsupported task name: %q", params.taskName)
+	}
 	if err := params.taskType.Validate(); err != nil {
 		return "", errors.Annotate(err, "create buildbucket repair task: invalid task type %v", params.taskType).Err()
 	}

@@ -11,6 +11,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
@@ -619,4 +621,13 @@ func TestRouteRepairTaskProbability(t *testing.T) {
 	if dist := math.Abs(float64(latestTally) - latestExpected); dist > latestTol {
 		t.Errorf("latest difference %f is too high", dist)
 	}
+}
+
+func TestCreateBuildbucketTask(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("test create buildbucket task", t, func() {
+		_, err := createBuildbucketTask(ctx, createBuildbucketTaskRequest{taskName: "e"})
+		So(err, ShouldErrLike, "unsupported")
+	})
 }
