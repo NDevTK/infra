@@ -22,6 +22,30 @@
       },
       "revId": "b0354f2a06d64cbf4d92053e1bec624bd6d36733",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e369cfb_14183f52",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 716,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-07-21T02:08:01Z",
+      "side": 1,
+      "message": "As discussed, based on experiments we ran, let\u0027s continue with the current approach.",
+      "parentUuid": "c7a013eb_41acd122",
+      "range": {
+        "startLine": 716,
+        "startChar": 2,
+        "endLine": 716,
+        "endChar": 40
+      },
+      "revId": "b0354f2a06d64cbf4d92053e1bec624bd6d36733",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
