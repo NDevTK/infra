@@ -373,8 +373,13 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 		if c.ClusterID.IsBugCluster() {
 			ruleID := c.ClusterID.ID
 			rule := ruleset.ActiveRulesByID[ruleID]
-			cs.Title = rule.Rule.RuleDefinition
-			cs.Bug = createAssociatedBugPB(rule.Rule.BugID, cfg.Config)
+			if rule != nil {
+				cs.Title = rule.Rule.RuleDefinition
+				cs.Bug = createAssociatedBugPB(rule.Rule.BugID, cfg.Config)
+			} else {
+				// Rule is inactive / in process of being archived.
+				cs.Title = "(rule archived)"
+			}
 		} else {
 			example := &clustering.Failure{
 				TestID: c.ExampleTestID,

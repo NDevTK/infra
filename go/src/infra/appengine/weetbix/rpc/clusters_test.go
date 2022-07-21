@@ -519,6 +519,18 @@ func TestClusters(t *testing.T) {
 					ExampleFailureReason:       bigquery.NullString{Valid: true, StringVal: "Example failure reason 2."},
 					ExampleTestID:              "TestID 3",
 				},
+				{
+					ClusterID: clustering.ClusterID{
+						// Rule that is no longer active.
+						Algorithm: rulesalgorithm.AlgorithmName,
+						ID:        "01234567890abcdef01234567890abcdef",
+					},
+					PresubmitRejects:           7,
+					CriticalFailuresExonerated: 8,
+					Failures:                   9,
+					ExampleFailureReason:       bigquery.NullString{Valid: true, StringVal: "Example failure reason."},
+					ExampleTestID:              "TestID 1",
+				},
 			}
 
 			request := &pb.QueryClusterSummariesRequest{
@@ -554,6 +566,16 @@ func TestClusters(t *testing.T) {
 							PresubmitRejects:           4,
 							CriticalFailuresExonerated: 5,
 							Failures:                   6,
+						},
+						{
+							ClusterId: &pb.ClusterId{
+								Algorithm: "rules",
+								Id:        "01234567890abcdef01234567890abcdef",
+							},
+							Title:                      `(rule archived)`,
+							PresubmitRejects:           7,
+							CriticalFailuresExonerated: 8,
+							Failures:                   9,
 						},
 					},
 				}

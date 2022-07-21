@@ -23,7 +23,7 @@ const ClustersTableHead = ({
     <TableHead data-testid="clusters_table_head">
       <TableRow>
         <TableCell>Cluster</TableCell>
-        <TableCell sx={{ width: '130px' }}>Bug</TableCell>
+        <TableCell sx={{ width: '150px' }}>Bug</TableCell>
         <TableCell
           sortDirection={sortMetric === 'presubmit_rejects' ? (isAscending ? 'asc' : 'desc') : false}
           sx={{ cursor: 'pointer', width: '100px' }}>
