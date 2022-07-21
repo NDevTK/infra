@@ -52,6 +52,9 @@ type AnalysisClient interface {
 	// ReadImpactfulClusters reads analysis for clusters matching the
 	// specified criteria.
 	ReadImpactfulClusters(ctx context.Context, opts analysis.ImpactfulClusterReadOptions) ([]*analysis.Cluster, error)
+	// PurgeStaleRows purges stale clustered failure rows
+	// from the table.
+	PurgeStaleRows(ctx context.Context, luciProject string) error
 }
 
 func init() {
@@ -189,25 +192,26 @@ func updateAnalysisAndBugsForProject(ctx context.Context, opts updateOptions) er
 	if err := opts.analysisClient.RebuildAnalysis(ctx, opts.project); err != nil {
 		return errors.Annotate(err, "update cluster summary analysis").Err()
 	}
+	if opts.enableBugUpdates {
+		mgrs := make(map[string]BugManager)
 
-	if !opts.enableBugUpdates {
-		return nil
+		mbm, err := monorail.NewBugManager(opts.monorailClient, opts.appID, opts.project, projectCfg.Config)
+		if err != nil {
+			return errors.Annotate(err, "create monorail bug manager").Err()
+		}
+
+		mbm.Simulate = opts.simulateBugUpdates
+		mgrs[bugs.MonorailSystem] = mbm
+
+		bu := NewBugUpdater(opts.project, mgrs, opts.analysisClient, projectCfg)
+		bu.MaxBugsFiledPerRun = opts.maxBugsFiledPerRun
+		if err := bu.Run(ctx, progress); err != nil {
+			return errors.Annotate(err, "update bugs").Err()
+		}
 	}
-
-	mgrs := make(map[string]BugManager)
-
-	mbm, err := monorail.NewBugManager(opts.monorailClient, opts.appID, opts.project, projectCfg.Config)
-	if err != nil {
-		return errors.Annotate(err, "create monorail bug manager").Err()
-	}
-
-	mbm.Simulate = opts.simulateBugUpdates
-	mgrs[bugs.MonorailSystem] = mbm
-
-	bu := NewBugUpdater(opts.project, mgrs, opts.analysisClient, projectCfg)
-	bu.MaxBugsFiledPerRun = opts.maxBugsFiledPerRun
-	if err := bu.Run(ctx, progress); err != nil {
-		return errors.Annotate(err, "update bugs").Err()
+	// Do last, as this failing should not block bug updates.
+	if err := opts.analysisClient.PurgeStaleRows(ctx, opts.project); err != nil {
+		return errors.Annotate(err, "purge stale rows").Err()
 	}
 	return nil
 }
