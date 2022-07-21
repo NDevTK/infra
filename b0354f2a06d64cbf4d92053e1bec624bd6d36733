@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9271dd6f_3d8f5247",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2022-07-21T03:32:45Z",
+      "side": 1,
+      "message": "Rolled the schema change to prod.\nhttps://buganizer.corp.google.com/issues/239767244\n",
+      "revId": "b0354f2a06d64cbf4d92053e1bec624bd6d36733",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c7a013eb_41acd122",
