@@ -56,7 +56,7 @@ func isFirmwareInGoodState(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// isOnRWFirmwareStableVersionExec confirms that the DUT is currently running the stable version based on its specification.
+// isOnRWFirmwareStableVersionExec confirms that the current RW firmware on DUT is match with model specific stable version.
 func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
 	if err != nil {
@@ -64,6 +64,16 @@ func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) 
 	}
 	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "fwid", sv.FwVersion)
 	return errors.Annotate(err, "on rw firmware stable version").Err()
+}
+
+// isOnROFirmwareStableVersionExec confirms that the current RO firmware on DUT is match with model specific stable version.
+func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	if err != nil {
+		return errors.Annotate(err, "on ro firmware stable version").Err()
+	}
+	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "ro_fwid", sv.FwVersion)
+	return errors.Annotate(err, "on ro firmware stable version").Err()
 }
 
 // isRWFirmwareStableVersionAvailableExec confirms the stable firmware is up to date with the available firmware.
@@ -200,6 +210,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 func init() {
 	execs.Register("cros_is_firmware_in_good_state", isFirmwareInGoodState)
 	execs.Register("cros_is_on_rw_firmware_stable_version", isOnRWFirmwareStableVersionExec)
+	execs.Register("cros_is_on_ro_firmware_stable_version", isOnROFirmwareStableVersionExec)
 	execs.Register("cros_is_rw_firmware_stable_version_available", isRWFirmwareStableVersionAvailableExec)
 	execs.Register("cros_has_dev_signed_firmware", hasDevSignedFirmwareExec)
 	execs.Register("cros_run_firmware_update", runFirmwareUpdaterExec)
