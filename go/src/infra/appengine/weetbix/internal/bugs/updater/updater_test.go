@@ -882,6 +882,10 @@ func (f *fakeAnalysisClient) RebuildAnalysis(ctx context.Context, project string
 	return nil
 }
 
+func (f *fakeAnalysisClient) PurgeStaleRows(ctx context.Context, luciProject string) error {
+	return nil
+}
+
 func (f *fakeAnalysisClient) ReadImpactfulClusters(ctx context.Context, opts analysis.ImpactfulClusterReadOptions) ([]*analysis.Cluster, error) {
 	if !f.analysisBuilt {
 		return nil, errors.New("cluster_summaries does not exist")
