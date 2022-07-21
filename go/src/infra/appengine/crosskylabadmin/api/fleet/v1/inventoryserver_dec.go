@@ -23,23 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) DeleteDuts(ctx context.Context, req *DeleteDutsRequest) (rsp *DeleteDutsResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "DeleteDuts", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.DeleteDuts(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "DeleteDuts", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) RemoveDutsFromDrones(ctx context.Context, req *RemoveDutsFromDronesRequest) (rsp *RemoveDutsFromDronesResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

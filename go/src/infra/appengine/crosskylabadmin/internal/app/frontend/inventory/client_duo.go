@@ -119,18 +119,6 @@ func (client *duoClient) updateDUTSpecs(ctx context.Context, od, nd *inventory.C
 	return
 }
 
-func (client *duoClient) deleteDUTsFromFleet(ctx context.Context, ids []string) (url string, deletedIds []string, err error) {
-	if !client.inventoryV2Only {
-		url, deletedIds, err = client.gc.deleteDUTsFromFleet(ctx, ids)
-		logging.Infof(ctx, "[v1] delete dut result: %s, %s, %s", url, deletedIds, err)
-	}
-	if client.willWriteToV2() {
-		url, deletedIds, err = client.ic.deleteDUTsFromFleet(ctx, ids)
-		logging.Infof(ctx, "[v2] delete dut result: %s, %s, %s", url, deletedIds, err)
-	}
-	return
-}
-
 func (client *duoClient) getDutInfo(ctx context.Context, req *fleet.GetDutInfoRequest) ([]byte, time.Time, error) {
 	if client.willReadFromV2(req) {
 		dut, now, err := client.ic.getDutInfo(ctx, req)

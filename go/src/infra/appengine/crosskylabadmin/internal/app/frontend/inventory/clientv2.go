@@ -182,16 +182,6 @@ func (c *invServiceClient) updateDUTSpecs(ctx context.Context, od, nd *inventory
 	return "URL N/A", nil
 }
 
-func (c *invServiceClient) deleteDUTsFromFleet(ctx context.Context, ids []string) (string, []string, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			logging.Errorf(ctx, "Recovered in deleteDUTsFromFleet(%s)", r)
-		}
-	}()
-
-	return "fake delete URL", []string{}, nil
-}
-
 func (c *invServiceClient) getDutInfo(ctx context.Context, req *invV1Api.GetDutInfoRequest) ([]byte, time.Time, error) {
 	var devID *api.DeviceID
 	now := time.Now().UTC()

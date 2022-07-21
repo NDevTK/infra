@@ -145,26 +145,6 @@ func (mr *MockInventoryClientMockRecorder) BatchUpdateDuts(ctx, in interface{}, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchUpdateDuts", reflect.TypeOf((*MockInventoryClient)(nil).BatchUpdateDuts), varargs...)
 }
 
-// DeleteDuts mocks base method.
-func (m *MockInventoryClient) DeleteDuts(ctx context.Context, in *DeleteDutsRequest, opts ...grpc.CallOption) (*DeleteDutsResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DeleteDuts", varargs...)
-	ret0, _ := ret[0].(*DeleteDutsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeleteDuts indicates an expected call of DeleteDuts.
-func (mr *MockInventoryClientMockRecorder) DeleteDuts(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDuts", reflect.TypeOf((*MockInventoryClient)(nil).DeleteDuts), varargs...)
-}
-
 // DeleteSatlabStableVersion mocks base method.
 func (m *MockInventoryClient) DeleteSatlabStableVersion(ctx context.Context, in *DeleteSatlabStableVersionRequest, opts ...grpc.CallOption) (*DeleteSatlabStableVersionResponse, error) {
 	m.ctrl.T.Helper()
@@ -496,21 +476,6 @@ func (m *MockInventoryServer) BatchUpdateDuts(arg0 context.Context, arg1 *BatchU
 func (mr *MockInventoryServerMockRecorder) BatchUpdateDuts(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchUpdateDuts", reflect.TypeOf((*MockInventoryServer)(nil).BatchUpdateDuts), arg0, arg1)
-}
-
-// DeleteDuts mocks base method.
-func (m *MockInventoryServer) DeleteDuts(arg0 context.Context, arg1 *DeleteDutsRequest) (*DeleteDutsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteDuts", arg0, arg1)
-	ret0, _ := ret[0].(*DeleteDutsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeleteDuts indicates an expected call of DeleteDuts.
-func (mr *MockInventoryServerMockRecorder) DeleteDuts(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDuts", reflect.TypeOf((*MockInventoryServer)(nil).DeleteDuts), arg0, arg1)
 }
 
 // DeleteSatlabStableVersion mocks base method.

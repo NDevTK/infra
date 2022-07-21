@@ -16,9 +16,6 @@ package fleet
 
 import (
 	"errors"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // Validate returns an error if r is invalid.
@@ -59,14 +56,6 @@ func (r *GetDutInfoRequest) Validate() error {
 func (r *DutSelector) Validate() error {
 	if r.Id == "" && r.Hostname == "" && r.Model == "" {
 		return errors.New("dut_selector must not be empty")
-	}
-	return nil
-}
-
-// Validate returns an error if r is invalid.
-func (r *DeleteDutsRequest) Validate() error {
-	if len(r.Hostnames) == 0 {
-		return status.Errorf(codes.InvalidArgument, "must specify at least one hostname")
 	}
 	return nil
 }

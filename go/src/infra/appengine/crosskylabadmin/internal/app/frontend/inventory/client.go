@@ -13,7 +13,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
-	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
@@ -39,7 +38,6 @@ type inventoryClient interface {
 	getAssetsFromRegistration(ctx context.Context, assetList *api.AssetIDList) (*api.AssetResponse, error)
 	updateAssetsInRegistration(ctx context.Context, assetList *api.AssetList) (*api.AssetResponse, error)
 	updateDUTSpecs(context.Context, *inventory.CommonDeviceSpecs, *inventory.CommonDeviceSpecs, bool) (string, error)
-	deleteDUTsFromFleet(context.Context, []string) (string, []string, error)
 	getDutInfo(context.Context, *fleet.GetDutInfoRequest) ([]byte, time.Time, error)
 	deviceConfigsExists(context.Context, []*device.ConfigId) (map[int32]bool, error)
 }
@@ -70,10 +68,6 @@ func (client *gitStoreClient) updateAssetsInRegistration(ctx context.Context, as
 
 func (client *gitStoreClient) updateDUTSpecs(ctx context.Context, od, nd *inventory.CommonDeviceSpecs, pickServoPort bool) (string, error) {
 	return updateDUTSpecs(ctx, client.store, od, nd, pickServoPort)
-}
-
-func (client *gitStoreClient) deleteDUTsFromFleet(ctx context.Context, ids []string) (string, []string, error) {
-	return deleteDUTsFromFleet(ctx, client.store, ids)
 }
 
 func (client *gitStoreClient) deviceConfigsExists(ctx context.Context, configIds []*device.ConfigId) (map[int32]bool, error) {
@@ -309,60 +303,4 @@ func addDUTToStore(s *gitstore.InventoryStore, nd *inventory.CommonDeviceSpecs) 
 		Common: nd,
 	})
 	return *nd.Id
-}
-
-func deleteDUTsFromFleet(ctx context.Context, s *gitstore.InventoryStore, ids []string) (string, []string, error) {
-	var changeURL string
-	var removedIDs []string
-	f := func() error {
-		if err2 := s.Refresh(ctx); err2 != nil {
-			return err2
-		}
-		removedDUTs := removeDUTWithHostnames(s, ids)
-		url, err2 := s.Commit(ctx, fmt.Sprintf("delete %d duts", len(removedDUTs)))
-		if gitstore.IsEmptyErr(err2) {
-			return nil
-		}
-		if err2 != nil {
-			return err2
-		}
-
-		// Captured variables only on success, hence at most once.
-		changeURL = url
-		removedIDs = make([]string, 0, len(removedDUTs))
-		for _, d := range removedDUTs {
-			removedIDs = append(removedIDs, d.GetCommon().GetId())
-		}
-		return nil
-	}
-	err := retry.Retry(ctx, transientErrorRetries(), f, retry.LogCallback(ctx, "DeleteDut"))
-	return changeURL, removedIDs, err
-}
-
-// removeDUTWithHostnames deletes duts with the given hostnames.
-//
-// The function returns the deleted duts.
-// If multiple DUTs have the same hostname, that is in hostnames, they are all deleted.
-func removeDUTWithHostnames(s *gitstore.InventoryStore, hostnames []string) []*inventory.DeviceUnderTest {
-	duts := s.Lab.Duts
-	toRemove := stringset.NewFromSlice(hostnames...)
-	removedDuts := make([]*inventory.DeviceUnderTest, 0, len(hostnames))
-	for i := 0; i < len(duts); {
-		d := duts[i]
-		h := d.GetCommon().GetHostname()
-		if !toRemove.Has(h) {
-			i++
-			continue
-		}
-		removedDuts = append(removedDuts, d)
-		duts = deleteAtIndex(duts, i)
-	}
-	s.Lab.Duts = duts
-	return removedDuts
-}
-
-func deleteAtIndex(duts []*inventory.DeviceUnderTest, i int) []*inventory.DeviceUnderTest {
-	copy(duts[i:], duts[i+1:])
-	duts[len(duts)-1] = nil
-	return duts[:len(duts)-1]
 }

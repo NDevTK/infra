@@ -21,6 +21,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	"go.chromium.org/luci/common/errors"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
@@ -431,4 +432,20 @@ func TestStableVersionFileParsing(t *testing.T) {
 		So(len(records.firmware), ShouldEqual, 1)
 		So(len(records.faft), ShouldEqual, 1)
 	})
+}
+
+// getLastChangeForHost gets the latest change for a given path of one host in gerrit for per-file inventory.
+func getLastChangeForHost(fg *fakes.GerritClient, path string) (*inventory.Lab, error) {
+	if len(fg.Changes) == 0 {
+		return nil, errors.Reason("found no gerrit changes").Err()
+	}
+
+	change := fg.Changes[len(fg.Changes)-1]
+	content, ok := change.Files[path]
+	if !ok {
+		return nil, errors.Reason(fmt.Sprintf("cannot find path %s in %v", path, change.Files)).Err()
+	}
+	var oneDutLab inventory.Lab
+	err := inventory.LoadLabFromString(content, &oneDutLab)
+	return &oneDutLab, err
 }
