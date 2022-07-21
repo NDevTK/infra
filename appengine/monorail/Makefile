@@ -75,6 +75,9 @@ business_proto:
 	../../cipd/protoc \
 	--python_out=. --prpc-python_out=. proto/*.proto
 
+pytest:
+	GAE_RUNTIME=python3 GAE_APPLICATION=testbed-test SERVER_SOFTWARE=test pytest
+
 test:
 	../../test.py test appengine/monorail
 
