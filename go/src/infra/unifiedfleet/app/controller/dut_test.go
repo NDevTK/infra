@@ -2680,12 +2680,11 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 
-		Convey("GetChromeOSDevicedata - id happy path; inv v2 hwid api", func() {
+		Convey("GetChromeOSDevicedata - deprecated inv v2 hwid api", func() {
 			cfgLst := &config.Config{
 				UseCachedHwidManufacturingConfig: false,
 			}
 			ctx2 := config.Use(ctx, cfgLst)
-			invV2HwidData := &ufspb.HwidData{Sku: "test", Variant: "test"}
 
 			resp, err := GetChromeOSDeviceData(ctx2, "machine-1", "")
 			So(err, ShouldBeNil)
@@ -2695,7 +2694,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDutState(), ShouldResembleProto, dutState)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
-			So(resp.GetHwidData(), ShouldResembleProto, invV2HwidData)
+			So(resp.GetHwidData(), ShouldBeNil)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
