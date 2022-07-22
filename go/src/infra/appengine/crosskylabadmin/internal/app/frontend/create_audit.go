@@ -35,7 +35,7 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 	taskType, rErr := RouteTask(
 		ctx,
 		RouteTaskParams{
-			taskType:      tn,
+			taskType:      tn.String(),
 			botID:         botID,
 			expectedState: "",
 			pools:         nil,
