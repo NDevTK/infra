@@ -14,7 +14,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
 	"time"
 
@@ -185,11 +184,8 @@ func generateCommandArray(containerName string, req *ContainerArgs) []string {
 // Remove removes existed container.
 func (d *dockerClient) Remove(ctx context.Context, containerName string, force bool) error {
 	log.Debugf(ctx, "Removing container %q, using force:%v", containerName, force)
-	args := []string{"rm", containerName}
-	if force {
-		args = append(args, "--force")
-	}
-	err := exec.CommandContext(ctx, "docker", args...).Run()
+	o := types.ContainerRemoveOptions{Force: force}
+	err := d.client.ContainerRemove(ctx, containerName, o)
 	return errors.Annotate(err, "docker remove container  %s", containerName).Err()
 }
 
