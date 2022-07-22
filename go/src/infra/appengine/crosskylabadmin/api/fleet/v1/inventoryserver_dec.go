@@ -23,23 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) ListServers(ctx context.Context, req *ListServersRequest) (rsp *ListServersResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ListServers", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ListServers(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ListServers", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) GetDutInfo(ctx context.Context, req *GetDutInfoRequest) (rsp *GetDutInfoResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
@@ -53,40 +36,6 @@ func (s *DecoratedInventory) GetDutInfo(ctx context.Context, req *GetDutInfoRequ
 	}
 	if s.Postlude != nil {
 		err = s.Postlude(ctx, "GetDutInfo", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) GetDroneConfig(ctx context.Context, req *GetDroneConfigRequest) (rsp *GetDroneConfigResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetDroneConfig", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetDroneConfig(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetDroneConfig", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) PushInventoryToQueen(ctx context.Context, req *PushInventoryToQueenRequest) (rsp *PushInventoryToQueenResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "PushInventoryToQueen", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.PushInventoryToQueen(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "PushInventoryToQueen", rsp, err)
 	}
 	return
 }

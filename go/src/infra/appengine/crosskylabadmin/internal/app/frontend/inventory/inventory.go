@@ -432,14 +432,6 @@ func setOrAppend(attrs []*inventory.KeyValue, key string, value string) []*inven
 	return attrs
 }
 
-// PushInventoryToQueen implements the method from fleet.InventoryServer interface.
-//
-// This RPC is deprecated. The cron job is moved to InventoryV2[pushToDroneQueenCronHandler].
-// https://source.corp.google.com/chromium_infra/go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go;l=312
-func (is *ServerImpl) PushInventoryToQueen(ctx context.Context, req *fleet.PushInventoryToQueenRequest) (resp *fleet.PushInventoryToQueenResponse, err error) {
-	return &fleet.PushInventoryToQueenResponse{}, nil
-}
-
 // queenDroneName returns the name of the fake drone whose DUTs should
 // be pushed to the drone queen service.
 func queenDroneName(env string) string {

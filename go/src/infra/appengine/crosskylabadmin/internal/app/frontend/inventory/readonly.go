@@ -44,14 +44,6 @@ import (
 
 const beagleboneServo = "beaglebone_servo"
 
-// ListServers implements the method from fleet.InventoryServer interface.
-func (is *ServerImpl) ListServers(ctx context.Context, req *fleet.ListServersRequest) (resp *fleet.ListServersResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	return nil, status.Error(codes.Unimplemented, "ListServers not yet implemented")
-}
-
 // GetDutInfo implements the method from fleet.InventoryServer interface.
 // Deprecated: Do not use.
 func (is *ServerImpl) GetDutInfo(ctx context.Context, req *fleet.GetDutInfoRequest) (resp *fleet.GetDutInfoResponse, err error) {
@@ -75,28 +67,6 @@ func (is *ServerImpl) GetDutInfo(ctx context.Context, req *fleet.GetDutInfoReque
 		Spec:    data,
 		Updated: timestamppb.New(updated),
 	}, nil
-}
-
-// GetDroneConfig implements the method from fleet.InventoryServer interface.
-func (is *ServerImpl) GetDroneConfig(ctx context.Context, req *fleet.GetDroneConfigRequest) (resp *fleet.GetDroneConfigResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	e, err := dronecfg.Get(ctx, req.Hostname)
-	if err != nil {
-		if datastore.IsErrNoSuchEntity(err) {
-			return nil, status.Errorf(codes.NotFound, err.Error())
-		}
-		return nil, err
-	}
-	resp = &fleet.GetDroneConfigResponse{}
-	for _, d := range e.DUTs {
-		resp.Duts = append(resp.Duts, &fleet.GetDroneConfigResponse_Dut{
-			Id:       d.ID,
-			Hostname: d.Hostname,
-		})
-	}
-	return resp, nil
 }
 
 // GetStableVersion implements the method from fleet.InventoryServer interface

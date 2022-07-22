@@ -165,26 +165,6 @@ func (mr *MockInventoryClientMockRecorder) DumpStableVersionToDatastore(ctx, in 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DumpStableVersionToDatastore", reflect.TypeOf((*MockInventoryClient)(nil).DumpStableVersionToDatastore), varargs...)
 }
 
-// GetDroneConfig mocks base method.
-func (m *MockInventoryClient) GetDroneConfig(ctx context.Context, in *GetDroneConfigRequest, opts ...grpc.CallOption) (*GetDroneConfigResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetDroneConfig", varargs...)
-	ret0, _ := ret[0].(*GetDroneConfigResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDroneConfig indicates an expected call of GetDroneConfig.
-func (mr *MockInventoryClientMockRecorder) GetDroneConfig(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDroneConfig", reflect.TypeOf((*MockInventoryClient)(nil).GetDroneConfig), varargs...)
-}
-
 // GetDutInfo mocks base method.
 func (m *MockInventoryClient) GetDutInfo(ctx context.Context, in *GetDutInfoRequest, opts ...grpc.CallOption) (*GetDutInfoResponse, error) {
 	m.ctrl.T.Helper()
@@ -223,46 +203,6 @@ func (mr *MockInventoryClientMockRecorder) GetStableVersion(ctx, in interface{},
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).GetStableVersion), varargs...)
-}
-
-// ListServers mocks base method.
-func (m *MockInventoryClient) ListServers(ctx context.Context, in *ListServersRequest, opts ...grpc.CallOption) (*ListServersResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListServers", varargs...)
-	ret0, _ := ret[0].(*ListServersResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListServers indicates an expected call of ListServers.
-func (mr *MockInventoryClientMockRecorder) ListServers(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServers", reflect.TypeOf((*MockInventoryClient)(nil).ListServers), varargs...)
-}
-
-// PushInventoryToQueen mocks base method.
-func (m *MockInventoryClient) PushInventoryToQueen(ctx context.Context, in *PushInventoryToQueenRequest, opts ...grpc.CallOption) (*PushInventoryToQueenResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "PushInventoryToQueen", varargs...)
-	ret0, _ := ret[0].(*PushInventoryToQueenResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// PushInventoryToQueen indicates an expected call of PushInventoryToQueen.
-func (mr *MockInventoryClientMockRecorder) PushInventoryToQueen(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushInventoryToQueen", reflect.TypeOf((*MockInventoryClient)(nil).PushInventoryToQueen), varargs...)
 }
 
 // ReportInventory mocks base method.
@@ -453,21 +393,6 @@ func (mr *MockInventoryServerMockRecorder) DumpStableVersionToDatastore(arg0, ar
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DumpStableVersionToDatastore", reflect.TypeOf((*MockInventoryServer)(nil).DumpStableVersionToDatastore), arg0, arg1)
 }
 
-// GetDroneConfig mocks base method.
-func (m *MockInventoryServer) GetDroneConfig(arg0 context.Context, arg1 *GetDroneConfigRequest) (*GetDroneConfigResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDroneConfig", arg0, arg1)
-	ret0, _ := ret[0].(*GetDroneConfigResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDroneConfig indicates an expected call of GetDroneConfig.
-func (mr *MockInventoryServerMockRecorder) GetDroneConfig(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDroneConfig", reflect.TypeOf((*MockInventoryServer)(nil).GetDroneConfig), arg0, arg1)
-}
-
 // GetDutInfo mocks base method.
 func (m *MockInventoryServer) GetDutInfo(arg0 context.Context, arg1 *GetDutInfoRequest) (*GetDutInfoResponse, error) {
 	m.ctrl.T.Helper()
@@ -496,36 +421,6 @@ func (m *MockInventoryServer) GetStableVersion(arg0 context.Context, arg1 *GetSt
 func (mr *MockInventoryServerMockRecorder) GetStableVersion(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).GetStableVersion), arg0, arg1)
-}
-
-// ListServers mocks base method.
-func (m *MockInventoryServer) ListServers(arg0 context.Context, arg1 *ListServersRequest) (*ListServersResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListServers", arg0, arg1)
-	ret0, _ := ret[0].(*ListServersResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListServers indicates an expected call of ListServers.
-func (mr *MockInventoryServerMockRecorder) ListServers(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServers", reflect.TypeOf((*MockInventoryServer)(nil).ListServers), arg0, arg1)
-}
-
-// PushInventoryToQueen mocks base method.
-func (m *MockInventoryServer) PushInventoryToQueen(arg0 context.Context, arg1 *PushInventoryToQueenRequest) (*PushInventoryToQueenResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PushInventoryToQueen", arg0, arg1)
-	ret0, _ := ret[0].(*PushInventoryToQueenResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// PushInventoryToQueen indicates an expected call of PushInventoryToQueen.
-func (mr *MockInventoryServerMockRecorder) PushInventoryToQueen(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushInventoryToQueen", reflect.TypeOf((*MockInventoryServer)(nil).PushInventoryToQueen), arg0, arg1)
 }
 
 // ReportInventory mocks base method.

@@ -5,7 +5,6 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "infra/appengine/crosskylabadmin/api/fleet/v1/common.proto";
 
 package crosskylabadmin.fleet;
 
@@ -14,12 +13,6 @@ option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 
 // Inventory service helps manage ChromeOS DUTs.
 service Inventory {
-  // ///////////////////////////////////////////////////////////////////////////
-  // Inventory ReadOnly RPCs
-
-  // ListServers lists the servers in the current environment.
-  rpc ListServers(ListServersRequest) returns (ListServersResponse);
-
   // GetDutInfo returns inventory information about a single DUT.
   //
   // This RPC returns possibly cached data about a single DUT. The cache is
@@ -28,20 +21,6 @@ service Inventory {
   rpc GetDutInfo(GetDutInfoRequest) returns (GetDutInfoResponse){
     option deprecated = true;
   };
-
-  // GetDroneConfig returns the inventory configuration for a drone.
-  //
-  // This RPC returns possibly cached data.
-  rpc GetDroneConfig(GetDroneConfigRequest) returns (GetDroneConfigResponse);
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // RPCs used internally by the infrastructure. Not for end-user tools.
-
-  // PushInventoryToQueen is called by a cron job.
-  //
-  // This RPC is deprecated. The cron job is moved to InventoryV2[pushToDroneQueenCronHandler].
-  // https://source.corp.google.com/chromium_infra/go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go;l=312
-  rpc PushInventoryToQueen(PushInventoryToQueenRequest) returns (PushInventoryToQueenResponse);
 
   // UpdateDutLabels sets the SchedulableLabels of a DUT.
   //
@@ -104,9 +83,6 @@ message ReportInventoryRequest {
 }
 message ReportInventoryResponse {}
 
-message PushInventoryToQueenRequest {}
-message PushInventoryToQueenResponse {}
-
 message UpdateDeviceConfigRequest {
 }
 
@@ -121,19 +97,6 @@ message DutSelector {
   string id = 3;
 
   string model = 1;
-}
-
-message ListServersRequest {
-  message Filter {
-    // Role of servers to list; if absent, list servers of all roles.
-    ServerRole role = 1;
-  }
-
-  Filter filter = 1;
-}
-
-message ListServersResponse {
-  repeated Server servers = 1;
 }
 
 message GetDutInfoRequest {
@@ -164,22 +127,6 @@ message GetDutInfoResponse {
   // Returned specs are guaranteed to be up-to-date with the source of truth as
   // of this timestamp.
   google.protobuf.Timestamp updated = 2;
-}
-
-message GetDroneConfigRequest {
-  // hostname of the drone, fully qualified.
-  string hostname = 1;
-}
-
-message GetDroneConfigResponse {
-  message Dut {
-    // id of the DUT.
-    string id = 1;
-    // hostname of the DUT, unqualified.
-    string hostname = 2;
-  }
-  // duts assigned to the drone.
-  repeated Dut duts = 1;
 }
 
 message UpdateDutLabelsRequest {
