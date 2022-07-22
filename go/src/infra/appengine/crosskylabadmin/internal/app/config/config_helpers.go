@@ -112,8 +112,6 @@ func (x *RolloutConfig) ValidateNoRepairOnlyFields() error {
 		return errors.New("optin_all_duts is a repair-only field")
 	case len(x.GetOptinDutPool()) > 0:
 		return errors.New("optin_dut_pool is a repair-only field")
-	case x.GetUfsErrorPolicy() != "":
-		return errors.New("ufs_error_policy is a repair-only field")
 	}
 	return nil
 }
