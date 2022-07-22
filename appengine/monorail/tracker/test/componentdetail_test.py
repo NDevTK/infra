@@ -12,7 +12,10 @@ import unittest
 
 from mock import Mock, patch
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from features import filterrules_helpers
 from framework import permissions

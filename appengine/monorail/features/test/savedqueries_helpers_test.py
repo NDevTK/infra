@@ -10,7 +10,10 @@ from __future__ import absolute_import
 
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from features import savedqueries_helpers
 from testing import fake

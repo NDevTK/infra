@@ -13,7 +13,10 @@ import unittest
 import logging
 import mock
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from google.appengine.api import memcache
 from google.appengine.ext import testbed

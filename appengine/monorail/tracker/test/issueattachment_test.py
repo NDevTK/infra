@@ -12,7 +12,10 @@ import unittest
 
 from google.appengine.ext import testbed
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import webapp2
 
 from framework import gcs_helpers

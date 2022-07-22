@@ -10,7 +10,10 @@ from __future__ import division
 from __future__ import absolute_import
 
 import datetime
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import re
 import settings
 import unittest

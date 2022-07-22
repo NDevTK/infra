@@ -8,7 +8,10 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import unittest
 
 from search import search_helpers

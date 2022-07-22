@@ -10,7 +10,10 @@ from __future__ import absolute_import
 
 import logging
 import mock
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import time
 import unittest
 

@@ -12,7 +12,10 @@ import unittest
 # For convenient debugging
 import logging
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from framework import sorting
 from framework import framework_views

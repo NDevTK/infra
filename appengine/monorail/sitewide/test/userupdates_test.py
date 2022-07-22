@@ -10,7 +10,10 @@ from __future__ import absolute_import
 
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from features import activities
 from services import service_manager
@@ -112,4 +115,3 @@ class ProjectUpdatesTest(unittest.TestCase):
     self.assertEqual('st5', page_data['user_tab_mode'])
     self.assertEqual('yes', page_data['viewing_user_page'])
     self.assertEqual(uui._TAB_MODE, page_data['user_updates_tab_mode'])
-

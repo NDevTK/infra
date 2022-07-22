@@ -13,7 +13,10 @@ import mock
 import re
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import six
 
 from google.appengine.api import oauth

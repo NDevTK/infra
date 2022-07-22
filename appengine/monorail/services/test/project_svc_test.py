@@ -11,7 +11,10 @@ from __future__ import absolute_import
 import time
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import mock
 
 from google.appengine.ext import testbed

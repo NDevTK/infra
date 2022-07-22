@@ -9,7 +9,10 @@ from __future__ import division
 from __future__ import absolute_import
 
 import unittest
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from components.prpc import codes
 from components.prpc import context

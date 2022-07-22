@@ -11,7 +11,10 @@ from __future__ import absolute_import
 import logging
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from google.appengine.api import app_identity
 import ezt

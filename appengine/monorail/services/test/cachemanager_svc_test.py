@@ -10,7 +10,10 @@ from __future__ import absolute_import
 
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from framework import sql
 from services import cachemanager_svc

@@ -15,7 +15,10 @@ import unittest
 from google.appengine.api import memcache
 from google.appengine.ext import testbed
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import os
 import settings
 

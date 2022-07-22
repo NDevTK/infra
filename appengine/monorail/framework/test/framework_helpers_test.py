@@ -11,7 +11,10 @@ from __future__ import absolute_import
 import mock
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import time
 
 from businesslogic import work_env

@@ -11,7 +11,10 @@ from __future__ import absolute_import
 import email
 import unittest
 from mock import patch
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 from parameterized import parameterized
 
 from features import alert2issue

@@ -12,7 +12,10 @@ import collections
 import mock
 import unittest
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 
 from google.appengine.ext import testbed
 

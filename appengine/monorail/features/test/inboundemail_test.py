@@ -12,7 +12,10 @@ import unittest
 import webapp2
 from mock import patch
 
-import mox
+try:
+  from mox3 import mox
+except ImportError:
+  import mox
 import time
 
 from google.appengine.api import mail
