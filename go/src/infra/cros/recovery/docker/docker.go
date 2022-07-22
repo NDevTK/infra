@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"go.chromium.org/luci/common/errors"
 
@@ -255,20 +256,33 @@ func (d *dockerClient) IsUp(ctx context.Context, containerName string) (bool, er
 // $ docker inspect '--format={{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' some_container
 // 192.168.27.4
 func (d *dockerClient) IPAddress(ctx context.Context, containerName string) (string, error) {
-	args := []string{"inspect", "--format={{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}", containerName}
-	res, err := runWithTimeout(ctx, time.Minute, "docker", args...)
-	log.Debugf(ctx, "Run docker exec %q: exitcode: %v", containerName, res.ExitCode)
-	log.Debugf(ctx, "Run docker exec %q: stdout: %v", containerName, res.Stdout)
-	log.Debugf(ctx, "Run docker exec %q: stderr: %v", containerName, res.Stderr)
-	log.Debugf(ctx, "Run docker exec %q: err: %v", containerName, err)
+	f := filters.NewArgs()
+	f.Add("name", containerName)
+	f.Add("status", "running")
+	// Get the list of containers based on the filter above.
+	containers, err := d.client.ContainerList(ctx, types.ContainerListOptions{Filters: f})
 	if err != nil {
-		return "", errors.Annotate(err, "ip address %q", containerName).Err()
-	} else if res.ExitCode != 0 {
-		return "", errors.Reason("ip address %q: fail with exit code %v", containerName, res.ExitCode).Err()
+		return "", errors.Annotate(err, "container is up: fail to get a list of containers").Err()
 	}
-	addr := strings.TrimSpace(res.Stdout)
-	log.Debugf(ctx, "IPAddress %q: %v", containerName, addr)
-	return addr, nil
+	// Return error if the container is not found or is not in running state.
+	if len(containers) != 1 {
+		return "", errors.Reason("%s is not found or not running.", containerName).Err()
+	}
+	// Get the Docker network set to the container, this is set in the drone env variables.
+	// If not found then fall back to default network name.
+	cnet := os.Getenv("DOCKER_DEFAULT_NETWORK")
+	if cnet == "" {
+		cnet = "default_satlab"
+	}
+	if containers[0].NetworkSettings != nil {
+		sat_net := containers[0].NetworkSettings.Networks[cnet]
+		if sat_net != nil {
+			return sat_net.IPAddress, nil
+		}
+		return "", errors.Reason("Could not find the %s network for the container %s. Found networks: %v.", cnet, containerName, containers[0].NetworkSettings.Networks).Err()
+	}
+	return "", errors.Reason("Could not find IP address for the container '%s'.", containerName).Err()
+
 }
 
 // CopyTo copies a file from the host to the container.
