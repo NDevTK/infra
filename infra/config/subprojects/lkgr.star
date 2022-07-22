@@ -9,7 +9,7 @@ load("//lib/build.star", "build")
 luci.builder(
     name = "chromium-lkgr-finder",
     bucket = "cron",
-    executable = build.recipe("lkgr_finder"),
+    executable = build.recipe("lkgr_finder", use_python3 = True),
     service_account = "chromium-lkgr-finder-builder@chops-service-accounts.iam.gserviceaccount.com",
     dimensions = {
         "builderless": "1",
