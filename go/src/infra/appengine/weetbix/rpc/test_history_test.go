@@ -39,6 +39,14 @@ func TestTestHistoryServer(t *testing.T) {
 					Realm:      "project:realm",
 					Permission: rdbperms.PermListTestExonerations,
 				},
+				{
+					Realm:      "project:other-realm",
+					Permission: rdbperms.PermListTestResults,
+				},
+				{
+					Realm:      "project:other-realm",
+					Permission: rdbperms.PermListTestExonerations,
+				},
 			},
 		})
 
@@ -49,6 +57,7 @@ func TestTestHistoryServer(t *testing.T) {
 		var2 := pbutil.Variant("key1", "val2", "key2", "val1")
 		var3 := pbutil.Variant("key1", "val2", "key2", "val2")
 		var4 := pbutil.Variant("key1", "val1", "key2", "val2")
+		var5 := pbutil.Variant("key1", "val3", "key2", "val2")
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTR := func(subRealm string, testID string) {
@@ -61,7 +70,8 @@ func TestTestHistoryServer(t *testing.T) {
 			insertTR("realm", "test_id")
 			insertTR("realm", "test_id1")
 			insertTR("realm", "test_id2")
-			insertTR("realm2", "test_id3")
+			insertTR("other-realm", "test_id3")
+			insertTR("forbidden-realm", "test_id4")
 
 			insertTVR := func(subRealm string, variant *pb.Variant) {
 				span.BufferWrite(ctx, (&testresults.TestVariantRealm{
@@ -76,16 +86,17 @@ func TestTestHistoryServer(t *testing.T) {
 			insertTVR("realm", var1)
 			insertTVR("realm", var2)
 			insertTVR("realm", var3)
-			insertTVR("realm2", var4)
+			insertTVR("other-realm", var4)
+			insertTVR("forbidden-realm", var5)
 
-			insertTV := func(partitionTime time.Time, variant *pb.Variant, invId string, hasUnsubmittedChanges bool) {
+			insertTV := func(partitionTime time.Time, variant *pb.Variant, invId string, hasUnsubmittedChanges bool, subRealm string) {
 				baseTestResult := testresults.NewTestResult().
 					WithProject("project").
 					WithTestID("test_id").
 					WithVariantHash(pbutil.VariantHash(variant)).
 					WithPartitionTime(partitionTime).
 					WithIngestedInvocationID(invId).
-					WithSubRealm("realm").
+					WithSubRealm(subRealm).
 					WithStatus(pb.TestResultStatus_PASS).
 					WithoutRunDuration()
 				if hasUnsubmittedChanges {
@@ -115,15 +126,18 @@ func TestTestHistoryServer(t *testing.T) {
 				}
 			}
 
-			insertTV(referenceTime.Add(-1*day), var1, "inv1", false)
-			insertTV(referenceTime.Add(-1*day), var1, "inv2", false)
-			insertTV(referenceTime.Add(-1*day), var2, "inv1", false)
+			insertTV(referenceTime.Add(-1*day), var1, "inv1", false, "realm")
+			insertTV(referenceTime.Add(-1*day), var1, "inv2", false, "realm")
+			insertTV(referenceTime.Add(-1*day), var2, "inv1", false, "realm")
 
-			insertTV(referenceTime.Add(-2*day), var1, "inv1", false)
-			insertTV(referenceTime.Add(-2*day), var1, "inv2", true)
-			insertTV(referenceTime.Add(-2*day), var2, "inv1", true)
+			insertTV(referenceTime.Add(-2*day), var1, "inv1", false, "realm")
+			insertTV(referenceTime.Add(-2*day), var1, "inv2", true, "realm")
+			insertTV(referenceTime.Add(-2*day), var2, "inv1", true, "realm")
 
-			insertTV(referenceTime.Add(-3*day), var3, "inv1", true)
+			insertTV(referenceTime.Add(-3*day), var3, "inv1", true, "realm")
+
+			insertTV(referenceTime.Add(-4*day), var4, "inv2", false, "other-realm")
+			insertTV(referenceTime.Add(-5*day), var5, "inv3", false, "forbidden-realm")
 
 			return nil
 		})
@@ -194,6 +208,35 @@ func TestTestHistoryServer(t *testing.T) {
 				So(err, ShouldNotBeNil)
 				So(err, ShouldHaveGRPCStatus, codes.InvalidArgument)
 				So(res, ShouldBeNil)
+			})
+
+			Convey("multi-realms", func() {
+				req.Predicate.SubRealm = ""
+				req.Predicate.VariantPredicate = &pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Contains{
+						Contains: pbutil.Variant("key2", "val2"),
+					},
+				}
+				res, err := server.Query(ctx, req)
+				So(err, ShouldBeNil)
+				So(res, ShouldResembleProto, &pb.QueryTestHistoryResponse{
+					Verdicts: []*pb.TestVerdict{
+						{
+							TestId:        "test_id",
+							VariantHash:   pbutil.VariantHash(var3),
+							InvocationId:  "inv1",
+							Status:        pb.TestVerdictStatus_EXPECTED,
+							PartitionTime: timestamppb.New(referenceTime.Add(-3 * day)),
+						},
+						{
+							TestId:        "test_id",
+							VariantHash:   pbutil.VariantHash(var4),
+							InvocationId:  "inv2",
+							Status:        pb.TestVerdictStatus_EXPECTED,
+							PartitionTime: timestamppb.New(referenceTime.Add(-4 * day)),
+						},
+					},
+				})
 			})
 
 			Convey("e2e", func() {
@@ -330,6 +373,31 @@ func TestTestHistoryServer(t *testing.T) {
 				So(res, ShouldBeNil)
 			})
 
+			Convey("multi-realms", func() {
+				req.Predicate.SubRealm = ""
+				req.Predicate.VariantPredicate = &pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Contains{
+						Contains: pbutil.Variant("key2", "val2"),
+					},
+				}
+				res, err := server.QueryStats(ctx, req)
+				So(err, ShouldBeNil)
+				So(res, ShouldResembleProto, &pb.QueryTestHistoryStatsResponse{
+					Groups: []*pb.QueryTestHistoryStatsResponse_Group{
+						{
+							PartitionTime: timestamppb.New(referenceTime.Add(-3 * day)),
+							VariantHash:   pbutil.VariantHash(var3),
+							ExpectedCount: 1,
+						},
+						{
+							PartitionTime: timestamppb.New(referenceTime.Add(-4 * day)),
+							VariantHash:   pbutil.VariantHash(var4),
+							ExpectedCount: 1,
+						},
+					},
+				})
+			})
+
 			Convey("e2e", func() {
 				res, err := server.QueryStats(ctx, req)
 				So(err, ShouldBeNil)
@@ -401,6 +469,30 @@ func TestTestHistoryServer(t *testing.T) {
 				So(res, ShouldBeNil)
 			})
 
+			Convey("multi-realms", func() {
+				req.PageSize = 0
+				req.SubRealm = ""
+				req.VariantPredicate = &pb.VariantPredicate{
+					Predicate: &pb.VariantPredicate_Contains{
+						Contains: pbutil.Variant("key2", "val2"),
+					},
+				}
+				res, err := server.QueryVariants(ctx, req)
+				So(err, ShouldBeNil)
+				So(res, ShouldResembleProto, &pb.QueryVariantsResponse{
+					Variants: []*pb.QueryVariantsResponse_VariantInfo{
+						{
+							VariantHash: pbutil.VariantHash(var3),
+							Variant:     var3,
+						},
+						{
+							VariantHash: pbutil.VariantHash(var4),
+							Variant:     var4,
+						},
+					},
+				})
+			})
+
 			Convey("e2e", func() {
 				res, err := server.QueryVariants(ctx, req)
 				So(err, ShouldBeNil)
@@ -457,6 +549,16 @@ func TestTestHistoryServer(t *testing.T) {
 				So(err, ShouldNotBeNil)
 				So(err, ShouldHaveGRPCStatus, codes.InvalidArgument)
 				So(res, ShouldBeNil)
+			})
+
+			Convey("multi-realms", func() {
+				req.PageSize = 0
+				req.SubRealm = ""
+				res, err := server.QueryTests(ctx, req)
+				So(err, ShouldBeNil)
+				So(res, ShouldResembleProto, &pb.QueryTestsResponse{
+					TestIds: []string{"test_id", "test_id1", "test_id2", "test_id3"},
+				})
 			})
 
 			Convey("e2e", func() {

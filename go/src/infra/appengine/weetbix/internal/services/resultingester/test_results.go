@@ -55,9 +55,9 @@ func extractIngestionContext(task *taskspb.IngestTestResults, build *bbpb.Build,
 		panic(err)
 	}
 
-	proj, subRealm := utils.SplitRealm(inv.Realm)
-	if proj == "" {
-		return nil, nil, errors.Reason("invocation has invalid realm: %q", inv.Realm).Err()
+	proj, subRealm, err := utils.SplitRealm(inv.Realm)
+	if err != nil {
+		return nil, nil, errors.Annotate(err, "invocation has invalid realm: %q", inv.Realm).Err()
 	}
 	if proj != task.Build.Project {
 		return nil, nil, errors.Reason("invocation project (%q) does not match build project (%q) for build %s-%d",

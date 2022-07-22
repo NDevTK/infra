@@ -8,12 +8,9 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/grpc/appstatus"
 	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth/realms"
 	"go.chromium.org/luci/server/span"
-	"google.golang.org/grpc/codes"
 
 	"infra/appengine/weetbix/internal/pagination"
 	"infra/appengine/weetbix/internal/testresults"
@@ -21,6 +18,11 @@ import (
 	pb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/utils"
 )
+
+func init() {
+	rdbperms.PermListTestResults.AddFlags(realms.UsedInQueryRealms)
+	rdbperms.PermListTestExonerations.AddFlags(realms.UsedInQueryRealms)
+}
 
 var pageSizeLimiter = pagination.PageSizeLimiter{
 	Default: 100,
@@ -46,21 +48,23 @@ func (*testHistoryServer) Query(ctx context.Context, req *pb.QueryTestHistoryReq
 		return nil, invalidArgumentError(err)
 	}
 
-	if req.GetPredicate().GetSubRealm() == "" {
-		return nil, appstatus.Errorf(codes.Unimplemented, "multi-realm test history not implemented")
-	}
-	realm := req.GetProject() + ":" + req.GetPredicate().GetSubRealm()
-
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults, rdbperms.PermListTestExonerations}
-	if err := utils.HasPermissions(ctx, requiredPerms, realm, nil); err != nil {
+	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetPredicate().GetSubRealm(), nil)
+	if err != nil {
 		return nil, err
+	}
+	_, subRealms, err := utils.SplitRealms(realms)
+	if err != nil {
+		// Realms from `utils.QueryRealms` should always be valid. This should never
+		// happen.
+		panic(err)
 	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
 	opts := testresults.ReadTestHistoryOptions{
 		Project:          req.GetProject(),
 		TestID:           req.GetTestId(),
-		SubRealms:        []string{req.GetPredicate().GetSubRealm()},
+		SubRealms:        subRealms,
 		VariantPredicate: req.GetPredicate().GetVariantPredicate(),
 		SubmittedFilter:  req.GetPredicate().GetSubmittedFilter(),
 		TimeRange:        req.GetPredicate().GetPartitionTimeRange(),
@@ -105,23 +109,23 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 		return nil, invalidArgumentError(err)
 	}
 
-	if req.GetPredicate().GetSubRealm() == "" {
-		return nil, appstatus.Errorf(codes.Unimplemented, "multi-realm test history not implemented")
-	}
-	realm := req.GetProject() + ":" + req.GetPredicate().GetSubRealm()
-
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults, rdbperms.PermListTestExonerations}
-	if err := utils.HasPermissions(ctx, requiredPerms, realm, nil); err != nil {
+	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetPredicate().GetSubRealm(), nil)
+	if err != nil {
 		return nil, err
 	}
-
-	logging.Infof(ctx, "project: %s test_id: %s sub_realm: %s", req.GetProject(), req.GetTestId(), req.GetPredicate().GetSubRealm())
+	_, subRealms, err := utils.SplitRealms(realms)
+	if err != nil {
+		// Realms from `utils.QueryRealms` should always be valid. This should never
+		// happen.
+		panic(err)
+	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
 	opts := testresults.ReadTestHistoryOptions{
 		Project:          req.GetProject(),
 		TestID:           req.GetTestId(),
-		SubRealms:        []string{req.GetPredicate().GetSubRealm()},
+		SubRealms:        subRealms,
 		VariantPredicate: req.GetPredicate().GetVariantPredicate(),
 		SubmittedFilter:  req.GetPredicate().GetSubmittedFilter(),
 		TimeRange:        req.GetPredicate().GetPartitionTimeRange(),
@@ -166,19 +170,21 @@ func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVarian
 		return nil, invalidArgumentError(err)
 	}
 
-	if req.GetSubRealm() == "" {
-		return nil, appstatus.Errorf(codes.Unimplemented, "multi-realm test history not implemented")
-	}
-	realm := req.GetProject() + ":" + req.GetSubRealm()
-
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
-	if err := utils.HasPermissions(ctx, requiredPerms, realm, nil); err != nil {
+	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetSubRealm(), nil)
+	if err != nil {
 		return nil, err
+	}
+	_, subRealms, err := utils.SplitRealms(realms)
+	if err != nil {
+		// Realms from `utils.QueryRealms` should always be valid. This should never
+		// happen.
+		panic(err)
 	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
 	opts := testresults.ReadVariantsOptions{
-		SubRealms:        []string{req.GetSubRealm()},
+		SubRealms:        subRealms,
 		VariantPredicate: req.GetVariantPredicate(),
 		PageSize:         pageSize,
 		PageToken:        req.GetPageToken(),
@@ -223,19 +229,21 @@ func (*testHistoryServer) QueryTests(ctx context.Context, req *pb.QueryTestsRequ
 		return nil, invalidArgumentError(err)
 	}
 
-	if req.GetSubRealm() == "" {
-		return nil, appstatus.Errorf(codes.Unimplemented, "multi-realm test history not implemented")
-	}
-	realm := req.GetProject() + ":" + req.GetSubRealm()
-
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
-	if err := utils.HasPermissions(ctx, requiredPerms, realm, nil); err != nil {
+	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetSubRealm(), nil)
+	if err != nil {
 		return nil, err
+	}
+	_, subRealms, err := utils.SplitRealms(realms)
+	if err != nil {
+		// Realms from `utils.QueryRealms` should always be valid. This should never
+		// happen.
+		panic(err)
 	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
 	opts := testresults.QueryTestsOptions{
-		SubRealms: []string{req.GetSubRealm()},
+		SubRealms: subRealms,
 		PageSize:  pageSize,
 		PageToken: req.GetPageToken(),
 	}
