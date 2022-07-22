@@ -44,3 +44,12 @@ func (c *ContainerPort) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"container", "port", c.Name}
 	return execute(ctx, dockerCmd, args)
 }
+
+// HostIpAddresses represents `hostname --all-ip-addresses`. Output is all IP
+// addresses separated by a whitespace.
+type HostIpAddresses struct{}
+
+func (c *HostIpAddresses) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"--all-ip-addresses"}
+	return execute(ctx, "hostname", args)
+}

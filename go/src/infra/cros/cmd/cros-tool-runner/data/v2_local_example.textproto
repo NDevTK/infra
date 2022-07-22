@@ -1,0 +1,63 @@
+# This example runs locally. You will need to do port forwarding in order to
+# connect to a DUT in the lab. And use the `host` network to run all containers.
+# See go/cft-local-setup for more information about port forwarding.
+# The StartContainer endpoint is used for more flexibility.
+# The requests in this example are based on the print of template unit tests.
+# Add the following line to print textproto of proto messages.
+# `log.Println(proto.MarshalTextString(convertedRequest))`
+# To run this example:
+# `grpc_cli call localhost:8082 chromiumos.test.api.CrosToolRunnerContainerService.StackCommands --infile=data/v2_local_example.textproto --channel_creds_type insecure`
+requests: {
+  login_registry: {
+    username: "oauth2accesstoken"
+    password: "$(gcloud auth print-access-token)"
+    registry: "us-docker.pkg.dev"
+  }
+}
+requests: {
+  start_container: {
+    name: "my-cros-dut"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8808284912578165185"
+    additional_options: <
+      volume: "/tmp:/tmp/cros-dut"
+      network: "host" # using host network in order to ssh to DUT in the lab
+    >
+    start_command: "cros-dut"
+    start_command: "-dut_address"
+    start_command: "localhost:2226" # proxy channel to DUT: `ssh -L2226:localhost:22 chromeos6-row18-rack15-host20 -N` see go/cft-local-setup
+    start_command: "-cache_address"
+    start_command: "localhost:33" # proxy channel to Cache. see go/cft-local-setup
+    start_command: "-port"
+    start_command: "30080" # to avoid port conflicts on the host, use a unique port for each container service.
+  }
+}
+requests: {
+  start_container: {
+    name: "my-cros-provision"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-provision:8808284912578165185"
+    additional_options: <
+      volume: "/tmp:/tmp/provisionservice"
+      network: "host"
+    >
+    start_command: "cros-provision"
+    start_command: "server"
+    start_command: "-metadata"
+    start_command: "/tmp/provisionservice/in.json" # make sure the file exists. You may use the template example to generate the file
+    start_command: "-port"
+    start_command: "30081"
+  }
+}
+requests: {
+  start_container: {
+    name: "my-cros-test"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-test:8808545304957887457"
+    additional_options: <
+      volume: "/tmp/unit-tests/cros-test/cros-test:/tmp/test/cros-test"
+      volume: "/tmp/unit-tests/cros-test/results:/tmp/test/results"
+      network: "host"
+    >
+    start_command: "bash"
+    start_command: "-c"
+    start_command: "sudo --non-interactive chown -R chromeos-test:chromeos-test /tmp/test && cros-test server -port 30082" # note that port is specified in this line
+  }
+}
