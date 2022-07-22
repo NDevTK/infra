@@ -99,8 +99,8 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	if unit == "" {
 		return errors.New("unit is not specified")
 	}
-	tn := c.taskName
-	if err := tasknames.ValidateTaskName(tn); err != nil {
+	tn, err := tasknames.NormalizeTaskName(c.taskName)
+	if err != nil {
 		return errors.Annotate(err, "local recovery").Err()
 	}
 	ctx := cli.GetContext(a, c, env)

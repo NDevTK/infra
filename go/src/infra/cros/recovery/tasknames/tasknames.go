@@ -13,7 +13,7 @@ import (
 )
 
 // TaskName describes which flow/plans will be involved in the process.
-type TaskName = string
+type TaskName string
 
 const (
 	InvalidTaskName TaskName = ""
@@ -32,7 +32,19 @@ const (
 	Custom TaskName = "custom"
 )
 
-var BuilderNameMap = map[TaskName]string{
+// String returns the name of the task as an argument to the labpack command-line tool.
+func (tn TaskName) String() string {
+	return string(tn)
+}
+
+func (tn TaskName) BuilderName() string {
+	if name, ok := builderNameMap[tn]; ok {
+		return name
+	}
+	return string(tn)
+}
+
+var builderNameMap = map[TaskName]string{
 	AuditRPM:     "audit-rpm",
 	AuditStorage: "audit-storage",
 	AuditUSB:     "audit-usb",

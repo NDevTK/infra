@@ -182,13 +182,13 @@ func (c *auditRun) collectActions() (string, error) {
 func (c *auditRun) getTaskNames() ([]string, error) {
 	var a []string
 	if c.runVerifyDUTStorage {
-		a = append(a, tasknames.AuditStorage)
+		a = append(a, tasknames.AuditStorage.String())
 	}
 	if c.runVerifyServoUSB {
-		a = append(a, tasknames.AuditUSB)
+		a = append(a, tasknames.AuditUSB.String())
 	}
 	if c.runVerifyRpmConfig {
-		a = append(a, tasknames.AuditRPM)
+		a = append(a, tasknames.AuditRPM.String())
 	}
 	if len(a) == 0 {
 		return nil, errors.Reason("get task names: no actions was specified to run").Err()
@@ -198,17 +198,17 @@ func (c *auditRun) getTaskNames() ([]string, error) {
 
 // scheduleAuditBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
 func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, taskName string, host string, adminSession string) (*swarming.TaskInfo, error) {
-	builder, ok := tasknames.BuilderNameMap[taskName]
-	if !ok {
-		return nil, errors.Reason(fmt.Sprintf("unrecognized name %q", taskName)).Err()
+	tn, err := tasknames.NormalizeTaskName(taskName)
+	if err != nil {
+		return nil, errors.Annotate(err, "schedule audit builder").Err()
 	}
 	v := labpack.CIPDProd
 	p := &labpack.Params{
 		BuilderProject: "",
 		BuilderBucket:  "",
-		BuilderName:    builder,
+		BuilderName:    tn.BuilderName(),
 		UnitName:       host,
-		TaskName:       taskName,
+		TaskName:       tn.String(),
 		EnableRecovery: false,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.
