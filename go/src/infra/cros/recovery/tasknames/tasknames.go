@@ -9,12 +9,14 @@ package tasknames
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 // TaskName describes which flow/plans will be involved in the process.
 type TaskName = string
 
 const (
+	InvalidTaskName TaskName = ""
 	// Audit is used to run audit task of RPM.
 	AuditRPM TaskName = "audit_rpm"
 	// Audit is used to run audit task of internal storage.
@@ -34,6 +36,28 @@ var BuilderNameMap = map[TaskName]string{
 	AuditRPM:     "audit-rpm",
 	AuditStorage: "audit-storage",
 	AuditUSB:     "audit-usb",
+}
+
+// NormalizeTaskName takes a task name from anywhere and normalizes it.
+// This is a necessary first step towards consolidating our notion of task names.
+//
+// Names are taken from here and https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/appengine/crosskylabadmin/internal/app/frontend/tracker.go .
+func NormalizeTaskName(name string) (TaskName, error) {
+	switch strings.ToLower(name) {
+	case "verify-servo-usb-drive", "usb-drive", "audit-usb", "audit_usb":
+		return AuditUSB, nil
+	case "verify-dut-storage", "storage", "audit-storage", "audit_storage":
+		return AuditStorage, nil
+	case "verify-rpm-config", "rpm config", "audit-rpm", "audit_rpm":
+		return AuditRPM, nil
+	case "repair", "recovery":
+		return Recovery, nil
+	case "deploy":
+		return Deploy, nil
+	case "custom":
+		return Custom, nil
+	}
+	return InvalidTaskName, fmt.Errorf("normalize task name: unrecognized task name %q", name)
 }
 
 // ValidateTaskName checks whether a task name is valid
