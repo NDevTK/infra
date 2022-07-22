@@ -7,6 +7,7 @@ package docker
 // TODO: Move package to common lib when developing finished.
 
 import (
+	"bytes"
 	"context"
 	base_error "errors"
 	"fmt"
@@ -102,13 +103,18 @@ func (d *dockerClient) Pull(ctx context.Context, imageName string, timeout time.
 	if timeout < time.Second {
 		return errors.Reason("pull: timeout %v is less than 1 second", timeout).Err()
 	}
-	res, err := runWithTimeout(ctx, timeout, "docker", "pull", "--", imageName)
-	log.Debugf(ctx, "Run docker pull %q: exitcode: %v", imageName, res.ExitCode)
-	log.Debugf(ctx, "Run docker pull %q: stdout: %v", imageName, res.Stdout)
-	log.Debugf(ctx, "Run docker pull %q: stderr: %v", imageName, res.Stderr)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	// Only able to pull image from public registry.
+	res, err := d.client.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
 		log.Debugf(ctx, "Run docker pull %q: err: %v", imageName, err)
+		return errors.Annotate(err, "pull image").Err()
 	}
+	defer res.Close()
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(res)
+	log.Debugf(ctx, "Run docker pull %q: stdout: %v", imageName, buf.String())
 	return errors.Annotate(err, "pull image").Err()
 }
 
