@@ -126,7 +126,10 @@ serve_remote_email:
 
 run: serve
 
-deps: node_deps
+pydeps:
+	pip install -r requirements.txt
+
+jsdeps: node_deps
 	rm -f static/dist/*
 
 build_js:
