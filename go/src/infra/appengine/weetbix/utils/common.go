@@ -132,3 +132,24 @@ func QueryRealms(ctx context.Context, permissions []realms.Permission, project, 
 
 	return allowedRealmSet.ToSortedSlice(), nil
 }
+
+// QuerySubRealms is similar to QueryRealms with the following differences:
+//  1. project is required.
+//  2. a list of subRealms is returned instead of a list of realms
+//   (e.g. ["realm1", "realm2"] instead of ["project:realm1", "project:realm2"])
+func QuerySubRealms(ctx context.Context, permissions []realms.Permission, project, subRealm string, attrs realms.Attrs) ([]string, error) {
+	if project == "" {
+		return nil, errors.New("project must be provided")
+	}
+
+	realms, err := QueryRealms(ctx, permissions, project, subRealm, nil)
+	if err != nil {
+		return nil, err
+	}
+	_, subRealms, err := SplitRealms(realms)
+	if err != nil {
+		// Realms from `QueryRealms` should always be valid. This should never happen.
+		panic(err)
+	}
+	return subRealms, nil
+}

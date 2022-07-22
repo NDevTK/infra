@@ -49,27 +49,21 @@ func (*testHistoryServer) Query(ctx context.Context, req *pb.QueryTestHistoryReq
 	}
 
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults, rdbperms.PermListTestExonerations}
-	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetPredicate().GetSubRealm(), nil)
+	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.Predicate.SubRealm, nil)
 	if err != nil {
 		return nil, err
 	}
-	_, subRealms, err := utils.SplitRealms(realms)
-	if err != nil {
-		// Realms from `utils.QueryRealms` should always be valid. This should never
-		// happen.
-		panic(err)
-	}
 
-	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
+	pageSize := int(pageSizeLimiter.Adjust(req.PageSize))
 	opts := testresults.ReadTestHistoryOptions{
-		Project:          req.GetProject(),
-		TestID:           req.GetTestId(),
+		Project:          req.Project,
+		TestID:           req.TestId,
 		SubRealms:        subRealms,
-		VariantPredicate: req.GetPredicate().GetVariantPredicate(),
-		SubmittedFilter:  req.GetPredicate().GetSubmittedFilter(),
-		TimeRange:        req.GetPredicate().GetPartitionTimeRange(),
+		VariantPredicate: req.Predicate.VariantPredicate,
+		SubmittedFilter:  req.Predicate.SubmittedFilter,
+		TimeRange:        req.Predicate.PartitionTimeRange,
 		PageSize:         pageSize,
-		PageToken:        req.GetPageToken(),
+		PageToken:        req.PageToken,
 	}
 
 	verdicts, nextPageToken, err := testresults.ReadTestHistory(span.Single(ctx), opts)
@@ -110,27 +104,21 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 	}
 
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults, rdbperms.PermListTestExonerations}
-	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetPredicate().GetSubRealm(), nil)
+	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.Predicate.SubRealm, nil)
 	if err != nil {
 		return nil, err
 	}
-	_, subRealms, err := utils.SplitRealms(realms)
-	if err != nil {
-		// Realms from `utils.QueryRealms` should always be valid. This should never
-		// happen.
-		panic(err)
-	}
 
-	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
+	pageSize := int(pageSizeLimiter.Adjust(req.PageSize))
 	opts := testresults.ReadTestHistoryOptions{
-		Project:          req.GetProject(),
-		TestID:           req.GetTestId(),
+		Project:          req.Project,
+		TestID:           req.TestId,
 		SubRealms:        subRealms,
-		VariantPredicate: req.GetPredicate().GetVariantPredicate(),
-		SubmittedFilter:  req.GetPredicate().GetSubmittedFilter(),
-		TimeRange:        req.GetPredicate().GetPartitionTimeRange(),
+		VariantPredicate: req.Predicate.VariantPredicate,
+		SubmittedFilter:  req.Predicate.SubmittedFilter,
+		TimeRange:        req.Predicate.PartitionTimeRange,
 		PageSize:         pageSize,
-		PageToken:        req.GetPageToken(),
+		PageToken:        req.PageToken,
 	}
 
 	groups, nextPageToken, err := testresults.ReadTestHistoryStats(span.Single(ctx), opts)
@@ -171,23 +159,17 @@ func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVarian
 	}
 
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
-	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetSubRealm(), nil)
+	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.SubRealm, nil)
 	if err != nil {
 		return nil, err
 	}
-	_, subRealms, err := utils.SplitRealms(realms)
-	if err != nil {
-		// Realms from `utils.QueryRealms` should always be valid. This should never
-		// happen.
-		panic(err)
-	}
 
-	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
+	pageSize := int(pageSizeLimiter.Adjust(req.PageSize))
 	opts := testresults.ReadVariantsOptions{
 		SubRealms:        subRealms,
-		VariantPredicate: req.GetVariantPredicate(),
+		VariantPredicate: req.VariantPredicate,
 		PageSize:         pageSize,
-		PageToken:        req.GetPageToken(),
+		PageToken:        req.PageToken,
 	}
 
 	variants, nextPageToken, err := testresults.ReadVariants(span.Single(ctx), req.GetProject(), req.GetTestId(), opts)
@@ -230,25 +212,19 @@ func (*testHistoryServer) QueryTests(ctx context.Context, req *pb.QueryTestsRequ
 	}
 
 	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
-	realms, err := utils.QueryRealms(ctx, requiredPerms, req.GetProject(), req.GetSubRealm(), nil)
+	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.SubRealm, nil)
 	if err != nil {
 		return nil, err
 	}
-	_, subRealms, err := utils.SplitRealms(realms)
-	if err != nil {
-		// Realms from `utils.QueryRealms` should always be valid. This should never
-		// happen.
-		panic(err)
-	}
 
-	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
+	pageSize := int(pageSizeLimiter.Adjust(req.PageSize))
 	opts := testresults.QueryTestsOptions{
 		SubRealms: subRealms,
 		PageSize:  pageSize,
 		PageToken: req.GetPageToken(),
 	}
 
-	testIDs, nextPageToken, err := testresults.QueryTests(span.Single(ctx), req.GetProject(), req.GetTestIdSubstring(), opts)
+	testIDs, nextPageToken, err := testresults.QueryTests(span.Single(ctx), req.Project, req.TestIdSubstring, opts)
 	if err != nil {
 		return nil, err
 	}
