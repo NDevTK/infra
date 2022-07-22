@@ -287,18 +287,12 @@ func (d *dockerClient) IPAddress(ctx context.Context, containerName string) (str
 
 // CopyTo copies a file from the host to the container.
 func (d *dockerClient) CopyTo(ctx context.Context, containerName string, sourcePath, destinationPath string) error {
-	// Using `docker cp -- src desc`  where `--` used to avoid interpret src as argument.
-	res, err := runWithTimeout(ctx, time.Minute, "docker", "cp", "--", sourcePath, fmt.Sprintf("%s:%s", containerName, destinationPath))
-	log.Debugf(ctx, "Run docker copy to %q: exitcode: %v", containerName, res.ExitCode)
-	log.Debugf(ctx, "Run docker copy to %q: stdout: %v", containerName, res.Stdout)
-	log.Debugf(ctx, "Run docker copy to %q: stderr: %v", containerName, res.Stderr)
-	log.Debugf(ctx, "Run docker copy to %q: err: %v", containerName, err)
+	f, err := os.Open(sourcePath)
 	if err != nil {
-		return errors.Annotate(err, "copy to %q", containerName).Err()
-	} else if res.ExitCode != 0 {
-		return errors.Reason("copy to %q: fail with exit code %v", containerName, res.ExitCode).Err()
+		return errors.Annotate(err, "copy to %q: could not open local file", containerName).Err()
 	}
-	return nil
+	defer f.Close()
+	return d.client.CopyToContainer(ctx, containerName, destinationPath, f, types.CopyToContainerOptions{AllowOverwriteDirWithFile: true})
 }
 
 // CopyFrom copies a file from container to the host.
