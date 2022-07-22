@@ -105,26 +105,6 @@ func (m *MockInventoryClient) EXPECT() *MockInventoryClientMockRecorder {
 	return m.recorder
 }
 
-// AssignDutsToDrones mocks base method.
-func (m *MockInventoryClient) AssignDutsToDrones(ctx context.Context, in *AssignDutsToDronesRequest, opts ...grpc.CallOption) (*AssignDutsToDronesResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "AssignDutsToDrones", varargs...)
-	ret0, _ := ret[0].(*AssignDutsToDronesResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// AssignDutsToDrones indicates an expected call of AssignDutsToDrones.
-func (mr *MockInventoryClientMockRecorder) AssignDutsToDrones(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignDutsToDrones", reflect.TypeOf((*MockInventoryClient)(nil).AssignDutsToDrones), varargs...)
-}
-
 // BatchUpdateDuts mocks base method.
 func (m *MockInventoryClient) BatchUpdateDuts(ctx context.Context, in *BatchUpdateDutsRequest, opts ...grpc.CallOption) (*BatchUpdateDutsResponse, error) {
 	m.ctrl.T.Helper()
@@ -285,26 +265,6 @@ func (mr *MockInventoryClientMockRecorder) PushInventoryToQueen(ctx, in interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushInventoryToQueen", reflect.TypeOf((*MockInventoryClient)(nil).PushInventoryToQueen), varargs...)
 }
 
-// RemoveDutsFromDrones mocks base method.
-func (m *MockInventoryClient) RemoveDutsFromDrones(ctx context.Context, in *RemoveDutsFromDronesRequest, opts ...grpc.CallOption) (*RemoveDutsFromDronesResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "RemoveDutsFromDrones", varargs...)
-	ret0, _ := ret[0].(*RemoveDutsFromDronesResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RemoveDutsFromDrones indicates an expected call of RemoveDutsFromDrones.
-func (mr *MockInventoryClientMockRecorder) RemoveDutsFromDrones(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveDutsFromDrones", reflect.TypeOf((*MockInventoryClient)(nil).RemoveDutsFromDrones), varargs...)
-}
-
 // ReportInventory mocks base method.
 func (m *MockInventoryClient) ReportInventory(ctx context.Context, in *ReportInventoryRequest, opts ...grpc.CallOption) (*ReportInventoryResponse, error) {
 	m.ctrl.T.Helper()
@@ -448,21 +408,6 @@ func (m *MockInventoryServer) EXPECT() *MockInventoryServerMockRecorder {
 	return m.recorder
 }
 
-// AssignDutsToDrones mocks base method.
-func (m *MockInventoryServer) AssignDutsToDrones(arg0 context.Context, arg1 *AssignDutsToDronesRequest) (*AssignDutsToDronesResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AssignDutsToDrones", arg0, arg1)
-	ret0, _ := ret[0].(*AssignDutsToDronesResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// AssignDutsToDrones indicates an expected call of AssignDutsToDrones.
-func (mr *MockInventoryServerMockRecorder) AssignDutsToDrones(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignDutsToDrones", reflect.TypeOf((*MockInventoryServer)(nil).AssignDutsToDrones), arg0, arg1)
-}
-
 // BatchUpdateDuts mocks base method.
 func (m *MockInventoryServer) BatchUpdateDuts(arg0 context.Context, arg1 *BatchUpdateDutsRequest) (*BatchUpdateDutsResponse, error) {
 	m.ctrl.T.Helper()
@@ -581,21 +526,6 @@ func (m *MockInventoryServer) PushInventoryToQueen(arg0 context.Context, arg1 *P
 func (mr *MockInventoryServerMockRecorder) PushInventoryToQueen(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushInventoryToQueen", reflect.TypeOf((*MockInventoryServer)(nil).PushInventoryToQueen), arg0, arg1)
-}
-
-// RemoveDutsFromDrones mocks base method.
-func (m *MockInventoryServer) RemoveDutsFromDrones(arg0 context.Context, arg1 *RemoveDutsFromDronesRequest) (*RemoveDutsFromDronesResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemoveDutsFromDrones", arg0, arg1)
-	ret0, _ := ret[0].(*RemoveDutsFromDronesResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RemoveDutsFromDrones indicates an expected call of RemoveDutsFromDrones.
-func (mr *MockInventoryServerMockRecorder) RemoveDutsFromDrones(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveDutsFromDrones", reflect.TypeOf((*MockInventoryServer)(nil).RemoveDutsFromDrones), arg0, arg1)
 }
 
 // ReportInventory mocks base method.

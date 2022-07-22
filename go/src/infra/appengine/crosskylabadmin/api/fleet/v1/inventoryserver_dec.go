@@ -23,40 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) RemoveDutsFromDrones(ctx context.Context, req *RemoveDutsFromDronesRequest) (rsp *RemoveDutsFromDronesResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "RemoveDutsFromDrones", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.RemoveDutsFromDrones(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "RemoveDutsFromDrones", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) AssignDutsToDrones(ctx context.Context, req *AssignDutsToDronesRequest) (rsp *AssignDutsToDronesResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "AssignDutsToDrones", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.AssignDutsToDrones(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "AssignDutsToDrones", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) ListServers(ctx context.Context, req *ListServersRequest) (rsp *ListServersResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -15,17 +15,6 @@ option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 // Inventory service helps manage ChromeOS DUTs.
 service Inventory {
   // ///////////////////////////////////////////////////////////////////////////
-  // Server database manipulation RPCs
-
-  // RemoveDutsFromDrones removes the given duts from drones.
-  rpc RemoveDutsFromDrones(RemoveDutsFromDronesRequest) returns (RemoveDutsFromDronesResponse);
-
-  // AssignDutsToDrones assigns the given duts to drones.
-  rpc AssignDutsToDrones(AssignDutsToDronesRequest) returns (AssignDutsToDronesResponse) {
-    option deprecated = true;
-  };
-
-  // ///////////////////////////////////////////////////////////////////////////
   // Inventory ReadOnly RPCs
 
   // ListServers lists the servers in the current environment.
@@ -132,97 +121,6 @@ message DutSelector {
   string id = 3;
 
   string model = 1;
-}
-
-message RemoveDutsFromDronesRequest {
-  // NEXT TAG: 5
-  message Item {
-    // dut_id is the id of a DUT to be removed.
-    //
-    // Exactly one of dut_id or hostname must be provided.
-    string dut_id = 1;
-
-    // dut_hostname is the id of a DUT to be removed.
-    //
-    // Exactly one of dut_id or dut_hostname must be provided.
-    string dut_hostname = 3;
-
-    // drone_hostname is the drone to remove the dut from.
-    //
-    // If specified, the DUT must currently be assigned to the
-    // specified drone.
-    //
-    // This is ignored if the DUT is assigned to a queen drone.
-    string drone_hostname = 2;
-
-    // removal_reason is the reason for removal.
-    //
-    // This is a serialized inventory.RemovalReason protobuf.
-    bytes removal_reason = 4;
-  }
-
-  // removals is the set of Duts to remove.
-  repeated Item removals = 1;
-}
-
-message RemoveDutsFromDronesResponse {
-  message Item {
-    // dut_id is the id of a dut that was removed.
-    string dut_id = 1;
-
-    // drone_hostname is the hostname of the drone that it the Dut was removed
-    // from.
-    string drone_hostname = 2;
-  }
-
-  // removed is the set of Duts that were removed.
-  repeated Item removed = 1;
-
-  // url is an opaque URL for this inventory change.
-  //
-  // It is intended to be the gerrit CL corresponding to the change, or the
-  // gitiles path for a committed changelist for the change.
-  string url = 2;
-}
-
-message AssignDutsToDronesRequest {
-  // NEXT TAG: 4
-  message Item {
-    // dut_id is the id of a DUT to assign to a drone.
-    //
-    // Exactly one of dut_id or hostname must be provided.
-    string dut_id = 1;
-
-    // dut_hostname is the hostname of the DUT to assign to the drone.
-    //
-    // Exactly one of dut_id or hostname must be provided.
-    string dut_hostname = 3;
-
-    // drone_hostname is deprecated and does nothing.
-    string drone_hostname = 2 [deprecated=true];
-  }
-
-  // assignments is the set of Duts to assign.
-  repeated Item assignments = 1;
-}
-
-message AssignDutsToDronesResponse {
-  message Item {
-    // dut_id is the id of a dut that was assigned to a drone.
-    string dut_id = 1;
-
-    // drone_hostname is the drone the dut was assigned to.
-    string drone_hostname = 2;
-  }
-
-  // assigned is the set of Duts that were removed.
-  repeated Item assigned = 1;
-
-  // url is an opaque URL for this inventory change.
-  //
-  // It is intended to be the gerrit CL corresponding to the change, or the
-  // gitiles path for a committed changelist for the change.
-  string url = 2;
 }
 
 message ListServersRequest {
