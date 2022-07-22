@@ -16,6 +16,24 @@
       "message": "Can you please resolve the merge conflict.",
       "revId": "0ead580e56a75d01294906a7d2033813cbcb4da4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6d7873d_acf761eb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-22T21:05:35Z",
+      "side": 1,
+      "message": "Done. In this particular case, there was not an actual merge conflict (in my experience, merge conflict false positives are extremely common). I think the logic that Gerrit uses is to assume that there is a merge conflict if any of the same files are involved between a CL and the CLs that it depends on.",
+      "parentUuid": "4fba3e12_fc96c7e4",
+      "revId": "0ead580e56a75d01294906a7d2033813cbcb4da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
