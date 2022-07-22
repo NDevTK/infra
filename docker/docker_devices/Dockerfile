@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN /usr/bin/apt-get update
 RUN /usr/bin/apt-get -y dist-upgrade
-RUN /usr/bin/apt-get -y install curl iputils-ping locales lsb-release lsof \
+RUN /usr/bin/apt-get -y install curl iputils-ping jq locales lsb-release lsof \
       net-tools netcat-openbsd parted psmisc python python3 rsync sshpass sudo \
       udev usbutils wget
 
