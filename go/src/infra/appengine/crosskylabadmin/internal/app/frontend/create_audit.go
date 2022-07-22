@@ -26,12 +26,16 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 	// We're also using Paris in a slightly different way than legacy.
 	// Each audit action will correspond to one paris job, always.
 	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q", botID, randFloat, actions)
+	tn, err := tasknames.NormalizeTaskName(taskname)
+	if err != nil {
+		logging.Errorf(ctx, "error when normalizing task name: %q", err)
+	}
 
 	// Determine the implementation to use.
 	taskType, rErr := RouteTask(
 		ctx,
 		RouteTaskParams{
-			taskType:      taskname,
+			taskType:      tn,
 			botID:         botID,
 			expectedState: "",
 			pools:         nil,
