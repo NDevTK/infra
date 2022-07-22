@@ -291,30 +291,6 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			out:       routing.Legacy,
 			reason:    routing.WrongPool,
 		},
-		{
-			name: "ignore UFS error",
-			in: &config.RolloutConfig{
-				Enable:         true,
-				ProdPermille:   500,
-				OptinAllDuts:   true,
-				UfsErrorPolicy: "lax",
-			},
-			randFloat: 0.5,
-			out:       routing.Paris,
-			reason:    routing.ScoreBelowThreshold,
-		},
-		{
-			name: "don't ignore UFS error if we're above the threshold",
-			in: &config.RolloutConfig{
-				Enable:         true,
-				ProdPermille:   498,
-				OptinAllDuts:   true,
-				UfsErrorPolicy: "lax",
-			},
-			randFloat: 0.5,
-			out:       routing.Legacy,
-			reason:    routing.ScoreTooHigh,
-		},
 	}
 
 	for i, tt := range cases {

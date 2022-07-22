@@ -146,28 +146,13 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 		logging.Errorf(ctx, "info cannot be nil, falling back to legacy")
 		return routing.Legacy, routing.NilArgument
 	}
-	// TODO(gregorynisbet): Log instead of silently falling back to the default error handling policy.
-	ufsErrorPolicy, err := normalizeErrorPolicy(r.GetUfsErrorPolicy())
-	if err != nil {
-		logging.Infof(ctx, "error while routing labstation repair task: %s", err)
-	}
 	// Check that the feature is enabled at all.
 	if !r.GetEnable() {
 		return routing.Legacy, routing.ParisNotEnabled
 	}
 	// Check for malformed input data that would cause us to be unable to make a decision.
 	if len(info.pools) == 0 {
-		switch ufsErrorPolicy {
-		case ufsErrorPolicyLax:
-			// Do nothing.
-		case ufsErrorPolicyStrict:
-			// TODO(gregorynisbet): Make strict error handling propagate the failure back up.
-			return routing.Legacy, routing.NoPools
-		case ufsErrorPolicyFallback:
-			return routing.Legacy, routing.NoPools
-		default:
-			return routing.Legacy, routing.MalformedPolicy
-		}
+		return routing.Legacy, routing.NoPools
 	}
 
 	d := r.ComputePermilleData(ctx, info.hostname)

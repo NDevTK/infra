@@ -338,9 +338,10 @@ message Paris {
 //  "optin_all_duts": False,
 //  "optin_dut_pool": [ "a", "b" ],
 //  "rollout_permille": 50,
-//  "ufs_error_policy": "strict",
 // }
 message RolloutConfig {
+  reserved 5;
+  reserved "ufs_error_policy";
   // Enable is set to true when recovery is enabled at all. If it is set to false, the entire
   // DUT recovery flow for PARIS is skipped and the legacy flow is used instead.
   bool enable = 1;
@@ -401,15 +402,6 @@ message RolloutConfig {
   // Organizing these patterns more specific to less specific reads better than organizing
   // them in another way.
   repeated Pattern pattern = 8;
-
-  // The UFS_error_policy controls what happens if we encounter a UFS error at the beginning of launching a task.
-  // The valid values are:
-  //  - "default" or "" or "fallback" -- Fall back to the legacy path in the event of a UFS error.
-  //  - "lax"                         -- In cases where the pool is not needed to route the task, do not fail the request because of UFS errors.
-  //  - "strict"                      -- Whether we need the data or not, fail the request if there's a UFS error.
-  //
-  /// TODO(gregorynisbet): Remove this option and adopt the strict policy once the dependency on UFS stabilizes.
-  string ufs_error_policy = 5;
 };
 
 // UFSConfig contains information about UFS, such as its hostname.

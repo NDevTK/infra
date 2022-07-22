@@ -191,8 +191,4 @@ func TestValidateNoRepairOnlyFields(t *testing.T) {
 		pd := &RolloutConfig{Enable: true, OptinDutPool: []string{"aaa"}}
 		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "optin_dut_pool")
 	})
-	Convey("ufs_error_policy", t, func() {
-		pd := &RolloutConfig{Enable: true, UfsErrorPolicy: "strict"}
-		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "ufs_error_policy")
-	})
 }
