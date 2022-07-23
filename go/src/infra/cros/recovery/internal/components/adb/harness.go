@@ -28,11 +28,8 @@ func EnableDeviceTestHarnessMode(ctx context.Context, run components.Runner, log
 
 // WaitForDevice waits until the device is online.
 func WaitForDevice(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
-	const (
-		adbWaitForDeviceCmd     = "timeout %d adb -s %s wait-for-device"
-		maxWaitForDeviceSeconds = 120
-	)
-	cmd := fmt.Sprintf(adbWaitForDeviceCmd, maxWaitForDeviceSeconds, serialNumber)
+	const adbWaitForDeviceCmd = "adb -s %s wait-for-device"
+	cmd := fmt.Sprintf(adbWaitForDeviceCmd, serialNumber)
 	if _, err := run(ctx, time.Minute, cmd); err != nil {
 		return errors.Annotate(err, "wait for device").Err()
 	}

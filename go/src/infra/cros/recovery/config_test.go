@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,18 @@ func TestCrosRepairConfig(t *testing.T) {
 func TestCrosDeployConfig(t *testing.T) {
 	t.Parallel()
 	verifyConfig("dut-deploy", t, config.CrosDeployConfig())
+}
+
+// TestAndroidRepairConfig verifies the android repair configuration.
+func TestAndroidRepairConfig(t *testing.T) {
+	t.Parallel()
+	verifyConfig("android-repair", t, config.AndroidRepairConfig())
+}
+
+// TestAndroidDeployConfig verifies the android deploy configuration.
+func TestAndroidDeployConfig(t *testing.T) {
+	t.Parallel()
+	verifyConfig("android-deploy", t, config.AndroidDeployConfig())
 }
 
 func mustCreateConfigJSON(c *config.Configuration) io.Reader {

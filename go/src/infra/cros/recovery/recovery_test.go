@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,13 +110,13 @@ var dutPlansCases = []struct {
 		"android recovery",
 		tlw.DUTSetupTypeAndroid,
 		tasknames.Recovery,
-		[]string{"android"},
+		[]string{"android", "close"},
 	},
 	{
 		"android deploy",
 		tlw.DUTSetupTypeAndroid,
 		tasknames.Deploy,
-		[]string{"android"},
+		[]string{"android", "close"},
 	},
 	{
 		"android custom",

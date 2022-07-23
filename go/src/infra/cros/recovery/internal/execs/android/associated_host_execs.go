@@ -21,7 +21,7 @@ import (
 
 const (
 	flagsDir   = "/var/lib/servod/"
-	inUseFlag  = flagsDir + "%s_in_use"
+	inUseFlag  = flagsDir + "adb_%s_in_use"
 	rebootFlag = flagsDir + "%s_reboot"
 )
 
@@ -59,10 +59,12 @@ func isAssociatedHostLabstationExec(ctx context.Context, info *execs.ExecInfo) e
 
 // hasADBVendorKeyExec verifies that adb vendor key is provisioned at the DUT associated host.
 func hasADBVendorKeyExec(ctx context.Context, info *execs.ExecInfo) error {
-	if len(info.ActionArgs) != 1 {
+	actionArgs := info.GetActionArgs(ctx)
+	if !actionArgs.Has("adb_vendor_key") {
 		return errors.Reason("invalid number of arguments: adb vendor key is required").Err()
 	}
-	return adb.CheckADBVendorKey(ctx, newRunner(info), info.NewLogger(), info.ActionArgs[0])
+	vendorKey := actionArgs.AsString(ctx, "adb_vendor_key", "")
+	return adb.CheckADBVendorKey(ctx, newRunner(info), info.NewLogger(), vendorKey)
 }
 
 // hasADBInstalledExec verifies that adb is installed at the DUT associated host.
@@ -80,10 +82,11 @@ func hasADBInstalledExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // startADBServerExec ensures that adb server is running on the DUT associated host.
 func startADBServerExec(ctx context.Context, info *execs.ExecInfo) error {
-	if len(info.ActionArgs) != 1 {
+	actionArgs := info.GetActionArgs(ctx)
+	if !actionArgs.Has("adb_vendor_key") {
 		return errors.Reason("invalid number of arguments: adb vendor key is required").Err()
 	}
-	vendorKey := info.ActionArgs[0]
+	vendorKey := actionArgs.AsString(ctx, "adb_vendor_key", "")
 	return adb.StartADBServer(ctx, newRunner(info), info.NewLogger(), vendorKey)
 }
 
@@ -110,6 +113,22 @@ func createInUseFlagExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	// Ignore errors.
 	return nil
+}
+
+// hasNoOtherInUseFlagsExec fails if associated host has other adb in-use flag files.
+func hasNoOtherInUseFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
+	const (
+		findOtherInUseFlagsCmd  = "find " + flagsDir + "adb_*_in_use -type f ! -name 'adb_%s_in_use' -mmin -%d"
+		inUseFlagExpirationMins = 10
+	)
+	run := newRunner(info)
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	output, _ := run(ctx, time.Minute, fmt.Sprintf(findOtherInUseFlagsCmd, serialNumber, inUseFlagExpirationMins))
+	if output == "" {
+		log.Debugf(ctx, "Does not have other adb in-use flags.")
+		return nil
+	}
+	return errors.Reason("has other adb in-use flags\n%s", output).Err()
 }
 
 // removeInUseFlagExec removes in-use flag file.
@@ -146,6 +165,7 @@ func init() {
 	execs.Register("android_associated_host_stop_adb", killADBServerExec)
 	execs.Register("android_associated_host_fs_is_writable", isFileSystemWritableExec)
 	execs.Register("android_associated_host_lock", createInUseFlagExec)
+	execs.Register("android_associated_host_has_no_other_locks", hasNoOtherInUseFlagsExec)
 	execs.Register("android_associated_host_unlock", removeInUseFlagExec)
 	execs.Register("android_associated_host_schedule_reboot", scheduleRebootExec)
 }
