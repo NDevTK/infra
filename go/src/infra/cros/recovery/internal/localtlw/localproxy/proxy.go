@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package proxy provide temp solution to run  existion from local environment
-// to execute recovery flows.
+// Package localproxy provides a temp solution to run shell commands from local
+// environment remotely to execute recovery flows.
 package localproxy
 
 import (
@@ -25,35 +25,32 @@ var (
 
 // Proxy holds info for active running ssh proxy for requested host.
 type proxy struct {
-	host         string
-	hostIp       string
-	hostPort     int
-	jumpHost     string
-	jumpHostPort int
-	cmd          *exec.Cmd
+	host     string
+	hostIp   string
+	hostPort int
+	jumpHost string
+	cmd      *exec.Cmd
 }
 
 // newProxy creates if not exist or returns existing proxy from pool.
-func newProxy(ctx context.Context, host string, hostPort int, jumpHost string, jumpHostPort int) *proxy {
+func newProxy(ctx context.Context, host string, hostPort int, jumpHost string) *proxy {
 	p, ok := proxyPool[host]
 	if !ok {
 		ip, err := lookupHost(host)
 		p = &proxy{
-			host:         host,
-			hostIp:       ip,
-			hostPort:     hostPort,
-			jumpHost:     jumpHost,
-			jumpHostPort: jumpHostPort,
+			host:     host,
+			hostIp:   ip,
+			hostPort: hostPort,
+			jumpHost: jumpHost,
 		}
 		if err != nil {
-			fmt.Printf("Fail loopup ip for %s: %s\n", host, err)
+			fmt.Printf("Fail lookup ip for %s: %s\n", host, err)
 			proxyPool[p.host] = p
 			return p
 		}
 		// Ex.: the proxy create command will look something like this:
-		// "ssh -f -N -L jumpHostPort:127.0.0.1:22 -L hostPort:host:22 root@jumpHost"
+		// "ssh -f -N -L hostPort:host:22 root@jumpHost"
 		p.cmd = exec.CommandContext(ctx, "ssh", "-f", "-N",
-			"-L", fmt.Sprintf("%d:127.0.0.1:22", p.jumpHostPort),
 			"-L", fmt.Sprintf("%d:%s:22", p.hostPort, p.hostIp),
 			fmt.Sprintf("root@%s", p.jumpHost))
 		initSystemProcAttr(p)
@@ -61,7 +58,7 @@ func newProxy(ctx context.Context, host string, hostPort int, jumpHost string, j
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("---> local proxy for %q on port %v (with jump host of %q on jump host port: %v)\n", p.host, p.hostPort, p.jumpHost, p.jumpHostPort)
+		fmt.Printf("---> local proxy for %q on port %v through %q jump host\n", p.host, p.hostPort, p.jumpHost)
 		if err := p.cmd.Start(); err != nil {
 			fmt.Printf("Fail to starte proxy: %s\n", err)
 		}

@@ -409,6 +409,9 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 				if sh := execArgs.DUT.GetChromeos().GetServo(); sh.GetName() == resource && sh.GetContainerName() != "" {
 					continue
 				}
+				if associatedHostname := execArgs.DUT.GetAndroid().GetAssociatedHostname(); associatedHostname != "" {
+					resource = associatedHostname
+				}
 				if err := localproxy.RegHost(ctx, resource, jumpHostForLocalProxy); err != nil {
 					return errors.Annotate(err, "run plans: create proxy for %q", resource).Err()
 				}

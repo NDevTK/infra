@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,9 @@ var (
 // If hostname i snot known then new proxy will be created and register to map.
 func RegHost(ctx context.Context, hostname string, jumpHostname string) error {
 	if _, ok := hostProxyPortMap[hostname]; !ok {
-		p := newProxy(ctx, hostname, lastUsedProxyPort, jumpHostname, lastUsedProxyPort+1)
+		p := newProxy(ctx, hostname, lastUsedProxyPort, jumpHostname)
 		if p.Port() == lastUsedProxyPort {
-			lastUsedProxyPort += 2
+			lastUsedProxyPort++
 		}
 		hostProxyPortMap[hostname] = p.Port()
 	}
