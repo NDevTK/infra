@@ -67,9 +67,9 @@ Here's how to run Monorail locally for development on MacOS and Debian stretch/b
         1. `python -m virtualenv venv` to set up virtualenv within your monorail directory.
         1. `source venv/bin/activate` to activate it, needed in each terminal instance of the directory.
     1.  Mac only: install [libssl](https://github.com/PyMySQL/mysqlclient-python/issues/74), needed for mysqlclient. (do this in local env not virtual env)
-        1. `brew install openssl`
-    1.  `LIBRARY_PATH=/usr/local/opt/openssl/lib LDFLAGS="-L/usr/local/opt/openssl/lib" CPPFLAGS="-I/usr/local/opt/openssl/include" make dev_deps` (run in virtual env)
-    1.  `make jsdeps`
+        1. `brew install openssl; export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/`
+    1.  `make dev_deps` (run in virtual env)
+    1.  `make deps` (run in virtual env)
 1.  Run the app:
     1.  `make serve` (run in virtual env)
     1.  Start MySQL:
