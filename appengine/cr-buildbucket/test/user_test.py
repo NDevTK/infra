@@ -10,22 +10,16 @@ import mock
 from google.appengine.ext import ndb
 
 from go.chromium.org.luci.buildbucket.proto import project_config_pb2
-from test import test_util
 from test.test_util import future
 import config
 import errors
 import user
 
-# Shortcuts
-Bucket = project_config_pb2.Bucket
-Acl = project_config_pb2.Acl
 
-
-def perms_for_role(role):
-  return frozenset(
-      perm for perm, min_role in user.PERM_TO_MIN_ROLE.items()
-      if role >= min_role
-  )
+# Representative subsets of permissions per role.
+READER_PERMS = frozenset([user.PERM_BUILDS_GET])
+SCHEDULER_PERMS = READER_PERMS | frozenset([user.PERM_BUILDS_ADD])
+WRITER_PERMS = SCHEDULER_PERMS | frozenset([user.PERM_BUILDS_LEASE])
 
 
 class UserTest(testing.AppengineTestCase):
@@ -61,87 +55,28 @@ class UserTest(testing.AppengineTestCase):
         side_effect=has_permission
     )
 
-    config.put_bucket(
-        'p1', 'ignored-rev',
-        Bucket(
-            name='a',
-            acls=[
-                Acl(role=Acl.WRITER, group='a-writers'),
-                Acl(role=Acl.READER, group='a-readers'),
-            ]
-        )
-    )
+    config.put_bucket('p1', 'ignored-rev', project_config_pb2.Bucket(name='a'))
     self.perms['p1:a'] = [
-        ('a-writers', perms_for_role(Acl.WRITER)),
-        ('a-readers', perms_for_role(Acl.READER)),
-        ('project:p1', perms_for_role(Acl.SCHEDULER)),  # implicit
+        ('a-writers', WRITER_PERMS),
+        ('a-readers', READER_PERMS),
+        ('project:p1', SCHEDULER_PERMS),  # implicit
     ]
 
-    config.put_bucket(
-        'p2', 'ignored-rev',
-        Bucket(
-            name='b',
-            acls=[
-                Acl(role=Acl.WRITER, group='b-writers'),
-                Acl(role=Acl.READER, group='b-readers'),
-            ]
-        )
-    )
+    config.put_bucket('p2', 'ignored-rev', project_config_pb2.Bucket(name='b'))
     self.perms['p2:b'] = [
-        ('b-writers', perms_for_role(Acl.WRITER)),
-        ('b-readers', perms_for_role(Acl.READER)),
-        ('project:p2', perms_for_role(Acl.SCHEDULER)),  # implicit
+        ('b-writers', WRITER_PERMS),
+        ('b-readers', READER_PERMS),
+        ('project:p2', SCHEDULER_PERMS),  # implicit
     ]
 
-    config.put_bucket(
-        'p3', 'ignored-rev',
-        Bucket(
-            name='c',
-            acls=[
-                Acl(role=Acl.READER, group='c-readers'),
-                Acl(role=Acl.READER, identity='user:a@example.com'),
-                Acl(role=Acl.WRITER, group='c-writers'),
-                Acl(role=Acl.READER, identity='project:p1'),
-            ]
-        )
-    )
+    config.put_bucket('p3', 'ignored-rev', project_config_pb2.Bucket(name='c'))
     self.perms['p3:c'] = [
-        ('c-readers', perms_for_role(Acl.READER)),
-        ('user:a@example.com', perms_for_role(Acl.READER)),
-        ('c-writers', perms_for_role(Acl.WRITER)),
-        ('project:p1', perms_for_role(Acl.READER)),
-        ('project:p3', perms_for_role(Acl.SCHEDULER)),  # implicit
+        ('c-readers', READER_PERMS),
+        ('user:a@example.com', READER_PERMS),
+        ('c-writers', WRITER_PERMS),
+        ('project:p1', READER_PERMS),
+        ('project:p3', SCHEDULER_PERMS),  # implicit
     ]
-
-  def get_role(self, bucket_id):
-    return user.get_role_async_deprecated(bucket_id).get_result()
-
-  @mock.patch('components.auth.is_group_member', autospec=True)
-  def test_get_role_deprecated(self, is_group_member):
-    is_group_member.side_effect = lambda g, _=None: g == 'a-writers'
-
-    self.assertEqual(self.get_role('p1/a'), Acl.WRITER)
-    self.assertEqual(self.get_role('p2/a'), None)
-    self.assertEqual(self.get_role('p3/c'), Acl.READER)
-    self.assertEqual(self.get_role('p1/non.existing'), None)
-
-    # Memcache test.
-    user.clear_request_cache()
-    self.assertEqual(self.get_role('p1/a'), Acl.WRITER)
-
-  def test_get_role_admin_deprecated(self):
-    auth.is_admin.return_value = True
-    self.assertEqual(self.get_role('p1/a'), Acl.WRITER)
-    self.assertEqual(self.get_role('p1/non.existing'), None)
-
-  @mock.patch('components.auth.is_group_member', autospec=True)
-  def test_get_role_for_project_deprecated(self, is_group_member):
-    is_group_member.side_effect = lambda g, _=None: False
-
-    self.current_identity = auth.Identity.from_bytes('project:p1')
-    self.assertEqual(self.get_role('p1/a'), Acl.WRITER)  # implicit
-    self.assertEqual(self.get_role('p2/b'), None)  # no roles at all
-    self.assertEqual(self.get_role('p3/c'), Acl.READER)  # via explicit ACL
 
   @parameterized.expand([
       (user.PERM_BUILDS_GET, ['a-readers'], {'p1/a', 'p3/c'}),
@@ -178,24 +113,6 @@ class UserTest(testing.AppengineTestCase):
         }
     )
 
-  def mock_role(self, role):
-    self.patch('user.get_role_async_deprecated', return_value=future(role))
-
-  def test_has_perm_deprecated(self):
-    self.mock_role(Acl.READER)
-
-    self.assertTrue(user.has_perm(user.PERM_BUILDS_GET, 'proj/bucket'))
-    self.assertFalse(user.has_perm(user.PERM_BUILDS_CANCEL, 'proj/bucket'))
-    self.assertFalse(user.has_perm(user.PERM_BUILDERS_SET_NUM, 'proj/bucket'))
-
-    # Memcache coverage
-    self.assertFalse(user.has_perm(user.PERM_BUILDERS_SET_NUM, 'proj/bucket'))
-
-  def test_has_perm_no_roles_deprecated(self):
-    self.mock_role(None)
-    for perm in user.PERM_TO_MIN_ROLE:
-      self.assertFalse(user.has_perm(perm, 'proj/bucket'))
-
   @mock.patch('components.auth.is_group_member', autospec=True)
   def test_has_perm(self, is_group_member):
     is_group_member.side_effect = lambda g, _=None: g == 'a-readers'
@@ -222,24 +139,25 @@ class UserTest(testing.AppengineTestCase):
       bid = 'project_id/bad bucket name'
       user.has_perm(user.PERM_BUILDS_GET, bid)
 
-  @mock.patch('user.get_role_async_deprecated')
-  def test_filter_buckets_by_perm(self, get_role_async):
-    get_role_async.side_effect = lambda bid: future({
-        'p/read': Acl.READER,
-        'p/read-sched': Acl.SCHEDULER,
-        'p/read-sched-write': Acl.WRITER,
-    }.get(bid))
+  @mock.patch('components.auth.is_group_member', autospec=True)
+  def test_filter_buckets_by_perm(self, is_group_member):
+    self.current_identity = auth.Identity.from_bytes('user:a@example.com')
+    is_group_member.side_effect = lambda g, _=None: g == 'a-readers'
 
-    all_buckets = ['p/read', 'p/read-sched', 'p/read-sched-write', 'p/unknown']
+    all_buckets = ['p1/a', 'p2/b', 'p3/c', 'p/unknown']
 
     filtered = user.filter_buckets_by_perm(user.PERM_BUILDS_GET, all_buckets)
-    self.assertEqual(filtered, {'p/read', 'p/read-sched', 'p/read-sched-write'})
+    self.assertEqual(
+        filtered,
+        {
+            'p1/a',  # via a-readers group
+            'p3/c',  # via direct identity reference in ACLs
+        }
+    )
 
+    self.current_identity = auth.Identity.from_bytes('project:p2')
     filtered = user.filter_buckets_by_perm(user.PERM_BUILDS_ADD, all_buckets)
-    self.assertEqual(filtered, {'p/read-sched', 'p/read-sched-write'})
-
-    filtered = user.filter_buckets_by_perm(user.PERM_BUILDS_LEASE, all_buckets)
-    self.assertEqual(filtered, {'p/read-sched-write'})
+    self.assertEqual(filtered, {'p2/b'})
 
   def test_parse_identity(self):
     self.assertEqual(

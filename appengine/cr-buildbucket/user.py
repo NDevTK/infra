@@ -2,33 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""User-related functions, including access control list implementation.
+"""User-related functions, including access control list implementation."""
 
-See Acl message in proto/project_config.proto.
-"""
-
-import collections
 import logging
 import os
 import threading
 
-from google.appengine.api import app_identity
 from google.appengine.ext import ndb
 
 from components import auth
 from components import utils
 
-from protorpc import messages
-from go.chromium.org.luci.buildbucket.proto import project_config_pb2
 import config
 import errors
 
-# Group whitelisting users to update builds. They are expected to be robots.
+# Group users to update builds. They are expected to be robots.
 UPDATE_BUILD_ALLOWED_USERS = 'buildbucket-update-build-users'
 
-
-################################################################################
-## Permissions-based API (implemented in terms of Buildbucket roles for now).
 
 ALL_PERMISSIONS = set()
 
@@ -75,28 +65,6 @@ PERM_BUCKETS_PAUSE = _permission('buildbucket.buckets.pause')
 # Forbid adding more permission from other modules or tests after this point.
 ALL_PERMISSIONS = frozenset(ALL_PERMISSIONS)
 
-# Maps a Permission to a minimum required project_config_pb2.Acl.Role.
-PERM_TO_MIN_ROLE = {
-    # Reader.
-    PERM_BUILDS_GET: project_config_pb2.Acl.READER,
-    PERM_BUILDS_LIST: project_config_pb2.Acl.READER,
-    PERM_BUILDERS_GET: project_config_pb2.Acl.READER,
-    PERM_BUILDERS_LIST: project_config_pb2.Acl.READER,
-    PERM_BUCKETS_GET: project_config_pb2.Acl.READER,
-
-    # Scheduler.
-    PERM_BUILDS_ADD: project_config_pb2.Acl.SCHEDULER,
-    PERM_BUILDS_CANCEL: project_config_pb2.Acl.SCHEDULER,
-
-    # Writer.
-    PERM_BUILDS_LEASE: project_config_pb2.Acl.WRITER,
-    PERM_BUILDS_RESET: project_config_pb2.Acl.WRITER,
-    PERM_BUILDERS_SET_NUM: project_config_pb2.Acl.WRITER,
-    PERM_BUCKETS_DELETE_BUILDS: project_config_pb2.Acl.WRITER,
-    PERM_BUCKETS_PAUSE: project_config_pb2.Acl.WRITER,
-}
-assert sorted(PERM_TO_MIN_ROLE.keys()) == sorted(ALL_PERMISSIONS)
-
 
 @ndb.tasklet
 def has_perm_async(perm, bucket_id):
@@ -131,20 +99,7 @@ def has_perm_async(perm, bucket_id):
     )
     raise ndb.Return(True)
 
-  # Fallback to the legacy ACL check.
-  role = yield get_role_async_deprecated(bucket_id)
-  outcome = role is not None and role >= PERM_TO_MIN_ROLE[perm]
-
-  # Log if we had to rely on legacy ACLs.
-  if outcome:
-    logging.warning(
-        'LEGACY_FALLBACK: perm=%r bucket=%r caller=%r',
-        perm,
-        bucket_id,
-        auth.get_current_identity().to_bytes(),
-    )
-
-  raise ndb.Return(outcome)
+  raise ndb.Return(False)
 
 
 def has_perm(perm, bucket_id):
@@ -228,67 +183,7 @@ def can_update_build_async():  # pragma: no cover
 
 
 ################################################################################
-## Implementation.
-
-
-def get_role_async_deprecated(bucket_id):
-  """Returns the most permissive role of the current user in |bucket_id|.
-
-  The most permissive role is the role that allows most actions, e.g. WRITER
-  is more permissive than READER.
-
-  Returns None if there's no such bucket or the current identity has no roles in
-  it at all.
-  """
-  config.validate_bucket_id(bucket_id)
-
-  identity = auth.get_current_identity()
-  identity_str = identity.to_bytes()
-
-  @ndb.tasklet
-  def impl():
-    ctx = ndb.get_context()
-    cache_key = 'role/%s/%s' % (identity_str, bucket_id)
-    cache = yield ctx.memcache_get(cache_key)
-    if cache is not None:
-      raise ndb.Return(cache[0])
-
-    _, bucket_cfg = yield config.get_bucket_async(bucket_id)
-    if not bucket_cfg:
-      raise ndb.Return(None)
-    if auth.is_admin(identity):
-      raise ndb.Return(project_config_pb2.Acl.WRITER)
-
-    # A LUCI service calling us in the context of some project is allowed to
-    # do anything it wants in that project. We trust all LUCI services to do
-    # authorization on their own for this case. A cross-project request must be
-    # explicitly authorized in Buildbucket ACLs though (so we proceed to the
-    # bucket_cfg check below).
-    if identity.is_project:
-      project_id, _ = config.parse_bucket_id(bucket_id)
-      if project_id == identity.name:
-        raise ndb.Return(project_config_pb2.Acl.WRITER)
-
-    # Roles are just numbers. The higher the number, the more permissions
-    # the identity has. We exploit this here to get the single maximally
-    # permissive role for the current identity.
-    role = None
-    for rule in bucket_cfg.acls:
-      if rule.role <= role:
-        continue
-      if (rule.identity == identity_str or
-          (rule.group and auth.is_group_member(rule.group, identity))):
-        role = rule.role
-    yield ctx.memcache_set(cache_key, (role,), time=60)
-    raise ndb.Return(role)
-
-  return _get_or_create_cached_future(identity, 'role/%s' % bucket_id, impl)
-
-
-@utils.cache
-def self_identity():  # pragma: no cover
-  """Returns identity of the buildbucket app."""
-  return auth.Identity('user', app_identity.get_service_account_name())
+## User-related helpers used by other modules.
 
 
 def current_identity_cannot(action_format, *args):  # pragma: no cover
@@ -312,6 +207,9 @@ def parse_identity(identity):
       raise errors.InvalidInputError('Invalid identity: %s' % ex)
   return identity
 
+
+################################################################################
+## Implementation.
 
 _thread_local = threading.local()
 
