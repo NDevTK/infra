@@ -17,7 +17,6 @@ import webapp2
 from legacy import api as legacy_api
 from legacy import api_common
 from legacy import swarmbucket_api
-import access
 import bq
 import bulkproc
 import config
@@ -165,7 +164,6 @@ def get_frontend_routes():  # pragma: no cover
 
   prpc_server = prpc.Server()
   prpc_server.add_interceptor(auth.prpc_interceptor)
-  prpc_server.add_service(access.AccessServicer())
   routes += prpc_server.get_routes()
 
   return routes

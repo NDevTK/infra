@@ -241,23 +241,6 @@ class UserTest(testing.AppengineTestCase):
     filtered = user.filter_buckets_by_perm(user.PERM_BUILDS_LEASE, all_buckets)
     self.assertEqual(filtered, {'p/read-sched-write'})
 
-  def test_permitted_actions_async_no_roles(self):
-    self.mock_role(None)
-    self.assertEqual(
-        user.permitted_actions_async('project/bucket').get_result(),
-        (),
-    )
-
-  def test_permitted_actions_async_some_role(self):
-    self.mock_role(Acl.READER)
-    self.assertEqual(
-        user.permitted_actions_async('project/bucket').get_result(),
-        (
-            user.Action.VIEW_BUILD, user.Action.SEARCH_BUILDS,
-            user.Action.ACCESS_BUCKET
-        ),
-    )
-
   def test_parse_identity(self):
     self.assertEqual(
         user.parse_identity('user:a@example.com'),

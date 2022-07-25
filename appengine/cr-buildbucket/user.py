@@ -217,86 +217,6 @@ def buckets_by_perm_async(perm):
 
 
 ################################################################################
-## Role definitions (DEPRECATED).
-
-
-class Action(messages.Enum):
-  # Schedule a build.
-  ADD_BUILD = 1
-  # Get information about a build.
-  VIEW_BUILD = 2
-  # Lease a build for execution. Normally done by build systems.
-  LEASE_BUILD = 3
-  # Cancel an existing build. Does not require a lease key.
-  CANCEL_BUILD = 4
-  # Unlease and reset state of an existing build. Normally done by admins.
-  RESET_BUILD = 5
-  # Search for builds or get a list of scheduled builds.
-  SEARCH_BUILDS = 6
-  # Delete all scheduled builds from a bucket.
-  DELETE_SCHEDULED_BUILDS = 9
-  # Know about bucket existence and read its info.
-  ACCESS_BUCKET = 10
-  # Pause builds for a given bucket.
-  PAUSE_BUCKET = 11
-  # Set the number for the next build in a builder.
-  SET_NEXT_NUMBER = 12
-
-
-# Maps an Action to a description.
-ACTION_DESCRIPTIONS = {
-    Action.ADD_BUILD:
-        'Schedule a build.',
-    Action.VIEW_BUILD:
-        'Get information about a build.',
-    Action.LEASE_BUILD:
-        'Lease a build for execution.',
-    Action.CANCEL_BUILD:
-        'Cancel an existing build. Does not require a lease key.',
-    Action.RESET_BUILD:
-        'Unlease and reset state of an existing build.',
-    Action.SEARCH_BUILDS:
-        'Search for builds or get a list of scheduled builds.',
-    Action.DELETE_SCHEDULED_BUILDS:
-        'Delete all scheduled builds from a bucket.',
-    Action.ACCESS_BUCKET:
-        'Know about a bucket\'s existence and read its info.',
-    Action.PAUSE_BUCKET:
-        'Pause builds for a given bucket.',
-    Action.SET_NEXT_NUMBER:
-        'Set the number for the next build in a builder.',
-}
-
-# Maps an Action to a permission, assuming Access API is used only by Milo.
-ACTION_TO_PERM = {
-    Action.ADD_BUILD:
-        PERM_BUILDS_ADD,
-    Action.VIEW_BUILD:
-        PERM_BUILDS_GET,
-    Action.LEASE_BUILD:
-        PERM_BUILDS_LEASE,
-    Action.CANCEL_BUILD:
-        PERM_BUILDS_CANCEL,
-    Action.RESET_BUILD:
-        PERM_BUILDS_RESET,
-    Action.SEARCH_BUILDS:
-        PERM_BUILDS_LIST,
-    Action.DELETE_SCHEDULED_BUILDS:
-        PERM_BUCKETS_DELETE_BUILDS,
-    # Milo checks ACCESS_BUCKET exclusively to test visibility of builders.
-    Action.ACCESS_BUCKET:
-        PERM_BUILDERS_GET,
-    Action.PAUSE_BUCKET:
-        PERM_BUCKETS_PAUSE,
-    Action.SET_NEXT_NUMBER:
-        PERM_BUILDERS_SET_NUM,
-}
-
-# Reverse, since it is more useful in the actual implementation.
-PERM_TO_ACTION = {perm: action for action, perm in ACTION_TO_PERM.items()}
-
-
-################################################################################
 ## Granular actions. API uses these.
 
 
@@ -363,16 +283,6 @@ def get_role_async_deprecated(bucket_id):
     raise ndb.Return(role)
 
   return _get_or_create_cached_future(identity, 'role/%s' % bucket_id, impl)
-
-
-@ndb.tasklet
-def permitted_actions_async(bucket_id):
-  """Returns a tuple of actions (as Action enums) permitted to the caller."""
-  per_perm = yield [has_perm_async(perm, bucket_id) for perm in PERM_TO_ACTION]
-  actions = [
-      PERM_TO_ACTION[perm] for perm, has in zip(PERM_TO_ACTION, per_perm) if has
-  ]
-  raise ndb.Return(tuple(sorted(actions)))
 
 
 @utils.cache
