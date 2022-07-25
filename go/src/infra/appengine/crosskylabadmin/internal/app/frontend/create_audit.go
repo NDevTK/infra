@@ -25,7 +25,7 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 	// The actions field is a little bit tricky and consists of a comma-delimited list of actions.
 	// We're also using Paris in a slightly different way than legacy.
 	// Each audit action will correspond to one paris job, always.
-	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q", botID, randFloat, actions)
+	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q taskname %q", botID, randFloat, actions, taskname)
 	tn, err := tasknames.NormalizeTaskName(taskname)
 	if err != nil {
 		logging.Errorf(ctx, "error when normalizing task name: %q", err)
@@ -84,6 +84,7 @@ func createLegacyAuditTask(ctx context.Context, botID string, taskname string, a
 
 // routeAuditTaskImpl routes an audit task (storage, rpm, USB) based on the rollout config that's tied to that specific task.
 func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname string, randFloat float64) (heuristics.TaskType, routing.Reason) {
+	logging.Infof(ctx, "control transferred to routeAuditTaskImpl for hostname %q", hostname)
 	if r == nil {
 		return routing.Legacy, routing.ParisNotEnabled
 	}
@@ -110,11 +111,15 @@ func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname s
 	// This way a threshold of zero actually means 0.0% instead of 0.1%.
 	valueBelowThreshold := threshold != 0 && myValue <= threshold
 	valueBelowLatestThreshold := latestThreshold != 0 && myValue <= latestThreshold
+	logging.Infof(ctx, "Values in routeAuditTaskInfo %q %f %f %f", hostname, threshold, latestThreshold, myValue)
 	switch {
 	case valueBelowLatestThreshold:
 		return routing.ParisLatest, routing.ScoreBelowThreshold
 	case valueBelowThreshold:
 		return routing.Paris, routing.ScoreBelowThreshold
 	}
-	return routing.Legacy, routing.NotImplemented
+	if threshold == 0 {
+		return routing.Legacy, routing.ThresholdZero
+	}
+	return routing.Legacy, routing.ScoreTooHigh
 }
