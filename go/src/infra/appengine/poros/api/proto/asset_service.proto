@@ -181,5 +181,5 @@ message GetDefaultResourcesRequest {
 
 message GetDefaultResourcesResponse {
   // The default Resources given an Asset type
-  repeated ResourceModel resources = 1;
+  repeated AssetResourceModel asset_resources = 1;
 }

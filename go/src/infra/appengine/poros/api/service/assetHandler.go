@@ -330,16 +330,16 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 	case "active_directory":
 		resourceData = [][]string{
 			{"network", "primary"},
-			{"ad_domain", "foo.example"},
-			{"domain_controller_machine", "win2008r2"},
+			{"ad_domain", "test1.com"},
+			{"domain_controller_machine", "dc"},
 			{"user", "Joe"},
 		}
 		break
 	case "active_directory_splunk":
 		resourceData = [][]string{
 			{"network", "primary"},
-			{"ad_domain", "foo.example"},
-			{"domain_controller_machine", "win2008r2"},
+			{"ad_domain", "test1.com"},
+			{"domain_controller_machine", "dc"},
 			{"user", "Joe"},
 			{"win2016", "Splunk"},
 		}
@@ -348,18 +348,20 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 		resourceData = [][]string{}
 	}
 
-	var resources []*proto.ResourceModel
+	var assetResources []*proto.AssetResourceModel
 	for _, data := range resourceData {
 		query := datastore.NewQuery("ResourceEntity").Eq("Type", data[0]).Limit(1)
 		var entities []*ResourceEntity
 		if err := datastore.GetAll(ctx, query, &entities); err != nil {
 			return nil, err
 		}
-		resources = append(resources,
-			toResourceModel(entities[0]))
+
+		var assetResource *proto.AssetResourceModel
+		assetResource = &proto.AssetResourceModel{ResourceId: entities[0].ResourceId, AliasName: data[1], Default: true}
+		assetResources = append(assetResources, assetResource)
 	}
 
-	return &proto.GetDefaultResourcesResponse{Resources: resources}, nil
+	return &proto.GetDefaultResourcesResponse{AssetResources: assetResources}, nil
 }
 
 func getById(ctx context.Context, id string) (*AssetEntity, error) {

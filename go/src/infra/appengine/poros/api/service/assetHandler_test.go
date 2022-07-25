@@ -389,10 +389,10 @@ func TestDefaultResourcesWithActiveDirectory(t *testing.T) {
 		handler := &AssetHandler{}
 		resourceRequest := &proto.GetDefaultResourcesRequest{AssetType: "active_directory"}
 		response, err := handler.GetDefaultResources(ctx, resourceRequest)
-		defaultResources := response.GetResources()
+		defaultResources := response.GetAssetResources()
 		So(err, ShouldBeNil)
-		want := []string{"Network", "Active Directory Domain", "win2008r2", "User"}
-		get := []string{defaultResources[0].GetName(), defaultResources[1].GetName(), defaultResources[2].GetName(), defaultResources[3].GetName()}
+		want := []string{"primary", "test1.com", "dc", "Joe"}
+		get := []string{defaultResources[0].GetAliasName(), defaultResources[1].GetAliasName(), defaultResources[2].GetAliasName(), defaultResources[3].GetAliasName()}
 		So(defaultResources, ShouldHaveLength, 4)
 		So(want, ShouldResemble, get)
 	})

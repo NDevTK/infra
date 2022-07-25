@@ -333,7 +333,7 @@ export interface GetDefaultResourcesRequest {
 
 export interface GetDefaultResourcesResponse {
   /** List of default Resources*/
-  resources: ResourceModel[];
+  assetResources: AssetResourceModel[];
 }
 
 export const GetDefaultResourcesRequest = {
@@ -347,8 +347,8 @@ export const GetDefaultResourcesRequest = {
 export const GetDefaultResourcesResponse = {
   fromJSON(object: any): GetDefaultResourcesResponse {
     return {
-      resources: Array.isArray(object?.resources)
-        ? object.resources.map((e: any) => ResourceModel.fromJSON(e))
+      assetResources: Array.isArray(object?.assetResources)
+        ? object.assetResources.map((e: any) => AssetResourceModel.fromJSON(e))
         : [],
     };
   },
