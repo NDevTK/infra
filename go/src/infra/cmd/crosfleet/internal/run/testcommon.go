@@ -8,16 +8,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"strings"
+	"sync"
+	"time"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	crosfleetpb "infra/cmd/crosfleet/internal/proto"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
-	"math"
-	"strings"
-	"sync"
-	"time"
 
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
@@ -166,10 +166,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	}
 	// If no models are specified, we still schedule one test with model label
 	// left blank.
-	numUniqueDUTs := int(math.Max(1, float64(len(c.models))))
-	if numUniqueDUTs*c.repeats > maxCTPRunsPerCmd {
-		errors = append(errors, fmt.Sprintf("total number of CTP runs launched (# models specified * repeats) cannot exceed %d", maxCTPRunsPerCmd))
-	}
+	//numUniqueDUTs := int(math.Max(1, float64(len(c.models))))
+	////if numUniqueDUTs*c.repeats > maxCTPRunsPerCmd {
+	////	errors = append(errors, fmt.Sprintf("total number of CTP runs launched (# models specified * repeats) cannot exceed %d", maxCTPRunsPerCmd))
+	////}
 	if f.NArg() == 0 {
 		errors = append(errors, fmt.Sprintf("missing %v arg", mainArgType))
 	}
