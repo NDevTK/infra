@@ -224,11 +224,12 @@ func androidRepairPlan() *Plan {
 					"Sleep 60s while device resets",
 				},
 				ExecName:    "android_wait_for_online_dut",
-				ExecTimeout: &durationpb.Duration{Seconds: 180},
+				ExecTimeout: &durationpb.Duration{Seconds: 300},
 			},
 			"Sleep 60s while device resets": {
 				ExecName:      "sample_sleep",
 				ExecExtraArgs: []string{"sleep:60"},
+				ExecTimeout:   &durationpb.Duration{Seconds: 90},
 				RunControl:    RunControl_ALWAYS_RUN,
 			},
 			"Connect to WiFi network": {
