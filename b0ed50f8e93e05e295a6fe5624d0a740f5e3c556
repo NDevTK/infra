@@ -16,6 +16,52 @@
       "message": "!ping",
       "revId": "b0ed50f8e93e05e295a6fe5624d0a740f5e3c556",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86b23e6b_9bf78946",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 966,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-07-25T07:36:01Z",
+      "side": 1,
+      "message": "rename V1 should in a separate CL",
+      "range": {
+        "startLine": 966,
+        "startChar": 11,
+        "endLine": 966,
+        "endChar": 22
+      },
+      "revId": "b0ed50f8e93e05e295a6fe5624d0a740f5e3c556",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2b043b5_5aad679c",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-07-25T07:36:01Z",
+      "side": 1,
+      "message": "this change will break back-ward compatibility right? as you cannot retrieve the existing data in datastore. Should you fallback to the old flow if retrieving new hwiddata fails?",
+      "range": {
+        "startLine": 43,
+        "startChar": 40,
+        "endLine": 43,
+        "endChar": 58
+      },
+      "revId": "b0ed50f8e93e05e295a6fe5624d0a740f5e3c556",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
