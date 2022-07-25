@@ -33,6 +33,7 @@ var Audit = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.configFile, "config", "", "Path to the custom json config file.")
+		c.Flags.BoolVar(&c.all, "all", false, `-all controls whether to run all audit tasks.`)
 		c.Flags.StringVar(&c.auditType, "type", "", `Type of audit task: valid choices are "usb", "rpm", "storage".`)
 		c.Flags.BoolVar(&c.noStepper, "no-stepper", false, "Block steper from using. This will prevent by using steps and you can only see logs.")
 		c.Flags.BoolVar(&c.updateInv, "update-inv", false, "Update result to inventory. By default no.")
@@ -49,6 +50,7 @@ type auditRun struct {
 	envFlags  site.EnvFlags
 
 	noStepper    bool
+	all          bool
 	configFile   string
 	auditType    string
 	updateInv    bool
@@ -63,13 +65,21 @@ var names = map[string]tasknames.TaskName{
 	"rpm":     tasknames.AuditRPM,
 }
 
-// getTaskName gets the name of a task.
-func (c auditRun) getTaskName() (string, error) {
+var allTasks = []tasknames.TaskName{tasknames.AuditUSB, tasknames.AuditStorage, tasknames.AuditRPM}
+
+// getTaskNames gets the name of a task.
+func (c auditRun) getTaskNames() ([]tasknames.TaskName, error) {
+	if c.all {
+		if c.auditType != "" {
+			return nil, errors.Reason(`get task name: "-type" and "-all" are mutually exclusive.`).Err()
+		}
+		return allTasks, nil
+	}
 	out, ok := names[c.auditType]
 	if !ok {
-		return "", errors.Reason(`get task name: unrecognized task name %q, try "-type rpm"`, c.auditType).Err()
+		return nil, errors.Reason(`get task name: unrecognized task name %q, try "-type rpm"`, c.auditType).Err()
 	}
-	return string(out), nil
+	return []tasknames.TaskName{out}, nil
 }
 
 // Run runs the audit task.
@@ -114,36 +124,39 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 		if c.latest {
 			v = labpack.CIPDLatest
 		}
-		task, err := c.getTaskName()
+		tasks, err := c.getTaskNames()
 		if err != nil {
 			return errors.Annotate(err, "create audit task").Err()
 		}
-		url, _, err := labpack.ScheduleTask(
-			ctx,
-			bc,
-			v,
-			&labpack.Params{
-				UnitName:         unit,
-				TaskName:         task,
-				AdminService:     e.AdminService,
-				InventoryService: e.UFSService,
-				UpdateInventory:  c.updateInv,
-				NoStepper:        c.noStepper,
-				// TODO(gregorynisbet): send our metrics to the dev karte instance instead of dropping them.
-				NoMetrics:     true,
-				Configuration: configuration,
-				ExtraTags: []string{
-					sessionTag,
-					fmt.Sprintf("task:%s", task),
-					site.ClientTag,
-					fmt.Sprintf("version:%s", v),
+
+		for _, task := range tasks {
+			url, _, err := labpack.ScheduleTask(
+				ctx,
+				bc,
+				v,
+				&labpack.Params{
+					UnitName:         unit,
+					TaskName:         task.String(),
+					AdminService:     e.AdminService,
+					InventoryService: e.UFSService,
+					UpdateInventory:  c.updateInv,
+					NoStepper:        c.noStepper,
+					// TODO(gregorynisbet): send our metrics to the dev karte instance instead of dropping them.
+					NoMetrics:     true,
+					Configuration: configuration,
+					ExtraTags: []string{
+						sessionTag,
+						fmt.Sprintf("task:%s", task),
+						site.ClientTag,
+						fmt.Sprintf("version:%s", v),
+					},
 				},
-			},
-		)
-		if err != nil {
-			return errors.Annotate(err, "create audit task").Err()
+			)
+			if err != nil {
+				return errors.Annotate(err, "create audit task").Err()
+			}
+			fmt.Fprintf(a.GetOut(), "Created audit task for %s: %s\n", unit, url)
 		}
-		fmt.Fprintf(a.GetOut(), "Created audit task for %s: %s\n", unit, url)
 	}
 	fmt.Fprintf(a.GetOut(), "Created tasks: %s\n", swarming.TaskListURLForTags(e.SwarmingService, []string{sessionTag}))
 	return nil
