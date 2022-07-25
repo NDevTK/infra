@@ -162,7 +162,7 @@ func defaultAPFilePath(d *tlw.Dut) string {
 
 // defaultFwFolderPath provides default path to directory used for firmware extraction.
 func defaultFwFolderPath(d *tlw.Dut) string {
-	return fmt.Sprintf("/tmp/fw_%v", d.Name)
+	return fmt.Sprintf("/mnt/stateful_partition/tmp/fw_%v", d.Name)
 }
 
 func init() {
