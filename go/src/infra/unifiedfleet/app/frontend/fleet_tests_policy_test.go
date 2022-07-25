@@ -26,7 +26,7 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-full/R100-14495.0.0-rc1",
+				Image:    "eve-public/R105-14988.0.0",
 			}
 
 			res, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)

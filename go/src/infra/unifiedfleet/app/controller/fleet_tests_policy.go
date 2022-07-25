@@ -184,7 +184,7 @@ func validatePublicBoardModel(ctx context.Context, board string, model string) e
 }
 
 func getValidPublicImages() []string {
-	return []string{"eve-full/R100-14495.0.0-rc1", "octopus-full/R101-14543.0.0-rc1"}
+	return []string{"eve-public/R105-14988.0.0", "octopus-public/R105-14988.0.0"}
 }
 
 func contains(listItems []string, name string) bool {
