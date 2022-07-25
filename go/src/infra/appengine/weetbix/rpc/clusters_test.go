@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/caching"
@@ -51,6 +52,11 @@ func TestClusters(t *testing.T) {
 		ctx = auth.WithState(ctx, &authtest.FakeState{
 			Identity:       "user:someone@example.com",
 			IdentityGroups: []string{"weetbix-access"},
+			IdentityPermissions: listTestResultsPermissions(
+				"testproject:realm1",
+				"testproject:realm2",
+				"otherproject:realm3",
+			),
 		})
 		ctx = secrets.Use(ctx, &testsecrets.Store{})
 
@@ -538,6 +544,13 @@ func TestClusters(t *testing.T) {
 				FailureFilter: "test_id:\"pita.Boot\" failure_reason:\"failed to boot\"",
 				OrderBy:       "presubmit_rejects desc, critical_failures_exonerated, failures desc",
 			}
+			Convey("Not authorised to view any test results", func() {
+				response, err := server.QueryClusterSummaries(ctx, request)
+				request.Project = "secretproject"
+				So(err, ShouldHaveAppStatus, codes.PermissionDenied)
+				So(err, ShouldErrLike, "caller does not have permission")
+				So(response, ShouldBeNil)
+			})
 			Convey("Valid request", func() {
 				expectedResponse := &pb.QueryClusterSummariesResponse{
 					ClusterSummaries: []*pb.ClusterSummary{
@@ -744,6 +757,21 @@ func TestClusters(t *testing.T) {
 	})
 }
 
+func listTestResultsPermissions(realms ...string) []authtest.RealmPermission {
+	var result []authtest.RealmPermission
+	for _, r := range realms {
+		result = append(result, authtest.RealmPermission{
+			Realm:      r,
+			Permission: rdbperms.PermListTestResults,
+		})
+		result = append(result, authtest.RealmPermission{
+			Realm:      r,
+			Permission: rdbperms.PermListTestExonerations,
+		})
+	}
+	return result
+}
+
 func emptyMetricValues() *pb.Cluster_MetricValues {
 	return &pb.Cluster_MetricValues{
 		OneDay:   &pb.Cluster_MetricValues_Counts{},
@@ -831,6 +859,7 @@ func (f *fakeAnalysisClient) QueryClusterSummaries(ctx context.Context, project 
 	if !ok {
 		return nil, analysis.ProjectNotExistsErr
 	}
+	So(options.Realms, ShouldResemble, []string{"testproject:realm1", "testproject:realm2"})
 
 	_, _, err := analysis.ClusteredFailuresTable.WhereClause(options.FailureFilter, "w_")
 	if err != nil {

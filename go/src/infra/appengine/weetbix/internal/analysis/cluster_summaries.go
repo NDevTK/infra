@@ -44,6 +44,7 @@ type QueryClusterSummariesOptions struct {
 	// A filter on the underlying failures to include in the clusters.
 	FailureFilter *aip.Filter
 	OrderBy       []aip.OrderBy
+	Realms        []string
 }
 
 // ClusterSummary represents a summary of the cluster's failures
@@ -129,6 +130,7 @@ func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, 
 				is_included_with_high_priority
 				AND partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
 				AND ` + whereClause + `
+				AND realm IN UNNEST(@realms)
 		)
 		GROUP BY
 			cluster_algorithm,
@@ -140,6 +142,10 @@ func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, 
 	q := c.client.Query(sql)
 	q.DefaultDatasetID = dataset
 	q.Parameters = toBigQueryParameters(parameters)
+	q.Parameters = append(q.Parameters, bigquery.QueryParameter{
+		Name:  "realms",
+		Value: options.Realms,
+	})
 
 	job, err := q.Run(ctx)
 	if err != nil {

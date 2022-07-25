@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/appstatus"
+	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/realms"
 	"google.golang.org/grpc/codes"
@@ -22,6 +23,16 @@ var (
 	ErrInvalidRealm     = errors.New("realm must be in the format <project>:<realm>")
 	ErrMultipleProjects = errors.New("all realms must be from the same projects")
 )
+
+func init() {
+	rdbperms.PermListTestResults.AddFlags(realms.UsedInQueryRealms)
+	rdbperms.PermListTestExonerations.AddFlags(realms.UsedInQueryRealms)
+}
+
+var ListTestResultsAndExonerations = []realms.Permission{
+	rdbperms.PermListTestResults,
+	rdbperms.PermListTestExonerations,
+}
 
 // SplitRealm splits the realm into the LUCI project name and the (sub)realm.
 // Returns ErrInvalidRealm if the provided realm doesn't have a valid format.

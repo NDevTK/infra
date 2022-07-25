@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-// DatasetForProject returns the name of the BigQuery dataset that contain's
+// DatasetForProject returns the name of the BigQuery dataset that contains
 // the given project's data, in the Weetbix GCP project.
 func DatasetForProject(luciProject string) (string, error) {
 	// The returned dataset may be used in SQL expressions, so we want to

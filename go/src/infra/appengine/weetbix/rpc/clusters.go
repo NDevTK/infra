@@ -23,8 +23,10 @@ import (
 	"infra/appengine/weetbix/internal/clustering/reclustering"
 	"infra/appengine/weetbix/internal/clustering/rules/cache"
 	"infra/appengine/weetbix/internal/clustering/runs"
+	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
 	pb "infra/appengine/weetbix/proto/v1"
+	"infra/appengine/weetbix/utils"
 )
 
 // MaxClusterRequestSize is the maximum number of test results to cluster in
@@ -292,6 +294,10 @@ func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.Ge
 }
 
 func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.QueryClusterSummariesRequest) (*pb.QueryClusterSummariesResponse, error) {
+	if !config.ProjectRe.MatchString(req.Project) {
+		return nil, invalidArgumentError(errors.Reason("project is invalid").Err())
+	}
+
 	var cfg *compiledcfg.ProjectConfig
 	var ruleset *cache.Ruleset
 	var clusters []*analysis.ClusterSummary
@@ -332,6 +338,11 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 			opts.OrderBy, err = aip.ParseOrderBy(req.OrderBy)
 			if err != nil {
 				bqErr = invalidArgumentError(errors.Annotate(err, "order_by").Err())
+				return nil
+			}
+			opts.Realms, err = utils.QueryRealms(ctx, utils.ListTestResultsAndExonerations, req.Project, "", nil)
+			if err != nil {
+				bqErr = err
 				return nil
 			}
 

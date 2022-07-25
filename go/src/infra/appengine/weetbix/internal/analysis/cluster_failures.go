@@ -54,15 +54,22 @@ type Changelist struct {
 	Patchset bigquery.NullInt64  `json:"patchset"`
 }
 
+type ReadClusterFailuresOptions struct {
+	// The LUCI Project.
+	Project   string
+	ClusterID clustering.ClusterID
+	Realms    []string
+}
+
 // ReadClusterFailures reads the latest 2000 groups of failures for a single cluster for the last 7 days.
 // A group of failures are failures that would be grouped together in MILO display, i.e.
 // same ingested_invocation_id, test_id and variant.
-func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, clusterID clustering.ClusterID) (cfs []*ClusterFailure, err error) {
+func (c *Client) ReadClusterFailures(ctx context.Context, opts ReadClusterFailuresOptions) (cfs []*ClusterFailure, err error) {
 	_, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/analysis/ReadClusterFailures")
-	s.Attribute("project", luciProject)
+	s.Attribute("project", opts.Project)
 	defer func() { s.End(err) }()
 
-	dataset, err := bqutil.DatasetForProject(luciProject)
+	dataset, err := bqutil.DatasetForProject(opts.Project)
 	if err != nil {
 		return nil, errors.Annotate(err, "getting dataset").Err()
 	}
@@ -76,6 +83,9 @@ func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, cl
 				ARRAY_AGG(cf ORDER BY cf.last_updated DESC LIMIT 1)[OFFSET(0)] as r
 			FROM clustered_failures cf
 			WHERE cf.partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+			  AND cluster_algorithm = @clusterAlgorithm
+			  AND cluster_id = @clusterID
+			  AND realm IN UNNEST(@realms)
 			GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id
 			HAVING r.is_included
 		)
@@ -96,8 +106,6 @@ func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, cl
 			ANY_VALUE(r.is_ingested_invocation_blocked) as IsIngestedInvocationBlocked,
 			count(*) as Count
 		FROM latest_failures_7d
-		WHERE cluster_algorithm = @clusterAlgorithm
-		  AND cluster_id = @clusterID
 		GROUP BY
 			r.realm,
 			r.ingested_invocation_id,
@@ -109,8 +117,9 @@ func (c *Client) ReadClusterFailures(ctx context.Context, luciProject string, cl
 	`)
 	q.DefaultDatasetID = dataset
 	q.Parameters = []bigquery.QueryParameter{
-		{Name: "clusterAlgorithm", Value: clusterID.Algorithm},
-		{Name: "clusterID", Value: clusterID.ID},
+		{Name: "clusterAlgorithm", Value: opts.ClusterID.Algorithm},
+		{Name: "clusterID", Value: opts.ClusterID.ID},
+		{Name: "realms", Value: opts.Realms},
 	}
 	job, err := q.Run(ctx)
 	if err != nil {

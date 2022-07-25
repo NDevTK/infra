@@ -5,6 +5,7 @@
 package utils
 
 import (
+	"context"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -14,8 +15,6 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/auth/realms"
 	"google.golang.org/grpc/codes"
-
-	"infra/appengine/weetbix/internal/testutil"
 )
 
 func init() {
@@ -27,7 +26,7 @@ func init() {
 
 func TestQueryRealms(t *testing.T) {
 	Convey("QueryRealms", t, func() {
-		ctx := testutil.SpannerTestContext(t)
+		ctx := context.Background()
 
 		ctx = auth.WithState(ctx, &authtest.FakeState{
 			Identity: "user:someone@example.com",

@@ -12,6 +12,7 @@ import (
 
 	"infra/appengine/weetbix/internal/analysis"
 	"infra/appengine/weetbix/internal/clustering"
+	"infra/appengine/weetbix/utils"
 )
 
 // GetClusterFailures handles a GET request for
@@ -41,7 +42,18 @@ func (h *Handlers) GetClusterFailures(ctx *router.Context) {
 		}
 	}()
 
-	failures, err := ac.ReadClusterFailures(ctx.Context, projectID, clusterID)
+	opts := analysis.ReadClusterFailuresOptions{
+		Project:   projectID,
+		ClusterID: clusterID,
+	}
+	opts.Realms, err = utils.QueryRealms(ctx.Context, utils.ListTestResultsAndExonerations, projectID, "", nil)
+	if err != nil {
+		logging.Errorf(ctx.Context, "Query realms: %v", err)
+		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+		return
+	}
+
+	failures, err := ac.ReadClusterFailures(ctx.Context, opts)
 	if err != nil {
 		logging.Errorf(ctx.Context, "Reading Cluster from BigQuery: %s", err)
 		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
