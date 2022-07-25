@@ -1,0 +1,12 @@
+diff -ur mysqlclient-2.1.1.orig/site.cfg mysqlclient-2.1.1/site.cfg
+--- mysqlclient-2.1.1.orig/site.cfg	2021-10-19 14:45:22.000000000 +1100
++++ mysqlclient-2.1.1/site.cfg	2022-07-22 12:21:20.851928882 +1000
+@@ -1,6 +1,6 @@
+ [options]
+ # static: link against a static library
+-static = False
++static = True
+ 
+ # The path to mysql_config.
+ # Only use this if mysql_config is not on your PATH, or you have some weird
+Only in mysqlclient-2.1.1: site.cfg~

@@ -183,11 +183,35 @@ class System(object):
 
   _devnull = open(os.devnull, 'w')
 
-  def run(self, args, cwd=None, env=None, stdout=subprocess.PIPE,
-          stderr=subprocess.STDOUT, stdin=_devnull, retcodes=None):
+  # A wrapper for subprocess.Popen() which adds required locking, as well as
+  # logging and error handling. In addition to the Popen() parameters, two
+  # other parameters are supported:
+  #
+  # env_prefix (List[(str, str)]): String to be prepended to an environment
+  #   variable, in the form [('VARNAME', 'PREFIXSTR'), ...]. The prefix will be
+  #   separated from any existing value using the OS path separator. The same
+  #   variable may appear multiple times; all values will be prepended and will
+  #   appear in the order given in env_prefix, followed by any existing value.
+  # env_suffix (List[(str, str)]): String to be appended to an environment
+  #   variable, in the form [('VARNAME', 'SUFFIXSTR'), ...]. The suffix will be
+  #   separated from any existing value using the OS path separator. The same
+  #   variable may appear multiple times; all values will be appended and will
+  #   appear in the order given in env_prefix.
+  def run(self,
+          args,
+          cwd=None,
+          env=None,
+          stdout=subprocess.PIPE,
+          stderr=subprocess.STDOUT,
+          stdin=_devnull,
+          retcodes=None,
+          env_prefix=None,
+          env_suffix=None):
     # Fold environment augmentations into the default system environment.
     cwd = cwd or os.getcwd()
-    util.LOGGER.debug('Running command: %s (env=%s; cwd=%s)', args, env, cwd)
+    util.LOGGER.debug(
+        'Running command: %s (env=%s; cwd=%s; env_prefix=%s; env_suffix=%s)',
+        args, env, cwd, env_prefix, env_suffix)
 
     kwargs = {
         'cwd': cwd,
@@ -198,6 +222,26 @@ class System(object):
     }
     if env is not None:
       kwargs['env'].update(env)
+
+    # Process environment prefixes/suffixes.
+    #
+    # Note: for commands run in a Docker container, env_prefix/env_suffix have
+    # already been handled by Image.run() before this function is called.
+    env_prefix = env_prefix or []
+    env_suffix = env_suffix or []
+
+    # Iterate prefixes backwards, so the items appear in-order in the output.
+    for k, v in reversed(env_prefix):
+      old_val = kwargs['env'].get(k, '')
+      new_val = v
+      if old_val:
+        new_val += os.pathsep + old_val
+      kwargs['env'][k] = new_val
+    for k, v in env_suffix:
+      old_val = kwargs['env'].get(k, '')
+      if old_val:
+        old_val += os.pathsep
+      kwargs['env'][k] = old_val + v
 
     stdout_lines = []
 

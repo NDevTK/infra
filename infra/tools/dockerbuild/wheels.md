@@ -1678,6 +1678,20 @@ wheel: <
 
 * *universal*
 
+## **ezt**
+
+### 1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ezt-py2_py3"
+  version: "version:1.1"
+>
+```
+
+
+* *universal*
+
 ## **fasteners**
 
 ### 0.14.1
@@ -2577,6 +2591,20 @@ wheel: <
 
 * *universal*
 
+## **google-cloud-tasks**
+
+### 2.9.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-tasks-py2_py3"
+  version: "version:2.9.1"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-trace**
 
 ### 0.16.0
@@ -3060,6 +3088,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/html5lib-py2_py3"
   version: "version:1.0.1"
+>
+```
+
+
+* *universal*
+
+## **httpagentparser**
+
+### 1.9.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/httpagentparser-py2_py3"
+  version: "version:1.9.3"
 >
 ```
 
@@ -3932,6 +3974,22 @@ wheel: <
 
 
 * *universal*
+
+## **mysqlclient**
+
+### 2.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mysqlclient/${vpython_platform}"
+  version: "version:2.1.1"
+>
+```
+
+
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
 
 ## **networkx-py3**
 

@@ -187,7 +187,7 @@ class Timer(object):
       t.stop()
 
 
-def check_run(system, dx, work_root, cmd, cwd=None, env=None):
+def check_run(system, dx, work_root, cmd, cwd=None, env=None, **kwargs):
   """Runs a command |cmd|.
 
   Args:
@@ -207,8 +207,8 @@ def check_run(system, dx, work_root, cmd, cwd=None, env=None):
   if dx is None:
     if cmd[0] == 'python':
       cmd[0] = system.native_python
-    return system.check_run(cmd, cwd=cwd or work_root, env=env)
-  return dx.check_run(work_root, cmd, cwd=cwd, env=env)
+    return system.check_run(cmd, cwd=cwd or work_root, env=env, **kwargs)
+  return dx.check_run(work_root, cmd, cwd=cwd, env=env, **kwargs)
 
 
 def check_run_script(system, dx, work_root, script, args=None, cwd=None,

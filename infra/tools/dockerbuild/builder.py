@@ -441,6 +441,7 @@ def BuildPackageFromSource(system,
       extra_env.update(env)
 
     with util.tempdir(tdir, 'deps') as tdeps:
+      env_prefix = []
       if tpp_libs:
         cflags = extra_env.get('CFLAGS', '')
         ldflags = extra_env.get('LDFLAGS', '')
@@ -451,6 +452,8 @@ def BuildPackageFromSource(system,
           system.cipd.install(pkg_name, version, pkg_dir)
           cflags += ' -I' + os.path.join(pkg_dir, 'include')
           ldflags += ' -L' + os.path.join(pkg_dir, 'lib')
+          # Prepend the bin/ directory of each package to PATH.
+          env_prefix.append(('PATH', os.path.join(pkg_dir, 'bin')))
 
         extra_env['CFLAGS'] = cflags.lstrip()
         extra_env['LDFLAGS'] = ldflags.lstrip()
@@ -476,7 +479,14 @@ def BuildPackageFromSource(system,
           '.',
       ]
 
-      util.check_run(system, dx, tdir, cmd, cwd=build_dir, env=extra_env)
+      util.check_run(
+          system,
+          dx,
+          tdir,
+          cmd,
+          cwd=build_dir,
+          env=extra_env,
+          env_prefix=env_prefix)
 
     output_dir = tdir
     if not skip_auditwheel and wheel.plat.wheel_plat[0].startswith('manylinux'):

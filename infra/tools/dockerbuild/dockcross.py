@@ -324,6 +324,14 @@ class Image(collections.namedtuple('_Image', (
 
       new_env = dict()  # key -> [val1, val2, ...]
 
+      # We need to handle env_prefix and env_suffix specially here, since they
+      # must be prepended/appended to the value inside the container, not the
+      # value in the host environment. This is accomplished by encoding them
+      # into special environment variables, which are then parsed by start.sh
+      # in the container.
+      #
+      # See System.run() for the description of env_prefix and env_suffix, and
+      # the non-docker implementation of this functionality.
       def encode_env_item(key, mode, value):
         key = 'DOCKERBUILD_%s_%s' % (mode, key)
         new_env.setdefault(key, []).append(
@@ -364,6 +372,7 @@ class Image(collections.namedtuple('_Image', (
       if cmd[0] == 'python':
         # Use system-native Python interpreter if requested.
         cmd[0] = self.system.native_python
+      # env_prefix/env_suffix are left in **kwargs for System.run.
 
     args += cmd
     return self.system.run(args, cwd=cwd, env=env, **kwargs)
