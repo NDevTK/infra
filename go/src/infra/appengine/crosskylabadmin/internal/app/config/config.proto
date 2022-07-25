@@ -337,11 +337,11 @@ message Paris {
 //  "enable": True,
 //  "optin_all_duts": False,
 //  "optin_dut_pool": [ "a", "b" ],
-//  "rollout_permille": 50,
+//  "prod_permille": 50,
 // }
 message RolloutConfig {
-  reserved 5;
-  reserved "ufs_error_policy";
+  reserved 4, 5;
+  reserved "ufs_error_policy", "rollout_permille";
   // Enable is set to true when recovery is enabled at all. If it is set to false, the entire
   // DUT recovery flow for PARIS is skipped and the legacy flow is used instead.
   bool enable = 1;
@@ -351,12 +351,6 @@ message RolloutConfig {
 
   // Optin_dut_pool controls on a per-bool basis.
   repeated string optin_dut_pool = 3;
-
-  // rollout_permille is deprecated in favor of prod_permille.
-  //
-  // Rollout_permille is the probability (multiplied by 1000) that we use the new flow for a DUT if
-  // we are permitted to repair the device in question by the other settings in the config file.
-  int32 rollout_permille = 4 [deprecated=true];
 
   // prod_permille is the probability (multiplied by 1000) that we use the new flow for a DUT if
   // we are permitted to repair the device in question by the other settings in the config file.
