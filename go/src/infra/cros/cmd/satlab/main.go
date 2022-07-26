@@ -24,7 +24,7 @@ import (
 // GetApplication returns the main application.
 func getApplication() *cli.Application {
 	return &cli.Application{
-		Name:  "satlab",
+		Name:  site.AppPrefix,
 		Title: `Satlab DUT Management Tool`,
 		Context: func(ctx context.Context) context.Context {
 			return ctx

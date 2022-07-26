@@ -18,6 +18,9 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
+// AppPrefix is the prefix to use the satlab CLI.
+var AppPrefix = "satlab"
+
 // DevCrosAdmService is the dev CrOSSkylabAdmin service.
 const DevCrosAdmService = "staging-skylab-bot-fleet.appspot.com"
 
