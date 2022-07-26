@@ -11,8 +11,10 @@ import (
 	"infra/chromium/bootstrapper/clients/gclient"
 	"infra/chromium/bootstrapper/clients/gerrit"
 	"infra/chromium/bootstrapper/clients/gitiles"
+	"infra/chromium/bootstrapper/clients/gob"
 	"infra/chromium/util"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -24,6 +26,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
+	ctx = gob.UseTestClock(ctx)
 
 	Convey("BuildBootstrapper.GetBootstrapConfig", t, func() {
 
@@ -989,6 +992,33 @@ func TestGetBootstrapConfig(t *testing.T) {
 						"test_property": "dependency-value"
 					}`)
 					So(config.skipAnalysisReasons, ShouldBeEmpty)
+				})
+
+				Convey("fails with a tagged error when the properties file does not exist at pinned revision", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@refs/heads/dependency',
+							}`),
+						},
+					}
+					dependencyGitiles.Refs["refs/heads/dependency"] = "dependency-dependency-head"
+					dependencyGitiles.Revisions["dependency-dependency-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"": strPtr("fake-root-contents"),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.textpb does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
+This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`)
+					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
+					So(errHasSleepTag, ShouldBeTrue)
+					So(sleepDuration, ShouldEqual, 10*time.Minute)
+					So(config, ShouldBeNil)
 				})
 
 			})

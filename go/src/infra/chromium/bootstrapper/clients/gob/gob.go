@@ -10,19 +10,13 @@ import (
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/grpc/codes"
 )
 
-var DontRetry = errors.BoolTag{Key: errors.NewTagKey("don't perform Git-on-Borg retry for this error")}
-
 // ErrorIsRetriable determines whether an error would be retried by Execute.
 func ErrorIsRetriable(err error) bool {
-	if DontRetry.In(err) {
-		return false
-	}
 	switch grpcutil.Code(err) {
 	case codes.NotFound, codes.Unavailable, codes.DeadlineExceeded:
 		return true

@@ -99,15 +99,6 @@ func TestExecute(t *testing.T) {
 
 					So(err, ShouldBeNil)
 				})
-
-				Convey("unless the error has the DontRetry tag", func() {
-					client.count = 0
-					client.err = DontRetry.Apply(client.err)
-
-					err := Execute(ctx, "fake op", client.op)
-
-					So(err, ShouldErrLike, message)
-				})
 			})
 		}
 

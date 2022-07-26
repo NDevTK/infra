@@ -8,11 +8,14 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/luciexe/exe"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -20,6 +23,7 @@ import (
 	"infra/chromium/bootstrapper/clients/gclient"
 	"infra/chromium/bootstrapper/clients/gerrit"
 	"infra/chromium/bootstrapper/clients/gitiles"
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 type GclientGetter func(ctx context.Context) (*gclient.Client, error)
@@ -36,7 +40,7 @@ func NewBuildBootstrapper(gitiles *gitiles.Client, gerrit *gerrit.Client, gclien
 	return &BuildBootstrapper{gitiles: gitiles, gerrit: gerrit, gclientGetter: gclientGetter}
 }
 
-// gitilesCommit is a simple wrapper around *buildbucketpb.GitilesCommit with
+// gitilesCommit is a simple wrapper around *buildbucketpb.gitilesCommit with
 // the gitiles URI as the string representation.
 type gitilesCommit struct {
 	*buildbucketpb.GitilesCommit
@@ -50,7 +54,7 @@ func (c *gitilesCommit) String() string {
 	return fmt.Sprintf("%s/%s/+/%s", c.Host, c.Project, revision)
 }
 
-// gerritChange is a wrapper around *buildbucketpb.GerritChange with the gerrit URI as the string
+// gerritChange is a wrapper around *buildbucketpb.gerritChange with the gerrit URI as the string
 // representation and information retrieved from gerrit about the change.
 type gerritChange struct {
 	*buildbucketpb.GerritChange
@@ -72,6 +76,12 @@ type BootstrapConfig struct {
 	// may modify the properties file.
 	change *gerritChange
 
+	// checkForUnrolledPropertiesFile causes NotFound errors to be treated differently when
+	// downloading the properties file. For projects with config defined in a dependency
+	// project, the properties file won't exist in the pinned revision of the top-level project
+	// until some time later when a roll happens. This will cause additional work to be done to
+	// distinguish this case from replication lag.
+	checkForUnrolledPropertiesFile bool
 	// preferBuildProperties causes properties set in buildProperties to override the properties
 	// set in builderProperties instead of the other way around
 	preferBuildProperties bool
@@ -228,9 +238,10 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 	}
 
 	return &BootstrapConfig{
-		commit:              configCommit,
-		additionalCommits:   []*gitilesCommit{commit},
-		skipAnalysisReasons: skipAnalysisReasons,
+		checkForUnrolledPropertiesFile: true,
+		commit:                         configCommit,
+		additionalCommits:              []*gitilesCommit{commit},
+		skipAnalysisReasons:            skipAnalysisReasons,
 	}, nil
 }
 
@@ -280,7 +291,7 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 		}
 	}
 
-	contents, err := b.downloadFile(ctx, config.commit, propsFile)
+	contents, err := b.downloadPropertiesFile(ctx, propsFile, config)
 	if err != nil {
 		return err
 	}
@@ -301,6 +312,72 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 	config.builderProperties = properties
 
 	return nil
+}
+
+func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFile string, config *BootstrapConfig) (string, error) {
+	if !config.checkForUnrolledPropertiesFile {
+		return b.downloadFile(ctx, config.commit, propsFile)
+	}
+
+	var contents string
+	revisionKnownToExist := false
+
+	err := gob.Execute(ctx, "download properties file", func() error {
+		// We want to issue multiple requests to gitiles without retries so that we can
+		// diagnose the errors we get from individual requests
+		ctx := gob.DisableRetries(ctx)
+
+		var err error
+		contents, err = b.downloadFile(ctx, config.commit, propsFile)
+		if grpcutil.Code(err) != codes.NotFound {
+			return err
+		}
+
+		// In the case of the file not being found, it could be due to replication lag, or
+		// it could that the revision of the top-level repo being used pins a version of the
+		// config repo before the builder was added. In order to distinguish the two,
+		// attempt to "download" the root of the repo: if it succeeds then we know that the
+		// revision is contained in the repo.
+		if !revisionKnownToExist {
+			_, rootErr := b.downloadFile(ctx, config.commit, "")
+			// gob flakiness, return the original error since that will make more sense
+			// to users
+			if gob.ErrorIsRetriable(rootErr) {
+				return err
+			}
+			// Report whatever weirdness happened
+			if rootErr != nil {
+				return rootErr
+			}
+			revisionKnownToExist = true
+
+			// Make another attempt to download the file in case the not found error was
+			// due to replication lag that caught up between the two requests. This
+			// could still result in some gob flakiness, in which case, this whole
+			// function will be retried, but we won't need to re-check if the revision
+			// exists.
+			contents, err = b.downloadFile(ctx, config.commit, propsFile)
+			if grpcutil.Code(err) != codes.NotFound {
+				return err
+			}
+		}
+
+		// The revision exists in the repo and we still got a not found error, so the file
+		// doesn't exist at the pinned revision. Create an error with a helpful message for
+		// users and a tag so the top-level code will sleep.
+		topLevelCommit := config.additionalCommits[0]
+		err = errors.Reason(`dependency properties file %s does not exist in pinned revision %s
+This should resolve once the CL that adds this builder rolls into %s/%s
+If you believe you are seeing this message in error, please contact a trooper
+This build will sleep for 10 minutes to avoid the builder cycling too quickly`,
+			propsFile, config.commit, topLevelCommit.Host, topLevelCommit.Project).Err()
+		err = SleepBeforeExiting.With(10 * time.Minute).Apply(err)
+		return err
+	})
+	if err != nil {
+		return "", err
+	}
+	return contents, nil
 }
 
 func (b *BuildBootstrapper) downloadFile(ctx context.Context, commit *gitilesCommit, file string) (string, error) {

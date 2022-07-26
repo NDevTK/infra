@@ -20,6 +20,8 @@ import (
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/testing/testfs"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Revision struct {
@@ -88,7 +90,7 @@ func (c *Client) getProject(projectName string) (*Project, error) {
 	if !ok {
 		return &Project{}, nil
 	} else if project == nil {
-		return nil, errors.Reason("unknown project %#v on host %#v", projectName, c.hostname).Err()
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown project %#v on host %#v", projectName, c.hostname))
 	}
 	return project, nil
 }
@@ -107,7 +109,7 @@ func (c *Client) Log(ctx context.Context, request *gitilespb.LogRequest, options
 			commitId = fmt.Sprintf("fake-revision|%s|%s|%s", c.hostname, request.Project, request.Committish)
 		}
 	} else if commitId == "" {
-		return nil, errors.Reason("unknown ref %#v for project %#v on host %#v", request.Committish, request.Project, c.hostname).Err()
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown ref %#v for project %#v on host %#v", request.Committish, request.Project, c.hostname))
 	}
 	return &gitilespb.LogResponse{
 		Log: []*git.Commit{
@@ -134,7 +136,7 @@ func (c *Client) getRevisionHistory(projectName, commitId string) ([]*commit, er
 		if !ok {
 			revision = &Revision{}
 		} else if revision == nil {
-			return nil, errors.Reason("unknown revision %#v of project %#v on host %#v", commitId, projectName, c.hostname).Err()
+			return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown revision %#v of project %#v on host %#v", commitId, projectName, c.hostname))
 		}
 		history = append(history, &commit{commitId, revision})
 		commitId = revision.Parent
@@ -156,7 +158,7 @@ func (c *Client) DownloadFile(ctx context.Context, request *gitilespb.DownloadFi
 		}
 	}
 	if contents == nil {
-		return nil, errors.Reason("unknown file %#v at revision %#v of project %#v on host %#v", request.Path, request.Committish, request.Project, c.hostname).Err()
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown file %#v at revision %#v of project %#v on host %#v", request.Path, request.Committish, request.Project, c.hostname))
 	}
 	return &gitilespb.DownloadFileResponse{
 		Contents: *contents,

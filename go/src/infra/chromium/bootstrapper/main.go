@@ -212,7 +212,7 @@ func updateBuild(ctx context.Context, build *buildbucketpb.Build) (err error) {
 	return
 }
 
-func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap bootstrapFn, executeCmd executeCmdFn, updateBuild updateBuildFn) error {
+func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap bootstrapFn, executeCmd executeCmdFn, updateBuild updateBuildFn) (time.Duration, error) {
 	opts := getOpts()
 	cmd, input, err := performBootstrap(ctx, os.Stdin, opts)
 	if err == nil {
@@ -222,31 +222,38 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 
 	if err != nil {
 		logging.Errorf(ctx, err.Error())
-		// An ExitError indicates that we were able to bootstrap the
-		// executable and that it failed, as opposed to being unable to
-		// launch the bootstrapped executable
+		// An ExitError indicates that we were able to bootstrap the executable and that it
+		// failed, as opposed to being unable to launch the bootstrapped executable. In that
+		// case, the recipe will have run and we don't need to make any modifications to the
+		// build.
 		var exitErr *exec.ExitError
-		if !stderrors.As(err, &exitErr) {
-			build := &buildbucketpb.Build{}
-			build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", err)
-			build.Status = buildbucketpb.Status_INFRA_FAILURE
-			if bootstrap.PatchRejected.In(err) {
-				build.Output = &buildbucketpb.Build_Output{
-					Properties: &structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							"failure_type": structpb.NewStringValue("PATCH_FAILURE"),
-						},
+		if stderrors.As(err, &exitErr) {
+			return 0, err
+		}
+
+		build := &buildbucketpb.Build{}
+		build.Status = buildbucketpb.Status_INFRA_FAILURE
+		build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", err)
+
+		if bootstrap.PatchRejected.In(err) {
+			build.Output = &buildbucketpb.Build_Output{
+				Properties: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"failure_type": structpb.NewStringValue("PATCH_FAILURE"),
 					},
-				}
-			}
-			if err := updateBuild(ctx, build); err != nil {
-				logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
+				},
 			}
 		}
-		return err
+
+		if err := updateBuild(ctx, build); err != nil {
+			logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
+		}
+
+		sleepDuration, _ := bootstrap.SleepBeforeExiting.In(err)
+		return sleepDuration, err
 	}
 
-	return nil
+	return 0, nil
 }
 
 func main() {
@@ -260,7 +267,9 @@ func main() {
 	ctx, shutdown := lucictx.TrackSoftDeadline(ctx, 500*time.Millisecond)
 	defer shutdown()
 
-	if err := bootstrapMain(ctx, parseFlags, performBootstrap, executeCmd, updateBuild); err != nil {
+	sleepDuration, err := bootstrapMain(ctx, parseFlags, performBootstrap, executeCmd, updateBuild)
+	time.Sleep(sleepDuration)
+	if err != nil {
 		os.Exit(1)
 	}
 }

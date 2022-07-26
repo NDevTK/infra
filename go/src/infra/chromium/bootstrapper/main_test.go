@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"infra/chromium/bootstrapper/bootstrap"
 	"infra/chromium/bootstrapper/clients/cipd"
@@ -358,9 +359,10 @@ func TestBootstrapMain(t *testing.T) {
 		record, updateBuild := testUpdateBuildFn(nil)
 
 		Convey("does not update build on success", func() {
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldBeNil)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldBeNil)
 		})
 
@@ -371,9 +373,10 @@ func TestBootstrapMain(t *testing.T) {
 			}
 			execute := testExecuteCmdFn(cmdErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, cmdErr)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldBeNil)
 		})
 
@@ -381,45 +384,63 @@ func TestBootstrapMain(t *testing.T) {
 			cmdErr := errors.New("test cmd execution failure")
 			execute := testExecuteCmdFn(cmdErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, cmdErr)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test cmd execution failure</pre>"
 			}`)
 		})
 
-		Convey("updates build for bootstrap failure", func() {
+		Convey("updates build for generic bootstrap failure", func() {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test bootstrap failure</pre>"
 			}`)
+		})
 
-			Convey("with failure_type set for patch rejected failure", func() {
-				bootstrapErr := bootstrap.PatchRejected.Apply(bootstrapErr)
-				performBootstrap := testBootstrapFn(bootstrapErr)
+		Convey("updates build for patch rejected failure", func() {
+			bootstrapErr := errors.New("test bootstrap failure")
+			bootstrapErr = bootstrap.PatchRejected.Apply(bootstrapErr)
+			performBootstrap := testBootstrapFn(bootstrapErr)
 
-				err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
-				So(err, ShouldErrLike, bootstrapErr)
-				So(record.build, ShouldResembleProtoJSON, `{
-					"status": "INFRA_FAILURE",
-					"summary_markdown": "<pre>test bootstrap failure</pre>",
-					"output": {
-						"properties": {
-							"failure_type": "PATCH_FAILURE"
-						}
+			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
+			So(record.build, ShouldResembleProtoJSON, `{
+				"status": "INFRA_FAILURE",
+				"summary_markdown": "<pre>test bootstrap failure</pre>",
+				"output": {
+					"properties": {
+						"failure_type": "PATCH_FAILURE"
 					}
-				}`)
-			})
+				}
+			}`)
+		})
 
+		Convey("returns sleep duration for sleep tagged error", func() {
+			bootstrapErr := errors.New("test error")
+			bootstrapErr = bootstrap.SleepBeforeExiting.With(20 * time.Second).Apply(bootstrapErr)
+			performBootstrap := testBootstrapFn(bootstrapErr)
+
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+
+			So(err, ShouldErrLike, "test error")
+			So(sleepDuration, ShouldEqual, 20*time.Second)
+			So(record.build, ShouldResembleProtoJSON, `{
+				"status": "INFRA_FAILURE",
+				"summary_markdown": "<pre>test error</pre>"
+			}`)
 		})
 
 		Convey("returns original error if updating build fails", func() {
@@ -428,9 +449,10 @@ func TestBootstrapMain(t *testing.T) {
 			updateBuildErr := errors.New("test update build failure")
 			_, updateBuild := testUpdateBuildFn(updateBuildErr)
 
-			err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
 			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
 		})
 
 	})

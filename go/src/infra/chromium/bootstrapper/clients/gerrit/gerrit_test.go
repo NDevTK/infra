@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -177,7 +178,7 @@ func TestGetChangeInfo(t *testing.T) {
 			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 2)
 
 			So(err, ShouldErrLike, "fake-host/c/fake/project/+/123 does not have patchset 2")
-			So(status.Code(err), ShouldEqual, codes.NotFound)
+			So(grpcutil.Code(err), ShouldEqual, codes.NotFound)
 			So(changeInfo, ShouldBeNil)
 		})
 
