@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "f7028d6c_de7db9ac",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ddff41f5_95e2d2aa",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 9
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "924f471c_99772e58",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 3
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f43f92d_d1ff69ac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "1. No particular reason - removed.\n2. Done.\n3. Good idea - now using Typography.\n4. Done.\n5. Done.\n6. Leaving for now, until real data is being shown.\n7. Done.",
+      "parentUuid": "7df054ef_fff0c551",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9a47f46b_46c7dbcd",
@@ -81,6 +123,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fc8c7b6_609ae1dd",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/analysis_details.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a47f46b_46c7dbcd",
+      "range": {
+        "startLine": 18,
+        "startChar": 1,
+        "endLine": 18,
+        "endChar": 3
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bfcb488c_48d0f6ca",
@@ -94,6 +160,30 @@
       "writtenOn": "2022-07-21T00:31:39Z",
       "side": 1,
       "message": "Nits: I think \"bbid\" will make the URL a bit shorter.",
+      "range": {
+        "startLine": 48,
+        "startChar": 45,
+        "endLine": 48,
+        "endChar": 58
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b76c941d_6379efa3",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/analysis_details.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bfcb488c_48d0f6ca",
       "range": {
         "startLine": 48,
         "startChar": 45,
@@ -129,6 +219,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8ca68edd_618c9ac3",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/handlers.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d15ed289_dddc2613",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 7
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "db644dda_aeb71a5b",
         "filename": "go/src/infra/appengine/gofindit/frontend/handlers/handlers.go",
         "patchSetId": 3
@@ -140,6 +254,24 @@
       "writtenOn": "2022-07-21T00:31:39Z",
       "side": 1,
       "message": "Are you planning to use \"cloudProject\" and \"prod\" anywhere?",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82a9e9d3_b48aab12",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/handlers.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "This was based off Weetbix\u0027s handlers, but as it\u0027s not being used, I\u0027ve removed it.  It can be added back in if that information ends up being needed.",
+      "parentUuid": "db644dda_aeb71a5b",
       "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -161,6 +293,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "63bc05dd_0063aa6e",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/package.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "3d272dc4_ae06bad6",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "891e7eef_86232f37",
@@ -178,6 +328,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae725f27_696ded56",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "For this one, the table is just to align the text. I didn\u0027t actually want it to visually appear as a table, with cell borders and padding.\n\nI have now added a styled MUI Table, PlainTable.",
+      "parentUuid": "891e7eef_86232f37",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eee3df6f_2b47e675",
@@ -191,6 +359,24 @@
       "writtenOn": "2022-07-21T00:31:39Z",
       "side": 1,
       "message": "Currently in datastore we are storing the \"total score\" for each suspect only, not the individual score for each file (e.g. https://screenshot.googleplex.com/3mK2ZhmwCyJ87WE). Are you planning to change how we store in datastore?",
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78a8424e_90834c71",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/heuristic_analysis_table/heuristic_analysis_table_row/heuristic_analysis_table_row.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Good point. I think it would be easier to not change; existing failure analyses could then be displayed in this UI instead of having no data.\n\nI will get the individual reasons from splitting the \"justification\" text in datastore and get rid of the individual file scores.",
+      "parentUuid": "eee3df6f_2b47e675",
       "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

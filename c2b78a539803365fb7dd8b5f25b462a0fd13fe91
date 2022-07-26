@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "11533ca8_e5430379",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/package-lock.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a34af0e9_e63b77c1",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "896fe6e6_643917d9",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-07-21T07:08:28Z",
       "side": 1,
       "message": "use MUI table",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "32e21b12_effcb470",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/change_list_overview/change_list_overview.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "896fe6e6_643917d9",
       "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c20427e_c6f448a8",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/heuristic_analysis_table/heuristic_analysis_table_row/heuristic_analysis_table_row.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done. The heuristic analysis details shown were further simplified so there is no need for HeuristicJustificationTableCells.",
+      "parentUuid": "185767c6_0fd23681",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "046703e7_cc81bfe9",
@@ -65,6 +119,24 @@
       "writtenOn": "2022-07-21T07:08:28Z",
       "side": 1,
       "message": "do we need to wrap it in a string?",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97566a98_27f06c94",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/suspects_overview/suspects_overview.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done. I had a typo in my interface (\"String\" instead of \"string\") which made the key nullable. Fixed the typo and removed the wrapper here.",
+      "parentUuid": "046703e7_cc81bfe9",
       "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -120,6 +192,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bb9ad24_5fb36428",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/views/analysis_details/analysis_details.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b897db7_1c20d63f",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "14e10a8b_5e5ffe01",
@@ -133,6 +223,24 @@
       "writtenOn": "2022-07-21T07:08:28Z",
       "side": 1,
       "message": "move tab names to a string enum for better reuse and modifiability.",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88e7d2f5_9e78fcbc",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/views/analysis_details/analysis_details.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14e10a8b_5e5ffe01",
       "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -154,6 +262,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "65dd77c2_937cabc5",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/views/analysis_details/analysis_details.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cfd43210_ca064b54",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "628fb15a_bb2d929a",
@@ -167,6 +293,24 @@
       "writtenOn": "2022-07-21T07:08:28Z",
       "side": 1,
       "message": "nit: extra space",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9e1e9a5_36edce1d",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/styles/style.css",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T00:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "628fb15a_bb2d929a",
       "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
