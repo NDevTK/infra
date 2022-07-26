@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b9db9ea_808a396a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-07-26T23:14:09Z",
+      "side": 1,
+      "message": "LGTM. But please wait for an LGTM from Mostafa as well 😊",
+      "revId": "4a6b73cac80ba77a2050fdfb34cf154f0c3962e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
