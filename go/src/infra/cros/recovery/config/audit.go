@@ -42,23 +42,3 @@ func CrosAuditRPMConfig() *Configuration {
 		},
 	}
 }
-
-// CrosAuditStorageConfig audits the internal storage for a ChromeOS DUT.
-func CrosAuditStorageConfig() *Configuration {
-	crosPlan := crosRepairPlan()
-	crosPlan.CriticalActions = []string{
-		"Set state: needs_repair",
-		"Device is SSHable",
-		"Audit storage (SMART only)",
-	}
-	return &Configuration{
-		PlanNames: []string{
-			PlanCrOS,
-			PlanClosing,
-		},
-		Plans: map[string]*Plan{
-			PlanCrOS:    crosPlan,
-			PlanClosing: setAllowFail(crosClosePlan(), true),
-		},
-	}
-}
