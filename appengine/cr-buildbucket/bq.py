@@ -190,6 +190,7 @@ def _export_builds(
     proto.infra.buildbucket.hostname = ''
     for s in proto.steps:
       s.summary_markdown = ''
+      s.merge_build = None
 
       for log in s.logs:
         # Clear everything but the name.
