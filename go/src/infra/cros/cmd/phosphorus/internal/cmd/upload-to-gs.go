@@ -59,23 +59,28 @@ func (c *uploadToGSRun) Run(a subcommands.Application, args []string, env subcom
 func (c *uploadToGSRun) innerRun(ctx context.Context, args []string, env subcommands.Env) error {
 	r := &phosphorus.UploadToGSRequest{}
 	if err := ReadJSONPB(c.InputPath, r); err != nil {
+		logging.Infof(ctx, "ReadJSONPB failed: %s", err)
 		return err
 	}
 	if err := validateUploadToGSRequest(r); err != nil {
+		logging.Infof(ctx, "validateUploadToGSRequest failed: %s", err)
 		return err
 	}
 	ctx, err := useSystemAuth(ctx, &c.AuthFlags)
 	if err != nil {
+		logging.Infof(ctx, "useSystemAuth failed: %s", err)
 		return err
 	}
 	path, err := runGSUploadStep(ctx, c.AuthFlags, r)
 	if err != nil {
+		logging.Infof(ctx, "runGSUploadStep failed: %s", err)
 		return err
 	}
 	out := phosphorus.UploadToGSResponse{
 		GsUrl: path,
 	}
 	if err = WriteJSONPB(c.OutputPath, &out); err != nil {
+		logging.Infof(ctx, "WriteJSONPB failed: %s", err)
 		return err
 	}
 	return nil
@@ -107,6 +112,7 @@ func runGSUploadStep(ctx context.Context, authFlags authcli.Flags, r *phosphorus
 
 	gsC, err := newGSClient(ctx, &authFlags)
 	if err != nil {
+		logging.Infof(ctx, "Creating new GS client failed: %s", err)
 		return "", err
 	}
 	w := gs.NewDirWriter(gsC, maxConcurrentUploads)
@@ -117,7 +123,8 @@ func runGSUploadStep(ctx context.Context, authFlags authcli.Flags, r *phosphorus
 	defer cancel()
 
 	if err = w.WriteDir(wCtx, localPath, path); err != nil {
-		logging.Debugf(ctx, "Directory listing for failed upload: %s", dirList(localPath))
+		logging.Infof(ctx, "Writing local dir %q to GS path %q failed", localPath, path)
+		logging.Infof(ctx, "Dir list in local path: %s", dirList(localPath))
 		return "", err
 	}
 	logging.Infof(ctx, "All files uploaded.")
