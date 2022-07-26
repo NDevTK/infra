@@ -79,15 +79,6 @@ func (is *ServerImpl) GetStableVersion(ctx context.Context, req *fleet.GetStable
 	return getStableVersionImpl(ctx, ic, req.GetBuildTarget(), req.GetModel(), req.GetHostname(), req.GetSatlabInformationalQuery())
 }
 
-func isDrone(s *inventory.Server) bool {
-	for _, r := range s.GetRoles() {
-		if r == inventory.Server_ROLE_SKYLAB_DRONE {
-			return true
-		}
-	}
-	return false
-}
-
 // getSatlabStableVersion gets a stable version for a satlab device.
 //
 // It returns a full response if there's no error, and a boolean ok which determines whether the error should cause

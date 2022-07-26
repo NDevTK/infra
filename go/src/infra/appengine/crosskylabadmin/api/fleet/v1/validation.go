@@ -25,11 +25,3 @@ func (r *GetDutInfoRequest) Validate() error {
 	}
 	return nil
 }
-
-// Validate returns an error if r is invalid.
-func (r *DutSelector) Validate() error {
-	if r.Id == "" && r.Hostname == "" && r.Model == "" {
-		return errors.New("dut_selector must not be empty")
-	}
-	return nil
-}

@@ -311,14 +311,6 @@ func getHWID(dut *inventory.DeviceUnderTest) (string, error) {
 	return "", fmt.Errorf("no \"HWID\" attribute for hostname (%s)", dut.GetCommon().GetHostname())
 }
 
-// queenDroneName returns the name of the fake drone whose DUTs should
-// be pushed to the drone queen service.
-func queenDroneName(env string) string {
-	return queenDronePrefix + env
-}
-
-const queenDronePrefix = "drone-queen-"
-
 // DumpStableVersionToDatastore takes stable version info from the git repo where it lives
 // and dumps it to datastore
 func (is *ServerImpl) DumpStableVersionToDatastore(ctx context.Context, in *fleet.DumpStableVersionToDatastoreRequest) (*fleet.DumpStableVersionToDatastoreResponse, error) {
@@ -359,23 +351,6 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 	}
 	logging.Infof(ctx, "successfully wrote stable versions")
 	return &fleet.DumpStableVersionToDatastoreResponse{}, nil
-}
-
-func getDUTByID(lab *inventory.Lab, id string) (*inventory.DeviceUnderTest, bool) {
-	for _, d := range lab.GetDuts() {
-		if d.GetCommon().GetId() == id {
-			return d, true
-		}
-	}
-	return nil, false
-}
-
-func mapHostnameToDUTs(duts []*inventory.DeviceUnderTest) map[string]*inventory.DeviceUnderTest {
-	m := make(map[string]*inventory.DeviceUnderTest)
-	for _, d := range duts {
-		m[d.GetCommon().GetHostname()] = d
-	}
-	return m
 }
 
 func parseStableVersions(contents string) (*lab_platform.StableVersions, error) {

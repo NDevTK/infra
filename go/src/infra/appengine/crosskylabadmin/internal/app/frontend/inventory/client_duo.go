@@ -9,15 +9,12 @@ import (
 	"math/rand"
 	"time"
 
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	api "infra/appengine/cros/lab_inventory/api/v1"
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/gitstore"
-	"infra/libs/skylab/inventory"
 )
 
 type duoClient struct {
@@ -62,11 +59,6 @@ func newDuoClient(ctx context.Context, gs *gitstore.InventoryStore, host string,
 	}, nil
 }
 
-func (client *duoClient) willWriteToV2() bool {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return r.Intn(100) < client.writeTrafficRatio
-}
-
 func (client *duoClient) willReadFromV2(req *fleet.GetDutInfoRequest) bool {
 	if req.MustFromV1 {
 		return false
@@ -81,44 +73,6 @@ func (client *duoClient) willReadFromV2(req *fleet.GetDutInfoRequest) bool {
 	return r.Intn(100) < client.readTrafficRatio
 }
 
-func (client *duoClient) addManyDUTsToFleet(ctx context.Context, nds []*inventory.CommonDeviceSpecs, pickServoPort bool) (url string, ds []*inventory.CommonDeviceSpecs, err error) {
-	if !client.inventoryV2Only {
-		url, ds, err = client.gc.addManyDUTsToFleet(ctx, nds, pickServoPort)
-		logging.Infof(ctx, "[v1] add dut result: %s, %s", url, err)
-		logging.Infof(ctx, "[v1] spec returned: %s", ds)
-	}
-	if client.willWriteToV2() {
-		url, ds, err = client.ic.addManyDUTsToFleet(ctx, nds, pickServoPort)
-		logging.Infof(ctx, "[v2] add dut result: %s, %s", url, err)
-		logging.Infof(ctx, "[v2] spec returned: %s", ds)
-	}
-	return
-}
-
-func (client *duoClient) getAssetsFromRegistration(ctx context.Context, assetIDList *api.AssetIDList) (*api.AssetResponse, error) {
-	ds, err := client.ic.getAssetsFromRegistration(ctx, assetIDList)
-	logging.Infof(ctx, "[v2] getAssetsFromRegistration assetResponse returned: %s, %s", ds, err)
-	return ds, err
-}
-
-func (client *duoClient) updateAssetsInRegistration(ctx context.Context, assetList *api.AssetList) (*api.AssetResponse, error) {
-	ds, err := client.ic.updateAssetsInRegistration(ctx, assetList)
-	logging.Infof(ctx, "[v2] updateAssetsInRegistration assetResponse returned: %s, %s", ds, err)
-	return ds, err
-}
-
-func (client *duoClient) updateDUTSpecs(ctx context.Context, od, nd *inventory.CommonDeviceSpecs, pickServoPort bool) (url string, err error) {
-	if !client.inventoryV2Only {
-		url, err = client.gc.updateDUTSpecs(ctx, od, nd, pickServoPort)
-		logging.Infof(ctx, "[v1] update dut result: %s, %s", url, err)
-	}
-	if client.willWriteToV2() {
-		url, err = client.ic.updateDUTSpecs(ctx, od, nd, pickServoPort)
-		logging.Infof(ctx, "[v2] update dut result: %s, %s", url, err)
-	}
-	return
-}
-
 func (client *duoClient) getDutInfo(ctx context.Context, req *fleet.GetDutInfoRequest) ([]byte, time.Time, error) {
 	if client.willReadFromV2(req) {
 		dut, now, err := client.ic.getDutInfo(ctx, req)
@@ -126,8 +80,4 @@ func (client *duoClient) getDutInfo(ctx context.Context, req *fleet.GetDutInfoRe
 		return dut, now, err
 	}
 	return client.gc.getDutInfo(ctx, req)
-}
-
-func (client *duoClient) deviceConfigsExists(ctx context.Context, configIds []*device.ConfigId) (map[int32]bool, error) {
-	return client.ic.deviceConfigsExists(ctx, configIds)
 }

@@ -65,16 +65,6 @@ message UpdateDeviceConfigRequest {
 message UpdateDeviceConfigResponse {
 }
 
-// NEXT TAG: 4
-message DutSelector {
-  string hostname = 2;
-
-  // ID assigned to the DUT in the inventory.
-  string id = 3;
-
-  string model = 1;
-}
-
 message GetDutInfoRequest {
   // id of the DUT to get info for.
   //
