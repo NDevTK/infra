@@ -1,0 +1,54 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-bottom: 1px solid lightgray;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.roundedTabs .MuiTabs-flexContainer {
+  border-bottom: 1px solid lightgray;
+}
+
+.roundedTabs .roundedTab {
+  text-transform: none;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-top: 1px solid lightgray;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: lightgray;
+  opacity: 80%;
+}
+
+.roundedTab + .roundedTab {
+  margin-left: 0.5rem;
+}
+
+.roundedTab.Mui-selected {
+  background-color: transparent;
+  opacity: 100%;
+}
+
+.tabPanel {
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+
+.tabPanelContents {
+  padding: 2rem;
+}
