@@ -218,6 +218,7 @@ func loadConfiguration(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rc *co
 		} else if cv, err := config.Validate(ctx, c, execs.Exist); err != nil {
 			return nil, errors.Annotate(err, "load configuration").Err()
 		} else {
+			log.Infof(ctx, "using config for task name %q", args.TaskName)
 			return cv, nil
 		}
 	}
