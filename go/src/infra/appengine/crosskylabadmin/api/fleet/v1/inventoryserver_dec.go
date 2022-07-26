@@ -40,57 +40,6 @@ func (s *DecoratedInventory) GetDutInfo(ctx context.Context, req *GetDutInfoRequ
 	return
 }
 
-func (s *DecoratedInventory) UpdateDutLabels(ctx context.Context, req *UpdateDutLabelsRequest) (rsp *UpdateDutLabelsResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "UpdateDutLabels", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.UpdateDutLabels(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "UpdateDutLabels", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) BatchUpdateDuts(ctx context.Context, req *BatchUpdateDutsRequest) (rsp *BatchUpdateDutsResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "BatchUpdateDuts", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.BatchUpdateDuts(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "BatchUpdateDuts", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) UpdateCachedInventory(ctx context.Context, req *UpdateCachedInventoryRequest) (rsp *UpdateCachedInventoryResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "UpdateCachedInventory", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.UpdateCachedInventory(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "UpdateCachedInventory", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) UpdateDeviceConfig(ctx context.Context, req *UpdateDeviceConfigRequest) (rsp *UpdateDeviceConfigResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
@@ -172,23 +121,6 @@ func (s *DecoratedInventory) DumpStableVersionToDatastore(ctx context.Context, r
 	}
 	if s.Postlude != nil {
 		err = s.Postlude(ctx, "DumpStableVersionToDatastore", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) ReportInventory(ctx context.Context, req *ReportInventoryRequest) (rsp *ReportInventoryResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ReportInventory", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ReportInventory(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ReportInventory", rsp, err)
 	}
 	return
 }

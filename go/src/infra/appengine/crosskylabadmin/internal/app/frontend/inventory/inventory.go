@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -95,10 +94,6 @@ type ServerImpl struct {
 
 	// StableVersionGitClientFactory
 	StableVersionGitClientFactory StableVersionGitClientFactory
-
-	// updateLimiter rate limits UpdateDutLabels.
-	updateLimiter     rateLimiter
-	updateLimiterOnce sync.Once
 }
 
 type getStableVersionRecordsResult struct {
@@ -316,122 +311,6 @@ func getHWID(dut *inventory.DeviceUnderTest) (string, error) {
 	return "", fmt.Errorf("no \"HWID\" attribute for hostname (%s)", dut.GetCommon().GetHostname())
 }
 
-// UpdateDutLabels implements the method from fleet.InventoryServer interface.
-func (is *ServerImpl) UpdateDutLabels(ctx context.Context, req *fleet.UpdateDutLabelsRequest) (resp *fleet.UpdateDutLabelsResponse, err error) {
-	// TODO fully remove it when remove all calls of thi method
-	// https://crbug.com/1092948
-	return nil, nil
-}
-
-func validateBatchUpdateDutsRequest(req *fleet.BatchUpdateDutsRequest) error {
-	if len(req.GetDutProperties()) == 0 {
-		return errors.New("must specify at least dut property for one host")
-	}
-
-	if len(req.GetHostnames()) > 0 {
-		return errors.New("'hostnames' field in BatchUpdateRequest is deprecated, please update skylab tool")
-	}
-
-	if req.GetPool() != "" {
-		return errors.New("'pool' field in BatchUpdateRequest is deprecated, please update skylab tool")
-	}
-	return nil
-}
-
-// BatchUpdateDuts implements the method from fleet.InventoryServer interface.
-func (is *ServerImpl) BatchUpdateDuts(ctx context.Context, req *fleet.BatchUpdateDutsRequest) (resp *fleet.BatchUpdateDutsResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	if err := validateBatchUpdateDutsRequest(req); err != nil {
-		return nil, errors.Annotate(err, "invalid BatchUpdateDutsRequest").Err()
-	}
-
-	duts := req.GetDutProperties()
-	hostnameToProperty := make(map[string]*fleet.DutProperty, len(duts))
-	for _, d := range duts {
-		hostnameToProperty[d.GetHostname()] = d
-	}
-
-	store, err := is.newStore(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "BatchUpdateDuts").Err()
-	}
-	if err := store.Refresh(ctx); err != nil {
-		return nil, errors.Annotate(err, "BatchUpdateDuts").Err()
-	}
-
-	for _, d := range store.Lab.GetDuts() {
-		hostname := d.GetCommon().GetHostname()
-		if hostname == "" {
-			logging.Infof(ctx, "empty hostname for dut %#v", d)
-			continue
-		}
-		if dp, ok := hostnameToProperty[hostname]; ok {
-			pool := dp.GetPool()
-			if pool == "" {
-				logging.Infof(ctx, "skip pool update for host %s as no pool is passed in", hostname)
-			} else {
-				assignPool(d, pool)
-			}
-			rpm := dp.GetRpm()
-			if rpm == nil {
-				logging.Infof(ctx, "skip rpm update for host %s as no rpm is passed in", hostname)
-			} else {
-				assignRpm(d, rpm)
-			}
-		}
-	}
-
-	url, err := store.Commit(ctx, "Batch update DUT labels")
-	if gitstore.IsEmptyErr(err) {
-		logging.Infof(ctx, "no updates, so nothing to commit")
-		return &fleet.BatchUpdateDutsResponse{}, nil
-	}
-	if err != nil {
-		logging.Infof(ctx, "commit failure: %v", err)
-		return nil, errors.Annotate(err, "BatchUpdateDuts").Err()
-	}
-
-	return &fleet.BatchUpdateDutsResponse{
-		Url: url,
-	}, nil
-}
-
-// Assign pool to a single device.
-func assignPool(d *inventory.DeviceUnderTest, pool string) {
-	cp, ok := inventory.SchedulableLabels_DUTPool_value[pool]
-	if ok {
-		d.GetCommon().GetLabels().CriticalPools = []inventory.SchedulableLabels_DUTPool{inventory.SchedulableLabels_DUTPool(cp)}
-		d.GetCommon().GetLabels().SelfServePools = nil
-	} else {
-		d.GetCommon().GetLabels().CriticalPools = nil
-		d.GetCommon().GetLabels().SelfServePools = []string{pool}
-	}
-}
-
-// Assign rpm info to a single device.
-func assignRpm(d *inventory.DeviceUnderTest, rpm *fleet.DutProperty_Rpm) {
-	attrs := d.GetCommon().GetAttributes()
-	attrs = setOrAppend(attrs, "powerunit_hostname", rpm.GetPowerunitHostname())
-	attrs = setOrAppend(attrs, "powerunit_outlet", rpm.GetPowerunitOutlet())
-	d.GetCommon().Attributes = attrs
-}
-
-func setOrAppend(attrs []*inventory.KeyValue, key string, value string) []*inventory.KeyValue {
-	for _, att := range attrs {
-		if att.GetKey() == key {
-			att.Value = &value
-			return attrs
-		}
-	}
-	attrs = append(attrs, &inventory.KeyValue{
-		Key:   &key,
-		Value: &value,
-	})
-	return attrs
-}
-
 // queenDroneName returns the name of the fake drone whose DUTs should
 // be pushed to the drone queen service.
 func queenDroneName(env string) string {
@@ -480,13 +359,6 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 	}
 	logging.Infof(ctx, "successfully wrote stable versions")
 	return &fleet.DumpStableVersionToDatastoreResponse{}, nil
-}
-
-type updateDutLabelsRequest struct {
-	dutID     string
-	labels    *inventory.SchedulableLabels
-	reason    string
-	oldLabels *inventory.SchedulableLabels
 }
 
 func getDUTByID(lab *inventory.Lab, id string) (*inventory.DeviceUnderTest, bool) {

@@ -22,8 +22,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	invV1Api "infra/appengine/crosskylabadmin/api/fleet/v1"
 	protos "infra/libs/fleet/protos"
 	ufs "infra/libs/fleet/protos/go"
 	"infra/libs/skylab/inventory"
@@ -35,7 +33,6 @@ import (
 type Client interface {
 	GetDutInfo(context.Context, string, bool) (*inventory.DeviceUnderTest, error)
 	DeleteDUTs(context.Context, []string, *authcli.Flags, rem.RemovalReason, io.Writer) (bool, error)
-	BatchUpdateDUTs(context.Context, *invV1Api.BatchUpdateDutsRequest, io.Writer) error
 	FilterDUTHostnames(context.Context, []string) ([]string, error)
 	UpdateLabstations(context.Context, string, string, string) (*invV2Api.UpdateLabstationsResponse, error)
 	UpdateDUT(context.Context, *inventory.CommonDeviceSpecs) error
@@ -109,29 +106,6 @@ func (client *V2Client) UpdateLabstations(ctx context.Context, hostname, servosT
 		req.AddedDUTs = []string{dutToAdd}
 	}
 	return client.ic.UpdateLabstations(ctx, req)
-}
-
-// BatchUpdateDUTs updates many DUTs.
-func (client *V2Client) BatchUpdateDUTs(ctx context.Context, req *fleet.BatchUpdateDutsRequest, writer io.Writer) error {
-	properties := make([]*invV2Api.DeviceProperty, len(req.GetDutProperties()))
-	for i, r := range req.GetDutProperties() {
-		properties[i] = &invV2Api.DeviceProperty{
-			Hostname: r.GetHostname(),
-			Pool:     r.GetPool(),
-			Rpm: &invV2Api.DeviceProperty_Rpm{
-				PowerunitName:   r.GetRpm().GetPowerunitHostname(),
-				PowerunitOutlet: r.GetRpm().GetPowerunitOutlet(),
-			},
-		}
-	}
-	_, err := client.ic.BatchUpdateDevices(ctx, &invV2Api.BatchUpdateDevicesRequest{
-		DeviceProperties: properties,
-	})
-	if err != nil {
-		return errors.Annotate(err, "fail to update Duts").Err()
-	}
-	fmt.Fprintln(writer, "Successfully batch updated.")
-	return nil
 }
 
 // GetDutInfo gets the dut information from inventory v2 service.

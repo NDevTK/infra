@@ -105,26 +105,6 @@ func (m *MockInventoryClient) EXPECT() *MockInventoryClientMockRecorder {
 	return m.recorder
 }
 
-// BatchUpdateDuts mocks base method.
-func (m *MockInventoryClient) BatchUpdateDuts(ctx context.Context, in *BatchUpdateDutsRequest, opts ...grpc.CallOption) (*BatchUpdateDutsResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "BatchUpdateDuts", varargs...)
-	ret0, _ := ret[0].(*BatchUpdateDutsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// BatchUpdateDuts indicates an expected call of BatchUpdateDuts.
-func (mr *MockInventoryClientMockRecorder) BatchUpdateDuts(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchUpdateDuts", reflect.TypeOf((*MockInventoryClient)(nil).BatchUpdateDuts), varargs...)
-}
-
 // DeleteSatlabStableVersion mocks base method.
 func (m *MockInventoryClient) DeleteSatlabStableVersion(ctx context.Context, in *DeleteSatlabStableVersionRequest, opts ...grpc.CallOption) (*DeleteSatlabStableVersionResponse, error) {
 	m.ctrl.T.Helper()
@@ -205,26 +185,6 @@ func (mr *MockInventoryClientMockRecorder) GetStableVersion(ctx, in interface{},
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).GetStableVersion), varargs...)
 }
 
-// ReportInventory mocks base method.
-func (m *MockInventoryClient) ReportInventory(ctx context.Context, in *ReportInventoryRequest, opts ...grpc.CallOption) (*ReportInventoryResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ReportInventory", varargs...)
-	ret0, _ := ret[0].(*ReportInventoryResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReportInventory indicates an expected call of ReportInventory.
-func (mr *MockInventoryClientMockRecorder) ReportInventory(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReportInventory", reflect.TypeOf((*MockInventoryClient)(nil).ReportInventory), varargs...)
-}
-
 // SetSatlabStableVersion mocks base method.
 func (m *MockInventoryClient) SetSatlabStableVersion(ctx context.Context, in *SetSatlabStableVersionRequest, opts ...grpc.CallOption) (*SetSatlabStableVersionResponse, error) {
 	m.ctrl.T.Helper()
@@ -245,26 +205,6 @@ func (mr *MockInventoryClientMockRecorder) SetSatlabStableVersion(ctx, in interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSatlabStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).SetSatlabStableVersion), varargs...)
 }
 
-// UpdateCachedInventory mocks base method.
-func (m *MockInventoryClient) UpdateCachedInventory(ctx context.Context, in *UpdateCachedInventoryRequest, opts ...grpc.CallOption) (*UpdateCachedInventoryResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "UpdateCachedInventory", varargs...)
-	ret0, _ := ret[0].(*UpdateCachedInventoryResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateCachedInventory indicates an expected call of UpdateCachedInventory.
-func (mr *MockInventoryClientMockRecorder) UpdateCachedInventory(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCachedInventory", reflect.TypeOf((*MockInventoryClient)(nil).UpdateCachedInventory), varargs...)
-}
-
 // UpdateDeviceConfig mocks base method.
 func (m *MockInventoryClient) UpdateDeviceConfig(ctx context.Context, in *UpdateDeviceConfigRequest, opts ...grpc.CallOption) (*UpdateDeviceConfigResponse, error) {
 	m.ctrl.T.Helper()
@@ -283,26 +223,6 @@ func (mr *MockInventoryClientMockRecorder) UpdateDeviceConfig(ctx, in interface{
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeviceConfig", reflect.TypeOf((*MockInventoryClient)(nil).UpdateDeviceConfig), varargs...)
-}
-
-// UpdateDutLabels mocks base method.
-func (m *MockInventoryClient) UpdateDutLabels(ctx context.Context, in *UpdateDutLabelsRequest, opts ...grpc.CallOption) (*UpdateDutLabelsResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "UpdateDutLabels", varargs...)
-	ret0, _ := ret[0].(*UpdateDutLabelsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateDutLabels indicates an expected call of UpdateDutLabels.
-func (mr *MockInventoryClientMockRecorder) UpdateDutLabels(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDutLabels", reflect.TypeOf((*MockInventoryClient)(nil).UpdateDutLabels), varargs...)
 }
 
 // UpdateManufacturingConfig mocks base method.
@@ -346,21 +266,6 @@ func NewMockInventoryServer(ctrl *gomock.Controller) *MockInventoryServer {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockInventoryServer) EXPECT() *MockInventoryServerMockRecorder {
 	return m.recorder
-}
-
-// BatchUpdateDuts mocks base method.
-func (m *MockInventoryServer) BatchUpdateDuts(arg0 context.Context, arg1 *BatchUpdateDutsRequest) (*BatchUpdateDutsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BatchUpdateDuts", arg0, arg1)
-	ret0, _ := ret[0].(*BatchUpdateDutsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// BatchUpdateDuts indicates an expected call of BatchUpdateDuts.
-func (mr *MockInventoryServerMockRecorder) BatchUpdateDuts(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchUpdateDuts", reflect.TypeOf((*MockInventoryServer)(nil).BatchUpdateDuts), arg0, arg1)
 }
 
 // DeleteSatlabStableVersion mocks base method.
@@ -423,21 +328,6 @@ func (mr *MockInventoryServerMockRecorder) GetStableVersion(arg0, arg1 interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).GetStableVersion), arg0, arg1)
 }
 
-// ReportInventory mocks base method.
-func (m *MockInventoryServer) ReportInventory(arg0 context.Context, arg1 *ReportInventoryRequest) (*ReportInventoryResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReportInventory", arg0, arg1)
-	ret0, _ := ret[0].(*ReportInventoryResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReportInventory indicates an expected call of ReportInventory.
-func (mr *MockInventoryServerMockRecorder) ReportInventory(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReportInventory", reflect.TypeOf((*MockInventoryServer)(nil).ReportInventory), arg0, arg1)
-}
-
 // SetSatlabStableVersion mocks base method.
 func (m *MockInventoryServer) SetSatlabStableVersion(arg0 context.Context, arg1 *SetSatlabStableVersionRequest) (*SetSatlabStableVersionResponse, error) {
 	m.ctrl.T.Helper()
@@ -453,21 +343,6 @@ func (mr *MockInventoryServerMockRecorder) SetSatlabStableVersion(arg0, arg1 int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSatlabStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).SetSatlabStableVersion), arg0, arg1)
 }
 
-// UpdateCachedInventory mocks base method.
-func (m *MockInventoryServer) UpdateCachedInventory(arg0 context.Context, arg1 *UpdateCachedInventoryRequest) (*UpdateCachedInventoryResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCachedInventory", arg0, arg1)
-	ret0, _ := ret[0].(*UpdateCachedInventoryResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateCachedInventory indicates an expected call of UpdateCachedInventory.
-func (mr *MockInventoryServerMockRecorder) UpdateCachedInventory(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCachedInventory", reflect.TypeOf((*MockInventoryServer)(nil).UpdateCachedInventory), arg0, arg1)
-}
-
 // UpdateDeviceConfig mocks base method.
 func (m *MockInventoryServer) UpdateDeviceConfig(arg0 context.Context, arg1 *UpdateDeviceConfigRequest) (*UpdateDeviceConfigResponse, error) {
 	m.ctrl.T.Helper()
@@ -481,21 +356,6 @@ func (m *MockInventoryServer) UpdateDeviceConfig(arg0 context.Context, arg1 *Upd
 func (mr *MockInventoryServerMockRecorder) UpdateDeviceConfig(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeviceConfig", reflect.TypeOf((*MockInventoryServer)(nil).UpdateDeviceConfig), arg0, arg1)
-}
-
-// UpdateDutLabels mocks base method.
-func (m *MockInventoryServer) UpdateDutLabels(arg0 context.Context, arg1 *UpdateDutLabelsRequest) (*UpdateDutLabelsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateDutLabels", arg0, arg1)
-	ret0, _ := ret[0].(*UpdateDutLabelsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateDutLabels indicates an expected call of UpdateDutLabels.
-func (mr *MockInventoryServerMockRecorder) UpdateDutLabels(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDutLabels", reflect.TypeOf((*MockInventoryServer)(nil).UpdateDutLabels), arg0, arg1)
 }
 
 // UpdateManufacturingConfig mocks base method.

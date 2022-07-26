@@ -22,21 +22,6 @@ service Inventory {
     option deprecated = true;
   };
 
-  // UpdateDutLabels sets the SchedulableLabels of a DUT.
-  //
-  // This API should only be used by the Skylab infrastructure
-  // internally.  It is used by repair tasks to update DUT labels.
-  rpc UpdateDutLabels(UpdateDutLabelsRequest) returns (UpdateDutLabelsResponse);
-
-  rpc BatchUpdateDuts(BatchUpdateDutsRequest) returns (BatchUpdateDutsResponse);
-
-  // UpdateCachedInventory updates the cached inventory data.
-  //
-  // Cached inventory data is used to serve read-only inventory RPCs.
-  // Cached inventory data is not used for inventory modification RPCs.
-  rpc UpdateCachedInventory(UpdateCachedInventoryRequest)
-      returns (UpdateCachedInventoryResponse);
-
   // Update device config to inventory and local datastore.
   //
   // Updating device config in inventory will be forbidden via repair jobs.
@@ -63,9 +48,6 @@ service Inventory {
   // and writes it to datastore.
   rpc DumpStableVersionToDatastore(DumpStableVersionToDatastoreRequest) returns (DumpStableVersionToDatastoreResponse);
 
-  // Report inventory metrics.
-  rpc ReportInventory(ReportInventoryRequest) returns (ReportInventoryResponse);
-
   // Backfill (part of) manufacturing config.
   rpc UpdateManufacturingConfig(UpdateManufacturingConfigRequest) returns (UpdateManufacturingConfigResponse);
 }
@@ -76,12 +58,6 @@ message UpdateManufacturingConfigRequest {
 message UpdateManufacturingConfigResponse {
   string change_url = 1;
 }
-
-message ReportInventoryRequest {
-  // Skip reporting inventory metrics after we migrate to inventory v2.
-  bool skip_inventory_metrics = 1;
-}
-message ReportInventoryResponse {}
 
 message UpdateDeviceConfigRequest {
 }
@@ -128,54 +104,6 @@ message GetDutInfoResponse {
   // of this timestamp.
   google.protobuf.Timestamp updated = 2;
 }
-
-message UpdateDutLabelsRequest {
-  string dut_id = 1;
-  // labels are the labels for the DUT that the client changed.  This
-  // should be a serialized protobuf of inventory.SchedulableLabels.
-  // Any labels that shouldn't be updated are ignored.
-  bytes labels = 2;
-  // reason is some string to provide context for the update.  This
-  // should contain a URL to the task that triggered the change.  This
-  // should not be capitalized since it will get formatted with other
-  // information.
-  string reason = 3;
-  // old_labels are the old labels for the DUT before this update. Same
-  // format with labels.
-  bytes old_labels = 4;
-}
-
-message UpdateDutLabelsResponse {
-  // url is a URL associated with the label update.
-  //
-  // It is usually a Gerrit or Gitiles URL.
-  string url = 1;
-}
-
-message BatchUpdateDutsRequest {
-  repeated string hostnames = 1 [deprecated=true];
-  string pool = 2 [deprecated=true];
-  repeated DutProperty dut_properties = 3;
-}
-
-message DutProperty {
-  string hostname = 1;
-  string pool = 2;
-
-  message Rpm {
-    string powerunit_hostname = 1;
-    string powerunit_outlet = 2;
-  }
-  Rpm rpm = 3;
-}
-
-message BatchUpdateDutsResponse {
-  // A Gerrit URL with the label update.
-  string url = 1;
-}
-
-message UpdateCachedInventoryRequest {}
-message UpdateCachedInventoryResponse {}
 
 // next tag: 5
 message GetStableVersionRequest {

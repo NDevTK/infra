@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
@@ -32,12 +31,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/dronecfg"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/freeduts"
-	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/inventory"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
-	"infra/appengine/crosskylabadmin/internal/app/gitstore"
 	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/inventory"
 )
@@ -84,85 +79,6 @@ func (is *ServerImpl) GetStableVersion(ctx context.Context, req *fleet.GetStable
 	return getStableVersionImpl(ctx, ic, req.GetBuildTarget(), req.GetModel(), req.GetHostname(), req.GetSatlabInformationalQuery())
 }
 
-// ReportInventory reports metrics of duts in inventory.
-//
-// This method is deprecated. UFS reports the inventory metrics.
-func (is *ServerImpl) ReportInventory(ctx context.Context, req *fleet.ReportInventoryRequest) (resp *fleet.ReportInventoryResponse, err error) {
-	return &fleet.ReportInventoryResponse{}, nil
-}
-
-// UpdateCachedInventory implements the method from fleet.InventoryServer interface.
-func (is *ServerImpl) UpdateCachedInventory(ctx context.Context, req *fleet.UpdateCachedInventoryRequest) (resp *fleet.UpdateCachedInventoryResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-
-	store, err := is.newStore(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if err := store.Refresh(ctx); err != nil {
-		return nil, err
-	}
-	duts := dutsInCurrentEnvironment(ctx, store.Lab.GetDuts())
-	if err := dsinventory.UpdateDUTs(ctx, duts); err != nil {
-		return nil, err
-	}
-	es := makeDroneConfigs(ctx, store.Infrastructure, store.Lab)
-	if err := dronecfg.Update(ctx, es); err != nil {
-		return nil, err
-	}
-	if err := updateFreeDUTs(ctx, store); err != nil {
-		return nil, err
-	}
-	return &fleet.UpdateCachedInventoryResponse{}, nil
-}
-
-func dutsInCurrentEnvironment(ctx context.Context, duts []*inventory.DeviceUnderTest) []*inventory.DeviceUnderTest {
-	// TODO(crbug.com/947322): Disable this temporarily until it
-	// can be implemented properly.  This updates the cache of
-	// DUTs which can only be queried by hostname or ID, so it is
-	// not problematic to also cache DUTs in the wrong environment
-	// (prod vs dev).
-	return duts
-}
-
-func makeDroneConfigs(ctx context.Context, inf *inventory.Infrastructure, lab *inventory.Lab) []dronecfg.Entity {
-	dutHostnames := makeDUTHostnameMap(lab.GetDuts())
-	var entities []dronecfg.Entity
-	for _, s := range inf.GetServers() {
-		if !isDrone(s) {
-			continue
-		}
-		e := dronecfg.Entity{
-			Hostname: s.GetHostname(),
-		}
-		for _, d := range s.GetDutUids() {
-			h, ok := dutHostnames[d]
-			if !ok {
-				logging.Infof(ctx, "DUT ID %s doesn't match any hostname", d)
-				continue
-			}
-			e.DUTs = append(e.DUTs, dronecfg.DUT{
-				ID:       d,
-				Hostname: h,
-			})
-		}
-		entities = append(entities, e)
-	}
-	return entities
-}
-
-// makeDUTHostnameMap makes a mapping from DUT IDs to DUT hostnames.
-func makeDUTHostnameMap(duts []*inventory.DeviceUnderTest) map[string]string {
-	m := make(map[string]string)
-	for _, d := range duts {
-		c := d.GetCommon()
-		m[c.GetId()] = c.GetHostname()
-	}
-	return m
-}
-
 func isDrone(s *inventory.Server) bool {
 	for _, r := range s.GetRoles() {
 		if r == inventory.Server_ROLE_SKYLAB_DRONE {
@@ -170,66 +86,6 @@ func isDrone(s *inventory.Server) bool {
 		}
 	}
 	return false
-}
-
-func updateFreeDUTs(ctx context.Context, s *gitstore.InventoryStore) error {
-	ic := newGlobalInvCache(ctx, s)
-	var free []freeduts.DUT
-	for dutID, d := range ic.idToDUT {
-		if _, ok := ic.droneForDUT[dutID]; ok {
-			continue
-		}
-		free = append(free, freeDUTInfo(d))
-	}
-	stale, err := getStaleFreeDUTs(ctx, free)
-	if err != nil {
-		return errors.Annotate(err, "update free duts").Err()
-	}
-	if err := freeduts.Remove(ctx, stale); err != nil {
-		return errors.Annotate(err, "update free duts").Err()
-	}
-	if err := freeduts.Add(ctx, free); err != nil {
-		return errors.Annotate(err, "update free duts").Err()
-	}
-	return nil
-}
-
-// getStaleFreeDUTs returns the free DUTs in datastore that are no longer
-// free, given the currently free DUTs passed as an argument.
-func getStaleFreeDUTs(ctx context.Context, free []freeduts.DUT) ([]freeduts.DUT, error) {
-	freeMap := make(map[string]bool, len(free))
-	for _, d := range free {
-		freeMap[d.ID] = true
-	}
-	all, err := freeduts.GetAll(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "get stale free duts").Err()
-	}
-	stale := make([]freeduts.DUT, 0, len(all))
-	for _, d := range all {
-		if _, ok := freeMap[d.ID]; !ok {
-			stale = append(stale, d)
-		}
-	}
-	return stale, nil
-}
-
-// freeDUTInfo returns the free DUT info to store for a DUT.
-func freeDUTInfo(d *inventory.DeviceUnderTest) freeduts.DUT {
-	c := d.GetCommon()
-	rr := d.GetRemovalReason()
-	var t time.Time
-	if ts := rr.GetExpireTime(); ts != nil {
-		t = time.Unix(ts.GetSeconds(), int64(ts.GetNanos())).UTC()
-	}
-	return freeduts.DUT{
-		ID:         c.GetId(),
-		Hostname:   c.GetHostname(),
-		Bug:        rr.GetBug(),
-		Comment:    rr.GetComment(),
-		ExpireTime: t,
-		Model:      c.GetLabels().GetModel(),
-	}
 }
 
 // getSatlabStableVersion gets a stable version for a satlab device.

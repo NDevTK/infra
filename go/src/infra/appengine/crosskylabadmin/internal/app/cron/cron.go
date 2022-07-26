@@ -49,8 +49,6 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	// Import config.cfg from LUCI Config.
 	r.GET("/internal/cron/import-service-config", mwCron, logAndSetHTTPErr(importServiceConfig))
 
-	r.GET("/internal/cron/refresh-inventory", mwCron, logAndSetHTTPErr(refreshInventoryCronHandler))
-
 	// Generate repair jobs for needs_repair CrOS DUTs.
 	r.GET("/internal/cron/push-bots-for-admin-tasks", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler(fleet.DutState_NeedsRepair)))
 
@@ -74,8 +72,6 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 
 	// Report Bot metrics.
 	r.GET("/internal/cron/report-bots", mwCron, logAndSetHTTPErr(reportBotsCronHandler))
-	// Report inventory metrics
-	r.GET("/internal/cron/report-inventory", mwCron, logAndSetHTTPErr(reportInventoryCronHandler))
 
 	// dump information from stable version file to datastore
 	r.GET("/internal/cron/dump-stable-version-to-datastore", mwCron, logAndSetHTTPErr(dumpStableVersionToDatastoreHandler))
@@ -188,35 +184,12 @@ func reportBotsCronHandler(c *router.Context) (err error) {
 	return nil
 }
 
-func reportInventoryCronHandler(c *router.Context) (err error) {
-	defer func() {
-		reportInventoryCronHandlerTick.Add(c.Context, 1, err == nil)
-	}()
-
-	inv := createInventoryServer(c)
-	cfg := config.Get(c.Context)
-	_, err = inv.ReportInventory(c.Context, &fleet.ReportInventoryRequest{
-		SkipInventoryMetrics: cfg.GetInventoryProvider().GetInventoryV2Only(),
-	})
-	return err
-}
-
 func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
 	return func(c *router.Context) {
 		if err := f(c); err != nil {
 			http.Error(c.Writer, "Internal server error", http.StatusInternalServerError)
 		}
 	}
-}
-
-func refreshInventoryCronHandler(c *router.Context) error {
-	cfg := config.Get(c.Context)
-	if cfg.RpcControl != nil && cfg.RpcControl.GetDisableRefreshInventory() {
-		return nil
-	}
-	inv := createInventoryServer(c)
-	_, err := inv.UpdateCachedInventory(c.Context, &fleet.UpdateCachedInventoryRequest{})
-	return err
 }
 
 func createInventoryServer(c *router.Context) *inventory.ServerImpl {
