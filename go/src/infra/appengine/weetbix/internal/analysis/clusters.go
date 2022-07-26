@@ -7,10 +7,12 @@ package analysis
 import (
 	"context"
 	"math"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/trace"
 	"google.golang.org/api/iterator"
 
@@ -174,14 +176,19 @@ func (c *Client) PurgeStaleRows(ctx context.Context, luciProject string) error {
 	waitCtx, cancel := context.WithTimeout(ctx, time.Minute*5)
 	defer cancel()
 
-	// If we get an error like:
-	// "UPDATE or DELETE statement over table project.dataset.table would affect rows
-	//  in the streaming buffer, which is not supported".
-	// We may have to increase how long we hold-off deleting a row, or
-	// simply discard the error knowing we will retry later.
 	js, err := job.Wait(waitCtx)
 	if err != nil {
-		return errors.Annotate(err, "waiting for stalw row purge to complete").Err()
+		// BigQuery specifies that rows are kept in the streaming buffer for
+		// 30 minutes, but sometimes exceeds this SLO. We could be less
+		// aggressive at deleting rows, but that would make the average-case
+		// experience worse. These errors should only occur occasionally,
+		// so it is better to ignore them.
+		if strings.Contains(err.Error(), "would affect rows in the streaming buffer, which is not supported") {
+			logging.Warningf(ctx, "Row purge failed for %v because rows were in the streaming buffer for over 30 minutes. "+
+				"If this message occurs more than 25 percent of the time, it should be investigated.", luciProject)
+			return nil
+		}
+		return errors.Annotate(err, "waiting for stale row purge to complete").Err()
 	}
 	if js.Err() != nil {
 		return errors.Annotate(err, "purge stale rows failed").Err()
