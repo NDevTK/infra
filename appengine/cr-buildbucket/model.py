@@ -720,9 +720,9 @@ class BuildBundle(BuildBundleBase):
     if self.steps:
       self.steps.read_steps(dest)
 
-    if self.input_properties:
+    if self.input_properties and self.input_properties.properties:
       dest.input.properties.ParseFromString(self.input_properties.properties)
-    if self.output_properties:
+    if self.output_properties and self.output_properties.properties:
       dest.output.properties.ParseFromString(self.output_properties.properties)
     return dest
 
