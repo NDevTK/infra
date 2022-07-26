@@ -158,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a1e8243_f721cea6",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/store/custom_hooks.ts",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T06:54:33Z",
+      "side": 1,
+      "message": "Done. Removed all files in the `store` directory as currently, global state management is not required.",
+      "parentUuid": "16631643_790f0b57",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a9954346_8bddd2ab",
@@ -171,6 +189,24 @@
       "writtenOn": "2022-07-21T07:08:28Z",
       "side": 1,
       "message": "What is the need for this file?",
+      "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17c4fee1_16680eb7",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/tools/react_shim.ts",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T06:54:33Z",
+      "side": 1,
+      "message": "This is to auto-import React (https://esbuild.github.io/content-types/#auto-import-for-jsx). I can\u0027t figure out a way to remove this.\n\nIf I remove the auto-injection and instead just import React to the files that need it (which is most of them), then I get a complaint when building the project: \"React is defined but not used\". This is probably due to the tsconfig of \"noUnusedLocals\" and \"strict\" both being true.",
+      "parentUuid": "a9954346_8bddd2ab",
       "revId": "c2b78a539803365fb7dd8b5f25b462a0fd13fe91",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

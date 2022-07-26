@@ -241,6 +241,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb95e29d_ec13f06e",
+        "filename": "go/src/infra/appengine/gofindit/frontend/handlers/handlers.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-07-26T06:54:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8ca68edd_618c9ac3",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 7
+      },
+      "revId": "d89d7f907fc26b78549432a992039b225796f2ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db644dda_aeb71a5b",
