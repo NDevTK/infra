@@ -17,6 +17,7 @@ from six.moves import urllib
 
 import ezt
 
+from google.appengine.api import mail
 from google.appengine.ext.webapp.mail_handlers import BounceNotificationHandler
 
 import webapp2
