@@ -270,7 +270,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		if err != nil {
 			return err
 		}
-		bc, err = buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+		bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 		if err != nil {
 			return err
 		}

@@ -368,7 +368,7 @@ func createBBClient(ctx context.Context, authFlags authcli.Flags) (buildbucket.C
 	if err != nil {
 		return nil, errors.Annotate(err, "ensure bb client").Err()
 	}
-	bc, err := buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 	if err != nil {
 		return nil, errors.Annotate(err, "ensure bb client").Err()
 	}
