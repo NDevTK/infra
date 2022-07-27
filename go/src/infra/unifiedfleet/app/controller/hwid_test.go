@@ -26,53 +26,63 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
-func mockDutLabel() *ufspb.DutLabel {
-	return &ufspb.DutLabel{
-		PossibleLabels: []string{
-			"test-possible-1",
-			"test-possible-2",
-		},
-		Labels: []*ufspb.DutLabel_Label{
-			{
-				Name:  "test-label-1",
-				Value: "test-value-1",
+func mockHwidData() *ufspb.HwidData {
+	return &ufspb.HwidData{
+		Sku:     "test-sku",
+		Variant: "test-variant",
+		Hwid:    "test",
+		DutLabel: &ufspb.DutLabel{
+			PossibleLabels: []string{
+				"test-possible-1",
+				"test-possible-2",
 			},
-			{
-				Name:  "Sku",
-				Value: "test-sku",
-			},
-			{
-				Name:  "variant",
-				Value: "test-variant",
-			},
-		},
-	}
-}
-
-func mockDutLabelNoServer() *ufspb.DutLabel {
-	return &ufspb.DutLabel{
-		PossibleLabels: []string{
-			"test-possible-1",
-			"test-possible-2",
-		},
-		Labels: []*ufspb.DutLabel_Label{
-			{
-				Name:  "test-label-1",
-				Value: "test-value-1",
-			},
-			{
-				Name:  "Sku",
-				Value: "test-sku-no-server",
-			},
-			{
-				Name:  "variant",
-				Value: "test-variant-no-server",
+			Labels: []*ufspb.DutLabel_Label{
+				{
+					Name:  "test-label-1",
+					Value: "test-value-1",
+				},
+				{
+					Name:  "Sku",
+					Value: "test-sku",
+				},
+				{
+					Name:  "variant",
+					Value: "test-variant",
+				},
 			},
 		},
 	}
 }
 
-func fakeUpdateHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string, updatedTime time.Time) (*configuration.HwidDataEntity, error) {
+func mockHwidDataNoServer() *ufspb.HwidData {
+	return &ufspb.HwidData{
+		Sku:     "test-sku",
+		Variant: "test-variant",
+		Hwid:    "test",
+		DutLabel: &ufspb.DutLabel{
+			PossibleLabels: []string{
+				"test-possible-1",
+				"test-possible-2",
+			},
+			Labels: []*ufspb.DutLabel_Label{
+				{
+					Name:  "test-label-1",
+					Value: "test-value-1",
+				},
+				{
+					Name:  "Sku",
+					Value: "test-sku-no-server",
+				},
+				{
+					Name:  "variant",
+					Value: "test-variant-no-server",
+				},
+			},
+		},
+	}
+}
+
+func fakeUpdateHwidData(ctx context.Context, d *ufspb.HwidData, hwid string, updatedTime time.Time) (*configuration.HwidDataEntity, error) {
 	hwidData, err := proto.Marshal(d)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to marshal HwidData %s", d).Err()
@@ -94,7 +104,7 @@ func fakeUpdateHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string, upd
 	return entity, nil
 }
 
-func TestGetHwidDataV1(t *testing.T) {
+func TestGetHwidData(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	ctx = external.WithTestingContext(ctx)
@@ -120,26 +130,47 @@ func TestGetHwidDataV1(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Fake hwid server responded with error: %s", err)
 		}
-		if diff := cmp.Diff(mockDutLabel(), serverRsp, protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(mockHwidData().GetDutLabel(), serverRsp, protocmp.Transform()); diff != "" {
 			t.Errorf("Fake hwid server returned unexpected diff (-want +got):\n%s", diff)
 		}
 
 		// Test getting data from datastore.
 		cacheTime := time.Now().UTC().Add(-30 * time.Minute)
-		_, err = fakeUpdateHwidData(ctx, mockDutLabel(), id, cacheTime)
+		_, err = fakeUpdateHwidData(ctx, mockHwidData(), id, cacheTime)
 		if err != nil {
 			t.Fatalf("fakeUpdateHwidData failed: %s", err)
 		}
 		want := &ufspb.HwidData{
 			Sku:     "test-sku",
 			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant",
+					},
+				},
+			},
 		}
-		got, err := GetHwidDataV1(ctx, client, id)
+		got, err := GetHwidData(ctx, client, id)
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 failed: %s", err)
+			t.Fatalf("GetHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 		hwidEnt, _ := configuration.GetHwidData(ctx, id)
 		if diff := cmp.Diff(cacheTime, hwidEnt.Updated, cmpopts.EquateApproxTime(1*time.Millisecond)); diff != "" {
@@ -163,20 +194,41 @@ func TestGetHwidDataV1(t *testing.T) {
 		}
 
 		// Test getting data from datastore.
-		hwidEnt, err := configuration.UpdateHwidData(ctx, mockDutLabelNoServer(), id)
+		hwidEnt, err := configuration.UpdateHwidData(ctx, mockHwidDataNoServer(), id)
 		if err != nil {
 			t.Fatalf("UpdateHwidData failed: %s", err)
 		}
 		want := &ufspb.HwidData{
 			Sku:     "test-sku-no-server",
 			Variant: "test-variant-no-server",
+			Hwid:    "test-no-server",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku-no-server",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant-no-server",
+					},
+				},
+			},
 		}
-		got, err := GetHwidDataV1(ctx, client, id)
+		got, err := GetHwidData(ctx, client, id)
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 failed: %s", err)
+			t.Fatalf("GetHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 		datastore.Delete(ctx, hwidEnt)
 	})
@@ -196,29 +248,50 @@ func TestGetHwidDataV1(t *testing.T) {
 		want := &ufspb.HwidData{
 			Sku:     "test-sku",
 			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant",
+					},
+				},
+			},
 		}
-		got, err := GetHwidDataV1(ctx, client, id)
+		got, err := GetHwidData(ctx, client, id)
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 failed: %s", err)
+			t.Fatalf("GetHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 
 		// Test if results were cached into datastore.
 		hwidEnt, err := configuration.GetHwidData(ctx, id)
 		if err != nil {
 			if util.IsNotFoundError(err) {
-				t.Fatalf("GetHwidDataV1 did not cache hwid server result")
+				t.Fatalf("GetHwidData did not cache hwid server result")
 			}
-			t.Fatalf("GetHwidDataV1 unknown error: %s", err)
+			t.Fatalf("GetHwidData unknown error: %s", err)
 		}
-		data, err := configuration.ParseHwidDataV1(hwidEnt)
+		data, err := configuration.ParseHwidData(hwidEnt)
 		if err != nil {
 			t.Fatalf("Failed to parse hwid data: %s", err)
 		}
 		if diff := cmp.Diff(want, data, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 		if diff := cmp.Diff(time.Now().UTC(), hwidEnt.Updated, cmpopts.EquateApproxTime(2*time.Second)); diff != "" {
 			t.Errorf("New cache time is outside margin of error; unexpected diff (-want +got):\n%s", diff)
@@ -233,42 +306,84 @@ func TestGetHwidDataV1(t *testing.T) {
 
 		// Add expired data to datastore.
 		expiredTime := time.Now().Add(-2 * time.Hour).UTC()
-		fakeUpdateHwidData(ctx, mockDutLabelNoServer(), "test", expiredTime)
+		fakeUpdateHwidData(ctx, mockHwidDataNoServer(), "test", expiredTime)
 		want := &ufspb.HwidData{
 			Sku:     "test-sku-no-server",
 			Variant: "test-variant-no-server",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku-no-server",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant-no-server",
+					},
+				},
+			},
 		}
 		hwidEntExp, _ := configuration.GetHwidData(ctx, id)
-		dataExp, _ := configuration.ParseHwidDataV1(hwidEntExp)
+		dataExp, _ := configuration.ParseHwidData(hwidEntExp)
 		if diff := cmp.Diff(want, dataExp, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 
-		// Calling GetHwidDataV1 should immediately cache new data into datastore
+		// Calling GetHwidData should immediately cache new data into datastore
 		// and return the new data.
 		want = &ufspb.HwidData{
 			Sku:     "test-sku",
 			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant",
+					},
+				},
+			},
 		}
-		got, err := GetHwidDataV1(ctx, client, id)
+		got, err := GetHwidData(ctx, client, id)
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 failed: %s", err)
+			t.Fatalf("GetHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 
 		// Test if results were cached into datastore.
 		hwidEnt, err := configuration.GetHwidData(ctx, id)
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 unknown error: %s", err)
+			t.Fatalf("GetHwidData unknown error: %s", err)
 		}
-		data, err := configuration.ParseHwidDataV1(hwidEnt)
+		data, err := configuration.ParseHwidData(hwidEnt)
 		if err != nil {
 			t.Fatalf("Failed to parse hwid data: %s", err)
 		}
 		if diff := cmp.Diff(want, data, protocmp.Transform()); diff != "" {
-			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("GetHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 		if diff := cmp.Diff(time.Now().UTC(), hwidEnt.Updated, cmpopts.EquateApproxTime(2*time.Second)); diff != "" {
 			t.Errorf("New cache time is outside margin of error; unexpected diff (-want +got):\n%s", diff)
@@ -277,12 +392,12 @@ func TestGetHwidDataV1(t *testing.T) {
 	})
 
 	t.Run("no data in datastore and hwid server errors", func(t *testing.T) {
-		got, err := GetHwidDataV1(ctx, client, "test-err")
+		got, err := GetHwidData(ctx, client, "test-err")
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 unknown error: %s", err)
+			t.Fatalf("GetHwidData unknown error: %s", err)
 		}
 		if got != nil {
-			t.Errorf("GetHwidDataV1 is not nil: %s", got)
+			t.Errorf("GetHwidData is not nil: %s", got)
 		}
 	})
 
@@ -292,12 +407,12 @@ func TestGetHwidDataV1(t *testing.T) {
 		}
 		trafficCtx := config.Use(ctx, cfgLst)
 
-		got, err := GetHwidDataV1(trafficCtx, client, "test-no-data")
+		got, err := GetHwidData(trafficCtx, client, "test-no-data")
 		if err != nil {
-			t.Fatalf("GetHwidDataV1 unknown error: %s", err)
+			t.Fatalf("GetHwidData unknown error: %s", err)
 		}
 		if got != nil {
-			t.Errorf("GetHwidDataV1 is not nil: %s", got)
+			t.Errorf("GetHwidData is not nil: %s", got)
 		}
 	})
 }

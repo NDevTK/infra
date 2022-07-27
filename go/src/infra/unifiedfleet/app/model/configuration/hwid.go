@@ -32,7 +32,7 @@ type HwidDataEntity struct {
 
 // GetProto returns the unmarshaled HwidData.
 func (e *HwidDataEntity) GetProto() (proto.Message, error) {
-	p := &ufspb.DutLabel{}
+	p := &ufspb.HwidData{}
 	if err := proto.Unmarshal(e.HwidData, p); err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (e *HwidDataEntity) GetProto() (proto.Message, error) {
 }
 
 // UpdateHwidData updates HwidData in datastore.
-func UpdateHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string) (*HwidDataEntity, error) {
+func UpdateHwidData(ctx context.Context, d *ufspb.HwidData, hwid string) (*HwidDataEntity, error) {
 	hwidData, err := proto.Marshal(d)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to marshal HwidData %s", d).Err()
@@ -77,11 +77,11 @@ func GetHwidData(ctx context.Context, hwid string) (*HwidDataEntity, error) {
 	return entity, nil
 }
 
-// ParseHwidDataV1 returns sku and variant.
+// ParseHwidData returns the HwidData proto based on the datastore entity.
 //
 // It parses a given HwidDataEntity into the ufspb.HwidData proto containing
-// sku and variant. No error is returned if the entity is nil.
-func ParseHwidDataV1(ent *HwidDataEntity) (*ufspb.HwidData, error) {
+// all DutLabels. No error is returned if the entity is nil.
+func ParseHwidData(ent *HwidDataEntity) (*ufspb.HwidData, error) {
 	if ent == nil {
 		return nil, nil
 	}
@@ -91,13 +91,15 @@ func ParseHwidDataV1(ent *HwidDataEntity) (*ufspb.HwidData, error) {
 		return nil, err
 	}
 
-	hwidData, ok := entData.(*ufspb.DutLabel)
+	hwidData, ok := entData.(*ufspb.HwidData)
 	if !ok {
-		return nil, errors.Reason("Failed to cast data to DutLabel: %s", entData).Err()
+		return nil, errors.Reason("Failed to cast data to HwidData: %s", entData).Err()
 	}
 
 	var data ufspb.HwidData
-	for _, l := range hwidData.GetLabels() {
+	data.Hwid = ent.ID
+	data.DutLabel = hwidData.GetDutLabel()
+	for _, l := range hwidData.GetDutLabel().GetLabels() {
 		switch strings.ToLower(l.GetName()) {
 		case "sku":
 			data.Sku = l.GetValue()
