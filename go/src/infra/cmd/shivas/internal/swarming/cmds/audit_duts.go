@@ -88,7 +88,11 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 func (c *auditRun) innerRunParis(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	e := c.envFlags.Env()
 	creator, err := swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService)
-	bc, err := buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
+	if err != nil {
+		return errors.Annotate(err, "paris").Err()
+	}
+	bc, err := buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 	if err != nil {
 		return errors.Annotate(err, "paris").Err()
 	}

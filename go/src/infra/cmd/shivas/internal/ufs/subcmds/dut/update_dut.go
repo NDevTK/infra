@@ -316,7 +316,11 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	var sessionTag string
 	if c.paris {
 		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		if bc, err = buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack"); err != nil {
+		hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
+		if err != nil {
+			return err
+		}
+		if bc, err = buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack"); err != nil {
 			return err
 		}
 		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())

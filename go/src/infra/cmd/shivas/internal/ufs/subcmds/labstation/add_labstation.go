@@ -364,7 +364,11 @@ func (c *addLabstation) createLabstationDeployTask(ctx context.Context, tc *swar
 
 // CreateBBClient creates a buildbucket client if permitted.
 func createBBClient(ctx context.Context, authFlags authcli.Flags) (buildbucket.Client, error) {
-	bc, err := buildbucket.NewClient(ctx, authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	hc, err := buildbucket.NewHTTPClient(ctx, &authFlags)
+	if err != nil {
+		return nil, errors.Annotate(err, "ensure bb client").Err()
+	}
+	bc, err := buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 	if err != nil {
 		return nil, errors.Annotate(err, "ensure bb client").Err()
 	}

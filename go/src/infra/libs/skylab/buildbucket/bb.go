@@ -49,21 +49,6 @@ type clientImpl struct {
 	builderID *buildbucket_pb.BuilderID
 }
 
-// NewClient returns a new client to interact with buildbucket builds.
-//
-// Deprecated:
-//
-//	This function takes authcli.Flags parameters directly instead of an http.Client.
-//	This is too inflexible when it comes to authentication strategies.
-//	Replace calls to this function with calls to NewClient2 and then rename NewClient2 to NewClient.
-func NewClient(ctx context.Context, f authcli.Flags, options *prpc.Options, project string, bucket string, builder string) (Client, error) {
-	hc, err := NewHTTPClient(ctx, &f)
-	if err != nil {
-		return nil, errors.Annotate(err, "new buildbucket client").Err()
-	}
-	return NewClient2(ctx, hc, options, project, bucket, builder)
-}
-
 // NewClient2 returns a new client to interact with buildbucket builds.
 // TODO(gregorynisbet): Replace calls to NewClient with calls to NewClient2, and then rename NewClient2 to NewClient.
 func NewClient2(ctx context.Context, hc *http.Client, options *prpc.Options, project string, bucket string, builder string) (Client, error) {

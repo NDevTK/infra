@@ -81,7 +81,11 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	}
 	ctx := cli.GetContext(a, c, env)
 	e := c.envFlags.Env()
-	bc, err := buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+	bc, err := buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 	if err != nil {
 		return err
 	}

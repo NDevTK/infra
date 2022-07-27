@@ -79,7 +79,11 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if c.paris {
 		var err error
 		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		bc, err = buildbucket.NewClient(ctx, c.authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+		hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
+		if err != nil {
+			return err
+		}
+		bc, err = buildbucket.NewClient2(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 		if err != nil {
 			return err
 		}
