@@ -1207,6 +1207,7 @@ SPECS.update({
         Universal('google-cloud-storage', '1.6.0'),
         Universal('google-cloud-storage', '1.41.1'),
         Universal('google-cloud-storage', '2.1.0', pyversions=['py3']),
+        Universal('google-cloud-tasks', '2.8.1'),
         Universal('google-cloud-tasks', '2.9.1'),
         Universal('google-cloud-translate', '1.3.0'),
         Universal('google-cloud-videointelligence', '0.28.0'),

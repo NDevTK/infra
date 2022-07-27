@@ -2593,6 +2593,18 @@ wheel: <
 
 ## **google-cloud-tasks**
 
+### 2.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-tasks-py2_py3"
+  version: "version:2.8.1"
+>
+```
+
+
+* *universal*
+
 ### 2.9.1
 
 ```protobuf
