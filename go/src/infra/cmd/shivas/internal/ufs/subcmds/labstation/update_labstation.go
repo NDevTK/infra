@@ -23,7 +23,7 @@ import (
 	"infra/cmd/shivas/utils"
 	suUtil "infra/cmd/shivas/utils/schedulingunit"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/buildbucket"
+	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 	swarming "infra/libs/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
