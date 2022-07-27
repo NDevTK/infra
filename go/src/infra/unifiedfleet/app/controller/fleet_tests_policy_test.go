@@ -201,7 +201,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				Board:              "eve",
 				Model:              "eve",
 				Image:              "eve-public/R105-14988.0.0",
-				TestServiceAccount: "abc@def.com",
+				TestServiceAccount: "user:abc@def.com",
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				Identity: identity.AnonymousIdentity,
@@ -293,7 +293,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(publicGroupMember, ShouldBeFalse)
 		})
-		Convey("No Identity - Returns false", func() {
+		Convey("Anonymous Identity - Returns true", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -306,7 +306,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
 			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeFalse)
+			So(publicGroupMember, ShouldBeTrue)
 		})
 	})
 }

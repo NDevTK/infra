@@ -133,13 +133,20 @@ func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.Go
 }
 
 func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) (bool, error) {
-	email := req.GetTestServiceAccount()
-	if email == "" {
-		email = auth.CurrentIdentity(ctx).Email()
+	var ident identity.Identity
+	var err error
+	if req.GetTestServiceAccount() != "" {
+		ident, err = identity.MakeIdentity(req.GetTestServiceAccount())
+		if err != nil {
+			logging.WithError(err).Errorf(ctx, "Failed to create identity for %q.", req.GetTestServiceAccount())
+			return false, nil
+		}
+	} else {
+		ident = auth.CurrentIdentity(ctx)
 	}
 
 	logging.Infof(ctx, "CheckFleetTestsPolicyRequest: %s", req)
-	logging.Infof(ctx, "Service account being validated: %s", email)
+	logging.Infof(ctx, "Service account being validated: %s", ident.Email())
 
 	state := auth.GetState(ctx)
 	if state == nil {
@@ -152,11 +159,6 @@ func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequ
 		return false, nil
 	}
 
-	ident, err := identity.MakeIdentity("user:" + email)
-	if err != nil {
-		logging.WithError(err).Errorf(ctx, "Failed to create identity for %q.", email)
-		return false, nil
-	}
 	isMemberInPublicGroup, err := authDB.IsMember(ctx, ident, []string{PublicUsersToChromeOSAuthGroup})
 	if err != nil {
 		// Ignoring error for now till we validate the service account membership check is correct

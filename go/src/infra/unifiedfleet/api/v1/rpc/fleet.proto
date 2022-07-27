@@ -2315,6 +2315,7 @@ message CheckFleetTestsPolicyRequest {
   string model = 3;
   string image = 4;
   // Service account which is used to run the test from crosfleet cli. If this field is empty, service account is obtained from the context.
+  // Must be a valid LUCI identity. Ex: service:xyz, user:abc@xyz etc.
   string test_service_account = 5;
 }
 

@@ -10692,6 +10692,7 @@ type CheckFleetTestsPolicyRequest struct {
 	Model    string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
 	Image    string `protobuf:"bytes,4,opt,name=image,proto3" json:"image,omitempty"`
 	// Service account which is used to run the test from crosfleet cli. If this field is empty, service account is obtained from the context.
+	// Must be a valid LUCI identity. Ex: service:xyz, user:abc@xyz etc.
 	TestServiceAccount string `protobuf:"bytes,5,opt,name=test_service_account,json=testServiceAccount,proto3" json:"test_service_account,omitempty"`
 }
 
