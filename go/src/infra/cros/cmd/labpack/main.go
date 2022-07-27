@@ -299,6 +299,10 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 
 // Mapping of all supported tasks.
 var supportedTasks = map[string]tasknames.TaskName{
-	string(tasknames.Deploy):   tasknames.Deploy,
-	string(tasknames.Recovery): tasknames.Recovery,
+	string(tasknames.AuditRPM):     tasknames.AuditRPM,
+	string(tasknames.AuditStorage): tasknames.AuditStorage,
+	string(tasknames.AuditUSB):     tasknames.AuditUSB,
+	string(tasknames.Custom):       tasknames.Custom,
+	string(tasknames.Deploy):       tasknames.Deploy,
+	string(tasknames.Recovery):     tasknames.Recovery,
 }
