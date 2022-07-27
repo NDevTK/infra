@@ -2,10 +2,8 @@
 # connect to a DUT in the lab. And use the `host` network to run all containers.
 # See go/cft-local-setup for more information about port forwarding.
 # The StartContainer endpoint is used for more flexibility.
-# The requests in this example are based on the print of template unit tests.
-# Add the following line to print textproto of proto messages.
-# `log.Println(proto.MarshalTextString(convertedRequest))`
-# To run this example:
+# To run this example: start CTR container service following v2/README.md and
+# then interact with the service using grpc_cli. More explicitly:
 # `grpc_cli call localhost:8082 chromiumos.test.api.CrosToolRunnerContainerService.StackCommands --infile=data/v2_local_example.textproto --channel_creds_type insecure`
 requests: {
   login_registry: {
@@ -24,9 +22,9 @@ requests: {
     >
     start_command: "cros-dut"
     start_command: "-dut_address"
-    start_command: "localhost:2226" # proxy channel to DUT: `ssh -L2226:localhost:22 chromeos6-row18-rack15-host20 -N` see go/cft-local-setup
+    start_command: "localhost:2226" # proxy tunnel to DUT: `ssh -L2226:localhost:22 chromeos6-row18-rack15-host20 -N` see go/cft-local-setup
     start_command: "-cache_address"
-    start_command: "localhost:33" # proxy channel to Cache. see go/cft-local-setup
+    start_command: "localhost:33" # proxy tunnel to Cache. see go/cft-local-setup
     start_command: "-port"
     start_command: "30080" # to avoid port conflicts on the host, use a unique port for each container service.
   }
@@ -61,3 +59,8 @@ requests: {
     start_command: "sudo --non-interactive chown -R chromeos-test:chromeos-test /tmp/test && cros-test server -port 30082" # note that port is specified in this line
   }
 }
+# Trivial notes:
+# The requests in this example are based on the print of template unit tests.
+# Add the following line to print textproto of proto messages.
+# `log.Println(proto.MarshalTextString(convertedRequest))`
+

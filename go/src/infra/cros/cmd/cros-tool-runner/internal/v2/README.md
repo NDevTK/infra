@@ -6,8 +6,8 @@ Container services expose certain docker commands as gRPC services.
 go/cft-container-services
 
 ## API definition
-API protos are located in `src/config/proto/chromiumos/test/api` along with the
-rest test API definitions.
+API protos are located in the [src/config/proto/chromiumos/test/api](http://cs/chromeos_public/src/config/proto/chromiumos/test/api/cros_tool_runner_container_service.proto)
+folder.
 
 ## Code organization
 - `commands` package adopts command design pattern to provide an abstraction
@@ -19,6 +19,7 @@ rest test API definitions.
   namespaced from other more "important" methods.
 
 ## Run locally
+Start cros-tool-runner server.
 ```shell
 cros-tool-runner$ go build .
 cros-tool-runner$ ./cros-tool-runner serve
@@ -56,6 +57,14 @@ container {
 Rpc succeeded with OK status
 ```
 * Depending on your setup, you may need to run `gcloud auth login` to be able to
-  call the LoginRegistry endpoint.
+  call the LoginRegistry endpoint. If a service account is used, the endpoint 
+  provides an [extension](http://cs/chromeos_public/src/config/proto/chromiumos/test/api/cros_tool_runner_container_service_extensions.proto?l=12)
+  to run `gcloud auth activate-service-account` before login to registry.
 * You may use the `--infile` flag of grpc_cli to read request data from a
-  textproto file. See data/v2_example.textproto
+  textproto file. Used together with the StackCommands endpoint, the textproto
+  file works like a script. The [cros-tool-runner/data/](http://cs/chromium_infra/go/src/infra/cros/cmd/cros-tool-runner/data/)
+  folder provides a few examples.
+* The StartTemplatedContainer endpoint provides simplified interface([templates](http://cs/chromeos_public/src/config/proto/chromiumos/test/api/cros_tool_runner_container_service_templates.proto))
+  to start certain containers. Within templates, [placeholders](http://cs/chromium_infra/go/src/infra/cros/cmd/cros-tool-runner/internal/v2/templates/placeholder.go?l=27)
+  can be used to populate runtime information (such as port number or IP 
+  address) of a container dependency.
