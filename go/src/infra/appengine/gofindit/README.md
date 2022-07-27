@@ -13,9 +13,20 @@ and
 luci-auth login -scopes "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email"
 ```
 
-After that, run
+### Building the Frontend
+In another terminal window, build the project with watch for development:
+```
+cd frontend/ui
+npm run watch
+```
+This will build the React app. If left running, local changes to the React app
+will trigger re-building automatically.
+
+### Running GoFindit
+In the root gofindit directory, run
 ```
 go run main.go
 ```
 
-This will start a web server running at http://localhost:8800
+This will start a web server running at http://localhost:8800. Navigate to this URL using your preferred browser. Once you "log in", the GoFindit frontend
+should load.
