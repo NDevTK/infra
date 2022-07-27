@@ -1,0 +1,11 @@
+---
+name: fleet-caching-backend/downloader
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/cmd/caching-backend/downloader/docker/Dockerfile
+deterministic: true
+
+build:
+  - go_binary: infra/cros/cmd/caching-backend/downloader
+    # ContextDir defaults to the directory with Dockerfile
+    dest: ${contextdir}/downloader
