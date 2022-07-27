@@ -31,39 +31,17 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 		logging.Errorf(ctx, "error when normalizing task name: %q", err)
 	}
 
-	// Determine the implementation to use.
-	taskType, rErr := RouteTask(
-		ctx,
-		RouteTaskParams{
-			taskType:      tn.String(),
-			botID:         botID,
-			expectedState: "",
-			pools:         nil,
-		},
-		randFloat,
-	)
-	logging.Infof(ctx, "RouteTask picked the taskType %d", int(taskType))
-	logging.Infof(ctx, "RouteTask produced error %q", rErr)
-
-	// Attempt to launch new repair.
-	bbURL := ""
-	cErr := errors.New("create audit task: no action taken")
-	if rErr == nil && taskType == heuristics.ProdTaskType {
-		logging.Infof(ctx, "Attempting to launch audit task")
-		bbURL, cErr = createBuildbucketTask(ctx, createBuildbucketTaskRequest{
-			// TODO(b:195583069, b:187879790): generalize this to all audit tasks.
-			taskName: tasknames.AuditRPM,
-			taskType: labpack.CIPDProd,
-			botID:    botID,
-		})
-	}
-	if cErr == nil {
-		logging.Infof(ctx, "Successfully launched audit task %q for bot %q", bbURL, botID)
-		return bbURL, nil
+	bbURL, cErr := createBuildbucketTask(ctx, createBuildbucketTaskRequest{
+		taskName: tn,
+		taskType: labpack.CIPDProd,
+		botID:    botID,
+	})
+	if cErr != nil {
+		return "", errors.Annotate(cErr, "create audit task").Err()
 	}
 
-	// Fall back to legacy repair if we failed.
-	return createLegacyAuditTask(ctx, botID, taskname, actions)
+	logging.Infof(ctx, "Successfully launched audit task %q for bot %q", bbURL, botID)
+	return bbURL, nil
 }
 
 // createLegacyAuditTask kicks off a legacy audit job.
