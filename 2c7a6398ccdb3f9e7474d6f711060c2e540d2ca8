@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "468ae26f_7c25b268",
+        "filename": "go/src/infra/cros/recovery/docker/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-07-27T22:39:27Z",
+      "side": 1,
+      "message": "I don\u0027t think this copies permissions. Is there a way to copy those as well?",
+      "revId": "2c7a6398ccdb3f9e7474d6f711060c2e540d2ca8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
