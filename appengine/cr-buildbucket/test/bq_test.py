@@ -98,6 +98,7 @@ class BigQueryExportTest(testing.AppengineTestCase):
                     name='bot_update',
                     status=common_pb2.SUCCESS,
                     summary_markdown='summary_markdown',
+                    merge_build=dict(from_logdog_stream='huh'),
                     logs=[dict(name='stdout', view_url='https://example.com')],
                 ),
             ],
@@ -139,6 +140,9 @@ class BigQueryExportTest(testing.AppengineTestCase):
     )
 
     step = actual_payload['rows'][0]['json']['steps'][0]
+    self.assertEqual(
+        set(step.keys()), {'status', 'summary_markdown', 'name', 'logs'}
+    )
     self.assertEqual(step['name'], 'bot_update')
     self.assertEqual(step['summary_markdown'], '')
     self.assertEqual(step['logs'][0]['name'], 'stdout')

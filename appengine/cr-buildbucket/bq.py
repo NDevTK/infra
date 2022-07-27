@@ -187,10 +187,10 @@ def _export_builds(
   # Clear fields that we don't want in BigQuery.
   #
   for proto in build_protos:
-    proto.infra.buildbucket.hostname = ''
+    proto.infra.buildbucket.ClearField('hostname')
     for s in proto.steps:
-      s.summary_markdown = ''
-      s.merge_build = None
+      s.ClearField('summary_markdown')
+      s.ClearField('merge_build')
 
       for log in s.logs:
         # Clear everything but the name.
