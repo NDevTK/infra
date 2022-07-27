@@ -17,24 +17,29 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
-func mockDutLabel() *ufspb.DutLabel {
-	return &ufspb.DutLabel{
-		PossibleLabels: []string{
-			"test-possible-1",
-			"test-possible-2",
-		},
-		Labels: []*ufspb.DutLabel_Label{
-			{
-				Name:  "test-label-1",
-				Value: "test-value-1",
+func mockHwidData() *ufspb.HwidData {
+	return &ufspb.HwidData{
+		Sku:     "test-sku",
+		Variant: "test-variant",
+		Hwid:    "test-hwid",
+		DutLabel: &ufspb.DutLabel{
+			PossibleLabels: []string{
+				"test-possible-1",
+				"test-possible-2",
 			},
-			{
-				Name:  "Sku",
-				Value: "test-sku",
-			},
-			{
-				Name:  "variant",
-				Value: "test-variant",
+			Labels: []*ufspb.DutLabel_Label{
+				{
+					Name:  "test-label-1",
+					Value: "test-value-1",
+				},
+				{
+					Name:  "Sku",
+					Value: "test-sku",
+				},
+				{
+					Name:  "variant",
+					Value: "test-variant",
+				},
 			},
 		},
 	}
@@ -46,7 +51,7 @@ func TestUpdateHwidData(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 
 	t.Run("update non-existent HwidData", func(t *testing.T) {
-		want := mockDutLabel()
+		want := mockHwidData()
 		got, err := UpdateHwidData(ctx, want, "test-hwid")
 		if err != nil {
 			t.Fatalf("UpdateHwidData failed: %s", err)
@@ -62,10 +67,10 @@ func TestUpdateHwidData(t *testing.T) {
 
 	t.Run("update existent HwidData", func(t *testing.T) {
 		hd2Id := "test-hwid-2"
-		hd2 := mockDutLabel()
+		hd2 := mockHwidData()
 
-		hd2update := mockDutLabel()
-		hd2update.PossibleLabels = append(hd2update.PossibleLabels, "test-possible-3")
+		hd2update := mockHwidData()
+		hd2update.DutLabel.PossibleLabels = append(hd2update.DutLabel.PossibleLabels, "test-possible-3")
 
 		// Insert hd2 into datastore
 		_, _ = UpdateHwidData(ctx, hd2, hd2Id)
@@ -85,7 +90,7 @@ func TestUpdateHwidData(t *testing.T) {
 	})
 
 	t.Run("update HwidData with empty hwid", func(t *testing.T) {
-		hd3 := mockDutLabel()
+		hd3 := mockHwidData()
 		got, err := UpdateHwidData(ctx, hd3, "")
 		if err == nil {
 			t.Errorf("UpdateHwidData succeeded with empty hwid")
@@ -107,7 +112,7 @@ func TestGetHwidData(t *testing.T) {
 
 	t.Run("get HwidData by existing ID", func(t *testing.T) {
 		id := "test-hwid"
-		want := mockDutLabel()
+		want := mockHwidData()
 		_, err := UpdateHwidData(ctx, want, id)
 		if err != nil {
 			t.Fatalf("UpdateHwidData failed: %s", err)
@@ -144,7 +149,7 @@ func TestParseHwidDataV1(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 
 	id := "test-hwid"
-	_, err := UpdateHwidData(ctx, mockDutLabel(), id)
+	_, err := UpdateHwidData(ctx, mockHwidData(), id)
 	if err != nil {
 		t.Fatalf("UpdateHwidData failed: %s", err)
 	}
@@ -164,6 +169,27 @@ func TestParseHwidDataV1(t *testing.T) {
 		want := &ufspb.HwidData{
 			Sku:     "test-sku",
 			Variant: "test-variant",
+			Hwid:    "test-hwid",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant",
+					},
+				},
+			},
 		}
 		ent, err := GetHwidData(ctx, id)
 		if err != nil {

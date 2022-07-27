@@ -2642,7 +2642,31 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 		ManufacturingId: &ufsmanufacturing.ConfigID{Value: "test"},
 	}
 
-	hwidMockData := &ufspb.HwidData{Sku: "test-sku", Variant: "test-variant"}
+	hwidMockData := &ufspb.HwidData{
+		Sku:     "test-sku",
+		Variant: "test-variant",
+		Hwid:    "test",
+		DutLabel: &ufspb.DutLabel{
+			PossibleLabels: []string{
+				"test-possible-1",
+				"test-possible-2",
+			},
+			Labels: []*ufspb.DutLabel_Label{
+				{
+					Name:  "test-label-1",
+					Value: "test-value-1",
+				},
+				{
+					Name:  "Sku",
+					Value: "test-sku",
+				},
+				{
+					Name:  "variant",
+					Value: "test-variant",
+				},
+			},
+		},
+	}
 
 	cfgBundle := &payload.ConfigBundle{
 		DesignList: []*api.Design{
@@ -2825,29 +2849,58 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 		Convey("GetChromeOSDevicedata - happy path; hwid out of date and server fails", func() {
 			// Mock server fails with test-no-server so use expired data found in datastore
 			// instead.
-			hwidMockDataExp := &ufspb.HwidData{Sku: "test-sku-no-server", Variant: "test-variant-no-server"}
-			expiredTime := time.Now().Add(-2 * time.Hour).UTC()
-			expiredLabels := &ufspb.DutLabel{
-				PossibleLabels: []string{
-					"test-possible-1",
-					"test-possible-2",
-				},
-				Labels: []*ufspb.DutLabel_Label{
-					{
-						Name:  "test-label-1",
-						Value: "test-value-1",
+			hwidMockDataExp := &ufspb.HwidData{
+				Sku:     "test-sku-no-server",
+				Variant: "test-variant-no-server",
+				Hwid:    "test-no-server",
+				DutLabel: &ufspb.DutLabel{
+					PossibleLabels: []string{
+						"test-possible-1",
+						"test-possible-2",
 					},
-					{
-						Name:  "Sku",
-						Value: "test-sku-no-server",
-					},
-					{
-						Name:  "variant",
-						Value: "test-variant-no-server",
+					Labels: []*ufspb.DutLabel_Label{
+						{
+							Name:  "test-label-1",
+							Value: "test-value-1",
+						},
+						{
+							Name:  "Sku",
+							Value: "test-sku-no-server",
+						},
+						{
+							Name:  "variant",
+							Value: "test-variant-no-server",
+						},
 					},
 				},
 			}
-			fakeUpdateHwidData(ctx, expiredLabels, "test-no-server", expiredTime)
+			expiredTime := time.Now().Add(-2 * time.Hour).UTC()
+			expiredHwidData := &ufspb.HwidData{
+				Sku:     "test-sku-no-server",
+				Variant: "test-variant-no-server",
+				Hwid:    "test-no-server",
+				DutLabel: &ufspb.DutLabel{
+					PossibleLabels: []string{
+						"test-possible-1",
+						"test-possible-2",
+					},
+					Labels: []*ufspb.DutLabel_Label{
+						{
+							Name:  "test-label-1",
+							Value: "test-value-1",
+						},
+						{
+							Name:  "Sku",
+							Value: "test-sku-no-server",
+						},
+						{
+							Name:  "variant",
+							Value: "test-variant-no-server",
+						},
+					},
+				},
+			}
+			fakeUpdateHwidData(ctx, expiredHwidData, "test-no-server", expiredTime)
 
 			machineExp := &ufspb.Machine{
 				Name: "machine-using-exp",
@@ -2886,28 +2939,33 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 		Convey("GetChromeOSDevicedata - happy path; hwid out of date and new cache", func() {
 			// Datastore data is expired. Query hwid server, use values, and update cache.
 			expiredTime := time.Now().Add(-2 * time.Hour).UTC()
-			expiredLabels := &ufspb.DutLabel{
-				PossibleLabels: []string{
-					"test-possible-1",
-					"test-possible-2",
-				},
-				Labels: []*ufspb.DutLabel_Label{
-					{
-						Name:  "test-label-1",
-						Value: "test-value-1",
+			expiredHwidData := &ufspb.HwidData{
+				Sku:     "test-sku-exp",
+				Variant: "test-variant-exp",
+				Hwid:    "test-hwid-exp",
+				DutLabel: &ufspb.DutLabel{
+					PossibleLabels: []string{
+						"test-possible-1",
+						"test-possible-2",
 					},
-					{
-						Name:  "Sku",
-						Value: "test-sku-exp",
-					},
-					{
-						Name:  "variant",
-						Value: "test-variant-exp",
+					Labels: []*ufspb.DutLabel_Label{
+						{
+							Name:  "test-label-1",
+							Value: "test-value-1",
+						},
+						{
+							Name:  "Sku",
+							Value: "test-sku-exp",
+						},
+						{
+							Name:  "variant",
+							Value: "test-variant-exp",
+						},
 					},
 				},
 			}
 			hwid := "test"
-			fakeUpdateHwidData(ctx, expiredLabels, hwid, expiredTime)
+			fakeUpdateHwidData(ctx, expiredHwidData, hwid, expiredTime)
 
 			machineHwid := &ufspb.Machine{
 				Name: "machine-using-hwid-server",
@@ -3021,6 +3079,32 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			dutStateNoThrottle := mockDutState("machine-no-throttle-hwid", "lse-no-throttle-hwid")
 			UpdateDutState(ctx, dutStateNoThrottle)
 
+			hwidNoCachedMockData := &ufspb.HwidData{
+				Sku:     "test-sku",
+				Variant: "test-variant",
+				Hwid:    "test-no-cached-hwid-data",
+				DutLabel: &ufspb.DutLabel{
+					PossibleLabels: []string{
+						"test-possible-1",
+						"test-possible-2",
+					},
+					Labels: []*ufspb.DutLabel_Label{
+						{
+							Name:  "test-label-1",
+							Value: "test-value-1",
+						},
+						{
+							Name:  "Sku",
+							Value: "test-sku",
+						},
+						{
+							Name:  "variant",
+							Value: "test-variant",
+						},
+					},
+				},
+			}
+
 			resp, err := GetChromeOSDeviceData(ctx, "machine-no-throttle-hwid", "")
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
@@ -3029,7 +3113,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDutState(), ShouldResembleProto, dutStateNoThrottle)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldBeNil)
-			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
+			So(resp.GetHwidData(), ShouldResembleProto, hwidNoCachedMockData)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
