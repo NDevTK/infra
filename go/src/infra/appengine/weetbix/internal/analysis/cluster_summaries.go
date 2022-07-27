@@ -50,12 +50,13 @@ type QueryClusterSummariesOptions struct {
 // ClusterSummary represents a summary of the cluster's failures
 // and their impact.
 type ClusterSummary struct {
-	ClusterID                  clustering.ClusterID `json:"clusterId"`
-	PresubmitRejects           int64                `json:"presubmitRejects"`
-	CriticalFailuresExonerated int64                `json:"criticalFailuresExonerated"`
-	Failures                   int64                `json:"failures"`
-	ExampleFailureReason       bigquery.NullString  `json:"exampleFailureReason"`
-	ExampleTestID              string               `json:"exampleTestId"`
+	ClusterID                  clustering.ClusterID
+	PresubmitRejects           int64
+	CriticalFailuresExonerated int64
+	Failures                   int64
+	ExampleFailureReason       bigquery.NullString
+	ExampleTestID              string
+	UniqueTestIDs              int64
 }
 
 // Queries a summary of clusters in the project.
@@ -100,7 +101,8 @@ func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, 
 			STRUCT(cluster_algorithm AS Algorithm,
 				cluster_id AS ID) AS ClusterID,
 			ANY_VALUE(failure_reason.primary_error_message) AS ExampleFailureReason,
-			ANY_VALUE(test_id) AS ExampleTestID,
+			MIN(test_id) AS ExampleTestID,
+			APPROX_COUNT_DISTINCT(test_id) AS UniqueTestIDs,
 			APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
 			APPROX_COUNT_DISTINCT(IF(is_critical_and_exonerated,unique_test_result_id, NULL)) AS CriticalFailuresExonerated,
 			APPROX_COUNT_DISTINCT(unique_test_result_id) AS Failures,

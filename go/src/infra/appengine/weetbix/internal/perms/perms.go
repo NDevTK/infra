@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package perms defines permissions used to control access to Weetbix resources.
+// Package perms defines permissions used to control access to Weetbix
+// resources, and related methods.
 package perms
 
 import (
+	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth/realms"
 )
 
@@ -84,3 +86,14 @@ var (
 	// Grants permission to perform expensive queries (that hit BigQuery).
 	PermExpensiveClusterQueries = realms.RegisterPermission("weetbix.clusters.expensiveQueries")
 )
+
+// Permissions used to control access to test results.
+var ListTestResultsAndExonerations = []realms.Permission{
+	rdbperms.PermListTestResults,
+	rdbperms.PermListTestExonerations,
+}
+
+func init() {
+	rdbperms.PermListTestResults.AddFlags(realms.UsedInQueryRealms)
+	rdbperms.PermListTestExonerations.AddFlags(realms.UsedInQueryRealms)
+}

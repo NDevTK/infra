@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package utils contains various helper functions.
-package utils
+package perms
 
 import (
 	"context"
@@ -13,7 +12,6 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/appstatus"
-	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/realms"
 	"google.golang.org/grpc/codes"
@@ -23,16 +21,6 @@ var (
 	ErrInvalidRealm     = errors.New("realm must be in the format <project>:<realm>")
 	ErrMultipleProjects = errors.New("all realms must be from the same projects")
 )
-
-func init() {
-	rdbperms.PermListTestResults.AddFlags(realms.UsedInQueryRealms)
-	rdbperms.PermListTestExonerations.AddFlags(realms.UsedInQueryRealms)
-}
-
-var ListTestResultsAndExonerations = []realms.Permission{
-	rdbperms.PermListTestResults,
-	rdbperms.PermListTestExonerations,
-}
 
 // SplitRealm splits the realm into the LUCI project name and the (sub)realm.
 // Returns ErrInvalidRealm if the provided realm doesn't have a valid format.
@@ -74,10 +62,10 @@ func SplitRealms(realms []string) (proj string, subRealms []string, err error) {
 	return proj, subRealms, nil
 }
 
-// HasPermissions is a wrapper around luci/server/auth.HasPermission that checks
+// VerifyPermissions is a wrapper around luci/server/auth.HasPermission that checks
 // whether the user has all the listed permissions and return an appstatus
 // annotated error if users have no permission.
-func HasPermissions(ctx context.Context, permissions []realms.Permission, realm string, attrs realms.Attrs) error {
+func VerifyPermissions(ctx context.Context, realm string, attrs realms.Attrs, permissions ...realms.Permission) error {
 	for _, perm := range permissions {
 		allowed, err := auth.HasPermission(ctx, perm, realm, attrs)
 		if err != nil {
@@ -88,6 +76,38 @@ func HasPermissions(ctx context.Context, permissions []realms.Permission, realm 
 		}
 	}
 	return nil
+}
+
+// VerifyProjectPermissions verifies the caller has the given permissions in the
+// @root realm of the given project. If the caller does not have permission,
+// an appropriate appstatus error is returned, which should be returned
+// immediately to the RPC caller.
+func VerifyProjectPermissions(ctx context.Context, project string, permissions ...realms.Permission) error {
+	realm := project + ":@root"
+	for _, p := range permissions {
+		allowed, err := HasProjectPermission(ctx, project, p)
+		if err != nil {
+			return err
+		}
+		if !allowed {
+			return appstatus.Errorf(codes.PermissionDenied, `caller does not have permission %s in realm %s`, p, realm)
+		}
+	}
+	return nil
+}
+
+// HasProjectPermission returns if the caller has the given permission in
+// the @root realm of the given project. This method only returns an error
+// if there is some AuthDB issue.
+func HasProjectPermission(ctx context.Context, project string, permission realms.Permission) (bool, error) {
+	realm := project + ":@root"
+	switch allowed, err := auth.HasPermission(ctx, permission, realm, nil); {
+	case err != nil:
+		return false, err
+	case !allowed:
+		return false, nil
+	}
+	return true, nil
 }
 
 // QueryRealms is a wrapper around luci/server/auth.QueryRealms that returns a
@@ -103,7 +123,7 @@ func HasPermissions(ctx context.Context, permissions []realms.Permission, realm 
 // The permissions should be flagged in the process with UsedInQueryRealms
 // flag, which lets the runtime know it must prepare indexes for the
 // corresponding QueryRealms call.
-func QueryRealms(ctx context.Context, permissions []realms.Permission, project, subRealm string, attrs realms.Attrs) ([]string, error) {
+func QueryRealms(ctx context.Context, project, subRealm string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
 	if len(permissions) == 0 {
 		return nil, errors.New("at least one permission must be provided")
 	}
@@ -113,7 +133,7 @@ func QueryRealms(ctx context.Context, permissions []realms.Permission, project, 
 			return nil, errors.New("project must be specified when the subRealm is specified")
 		}
 		realm := project + ":" + subRealm
-		if err := HasPermissions(ctx, permissions, realm, nil); err != nil {
+		if err := VerifyPermissions(ctx, realm, attrs, permissions...); err != nil {
 			return nil, err
 		}
 		return []string{realm}, nil
@@ -148,12 +168,12 @@ func QueryRealms(ctx context.Context, permissions []realms.Permission, project, 
 //  1. project is required.
 //  2. a list of subRealms is returned instead of a list of realms
 //   (e.g. ["realm1", "realm2"] instead of ["project:realm1", "project:realm2"])
-func QuerySubRealms(ctx context.Context, permissions []realms.Permission, project, subRealm string, attrs realms.Attrs) ([]string, error) {
+func QuerySubRealms(ctx context.Context, project, subRealm string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
 	if project == "" {
 		return nil, errors.New("project must be provided")
 	}
 
-	realms, err := QueryRealms(ctx, permissions, project, subRealm, nil)
+	realms, err := QueryRealms(ctx, project, subRealm, attrs, permissions...)
 	if err != nil {
 		return nil, err
 	}

@@ -20,12 +20,12 @@ import (
 	"go.chromium.org/luci/server/span"
 
 	"infra/appengine/weetbix/internal/ingestion/resultdb"
+	"infra/appengine/weetbix/internal/perms"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testresults/gitreferences"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
-	"infra/appengine/weetbix/utils"
 )
 
 // maximumCLs is the maximum number of changelists to capture from any
@@ -55,7 +55,7 @@ func extractIngestionContext(task *taskspb.IngestTestResults, build *bbpb.Build,
 		panic(err)
 	}
 
-	proj, subRealm, err := utils.SplitRealm(inv.Realm)
+	proj, subRealm, err := perms.SplitRealm(inv.Realm)
 	if err != nil {
 		return nil, nil, errors.Annotate(err, "invocation has invalid realm: %q", inv.Realm).Err()
 	}

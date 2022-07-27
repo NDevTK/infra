@@ -25,8 +25,8 @@ import (
 	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
+	"infra/appengine/weetbix/internal/perms"
 	pb "infra/appengine/weetbix/proto/v1"
-	"infra/appengine/weetbix/utils"
 )
 
 // MaxClusterRequestSize is the maximum number of test results to cluster in
@@ -56,6 +56,17 @@ func NewClustersServer(analysisClient AnalysisClient) *pb.DecoratedClusters {
 
 // Cluster clusters a list of test failures. See proto definition for more.
 func (*clustersServer) Cluster(ctx context.Context, req *pb.ClusterRequest) (*pb.ClusterResponse, error) {
+	if !config.ProjectRe.MatchString(req.Project) {
+		return nil, invalidArgumentError(errors.Reason("project is invalid").Err())
+	}
+	// We could make an implementation that gracefully degrades if
+	// perms.PermGetRule is not available (i.e. by not returning the
+	// bug associated with a rule cluster), but there is currently no point.
+	// All Weetbix roles currently always grants both permissions together.
+	if err := perms.VerifyProjectPermissions(ctx, req.Project, perms.PermGetClustersByFailure, perms.PermGetRule); err != nil {
+		return nil, err
+	}
+
 	if len(req.TestResults) > MaxClusterRequestSize {
 		return nil, invalidArgumentError(fmt.Errorf(
 			"too many test results: at most %v test results can be clustered in one request", MaxClusterRequestSize))
@@ -142,6 +153,9 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 	if err != nil {
 		return nil, invalidArgumentError(errors.Annotate(err, "parent").Err())
 	}
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermGetCluster, perms.PermExpensiveClusterQueries); err != nil {
+		return nil, err
+	}
 
 	if len(req.Names) > MaxBatchGetClustersRequestSize {
 		return nil, invalidArgumentError(fmt.Errorf(
@@ -226,6 +240,9 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 					PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
 				},
 			}
+			// TODO(b/239768873): We need to check the user can see an example
+			// in the cluster before we can disclose the pattern the cluster
+			// matched.
 			result.Title = suggestedClusterTitle(c.ClusterID, example, cfg)
 
 			// Ignore error, it is only returned if algorithm cannot be found.
@@ -271,6 +288,12 @@ func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.Ge
 	if err != nil {
 		return nil, invalidArgumentError(errors.Annotate(err, "name").Err())
 	}
+	// Getting reclustering progress is considered part of getting a cluster:
+	// whenever you retrieve a cluster, you should be able to tell if the
+	// information you are reading is up to date.
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermGetCluster); err != nil {
+		return nil, err
+	}
 
 	progress, err := runs.ReadReclusteringProgress(ctx, project)
 	if err != nil {
@@ -298,13 +321,27 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 		return nil, invalidArgumentError(errors.Reason("project is invalid").Err())
 	}
 
+	// TODO(b/239768873): Provide some sort of fallback for users who do not
+	// have permission to run expensive queries if no filters are applied.
+
+	// We could make an implementation that gracefully deals with the situation where the user
+	// does not have perms.PermGetRule, but there is currently no point as the Weetbix reader
+	// role currently always grants PermGetRule with PermListClusters.
+	if err := perms.VerifyProjectPermissions(ctx, req.Project, perms.PermListClusters, perms.PermExpensiveClusterQueries, perms.PermGetRule); err != nil {
+		return nil, err
+	}
+	canSeeRuleDefinition, err := perms.HasProjectPermission(ctx, req.Project, perms.PermGetRuleDefinition)
+	if err != nil {
+		return nil, err
+	}
+
 	var cfg *compiledcfg.ProjectConfig
 	var ruleset *cache.Ruleset
 	var clusters []*analysis.ClusterSummary
 	var bqErr error
 	// Parallelise call to Biquery (slow call)
 	// with the datastore/spanner calls to reduce the critical path.
-	err := parallel.FanOutIn(func(ch chan<- func() error) {
+	err = parallel.FanOutIn(func(ch chan<- func() error) {
 		ch <- func() error {
 			start := time.Now()
 			var err error
@@ -340,7 +377,7 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 				bqErr = invalidArgumentError(errors.Annotate(err, "order_by").Err())
 				return nil
 			}
-			opts.Realms, err = utils.QueryRealms(ctx, utils.ListTestResultsAndExonerations, req.Project, "", nil)
+			opts.Realms, err = perms.QueryRealms(ctx, req.Project, "", nil, perms.ListTestResultsAndExonerations...)
 			if err != nil {
 				bqErr = err
 				return nil
@@ -385,8 +422,22 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 			ruleID := c.ClusterID.ID
 			rule := ruleset.ActiveRulesByID[ruleID]
 			if rule != nil {
-				cs.Title = rule.Rule.RuleDefinition
 				cs.Bug = createAssociatedBugPB(rule.Rule.BugID, cfg.Config)
+				if canSeeRuleDefinition {
+					cs.Title = rule.Rule.RuleDefinition
+				} else {
+					// Because the query is limited to running over the test
+					// failures the user has access to, they have permission
+					// to see the example Test ID for the cluster.
+
+					// Attempt to provide a description of the failures matched
+					// by the rule from the data the user can see, without
+					// revealing the content of the rule itself.
+					cs.Title = fmt.Sprintf("Selected failures in %s", c.ExampleTestID)
+					if c.UniqueTestIDs > 1 {
+						cs.Title += fmt.Sprintf(" (and %v more)", c.UniqueTestIDs-1)
+					}
+				}
 			} else {
 				// Rule is inactive / in process of being archived.
 				cs.Title = "(rule archived)"
@@ -398,6 +449,9 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 					PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
 				},
 			}
+			// Because QueryClusterSummaries only reads failures the user has
+			// access to, the example is one the user has access to, and
+			// so we can use it for the title.
 			cs.Title = suggestedClusterTitle(c.ClusterID, example, cfg)
 		}
 

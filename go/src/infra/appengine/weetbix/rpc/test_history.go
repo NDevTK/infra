@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/server/span"
 
 	"infra/appengine/weetbix/internal/pagination"
+	"infra/appengine/weetbix/internal/perms"
 	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
-	"infra/appengine/weetbix/utils"
 )
 
 func init() {
@@ -48,8 +48,7 @@ func (*testHistoryServer) Query(ctx context.Context, req *pb.QueryTestHistoryReq
 		return nil, invalidArgumentError(err)
 	}
 
-	requiredPerms := []realms.Permission{rdbperms.PermListTestResults, rdbperms.PermListTestExonerations}
-	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.Predicate.SubRealm, nil)
+	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.Predicate.SubRealm, nil, perms.ListTestResultsAndExonerations...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +102,7 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 		return nil, invalidArgumentError(err)
 	}
 
-	requiredPerms := []realms.Permission{rdbperms.PermListTestResults, rdbperms.PermListTestExonerations}
-	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.Predicate.SubRealm, nil)
+	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.Predicate.SubRealm, nil, perms.ListTestResultsAndExonerations...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,8 +156,7 @@ func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVarian
 		return nil, invalidArgumentError(err)
 	}
 
-	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
-	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.SubRealm, nil)
+	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.SubRealm, nil, rdbperms.PermListTestResults)
 	if err != nil {
 		return nil, err
 	}
@@ -211,8 +208,7 @@ func (*testHistoryServer) QueryTests(ctx context.Context, req *pb.QueryTestsRequ
 		return nil, invalidArgumentError(err)
 	}
 
-	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
-	subRealms, err := utils.QuerySubRealms(ctx, requiredPerms, req.Project, req.SubRealm, nil)
+	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.SubRealm, nil, rdbperms.PermListTestResults)
 	if err != nil {
 		return nil, err
 	}

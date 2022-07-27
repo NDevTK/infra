@@ -13,17 +13,17 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
+	"go.chromium.org/luci/server/auth/realms"
 	"go.chromium.org/luci/server/caching"
 	"go.chromium.org/luci/server/secrets"
 	"go.chromium.org/luci/server/secrets/testsecrets"
-	"google.golang.org/grpc/codes"
-	grpcStatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/internal/analysis"
@@ -37,6 +37,7 @@ import (
 	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
+	"infra/appengine/weetbix/internal/perms"
 	"infra/appengine/weetbix/internal/testutil"
 	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
@@ -49,15 +50,11 @@ func TestClusters(t *testing.T) {
 
 		// For user identification.
 		ctx = authtest.MockAuthConfig(ctx)
-		ctx = auth.WithState(ctx, &authtest.FakeState{
+		authState := &authtest.FakeState{
 			Identity:       "user:someone@example.com",
 			IdentityGroups: []string{"weetbix-access"},
-			IdentityPermissions: listTestResultsPermissions(
-				"testproject:realm1",
-				"testproject:realm2",
-				"otherproject:realm3",
-			),
-		})
+		}
+		ctx = auth.WithState(ctx, authState)
 		ctx = secrets.Use(ctx, &testsecrets.Store{})
 
 		// Provides datastore implementation needed for project config.
@@ -126,12 +123,21 @@ func TestClusters(t *testing.T) {
 			}
 
 			rule, err := server.Cluster(ctx, request)
-			st, _ := grpcStatus.FromError(err)
-			So(st.Code(), ShouldEqual, codes.PermissionDenied)
-			So(st.Message(), ShouldEqual, "not a member of weetbix-access")
+			So(err, ShouldBeRPCPermissionDenied, "not a member of weetbix-access")
 			So(rule, ShouldBeNil)
 		})
 		Convey("Cluster", func() {
+			authState.IdentityPermissions = []authtest.RealmPermission{
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermGetClustersByFailure,
+				},
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermGetRule,
+				},
+			}
+
 			request := &pb.ClusterRequest{
 				Project: "testproject",
 				TestResults: []*pb.ClusterRequest_TestResult{
@@ -149,6 +155,20 @@ func TestClusters(t *testing.T) {
 				},
 			}
 
+			Convey("Not authorised to cluster", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetClustersByFailure)
+
+				response, err := server.Cluster(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.getByFailure")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to get rule", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetRule)
+
+				response, err := server.Cluster(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.rules.get")
+				So(response, ShouldBeNil)
+			})
 			Convey("With a valid request", func() {
 				// Run
 				response, err := server.Cluster(ctx, request)
@@ -220,10 +240,8 @@ func TestClusters(t *testing.T) {
 				response, err := server.Cluster(ctx, request)
 
 				// Verify
-				st, _ := grpcStatus.FromError(err)
-				So(st.Code(), ShouldEqual, codes.InvalidArgument)
-				So(st.Message(), ShouldEqual, "test result 1: test ID must not be empty")
 				So(response, ShouldBeNil)
+				So(err, ShouldBeRPCInvalidArgument, "test result 1: test ID must not be empty")
 			})
 			Convey("With too many test results", func() {
 				var testResults []*pb.ClusterRequest_TestResult
@@ -238,25 +256,33 @@ func TestClusters(t *testing.T) {
 				response, err := server.Cluster(ctx, request)
 
 				// Verify
-				st, _ := grpcStatus.FromError(err)
-				So(st.Code(), ShouldEqual, codes.InvalidArgument)
-				So(st.Message(), ShouldEqual, "too many test results: at most 1000 test results can be clustered in one request")
 				So(response, ShouldBeNil)
+				So(err, ShouldBeRPCInvalidArgument, "too many test results: at most 1000 test results can be clustered in one request")
 			})
 			Convey("With project not configured", func() {
-				request.Project = "not-exists"
+				err := config.SetTestProjectConfig(ctx, map[string]*configpb.ProjectConfig{})
+				So(err, ShouldBeNil)
 
 				// Run
 				response, err := server.Cluster(ctx, request)
 
 				// Verify
-				st, _ := grpcStatus.FromError(err)
-				So(st.Code(), ShouldEqual, codes.FailedPrecondition)
-				So(st.Message(), ShouldEqual, "project does not exist in Weetbix")
 				So(response, ShouldBeNil)
+				So(err, ShouldBeRPCFailedPrecondition, "project does not exist in Weetbix")
 			})
 		})
 		Convey("BatchGet", func() {
+			authState.IdentityPermissions = []authtest.RealmPermission{
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermGetCluster,
+				},
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermExpensiveClusterQueries,
+				},
+			}
+
 			analysisClient.clustersByProject["testproject"] = []*analysis.Cluster{
 				{
 					ClusterID: clustering.ClusterID{
@@ -359,6 +385,20 @@ func TestClusters(t *testing.T) {
 				},
 			}
 
+			Convey("Not authorised to get cluster", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetCluster)
+
+				response, err := server.BatchGet(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.get")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to perform expensive queries", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermExpensiveClusterQueries)
+
+				response, err := server.BatchGet(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.expensiveQueries")
+				So(response, ShouldBeNil)
+			})
 			Convey("With a valid request", func() {
 				Convey("No duplciate requests", func() {
 					// Run
@@ -390,10 +430,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "parent: invalid project name, expected format: projects/{project}")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "parent: invalid project name, expected format: projects/{project}")
 				})
 				Convey("No names specified", func() {
 					request.Names = []string{}
@@ -402,10 +440,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "names must be specified")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "names must be specified")
 				})
 				Convey("Parent does not match request items", func() {
 					// Request asks for project "blah" but parent asks for
@@ -417,10 +453,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, `name 1: project must match parent project ("testproject")`)
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, `name 1: project must match parent project ("testproject")`)
 				})
 				Convey("Invalid name", func() {
 					request.Names[1] = "invalid"
@@ -429,10 +463,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name 1: invalid cluster name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}")
 				})
 				Convey("Invalid cluster algorithm in name", func() {
 					request.Names[1] = "projects/blah/clusters/reason/cccccc00000000000000000000000001"
@@ -441,10 +473,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name 1: invalid cluster name: algorithm not valid")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster name: algorithm not valid")
 				})
 				Convey("Invalid cluster ID in name", func() {
 					request.Names[1] = "projects/blah/clusters/reason-v3/123"
@@ -453,10 +483,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name 1: invalid cluster name: ID is not valid lowercase hexadecimal bytes")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster name: ID is not valid lowercase hexadecimal bytes")
 				})
 				Convey("Too many request items", func() {
 					var names []string
@@ -469,10 +497,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "too many names: at most 1000 clusters can be retrieved in one request")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "too many names: at most 1000 clusters can be retrieved in one request")
 				})
 				Convey("Dataset does not exist", func() {
 					delete(analysisClient.clustersByProject, "testproject")
@@ -481,27 +507,47 @@ func TestClusters(t *testing.T) {
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.NotFound)
-					So(st.Message(), ShouldEqual, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCNotFound, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
 				})
 				Convey("With project not configured", func() {
-					request.Parent = "projects/not-exists"
-					request.Names = []string{"projects/not-exists/clusters/reason-v3/cccccc0000000000000000000000ffff"}
+					err := config.SetTestProjectConfig(ctx, map[string]*configpb.ProjectConfig{})
+					So(err, ShouldBeNil)
 
 					// Run
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.FailedPrecondition)
-					So(st.Message(), ShouldEqual, "project does not exist in Weetbix")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCFailedPrecondition, "project does not exist in Weetbix")
 				})
 			})
 		})
 		Convey("QueryClusterSummaries", func() {
+			authState.IdentityPermissions = listTestResultsPermissions(
+				"testproject:realm1",
+				"testproject:realm2",
+				"otherproject:realm3",
+			)
+			authState.IdentityPermissions = append(authState.IdentityPermissions, []authtest.RealmPermission{
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermListClusters,
+				},
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermExpensiveClusterQueries,
+				},
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermGetRule,
+				},
+				{
+					Realm:      "testproject:@root",
+					Permission: perms.PermGetRuleDefinition,
+				},
+			}...)
+
 			analysisClient.clusterMetricsByProject["testproject"] = []*analysis.ClusterSummary{
 				{
 					ClusterID: clustering.ClusterID{
@@ -538,17 +584,32 @@ func TestClusters(t *testing.T) {
 					ExampleTestID:              "TestID 1",
 				},
 			}
+			analysisClient.expectedRealmsQueried = []string{"testproject:realm1", "testproject:realm2"}
 
 			request := &pb.QueryClusterSummariesRequest{
 				Project:       "testproject",
 				FailureFilter: "test_id:\"pita.Boot\" failure_reason:\"failed to boot\"",
 				OrderBy:       "presubmit_rejects desc, critical_failures_exonerated, failures desc",
 			}
-			Convey("Not authorised to view any test results", func() {
+			Convey("Not authorised to list clusters", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermListClusters)
+
 				response, err := server.QueryClusterSummaries(ctx, request)
-				request.Project = "secretproject"
-				So(err, ShouldHaveAppStatus, codes.PermissionDenied)
-				So(err, ShouldErrLike, "caller does not have permission")
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.list")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to perform expensive queries", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermExpensiveClusterQueries)
+
+				response, err := server.QueryClusterSummaries(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.expensiveQueries")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to get rules", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetRule)
+
+				response, err := server.QueryClusterSummaries(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.rules.get")
 				So(response, ShouldBeNil)
 			})
 			Convey("Valid request", func() {
@@ -606,6 +667,19 @@ func TestClusters(t *testing.T) {
 					So(err, ShouldBeNil)
 					So(response, ShouldResembleProto, expectedResponse)
 				})
+				Convey("Without rule definition get permission", func() {
+					authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetRuleDefinition)
+
+					// The RPC cannot return the rule definition as the
+					// cluster title as the user is not authorised to see it.
+					// Instead, it should generate a description of the
+					// content of the cluster based on what the user can see.
+					expectedResponse.ClusterSummaries[0].Title = "Selected failures in TestID 1"
+
+					response, err := server.QueryClusterSummaries(ctx, request)
+					So(err, ShouldBeNil)
+					So(response, ShouldResembleProto, expectedResponse)
+				})
 			})
 			Convey("Invalid request", func() {
 				Convey("Dataset does not exist", func() {
@@ -615,10 +689,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.QueryClusterSummaries(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.NotFound)
-					So(st.Message(), ShouldEqual, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCNotFound, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
 				})
 				Convey("Failure filter syntax is invalid", func() {
 					request.FailureFilter = "test_id::"
@@ -627,10 +699,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.QueryClusterSummaries(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "failure_filter: expected arg after :")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "failure_filter: expected arg after :")
 				})
 				Convey("Failure filter references non-existant column", func() {
 					request.FailureFilter = `test:"pita.Boot"`
@@ -639,10 +709,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.QueryClusterSummaries(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldStartWith, `failure_filter: no filterable field named "test"`)
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, `failure_filter: no filterable field named "test"`)
 				})
 				Convey("Failure filter references unimplemented feature", func() {
 					request.FailureFilter = "test<=\"blah\""
@@ -651,10 +719,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.QueryClusterSummaries(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "failure_filter: comparator operator not implemented yet")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "failure_filter: comparator operator not implemented yet")
 				})
 				Convey("Order by syntax invalid", func() {
 					request.OrderBy = "presubmit_rejects asc"
@@ -663,10 +729,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.QueryClusterSummaries(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, `order_by: invalid ordering "presubmit_rejects asc"`)
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, `order_by: invalid ordering "presubmit_rejects asc"`)
 				})
 				Convey("Order by syntax references invalid column", func() {
 					request.OrderBy = "not_exists desc"
@@ -675,17 +739,27 @@ func TestClusters(t *testing.T) {
 					response, err := server.QueryClusterSummaries(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldStartWith, `order_by: no sortable field named "not_exists"`)
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, `order_by: no sortable field named "not_exists"`)
 				})
 			})
 		})
 		Convey("GetReclusteringProgress", func() {
+			authState.IdentityPermissions = []authtest.RealmPermission{{
+				Realm:      "testproject:@root",
+				Permission: perms.PermGetCluster,
+			}}
+
 			request := &pb.GetReclusteringProgressRequest{
 				Name: "projects/testproject/reclusteringProgress",
 			}
+			Convey("Not authorised to get cluster", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetCluster)
+
+				response, err := server.GetReclusteringProgress(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.get")
+				So(response, ShouldBeNil)
+			})
 			Convey("With a valid request", func() {
 				rulesVersion := time.Date(2021, time.January, 1, 1, 0, 0, 0, time.UTC)
 				reference := time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC)
@@ -747,10 +821,8 @@ func TestClusters(t *testing.T) {
 					response, err := server.GetReclusteringProgress(ctx, request)
 
 					// Verify
-					st, _ := grpcStatus.FromError(err)
-					So(st.Code(), ShouldEqual, codes.InvalidArgument)
-					So(st.Message(), ShouldEqual, "name: invalid reclustering progress name, expected format: projects/{project}/reclusteringProgress")
 					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "name: invalid reclustering progress name, expected format: projects/{project}/reclusteringProgress")
 				})
 			})
 		})
@@ -768,6 +840,16 @@ func listTestResultsPermissions(realms ...string) []authtest.RealmPermission {
 			Realm:      r,
 			Permission: rdbperms.PermListTestExonerations,
 		})
+	}
+	return result
+}
+
+func removePermission(perms []authtest.RealmPermission, permission realms.Permission) []authtest.RealmPermission {
+	var result []authtest.RealmPermission
+	for _, p := range perms {
+		if p.Permission != permission {
+			result = append(result, p)
+		}
 	}
 	return result
 }
@@ -824,6 +906,7 @@ func sortClusterEntries(entries []*pb.ClusterResponse_ClusteredTestResult_Cluste
 type fakeAnalysisClient struct {
 	clustersByProject       map[string][]*analysis.Cluster
 	clusterMetricsByProject map[string][]*analysis.ClusterSummary
+	expectedRealmsQueried   []string
 }
 
 func newFakeAnalysisClient() *fakeAnalysisClient {
@@ -859,7 +942,11 @@ func (f *fakeAnalysisClient) QueryClusterSummaries(ctx context.Context, project 
 	if !ok {
 		return nil, analysis.ProjectNotExistsErr
 	}
-	So(options.Realms, ShouldResemble, []string{"testproject:realm1", "testproject:realm2"})
+
+	set := stringset.NewFromSlice(options.Realms...)
+	if set.Len() != len(f.expectedRealmsQueried) || !set.HasAll(f.expectedRealmsQueried...) {
+		panic("realms passed to QueryClusterSummaries do not match expected")
+	}
 
 	_, _, err := analysis.ClusteredFailuresTable.WhereClause(options.FailureFilter, "w_")
 	if err != nil {

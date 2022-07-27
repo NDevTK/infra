@@ -21,6 +21,7 @@ import (
 	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/clustering/rules"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
+	"infra/appengine/weetbix/internal/perms"
 	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -44,6 +45,13 @@ func (*rulesServer) Get(ctx context.Context, req *pb.GetRuleRequest) (*pb.Rule, 
 	if err != nil {
 		return nil, invalidArgumentError(err)
 	}
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermGetRule); err != nil {
+		return nil, err
+	}
+	canSeeDefinition, err := perms.HasProjectPermission(ctx, project, perms.PermGetRuleDefinition)
+	if err != nil {
+		return nil, err
+	}
 
 	cfg, err := readProjectConfig(ctx, project)
 	if err != nil {
@@ -58,7 +66,7 @@ func (*rulesServer) Get(ctx context.Context, req *pb.GetRuleRequest) (*pb.Rule, 
 		// This will result in an internal error being reported to the caller.
 		return nil, errors.Annotate(err, "reading rule %s", ruleID).Err()
 	}
-	return createRulePB(r, cfg.Config), nil
+	return createRulePB(r, cfg.Config, canSeeDefinition), nil
 }
 
 // Lists rules.
@@ -66,6 +74,13 @@ func (*rulesServer) List(ctx context.Context, req *pb.ListRulesRequest) (*pb.Lis
 	project, err := parseProjectName(req.Parent)
 	if err != nil {
 		return nil, invalidArgumentError(err)
+	}
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermListRules); err != nil {
+		return nil, err
+	}
+	canSeeDefinition, err := perms.HasProjectPermission(ctx, project, perms.PermGetRuleDefinition)
+	if err != nil {
+		return nil, err
 	}
 
 	cfg, err := readProjectConfig(ctx, project)
@@ -82,7 +97,7 @@ func (*rulesServer) List(ctx context.Context, req *pb.ListRulesRequest) (*pb.Lis
 
 	rpbs := make([]*pb.Rule, 0, len(rs))
 	for _, r := range rs {
-		rpbs = append(rpbs, createRulePB(r, cfg.Config))
+		rpbs = append(rpbs, createRulePB(r, cfg.Config, canSeeDefinition))
 	}
 	response := &pb.ListRulesResponse{
 		Rules: rpbs,
@@ -95,6 +110,9 @@ func (*rulesServer) Create(ctx context.Context, req *pb.CreateRuleRequest) (*pb.
 	project, err := parseProjectName(req.Parent)
 	if err != nil {
 		return nil, invalidArgumentError(err)
+	}
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermCreateRule); err != nil {
+		return nil, err
 	}
 
 	cfg, err := readProjectConfig(ctx, project)
@@ -163,7 +181,8 @@ func (*rulesServer) Create(ctx context.Context, req *pb.CreateRuleRequest) (*pb.
 	r.LastUpdatedUser = user
 	r.PredicateLastUpdated = commitTime.In(time.UTC)
 
-	return createRulePB(r, cfg.Config), nil
+	canSeeDefinition := true
+	return createRulePB(r, cfg.Config, canSeeDefinition), nil
 }
 
 // Updates a rule.
@@ -171,6 +190,9 @@ func (*rulesServer) Update(ctx context.Context, req *pb.UpdateRuleRequest) (*pb.
 	project, ruleID, err := parseRuleName(req.Rule.GetName())
 	if err != nil {
 		return nil, invalidArgumentError(err)
+	}
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermUpdateRule); err != nil {
+		return nil, err
 	}
 
 	cfg, err := readProjectConfig(ctx, project)
@@ -192,7 +214,8 @@ func (*rulesServer) Update(ctx context.Context, req *pb.UpdateRuleRequest) (*pb.
 			// caller.
 			return errors.Annotate(err, "read rule").Err()
 		}
-		if req.Etag != "" && ruleETag(rule) != req.Etag {
+		canSeeDefinition := true
+		if req.Etag != "" && ruleETag(rule, canSeeDefinition) != req.Etag {
 			// Attach a codes.Aborted appstatus to a vanilla error to avoid
 			// ReadWriteTransaction interpreting this case for a scenario
 			// in which it should retry the transaction.
@@ -280,7 +303,8 @@ func (*rulesServer) Update(ctx context.Context, req *pb.UpdateRuleRequest) (*pb.
 		updatedRule.PredicateLastUpdated = commitTime.In(time.UTC)
 	}
 
-	return createRulePB(updatedRule, cfg.Config), nil
+	canSeeDefinition := true
+	return createRulePB(updatedRule, cfg.Config, canSeeDefinition), nil
 }
 
 // LookupBug looks up the rule associated with the given bug.
@@ -299,19 +323,29 @@ func (*rulesServer) LookupBug(ctx context.Context, req *pb.LookupBugRequest) (*p
 	}
 	ruleNames := make([]string, 0, len(rules))
 	for _, rule := range rules {
-		ruleNames = append(ruleNames, ruleName(rule.Project, rule.RuleID))
+		allowed, err := perms.HasProjectPermission(ctx, rule.Project, perms.PermListRules)
+		if err != nil {
+			return nil, err
+		}
+		if allowed {
+			ruleNames = append(ruleNames, ruleName(rule.Project, rule.RuleID))
+		}
 	}
 	return &pb.LookupBugResponse{
 		Rules: ruleNames,
 	}, nil
 }
 
-func createRulePB(r *rules.FailureAssociationRule, cfg *configpb.ProjectConfig) *pb.Rule {
+func createRulePB(r *rules.FailureAssociationRule, cfg *configpb.ProjectConfig, includeDefinition bool) *pb.Rule {
+	definition := ""
+	if includeDefinition {
+		definition = r.RuleDefinition
+	}
 	return &pb.Rule{
 		Name:           ruleName(r.Project, r.RuleID),
 		Project:        r.Project,
 		RuleId:         r.RuleID,
-		RuleDefinition: r.RuleDefinition,
+		RuleDefinition: definition,
 		Bug:            createAssociatedBugPB(r.BugID, cfg),
 		IsActive:       r.IsActive,
 		IsManagingBug:  r.IsManagingBug,
@@ -324,12 +358,16 @@ func createRulePB(r *rules.FailureAssociationRule, cfg *configpb.ProjectConfig) 
 		LastUpdateTime:          timestamppb.New(r.LastUpdated),
 		LastUpdateUser:          r.LastUpdatedUser,
 		PredicateLastUpdateTime: timestamppb.New(r.PredicateLastUpdated),
-		Etag:                    ruleETag(r),
+		Etag:                    ruleETag(r, includeDefinition),
 	}
 }
 
-func ruleETag(rule *rules.FailureAssociationRule) string {
-	return fmt.Sprintf(`W/"%s"`, rule.LastUpdated.UTC().Format(time.RFC3339Nano))
+func ruleETag(rule *rules.FailureAssociationRule, includeDefinition bool) string {
+	filtered := "y"
+	if includeDefinition {
+		filtered = "n"
+	}
+	return fmt.Sprintf(`W/"%s%s"`, filtered, rule.LastUpdated.UTC().Format(time.RFC3339Nano))
 }
 
 // validateBugAgainstConfig validates the specified bug is consistent with

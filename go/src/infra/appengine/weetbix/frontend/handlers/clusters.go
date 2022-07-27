@@ -12,7 +12,7 @@ import (
 
 	"infra/appengine/weetbix/internal/analysis"
 	"infra/appengine/weetbix/internal/clustering"
-	"infra/appengine/weetbix/utils"
+	"infra/appengine/weetbix/internal/perms"
 )
 
 // GetClusterFailures handles a GET request for
@@ -46,7 +46,7 @@ func (h *Handlers) GetClusterFailures(ctx *router.Context) {
 		Project:   projectID,
 		ClusterID: clusterID,
 	}
-	opts.Realms, err = utils.QueryRealms(ctx.Context, utils.ListTestResultsAndExonerations, projectID, "", nil)
+	opts.Realms, err = perms.QueryRealms(ctx.Context, projectID, "", nil, perms.ListTestResultsAndExonerations...)
 	if err != nil {
 		logging.Errorf(ctx.Context, "Query realms: %v", err)
 		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
