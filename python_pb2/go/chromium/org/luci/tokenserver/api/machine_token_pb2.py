@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z0go.chromium.org/luci/tokenserver/api;tokenserver',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n8go.chromium.org/luci/tokenserver/api/machine_token.proto\x12\x0btokenserver\"\x80\x01\n\x10MachineTokenBody\x12\x14\n\x0cmachine_fqdn\x18\x01 \x01(\t\x12\x11\n\tissued_by\x18\x02 \x01(\t\x12\x11\n\tissued_at\x18\x03 \x01(\x04\x12\x10\n\x08lifetime\x18\x04 \x01(\x04\x12\r\n\x05\x63\x61_id\x18\x05 \x01(\x03\x12\x0f\n\x07\x63\x65rt_sn\x18\x06 \x01(\x04\"N\n\x14MachineTokenEnvelope\x12\x12\n\ntoken_body\x18\x01 \x01(\x0c\x12\x0e\n\x06key_id\x18\x02 \x01(\t\x12\x12\n\nrsa_sha256\x18\x03 \x01(\x0c*<\n\x10MachineTokenType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x16\n\x12LUCI_MACHINE_TOKEN\x10\x02\x42\x32Z0go.chromium.org/luci/tokenserver/api;tokenserverb\x06proto3'
+  serialized_pb=b'\n8go.chromium.org/luci/tokenserver/api/machine_token.proto\x12\x0btokenserver\"\x86\x01\n\x10MachineTokenBody\x12\x14\n\x0cmachine_fqdn\x18\x01 \x01(\t\x12\x11\n\tissued_by\x18\x02 \x01(\t\x12\x11\n\tissued_at\x18\x03 \x01(\x04\x12\x10\n\x08lifetime\x18\x04 \x01(\x04\x12\r\n\x05\x63\x61_id\x18\x05 \x01(\x03\x12\x0f\n\x07\x63\x65rt_sn\x18\x07 \x01(\x0cJ\x04\x08\x06\x10\x07\"N\n\x14MachineTokenEnvelope\x12\x12\n\ntoken_body\x18\x01 \x01(\x0c\x12\x0e\n\x06key_id\x18\x02 \x01(\t\x12\x12\n\nrsa_sha256\x18\x03 \x01(\x0c*<\n\x10MachineTokenType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x16\n\x12LUCI_MACHINE_TOKEN\x10\x02\x42\x32Z0go.chromium.org/luci/tokenserver/api;tokenserverb\x06proto3'
 )
 
 _MACHINETOKENTYPE = _descriptor.EnumDescriptor(
@@ -43,8 +43,8 @@ _MACHINETOKENTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=284,
-  serialized_end=344,
+  serialized_start=290,
+  serialized_end=350,
 )
 _sym_db.RegisterEnumDescriptor(_MACHINETOKENTYPE)
 
@@ -99,8 +99,8 @@ _MACHINETOKENBODY = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='cert_sn', full_name='tokenserver.MachineTokenBody.cert_sn', index=5,
-      number=6, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
+      number=7, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -117,7 +117,7 @@ _MACHINETOKENBODY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=74,
-  serialized_end=202,
+  serialized_end=208,
 )
 
 
@@ -162,8 +162,8 @@ _MACHINETOKENENVELOPE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=204,
-  serialized_end=282,
+  serialized_start=210,
+  serialized_end=288,
 )
 
 DESCRIPTOR.message_types_by_name['MachineTokenBody'] = _MACHINETOKENBODY

@@ -30,7 +30,6 @@ from go.chromium.org.luci.buildbucket.proto import service_config_pb2
 import errors
 
 CURRENT_BUCKET_SCHEMA_VERSION = 13
-ACL_SET_NAME_RE = re.compile('^[a-z0-9_]+$')
 
 # The memcache key for get_all_bucket_ids_async cache.
 _MEMCACHE_ALL_BUCKET_IDS_KEY = 'all_bucket_ids_v1'
@@ -61,33 +60,6 @@ def self_config_set():
     return 'services/testbed-test'
 
 
-def validate_identity(identity, ctx):
-  if ':' in identity:
-    kind, name = identity.split(':', 2)
-  else:
-    kind = 'user'
-    name = identity
-  try:
-    auth.Identity(kind, name)
-  except ValueError as ex:
-    ctx.error('%s', ex)
-
-
-def validate_access_list(acl_list, ctx):
-  """Validates a list of Acl messages."""
-  for i, acl in enumerate(acl_list):
-    with ctx.prefix('acl #%d: ', i + 1):
-      if acl.group and acl.identity:
-        ctx.error('either group or identity must be set, not both')
-      elif acl.group:
-        if not auth.is_valid_group_name(acl.group):
-          ctx.error('invalid group: %s', acl.group)
-      elif acl.identity:
-        validate_identity(acl.identity, ctx)
-      else:
-        ctx.error('group or identity must be set')
-
-
 @validation.project_config_rule(cfg_path(), project_config_pb2.BuildbucketCfg)
 def validate_buildbucket_cfg(cfg, ctx):
   import swarmingcfg
@@ -96,22 +68,6 @@ def validate_buildbucket_cfg(cfg, ctx):
   well_known_experiments = set(
       e.name for e in global_cfg.experiment.experiments
   )
-
-  acl_set_names = set()
-  for i, acl_set in enumerate(cfg.acl_sets):
-    with ctx.prefix('ACL set #%d (%s): ', i + 1, acl_set.name):
-      if not acl_set.name:
-        ctx.error('name is unspecified')
-      elif not ACL_SET_NAME_RE.match(acl_set.name):
-        ctx.error(
-            'invalid name "%s" does not match regex %r', acl_set.name,
-            ACL_SET_NAME_RE.pattern
-        )
-      elif acl_set.name in acl_set_names:
-        ctx.error('duplicate name "%s"', acl_set.name)
-      acl_set_names.add(acl_set.name)
-
-      validate_access_list(acl_set.acls, ctx)
 
   bucket_names = set()
 
@@ -128,14 +84,6 @@ def validate_buildbucket_cfg(cfg, ctx):
           bucket_names.add(bucket.name)
           if i > 0 and bucket.name < cfg.buckets[i - 1].name:
             ctx.warning('out of order')
-
-      validate_access_list(bucket.acls, ctx)
-      for name in bucket.acl_sets:
-        if name not in acl_set_names:
-          ctx.error(
-              'undefined ACL set "%s". '
-              'It must be defined in the same file', name
-          )
 
       if bucket.HasField('swarming'):  # pragma: no cover
         with ctx.prefix('swarming: '):
@@ -420,20 +368,6 @@ def get_bucket(bucket_id):
   return get_bucket_async(bucket_id).get_result()
 
 
-def _normalize_acls(acls):
-  """Normalizes a RepeatedCompositeContainer of Acl messages."""
-  for a in acls:
-    if a.identity and ':' not in a.identity:
-      a.identity = 'user:%s' % a.identity
-
-  sort_key = lambda a: (a.role, a.group, a.identity)
-  acls.sort(key=sort_key)
-
-  for i in xrange(len(acls) - 1, 0, -1):
-    if sort_key(acls[i]) == sort_key(acls[i - 1]):
-      del acls[i]
-
-
 def put_bucket(project_id, revision, bucket_cfg):
   # New Bucket format uses short bucket names, e.g. "try" instead of
   # "luci.chromium.try".
@@ -460,11 +394,7 @@ def put_builders(project_id, bucket_name, *builder_cfgs):
 
 
 def cron_update_buckets():
-  """Synchronizes bucket entities with configs fetched from luci-config.
-
-  When storing in the datastore, inlines the referenced ACL sets and clears
-  the acl_sets message field.
-  """
+  """Synchronizes bucket entities with configs fetched from luci-config."""
   config_map = config.get_project_configs(
       cfg_path(), project_config_pb2.BuildbucketCfg
   )
@@ -491,7 +421,6 @@ def cron_update_buckets():
     revision = revision or 'sha1:%s' % hashlib.sha1(
         project_cfg.SerializeToString(deterministic=True)
     ).hexdigest()
-    acl_sets_by_name = {a.name: a for a in project_cfg.acl_sets}
 
     for bucket_cfg in project_cfg.buckets:
       bucket_key = Bucket.make_key(
@@ -503,22 +432,6 @@ def cron_update_buckets():
           bucket.entity_schema_version == CURRENT_BUCKET_SCHEMA_VERSION and
           bucket.revision == revision):
         continue
-
-      # Inline ACL sets.
-      for name in bucket_cfg.acl_sets:
-        acl_set = acl_sets_by_name.get(name)
-        if not acl_set:
-          logging.error(
-              'referenced acl_set not found.\n'
-              'Bucket: %s\n'
-              'ACL set name: %r\n'
-              'Config revision: %r', bucket_key, name, revision
-          )
-          continue
-        bucket_cfg.acls.extend(acl_set.acls)
-      del bucket_cfg.acl_sets[:]
-
-      _normalize_acls(bucket_cfg.acls)
 
       builders = {b.key: b for b in Builder.query(ancestor=bucket_key).fetch()}
       builders_to_delete = set(builders)

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z1go.chromium.org/luci/scheduler/appengine/messages\242\376#E\nChttps://luci-config.appspot.com/schemas/projects:luci-scheduler.cfg',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n>go.chromium.org/luci/scheduler/appengine/messages/config.proto\x12\x10scheduler.config\x1a/go.chromium.org/luci/common/proto/options.proto\"\xa7\x01\n\rProjectConfig\x12\"\n\x03job\x18\x01 \x03(\x0b\x32\x15.scheduler.config.Job\x12*\n\x07trigger\x18\x02 \x03(\x0b\x32\x19.scheduler.config.Trigger\x12.\n\x08\x61\x63l_sets\x18\x03 \x03(\x0b\x32\x18.scheduler.config.AclSetB\x02\x18\x01J\x04\x08\x04\x10\x05R\x10security_options\"q\n\x03\x41\x63l\x12(\n\x04role\x18\x01 \x01(\x0e\x32\x1a.scheduler.config.Acl.Role\x12\x12\n\ngranted_to\x18\x02 \x01(\t\",\n\x04Role\x12\n\n\x06READER\x10\x00\x12\r\n\tTRIGGERER\x10\x02\x12\t\n\x05OWNER\x10\x01\";\n\x06\x41\x63lSet\x12\x0c\n\x04name\x18\x01 \x01(\t\x12#\n\x04\x61\x63ls\x18\x02 \x03(\x0b\x32\x15.scheduler.config.Acl\"\xdd\x01\n\x10TriggeringPolicy\x12\x35\n\x04kind\x18\x01 \x01(\x0e\x32\'.scheduler.config.TriggeringPolicy.Kind\x12\"\n\x1amax_concurrent_invocations\x18\x02 \x01(\x03\x12\x16\n\x0emax_batch_size\x18\x03 \x01(\x03\x12\x10\n\x08log_base\x18\x04 \x01(\x02\"D\n\x04Kind\x12\r\n\tUNDEFINED\x10\x00\x12\x13\n\x0fGREEDY_BATCHING\x10\x01\x12\x18\n\x14LOGARITHMIC_BATCHING\x10\x02\"\xe3\x02\n\x03Job\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05realm\x18\x08 \x01(\t\x12\x10\n\x08schedule\x18\x02 \x01(\t\x12\x10\n\x08\x64isabled\x18\x03 \x01(\x08\x12\'\n\x04\x61\x63ls\x18\x05 \x03(\x0b\x32\x15.scheduler.config.AclB\x02\x18\x01\x12\x14\n\x08\x61\x63l_sets\x18\x06 \x03(\tB\x02\x18\x01\x12=\n\x11triggering_policy\x18\x07 \x01(\x0b\x32\".scheduler.config.TriggeringPolicy\x12(\n\x04noop\x18\x64 \x01(\x0b\x32\x1a.scheduler.config.NoopTask\x12\x31\n\turl_fetch\x18\x65 \x01(\x0b\x32\x1e.scheduler.config.UrlFetchTask\x12\x36\n\x0b\x62uildbucket\x18g \x01(\x0b\x32!.scheduler.config.BuildbucketTaskJ\x04\x08\x04\x10\x05J\x04\x08\x66\x10g\"\xb3\x02\n\x07Trigger\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05realm\x18\x07 \x01(\t\x12\x10\n\x08schedule\x18\x02 \x01(\t\x12\x10\n\x08\x64isabled\x18\x03 \x01(\x08\x12\'\n\x04\x61\x63ls\x18\x04 \x03(\x0b\x32\x15.scheduler.config.AclB\x02\x18\x01\x12\x14\n\x08\x61\x63l_sets\x18\x05 \x03(\tB\x02\x18\x01\x12=\n\x11triggering_policy\x18\x06 \x01(\x0b\x32\".scheduler.config.TriggeringPolicy\x12\x11\n\x08triggers\x18\xc8\x01 \x03(\t\x12(\n\x04noop\x18\x64 \x01(\x0b\x32\x1a.scheduler.config.NoopTask\x12.\n\x07gitiles\x18\x65 \x01(\x0b\x32\x1d.scheduler.config.GitilesTask\"4\n\x08NoopTask\x12\x10\n\x08sleep_ms\x18\x01 \x01(\x03\x12\x16\n\x0etriggers_count\x18\x02 \x01(\x03\"]\n\x0bGitilesTask\x12\x0c\n\x04repo\x18\x01 \x01(\t\x12\x0c\n\x04refs\x18\x02 \x03(\t\x12\x14\n\x0cpath_regexps\x18\x03 \x03(\t\x12\x1c\n\x14path_regexps_exclude\x18\x04 \x03(\t\"@\n\x0cUrlFetchTask\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x13\n\x0btimeout_sec\x18\x03 \x01(\x05\"d\n\x0f\x42uildbucketTask\x12\x0e\n\x06server\x18\x01 \x01(\t\x12\x0e\n\x06\x62ucket\x18\x02 \x01(\t\x12\x0f\n\x07\x62uilder\x18\x03 \x01(\t\x12\x12\n\nproperties\x18\x04 \x03(\t\x12\x0c\n\x04tags\x18\x05 \x03(\t\"\xdb\x01\n\x0eTaskDefWrapper\x12(\n\x04noop\x18\x01 \x01(\x0b\x32\x1a.scheduler.config.NoopTask\x12\x31\n\turl_fetch\x18\x02 \x01(\x0b\x32\x1e.scheduler.config.UrlFetchTask\x12\x36\n\x0b\x62uildbucket\x18\x04 \x01(\x0b\x32!.scheduler.config.BuildbucketTask\x12.\n\x07gitiles\x18\x05 \x01(\x0b\x32\x1d.scheduler.config.GitilesTaskJ\x04\x08\x03\x10\x04\x42|Z1go.chromium.org/luci/scheduler/appengine/messages\xa2\xfe#E\nChttps://luci-config.appspot.com/schemas/projects:luci-scheduler.cfgb\x06proto3'
+  serialized_pb=b'\n>go.chromium.org/luci/scheduler/appengine/messages/config.proto\x12\x10scheduler.config\x1a/go.chromium.org/luci/common/proto/options.proto\"\xa7\x01\n\rProjectConfig\x12\"\n\x03job\x18\x01 \x03(\x0b\x32\x15.scheduler.config.Job\x12*\n\x07trigger\x18\x02 \x03(\x0b\x32\x19.scheduler.config.Trigger\x12.\n\x08\x61\x63l_sets\x18\x03 \x03(\x0b\x32\x18.scheduler.config.AclSetB\x02\x18\x01J\x04\x08\x04\x10\x05R\x10security_options\"y\n\x03\x41\x63l\x12,\n\x04role\x18\x01 \x01(\x0e\x32\x1a.scheduler.config.Acl.RoleB\x02\x18\x01\x12\x16\n\ngranted_to\x18\x02 \x01(\tB\x02\x18\x01\",\n\x04Role\x12\n\n\x06READER\x10\x00\x12\r\n\tTRIGGERER\x10\x02\x12\t\n\x05OWNER\x10\x01\"C\n\x06\x41\x63lSet\x12\x10\n\x04name\x18\x01 \x01(\tB\x02\x18\x01\x12\'\n\x04\x61\x63ls\x18\x02 \x03(\x0b\x32\x15.scheduler.config.AclB\x02\x18\x01\"\xdd\x01\n\x10TriggeringPolicy\x12\x35\n\x04kind\x18\x01 \x01(\x0e\x32\'.scheduler.config.TriggeringPolicy.Kind\x12\"\n\x1amax_concurrent_invocations\x18\x02 \x01(\x03\x12\x16\n\x0emax_batch_size\x18\x03 \x01(\x03\x12\x10\n\x08log_base\x18\x04 \x01(\x02\"D\n\x04Kind\x12\r\n\tUNDEFINED\x10\x00\x12\x13\n\x0fGREEDY_BATCHING\x10\x01\x12\x18\n\x14LOGARITHMIC_BATCHING\x10\x02\"\xe3\x02\n\x03Job\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05realm\x18\x08 \x01(\t\x12\x10\n\x08schedule\x18\x02 \x01(\t\x12\x10\n\x08\x64isabled\x18\x03 \x01(\x08\x12\'\n\x04\x61\x63ls\x18\x05 \x03(\x0b\x32\x15.scheduler.config.AclB\x02\x18\x01\x12\x14\n\x08\x61\x63l_sets\x18\x06 \x03(\tB\x02\x18\x01\x12=\n\x11triggering_policy\x18\x07 \x01(\x0b\x32\".scheduler.config.TriggeringPolicy\x12(\n\x04noop\x18\x64 \x01(\x0b\x32\x1a.scheduler.config.NoopTask\x12\x31\n\turl_fetch\x18\x65 \x01(\x0b\x32\x1e.scheduler.config.UrlFetchTask\x12\x36\n\x0b\x62uildbucket\x18g \x01(\x0b\x32!.scheduler.config.BuildbucketTaskJ\x04\x08\x04\x10\x05J\x04\x08\x66\x10g\"\xb3\x02\n\x07Trigger\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05realm\x18\x07 \x01(\t\x12\x10\n\x08schedule\x18\x02 \x01(\t\x12\x10\n\x08\x64isabled\x18\x03 \x01(\x08\x12\'\n\x04\x61\x63ls\x18\x04 \x03(\x0b\x32\x15.scheduler.config.AclB\x02\x18\x01\x12\x14\n\x08\x61\x63l_sets\x18\x05 \x03(\tB\x02\x18\x01\x12=\n\x11triggering_policy\x18\x06 \x01(\x0b\x32\".scheduler.config.TriggeringPolicy\x12\x11\n\x08triggers\x18\xc8\x01 \x03(\t\x12(\n\x04noop\x18\x64 \x01(\x0b\x32\x1a.scheduler.config.NoopTask\x12.\n\x07gitiles\x18\x65 \x01(\x0b\x32\x1d.scheduler.config.GitilesTask\"4\n\x08NoopTask\x12\x10\n\x08sleep_ms\x18\x01 \x01(\x03\x12\x16\n\x0etriggers_count\x18\x02 \x01(\x03\"]\n\x0bGitilesTask\x12\x0c\n\x04repo\x18\x01 \x01(\t\x12\x0c\n\x04refs\x18\x02 \x03(\t\x12\x14\n\x0cpath_regexps\x18\x03 \x03(\t\x12\x1c\n\x14path_regexps_exclude\x18\x04 \x03(\t\"@\n\x0cUrlFetchTask\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x13\n\x0btimeout_sec\x18\x03 \x01(\x05\"d\n\x0f\x42uildbucketTask\x12\x0e\n\x06server\x18\x01 \x01(\t\x12\x0e\n\x06\x62ucket\x18\x02 \x01(\t\x12\x0f\n\x07\x62uilder\x18\x03 \x01(\t\x12\x12\n\nproperties\x18\x04 \x03(\t\x12\x0c\n\x04tags\x18\x05 \x03(\t\"\xdb\x01\n\x0eTaskDefWrapper\x12(\n\x04noop\x18\x01 \x01(\x0b\x32\x1a.scheduler.config.NoopTask\x12\x31\n\turl_fetch\x18\x02 \x01(\x0b\x32\x1e.scheduler.config.UrlFetchTask\x12\x36\n\x0b\x62uildbucket\x18\x04 \x01(\x0b\x32!.scheduler.config.BuildbucketTask\x12.\n\x07gitiles\x18\x05 \x01(\x0b\x32\x1d.scheduler.config.GitilesTaskJ\x04\x08\x03\x10\x04\x42|Z1go.chromium.org/luci/scheduler/appengine/messages\xa2\xfe#E\nChttps://luci-config.appspot.com/schemas/projects:luci-scheduler.cfgb\x06proto3'
   ,
   dependencies=[go_dot_chromium_dot_org_dot_luci_dot_common_dot_proto_dot_options__pb2.DESCRIPTOR,])
 
@@ -51,8 +51,8 @@ _ACL_ROLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=372,
-  serialized_end=416,
+  serialized_start=380,
+  serialized_end=424,
 )
 _sym_db.RegisterEnumDescriptor(_ACL_ROLE)
 
@@ -81,8 +81,8 @@ _TRIGGERINGPOLICY_KIND = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=633,
-  serialized_end=701,
+  serialized_start=649,
+  serialized_end=717,
 )
 _sym_db.RegisterEnumDescriptor(_TRIGGERINGPOLICY_KIND)
 
@@ -147,14 +147,14 @@ _ACL = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='granted_to', full_name='scheduler.config.Acl.granted_to', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -169,7 +169,7 @@ _ACL = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=303,
-  serialized_end=416,
+  serialized_end=424,
 )
 
 
@@ -187,14 +187,14 @@ _ACLSET = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='acls', full_name='scheduler.config.AclSet.acls', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -207,8 +207,8 @@ _ACLSET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=418,
-  serialized_end=477,
+  serialized_start=426,
+  serialized_end=493,
 )
 
 
@@ -261,8 +261,8 @@ _TRIGGERINGPOLICY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=480,
-  serialized_end=701,
+  serialized_start=496,
+  serialized_end=717,
 )
 
 
@@ -356,8 +356,8 @@ _JOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=704,
-  serialized_end=1059,
+  serialized_start=720,
+  serialized_end=1075,
 )
 
 
@@ -451,8 +451,8 @@ _TRIGGER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1062,
-  serialized_end=1369,
+  serialized_start=1078,
+  serialized_end=1385,
 )
 
 
@@ -490,8 +490,8 @@ _NOOPTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1371,
-  serialized_end=1423,
+  serialized_start=1387,
+  serialized_end=1439,
 )
 
 
@@ -543,8 +543,8 @@ _GITILESTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1425,
-  serialized_end=1518,
+  serialized_start=1441,
+  serialized_end=1534,
 )
 
 
@@ -589,8 +589,8 @@ _URLFETCHTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1520,
-  serialized_end=1584,
+  serialized_start=1536,
+  serialized_end=1600,
 )
 
 
@@ -649,8 +649,8 @@ _BUILDBUCKETTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1586,
-  serialized_end=1686,
+  serialized_start=1602,
+  serialized_end=1702,
 )
 
 
@@ -702,8 +702,8 @@ _TASKDEFWRAPPER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1689,
-  serialized_end=1908,
+  serialized_start=1705,
+  serialized_end=1924,
 )
 
 _PROJECTCONFIG.fields_by_name['job'].message_type = _JOB
@@ -820,6 +820,10 @@ _sym_db.RegisterMessage(TaskDefWrapper)
 
 DESCRIPTOR._options = None
 _PROJECTCONFIG.fields_by_name['acl_sets']._options = None
+_ACL.fields_by_name['role']._options = None
+_ACL.fields_by_name['granted_to']._options = None
+_ACLSET.fields_by_name['name']._options = None
+_ACLSET.fields_by_name['acls']._options = None
 _JOB.fields_by_name['acls']._options = None
 _JOB.fields_by_name['acl_sets']._options = None
 _TRIGGER.fields_by_name['acls']._options = None

@@ -50,14 +50,6 @@ def without_builders(cfg):
 LUCI_CHROMIUM_TRY = test_util.parse_bucket_cfg(
     '''
     name: "luci.chromium.try"
-    acls {
-      role: READER
-      group: "all"
-    }
-    acls {
-      role: SCHEDULER
-      identity: "user:johndoe@example.com"
-    }
     swarming {
       task_template_canary_percentage { value: 10 }
       builders {
@@ -96,52 +88,24 @@ LUCI_DART_TRY = test_util.parse_bucket_cfg(
 MASTER_TRYSERVER_CHROMIUM_LINUX = test_util.parse_bucket_cfg(
     '''
     name: "master.tryserver.chromium.linux"
-    acls {
-      role: READER
-      group: "all"
-    }
-    acls {
-      role: SCHEDULER
-      group: "tryjob-access"
-    }
     '''
 )
 
 MASTER_TRYSERVER_CHROMIUM_WIN = test_util.parse_bucket_cfg(
     '''
     name: "master.tryserver.chromium.win"
-    acls {
-      role: READER
-      group: "all"
-    }
-    acls {
-      role: SCHEDULER
-      group: "tryjob-access"
-    }
     '''
 )
 
 MASTER_TRYSERVER_CHROMIUM_MAC = test_util.parse_bucket_cfg(
     '''
     name: "master.tryserver.chromium.mac"
-    acls {
-      role: READER
-      group: "all"
-    }
-    acls {
-      role: SCHEDULER
-      group: "tryjob-access"
-    }
     '''
 )
 
 MASTER_TRYSERVER_V8 = test_util.parse_bucket_cfg(
     '''
     name: "master.tryserver.v8"
-    acls {
-      role: WRITER
-      group: "v8-team"
-    }
     '''
 )
 
@@ -276,25 +240,8 @@ class ConfigTest(testing.AppengineTestCase):
   def test_cron_update_buckets(self, get_project_configs):
     chromium_buildbucket_cfg = parse_cfg(
         '''
-        acl_sets {
-          name: "public"
-          acls {
-            role: READER
-            group: "all"
-          }
-
-          # Test deduplication.
-          acls {
-            group: "all"
-          }
-        }
         buckets {
           name: "try"
-          acl_sets: "public"
-          acls {
-            role: SCHEDULER
-            identity: "johndoe@example.com"
-          }
           swarming {
             task_template_canary_percentage { value: 10 }
             builders {
@@ -314,24 +261,10 @@ class ConfigTest(testing.AppengineTestCase):
         }
         buckets {
           name: "master.tryserver.chromium.linux"
-          acl_sets: "public"
-          acl_sets: "undefined_acl_set_will_log_an_error_but_not_failure"
-          acls {
-            role: SCHEDULER
-            group: "tryjob-access"
-          }
         }
 
         buckets {
           name: "master.tryserver.chromium.win"
-          acls {
-            role: READER
-            group: "all"
-          }
-          acls {
-            role: SCHEDULER
-            group: "tryjob-access"
-          }
         }
         '''
     )
@@ -359,10 +292,6 @@ class ConfigTest(testing.AppengineTestCase):
         '''
       buckets {
         name: "master.tryserver.v8"
-        acls {
-          role: WRITER
-          group: "v8-team"
-        }
       }
       '''
     )
@@ -410,7 +339,7 @@ class ConfigTest(testing.AppengineTestCase):
             parent=ndb.Key(config.Project, 'v8'),
             id='master.tryserver.v8',
             entity_schema_version=config.CURRENT_BUCKET_SCHEMA_VERSION,
-            revision='sha1:cfc761d7a953a72ddea8f3d4c9a28e69777ca22c',
+            revision='sha1:163ac9915fdc091819ae5e5b1fb323ee512b6e73',
             config=without_builders(MASTER_TRYSERVER_V8),
         ),
     ]
@@ -448,36 +377,12 @@ class ConfigTest(testing.AppengineTestCase):
         '''
         buckets {
           name: "master.tryserver.chromium.linux"
-          acls {
-            role: READER
-            group: "all"
-          }
-          acls {
-            role: SCHEDULER
-            group: "tryjob-access"
-          }
         }
         buckets {
           name: "master.tryserver.chromium.mac"
-          acls {
-            role: READER
-            group: "all"
-          }
-          acls {
-            role: SCHEDULER
-            group: "tryjob-access"
-          }
         }
         buckets {
           name: "try"
-          acls {
-            role: READER
-            group: "all"
-          }
-          acls {
-            role: SCHEDULER
-            identity: "johndoe@example.com"
-          }
           swarming {
             task_template_canary_percentage { value: 10 }
             builders {
@@ -519,10 +424,6 @@ class ConfigTest(testing.AppengineTestCase):
         '''
         buckets {
           name: "master.tryserver.v8"
-          acls {
-            role: WRITER
-            group: "v8-team"
-          }
         }
         '''
     )
@@ -669,31 +570,11 @@ class ConfigTest(testing.AppengineTestCase):
     self.cfg_validation_test(
         parse_cfg(
             '''
-      acl_sets {
-        name: "public"
-        acls {
-          role: READER
-          group: "all"
-        }
-      }
       buckets {
         name: "good.name"
-        acls {
-          role: WRITER
-          group: "writers"
-        }
       }
       buckets {
         name: "good.name2"
-        acl_sets: "public"
-        acls {
-          role: READER
-          identity: "a@a.com"
-        }
-        acls {
-          role: READER
-          identity: "user:b@a.com"
-        }
       }
       '''
         ), []
@@ -703,59 +584,17 @@ class ConfigTest(testing.AppengineTestCase):
     self.cfg_validation_test(
         parse_cfg(
             '''
-      acl_sets {}
-      acl_sets {
-        name: "^"
-        acls {}
-      }
-      acl_sets { name: "a" }
-      acl_sets { name: "a" }
       buckets {
         name: "a"
-        acl_sets: "does_not_exist"
-        acls {
-          role: READER
-          group: "writers"
-          identity: "a@a.com"
-        }
-        acls {
-          role: READER
-        }
       }
       buckets {
         name: "a"
-        acls {
-          role: READER
-          identity: "ldap"
-        }
-        acls {
-          role: READER
-          group: ";%:"
-        }
       }
       buckets {}
       buckets { name: "luci.x" }
       '''
         ), [
-            errmsg('ACL set #1 (): name is unspecified'),
-            errmsg(
-                'ACL set #2 (^): invalid name "^" does not match regex '
-                '\'^[a-z0-9_]+$\''
-            ),
-            errmsg('ACL set #2 (^): acl #1: group or identity must be set'),
-            errmsg('ACL set #4 (a): duplicate name "a"'),
-            errmsg(
-                'Bucket a: acl #1: either group or identity must be set, '
-                'not both'
-            ),
-            errmsg('Bucket a: acl #2: group or identity must be set'),
-            errmsg(
-                'Bucket a: undefined ACL set "does_not_exist". '
-                'It must be defined in the same file'
-            ),
             errmsg('Bucket a: duplicate bucket name'),
-            errmsg('Bucket a: acl #1: Identity has invalid format: ldap'),
-            errmsg('Bucket a: acl #2: invalid group: ;%:'),
             errmsg('Bucket #3: invalid name: Bucket not specified'),
             errmsg(
                 'Bucket luci.x: invalid name: Bucket must start with '
