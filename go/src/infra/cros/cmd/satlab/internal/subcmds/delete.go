@@ -5,11 +5,14 @@
 package subcmds
 
 import (
+	"fmt"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cros/cmd/satlab/internal/commands/dns"
 	"infra/cros/cmd/satlab/internal/components/dut"
+	"infra/cros/cmd/satlab/internal/site"
 )
 
 // DeleteBase is the placeholder for the delete command.
@@ -30,6 +33,13 @@ var DeleteCmd = &subcommands.Command{
 // when consuming the "delete" subcommand.
 type deleteApp struct {
 	cli.Application
+}
+
+// GetName fulfills the cli.Application interface's method call which lets us print the correct usage
+// alternatively we could define another Application with the `satlab get` name like in the subcommands
+// https://github.com/maruel/subcommands/blob/main/sample-complex/ask.go#L13
+func (c deleteApp) GetName() string {
+	return fmt.Sprintf("%s delete", site.AppPrefix)
 }
 
 // Run transfers control to the subcommands of delete.

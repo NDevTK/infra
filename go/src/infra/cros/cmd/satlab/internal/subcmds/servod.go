@@ -5,10 +5,13 @@
 package subcmds
 
 import (
+	"fmt"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cros/cmd/satlab/internal/servod"
+	"infra/cros/cmd/satlab/internal/site"
 )
 
 // servodBase is the type for the servod placeholder command.
@@ -35,6 +38,13 @@ var ServodCmd = &subcommands.Command{
 // ServodApp is the placeholder application for the servod command.
 type servodApp struct {
 	cli.Application
+}
+
+// GetName fulfills the cli.Application interface's method call which lets us print the correct usage
+// alternatively we could define another Application with the `satlab get` name like in the subcommands
+// https://github.com/maruel/subcommands/blob/main/sample-complex/ask.go#L13
+func (c servodApp) GetName() string {
+	return fmt.Sprintf("%s servod", site.AppPrefix)
 }
 
 // GetCommands lists the servod subcommands.

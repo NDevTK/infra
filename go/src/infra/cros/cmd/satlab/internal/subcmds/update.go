@@ -5,10 +5,13 @@
 package subcmds
 
 import (
+	"fmt"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cros/cmd/satlab/internal/commands/dns"
+	"infra/cros/cmd/satlab/internal/site"
 )
 
 // UpdateBase is the type for the add placeholder command.
@@ -28,6 +31,13 @@ var UpdateCmd = &subcommands.Command{
 // UpdateApp is the placeholder application for the update command.
 type updateApp struct {
 	cli.Application
+}
+
+// GetName fulfills the cli.Application interface's method call which lets us print the correct usage
+// alternatively we could define another Application with the `satlab get` name like in the subcommands
+// https://github.com/maruel/subcommands/blob/main/sample-complex/ask.go#L13
+func (c updateApp) GetName() string {
+	return fmt.Sprintf("%s update", site.AppPrefix)
 }
 
 // Run transfers control to the add subcommands.
