@@ -205,6 +205,7 @@ builder(
             "codesearch-gen-chromium-lacros",
             "codesearch-gen-chromium-linux",
             "codesearch-gen-chromium-mac",
+            "codesearch-gen-chromium-webview",
             "codesearch-gen-chromium-win",
         ],
         "source_repo": "https://chromium.googlesource.com/codesearch/chromium/src",
@@ -227,6 +228,21 @@ chromium_genfiles(
         "gen_repo_out_dir": "android-Debug",
         "corpus": "chromium.googlesource.com/chromium/src",
         "build_config": "android",
+    },
+)
+
+chromium_genfiles(
+    short_name = "wbv",
+    name = "codesearch-gen-chromium-webview",
+    recipe_properties = {
+        "compile_targets": ["system_webview_apk"],
+        "platform": "android",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        # Generated files will end up in out/webview-Debug/gen.
+        "gen_repo_out_dir": "webview-Debug",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "webview",
     },
 )
 
