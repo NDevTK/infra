@@ -254,11 +254,17 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 	}
 	defer access.Close(ctx)
 
-	// TODO: Need to use custom plan as default.
-	task := tasknames.Recovery
-	if t, ok := supportedTasks[in.TaskName]; ok {
-		task = t
+	// Recovery is the task that we want 90% of the time. However, silently making
+	// recovery the default can cause us to silently fall back to performing a recovery task
+	// when we did not intend to, which is hard to discover unless you carefully read the logs.
+	//
+	// To avoid this, I am making the logic here much stricter and ending the task early if
+	// we use an unrecognized (or empty) task name.
+	task, ok := supportedTasks[in.TaskName]
+	if !ok {
+		return errors.Reason("task name %q is invalid", in.TaskName).Err()
 	}
+
 	var metrics metrics.Metrics
 	if !in.GetNoMetrics() {
 		var err error
