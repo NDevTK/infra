@@ -23,7 +23,7 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/buildbucket"
+	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 	swarming "infra/libs/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -364,7 +364,7 @@ func (c *addLabstation) createLabstationDeployTask(ctx context.Context, tc *swar
 
 // CreateBBClient creates a buildbucket client if permitted.
 func createBBClient(ctx context.Context, authFlags authcli.Flags) (buildbucket.Client, error) {
-	bc, err := buildbucket.NewLabpackClient(ctx, authFlags, site.DefaultPRPCOptions)
+	bc, err := buildbucket.NewClient(ctx, authFlags, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
 	if err != nil {
 		return nil, errors.Annotate(err, "ensure bb client").Err()
 	}
