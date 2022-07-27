@@ -33,6 +33,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
+	"infra/appengine/crosskylabadmin/internal/ufs"
 	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/inventory"
 )
@@ -300,6 +301,16 @@ func getDUT(ctx context.Context, ic inventoryClient, hostname string) (*inventor
 	if getDUTOverrideForTests != nil {
 		return getDUTOverrideForTests(ctx, ic, hostname)
 	}
+
+	// Call UFS directly to get DUT info, if fails, falling back to use the old workflow
+	dutV1, err := ufs.GetDutV1(ctx, hostname)
+	if err != nil {
+		logging.Infof(ctx, "getDUT: fail to get DUT info from UFS for host %s: %s", hostname, err)
+	} else {
+		return dutV1, err
+	}
+
+	logging.Infof(ctx, "getDUT: fallback to get DUT info from Inv2 for host %s", hostname)
 	if ic == nil {
 		return nil, errors.Reason("Inventory Client cannot be nil").Err()
 	}

@@ -87,3 +87,15 @@ func (f *fakeGetPoolsClient) GetChromeOSDeviceData(ctx context.Context, in *ufsA
 		LabConfig: fakeMachine,
 	}, nil
 }
+
+// GetDeviceData always returns a fake host.
+func (f *fakeGetPoolsClient) GetDeviceData(ctx context.Context, in *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error) {
+	f.names = append(f.names, in.GetHostname())
+	return &ufsAPI.GetDeviceDataResponse{
+		Resource: &ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData{
+			ChromeOsDeviceData: &models.ChromeOSDeviceData{
+				LabConfig: fakeMachine,
+			},
+		},
+	}, nil
+}

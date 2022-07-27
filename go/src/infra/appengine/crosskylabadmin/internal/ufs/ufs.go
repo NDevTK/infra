@@ -12,11 +12,15 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
+	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/site"
 	"infra/libs/skylab/common/heuristics"
+	"infra/libs/skylab/inventory"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // NewHTTPClient creates a new client specifically configured to talk to UFS correctly when run from
@@ -31,10 +35,17 @@ func NewHTTPClient(ctx context.Context) (*http.Client, error) {
 	}, nil
 }
 
+// setupContext set up the outgoing context for API calls.
+func setupContext(ctx context.Context, namespace string) context.Context {
+	md := metadata.Pairs(ufsUtil.Namespace, namespace)
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
 // Client exposes a deliberately chosen subset of the UFS functionality.
 type Client interface {
 	GetMachineLSE(context.Context, *ufsAPI.GetMachineLSERequest, ...grpc.CallOption) (*models.MachineLSE, error)
 	GetChromeOSDeviceData(context.Context, *ufsAPI.GetChromeOSDeviceDataRequest, ...grpc.CallOption) (*models.ChromeOSDeviceData, error)
+	GetDeviceData(context.Context, *ufsAPI.GetDeviceDataRequest, ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error)
 }
 
 // ClientImpl is the concrete implementation of this client.
@@ -88,4 +99,24 @@ func GetPools(ctx context.Context, client Client, botID string) ([]string, error
 	}
 	// We have a labstation DUT.
 	return res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
+}
+
+func GetDutV1(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+	cfg := config.Get(ctx)
+	hc, err := NewHTTPClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+	client, err := NewClient(ctx, hc, cfg.GetUFS().GetHost())
+	if err != nil {
+		return nil, err
+	}
+	osCtx := setupContext(ctx, ufsUtil.OSNamespace)
+	res, err := client.GetDeviceData(osCtx, &ufsAPI.GetDeviceDataRequest{
+		Hostname: hostname,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res.GetChromeOsDeviceData().GetDutV1(), nil
 }
