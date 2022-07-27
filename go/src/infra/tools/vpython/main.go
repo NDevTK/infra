@@ -51,11 +51,38 @@ var cipdPackageLoader = cipd.PackageLoader{
 	},
 }
 
-func pythonInterpreterPrefix() string {
-	if runtime.GOOS == "darwin" {
-		return "../Resources/"
+func setupBundledInterpreters() map[string]string {
+	self, err := os.Executable()
+	if err != nil {
+		panic(err)
 	}
-	return ""
+
+	// Make sure the path has all symlinks resolved.
+	// Skip EvalSymlinks for windows because it is broken:
+	// https://github.com/golang/go/issues/40180
+	if runtime.GOOS != "windows" {
+		if self, err = filepath.EvalSymlinks(self); err != nil {
+			panic(err)
+		}
+	}
+
+	basePath := filepath.Dir(self)
+	if runtime.GOOS == "darwin" {
+		basePath += "/../Resources"
+	}
+	exeSuffix := ""
+	if runtime.GOOS == "windows" {
+		exeSuffix = ".exe"
+	}
+	ret := make(map[string]string)
+	for _, version := range []string{"2.7", "3.8"} {
+		pythonName := "python"
+		if version[0] == '3' {
+			pythonName += "3"
+		}
+		ret[version] = fmt.Sprintf("%s/%s/bin/%s%s", basePath, version, pythonName, exeSuffix)
+	}
+	return ret
 }
 
 var defaultConfig = application.Config{
@@ -76,10 +103,7 @@ var defaultConfig = application.Config{
 		Name:    "infra/3pp/tools/virtualenv",
 		Version: "version:2@16.7.10.chromium.7",
 	},
-	RelativePathOverride: []string{
-		pythonInterpreterPrefix() + "2.7/bin",
-		pythonInterpreterPrefix() + "3.8/bin",
-	},
+	InterpreterPaths:        setupBundledInterpreters(),
 	PruneThreshold:          7 * 24 * time.Hour, // One week.
 	MaxPrunesPerSweep:       3,
 	DefaultVerificationTags: verificationScenarios,
