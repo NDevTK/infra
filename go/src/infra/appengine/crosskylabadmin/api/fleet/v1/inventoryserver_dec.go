@@ -23,23 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) GetDutInfo(ctx context.Context, req *GetDutInfoRequest) (rsp *GetDutInfoResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetDutInfo", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetDutInfo(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetDutInfo", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) UpdateDeviceConfig(ctx context.Context, req *UpdateDeviceConfigRequest) (rsp *UpdateDeviceConfigResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

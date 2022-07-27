@@ -13,15 +13,6 @@ option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 
 // Inventory service helps manage ChromeOS DUTs.
 service Inventory {
-  // GetDutInfo returns inventory information about a single DUT.
-  //
-  // This RPC returns possibly cached data about a single DUT. The cache is
-  // updated asynchronously and guaranteed to be a relatively fresh snapshot of
-  // the inventory data.
-  rpc GetDutInfo(GetDutInfoRequest) returns (GetDutInfoResponse){
-    option deprecated = true;
-  };
-
   // Update device config to inventory and local datastore.
   //
   // Updating device config in inventory will be forbidden via repair jobs.

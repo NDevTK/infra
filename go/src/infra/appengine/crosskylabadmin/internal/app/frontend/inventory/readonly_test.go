@@ -20,12 +20,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -34,46 +31,6 @@ import (
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/libs/skylab/inventory"
 )
-
-func TestGetDutInfoWithConsistentDatastoreAndSplitInventory(t *testing.T) {
-	Convey("On happy path and 3 DUTs in the inventory", t, func() {
-		ctx := testingContext()
-		ctx = withSplitInventory(ctx)
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-
-		setSplitGitilesDuts(tf.C, tf.FakeGitiles, []testInventoryDut{
-			{id: "dut1_id", hostname: "jetstream-host", model: "link", pool: "DUT_POOL_SUITES"},
-			{id: "dut2_id", hostname: "jetstream-host", model: "peppy", pool: "DUT_POOL_SUITES"},
-			{id: "dut3_id", hostname: "chromeos15-rack1-row2-host3", model: "link", pool: "DUT_POOL_SUITES"},
-		})
-
-		Convey("initial GetDutInfo (by Id) returns NotFound", func() {
-			_, err := tf.Inventory.GetDutInfo(tf.C, &fleet.GetDutInfoRequest{Id: "dut1_id"})
-			So(status.Code(err), ShouldEqual, codes.NotFound)
-		})
-
-		Convey("initial GetDutInfo (by Hostname) returns NotFound", func() {
-			_, err := tf.Inventory.GetDutInfo(tf.C, &fleet.GetDutInfoRequest{Hostname: "jetstream-host"})
-			So(status.Code(err), ShouldEqual, codes.NotFound)
-		})
-	})
-}
-
-func TestGetDutInfoWithEventuallyConsistentDatastoreAndSplitInventory(t *testing.T) {
-	Convey("With eventually consistent datastore and a single DUT in the inventory", t, func() {
-		ctx := testingContext()
-		ctx = withSplitInventory(ctx)
-		ctx = withDutInfoCacheValidity(ctx, 100*time.Second)
-		datastore.GetTestable(ctx).Consistent(false)
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-
-		setSplitGitilesDuts(tf.C, tf.FakeGitiles, []testInventoryDut{
-			{id: "dut1_id", hostname: "jetstream-host", model: "link", pool: "DUT_POOL_SUITES"},
-		})
-	})
-}
 
 var testLooksLikeFakeServoTests = []struct {
 	in   string
@@ -434,29 +391,6 @@ func withSplitInventory(ctx context.Context) context.Context {
 	cfg := config.Get(ctx)
 	cfg.Inventory.Multifile = true
 	return config.Use(ctx, cfg)
-}
-
-func getDutInfo(t *testing.T, di *fleet.GetDutInfoResponse) *inventory.DeviceUnderTest {
-	t.Helper()
-
-	var dut inventory.DeviceUnderTest
-	So(di.Spec, ShouldNotBeNil)
-	err := proto.Unmarshal(di.Spec, &dut)
-	So(err, ShouldBeNil)
-	return &dut
-}
-
-func getDutInfoBasic(t *testing.T, di *fleet.GetDutInfoResponse) *inventory.DeviceUnderTest {
-	t.Helper()
-	var dut inventory.DeviceUnderTest
-	if di.Spec == nil {
-		t.Fatalf("Got nil spec")
-	}
-	err := proto.Unmarshal(di.Spec, &dut)
-	if err != nil {
-		t.Fatalf("Unmarshal DutInfo returned non-nil error: %s", err)
-	}
-	return &dut
 }
 
 // Maximum time to failure: (2^7 - 1)*(50/1000) = 6.35 seconds

@@ -28,7 +28,6 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
@@ -39,31 +38,6 @@ import (
 )
 
 const beagleboneServo = "beaglebone_servo"
-
-// GetDutInfo implements the method from fleet.InventoryServer interface.
-// Deprecated: Do not use.
-func (is *ServerImpl) GetDutInfo(ctx context.Context, req *fleet.GetDutInfoRequest) (resp *fleet.GetDutInfoResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-
-	if err = req.Validate(); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, err.Error())
-	}
-
-	ic, err := is.newInventoryClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-	data, updated, err := ic.getDutInfo(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	return &fleet.GetDutInfoResponse{
-		Spec:    data,
-		Updated: timestamppb.New(updated),
-	}, nil
-}
 
 // GetStableVersion implements the method from fleet.InventoryServer interface
 func (is *ServerImpl) GetStableVersion(ctx context.Context, req *fleet.GetStableVersionRequest) (resp *fleet.GetStableVersionResponse, err error) {
