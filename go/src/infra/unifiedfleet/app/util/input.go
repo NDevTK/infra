@@ -809,9 +809,9 @@ func ToSchedulingUnitType(schedulingUnitType string) ufspb.SchedulingUnitType {
 
 // StrToSchedulingUnitExposeType refers a map between a string to a UFS defined map.
 var StrToSchedulingUnitExposeType = map[string]string{
-	"default":               "SchedulingUnit_DEFAULT",
-	"default_plus_primary":  "SchedulingUnit_DEFAULT_PLUS_PRIMARY",
-	"strictly_primary_only": "SchedulingUnit_STRICTLY_PRIMARY_ONLY`",
+	"default":               "DEFAULT",
+	"default_plus_primary":  "DEFAULT_PLUS_PRIMARY",
+	"strictly_primary_only": "STRICTLY_PRIMARY_ONLY",
 }
 
 // ValidSchedulingUnitExposeTypeStr returns a valid str list for SchedulingUnit_ExposeType strings.
