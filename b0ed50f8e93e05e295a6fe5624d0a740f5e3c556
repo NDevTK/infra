@@ -110,6 +110,30 @@
       },
       "revId": "b0ed50f8e93e05e295a6fe5624d0a740f5e3c556",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63278c59_b8ea2e0b",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-07-27T18:03:36Z",
+      "side": 1,
+      "message": "When the existing data in the datastore will be overwritten?\n\nI\u0027m not sure I understand the latter part of your replies... the current datastore is already used in prod. If you change the structure blob here and it cannot be marshaled, https://source.corp.google.com/chromium_infra/go/src/infra/unifiedfleet/app/controller/hwid.go;l\u003d40?q\u003dGetHwidData\u0026ss\u003dpiper%2FGoogle%2Fchromium_infra:go%2Fsrc%2Finfra%2Funifiedfleet%2F will definitely fail before you overwrite any data?",
+      "parentUuid": "6a8f80df_1618c872",
+      "range": {
+        "startLine": 43,
+        "startChar": 40,
+        "endLine": 43,
+        "endChar": 58
+      },
+      "revId": "b0ed50f8e93e05e295a6fe5624d0a740f5e3c556",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
