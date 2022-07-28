@@ -24,10 +24,7 @@ Includes CI configs for the following subprojects:
   * https://chromium.googlesource.com/infra/testing/expect_tests
 """
 
-lucicfg.check_version("1.31.2", "Please update depot_tools")
-
-# LUCI Scheduler BBv2 names and realms configs.
-lucicfg.enable_experiment("crbug.com/1182002")
+lucicfg.check_version("1.32.0", "Please update depot_tools")
 
 # Tell lucicfg what files it is allowed to touch.
 lucicfg.config(
