@@ -182,6 +182,9 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                     'chromium/src': ['refs/heads/main',]
                 }
             },
+            'allowed_gerrit_configs': {
+                'chromium-review.googlesource.com': ['chromium/src']
+            },
             'postsubmit_platform_info_map': {
                 'chromium': {
                     'linux': {

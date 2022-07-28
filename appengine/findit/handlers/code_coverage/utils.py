@@ -59,6 +59,24 @@ def GetAllowedGitilesConfigs():
       'allowed_gitiles_configs', {})
 
 
+def GetAllowedGerritConfigs():
+  """Returns the set of valid gerrit configurations.
+
+  The returned structure contains the map of valid gerrit_hosts to projects.
+
+  Example config:
+  {
+    'allowed_gerrit_configs': {
+      'chromium-review.googlesource.com': [
+        'chromium/src'
+      ]
+    }
+  }
+  """
+  return waterfall_config.GetCodeCoverageSettings().get(
+      'allowed_gerrit_configs', {})
+
+
 def GetMatchedDependencyRepository(manifest, file_path):  # pragma: no cover.
   """Gets the matched dependency in the manifest of the report.
 

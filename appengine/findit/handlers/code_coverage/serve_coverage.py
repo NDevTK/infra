@@ -340,7 +340,7 @@ class ServeCodeCoverageData(BaseHandler):
 
       return {'data': {'data': formatted_data,}, 'allowed_origin': '*'}
 
-    host = self.request.get('host')
+    gerrit_host = self.request.get('host')
     project = self.request.get('project')
     try:
       change = int(self.request.get('change'))
@@ -357,15 +357,15 @@ class ServeCodeCoverageData(BaseHandler):
     data_type = self.request.get('type', 'lines')
 
     logging.info('Serving coverage data for CL:')
-    logging.info('host=%s', host)
+    logging.info('host=%s', gerrit_host)
     logging.info('change=%d', change)
     logging.info('patchset=%d', patchset)
     logging.info('type=%s', data_type)
 
-    configs = utils.GetAllowedGitilesConfigs()
-    if project not in configs.get(host.replace('-review', ''), {}):
+    configs = utils.GetAllowedGerritConfigs()
+    if project not in configs.get(gerrit_host, []):
       return BaseHandler.CreateError(
-          error_message='"%s/%s" is not supported.' % (host, project),
+          error_message='"%s/%s" is not supported.' % (gerrit_host, project),
           return_code=400,
           allowed_origin='*',
           is_project_supported=False)
@@ -388,7 +388,7 @@ class ServeCodeCoverageData(BaseHandler):
           **kwargs)
 
     entity = PresubmitCoverageData.Get(
-        server_host=host, change=change, patchset=patchset)
+        server_host=gerrit_host, change=change, patchset=patchset)
     is_serving_percentages = (data_type == 'percentages')
     if entity:
       if is_serving_percentages:
@@ -402,7 +402,7 @@ class ServeCodeCoverageData(BaseHandler):
     # If coverage data of the requested patchset is not available, we check
     # previous equivalent patchsets try to reuse their data if applicable.
     equivalent_patchsets = code_coverage_util.GetEquivalentPatchsets(
-        host, project, change, patchset)
+        gerrit_host, project, change, patchset)
     if not equivalent_patchsets:
       return BaseHandler.CreateError(
           'Requested coverage data is not found.', 404, allowed_origin='*')
@@ -410,7 +410,7 @@ class ServeCodeCoverageData(BaseHandler):
     latest_entity = None
     for ps in sorted(equivalent_patchsets, reverse=True):
       latest_entity = PresubmitCoverageData.Get(
-          server_host=host, change=change, patchset=ps)
+          server_host=gerrit_host, change=change, patchset=ps)
       if latest_entity and latest_entity.based_on is None:
         break
 
@@ -427,7 +427,7 @@ class ServeCodeCoverageData(BaseHandler):
     try:
       rebased_coverage_data = \
         code_coverage_util.RebasePresubmitCoverageDataBetweenPatchsets(
-          host=host,
+          host=gerrit_host,
           project=project,
           change=change,
           patchset_src=latest_entity.cl_patchset.patchset,
@@ -435,7 +435,7 @@ class ServeCodeCoverageData(BaseHandler):
           coverage_data_src=latest_entity.data) if latest_entity.data else None
       rebased_coverage_data_unit = \
         code_coverage_util.RebasePresubmitCoverageDataBetweenPatchsets(
-          host=host,
+          host=gerrit_host,
           project=project,
           change=change,
           patchset_src=latest_entity.cl_patchset.patchset,
@@ -449,7 +449,7 @@ class ServeCodeCoverageData(BaseHandler):
           allowed_origin='*')
 
     entity = PresubmitCoverageData.Create(
-        server_host=host,
+        server_host=gerrit_host,
         change=change,
         patchset=patchset,
         data=rebased_coverage_data,
