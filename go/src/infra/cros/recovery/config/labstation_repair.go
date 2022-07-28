@@ -22,6 +22,7 @@ func LabstationRepairConfig() *Configuration {
 					"check_host_info",
 					"Device is pingable",
 					"Device is SSHable",
+					"Clean up logs if necessary",
 					"Filesystem is writable",
 					"cros_is_on_stable_version",
 					"Update provisioned info",
@@ -277,6 +278,16 @@ func LabstationRepairConfig() *Configuration {
 					},
 					"Read serial number from labstation": {
 						ExecName:               "cros_update_serial_number_inventory",
+						AllowFailAfterRecovery: true,
+					},
+					"Clean up logs if necessary": {
+						Docs: []string{
+							"Check size of messages logs on labstation and cleanup if necessary.",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName:               "cros_log_clean_up",
 						AllowFailAfterRecovery: true,
 					},
 				},
