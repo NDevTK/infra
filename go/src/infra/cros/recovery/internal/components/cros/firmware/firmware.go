@@ -47,7 +47,7 @@ var targetOverrideModels = map[string]string{
 	// TODO(b/226402941): Read existing ec image name using futility.
 	"dragonair": "dratini",
 	// Models that use _signed version of firmware.
-	"drallion360": "drallion360_signed",
+	"drallion360": "drallion_signed",
 	"sarien":      "sarien_signed",
 	"arcada":      "arcada_signed",
 	"drallion":    "drallion_signed",
