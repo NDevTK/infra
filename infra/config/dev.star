@@ -11,14 +11,11 @@ This is also enforced by PRESUBMIT.py script.
 
 load("//lib/infra.star", "infra")
 
-lucicfg.check_version("1.30.9", "Please update depot_tools")
+lucicfg.check_version("1.32.0", "Please update depot_tools")
 
 # Global recipe defaults
 luci.recipe.defaults.cipd_version.set("refs/heads/main")
 luci.recipe.defaults.use_bbagent.set(True)
-
-# Enable v2 bucket names in LUCI Scheduler config.
-lucicfg.enable_experiment("crbug.com/1182002")
 
 lucicfg.config(
     config_dir = "generated",
