@@ -19,6 +19,8 @@ import (
 const (
 	// Default minimum labstation uptime.
 	minLabstationUptime = 6 * time.Hour
+	// Threshold of messages log size we can keep. It should use expression(bcwkMG) that supported by `find` cli.
+	messagesLogSizeThreshold = "50M"
 )
 
 // cleanTmpOwnerRequestExec cleans tpm owner requests.
@@ -85,9 +87,34 @@ func filesystemIoNotBlockedExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
+// logCleanupExec rotate and cleanup messages logs if they're large than the threshold.
+func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.DefaultRunner()
+	// First we want to check if the current messages log larger than the threshold, and if it is
+	// we need rotate logs before we can safely remove it as other process may still writing logs into it.
+	checkCurrentCmd := fmt.Sprintf("find /var/log/messages -size +%s", messagesLogSizeThreshold)
+	if out, err := run(ctx, info.ActionTimeout, checkCurrentCmd); err != nil && out != "" {
+		log.Debugf(ctx, "Log cleanup: current messages log larger than %s, will rotate logs.", messagesLogSizeThreshold)
+		if _, err := run(ctx, info.ActionTimeout, "/usr/sbin/chromeos-cleanup-logs"); err != nil {
+			log.Debugf(ctx, "Log cleanup: failed to execute chromeos-cleanup-logs")
+		}
+	}
+	// Checking if there are any old logs that larger than the threshold, and if true remove all old logs.
+	checkOldCmd := fmt.Sprintf("find /var/log/messages.* -size +%s", messagesLogSizeThreshold)
+	if out, err := run(ctx, info.ActionTimeout, checkOldCmd); err != nil && out != "" {
+		log.Debugf(ctx, "Log cleanup: detected old messages log that larger than %s", messagesLogSizeThreshold)
+		if _, err := run(ctx, info.ActionTimeout, "rm /var/log/messages.*"); err != nil {
+			return errors.Reason("log cleanup: failed to remove old messages log.").Err()
+		}
+		log.Debugf(ctx, "Log cleanup: successfully removed old messages log.")
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_clean_tmp_owner_request", cleanTmpOwnerRequestExec)
 	execs.Register("cros_validate_uptime", validateUptime)
 	execs.Register("cros_allowed_reboot", allowedRebootExec)
 	execs.Register("cros_filesystem_io_not_blocked", filesystemIoNotBlockedExec)
+	execs.Register("cros_log_clean_up", logCleanupExec)
 }
