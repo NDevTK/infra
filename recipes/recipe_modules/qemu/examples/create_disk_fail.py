@@ -17,5 +17,5 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield (api.test('Test qemu init') + api.post_process(StatusFailure) +
+  yield (api.test('Test create_disk fail') + api.post_process(StatusFailure) +
          api.post_process(DropExpectation))
