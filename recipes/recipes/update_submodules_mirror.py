@@ -52,6 +52,12 @@ PROPERTIES = {
             help='A list of patterns for which matching refs should be added. '
             'Git supported pattern syntax: '
             'https://man7.org/linux/man-pages/man7/glob.7.html'),
+    'refs_to_skip':
+        Property(
+            default=[],
+            help='A list of refs which match a ref_patterns but should be '
+            'excluded from the mirroring. This can be used to remove branches '
+            'with invalid git hashes.'),
 }
 
 COMMIT_USERNAME = 'Submodules bot'
@@ -62,7 +68,7 @@ SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
 
 
 def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
-             internal, with_tags, ref_patterns):
+             internal, with_tags, ref_patterns, refs_to_skip):
   _, source_project = api.gitiles.parse_repo_url(source_repo)
 
   # NOTE: This name must match the definition in cr-buildbucket.cfg. Do not
@@ -105,7 +111,9 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
         'ls-remote', source_repo, ref_pattern,
         stdout=api.raw_io.output_text()).stdout.splitlines()
     for line in resp:
-      refs_to_mirror_set.add(line.split()[1])
+      ref = line.split()[1]
+      if ref not in refs_to_skip:
+        refs_to_mirror_set.add(ref)
 
   refs_to_mirror = sorted(refs_to_mirror_set)
 
