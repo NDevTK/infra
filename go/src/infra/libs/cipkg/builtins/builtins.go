@@ -27,10 +27,10 @@ func Execute(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	switch cmd.Path {
-	//case FetchURLBuilder:
-	//	return fetchURL(ctx, out, drv.Args)
-	//case EmbedFilesBuilder:
-	//	return embedFiles(ctx, out, drv.Args)
+	case FetchURLBuilder:
+		return fetchURL(ctx, cmd)
+	case CopyFilesBuilder:
+		return copyFiles(ctx, cmd)
 	case ImportBuilder:
 		return importFromHost(ctx, cmd)
 	case CIPDEnsureBuilder:

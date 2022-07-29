@@ -26,13 +26,16 @@ const (
 	ImportDirectory
 )
 
+type ImportTarget struct {
+	Source      string
+	Destination string
+	Version     string
+	Type        int
+}
+
 type Import struct {
 	Name    string
-	Path    string
-	Version string
-	Target  string
-
-	Type int
+	Targets []ImportTarget
 }
 
 func (i *Import) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
@@ -59,55 +62,67 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 		return fmt.Errorf("failed to decode import: %#v: %w", cmd.Args[1], err)
 	}
 
-	subdir := filepath.Join(out, i.Target)
-	if err := os.MkdirAll(subdir, os.ModePerm); err != nil {
-		return fmt.Errorf("failed to create directory: %#v: %w", subdir, err)
-	}
-	var newname string
-	switch i.Type {
-	case ImportNormalFile:
-		newname = filepath.Join(subdir, filepath.Base(i.Path))
-	case ImportExecutable:
-		// TODO: For windows we need to create a bat file instead for dll searching
-		newname = filepath.Join(subdir, filepath.Base(i.Path))
-	case ImportDirectory:
-		if err := os.Remove(subdir); err != nil {
-			return fmt.Errorf("failed to remove output dir: %w", err)
+	for _, t := range i.Targets {
+		subdir := filepath.Join(out, t.Destination)
+		if err := os.MkdirAll(subdir, os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create directory: %#v: %w", subdir, err)
 		}
-		newname = subdir
-	}
+		var newname string
+		switch t.Type {
+		case ImportNormalFile:
+			newname = filepath.Join(subdir, filepath.Base(t.Source))
+		case ImportExecutable:
+			// TODO: For windows we need to create a bat file instead for dll searching
+			newname = filepath.Join(subdir, filepath.Base(t.Source))
+		case ImportDirectory:
+			if err := os.Remove(subdir); err != nil {
+				return fmt.Errorf("failed to remove output dir: %w", err)
+			}
+			newname = subdir
+		}
 
-	if err := os.Symlink(i.Path, newname); err != nil {
-		return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
+		if err := os.Symlink(t.Source, newname); err != nil {
+			return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
+		}
 	}
 	return nil
 }
 
 var importFromPathMap = make(map[string]struct {
-	g   cipkg.Generator
-	err error
+	target *ImportTarget
+	err    error
 })
 
-// FromHost(bin) is a wrapper for builtins.Import generator. It finds binaries
+// FromPathBatch(...) is a wrapper for builtins.Import generator. It finds binaries
 // in the PATH environment and caches the result.
-func FromPath(bin string) (cipkg.Generator, error) {
-	ret, ok := importFromPathMap[bin]
-	if ok {
-		return ret.g, ret.err
-	}
+func FromPathBatch(name string, bins ...string) (cipkg.Generator, error) {
+	i := &Import{Name: name}
+	for _, bin := range bins {
+		ret, ok := importFromPathMap[bin]
+		if !ok {
+			ret.target, ret.err = func() (*ImportTarget, error) {
+				path, err := exec.LookPath(bin)
+				if err != nil {
+					return nil, fmt.Errorf("failed to find binary: %s: %w", bin, err)
+				}
+				return &ImportTarget{
+					Source:      path,
+					Destination: "bin",
+					Type:        ImportExecutable,
+				}, nil
+			}()
 
-	ret.g, ret.err = func() (cipkg.Generator, error) {
-		path, err := exec.LookPath(bin)
-		if err != nil {
-			return nil, fmt.Errorf("failed to find binary: %s: %w", bin, err)
+			importFromPathMap[bin] = ret
 		}
-		return &Import{
-			Name: bin,
-			Path: path,
-			Type: ImportExecutable,
-		}, nil
-	}()
 
-	importFromPathMap[bin] = ret
-	return ret.g, ret.err
+		if ret.err != nil {
+			return nil, ret.err
+		}
+		i.Targets = append(i.Targets, *ret.target)
+	}
+	return i, nil
+}
+
+func FromPath(bin string) (cipkg.Generator, error) {
+	return FromPathBatch(fmt.Sprintf("%s_import", bin), bin)
 }

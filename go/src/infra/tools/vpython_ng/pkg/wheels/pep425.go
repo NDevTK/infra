@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"

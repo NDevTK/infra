@@ -20,7 +20,6 @@ import (
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/spec"
 	"go.chromium.org/luci/vpython/wheel"
@@ -40,6 +39,9 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: tags},
 		},
+		Env: []string{
+			"python_pep425tags={{.python_pep425tags}}",
+		},
 	}, nil
 }
 
@@ -48,7 +50,7 @@ func init() {
 }
 
 func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
-	// cmd.Args = ["builtin:udf:generateWheelsDir", Version, Spec]
+	// cmd.Args = ["builtin:udf:ensureWheels", Version, Spec]
 
 	// Parse spec file
 	var s vpython.Spec
@@ -138,7 +140,6 @@ func ensureFileFromWheels(expander template.Expander, wheels []*vpython.Spec_Pac
 		}
 	}
 	return &ensure.File{
-		ServiceURL:       chromeinfra.CIPDServiceURL,
 		PackagesBySubdir: map[string]ensure.PackageSlice{"wheels": pslice},
 	}, nil
 }

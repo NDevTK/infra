@@ -14,7 +14,7 @@ import (
 
 type BaseDependency struct {
 	Runtime   bool
-	Type      int
+	Type      cipkg.DependencyType
 	Generator cipkg.Generator
 }
 
@@ -26,8 +26,17 @@ type BaseGenerator struct {
 	Dependencies []BaseDependency
 }
 
+type BaseGeneratorResult struct {
+	Derivation cipkg.Derivation
+	Metadata   cipkg.PackageMetadata
+	Packages   []cipkg.Package
+}
+
 func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	var inputs, envs, rDeps []string
+	// Generate dependencies' derivation
+	var inputs, rDeps []string
+	dirs := make(map[string]string)
+	envDeps := make(map[string][]string)
 	for _, dep := range g.Dependencies {
 		d := &cipkg.Dependency{
 			Type:      dep.Type,
@@ -40,30 +49,31 @@ func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cip
 
 		drv := pkg.Derivation()
 		inputs = append(inputs, drv.ID())
-		envs = append(envs, fmt.Sprintf("%s=%s", drv.Name, pkg.Directory()))
+		dirs[drv.Name] = pkg.Directory()
+		envDeps[d.Type.String()] = append(envDeps[d.Type.String()], pkg.Directory())
 		if dep.Runtime {
 			rDeps = append(rDeps, drv.ID())
 		}
 	}
-	envs = append(envs, g.Env...)
 
-	envMap, err := envToMap(envs)
-	if err != nil {
-		return cipkg.Derivation{}, cipkg.PackageMetadata{}, nil
-	}
-
+	// Render templates for Builder, Args, Env
 	tmpl := template.New(g.Name).Option("missingkey=error")
-	builder, err := render(tmpl.New("builder"), g.Builder, envMap)
+	builder, err := render(tmpl.New("builder"), g.Builder, dirs)
 	if err != nil {
-		return cipkg.Derivation{}, cipkg.PackageMetadata{}, nil
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
-	var args []string
-	for i, arg := range g.Args {
-		a, err := render(tmpl.New(fmt.Sprintf("arg_%d", i)), arg, envMap)
-		if err != nil {
-			return cipkg.Derivation{}, cipkg.PackageMetadata{}, nil
-		}
-		args = append(args, a)
+	args, err := renderAll(tmpl, "arg", g.Args, dirs)
+	if err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+	}
+	env, err := renderAll(tmpl, "env", g.Env, dirs)
+	if err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+	}
+
+	// Add dependencies' environment variables
+	for e, deps := range envDeps {
+		env = append(env, fmt.Sprintf("%s=%s", e, strings.Join(deps, ":")))
 	}
 
 	return cipkg.Derivation{
@@ -71,25 +81,23 @@ func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cip
 			Platform: ctx.Platform.Build,
 			Builder:  builder,
 			Args:     args,
-			Env:      envs,
+			Env:      env,
 			Inputs:   inputs,
-		},
-		cipkg.PackageMetadata{
+		}, cipkg.PackageMetadata{
 			Dependencies: rDeps,
-		},
-		nil
+		}, nil
 }
 
-func envToMap(envs []string) (map[string]string, error) {
-	m := make(map[string]string)
-	for _, env := range envs {
-		ss := strings.SplitN(env, "=", 2)
-		if len(ss) != 2 {
-			return nil, fmt.Errorf("invalid environment variable: %s", env)
+func renderAll(tmpl *template.Template, prefix string, raw []string, data interface{}) ([]string, error) {
+	var ret []string
+	for i, r := range raw {
+		a, err := render(tmpl.New(fmt.Sprintf("%s_%d", prefix, i)), r, data)
+		if err != nil {
+			return nil, err
 		}
-		m[ss[0]] = ss[1]
+		ret = append(ret, a)
 	}
-	return m, nil
+	return ret, nil
 }
 
 func render(tmpl *template.Template, raw string, data interface{}) (string, error) {

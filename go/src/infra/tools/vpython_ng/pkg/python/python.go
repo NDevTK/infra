@@ -17,7 +17,6 @@ import (
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 type Environment struct {
@@ -29,7 +28,6 @@ func CPythonFromCIPD(version string) cipkg.Generator {
 	return &builtins.CIPDEnsure{
 		Name: "cpython",
 		Ensure: ensure.File{
-			ServiceURL: chromeinfra.CIPDServiceURL,
 			PackagesBySubdir: map[string]ensure.PackageSlice{
 				"": {
 					{PackageTemplate: "infra/3pp/tools/cpython3/${platform}", UnresolvedVersion: version},
@@ -43,7 +41,6 @@ func VirtualenvFromCIPD(version string) cipkg.Generator {
 	return &builtins.CIPDEnsure{
 		Name: "virtualenv",
 		Ensure: ensure.File{
-			ServiceURL: chromeinfra.CIPDServiceURL,
 			PackagesBySubdir: map[string]ensure.PackageSlice{
 				"": {
 					{PackageTemplate: "infra/3pp/tools/virtualenv", UnresolvedVersion: version},
@@ -90,6 +87,9 @@ func (e *Environment) WithWheels(wheels cipkg.Generator) cipkg.Generator {
 			{Type: cipkg.DepsHostTarget, Generator: e.Virtualenv},
 			{Type: cipkg.DepsHostTarget, Generator: wheels},
 		},
+		Env: []string{
+			"wheels={{.wheels}}",
+		},
 	}
 }
 
@@ -112,9 +112,9 @@ func CPythonFromRelativePath(subdir string) (cipkg.Generator, error) {
 		return nil, errors.Annotate(err, "failed to read version file").Err()
 	}
 	return &builtins.Import{
-		Name:    "cpython",
-		Path:    cpythonDir,
-		Version: string(version),
-		Type:    builtins.ImportDirectory,
+		Name: "cpython",
+		Targets: []builtins.ImportTarget{
+			{Source: cpythonDir, Version: string(version), Type: builtins.ImportDirectory},
+		},
 	}, nil
 }

@@ -18,8 +18,29 @@ var (
 
 // Different dependency types are used to calculate dependency's cross-compile
 // platform from the dependent's.
+type DependencyType int
+
+func (t DependencyType) String() string {
+	switch t {
+	case DepsBuildBuild:
+		return "depsBuildBuild"
+	case DepsBuildHost:
+		return "depsBuildHost"
+	case DepsBuildTarget:
+		return "depsBuildTarget"
+	case DepsHostHost:
+		return "depsHostHost"
+	case DepsHostTarget:
+		return "depsHostTarget"
+	case DepsTargetTarget:
+		return "depsTargetTarget"
+	default:
+		return "depsUnknown"
+	}
+}
+
 const (
-	DepsUnknown = iota
+	DepsUnknown DependencyType = iota
 	DepsBuildBuild
 	DepsBuildHost
 	DepsBuildTarget
@@ -29,7 +50,7 @@ const (
 )
 
 type Dependency struct {
-	Type      int
+	Type      DependencyType
 	Generator Generator
 }
 
