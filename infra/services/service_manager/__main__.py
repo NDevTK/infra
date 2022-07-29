@@ -98,4 +98,3 @@ class ServiceManager(app.BaseApplication):
 
 if __name__ == '__main__':
   ServiceManager().run()
-

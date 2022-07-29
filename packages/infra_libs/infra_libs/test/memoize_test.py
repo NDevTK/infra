@@ -76,9 +76,6 @@ class FunctionTestCase(MemoTestCase):
   def testOldClassMethod(self):
 
     class Test:
-      # Disable 'no __init__ method' warning | pylint: disable=W0232
-      # pylint: disable=old-style-class
-
       @classmethod
       @memoize.memo()
       def func(cls, a):
@@ -116,9 +113,6 @@ class FunctionTestCase(MemoTestCase):
   def testOldClassStaticMethod(self):
 
     class Test:
-      # Disable 'no __init__ method' warning | pylint: disable=W0232
-      # pylint: disable=old-style-class
-
       @staticmethod
       @memoize.memo()
       def func(a):
@@ -191,7 +185,6 @@ class FunctionTestCase(MemoTestCase):
 class MemoInstanceMethodTestCase(MemoTestCase):
 
   class TestBaseOld:
-    # pylint: disable=old-style-class
     def __init__(self, test_case, name):
       self.test_case = test_case
       self.name = name

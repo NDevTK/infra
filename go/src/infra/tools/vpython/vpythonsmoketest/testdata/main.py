@@ -6,7 +6,7 @@ import sys
 if sys.platform == 'win32':
   import msvcrt
 
-print "Hello"
+print("Hello")
 vpython_exe = os.getenv("VPYTHON_TEST_EXE")
 
 nb_child = 3

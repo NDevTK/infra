@@ -24,6 +24,7 @@ import mock
 Stat = collections.namedtuple('Stat', ['st_ino'])
 
 
+# pylint: disable=unexpected-keyword-arg
 class TestFlock(auto_stub.TestCase):
   @unittest.skipIf(sys.platform == 'win32', 'Requires not windows')
   def setUp(self):

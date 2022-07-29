@@ -40,6 +40,7 @@ def make_signal_quality_entities(project, p):
     return p | 'CreateEntity' >> beam.Map(make_entity)
 
 
+# pylint: disable=expression-not-assigned
 def main():
     project = 'chromeperf'
     options = PipelineOptions()

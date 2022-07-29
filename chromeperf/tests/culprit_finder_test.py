@@ -148,7 +148,6 @@ def simple_job(datastore_client, gitiles_commit_info):
             'start_git_hash': 'commit_0',
             'end_git_hash': 'commit_5',
             'repository': 'chromium',
-            'target': 'some target',
             'benchmark': 'some benchmark',
             'builder': 'Some builder',
             'target': 'telemetry_perf_tests',

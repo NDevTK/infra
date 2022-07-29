@@ -3,4 +3,4 @@
 import sys
 import six
 
-print "Child2", sys.argv[1]
+print("Child2", sys.argv[1])

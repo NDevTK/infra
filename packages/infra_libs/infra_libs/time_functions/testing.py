@@ -14,6 +14,7 @@ import tzlocal
 from six import with_metaclass
 
 
+# pylint: disable=invalid-metaclass
 def mock_datetime_utc(*dec_args, **dec_kwargs):
   """Overrides built-in datetime and date classes to always return a given time.
 

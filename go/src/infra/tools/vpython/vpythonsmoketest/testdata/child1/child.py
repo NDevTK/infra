@@ -3,4 +3,4 @@
 import sys
 import enum
 
-print "Child1", sys.argv[1]
+print("Child1", sys.argv[1])

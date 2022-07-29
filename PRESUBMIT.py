@@ -19,6 +19,50 @@ DISABLED_TESTS = [
 DISABLED_PYLINT_WARNINGS = [
     'no-init',                # Class has no __init__ method
     'super-init-not-called',  # __init__ method from base class is not called
+    'cyclic-import',
+    'unused-argument',
+    'import-outside-toplevel',
+    'inconsistent-return-statements',
+    'no-member',
+    'no-value-for-parameter',
+    'stop-iteration-return',
+    'subprocess-run-check',
+    # TODO(crbug/1347377): Re-enable these checks.
+    'no-else-return',
+    'no-else-continue',
+    'no-else-raise',
+    'use-a-generator',
+    'consider-using-in',
+    'consider-iterating-dictionary',
+    'arguments-differ',
+    'useless-import-alias',
+    'unused-variable',
+    'pointless-statement',
+    'redefined-outer-name',
+    'line-too-long',
+    'possibly-unused-variable',
+    'useless-object-inheritance',
+    'redefined-argument-from-local',
+    'unnecessary-comprehension',
+    'unnecessary-pass',
+    'consider-using-set-comprehension',
+    'dangerous-default-value',
+    'redefined-builtin',
+    'unidiomatic-typecheck',
+    'multiple-statements',
+    'logging-fstring-interpolation',
+    'useless-super-delegation',
+    'bare-except',
+    'raising-format-tuple',
+    'useless-return',
+    'f-string-without-interpolation',
+    'attribute-defined-outside-init',
+    'try-except-raise',
+    # Checks which should be re-enabled after Python 2 support is removed.
+    'useless-object-inheritance',
+    'super-with-arguments',
+    'raise-missing-from',
+    'keyword-arg-before-vararg',
 ]
 
 DISABLED_PROJECTS = [
@@ -30,6 +74,7 @@ DISABLED_PROJECTS = [
     '.*/__pycache__',
     '\.git',
     '\.wheelcache',
+    '\.dockerbuild',
     'bootstrap/virtualenv-ext',
     'go/src/infra/cmd/package_index_cros',
     'go/src/infra/tools/vpython/utils',
@@ -335,6 +380,56 @@ def BrokenLinksChecks(input_api, output_api):  # pragma: no cover
 
 
 def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
+  py2_files = [
+      r'^bootstrap/.*\.py$',
+      r'^build/.*\.py$',
+      r'^infra/libs/git2/.*\.py$',
+      r'^infra/libs/state_machine/.*\.py$',
+      r'^infra/services/git_cookie_daemon/.*\.py$',
+      r'^infra/services/service_manager/.*\.py$',
+      r'^infra/tools/bot_setup/.*\.py$',
+      r'^infra/tools/bucket/.*\.py$',
+      r'^infra/tools/dockerbuild/.*\.py$',
+      r'^infra/tools/log/.*\.py$',
+      r'^infra/tools/new_tool/.*\.py$',
+      r'^infra/tools/zip_release_commits/.*\.py$',
+      r'^glyco/glucose/.*\.py$',
+      r'^go/src/infra/tools/cloudtail/.*\.py$',
+  ]
+  tests = []
+  tests.extend(PylintChecksForPython2(
+        input_api, output_api, only_changed, include=py2_files))
+  tests.extend(PylintChecksForPython3(
+        input_api, output_api, exclude=py2_files))
+  return tests
+
+
+def PylintChecksForPython3(input_api, output_api, exclude):  # pragma: no cover
+  files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP)
+  files_to_skip += exclude
+  files_to_skip += DISABLED_PROJECTS
+  files_to_skip += IgnoredPaths(input_api)
+  files_to_skip += [
+      r'.*_pb2\.py$',
+
+      # Tests are expected to trigger pylint warnings
+      r'go/src/infra/tricium/functions/pylint/test/.*\.py$',
+
+      # TODO(phajdan.jr): pylint recipes-py code (http://crbug.com/617939).
+      r'^recipes/recipes\.py$'
+  ]
+
+  return input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      files_to_skip=files_to_skip,
+      disabled_warnings=DISABLED_PYLINT_WARNINGS,
+      version='2.7',
+  )
+
+
+def PylintChecksForPython2(
+    input_api, output_api, only_changed, include):  # pragma: no cover
   infra_root = input_api.PresubmitLocalPath()
   # DEPS specifies depot_tools, as sibling of infra.
   venv_path = input_api.os_path.join(infra_root, 'ENV', 'lib', 'python2.7')
@@ -343,16 +438,13 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
   input_api.python_executable = (
     input_api.os_path.join(infra_root, 'ENV', 'bin', 'python'))
 
-  files_to_check = ['.*\.py$']
+  files_to_check = include
   files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP)
   # FIXME: files_to_skip are regexes, but DISABLED_PROJECTS aren't.
   files_to_skip += DISABLED_PROJECTS
   files_to_skip += [
     '.*_pb2\.py',
-    'chromeperf/.*',  # TODO(crbug.com/1123486): pylint for Python3
   ]
-  # TODO(phajdan.jr): pylint recipes-py code (http://crbug.com/617939).
-  files_to_skip += [r'^recipes/recipes\.py$']
   files_to_skip += IgnoredPaths(input_api)
 
   extra_syspaths = [venv_path]

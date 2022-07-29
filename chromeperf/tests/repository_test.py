@@ -70,4 +70,3 @@ def test_resolves_ignoring_dotgit_suffix(datastore_client):
 def test_Repository_not_directly_constructible():
     with pytest.raises(AssertionError):
         repository_module.Repository('name', 'https://url/')
-

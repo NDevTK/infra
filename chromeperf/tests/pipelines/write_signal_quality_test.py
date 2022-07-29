@@ -34,7 +34,7 @@ def make_entity(now, id, score):
 
 
 def test_write_signal_quality():
-    now = datetime.datetime.now(),
+    now = datetime.datetime.now()
     with test_pipeline.TestPipeline() as p:
         input = p | beam.Create([{
             'test': 'ChromiumPerf/android-pixel2-perf/blink_perf/1',
