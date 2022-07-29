@@ -1720,6 +1720,20 @@ wheel: <
 
 * *universal*
 
+## **fixtures**
+
+### 4.0.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/fixtures-py2_py3"
+  version: "version:4.0.1"
+>
+```
+
+
+* *universal*
+
 ## **flask**
 
 ### 1.0.2
@@ -3763,6 +3777,20 @@ wheel: <
 
 * *universal*
 
+## **mox3**
+
+### 1.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mox3-py2_py3"
+  version: "version:1.1.0"
+>
+```
+
+
+* *universal*
+
 ## **mozdebug**
 
 ### 0.1.1
@@ -4558,6 +4586,18 @@ wheel: <
 
 * *universal*
 
+### 5.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pbr-py2_py3"
+  version: "version:5.9.0"
+>
+```
+
+
+* *universal*
+
 ## **pefile**
 
 ### 2018.8.8
@@ -4995,6 +5035,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/protobuf-to-dict-py2_py3"
   version: "version:0.1.0"
+>
+```
+
+
+* *universal*
+
+## **protorpc**
+
+### 0.12.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/protorpc-py2_py3"
+  version: "version:0.12.0"
 >
 ```
 
