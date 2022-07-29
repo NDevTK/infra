@@ -28,12 +28,13 @@ import (
 )
 
 // This compiles `task.cfg` into the final program as a []byte
+//
 //go:embed task.cfg
 var Config []byte
 
 const configName = "task.cfg"
 
-var execCommand = exec.Command
+var execCommand = exec.CommandContext
 
 // This function is replaced in the test.
 var setupNsJailLog = func(ctx context.Context) (*os.File, error) {
@@ -65,7 +66,7 @@ func RunInNsjail(ctx context.Context, command []string) error {
 	logFd := strconv.FormatUint(uint64(nsjailFile.Fd())+3, 10)
 	nsjailPath := "/opt/isolation/nsjail"
 	cmdConfig := append([]string{"--config", configName, "--log_fd", logFd, "--seccomp_log"}, command...)
-	nsjailCmd := execCommand(nsjailPath, cmdConfig...)
+	nsjailCmd := execCommand(ctx, nsjailPath, cmdConfig...)
 	nsjailCmd.ExtraFiles = []*os.File{nsjailFile}
 
 	// Configure stdin/stdout/stderr

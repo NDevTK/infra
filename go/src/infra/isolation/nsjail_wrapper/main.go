@@ -18,7 +18,9 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
+	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/provenance/client"
 	"go.chromium.org/luci/provenance/reporter"
 )
@@ -27,6 +29,8 @@ const snoopy_addr = "http://localhost:11000"
 
 func main() {
 	ctx := context.Background()
+	ctx, shutdown := lucictx.TrackSoftDeadline(ctx, 500*time.Millisecond)
+	defer shutdown()
 
 	if len(os.Args) < 2 {
 		log.Fatalf("not enough arguments passed")

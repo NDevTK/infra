@@ -68,10 +68,10 @@ func TestHelperProcess(t *testing.T) {
 		fmt.Fprintf(os.Stderr, "non-nsjail command: %s\n", cmd)
 	}
 }
-func fakeExecCommand(command string, args ...string) *exec.Cmd {
+func fakeExecCommand(ctx context.Context, command string, args ...string) *exec.Cmd {
 	cs := []string{"-test.run=TestHelperProcess", "--", command}
 	cs = append(cs, args...)
-	cmd := exec.Command(os.Args[0], cs...)
+	cmd := exec.CommandContext(ctx, os.Args[0], cs...)
 	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
 	return cmd
 }
@@ -93,7 +93,7 @@ func TestRunInNsjail(t *testing.T) {
 		err := RunInNsjail(ctx, []string{"cat", "hello world"})
 		// // override exec.Command
 		execCommand = fakeExecCommand
-		defer func() { execCommand = exec.Command }()
+		defer func() { execCommand = exec.CommandContext }()
 		So(err.Error(), ShouldContainSubstring, "nsjail: no such file or directory")
 	})
 
