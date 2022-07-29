@@ -45,7 +45,7 @@ func TestGetPools(t *testing.T) {
 	if diff := cmp.Diff(expectedPools, actualPools); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
-	expectedName := []string{"a"}
+	expectedName := map[string]bool{"a": true}
 	actualName := c.names
 	if diff := cmp.Diff(expectedName, actualName); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
@@ -71,18 +71,24 @@ var fakeMachine = &models.MachineLSE{
 
 // FakeGetPoolsClient mimics a UFS client and records what it was asked to look up.
 type fakeGetPoolsClient struct {
-	names []string
+	names map[string]bool
 }
 
 // GetMachineLSE always returns a fake machine.
 func (f *fakeGetPoolsClient) GetMachineLSE(ctx context.Context, in *ufsAPI.GetMachineLSERequest, opts ...grpc.CallOption) (*models.MachineLSE, error) {
-	f.names = append(f.names, in.GetName())
+	if f.names == nil {
+		f.names = map[string]bool{}
+	}
+	f.names[in.GetName()] = true
 	return fakeMachine, nil
 }
 
 // GetMachineLSE always returns a fake machine.
 func (f *fakeGetPoolsClient) GetChromeOSDeviceData(ctx context.Context, in *ufsAPI.GetChromeOSDeviceDataRequest, opts ...grpc.CallOption) (*models.ChromeOSDeviceData, error) {
-	f.names = append(f.names, in.GetHostname())
+	if f.names == nil {
+		f.names = map[string]bool{}
+	}
+	f.names[in.GetHostname()] = true
 	return &models.ChromeOSDeviceData{
 		LabConfig: fakeMachine,
 	}, nil
@@ -90,7 +96,10 @@ func (f *fakeGetPoolsClient) GetChromeOSDeviceData(ctx context.Context, in *ufsA
 
 // GetDeviceData always returns a fake host.
 func (f *fakeGetPoolsClient) GetDeviceData(ctx context.Context, in *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error) {
-	f.names = append(f.names, in.GetHostname())
+	if f.names == nil {
+		f.names = map[string]bool{}
+	}
+	f.names[in.GetHostname()] = true
 	return &ufsAPI.GetDeviceDataResponse{
 		Resource: &ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData{
 			ChromeOsDeviceData: &models.ChromeOSDeviceData{
