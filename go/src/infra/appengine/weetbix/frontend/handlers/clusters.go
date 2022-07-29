@@ -46,7 +46,7 @@ func (h *Handlers) GetClusterFailures(ctx *router.Context) {
 		Project:   projectID,
 		ClusterID: clusterID,
 	}
-	opts.Realms, err = perms.QueryRealms(ctx.Context, projectID, "", nil, perms.ListTestResultsAndExonerations...)
+	opts.Realms, err = perms.QueryRealmsNonEmpty(ctx.Context, projectID, nil, perms.ListTestResultsAndExonerations...)
 	if err != nil {
 		logging.Errorf(ctx.Context, "Query realms: %v", err)
 		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)

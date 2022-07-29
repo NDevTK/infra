@@ -57,15 +57,23 @@ func clusterLike(config *compiledcfg.ProjectConfig, failure *clustering.Failure)
 	return "", false
 }
 
-// Cluster clusters the given test failure and returns its cluster ID (if it
-// can be clustered) or nil otherwise.
-func (a *Algorithm) Cluster(config *compiledcfg.ProjectConfig, failure *clustering.Failure) []byte {
+// clusterKey returns the unhashed key for the cluster. Absent an extremely
+// unlikely hash collision, this value is the same for all test results
+// in the cluster.
+func clusterKey(config *compiledcfg.ProjectConfig, failure *clustering.Failure) string {
 	// Get the like expression that defines the cluster.
 	key, ok := clusterLike(config, failure)
 	if !ok {
 		// Fall back to clustering on the exact test name.
 		key = failure.TestID
 	}
+	return key
+}
+
+// Cluster clusters the given test failure and returns its cluster ID (if it
+// can be clustered) or nil otherwise.
+func (a *Algorithm) Cluster(config *compiledcfg.ProjectConfig, failure *clustering.Failure) []byte {
+	key := clusterKey(config, failure)
 
 	// Hash the expressionto generate a unique fingerprint.
 	h := sha256.Sum256([]byte(key))
@@ -96,15 +104,12 @@ func (a *Algorithm) ClusterDescription(config *compiledcfg.ProjectConfig, summar
 	}
 }
 
-// ClusterTitle returns a title for the cluster containing the given
-// example, to display on the cluster page or cluster listing.
-func (a *Algorithm) ClusterTitle(config *compiledcfg.ProjectConfig, example *clustering.Failure) string {
-	like, ok := clusterLike(config, example)
-	if ok {
-		return clustering.EscapeToGraphical(like)
-	} else {
-		return clustering.EscapeToGraphical(example.TestID)
-	}
+// ClusterKey returns the unhashed clustering key which is common
+// across all test results in a cluster. For display on the cluster
+// page or cluster listing.
+func (a *Algorithm) ClusterKey(config *compiledcfg.ProjectConfig, example *clustering.Failure) string {
+	key := clusterKey(config, example)
+	return clustering.EscapeToGraphical(key)
 }
 
 // FailureAssociationRule returns a failure association rule that

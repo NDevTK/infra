@@ -48,7 +48,7 @@ func (*testHistoryServer) Query(ctx context.Context, req *pb.QueryTestHistoryReq
 		return nil, invalidArgumentError(err)
 	}
 
-	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.Predicate.SubRealm, nil, perms.ListTestResultsAndExonerations...)
+	subRealms, err := perms.QuerySubRealmsNonEmpty(ctx, req.Project, req.Predicate.SubRealm, nil, perms.ListTestResultsAndExonerations...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 		return nil, invalidArgumentError(err)
 	}
 
-	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.Predicate.SubRealm, nil, perms.ListTestResultsAndExonerations...)
+	subRealms, err := perms.QuerySubRealmsNonEmpty(ctx, req.Project, req.Predicate.SubRealm, nil, perms.ListTestResultsAndExonerations...)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVarian
 		return nil, invalidArgumentError(err)
 	}
 
-	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.SubRealm, nil, rdbperms.PermListTestResults)
+	subRealms, err := perms.QuerySubRealmsNonEmpty(ctx, req.Project, req.SubRealm, nil, rdbperms.PermListTestResults)
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +208,7 @@ func (*testHistoryServer) QueryTests(ctx context.Context, req *pb.QueryTestsRequ
 		return nil, invalidArgumentError(err)
 	}
 
-	subRealms, err := perms.QuerySubRealms(ctx, req.Project, req.SubRealm, nil, rdbperms.PermListTestResults)
+	subRealms, err := perms.QuerySubRealmsNonEmpty(ctx, req.Project, req.SubRealm, nil, rdbperms.PermListTestResults)
 	if err != nil {
 		return nil, err
 	}

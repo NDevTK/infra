@@ -1,45 +1,6 @@
 package analysis
 
-const clusterPresubmitAnalysis = `
-  WITH clustered_failures_latest AS (
-	SELECT
-	  cluster_algorithm,
-	  cluster_id,
-	  test_result_system,
-	  test_result_id,
-	  DATE(partition_time) as partition_time,
-	  ARRAY_AGG(cf ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-	FROM clustered_failures cf
-	WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-	GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time)
-  ),
-  clustered_failures_extended AS (
-	SELECT
-	  cluster_algorithm,
-	  cluster_id,
-	  r.is_included,
-	  r.partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 12 HOUR) as is_12h,
-	  r.partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY) as is_1d,
-	  -- The identity of the first changelist that was tested, assuming the
-	  -- result was part of a presubmit run, and the owner of the presubmit
-	  -- run was a user and not automation.
-	  IF(ARRAY_LENGTH(r.changelists)>0 AND r.presubmit_run_owner='user',
-		  CONCAT(r.changelists[OFFSET(0)].host, r.changelists[OFFSET(0)].change),
-		  NULL) as presubmit_run_user_cl_id,
-	  r.is_test_run_blocked as is_test_run_fail,
-	FROM clustered_failures_latest
-  )
-  SELECT
-    STRUCT(cluster_algorithm AS Algorithm, cluster_id as ID) as ClusterID,
-	COUNT(DISTINCT IF(is_12h AND is_test_run_fail, presubmit_run_user_cl_id, NULL)) as DistinctUserClTestRunsFailed12h,
-	COUNT(DISTINCT IF(is_1d AND is_test_run_fail, presubmit_run_user_cl_id, NULL)) as DistinctUserClTestRunsFailed1d,
-  FROM clustered_failures_extended
-  WHERE STRUCT(cluster_algorithm AS Algorithm, cluster_id as ID) IN UNNEST(@clusterIDs)
-    AND is_included
-  GROUP BY cluster_algorithm, cluster_id
-`
-
-const clusterSummariesAnalysis = `
+const clusterAnalysis = `
   WITH clustered_failures_latest AS (
 	SELECT
 	  cluster_algorithm,
@@ -58,6 +19,7 @@ const clusterSummariesAnalysis = `
 	  cluster_id,
 	  r.is_included,
 	  r.is_included_with_high_priority,
+	  r.realm,
 	  COALESCE(ARRAY_LENGTH(r.exonerations) > 0, FALSE) as is_exonerated,
 	  r.build_status = 'FAILURE' as build_failed,
 	  -- Presubmit run and tryjob is critical, and
@@ -124,6 +86,7 @@ const clusterSummariesAnalysis = `
 
 	  -- Other analysis.
 	  ANY_VALUE(failure_reason) as example_failure_reason,
+	  ARRAY_AGG(DISTINCT realm) as realms,
 	  APPROX_TOP_COUNT(test_id, 5) as top_test_ids,
 	  APPROX_TOP_COUNT(IF(bug_tracking_component.system = 'monorail', bug_tracking_component.component, NULL), 5) as top_monorail_components,
   FROM clustered_failures_extended

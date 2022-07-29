@@ -117,15 +117,15 @@ func TestAlgorithm(t *testing.T) {
 			failure := &clustering.Failure{
 				Reason: &pb.FailureReason{PrimaryErrorMessage: "Null pointer exception at ip 0x45637271"},
 			}
-			title := a.ClusterTitle(cfg, failure)
-			So(title, ShouldEqual, `Null pointer exception at ip 0x45637271`)
+			title := a.ClusterKey(cfg, failure)
+			So(title, ShouldEqual, `Null pointer exception at ip %`)
 		})
 		Convey(`Escaping`, func() {
 			failure := &clustering.Failure{
 				Reason: &pb.FailureReason{PrimaryErrorMessage: `_%"'+[]|` + "\u0000\r\n\v\u202E\u2066 AdafdxAAD17917+/="},
 			}
-			title := a.ClusterTitle(cfg, failure)
-			So(title, ShouldEqual, `_%\"'+[]|\x00\r\n\v\u202e\u2066 AdafdxAAD17917+/=`)
+			title := a.ClusterKey(cfg, failure)
+			So(title, ShouldEqual, `_%\"'+[]|\x00\r\n\v\u202e\u2066 %`)
 		})
 	})
 	Convey(`Cluster Description`, t, func() {

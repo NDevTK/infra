@@ -44,6 +44,8 @@ type Cluster struct {
 	CriticalFailuresExonerated3d Counts `json:"criticalFailuresExonerated3d"`
 	CriticalFailuresExonerated7d Counts `json:"criticalFailuresExonerated7d"`
 
+	// The realm(s) examples of the cluster are present in.
+	Realms               []string
 	ExampleFailureReason bigquery.NullString `json:"exampleFailureReason"`
 	// Top Test IDs included in the cluster, up to 5. Unless the cluster
 	// is empty, will always include at least one Test ID.
@@ -94,7 +96,7 @@ func (c *Client) RebuildAnalysis(ctx context.Context, luciProject string) error 
 
 	dstTable := dataset.Table("cluster_summaries")
 
-	q := c.client.Query(clusterSummariesAnalysis)
+	q := c.client.Query(clusterAnalysis)
 	q.DefaultDatasetID = dataset.DatasetID
 	q.Dst = dstTable
 	q.CreateDisposition = bigquery.CreateIfNeeded
@@ -223,6 +225,7 @@ func (c *Client) ReadClusters(ctx context.Context, luciProject string, clusterID
 		selectCounts("failures", "Failures", "1d") +
 		selectCounts("failures", "Failures", "3d") +
 		selectCounts("failures", "Failures", "7d") + `
+		    realms as Realms,
 			example_failure_reason.primary_error_message as ExampleFailureReason,
 			top_test_ids as TopTestIDs
 		FROM cluster_summaries

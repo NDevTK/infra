@@ -6,7 +6,6 @@ package perms
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"go.chromium.org/luci/common/data/stringset"
@@ -48,7 +47,7 @@ func SplitRealms(realms []string) (proj string, subRealms []string, err error) {
 		return "", nil, ErrInvalidRealm
 	}
 	subRealms = append(subRealms, subRealm)
-	for _, realm := range realms {
+	for _, realm := range realms[1:] {
 		currentProj, subRealm, err := SplitRealm(realm)
 		if err != nil {
 			return "", nil, ErrInvalidRealm
@@ -90,7 +89,7 @@ func VerifyProjectPermissions(ctx context.Context, project string, permissions .
 			return err
 		}
 		if !allowed {
-			return appstatus.Errorf(codes.PermissionDenied, `caller does not have permission %s in realm %s`, p, realm)
+			return appstatus.Errorf(codes.PermissionDenied, `caller does not have permission %s in realm %q`, p, realm)
 		}
 	}
 	return nil
@@ -113,30 +112,17 @@ func HasProjectPermission(ctx context.Context, project string, permission realms
 // QueryRealms is a wrapper around luci/server/auth.QueryRealms that returns a
 // list of realms where the current caller has all the listed permissions.
 //
-// If `project` is specified, only returns realms in the project.
-// If both `project` and `subRealm` are specified, only returns the
-// `<project>:<subRealm>` realm.
-//
-// Returns an appstatus annotated error if users have no permission in any
-// matching realm.
+// A project is required.
 //
 // The permissions should be flagged in the process with UsedInQueryRealms
 // flag, which lets the runtime know it must prepare indexes for the
 // corresponding QueryRealms call.
-func QueryRealms(ctx context.Context, project, subRealm string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
-	if len(permissions) == 0 {
-		return nil, errors.New("at least one permission must be provided")
+func QueryRealms(ctx context.Context, project string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
+	if project == "" {
+		return nil, errors.New("project must be specified")
 	}
-
-	if subRealm != "" {
-		if project == "" {
-			return nil, errors.New("project must be specified when the subRealm is specified")
-		}
-		realm := project + ":" + subRealm
-		if err := VerifyPermissions(ctx, realm, attrs, permissions...); err != nil {
-			return nil, err
-		}
-		return []string{realm}, nil
+	if len(permissions) == 0 {
+		return nil, errors.New("at least one permission must be specified")
 	}
 
 	allowedRealms, err := auth.QueryRealms(ctx, permissions[0], project, attrs)
@@ -153,33 +139,52 @@ func QueryRealms(ctx context.Context, project, subRealm string, attrs realms.Att
 		allowedRealmSet = allowedRealmSet.Intersect(stringset.NewFromSlice(allowedRealms...))
 	}
 
-	if len(allowedRealmSet) == 0 {
-		projectLabel := "any projects"
-		if project != "" {
-			projectLabel = fmt.Sprintf("project %q", project)
-		}
-		return nil, appstatus.Errorf(codes.PermissionDenied, `caller does not have permissions %v in %s`, permissions, projectLabel)
-	}
-
 	return allowedRealmSet.ToSortedSlice(), nil
 }
 
-// QuerySubRealms is similar to QueryRealms with the following differences:
-//  1. project is required.
+// QueryRealmsNonEmpty is similar to QueryRealms but it returns an
+// appstatus annotated error if there are no realms
+// that the user has all of the given permissions in.
+func QueryRealmsNonEmpty(ctx context.Context, project string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
+	realms, err := QueryRealms(ctx, project, attrs, permissions...)
+	if err != nil {
+		return nil, err
+	}
+	if len(realms) == 0 {
+		return nil, appstatus.Errorf(codes.PermissionDenied, `caller does not have permissions %v in any realm in project %q`, permissions, project)
+	}
+	return realms, nil
+}
+
+// QuerySubRealmsNonEmpty is similar to QueryRealmsNonEmpty with the following differences:
+//  1. an optional subRealm argument allows results to be limited to a
+//     specific realm (matching `<project>:<subRealm>`).
 //  2. a list of subRealms is returned instead of a list of realms
-//   (e.g. ["realm1", "realm2"] instead of ["project:realm1", "project:realm2"])
-func QuerySubRealms(ctx context.Context, project, subRealm string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
+//    (e.g. ["realm1", "realm2"] instead of ["project:realm1", "project:realm2"])
+func QuerySubRealmsNonEmpty(ctx context.Context, project, subRealm string, attrs realms.Attrs, permissions ...realms.Permission) ([]string, error) {
 	if project == "" {
-		return nil, errors.New("project must be provided")
+		return nil, errors.New("project must be specified")
+	}
+	if len(permissions) == 0 {
+		return nil, errors.New("at least one permission must be specified")
 	}
 
-	realms, err := QueryRealms(ctx, project, subRealm, attrs, permissions...)
+	if subRealm != "" {
+		realm := project + ":" + subRealm
+		if err := VerifyPermissions(ctx, realm, attrs, permissions...); err != nil {
+			return nil, err
+		}
+		return []string{subRealm}, nil
+	}
+
+	realms, err := QueryRealmsNonEmpty(ctx, project, attrs, permissions...)
 	if err != nil {
 		return nil, err
 	}
 	_, subRealms, err := SplitRealms(realms)
 	if err != nil {
-		// Realms from `QueryRealms` should always be valid. This should never happen.
+		// Realms returned by `QueryRealms` should always be valid.
+		// This should never happen.
 		panic(err)
 	}
 	return subRealms, nil

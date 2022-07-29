@@ -6,13 +6,16 @@ package rpc
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/grpc/appstatus"
+	"go.chromium.org/luci/resultdb/rdbperms"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -199,6 +202,12 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 		readClusterByID[c.ClusterID] = c
 	}
 
+	readableRealms, err := perms.QueryRealms(ctx, project, nil, rdbperms.PermListTestResults)
+	if err != nil {
+		return nil, err
+	}
+	readableRealmsSet := stringset.NewFromSlice(readableRealms...)
+
 	// As per google.aip.dev/231, the order of responses must be the
 	// same as the names in the request.
 	results := make([]*pb.Cluster, 0, len(clusterIDs))
@@ -240,15 +249,25 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 					PrimaryErrorMessage: c.ExampleFailureReason.StringVal,
 				},
 			}
-			// TODO(b/239768873): We need to check the user can see an example
-			// in the cluster before we can disclose the pattern the cluster
-			// matched.
-			result.Title = suggestedClusterTitle(c.ClusterID, example, cfg)
 
-			// Ignore error, it is only returned if algorithm cannot be found.
-			alg, _ := algorithms.SuggestingAlgorithm(clusterID.Algorithm)
-			if alg != nil {
-				result.EquivalentFailureAssociationRule = alg.FailureAssociationRule(cfg, example)
+			// Whether the user has access to at least one test result in the cluster.
+			canSeeAtLeastOneExample := false
+			for _, r := range c.Realms {
+				if readableRealmsSet.Has(r) {
+					canSeeAtLeastOneExample = true
+					break
+				}
+			}
+			if canSeeAtLeastOneExample {
+				// While the user has access to at least one test result in the cluster,
+				// they may not have access to the randomly selected example we retrieved
+				// from the cluster_summaries table. Therefore, we must be careful not
+				// to disclose any aspect of this example other than the
+				// clustering key it has in common with all other examples
+				// in the cluster.
+				hasAccessToGivenExample := false
+				result.Title = suggestedClusterTitle(c.ClusterID, example, hasAccessToGivenExample, cfg)
+				result.EquivalentFailureAssociationRule = failureAssociationRule(c.ClusterID, example, cfg)
 			}
 		}
 		results = append(results, result)
@@ -262,25 +281,95 @@ func newCounts(counts analysis.Counts) *pb.Cluster_MetricValues_Counts {
 	return &pb.Cluster_MetricValues_Counts{Nominal: counts.Nominal}
 }
 
-func suggestedClusterTitle(clusterID clustering.ClusterID, exampleFailure *clustering.Failure, cfg *compiledcfg.ProjectConfig) string {
-	var title string
-
+// failureAssociationRule returns the failure association rule for the
+// given cluster ID, assuming the provided example is still a current
+// example of the cluster.
+// It is assumed the user does not have access to the specific test
+// result represented by exampleFailure, but does have access to at
+// least one other test result in the cluster. As such, this method
+// must only return aspects of the test result which are common
+// to all test results in this cluster.
+func failureAssociationRule(clusterID clustering.ClusterID, exampleFailure *clustering.Failure, cfg *compiledcfg.ProjectConfig) string {
 	// Ignore error, it is only returned if algorithm cannot be found.
 	alg, _ := algorithms.SuggestingAlgorithm(clusterID.Algorithm)
-	switch {
-	case alg != nil:
-		title = alg.ClusterTitle(cfg, exampleFailure)
-	case clusterID.IsTestNameCluster():
-		// Fallback for old test name clusters.
-		title = exampleFailure.TestID
-	case clusterID.IsFailureReasonCluster():
-		// Fallback for old reason-based clusters.
-		title = exampleFailure.Reason.PrimaryErrorMessage
-	default:
-		// Fallback for all other cases.
-		title = fmt.Sprintf("%s/%s", clusterID.Algorithm, clusterID.ID)
+	if alg != nil {
+		// Check the example is still in the cluster. Sometimes cluster
+		// examples are stale (e.g. because cluster configuration has
+		// changed and re-clustering is yet to be fully complete and
+		// reflected in the cluster_summaries table).
+		//
+		// If the example is stale, it cannot be used as the basis for
+		// deriving the failure association rule to show to the user.
+		// This is for two reasons:
+		// 1) Functionality. The rule derived from the example
+		//    would not be the correct rule for this cluster.
+		// 2) Security. The example failure provided may not be from a realm
+		//    the user has access to. As a result of a configuration change,
+		//    it may now be in a new cluster.
+		//    There is no guarantee the user has access to any test results
+		//    in this new cluster, even if it contains some of the test results
+		//    of the old cluster, which the user could see some examples of.
+		//    The failure association rule for the new cluster is one that the
+		//    user may not be allowed to see.
+		exampleClusterID := hex.EncodeToString(alg.Cluster(cfg, exampleFailure))
+		if exampleClusterID == clusterID.ID {
+			return alg.FailureAssociationRule(cfg, exampleFailure)
+		}
 	}
-	return title
+	return ""
+}
+
+// suggestedClusterTitle returns a human-readable description of the cluster,
+// using an example failure to help recover the unhashed clustering key.
+// hasAccessToGivenExample indicates if the user has permission to see the specific
+// example of the cluster (exampleFailure), or (if false) whether they can
+// only see one example (but not necessarily exampleFailure).
+// If it is false, the result of this method will not contain any aspects
+// of the test result other than the aspects which are common to all other
+// test results in the cluster (i.e. the clustering key).
+func suggestedClusterTitle(clusterID clustering.ClusterID, exampleFailure *clustering.Failure, hasAccessToGivenExample bool, cfg *compiledcfg.ProjectConfig) string {
+	// Ignore error, it is only returned if algorithm cannot be found.
+	alg, _ := algorithms.SuggestingAlgorithm(clusterID.Algorithm)
+	if alg != nil {
+		// Check the example is still in the cluster. Sometimes cluster
+		// examples are stale (e.g. because cluster configuration has
+		// changed and re-clustering is yet to be fully complete and
+		// reflected in the cluster_summaries table).
+		//
+		// If the example is stale, it cannot be used as the basis for
+		// deriving the clustering key (cluster definition) to show to
+		// the user. This is for two reasons:
+		// 1) Functionality. The clustering key derived from the example
+		//    would not be the correct clustering key for this cluster.
+		// 2) Security. The example failure provided may not be from a realm
+		//    the user has access to. As a result of a configuration change,
+		//    it may now be in a new cluster.
+		//    There is no guarantee the user has access to any test results
+		//    in this new cluster, even if it contains some of the test results
+		//    of the current cluster, which the user could see some examples of.
+		//    The failure association rule for the new cluster is one that the
+		//    user may not be allowed to see.
+		exampleClusterID := hex.EncodeToString(alg.Cluster(cfg, exampleFailure))
+		if exampleClusterID == clusterID.ID {
+			return alg.ClusterKey(cfg, exampleFailure)
+		}
+	}
+	// Fallback.
+	if hasAccessToGivenExample {
+		// The user has access to the specific test result used as an example.
+		// We are fine to disclose it; we do not have to rely on sanitising it
+		// down to the common clustering key.
+		if clusterID.IsTestNameCluster() {
+			// Fallback for old test name clusters.
+			return exampleFailure.TestID
+		}
+		if clusterID.IsFailureReasonCluster() {
+			// Fallback for old reason-based clusters.
+			return exampleFailure.Reason.PrimaryErrorMessage
+		}
+	}
+	// Fallback for all other cases.
+	return "(definition unavailable due to ongoing reclustering)"
 }
 
 func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.GetReclusteringProgressRequest) (*pb.ReclusteringProgress, error) {
@@ -377,7 +466,7 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 				bqErr = invalidArgumentError(errors.Annotate(err, "order_by").Err())
 				return nil
 			}
-			opts.Realms, err = perms.QueryRealms(ctx, req.Project, "", nil, perms.ListTestResultsAndExonerations...)
+			opts.Realms, err = perms.QueryRealmsNonEmpty(ctx, req.Project, nil, perms.ListTestResultsAndExonerations...)
 			if err != nil {
 				bqErr = err
 				return nil
@@ -452,7 +541,8 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 			// Because QueryClusterSummaries only reads failures the user has
 			// access to, the example is one the user has access to, and
 			// so we can use it for the title.
-			cs.Title = suggestedClusterTitle(c.ClusterID, example, cfg)
+			hasAccessToGivenExample := true
+			cs.Title = suggestedClusterTitle(c.ClusterID, example, hasAccessToGivenExample, cfg)
 		}
 
 		result = append(result, cs)

@@ -66,78 +66,97 @@ func TestQueryRealms(t *testing.T) {
 			},
 		})
 
-		Convey("no permission specified", func() {
-			realms, err := QueryRealms(ctx, "project1", "realm1", nil)
-			So(err, ShouldErrLike, "at least one permission must be provided")
-			So(realms, ShouldBeEmpty)
-		})
-
-		Convey("specified subRealm  without project", func() {
-			realms, err := QueryRealms(ctx, "", "realm1", nil, rdbperms.PermListTestResults)
-			So(err, ShouldErrLike, "project must be specified when the subRealm is specified")
-			So(realms, ShouldBeEmpty)
-		})
-
-		Convey("global scope", func() {
-			Convey("check single permission", func() {
-				realms, err := QueryRealms(ctx, "", "", nil, rdbperms.PermListTestResults)
-				So(err, ShouldBeNil)
-				So(realms, ShouldResemble, []string{"project1:realm1", "project1:realm2", "project2:realm1"})
-			})
-
-			Convey("check multiple permissions", func() {
-				realms, err := QueryRealms(ctx, "", "", nil, rdbperms.PermListTestResults, rdbperms.PermGetArtifact)
-				So(err, ShouldBeNil)
-				So(realms, ShouldResemble, []string{"project1:realm1", "project2:realm1"})
-			})
-
-			Convey("no matched realms", func() {
-				realms, err := QueryRealms(ctx, "", "", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
-				So(err, ShouldErrLike, "caller does not have permissions", "in any projects")
-				So(err, ShouldHaveAppStatus, codes.PermissionDenied)
+		Convey("QueryRealms", func() {
+			Convey("no permission specified", func() {
+				realms, err := QueryRealms(ctx, "project1", nil)
+				So(err, ShouldErrLike, "at least one permission must be specified")
 				So(realms, ShouldBeEmpty)
 			})
-		})
 
-		Convey("project scope", func() {
+			Convey("no project specified", func() {
+				realms, err := QueryRealms(ctx, "", nil, rdbperms.PermListTestResults)
+				So(err, ShouldErrLike, "project must be specified")
+				So(realms, ShouldBeEmpty)
+			})
+
 			Convey("check single permission", func() {
-				realms, err := QueryRealms(ctx, "project1", "", nil, rdbperms.PermListTestResults)
+				realms, err := QueryRealms(ctx, "project1", nil, rdbperms.PermListTestResults)
 				So(err, ShouldBeNil)
 				So(realms, ShouldResemble, []string{"project1:realm1", "project1:realm2"})
 			})
 
 			Convey("check multiple permissions", func() {
-				realms, err := QueryRealms(ctx, "project1", "", nil, rdbperms.PermListTestResults, rdbperms.PermGetArtifact)
+				realms, err := QueryRealms(ctx, "project1", nil, rdbperms.PermListTestResults, rdbperms.PermGetArtifact)
 				So(err, ShouldBeNil)
 				So(realms, ShouldResemble, []string{"project1:realm1"})
 			})
 
 			Convey("no matched realms", func() {
-				realms, err := QueryRealms(ctx, "project1", "", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
-				So(err, ShouldErrLike, "caller does not have permissions", "in project \"project1\"")
+				realms, err := QueryRealms(ctx, "project1", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
+				So(err, ShouldBeNil)
+				So(realms, ShouldBeEmpty)
+			})
+
+			Convey("no matched realms with non-empty method variant", func() {
+				realms, err := QueryRealmsNonEmpty(ctx, "project1", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
+				So(err, ShouldErrLike, "caller does not have permissions", "in any realm in project \"project1\"")
 				So(err, ShouldHaveAppStatus, codes.PermissionDenied)
 				So(realms, ShouldBeEmpty)
 			})
 		})
-
-		Convey("realm scope", func() {
-			Convey("check single permission", func() {
-				realms, err := QueryRealms(ctx, "project1", "realm1", nil, rdbperms.PermListTestResults)
-				So(err, ShouldBeNil)
-				So(realms, ShouldResemble, []string{"project1:realm1"})
-			})
-
-			Convey("check multiple permissions", func() {
-				realms, err := QueryRealms(ctx, "project1", "realm1", nil, rdbperms.PermListTestResults, rdbperms.PermGetArtifact)
-				So(err, ShouldBeNil)
-				So(realms, ShouldResemble, []string{"project1:realm1"})
-			})
-
-			Convey("no matched realms", func() {
-				realms, err := QueryRealms(ctx, "project1", "realm1", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
-				So(err, ShouldErrLike, "caller does not have permission", "in realm \"project1:realm1\"")
-				So(err, ShouldHaveAppStatus, codes.PermissionDenied)
+		Convey("QuerySubRealms", func() {
+			Convey("no permission specified", func() {
+				realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "realm1", nil)
+				So(err, ShouldErrLike, "at least one permission must be specified")
 				So(realms, ShouldBeEmpty)
+			})
+
+			Convey("no project specified", func() {
+				realms, err := QuerySubRealmsNonEmpty(ctx, "", "", nil, rdbperms.PermListTestResults)
+				So(err, ShouldErrLike, "project must be specified")
+				So(realms, ShouldBeEmpty)
+			})
+
+			Convey("project scope", func() {
+				Convey("check single permission", func() {
+					realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "", nil, rdbperms.PermListTestResults)
+					So(err, ShouldBeNil)
+					So(realms, ShouldResemble, []string{"realm1", "realm2"})
+				})
+
+				Convey("check multiple permissions", func() {
+					realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "", nil, rdbperms.PermListTestResults, rdbperms.PermGetArtifact)
+					So(err, ShouldBeNil)
+					So(realms, ShouldResemble, []string{"realm1"})
+				})
+
+				Convey("no matched realms", func() {
+					realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
+					So(err, ShouldErrLike, "caller does not have permissions", "in any realm in project \"project1\"")
+					So(err, ShouldHaveAppStatus, codes.PermissionDenied)
+					So(realms, ShouldBeEmpty)
+				})
+			})
+
+			Convey("realm scope", func() {
+				Convey("check single permission", func() {
+					realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "realm1", nil, rdbperms.PermListTestResults)
+					So(err, ShouldBeNil)
+					So(realms, ShouldResemble, []string{"realm1"})
+				})
+
+				Convey("check multiple permissions", func() {
+					realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "realm1", nil, rdbperms.PermListTestResults, rdbperms.PermGetArtifact)
+					So(err, ShouldBeNil)
+					So(realms, ShouldResemble, []string{"realm1"})
+				})
+
+				Convey("no matched realms", func() {
+					realms, err := QuerySubRealmsNonEmpty(ctx, "project1", "realm1", nil, rdbperms.PermListTestExonerations, rdbperms.PermListArtifacts)
+					So(err, ShouldErrLike, "caller does not have permission", "in realm \"project1:realm1\"")
+					So(err, ShouldHaveAppStatus, codes.PermissionDenied)
+					So(realms, ShouldBeEmpty)
+				})
 			})
 		})
 	})

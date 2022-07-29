@@ -281,7 +281,24 @@ func TestClusters(t *testing.T) {
 					Realm:      "testproject:@root",
 					Permission: perms.PermExpensiveClusterQueries,
 				},
+				{
+					Realm:      "testproject:realm1",
+					Permission: rdbperms.PermListTestResults,
+				},
+				{
+					Realm:      "testproject:realm3",
+					Permission: rdbperms.PermListTestResults,
+				},
 			}
+
+			example := &clustering.Failure{
+				TestID: "TestID_Example",
+				Reason: &pb.FailureReason{
+					PrimaryErrorMessage: "Example failure reason 123.",
+				},
+			}
+			a := &failurereason.Algorithm{}
+			reasonClusterID := a.Cluster(compiledTestProjectCfg, example)
 
 			analysisClient.clustersByProject["testproject"] = []*analysis.Cluster{
 				{
@@ -303,10 +320,11 @@ func TestClusters(t *testing.T) {
 						{Value: "TestID 1", Count: 2},
 						{Value: "TestID 2", Count: 1},
 					},
+					Realms: []string{"testproject:realm1", "testproject:realm2"},
 				},
 				{
 					ClusterID: clustering.ClusterID{
-						Algorithm: "reason-v3",
+						Algorithm: testname.AlgorithmName,
 						ID:        "cccccc00000000000000000000000001",
 					},
 					PresubmitRejects7d:   analysis.Counts{Nominal: 11},
@@ -314,6 +332,19 @@ func TestClusters(t *testing.T) {
 					TopTestIDs: []analysis.TopCount{
 						{Value: "TestID 3", Count: 2},
 					},
+					Realms: []string{"testproject:realm2", "testproject:realm3"},
+				},
+				{
+					ClusterID: clustering.ClusterID{
+						Algorithm: failurereason.AlgorithmName,
+						ID:        hex.EncodeToString(reasonClusterID),
+					},
+					PresubmitRejects7d:   analysis.Counts{Nominal: 15},
+					ExampleFailureReason: bigquery.NullString{Valid: true, StringVal: "Example failure reason 123."},
+					TopTestIDs: []analysis.TopCount{
+						{Value: "TestID_Example", Count: 10},
+					},
+					Realms: []string{"testproject:realm1", "testproject:realm3"},
 				},
 			}
 
@@ -326,8 +357,14 @@ func TestClusters(t *testing.T) {
 					// Rule for which no data exists.
 					"projects/testproject/clusters/rules/1111110000000000000000000000ffff",
 
-					// Suggested cluster for which data exists.
-					"projects/testproject/clusters/reason-v3/cccccc00000000000000000000000001",
+					// Suggested cluster for which cluster ID matches the example
+					// provided for the cluster.
+					"projects/testproject/clusters/" + failurereason.AlgorithmName + "/" + hex.EncodeToString(reasonClusterID),
+
+					// Suggested cluster for which data exists, but cluster ID mismatches
+					// the example provided for the cluster. This could be because
+					// configuration has changed and re-clustering is not yet complete.
+					"projects/testproject/clusters/" + testname.AlgorithmName + "/cccccc00000000000000000000000001",
 
 					// Suggested cluster for which no impact data exists.
 					"projects/testproject/clusters/reason-v3/cccccc0000000000000000000000ffff",
@@ -363,8 +400,21 @@ func TestClusters(t *testing.T) {
 						Failures:                   emptyMetricValues(),
 					},
 					{
-						Name:       "projects/testproject/clusters/reason-v3/cccccc00000000000000000000000001",
-						Title:      "Example failure reason 2.",
+						Name:       "projects/testproject/clusters/" + failurereason.AlgorithmName + "/" + hex.EncodeToString(reasonClusterID),
+						Title:      "Example failure reason %.",
+						HasExample: true,
+						UserClsFailedPresubmit: &pb.Cluster_MetricValues{
+							OneDay:   &pb.Cluster_MetricValues_Counts{},
+							ThreeDay: &pb.Cluster_MetricValues_Counts{},
+							SevenDay: &pb.Cluster_MetricValues_Counts{Nominal: 15},
+						},
+						CriticalFailuresExonerated:       emptyMetricValues(),
+						Failures:                         emptyMetricValues(),
+						EquivalentFailureAssociationRule: `reason LIKE "Example failure reason %."`,
+					},
+					{
+						Name:       "projects/testproject/clusters/" + testname.AlgorithmName + "/cccccc00000000000000000000000001",
+						Title:      "(definition unavailable due to ongoing reclustering)",
 						HasExample: true,
 						UserClsFailedPresubmit: &pb.Cluster_MetricValues{
 							OneDay:   &pb.Cluster_MetricValues_Counts{},
@@ -373,7 +423,7 @@ func TestClusters(t *testing.T) {
 						},
 						CriticalFailuresExonerated:       emptyMetricValues(),
 						Failures:                         emptyMetricValues(),
-						EquivalentFailureAssociationRule: `reason LIKE "Example failure reason %."`,
+						EquivalentFailureAssociationRule: ``,
 					},
 					{
 						Name:                       "projects/testproject/clusters/reason-v3/cccccc0000000000000000000000ffff",
@@ -400,11 +450,25 @@ func TestClusters(t *testing.T) {
 				So(response, ShouldBeNil)
 			})
 			Convey("With a valid request", func() {
-				Convey("No duplciate requests", func() {
+				Convey("No duplicate requests", func() {
 					// Run
 					response, err := server.BatchGet(ctx, request)
 
 					// Verify
+					So(err, ShouldBeNil)
+					So(response, ShouldResembleProto, expectedResponse)
+				})
+				Convey("No test result list permission", func() {
+					authState.IdentityPermissions = removePermission(authState.IdentityPermissions, rdbperms.PermListTestResults)
+
+					// Run
+					response, err := server.BatchGet(ctx, request)
+
+					// Verify
+					for _, r := range expectedResponse.Clusters {
+						r.Title = ""
+						r.EquivalentFailureAssociationRule = ""
+					}
 					So(err, ShouldBeNil)
 					So(response, ShouldResembleProto, expectedResponse)
 				})

@@ -27,7 +27,7 @@ import (
 // version should be incremented whenever existing test results may be
 // clustered differently (i.e. Cluster(f) returns a different value for some
 // f that may have been already ingested).
-const AlgorithmVersion = 3
+const AlgorithmVersion = 4
 
 // AlgorithmName is the identifier for the clustering algorithm.
 // Weetbix requires all clustering algorithms to have a unique identifier.
@@ -61,14 +61,21 @@ func (a *Algorithm) Name() string {
 	return AlgorithmName
 }
 
+// clusterKey returns the unhashed key for the cluster. Absent an extremely
+// unlikely hash collision, this value is the same for all test results
+// in the cluster.
+func clusterKey(primaryErrorMessage string) string {
+	// Replace numbers and hex values.
+	return clusterExp.ReplaceAllString(primaryErrorMessage, "%")
+}
+
 // Cluster clusters the given test failure and returns its cluster ID (if it
 // can be clustered) or nil otherwise.
 func (a *Algorithm) Cluster(config *compiledcfg.ProjectConfig, failure *clustering.Failure) []byte {
 	if failure.Reason == nil || failure.Reason.PrimaryErrorMessage == "" {
 		return nil
 	}
-	// Replace numbers and hex values.
-	id := clusterExp.ReplaceAllString(failure.Reason.PrimaryErrorMessage, "0")
+	id := clusterKey(failure.Reason.PrimaryErrorMessage)
 	// sha256 hash the resulting string.
 	h := sha256.Sum256([]byte(id))
 	// Take first 16 bytes as the ID. (Risk of collision is
@@ -108,13 +115,17 @@ func (a *Algorithm) ClusterDescription(config *compiledcfg.ProjectConfig, summar
 	}, nil
 }
 
-// ClusterTitle returns a title for the cluster containing the given
-// example, to display on the cluster page or cluster listing.
-func (a *Algorithm) ClusterTitle(config *compiledcfg.ProjectConfig, example *clustering.Failure) string {
+// ClusterKey returns the unhashed clustering key which is common
+// across all test results in a cluster. For display on the cluster
+// page or cluster listing.
+func (a *Algorithm) ClusterKey(config *compiledcfg.ProjectConfig, example *clustering.Failure) string {
 	if example.Reason == nil || example.Reason.PrimaryErrorMessage == "" {
 		return ""
 	}
-	return clustering.EscapeToGraphical(example.Reason.PrimaryErrorMessage)
+	// Should match exactly the algorithm in Cluster(...)
+	key := clusterKey(example.Reason.PrimaryErrorMessage)
+
+	return clustering.EscapeToGraphical(key)
 }
 
 // FailureAssociationRule returns a failure association rule that
@@ -123,7 +134,7 @@ func (a *Algorithm) FailureAssociationRule(config *compiledcfg.ProjectConfig, ex
 	if example.Reason == nil || example.Reason.PrimaryErrorMessage == "" {
 		return ""
 	}
-	// Escape \, % and _ so that they are not interpreted as by LIKE
+	// Escape \, % and _ so that they are not interpreted by LIKE
 	// pattern matching.
 	rewriter := strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
 	likePattern := rewriter.Replace(example.Reason.PrimaryErrorMessage)
