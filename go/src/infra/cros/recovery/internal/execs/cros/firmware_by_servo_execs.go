@@ -170,5 +170,5 @@ func init() {
 	execs.Register("cros_ap_is_dev_signed_by_servo", checkIfApHasDevSignedImageExec)
 	execs.Register("cros_set_gbb_by_servo", setGbbFlagsByServoExec)
 	execs.Register("cros_remove_default_ap_file_servo_host", removeAPFileFromServoHostExec)
-	execs.Register("cros_update_fw_with_fw_image_by_servo_from", updateFwWithFwImageByServo)
+	execs.Register("cros_update_fw_with_fw_image_by_servo", updateFwWithFwImageByServo)
 }

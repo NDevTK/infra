@@ -343,8 +343,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
-				"Update FW from fw-image by servo",
-				"Cold reset DUT by servo and wait to boot",
+				"Update FW from fw-image by servo and reboot",
 			},
 		},
 		"Login UI is up": {
@@ -487,7 +486,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_on_ro_firmware_stable_version",
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
-				"Update FW from fw-image by servo",
+				"Update FW from fw-image by servo and reboot",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -1700,13 +1699,11 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Update FW from fw-image by servo": {
+		"Flash AP (FW) by servo": {
 			Docs: []string{
-				"Download fw-image specified in stable version and flash EC/AP to the DUT by servo",
-				"Set timeout for 100 minutes for now as = 10m(download)+ 7*3m(extraction-file)+10m(ec-update)+30m(ap-update).",
-				"The time will be updated later based on collected metrics",
-				"Each operation with extraction files can take up to a few minutes.",
-				"The AP update on the DUT can take up to 30 minutes",
+				"Download fw-image specified in stable version and flash AP to the DUT by servo",
+				"Set timeout for 50 minutes for now as = 10m(download)+ 10m(extraction-file)+30m(ap-update with retry).",
+				"We will retry up to 3 times since there may be flakiness on flash AP via servo.",
 			},
 			Conditions: []string{
 				"dut_servo_host_present",
@@ -1715,21 +1712,20 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Recovery version has firmware image path",
 			},
-			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
+			ExecName: "cros_update_fw_with_fw_image_by_servo",
 			ExecExtraArgs: []string{
-				"update_ec_attempt_count:1",
-				"update_ap_attempt_count:1",
+				"update_ap_attempt_count:3",
 				"download_timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{
-				Seconds: 6000,
+				Seconds: 3000,
 			},
-			// Allowed to fail as part of b/236417969 to check affect of it.
 			AllowFailAfterRecovery: true,
 		},
 		"Flash EC (FW) by servo": {
 			Docs: []string{
-				"Flash EC firmware via servo for recovery purpose.",
+				"Download fw-image specified in stable version and flash EC to the DUT by servo",
+				"Set timeout for 100 minutes for now as = 10m(download)+ 2*10m(extraction-file)+20m(ec-update with retry).",
 				"We will retry up to 5 times since there is flakiness on flash EC.",
 			},
 			Conditions: []string{
@@ -1739,15 +1735,15 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Recovery version has firmware image path",
 			},
-			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
+			ExecName: "cros_update_fw_with_fw_image_by_servo",
 			ExecExtraArgs: []string{
 				"update_ec_attempt_count:5",
-				"update_ap_attempt_count:0",
 				"download_timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{
-				Seconds: 1800,
+				Seconds: 3000,
 			},
+			AllowFailAfterRecovery: true,
 		},
 		"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)": {
 			Docs: []string{
@@ -1764,7 +1760,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Recovery version has firmware image path",
 			},
-			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
+			ExecName: "cros_update_fw_with_fw_image_by_servo",
 			ExecExtraArgs: []string{
 				"update_ec_attempt_count:0",
 				"update_ap_attempt_count:3",
@@ -1786,7 +1782,8 @@ func crosRepairActions() map[string]*Action {
 				"dut_servo_host_present",
 			},
 			Dependencies: []string{
-				"Update FW from fw-image by servo",
+				"Flash EC (FW) by servo",
+				"Flash AP (FW) by servo",
 				"Cold reset by servo and wait for SSH",
 			},
 			ExecName: "sample_pass",
@@ -1807,7 +1804,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Recovery version has firmware image path",
 			},
-			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
+			ExecName: "cros_update_fw_with_fw_image_by_servo",
 			ExecExtraArgs: []string{
 				"update_ec_attempt_count:1",
 				"update_ap_attempt_count:1",
