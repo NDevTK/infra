@@ -141,7 +141,7 @@ func (r *createModelRun) writeModel(ctx context.Context, dir string) error {
 	}
 
 	logging.Infof(ctx, "Training the ML model...")
-	if err := trainMlModel(r.trainingData, filepath.Join(dir, "saved_model")); err != nil {
+	if err := trainMlModel(ctx, r.trainingData, dir); err != nil {
 		return errors.Annotate(err, "failed to train the ml model").Err()
 	}
 

@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -84,14 +85,14 @@ func (r bqStabilityRow) mlExample() *mlExample {
 }
 
 // Trains a model by calling the cli with the provided file
-func trainMlModel(traingDataFile string, savedModelDir string) error {
-	cmd := exec.Command("python3",
-		mlCli,
+func trainMlModel(ctx context.Context, traingDataFile string, modelDir string) error {
+	cmd := exec.Command("vpython3",
+		filepath.Join(modelDir, mlCli),
 		"train",
 		"--train-data",
 		traingDataFile,
 		"--output",
-		savedModelDir,
+		filepath.Join(modelDir, "saved_model"),
 	)
 
 	var stdoutBuf bytes.Buffer
@@ -102,10 +103,8 @@ func trainMlModel(traingDataFile string, savedModelDir string) error {
 	err := cmd.Run()
 
 	if err != nil {
-		fmt.Print("stdout from cli:\n")
-		fmt.Print(string(stdoutBuf.String()))
-		fmt.Print("stderr from cli:\n")
-		fmt.Print(string(errBuf.String()))
+		logging.Infof(ctx, "stdout from cli:\n", string(stdoutBuf.String()))
+		logging.Infof(ctx, "stderr from cli:\n", string(errBuf.String()))
 		return err
 	}
 
@@ -114,11 +113,22 @@ func trainMlModel(traingDataFile string, savedModelDir string) error {
 
 // Uses the ml cli to make predictions. Passes the dataframes to the cli through
 // a file to avoid command line argument limits
-func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error) {
-	featuresFile, err := ioutil.TempFile("predictions", "PsFeatures_thread*.csv")
+func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) ([]float64, error) {
+	predictions_dir, err := filepath.Abs("predictions")
 	if err != nil {
 		return nil, err
 	}
+
+	err = os.MkdirAll(predictions_dir, os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+
+	featuresFile, err := ioutil.TempFile(predictions_dir, "PsFeatures_thread*.csv")
+	if err != nil {
+		return nil, err
+	}
+
 	featureFileName, err := filepath.Abs(featuresFile.Name())
 	if err != nil {
 		return nil, err
@@ -130,10 +140,8 @@ func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error
 		return nil, err
 	}
 
-	err = os.MkdirAll("predictions", os.ModePerm)
-	if err != nil {
-		return nil, err
-	}
+	logging.Infof(ctx, "Writing features file: %f", featureFileName)
+	logging.Infof(ctx, "Writing predicions file: %f", featureFileName)
 
 	csvWriter := csv.NewWriter(featuresFile)
 
@@ -171,15 +179,15 @@ func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error
 	}
 	csvWriter.WriteAll(csvData)
 
-	cmd := exec.Command("python3",
-		mlCli,
+	cmd := exec.Command("vpython3",
+		filepath.Join(modelDir, mlCli),
 		"predict",
 		"--file",
 		featureFileName,
 		"--output",
 		predictionsFileName,
 		"--model",
-		savedModelDir,
+		filepath.Join(modelDir, "saved_model"),
 	)
 	var outBuf bytes.Buffer
 	cmd.Stdout = &outBuf
@@ -187,12 +195,10 @@ func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error
 	cmd.Stderr = &errBuf
 	err = cmd.Run()
 
-	fmt.Print("stdout from cli:\n")
-	fmt.Print(string(outBuf.String()))
+	logging.Infof(ctx, "stdout from cli:\n", outBuf.String())
 
 	if err != nil {
-		fmt.Print("stderr from cli:\n")
-		fmt.Print(string(errBuf.String()))
+		logging.Infof(ctx, "stderr from cli:\n", errBuf.String())
 		return nil, err
 	}
 
@@ -203,7 +209,7 @@ func fileInferMlModel(rows []*mlExample, savedModelDir string) ([]float64, error
 	lines := strings.Split(strings.TrimSpace(string(fileText)), "\n")
 
 	if len(rows) != len(lines) {
-		fmt.Print("ML inference returned too many predictions\n")
+		logging.Infof(ctx, "ML inference returned too many predictions\n")
 		return nil, errors.New("ML inference returned too many predictions")
 	}
 

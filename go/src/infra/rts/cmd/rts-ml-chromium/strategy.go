@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"math"
 	"path"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -112,7 +111,7 @@ func (r *selectRun) selectTests(ctx context.Context, skipTest func(string, strin
 		testFilterTargets = append(testFilterTargets, filterTarget)
 	}
 
-	predictions, err := fileInferMlModel(allRows, filepath.Join(r.ModelDir, "saved_model"))
+	predictions, err := fileInferMlModel(ctx, allRows, r.ModelDir)
 
 	for i := range predictions {
 		if predictions[i] > r.Strategy.MaxDistance {
@@ -286,7 +285,7 @@ func (r *createModelRun) evalStrategy() eval.Strategy {
 			examples[i] = example
 		}
 
-		predictions, err := fileInferMlModel(examples, filepath.Join(r.modelDir, "saved_model"))
+		predictions, err := fileInferMlModel(ctx, examples, r.modelDir)
 
 		if err != nil {
 			return err
