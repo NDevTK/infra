@@ -22,6 +22,7 @@
 package main
 
 import (
+	"archive/tar"
 	"context"
 	"encoding/base64"
 	"encoding/binary"
@@ -73,6 +74,7 @@ func innerMain() error {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/download/", c.downloadHandler)
+	mux.HandleFunc("/extract/", c.extractHandler)
 
 	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: mux}
@@ -90,18 +92,20 @@ func innerMain() error {
 // It writes file content to body for GET method.
 func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	id := fmt.Sprintf("%s:%s", r.Method, r.URL.Path)
+	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
 	log.Printf("%s request started", id)
 	defer log.Printf("%s request completed in %s", id, time.Since(startTime))
 
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
 	defer cancel()
 
+	gsClient := c.gsClient
+
 	switch r.Method {
 	case http.MethodHead:
-		c.handleDownloadHEAD(ctx, w, r, id)
+		handleDownloadHEAD(ctx, w, r, gsClient, id)
 	case http.MethodGet:
-		c.handleDownloadGET(ctx, w, r, id)
+		handleDownloadGET(ctx, w, r, gsClient, id)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
@@ -112,7 +116,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 // handleDownloadHEAD handles download HEAD request.
 // It writes file stat to ResponseWriter.
 // It returns gsObject which is used by handleDownloadGET to send file content.
-func (c *archiveServer) handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, reqID string) (gsObject, error) {
+func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, reqID string) (gsObject, error) {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
@@ -121,13 +125,7 @@ func (c *archiveServer) handleDownloadHEAD(ctx context.Context, w http.ResponseW
 		return nil, err
 	}
 
-	gsObject := c.gsClient.getObject(objectName)
-	if err != nil {
-		err = fmt.Errorf("%s getObject error: %w", reqID, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Printf(err.Error())
-		return nil, err
-	}
+	gsObject := gsClient.getObject(objectName)
 
 	gsAttrs, err := gsObject.Attrs(ctx)
 	if err != nil {
@@ -149,8 +147,8 @@ func (c *archiveServer) handleDownloadHEAD(ctx context.Context, w http.ResponseW
 
 // handleDownloadGET handles download GET request.
 // It writes file stat to ResponseWriter header, and content to body.
-func (c *archiveServer) handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, reqID string) {
-	gsObject, err := c.handleDownloadHEAD(ctx, w, r, reqID)
+func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, reqID string) {
+	gsObject, err := handleDownloadHEAD(ctx, w, r, gsClient, reqID)
 	if err != nil {
 		return
 	}
@@ -206,4 +204,126 @@ func parseURL(url string) (*gsObjectName, error) {
 		return nil, fmt.Errorf("object cannot be empty")
 	}
 	return &gsObjectName{bucket: fields[2], path: path}, nil
+}
+
+// extractHandler handles /extract/bucket/path/to/file?file=target_file requests.
+// It extracts target_file from tar writes the stat to header,
+// the content to body.
+func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+	log.Printf("%s request started", id)
+	defer log.Printf("%s request completed in %s", id, time.Since(startTime))
+
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
+	defer cancel()
+
+	switch r.Method {
+	case http.MethodHead:
+		handleExtractHEAD(ctx, w, r, c.cacheServerURL, id)
+	case http.MethodGet:
+		handleExtractGET(ctx, w, r, c.cacheServerURL, id)
+	default:
+		errStr := fmt.Sprintf("%s unsupported method", id)
+		http.Error(w, errStr, http.StatusBadRequest)
+		log.Printf(errStr)
+	}
+}
+
+// handleExtractHEAD handles extract HEAD request.
+// It downloads the tar from cache server(nginx). It then, extracts
+// the target file and writes stat to ResponseWriter header.
+// It returns *tar.Header which is used by handleExtractGET.
+func handleExtractHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) (*tar.Reader, error) {
+	objectName, err := parseURL(r.URL.Path)
+	if err != nil {
+		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Printf(err.Error())
+		return nil, err
+	}
+
+	queryFile := r.URL.Query().Get("file")
+	if queryFile == "" {
+		err := fmt.Errorf("%s extract file query not specified from %s", reqID, objectName.path)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Printf(err.Error())
+		return nil, err
+	}
+
+	//TODO(b/240166634): handle compressed tar file extraction.
+	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
+	res, err := downloadURL(ctx, reqURL)
+	if err != nil {
+		err := fmt.Errorf("%s: %s", reqID, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf(err.Error())
+		return nil, err
+	}
+
+	tarReader, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
+	if err != nil {
+		err := fmt.Errorf("%s extractTarAndWriteHeader failed: %s", reqID, err)
+		log.Printf(err.Error())
+		return nil, err
+	}
+	return tarReader, nil
+}
+
+// handleExtractGET handles extract GET request.
+// It downloads the tar from cache server(nginx). It then, extracts
+// the target file and writes to ResponseWriter header and body.
+func handleExtractGET(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) {
+	tarReader, err := handleExtractHEAD(ctx, w, r, cacheServerURL, reqID)
+	if err != nil {
+		return
+	}
+
+	if n, err := io.Copy(w, tarReader); err != nil {
+		log.Printf("%s copy to body failed at byte %v: %s", reqID, n, err)
+	}
+}
+
+// downloadURL downloads the reqURL and returns the content in response.
+func downloadURL(ctx context.Context, reqURL string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create download request for %q: %w", reqURL, err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("download %q: %w", reqURL, err)
+	}
+	return res, nil
+}
+
+// extractTarAndWriteHeader extracts file from r reader.
+// It writes file stat to the header and returns
+// the tar reader for GET handling.
+func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string, w http.ResponseWriter) (*tar.Reader, error) {
+	tarReader := tar.NewReader(r)
+	for {
+		select {
+		case <-ctx.Done():
+			break
+		default:
+		}
+
+		header, err := tarReader.Next()
+		if err != nil {
+			err = fmt.Errorf("tarReader error: %w", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return nil, err
+		}
+
+		if header.Typeflag == tar.TypeReg && header.Name == fileName {
+			w.Header().Set("Accept-Ranges", "bytes")
+			w.Header().Set("Content-Length", strconv.FormatInt(header.Size, 10))
+			w.Header().Set("Content-Type", "application/octet-stream")
+			w.WriteHeader(http.StatusOK)
+
+			return tarReader, nil
+		}
+	}
 }

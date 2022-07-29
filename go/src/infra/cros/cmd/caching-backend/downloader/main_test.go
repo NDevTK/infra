@@ -5,10 +5,13 @@
 package main
 
 import (
+	"archive/tar"
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
 	"io"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -58,7 +61,7 @@ func TestDownloadHandler(t *testing.T) {
 			method:            "GET",
 			url:               "/download/wrong-bucket/path/to/file",
 			wantStatusCode:    404,
-			wantBody:          "GET:/download/wrong-bucket/path/to/file Attrs error: storage: object doesn't exist\n",
+			wantBody:          "GET/download/wrong-bucket/path/to/file Attrs error: storage: object doesn't exist\n",
 			wantContentLength: -1,
 			wantContentType:   "text/plain; charset=utf-8",
 		},
@@ -92,6 +95,136 @@ func TestDownloadHandler(t *testing.T) {
 			}
 			if b := string(body); b != tc.wantBody {
 				t.Errorf("Body = %q, want %q", b, tc.wantBody)
+			}
+		})
+	}
+}
+
+func TestExtracHandler(t *testing.T) {
+	t.Parallel()
+
+	fakeObjects := map[string]*fakeGSObject{}
+	gsa := &archiveServer{
+		gsClient: &fakeGSClient{
+			objects: fakeObjects,
+		},
+	}
+
+	tarFiles := map[string]map[string]string{
+		"bucket2/extract.tar": {
+			"f1.txt": "this is bucket2 file1",
+			"f2.txt": "this is bucket2 file2",
+			"f3.txt": "this is bucket2 file3",
+		},
+		"bucket/extract.tar": {
+			"f1.txt": "this is bucket file1",
+			"f2.txt": "this is bucket file2",
+			"f3.txt": "this is bucket file3. Hi\nHow\nAre\nYou\n",
+		},
+	}
+
+	for tarName, tarContent := range tarFiles {
+		var buf bytes.Buffer
+		tw := tar.NewWriter(&buf)
+		defer tw.Close()
+
+		for name, content := range tarContent {
+			hdr := &tar.Header{
+				Name: name,
+				Mode: 0600,
+				Size: int64(len(content)),
+			}
+			if err := tw.WriteHeader(hdr); err != nil {
+				t.Fatalf("ExtractHandler error writing header: %s", err)
+			}
+			if _, err := tw.Write([]byte(content)); err != nil {
+				t.Fatalf("ExtractHadnler rror writing content: %s", err)
+			}
+		}
+		fakeObjects[tarName] = &fakeGSObject{
+			exists: true,
+			attrs: &storage.ObjectAttrs{
+				Size:        int64(len(buf.String())),
+				ContentType: "tar",
+			},
+			content: buf.String(),
+		}
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/extract/", gsa.extractHandler)
+	mux.HandleFunc("/download/", gsa.downloadHandler)
+	s := httptest.NewServer(mux)
+	defer s.Close()
+	gsa.cacheServerURL = s.URL
+
+	tests := []struct {
+		url               string
+		wantStatusCode    int
+		wantContentLength int64
+		wantBody          string
+	}{
+		{
+			url:               "/extract/bucket/extract.tar?file=f1.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f1.txt"])),
+			wantBody:          tarFiles["bucket/extract.tar"]["f1.txt"],
+		},
+		{
+			url:               "/extract/bucket/extract.tar?file=f2.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f2.txt"])),
+			wantBody:          tarFiles["bucket/extract.tar"]["f2.txt"],
+		},
+		{
+			url:               "/extract/bucket/extract.tar?file=f3.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f3.txt"])),
+			wantBody:          tarFiles["bucket/extract.tar"]["f3.txt"],
+		},
+		{
+			url:               "/extract/bucket2/extract.tar?file=f1.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f1.txt"])),
+			wantBody:          tarFiles["bucket2/extract.tar"]["f1.txt"],
+		},
+		{
+			url:               "/extract/bucket2/extract.tar?file=f2.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f2.txt"])),
+			wantBody:          tarFiles["bucket2/extract.tar"]["f2.txt"],
+		},
+		{
+			url:               "/extract/bucket2/extract.tar?file=f3.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f3.txt"])),
+			wantBody:          tarFiles["bucket2/extract.tar"]["f3.txt"],
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		got, err := http.Get(fmt.Sprintf("%s%s", s.URL, tc.url))
+		t.Run(tc.url, func(t *testing.T) {
+			t.Parallel()
+			if err != nil {
+				t.Fatalf("extractHandler http.Get(%s) failed unexpectedly. err=%s", tc.url, err)
+			}
+			defer got.Body.Close()
+
+			if got.StatusCode != tc.wantStatusCode {
+				t.Errorf("extractHandler StatusCode=%v, want %v", got.StatusCode, tc.wantStatusCode)
+			}
+			if got.ContentLength != tc.wantContentLength {
+				t.Errorf("extractHandler ContentLength=%v, want %v", got.ContentLength, tc.wantContentLength)
+			}
+
+			gotRead, err := io.ReadAll(got.Body)
+			if err != nil {
+				t.Fatalf("extractHandler %s read body failed unexpectedly. err=%s", tc.url, err)
+			}
+			if gotBody := string(gotRead); gotBody != tc.wantBody {
+				t.Errorf("extractHanlder Body=%s, want %s", gotBody, tc.wantBody)
 			}
 		})
 	}
