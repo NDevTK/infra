@@ -83,12 +83,15 @@ luci.notifier(
     on_failure = True,
     on_status_change = True,
     notify_emails = [
-        "raphael.kubo.da.costa@intel.com",
+        "chromium-packagers@chromium.org",
+        # https://crbug.com/1030114
+        # "raphael.kubo.da.costa@intel.com",
         "thestig@chromium.org",
         "thomasanderson@chromium.org",
     ],
     notified_by = [
-        "Build From Tarball",
+        # https://crbug.com/1346047
+        # "Build From Tarball",
         "publish_tarball",
     ],
 )
