@@ -17,24 +17,25 @@ import (
 )
 
 type ClusterFailure struct {
-	Realm                       bigquery.NullString    `json:"realm"`
-	TestID                      bigquery.NullString    `json:"testId"`
-	Variant                     []*Variant             `json:"variant"`
-	PresubmitRunID              *PresubmitRunID        `json:"presubmitRunId"`
-	PresubmitRunOwner           bigquery.NullString    `json:"presubmitRunOwner"`
-	PresubmitRunMode            bigquery.NullString    `json:"presubmitRunMode"`
-	Changelist                  *Changelist            `json:"changelist"`
-	PartitionTime               bigquery.NullTimestamp `json:"partitionTime"`
-	Exonerations                []*Exoneration         `json:"exonerations"`
-	BuildStatus                 bigquery.NullString    `json:"buildStatus"`
-	IsBuildCritical             bigquery.NullBool      `json:"isBuildCritical"`
-	IngestedInvocationID        bigquery.NullString    `json:"ingestedInvocationId"`
-	IsIngestedInvocationBlocked bigquery.NullBool      `json:"isIngestedInvocationBlocked"`
-	Count                       int32                  `json:"count"`
+	Realm             bigquery.NullString    `json:"realm"`
+	TestID            bigquery.NullString    `json:"testId"`
+	Variant           []*Variant             `json:"variant"`
+	PresubmitRunID    *PresubmitRunID        `json:"presubmitRunId"`
+	PresubmitRunOwner bigquery.NullString    `json:"presubmitRunOwner"`
+	PresubmitRunMode  bigquery.NullString    `json:"presubmitRunMode"`
+	Changelist        *Changelist            `json:"changelist"`
+	PartitionTime     bigquery.NullTimestamp `json:"partitionTime"`
+	Exonerations      []*Exoneration         `json:"exonerations"`
+	// weetbix.v1.BuildStatus, without "BUILD_STATUS_" prefix.
+	BuildStatus                 bigquery.NullString `json:"buildStatus"`
+	IsBuildCritical             bigquery.NullBool   `json:"isBuildCritical"`
+	IngestedInvocationID        bigquery.NullString `json:"ingestedInvocationId"`
+	IsIngestedInvocationBlocked bigquery.NullBool   `json:"isIngestedInvocationBlocked"`
+	Count                       int32               `json:"count"`
 }
 
 type Exoneration struct {
-	// One of OCCURS_ON_OTHER_CLS, OCCURS_ON_MAINLINE, NOT_CRITICAL.
+	// weetbix.v1.ExonerationReason value. E.g. "OCCURS_ON_OTHER_CLS".
 	Reason bigquery.NullString `json:"reason"`
 }
 

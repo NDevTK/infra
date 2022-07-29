@@ -39,6 +39,7 @@ import (
 	"infra/appengine/weetbix/internal/config/compiledcfg"
 	"infra/appengine/weetbix/internal/perms"
 	"infra/appengine/weetbix/internal/testutil"
+	"infra/appengine/weetbix/pbutil"
 	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -538,7 +539,7 @@ func TestClusters(t *testing.T) {
 
 					// Verify
 					So(response, ShouldBeNil)
-					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster name: algorithm not valid")
+					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster identity: algorithm not valid")
 				})
 				Convey("Invalid cluster ID in name", func() {
 					request.Names[1] = "projects/blah/clusters/reason-v3/123"
@@ -548,7 +549,7 @@ func TestClusters(t *testing.T) {
 
 					// Verify
 					So(response, ShouldBeNil)
-					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster name: ID is not valid lowercase hexadecimal bytes")
+					So(err, ShouldBeRPCInvalidArgument, "name 1: invalid cluster identity: ID is not valid lowercase hexadecimal bytes")
 				})
 				Convey("Too many request items", func() {
 					var names []string
@@ -572,7 +573,7 @@ func TestClusters(t *testing.T) {
 
 					// Verify
 					So(response, ShouldBeNil)
-					So(err, ShouldBeRPCNotFound, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+					So(err, ShouldBeRPCNotFound, "Weetbix BigQuery dataset not provisioned for project or cluster analysis is not yet available")
 				})
 				Convey("With project not configured", func() {
 					err := config.SetTestProjectConfig(ctx, map[string]*configpb.ProjectConfig{})
@@ -676,6 +677,20 @@ func TestClusters(t *testing.T) {
 				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.rules.get")
 				So(response, ShouldBeNil)
 			})
+			Convey("Not authorised to list test results in any realm", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, rdbperms.PermListTestResults)
+
+				response, err := server.QueryClusterSummaries(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permissions [resultdb.testResults.list resultdb.testExonerations.list] in any realm in project \"testproject\"")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to list test exonerations in any realm", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, rdbperms.PermListTestExonerations)
+
+				response, err := server.QueryClusterSummaries(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permissions [resultdb.testResults.list resultdb.testExonerations.list] in any realm in project \"testproject\"")
+				So(response, ShouldBeNil)
+			})
 			Convey("Valid request", func() {
 				expectedResponse := &pb.QueryClusterSummariesResponse{
 					ClusterSummaries: []*pb.ClusterSummary{
@@ -754,7 +769,7 @@ func TestClusters(t *testing.T) {
 
 					// Verify
 					So(response, ShouldBeNil)
-					So(err, ShouldBeRPCNotFound, "project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+					So(err, ShouldBeRPCNotFound, "Weetbix BigQuery dataset not provisioned for project or cluster analysis is not yet available")
 				})
 				Convey("Failure filter syntax is invalid", func() {
 					request.FailureFilter = "test_id::"
@@ -890,7 +905,211 @@ func TestClusters(t *testing.T) {
 				})
 			})
 		})
+		Convey("QueryClusterFailures", func() {
+			authState.IdentityPermissions = listTestResultsPermissions(
+				"testproject:realm1",
+				"testproject:realm2",
+				"otherproject:realm3",
+			)
+			authState.IdentityPermissions = append(authState.IdentityPermissions, authtest.RealmPermission{
+				Realm:      "testproject:@root",
+				Permission: perms.PermGetCluster,
+			}, authtest.RealmPermission{
+				Realm:      "testproject:@root",
+				Permission: perms.PermExpensiveClusterQueries,
+			})
+
+			request := &pb.QueryClusterFailuresRequest{
+				Parent: "projects/testproject/clusters/reason-v1/cccccc00000000000000000000000001/failures",
+			}
+			Convey("Not authorised to get cluster", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermGetCluster)
+
+				response, err := server.QueryClusterFailures(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.get")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to perform expensive queries", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, perms.PermExpensiveClusterQueries)
+
+				response, err := server.QueryClusterFailures(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permission weetbix.clusters.expensiveQueries")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to list test results in any realm", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, rdbperms.PermListTestResults)
+
+				response, err := server.QueryClusterFailures(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permissions [resultdb.testResults.list resultdb.testExonerations.list] in any realm in project \"testproject\"")
+				So(response, ShouldBeNil)
+			})
+			Convey("Not authorised to list test exonerations in any realm", func() {
+				authState.IdentityPermissions = removePermission(authState.IdentityPermissions, rdbperms.PermListTestExonerations)
+
+				response, err := server.QueryClusterFailures(ctx, request)
+				So(err, ShouldBeRPCPermissionDenied, "caller does not have permissions [resultdb.testResults.list resultdb.testExonerations.list] in any realm in project \"testproject\"")
+				So(response, ShouldBeNil)
+			})
+			Convey("With a valid request", func() {
+				analysisClient.expectedRealmsQueried = []string{"testproject:realm1", "testproject:realm2"}
+				analysisClient.failuresByProjectAndCluster["testproject"] = map[clustering.ClusterID][]*analysis.ClusterFailure{
+					{
+						Algorithm: "reason-v1",
+						ID:        "cccccc00000000000000000000000001",
+					}: {
+						{
+							TestID: bqString("testID-1"),
+							Variant: []*analysis.Variant{
+								{
+									Key:   bqString("key1"),
+									Value: bqString("value1"),
+								},
+								{
+									Key:   bqString("key2"),
+									Value: bqString("value2"),
+								},
+							},
+							PresubmitRunID: &analysis.PresubmitRunID{
+								System: bqString("luci-cv"),
+								ID:     bqString("123456789"),
+							},
+							PresubmitRunOwner: bqString("user"),
+							PresubmitRunMode:  bqString(analysis.ToBQPresubmitRunMode(pb.PresubmitRunMode_QUICK_DRY_RUN)),
+							PartitionTime:     bigquery.NullTimestamp{Timestamp: time.Date(2123, time.April, 1, 2, 3, 4, 5, time.UTC), Valid: true},
+							Exonerations: []*analysis.Exoneration{
+								{
+									Reason: bqString(pb.ExonerationReason_OCCURS_ON_MAINLINE.String()),
+								},
+								{
+									Reason: bqString(pb.ExonerationReason_NOT_CRITICAL.String()),
+								},
+							},
+							BuildStatus:                 bqString(analysis.ToBQBuildStatus(pb.BuildStatus_BUILD_STATUS_FAILURE)),
+							IsBuildCritical:             bigquery.NullBool{Bool: true, Valid: true},
+							IngestedInvocationID:        bqString("build-1234567890"),
+							IsIngestedInvocationBlocked: bigquery.NullBool{Bool: true, Valid: true},
+							Count:                       15,
+						},
+						{
+							TestID: bigquery.NullString{StringVal: "testID-2"},
+							Variant: []*analysis.Variant{
+								{
+									Key:   bqString("key1"),
+									Value: bqString("value2"),
+								},
+								{
+									Key:   bqString("key3"),
+									Value: bqString("value3"),
+								},
+							},
+							PresubmitRunID:              nil,
+							PresubmitRunOwner:           bigquery.NullString{},
+							PresubmitRunMode:            bigquery.NullString{},
+							PartitionTime:               bigquery.NullTimestamp{Timestamp: time.Date(2124, time.May, 2, 3, 4, 5, 6, time.UTC), Valid: true},
+							BuildStatus:                 bqString(analysis.ToBQBuildStatus(pb.BuildStatus_BUILD_STATUS_CANCELED)),
+							IsBuildCritical:             bigquery.NullBool{},
+							IngestedInvocationID:        bqString("build-9888887771"),
+							IsIngestedInvocationBlocked: bigquery.NullBool{Bool: true, Valid: true},
+							Count:                       1,
+						},
+					},
+				}
+
+				expectedResponse := &pb.QueryClusterFailuresResponse{
+					Failures: []*pb.ClusterFailureGroup{
+						{
+							TestId:        "testID-1",
+							Variant:       pbutil.Variant("key1", "value1", "key2", "value2"),
+							PartitionTime: timestamppb.New(time.Date(2123, time.April, 1, 2, 3, 4, 5, time.UTC)),
+							PresubmitRun: &pb.ClusterFailureGroup_PresubmitRun{
+								PresubmitRunId: &pb.PresubmitRunId{
+									System: "luci-cv",
+									Id:     "123456789",
+								},
+								Owner: "user",
+								Mode:  pb.PresubmitRunMode_QUICK_DRY_RUN,
+							},
+							IsBuildCritical: true,
+							Exonerations: []*pb.ClusterFailureGroup_Exoneration{{
+								Reason: pb.ExonerationReason_OCCURS_ON_MAINLINE,
+							}, {
+								Reason: pb.ExonerationReason_NOT_CRITICAL,
+							}},
+							BuildStatus:                 pb.BuildStatus_BUILD_STATUS_FAILURE,
+							IngestedInvocationId:        "build-1234567890",
+							IsIngestedInvocationBlocked: true,
+							Count:                       15,
+						},
+						{
+							TestId:                      "testID-2",
+							Variant:                     pbutil.Variant("key1", "value2", "key3", "value3"),
+							PartitionTime:               timestamppb.New(time.Date(2124, time.May, 2, 3, 4, 5, 6, time.UTC)),
+							PresubmitRun:                nil,
+							IsBuildCritical:             false,
+							Exonerations:                nil,
+							BuildStatus:                 pb.BuildStatus_BUILD_STATUS_CANCELED,
+							IngestedInvocationId:        "build-9888887771",
+							IsIngestedInvocationBlocked: true,
+							Count:                       1,
+						},
+					},
+				}
+
+				// Run
+				response, err := server.QueryClusterFailures(ctx, request)
+
+				// Verify.
+				So(err, ShouldBeNil)
+				So(response, ShouldResembleProto, expectedResponse)
+			})
+			Convey("With an invalid request", func() {
+				Convey("Invalid parent", func() {
+					request.Parent = "blah"
+
+					// Run
+					response, err := server.QueryClusterFailures(ctx, request)
+
+					// Verify
+					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "parent: invalid cluster failures name, expected format: projects/{project}/clusters/{cluster_alg}/{cluster_id}/failures")
+				})
+				Convey("Invalid cluster algorithm in parent", func() {
+					request.Parent = "projects/blah/clusters/reason/cccccc00000000000000000000000001/failures"
+
+					// Run
+					response, err := server.QueryClusterFailures(ctx, request)
+
+					// Verify
+					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "parent: invalid cluster identity: algorithm not valid")
+				})
+				Convey("Invalid cluster ID in parent", func() {
+					request.Parent = "projects/blah/clusters/reason-v3/123/failures"
+
+					// Run
+					response, err := server.QueryClusterFailures(ctx, request)
+
+					// Verify
+					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCInvalidArgument, "parent: invalid cluster identity: ID is not valid lowercase hexadecimal bytes")
+				})
+				Convey("Dataset does not exist", func() {
+					delete(analysisClient.clustersByProject, "testproject")
+
+					// Run
+					response, err := server.QueryClusterFailures(ctx, request)
+
+					// Verify
+					So(response, ShouldBeNil)
+					So(err, ShouldBeRPCNotFound, "Weetbix BigQuery dataset not provisioned for project or clustered failures not yet available")
+				})
+			})
+		})
 	})
+}
+
+func bqString(value string) bigquery.NullString {
+	return bigquery.NullString{StringVal: value, Valid: true}
 }
 
 func listTestResultsPermissions(realms ...string) []authtest.RealmPermission {
@@ -968,15 +1187,17 @@ func sortClusterEntries(entries []*pb.ClusterResponse_ClusteredTestResult_Cluste
 }
 
 type fakeAnalysisClient struct {
-	clustersByProject       map[string][]*analysis.Cluster
-	clusterMetricsByProject map[string][]*analysis.ClusterSummary
-	expectedRealmsQueried   []string
+	clustersByProject           map[string][]*analysis.Cluster
+	failuresByProjectAndCluster map[string]map[clustering.ClusterID][]*analysis.ClusterFailure
+	clusterMetricsByProject     map[string][]*analysis.ClusterSummary
+	expectedRealmsQueried       []string
 }
 
 func newFakeAnalysisClient() *fakeAnalysisClient {
 	return &fakeAnalysisClient{
-		clustersByProject:       make(map[string][]*analysis.Cluster),
-		clusterMetricsByProject: make(map[string][]*analysis.ClusterSummary),
+		clustersByProject:           make(map[string][]*analysis.Cluster),
+		failuresByProjectAndCluster: make(map[string]map[clustering.ClusterID][]*analysis.ClusterFailure),
+		clusterMetricsByProject:     make(map[string][]*analysis.ClusterSummary),
 	}
 }
 
@@ -1026,4 +1247,18 @@ func (f *fakeAnalysisClient) QueryClusterSummaries(ctx context.Context, project 
 		results = append(results, c)
 	}
 	return results, nil
+}
+
+func (f *fakeAnalysisClient) ReadClusterFailures(ctx context.Context, options analysis.ReadClusterFailuresOptions) ([]*analysis.ClusterFailure, error) {
+	failuresByCluster, ok := f.failuresByProjectAndCluster[options.Project]
+	if !ok {
+		return nil, analysis.ProjectNotExistsErr
+	}
+
+	set := stringset.NewFromSlice(options.Realms...)
+	if set.Len() != len(f.expectedRealmsQueried) || !set.HasAll(f.expectedRealmsQueried...) {
+		panic("realms passed to ReadClusterFailures do not match expected")
+	}
+
+	return failuresByCluster[options.ClusterID], nil
 }

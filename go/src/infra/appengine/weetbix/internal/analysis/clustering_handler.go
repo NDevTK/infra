@@ -6,7 +6,6 @@ package analysis
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -158,7 +157,7 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 		Duration:             failure.Duration.AsDuration().Seconds(),
 		Exonerations:         exonerations,
 
-		BuildStatus:                   strings.TrimPrefix(failure.BuildStatus.String(), "BUILD_STATUS_"),
+		BuildStatus:                   ToBQBuildStatus(failure.BuildStatus),
 		BuildCritical:                 failure.BuildCritical != nil && *failure.BuildCritical,
 		Changelists:                   failure.Changelists,
 		IngestedInvocationId:          failure.IngestedInvocationId,
@@ -173,9 +172,8 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 	if failure.PresubmitRun != nil {
 		entry.PresubmitRunId = failure.PresubmitRun.PresubmitRunId
 		entry.PresubmitRunOwner = failure.PresubmitRun.Owner
-		entry.PresubmitRunMode = failure.PresubmitRun.Mode.String()
-		presubmitRunStatus := strings.TrimPrefix(failure.PresubmitRun.Status.String(), "PRESUBMIT_RUN_STATUS_")
-		entry.PresubmitRunStatus = presubmitRunStatus
+		entry.PresubmitRunMode = ToBQPresubmitRunMode(failure.PresubmitRun.Mode)
+		entry.PresubmitRunStatus = ToBQPresubmitRunStatus(failure.PresubmitRun.Status)
 	}
 	return entry
 }

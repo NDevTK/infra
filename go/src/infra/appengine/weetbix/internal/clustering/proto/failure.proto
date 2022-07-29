@@ -91,7 +91,7 @@ message Failure {
   weetbix.v1.BuildStatus build_status = 28;
 
   // Whether the build was critical to a presubmit run succeeding.
-  // If the build was not a tryjob for a presubmit run, this is unset.
+  // If the build was not part of a presubmit run, this is unset.
   optional bool build_critical = 29;
 
   // The unsubmitted changelists that were tested (if any).
@@ -126,7 +126,7 @@ message Failure {
   // only true if all (non-skipped) test results for this test variant
   // (in the ingested invocation) are unexpected failures.
   //
-  // Exoneration does not factor into this value; check is_exonerated
+  // Exoneration does not factor into this value; check exonerations
   // to see if the impact of this ingested invocation being blocked was
   // mitigated by exoneration.
   bool is_ingested_invocation_blocked = 17;
@@ -158,7 +158,7 @@ message Failure {
   // (non-skipped) test results for this test variant (in the test run)
   // are unexpected failures.
   //
-  // Exoneration does not factor into this value; check is_exonerated
+  // Exoneration does not factor into this value; check exonerations
   // to see if the impact of this test run being blocked was
   // mitigated by exoneration.
   bool is_test_run_blocked = 21;
