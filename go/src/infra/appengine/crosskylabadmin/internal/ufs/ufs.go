@@ -82,7 +82,27 @@ type GetPoolsClient interface {
 
 // getPoolsForGenericDevice gets the pools for the generic device.
 func getPoolsForGenericDevice(ctx context.Context, client Client, botID string) ([]string, error) {
-	return nil, errors.Reason("get pools for generic device: not yet implemented").Err()
+	res, err := client.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{
+		Hostname: heuristics.NormalizeBotNameToDeviceName(botID),
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "get pools for generic device %q", botID).Err()
+	}
+	switch res.GetResourceType() {
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
+		dRes, _ := res.GetResource().(*ufsAPI.GetDeviceDataResponse_SchedulingUnit)
+		return dRes.SchedulingUnit.GetPools(), nil
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		dRes, _ := res.GetResource().(*ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData)
+		d := dRes.ChromeOsDeviceData
+		if d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
+			// We have a non-labstation DUT.
+			return d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), nil
+		}
+		// We have a labstation DUT.
+		return d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
+	}
+	return nil, errors.Reason("get pools for generic device %q: unsupported device type %q", botID, res.GetResourceType().String()).Err()
 }
 
 // GetPools gets the pools associated with a particular bot or dut.
