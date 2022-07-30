@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc"
@@ -79,14 +80,26 @@ type GetPoolsClient interface {
 	GetMachineLSE(ctx context.Context, in *ufsAPI.GetMachineLSERequest, opts ...grpc.CallOption) (*models.MachineLSE, error)
 }
 
+// getPoolsForGenericDevice gets the pools for the generic device.
+func getPoolsForGenericDevice(ctx context.Context, client Client, botID string) ([]string, error) {
+	return nil, errors.Reason("get pools for generic device: not yet implemented").Err()
+}
+
 // GetPools gets the pools associated with a particular bot or dut.
 // UFSClient may be nil.
 func GetPools(ctx context.Context, client Client, botID string) ([]string, error) {
 	if client == nil {
 		return nil, errors.Reason("get pools: client cannot be nil").Err()
 	}
-	// TODO(gregorynisbet): Consider generalizing this from ChromeOS devices
-	//                       to other kinds of devices.
+
+	pools, err := getPoolsForGenericDevice(ctx, client, botID)
+	if err == nil {
+		logging.Infof(ctx, "Successfully got pools for generic device %q", botID)
+		return pools, err
+	} else {
+		logging.Infof(ctx, "Encountered error for bot %q: %s", botID, err)
+	}
+
 	res, err := client.GetChromeOSDeviceData(ctx, &ufsAPI.GetChromeOSDeviceDataRequest{
 		Hostname: heuristics.NormalizeBotNameToDeviceName(botID),
 	})
