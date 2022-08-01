@@ -67,11 +67,21 @@ wheel: <
 >
 
 wheel: <
+  name: "infra/python/wheels/protorpc-py2_py3"
+  version: "version:0.12.0"
+>
+
+wheel: <
  name: "infra/python/wheels/six-py2_py3"
  version: "version:1.15.0"
 >
 
 # Required for testing only.
+wheel: <
+  name: "infra/python/wheels/mox3-py2_py3"
+  version: "version:1.1.0"
+>
+
 wheel: <
   name: "infra/python/wheels/pytest-py3"
   version: "version:6.2.2"
@@ -262,6 +272,17 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pyasn1-py2_py3"
   version: "version:0.4.8"
+>
+
+# Required by mox3==1.1.0
+wheel: <
+  name: "infra/python/wheels/pbr-py2_py3"
+  version: "version:5.9.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/fixtures-py2_py3"
+  version: "version:4.0.1"
 >
 
 # Required by pytest==6.2.2
