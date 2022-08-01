@@ -33,3 +33,10 @@ message DutLabel {
   }
   repeated Label labels = 2;  // NOLINT
 }
+
+message HwidData {
+  string sku = 1;
+  string variant = 2;
+  string hwid = 3;
+  DutLabel dut_label = 4;
+}
