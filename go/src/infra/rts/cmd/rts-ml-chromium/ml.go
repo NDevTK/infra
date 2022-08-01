@@ -29,6 +29,7 @@ import (
 )
 
 var mlCli string = "ml_cli_logit.py"
+var vpythonSpec string = ".vpython3"
 
 // A single test's stability for a day (Timestamp) including its identify
 // information
@@ -87,6 +88,8 @@ func (r bqStabilityRow) mlExample() *mlExample {
 // Trains a model by calling the cli with the provided file
 func trainMlModel(ctx context.Context, traingDataFile string, modelDir string) error {
 	cmd := exec.Command("vpython3",
+		"-vpython-spec",
+		filepath.Join(modelDir, vpythonSpec),
 		filepath.Join(modelDir, mlCli),
 		"train",
 		"--train-data",
@@ -180,6 +183,8 @@ func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) (
 	csvWriter.WriteAll(csvData)
 
 	cmd := exec.Command("vpython3",
+		"-vpython-spec",
+		filepath.Join(modelDir, vpythonSpec),
 		filepath.Join(modelDir, mlCli),
 		"predict",
 		"--file",
