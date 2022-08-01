@@ -34,7 +34,7 @@ func cleanTmpOwnerRequestExec(ctx context.Context, info *execs.ExecInfo) error {
 func validateUptime(ctx context.Context, info *execs.ExecInfo) error {
 	maxUptime := minLabstationUptime
 	for _, arg := range info.ActionArgs {
-		if strings.HasPrefix(arg, "min_duration:") {
+		if strings.HasPrefix(arg, "max_duration:") {
 			d, err := time.ParseDuration(strings.Split(arg, ":")[1])
 			if err != nil {
 				return errors.Annotate(err, "validate uptime: parse action args").Err()

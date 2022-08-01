@@ -6,6 +6,9 @@ package cros
 
 import (
 	"context"
+	"fmt"
+	"regexp"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -48,4 +51,22 @@ func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, pinge
 		log.Debugf(ctx, "require sink mode in recovery: battery level %d is less than the thresold %d. We will attempt to boot host in recovery mode without changing servo to snk mode. Please note that the host may not be able to see usb drive in recovery mode later due to servo not in snk mode.", batteryLevel, MinimumBatteryLevel)
 	}
 	return true, nil
+}
+
+func ProcessUptime(uptimeVal string) (*time.Duration, error) {
+	// uptimePattern is a decimal number, possibly containing a decimal point.
+	uptimePattern := regexp.MustCompile(`^\s*(\d+\.?\d*)\s+(\d+\.?\d*)\s*$`)
+	parts := uptimePattern.FindStringSubmatch(uptimeVal)
+	if len(parts) != 3 {
+		// 'parts' consists of the complete match, as well as the two
+		// captured groups for the two numerical quantities returned
+		// upon reading /proc/uptime. Hence, in a correct read, the
+		// array should have exactly three elements.
+		return nil, errors.Reason("process uptime: fail to read value from %s", uptimeVal).Err()
+	}
+	dur, err := time.ParseDuration(fmt.Sprintf("%ss", parts[1]))
+	if err != nil {
+		return nil, errors.Annotate(err, "process uptime").Err()
+	}
+	return &dur, nil
 }

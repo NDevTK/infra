@@ -112,7 +112,7 @@ func LabstationRepairConfig() *Configuration {
 					"labstation_uptime_6_hours": {
 						ExecName: "cros_validate_uptime",
 						ExecExtraArgs: []string{
-							"min_duration:6h",
+							"max_duration:6h",
 						},
 					},
 					"Remove reboot requests": {

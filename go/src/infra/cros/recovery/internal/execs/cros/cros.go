@@ -59,7 +59,7 @@ func releaseBuildPath(ctx context.Context, run execs.Runner) (string, error) {
 }
 
 // uptimePattern is a decimal number, possibly containing a decimal point.
-var uptimePattern = regexp.MustCompile(`([\d.]{6,})`)
+var uptimePattern = regexp.MustCompile(`^(\d+\.?\d*)\s+(\d+\.?\d*)$`)
 
 // uptime returns uptime of resource.
 func uptime(ctx context.Context, run execs.Runner) (*time.Duration, error) {
@@ -73,14 +73,11 @@ func uptime(ctx context.Context, run execs.Runner) (*time.Duration, error) {
 		return nil, errors.Annotate(err, "uptime").Err()
 	}
 	log.Debugf(ctx, "Read value: %q.", out)
-	parts := uptimePattern.FindStringSubmatch(out)
-	if len(parts) < 2 {
-		return nil, errors.Reason("uptime: fail to read value from %s", out).Err()
+	dur, err := cros.ProcessUptime(out)
+	if err != nil {
+		return nil, errors.Annotate(err, "get uptime").Err()
 	}
-	// Direct parse to duration.
-	// Example: 683503.88s -> 189h51m43.88s
-	dur, err := time.ParseDuration(fmt.Sprintf("%ss", parts[1]))
-	return &dur, errors.Annotate(err, "get uptime").Err()
+	return dur, nil
 }
 
 // hasOnlySingleLine determines if the given string is only one single line.
@@ -105,9 +102,9 @@ const (
 
 // FindSingleUsbDeviceFSDir find the common parent directory where the unique device with VID and PID is enumerated by file system.
 //
-//   1) Get path to the unique idVendor file with VID
-//   2) Get path to the unique idProduct file with PID
-//   3) Get directions of both files and compare them
+//  1. Get path to the unique idVendor file with VID
+//  2. Get path to the unique idProduct file with PID
+//  3. Get directions of both files and compare them
 //
 // @param basePath: Path to the directory where to look for the device.
 // @param vid: Vendor ID of the looking device.
