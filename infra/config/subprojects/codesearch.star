@@ -236,7 +236,7 @@ chromium_genfiles(
     name = "codesearch-gen-chromium-webview",
     recipe_properties = {
         "compile_targets": ["system_webview_apk"],
-        "platform": "android",
+        "platform": "webview",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
         # Generated files will end up in out/webview-Debug/gen.
