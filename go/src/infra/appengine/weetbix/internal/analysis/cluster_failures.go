@@ -17,24 +17,27 @@ import (
 )
 
 type ClusterFailure struct {
-	Realm                       bigquery.NullString    `json:"realm"`
-	TestID                      bigquery.NullString    `json:"testId"`
-	Variant                     []*Variant             `json:"variant"`
-	PresubmitRunID              *PresubmitRunID        `json:"presubmitRunId"`
-	PresubmitRunOwner           bigquery.NullString    `json:"presubmitRunOwner"`
-	PresubmitRunMode            bigquery.NullString    `json:"presubmitRunMode"`
-	Changelist                  *Changelist            `json:"changelist"`
-	PartitionTime               bigquery.NullTimestamp `json:"partitionTime"`
-	Exonerations                []*Exoneration         `json:"exonerations"`
-	BuildStatus                 bigquery.NullString    `json:"buildStatus"`
-	IsBuildCritical             bigquery.NullBool      `json:"isBuildCritical"`
-	IngestedInvocationID        bigquery.NullString    `json:"ingestedInvocationId"`
-	IsIngestedInvocationBlocked bigquery.NullBool      `json:"isIngestedInvocationBlocked"`
-	Count                       int32                  `json:"count"`
+	Realm             bigquery.NullString `json:"realm"`
+	TestID            bigquery.NullString `json:"testId"`
+	Variant           []*Variant          `json:"variant"`
+	PresubmitRunID    *PresubmitRunID     `json:"presubmitRunId"`
+	PresubmitRunOwner bigquery.NullString `json:"presubmitRunOwner"`
+	PresubmitRunMode  bigquery.NullString `json:"presubmitRunMode"`
+	// TODO(b/239768873): Remove when legacy cluster failures endpoint deleted.
+	Changelist    *Changelist `json:"changelist"`
+	Changelists   []*Changelist
+	PartitionTime bigquery.NullTimestamp `json:"partitionTime"`
+	Exonerations  []*Exoneration         `json:"exonerations"`
+	// weetbix.v1.BuildStatus, without "BUILD_STATUS_" prefix.
+	BuildStatus                 bigquery.NullString `json:"buildStatus"`
+	IsBuildCritical             bigquery.NullBool   `json:"isBuildCritical"`
+	IngestedInvocationID        bigquery.NullString `json:"ingestedInvocationId"`
+	IsIngestedInvocationBlocked bigquery.NullBool   `json:"isIngestedInvocationBlocked"`
+	Count                       int32               `json:"count"`
 }
 
 type Exoneration struct {
-	// One of OCCURS_ON_OTHER_CLS, OCCURS_ON_MAINLINE, NOT_CRITICAL.
+	// weetbix.v1.ExonerationReason value. E.g. "OCCURS_ON_OTHER_CLS".
 	Reason bigquery.NullString `json:"reason"`
 }
 
@@ -98,6 +101,7 @@ func (c *Client) ReadClusterFailures(ctx context.Context, opts ReadClusterFailur
 			ANY_VALUE(r.presubmit_run_mode) as PresubmitRunMode,
 			ANY_VALUE(IF(ARRAY_LENGTH(r.changelists)>0,
 				r.changelists[OFFSET(0)], NULL)) as Changelist,
+			ANY_VALUE(r.changelists) as Changelists,
 			r.partition_time as PartitionTime,
 			ANY_VALUE(r.exonerations) as Exonerations,
 			ANY_VALUE(r.build_status) as BuildStatus,
