@@ -134,6 +134,77 @@ func (x *DutLabel) GetLabels() []*DutLabel_Label {
 	return nil
 }
 
+type HwidData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Sku      string    `protobuf:"bytes,1,opt,name=sku,proto3" json:"sku,omitempty"`
+	Variant  string    `protobuf:"bytes,2,opt,name=variant,proto3" json:"variant,omitempty"`
+	Hwid     string    `protobuf:"bytes,3,opt,name=hwid,proto3" json:"hwid,omitempty"`
+	DutLabel *DutLabel `protobuf:"bytes,4,opt,name=dut_label,json=dutLabel,proto3" json:"dut_label,omitempty"`
+}
+
+func (x *HwidData) Reset() {
+	*x = HwidData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HwidData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HwidData) ProtoMessage() {}
+
+func (x *HwidData) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HwidData.ProtoReflect.Descriptor instead.
+func (*HwidData) Descriptor() ([]byte, []int) {
+	return file_infra_unifiedfleet_api_v1_models_hwid_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *HwidData) GetSku() string {
+	if x != nil {
+		return x.Sku
+	}
+	return ""
+}
+
+func (x *HwidData) GetVariant() string {
+	if x != nil {
+		return x.Variant
+	}
+	return ""
+}
+
+func (x *HwidData) GetHwid() string {
+	if x != nil {
+		return x.Hwid
+	}
+	return ""
+}
+
+func (x *HwidData) GetDutLabel() *DutLabel {
+	if x != nil {
+		return x.DutLabel
+	}
+	return nil
+}
+
 // All labels extracted from the HWID string.
 type DutLabel_Label struct {
 	state         protoimpl.MessageState
@@ -149,7 +220,7 @@ type DutLabel_Label struct {
 func (x *DutLabel_Label) Reset() {
 	*x = DutLabel_Label{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[2]
+		mi := &file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -162,7 +233,7 @@ func (x *DutLabel_Label) String() string {
 func (*DutLabel_Label) ProtoMessage() {}
 
 func (x *DutLabel_Label) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[2]
+	mi := &file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -218,7 +289,16 @@ var file_infra_unifiedfleet_api_v1_models_hwid_proto_rawDesc = []byte{
 	0x0a, 0x05, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
 	0x12, 0x19, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42,
-	0x03, 0xe0, 0x41, 0x02, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x28, 0x5a, 0x26, 0x69,
+	0x03, 0xe0, 0x41, 0x02, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x8d, 0x01, 0x0a, 0x08,
+	0x48, 0x77, 0x69, 0x64, 0x44, 0x61, 0x74, 0x61, 0x12, 0x10, 0x0a, 0x03, 0x73, 0x6b, 0x75, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x73, 0x6b, 0x75, 0x12, 0x18, 0x0a, 0x07, 0x76, 0x61,
+	0x72, 0x69, 0x61, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x61, 0x72,
+	0x69, 0x61, 0x6e, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x77, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x68, 0x77, 0x69, 0x64, 0x12, 0x41, 0x0a, 0x09, 0x64, 0x75, 0x74, 0x5f,
+	0x6c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x75, 0x6e,
+	0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76,
+	0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x44, 0x75, 0x74, 0x4c, 0x61, 0x62, 0x65,
+	0x6c, 0x52, 0x08, 0x64, 0x75, 0x74, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x42, 0x28, 0x5a, 0x26, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x3b,
 	0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
@@ -236,20 +316,22 @@ func file_infra_unifiedfleet_api_v1_models_hwid_proto_rawDescGZIP() []byte {
 	return file_infra_unifiedfleet_api_v1_models_hwid_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_infra_unifiedfleet_api_v1_models_hwid_proto_goTypes = []interface{}{
 	(*GetDutLabelResponse)(nil), // 0: unifiedfleet.api.v1.models.GetDutLabelResponse
 	(*DutLabel)(nil),            // 1: unifiedfleet.api.v1.models.DutLabel
-	(*DutLabel_Label)(nil),      // 2: unifiedfleet.api.v1.models.DutLabel.Label
+	(*HwidData)(nil),            // 2: unifiedfleet.api.v1.models.HwidData
+	(*DutLabel_Label)(nil),      // 3: unifiedfleet.api.v1.models.DutLabel.Label
 }
 var file_infra_unifiedfleet_api_v1_models_hwid_proto_depIdxs = []int32{
 	1, // 0: unifiedfleet.api.v1.models.GetDutLabelResponse.dut_label:type_name -> unifiedfleet.api.v1.models.DutLabel
-	2, // 1: unifiedfleet.api.v1.models.DutLabel.labels:type_name -> unifiedfleet.api.v1.models.DutLabel.Label
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 1: unifiedfleet.api.v1.models.DutLabel.labels:type_name -> unifiedfleet.api.v1.models.DutLabel.Label
+	1, // 2: unifiedfleet.api.v1.models.HwidData.dut_label:type_name -> unifiedfleet.api.v1.models.DutLabel
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_infra_unifiedfleet_api_v1_models_hwid_proto_init() }
@@ -283,6 +365,18 @@ func file_infra_unifiedfleet_api_v1_models_hwid_proto_init() {
 			}
 		}
 		file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HwidData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_unifiedfleet_api_v1_models_hwid_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DutLabel_Label); i {
 			case 0:
 				return &v.state
@@ -301,7 +395,7 @@ func file_infra_unifiedfleet_api_v1_models_hwid_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_unifiedfleet_api_v1_models_hwid_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
