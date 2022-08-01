@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../shared_elements/title_bar';
-import '../../web_component_types';
+import { Outlet } from 'react-router-dom';
 
-import {
-  Outlet,
-  useParams,
-} from 'react-router-dom';
+import TopBar from '../components/top_bar/top_bar';
 
 declare global {
     interface Window {
-        email: string;
-        logoutUrl: string;
+      avatar: string;
+      fullName: string;
+      email: string;
+      logoutUrl: string;
     }
 }
 
 const BaseLayout = () => {
-  const params = useParams();
   return (
     <>
-      <title-bar email={window.email} logoutUrl={window.logoutUrl} project={params.project === null ? undefined : params.project}/>
+      <TopBar />
       <Outlet />
     </>
   );

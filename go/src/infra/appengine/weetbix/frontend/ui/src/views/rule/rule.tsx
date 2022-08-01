@@ -16,7 +16,7 @@ const Rule = () => {
 
   return (
     <Container className='mt-1' maxWidth={false}>
-      <Grid container spacing={2}>
+      <Grid sx={{ mt: 1 }} container spacing={2}>
         <Grid item xs={12}>
           {(project && id) && (
             <RuleTopPanel project={project} ruleId={id} />

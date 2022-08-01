@@ -13,6 +13,17 @@ gcloud config set project chops-weetbix-dev
 gcloud auth application-default login
 ```
 
+Authenticate in LUCI and in :
+
+1. In Weetbix's `frontend` directory run:
+    ```
+    luci-auth login -scopes "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email"
+    ```
+2. In the same directory run:
+   ```
+   cipd auth-login
+   ```
+
 Once the GCP project is authorized, in one terminal start esbuild to rebuild the UI code after any changes:
 ```
 cd frontend/ui
