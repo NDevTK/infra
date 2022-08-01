@@ -147,12 +147,15 @@ export interface ClusterSummary {
   // The number of distinct user CLs rejected by the cluster.
   // 64-bit integer serialized as a string.
   presubmitRejects: string | undefined;
+  presubmitRejectsByDay: string[] | undefined;
   // The number of failures that were critical (on builders critical
   // to CQ succeeding and not exonerated for non-criticality)
   // and exonerated.
   // 64-bit integer serialized as a string.
   criticalFailuresExonerated: string | undefined;
+  criticalFailuresExoneratedByDay: string[] | undefined;
   // The total number of test results in the cluster.
   // 64-bit integer serialized as a string.
   failures: string | undefined;
+  failuresByDay: string[] | undefined;
 }

@@ -413,10 +413,13 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 	result := []*pb.ClusterSummary{}
 	for _, c := range clusters {
 		cs := &pb.ClusterSummary{
-			ClusterId:                  createClusterIdPB(c.ClusterID),
-			PresubmitRejects:           c.PresubmitRejects,
-			CriticalFailuresExonerated: c.CriticalFailuresExonerated,
-			Failures:                   c.Failures,
+			ClusterId:                       createClusterIdPB(c.ClusterID),
+			PresubmitRejects:                c.PresubmitRejects,
+			PresubmitRejectsByDay:           c.PresubmitRejectsByDay,
+			CriticalFailuresExonerated:      c.CriticalFailuresExonerated,
+			CriticalFailuresExoneratedByDay: c.CriticalFailuresExoneratedByDay,
+			Failures:                        c.Failures,
+			FailuresByDay:                   c.FailuresByDay,
 		}
 		if c.ClusterID.IsBugCluster() {
 			ruleID := c.ClusterID.ID

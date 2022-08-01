@@ -44,8 +44,11 @@ export const getMockRuleClusterSummary = (id: string): ClusterSummary => {
       'url': 'https://buganizer/123456789',
     },
     'presubmitRejects': '27',
+    'presubmitRejectsByDay': ['27', '0'],
     'criticalFailuresExonerated': '918',
+    'criticalFailuresExoneratedByDay': ['918', '0'],
     'failures': '1871',
+    'failuresByDay': ['1871', '0'],
   };
 };
 
@@ -58,8 +61,11 @@ export const getMockSuggestedClusterSummary = (id: string): ClusterSummary => {
     'bug': undefined,
     'title': 'reason LIKE "blah%"',
     'presubmitRejects': '29',
+    'presubmitRejectsByDay': ['29', '0'],
     'criticalFailuresExonerated': '919',
+    'criticalFailuresExoneratedByDay': ['919', '0'],
     'failures': '1872',
+    'failuresByDay': ['1872', '0'],
   };
 };
 

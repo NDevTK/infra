@@ -50,13 +50,17 @@ type QueryClusterSummariesOptions struct {
 // ClusterSummary represents a summary of the cluster's failures
 // and their impact.
 type ClusterSummary struct {
-	ClusterID                  clustering.ClusterID
-	PresubmitRejects           int64
-	CriticalFailuresExonerated int64
-	Failures                   int64
-	ExampleFailureReason       bigquery.NullString
-	ExampleTestID              string
-	UniqueTestIDs              int64
+	ClusterID                       clustering.ClusterID
+	ExampleFailureReason            bigquery.NullString
+	ExampleTestID                   string
+	PresubmitRejects                int64
+	PresubmitRejectsByDay           []int64
+	CriticalFailuresExonerated      int64
+	CriticalFailuresExoneratedByDay []int64
+	Failures                        int64
+	FailuresByDay                   []int64
+	UniqueTestIDs                   int64
+	UniqueTestIDsByDay              []int64
 }
 
 // Queries a summary of clusters in the project.
@@ -97,48 +101,151 @@ func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, 
 	// deletion, re-addition) by using APPROX_COUNT_DISTINCT to count the
 	// number of distinct failures in the cluster.
 	sql := `
-		SELECT
-			STRUCT(cluster_algorithm AS Algorithm,
-				cluster_id AS ID) AS ClusterID,
-			ANY_VALUE(failure_reason.primary_error_message) AS ExampleFailureReason,
-			MIN(test_id) AS ExampleTestID,
-			APPROX_COUNT_DISTINCT(test_id) AS UniqueTestIDs,
-			APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
-			APPROX_COUNT_DISTINCT(IF(is_critical_and_exonerated,unique_test_result_id, NULL)) AS CriticalFailuresExonerated,
-			APPROX_COUNT_DISTINCT(unique_test_result_id) AS Failures,
-		FROM (
-			SELECT
-				cluster_algorithm,
-				cluster_id,
-				test_id,
-				failure_reason,
-				CONCAT(chunk_id, '/', chunk_index) as unique_test_result_id,
-				(build_critical AND
-				-- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
-				-- Passes are not ingested by Weetbix, but if a test has both an unexpected pass
-				-- and an unexpected failure, it will be exonerated for the unexpected pass.
-				(STRUCT('OCCURS_ON_MAINLINE' as Reason) in UNNEST(exonerations) OR
-					STRUCT('OCCURS_ON_OTHER_CLS' as Reason) in UNNEST(exonerations)))
-				AS is_critical_and_exonerated,
-				IF(is_ingested_invocation_blocked AND build_critical AND presubmit_run_mode = 'FULL_RUN' AND
-				ARRAY_LENGTH(exonerations) = 0 AND build_status = 'FAILURE' AND presubmit_run_owner = 'user',
-					IF(ARRAY_LENGTH(changelists)>0 AND presubmit_run_owner='user',
-					CONCAT(changelists[OFFSET(0)].host, changelists[OFFSET(0)].change),
-					NULL),
-					NULL)
-				AS presubmit_cl_blocked,
-			FROM clustered_failures cf
-			WHERE
-				is_included_with_high_priority
-				AND partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
-				AND ` + whereClause + `
-				AND realm IN UNNEST(@realms)
-		)
-		GROUP BY
-			cluster_algorithm,
-			cluster_id
-		` + orderByClause + `
-		LIMIT 1000
+	WITH
+  failures AS (
+  SELECT
+    cluster_algorithm,
+    cluster_id,
+    test_id,
+    failure_reason,
+    CONCAT(chunk_id, '/', chunk_index) AS unique_test_result_id,
+    (build_critical AND
+      -- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
+      -- Passes are not ingested by Weetbix, but if a test has both an unexpected pass
+      -- and an unexpected failure, it will be exonerated for the unexpected pass.
+      (STRUCT('OCCURS_ON_MAINLINE' AS Reason) IN UNNEST(exonerations)
+        OR STRUCT('OCCURS_ON_OTHER_CLS' AS Reason) IN UNNEST(exonerations))) AS is_critical_and_exonerated,
+  IF
+    (is_ingested_invocation_blocked
+      AND build_critical
+      AND presubmit_run_mode = 'FULL_RUN'
+      AND ARRAY_LENGTH(exonerations) = 0
+      AND build_status = 'FAILURE'
+      AND presubmit_run_owner = 'user',
+    IF
+      (ARRAY_LENGTH(changelists)>0
+        AND presubmit_run_owner='user',
+        CONCAT(changelists[
+        OFFSET
+          (0)].host, changelists[
+        OFFSET
+          (0)].change),
+        NULL),
+      NULL) AS presubmit_cl_blocked,
+    DATE(partition_time) AS day,
+  FROM
+    clustered_failures cf
+  WHERE
+    is_included_with_high_priority
+    AND partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+    AND ` + whereClause + ` 
+    ),
+  clusters AS (
+  SELECT
+    cluster_algorithm,
+    cluster_id,
+    APPROX_COUNT_DISTINCT(test_id) AS UniqueTestIDs,
+    ANY_VALUE(failure_reason.primary_error_message) AS ExampleFailureReason,
+    ANY_VALUE(test_id) AS ExampleTestID,
+    APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
+    APPROX_COUNT_DISTINCT(
+    IF
+      (is_critical_and_exonerated,
+        unique_test_result_id,
+        NULL)) AS CriticalFailuresExonerated,
+    APPROX_COUNT_DISTINCT(unique_test_result_id) AS Failures,
+  FROM
+    failures
+  GROUP BY
+    cluster_algorithm,
+    cluster_id),
+  daily_clusters AS (
+  SELECT
+    cluster_algorithm,
+    cluster_id,
+    day,
+    APPROX_COUNT_DISTINCT(test_id) AS UniqueTestIDs,
+    APPROX_COUNT_DISTINCT(presubmit_cl_blocked) AS PresubmitRejects,
+    APPROX_COUNT_DISTINCT(
+    IF
+      (is_critical_and_exonerated,
+        unique_test_result_id,
+        NULL)) AS CriticalFailuresExonerated,
+    APPROX_COUNT_DISTINCT(unique_test_result_id) AS Failures,
+  FROM
+    failures
+  GROUP BY
+    cluster_algorithm,
+    cluster_id,
+    day),
+  cluster_days AS (
+  SELECT
+    cluster_algorithm,
+    cluster_id,
+    day,
+  FROM
+    clusters
+  CROSS JOIN
+    UNNEST(GENERATE_DATE_ARRAY(DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY), CURRENT_DATE())) AS day ),
+  daily_clusters_no_gaps AS (
+  SELECT
+    d.cluster_algorithm,
+    d.cluster_id,
+    d.day,
+    COALESCE(c.UniqueTestIDs,
+      0) AS UniqueTestIDs,
+    COALESCE(c.PresubmitRejects,
+      0) AS PresubmitRejects,
+    COALESCE(c.CriticalFailuresExonerated,
+      0) AS CriticalFailuresExonerated,
+    COALESCE(c.Failures,
+      0) AS Failures,
+  FROM
+    cluster_days d
+  LEFT OUTER JOIN
+    daily_clusters c
+  ON
+    d.cluster_algorithm = c.cluster_algorithm
+    AND d.cluster_id = c.cluster_id
+    AND d.day = c.day ),
+daily_clusters_agg AS (SELECT
+  cluster_algorithm,
+  cluster_id,
+  ARRAY_AGG(UniqueTestIDs
+  ORDER BY
+    day DESC) AS UniqueTestIDsByDay,
+  ARRAY_AGG(PresubmitRejects
+  ORDER BY
+    day DESC) AS PresubmitRejectsByDay,
+  ARRAY_AGG(CriticalFailuresExonerated
+  ORDER BY
+    day DESC) AS CriticalFailuresExoneratedByDay,
+  ARRAY_AGG(Failures
+  ORDER BY
+    day DESC) AS FailuresByDay,
+FROM
+  daily_clusters_no_gaps
+GROUP BY
+  cluster_algorithm,
+  cluster_id)
+SELECT
+STRUCT(c.cluster_algorithm AS Algorithm,
+    c.cluster_id AS ID) AS ClusterID,
+    ExampleFailureReason,
+    ExampleTestID,
+    UniqueTestIDs,
+    UniqueTestIDsByDay,
+    PresubmitRejects,
+    PresubmitRejectsByDay,
+    CriticalFailuresExonerated,
+    CriticalFailuresExoneratedByDay,
+    Failures,
+    FailuresByDay
+FROM
+  clusters c JOIN daily_clusters_agg d ON c.cluster_algorithm = d.cluster_algorithm AND c.cluster_id = d.cluster_id
+  ` + orderByClause + `
+LIMIT
+  1000
 	`
 
 	q := c.client.Query(sql)
