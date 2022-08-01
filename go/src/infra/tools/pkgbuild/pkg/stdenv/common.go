@@ -1,3 +1,6 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package stdenv
 
 import (
@@ -86,27 +89,26 @@ func Init() (err error) {
 
 type Generator struct {
 	Name         string
-	Source       interface{}
+	Source       Source
 	Env          []string
 	Dependencies []utilities.BaseDependency
+}
+
+type Source interface {
+	isSourceMethod()
 }
 
 type SourceGit struct {
 	Repository string
 }
 
+func (s *SourceGit) isSourceMethod() {}
+
 type SourceURL struct {
 	URL           string
+	Filename      string
 	HashAlgorithm crypto.Hash
 	HashString    string
 }
 
-const setupScript = `
-import os
-import sys
-
-sys.path.insert(0, '{{.stdenv}}')
-
-import setup
-setup.main()
-`
+func (s *SourceURL) isSourceMethod() {}

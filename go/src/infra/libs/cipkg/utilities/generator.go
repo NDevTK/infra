@@ -6,6 +6,7 @@ package utilities
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"text/template"
 
@@ -71,9 +72,13 @@ func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cip
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
 
-	// Add dependencies' environment variables
-	for e, deps := range envDeps {
-		env = append(env, fmt.Sprintf("%s=%s", e, strings.Join(deps, ":")))
+	// Add dependencies' environment variables. Iterate through dependency types
+	// to ensure a deterministic order.
+	for i := cipkg.DepsUnknown; i < cipkg.DepsMaxNum; i++ {
+		e := i.String()
+		if deps, ok := envDeps[e]; ok {
+			env = append(env, fmt.Sprintf("%s=%s", e, strings.Join(deps, string(os.PathListSeparator))))
+		}
 	}
 
 	return cipkg.Derivation{

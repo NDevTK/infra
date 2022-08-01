@@ -1,6 +1,10 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package stdenv
 
 import (
+	"embed"
 	"fmt"
 
 	"infra/libs/cipkg"
@@ -8,14 +12,24 @@ import (
 	"infra/libs/cipkg/utilities"
 )
 
+var (
+	//go:embed setup_linux.py
+	setupLinuxFiles embed.FS
+	setupLinux      = &builtins.CopyFiles{
+		Name:  "setup_linux",
+		Files: setupLinuxFiles,
+	}
+)
+
 func (g *Generator) getSource() (cipkg.Generator, error) {
 	switch s := g.Source.(type) {
-	case SourceGit:
+	case *SourceGit:
 		panic("unimplemented")
-	case SourceURL:
+	case *SourceURL:
 		return &builtins.FetchURL{
 			Name:          fmt.Sprintf("%s_source", g.Name),
 			URL:           s.URL,
+			Filename:      s.Filename,
 			HashAlgorithm: s.HashAlgorithm,
 			HashString:    s.HashString,
 		}, nil
@@ -76,21 +90,21 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 	base := &utilities.BaseGenerator{
 		Name:    g.Name,
 		Builder: "{{.stdenv_python3}}/bin/python3",
-		Args:    []string{"-I", "-B", "-c", setupScript},
+		Args:    []string{"-I", "-B", "{{.setup_linux}}/setup_linux.py", "{{.stdenv}}"},
 		Env: append([]string{
-			fmt.Sprintf("preHook=%s", preHook),
 			"buildFlags=",
 			"installFlags=",
 			fmt.Sprintf("srcs={{.%s_source}}", g.Name),
 		}, g.Env...),
-		Dependencies: []utilities.BaseDependency{
+		Dependencies: append([]utilities.BaseDependency{
 			{Type: cipkg.DepsBuildHost, Generator: src},
 			{Type: cipkg.DepsBuildHost, Generator: common.Stdenv},
 			{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
 			{Type: cipkg.DepsBuildHost, Generator: common.Docker},
 			{Type: cipkg.DepsBuildHost, Generator: common.Git},
 			{Type: cipkg.DepsBuildHost, Generator: common.Python3},
-		},
+			{Type: cipkg.DepsBuildHost, Generator: setupLinux},
+		}, g.Dependencies...),
 	}
 	return base.Generate(ctx)
 }

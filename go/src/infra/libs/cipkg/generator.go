@@ -47,6 +47,7 @@ const (
 	DepsHostHost
 	DepsHostTarget
 	DepsTargetTarget
+	DepsMaxNum
 )
 
 type Dependency struct {

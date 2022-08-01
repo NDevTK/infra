@@ -16,6 +16,7 @@ import pathlib
 import re
 import shlex
 import subprocess
+import sys
 
 from typing import Callable
 from typing import Dict
@@ -119,7 +120,7 @@ class Execution:
       self.current_context = ctx
       return any(itertools.chain(
           (self._execute_implicit_hook(name, False),),
-          (f(self) for f in self.hooks.get(name, [])),
+          (f(self) for f in reversed(self.hooks.get(name, []))),
       ))
     finally:
       self.current_context = None
@@ -131,7 +132,7 @@ class Execution:
       self.current_context = ctx
       return all(itertools.chain(
           (self._execute_implicit_hook(name, True),),
-          (f(self) for f in self.hooks.get(name, [])),
+          (f(self) for f in reversed(self.hooks.get(name, []))),
       ))
     finally:
       self.current_context = None
@@ -166,7 +167,7 @@ class Execution:
       with open(name) as f:
         try:
           # pylint: disable=exec-used
-          exec(f, globals(), {'exe': self})
+          exec(f.read(), globals(), {'exe': self})
         except HookReturnFalseError:
           return False
         return True
@@ -209,15 +210,15 @@ class Execution:
       self.add_to_search_path(
           Execution.ENV_XDG_DATA_DIRS, pkg.joinpath('share'))
 
-    # Only dependencies whose target platform matches the host platform are
+    # Only dependencies whose host platform matches the host platform are
     # guaranteed their libraries can be linked.
     # TODO(fancl): Move this to pkg-config package
-    if target == PlatType.HOST:
+    if host == PlatType.HOST:
       self.add_to_search_path(
           Execution.ENV_PKG_CONFIG_PATH, pkg.joinpath('lib', 'pkgconfig'))
 
-    if (hook := pkg.joinpath('build-support', 'setup-hook')).is_file():
-      self.execute_one_hook(hook, Execution.HookContext.Setup(
+    if (hook := pkg.joinpath('build-support', 'setup-hook.py')).is_file():
+      self.execute_one_hook(str(hook), Execution.HookContext.Setup(
           host=host,
           target=target,
       ))
@@ -227,7 +228,7 @@ class Execution:
 
     def pkgs(name: str) -> List[pathlib.Path]:
       if e := self.env.get(name):
-        return map(pathlib.Path, e.split(':'))
+        return map(pathlib.Path, e.split(os.path.pathsep))
       return []
 
     for pkg in pkgs('depsBuildBuild'):
@@ -244,6 +245,11 @@ class Execution:
       self.activate_pkg(pkg, PlatType.TARGET, PlatType.TARGET)
 
   def execute_cmd(self, args) -> None:
+    """Execute an external command."""
+    # Flush python's output buffer before executing commands
+    sys.stdout.flush()
+    sys.stderr.flush()
+
     if not self.execute_one_hook(
         'executeCmd',
         Execution.HookContext.ExecutionCmd(
@@ -278,7 +284,7 @@ class Execution:
 
   def unpack_phase(self) -> None:
     """Upack the source code archives listed in ENV_SOURCES."""
-    srcs = self.env[Execution.ENV_SOURCES].split(':')
+    srcs = self.env[Execution.ENV_SOURCES].split(os.path.pathsep)
 
     # To determine the source directory created by unpacking the
     # source archives, we record the contents of the current
@@ -358,7 +364,11 @@ def _camel_to_snake(s: str) -> str:
   return re.sub('([A-Z]+)', r'_\1', s).lower()
 
 
-def main() -> None:
+def _phase_hook(prefix: str, phase: str) -> str:
+  return prefix + phase[0].upper() + phase.rstrip('Phase')[1:]
+
+
+def main(exe=None) -> None:
   """The entrypoint of the setup package.
 
   The main() function is supposed to be executed by stdenv derivation and will
@@ -369,8 +379,12 @@ def main() -> None:
   or Execution.add_hook(...). An Execution instance will always be available
   from argument or local variable 'exe'. See _execute_implicit_hook(...) for how
   it's implemented.
+
+  Args:
+    exe: Optional execution instance for extra initialization.
   """
-  exe = Execution()
+  if not exe:
+    exe = Execution()
 
   # Extra default hooks
   exe.add_hook('unpackCmd', extract.unpack_cmd)
@@ -389,7 +403,9 @@ def main() -> None:
   for phase in ('unpackPhase', 'configurePhase', 'buildPhase', 'installPhase'):
     if Execution.ENV_SOURCE_ROOT in exe.env:
       os.chdir(exe.env[Execution.ENV_SOURCE_ROOT])
+    exe.execute_all_hooks(_phase_hook('pre', phase))
     exe.execute_phase(phase)
+    exe.execute_all_hooks(_phase_hook('post', phase))
 
   exe.execute_all_hooks('postHook')
 
