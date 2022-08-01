@@ -5,19 +5,27 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"infra/tools/vpython_ng/pkg/application"
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
 
+	cipdClient "go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"go.chromium.org/luci/vpython/api/vpython"
+	"go.chromium.org/luci/vpython/cipd"
+	"go.chromium.org/luci/vpython/venv"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -117,6 +125,64 @@ func TestExitCode(t *testing.T) {
 		rc, has := exitcode.Get(err.(error))
 		So(has, ShouldBeTrue)
 		So(rc, ShouldEqual, 42)
+	})
+}
+
+func TestLegacyCache(t *testing.T) {
+	Convey("Test exit code", t, func() {
+		// Run new vpython's venv creation
+		c := cmd(&application.Application{
+			Arguments: []string{
+				"-vpython-spec",
+				testData("default.vpython3"),
+				testData("something.py"),
+			},
+		})
+
+		// Run old vpython's venv creation and trigger prune
+		cfg := venv.Config{
+			BaseDir: testStorageDir,
+			Python:  map[string]string{"3.8": c.Path},
+			Spec: &vpython.Spec{
+				PythonVersion: "3.8",
+				Virtualenv: &vpython.Spec_Package{
+					Name:    "infra/3pp/tools/virtualenv",
+					Version: "version:2@16.7.10.chromium.7",
+				},
+			},
+			Loader: &cipd.PackageLoader{
+				Options: cipdClient.ClientOptions{
+					ServiceURL: chromeinfra.CIPDServiceURL,
+					UserAgent:  fmt.Sprintf("vpython, %s", cipdClient.UserAgent),
+				},
+			},
+			PruneThreshold: time.Hour,
+		}
+		var root string
+		err := venv.With(context.Background(), cfg, func(ctx context.Context, env *venv.Env) error {
+			root = env.Root
+			return nil
+		})
+		So(err, ShouldBeNil)
+
+		// Check new vpython cache exist
+		_, err = os.Stat(c.Path)
+		So(err, ShouldBeNil)
+
+		// Run new vpython's venv creation again to trigger prune
+		_ = cmd(&application.Application{
+			PruneThreshold:    time.Hour,
+			MaxPrunesPerSweep: -1,
+			Arguments: []string{
+				"-vpython-spec",
+				testData("default.vpython3"),
+				testData("something.py"),
+			},
+		})
+
+		// Check old vpython cache exist
+		_, err = os.Stat(root)
+		So(err, ShouldBeNil)
 	})
 }
 

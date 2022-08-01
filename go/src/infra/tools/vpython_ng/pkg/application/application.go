@@ -8,6 +8,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -151,7 +152,7 @@ func (a *Application) ParseEnvs() (err error) {
 		if err != nil {
 			return errors.Annotate(err, "failed to get user home directory").Err()
 		}
-		a.VpythonRoot = filepath.Join(hdir, ".vpython-ng-root")
+		a.VpythonRoot = filepath.Join(hdir, ".vpython-root")
 	}
 
 	// Get default spec path
@@ -250,7 +251,9 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		root = tmp
 	}
 
-	s, err := utilities.NewLocalStorage(root)
+	// Use legacy storage wrapper to respect the complete flag. This can prevent
+	// new or old vpython implementation from pruning each other's cache.
+	s, err := NewLegacyStorage(root)
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
 	}
@@ -344,5 +347,88 @@ func (a *Application) GetExecCommand() *exec.Cmd {
 		Args: append([]string{a.PythonExecutable}, cl.BuildArgs()...),
 		Env:  env.Sorted(),
 		Dir:  a.WorkDir,
+	}
+}
+
+// TODO(fancl): Remove after legacy vpython eliminated.
+type LegacyPackage struct {
+	cipkg.Package
+}
+
+func (p *LegacyPackage) RLock() error {
+	// We ASSUME the content path is <vpython-root>/<name>/contents.
+	pkgPath, contents := filepath.Split(p.Directory())
+	_, drvName := filepath.Split(filepath.Join(pkgPath))
+
+	// Sanity check to prevent assumption changed.
+	if contents != "contents" || drvName != p.Derivation().ID() {
+		return errors.Reason("unexpected package path: %s", p.Directory()).Err()
+	}
+
+	flag := filepath.Join(pkgPath, "complete.flag")
+
+	if err := filesystem.Touch(flag, time.Time{}, 0644); err != nil {
+		return errors.Annotate(err, "failed to update legacy complete flag").Err()
+	}
+
+	return p.Package.RLock()
+}
+
+func NewLegacyStorage(path string) (cipkg.Storage, error) {
+	s, err := utilities.NewLocalStorage(path)
+	if err != nil {
+		return nil, err
+	}
+	return &LegacyStorage{
+		storagePath: path,
+		Storage:     s,
+	}, nil
+}
+
+type LegacyStorage struct {
+	storagePath string
+	cipkg.Storage
+}
+
+func (s *LegacyStorage) Add(drv cipkg.Derivation, m cipkg.PackageMetadata) cipkg.Package {
+	return &LegacyPackage{s.Storage.Add(drv, m)}
+}
+
+func (s *LegacyStorage) Get(id string) cipkg.Package {
+	return &LegacyPackage{s.Storage.Get(id)}
+}
+
+func (s *LegacyStorage) Prune(c context.Context, ttl time.Duration, max int) {
+	deadline := time.Now().Add(-ttl)
+	locks, err := fs.Glob(os.DirFS(s.storagePath), ".*.lock")
+	if err != nil {
+		logging.WithError(err).Warningf(c, "failed to list locks")
+	}
+	pruned := 0
+	for _, l := range locks {
+		id := l[1 : len(l)-5] // remove prefix "." and suffix ".lock"
+		pkg := s.Storage.Get(id)
+		ok, mtime := pkg.Available()
+
+		// If complete.flag exist and package not available (flag not created by
+		// LegacyStampPackage), ignore the package because it's managed by legacy
+		// vpython.
+		if _, err := os.Stat(filepath.Join(s.storagePath, id, "complete.flag")); !ok && err == nil {
+			continue
+		}
+
+		if !ok || mtime.Before(deadline) {
+			if removed, err := pkg.TryRemove(); err != nil {
+				logging.WithError(err).Warningf(c, "failed to remove package")
+			} else if removed {
+				logging.Debugf(c, "prune: remove package (not used since %s): %s", mtime, id)
+				if pruned++; pruned == max {
+					logging.Debugf(c, "prune: hit prune limit of %d ", max)
+					break
+				}
+			}
+		} else {
+			logging.Debugf(c, "prune: skip package (not used since %s): %s", mtime, id)
+		}
 	}
 }
