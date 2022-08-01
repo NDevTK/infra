@@ -42,6 +42,7 @@ const MaxBatchGetClustersRequestSize = 1000
 
 type AnalysisClient interface {
 	ReadClusters(ctx context.Context, luciProject string, clusterIDs []clustering.ClusterID) ([]*analysis.Cluster, error)
+	ReadClusterFailures(ctx context.Context, options analysis.ReadClusterFailuresOptions) (cfs []*analysis.ClusterFailure, err error)
 	QueryClusterSummaries(ctx context.Context, luciProject string, options *analysis.QueryClusterSummariesOptions) ([]*analysis.ClusterSummary, error)
 }
 
@@ -60,7 +61,7 @@ func NewClustersServer(analysisClient AnalysisClient) *pb.DecoratedClusters {
 // Cluster clusters a list of test failures. See proto definition for more.
 func (*clustersServer) Cluster(ctx context.Context, req *pb.ClusterRequest) (*pb.ClusterResponse, error) {
 	if !config.ProjectRe.MatchString(req.Project) {
-		return nil, invalidArgumentError(errors.Reason("project is invalid").Err())
+		return nil, invalidArgumentError(errors.Reason("project").Err())
 	}
 	// We could make an implementation that gracefully degrades if
 	// perms.PermGetRule is not available (i.e. by not returning the
@@ -192,7 +193,7 @@ func (c *clustersServer) BatchGet(ctx context.Context, req *pb.BatchGetClustersR
 	if err != nil {
 		if err == analysis.ProjectNotExistsErr {
 			return nil, appstatus.Error(codes.NotFound,
-				"project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+				"Weetbix BigQuery dataset not provisioned for project or cluster analysis is not yet available")
 		}
 		return nil, err
 	}
@@ -407,7 +408,7 @@ func (c *clustersServer) GetReclusteringProgress(ctx context.Context, req *pb.Ge
 
 func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.QueryClusterSummariesRequest) (*pb.QueryClusterSummariesResponse, error) {
 	if !config.ProjectRe.MatchString(req.Project) {
-		return nil, invalidArgumentError(errors.Reason("project is invalid").Err())
+		return nil, invalidArgumentError(errors.Reason("project").Err())
 	}
 
 	// TODO(b/239768873): Provide some sort of fallback for users who do not
@@ -476,7 +477,7 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 			if err != nil {
 				if err == analysis.ProjectNotExistsErr {
 					bqErr = appstatus.Error(codes.NotFound,
-						"project dataset not provisioned in Weetbix or cluster analysis is not yet available")
+						"Weetbix BigQuery dataset not provisioned for project or cluster analysis is not yet available")
 					return nil
 				}
 				if analysis.InvalidArgumentTag.In(err) {
@@ -548,4 +549,94 @@ func (c *clustersServer) QueryClusterSummaries(ctx context.Context, req *pb.Quer
 		result = append(result, cs)
 	}
 	return &pb.QueryClusterSummariesResponse{ClusterSummaries: result}, nil
+}
+
+func (c *clustersServer) QueryClusterFailures(ctx context.Context, req *pb.QueryClusterFailuresRequest) (*pb.QueryClusterFailuresResponse, error) {
+	project, clusterID, err := parseClusterFailuresName(req.Parent)
+	if err != nil {
+		return nil, invalidArgumentError(errors.Annotate(err, "parent").Err())
+	}
+
+	if err := perms.VerifyProjectPermissions(ctx, project, perms.PermGetCluster, perms.PermExpensiveClusterQueries); err != nil {
+		return nil, err
+	}
+	opts := analysis.ReadClusterFailuresOptions{
+		Project:   project,
+		ClusterID: clusterID,
+	}
+	opts.Realms, err = perms.QueryRealmsNonEmpty(ctx, project, nil, perms.ListTestResultsAndExonerations...)
+	if err != nil {
+		// If the user has permission in no realms, QueryRealmsNonEmpty
+		// will return an appstatus error PERMISSION_DENIED.
+		// Otherwise, e.g. in case AuthDB was unavailable, the error will
+		// not be an appstatus error and the client will get an internal
+		// server error.
+		return nil, err
+	}
+
+	failures, err := c.analysisClient.ReadClusterFailures(ctx, opts)
+	if err != nil {
+		if err == analysis.ProjectNotExistsErr {
+			return nil, appstatus.Error(codes.NotFound,
+				"Weetbix BigQuery dataset not provisioned for project or clustered failures not yet available")
+		}
+		return nil, errors.Annotate(err, "query cluster failures").Err()
+	}
+	response := &pb.QueryClusterFailuresResponse{}
+	for _, f := range failures {
+		response.Failures = append(response.Failures, createDistinctClusterFailurePB(f))
+	}
+
+	return response, nil
+}
+
+func createDistinctClusterFailurePB(f *analysis.ClusterFailure) *pb.DistinctClusterFailure {
+	var exonerations []*pb.DistinctClusterFailure_Exoneration
+	for _, ex := range f.Exonerations {
+		exonerations = append(exonerations, &pb.DistinctClusterFailure_Exoneration{
+			Reason: analysis.FromBQExonerationReason(ex.Reason.StringVal),
+		})
+	}
+
+	var changelists []*pb.Changelist
+	for _, cl := range f.Changelists {
+		changelists = append(changelists, &pb.Changelist{
+			Host:     cl.Host.StringVal,
+			Change:   cl.Change.Int64,
+			Patchset: int32(cl.Patchset.Int64),
+		})
+	}
+
+	buildStatus := analysis.FromBQBuildStatus(f.BuildStatus.StringVal)
+
+	var presubmitRun *pb.DistinctClusterFailure_PresubmitRun
+	if f.PresubmitRunID != nil {
+		presubmitRun = &pb.DistinctClusterFailure_PresubmitRun{
+			PresubmitRunId: &pb.PresubmitRunId{
+				System: f.PresubmitRunID.System.StringVal,
+				Id:     f.PresubmitRunID.ID.StringVal,
+			},
+			Owner: f.PresubmitRunOwner.StringVal,
+			Mode:  analysis.FromBQPresubmitRunMode(f.PresubmitRunMode.StringVal),
+		}
+	}
+
+	variant := make(map[string]string)
+	for _, v := range f.Variant {
+		variant[v.Key.StringVal] = v.Value.StringVal
+	}
+
+	return &pb.DistinctClusterFailure{
+		TestId:                      f.TestID.StringVal,
+		Variant:                     &pb.Variant{Def: variant},
+		PartitionTime:               timestamppb.New(f.PartitionTime.Timestamp),
+		PresubmitRun:                presubmitRun,
+		IsBuildCritical:             f.IsBuildCritical.Bool,
+		Exonerations:                exonerations,
+		BuildStatus:                 buildStatus,
+		IngestedInvocationId:        f.IngestedInvocationID.StringVal,
+		IsIngestedInvocationBlocked: f.IsIngestedInvocationBlocked.Bool,
+		Changelists:                 changelists,
+		Count:                       f.Count,
+	}
 }
