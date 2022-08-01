@@ -6,7 +6,6 @@
 import { DOMAttributes } from 'react';
 
 import { FailureTable } from './src/shared_elements/failure_table';
-import { TitleBar } from './src/shared_elements/title_bar';
 import { BugPage } from './src/views/bug/bug_page/bug_page';
 import { ClusterPage } from './src/views/clusters/cluster/cluster_page';
 import { ImpactTable } from './src/views/clusters/cluster/elements/impact_table';
@@ -20,7 +19,6 @@ declare global {
     namespace JSX {
         interface IntrinsicElements {
             ['home-page']: CustomElement<HomePage>;
-            ['title-bar']: CustomElement<TitleBar>;
             ['new-rule-page']: CustomElement<NewRulePage>;
             ['cluster-page']: CustomElement<ClusterPage>;
             ['bug-page']: CustomElement<BugPage>;
