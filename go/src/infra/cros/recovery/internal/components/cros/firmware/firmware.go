@@ -413,6 +413,14 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 }
 
 // Helper function to extract EC image from downloaded tarball.
+// A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
+// For extract firmware image, we're following below orders to decide firmware target on the DUT:
+//
+//	(1) Use data in targetOverrideModels if a model appears in the map.
+//	(2) Use response from `ec_board` control if we can get that data from the servo.
+//	(3) Use name parsed from DUT crossystem_fwid.
+//	(4) Use model name of the DUT.
+//	(5) Use board name of the DUT.
 func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "EC")
 	candidatesFiles := []string{}
@@ -438,7 +446,9 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		if err != nil {
 			log.Debugf("Failed to get firmware target info from DUT.")
 		}
-		if fwTarget != "" && fwTarget != req.Model {
+		// We don't want the parsed result here to change the order of image-$model and image-$board
+		// So only string that not equal to DUT's board/model name will be used here.
+		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwTarget))
 		}
 	}
@@ -464,6 +474,14 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 }
 
 // Helper function to extract BIOS image from downloaded tarball.
+// A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
+// For extract firmware image, we're following below orders to decide firmware target on the DUT:
+//
+//	(1) Use data in targetOverrideModels if a model appears in the map.
+//	(2) Use response from `ec_board` control if we can get that data from the servo.
+//	(3) Use name parsed from DUT crossystem_fwid.
+//	(4) Use model name of the DUT.
+//	(5) Use board name of the DUT.
 func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "AP")
 	candidatesFiles := []string{}
@@ -489,7 +507,9 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		if err != nil {
 			log.Debugf("Failed to get firmware target info from DUT.")
 		}
-		if fwTarget != "" && fwTarget != req.Model {
+		// We don't want the parsed result here to change the order of image-$model and image-$board
+		// So only string that not equal to DUT's board/model name will be used here.
+		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwTarget))
 		}
 	}
