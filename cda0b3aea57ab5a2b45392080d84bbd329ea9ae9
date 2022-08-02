@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cef1df06_edf680bc",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-02T18:12:27Z",
+      "side": 1,
+      "message": "did this work?\n\nif the data stored in db is in old format of HwidData, you will get err when calling ent.GetProto()?",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 39
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
