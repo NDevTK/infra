@@ -288,6 +288,26 @@ func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity,
 	return asset_instance, nil
 }
 
+// Collect the records which are ready for deletion and add those to cloud task
+func (e *AssetInstanceHandler) TriggerAssetDeletion(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
+	currentTime := time.Now().UTC()
+	query := datastore.NewQuery("AssetInstanceEntity").Eq("Status", "STATUS_COMPLETED").Lte("DeleteAt", currentTime)
+	var asset_instances []*AssetInstanceEntity
+	if err := datastore.GetAll(ctx, query, &asset_instances); err != nil {
+		return nil, err
+	}
+
+	for _, asset_instance := range asset_instances {
+		assetInstanceId := asset_instance.AssetInstanceId
+		err := EnqueueAssetAdditionOrDeletion(ctx, assetInstanceId, "purge", 100)
+		if err != nil {
+			logging.Errorf(ctx, "Error adding the deletion task to the queue for AssetInstance %s: %s", assetInstanceId, err.Error())
+		}
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
 // EnqueueAssetInstance enqueues a asset instance creattion/deletion task.
 func EnqueueAssetAdditionOrDeletion(ctx context.Context, assetInstanceId string, operation string, delay int64) error {
 	return tq.AddTask(ctx, &tq.Task{

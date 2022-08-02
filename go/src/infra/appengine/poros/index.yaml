@@ -18,6 +18,11 @@ indexes:
   - name: ModifiedAt
     direction: desc
 
+- kind: AssetInstanceEntity
+  properties:
+  - name: Status
+  - name: DeleteAt
+
 - kind: AssetResourceEntity
   ancestor: no
   properties:

@@ -32,6 +32,8 @@ service AssetInstance {
   rpc TriggerDeployment(TriggerDeploymentRequest) returns (TriggerDeploymentResponse);
 
   rpc FetchLogs(FetchLogsRequest) returns (FetchLogsResponse);
+
+  rpc TriggerAssetDeletion(.google.protobuf.Empty) returns (.google.protobuf.Empty);
 }
 // Request to create a single AssetInstance
 message CreateAssetInstanceRequest {

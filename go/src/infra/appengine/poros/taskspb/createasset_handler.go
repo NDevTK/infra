@@ -94,8 +94,18 @@ func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {
 		return err
 	}
 
-	// Run the binary
-	executeCommand(ctx, tmpDir, task.Operation, assetFile, task.AssetInstanceId)
+	cmdArgs := []string{}
+	successStatus := []string{}
+	if task.Operation == "purge" {
+		cmdArgs = []string{task.Operation, "--builtins", assetFile}
+		successStatus = []string{"STATUS_DESTROYED", "Lab Destroyed Successfully!!\n"}
+	} else {
+		cmdArgs = []string{task.Operation, "--builtins", "--timeout", "300", assetFile}
+		successStatus = []string{"STATUS_COMPLETED", "Lab Deployed Successfully!!\n"}
+	}
+
+	executeCommand(ctx, tmpDir, task.AssetInstanceId, cmdArgs, successStatus)
+
 	return nil
 }
 
@@ -122,9 +132,9 @@ func createAssetFile(ctx context.Context, assetInstanceId string) (string, error
 	return tmpfile.Name(), nil
 }
 
-func executeCommand(ctx context.Context, binaryDir string, operation string, assetFile string, assetInstanceId string) {
+func executeCommand(ctx context.Context, binaryDir string, assetInstanceId string, cmdArgs []string, successStatus []string) {
 	celBinary := filepath.Join(binaryDir, "linux_amd64", "bin", "cel_ctl")
-	cmd := exec.Command(celBinary, operation, "--builtins", "--timeout", "300", assetFile)
+	cmd := exec.Command(celBinary, cmdArgs...)
 	var stdout, stderr []byte
 	var errStdout, errStderr error
 	stdoutIn, _ := cmd.StdoutPipe()
@@ -169,8 +179,8 @@ func executeCommand(ctx context.Context, binaryDir string, operation string, ass
 		return
 	}
 
-	logging.Infof(ctx, "Deployment Successful!!")
-	updateStatusLogs(ctx, assetInstanceId, "STATUS_COMPLETED", "Deployment completed successfully\n", nil)
+	logging.Infof(ctx, successStatus[1])
+	updateStatusLogs(ctx, assetInstanceId, successStatus[0], successStatus[1], nil)
 }
 
 func enqueueWaitForTask(ctx context.Context, assetInstanceId string, operation string) error {

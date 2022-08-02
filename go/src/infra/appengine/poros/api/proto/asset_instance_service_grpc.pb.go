@@ -35,6 +35,7 @@ type AssetInstanceClient interface {
 	List(ctx context.Context, in *ListAssetInstancesRequest, opts ...grpc.CallOption) (*ListAssetInstancesResponse, error)
 	TriggerDeployment(ctx context.Context, in *TriggerDeploymentRequest, opts ...grpc.CallOption) (*TriggerDeploymentResponse, error)
 	FetchLogs(ctx context.Context, in *FetchLogsRequest, opts ...grpc.CallOption) (*FetchLogsResponse, error)
+	TriggerAssetDeletion(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type assetInstanceClient struct {
@@ -108,6 +109,15 @@ func (c *assetInstanceClient) FetchLogs(ctx context.Context, in *FetchLogsReques
 	return out, nil
 }
 
+func (c *assetInstanceClient) TriggerAssetDeletion(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/poros.AssetInstance/TriggerAssetDeletion", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetInstanceServer is the server API for AssetInstance service.
 // All implementations must embed UnimplementedAssetInstanceServer
 // for forward compatibility
@@ -124,6 +134,7 @@ type AssetInstanceServer interface {
 	List(context.Context, *ListAssetInstancesRequest) (*ListAssetInstancesResponse, error)
 	TriggerDeployment(context.Context, *TriggerDeploymentRequest) (*TriggerDeploymentResponse, error)
 	FetchLogs(context.Context, *FetchLogsRequest) (*FetchLogsResponse, error)
+	TriggerAssetDeletion(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAssetInstanceServer()
 }
 
@@ -151,6 +162,9 @@ func (UnimplementedAssetInstanceServer) TriggerDeployment(context.Context, *Trig
 }
 func (UnimplementedAssetInstanceServer) FetchLogs(context.Context, *FetchLogsRequest) (*FetchLogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchLogs not implemented")
+}
+func (UnimplementedAssetInstanceServer) TriggerAssetDeletion(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TriggerAssetDeletion not implemented")
 }
 func (UnimplementedAssetInstanceServer) mustEmbedUnimplementedAssetInstanceServer() {}
 
@@ -291,6 +305,24 @@ func _AssetInstance_FetchLogs_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AssetInstance_TriggerAssetDeletion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetInstanceServer).TriggerAssetDeletion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/poros.AssetInstance/TriggerAssetDeletion",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetInstanceServer).TriggerAssetDeletion(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetInstance_ServiceDesc is the grpc.ServiceDesc for AssetInstance service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -325,6 +357,10 @@ var AssetInstance_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchLogs",
 			Handler:    _AssetInstance_FetchLogs_Handler,
+		},
+		{
+			MethodName: "TriggerAssetDeletion",
+			Handler:    _AssetInstance_TriggerAssetDeletion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
