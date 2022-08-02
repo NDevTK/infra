@@ -9,51 +9,24 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
+import { AssociatedBug, SuspectRange } from '../../services/analysis_details';
 import { PlainTable } from '../plain_table/plain_table';
 
-interface AnalysisSummary {
+export interface AnalysisSummary {
   id: number;
   status: string;
   failureType: string;
   buildID: number;
   builder: string;
-  suspectRange: string[];
-  bugs: string[];
+  suspectRange: SuspectRange;
+  bugs: AssociatedBug[];
 }
 
 interface Props {
   analysis: AnalysisSummary;
 }
 
-function processSuspectRange(suspects: string[]) {
-  let suspectRangeText = '';
-  let suspectRangeUrl = '';
-
-  var suspectRange = [];
-
-  const suspectCount = suspects.length;
-  if (suspectCount > 0) {
-    suspectRange.push(suspects[0]);
-  }
-  if (suspectCount > 1) {
-    suspectRange.push(suspects[suspectCount - 1]);
-  }
-
-  if (suspectRange.length > 0) {
-    suspectRangeText = suspectRange.join(' ... ');
-    suspectRangeUrl = `/placeholder/url?earliest=${suspectRange[0]}&latest=${
-      suspectRange[suspectRange.length - 1]
-    }`;
-  }
-
-  return [suspectRangeText, suspectRangeUrl];
-}
-
 export const AnalysisOverview = ({ analysis }: Props) => {
-  const [suspectRangeText, suspectRangeUrl] = processSuspectRange(
-    analysis.suspectRange
-  );
-
   return (
     <TableContainer>
       <PlainTable>
@@ -63,7 +36,7 @@ export const AnalysisOverview = ({ analysis }: Props) => {
           <col style={{ width: '15%' }} />
           <col style={{ width: '35%' }} />
         </colgroup>
-        <TableBody>
+        <TableBody data-testid='analysis_overview_table_body'>
           <TableRow>
             <TableCell variant='head'>Analysis ID</TableCell>
             <TableCell>{analysis.id}</TableCell>
@@ -81,26 +54,32 @@ export const AnalysisOverview = ({ analysis }: Props) => {
           <TableRow>
             <TableCell variant='head'>Suspect range</TableCell>
             <TableCell>
-              <a href={suspectRangeUrl}>{suspectRangeText}</a>
+              <a href={analysis.suspectRange.url}>
+                {analysis.suspectRange.linkText}
+              </a>
             </TableCell>
-            <TableCell variant='head'>Failure Type</TableCell>
+            <TableCell variant='head'>Failure type</TableCell>
             <TableCell>{analysis.failureType}</TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>
-              <br />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell variant='head'>Related bugs</TableCell>
-            <TableCell colSpan={3}>
-              {analysis.bugs.map((bugUrl) => (
-                <span className='bugLink' key={bugUrl}>
-                  <a href={bugUrl}>{bugUrl}</a>
-                </span>
-              ))}
-            </TableCell>
-          </TableRow>
+          {analysis.bugs.length > 0 && (
+            <>
+              <TableRow>
+                <TableCell>
+                  <br />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell variant='head'>Related bugs</TableCell>
+                <TableCell colSpan={3}>
+                  {analysis.bugs.map((bug) => (
+                    <span className='bugLink' key={bug.url}>
+                      <a href={bug.url}>{bug.linkText}</a>
+                    </span>
+                  ))}
+                </TableCell>
+              </TableRow>
+            </>
+          )}
         </TableBody>
       </PlainTable>
     </TableContainer>

@@ -22,6 +22,12 @@ npm run watch
 This will build the React app. If left running, local changes to the React app
 will trigger re-building automatically.
 
+To run the frontend unit tests,
+```
+cd frontend/ui
+npm test
+```
+
 ### Running GoFindit
 In the root gofindit directory, run
 ```

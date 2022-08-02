@@ -13,11 +13,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { DetailedSuspect } from './../../services/analysis_details';
+import { HeuristicSuspect } from '../../services/analysis_details';
 import { HeuristicAnalysisTableRow } from './heuristic_analysis_table_row/heuristic_analysis_table_row';
 
 interface Props {
-  suspects: DetailedSuspect[];
+  suspects: HeuristicSuspect[];
 }
 
 export const HeuristicAnalysisTable = ({ suspects }: Props) => {
@@ -39,6 +39,13 @@ export const HeuristicAnalysisTable = ({ suspects }: Props) => {
               suspect={suspect}
             />
           ))}
+          {suspects.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={4} className='dataPlaceholder'>
+                No suspects to display
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

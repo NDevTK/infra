@@ -12,6 +12,10 @@ format:
 test:
 	go test ./...
 
+ui-test:
+	cd frontend/ui; \
+	npm run jest
+
 deploy:
 	$(GAE_PY) upload -A chops-gofindit-dev
 

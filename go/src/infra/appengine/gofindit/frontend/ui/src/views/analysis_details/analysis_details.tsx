@@ -87,20 +87,22 @@ export const AnalysisDetailsPage = () => {
         </Typography>
         <AnalysisOverview analysis={analysisDetails} />
       </div>
-      <div className='section'>
-        {/* TODO: Hide this section if there is no revert CL */}
-        <Typography variant='h4' gutterBottom>
-          Revert CL
-        </Typography>
-        <ChangeListOverview changeList={analysisDetails.revertChangeList} />
-      </div>
-      <div className='section'>
-        {/* TODO: Hide this section if there are no suspects */}
-        <Typography variant='h4' gutterBottom>
-          Suspect Summary
-        </Typography>
-        <SuspectsOverview suspects={analysisDetails.suspects} />
-      </div>
+      {analysisDetails.revertChangeList! && (
+        <div className='section'>
+          <Typography variant='h4' gutterBottom>
+            Revert CL
+          </Typography>
+          <ChangeListOverview changeList={analysisDetails.revertChangeList} />
+        </div>
+      )}
+      {analysisDetails.suspects.length > 0 && (
+        <div className='section'>
+          <Typography variant='h4' gutterBottom>
+            Suspect Summary
+          </Typography>
+          <SuspectsOverview suspects={analysisDetails.suspects} />
+        </div>
+      )}
       <div className='section'>
         <Typography variant='h4' gutterBottom>
           Analysis Components

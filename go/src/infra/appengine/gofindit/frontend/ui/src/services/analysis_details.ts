@@ -22,14 +22,19 @@ export interface AnalysisDetails {
   failureType: string;
   buildID: number;
   builder: string;
-  suspectRange: string[];
-  bugs: string[];
+  suspectRange: SuspectRange;
+  bugs: AssociatedBug[];
   revertChangeList: ChangeListDetails;
   suspects: SuspectSummary[];
-  heuristicAnalysis: DetailedSuspect[];
+  heuristicAnalysis: HeuristicSuspect[];
 }
 
-export interface DetailedSuspect {
+export interface SuspectRange {
+  linkText: string;
+  url: string;
+}
+
+export interface HeuristicSuspect {
   commitID: string;
   reviewURL: string;
   score: number;
@@ -51,4 +56,9 @@ export interface SuspectSummary {
   url: string;
   culpritStatus: string;
   accuseSource: string;
+}
+
+export interface AssociatedBug {
+  linkText: string;
+  url: string;
 }

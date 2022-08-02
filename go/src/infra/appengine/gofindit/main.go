@@ -75,7 +75,7 @@ func checkAccess(ctx *router.Context, next router.Handler) {
 // prepareTemplates configures templates.Bundle used by all UI handlers.
 func prepareTemplates(opts *server.Options) *templates.Bundle {
 	return &templates.Bundle{
-		Loader: templates.FileSystemLoader("templates"),
+		Loader: templates.FileSystemLoader("frontend/templates"),
 		// Controls whether templates are cached.
 		DebugMode: func(context.Context) bool { return !opts.Prod },
 		DefaultArgs: func(ctx context.Context, e *templates.Extra) (templates.Args, error) {

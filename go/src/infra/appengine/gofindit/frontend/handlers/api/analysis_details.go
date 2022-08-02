@@ -7,6 +7,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,10 +19,23 @@ import (
 	"go.chromium.org/luci/server/router"
 )
 
+type AssociatedBug struct {
+	BugSystem string `json:"bugSystem"`
+	Project   string `json:"project"`
+	ID        string `json:"id"`
+	LinkText  string `json:"linkText"`
+	URL       string `json:"url"`
+}
+
+type SuspectRange struct {
+	LinkText string `json:"linkText"`
+	URL      string `json:"url"`
+}
+
 type ChangeList struct {
 	ID             string `json:"id"`
 	Title          string `json:"title"`
-	Url            string `json:"url"`
+	URL            string `json:"url"`
 	Status         string `json:"status"`
 	SubmitTime     string `json:"submitTime"`
 	CommitPosition int    `json:"commitPosition"`
@@ -30,7 +44,7 @@ type ChangeList struct {
 type SuspectSummary struct {
 	ID            string `json:"id"`
 	Title         string `json:"title"`
-	Url           string `json:"url"`
+	URL           string `json:"url"`
 	CulpritStatus string `json:"culpritStatus"`
 	AccuseSource  string `json:"accuseSource"`
 }
@@ -41,19 +55,29 @@ type FailureAnalysis struct {
 	FailureType       string             `json:"failureType"`
 	BuildID           int                `json:"buildID"`
 	Builder           string             `json:"builder"`
-	SuspectRange      []string           `json:"suspectRange"`
-	RelatedBugs       []string           `json:"bugs"`
-	RevertChangeList  ChangeList         `json:"revertChangeList"`
-	Suspects          []SuspectSummary   `json:"suspects"`
+	SuspectRange      *SuspectRange      `json:"suspectRange"`
+	RelatedBugs       []*AssociatedBug   `json:"bugs"`
+	RevertChangeList  *ChangeList        `json:"revertChangeList"`
+	Suspects          []*SuspectSummary  `json:"suspects"`
 	HeuristicAnalysis []*DetailedSuspect `json:"heuristicAnalysis"`
 }
 
 type DetailedSuspect struct {
 	CommitID      string   `json:"commitID"`
-	ReviewUrl     string   `json:"reviewURL"`
+	ReviewURL     string   `json:"reviewURL"`
 	Score         int      `json:"score"`
 	Confidence    string   `json:"confidence"`
 	Justification []string `json:"justification"`
+}
+
+func newSuspectRange(
+	repoURL string,
+	startRevision string,
+	endRevision string) *SuspectRange {
+	return &SuspectRange{
+		LinkText: fmt.Sprintf("%s ... %s", startRevision, endRevision),
+		URL:      fmt.Sprintf("%s/+log/%s..%s", repoURL, startRevision, endRevision),
+	}
 }
 
 func GetAnalysisDetails(ctx *router.Context) {
@@ -66,8 +90,41 @@ func GetAnalysisDetails(ctx *router.Context) {
 		return
 	}
 
-	// TODO: replace this hardcoded response with actual analysis details
+	// TODO: replace these hardcoded response with actual analysis details
 	// query results
+
+	var response *FailureAnalysis
+	if buildID%2 == 0 {
+		response = getFauxEmptyAnalysisDetails(buildID)
+	} else {
+		response = getFauxAnalysisDetails(buildID)
+	}
+
+	respondWithJSON(ctx, &response)
+}
+
+// Returns a faux failure analysis that doesn't have much data, which is useful
+// for checking how the UI handles lack of data
+func getFauxEmptyAnalysisDetails(buildID int) *FailureAnalysis {
+	suspectRange := newSuspectRange("https://chromium.googlesource.com/placeholder", "cd52ae", "cd52af")
+
+	return &FailureAnalysis{
+		ID:                10000000,
+		Status:            "ANALYSING",
+		FailureType:       "Compile failure",
+		BuildID:           buildID,
+		Builder:           "builder-type-amd-rhel-cc64",
+		SuspectRange:      suspectRange,
+		RelatedBugs:       []*AssociatedBug{},
+		Suspects:          []*SuspectSummary{},
+		HeuristicAnalysis: []*DetailedSuspect{},
+	}
+}
+
+// Returns a faux failure analysis that has most fields, which is useful
+// for checking how the UI renders all details
+func getFauxAnalysisDetails(buildID int) *FailureAnalysis {
+	suspectRange := newSuspectRange("https://chromium.googlesource.com/placeholder", "cd52ae", "cd52af")
 
 	suspects := []*gfim.Suspect{
 		{
@@ -88,7 +145,7 @@ The file "dir/a/b/z.cc" was added and it was in the failure log.`,
 	for i, suspect := range suspects {
 		detailedSuspect := &DetailedSuspect{
 			CommitID:      "c9e3a" + strconv.Itoa(i),
-			ReviewUrl:     suspect.ReviewUrl,
+			ReviewURL:     suspect.ReviewUrl,
 			Score:         suspect.Score,
 			Confidence:    heuristic.GetConfidenceLevel(suspect.Score).String(),
 			Justification: strings.Split(suspect.Justification, "\n"),
@@ -96,33 +153,46 @@ The file "dir/a/b/z.cc" was added and it was in the failure log.`,
 		detailedSuspects[i] = detailedSuspect
 	}
 
-	response := FailureAnalysis{
+	return &FailureAnalysis{
 		ID:           10000001,
 		Status:       "VERIFYING",
 		FailureType:  "Compile failure",
 		BuildID:      buildID,
 		Builder:      "builder-type-amd-rhel-cc64",
-		SuspectRange: []string{"cd52ae", "cd52af"},
-		RelatedBugs:  []string{"crbug.com/23527", "crbug.com/23528"},
-		RevertChangeList: ChangeList{
+		SuspectRange: suspectRange,
+		RelatedBugs: []*AssociatedBug{
+			{
+				BugSystem: "monorail",
+				Project:   "chromium",
+				ID:        "23527",
+				LinkText:  "crbug.com/23527",
+				URL:       "https://bugs.chromium.org/placeholder/chromium/issues/detail?id=23527",
+			},
+			{
+				BugSystem: "monorail",
+				Project:   "chromium",
+				ID:        "23528",
+				LinkText:  "crbug.com/23528",
+				URL:       "https://bugs.chromium.org/placeholder/chromium/issues/detail?id=23528",
+			},
+		},
+		RevertChangeList: &ChangeList{
 			ID:             "f23ade252",
 			Title:          "Title of revert CL that was created by GoFindit",
-			Url:            "https://not.a.real.link",
+			URL:            "https://not.a.real.link",
 			Status:         "MERGED",
 			SubmitTime:     "2022-02-02 16:21:13",
 			CommitPosition: 77346,
 		},
-		Suspects: []SuspectSummary{
+		Suspects: []*SuspectSummary{
 			{
 				ID:            "b2f50452c",
 				Title:         "Short title",
-				Url:           "https://www.google.com",
+				URL:           "https://www.google.com",
 				CulpritStatus: "VERIFYING",
 				AccuseSource:  "Heuristic",
 			},
 		},
 		HeuristicAnalysis: detailedSuspects,
 	}
-
-	respondWithJSON(ctx, response)
 }

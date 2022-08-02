@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
-import { ChangeListDetails } from './../../services/analysis_details';
+import { ChangeListDetails } from '../../services/analysis_details';
 import { PlainTable } from '../plain_table/plain_table';
 
 interface Props {
@@ -22,7 +22,7 @@ export const ChangeListOverview = ({ changeList }: Props) => {
           <col style={{ width: '15%' }} />
           <col style={{ width: '85%' }} />
         </colgroup>
-        <TableBody>
+        <TableBody data-testid='change_list_overview_table_body'>
           <TableRow>
             <TableCell variant='head' colSpan={2}>
               <a href={changeList.url}>{changeList.title}</a>

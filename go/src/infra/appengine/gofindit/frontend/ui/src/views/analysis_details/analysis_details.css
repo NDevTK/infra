@@ -52,3 +52,8 @@
 .tabPanelContents {
   padding: 2rem;
 }
+
+.dataPlaceholder {
+  font-size: 0.6em;
+  opacity: 40%;
+}

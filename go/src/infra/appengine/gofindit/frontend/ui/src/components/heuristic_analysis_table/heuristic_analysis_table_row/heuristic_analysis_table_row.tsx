@@ -5,10 +5,10 @@
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-import { DetailedSuspect } from '../../../services/analysis_details';
+import { HeuristicSuspect } from '../../../services/analysis_details';
 
 interface Props {
-  suspect: DetailedSuspect;
+  suspect: HeuristicSuspect;
 }
 
 export const HeuristicAnalysisTableRow = ({ suspect }: Props) => {
@@ -17,7 +17,7 @@ export const HeuristicAnalysisTableRow = ({ suspect }: Props) => {
 
   return (
     <>
-      <TableRow>
+      <TableRow data-testid='heuristic_analysis_table_row'>
         <TableCell rowSpan={reasonCount}>
           <a href={reviewURL}>{commitID}: [TODO: Get title of commit]</a>
         </TableCell>
