@@ -47,7 +47,7 @@ class ZipApi(recipe_api.RecipeApi):
     """
     return ZipPackage(self, root, output, mode='a')
 
-  def directory(self, step_name, directory, output):
+  def directory(self, step_name, directory, output, comment=None):
     """Step to compress a single directory.
 
     Args:
@@ -56,9 +56,12 @@ class ZipApi(recipe_api.RecipeApi):
           an archive, i.e. |directory|/file.txt would be named 'file.txt' in
           the archive.
       output: path to a zip file to create.
+      comment: the archive comment to set on the created ZIP file.
     """
     pkg = self.make_package(directory, output)
     pkg.add_directory(directory)
+    if comment:
+      pkg.set_comment(comment)
     pkg.zip(step_name)
 
   def unzip(self, step_name, zip_file, output, quiet=False):
@@ -87,6 +90,23 @@ class ZipApi(recipe_api.RecipeApi):
         script=self.resource('unzip.py'),
         stdin=self.m.json.input(script_input))
 
+  def get_comment(self, step_name, zip_file):
+    """Returns the archive comment from |zip_file|.
+
+    Args:
+      step_name: display name of a step.
+      zip_file: path to a zip file to read, should exist.
+    """
+    script_input = {
+        'zip_file': str(zip_file),
+    }
+    step_result = self.m.python(
+        name=step_name,
+        script=self.resource('zipcomment.py'),
+        stdout=self.m.raw_io.output_text(),
+        stdin=self.m.json.input(script_input))
+    return step_result.stdout
+
 
 class ZipPackage(object):
   """Used to gather a list of files to zip."""
@@ -97,6 +117,7 @@ class ZipPackage(object):
     self._output = output
     self._mode = mode
     self._entries = []
+    self._comment = ''
 
   @property
   def root(self):
@@ -105,6 +126,9 @@ class ZipPackage(object):
   @property
   def output(self):
     return self._output
+
+  def set_comment(self, comment):
+    self._comment = comment
 
   def add_file(self, path, archive_name=None):
     """Stages single file to be added to the package.
@@ -137,6 +161,7 @@ class ZipPackage(object):
     """Step to zip all staged files."""
     script_input = {
         'entries': self._entries,
+        'comment': self._comment,
         'output': str(self._output),
         'root': str(self._root),
         'mode': str(self._mode),

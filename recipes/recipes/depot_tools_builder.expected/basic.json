@@ -249,7 +249,7 @@
       }
     },
     "name": "zip it up",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/depot_tools\", \"type\": \"dir\"}], \"mode\": \"w\", \"output\": \"[START_DIR]/depot_tools.zip\", \"root\": \"[START_DIR]/depot_tools\"}"
+    "stdin": "{\"comment\": \"\", \"entries\": [{\"path\": \"[START_DIR]/depot_tools\", \"type\": \"dir\"}], \"mode\": \"w\", \"output\": \"[START_DIR]/depot_tools.zip\", \"root\": \"[START_DIR]/depot_tools\"}"
   },
   {
     "cmd": [

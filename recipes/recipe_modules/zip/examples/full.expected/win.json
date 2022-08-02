@@ -41,7 +41,7 @@
       "RECIPE_MODULE[infra::zip]\\resources\\zip.py"
     ],
     "name": "zipping",
-    "stdin": "{\"entries\": [{\"path\": \"[CLEANUP]\\\\zip-example_tmp_1\", \"type\": \"dir\"}], \"mode\": \"w\", \"output\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\output.zip\", \"root\": \"[CLEANUP]\\\\zip-example_tmp_1\"}"
+    "stdin": "{\"comment\": \"hello\", \"entries\": [{\"path\": \"[CLEANUP]\\\\zip-example_tmp_1\", \"type\": \"dir\"}], \"mode\": \"w\", \"output\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\output.zip\", \"root\": \"[CLEANUP]\\\\zip-example_tmp_1\"}"
   },
   {
     "cmd": [
@@ -49,7 +49,7 @@
       "RECIPE_MODULE[infra::zip]\\resources\\zip.py"
     ],
     "name": "zipping more",
-    "stdin": "{\"entries\": [{\"archive_name\": null, \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\a\", \"type\": \"file\"}, {\"archive_name\": null, \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\b\", \"type\": \"file\"}, {\"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\sub\", \"type\": \"dir\"}], \"mode\": \"w\", \"output\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\more.zip\", \"root\": \"[CLEANUP]\\\\zip-example_tmp_1\"}"
+    "stdin": "{\"comment\": \"\", \"entries\": [{\"archive_name\": null, \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\a\", \"type\": \"file\"}, {\"archive_name\": null, \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\b\", \"type\": \"file\"}, {\"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\sub\", \"type\": \"dir\"}], \"mode\": \"w\", \"output\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\more.zip\", \"root\": \"[CLEANUP]\\\\zip-example_tmp_1\"}"
   },
   {
     "cmd": [
@@ -57,7 +57,7 @@
       "RECIPE_MODULE[infra::zip]\\resources\\zip.py"
     ],
     "name": "zipping more updates",
-    "stdin": "{\"entries\": [{\"archive_name\": \"renamed_a\", \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\update_a\", \"type\": \"file\"}, {\"archive_name\": \"renamed_b\", \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\update_b\", \"type\": \"file\"}], \"mode\": \"a\", \"output\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\more.zip\", \"root\": \"[CLEANUP]\\\\zip-example_tmp_1\"}"
+    "stdin": "{\"comment\": \"hello again\", \"entries\": [{\"archive_name\": \"renamed_a\", \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\update_a\", \"type\": \"file\"}, {\"archive_name\": \"renamed_b\", \"path\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\update_b\", \"type\": \"file\"}], \"mode\": \"a\", \"output\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\more.zip\", \"root\": \"[CLEANUP]\\\\zip-example_tmp_1\"}"
   },
   {
     "cmd": [
@@ -93,6 +93,21 @@
     ],
     "infra_step": true,
     "name": "cleanup"
+  },
+  {
+    "cmd": [
+      "python",
+      "RECIPE_MODULE[infra::zip]\\resources\\zipcomment.py"
+    ],
+    "name": "get comment",
+    "stdin": "{\"zip_file\": \"[CLEANUP]\\\\zip-example_tmp_1\\\\output.zip\"}"
+  },
+  {
+    "cmd": [
+      "echo",
+      ""
+    ],
+    "name": "report comment"
   },
   {
     "name": "$result"

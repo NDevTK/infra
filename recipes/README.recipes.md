@@ -1299,7 +1299,7 @@ Raises:
     StepFailure or InfraFailure.
 ### *recipe_modules* / [zip](/recipes/recipe_modules/zip)
 
-[DEPS](/recipes/recipe_modules/zip/__init__.py#7): [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/python][recipe_engine/recipe_modules/python]
+[DEPS](/recipes/recipe_modules/zip/__init__.py#7): [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
@@ -1307,7 +1307,7 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 
 Provides steps to zip and unzip files.
 
-&mdash; **def [directory](/recipes/recipe_modules/zip/api.py#50)(self, step_name, directory, output):**
+&mdash; **def [directory](/recipes/recipe_modules/zip/api.py#50)(self, step_name, directory, output, comment=None):**
 
 Step to compress a single directory.
 
@@ -1317,6 +1317,15 @@ Args:
       an archive, i.e. |directory|/file.txt would be named 'file.txt' in
       the archive.
   output: path to a zip file to create.
+  comment: the archive comment to set on the created ZIP file.
+
+&mdash; **def [get\_comment](/recipes/recipe_modules/zip/api.py#93)(self, step_name, zip_file):**
+
+Returns the archive comment from |zip_file|.
+
+Args:
+  step_name: display name of a step.
+  zip_file: path to a zip file to read, should exist.
 
 &mdash; **def [make\_package](/recipes/recipe_modules/zip/api.py#11)(self, root, output):**
 
@@ -1336,7 +1345,7 @@ Args:
 Returns:
   ZipPackage object.
 
-&mdash; **def [unzip](/recipes/recipe_modules/zip/api.py#64)(self, step_name, zip_file, output, quiet=False):**
+&mdash; **def [unzip](/recipes/recipe_modules/zip/api.py#67)(self, step_name, zip_file, output, quiet=False):**
 
 Step to uncompress |zip_file| into |output| directory.
 

@@ -23,7 +23,7 @@ def RunSteps(api):
   api.step('touch c', ['touch', temp.join('sub', 'dir', 'c')])
 
   # Build zip using 'zip.directory'.
-  api.zip.directory('zipping', temp, temp.join('output.zip'))
+  api.zip.directory('zipping', temp, temp.join('output.zip'), comment='hello')
 
   # Build a zip using ZipPackage api.
   package = api.zip.make_package(temp, temp.join('more.zip'))
@@ -36,6 +36,7 @@ def RunSteps(api):
   package = api.zip.update_package(temp, temp.join('more.zip'))
   package.add_file(temp.join('update_a'), 'renamed_a')
   package.add_file(temp.join('update_b'), 'renamed_b')
+  package.set_comment('hello again')
   package.zip('zipping more updates')
 
   # Coverage for 'output' property.
@@ -49,6 +50,10 @@ def RunSteps(api):
     api.step('listing', ['find'])
   # Clean up.
   api.file.rmtree('cleanup', temp)
+
+  # Retrieve archive comment.
+  comment = api.zip.get_comment('get comment', temp.join('output.zip'))
+  api.step('report comment', ['echo', comment])
 
 
 def GenTests(api):

@@ -15,7 +15,7 @@ import sys
 import zipfile
 
 
-def zip_with_subprocess(root, output, entries, mode):
+def zip_with_subprocess(root, output, entries, comment, mode):
   """Zips set of files and directories using 'zip' utility.
 
   Works only on Linux and Mac, uses system 'zip' program.
@@ -24,6 +24,7 @@ def zip_with_subprocess(root, output, entries, mode):
     root: absolute path to a directory that will become a root of the archive.
     output: absolute path to a destination archive.
     entries: list of dicts, describing what to zip, see zip/api.py.
+    comment: archive comment to store in the archive.
     mode: 'w' to create/overwrite output file, or 'a' to append to output file.
         Note, if output file doesn't exist, this always creates a new file.
 
@@ -60,10 +61,16 @@ def zip_with_subprocess(root, output, entries, mode):
       stdin=subprocess.PIPE,
       cwd=root)
   proc.communicate('\n'.join(items_to_zip))
+  if proc.returncode == 0 and comment:
+    proc = subprocess.Popen(
+        args=['zip', '--archive-comment', output],
+        stdin=subprocess.PIPE,
+        cwd=root)
+    proc.communicate(comment)
   return proc.returncode
 
 
-def zip_with_python(root, output, entries, mode):
+def zip_with_python(root, output, entries, comment, mode):
   """Zips set of files and directories using 'zipfile' python module.
 
   Works everywhere where python works (Windows and Posix).
@@ -72,6 +79,7 @@ def zip_with_python(root, output, entries, mode):
     root: absolute path to a directory that will become a root of the archive.
     output: absolute path to a destination archive.
     entries: list of dicts, describing what to zip, see zip/api.py.
+    comment: archive comment to store in the archive.
     mode: 'w' to create/overwrite output file, or 'a' to append to output file.
         Note, if output file doesn't exist, this always creates a new file.
 
@@ -102,6 +110,8 @@ def zip_with_python(root, output, entries, mode):
             add(os.path.join(cur, name), None)
       else:
         raise AssertionError('Invalid entry type: %s' % (tp,))
+    if comment:
+      zip_file.comment = comment
   return 0
 
 
@@ -121,6 +131,7 @@ def main():
   output = data['output']
   root = data['root'].rstrip(os.path.sep) + os.path.sep
   mode = data['mode']
+  comment = data['comment']
 
   # Archive root directory should exist and be an absolute path.
   assert os.path.exists(root), root
@@ -136,10 +147,10 @@ def main():
       # Used on Windows, since there's no builtin 'zip' utility there, and when
       # an explicit archive_name is set, since there's no way to do that with
       # the native zip utility without filesystem shenanigans
-      exit_code = zip_with_python(root, output, entries, mode)
+      exit_code = zip_with_python(root, output, entries, comment, mode)
     else:
       # On mac and linux 'zip' utility handles symlink and file modes.
-      exit_code = zip_with_subprocess(root, output, entries, mode)
+      exit_code = zip_with_subprocess(root, output, entries, comment, mode)
   finally:
     # On non-zero exit code or on unexpected exception, clean up.
     if exit_code:
