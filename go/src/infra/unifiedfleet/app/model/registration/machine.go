@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsds "infra/unifiedfleet/app/model/datastore"
@@ -80,6 +81,17 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 		buildTarget = p.GetAttachedDevice().GetBuildTarget()
 		deviceType = p.GetAttachedDevice().GetDeviceType().String()
 		model = strings.ToLower(p.GetAttachedDevice().GetModel())
+	} else if p.GetDevboard() != nil {
+		var b protoreflect.ProtoMessage
+		if b2 := p.GetDevboard().GetAndreiboard(); b2 != nil {
+			b = b2
+		} else if b2 := p.GetDevboard().GetIcetower(); b2 != nil {
+			b = b2
+		}
+		if b != nil {
+			d := b.(protoreflect.ProtoMessage).ProtoReflect().Descriptor()
+			deviceType = string(d.FullName())
+		}
 	}
 
 	return &MachineEntity{
