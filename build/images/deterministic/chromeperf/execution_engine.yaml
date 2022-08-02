@@ -1,5 +1,0 @@
-name: chromeperf/execution_engine
-extends: ../../base.yaml
-
-contextdir: ../../../../chromeperf
-deterministic: true
