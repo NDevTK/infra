@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2208d4bc_1bf7abaf",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-08-02T18:54:47Z",
+      "side": 1,
+      "message": "Is this required?",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 2
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cef1df06_edf680bc",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
         "patchSetId": 6
