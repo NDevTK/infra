@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7fe5bd9e_70253dd2",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 2692,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-02T21:38:25Z",
+      "side": 1,
+      "message": "need to test the case that database contains the old format of hwiddata",
+      "range": {
+        "startLine": 2692,
+        "startChar": 2,
+        "endLine": 2692,
+        "endChar": 58
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2208d4bc_1bf7abaf",
         "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
         "patchSetId": 6
@@ -60,6 +83,29 @@
         "startChar": 0,
         "endLine": 30,
         "endChar": 2
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97c3a548_b7e877e0",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-02T21:38:25Z",
+      "side": 1,
+      "message": "need to test the case that database contains the old format of hwiddata",
+      "range": {
+        "startLine": 107,
+        "startChar": 5,
+        "endLine": 107,
+        "endChar": 22
       },
       "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
@@ -203,6 +249,29 @@
         "startChar": 0,
         "endLine": 113,
         "endChar": 39
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91d797ba_58f8282d",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-02T21:38:25Z",
+      "side": 1,
+      "message": "need to test:\n\ndata contains old format, you try to update new one. \ndata contains new format, you try to update old one (in case for DUTs some cases work, some cases not)\ndata contains new format, you try to update new one.",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 23
       },
       "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
