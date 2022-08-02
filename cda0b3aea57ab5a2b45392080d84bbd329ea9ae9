@@ -182,6 +182,30 @@
       },
       "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b063eeb_925b344d",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-02T21:34:52Z",
+      "side": 1,
+      "message": "maybe it\u0027s because the old one and new one are pretty similar and have similar fields. will check the unittest later to see if it\u0027s the case",
+      "parentUuid": "e7a1e8d7_27beec8f",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 39
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
