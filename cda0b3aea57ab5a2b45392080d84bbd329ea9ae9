@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "180cc3a0_44a2a6d1",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-02T19:07:22Z",
+      "side": 1,
+      "message": "The linter keeps adding the line back whenever I delete it...",
+      "parentUuid": "2208d4bc_1bf7abaf",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 2
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cef1df06_edf680bc",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
         "patchSetId": 6
@@ -54,6 +78,30 @@
       "writtenOn": "2022-08-02T18:12:27Z",
       "side": 1,
       "message": "did this work?\n\nif the data stored in db is in old format of HwidData, you will get err when calling ent.GetProto()?",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 39
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ab865be_2b2421d5",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-02T19:07:22Z",
+      "side": 1,
+      "message": "It will not. That\u0027s why there\u0027s the block in line 115. The only way to know is to check if data.DutLabel is correctly formed.",
+      "parentUuid": "cef1df06_edf680bc",
       "range": {
         "startLine": 101,
         "startChar": 0,
