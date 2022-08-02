@@ -305,11 +305,11 @@ type hook struct {
 //
 // Current working directories have the following form, where X is a disambiguation suffix and Y is a hostname.
 //
-//   /home/chromeos-test/skylab_bots/YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY.XXXXXXXXX
+//	/home/chromeos-test/skylab_bots/YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY.XXXXXXXXX
 //
 // The following is a hostname, appended by the swarming bot.
 //
-//   /w/ir/x/ld/sock.ZZZZZZZZZ
+//	/w/ir/x/ld/sock.ZZZZZZZZZ
 //
 // This means that 67 bytes total are used for parts of the path that we do not control, leaving 37 for the hostname.
 // All of these details are implementation details though, so let's conservatively pick a lower bound of 20 character,
@@ -397,7 +397,8 @@ func abbreviateWord(word string) string {
 // dashAbbrev will never return a string longer than n.
 //
 // E.g. abbreviate("abc123-def456", ...) === "a123-d456"
-//      abbreviate("aaaaaaaa", ...) === "aaaaaaaa"
+//
+//	abbreviate("aaaaaaaa", ...) === "aaaaaaaa"
 //
 // See b:218349208 for details. Hostnames that are too long cause the generated names of unix domain sockets
 // to exceed the current 104-byte limit.
