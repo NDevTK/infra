@@ -260,7 +260,7 @@ const IPBatchSize = 100
 
 // BatchUpdateIPs updates the ip entity to UFS.
 //
-// This can be used inside a transaction
+// This cannot be used inside a transaction as the number IPS can exceed the transaction limit of 500
 func BatchUpdateIPs(ctx context.Context, ips []*ufspb.IP) ([]*ufspb.IP, error) {
 	for i := 0; i < len(ips); i += IPBatchSize {
 		batchLen := IPBatchSize

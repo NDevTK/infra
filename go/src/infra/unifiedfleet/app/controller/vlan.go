@@ -80,9 +80,8 @@ func UpdateVlan(ctx context.Context, vlan *ufspb.Vlan, mask *field_mask.FieldMas
 		// Set the realm for vlan
 		setRealmForVlan(vlan)
 	}
+	hc := getVlanHistoryClient(vlan)
 	f := func(ctx context.Context) error {
-		hc := getVlanHistoryClient(vlan)
-
 		oldVlan, err := configuration.GetVlan(ctx, vlan.GetName())
 		if err != nil {
 			return errors.Annotate(err, "UpdateVlan - fail to get old vlan").Err()
@@ -118,7 +117,7 @@ func UpdateVlan(ctx context.Context, vlan *ufspb.Vlan, mask *field_mask.FieldMas
 		}
 
 		// ip range of the vlan may be changed
-		if err := hc.netUdt.updateVlanAndIPTable(ctx, vlan); err != nil {
+		if err := hc.netUdt.updateVlan(ctx, vlan); err != nil {
 			return err
 		}
 
@@ -132,7 +131,13 @@ func UpdateVlan(ctx context.Context, vlan *ufspb.Vlan, mask *field_mask.FieldMas
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return nil, errors.Annotate(err, "UpdateVlan - unable to update vlan %s", vlan.Name).Err()
 	}
-	return vlan, nil
+
+	// Update IP table, this is done outside of the transaction as the number of
+	// updates for the IP table can exceed the current transaction batch update limit of 500
+	if err := hc.netUdt.updateIPTable(ctx, vlan); err != nil {
+		return nil, errors.Annotate(err, "UpdateVlan - unable to update IP Table %s", vlan.Name).Err()
+	}
+	return vlan, hc.SaveChangeEvents(ctx)
 }
 
 // GetVlan returns vlan for the given id from datastore.

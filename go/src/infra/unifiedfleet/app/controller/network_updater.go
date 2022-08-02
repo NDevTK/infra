@@ -298,22 +298,28 @@ func (nu *networkUpdater) deleteLseHostHelper(ctx context.Context, lse *ufspb.Ma
 	return nil
 }
 
-func (nu *networkUpdater) updateVlanAndIPTable(ctx context.Context, newVlan *ufspb.Vlan) error {
+func (nu *networkUpdater) updateVlan(ctx context.Context, newVlan *ufspb.Vlan) error {
+	_, _, freeStartIP, freeEndIP, err := util.ParseVlan(newVlan.GetName(), newVlan.GetVlanAddress(), newVlan.GetFreeStartIpv4Str(), newVlan.GetFreeEndIpv4Str())
+	newVlan.FreeStartIpv4Str = freeStartIP
+	newVlan.FreeEndIpv4Str = freeEndIP
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (nu *networkUpdater) updateIPTable(ctx context.Context, newVlan *ufspb.Vlan) error {
 	ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": newVlan.GetName()})
 	if err != nil {
 		return err
 	}
 	toUpdateIPs := make([]*ufspb.IP, 0)
-
-	_, _, freeStartIP, freeEndIP, err := util.ParseVlan(newVlan.GetName(), newVlan.GetVlanAddress(), newVlan.GetFreeStartIpv4Str(), newVlan.GetFreeEndIpv4Str())
-	newVlan.FreeStartIpv4Str = freeStartIP
-	newVlan.FreeEndIpv4Str = freeEndIP
-
-	freeStartIPInt, err := util.IPv4StrToInt(freeStartIP)
+	freeStartIPInt, err := util.IPv4StrToInt(newVlan.FreeStartIpv4Str)
 	if err != nil {
 		return err
 	}
-	freeEndIPInt, err := util.IPv4StrToInt(freeEndIP)
+	freeEndIPInt, err := util.IPv4StrToInt(newVlan.FreeEndIpv4Str)
 	if err != nil {
 		return err
 	}
