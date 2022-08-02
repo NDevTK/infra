@@ -25,6 +25,8 @@ var RwVPDMap = map[string]string{
 const (
 	// readRwVPDValuesCmdGlob reads the value of VPD key from RW_VPD partition by name.
 	readRwVPDValuesCmdGlob = "vpd -i RW_VPD -g %s"
+	//listRwVPDValuesCmd lists RW_VPD values
+	listRwVPDValuesCmd = "vpd -i RW_VPD -l"
 )
 
 // areRequiredRWVPDKeysPresentExec confirms that there is no required RW_VPD keys missing on the device.
@@ -40,6 +42,31 @@ func areRequiredRWVPDKeysPresentExec(ctx context.Context, info *execs.ExecInfo) 
 	return nil
 }
 
+// canListRWVPDKeysExec checks whether any special errors are
+// encountered during listing the RW VPD values.
+func canListRWVPDKeysExec(ctx context.Context, info *execs.ExecInfo) error {
+	r := info.DefaultRunner()
+	_, err := r(ctx, time.Minute, listRwVPDValuesCmd)
+	// We only care about error codes 11 and 12 following the logic in
+	// legacy repair.
+	if err != nil {
+		errorCode, ok := errors.TagValueIn(execs.ErrCodeTag, err)
+		if !ok {
+			return errors.Annotate(err, "can list rw pd keys: cannot find error code.").Err()
+		}
+		if errorCode == 11 {
+			log.Debugf(ctx, "Can List RW VPD Keys: Invalid VPD.")
+			return errors.Annotate(err, "can list rw vpd keys").Err()
+		} else if errorCode == 12 {
+			log.Debugf(ctx, "Can List RW VPD Keys: Error when decoding VPD blob.")
+			return errors.Annotate(err, "can list rw vpd keys").Err()
+		}
+		log.Debugf(ctx, "Not Critical: %s", err)
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_are_required_rw_vpd_keys_present", areRequiredRWVPDKeysPresentExec)
+	execs.Register("cros_can_list_rw_vpd_keys", canListRWVPDKeysExec)
 }
