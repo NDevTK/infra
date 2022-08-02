@@ -417,8 +417,8 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 // For extract firmware image, we're following below orders to decide firmware target on the DUT:
 //
 //	(1) Use data in targetOverrideModels if a model appears in the map.
-//	(2) Use response from `ec_board` control if we can get that data from the servo.
-//	(3) Use name parsed from DUT crossystem_fwid.
+//	(2) Use response from `ec_board` control if available, except when it equal to board/model name.
+//	(3) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
 //	(4) Use model name of the DUT.
 //	(5) Use board name of the DUT.
 func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
@@ -436,7 +436,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		}
 		// Based on b:220157423 some board report name is upper case.
 		fwBoard = strings.ToLower(fwBoard)
-		if fwBoard != "" && fwBoard != req.Model {
+		if fwBoard != "" && fwBoard != req.Model && fwBoard != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwBoard))
 		}
 	}
@@ -446,8 +446,6 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		if err != nil {
 			log.Debugf("Failed to get firmware target info from DUT.")
 		}
-		// We don't want the parsed result here to change the order of image-$model and image-$board
-		// So only string that not equal to DUT's board/model name will be used here.
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwTarget))
 		}
@@ -478,8 +476,8 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 // For extract firmware image, we're following below orders to decide firmware target on the DUT:
 //
 //	(1) Use data in targetOverrideModels if a model appears in the map.
-//	(2) Use response from `ec_board` control if we can get that data from the servo.
-//	(3) Use name parsed from DUT crossystem_fwid.
+//	(2) Use response from `ec_board` control if available, except when it equal to board/model name.
+//	(3) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
 //	(4) Use model name of the DUT.
 //	(5) Use board name of the DUT.
 func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
@@ -497,7 +495,7 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		}
 		// Based on b:220157423 some board report name is upper case.
 		fwBoard = strings.ToLower(fwBoard)
-		if fwBoard != "" && fwBoard != req.Model {
+		if fwBoard != "" && fwBoard != req.Model && fwBoard != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwBoard))
 		}
 	}
@@ -507,8 +505,6 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		if err != nil {
 			log.Debugf("Failed to get firmware target info from DUT.")
 		}
-		// We don't want the parsed result here to change the order of image-$model and image-$board
-		// So only string that not equal to DUT's board/model name will be used here.
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwTarget))
 		}
