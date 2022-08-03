@@ -90,3 +90,20 @@ func (s *DecoratedClusters) QueryClusterSummaries(ctx context.Context, req *Quer
 	}
 	return
 }
+
+func (s *DecoratedClusters) QueryClusterFailures(ctx context.Context, req *QueryClusterFailuresRequest) (rsp *QueryClusterFailuresResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "QueryClusterFailures", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.QueryClusterFailures(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "QueryClusterFailures", rsp, err)
+	}
+	return
+}
