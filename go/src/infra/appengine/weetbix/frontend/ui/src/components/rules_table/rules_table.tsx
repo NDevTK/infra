@@ -61,7 +61,7 @@ const RulesTable = ({ project } : Props ) => {
         <TableHead>
           <TableRow>
             <TableCell>Rule Definition</TableCell>
-            <TableCell sx={{ width: '130px' }}>Bug</TableCell>
+            <TableCell sx={{ width: '150px' }}>Bug</TableCell>
             <TableCell sx={{ width: '100px' }}>Last Updated</TableCell>
           </TableRow>
         </TableHead>
