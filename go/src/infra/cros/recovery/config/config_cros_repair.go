@@ -25,6 +25,7 @@ func crosRepairPlan() *Plan {
 			"Audit",
 			"Firmware validations",
 			"Login UI is up",
+			"Can list RW VPD Keys",
 			"Verify keys of RW_VPD",
 			"Verify RO_VPD sku_number",
 			"Update Servo NIC mac address",
@@ -372,12 +373,69 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
 				// TODO: Need run tmp reset.
-				// TODO: Missed original recovery action to set key values.
+				"Restore RW VPD Keys",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 			AllowFailAfterRecovery: true,
+		},
+		"Can list RW VPD Keys": {
+			Docs: []string{
+				"Check whether the RW VPD keys can be listed without any errors.",
+			},
+			ExecName: "cros_can_list_rw_vpd_keys",
+			RecoveryActions: []string{
+				"Recover from RW VPD keys listing errors",
+			},
+		},
+		"Recover from RW VPD keys listing errors": {
+			Docs: []string{
+				"Check whether the RW VPD keys can be listed without any errors.",
+			},
+			Dependencies: []string{
+				"Provision OS if needed",
+				"Erase RW VPD Keys",
+				"Restore RW VPD Keys",
+				"Check RW VPD Keys",
+			},
+			ExecName: "sample_pass",
+		},
+		"Check RW VPD Keys": {
+			Docs: []string{
+				"Verify that keys: 'should_send_rlz_ping', 'gbind_attribute', 'ubind_attribute' are present in vpd RW_VPD partition.",
+				"This action is not critical, and only logs any missing RW VPD keys.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
+			ExecName:               "cros_are_required_rw_vpd_keys_present",
+			AllowFailAfterRecovery: true,
+		},
+		"Device has incorrect cros image version": {
+			Docs: []string{
+				"Check whether the cros image version on the device is not as expected.",
+			},
+			Dependencies: []string{
+				"has_stable_version_cros_image",
+				"cros_is_on_stable_version",
+			},
+			ExecName: "sample_fail",
+		},
+		"Erase RW VPD Keys": {
+			Docs: []string{
+				"Reset the RW VPD keys by resetting the flash memory of RW_VPD on the device.",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"flashrom -p host -i RW_VPD -E",
+			},
+		},
+		"Restore RW VPD Keys": {
+			Docs: []string{
+				"Restore any possible RW VPD keys from the known default values.",
+			},
+			ExecName: "cros_restore_rw_vpd_keys",
 		},
 		"Verify servo keyboard firmware": {
 			Conditions: []string{

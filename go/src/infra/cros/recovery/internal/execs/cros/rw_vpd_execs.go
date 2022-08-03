@@ -27,6 +27,8 @@ const (
 	readRwVPDValuesCmdGlob = "vpd -i RW_VPD -g %s"
 	//listRwVPDValuesCmd lists RW_VPD values
 	listRwVPDValuesCmd = "vpd -i RW_VPD -l"
+	// setRwVpdValueCmd sets a RW_VPD values
+	setRwVpdValueCmd = "vpd -i RW_VPD -s %s=%s"
 )
 
 // areRequiredRWVPDKeysPresentExec confirms that there is no required RW_VPD keys missing on the device.
@@ -39,6 +41,24 @@ func areRequiredRWVPDKeysPresentExec(ctx context.Context, info *execs.ExecInfo) 
 		}
 	}
 	log.Infof(ctx, "no rw_vpd values missing")
+	return nil
+}
+
+// restoreRWVPDKeys restores the values of RW VPD keys from the set of
+// known values.
+func restoreRWVPDKeysExec(ctx context.Context, info *execs.ExecInfo) error {
+	r := info.DefaultRunner()
+	for k, v := range RwVPDMap {
+		if out, err := r(ctx, time.Minute, fmt.Sprintf(readRwVPDValuesCmdGlob, k)); err != nil {
+			log.Debugf(ctx, "Restore RW VPD Keys: setting value  %s:%s", k, v)
+			if _, err := r(ctx, time.Minute, fmt.Sprintf(setRwVpdValueCmd, k, v)); err != nil {
+				log.Debugf(ctx, "Restore RW VPD Keys: failed to set value for %s", k)
+				return errors.Reason("Restore RW VPD Keys: could not restore the value for key %s", k).Err()
+			}
+		} else {
+			log.Debugf(ctx, "Restore RW VPD Keys: skipping fix for %s:%s", k, out)
+		}
+	}
 	return nil
 }
 
@@ -69,4 +89,5 @@ func canListRWVPDKeysExec(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("cros_are_required_rw_vpd_keys_present", areRequiredRWVPDKeysPresentExec)
 	execs.Register("cros_can_list_rw_vpd_keys", canListRWVPDKeysExec)
+	execs.Register("cros_restore_rw_vpd_keys", restoreRWVPDKeysExec)
 }
