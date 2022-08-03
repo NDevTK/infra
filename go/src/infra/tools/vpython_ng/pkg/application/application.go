@@ -151,7 +151,7 @@ func (a *Application) ParseEnvs() (err error) {
 		if err != nil {
 			return errors.Annotate(err, "failed to get user home directory").Err()
 		}
-		a.VpythonRoot = filepath.Join(hdir, ".vpython-ng-root")
+		a.VpythonRoot = filepath.Join(hdir, ".vpython-root")
 	}
 
 	// Get default spec path
@@ -250,7 +250,7 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		root = tmp
 	}
 
-	s, err := utilities.NewLocalStorage(root)
+	s, err := NewLocalStorageWithStamp(filepath.Join(root, "store"))
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
 	}
@@ -345,4 +345,19 @@ func (a *Application) GetExecCommand() *exec.Cmd {
 		Env:  env.Sorted(),
 		Dir:  a.WorkDir,
 	}
+}
+
+// Update the complete.flag under the storage root, which will be treated as a
+// single venv in the old vpython implementation.
+// TODO(fancl): Remove after legacy vpython eliminated.
+func NewLocalStorageWithStamp(path string) (cipkg.Storage, error) {
+	s, err := utilities.NewLocalStorage(path)
+	if err != nil {
+		return nil, err
+	}
+	stamp := filepath.Join(path, "complete.flag")
+	if err := filesystem.Touch(stamp, time.Time{}, 0644); err != nil {
+		return nil, errors.Annotate(err, "failed to update legacy complete flag").Err()
+	}
+	return s, nil
 }

@@ -102,7 +102,7 @@ func CPythonFromRelativePath(subdir string) (cipkg.Generator, error) {
 	v, err := os.Open(filepath.Join(cpythonDir, ".versions", "cpython3.cipd_version"))
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, err
+			return nil, errors.Reason("Bundled Python %s not found. Use VPYTHON_BYPASS if prebuilt cpython not available on this platform.", subdir).Err()
 		}
 		return nil, errors.Annotate(err, "failed to open version file").Err()
 	}
