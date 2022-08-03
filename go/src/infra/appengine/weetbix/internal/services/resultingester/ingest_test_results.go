@@ -448,11 +448,6 @@ func scheduleNextTask(ctx context.Context, task *taskspb.IngestTestResults, next
 }
 
 func ingestForClustering(ctx context.Context, clustering *ingestion.Ingester, payload *taskspb.IngestTestResults, inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant) (err error) {
-	if payload.PresubmitRun != nil && payload.PresubmitRun.Mode != pb.PresubmitRunMode_FULL_RUN {
-		// Do not ingest dry run data.
-		return nil
-	}
-
 	ctx, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/services/resultingester.ingestForClustering")
 	defer func() { s.End(err) }()
 
