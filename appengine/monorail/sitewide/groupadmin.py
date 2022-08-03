@@ -23,7 +23,7 @@ from services import usergroup_svc
 from sitewide import group_helpers
 
 
-class GroupAdmin(servlet.Servlet):
+class GroupAdmin(flaskservlet.FlaskServlet):
   """The group admin page."""
 
   _PAGE_TEMPLATE = 'sitewide/group-admin-page.ezt'
@@ -123,8 +123,8 @@ class GroupAdmin(servlet.Servlet):
           mr, '/g/%s%s' % (group_name, urls.GROUP_ADMIN),
           include_project=False, saved=1, ts=int(time.time()))
 
-  # def GetGroupAdmin(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetGroupAdmin(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostGroupAdmin(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostGroupAdmin(self, **kwargs):
+    return self.handler(**kwargs)

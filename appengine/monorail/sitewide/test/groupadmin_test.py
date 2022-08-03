@@ -34,8 +34,7 @@ class GrouAdminTest(unittest.TestCase):
     self.services.usergroup.TestAddGroupSettings(888, 'group@example.com')
     self.services.usergroup.TestAddGroupSettings(
         999, 'importgroup@example.com', external_group_type='mdb')
-    self.servlet = groupadmin.GroupAdmin(
-        'req', 'res', services=self.services)
+    self.servlet = groupadmin.GroupAdmin(services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest()
     self.mr.viewed_username = 'group@example.com'
     self.mr.viewed_user_auth.user_id = 888

@@ -28,7 +28,7 @@ from sitewide import sitewide_views
 MEMBERS_PER_PAGE = 50
 
 
-class GroupDetail(servlet.Servlet):
+class GroupDetail(flaskservlet.FlaskServlet):
   """The group detail page presents information about one user group."""
 
   _PAGE_TEMPLATE = 'sitewide/group-detail-page.ezt'
@@ -189,9 +189,7 @@ class GroupDetail(servlet.Servlet):
       String URL to redirect the user to after processing.
     """
     # 1. Gather data from the request.
-    remove_strs = post_data.getall('remove')
-    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
-    # remove_strs = post_data.getlist('remove')
+    remove_strs = post_data.getlist('remove')
     logging.info('remove_strs = %r', remove_strs)
 
     if not remove_strs:
@@ -212,8 +210,8 @@ class GroupDetail(servlet.Servlet):
           mr, '/g/%s/' % mr.viewed_username, include_project=False,
           saved=1, ts=int(time.time()))
 
-  # def GetGroupDetail(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetGroupDetail(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostGroupDetail(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostGroupDetail(self, **kwargs):
+    return self.handler(**kwargs)

@@ -139,22 +139,22 @@ class ServletRegistry(object):
   def RegisterGroupUrls(self, services):
     flaskapp_group = flask.Flask(__name__)
     _GROUP_URL = [
-        # ('/', grouplist.GroupList(services=services).GetGroupList, ['GET']),
-        # (
-        #     '/<string:viewed_username>/',
-        #     groupdetail.GroupDetail(services=services).GetGroupDetail,
-        #     ['GET']),
-        # (
-        #     '/<string:viewed_username>/edit.do',
-        #     groupdetail.GroupDetail(services=services).PostGroupDetail,
-        #     ['POST']),
-        # (
-        #     '/<string:viewed_username>/groupadmin',
-        #     groupadmin.GroupAdmin(services=services).GetGroupAdmin, ['GET']),
-        # (
-        #     '/<string:viewed_username>/groupadmin.do',
-        #     groupadmin.GroupAdmin(services=services).PostGroupAdmin,
-        #     ['POST']),
+        (
+            '/', grouplist.FlaskGroupList(services=services).GetGroupList,
+            ['GET']),
+        (
+            '/<string:viewed_username>/',
+            groupdetail.GroupDetail(services=services).GetGroupDetail, ['GET']),
+        (
+            '/<string:viewed_username>/edit.do',
+            groupdetail.GroupDetail(services=services).PostGroupDetail,
+            ['POST']),
+        (
+            '/<string:viewed_username>/groupadmin',
+            groupadmin.GroupAdmin(services=services).GetGroupAdmin, ['GET']),
+        (
+            '/<string:viewed_username>/groupadmin.do',
+            groupadmin.GroupAdmin(services=services).PostGroupAdmin, ['POST']),
     ]
 
     return self._AddFlaskUrlRules(flaskapp_group, _GROUP_URL)
@@ -206,11 +206,11 @@ class ServletRegistry(object):
         #     ['POST']),
         # (
         #     '/deleteGroup',
-        #     grouplist.GroupDelete(services=service).GetGroupDelete,
+        #     grouplist.FlaskGroupList(services=service).GetGroupDelete,
         #     ['GET']),
         # (
         #     '/deleteGroup.do',
-        #     grouplist.GroupDelete(services=service).PostGroupDelete,
+        #     grouplist.FlaskGroupList(services=service).PostGroupDelete,
         #     ['POST']),
     ]
 

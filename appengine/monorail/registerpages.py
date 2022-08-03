@@ -58,9 +58,7 @@ from services import cachemanager_svc
 from services import client_config_svc
 
 from sitewide import custom_404
-from sitewide import groupadmin
 from sitewide import groupcreate
-from sitewide import groupdetail
 from sitewide import grouplist
 from sitewide import moved
 from sitewide import projectcreate
@@ -372,7 +370,6 @@ class ServletRegistry(object):
         # The user settings page is a site-wide servlet, not under /u/.
         urls.USER_SETTINGS: usersettings.UserSettings,
         urls.GROUP_CREATE: groupcreate.GroupCreate,
-        urls.GROUP_LIST: grouplist.GroupList,
         urls.GROUP_DELETE: grouplist.GroupList,
         urls.HOTLIST_CREATE: hotlistcreate.HotlistCreate,
         urls.BAN_SPAMMER_TASK: banspammer.BanSpammerTask,
@@ -405,11 +402,6 @@ class ServletRegistry(object):
         urls.USER_PROFILE, 'u')
     self._SetupUserServlets({'': profile_redir})
 
-    self._SetupGroupServlets({
-        urls.GROUP_DETAIL: groupdetail.GroupDetail,
-        urls.GROUP_ADMIN: groupadmin.GroupAdmin,
-        })
-
   def _RegisterWebComponentsHanders(self):
     """Register page handlers that are handled by WebComponentsPage."""
     self._AddRoute('/', webcomponentspage.ProjectListPage, 'GET')
@@ -438,13 +430,6 @@ class ServletRegistry(object):
         '/people': redirect,
         '/people/': redirect,
         })
-
-    redirect = registerpages_helpers.MakeRedirect(urls.GROUP_LIST)
-    self._SetupServlets({'/g': redirect})
-
-    group_redir = registerpages_helpers.MakeRedirectInScope(
-        urls.USER_PROFILE, 'g')
-    self._SetupGroupServlets({'': group_redir})
 
   def _RegisterInboundMail(self):
     """Register a handler for inbound email and email bounces."""
