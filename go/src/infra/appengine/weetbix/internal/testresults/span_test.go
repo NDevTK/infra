@@ -98,8 +98,9 @@ func TestReadTestHistory(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		opts := ReadTestHistoryOptions{
-			Project: "project",
-			TestID:  "test_id",
+			Project:   "project",
+			TestID:    "test_id",
+			SubRealms: []string{"realm", "realm2"},
 		}
 
 		Convey("pagination works", func() {
@@ -484,8 +485,9 @@ func TestReadTestHistoryStats(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		opts := ReadTestHistoryOptions{
-			Project: "project",
-			TestID:  "test_id",
+			Project:   "project",
+			TestID:    "test_id",
+			SubRealms: []string{"realm", "realm2"},
 		}
 
 		Convey("pagination works", func() {
@@ -798,7 +800,7 @@ func TestReadVariants(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("pagination works", func() {
-			opts := ReadVariantsOptions{PageSize: 3}
+			opts := ReadVariantsOptions{PageSize: 3, SubRealms: []string{"realm1", "realm2", "realm3"}}
 			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
 			So(err, ShouldBeNil)
 			So(nextPageToken, ShouldNotBeEmpty)
@@ -988,7 +990,7 @@ func TestQueryTests(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("pagination works", func() {
-			opts := QueryTestsOptions{PageSize: 2}
+			opts := QueryTestsOptions{PageSize: 2, SubRealms: []string{"realm1", "realm2", "realm3"}}
 			testIDs, nextPageToken, err := QueryTests(span.Single(ctx), "project", "id1", opts)
 			So(err, ShouldBeNil)
 			So(nextPageToken, ShouldNotBeEmpty)
@@ -1034,7 +1036,7 @@ func TestQueryTests(t *testing.T) {
 		})
 
 		Convey("special character works", func() {
-			opts := QueryTestsOptions{}
+			opts := QueryTestsOptions{SubRealms: []string{"realm1", "realm2", "realm3"}}
 			testIDs, nextPageToken, err := QueryTests(span.Single(ctx), "project", "special%_characters", opts)
 			So(err, ShouldBeNil)
 			So(nextPageToken, ShouldBeEmpty)

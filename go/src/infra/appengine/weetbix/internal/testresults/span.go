@@ -425,7 +425,6 @@ func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, p
 		"pass": int(pb.TestResultStatus_PASS),
 	}
 	input := map[string]interface{}{
-		"hasSubRealms":       len(opts.SubRealms) > 0,
 		"hasLimit":           opts.PageSize > 0,
 		"hasSubmittedFilter": opts.SubmittedFilter != pb.SubmittedFilter_SUBMITTED_FILTER_UNSPECIFIED,
 		"pagination":         opts.PageToken != "",
@@ -723,9 +722,8 @@ func ReadVariants(ctx context.Context, project, testID string, opts ReadVariants
 		"paginationVariantHash": paginationVariantHash,
 	}
 	input := map[string]interface{}{
-		"hasSubRealms": len(opts.SubRealms) > 0,
-		"hasLimit":     opts.PageSize > 0,
-		"params":       params,
+		"hasLimit": opts.PageSize > 0,
+		"params":   params,
 	}
 
 	switch p := opts.VariantPredicate.GetPredicate().(type) {
@@ -820,9 +818,8 @@ func QueryTests(ctx context.Context, project, testIDSubstring string, opts Query
 		"paginationTestId": paginationTestID,
 	}
 	input := map[string]interface{}{
-		"hasSubRealms": len(opts.SubRealms) > 0,
-		"hasLimit":     opts.PageSize > 0,
-		"params":       params,
+		"hasLimit": opts.PageSize > 0,
+		"params":   params,
 	}
 
 	stmt, err := spanutil.GenerateStatement(QueryTestsQueryTmpl, QueryTestsQueryTmpl.Name(), input)
@@ -873,9 +870,7 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 			AND TestId = @testId
 			AND PartitionTime >= @afterTime
 			AND PartitionTime < @beforeTime
-			{{if .hasSubRealms}}
-				AND SubRealm IN UNNEST(@subRealms)
-			{{end}}
+			AND SubRealm IN UNNEST(@subRealms)
 			{{if .hasVariantHash}}
 				AND VariantHash = @variantHash
 			{{end}}
@@ -886,9 +881,7 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 					WHERE
 						Project = @project
 						AND TestId = @testId
-						{{if .hasSubRealms}}
-							AND SubRealm IN UNNEST(@subRealms)
-						{{end}}
+						AND SubRealm IN UNNEST(@subRealms)
 						AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantKVs) kv)
 				)
 			{{end}}
@@ -975,9 +968,7 @@ var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
 	WHERE
 		Project = @project
 			AND TestId = @testId
-			{{if .hasSubRealms}}
-				AND SubRealm IN UNNEST(@subRealms)
-			{{end}}
+			AND SubRealm IN UNNEST(@subRealms)
 			{{if .hasVariantHash}}
 				AND VariantHash = @variantHash
 			{{end}}
@@ -992,18 +983,20 @@ var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
 	{{end}}
 `))
 
+// The query is written in a way to force spanner NOT to put
+// `SubRealm IN UNNEST(@subRealms)` check in Filter Scan seek condition, which
+// can significantly increase the time it takes to scan the table.
 var QueryTestsQueryTmpl = template.Must(template.New("QueryTestsQuery").Parse(`
-	SELECT
-		TestId
-	FROM TestRealms
-	WHERE
-		Project = @project
-			{{if .hasSubRealms}}
-				AND SubRealm IN UNNEST(@subRealms)
-			{{end}}
-			AND TestId > @paginationTestId
-			AND TestId LIKE @testIdPattern
-	GROUP BY TestId
+	WITH Tests as (
+		SELECT DISTINCT TestId, SubRealm IN UNNEST(@subRealms) as HasAccess
+		FROM TestRealms
+		WHERE
+			Project = @project
+				AND TestId > @paginationTestId
+				AND TestId LIKE @testIdPattern
+	)
+	SELECT TestId FROM Tests
+	WHERE HasAccess
 	ORDER BY TestId ASC
 	{{if .hasLimit}}
 		LIMIT @limit
