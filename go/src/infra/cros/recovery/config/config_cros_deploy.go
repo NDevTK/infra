@@ -360,7 +360,8 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"has_stable_version_cros_image",
 				"Check stable firmware version exists",
-				"Check stable faft version exists",
+				// Disabled faft version check until b/241150358 got resolved.
+				//"Check stable faft version exists",
 			},
 			ExecName: "sample_pass",
 		},
