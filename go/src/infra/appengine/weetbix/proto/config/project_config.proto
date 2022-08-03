@@ -50,6 +50,7 @@ message ProjectConfig {
 message ProjectMetadata {
 
   // Indicates the preferred display name for the project in the UI.
+  // Deprecated: not used anymore.
   string display_name = 1;
 }
 

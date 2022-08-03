@@ -13,6 +13,10 @@ import "infra/appengine/weetbix/proto/v1/project.proto";
 
 // Provides methods to access the projects which are using Weetbix.
 service Projects {
+  // Gets Weetbix configuration for a LUCI Project.
+  //
+  // RPC desigend to comply with https://google.aip.dev/131.
+  rpc GetConfig(GetProjectConfigRequest) returns (ProjectConfig) {};
 
   // Lists LUCI Projects visible to the user.
   //
@@ -28,7 +32,31 @@ message ListProjectsRequest {}
 
 // A response containing the list of projects which are are using Weetbix.
 message ListProjectsResponse {
+  // The list of projects using Weetbix.
+  repeated Project projects = 1;
+}
 
-    // The list of projects using Weetbix.
-    repeated Project projects = 1;
+message GetProjectConfigRequest {
+  // The name of the project configuration to retrieve.
+  // Format: projects/{project}/config.
+  string name = 1;
+}
+
+message ProjectConfig {
+  message Monorail {
+    // The monorail project used for this LUCI project.
+    string project = 1;
+
+    // The shortlink format used for this bug tracker.
+    // For example, "crbug.com".
+    string display_prefix = 2;
+  }
+
+  // Resource name of the project configuration.
+  // Format: projects/{project}/config.
+  // See also https://google.aip.dev/122.
+  string name = 1;
+
+  // Details about the monorail project used for this LUCI project.
+  Monorail monorail = 2;
 }

@@ -23,6 +23,23 @@ type DecoratedProjects struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
+func (s *DecoratedProjects) GetConfig(ctx context.Context, req *GetProjectConfigRequest) (rsp *ProjectConfig, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetConfig", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetConfig(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetConfig", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedProjects) List(ctx context.Context, req *ListProjectsRequest) (rsp *ListProjectsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -136,6 +136,7 @@ type ProjectMetadata struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Indicates the preferred display name for the project in the UI.
+	// Deprecated: not used anymore.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 }
 

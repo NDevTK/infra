@@ -4,7 +4,6 @@
 package config
 
 import (
-	"strings"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -14,19 +13,11 @@ import (
 	configpb "infra/appengine/weetbix/proto/config"
 )
 
-// createPlaceholderProjectWithKey Creates a placeholder project
-// with the given key as the project key.
-func createPlaceholderProjectWithKey(key string) *configpb.ProjectMetadata {
-	return &configpb.ProjectMetadata{
-		DisplayName: strings.Title(key),
-	}
-}
-
-// createPlaceholderProjectWithKey Creates a placeholder Monorail project
-// with default values and a key.
-func createPlaceholderMonorailProjectWithKey(key string) *configpb.MonorailProject {
+// createPlaceholderMonorailProject Creates a placeholder Monorail project
+// with default values.
+func createPlaceholderMonorailProject() *configpb.MonorailProject {
 	return &configpb.MonorailProject{
-		Project:         key,
+		Project:         "chromium",
 		PriorityFieldId: 10,
 		Priorities: []*configpb.MonorailPriority{
 			{
@@ -76,8 +67,8 @@ func createPlaceholderClustering() *configpb.Clustering {
 	}
 }
 
-// Creates a placeholder realms config slice with the specified key as the dataset key.
-func createPlaceholderRealmsWithKey(key string) []*configpb.RealmConfig {
+// Creates a placeholder realms config.
+func createPlaceholderRealms() []*configpb.RealmConfig {
 	return []*configpb.RealmConfig{
 		{
 			Name: "ci",
@@ -90,7 +81,7 @@ func createPlaceholderRealmsWithKey(key string) []*configpb.RealmConfig {
 					{
 						Table: &configpb.BigQueryExport_BigQueryTable{
 							CloudProject: "test-hrd",
-							Dataset:      key,
+							Dataset:      "chromium",
 							Table:        "flaky_test_variants",
 						},
 						Predicate: &atvpb.Predicate{},
@@ -101,25 +92,12 @@ func createPlaceholderRealmsWithKey(key string) []*configpb.RealmConfig {
 	}
 }
 
-// Creates a project config with the specified key.
-func CreatePlaceholderProjectConfigWithKey(key string) *configpb.ProjectConfig {
-	return &configpb.ProjectConfig{
-		ProjectMetadata:    createPlaceholderProjectWithKey(key),
-		Monorail:           createPlaceholderMonorailProjectWithKey(key),
-		BugFilingThreshold: createPlaceholderImpactThreshold(),
-		Realms:             createPlaceholderRealmsWithKey(key),
-		Clustering:         createPlaceholderClustering(),
-	}
-}
-
 // Creates a placeholder project config with key "chromium".
 func CreatePlaceholderProjectConfig() *configpb.ProjectConfig {
-	defaulyKey := "chromium"
 	return &configpb.ProjectConfig{
-		ProjectMetadata:    createPlaceholderProjectWithKey(defaulyKey),
-		Monorail:           createPlaceholderMonorailProjectWithKey(defaulyKey),
+		Monorail:           createPlaceholderMonorailProject(),
 		BugFilingThreshold: createPlaceholderImpactThreshold(),
-		Realms:             createPlaceholderRealmsWithKey(defaulyKey),
+		Realms:             createPlaceholderRealms(),
 		Clustering:         createPlaceholderClustering(),
 	}
 }

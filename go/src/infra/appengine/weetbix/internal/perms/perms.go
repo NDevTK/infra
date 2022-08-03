@@ -57,6 +57,16 @@ var (
 	// PermGetClustersByFailure allows the user to obtain the cluster
 	// identit(ies) matching a given failure.
 	PermGetClustersByFailure = realms.RegisterPermission("weetbix.clusters.getByFailure")
+
+	// Grants permission to get project configuration, such
+	// as the configured monorail issue tracker. Controls the
+	// visibility of the project in the Weetbix main page.
+	//
+	// Can be assumed this is also granted wherever a project has
+	// a weetbix.rules.* or weetbix.clusters.* CRUD permission;
+	// many parts of Weetbix rely on Weetbix configuration and
+	// there is no need to perform gratuitous access checks.
+	PermGetConfig = realms.RegisterPermission("weetbix.config.get")
 )
 
 // The following permission grants view access to the rule definition,

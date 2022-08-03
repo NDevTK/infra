@@ -29,6 +29,7 @@ var (
 	// ClusterID.Validate().
 	ClusterFailuresNameRe      = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/clusters/(` + GenericKeyPattern + `)/(` + GenericKeyPattern + `)/failures$`)
 	ProjectNameRe              = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)$`)
+	ProjectConfigNameRe        = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/config$`)
 	ReclusteringProgressNameRe = regexp.MustCompile(`^projects/(` + config.ProjectRePattern + `)/reclusteringProgress$`)
 )
 
@@ -46,6 +47,15 @@ func parseProjectName(name string) (project string, err error) {
 	match := ProjectNameRe.FindStringSubmatch(name)
 	if match == nil {
 		return "", errors.New("invalid project name, expected format: projects/{project}")
+	}
+	return match[1], nil
+}
+
+// parseProjectConfigName parses a project config resource name into a project ID.
+func parseProjectConfigName(name string) (project string, err error) {
+	match := ProjectConfigNameRe.FindStringSubmatch(name)
+	if match == nil {
+		return "", errors.New("invalid project config name, expected format: projects/{project}/config")
 	}
 	return match[1], nil
 }
