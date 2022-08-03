@@ -87,6 +87,13 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 			TestMetadata: &pb.TestMetadata{Name: testName},
 		}
 
+		if !c.Start.IsZero() {
+			tr.StartTime = timestamppb.New(c.Start)
+			if !c.End.IsZero() {
+				tr.Duration = msToDuration(float64(c.End.Sub(c.Start).Milliseconds()))
+			}
+		}
+
 		// Add Tags to test results.
 		contacts := strings.Join(c.Contacts[:], ",")
 		tr.Tags = append(tr.Tags, pbutil.StringPair("contacts", contacts))
@@ -102,8 +109,6 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 			ret = append(ret, tr)
 			continue
 		}
-		tr.StartTime = timestamppb.New(c.Start)
-		tr.Duration = msToDuration(float64(c.End.Sub(c.Start).Milliseconds()))
 
 		d := c.OutDir
 		tr.Artifacts = map[string]*sinkpb.Artifact{}

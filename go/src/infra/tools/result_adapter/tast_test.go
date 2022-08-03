@@ -150,6 +150,8 @@ func TestTastConversions(t *testing.T) {
 				TestMetadata: &pb.TestMetadata{
 					Name: "tast.lacros.Basic",
 				},
+				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+				Duration:  &duration.Duration{Seconds: 1},
 			})
 		})
 		Convey(`Errors`, func() {
