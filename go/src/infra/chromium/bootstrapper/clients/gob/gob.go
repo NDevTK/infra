@@ -18,7 +18,7 @@ import (
 // ErrorIsRetriable determines whether an error would be retried by Execute.
 func ErrorIsRetriable(err error) bool {
 	switch grpcutil.Code(err) {
-	case codes.NotFound, codes.Unavailable, codes.DeadlineExceeded:
+	case codes.NotFound, codes.Unavailable, codes.DeadlineExceeded, codes.ResourceExhausted:
 		return true
 	}
 	return false

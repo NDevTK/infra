@@ -46,6 +46,7 @@ func TestExecute(t *testing.T) {
 			codes.NotFound,
 			codes.Unavailable,
 			codes.DeadlineExceeded,
+			codes.ResourceExhausted,
 		}
 
 		Convey("does not retry on errors without status code", func() {
