@@ -16,6 +16,24 @@
       "message": "I wonder if we still need this test now with the new approach? What is it testing?",
       "revId": "d8f09b466556ef8c08b8d56efe7e1d66b73c934f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c4d5681_d2d4a2b8",
+        "filename": "go/src/infra/tools/vpython_ng/cmd/vpython3.8/main_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-08-03T03:58:18Z",
+      "side": 1,
+      "message": "It\u0027s testing the old and new implementation won\u0027t prune each other\u0027s cache. It\u0027s still possible for the old vpython pruning the new\u0027s if the stamp isn\u0027t implemented correctly.",
+      "parentUuid": "8a5b69fa_c69bc923",
+      "revId": "d8f09b466556ef8c08b8d56efe7e1d66b73c934f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
