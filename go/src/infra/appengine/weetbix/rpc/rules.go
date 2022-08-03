@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/appstatus"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/span"
@@ -181,8 +182,16 @@ func (*rulesServer) Create(ctx context.Context, req *pb.CreateRuleRequest) (*pb.
 	r.LastUpdatedUser = user
 	r.PredicateLastUpdated = commitTime.In(time.UTC)
 
+	// Log rule changes to provide a way of recovering old system state
+	// if malicious or unintended updates occur.
+	logRuleCreate(ctx, r)
+
 	canSeeDefinition := true
 	return createRulePB(r, cfg.Config, canSeeDefinition), nil
+}
+
+func logRuleCreate(ctx context.Context, rule *rules.FailureAssociationRule) {
+	logging.Infof(ctx, "Rule created (%s/%s): %s", rule.Project, rule.RuleID, formatRule(rule))
 }
 
 // Updates a rule.
@@ -203,6 +212,7 @@ func (*rulesServer) Update(ctx context.Context, req *pb.UpdateRuleRequest) (*pb.
 	user := auth.CurrentUser(ctx).Email
 
 	var predicateUpdated bool
+	var originalRule *rules.FailureAssociationRule
 	var updatedRule *rules.FailureAssociationRule
 	f := func(ctx context.Context) error {
 		rule, err := rules.Read(ctx, project, ruleID)
@@ -214,6 +224,9 @@ func (*rulesServer) Update(ctx context.Context, req *pb.UpdateRuleRequest) (*pb.
 			// caller.
 			return errors.Annotate(err, "read rule").Err()
 		}
+		originalRule = &rules.FailureAssociationRule{}
+		*originalRule = *rule
+
 		canSeeDefinition := true
 		if req.Etag != "" && ruleETag(rule, canSeeDefinition) != req.Etag {
 			// Attach a codes.Aborted appstatus to a vanilla error to avoid
@@ -302,9 +315,27 @@ func (*rulesServer) Update(ctx context.Context, req *pb.UpdateRuleRequest) (*pb.
 	if predicateUpdated {
 		updatedRule.PredicateLastUpdated = commitTime.In(time.UTC)
 	}
+	// Log rule changes to provide a way of recovering old system state
+	// if malicious or unintended updates occur.
+	logRuleUpdate(ctx, originalRule, updatedRule)
 
 	canSeeDefinition := true
 	return createRulePB(updatedRule, cfg.Config, canSeeDefinition), nil
+}
+
+func logRuleUpdate(ctx context.Context, old *rules.FailureAssociationRule, new *rules.FailureAssociationRule) {
+	logging.Infof(ctx, "Rule updated (%s/%s): from %s to %s", old.Project, old.RuleID, formatRule(old), formatRule(new))
+}
+
+func formatRule(r *rules.FailureAssociationRule) string {
+	return fmt.Sprintf("{\n"+
+		"\tRuleDefinition: %q,\n"+
+		"\tBugID: %q,\n"+
+		"\tIsActive: %v,\n"+
+		"\tIsManagingBug: %v,\n"+
+		"\tSourceCluster: %q\n"+
+		"\tLastUpdated: %q\n"+
+		"}", r.RuleDefinition, r.BugID, r.IsActive, r.IsManagingBug, r.SourceCluster, r.LastUpdated.Format(time.RFC3339Nano))
 }
 
 // LookupBug looks up the rule associated with the given bug.

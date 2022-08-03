@@ -788,4 +788,25 @@ func TestRules(t *testing.T) {
 			})
 		})
 	})
+	Convey("formatRule", t, func() {
+		rule := rules.NewRule(0).
+			WithProject(testProject).
+			WithBug(bugs.BugID{System: "monorail", ID: "monorailproject/123456"}).
+			WithRuleDefinition(`test = "create"`).
+			WithActive(false).
+			WithBugManaged(true).
+			WithSourceCluster(clustering.ClusterID{
+				Algorithm: testname.AlgorithmName,
+				ID:        strings.Repeat("aa", 16),
+			}).Build()
+		expectedRule := `{
+	RuleDefinition: "test = \"create\"",
+	BugID: "monorail:monorailproject/123456",
+	IsActive: false,
+	IsManagingBug: true,
+	SourceCluster: "testname-v3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	LastUpdated: "1900-01-02T03:04:07Z"
+}`
+		So(formatRule(rule), ShouldEqual, expectedRule)
+	})
 }
