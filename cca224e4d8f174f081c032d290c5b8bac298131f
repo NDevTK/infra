@@ -16,6 +16,24 @@
       "message": "probably want to say that it is most recent failures first",
       "revId": "cca224e4d8f174f081c032d290c5b8bac298131f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0fe43f5_3340d47b",
+        "filename": "go/src/infra/appengine/weetbix/proto/v1/clusters.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-08-03T05:45:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2d37361_22043268",
+      "revId": "cca224e4d8f174f081c032d290c5b8bac298131f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
