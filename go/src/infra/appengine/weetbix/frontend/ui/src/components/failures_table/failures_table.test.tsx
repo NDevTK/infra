@@ -16,7 +16,9 @@ import {
   createDefaultMockFailures,
   newMockFailure,
 } from '../../testing_tools/mocks/failures_mock';
+import { mockFetchAuthState } from '../../testing_tools/mocks/authstate_mock';
 import { FailureFilters } from '../../tools/failures_tools';
+import { mockQueryClusterFailures } from '../../testing_tools/mocks/cluster_mock';
 import FailuresTable from './failures_table';
 
 describe('Test FailureTable component', () => {
@@ -26,13 +28,13 @@ describe('Test FailureTable component', () => {
   });
 
   it('given cluster failures, should group and display them', async () => {
+    mockFetchAuthState();
     const mockFailures = createDefaultMockFailures();
-
-    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    mockQueryClusterFailures('projects/chrome/clusters/rules/rule-123345/failures', mockFailures);
 
     renderWithRouterAndClient(
         <FailuresTable
-          clusterAlgorithm="rules-v2"
+          clusterAlgorithm="rules"
           clusterId="rule-123345"
           project="chrome"/>,
     );
@@ -43,6 +45,7 @@ describe('Test FailureTable component', () => {
   });
 
   it('when clicking a sortable column then should modify groups order', async () => {
+    mockFetchAuthState();
     const mockFailures = [
       newMockFailure().withTestId('group1').build(),
       newMockFailure().withTestId('group1').build(),
@@ -53,11 +56,11 @@ describe('Test FailureTable component', () => {
       newMockFailure().withTestId('group3').build(),
       newMockFailure().withTestId('group3').build(),
     ];
-    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    mockQueryClusterFailures('projects/chrome/clusters/rules/rule-123345/failures', mockFailures);
 
     renderWithRouterAndClient(
         <FailuresTable
-          clusterAlgorithm="rules-v2"
+          clusterAlgorithm="rules"
           clusterId="rule-123345"
           project="chrome"/>,
     );
@@ -80,16 +83,17 @@ describe('Test FailureTable component', () => {
   });
 
   it('when expanding then should show child groups', async () => {
+    mockFetchAuthState();
     const mockFailures = [
       newMockFailure().withTestId('group1').build(),
       newMockFailure().withTestId('group1').build(),
       newMockFailure().withTestId('group1').build(),
     ];
-    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    mockQueryClusterFailures('projects/chrome/clusters/rules/rule-123345/failures', mockFailures);
 
     renderWithRouterAndClient(
         <FailuresTable
-          clusterAlgorithm="rules-v2"
+          clusterAlgorithm="rules"
           clusterId="rule-123345"
           project="chrome"/>,
     );
@@ -107,16 +111,17 @@ describe('Test FailureTable component', () => {
   });
 
   it('when filtering by failure type then should display matching groups', async () => {
+    mockFetchAuthState();
     const mockFailures = [
       newMockFailure().withoutPresubmit().withTestId('group1').build(),
       newMockFailure().withTestId('group2').build(),
       newMockFailure().withTestId('group3').build(),
     ];
-    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    mockQueryClusterFailures('projects/chrome/clusters/rules/rule-123345/failures', mockFailures);
 
     renderWithRouterAndClient(
         <FailuresTable
-          clusterAlgorithm="rules-v2"
+          clusterAlgorithm="rules"
           clusterId="rule-123345"
           project="chrome"/>,
     );
@@ -138,15 +143,16 @@ describe('Test FailureTable component', () => {
   });
 
   it('when filtering with impact then should recalculate impact', async () => {
+    mockFetchAuthState();
     const mockFailures = [
       newMockFailure().withoutPresubmit().withTestId('group1').build(),
       newMockFailure().withTestId('group1').build(),
     ];
-    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    mockQueryClusterFailures('projects/chrome/clusters/rules/rule-123345/failures', mockFailures);
 
     renderWithRouterAndClient(
         <FailuresTable
-          clusterAlgorithm="rules-v2"
+          clusterAlgorithm="rules"
           clusterId="rule-123345"
           project="chrome"/>,
     );
@@ -164,18 +170,18 @@ describe('Test FailureTable component', () => {
   });
 
   it('when grouping by variants then should modify displayed tree', async () => {
+    mockFetchAuthState();
     const mockFailures = [
       newMockFailure().withVariantGroups('v1', 'a').withTestId('group1').build(),
       newMockFailure().withVariantGroups('v1', 'a').withTestId('group1').build(),
       newMockFailure().withVariantGroups('v1', 'b').withTestId('group1').build(),
       newMockFailure().withVariantGroups('v1', 'b').withTestId('group1').build(),
     ];
-
-    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    mockQueryClusterFailures('projects/chrome/clusters/rules/rule-123345/failures', mockFailures);
 
     renderWithRouterAndClient(
         <FailuresTable
-          clusterAlgorithm="rules-v2"
+          clusterAlgorithm="rules"
           clusterId="rule-123345"
           project="chrome"/>,
     );

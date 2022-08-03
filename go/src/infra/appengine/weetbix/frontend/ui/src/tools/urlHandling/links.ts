@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { DistinctClusterFailure, Changelist } from '../../services/cluster';
 import { ClusterId } from '../../services/shared_models';
-import { Changelist, ClusterFailure } from '../failures_tools';
 
 export const linkToCluster = (project: string, c: ClusterId): string => {
   if (c.algorithm.startsWith('rules-') || c.algorithm == 'rules') {
@@ -22,16 +22,18 @@ export const linkToRule = (project: string, ruleId: string): string => {
   return `/p/${projectEncoded}/rules/${ruleIdEncoded}`;
 };
 
-export const failureLink = (failure: ClusterFailure) => {
+export const failureLink = (failure: DistinctClusterFailure) => {
   const query = `ID:${failure.testId} `;
   if (failure.ingestedInvocationId?.startsWith('build-')) {
     return `https://ci.chromium.org/ui/b/${failure.ingestedInvocationId.replace('build-', '')}/test-results?q=${encodeURIComponent(query)}`;
   }
   return `https://ci.chromium.org/ui/inv/${failure.ingestedInvocationId}/test-results?q=${encodeURIComponent(query)}`;
 };
+
 export const clLink = (cl: Changelist) => {
   return `https://${cl.host}/c/${cl.change}/${cl.patchset}`;
 };
+
 export const clName = (cl: Changelist) => {
   const host = cl.host.replace('-review.googlesource.com', '');
   return `${host}/${cl.change}/${cl.patchset}`;

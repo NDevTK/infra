@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import dayjs from 'dayjs';
+import { DistinctClusterFailure } from '../../services/cluster';
 
 import {
-  ClusterFailure,
   FailureGroup,
   VariantGroup,
   ImpactFilter,
@@ -13,26 +13,31 @@ import {
 } from '../../tools/failures_tools';
 
 class ClusterFailureBuilder {
-  failure: ClusterFailure;
+  failure: DistinctClusterFailure;
   constructor() {
     this.failure = {
-      realm: 'testproject/testrealm',
       testId: 'ninja://dir/test.param',
-      variant: [],
-      presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
-      presubmitRunOwner: 'user',
-      presubmitRunMode: 'FULL_RUN',
-      changelist: { host: 'clproject-review.googlesource.com', change: 123456, patchset: 7 },
+      variant: undefined,
+      presubmitRun: {
+        presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
+        owner: 'user',
+        mode: 'PRESUBMIT_RUN_MODE_FULL_RUN',
+      },
+      changelists: [{
+        host: 'clproject-review.googlesource.com',
+        change: '123456',
+        patchset: 7,
+      }],
       partitionTime: '2021-05-12T19:05:34',
-      exonerations: null,
-      buildStatus: 'SUCCESS',
+      exonerations: undefined,
+      buildStatus: 'BUILD_STATUS_SUCCESS',
       isBuildCritical: true,
       ingestedInvocationId: 'ingestedInvocationId',
       isIngestedInvocationBlocked: false,
       count: 1,
     };
   }
-  build(): ClusterFailure {
+  build(): DistinctClusterFailure {
     return this.failure;
   }
   ingestedInvocationBlocked() {
@@ -44,11 +49,15 @@ class ClusterFailureBuilder {
     return this;
   }
   buildFailed() {
-    this.failure.buildStatus = 'FAILURE';
+    this.failure.buildStatus = 'BUILD_STATUS_FAILURE';
     return this;
   }
   dryRun() {
-    this.failure.presubmitRunMode = 'DRY_RUN';
+    this.failure.presubmitRun = {
+      presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
+      owner: 'user',
+      mode: 'PRESUBMIT_RUN_MODE_DRY_RUN',
+    };
     return this;
   }
   exonerateOccursOnOtherCLs() {
@@ -62,7 +71,10 @@ class ClusterFailureBuilder {
     return this;
   }
   withVariantGroups(key: string, value: string) {
-    this.failure.variant!.push({ key, value });
+    if (this.failure.variant === undefined) {
+      this.failure.variant = { def: {} };
+    }
+    this.failure.variant.def[key] = value;
     return this;
   }
   withTestId(id: string) {
@@ -70,10 +82,8 @@ class ClusterFailureBuilder {
     return this;
   }
   withoutPresubmit() {
-    this.failure.changelist = null;
-    this.failure.presubmitRunId = null;
-    this.failure.presubmitRunOwner = null;
-    this.failure.presubmitRunMode = null;
+    this.failure.changelists = undefined;
+    this.failure.presubmitRun = undefined;
     return this;
   }
 }
@@ -124,7 +134,7 @@ class FailureGroupBuilder {
     return this;
   }
 
-  withFailure(failure: ClusterFailure) {
+  withFailure(failure: DistinctClusterFailure) {
     this.failureGroup.failure = failure;
     return this;
   }
@@ -144,11 +154,11 @@ export const newMockFailure = (): ClusterFailureBuilder => {
   return new ClusterFailureBuilder();
 };
 
-export const createDefaultMockFailure = (): ClusterFailure => {
+export const createDefaultMockFailure = (): DistinctClusterFailure => {
   return newMockFailure().build();
 };
 
-export const createDefaultMockFailures = (num = 5): Array<ClusterFailure> => {
+export const createDefaultMockFailures = (num = 5): Array<DistinctClusterFailure> => {
   return Array.from(Array(num).keys())
       .map(() => createDefaultMockFailure());
 };

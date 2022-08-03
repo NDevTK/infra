@@ -9,38 +9,41 @@ import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-select';
 
 import {
-    css,
-    customElement,
-    html,
-    LitElement,
-    property,
-    state,
-    TemplateResult
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  state,
+  TemplateResult,
 } from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map';
 import { DateTime } from 'luxon';
 
-import { getFailures } from '../services/failures';
 import {
-    ClusterFailure,
-    countAndSortFailures,
-    defaultFailureFilter,
-    defaultImpactFilter,
-    FailureFilter,
-    FailureFilters,
-    FailureGroup,
-    VariantGroup,
-    groupAndCountFailures,
-    ImpactFilter,
-    ImpactFilters,
-    MetricName,
-    sortFailureGroups,
-    countDistictVariantValues
+  DistinctClusterFailure,
+  getClustersService,
+  QueryClusterFailuresResponse,
+} from '../services/cluster';
+import {
+  countAndSortFailures,
+  defaultFailureFilter,
+  defaultImpactFilter,
+  FailureFilter,
+  FailureFilters,
+  FailureGroup,
+  VariantGroup,
+  groupAndCountFailures,
+  ImpactFilter,
+  ImpactFilters,
+  MetricName,
+  sortFailureGroups,
+  countDistictVariantValues,
 } from '../tools/failures_tools';
 import {
-    clLink,
-    clName,
-    failureLink
+  clLink,
+  clName,
+  failureLink,
 } from '../tools/urlHandling/links';
 
 // Indent of each level of grouping in the table in pixels.
@@ -49,120 +52,123 @@ const levelIndent = 10;
 // FailureTable lists the failures in a cluster tracked by Weetbix.
 @customElement('failure-table')
 export class FailureTable extends LitElement {
-    @property()
+  @property()
     project = '';
 
-    @property()
+  @property()
     clusterAlgorithm = '';
 
-    @property()
+  @property()
     clusterID = '';
 
-    @state()
-    failures: ClusterFailure[] | undefined;
+  @state()
+    failures: DistinctClusterFailure[] | undefined;
 
-    @state()
+  @state()
     groups: FailureGroup[] = [];
 
-    @state()
+  @state()
     variants: VariantGroup[] = [];
 
-    @state()
+  @state()
     failureFilter: FailureFilter = defaultFailureFilter;
 
-    @state()
+  @state()
     impactFilter: ImpactFilter = defaultImpactFilter;
 
-    @property()
+  @property()
     sortMetric: MetricName = 'latestFailureTime';
 
-    @property({ type: Boolean })
+  @property({ type: Boolean })
     ascending = false;
 
-    connectedCallback() {
-        super.connectedCallback();
+  connectedCallback() {
+    super.connectedCallback();
 
-        getFailures(this.project, this.clusterAlgorithm, this.clusterID)
-            .then((failures: ClusterFailure[]) => {
-                this.failures = failures;
-                this.variants = countDistictVariantValues(failures);
-                this.groupCountAndSortFailures();
-            });
+    const service = getClustersService();
+    service.queryClusterFailures({
+      parent: `projects/${this.project}/clusters/${this.clusterAlgorithm}/${this.clusterID}/failures`,
+    }).then((response: QueryClusterFailuresResponse) => {
+      this.failures = response.failures;
+      this.variants = countDistictVariantValues(response.failures || []);
+      this.groupCountAndSortFailures();
+    });
+  }
+
+  groupCountAndSortFailures() {
+    if (this.failures) {
+      this.groups = groupAndCountFailures(this.failures, this.variants, this.failureFilter);
     }
+    this.groups = countAndSortFailures(this.groups, this.impactFilter);
+    this.sortFailures();
+  }
 
-    groupCountAndSortFailures() {
-        if(this.failures) {
-            this.groups = groupAndCountFailures(this.failures, this.variants, this.failureFilter);
-        }
-        this.groups = countAndSortFailures(this.groups, this.impactFilter);
-        this.sortFailures();
+  sortFailures() {
+    this.groups = sortFailureGroups(this.groups, this.sortMetric, this.ascending);
+    this.requestUpdate();
+  }
+
+  toggleSort(metric: MetricName) {
+    if (metric === this.sortMetric) {
+      this.ascending = !this.ascending;
+    } else {
+      this.sortMetric = metric;
+      this.ascending = false;
     }
+    this.sortFailures();
+  }
 
-    sortFailures() {
-        this.groups = sortFailureGroups(this.groups, this.sortMetric, this.ascending);
-        this.requestUpdate();
+  onImpactFilterChanged() {
+    const item = this.shadowRoot!.querySelector('#impact-filter [selected]');
+    if (item) {
+      const selected = item.getAttribute('value');
+      this.impactFilter = ImpactFilters.filter((filter) => filter.name == selected)?.[0] || ImpactFilters[1];
+    }
+    this.groups = countAndSortFailures(this.groups, this.impactFilter);
+  }
+
+  onFailureFilterChanged() {
+    const item = this.shadowRoot!.querySelector('#failure-filter [selected]');
+    if (item) {
+      this.failureFilter = (item.getAttribute('value') as FailureFilter) || FailureFilters[0];
+    }
+    this.groupCountAndSortFailures();
+  }
+
+  toggleVariant(variant: VariantGroup) {
+    const index = this.variants.indexOf(variant);
+    this.variants.splice(index, 1);
+    variant.isSelected = !variant.isSelected;
+    const numSelected = this.variants.filter((v) => v.isSelected).length;
+    this.variants.splice(numSelected, 0, variant);
+    this.groupCountAndSortFailures();
+  }
+
+  toggleExpand(group: FailureGroup) {
+    group.isExpanded = !group.isExpanded;
+    this.requestUpdate();
+  }
+
+  render() {
+    const unselectedVariants = this.variants.filter((v) => !v.isSelected).map((v) => v.key);
+    if (this.failures === undefined) {
+      return html`Loading cluster failures...`;
+    }
+    const ungroupedVariants = (failure: DistinctClusterFailure) => {
+      return unselectedVariants.map((key) => failure.variant?.def[key] !== undefined ? { key: key, value: failure.variant.def[key] } : null).filter((v) => v);
     };
-
-    toggleSort(metric: MetricName) {
-        if (metric === this.sortMetric) {
-            this.ascending = !this.ascending;
-        } else {
-            this.sortMetric = metric;
-            this.ascending = false;
-        }
-        this.sortFailures();
-    }
-
-    onImpactFilterChanged() {
-        const item = this.shadowRoot!.querySelector('#impact-filter [selected]');
-        if (item) {
-            const selected = item.getAttribute('value');
-            this.impactFilter = ImpactFilters.filter(filter => filter.name == selected)?.[0] || ImpactFilters[1];
-        }
-        this.groups = countAndSortFailures(this.groups, this.impactFilter);
-    }
-
-    onFailureFilterChanged() {
-        const item = this.shadowRoot!.querySelector('#failure-filter [selected]');
-        if (item) {
-            this.failureFilter = (item.getAttribute('value') as FailureFilter) || FailureFilters[0];
-        }
-        this.groupCountAndSortFailures();
-    }
-
-    toggleVariant(variant: VariantGroup) {
-        const index = this.variants.indexOf(variant);
-        this.variants.splice(index, 1);
-        variant.isSelected = !variant.isSelected;
-        const numSelected = this.variants.filter(v => v.isSelected).length;
-        this.variants.splice(numSelected, 0, variant);
-        this.groupCountAndSortFailures();
-    }
-
-    toggleExpand(group: FailureGroup) {
-        group.isExpanded = !group.isExpanded;
-        this.requestUpdate();
-    }
-
-    render() {
-        const unselectedVariants = this.variants.filter(v => !v.isSelected).map(v => v.key);
-        if (this.failures === undefined) {
-            return html`Loading cluster failures...`;
-        }
-        const ungroupedVariants = (failure: ClusterFailure) => {
-            return unselectedVariants.map(key => failure.variant?.filter(v => v.key == key)?.[0]).filter(v => v);
-        };
-        const indentStyle = (level: number) => {
-            return styleMap({ paddingLeft: (levelIndent * level) + 'px' });
-        };
-        const groupRow = (group: FailureGroup): TemplateResult => {
-            return html`
+    const indentStyle = (level: number) => {
+      return styleMap({ paddingLeft: (levelIndent * level) + 'px' });
+    };
+    const groupRow = (group: FailureGroup): TemplateResult => {
+      return html`
             <tr>
                 ${group.failure ?
         html`<td style=${indentStyle(group.level)}>
                         <a href=${failureLink(group.failure)} target="_blank">${group.failure.ingestedInvocationId}</a>
-                        ${group.failure.changelist ? html`(<a href=${clLink(group.failure.changelist)}>${clName(group.failure.changelist)}</a>)` : html``}
-                        <span class="variant-info">${ungroupedVariants(group.failure).map(v => v && `${v.key}: ${v.value}`).filter(v => v).join(', ')}</span>
+                        ${(group.failure.changelists !== undefined && group.failure.changelists.length > 0) ?
+                            html`(<a href=${clLink(group.failure.changelists[0])}>${clName(group.failure.changelists[0])}</a>)` : html``}
+                        <span class="variant-info">${ungroupedVariants(group.failure).map((v) => v && `${v.key}: ${v.value}`).filter((v) => v).join(', ')}</span>
                     </td>` :
         html`<td class="group" style=${indentStyle(group.level)} @click=${() => this.toggleExpand(group)}>
                         <mwc-icon>${group.isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}</mwc-icon>
@@ -170,27 +176,26 @@ export class FailureTable extends LitElement {
                     </td>`}
                 <td class="number">
                     ${group.failure ?
-        (group.failure.presubmitRunId ?
-            html`<a class="presubmit-link" href="https://luci-change-verifier.appspot.com/ui/run/${group.failure.presubmitRunId.id}" target="_blank">${group.presubmitRejects}</a>` :
-            '-')
-        : group.presubmitRejects}
+        (group.failure.presubmitRun ?
+            html`<a class="presubmit-link" href="https://luci-change-verifier.appspot.com/ui/run/${group.failure.presubmitRun.presubmitRunId.id}" target="_blank">${group.presubmitRejects}</a>` :
+            '-') : group.presubmitRejects}
                 </td>
                 <td class="number">${group.invocationFailures}</td>
                 <td class="number">${group.criticalFailuresExonerated}</td>
                 <td class="number">${group.failures}</td>
                 <td>${DateTime.fromISO(group.latestFailureTime).toRelative()}</td>
             </tr>
-            ${group.isExpanded ? group.children.map(child => groupRow(child)) : null}`;
-        };
-        const groupByButton = (variant: VariantGroup) => {
-            return html`
+            ${group.isExpanded ? group.children.map((child) => groupRow(child)) : null}`;
+    };
+    const groupByButton = (variant: VariantGroup) => {
+      return html`
                 <mwc-button
                     label=${`${variant.key} (${variant.values.length})`}
                     ?unelevated=${variant.isSelected}
                     ?outlined=${!variant.isSelected}
                     @click=${() => this.toggleVariant(variant)}></mwc-button>`;
-        };
-        return html`
+    };
+    return html`
             <div class="controls">
                 <div class="select-offset">
                     <mwc-select id="failure-filter" outlined label="Failure Type" @change=${() => this.onFailureFilterChanged()}>
@@ -206,7 +211,7 @@ export class FailureTable extends LitElement {
                     <div class="label">
                         Group By
                     </div>
-                    ${this.variants.map(v => groupByButton(v))}
+                    ${this.variants.map((v) => groupByButton(v))}
                 </div>
             </div>
             <table data-testid="failures-table">
@@ -236,14 +241,14 @@ export class FailureTable extends LitElement {
                     </tr>
                 </thead>
                 <tbody>
-                    ${this.groups.map(group => groupRow(group))}
+                    ${this.groups.map((group) => groupRow(group))}
                 </tbody>
             </table>
         `;
-    }
-    static styles = [css`
+  }
+  static styles = [css`
         .controls {
-            display: flex;            
+            display: flex;
             gap: 30px;
         }
         .label {
@@ -295,5 +300,5 @@ export class FailureTable extends LitElement {
         .presubmit-link {
             font-size: var(--font-size-small);
         }
-    `];
+ `];
 }

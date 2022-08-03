@@ -17,7 +17,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 
-import { getFailures } from '../../services/failures';
+import { getClustersService } from '../../services/cluster';
 import {
   countAndSortFailures,
   countDistictVariantValues,
@@ -65,9 +65,14 @@ const FailuresTable = ({
     data: failures,
     error,
   } = useQuery(
-      ['clusterFailures', `${clusterAlgorithm}:${clusterId}`],
-      () => getFailures(project, clusterAlgorithm, clusterId),
-  );
+      ['clusterFailures', project, clusterAlgorithm, clusterId],
+      async () => {
+        const service = getClustersService();
+        const response = await service.queryClusterFailures({
+          parent: `projects/${project}/clusters/${clusterAlgorithm}/${clusterId}/failures`,
+        });
+        return response.failures || [];
+      });
 
   useEffect( () => {
     if (failures) {

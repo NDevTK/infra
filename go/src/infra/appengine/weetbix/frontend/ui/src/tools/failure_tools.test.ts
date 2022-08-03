@@ -4,9 +4,9 @@
 // found in the LICENSE file.
 
 
+import { DistinctClusterFailure } from '../services/cluster';
 import { impactFilterNamed, newMockFailure, newMockGroup } from '../testing_tools/mocks/failures_mock';
 import {
-  ClusterFailure,
   FailureGroup,
   groupFailures,
   rejectedIngestedInvocationIdsExtractor,
@@ -16,7 +16,7 @@ import {
 } from './failures_tools';
 
 interface ExtractorTestCase {
-    failure: ClusterFailure;
+    failure: DistinctClusterFailure;
     filter: string;
     shouldExtractIngestedInvocationId: boolean;
     shouldExtractPresubmitRunId: boolean;
@@ -233,7 +233,7 @@ describe('groupFailures', () => {
       newMockFailure().withVariantGroups('v1', 'b').withVariantGroups('v2', 'a').build(),
       newMockFailure().withVariantGroups('v1', 'b').withVariantGroups('v2', 'b').build(),
     ];
-    const groups: FailureGroup[] = groupFailures(failures, (f) => f.variant?.map((v) => v.value || '') || []);
+    const groups: FailureGroup[] = groupFailures(failures, (f) => [f.variant?.def['v1'] || '', f.variant?.def['v2'] || '']);
     expect(groups.length).toBe(2);
     expect(groups[0].children.length).toBe(2);
     expect(groups[1].children.length).toBe(2);
@@ -285,7 +285,7 @@ describe('treeDistinctValues', () => {
     const groups = groupFailures([
       newMockFailure().withTestId('a').withVariantGroups('group', 'a').build(),
       newMockFailure().withTestId('a').withVariantGroups('group', 'b').build(),
-    ], (f) => ['top', ...f.variant?.map((v) => v.value || '')||[]]);
+    ], (f) => ['top', f.variant?.def['group'] || '']);
 
     treeDistinctValues(groups[0], (f) => f.testId ? new Set([f.testId]) : new Set(), setFailures);
 
@@ -297,7 +297,7 @@ describe('treeDistinctValues', () => {
     const groups = groupFailures([
       newMockFailure().withTestId('a').withVariantGroups('group', 'a').build(),
       newMockFailure().withTestId('b').withVariantGroups('group', 'b').build(),
-    ], (f) => ['top', ...f.variant?.map((v) => v.value || '')||[]]);
+    ], (f) => ['top', f.variant?.def['group'] || '']);
 
     treeDistinctValues(groups[0], (f) => f.testId ? new Set([f.testId]) : new Set(), setFailures);
 

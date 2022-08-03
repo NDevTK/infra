@@ -14,16 +14,21 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
 import {
-  ClusterFailure,
   FailureGroup,
   VariantGroup,
 } from '../../../../tools/failures_tools';
 import { failureLink } from '../../../../tools/urlHandling/links';
+import { DistinctClusterFailure } from '../../../../services/cluster';
 
 interface Props {
   group: FailureGroup;
   variantGroups: VariantGroup[];
   children?: ReactNode;
+}
+
+interface VariantPair {
+  key: string;
+  value: string;
 }
 
 const FailuresTableRows = ({
@@ -37,13 +42,20 @@ const FailuresTableRows = ({
     setExpanded(!expanded);
   };
 
-  const ungroupedVariants = (failure: ClusterFailure) => {
+  const ungroupedVariants = (failure: DistinctClusterFailure): VariantPair[] => {
     const unselectedVariants = variantGroups
         .filter((v) => !v.isSelected)
         .map((v) => v.key);
-    return unselectedVariants
-        .map((key) => failure.variant?.filter((v) => v.key == key)?.[0])
-        .filter((v) => v);
+    const unselectedVariantPairs: (VariantPair|null)[] =
+      unselectedVariants.map((key) => {
+        const value = failure.variant?.def[key];
+        if (value !== undefined) {
+          return { key: key, value: value };
+        }
+        return null;
+      });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return unselectedVariantPairs.filter((vp) => vp != null).map((vp) => vp!);
   };
 
   return (
@@ -70,7 +82,7 @@ const FailuresTableRows = ({
               <small data-testid="ungrouped_variants">
                 {ungroupedVariants(group.failure)
                     .map((v) => v && `${v.key}: ${v.value}`)
-                    .filter(v => v)
+                    .filter((v) => v)
                     .join(', ')}
               </small>
             </>
@@ -97,10 +109,10 @@ const FailuresTableRows = ({
         <TableCell data-testid="failure_table_group_presubmitrejects">
           {group.failure ? (
             <>
-              {group.failure.presubmitRunId ? (
+              {group.failure.presubmitRun ? (
                 <Link
                   aria-label="Presubmit rejects link"
-                  href={`https://luci-change-verifier.appspot.com/ui/run/${group.failure.presubmitRunId.id}`}
+                  href={`https://luci-change-verifier.appspot.com/ui/run/${group.failure.presubmitRun.presubmitRunId.id}`}
                   target="_blank"
                 >
                   {group.presubmitRejects}

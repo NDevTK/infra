@@ -31,6 +31,10 @@ export class ClustersService {
   async queryClusterSummaries(request: QueryClusterSummariesRequest): Promise<QueryClusterSummariesResponse> {
     return this.client.call(ClustersService.SERVICE, 'QueryClusterSummaries', request);
   }
+
+  async queryClusterFailures(request: QueryClusterFailuresRequest): Promise<QueryClusterFailuresResponse> {
+    return this.client.call(ClustersService.SERVICE, 'QueryClusterFailures', request);
+  }
 }
 
 export interface BatchGetClustersRequest {
@@ -155,4 +159,155 @@ export interface ClusterSummary {
   // The total number of test results in the cluster.
   // 64-bit integer serialized as a string.
   failures: string | undefined;
+}
+
+export interface QueryClusterFailuresRequest {
+  // The resource name of the cluster to retrieve failures for.
+  // Format: projects/{project}/clusters/{cluster_algorithm}/{cluster_id}/failures.
+  parent: string;
+}
+
+export interface QueryClusterFailuresResponse {
+  // Example failures in the cluster. Limited to 2000 rows.
+  failures: DistinctClusterFailure[] | undefined;
+}
+
+// The reason a test result was exonerated.
+export type ExonerationReason =
+    // The exoneration reason is not known to Weetbix.
+    'EXONERATION_REASON_UNSPECIFIED'
+    // Similar unexpected results were observed in presubmit run(s) for other,
+    // unrelated CL(s). (This is suggestive of the issue being present
+    // on mainline but is not confirmed as there are possible confounding
+    // factors, like how tests are run on CLs vs how tests are run on
+    // mainline branches.)
+    // Applies to unexpected results in presubmit/CQ runs only.
+    | 'OCCURS_ON_OTHER_CLS'
+    // Similar unexpected results were observed on a mainline branch
+    // (i.e. against a build without unsubmitted changes applied).
+    // (For avoidance of doubt, this includes both flakily and
+    // deterministically occurring unexpected results.)
+    // Applies to unexpected results in presubmit/CQ runs only.
+    | 'OCCURS_ON_MAINLINE'
+    // The tests are not critical to the test subject (e.g. CL) passing.
+    // This could be because more data is being collected to determine if
+    // the tests are stable enough to be made critical (as is often the
+    // case for experimental test suites).
+    | 'NOT_CRITICAL'
+    // The test variant was exonerated because it contained an unexpected
+    // pass.
+    | 'UNEXPECTED_PASS';
+
+// Refer to weetbix.v1.PresubmitRunMode for documentation.
+export type PresubmitRunMode =
+    'PRESUBMIT_RUN_MODE_UNSPECIFIED'
+    | 'PRESUBMIT_RUN_MODE_DRY_RUN'
+    | 'PRESUBMIT_RUN_MODE_FULL_RUN'
+    | 'PRESUBMIT_RUN_MODE_QUICK_DRY_RUN';
+
+// Refer to weetbix.v1.BuildStatus for documentation.
+export type BuildStatus =
+    'BUILD_STATUS_UNSPECIFIED'
+    | 'BUILD_STATUS_SUCCESS'
+    | 'BUILD_STATUS_FAILURE'
+    | 'BUILD_STATUS_INFRA_FAILURE'
+    | 'BUILD_STATUS_CANCELED';
+
+// Refer to weetbix.v1.ClusterFailureGroup.Exoneration for documentation.
+export interface Exoneration {
+  // The machine-readable reason for the exoneration.
+  reason: ExonerationReason;
+}
+
+// Key/Value Variant pair that describes (part of) a way to run a test.
+export interface VariantPair {
+  key: string | undefined;
+  value: string | undefined;
+}
+
+export interface VariantDef {
+  [key: string]: string | undefined;
+}
+
+export interface Variant {
+  def: VariantDef;
+}
+
+// Identity of a presubmit run.
+// Refer to weetbix.v1.PresubmitRunId for documentation.
+export interface PresubmitRunId {
+  system: string | undefined;
+  id: string | undefined;
+}
+
+// Refer to weetbix.v1.ClusterFailureGroup.PresubmitRun for documentation.
+export interface PresubmitRun {
+  // Identity of the presubmit run that contains this test result.
+  presubmitRunId: PresubmitRunId;
+  // The owner of the presubmit run (if any).
+  owner: string;
+  // The mode of the presubmit run.
+  mode: PresubmitRunMode;
+}
+
+export interface Changelist {
+  // Gerrit hostname, e.g. "chromium-review.googlesource.com".
+  host: string;
+
+  // Change number, encoded as a string, e.g. "12345".
+  change: string;
+
+  // Patchset number, e.g. 1.
+  patchset: number;
+}
+
+// Refer to weetbix.v1.DistinctClusterFailure for documentation.
+export interface DistinctClusterFailure {
+  // The identity of the test.
+  testId: string;
+
+  // The test variant. Describes a way of running a test.
+  variant: Variant | undefined;
+
+  partitionTime: string; // RFC 3339 encoded date/time.
+
+  presubmitRun: PresubmitRun | undefined;
+
+  // Whether the build was critical to a presubmit run succeeding.
+  // If the build was not part of a presubmit run, this field should
+  // be ignored.
+  isBuildCritical: boolean | undefined;
+
+  // The exonerations applied to the test variant verdict.
+  exonerations : Exoneration[] | undefined;
+
+  // The status of the build that contained this test result. Can be used
+  // to filter incomplete results (e.g. where build was cancelled or had
+  // an infra failure). Can also be used to filter builds with incomplete
+  // exonerations (e.g. build succeeded but some tests not exonerated).
+  // This is the build corresponding to ingested_invocation_id.
+  buildStatus: BuildStatus;
+
+  // The invocation from which this test result was ingested. This is
+  // the top-level invocation that was ingested, an "invocation" being
+  // a container of test results as identified by the source test result
+  // system.
+  //
+  // For ResultDB, Weetbix ingests invocations corresponding to
+  // buildbucket builds.
+  ingestedInvocationId: string;
+
+  // Is the ingested invocation blocked by this test variant? This is
+  // only true if all (non-skipped) test results for this test variant
+  // (in the ingested invocation) are unexpected failures.
+  //
+  // Exoneration does not factor into this value; check exonerations
+  // to see if the impact of this ingested invocation being blocked was
+  // mitigated by exoneration.
+  isIngestedInvocationBlocked: boolean | undefined;
+
+  changelists: Changelist[] | undefined;
+
+  // The number of test results in the group.
+  count : number;
 }

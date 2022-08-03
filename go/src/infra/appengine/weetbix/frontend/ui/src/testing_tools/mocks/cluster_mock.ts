@@ -4,7 +4,15 @@
 
 import fetchMock from 'fetch-mock-jest';
 
-import { Cluster, ClusterSummary, QueryClusterSummariesRequest, QueryClusterSummariesResponse } from '../../services/cluster';
+import {
+  Cluster,
+  ClusterSummary,
+  QueryClusterSummariesRequest,
+  QueryClusterSummariesResponse,
+  QueryClusterFailuresRequest,
+  QueryClusterFailuresResponse,
+  DistinctClusterFailure,
+} from '../../services/cluster';
 
 export const getMockCluster = (id: string): Cluster => {
   return {
@@ -66,6 +74,24 @@ export const getMockSuggestedClusterSummary = (id: string): ClusterSummary => {
 export const mockQueryClusterSummaries = (request: QueryClusterSummariesRequest, response: QueryClusterSummariesResponse) => {
   fetchMock.post({
     url: 'http://localhost/prpc/weetbix.v1.Clusters/QueryClusterSummaries',
+    body: request,
+  }, {
+    headers: {
+      'X-Prpc-Grpc-Code': '0',
+    },
+    body: ')]}\'' + JSON.stringify(response),
+  }, { overwriteRoutes: true });
+};
+
+export const mockQueryClusterFailures = (parent: string, failures: DistinctClusterFailure[] | undefined) => {
+  const request: QueryClusterFailuresRequest = {
+    parent: parent,
+  };
+  const response: QueryClusterFailuresResponse = {
+    failures: failures,
+  };
+  fetchMock.post({
+    url: 'http://localhost/prpc/weetbix.v1.Clusters/QueryClusterFailures',
     body: request,
   }, {
     headers: {

@@ -4,32 +4,38 @@
 
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
+import { DistinctClusterFailure, Exoneration } from '../services/cluster';
 
 /**
  * Creates a list of distinct variants found in the list of failures provided.
  *
- * @param {ClusterFailure[]} failures the failures list.
+ * @param {DistinctClusterFailure[]} failures the failures list.
  * @return {VariantGroup[]} A list of distinct variants.
  */
-export const countDistictVariantValues = (failures: ClusterFailure[]): VariantGroup[] => {
+export const countDistictVariantValues = (failures: DistinctClusterFailure[]): VariantGroup[] => {
   if (!failures) {
     return [];
   }
   const variantGroups: VariantGroup[] = [];
   failures.forEach((failure) => {
-    failure.variant?.forEach((v) => {
-      if (!v.key) {
-        return;
+    if (failure.variant === undefined) {
+      return;
+    }
+    const def = failure.variant.def;
+    for (const key in def) {
+      if (!Object.prototype.hasOwnProperty.call(def, key)) {
+        continue;
       }
-      const variant = variantGroups.filter((e) => e.key === v.key)?.[0];
+      const value = def[key] || '';
+      const variant = variantGroups.filter((e) => e.key === key)?.[0];
       if (!variant) {
-        variantGroups.push({ key: v.key, values: [v.value || ''], isSelected: false });
+        variantGroups.push({ key: key, values: [value], isSelected: false });
       } else {
-        if (variant.values.indexOf(v.value || '') === -1) {
-          variant.values.push(v.value || '');
+        if (variant.values.indexOf(value) === -1) {
+          variant.values.push(value);
         }
       }
-    });
+    }
   });
   return variantGroups;
 };
@@ -37,7 +43,7 @@ export const countDistictVariantValues = (failures: ClusterFailure[]): VariantGr
 // group a number of failures into a tree of failure groups.
 // grouper is a function that returns a list of keys, one corresponding to each level of the grouping tree.
 // impactFilter controls how metric counts are aggregated from failures into parent groups (see treeCounts and rejected... functions).
-export const groupFailures = (failures: ClusterFailure[], grouper: (f: ClusterFailure) => string[]): FailureGroup[] => {
+export const groupFailures = (failures: DistinctClusterFailure[], grouper: (f: DistinctClusterFailure) => string[]): FailureGroup[] => {
   const topGroups: FailureGroup[] = [];
   failures.forEach((f) => {
     const keys = grouper(f);
@@ -119,7 +125,7 @@ export const treeDistinctValues = (
 
 // A FeatureExtractor returns a string representing some feature of a ClusterFailure.
 // Returns undefined if there is no such feature for this failure.
-export type FeatureExtractor = (failure: ClusterFailure) => Set<string>;
+export type FeatureExtractor = (failure: DistinctClusterFailure) => Set<string>;
 
 // failureIdExtractor returns an extractor that returns a unique failure id for each failure.
 // As failures don't actually have ids, it just returns an incrementing integer.
@@ -172,8 +178,8 @@ export const criticalFailuresExoneratedIdsExtractor = (): FeatureExtractor => {
 
 // Returns whether the failure was exonerated for a reason other than it occurred
 // on other CLs or on mainline.
-const isExoneratedByNonWeetbix = (exonerations: Exoneration[] | null): boolean => {
-  if (exonerations == null) {
+const isExoneratedByNonWeetbix = (exonerations: Exoneration[] | undefined): boolean => {
+  if (exonerations === undefined) {
     return false;
   }
   let hasOtherExoneration = false;
@@ -195,7 +201,7 @@ export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilte
     // This requires exclusion of all exonerated test results, as well as
     // test results from builds which passed (which implies the test results
     // could not have caused the presubmit run to fail).
-    if (((failure.exonerations != null && failure.exonerations.length > 0) || failure.buildStatus != 'FAILURE') &&
+    if (((failure.exonerations !== undefined && failure.exonerations.length > 0) || failure.buildStatus != 'BUILD_STATUS_FAILURE') &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
       return values;
     }
@@ -225,7 +231,7 @@ export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): Fe
     // This requires exclusion of all exonerated test results, as well as
     // test results from builds which passed (which implies the test results
     // could not have caused the presubmit run to fail).
-    if (((failure.exonerations != null && failure.exonerations.length > 0) || failure.buildStatus != 'FAILURE') &&
+    if (((failure.exonerations !== undefined && failure.exonerations.length > 0) || failure.buildStatus != 'BUILD_STATUS_FAILURE') &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
       return values;
     }
@@ -238,9 +244,10 @@ export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): Fe
     if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
       return values;
     }
-    if (failure.changelist && failure.presubmitRunOwner == 'user' &&
-        failure.isBuildCritical && failure.presubmitRunMode == 'FULL_RUN') {
-      values.add(failure.changelist.host + '/' + failure.changelist.change.toFixed(0));
+    if (failure.changelists !== undefined && failure.changelists.length > 0 &&
+        failure.presubmitRun !== undefined && failure.presubmitRun.owner == 'user' &&
+        failure.isBuildCritical && failure.presubmitRun.mode == 'PRESUBMIT_RUN_MODE_FULL_RUN') {
+      values.add(failure.changelists[0].host + '/' + failure.changelists[0].change);
     }
     return values;
   };
@@ -281,26 +288,26 @@ export const sortFailureGroups = (
 /**
  * Groups failures by the variant groups selected.
  *
- * @param {ClusterFailure} failures The list of  failures to group.
+ * @param {DistinctClusterFailure} failures The list of failures to group.
  * @param {VariantGroup} variantGroups The list of variant groups to use for grouping.
  * @param {FailureFilter} failureFilter The failure filter to filter out the failures.
  * @return {FailureGroup[]} The list of failures grouped by the variants.
  */
 export const groupAndCountFailures = (
-    failures: ClusterFailure[],
+    failures: DistinctClusterFailure[],
     variantGroups: VariantGroup[],
     failureFilter: FailureFilter,
 ): FailureGroup[] => {
   if (failures) {
     let currentFailures = failures;
     if (failureFilter == 'Presubmit Failures') {
-      currentFailures = failures.filter((f) => f.presubmitRunId);
+      currentFailures = failures.filter((f) => f.presubmitRun);
     } else if (failureFilter == 'Postsubmit Failures') {
-      currentFailures = failures.filter((f) => !f.presubmitRunId);
+      currentFailures = failures.filter((f) => !f.presubmitRun);
     }
     const groups = groupFailures(currentFailures, (failure) => {
       const variantValues = variantGroups.filter((v) => v.isSelected)
-          .map((v) => failure.variant?.filter((fv) => fv.key === v.key)?.[0]?.value || '');
+          .map((v) => failure.variant?.def[v.key] || '');
       return [...variantValues, failure.testId || ''];
     });
     return groups;
@@ -361,71 +368,71 @@ export const ImpactFilters: ImpactFilter[] = [
 
 export const defaultImpactFilter: ImpactFilter = ImpactFilters[0];
 
-// The reason a test result was exonerated.
-type ExonerationReason =
-    // The exoneration reason is not known to Weetbix.
-    'EXONERATION_REASON_UNSPECIFIED'
-    // Similar unexpected results were observed in presubmit run(s) for other,
-    // unrelated CL(s). (This is suggestive of the issue being present
-    // on mainline but is not confirmed as there are possible confounding
-    // factors, like how tests are run on CLs vs how tests are run on
-    // mainline branches.)
-    // Applies to unexpected results in presubmit/CQ runs only.
-    | 'OCCURS_ON_OTHER_CLS'
-    // Similar unexpected results were observed on a mainline branch
-    // (i.e. against a build without unsubmitted changes applied).
-    // (For avoidance of doubt, this includes both flakily and
-    // deterministically occurring unexpected results.)
-    // Applies to unexpected results in presubmit/CQ runs only.
-    | 'OCCURS_ON_MAINLINE'
-    // The tests are not critical to the test subject (e.g. CL) passing.
-    // This could be because more data is being collected to determine if
-    // the tests are stable enough to be made critical (as is often the
-    // case for experimental test suites).
-    | 'NOT_CRITICAL';
+// // The reason a test result was exonerated.
+// type ExonerationReason =
+//     // The exoneration reason is not known to Weetbix.
+//     'EXONERATION_REASON_UNSPECIFIED'
+//     // Similar unexpected results were observed in presubmit run(s) for other,
+//     // unrelated CL(s). (This is suggestive of the issue being present
+//     // on mainline but is not confirmed as there are possible confounding
+//     // factors, like how tests are run on CLs vs how tests are run on
+//     // mainline branches.)
+//     // Applies to unexpected results in presubmit/CQ runs only.
+//     | 'OCCURS_ON_OTHER_CLS'
+//     // Similar unexpected results were observed on a mainline branch
+//     // (i.e. against a build without unsubmitted changes applied).
+//     // (For avoidance of doubt, this includes both flakily and
+//     // deterministically occurring unexpected results.)
+//     // Applies to unexpected results in presubmit/CQ runs only.
+//     | 'OCCURS_ON_MAINLINE'
+//     // The tests are not critical to the test subject (e.g. CL) passing.
+//     // This could be because more data is being collected to determine if
+//     // the tests are stable enough to be made critical (as is often the
+//     // case for experimental test suites).
+//     | 'NOT_CRITICAL';
 
-// ClusterFailure is the data returned by the server for each failure.
-export interface ClusterFailure {
-    realm: string | null;
-    testId: string | null;
-    variant: Variant[] | null;
-    presubmitRunId: PresubmitRunId | null;
-    presubmitRunOwner: string | null;
-    presubmitRunMode: string | null;
-    changelist: Changelist | null;
-    partitionTime: string | null;
-    exonerations: Exoneration[] | null;
-    isBuildCritical: boolean | null;
-    buildStatus: string | null;
-    ingestedInvocationId: string | null;
-    isIngestedInvocationBlocked: boolean | null;
-    count: number;
-}
+// // ClusterFailure is the data returned by the server for each failure.
+// export interface ClusterFailure {
+//     realm: string | null;
+//     testId: string | null;
+//     variant: Variant[] | null;
+//     presubmitRunId: PresubmitRunId | null;
+//     presubmitRunOwner: string | null;
+//     presubmitRunMode: string | null;
+//     changelist: Changelist | null;
+//     partitionTime: string | null;
+//     exonerations: Exoneration[] | null;
+//     isBuildCritical: boolean | null;
+//     buildStatus: string | null;
+//     ingestedInvocationId: string | null;
+//     isIngestedInvocationBlocked: boolean | null;
+//     count: number;
+// }
 
-// Exoneration relieves a test of responsibility for causing the
-// test subject (e.g. a presubmit run or build) to fail.
-export interface Exoneration {
-  reason: ExonerationReason;
-}
+// // Exoneration relieves a test of responsibility for causing the
+// // test subject (e.g. a presubmit run or build) to fail.
+// export interface Exoneration {
+//   reason: ExonerationReason;
+// }
 
-// Key/Value Variant pairs for failures.
-export interface Variant {
-    key: string | null;
-    value: string | null;
-}
+// // Key/Value Variant pairs for failures.
+// export interface Variant {
+//     key: string | null;
+//     value: string | null;
+// }
 
-// Presubmit Run Ids of failures returned from the server.
-export interface PresubmitRunId {
-    system: string | null;
-    id: string | null;
-}
+// // Presubmit Run Ids of failures returned from the server.
+// export interface PresubmitRunId {
+//     system: string | null;
+//     id: string | null;
+// }
 
-// Changelist represents a gerrit patchset.
-export interface Changelist {
-    host: string;
-    change: number;
-    patchset: number;
-}
+// // Changelist represents a gerrit patchset.
+// export interface Changelist {
+//     host: string;
+//     change: number;
+//     patchset: number;
+// }
 
 // Metrics that can be used for sorting FailureGroups.
 // Each value is a property of FailureGroup.
@@ -443,7 +450,7 @@ export interface FailureGroup {
     level: number;
     children: FailureGroup[];
     isExpanded: boolean;
-    failure?: ClusterFailure;
+    failure?: DistinctClusterFailure;
 }
 
 // VariantGroup represents variant key that appear on at least one failure.
