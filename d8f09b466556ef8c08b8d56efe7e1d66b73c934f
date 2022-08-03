@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a5b69fa_c69bc923",
+        "filename": "go/src/infra/tools/vpython_ng/cmd/vpython3.8/main_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-08-03T03:22:56Z",
+      "side": 1,
+      "message": "I wonder if we still need this test now with the new approach? What is it testing?",
+      "revId": "d8f09b466556ef8c08b8d56efe7e1d66b73c934f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
