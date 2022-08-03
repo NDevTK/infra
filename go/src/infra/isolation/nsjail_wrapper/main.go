@@ -44,11 +44,13 @@ func main() {
 	args = args[1:]
 
 	if err := reportPID(ctx, snoopy_addr); err != nil {
-		log.Fatalf("failed to report pid to snoopy: %v", err)
+		log.Printf("failed to report pid to snoopy: %v", err)
+		os.Exit(1)
 	}
 
 	if err := RunInNsjail(ctx, args); err != nil {
-		log.Fatalf("running command: %s", err.Error())
+		log.Printf("running command: %s", err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -59,7 +61,7 @@ func main() {
 func reportPID(ctx context.Context, snoopy_url string) error {
 	reporterClient, err := client.MakeProvenanceClient(ctx, snoopy_url)
 	if err != nil {
-		log.Fatalf("failed to create snoopy client: %v", err)
+		log.Printf("failed to create snoopy client: %v", err)
 		return err
 	}
 
@@ -70,7 +72,7 @@ func reportPID(ctx context.Context, snoopy_url string) error {
 	pid := os.Getpid()
 	log.Printf("trying to report pid: %d to snoopy", pid)
 	if _, err := reporter.ReportPID(ctx, int64(pid)); err != nil {
-		log.Fatalf("failed to report pid to snoopy: %v", err)
+		log.Printf("failed to report pid to snoopy: %v", err)
 		return err
 	}
 	log.Printf("successfully reported pid: %d to snoopy", pid)
