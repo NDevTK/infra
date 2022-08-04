@@ -633,6 +633,11 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		ModelName:   g.Params.GetHardwareAttributes().GetModel(),
 	}
 
+	testName := g.Invocation.Test.Name
+	if !strings.HasPrefix(testName, "tauto.") {
+		testName = fmt.Sprintf("tauto.%s", testName)
+	}
+
 	testSuites := []*testapi.TestSuite{
 		{
 			Name: kv["suite"],
@@ -640,7 +645,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 				TestCaseIds: &testapi.TestCaseIdList{
 					TestCaseIds: []*testapi.TestCase_Id{
 						{
-							Value: fmt.Sprintf("tauto.%s", g.Invocation.Test.Name),
+							Value: testName,
 						},
 					},
 				},
