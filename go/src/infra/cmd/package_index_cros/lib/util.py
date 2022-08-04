@@ -117,7 +117,7 @@ class CrosSdk:
     """
     check_workon_cmd = ['cros_workon', f"--board={self.setup.board}", "list"]
 
-    output = CrosSdk._Exec(check_workon_cmd, capture_output=True).output
+    output = CrosSdk._Exec(check_workon_cmd, capture_output=True).stdout
     workon_packages = set(output.split('\n'))
     non_workon_packages = [p for p in package_names if not p in workon_packages]
 
@@ -169,7 +169,7 @@ class CrosSdk:
     """
     ninja_cmd = ['ninja', '-C', chroot_build_dir, '-t', 'compdb', 'cc', 'cxx']
 
-    return CrosSdk._Exec(ninja_cmd, capture_output=True).output
+    return CrosSdk._Exec(ninja_cmd, capture_output=True).stdout
 
   def GenerateGnTargets(self, chroot_root_dir: str,
                         chroot_build_dir: str) -> str:
@@ -192,7 +192,7 @@ class CrosSdk:
         '--format=json',
     ]
 
-    return CrosSdk._Exec(gn_desc_cmd, capture_output=True).output
+    return CrosSdk._Exec(gn_desc_cmd, capture_output=True).stdout
 
   def GenerateDependencyTree(self, package_names: List[str]):
     """
@@ -212,4 +212,4 @@ class CrosSdk:
         'sudo',
         path_util.ToChrootPath(PRINT_DEPS_SCRIPT_PATH), self.setup.board
     ] + package_names
-    return CrosSdk._Exec(cmd, capture_output=True).output
+    return CrosSdk._Exec(cmd, capture_output=True).stdout
