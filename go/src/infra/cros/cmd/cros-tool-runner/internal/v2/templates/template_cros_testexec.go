@@ -39,6 +39,17 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 		fmt.Sprintf("%s:%s", crosTestDir, "/tmp/test/cros-test"),
 		fmt.Sprintf("%s:%s", resultDir, "/tmp/test/results"),
 	}
+	// Mount authorization file for gsutil if exists. See b/239855913
+	gsutilAuthFile := "/home/chromeos-test/.boto"
+	if _, err := os.Stat(gsutilAuthFile); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", gsutilAuthFile, gsutilAuthFile))
+	}
+	// Mount autotest results shared folder if exists. See b/239855163
+	autotestResultsFolder := "/usr/local/autotest/results/shared"
+	if _, err := os.Stat(autotestResultsFolder); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", autotestResultsFolder, autotestResultsFolder))
+	}
+
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: t.Network,
 		Expose:  []string{serverPort},
