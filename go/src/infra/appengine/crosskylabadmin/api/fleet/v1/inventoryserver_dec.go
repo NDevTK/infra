@@ -23,23 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) UpdateDeviceConfig(ctx context.Context, req *UpdateDeviceConfigRequest) (rsp *UpdateDeviceConfigResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "UpdateDeviceConfig", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.UpdateDeviceConfig(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "UpdateDeviceConfig", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) GetStableVersion(ctx context.Context, req *GetStableVersionRequest) (rsp *GetStableVersionResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
@@ -104,23 +87,6 @@ func (s *DecoratedInventory) DumpStableVersionToDatastore(ctx context.Context, r
 	}
 	if s.Postlude != nil {
 		err = s.Postlude(ctx, "DumpStableVersionToDatastore", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) UpdateManufacturingConfig(ctx context.Context, req *UpdateManufacturingConfigRequest) (rsp *UpdateManufacturingConfigResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "UpdateManufacturingConfig", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.UpdateManufacturingConfig(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "UpdateManufacturingConfig", rsp, err)
 	}
 	return
 }

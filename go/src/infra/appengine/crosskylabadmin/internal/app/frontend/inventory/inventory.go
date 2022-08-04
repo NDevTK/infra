@@ -25,16 +25,13 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/kylelemons/godebug/pretty"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
-	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	authclient "go.chromium.org/luci/auth"
 	gitilesApi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
-	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -42,11 +39,8 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	dataSV "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/gitstore"
-	"infra/cros/lab_inventory/manufacturingconfig"
 	sv "infra/cros/stableversion"
 	"infra/libs/git"
-	"infra/libs/skylab/common/heuristics"
-	"infra/libs/skylab/inventory"
 )
 
 var prettyConfig = &pretty.Config{
@@ -180,135 +174,6 @@ func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.Client
 		return nil, errors.Annotate(err, "newStableVersionGitClient").Err()
 	}
 	return getStableVersionGitClient(ctx, hc)
-}
-
-// UpdateDeviceConfig implements updating device config to inventory.
-func (is *ServerImpl) UpdateDeviceConfig(ctx context.Context, req *fleet.UpdateDeviceConfigRequest) (resp *fleet.UpdateDeviceConfigResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	cfg := config.Get(ctx).Inventory
-	gitilesC, err := is.newGitilesClient(ctx, cfg.GitilesHost)
-	if err != nil {
-		return nil, errors.Annotate(err, "fail to update device config").Err()
-	}
-	deviceConfigs, err := GetDeviceConfig(ctx, gitilesC)
-	if err != nil {
-		return nil, errors.Annotate(err, "fail to fetch device configs").Err()
-	}
-	err = SaveDeviceConfig(ctx, deviceConfigs)
-	if err != nil {
-		return nil, errors.Annotate(err, "fail to save device config to datastore").Err()
-	}
-	store, err := is.newStore(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if err := store.Refresh(ctx); err != nil {
-		return nil, errors.Annotate(err, "fail to refresh inventory store").Err()
-	}
-	url, err := updateDeviceConfig(ctx, deviceConfigs, store)
-	if err != nil {
-		return nil, err
-	}
-	logging.Infof(ctx, "successfully update device config: %s", url)
-
-	return &fleet.UpdateDeviceConfigResponse{}, nil
-}
-
-func updateDeviceConfig(ctx context.Context, deviceConfigs map[string]*device.Config, s *gitstore.InventoryStore) (string, error) {
-	for _, d := range s.Lab.GetDuts() {
-		c := d.GetCommon()
-		dcID := getIDForInventoryLabels(ctx, c.GetLabels())
-		standardDC, ok := deviceConfigs[dcID]
-		if !ok {
-			continue
-		}
-		inventory.ConvertDeviceConfig(standardDC, c)
-	}
-	url, err := s.Commit(ctx, fmt.Sprintf("Update device config"))
-	if gitstore.IsEmptyErr(err) {
-		return "no commit for empty diff", nil
-	}
-	if err != nil {
-		return "", errors.Annotate(err, "fail to update device config").Err()
-	}
-	return url, nil
-}
-
-// UpdateManufacturingConfig backfill parts of manufacturing config to inventory V1.
-func (is *ServerImpl) UpdateManufacturingConfig(ctx context.Context, req *fleet.UpdateManufacturingConfigRequest) (resp *fleet.UpdateManufacturingConfigResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	cfg := config.Get(ctx).Inventory
-	gitilesC, err := is.newGitilesClient(ctx, cfg.GitilesHost)
-	if err != nil {
-		return nil, errors.Annotate(err, "fail to update manufacturing config").Err()
-	}
-	configs, err := GetManufacturingConfig(ctx, gitilesC)
-	if err != nil {
-		return nil, errors.Annotate(err, "fail to fetch manufacturing configs").Err()
-	}
-	store, err := is.newStore(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if err := store.Refresh(ctx); err != nil {
-		return nil, errors.Annotate(err, "fail to refresh inventory store").Err()
-	}
-	url, err := updateManufacturingConfig(ctx, configs, store)
-	if err != nil {
-		return nil, err
-	}
-	logging.Infof(ctx, "successfully update manufacturing config: %s", url)
-
-	return &fleet.UpdateManufacturingConfigResponse{
-		ChangeUrl: url,
-	}, nil
-}
-
-func updateManufacturingConfig(ctx context.Context, configs map[string]*manufacturing.Config, s *gitstore.InventoryStore) (string, error) {
-	for _, d := range s.Lab.GetDuts() {
-		if heuristics.LooksLikeLabstation(d.GetCommon().GetHostname()) {
-			continue
-		}
-		hwid, err := getHWID(d)
-		if err != nil || hwid == "" {
-			logging.Errorf(ctx, "missing HWID: %s", err)
-			continue
-		}
-		c, ok := configs[hwid]
-		if !ok {
-			logging.Errorf(ctx, "non-existing HWID: %s (%s)", hwid, d.GetCommon().GetHostname())
-			continue
-		}
-		l := d.GetCommon().GetLabels()
-		manufacturingconfig.ConvertMCToV1Labels(c, l)
-	}
-	url, err := s.Commit(ctx, fmt.Sprintf("Update manufacturing config"))
-	if gitstore.IsEmptyErr(err) {
-		return "no commit for empty diff", nil
-	}
-	if err != nil {
-		return "", errors.Annotate(err, "fail to update manufacturing config").Err()
-	}
-	return url, nil
-}
-
-func getHWID(dut *inventory.DeviceUnderTest) (string, error) {
-	attrs := dut.GetCommon().GetAttributes()
-	if len(attrs) == 0 {
-		return "", fmt.Errorf("attributes for dut with hostname (%s) is unexpectedly empty", dut.GetCommon().GetHostname())
-	}
-	for _, item := range attrs {
-		key := item.GetKey()
-		value := item.GetValue()
-		if key == "HWID" {
-			return value, nil
-		}
-	}
-	return "", fmt.Errorf("no \"HWID\" attribute for hostname (%s)", dut.GetCommon().GetHostname())
 }
 
 // DumpStableVersionToDatastore takes stable version info from the git repo where it lives

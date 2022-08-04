@@ -15,17 +15,13 @@
 package inventory
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
 	dataSV "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
-	"infra/appengine/crosskylabadmin/internal/app/gitstore"
 	"infra/appengine/crosskylabadmin/internal/app/gitstore/fakes"
 	"infra/libs/skylab/inventory"
 )
@@ -147,124 +143,6 @@ const (
     ]
 }`
 )
-
-func fakeDeviceConfig(ctx context.Context, ids []DeviceConfigID) map[string]*device.Config {
-	deviceConfigs := map[string]*device.Config{}
-	for _, id := range ids {
-		dcID := getDeviceConfigIDStr(ctx, id)
-		deviceConfigs[dcID] = &device.Config{
-			Id: &device.ConfigId{
-				PlatformId: &device.PlatformId{
-					Value: id.PlatformID,
-				},
-				ModelId: &device.ModelId{
-					Value: id.ModelID,
-				},
-				VariantId: &device.VariantId{
-					Value: id.VariantID,
-				},
-				BrandId: &device.BrandId{
-					Value: "",
-				},
-			},
-			GpuFamily: gpu,
-		}
-	}
-	return deviceConfigs
-}
-
-func TestUpdateDeviceConfig(t *testing.T) {
-	Convey("Update DUTs with empty device config", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-		deviceConfigs := map[string]*device.Config{}
-		tf.FakeGitiles.SetInventory(
-			config.Get(ctx).Inventory,
-			fakes.InventoryData{
-				Lab: []byte(fmt.Sprintf(dut, gpu)),
-			},
-		)
-		store := gitstore.NewInventoryStore(tf.FakeGerrit, tf.FakeGitiles)
-		err := store.Refresh(ctx)
-		So(err, ShouldBeNil)
-		url, err := updateDeviceConfig(tf.C, deviceConfigs, store)
-		So(err, ShouldBeNil)
-		So(url, ShouldNotContainSubstring, config.Get(ctx).Inventory.GerritHost)
-	})
-
-	Convey("Update DUTs as device config changes", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-		id := DeviceConfigID{
-			PlatformID: "",
-			ModelID:    "link",
-			VariantID:  "",
-		}
-		deviceConfigs := fakeDeviceConfig(ctx, []DeviceConfigID{id})
-
-		err := tf.FakeGitiles.SetInventory(config.Get(ctx).Inventory, fakes.InventoryData{
-			Lab: inventoryBytesFromDUTs([]testInventoryDut{
-				{"dut_id_1", "dut_hostname", "link", "DUT_POOL_SUITES"},
-			}),
-		})
-		store := gitstore.NewInventoryStore(tf.FakeGerrit, tf.FakeGitiles)
-		err = store.Refresh(ctx)
-		So(err, ShouldBeNil)
-		url, err := updateDeviceConfig(tf.C, deviceConfigs, store)
-		So(err, ShouldBeNil)
-		So(url, ShouldContainSubstring, config.Get(ctx).Inventory.GerritHost)
-	})
-
-	Convey("Update DUTs with non-existing device config", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-		id := DeviceConfigID{
-			PlatformID: "",
-			ModelID:    "non-link",
-			VariantID:  "",
-		}
-		deviceConfigs := fakeDeviceConfig(ctx, []DeviceConfigID{id})
-		err := tf.FakeGitiles.SetInventory(config.Get(ctx).Inventory, fakes.InventoryData{
-			Lab: inventoryBytesFromDUTs([]testInventoryDut{
-				{"dut_id_1", "dut_hostname", "link", "DUT_POOL_SUITES"},
-			}),
-		})
-		So(err, ShouldBeNil)
-		store := gitstore.NewInventoryStore(tf.FakeGerrit, tf.FakeGitiles)
-		err = store.Refresh(ctx)
-		So(err, ShouldBeNil)
-		url, err := updateDeviceConfig(tf.C, deviceConfigs, store)
-		So(err, ShouldBeNil)
-		So(url, ShouldNotContainSubstring, config.Get(ctx).Inventory.GerritHost)
-	})
-
-	Convey("Update DUTs with exactly same device config", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-		id := DeviceConfigID{
-			PlatformID: "",
-			ModelID:    "link",
-			VariantID:  "",
-		}
-		deviceConfigs := fakeDeviceConfig(ctx, []DeviceConfigID{id})
-		err := tf.FakeGitiles.SetInventory(
-			config.Get(ctx).Inventory, fakes.InventoryData{
-				Lab: []byte(fmt.Sprintf(dut, gpu)),
-			},
-		)
-		So(err, ShouldBeNil)
-		store := gitstore.NewInventoryStore(tf.FakeGerrit, tf.FakeGitiles)
-		err = store.Refresh(ctx)
-		So(err, ShouldBeNil)
-		url, err := updateDeviceConfig(tf.C, deviceConfigs, store)
-		So(err, ShouldBeNil)
-		So(url, ShouldNotContainSubstring, config.Get(ctx).Inventory.GerritHost)
-	})
-}
 
 func TestDumpStableVersionToDatastore(t *testing.T) {
 	Convey("Dump Stable version smoke test", t, func() {

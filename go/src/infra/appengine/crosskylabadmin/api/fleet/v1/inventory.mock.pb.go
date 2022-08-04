@@ -185,46 +185,6 @@ func (mr *MockInventoryClientMockRecorder) SetSatlabStableVersion(ctx, in interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSatlabStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).SetSatlabStableVersion), varargs...)
 }
 
-// UpdateDeviceConfig mocks base method.
-func (m *MockInventoryClient) UpdateDeviceConfig(ctx context.Context, in *UpdateDeviceConfigRequest, opts ...grpc.CallOption) (*UpdateDeviceConfigResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "UpdateDeviceConfig", varargs...)
-	ret0, _ := ret[0].(*UpdateDeviceConfigResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateDeviceConfig indicates an expected call of UpdateDeviceConfig.
-func (mr *MockInventoryClientMockRecorder) UpdateDeviceConfig(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeviceConfig", reflect.TypeOf((*MockInventoryClient)(nil).UpdateDeviceConfig), varargs...)
-}
-
-// UpdateManufacturingConfig mocks base method.
-func (m *MockInventoryClient) UpdateManufacturingConfig(ctx context.Context, in *UpdateManufacturingConfigRequest, opts ...grpc.CallOption) (*UpdateManufacturingConfigResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "UpdateManufacturingConfig", varargs...)
-	ret0, _ := ret[0].(*UpdateManufacturingConfigResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateManufacturingConfig indicates an expected call of UpdateManufacturingConfig.
-func (mr *MockInventoryClientMockRecorder) UpdateManufacturingConfig(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateManufacturingConfig", reflect.TypeOf((*MockInventoryClient)(nil).UpdateManufacturingConfig), varargs...)
-}
-
 // MockInventoryServer is a mock of InventoryServer interface.
 type MockInventoryServer struct {
 	ctrl     *gomock.Controller
@@ -306,34 +266,4 @@ func (m *MockInventoryServer) SetSatlabStableVersion(arg0 context.Context, arg1 
 func (mr *MockInventoryServerMockRecorder) SetSatlabStableVersion(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSatlabStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).SetSatlabStableVersion), arg0, arg1)
-}
-
-// UpdateDeviceConfig mocks base method.
-func (m *MockInventoryServer) UpdateDeviceConfig(arg0 context.Context, arg1 *UpdateDeviceConfigRequest) (*UpdateDeviceConfigResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateDeviceConfig", arg0, arg1)
-	ret0, _ := ret[0].(*UpdateDeviceConfigResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateDeviceConfig indicates an expected call of UpdateDeviceConfig.
-func (mr *MockInventoryServerMockRecorder) UpdateDeviceConfig(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeviceConfig", reflect.TypeOf((*MockInventoryServer)(nil).UpdateDeviceConfig), arg0, arg1)
-}
-
-// UpdateManufacturingConfig mocks base method.
-func (m *MockInventoryServer) UpdateManufacturingConfig(arg0 context.Context, arg1 *UpdateManufacturingConfigRequest) (*UpdateManufacturingConfigResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateManufacturingConfig", arg0, arg1)
-	ret0, _ := ret[0].(*UpdateManufacturingConfigResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateManufacturingConfig indicates an expected call of UpdateManufacturingConfig.
-func (mr *MockInventoryServerMockRecorder) UpdateManufacturingConfig(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateManufacturingConfig", reflect.TypeOf((*MockInventoryServer)(nil).UpdateManufacturingConfig), arg0, arg1)
 }

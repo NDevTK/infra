@@ -13,15 +13,6 @@ option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 
 // Inventory service helps manage ChromeOS DUTs.
 service Inventory {
-  // Update device config to inventory and local datastore.
-  //
-  // Updating device config in inventory will be forbidden via repair jobs.
-  // Instead, this cron job will sync up-to-date device config to inventory.
-  //
-  // It also caches device config to local datastore, which is used for filtering
-  // out device config in future DUT label updating.
-  rpc UpdateDeviceConfig(UpdateDeviceConfigRequest) returns (UpdateDeviceConfigResponse);
-
   // GetStableVersion reads the stable version for a particular DUT from datastore
   //
   // There is intentionally no RPC for overwriting the stable version with arbitrary content.
@@ -38,22 +29,6 @@ service Inventory {
   // DumpStableVersionToDatastore reads the stable version from the LUCI config file
   // and writes it to datastore.
   rpc DumpStableVersionToDatastore(DumpStableVersionToDatastoreRequest) returns (DumpStableVersionToDatastoreResponse);
-
-  // Backfill (part of) manufacturing config.
-  rpc UpdateManufacturingConfig(UpdateManufacturingConfigRequest) returns (UpdateManufacturingConfigResponse);
-}
-
-message UpdateManufacturingConfigRequest {
-}
-
-message UpdateManufacturingConfigResponse {
-  string change_url = 1;
-}
-
-message UpdateDeviceConfigRequest {
-}
-
-message UpdateDeviceConfigResponse {
 }
 
 message GetDutInfoRequest {
