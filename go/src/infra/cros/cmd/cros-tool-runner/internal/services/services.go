@@ -213,6 +213,22 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 	// chromeos-test inside docker. Hence, the user chromeos-test does not have write
 	// permission in /tmp/test. Therefore, we need to change the owner of the directory.
 	cmd := fmt.Sprintf("sudo --non-interactive chown -R chromeos-test:chromeos-test %s && cros-test", CrosTestRootDirInsideDocker)
+
+	volumes := []string{
+		fmt.Sprintf("%s:%s", crosTestDir, CrosTestDirInsideDocker),
+		fmt.Sprintf("%s:%s", resultDir, CrosTestResultsDirInsideDocker),
+	}
+	// Mount authorization file for gsutil if exists. See b/239855913
+	gsutilAuthFile := "/home/chromeos-test/.boto"
+	if _, err := os.Stat(gsutilAuthFile); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", gsutilAuthFile, gsutilAuthFile))
+	}
+	// Mount autotest results shared folder if exists. See b/239855163
+	autotestResultsFolder := "/usr/local/autotest/results/shared"
+	if _, err := os.Stat(autotestResultsFolder); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", autotestResultsFolder, autotestResultsFolder))
+	}
+
 	d := &docker.Docker{
 		Name:               fmt.Sprintf(crosTestContainerNameTemplate, os.Getpid(), time.Now().Unix()),
 		RequestedImageName: p,
@@ -224,10 +240,7 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 
 			cmd,
 		},
-		Volumes: []string{
-			fmt.Sprintf("%s:%s", crosTestDir, CrosTestDirInsideDocker),
-			fmt.Sprintf("%s:%s", resultDir, CrosTestResultsDirInsideDocker),
-		},
+		Volumes: volumes,
 		Detach:  false,
 		Network: networkName,
 	}
