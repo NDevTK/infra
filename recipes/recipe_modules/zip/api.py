@@ -100,9 +100,8 @@ class ZipApi(recipe_api.RecipeApi):
     script_input = {
         'zip_file': str(zip_file),
     }
-    step_result = self.m.python(
-        name=step_name,
-        script=self.resource('zipcomment.py'),
+    step_result = self.m.step(
+        step_name, ['python3', self.resource('zipcomment.py')],
         stdout=self.m.raw_io.output_text(),
         stdin=self.m.json.input(script_input))
     return step_result.stdout
