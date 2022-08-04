@@ -50,6 +50,8 @@ type ValidationResult struct {
 	FailedToLookup []*BoardModel `json:"failed_to_lookup"`
 	// InvalidVersions is the list of entries where the version in the config file does not match Google Storage.
 	InvalidVersions []*VersionMismatch `json:"invalid_versions"`
+	// InvalidFaftVersions is the list of FAFT entries.
+	InvalidFaftVersions []*VersionMismatch `json:"invalid_faft_versions"`
 }
 
 // RemoveAllowedDUTs removes DUTs that are exempted from the validation error summary.
@@ -86,7 +88,7 @@ func (r *ValidationResult) RemoveAllowedDUTs() {
 
 // AnomalyCount counts the total number of issues found in the results summary.
 func (r *ValidationResult) AnomalyCount() int {
-	return len(r.MissingBoards) + len(r.FailedToLookup) + len(r.InvalidVersions) + len(r.NonLowercaseEntries)
+	return len(r.MissingBoards) + len(r.FailedToLookup) + len(r.InvalidVersions) + len(r.NonLowercaseEntries) + len(r.InvalidFaftVersions)
 }
 
 type downloader func(gsPath gs.Path) ([]byte, error)
@@ -198,6 +200,14 @@ func (r *Reader) ValidateConfig(ctx context.Context, sv *labPlatform.StableVersi
 		if cfgVersion != realVersion {
 			out.InvalidVersions = append(out.InvalidVersions, &VersionMismatch{bt, model, realVersion, cfgVersion})
 			continue
+		}
+	}
+	// Confirm that all faft firmware bundles exist.
+	for _, item := range sv.GetFaft() {
+		bt := item.GetKey().GetBuildTarget().GetName()
+		model := item.GetKey().GetModelId().GetValue()
+		if path, err := r.validateFaft(item.GetVersion()); err != nil {
+			out.InvalidFaftVersions = append(out.InvalidFaftVersions, &VersionMismatch{bt, model, path, ""})
 		}
 	}
 	return &out, nil
