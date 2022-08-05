@@ -19,20 +19,22 @@ const PublicBoardModelDataKind string = "PublicBoardModelData"
 
 // PublicBoardModelDataEntity is a datastore entity that tracks a PublicBoardModelData.
 type PublicBoardModelDataEntity struct {
-	_kind  string   `gae:"$kind,PublicBoardModel"`
-	Board  string   `gae:"$id"`
-	Models []string `gae:"models"`
+	_kind                 string   `gae:"$kind,PublicBoardModel"`
+	Board                 string   `gae:"$id"`
+	Models                []string `gae:"models"`
+	BoardHasPrivateModels bool     `gae:"boardHasPrivateModels"`
 }
 
 // AddPublicBoardModelData adds a public board name and its corresponding models in the datastore.
-func AddPublicBoardModelData(ctx context.Context, board string, models []string) (*PublicBoardModelDataEntity, error) {
+func AddPublicBoardModelData(ctx context.Context, board string, models []string, hasPrivateModels bool) (*PublicBoardModelDataEntity, error) {
 	if board == "" {
 		return nil, status.Errorf(codes.Internal, "Empty board")
 	}
 
 	entity := &PublicBoardModelDataEntity{
-		Board:  board,
-		Models: models,
+		Board:                 board,
+		Models:                models,
+		BoardHasPrivateModels: hasPrivateModels,
 	}
 	if err := datastore.Put(ctx, entity); err != nil {
 		logging.Errorf(ctx, "Failed to put board name in datastore : %s - %s", board, err)
