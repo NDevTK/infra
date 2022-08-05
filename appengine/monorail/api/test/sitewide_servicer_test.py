@@ -12,9 +12,6 @@ import time
 import unittest
 
 import mock
-from components.prpc import codes
-from components.prpc import context
-from components.prpc import server
 
 import settings
 from api import sitewide_servicer

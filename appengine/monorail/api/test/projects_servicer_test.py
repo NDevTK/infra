@@ -13,16 +13,13 @@ from mock import patch
 
 from components.prpc import codes
 from components.prpc import context
-from components.prpc import server
 
 from api import projects_servicer
 from api.api_proto import common_pb2
 from api.api_proto import issue_objects_pb2
 from api.api_proto import project_objects_pb2
 from api.api_proto import projects_pb2
-from framework import authdata
 from framework import exceptions
-from framework import framework_constants
 from framework import monorailcontext
 from framework import permissions
 from proto import tracker_pb2

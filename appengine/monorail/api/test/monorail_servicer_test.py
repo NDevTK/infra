@@ -16,7 +16,6 @@ try:
 except ImportError:
   import mox
 
-from components.prpc import server
 from components.prpc import codes
 from components.prpc import context
 from google.appengine.ext import testbed

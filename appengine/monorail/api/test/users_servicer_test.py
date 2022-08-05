@@ -16,7 +16,6 @@ except ImportError:
   import mox
 from components.prpc import codes
 from components.prpc import context
-from components.prpc import server
 
 from api import users_servicer
 from api.api_proto import common_pb2

@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import cgi
 import functools
+import httplib
 import logging
 import time
 import sys
@@ -21,7 +22,6 @@ from google.appengine.api import users
 from google.appengine.api import app_identity
 from google.protobuf import json_format
 from components.prpc import codes
-from components.prpc import server
 
 from framework import monitoring
 
@@ -51,10 +51,29 @@ REQUEST_ID_HEADER = 'x-request-id'
 # Domain for service account emails.
 SERVICE_ACCOUNT_DOMAIN = 'gserviceaccount.com'
 
+# pylint: disable=pointless-string-statement
+
+# TODO(https://crbug.com/1346473)
+_PRPC_TO_HTTP_STATUS = {
+  codes.StatusCode.OK: httplib.OK,
+  codes.StatusCode.CANCELLED: httplib.NO_CONTENT,
+  codes.StatusCode.INVALID_ARGUMENT: httplib.BAD_REQUEST,
+  codes.StatusCode.DEADLINE_EXCEEDED: httplib.SERVICE_UNAVAILABLE,
+  codes.StatusCode.NOT_FOUND: httplib.NOT_FOUND,
+  codes.StatusCode.ALREADY_EXISTS: httplib.CONFLICT,
+  codes.StatusCode.PERMISSION_DENIED: httplib.FORBIDDEN,
+  codes.StatusCode.RESOURCE_EXHAUSTED: httplib.SERVICE_UNAVAILABLE,
+  codes.StatusCode.FAILED_PRECONDITION: httplib.PRECONDITION_FAILED,
+  codes.StatusCode.OUT_OF_RANGE: httplib.BAD_REQUEST,
+  codes.StatusCode.UNIMPLEMENTED: httplib.NOT_IMPLEMENTED,
+  codes.StatusCode.INTERNAL: httplib.INTERNAL_SERVER_ERROR,
+  codes.StatusCode.UNAVAILABLE: httplib.SERVICE_UNAVAILABLE,
+  codes.StatusCode.UNAUTHENTICATED: httplib.UNAUTHORIZED,
+}
 
 def ConvertPRPCStatusToHTTPStatus(context):
   """pRPC uses internal codes 0..16, but we want to report HTTP codes."""
-  return server._PRPC_TO_HTTP_STATUS.get(context._code, 500)
+  return _PRPC_TO_HTTP_STATUS.get(context._code, 500)
 
 
 def PRPCMethod(func):

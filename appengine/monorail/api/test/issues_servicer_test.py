@@ -8,7 +8,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import sys
 import time
 import unittest
@@ -18,7 +17,6 @@ from google.protobuf import empty_pb2
 
 from components.prpc import codes
 from components.prpc import context
-from components.prpc import server
 
 from api import issues_servicer
 from api import converters
@@ -76,7 +74,7 @@ class IssuesServicerTest(unittest.TestCase):
     self.issues_svcr = issues_servicer.IssuesServicer(
         self.services, make_rate_limiter=False)
     self.prpc_context = context.ServicerContext()
-    self.prpc_context.set_code(server.StatusCode.OK)
+    self.prpc_context.set_code(codes.StatusCode.OK)
     self.auth = authdata.AuthData(user_id=333, email='approver3@example.com')
 
     self.fd_1 = tracker_pb2.FieldDef(
