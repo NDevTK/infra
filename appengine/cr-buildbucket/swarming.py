@@ -856,13 +856,8 @@ def _sync_build_with_task_result_in_memory(build, build_infra, task_result):
     sw.bot_dimensions.sort(key=lambda d: (d.key, d.value))
 
   terminal_states = {
-      'EXPIRED',
-      'TIMED_OUT',
-      'BOT_DIED',
-      'CANCELED',
-      'COMPLETED',
-      'KILLED',
-      'NO_RESOURCE',
+      'EXPIRED', 'TIMED_OUT', 'BOT_DIED', 'CANCELED', 'COMPLETED', 'KILLED',
+      'NO_RESOURCE', 'CLIENT_ERROR'
   }
   state = (task_result or {}).get('state')
   if state is None:
@@ -896,9 +891,9 @@ def _sync_build_with_task_result_in_memory(build, build_infra, task_result):
       # Task started, but timed out.
       bp.status = common_pb2.INFRA_FAILURE
       bp.status_details.timeout.SetInParent()
-    elif state == 'BOT_DIED' or task_result.get('failure'):
+    elif state in ('BOT_DIED', 'CLIENT_ERROR') or task_result.get('failure'):
       # If this truly was a non-infra failure, bbagent would catch that and
-      # mark the build as FAILURE.
+      # mark the build as FAILURE. CLIENT_ERROR should not cause a retry
       # That did not happen, so this is an infra failure.
       bp.status = common_pb2.INFRA_FAILURE
     else:

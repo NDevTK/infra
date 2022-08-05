@@ -1066,6 +1066,16 @@ class SyncBuildTest(BaseTest):
       },),
       ({
           'task_result': {
+              'state': 'CLIENT_ERROR',
+              'started_ts': '2018-01-29T21:15:02.649750',
+              'abandoned_ts': '2018-01-30T00:15:18.162860',
+          },
+          'status': common_pb2.INFRA_FAILURE,
+          'start_time': tspb(seconds=1517260502, nanos=649750000),
+          'end_time': tspb(seconds=1517271318, nanos=162860000),
+      },),
+      ({
+          'task_result': {
               'state': 'TIMED_OUT',
               'started_ts': '2018-01-29T21:15:02.649750',
               'completed_ts': '2018-01-30T00:15:18.162860',
