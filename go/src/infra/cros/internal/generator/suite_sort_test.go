@@ -67,7 +67,19 @@ func vmBuildResult(buildTarget, builderName string, criticalSuite, criticalBuild
 					},
 				}},
 			},
-		}}
+			TastGceTestCfg: &testplans.TastGceTestCfg{
+				TastGceTest: []*testplans.TastGceTestCfg_TastGceTest{
+					{
+						Common: &testplans.TestSuiteCommon{
+							DisplayName:     builderName + ".bvt-tast-gce-cq",
+							Critical:        &wrappers.BoolValue{Value: criticalSuite},
+							TestSuiteGroups: groupsObjs(groups),
+						},
+					},
+				},
+			},
+		},
+	}
 }
 
 func Test_SortOrder(t *testing.T) {
@@ -107,14 +119,17 @@ func Test_SortOrder(t *testing.T) {
 	}
 
 	group1 := r["testGroup 1"]
-	if len(group1) != 7 {
-		t.Errorf("wanted %v suites in testGroup 1, got %v", 7, len(group1))
+	if len(group1) != 9 {
+		t.Errorf("wanted %v suites in testGroup 1, got %v", 9, len(group1))
 	}
-	if group1[0].tsc.GetDisplayName() != "betty-arc-b-cq.bvt-tast-vm-cq" {
-		t.Errorf("wanted %v as first suite in testGroup 1, got %v", "betty-arc-b-cq.bvt-tast-vm-cq", group1[0].tsc.GetDisplayName())
+	if group1[0].tsc.GetDisplayName() != "betty-arc-b-cq.bvt-tast-gce-cq" {
+		t.Errorf("wanted %v as first suite in testGroup 1, got %v", "betty-arc-b-cq.bvt-tast-gce-cq", group1[0].tsc.GetDisplayName())
 	}
-	if group1[1].tsc.GetDisplayName() != "coral-arc-r-cq.bvt-tast-cq" {
-		t.Errorf("wanted %v as second suite in testGroup 1, got %v", "coral-arc-r-cq.bvt-tast-cq", group1[1].tsc.GetDisplayName())
+	if group1[1].tsc.GetDisplayName() != "betty-arc-b-cq.bvt-tast-vm-cq" {
+		t.Errorf("wanted %v as second suite in testGroup 1, got %v", "betty-arc-b-cq.bvt-tast-vm-cq", group1[1].tsc.GetDisplayName())
+	}
+	if group1[2].tsc.GetDisplayName() != "coral-arc-r-cq.bvt-tast-cq" {
+		t.Errorf("wanted %v as second suite in testGroup 1, got %v", "coral-arc-r-cq.bvt-tast-cq", group1[2].tsc.GetDisplayName())
 	}
 	if group1[len(group1)-1].tsc.GetDisplayName() != "ocean-cq.bvt-tast-cq" {
 		t.Errorf("wanted %v as last suite in testGroup 1, got %v", "ocean-cq.bvt-tast-cq", group1[len(group1)-1].tsc.GetDisplayName())

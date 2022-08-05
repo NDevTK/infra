@@ -55,6 +55,9 @@ func groupAndSort(buildResult []buildResult, boardPriorityList *testplans.BoardP
 		for _, t := range req.GetVmTestCfg().GetVmTest() {
 			m = tsc(br, br.buildID.buildTarget, t.GetCommon(), true, m)
 		}
+		for _, t := range req.GetTastGceTestCfg().GetTastGceTest() {
+			m = tsc(br, br.buildID.buildTarget, t.GetCommon(), true, m)
+		}
 	}
 
 	boardPriorities := make(map[string]*testplans.BoardPriority)
