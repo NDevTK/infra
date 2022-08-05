@@ -8,10 +8,13 @@
 package bot
 
 import (
+	"log"
+
 	"golang.org/x/sys/unix"
 )
 
 // Terminate implements Bot.
 func (b realBot) Terminate() error {
+	log.Printf("Terminating bot %s", b.config.BotID)
 	return b.cmd.Process.Signal(unix.SIGTERM)
 }

@@ -99,11 +99,9 @@ func runBotForDUT(h ControllerHook, dutID string, s dutSignals) {
 		for {
 			select {
 			case <-s.drain:
-				// TODO(ayatane): Log error?
 				_ = b.Drain()
 				stop = true
 			case <-s.terminate:
-				// TODO(ayatane): Log error?
 				_ = b.Terminate()
 				stop = true
 			case <-wait:

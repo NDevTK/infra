@@ -116,6 +116,7 @@ func (a *Agent) runOnce(ctx context.Context) error {
 	if uuid == "" {
 		return errors.Reason("register with queen: got empty UUID").Err()
 	}
+	a.log("UUID assigned: %s", uuid)
 	s := a.wrapState(state.New(uuid, hook{a: a, uuid: uuid}))
 
 	// Set up expiration context.
@@ -147,6 +148,7 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 		defer wg.Done()
 		select {
 		case <-ctx.Done():
+			a.log("Terminating all DUTs due to expired context")
 			s.BlockDUTs()
 			s.TerminateAll()
 		case <-readyToExit:
@@ -158,6 +160,7 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 		defer wg.Done()
 		select {
 		case <-draining.C(ctx):
+			a.log("Draining all DUTs")
 			s.BlockDUTs()
 			s.DrainAll()
 		case <-readyToExit:
@@ -355,7 +358,7 @@ func (h hook) ReleaseDUT(dutID string) {
 	// Releasing DUTs is best-effort.  Ignore any errors since
 	// there's no way to handle them.
 	//
-	// TODO(ayatane): Log or track errors?
+	h.a.log("Releasing %s", dutID)
 	_, _ = h.a.Client.ReleaseDuts(ctx, &req)
 }
 

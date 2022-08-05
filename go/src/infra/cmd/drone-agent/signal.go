@@ -9,6 +9,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"os/signal"
 
@@ -23,7 +24,8 @@ func notifySIGTERM(ctx context.Context) context.Context {
 	ctx, cancel := context.WithCancel(ctx)
 	go func() {
 		select {
-		case <-ch:
+		case s := <-ch:
+			log.Printf("Receiving signal %d", s)
 			cancel()
 		}
 	}()

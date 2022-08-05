@@ -8,6 +8,7 @@ package bot
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -42,11 +43,13 @@ type realBot struct {
 func (b realBot) Wait() error {
 	err := b.cmd.Wait()
 	_ = b.logFile.Close()
+	log.Printf("Done waiting for bot %s", b.config.BotID)
 	return err
 }
 
 // Drain implements Bot.
 func (b realBot) Drain() error {
+	log.Printf("Draining bot %s", b.config.BotID)
 	f, err := os.Create(b.config.drainFilePath())
 	if err != nil {
 		return errors.Annotate(err, "drain bot %s", b.config.BotID).Err()
@@ -91,6 +94,7 @@ func (s Starter) Start(c Config) (b Bot, err error) {
 	if err := cmd.Start(); err != nil {
 		return nil, errors.Annotate(err, "start bot with %+v", c).Err()
 	}
+	log.Printf("Bot for %s started", c.BotID)
 	return realBot{
 		config:  c,
 		cmd:     cmd,
