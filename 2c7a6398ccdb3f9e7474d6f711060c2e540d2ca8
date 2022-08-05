@@ -16,6 +16,24 @@
       "message": "I don\u0027t think this copies permissions. Is there a way to copy those as well?",
       "revId": "2c7a6398ccdb3f9e7474d6f711060c2e540d2ca8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bd953db_9048c109",
+        "filename": "go/src/infra/cros/recovery/docker/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1346454
+      },
+      "writtenOn": "2022-08-05T22:12:33Z",
+      "side": 1,
+      "message": "I open this file only for reading the content to copy into the servod container. The servod container file will be read/write by any process and the container is short lived. It should be sufficient for now.",
+      "parentUuid": "468ae26f_7c25b268",
+      "revId": "2c7a6398ccdb3f9e7474d6f711060c2e540d2ca8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
