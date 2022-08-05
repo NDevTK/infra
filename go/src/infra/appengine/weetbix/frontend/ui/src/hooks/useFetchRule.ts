@@ -8,7 +8,7 @@ import { getRulesService } from '../services/rules';
 const useFetchRule = (ruleId: string | undefined, project: string | undefined) => {
   const rulesService = getRulesService();
 
-  return useQuery(['rule', ruleId], async () => await rulesService.get(
+  return useQuery(['rule', project, ruleId], async () => await rulesService.get(
       {
         name: `projects/${project}/rules/${ruleId}`,
       },

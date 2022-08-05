@@ -19,6 +19,10 @@ export class ProjectService {
     this.client = client;
   }
 
+  async getConfig(request: GetProjectConfigRequest): Promise<ProjectConfig> {
+    return this.client.call(ProjectService.SERVICE, 'GetConfig', request);
+  }
+
   async list(request: ListProjectsRequest): Promise<ListProjectsResponse> {
     return this.client.call(ProjectService.SERVICE, 'List', request);
   }
@@ -36,4 +40,28 @@ export interface Project {
 
 export interface ListProjectsResponse {
     projects: Project[] | null
+}
+
+export interface GetProjectConfigRequest {
+  // The format is: `projects/{project}/config`.
+  name: string;
+}
+
+// See weetbix.v1.Projects.GetProjectConfigResponse.Monorail for documentation.
+export interface Monorail {
+  // The monorail project used for this LUCI project.
+  project: string;
+
+  // The shortlink format used for this bug tracker.
+  // For example, "crbug.com".
+  displayPrefix: string;
+}
+
+// See weetbix.v1.Projects.ProjectConfig for documentation.
+export interface ProjectConfig {
+  // The format is: `projects/{project}/config`.
+  name: string;
+
+  // Details about the monorail project used for this LUCI project.
+  monorail: Monorail;
 }

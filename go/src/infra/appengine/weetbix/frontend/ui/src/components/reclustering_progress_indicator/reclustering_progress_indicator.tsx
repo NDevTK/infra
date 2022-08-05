@@ -47,7 +47,7 @@ const ReclusteringProgressIndicator = ({
   const queryClient = useQueryClient();
 
   const { isError, isLoading, data: progress, error } = useQuery(
-      'reclusteringProgress',
+      ['reclusteringProgress', project],
       async () => {
         return await fetchProgress(project);
       }, {

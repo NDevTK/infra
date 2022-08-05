@@ -4,19 +4,23 @@
 
 import fetchMock from 'fetch-mock-jest';
 
-import { ProjectConfig } from '../../services/config';
+import { ProjectConfig } from '../../services/project';
 
 export const createMockProjectConfig = (): ProjectConfig => {
   return {
-    project: 'chromium',
+    name: 'projects/chromium/config',
     monorail: {
       project: 'chromium',
       displayPrefix: 'crbug.com',
     },
-    paths: [],
   };
 };
 
 export const mockFetchProjectConfig = () => {
-  fetchMock.get('/api/projects/chromium/config', createMockProjectConfig());
+  fetchMock.post('http://localhost/prpc/weetbix.v1.Projects/GetConfig', {
+    headers: {
+      'X-Prpc-Grpc-Code': '0',
+    },
+    body: ')]}\'' + JSON.stringify(createMockProjectConfig()),
+  });
 };

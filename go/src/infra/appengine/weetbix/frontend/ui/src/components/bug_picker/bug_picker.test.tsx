@@ -10,12 +10,14 @@ import { screen } from '@testing-library/react';
 
 import { identityFunction } from '../../testing_tools/functions';
 import { renderWithRouterAndClient } from '../../testing_tools/libs/mock_router';
-import { createMockProjectConfig } from '../../testing_tools/mocks/project_config_mock';
+import { mockFetchAuthState } from '../../testing_tools/mocks/authstate_mock';
+import { mockFetchProjectConfig } from '../../testing_tools/mocks/projects_mock';
 import BugPicker from './bug_picker';
 
 describe('Test BugPicker component', () => {
   beforeEach(() => {
-    fetchMock.get('/api/projects/chromium/config', createMockProjectConfig());
+    mockFetchAuthState();
+    mockFetchProjectConfig();
   });
 
   afterEach(() => {

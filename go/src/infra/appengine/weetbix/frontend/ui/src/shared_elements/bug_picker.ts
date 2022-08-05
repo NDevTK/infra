@@ -4,11 +4,15 @@
 
 import { LitElement, html, customElement, property, css, state } from 'lit-element';
 
-import { readProjectConfig, ProjectConfig } from '../services/config';
 import { Select } from '@material/mwc-select';
 import { TextField } from '@material/mwc-textfield';
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
+import {
+  getProjectsService,
+  GetProjectConfigRequest,
+  ProjectConfig,
+} from '../services/project';
 
 // BugPicker lists the failure association rules configured in Weetbix.
 @customElement('bug-picker')
@@ -44,7 +48,11 @@ export class BugPicker extends LitElement {
         if (!this.project) {
             throw new Error('invariant violated: project must be set before fetch');
         }
-        this.projectConfig = await readProjectConfig(this.project);
+        const projectsService = getProjectsService();
+        const request: GetProjectConfigRequest = {
+            name: `projects/${encodeURIComponent(this.project)}/config`,
+        };
+        this.projectConfig = await projectsService.getConfig(request);
         if (this.bugSystem == '') {
             // Default the bug tracking system.
             this.setSystemMonorail();

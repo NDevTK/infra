@@ -13,7 +13,7 @@ import { renderWithRouterAndClient } from '../../../testing_tools/libs/mock_rout
 import { mockFetchAuthState } from '../../../testing_tools/mocks/authstate_mock';
 import { createMockBug } from '../../../testing_tools/mocks/bug_mock';
 import { createMockDoneProgress } from '../../../testing_tools/mocks/progress_mock';
-import { mockFetchProjectConfig } from '../../../testing_tools/mocks/project_config_mock';
+import { mockFetchProjectConfig } from '../../../testing_tools/mocks/projects_mock';
 import { createDefaultMockRule } from '../../../testing_tools/mocks/rule_mock';
 import RuleTopPanel from './rule_top_panel';
 

@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 
-import { readProjectConfig } from '../../services/config';
+import { getProjectsService, GetProjectConfigRequest } from '../../services/project';
 import ErrorAlert from '../error_alert/error_alert';
 
 interface Props {
@@ -87,11 +87,17 @@ const BugPicker = ({
     isError,
     data: projectConfig,
     error,
-  } = useQuery(['project', project], async () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return await readProjectConfig(project!);
+  } = useQuery(['projectconfig', project], async () => {
+    if (!project) {
+      throw new Error('invariant violated: project should be set');
+    }
+    const projectService = getProjectsService();
+    const request: GetProjectConfigRequest = {
+      name: `projects/${encodeURIComponent(project)}/config`,
+    };
+    return await projectService.getConfig(request);
   }, {
-    enabled: project !== null && project !== undefined,
+    enabled: !!project,
   });
 
   if (!project) {

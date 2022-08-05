@@ -21,7 +21,7 @@ const ImpactSection = () => {
     currentAlgorithm = 'rules';
   }
   const clustersService = getClustersService();
-  const { isLoading, isError, isSuccess, data: cluster, error } = useQuery(['cluster', `${currentAlgorithm}:${id}`], async () => {
+  const { isLoading, isError, isSuccess, data: cluster, error } = useQuery(['cluster', project, currentAlgorithm, id], async () => {
     const request: BatchGetClustersRequest = {
       parent: `projects/${encodeURIComponent(project || '')}`,
       names: [
