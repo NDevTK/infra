@@ -35,3 +35,4 @@ reasons.sqlite
 .expect_tests_coverage*
 .vscode
 .idea
+infra.iml
