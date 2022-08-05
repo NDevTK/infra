@@ -23,11 +23,9 @@ type ClusterFailure struct {
 	PresubmitRunID    *PresubmitRunID     `json:"presubmitRunId"`
 	PresubmitRunOwner bigquery.NullString `json:"presubmitRunOwner"`
 	PresubmitRunMode  bigquery.NullString `json:"presubmitRunMode"`
-	// TODO(b/239768873): Remove when legacy cluster failures endpoint deleted.
-	Changelist    *Changelist `json:"changelist"`
-	Changelists   []*Changelist
-	PartitionTime bigquery.NullTimestamp `json:"partitionTime"`
-	Exonerations  []*Exoneration         `json:"exonerations"`
+	Changelists       []*Changelist
+	PartitionTime     bigquery.NullTimestamp `json:"partitionTime"`
+	Exonerations      []*Exoneration         `json:"exonerations"`
 	// weetbix.v1.BuildStatus, without "BUILD_STATUS_" prefix.
 	BuildStatus                 bigquery.NullString `json:"buildStatus"`
 	IsBuildCritical             bigquery.NullBool   `json:"isBuildCritical"`
@@ -99,8 +97,6 @@ func (c *Client) ReadClusterFailures(ctx context.Context, opts ReadClusterFailur
 			ANY_VALUE(r.presubmit_run_id) as PresubmitRunID,
 			ANY_VALUE(r.presubmit_run_owner) as PresubmitRunOwner,
 			ANY_VALUE(r.presubmit_run_mode) as PresubmitRunMode,
-			ANY_VALUE(IF(ARRAY_LENGTH(r.changelists)>0,
-				r.changelists[OFFSET(0)], NULL)) as Changelist,
 			ANY_VALUE(r.changelists) as Changelists,
 			r.partition_time as PartitionTime,
 			ANY_VALUE(r.exonerations) as Exonerations,
