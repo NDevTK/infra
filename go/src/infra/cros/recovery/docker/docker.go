@@ -11,6 +11,7 @@ import (
 	"context"
 	base_error "errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -296,19 +297,20 @@ func (d *dockerClient) CopyTo(ctx context.Context, containerName string, sourceP
 }
 
 // CopyFrom copies a file from container to the host.
-func (d *dockerClient) CopyFrom(ctx context.Context, containerName string, sourcePath, destinationPath string) error {
-	// Using `docker cp -- src desc`  where `--` used to avoid interpret src as argument.
-	res, err := runWithTimeout(ctx, time.Minute, "docker", "cp", "--", fmt.Sprintf("%s:%s", containerName, sourcePath), destinationPath)
-	log.Debugf(ctx, "Run docker copy from %q: exitcode: %v", containerName, res.ExitCode)
-	log.Debugf(ctx, "Run docker copy from %q: stdout: %v", containerName, res.Stdout)
-	log.Debugf(ctx, "Run docker copy from %q: stderr: %v", containerName, res.Stderr)
-	log.Debugf(ctx, "Run docker copy from %q: err: %v", containerName, err)
+func (d *dockerClient) CopyFrom(ctx context.Context, containerName string, sourcePath string, destinationPath string) error {
+	outFile, err := os.OpenFile(destinationPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		return errors.Annotate(err, "copy from %q", containerName).Err()
-	} else if res.ExitCode != 0 {
-		return errors.Reason("copy from %q: fail with exit code %v", containerName, res.ExitCode).Err()
+		return errors.Annotate(err, "copy from %q: could not create local file", containerName).Err()
 	}
-	return nil
+	r, _, err := d.client.CopyFromContainer(ctx, containerName, sourcePath)
+	if err != nil {
+		return errors.Annotate(err, "copy from %q: could not copy remote file", containerName).Err()
+	}
+	_, err = io.Copy(outFile, r)
+	if err != nil {
+		return errors.Annotate(err, "copy from %q: could not write to local file", containerName).Err()
+	}
+	return outFile.Close()
 }
 
 // StartCommandString prints the command used in Start to spin up a container
