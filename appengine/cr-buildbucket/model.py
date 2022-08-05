@@ -35,6 +35,10 @@ BUILD_STORAGE_DURATION = datetime.timedelta(days=30 * 18)  # ~18mo
 BUILDER_EXPIRATION_DURATION = datetime.timedelta(weeks=4)
 
 
+class TooLargePropertyError(Exception):
+  """Raised when the size of a datastore entity property is too large."""
+
+
 class BuildStatus(messages.Enum):
   # Status is not set.
   UNSET = 0
@@ -500,7 +504,11 @@ class BuildSteps(BuildDetailEntity):
     """Checks BuildSteps invariants before putting."""
     super(BuildSteps, self)._pre_put_hook()
     assert self.step_container_bytes is not None
-    assert len(self.step_container_bytes) <= self.MAX_STEPS_LEN
+    if len(self.step_container_bytes) > self.MAX_STEPS_LEN:
+      raise TooLargePropertyError(
+          'step size %d is larger than %d' %
+          (len(self.step_container_bytes), self.MAX_STEPS_LEN)
+      )
 
   @classmethod
   def make(cls, build_proto):

@@ -959,7 +959,16 @@ def _sync_build_with_task_result(build_id, task_result):
       futures.append(events.on_build_completing_async(build))
 
     for f in futures:
-      f.check_success()
+      try:
+        f.check_success()
+      except model.TooLargePropertyError as err:  # pragma: no cover
+        # Ignore TooLargePropertyError in cancel_incomplete_steps_async to
+        # prevent infinitely retrying and allow to update build status.
+        logging.warning(
+            'Ignore an error in syncing build %s with task: %s' %
+            (build_id, err)
+        )
+        continue
     return build
 
   build = txn()

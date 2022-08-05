@@ -245,6 +245,15 @@ class BuildStepsTest(testing.AppengineTestCase):
     entity.read_steps(actual)
     self.assertEqual(actual, container)
 
+  @mock.patch('model.BuildSteps.MAX_STEPS_LEN', 1000)
+  def test_too_large(self):
+    container = build_pb2.Build(steps=[dict(name='x' * 1000000)])
+    entity = model.BuildSteps()
+    entity.write_steps(container)
+    self.assertTrue(entity.step_container_bytes_zipped)
+    with self.assertRaises(model.TooLargePropertyError):
+      entity.put()
+
   @ndb.transactional
   def cancel_incomplete_steps(self, build_id, end_ts):
     model.BuildSteps.cancel_incomplete_steps_async(
