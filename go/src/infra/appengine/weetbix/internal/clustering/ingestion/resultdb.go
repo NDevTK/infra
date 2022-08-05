@@ -104,7 +104,7 @@ func failureFromResult(tv *rdbpb.TestVariant, tr *rdbpb.TestResult, opts Options
 	result := &cpb.Failure{
 		TestResultId:                  pbutil.TestResultIDFromResultDB(tr.Name),
 		PartitionTime:                 timestamppb.New(opts.PartitionTime),
-		ChunkIndex:                    -1, // To be populated by chunking.
+		ChunkIndex:                    0, // To be populated by chunking.
 		Realm:                         opts.Realm,
 		TestId:                        tv.TestId,                              // Get from variant, as it is not populated on each result.
 		Variant:                       pbutil.VariantFromResultDB(tv.Variant), // Get from variant, as it is not populated on each result.

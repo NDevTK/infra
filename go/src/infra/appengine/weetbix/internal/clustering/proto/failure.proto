@@ -31,7 +31,7 @@ message Failure {
   // as the partitioning key in time/date-partitioned tables.
   google.protobuf.Timestamp partition_time = 2;
 
-  // The zero-based index of this failure within the chunk. Assigned by
+  // The one-based index of this failure within the chunk. Assigned by
   // Weetbix ingestion.
   int64 chunk_index = 3;
 

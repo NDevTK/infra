@@ -125,7 +125,7 @@ func (i *Ingester) Ingest(ctx context.Context, opts Options, tvs []*rdbpb.TestVa
 		buffer = buffer[0:0]
 
 		for i, f := range failures {
-			f.ChunkIndex = int64(i)
+			f.ChunkIndex = int64(i + 1)
 		}
 		chunk := &cpb.Chunk{
 			Failures: failures,

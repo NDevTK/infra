@@ -92,7 +92,7 @@ func TestIngest(t *testing.T) {
 				// Chunk ID and index is assigned by ingestion.
 				copyExp := proto.Clone(exp).(*bqpb.ClusteredFailureRow)
 				So(actual.ChunkId, ShouldNotBeEmpty)
-				So(actual.ChunkIndex, ShouldBeGreaterThanOrEqualTo, 0)
+				So(actual.ChunkIndex, ShouldBeGreaterThanOrEqualTo, 1)
 				copyExp.ChunkId = actual.ChunkId
 				copyExp.ChunkIndex = actual.ChunkIndex
 

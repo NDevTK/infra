@@ -112,7 +112,7 @@ func (c *Client) QueryClusterSummaries(ctx context.Context, luciProject string, 
 				cluster_id,
 				test_id,
 				failure_reason,
-				CONCAT(chunk_id, '/', chunk_index) as unique_test_result_id,
+				CONCAT(chunk_id, '/', COALESCE(chunk_index, 0)) as unique_test_result_id,
 				(build_critical AND
 				-- Exonerated for a reason other than NOT_CRITICAL or UNEXPECTED_PASS.
 				-- Passes are not ingested by Weetbix, but if a test has both an unexpected pass

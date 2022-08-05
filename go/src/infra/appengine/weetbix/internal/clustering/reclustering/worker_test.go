@@ -701,7 +701,7 @@ func (b *chunkBuilder) buildTestResults() (chunk *cpb.Chunk) {
 	var failures []*cpb.Failure
 	for i, tr := range b.testResults {
 		failure := tr.buildFailure()
-		failure.ChunkIndex = int64(i)
+		failure.ChunkIndex = int64(i + 1)
 		failures = append(failures, failure)
 	}
 	return &cpb.Chunk{
@@ -772,7 +772,7 @@ func (b *chunkBuilder) buildBQExport() []*bqpb.ClusteredFailureRow {
 		rows := tr.buildBQExport(cIDs)
 		for _, r := range rows {
 			r.ChunkId = b.chunkID
-			r.ChunkIndex = int64(i)
+			r.ChunkIndex = int64(i + 1)
 		}
 		result = append(result, rows...)
 	}

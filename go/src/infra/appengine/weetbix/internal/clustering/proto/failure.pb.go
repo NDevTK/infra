@@ -89,7 +89,7 @@ type Failure struct {
 	// Timestamp representing the start of the data retention period. This acts
 	// as the partitioning key in time/date-partitioned tables.
 	PartitionTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=partition_time,json=partitionTime,proto3" json:"partition_time,omitempty"`
-	// The zero-based index of this failure within the chunk. Assigned by
+	// The one-based index of this failure within the chunk. Assigned by
 	// Weetbix ingestion.
 	ChunkIndex int64 `protobuf:"varint,3,opt,name=chunk_index,json=chunkIndex,proto3" json:"chunk_index,omitempty"`
 	// Security realm of the test result.
@@ -132,7 +132,7 @@ type Failure struct {
 	// This is the build corresponding to ingested_invocation_id.
 	BuildStatus v1.BuildStatus `protobuf:"varint,28,opt,name=build_status,json=buildStatus,proto3,enum=weetbix.v1.BuildStatus" json:"build_status,omitempty"`
 	// Whether the build was critical to a presubmit run succeeding.
-	// If the build was not a tryjob for a presubmit run, this is unset.
+	// If the build was not part of a presubmit run, this is unset.
 	BuildCritical *bool `protobuf:"varint,29,opt,name=build_critical,json=buildCritical,proto3,oneof" json:"build_critical,omitempty"`
 	// The unsubmitted changelists that were tested (if any).
 	// Changelists are sorted in ascending (host, change, patchset) order.
@@ -162,7 +162,7 @@ type Failure struct {
 	// only true if all (non-skipped) test results for this test variant
 	// (in the ingested invocation) are unexpected failures.
 	//
-	// Exoneration does not factor into this value; check is_exonerated
+	// Exoneration does not factor into this value; check exonerations
 	// to see if the impact of this ingested invocation being blocked was
 	// mitigated by exoneration.
 	IsIngestedInvocationBlocked bool `protobuf:"varint,17,opt,name=is_ingested_invocation_blocked,json=isIngestedInvocationBlocked,proto3" json:"is_ingested_invocation_blocked,omitempty"`
@@ -190,7 +190,7 @@ type Failure struct {
 	// (non-skipped) test results for this test variant (in the test run)
 	// are unexpected failures.
 	//
-	// Exoneration does not factor into this value; check is_exonerated
+	// Exoneration does not factor into this value; check exonerations
 	// to see if the impact of this test run being blocked was
 	// mitigated by exoneration.
 	IsTestRunBlocked bool `protobuf:"varint,21,opt,name=is_test_run_blocked,json=isTestRunBlocked,proto3" json:"is_test_run_blocked,omitempty"`
