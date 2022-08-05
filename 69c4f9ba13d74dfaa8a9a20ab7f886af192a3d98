@@ -16,6 +16,23 @@
       "message": "I tested this locally and it seems to work. Garry PTAL.",
       "revId": "69c4f9ba13d74dfaa8a9a20ab7f886af192a3d98",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12d1a958_03f1d578",
+        "filename": "go/src/infra/cros/recovery/config/config_servo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1491,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-08-05T03:22:05Z",
+      "side": 1,
+      "message": "Seems they are duplicated actions?\n\"SmartHub is not present in setup\"\n\"SmartHub is not present\"",
+      "revId": "69c4f9ba13d74dfaa8a9a20ab7f886af192a3d98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
