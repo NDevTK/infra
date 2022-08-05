@@ -34,7 +34,8 @@ const RulesTable = ({ project } : Props ) => {
 
     const response = await rulesService.list(request);
 
-    const sortedRules = response.rules.sort((a, b)=> {
+    const rules = response.rules || [];
+    const sortedRules = rules.sort((a, b)=> {
       // These are RFC 3339-formatted date/time strings.
       // Because they are all use the same timezone, and RFC 3339
       // date/times are specified from most significant to least

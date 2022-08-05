@@ -72,7 +72,7 @@ export interface ListRulesRequest {
 }
 
 export interface ListRulesResponse {
-    rules: Rule[];
+    rules?: Rule[];
 }
 
 export interface CreateRuleRequest {

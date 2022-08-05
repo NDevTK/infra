@@ -50,7 +50,7 @@ export interface BatchGetClustersRequest {
 }
 
 export interface BatchGetClustersResponse {
-  clusters: Cluster[] | undefined;
+  clusters?: Cluster[];
 }
 
 export interface Cluster {
@@ -58,10 +58,10 @@ export interface Cluster {
   // Format: projects/{project}/clusters/{cluster_algorithm}/{cluster_id}.
   name: string;
   // Whether there is a recent example in the cluster.
-  hasExample: boolean | undefined;
+  hasExample?: boolean;
   // A human-readable name for the cluster.
   // Only populated for suggested clusters where has_example = true.
-  title: string | undefined;
+  title?: string;
   // The total number of user changelists which failed presubmit.
   userClsFailedPresubmit: MetricValues;
   // The total number of failures in the cluster that occurred on tryjobs
@@ -89,7 +89,7 @@ export interface MetricValues {
 export interface Counts {
   // The value of the metric (summed over all failures).
   // 64-bit integer serialized as a string.
-  nominal: string | undefined;
+  nominal?: string;
 }
 
 export interface GetReclusteringProgressRequest {
@@ -104,7 +104,7 @@ export interface GetReclusteringProgressRequest {
 export interface ReclusteringProgress {
   // ProgressPerMille is the progress of the current re-clustering run,
   // measured in thousandths (per mille).
-  progressPerMille: number | undefined;
+  progressPerMille?: number;
   // Last is the goal of the last completed re-clustering run.
   last: ClusteringVersion;
   // Next is the goal of the current re-clustering run. (For which
@@ -137,7 +137,7 @@ export interface QueryClusterSummariesRequest {
 export type SortableMetricName = 'presubmit_rejects' | 'critical_failures_exonerated' | 'failures';
 
 export interface QueryClusterSummariesResponse {
-  clusterSummaries: ClusterSummary[] | null;
+  clusterSummaries?: ClusterSummary[];
 }
 
 export interface ClusterSummary {
@@ -147,18 +147,18 @@ export interface ClusterSummary {
   title: string;
   // The bug associated with the cluster. This is only present for
   // clusters defined by failure association rules.
-  bug: AssociatedBug | undefined;
+  bug?: AssociatedBug;
   // The number of distinct user CLs rejected by the cluster.
   // 64-bit integer serialized as a string.
-  presubmitRejects: string | undefined;
+  presubmitRejects?: string;
   // The number of failures that were critical (on builders critical
   // to CQ succeeding and not exonerated for non-criticality)
   // and exonerated.
   // 64-bit integer serialized as a string.
-  criticalFailuresExonerated: string | undefined;
+  criticalFailuresExonerated?: string;
   // The total number of test results in the cluster.
   // 64-bit integer serialized as a string.
-  failures: string | undefined;
+  failures?: string;
 }
 
 export interface QueryClusterFailuresRequest {
@@ -169,7 +169,7 @@ export interface QueryClusterFailuresRequest {
 
 export interface QueryClusterFailuresResponse {
   // Example failures in the cluster. Limited to 2000 rows.
-  failures: DistinctClusterFailure[] | undefined;
+  failures?: DistinctClusterFailure[];
 }
 
 // The reason a test result was exonerated.
@@ -221,8 +221,8 @@ export interface Exoneration {
 
 // Key/Value Variant pair that describes (part of) a way to run a test.
 export interface VariantPair {
-  key: string | undefined;
-  value: string | undefined;
+  key?: string;
+  value?: string;
 }
 
 export interface VariantDef {
@@ -236,8 +236,8 @@ export interface Variant {
 // Identity of a presubmit run.
 // Refer to weetbix.v1.PresubmitRunId for documentation.
 export interface PresubmitRunId {
-  system: string | undefined;
-  id: string | undefined;
+  system?: string;
+  id?: string;
 }
 
 // Refer to weetbix.v1.ClusterFailureGroup.PresubmitRun for documentation.
@@ -267,19 +267,19 @@ export interface DistinctClusterFailure {
   testId: string;
 
   // The test variant. Describes a way of running a test.
-  variant: Variant | undefined;
+  variant?: Variant;
 
   partitionTime: string; // RFC 3339 encoded date/time.
 
-  presubmitRun: PresubmitRun | undefined;
+  presubmitRun?: PresubmitRun;
 
   // Whether the build was critical to a presubmit run succeeding.
   // If the build was not part of a presubmit run, this field should
   // be ignored.
-  isBuildCritical: boolean | undefined;
+  isBuildCritical?: boolean;
 
   // The exonerations applied to the test variant verdict.
-  exonerations : Exoneration[] | undefined;
+  exonerations?: Exoneration[];
 
   // The status of the build that contained this test result. Can be used
   // to filter incomplete results (e.g. where build was cancelled or had
@@ -304,9 +304,9 @@ export interface DistinctClusterFailure {
   // Exoneration does not factor into this value; check exonerations
   // to see if the impact of this ingested invocation being blocked was
   // mitigated by exoneration.
-  isIngestedInvocationBlocked: boolean | undefined;
+  isIngestedInvocationBlocked?: boolean;
 
-  changelists: Changelist[] | undefined;
+  changelists?: Changelist[];
 
   // The number of test results in the group.
   count : number;

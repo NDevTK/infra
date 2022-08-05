@@ -39,7 +39,7 @@ export interface Project {
 }
 
 export interface ListProjectsResponse {
-    projects: Project[] | null
+    projects?: Project[];
 }
 
 export interface GetProjectConfigRequest {
