@@ -29,7 +29,7 @@ describe('test UserActions component', () => {
 
     expect(screen.getByRole('img')).toHaveAttribute('src', window.avatar);
     expect(screen.getByRole('img')).toHaveAttribute('alt', window.fullName);
-    expect(screen.getByText('Logout')).toHaveAttribute('href', window.logoutUrl);
+    expect(screen.getByTestId('useractions_logout')).toHaveAttribute('href', window.logoutUrl);
   });
 
   it('when clicking on email button then should display logout url', async () => {

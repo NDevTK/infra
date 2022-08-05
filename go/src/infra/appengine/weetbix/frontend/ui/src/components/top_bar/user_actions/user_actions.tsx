@@ -54,7 +54,7 @@ const UserActions = () => {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        <MenuItem component={MuiLink} href={window.logoutUrl} onClick={handleCloseUserMenu}>
+        <MenuItem data-testid="useractions_logout" component={MuiLink} href={window.logoutUrl} onClick={handleCloseUserMenu}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>

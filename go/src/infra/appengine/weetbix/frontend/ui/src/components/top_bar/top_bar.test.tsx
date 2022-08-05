@@ -5,7 +5,10 @@ import '@testing-library/jest-dom';
 
 import { screen } from '@testing-library/react';
 
-import { renderWithRouter } from '../../testing_tools/libs/mock_router';
+import {
+  renderWithRouter,
+  renderWithRouterAndClient,
+} from '../../testing_tools/libs/mock_router';
 import TopBar from './top_bar';
 
 describe('test TopBar component', () => {
@@ -21,20 +24,21 @@ describe('test TopBar component', () => {
         <TopBar />,
     );
 
-    await screen.findByText('Weetbix');
+    await screen.findAllByText('Weetbix');
 
     expect(screen.getByText(window.email)).toBeInTheDocument();
   });
 
   it('given a route with a project then should display pages', async () => {
-    renderWithRouter(
+    renderWithRouterAndClient(
         <TopBar />,
         '/p/chrome',
+        '/p/:project',
     );
 
-    await screen.findByText('Weetbix');
+    await screen.findAllByText('Weetbix');
 
-    expect(screen.getByText('Clusters')).toBeInTheDocument();
-    expect(screen.getByText('Rules')).toBeInTheDocument();
+    expect(screen.getAllByText('Clusters')).toHaveLength(2);
+    expect(screen.getAllByText('Rules')).toHaveLength(2);
   });
 });
