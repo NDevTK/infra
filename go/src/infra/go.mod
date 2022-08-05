@@ -55,7 +55,7 @@ require (
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20201029184154-594d11850ebf
 	go.opencensus.io v0.23.0
-	go.skia.org/infra v0.0.0-20220517204524-3e1e25eccba0
+	go.skia.org/infra v0.0.0-20220804201638-51bed25131db
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
@@ -63,7 +63,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
-	golang.org/x/time v0.0.0-20220411224347-583f2d630306
+	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
 	golang.org/x/tools v0.1.11-0.20220407163324-91bcfb1bdf9c
 	golang.org/x/tools/gopls v0.8.3
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df
@@ -78,10 +78,10 @@ require (
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
-	howett.net/plist v0.0.0-20201203080718-1454fab16a06
-	k8s.io/api v0.22.1
-	k8s.io/apimachinery v0.22.1
-	k8s.io/client-go v0.22.1
+	howett.net/plist v1.0.0
+	k8s.io/api v0.22.12
+	k8s.io/apimachinery v0.22.12
+	k8s.io/client-go v0.22.12
 	k8s.io/metrics v0.22.1
 	sigs.k8s.io/yaml v1.3.0
 )
@@ -117,7 +117,7 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v0.6.7 // indirect
 	github.com/fiorix/go-web v1.0.1-0.20150221144011-5b593f1e8966 // indirect
 	github.com/go-logr/logr v1.1.0 // indirect
-	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.0.0 // indirect
@@ -182,10 +182,10 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	honnef.co/go/tools v0.3.0 // indirect
 	k8s.io/klog/v2 v2.20.0 // indirect
-	k8s.io/utils v0.0.0-20210820185131-d34e5cb4466e // indirect
+	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
 	mvdan.cc/gofumpt v0.3.0 // indirect
 	mvdan.cc/xurls/v2 v2.4.0 // indirect
-	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.2.1 // indirect
 )
 
 // See https://github.com/google/cel-go/issues/441.
