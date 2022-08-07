@@ -68,8 +68,23 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
         <TableBody>
           {suspects.map((s) => (
             <TableRow>
-              <TableCell align="left">
-                <Link href={s.reviewUrl} target="_blank" rel="noopener">{s.reviewUrl}</Link>
+              <TableCell align='left'>
+                <Link
+                  href={s.reviewUrl}
+                  target='_blank'
+                  rel='noopener'
+                  onClick={() => {
+                    ga('send', {
+                      hitType: 'event',
+                      eventCategory: 'GoFindit',
+                      eventAction: 'ClickGerritLink',
+                      eventLabel: s.reviewUrl,
+                      transport: 'beacon',
+                    });
+                  }}
+                >
+                  {s.reviewUrl}
+                </Link>
               </TableCell>
               <TableCell align="left">{confidenceText(s.confidence_level)}</TableCell>
               <TableCell align="left">

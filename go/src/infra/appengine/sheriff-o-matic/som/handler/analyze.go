@@ -12,6 +12,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/appengine"
 
+	gofindit "infra/appengine/gofindit/proto"
 	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/model"
@@ -255,6 +256,11 @@ func attachGoFinditResults(c context.Context, failures []*messages.BuildFailure,
 				continue
 			}
 			bf.GoFinditResult = append(bf.GoFinditResult, res.Analyses...)
+			if len(res.Analyses) > 0 {
+				if res.Analyses[0].HeuristicResult != nil && res.Analyses[0].HeuristicResult.Status == gofindit.AnalysisStatus_FOUND {
+					logging.Infof(c, "Found GoFindit result for build %d", bbid)
+				}
+			}
 		}
 	}
 	if len(errs) > 0 {
