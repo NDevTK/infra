@@ -268,12 +268,12 @@ func getServoHostHostname(dut *inventory.DeviceUnderTest) (string, error) {
 // getDUTOverrideForTests is an override for tests only.
 //
 // Do not set this variable for any other purpose.
-var getDUTOverrideForTests func(context.Context, inventoryClient, string) (*inventory.DeviceUnderTest, error) = nil
+var getDUTOverrideForTests func(context.Context, string) (*inventory.DeviceUnderTest, error) = nil
 
 // getDUT returns the DUT associated with a particular hostname from datastore
 func getDUT(ctx context.Context, ic inventoryClient, hostname string) (*inventory.DeviceUnderTest, error) {
 	if getDUTOverrideForTests != nil {
-		return getDUTOverrideForTests(ctx, ic, hostname)
+		return getDUTOverrideForTests(ctx, hostname)
 	}
 
 	// Call UFS directly to get DUT info, if fails, falling back to use the old workflow

@@ -27,7 +27,6 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/inventory"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/libs/skylab/inventory"
 )
@@ -85,9 +84,9 @@ func TestGetStableVersion(t *testing.T) {
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
-		// use a fake beaglebone servo
-		duts := []*inventory.DeviceUnderTest{
-			{
+		oldGetDUTOverrideForTests := getDUTOverrideForTests
+		getDUTOverrideForTests = func(_ context.Context, _ string) (*inventory.DeviceUnderTest, error) {
+			return &inventory.DeviceUnderTest{
 				Common: &inventory.CommonDeviceSpecs{
 					Attributes: []*inventory.KeyValue{
 						{
@@ -102,13 +101,13 @@ func TestGetStableVersion(t *testing.T) {
 						Board: strptr("xxx-build-target"),
 					},
 				},
-			},
+			}, nil
 		}
+		defer func() {
+			getDUTOverrideForTests = oldGetDUTOverrideForTests
+		}()
 
-		err := dsinventory.UpdateDUTs(ctx, duts)
-		So(err, ShouldBeNil)
-
-		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
+		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
 		So(err, ShouldBeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, beagleboneServo, beagleboneServo, "xxx-beaglebone-cros-version")
 		So(err, ShouldBeNil)
@@ -137,40 +136,45 @@ func TestGetStableVersion(t *testing.T) {
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
-		// use a fake labstation
-		duts := []*inventory.DeviceUnderTest{
-			{
-				Common: &inventory.CommonDeviceSpecs{
-					Attributes: []*inventory.KeyValue{
-						{
-							Key:   strptr("servo_host"),
-							Value: strptr("xxx-labstation"),
+		oldGetDUTOverrideForTests := getDUTOverrideForTests
+		getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+			if hostname == "xxx-hostname" {
+				return &inventory.DeviceUnderTest{
+					Common: &inventory.CommonDeviceSpecs{
+						Attributes: []*inventory.KeyValue{
+							{
+								Key:   strptr("servo_host"),
+								Value: strptr("xxx-labstation"),
+							},
+						},
+						Id:       strptr("xxx-id"),
+						Hostname: strptr("xxx-hostname"),
+						Labels: &inventory.SchedulableLabels{
+							Model: strptr("xxx-model"),
+							Board: strptr("xxx-build-target"),
 						},
 					},
-					Id:       strptr("xxx-id"),
-					Hostname: strptr("xxx-hostname"),
-					Labels: &inventory.SchedulableLabels{
-						Model: strptr("xxx-model"),
-						Board: strptr("xxx-build-target"),
+				}, nil
+			}
+			if hostname == "xxx-labstation" {
+				return &inventory.DeviceUnderTest{
+					Common: &inventory.CommonDeviceSpecs{
+						Id:       strptr("xxx-labstation-id"),
+						Hostname: strptr("xxx-labstation"),
+						Labels: &inventory.SchedulableLabels{
+							Model: strptr("xxx-labstation-model"),
+							Board: strptr("xxx-labstation-board"),
+						},
 					},
-				},
-			},
-			{
-				Common: &inventory.CommonDeviceSpecs{
-					Id:       strptr("xxx-labstation-id"),
-					Hostname: strptr("xxx-labstation"),
-					Labels: &inventory.SchedulableLabels{
-						Model: strptr("xxx-labstation-model"),
-						Board: strptr("xxx-labstation-board"),
-					},
-				},
-			},
+				}, nil
+			}
+			return nil, nil
 		}
+		defer func() {
+			getDUTOverrideForTests = oldGetDUTOverrideForTests
+		}()
 
-		err := dsinventory.UpdateDUTs(ctx, duts)
-		So(err, ShouldBeNil)
-
-		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
+		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
 		So(err, ShouldBeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-cros-version")
 		So(err, ShouldBeNil)
@@ -199,40 +203,45 @@ func TestGetStableVersion(t *testing.T) {
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
-		// use a fake labstation
-		duts := []*inventory.DeviceUnderTest{
-			{
-				Common: &inventory.CommonDeviceSpecs{
-					Attributes: []*inventory.KeyValue{
-						{
-							Key:   strptr("servo_host"),
-							Value: strptr("xxx-labstation"),
+		oldGetDUTOverrideForTests := getDUTOverrideForTests
+		getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+			if hostname == "xxx-hostname" {
+				return &inventory.DeviceUnderTest{
+					Common: &inventory.CommonDeviceSpecs{
+						Attributes: []*inventory.KeyValue{
+							{
+								Key:   strptr("servo_host"),
+								Value: strptr("xxx-labstation"),
+							},
+						},
+						Id:       strptr("xxx-id"),
+						Hostname: strptr("xxx-hostname"),
+						Labels: &inventory.SchedulableLabels{
+							Model: strptr("xxx-model"),
+							Board: strptr("xxx-build-target"),
 						},
 					},
-					Id:       strptr("xxx-id"),
-					Hostname: strptr("xxx-hostname"),
-					Labels: &inventory.SchedulableLabels{
-						Model: strptr("xxx-model"),
-						Board: strptr("xxx-build-target"),
+				}, nil
+			}
+			if hostname == "xxx-labstation" {
+				return &inventory.DeviceUnderTest{
+					Common: &inventory.CommonDeviceSpecs{
+						Id:       strptr("xxx-labstation-id"),
+						Hostname: strptr("xxx-labstation"),
+						Labels: &inventory.SchedulableLabels{
+							Model: strptr("xxx-labstation-model"),
+							Board: strptr("xxx-labstation-board"),
+						},
 					},
-				},
-			},
-			{
-				Common: &inventory.CommonDeviceSpecs{
-					Id:       strptr("xxx-labstation-id"),
-					Hostname: strptr("xxx-labstation"),
-					Labels: &inventory.SchedulableLabels{
-						Model: strptr("xxx-labstation-model"),
-						Board: strptr("xxx-labstation-board"),
-					},
-				},
-			},
+				}, nil
+			}
+			return nil, nil
 		}
+		defer func() {
+			getDUTOverrideForTests = oldGetDUTOverrideForTests
+		}()
 
-		err := dsinventory.UpdateDUTs(ctx, duts)
-		So(err, ShouldBeNil)
-
-		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
+		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
 		So(err, ShouldBeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-cros-version")
 		So(err, ShouldBeNil)
@@ -264,9 +273,9 @@ func TestGetStableVersion(t *testing.T) {
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
-		// use a fake beaglebone servo
-		duts := []*inventory.DeviceUnderTest{
-			{
+		oldGetDUTOverrideForTests := getDUTOverrideForTests
+		getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+			return &inventory.DeviceUnderTest{
 				Common: &inventory.CommonDeviceSpecs{
 					Attributes: []*inventory.KeyValue{
 						{
@@ -281,13 +290,13 @@ func TestGetStableVersion(t *testing.T) {
 						Board: strptr("xxx-build-target"),
 					},
 				},
-			},
+			}, nil
 		}
+		defer func() {
+			getDUTOverrideForTests = oldGetDUTOverrideForTests
+		}()
 
-		err := dsinventory.UpdateDUTs(ctx, duts)
-		So(err, ShouldBeNil)
-
-		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
+		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
 		So(err, ShouldBeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, beagleboneServo, "", "xxx-beaglebone-cros-version")
 		So(err, ShouldBeNil)
@@ -317,9 +326,9 @@ func TestGetStableVersion(t *testing.T) {
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
-		// use a fake labstation
-		duts := []*inventory.DeviceUnderTest{
-			{
+		oldGetDUTOverrideForTests := getDUTOverrideForTests
+		getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+			return &inventory.DeviceUnderTest{
 				Common: &inventory.CommonDeviceSpecs{
 					Attributes: []*inventory.KeyValue{
 						{
@@ -334,13 +343,13 @@ func TestGetStableVersion(t *testing.T) {
 						Board: strptr("xxx-build-target"),
 					},
 				},
-			},
+			}, nil
 		}
+		defer func() {
+			getDUTOverrideForTests = oldGetDUTOverrideForTests
+		}()
 
-		err := dsinventory.UpdateDUTs(ctx, duts)
-		So(err, ShouldBeNil)
-
-		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
+		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
 		So(err, ShouldBeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-cros-version")
 		So(err, ShouldBeNil)

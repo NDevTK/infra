@@ -24,7 +24,6 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/inventory"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
 	"infra/libs/skylab/inventory"
@@ -102,7 +101,7 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelWithHostnameLookup(
 	hostname := "satlab-h1"
 
 	oldGetDUTOverrideForTests := getDUTOverrideForTests
-	getDUTOverrideForTests = func(_ context.Context, _ inventoryClient, _ string) (*inventory.DeviceUnderTest, error) {
+	getDUTOverrideForTests = func(_ context.Context, _ string) (*inventory.DeviceUnderTest, error) {
 		return &inventory.DeviceUnderTest{
 			Common: &inventory.CommonDeviceSpecs{
 				Labels: &inventory.SchedulableLabels{
@@ -233,8 +232,9 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelFallback(t *testing
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 
-	duts := []*inventory.DeviceUnderTest{
-		{
+	oldGetDUTOverrideForTests := getDUTOverrideForTests
+	getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+		return &inventory.DeviceUnderTest{
 			Common: &inventory.CommonDeviceSpecs{
 				Attributes: []*inventory.KeyValue{},
 				Id:         strptr("id"),
@@ -244,12 +244,11 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelFallback(t *testing
 					Board: strptr("b"),
 				},
 			},
-		},
+		}, nil
 	}
-
-	if err := dsinventory.UpdateDUTs(ctx, duts); err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	defer func() {
+		getDUTOverrideForTests = oldGetDUTOverrideForTests
+	}()
 
 	if err := dssv.PutSingleCrosStableVersion(ctx, "b", "m", "c"); err != nil {
 		t.Errorf("unexpected error: %s", err)

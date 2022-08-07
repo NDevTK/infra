@@ -18,13 +18,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/libs/skylab/inventory"
 )
 
 const (
@@ -38,28 +36,6 @@ type DeviceUnderTest struct {
 	Data []byte
 	// Updated is the last time Data was refreshed from the source-of-truth.
 	Updated time.Time
-}
-
-// UpdateDUTs updates the datastore cache of DUT inventory.
-func UpdateDUTs(ctx context.Context, duts []*inventory.DeviceUnderTest) error {
-	now := time.Now().UTC()
-	es := make([]*dutEntity, 0, len(duts))
-	for _, d := range duts {
-		data, err := proto.Marshal(d)
-		if err != nil {
-			return errors.Annotate(err, "update dut with ID %s", d.GetCommon().GetId()).Err()
-		}
-		es = append(es, &dutEntity{
-			ID:       d.GetCommon().GetId(),
-			Hostname: d.GetCommon().GetHostname(),
-			Updated:  now,
-			Data:     data,
-		})
-	}
-	if err := datastore.Put(ctx, es); err != nil {
-		return errors.Annotate(err, "update duts").Err()
-	}
-	return nil
 }
 
 // GetSerializedDUTByID gets the cached, serialized, inventory.DeviceUnderTest for a DUT.
