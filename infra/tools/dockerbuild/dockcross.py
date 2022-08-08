@@ -164,7 +164,7 @@ class Builder(object):
         system=self._system,
         platform=plat,
         bin=os.path.join(self._system.bin_dir,
-                         'dockcross-%s-v2' % (plat.name,)),
+                         'dockcross-%s-v3' % (plat.name,)),
         docker_image=DockerImage(
             name='infra-dockerbuild/%s' % (plat.name,),
             tag=self.DOCKER_IMAGE_TAG,
@@ -240,6 +240,10 @@ class Builder(object):
           ],
                               stdout=script_tmp)
 
+          # Local modifications to the generated script:
+          # - allow passing in a specific container name
+          # - remove the docker --platform flag, which is not supported on
+          #   all of our docker installations.
           # Modify the generated script so that we can pass in a container name.
           script_tmp.seek(0)
           with open(dx.bin, 'w') as fd:
@@ -247,7 +251,8 @@ class Builder(object):
               line = line.decode()
               if line.startswith('CONTAINER_NAME='):
                 line = 'CONTAINER_NAME=${CONTAINER_NAME:-dockcross_$RANDOM}\n'
-              fd.write(line)
+              if not line.startswith('    --platform '):
+                fd.write(line)
 
         # Make the generated script executable.
         st = os.stat(dx.bin)
