@@ -20,16 +20,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 )
 
-// defaultExcludePrefixes excludes parts of Xcode.app that are not necessary
-// when uploading Xcode contents. Specifically, it excludes unused platforms like
-// AppleTVOS and WatchOS, documentation. It also excludes iOS simulator runtime
-// which will be packaged separately.
+// defaultExcludePrefixes excludes the iOS simulator runtime which will be
+// packaged separately. In the past this has excluded parts of Xcode.app that
+// are not necessary when uploading Xcode contents, but as each release of Xcode
+// may change what is required, proceed with caution before adding new folders
+// to exclude.
 var defaultExcludePrefixes = []string{
-	"Contents/Applications",
-	"Contents/Developer/Platforms/AppleTVOS.platform",
-	"Contents/Developer/Platforms/AppleTVSimulator.platform",
-	"Contents/Developer/Platforms/WatchOS.platform",
-	"Contents/Developer/Platforms/WatchSimulator.platform",
 	XcodeIOSSimulatorRuntimeRelPath,
 }
 
