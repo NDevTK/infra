@@ -22,6 +22,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	libsv "infra/cros/stableversion"
 )
@@ -78,6 +80,9 @@ func GetCrosStableVersion(ctx context.Context, buildTarget string, model string)
 	// fall back to looking up stable version by build target alone.
 	entity = &crosStableVersionEntity{ID: libsv.FallbackBuildTargetKey(buildTarget)}
 	if err := datastore.Get(ctx, entity); err != nil {
+		if datastore.IsErrNoSuchEntity(err) {
+			return "", status.Errorf(codes.NotFound, fmt.Sprintf("Entity not found for %s", key))
+		}
 		return "", errors.Annotate(err, "GetCrosStableVersion").Err()
 	}
 	return entity.Cros, nil
@@ -114,6 +119,9 @@ func GetFirmwareStableVersion(ctx context.Context, buildTarget string, model str
 	}
 	entity := &firmwareStableVersionEntity{ID: key}
 	if err := datastore.Get(ctx, entity); err != nil {
+		if datastore.IsErrNoSuchEntity(err) {
+			return "", status.Errorf(codes.NotFound, fmt.Sprintf("Entity not found for %s", key))
+		}
 		return "", errors.Annotate(err, "GetFirmwareStableVersion").Err()
 	}
 	return entity.Firmware, nil
@@ -149,6 +157,9 @@ func GetFaftStableVersion(ctx context.Context, buildTarget string, model string)
 	}
 	entity := &faftStableVersionEntity{ID: key}
 	if err := datastore.Get(ctx, entity); err != nil {
+		if datastore.IsErrNoSuchEntity(err) {
+			return "", status.Errorf(codes.NotFound, fmt.Sprintf("Entity not found for %s", key))
+		}
 		return "", errors.Annotate(err, "GetFaftStableVersion").Err()
 	}
 	return entity.Faft, nil

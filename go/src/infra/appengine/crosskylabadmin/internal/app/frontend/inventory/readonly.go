@@ -184,6 +184,8 @@ func getStableVersionImplNoHostname(ctx context.Context, buildTarget string, mod
 	out.FaftVersion, err = dssv.GetFaftStableVersion(ctx, buildTarget, model)
 	if err != nil {
 		logging.Infof(ctx, "faft stable version does not exist: %#v", err)
+	} else {
+		logging.Infof(ctx, "Got faft stable version %s from datastore", out.FaftVersion)
 	}
 	// successful early exit if we have a beaglebone servo
 	if buildTarget == beagleboneServo || model == beagleboneServo {
