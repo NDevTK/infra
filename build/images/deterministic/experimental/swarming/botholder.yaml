@@ -1,0 +1,12 @@
+name: experimental/swarming/botholder
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/infra/experimental/swarming/botholder/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/infra/experimental/swarming/botholder
+
+build:
+  - go_binary: infra/experimental/swarming/botholder
+    dest: ${contextdir}/botholder
