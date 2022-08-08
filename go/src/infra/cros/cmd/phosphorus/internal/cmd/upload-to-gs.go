@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -122,6 +123,14 @@ func runGSUploadStep(ctx context.Context, authFlags authcli.Flags, r *phosphorus
 	wCtx, cancel := context.WithTimeout(ctx, time.Hour)
 	defer cancel()
 
+	// Print usage of local path before writing
+	cmd := exec.Command("sudo", "du", "-h", "--max-depth=1", localPath)
+	output, err := cmd.Output()
+	if err != nil {
+		logging.Infof(ctx, "Error while cmd %q: %s", cmd.String(), err.Error())
+	} else {
+		logging.Infof(ctx, "Usage of path %q: \n%s", localPath, output)
+	}
 	if err = w.WriteDir(wCtx, localPath, path); err != nil {
 		logging.Infof(ctx, "Writing local dir %q to GS path %q failed", localPath, path)
 		logging.Infof(ctx, "Dir list in local path: %s", dirList(localPath))
