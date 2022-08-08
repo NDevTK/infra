@@ -175,33 +175,6 @@ func (r *Reader) ValidateConfig(ctx context.Context, sv *labPlatform.StableVersi
 		}
 		cfgCrosVersions[combined] = version
 	}
-	for _, item := range sv.GetFirmware() {
-		bt := item.GetKey().GetBuildTarget().GetName()
-		model := item.GetKey().GetModelId().GetValue()
-		cfgVersion := item.GetVersion()
-
-		if !isLowercase(bt) || !isLowercase(model) {
-			out.NonLowercaseEntries = append(out.NonLowercaseEntries, fmt.Sprintf("%s;%s", bt, model))
-			continue
-		}
-
-		cfgCrosVersion, ok := cfgCrosVersions[fmt.Sprintf("%s;%s", bt, model)]
-		if !ok {
-			out.FailedToLookup = append(out.FailedToLookup, &BoardModel{bt, model})
-			continue
-		}
-
-		realVersion, err := r.getFirmwareVersion(ctx, bt, model, cfgCrosVersion)
-
-		if err != nil {
-			out.FailedToLookup = append(out.FailedToLookup, &BoardModel{bt, model})
-			continue
-		}
-		if cfgVersion != realVersion {
-			out.InvalidVersions = append(out.InvalidVersions, &VersionMismatch{bt, model, realVersion, cfgVersion})
-			continue
-		}
-	}
 	// Confirm that all faft firmware bundles exist.
 	for _, item := range sv.GetFaft() {
 		bt := item.GetKey().GetBuildTarget().GetName()

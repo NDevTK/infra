@@ -255,33 +255,6 @@ var testValidateConfigData = []struct {
 		NOERROR,
 	},
 	{
-		"one nonexistent firmware version",
-		"ee6a1776-78b3-4e8f-a4ce-a298bc5428d8",
-		exampleMetadataJSON,
-		`{
-			"firmware": [
-				{
-					"key": {
-						"modelId": {"value": "nonexistent-model"},
-						"buildTarget": {"name": "nonexistent-board"}
-					},
-					"version": "Google_Nami.52.53.54"
-				}
-			]
-		}`,
-		`{
-			"missing_boards": null,
-			"failed_to_lookup": [
-				{
-					"build_target": "nonexistent-board",
-					"model": "nonexistent-model"
-				}
-			],
-			"invalid_versions": null
-		}`,
-		NOERROR,
-	},
-	{
 		"one nonexistent chrome os version",
 		"fab84b16-288d-44f0-b489-3712f8c14ad3",
 		exampleMetadataJSON,
