@@ -13,6 +13,7 @@ CANCELED = 40
 EXPIRED = 50
 TIMED_OUT = 60
 NO_RESOURCE = 70
+CLIENT_ERROR = 80
 
 STATES_NOT_RUNNING_TO_ERROR_CODES = {
     'BOT_DIED': BOT_DIED,
@@ -20,6 +21,7 @@ STATES_NOT_RUNNING_TO_ERROR_CODES = {
     'EXPIRED': EXPIRED,
     'TIMED_OUT': TIMED_OUT,
     'NO_RESOURCE': NO_RESOURCE,
+    'CLIENT_ERROR': CLIENT_ERROR,
 }
 
 # Customized error codes when getting results of a task.
@@ -43,6 +45,7 @@ ERROR_CODE_TO_MESSAGE = {
     CANCELED: 'CANCELED',
     EXPIRED: 'EXPIRED',
     TIMED_OUT: 'TIMED_OUT',
+    CLIENT_ERROR: 'An error was caused by the client',
     RUNNER_TIMEOUT: 'Runner to run swarming task timed out',
     NO_TASK_OUTPUTS: 'outputs_ref is None',
     NO_OUTPUT_JSON: 'No swarming task failure log',
