@@ -182,7 +182,7 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "cros_validate_uptime",
 				ExecExtraArgs: []string{
-					"max_duration:96h",
+					"max_duration:96",
 				},
 				RecoveryActions: []string{
 					"Simple reboot and wait",

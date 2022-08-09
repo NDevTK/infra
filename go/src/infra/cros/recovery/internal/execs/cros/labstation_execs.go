@@ -7,7 +7,6 @@ package cros
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -31,25 +30,26 @@ func cleanTmpOwnerRequestExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "clear tpm owner request").Err()
 }
 
-// validateUptime validate that host is up for more than 6 hours.
+// validateUptime validate that host is up for more than a threshold
+// number of hours.
 func validateUptime(ctx context.Context, info *execs.ExecInfo) error {
-	maxUptime := minLabstationUptime
-	for _, arg := range info.ActionArgs {
-		if strings.HasPrefix(arg, "max_duration:") {
-			d, err := time.ParseDuration(strings.Split(arg, ":")[1])
-			if err != nil {
-				return errors.Annotate(err, "validate uptime: parse action args").Err()
-			}
-			maxUptime = d
-		}
+	argsMap := info.GetActionArgs(ctx)
+	maxDuration := argsMap.AsDuration(ctx, "max_duration", 0, time.Hour)
+	minDuration := argsMap.AsDuration(ctx, "min_duration", 0, time.Hour)
+	if maxDuration == 0 && minDuration == 0 {
+		return errors.Reason("validate uptime: neither min nor max duration is specified").Err()
 	}
 	dur, err := uptime(ctx, info.DefaultRunner())
 	if err != nil {
 		return errors.Annotate(err, "validate uptime").Err()
 	}
-	if *dur < maxUptime {
-		return errors.Reason("validate uptime: only %s is up", dur).Err()
+	if maxDuration != 0 && *dur >= maxDuration {
+		return errors.Reason("validate uptime: uptime %s equals or exceeds the expected maximum threshold %s", dur, maxDuration).Err()
 	}
+	if minDuration != 0 && *dur < minDuration {
+		return errors.Reason("validate uptime: uptime %s is less than the expected minimum threshold %s", dur, minDuration).Err()
+	}
+	log.Debugf(ctx, "Validate Uptime: current uptime: %s, min threshold: %s, max threshold: %s: all good.", dur, minDuration, maxDuration)
 	return nil
 }
 
