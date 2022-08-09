@@ -1132,6 +1132,32 @@ func crosRepairActions() map[string]*Action {
 				"Download stable image to USB-key",
 			},
 		},
+		"Stable version image is missing from servo usbkey": {
+			Docs: []string{
+				"This is a reverse action which fails when required image is already cached in servo usbkey.",
+				"The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
+				"If this action fails, it means the servo usbkey already have required stable_version OS image cached.",
+			},
+			Conditions: []string{
+				"servo_usbkey_has_stable_image",
+			},
+			ExecName: "sample_fail",
+		},
+		"Download stable version OS image to servo usbkey if necessary": {
+			Docs: []string{
+				"This action will download model specific stable version OS image to servo usbkey.",
+				"The action will be skipped if the required image is already loaded.",
+			},
+			Conditions: []string{
+				"Stable version image is missing from servo usbkey",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+				"servo_servod_echo_host",
+			},
+			ExecName:    "servo_download_image_to_usb",
+			ExecTimeout: &durationpb.Duration{Seconds: 3000},
+		},
 		"Download stable image to USB-key": {
 			Docs: []string{
 				"Download lab stable image on servo USB-key",
@@ -1532,7 +1558,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
-				"Servo has USB-key with require image",
+				"Download stable version OS image to servo usbkey if necessary",
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
@@ -1543,6 +1569,7 @@ func crosRepairActions() map[string]*Action {
 				"halt_timeout:120",
 				"install_timeout:1200",
 				"tpm_reset_timeout:60",
+				"post_install_boot_time:60",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},

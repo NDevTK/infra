@@ -112,6 +112,10 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, logger); err != nil {
 		return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 	}
+	// Time to wait DUT boot up from post installation.
+	postInstallationBootTime := am.AsDuration(ctx, "post_install_boot_time", 60, time.Second)
+	logger.Debugf("Wait %s post installation for DUT to boot up.", postInstallationBootTime)
+	time.Sleep(postInstallationBootTime)
 	return nil
 }
 
