@@ -1780,6 +1780,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Write factory-install-reset to file system",
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
 				"Quick provision OS",
 			},
 			ExecName: "sample_pass",
