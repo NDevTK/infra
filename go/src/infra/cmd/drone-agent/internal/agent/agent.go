@@ -184,6 +184,8 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 		case <-time.After(a.ReportingInterval):
 		case <-readyToExit:
 			return nil
+		case <-ctx.Done():
+			return fmt.Errorf("report to queen: context cancelled")
 		}
 		a.log("Reporting to queen")
 		if err := a.reportDrone(ctx, s); err != nil {
