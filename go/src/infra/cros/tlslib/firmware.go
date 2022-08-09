@@ -53,16 +53,25 @@ func getAvailableFirmwareVersion(c *ssh.Client) (string, error) {
 	if err := json.Unmarshal([]byte(out), &manifest); err != nil {
 		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to unmarshal firmware manifest, %s", err)
 	}
-	fwModel, err := runCmdOutput(c, "crosid | grep FIRMWARE_MANIFEST_KEY | cut -d\"'\" -f2")
+	fwModel, err := getFirmwareTarget(c)
 	if err != nil {
-		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get FIRMWARE_MANIFEST_KEY, %s", err)
+		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware target %s", err)
 	}
-	fwModel = strings.TrimSuffix(fwModel, "\n")
 	if data, ok := manifest[fwModel]; ok {
 		log.Printf("Available firmware from the new OS: %s.", data.Host.Versions.Rw)
 		return data.Host.Versions.Rw, nil
 	}
 	return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware data of key %s from manifest, %s", fwModel, err)
+}
+
+// getFirmwareTarget returns firmware target of the DUT, which will be used to as key to fetch expected firmware from manifest.
+func getFirmwareTarget(c *ssh.Client) (string, error) {
+	out, err := runCmdOutput(c, "crosid | grep FIRMWARE_MANIFEST_KEY | cut -d\"'\" -f2")
+	if err == nil && out != "" {
+		return strings.TrimSuffix(out, "\n"), nil
+	}
+	log.Printf("getFirmwareTarget: failed to get FIRMWARE_MANIFEST_KEY from crosid, fallback to use cros_config.")
+	return runCmdOutput(c, "cros_config / name")
 }
 
 // getCurrentFirmwareVersion read current system firmware version on the DUT.
