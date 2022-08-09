@@ -14,11 +14,16 @@ create {
       tag_filter_re: "v[0-9.]*$"
     }
     cpe_base_address: "cpe:/a:cmake_project:cmake"
+    patch_version: "chromium.1"
   }
 
   build {
     tool: "build_support/cmake_bootstrap"
     tool: "tools/ninja"
+  }
+
+  package {
+    version_file: ".versions/cmake.cipd_version"
   }
 }
 
