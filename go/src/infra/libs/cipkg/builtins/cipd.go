@@ -122,7 +122,7 @@ func cipdEnsure(ctx context.Context, cmd *exec.Cmd) error {
 		for root, action := range actionMap {
 			errorCount += len(action.Errors)
 			for _, err := range action.Errors {
-				fmt.Fprintf(cmd.Stderr, "cipd root %q action %q for pin %q encountered error: %s", root, err.Action, err.Pin, err)
+				fmt.Fprintf(cmd.Stderr, "cipd root %q action %q for pin %q encountered error: %s", root, err.Action, err.Pin, err.Error)
 			}
 		}
 		if errorCount > 0 {
