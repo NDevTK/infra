@@ -11,5 +11,8 @@ import (
 // RegisterRoutes registers routes explicitly handled by the handler.
 func (h *Handlers) RegisterRoutes(r *router.Router, mw router.MiddlewareChain) {
 	r.GET("/api/authState", mw, h.GetAuthState)
+	r.GET("/lab", mw, h.IndexPage)
+	r.GET("/resources", mw, h.IndexPage)
+	r.GET("/assetInstances", mw, h.IndexPage)
 	r.GET("/", mw, h.IndexPage)
 }
