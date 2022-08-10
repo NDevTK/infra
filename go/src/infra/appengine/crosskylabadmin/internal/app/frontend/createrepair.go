@@ -19,7 +19,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
@@ -254,7 +254,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 // CreateLegacyRepairTask creates a legacy repair task for a labstation.
 func createLegacyRepairTask(ctx context.Context, botID string, expectedState string) (string, error) {
 	logging.Infof(ctx, "Using legacy repair flow for bot %q", botID)
-	at := worker.AdminTaskForType(ctx, fleet.TaskType_Repair)
+	at := util.AdminTaskForType(ctx, fleet.TaskType_Repair)
 	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to obtain swarming client").Err()

@@ -21,7 +21,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 )
 
 func TestRunTaskByBotID(t *testing.T) {
@@ -30,7 +30,7 @@ func TestRunTaskByBotID(t *testing.T) {
 		defer validate()
 
 		expectTaskCreationForDUT(tf, "task1", "bot_id", "state1", 5, 15)
-		at := worker.AdminTaskForType(tf.C, fleet.TaskType_Repair)
+		at := util.AdminTaskForType(tf.C, fleet.TaskType_Repair)
 		taskURL, err := runTaskByBotID(tf.C, at, tf.MockSwarming, "bot_id", "state1", 5, 15)
 		So(err, ShouldBeNil)
 		So(taskURL, ShouldContainSubstring, "task1")
@@ -39,7 +39,7 @@ func TestRunTaskByBotID(t *testing.T) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 		expectTaskCreationForDUT(tf, "task1", "bot_id", "", 7200, 7200)
-		at := worker.AuditTaskWithActions(tf.C, "MyTask", "action1,action2")
+		at := util.AuditTaskWithActions(tf.C, "MyTask", "action1,action2")
 		So(len(at.Cmd), ShouldEqual, 7)
 		So(at.Cmd[0], ShouldEqual, "/opt/infra-tools/skylab_swarming_worker")
 		So(at.Cmd[1], ShouldEqual, "-actions")

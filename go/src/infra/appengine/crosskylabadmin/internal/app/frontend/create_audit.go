@@ -14,7 +14,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/common/heuristics"
@@ -46,7 +46,7 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 
 // createLegacyAuditTask kicks off a legacy audit job.
 func createLegacyAuditTask(ctx context.Context, botID string, taskname string, actions string) (string, error) {
-	at := worker.AuditTaskWithActions(ctx, taskname, actions)
+	at := util.AuditTaskWithActions(ctx, taskname, actions)
 	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to obtain swarming client").Err()

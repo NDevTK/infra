@@ -31,7 +31,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	swarming_utils "infra/appengine/crosskylabadmin/internal/app/frontend/swarming"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/cros/lab_inventory/utilization"
 )
 
@@ -292,13 +292,13 @@ var dutStatesForRepairTask = map[fleet.DutState]bool{
 func identifyBotsForRepair(ctx context.Context, bots []*swarming.SwarmingRpcsBotInfo) (repairBOTs []string) {
 	repairBOTs = make([]string, 0, len(bots))
 	for _, b := range bots {
-		dims := swarming_utils.DimensionsMap(b.Dimensions)
-		os, err := swarming_utils.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
+		dims := util.DimensionsMap(b.Dimensions)
+		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 		// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
 		if err == nil && os == "OS_TYPE_LABSTATION" {
 			continue
 		}
-		id, err := swarming_utils.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
+		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
 			continue
@@ -318,14 +318,14 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarming.SwarmingRpcsBotI
 	logging.Infof(ctx, "Filtering bots for task: %s", auditTask)
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
-		dims := swarming_utils.DimensionsMap(b.Dimensions)
-		os, err := swarming_utils.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
+		dims := util.DimensionsMap(b.Dimensions)
+		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 		// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
 		if err == nil && os == "OS_TYPE_LABSTATION" {
 			continue
 		}
 
-		id, err := swarming_utils.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
+		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
 			continue
@@ -339,13 +339,13 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarming.SwarmingRpcsBotI
 			// 	continue
 			// }
 		case fleet.AuditTask_DUTStorage:
-			state := swarming_utils.ExtractBotState(b).StorageState
+			state := util.ExtractBotState(b).StorageState
 			if len(state) > 0 && state[0] == "NEED_REPLACEMENT" {
 				logging.Infof(ctx, "Skipping BOT with id: %q as storage marked for replacement", b.BotId)
 				continue
 			}
 		case fleet.AuditTask_RPMConfig:
-			state := swarming_utils.ExtractBotState(b).RpmState
+			state := util.ExtractBotState(b).RpmState
 			if len(state) > 0 && state[0] != "UNKNOWN" {
 				// expecting that RPM is going through check everytime when we do any update on setup.
 				logging.Infof(ctx, "Skipping BOT with id: %q as RPM was already audited", b.BotId)
@@ -367,8 +367,8 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarming.SwarmingRpcsBotI
 func identifyLabstationsForRepair(ctx context.Context, bots []*swarming.SwarmingRpcsBotInfo) []string {
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
-		dims := swarming_utils.DimensionsMap(b.Dimensions)
-		os, err := swarming_utils.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
+		dims := util.DimensionsMap(b.Dimensions)
+		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
 			continue
@@ -376,7 +376,7 @@ func identifyLabstationsForRepair(ctx context.Context, bots []*swarming.Swarming
 			continue
 		}
 
-		id, err := swarming_utils.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
+		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
 			continue

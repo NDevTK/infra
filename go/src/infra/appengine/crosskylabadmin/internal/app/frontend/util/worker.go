@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package worker
+package util
 
 import (
 	"context"
@@ -45,26 +45,6 @@ func AdminTaskForType(ctx context.Context, ttype fleet.TaskType) Task {
 	cmd.Config(wrapped(config.Get(ctx)))
 	t := Task{
 		Name: taskName[ttype],
-		Cmd:  cmd.Args(),
-	}
-	if cmd.LogDogAnnotationURL != "" {
-		t.Tags = []string{fmt.Sprintf("log_location:%s", cmd.LogDogAnnotationURL)}
-	}
-	return t
-}
-
-// DeployTaskWithActions returns the information required to create a Skylab
-// task for `lucifer deploytask`.
-//
-// actions may be empty to run the default deploytask with no actions.
-func DeployTaskWithActions(ctx context.Context, actions string) Task {
-	cmd := worker.Command{
-		TaskName: "deploy",
-		Actions:  actions,
-	}
-	cmd.Config(wrapped(config.Get(ctx)))
-	t := Task{
-		Name: "deploy",
 		Cmd:  cmd.Args(),
 	}
 	if cmd.LogDogAnnotationURL != "" {

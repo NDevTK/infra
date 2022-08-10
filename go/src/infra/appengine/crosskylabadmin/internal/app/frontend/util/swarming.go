@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package swarming contains utilities for skylab swarming tasks.
-package swarming
+package util
 
 import (
 	"context"
@@ -43,22 +43,6 @@ func URLForTask(ctx context.Context, tid string) string {
 	}
 	q := u.Query()
 	q.Set("id", tid)
-	u.RawQuery = q.Encode()
-	return u.String()
-}
-
-// URLForTags returns the task URL for a given tag list.
-func URLForTags(ctx context.Context, tags []string) string {
-	cfg := config.Get(ctx)
-	u := url.URL{
-		Scheme: "https",
-		Host:   cfg.Swarming.Host,
-		Path:   "tasklist",
-	}
-	q := u.Query()
-	for _, t := range tags {
-		q.Add("f", t)
-	}
 	u.RawQuery = q.Encode()
 	return u.String()
 }

@@ -24,20 +24,19 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/swarming"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 )
 
-func runTaskByBotID(ctx context.Context, at worker.Task, sc clients.SwarmingClient, botID, expectedState string, expirationSecs, executionTimeoutSecs int64) (string, error) {
+func runTaskByBotID(ctx context.Context, at util.Task, sc clients.SwarmingClient, botID, expectedState string, expirationSecs, executionTimeoutSecs int64) (string, error) {
 	cfg := config.Get(ctx)
-	tags := swarming.AddCommonTags(
+	tags := util.AddCommonTags(
 		ctx,
 		fmt.Sprintf("%s:%s", at.Name, botID),
 		fmt.Sprintf("task:%s", at.Name),
 	)
 	tags = append(tags, at.Tags...)
 
-	a := swarming.SetCommonTaskArgs(ctx, &clients.SwarmingCreateTaskArgs{
+	a := util.SetCommonTaskArgs(ctx, &clients.SwarmingCreateTaskArgs{
 		Cmd:                  at.Cmd,
 		BotID:                botID,
 		ExecutionTimeoutSecs: executionTimeoutSecs,
@@ -53,7 +52,7 @@ func runTaskByBotID(ctx context.Context, at worker.Task, sc clients.SwarmingClie
 		return "", errors.Annotate(err, "failed to create task for bot %s", botID).Err()
 	}
 	logging.Infof(ctx, "successfully kick off task %s for bot %s", tid, botID)
-	return swarming.URLForTask(ctx, tid), nil
+	return util.URLForTask(ctx, tid), nil
 }
 
 var dutStateForTask = map[fleet.TaskType]string{
