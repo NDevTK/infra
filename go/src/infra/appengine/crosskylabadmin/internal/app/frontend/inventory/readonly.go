@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -45,20 +44,14 @@ func (is *ServerImpl) GetStableVersion(ctx context.Context, req *fleet.GetStable
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
 
-	ic, err := is.newInventoryClient(ctx)
-	if err != nil {
-		logging.Errorf(ctx, "Failed to create inventory client: %s", err.Error())
-		logging.Infof(ctx, "Fall back to legacy flow")
-		ic = nil
-	}
-	return getStableVersionImpl(ctx, ic, req.GetBuildTarget(), req.GetModel(), req.GetHostname(), req.GetSatlabInformationalQuery())
+	return getStableVersionImpl(ctx, req.GetBuildTarget(), req.GetModel(), req.GetHostname(), req.GetSatlabInformationalQuery())
 }
 
 // getSatlabStableVersion gets a stable version for a satlab device.
 //
 // It returns a full response if there's no error, and a boolean ok which determines whether the error should cause
 // the request to fail or not.
-func getSatlabStableVersion(ctx context.Context, ic inventoryClient, buildTarget string, model string, hostname string) (resp *fleet.GetStableVersionResponse, ok bool, e error) {
+func getSatlabStableVersion(ctx context.Context, buildTarget string, model string, hostname string) (resp *fleet.GetStableVersionResponse, ok bool, e error) {
 	logging.Infof(ctx, "using satlab flow board:%q model:%q host:%q", buildTarget, model, hostname)
 
 	if hostnameID := satlab.MakeSatlabStableVersionID(hostname, "", ""); hostnameID != "" {
@@ -83,7 +76,7 @@ func getSatlabStableVersion(ctx context.Context, ic inventoryClient, buildTarget
 
 	if hostname != "" && (buildTarget == "" || model == "") {
 		logging.Infof(ctx, "looking up inventory info for DUT host:%q board:%q model:%q in order to get board and model info", hostname, buildTarget, model)
-		dut, err := getDUT(ctx, ic, hostname)
+		dut, err := getDUT(ctx, hostname)
 		if err != nil {
 			return nil, false, status.Errorf(codes.NotFound, "get satlab: processing dut %q: %s", hostname, err)
 		}
@@ -119,13 +112,13 @@ func getSatlabStableVersion(ctx context.Context, ic inventoryClient, buildTarget
 // getStableVersionImpl returns all the stable versions associated with a given buildTarget and model
 // NOTE: hostname is explicitly allowed to be "". If hostname is "", then no hostname was provided in the GetStableVersion RPC call
 // ALSO NOTE: If the hostname is "", then we assume that the device is not a satlab device and therefore we should not fall back to satlab.
-func getStableVersionImpl(ctx context.Context, ic inventoryClient, buildTarget string, model string, hostname string, satlabInformationalQuery bool) (*fleet.GetStableVersionResponse, error) {
+func getStableVersionImpl(ctx context.Context, buildTarget string, model string, hostname string, satlabInformationalQuery bool) (*fleet.GetStableVersionResponse, error) {
 	logging.Infof(ctx, "getting stable version for buildTarget: %s and model: %s", buildTarget, model)
 
 	wantSatlab := heuristics.LooksLikeSatlabDevice(hostname) || satlabInformationalQuery
 
 	if wantSatlab {
-		resp, ok, err := getSatlabStableVersion(ctx, ic, buildTarget, model, hostname)
+		resp, ok, err := getSatlabStableVersion(ctx, buildTarget, model, hostname)
 		switch {
 		case err == nil:
 			return resp, nil
@@ -155,7 +148,7 @@ func getStableVersionImpl(ctx context.Context, ic inventoryClient, buildTarget s
 
 	// Default case, not a satlab device.
 	logging.Infof(ctx, "hostname (%s) provided, ignoring user-provided buildTarget (%s) and model (%s)", hostname, buildTarget, model)
-	out, err := getStableVersionImplWithHostname(ctx, ic, hostname)
+	out, err := getStableVersionImplWithHostname(ctx, hostname)
 	if err == nil {
 		msg := "looked up non-satlab device hostname %q"
 		if wantSatlab {
@@ -202,7 +195,7 @@ func getStableVersionImplNoHostname(ctx context.Context, buildTarget string, mod
 // getStableVersionImplWithHostname return stable version information given just a hostname
 // TODO(gregorynisbet): Consider under what circumstances an error leaving this function
 // should be considered transient or non-transient.
-func getStableVersionImplWithHostname(ctx context.Context, ic inventoryClient, hostname string) (*fleet.GetStableVersionResponse, error) {
+func getStableVersionImplWithHostname(ctx context.Context, hostname string) (*fleet.GetStableVersionResponse, error) {
 	var err error
 
 	// If the DUT in question is a labstation or a servo (i.e. is a servo host), then it does not have
@@ -211,7 +204,7 @@ func getStableVersionImplWithHostname(ctx context.Context, ic inventoryClient, h
 		return getStableVersionImplNoHostname(ctx, beagleboneServo, "")
 	}
 
-	dut, err := getDUT(ctx, ic, hostname)
+	dut, err := getDUT(ctx, hostname)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get DUT %q", dut).Err()
 	}
@@ -238,7 +231,7 @@ func getStableVersionImplWithHostname(ctx context.Context, ic inventoryClient, h
 		logging.Infof(ctx, "concluded servo hostname is fake %q", servoHostHostname)
 		return out, nil
 	}
-	servoStableVersion, err := getCrosVersionFromServoHost(ctx, ic, servoHostHostname)
+	servoStableVersion, err := getCrosVersionFromServoHost(ctx, servoHostHostname)
 	if err != nil {
 		return nil, errors.Annotate(err, "getting cros version from servo host %q", servoHostHostname).Err()
 	}
@@ -273,7 +266,7 @@ func getServoHostHostname(dut *inventory.DeviceUnderTest) (string, error) {
 var getDUTOverrideForTests func(context.Context, string) (*inventory.DeviceUnderTest, error) = nil
 
 // getDUT returns the DUT associated with a particular hostname from datastore
-func getDUT(ctx context.Context, ic inventoryClient, hostname string) (*inventory.DeviceUnderTest, error) {
+func getDUT(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
 	if getDUTOverrideForTests != nil {
 		return getDUTOverrideForTests(ctx, hostname)
 	}
@@ -282,25 +275,9 @@ func getDUT(ctx context.Context, ic inventoryClient, hostname string) (*inventor
 	dutV1, err := ufs.GetDutV1(ctx, hostname)
 	if err != nil {
 		logging.Infof(ctx, "getDUT: fail to get DUT info from UFS for host %s: %s", hostname, err)
-	} else {
-		return dutV1, err
+		return nil, err
 	}
-
-	logging.Infof(ctx, "getDUT: fallback to get DUT info from Inv2 for host %s", hostname)
-	if ic == nil {
-		return nil, errors.Reason("Inventory Client cannot be nil").Err()
-	}
-	resp, _, err := ic.getDutInfo(ctx, &fleet.GetDutInfoRequest{
-		Hostname: hostname,
-	})
-	if err != nil {
-		return nil, errors.Annotate(err, "getting serialized DUT by hostname for %q", hostname).Err()
-	}
-	dut := &inventory.DeviceUnderTest{}
-	if err := proto.Unmarshal(resp, dut); err != nil {
-		return nil, errors.Annotate(err, "unserializing DUT for hostname %q", hostname).Err()
-	}
-	return dut, nil
+	return dutV1, err
 }
 
 // This is a heuristic to check if something is a servo and might be wrong.
@@ -320,13 +297,13 @@ func looksLikeFakeServo(hostname string) bool {
 // NOTE: If hostname is "localhost", task is for Satlab Containerized servod.
 // NOTE: If hostname is "", this indicates the absence of a relevant servo host. This can happen if the DUT in question is already a labstation, for instance.
 // NOTE: The cros version will be empty "" if the labstation does not exist. Because we don't re-image labstations as part of repair, the absence of a stable CrOS version for a labstation is not an error.
-func getCrosVersionFromServoHost(ctx context.Context, ic inventoryClient, hostname string) (string, error) {
+func getCrosVersionFromServoHost(ctx context.Context, hostname string) (string, error) {
 	if hostname == "" || hostname == "localhost" {
 		logging.Infof(ctx, "Skipping getting cros version. Servo host hostname is %q", hostname)
 		return "", nil
 	}
 	if heuristics.LooksLikeLabstation(hostname) {
-		dut, err := getDUT(ctx, ic, hostname)
+		dut, err := getDUT(ctx, hostname)
 		if err != nil {
 			logging.Infof(ctx, "get labstation dut info; %s", err)
 			return "", nil
