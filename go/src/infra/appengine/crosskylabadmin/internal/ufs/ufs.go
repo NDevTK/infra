@@ -17,6 +17,7 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/site"
+	shivasUtils "infra/cmd/shivas/utils"
 	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/inventory"
 	models "infra/unifiedfleet/api/v1/models"
@@ -81,7 +82,11 @@ type GetPoolsClient interface {
 }
 
 // getPoolsForGenericDevice gets the pools for the generic device.
-func getPoolsForGenericDevice(ctx context.Context, client Client, botID string) ([]string, error) {
+func getPoolsForGenericDevice(ctx context.Context, client Client, botID string, namespace string) ([]string, error) {
+	if namespace == "" {
+		return nil, errors.Reason(`get pools for generic device %q: namespace cannot be ""`, namespace).Err()
+	}
+	ctx = shivasUtils.SetupContext(ctx, namespace)
 	res, err := client.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{
 		Hostname: heuristics.NormalizeBotNameToDeviceName(botID),
 	})
@@ -112,12 +117,12 @@ func GetPools(ctx context.Context, client Client, botID string) ([]string, error
 		return nil, errors.Reason("get pools: client cannot be nil").Err()
 	}
 
-	pools, err := getPoolsForGenericDevice(ctx, client, botID)
+	pools, err := getPoolsForGenericDevice(ctx, client, botID, ufsUtil.OSNamespace)
 	if err == nil {
-		logging.Infof(ctx, "Successfully got pools for generic device %q", botID)
+		logging.Infof(ctx, "Successfully got pools for generic device %q in namespace %q", botID, ufsUtil.OSNamespace)
 		return pools, err
 	} else {
-		logging.Infof(ctx, "Encountered error for bot %q: %s", botID, err)
+		logging.Infof(ctx, "Encountered error for bot %q and namespace %q: %s", botID, ufsUtil.OSNamespace, err)
 	}
 
 	res, err := client.GetChromeOSDeviceData(ctx, &ufsAPI.GetChromeOSDeviceDataRequest{
