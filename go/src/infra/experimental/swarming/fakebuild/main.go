@@ -34,7 +34,12 @@ func main() {
 }
 
 func sleepStep(ctx context.Context, inputs *fakebuildpb.Inputs, idx int) {
-	secs := inputs.SleepMinSec + rand.Int63n(inputs.SleepMaxSec-inputs.SleepMinSec)
+	var secs int64
+	if dt := inputs.SleepMaxSec - inputs.SleepMinSec; dt > 0 {
+		secs = inputs.SleepMinSec + rand.Int63n(dt)
+	} else {
+		secs = inputs.SleepMinSec
+	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Step %d: sleep %d", idx+1, secs))
 	defer func() { step.End(nil) }()
