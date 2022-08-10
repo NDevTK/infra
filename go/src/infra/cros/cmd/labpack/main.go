@@ -23,6 +23,7 @@ import (
 	lucigs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/cmd/labpack/internal/site"
 	steps "infra/cros/cmd/labpack/internal/steps"
@@ -68,6 +69,13 @@ func main() {
 			// Set the log (via the Go standard library's log package) to Stderr, since we know that stderr is collected
 			// for the process as a whole.
 			log.SetOutput(os.Stderr)
+
+			// We need more logging in order to fix some data gaps (like the lack of a buildbucket ID).
+			// Log the input string as JSON so we can see exactly which fields are populated with what in prod.
+			b := protojson.MarshalOptions{
+				Indent: "  ",
+			}.Format(input)
+			log.Printf("%s\n", string(b))
 
 			err := mainRunInternal(ctx, input, state, writeOutputProps)
 			return errors.Annotate(err, "main").Err()
