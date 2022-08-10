@@ -364,6 +364,7 @@ luci.realm(
         ),
     ],
 )
+
 ################################################################################
 ## Realms used for Swarming client integration tests.
 
@@ -394,3 +395,65 @@ luci.realm(
         ),
     ],
 )
+
+################################################################################
+## Resources used for Buildbucket and Swarming load test.
+
+luci.realm(
+    name = "pools/loadtest",
+    bindings = [
+        # For led.
+        luci.binding(
+            roles = "role/swarming.poolUser",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+)
+
+luci.bucket(
+    name = "loadtest",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = "mdb/chrome-troopers",
+            users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        ),
+    ],
+)
+
+def fakebuild_builder(name, steps, sleep_min_secs, sleep_max_secs):
+    luci.builder(
+        name = name,
+        bucket = "loadtest",
+        executable = luci.executable(
+            name = "fakebuild",
+            cipd_package = "infra/experimental/swarming/fakebuild/${platform}",
+            cipd_version = "latest",
+            cmd = ["fakebuild"],
+        ),
+        dimensions = {
+            "os": "Linux",
+            "cpu": "x86-64",
+            "pool": "infra.loadtest.0",
+        },
+        properties = {
+            "steps": steps,
+            "sleep_min_secs": sleep_min_secs,
+            "sleep_max_secs": sleep_max_secs,
+        },
+        service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        execution_timeout = sleep_max_secs * steps * time.second + 10 * time.minute,
+        build_numbers = True,
+    )
+
+# Finishes in ~1min with 10 steps.
+fakebuild_builder("fake-1m", 10, 2, 10)
+
+# Finishes in ~10min with 100 steps.
+fakebuild_builder("fake-10m", 100, 2, 10)
+
+# Finishes in ~30min with 300 steps.
+fakebuild_builder("fake-30m", 300, 2, 10)
+
+# Finishes in ~1h with 600 steps.
+fakebuild_builder("fake-1h", 600, 2, 10)
