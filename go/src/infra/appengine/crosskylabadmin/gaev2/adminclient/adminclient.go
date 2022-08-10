@@ -45,6 +45,7 @@ func newApplication() *cli.Application {
 			subcommands.Section("UFS RPCs"),
 			cmds.GetMachineLSE,
 			cmds.GetChromeOSDeviceData,
+			cmds.GetDevice,
 		},
 	}
 }
