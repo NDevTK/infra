@@ -56,6 +56,30 @@
       },
       "revId": "e3207b33b834c98bcab7f4798290de6e0760853e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f16cdf54_2ef1caf5",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/public_board_model_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-08-10T21:41:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5f709a4_c9265d29",
+      "range": {
+        "startLine": 45,
+        "startChar": 2,
+        "endLine": 45,
+        "endChar": 9
+      },
+      "revId": "e3207b33b834c98bcab7f4798290de6e0760853e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
