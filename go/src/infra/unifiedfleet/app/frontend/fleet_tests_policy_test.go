@@ -19,7 +19,7 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 	})
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"})
+	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"}, false)
 	Convey("Check Fleet Policy For Tests", t, func() {
 		Convey("happy path", func() {
 			req := &api.CheckFleetTestsPolicyRequest{

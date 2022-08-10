@@ -125,7 +125,7 @@ func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.Go
 				for _, model := range board.Models {
 					modelNames = append(modelNames, model.Name)
 				}
-				configuration.AddPublicBoardModelData(ctx, board.PublicCodename, modelNames)
+				configuration.AddPublicBoardModelData(ctx, board.PublicCodename, modelNames, false)
 			}
 		}
 	}

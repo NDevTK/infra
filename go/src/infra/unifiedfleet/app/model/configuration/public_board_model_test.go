@@ -22,12 +22,15 @@ func TestAddPublicBoardData(t *testing.T) {
 	t.Run("add non-existent Public Board", func(t *testing.T) {
 		expectedBoardName := "board1"
 		expectedModels := []string{"model1", "model2"}
-		got, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels)
+		got, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels, true)
 		if err != nil {
 			t.Fatalf("AddPublicBoardModelData failed: %s", err)
 		}
 		if got.Board != expectedBoardName {
 			t.Errorf("AddPublicBoardModelData returned unexpected Board:\n%s", got.Board)
+		}
+		if got.BoardHasPrivateModels != true {
+			t.Errorf("AddPublicBoardModelData returned unexpected result for BoardHasPrivateModels:\n%v", got.BoardHasPrivateModels)
 		}
 		if diff := cmp.Diff(expectedModels, got.Models); diff != "" {
 			t.Errorf("AddPublicBoardModelData returned unexpected models (-want +got):\n%s", diff)
@@ -39,10 +42,10 @@ func TestAddPublicBoardData(t *testing.T) {
 		expectedModels := []string{"model1", "model2"}
 
 		// Insert board1 into datastore
-		_, _ = AddPublicBoardModelData(ctx, expectedBoardName, expectedModels)
+		AddPublicBoardModelData(ctx, expectedBoardName, expectedModels, false)
 
 		// Update board1
-		got, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels)
+		got, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels, false)
 		if err != nil {
 			t.Fatalf("AddPublicBoardModelData failed: %s", err)
 		}
@@ -55,7 +58,7 @@ func TestAddPublicBoardData(t *testing.T) {
 	})
 
 	t.Run("add empty board", func(t *testing.T) {
-		_, err := AddPublicBoardModelData(ctx, "", []string{})
+		_, err := AddPublicBoardModelData(ctx, "", []string{}, false)
 		if err == nil {
 			t.Errorf("AddPublicBoardModelData succeeded with empty Board name")
 		}
@@ -73,7 +76,7 @@ func TestGetPublicBoardModelData(t *testing.T) {
 	t.Run("get PublicBoardModelData by existing ID", func(t *testing.T) {
 		expectedBoardName := "board1"
 		expectedModels := []string{"model1", "model2"}
-		_, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels)
+		_, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels, true)
 		if err != nil {
 			t.Fatalf("AddPublicBoardModelData failed: %s", err)
 		}
@@ -84,6 +87,36 @@ func TestGetPublicBoardModelData(t *testing.T) {
 		}
 		if got.Board != expectedBoardName {
 			t.Errorf("GetPublicBoardModelData returned unexpected Board:\n%s", got.Board)
+		}
+		if got.BoardHasPrivateModels != true {
+			t.Errorf("GetPublicBoardModelData returned unexpected result for BoardHasPrivateModels:\n%v", got.BoardHasPrivateModels)
+		}
+		if diff := cmp.Diff(expectedModels, got.Models); diff != "" {
+			t.Errorf("GetPublicBoardModelData returned unexpected models (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("get PublicBoardModelData for previous data model with no boolean for tracking private models", func(t *testing.T) {
+		expectedBoardName := "board1"
+		expectedModels := []string{"model1", "model2"}
+		entity := &PublicBoardModelDataEntity{
+			Board:  expectedBoardName,
+			Models: expectedModels,
+		}
+		err := datastore.Put(ctx, entity)
+		if err != nil {
+			t.Fatalf("adding datastore entity PublicBoardModelDataEntity failed : %s", err)
+		}
+
+		got, err := GetPublicBoardModelData(ctx, expectedBoardName)
+		if err != nil {
+			t.Fatalf("GetPublicBoardModelData failed: %s", err)
+		}
+		if got.Board != expectedBoardName {
+			t.Errorf("GetPublicBoardModelData returned unexpected Board:\n%s", got.Board)
+		}
+		if got.BoardHasPrivateModels != false {
+			t.Errorf("GetPublicBoardModelData returned unexpected result for BoardHasPrivateModels:\n%v", got.BoardHasPrivateModels)
 		}
 		if diff := cmp.Diff(expectedModels, got.Models); diff != "" {
 			t.Errorf("GetPublicBoardModelData returned unexpected models (-want +got):\n%s", diff)
