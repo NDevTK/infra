@@ -421,7 +421,7 @@ luci.bucket(
     ],
 )
 
-def fakebuild_builder(name, steps, sleep_min_secs, sleep_max_secs):
+def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec):
     luci.builder(
         name = name,
         bucket = "loadtest",
@@ -438,11 +438,11 @@ def fakebuild_builder(name, steps, sleep_min_secs, sleep_max_secs):
         },
         properties = {
             "steps": steps,
-            "sleep_min_secs": sleep_min_secs,
-            "sleep_max_secs": sleep_max_secs,
+            "sleep_min_sec": sleep_min_sec,
+            "sleep_max_sec": sleep_max_sec,
         },
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
-        execution_timeout = sleep_max_secs * steps * time.second + 10 * time.minute,
+        execution_timeout = sleep_max_sec * steps * time.second + 10 * time.minute,
         build_numbers = True,
     )
 
