@@ -14,7 +14,10 @@ import requests
 TEST_CASES = [
     # OK.
     ('https://clients3.google.com/generate_204', 204),
-    ('https://extended-validation.badssl.com', 200),
+
+    # The cert for extended-validation.badssl.com (ironically?) expired. Disable
+    # its test in the meantime.
+    #('https://extended-validation.badssl.com', 200),
 
     # Bad certs.
     ('https://expired.badssl.com', requests.exceptions.SSLError),
