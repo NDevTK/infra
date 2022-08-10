@@ -327,6 +327,10 @@ func launchBot(ctx context.Context, botZip string) (*exec.Cmd, error) {
 	cmd.Env = append(cmd.Env, "SHIVAS_BINARY=-")
 	cmd.Env = append(cmd.Env, "SHIVAS_RO_CRED=-")
 
+	// Make CIPD do less stuff in parallel, to eat less RAM.
+	cmd.Env = append(cmd.Env, "CIPD_MAX_THREADS=1")
+	cmd.Env = append(cmd.Env, "CIPD_PARALLEL_DOWNLOADS=0")
+
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
