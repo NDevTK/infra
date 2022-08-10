@@ -271,9 +271,8 @@ func TestDeploymentProject(t *testing.T) {
 	projectList := gcpProjectList()
 	createData := [][]string{
 		{"Test AssetId1", "STATUS_PENDING", ""},
-		{"Test AssetId2", "STATUS_RUNNING", projectList[0][1]},
-		{"Test AssetId3", "STATUS_COMPLETED", projectList[1][1]},
-		{"Test AssetId4", "STATUS_READY_FOR_DESTROY", projectList[2][1]},
+		{"Test AssetId2", "STATUS_RUNNING", projectList[0]},
+		{"Test AssetId3", "STATUS_COMPLETED", projectList[1]},
 	}
 
 	Convey("Select a project for deployment", t, func() {
@@ -296,8 +295,7 @@ func TestDeploymentProject(t *testing.T) {
 		project, err := deploymentProject(ctx)
 		So(err, ShouldBeNil)
 
-		So(project[1], ShouldEqual, projectList[3][1])
-		So(project[0], ShouldEqual, projectList[3][0])
+		So(project, ShouldEqual, projectList[2])
 	})
 }
 
@@ -313,7 +311,7 @@ func TestDeploymentProject_NoAvailableProject(t *testing.T) {
 				AssetInstanceId: id,
 				AssetId:         fmt.Sprintf("Test AssetId %v", i),
 				Status:          "STATUS_RUNNING",
-				ProjectId:       project[1],
+				ProjectId:       project,
 				CreatedBy:       auth.CurrentUser(ctx).Email,
 				CreatedAt:       time.Now().UTC(),
 			}
@@ -322,7 +320,7 @@ func TestDeploymentProject_NoAvailableProject(t *testing.T) {
 		}
 
 		project, err := deploymentProject(ctx)
-		So(project, ShouldBeNil)
+		So(project, ShouldEqual, "")
 		So(err.Error(), ShouldEqual, "No Projects available at the moment")
 	})
 }

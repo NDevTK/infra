@@ -101,17 +101,17 @@ func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAsse
 }
 
 // Returns a gcp project which will be used for deployment of resources by cel_ctl
-func deploymentProject(ctx context.Context) ([]string, error) {
+func deploymentProject(ctx context.Context) (string, error) {
 	projectList := gcpProjectList()
 
 	// get all projects that are already deployed
-	activeInstanceStatuses := []string{"STATUS_RUNNING", "STATUS_COMPLETED", "STATUS_READY_FOR_DESTROY"}
+	activeInstanceStatuses := []string{"STATUS_RUNNING", "STATUS_COMPLETED"}
 	var activeProjects []string
 	for _, status := range activeInstanceStatuses {
 		query := datastore.NewQuery("AssetInstanceEntity").Eq("Status", status)
 		var asset_instances []*AssetInstanceEntity
 		if err := datastore.GetAll(ctx, query, &asset_instances); err != nil {
-			return nil, err
+			return "", err
 		}
 		for _, asset_instance := range asset_instances {
 			activeProjects = append(activeProjects, asset_instance.ProjectId)
@@ -121,20 +121,19 @@ func deploymentProject(ctx context.Context) ([]string, error) {
 
 	// exclude the deployed projects from the list of
 	// projects that are available for being chosen
-	availableProjects := [][]string{}
+	availableProjects := []string{}
 	for _, project := range projectList {
-		if !valueInSlice(project[1], activeProjects) {
+		if !valueInSlice(project, activeProjects) {
 			availableProjects = append(availableProjects, project)
 		}
 	}
 
 	if len(availableProjects) == 0 { // no project is available for deployment
-		return nil, errors.New("No Projects available at the moment")
+		return "", errors.New("No Projects available at the moment")
 	}
 
-	// TODO: crbug/1344675 Change this once the GCP projects are finalized
 	// return the first available project
-	return []string{"celab-chrome-ci", "celab-chrome-ci-001"}, nil
+	return availableProjects[0], nil
 }
 
 // Retrieves an AssetInstance for a given unique value.
@@ -215,20 +214,23 @@ func (e *AssetInstanceHandler) List(ctx context.Context, in *proto.ListAssetInst
 func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.TriggerDeploymentRequest) (*proto.TriggerDeploymentResponse, error) {
 	entityType := in.GetEntityType()
 	entityId := in.GetEntityId()
+	projectPrefix := "celab-poros"
 
-	project, err := deploymentProject(ctx)
-	if err != nil {
-		return nil, err
-	}
 	var entity *AssetInstanceEntity
+	var err error
 	if entityType == "Asset" {
+		project, err := deploymentProject(ctx)
+		if err != nil {
+			return nil, err
+		}
+
 		id := uuid.New().String()
 		timestamp := time.Now().UTC()
 		entity = &AssetInstanceEntity{
 			AssetInstanceId: id,
 			AssetId:         entityId,
 			Status:          "STATUS_RUNNING",
-			ProjectId:       project[1],
+			ProjectId:       project,
 			CreatedBy:       auth.CurrentUser(ctx).Email,
 			CreatedAt:       timestamp,
 			DeleteAt:        timestamp.Add(time.Hour * 6),
@@ -238,9 +240,17 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 		if err != nil {
 			return nil, err
 		}
-		entity.Status = "STATUS_RUNNING"
-		entity.ProjectId = project[1]
+
+		if entity.Status == "STATUS_PENDING" {
+			project, err := deploymentProject(ctx)
+			if err != nil {
+				return nil, err
+			}
+			entity.Status = "STATUS_RUNNING"
+			entity.ProjectId = project
+		}
 	}
+
 	if err := validateAssetInstanceEntity(entity); err != nil {
 		return nil, err
 	}
@@ -251,8 +261,8 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 	response := &proto.TriggerDeploymentResponse{
 		AssetId:         entity.AssetId,
 		AssetInstanceId: entity.AssetInstanceId,
-		ProjectId:       project[1],
-		ProjectPrefix:   project[0],
+		ProjectId:       entity.ProjectId,
+		ProjectPrefix:   projectPrefix,
 	}
 
 	return response, nil
@@ -270,13 +280,18 @@ func (e *AssetInstanceHandler) FetchLogs(ctx context.Context, req *proto.FetchLo
 	return response, nil
 }
 
-func gcpProjectList() [][]string {
-	return [][]string{
-		{"celab-chrome-ci", "celab-chrome-ci-004"},
-		{"celab-chrome-ci", "celab-chrome-ci-002"},
-		{"celab-chrome-ci", "celab-chrome-ci-003"},
-		{"celab-chrome-ci", "celab-chrome-ci-001"},
-		{"celab-chrome-ci", "celab-chrome-ci-005"},
+func gcpProjectList() []string {
+	return []string{
+		"celab-poros-001",
+		"celab-poros-002",
+		"celab-poros-003",
+		"celab-poros-004",
+		"celab-poros-005",
+		"celab-poros-006",
+		"celab-poros-007",
+		"celab-poros-008",
+		"celab-poros-009",
+		"celab-poros-010",
 	}
 }
 
