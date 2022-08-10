@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	ufsds "infra/unifiedfleet/app/model/datastore"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
@@ -19,6 +17,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsds "infra/unifiedfleet/app/model/datastore"
 )
 
 // ConfigBundleKind is the datastore entity kind ConfigBundle.
@@ -164,10 +165,10 @@ func GenerateFCEntityId(fc *payload.FlatConfig) (string, error) {
 		return "", errors.Reason("Empty FlatConfig DesignId").Err()
 	}
 	if designConfig == "" {
-		return fmt.Sprintf("%s-%s", program, design), nil
+		return strings.ToLower(fmt.Sprintf("%s-%s", program, design)), nil
 	}
 
-	return fmt.Sprintf("%s-%s-%s", program, design, designConfig), nil
+	return strings.ToLower(fmt.Sprintf("%s-%s-%s", program, design, designConfig)), nil
 }
 
 func newFlatConfigEntity(ctx context.Context, pm proto.Message) (fcEntity ufsds.FleetEntity, err error) {
@@ -249,4 +250,31 @@ func extractFCIds(ctx context.Context, id string) ([]string, error) {
 		return nil, status.Errorf(codes.InvalidArgument, ufsds.InvalidArgument)
 	}
 	return ids, nil
+}
+
+// GenerateFCIdFromCrosMachine generates a FlatConfig ID from a Cros Machine.
+//
+// The ID generated is based on the build target (board), model, and sku of a
+// ChromeOS Machine. The result is ${board}-${model}-${model:sku}.
+func GenerateFCIdFromCrosMachine(machine *ufspb.Machine) (string, error) {
+	crosMachine := machine.GetChromeosMachine()
+	if crosMachine == nil {
+		return "", errors.New("invalid machine type. Not a chrome OS machine")
+	}
+
+	board := crosMachine.GetBuildTarget()
+	if board == "" {
+		return "", errors.New("empty board value")
+	}
+
+	model := crosMachine.GetModel()
+	if model == "" {
+		return "", errors.New("empty model value")
+	}
+
+	sku := crosMachine.GetSku()
+	if sku == "" {
+		return fmt.Sprintf("%s-%s", board, model), nil
+	}
+	return fmt.Sprintf("%s-%s-%s:%s", board, model, model, sku), nil
 }

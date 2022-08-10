@@ -5,6 +5,7 @@
 package configuration
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -15,6 +16,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
 func mockConfigBundle(id string, programId string, name string) *payload.ConfigBundle {
@@ -28,6 +31,19 @@ func mockConfigBundle(id string, programId string, name string) *payload.ConfigB
 					Value: programId,
 				},
 				Name: name,
+			},
+		},
+	}
+}
+
+func mockChromeOSMachine(id, buildTarget, model, sku string) *ufspb.Machine {
+	return &ufspb.Machine{
+		Name: id,
+		Device: &ufspb.Machine_ChromeosMachine{
+			ChromeosMachine: &ufspb.ChromeOSMachine{
+				BuildTarget: buildTarget,
+				Model:       model,
+				Sku:         sku,
 			},
 		},
 	}
@@ -236,6 +252,97 @@ func TestGetFlatConfig(t *testing.T) {
 		}
 		if c := status.Code(err); c != codes.InvalidArgument {
 			t.Errorf("Unexpected error when calling GetFlatConfig: %s", err)
+		}
+	})
+}
+
+func TestGenerateFCIdFromCrosMachine(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+
+	t.Run("generate id from fully described cros machine", func(t *testing.T) {
+		machine := mockChromeOSMachine("chromeos-asset-1", "bt", "model", "1")
+		want := "bt-model-model:1"
+		got, err := GenerateFCIdFromCrosMachine(machine)
+
+		if err != nil {
+			t.Fatalf("TestGenerateFCIdFromCrosMachine failed: %s", err)
+		}
+
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Unexpected error when calling GenerateFCIdFromCrosMachine: %s", err)
+		}
+	})
+
+	t.Run("generate id from cros machine with no sku", func(t *testing.T) {
+		machine := mockChromeOSMachine("chromeos-asset-2", "bt", "model", "")
+		want := "bt-model"
+		got, err := GenerateFCIdFromCrosMachine(machine)
+
+		if err != nil {
+			t.Fatalf("TestGenerateFCIdFromCrosMachine failed: %s", err)
+		}
+
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("TestGenerateFCIdFromCrosMachine returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("generate id from cros machine with no board", func(t *testing.T) {
+		machine := mockChromeOSMachine("chromeos-asset-3", "", "model", "")
+		wantErrMsg := fmt.Sprintf("empty board value")
+		want := ""
+		got, gotErr := GenerateFCIdFromCrosMachine(machine)
+
+		if gotErr == nil {
+			t.Fatal("GenerateFCIdFromCrosMachine succeeded with no board value")
+		}
+
+		if gotErr.Error() != wantErrMsg {
+			t.Errorf(`Error message diff got "%v", want "%v"`, gotErr.Error(), wantErrMsg)
+		}
+
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("TestGenerateFCIdFromCrosMachine returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("generate id from cros machine with no model", func(t *testing.T) {
+		machine := mockChromeOSMachine("chromeos-asset-4", "bt", "", "")
+		wantErrMsg := fmt.Sprintf("empty model value")
+		want := ""
+		got, gotErr := GenerateFCIdFromCrosMachine(machine)
+
+		if gotErr == nil {
+			t.Fatal("GenerateFCIdFromCrosMachine succeeded with no model value")
+		}
+
+		if gotErr.Error() != wantErrMsg {
+			t.Errorf(`Error message diff got "%v", want "%v"`, gotErr.Error(), wantErrMsg)
+		}
+
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("TestGenerateFCIdFromCrosMachine returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("generate id from cros machine with no board or model", func(t *testing.T) {
+		machine := mockChromeOSMachine("chromeos-asset-5", "", "", "")
+		wantErrMsg := fmt.Sprintf("empty board value")
+		want := ""
+		got, gotErr := GenerateFCIdFromCrosMachine(machine)
+
+		if gotErr == nil {
+			t.Fatal("GenerateFCIdFromCrosMachine succeeded with no board value")
+		}
+
+		if gotErr.Error() != wantErrMsg {
+			t.Errorf(`Error message diff got "%v", want "%v"`, gotErr.Error(), wantErrMsg)
+		}
+
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("TestGenerateFCIdFromCrosMachine returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
 }
