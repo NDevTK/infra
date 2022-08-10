@@ -6,6 +6,7 @@ package swarming
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -15,14 +16,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-)
-
-const (
-	nilSelectErr  = "unsupported value type <nil> for select"
-	invalidKeyErr = "could not select value, invalid key"
 )
 
 var LabelMarshaler = jsonpb.Marshaler{
@@ -52,11 +45,14 @@ func ConvertAll(dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) ([]st
 
 	for _, p := range jsonPaths {
 		valuesStr, err := GetLabelValuesStr(p, flatConfig)
+		if err != nil {
+			return nil, err
+		}
 		if err == nil && valuesStr != "" {
 			return FormLabels(labelNames, valuesStr)
 		}
 	}
-	return nil, errors.Reason("No supported config source found").Err()
+	return nil, errors.New("no supported config source found")
 }
 
 // FormLabels pairs label names with the label values `${label_name}:val1,val2`.
@@ -64,7 +60,7 @@ func FormLabels(labelNames []string, valuesStr string) ([]string, error) {
 	// Exhausted all possible paths defined in DutAttribute. If valuesStr is empty,
 	// then no values found.
 	if valuesStr == "" {
-		return nil, status.Errorf(codes.NotFound, "No label values found in config source found")
+		return nil, errors.New("no label values found in config source found")
 	}
 
 	var labels []string
@@ -72,7 +68,7 @@ func FormLabels(labelNames []string, valuesStr string) ([]string, error) {
 		labels = append(labels, fmt.Sprintf("%s:%s", n, valuesStr))
 	}
 	if len(labels) == 0 {
-		return nil, errors.New("No labels can be generated")
+		return nil, errors.New("no labels can be generated")
 	}
 	return labels, nil
 }
@@ -142,15 +138,15 @@ func ConstructLabelValuesString(labelVals interface{}) string {
 //
 // It takes a DutAttribute and returns an array of field paths defined in
 // jsonpath syntax. The sources that are currently supported are:
-//   1. FlatConfigSource
-//   2. HwidSource
+//  1. FlatConfigSource
+//  2. HwidSource
 func ConstructJsonPaths(dutAttr *api.DutAttribute) ([]string, error) {
 	if dutAttr.GetFlatConfigSource() != nil {
 		return generateFlatConfigSourcePaths(dutAttr), nil
 	} else if dutAttr.GetHwidSource() != nil {
 		return generateHwidSourcePaths(dutAttr), nil
 	}
-	return []string{}, errors.Reason("No supported config source found").Err()
+	return []string{}, errors.New("no supported config source found")
 }
 
 // generateFlatConfigSourcePaths returns config paths defined by a DutAttribute.
