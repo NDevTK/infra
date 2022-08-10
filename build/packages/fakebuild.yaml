@@ -1,0 +1,10 @@
+package: infra/experimental/swarming/fakebuild/${platform}
+description: A luciexe that pretends to do some work
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/experimental/swarming/fakebuild
+root: ../../go/bin
+data:
+  - file: fakebuild${exe_suffix}
+  - version_file: .versions/fakebuild${exe_suffix}.cipd_version

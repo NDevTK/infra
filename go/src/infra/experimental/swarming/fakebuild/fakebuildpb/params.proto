@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package fakebuildpb;
+
+option go_package = "infra/experimental/swarming/fakebuild/fakebuildpb";
+
+message Inputs {
+  int64 steps = 1;          // how many steps to emit
+  int64 sleep_min_sec = 2;  // how long to sleep in each step, min
+  int64 sleep_max_sec = 3;  // how long to sleep in each step, max
+}
