@@ -43,7 +43,7 @@ deps = {
 
   "infra/go/src/go.chromium.org/chromiumos/config":
      "{chromium_git}/chromiumos/config@" +
-     "ea2824a7fb4b76550dcdb099f23a63d87fca4bdd",
+     "a4f705def138db6168c552ecd3bf9fc711cb7551",
 
   "infra/go/src/go.chromium.org/chromiumos/infra/proto":
      "{chromium_git}/chromiumos/infra/proto@" +
