@@ -16,7 +16,7 @@ func crosDeployPlan() *Plan {
 			"Set state: needs_deploy",
 			"Check stable versions exist",
 			"Clean up",
-			"Servo has USB-key with require image",
+			"Download stable version OS image to servo usbkey if necessary",
 			"Device is pingable before deploy",
 			"DUT is on test channel OS",
 			"DUT has expected dev firmware",

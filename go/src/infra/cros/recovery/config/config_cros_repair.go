@@ -1118,20 +1118,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Servo has USB-key with require image": {
-			Docs: []string{
-				"USB-drive contains stable image on it.",
-			},
-			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
-			},
-			ExecName:    "servo_usbkey_has_stable_image",
-			ExecTimeout: &durationpb.Duration{Seconds: 120},
-			RecoveryActions: []string{
-				"Download stable image to USB-key",
-			},
-		},
 		"Stable version image is missing from servo usbkey": {
 			Docs: []string{
 				"This is a reverse action which fails when required image is already cached in servo usbkey.",
