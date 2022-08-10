@@ -274,6 +274,7 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 		} else {
 			// TODO(gregorynisbet): Make this error end the current function.
 			lg.Errorf("internal run: failed to instantiate karte client: %s", err)
+			return errors.Annotate(err, "set up karte client").Err()
 		}
 	}
 
