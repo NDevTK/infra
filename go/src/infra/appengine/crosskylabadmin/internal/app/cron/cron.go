@@ -22,7 +22,6 @@
 package cron
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -32,11 +31,9 @@ import (
 	"go.chromium.org/luci/server/router"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/inventory"
-	"infra/appengine/crosskylabadmin/internal/app/gitstore"
 )
 
 // InstallHandlers installs handlers for cron jobs that are part of this app.
@@ -192,21 +189,6 @@ func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
 	}
 }
 
-func createInventoryServer(c *router.Context) *inventory.ServerImpl {
-	tracker := &frontend.TrackerServerImpl{}
-	return &inventory.ServerImpl{
-		GerritFactory: func(c context.Context, host string) (gitstore.GerritClient, error) {
-			return clients.NewGerritClientAsSelf(c, host)
-		},
-		GitilesFactory: func(c context.Context, host string) (gitstore.GitilesClient, error) {
-			return clients.NewGitilesClientAsSelf(c, host)
-		},
-		TrackerFactory: func() fleet.TrackerServer {
-			return tracker
-		},
-	}
-}
-
 func dumpStableVersionToDatastoreHandler(c *router.Context) error {
 	logging.Infof(c.Context, "begin dumpStableVersionToDatastoreHandler")
 	cfg := config.Get(c.Context)
@@ -218,7 +200,7 @@ func dumpStableVersionToDatastoreHandler(c *router.Context) error {
 		}
 		return nil
 	}
-	inv := createInventoryServer(c)
+	inv := &inventory.ServerImpl{}
 	_, err := inv.DumpStableVersionToDatastore(c.Context, &fleet.DumpStableVersionToDatastoreRequest{})
 	if err != nil {
 		logging.Infof(c.Context, "end dumpStableVersionToDatastoreHandler with err (%s)", err)

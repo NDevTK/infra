@@ -18,15 +18,11 @@ import (
 	"context"
 	"fmt"
 	"testing"
-	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/config"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/libs/skylab/inventory"
 )
@@ -388,33 +384,6 @@ func TestGetStableVersion(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
-}
-
-func withDutInfoCacheValidity(ctx context.Context, v time.Duration) context.Context {
-	cfg := config.Get(ctx)
-	cfg.Inventory.DutInfoCacheValidity = durationpb.New(v)
-	return config.Use(ctx, cfg)
-}
-
-func withSplitInventory(ctx context.Context) context.Context {
-	cfg := config.Get(ctx)
-	cfg.Inventory.Multifile = true
-	return config.Use(ctx, cfg)
-}
-
-// Maximum time to failure: (2^7 - 1)*(50/1000) = 6.35 seconds
-var testRetriesTemplate = retry.ExponentialBackoff{
-	Limited: retry.Limited{
-		Delay:   50 * time.Millisecond,
-		Retries: 7,
-	},
-	MaxDelay:   5 * time.Second,
-	Multiplier: 2,
-}
-
-func testRetryIteratorFactory() retry.Iterator {
-	it := testRetriesTemplate
-	return &it
 }
 
 func strptr(x string) *string {

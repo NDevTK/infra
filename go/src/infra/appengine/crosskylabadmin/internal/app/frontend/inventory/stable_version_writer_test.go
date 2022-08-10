@@ -19,7 +19,6 @@ import (
 func TestSetSatlabStableVersion(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	ctx = withSplitInventory(ctx)
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 
@@ -54,7 +53,6 @@ func TestSetSatlabStableVersion(t *testing.T) {
 func TestDeleteSatlabStableVersion(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	ctx = withSplitInventory(ctx)
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 

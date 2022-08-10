@@ -21,40 +21,21 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/kylelemons/godebug/pretty"
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	authclient "go.chromium.org/luci/auth"
 	gitilesApi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/retry"
-	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/server/auth"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	dataSV "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
-	"infra/appengine/crosskylabadmin/internal/app/gitstore"
-	sv "infra/cros/stableversion"
+	"infra/cros/stableversion"
 	"infra/libs/git"
 )
-
-var prettyConfig = &pretty.Config{
-	TrackCycles: true,
-}
-
-// GerritFactory is a contsructor for a GerritClient
-type GerritFactory func(c context.Context, host string) (gitstore.GerritClient, error)
-
-// GitilesFactory is a contsructor for a GerritClient
-type GitilesFactory func(c context.Context, host string) (gitstore.GitilesClient, error)
-
-// SwarmingFactory is a constructor for a SwarmingClient.
-type SwarmingFactory func(c context.Context, host string) (clients.SwarmingClient, error)
 
 // TrackerFactory is a constructor for a TrackerServer object.
 type TrackerFactory func() fleet.TrackerServer
@@ -65,21 +46,6 @@ type StableVersionGitClientFactory func(c context.Context) (git.ClientInterface,
 
 // ServerImpl implements the fleet.InventoryServer interface.
 type ServerImpl struct {
-	// GerritFactory is an optional factory function for creating gerrit client.
-	//
-	// If GerritFactory is nil, clients.NewGerritClient is used.
-	GerritFactory GerritFactory
-
-	// GitilesFactory is an optional factory function for creating gitiles client.
-	//
-	// If GitilesFactory is nil, clients.NewGitilesClient is used.
-	GitilesFactory GitilesFactory
-
-	// SwarmingFactory is an optional factory function for creating clients.
-	//
-	// If SwarmingFactory is nil, clients.NewSwarmingClient is used.
-	SwarmingFactory SwarmingFactory
-
 	// TrackerServerFactory is a required factory function for creating a tracker object.
 	//
 	// TODO(pprabhu) Move tracker/tasker to individual sub-packages and inject
@@ -96,25 +62,15 @@ type getStableVersionRecordsResult struct {
 	firmware map[string]string
 }
 
-var transientErrorRetriesTemplate = retry.ExponentialBackoff{
-	Limited: retry.Limited{
-		Delay: 200 * time.Millisecond,
-		// Don't retry too often, leaving some headroom for clients to retry if they wish.
-		Retries: 3,
-	},
-	// Slow down quickly so as to not flood outbound requests on retries.
-	Multiplier: 4,
-	MaxDelay:   5 * time.Second,
-}
-
-// transientErrorRetries returns a retry.Factory to use on transient errors on
-// outbound requests.
-func transientErrorRetries() retry.Factory {
-	next := func() retry.Iterator {
-		it := transientErrorRetriesTemplate
-		return &it
+// DumpStableVersionToDatastore takes stable version info from the git repo where it lives
+// and dumps it to datastore
+func (is *ServerImpl) DumpStableVersionToDatastore(ctx context.Context, in *fleet.DumpStableVersionToDatastoreRequest) (*fleet.DumpStableVersionToDatastoreResponse, error) {
+	client, err := is.newStableVersionGitClient(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "get git client: %s", err)
+		return nil, errors.Annotate(err, "get git client").Err()
 	}
-	return transient.Only(next)
+	return dumpStableVersionToDatastoreImpl(ctx, client.GetFile)
 }
 
 func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.ClientInterface, error) {
@@ -126,17 +82,6 @@ func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.Client
 		return nil, errors.Annotate(err, "newStableVersionGitClient").Err()
 	}
 	return getStableVersionGitClient(ctx, hc)
-}
-
-// DumpStableVersionToDatastore takes stable version info from the git repo where it lives
-// and dumps it to datastore
-func (is *ServerImpl) DumpStableVersionToDatastore(ctx context.Context, in *fleet.DumpStableVersionToDatastoreRequest) (*fleet.DumpStableVersionToDatastoreResponse, error) {
-	client, err := is.newStableVersionGitClient(ctx)
-	if err != nil {
-		logging.Errorf(ctx, "get git client: %s", err)
-		return nil, errors.Annotate(err, "get git client").Err()
-	}
-	return dumpStableVersionToDatastoreImpl(ctx, client.GetFile)
 }
 
 // dumpStableVersionToDatastoreImpl takes some way of getting a file and a context and writes to datastore
@@ -188,7 +133,7 @@ func getStableVersionRecords(ctx context.Context, stableVersions *lab_platform.S
 		buildTarget := item.GetKey().GetBuildTarget().GetName()
 		model := item.GetKey().GetModelId().GetValue()
 		version := item.GetVersion()
-		key, err := sv.JoinBuildTargetModel(buildTarget, model)
+		key, err := stableversion.JoinBuildTargetModel(buildTarget, model)
 		if err != nil {
 			logging.Infof(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
 			continue
@@ -199,7 +144,7 @@ func getStableVersionRecords(ctx context.Context, stableVersions *lab_platform.S
 		buildTarget := item.GetKey().GetBuildTarget().GetName()
 		model := item.GetKey().GetModelId().GetValue()
 		version := item.GetVersion()
-		key, err := sv.JoinBuildTargetModel(buildTarget, model)
+		key, err := stableversion.JoinBuildTargetModel(buildTarget, model)
 		if err != nil {
 			logging.Infof(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
 			continue
@@ -210,7 +155,7 @@ func getStableVersionRecords(ctx context.Context, stableVersions *lab_platform.S
 		buildTarget := item.GetKey().GetBuildTarget().GetName()
 		model := item.GetKey().GetModelId().GetValue()
 		version := item.GetVersion()
-		key, err := sv.JoinBuildTargetModel(buildTarget, model)
+		key, err := stableversion.JoinBuildTargetModel(buildTarget, model)
 		if err != nil {
 			logging.Infof(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
 			continue
