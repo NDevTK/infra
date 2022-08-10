@@ -16,7 +16,9 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/ufs"
 	"infra/appengine/crosskylabadmin/site"
+	shivasUtils "infra/cmd/shivas/utils"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // GetMachineLSE calls the GetMachineLSE RPC of UFS the way that CrOSSkylabAdmin would.
@@ -52,6 +54,7 @@ func (c *getMachineLSERun) Run(a subcommands.Application, args []string, env sub
 
 // InnerRun runs the command and returns an error.
 func (c *getMachineLSERun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	ctx = shivasUtils.SetupContext(ctx, ufsUtil.OSNamespace)
 	if len(args) != 0 {
 		return errors.Reason("get machine lse: positional arguments are unacceptable").Err()
 	}
@@ -67,8 +70,11 @@ func (c *getMachineLSERun) innerRun(ctx context.Context, a subcommands.Applicati
 	if err != nil {
 		return errors.Annotate(err, "get machine lse: creating client").Err()
 	}
+	if c.name == "" {
+		return errors.Reason("name cannot be empty").Err()
+	}
 	req := &ufsAPI.GetMachineLSERequest{
-		Name: c.name,
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, c.name),
 	}
 	jsonMarshaler.Marshal(a.GetErr(), req)
 	res, err := client.GetMachineLSE(ctx, req)
