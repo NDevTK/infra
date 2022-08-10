@@ -22,7 +22,7 @@ from framework import flaskservlet, permissions
 from framework import servlet
 
 
-class Banned(servlet.Servlet):
+class Banned(flaskservlet.FlaskServlet):
   """The Banned page shows a message explaining that the user is banned."""
 
   _PAGE_TEMPLATE = 'framework/banned-page.ezt'
@@ -53,5 +53,5 @@ class Banned(servlet.Servlet):
         'currentPageURLEncoded': None,
         }
 
-  # def GetNoAccessPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetNoAccessPage(self, **kwargs):
+    return self.handler(**kwargs)

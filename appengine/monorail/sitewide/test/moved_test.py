@@ -24,7 +24,7 @@ class MovedTest(unittest.TestCase):
   def setUp(self):
     self.services = service_manager.Services(
         project=fake.ProjectService())
-    self.servlet = moved.ProjectMoved('req', 'res', services=self.services)
+    self.servlet = moved.ProjectMoved(services=self.services)
     self.old_project = 'old-project'
 
   def testGatherPageData_NoProjectSpecified(self):
@@ -40,7 +40,7 @@ class MovedTest(unittest.TestCase):
     _, mr = testing_helpers.GetRequestObjects(
         path='/hosting/moved?project=nonexistent')
 
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(404, cm.exception.code)
 
@@ -50,7 +50,7 @@ class MovedTest(unittest.TestCase):
     _, mr = testing_helpers.GetRequestObjects(
         path='/hosting/moved?project=%s' % self.old_project)
 
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(400, cm.exception.code)
 

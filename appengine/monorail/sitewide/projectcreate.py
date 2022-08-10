@@ -37,7 +37,7 @@ _MSG_INVALID_PROJECT_NAME = 'Invalid project name'
 _MSG_MISSING_PROJECT_SUMMARY = 'Missing project summary'
 
 
-class ProjectCreate(servlet.Servlet):
+class ProjectCreate(flaskservlet.FlaskServlet):
   """Shows a page with a simple form to create a project."""
 
   _PAGE_TEMPLATE = 'sitewide/project-create-page.ezt'
@@ -156,8 +156,8 @@ class ProjectCreate(servlet.Servlet):
       return framework_helpers.FormatAbsoluteURL(
           mr, urls.ADMIN_INTRO, project_name=project_name)
 
-  # def GetCreateProject(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetCreateProject(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostCreateProject(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostCreateProject(self, **kwargs):
+    return self.handler(**kwargs)

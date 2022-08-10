@@ -24,7 +24,7 @@ class ProjectCreateTest(unittest.TestCase):
 
   def setUp(self):
     services = service_manager.Services()
-    self.servlet = projectcreate.ProjectCreate('req', 'res', services=services)
+    self.servlet = projectcreate.ProjectCreate(services=services)
 
   def CheckAssertBasePermissions(
       self, restriction, expect_admin_ok, expect_nonadmin_ok):

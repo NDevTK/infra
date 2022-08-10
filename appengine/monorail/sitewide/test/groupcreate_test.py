@@ -28,8 +28,7 @@ class GroupCreateTest(unittest.TestCase):
         user=fake.UserService(),
         usergroup=fake.UserGroupService(),
         project=fake.ProjectService())
-    self.servlet = groupcreate.GroupCreate(
-        'req', 'res', services=self.services)
+    self.servlet = groupcreate.GroupCreate(services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest()
 
   def CheckAssertBasePermissions(

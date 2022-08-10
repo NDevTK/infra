@@ -163,55 +163,52 @@ class ServletRegistry(object):
   def RegisterHostingUrl(self, service):
     flaskapp_hosting = flask.Flask(__name__)
     _HOSTING_URL = [
-        # (
-        #     '/excessiveActivity',
-        #     excessiveactivity.ExcessiveActivity(
-        #         services=service).GetExcessiveActivity, ['GET']),
-        # (
-        #     '/settings',
-        #     usersettings.UserSettings(services=service).GetUserSetting, ['GET'
-        #                                                                 ]),
-        # (
-        #     '/settings.do',
-        #     usersettings.UserSettings(services=service).PostUserSetting,
-        #     ['POST']),
-        # ('/noAccess', banned.Banned(services=service).GetNoAccessPage,
-        #   ['GET']),
-        # (
-        #     '/moved', moved.ProjectMoved(services=service).GetProjectMoved,
-        #     ['GET']),
-        # (
-        #     '/createProject',
-        #     projectcreate.ProjectCreate(services=service).GetCreateProject,
-        #     ['GET']),
-        # (
-        #     '/createProject.do',
-        #     projectcreate.ProjectCreate(services=service).PostCreateProject,
-        #     ['POST']),
-        # (
-        #     '/createHotlist',
-        #     hotlistcreate.HotlistCreate(services=service).GetCreateHotlist,
-        #     ['GET']),
-        # (
-        #     '/createHotlist.do',
-        #     hotlistcreate.HotlistCreate(services=service).PostCreateHotlist,
-        #     ['POST']),
-        # (
-        #     '/createGroup',
-        #     groupcreate.GroupCreate(services=service).GetGroupCreate,
-        #     ['GET']),
-        # (
-        #     '/createGroup.do',
-        #     groupcreate.GroupCreate(services=service).PostGroupCreate,
-        #     ['POST']),
-        # (
-        #     '/deleteGroup',
-        #     grouplist.FlaskGroupList(services=service).GetGroupDelete,
-        #     ['GET']),
-        # (
-        #     '/deleteGroup.do',
-        #     grouplist.FlaskGroupList(services=service).PostGroupDelete,
-        #     ['POST']),
+        (
+            '/excessiveActivity',
+            excessiveactivity.ExcessiveActivity(
+                services=service).GetExcessiveActivity, ['GET']),
+        (
+            '/settings',
+            usersettings.UserSettings(services=service).GetUserSetting, ['GET'
+                                                                        ]),
+        (
+            '/settings.do',
+            usersettings.UserSettings(services=service).PostUserSetting,
+            ['POST']),
+        ('/noAccess', banned.Banned(services=service).GetNoAccessPage, ['GET']),
+        (
+            '/moved', moved.ProjectMoved(services=service).GetProjectMoved,
+            ['GET']),
+        (
+            '/createProject',
+            projectcreate.ProjectCreate(services=service).GetCreateProject,
+            ['GET']),
+        (
+            '/createProject.do',
+            projectcreate.ProjectCreate(services=service).PostCreateProject,
+            ['POST']),
+        (
+            '/createHotlist',
+            hotlistcreate.HotlistCreate(services=service).GetCreateHotlist,
+            ['GET']),
+        (
+            '/createHotlist.do',
+            hotlistcreate.HotlistCreate(services=service).PostCreateHotlist,
+            ['POST']),
+        (
+            '/createGroup',
+            groupcreate.GroupCreate(services=service).GetGroupCreate, ['GET']),
+        (
+            '/createGroup.do',
+            groupcreate.GroupCreate(services=service).PostGroupCreate, ['POST'
+                                                                       ]),
+        (
+            '/deleteGroup',
+            grouplist.FlaskGroupList(services=service).GetGroupDelete, ['GET']),
+        (
+            '/deleteGroup.do',
+            grouplist.FlaskGroupList(services=service).PostGroupDelete,
+            ['POST']),
     ]
 
     flaskapp_hosting = self._AddFlaskUrlRules(flaskapp_hosting, _HOSTING_URL)

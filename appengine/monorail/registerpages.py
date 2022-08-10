@@ -17,7 +17,6 @@ from components import prpc
 from features import autolink
 from features import dateaction
 from features import banspammer
-from features import hotlistcreate
 from features import hotlistdetails
 from features import hotlistissues
 from features import hotlistissuescsv
@@ -30,7 +29,6 @@ from features import notify
 from features import rerankhotlist
 from features import savedqueries
 
-from framework import banned, excessiveactivity
 from framework import clientmon
 from framework import csp_report
 from framework import deleteusers
@@ -58,12 +56,7 @@ from services import cachemanager_svc
 from services import client_config_svc
 
 from sitewide import custom_404
-from sitewide import groupcreate
-from sitewide import grouplist
-from sitewide import moved
-from sitewide import projectcreate
 from sitewide import userprofile
-from sitewide import usersettings
 from sitewide import userclearbouncing
 from sitewide import userupdates
 
@@ -334,14 +327,6 @@ class ServletRegistry(object):
             urls.CSP_REPORT:
                 csp_report.CSPReportPage,
 
-            # These are only shown to users if specific conditions are met.
-            urls.EXCESSIVE_ACTIVITY:
-                excessiveactivity.ExcessiveActivity,
-            urls.BANNED:
-                banned.Banned,
-            urls.PROJECT_MOVED:
-                moved.ProjectMoved,
-
             # These are not externally accessible
             urls.RAMCACHE_CONSOLIDATE_CRON:
                 cachemanager_svc.RamCacheConsolidate,
@@ -366,12 +351,7 @@ class ServletRegistry(object):
   def _RegisterSitewideHandlers(self):
     """Register page and form handlers that aren't associated with projects."""
     self._SetupServlets({
-        urls.PROJECT_CREATE: projectcreate.ProjectCreate,
         # The user settings page is a site-wide servlet, not under /u/.
-        urls.USER_SETTINGS: usersettings.UserSettings,
-        urls.GROUP_CREATE: groupcreate.GroupCreate,
-        urls.GROUP_DELETE: grouplist.GroupList,
-        urls.HOTLIST_CREATE: hotlistcreate.HotlistCreate,
         urls.BAN_SPAMMER_TASK: banspammer.BanSpammerTask,
         urls.WIPEOUT_SYNC_CRON: deleteusers.WipeoutSyncCron,
         urls.SEND_WIPEOUT_USER_LISTS_TASK: deleteusers.SendWipeoutUserListsTask,
@@ -415,8 +395,6 @@ class ServletRegistry(object):
     redirect = registerpages_helpers.MakeRedirect('/')
     self._SetupServlets(
         {
-            '/hosting/': redirect,
-            '/hosting': redirect,
             '/p': redirect,
             '/p/': redirect,
             '/u': redirect,

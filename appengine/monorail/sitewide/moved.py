@@ -20,7 +20,7 @@ from framework import urls
 from project import project_constants
 
 
-class ProjectMoved(servlet.Servlet):
+class ProjectMoved(flaskservlet.FlaskServlet):
   """The ProjectMoved page explains that the project has moved."""
 
   _PAGE_TEMPLATE = 'sitewide/moved-page.ezt'
@@ -61,5 +61,5 @@ class ProjectMoved(servlet.Servlet):
         'moved_to_url': moved_to_url,
         }
 
-  # def GetProjectMoved(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetProjectMoved(self, **kwargs):
+    return self.handler(**kwargs)

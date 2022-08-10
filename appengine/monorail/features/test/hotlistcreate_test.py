@@ -33,8 +33,7 @@ class HotlistCreateTest(unittest.TestCase):
                                         user=fake.UserService(),
                                              issue=fake.IssueService(),
                                              features=fake.FeaturesService())
-    self.servlet = hotlistcreate.HotlistCreate('req', 'res',
-                                               services=self.services)
+    self.servlet = hotlistcreate.HotlistCreate(services=self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):

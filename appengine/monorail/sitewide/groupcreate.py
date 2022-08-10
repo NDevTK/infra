@@ -14,12 +14,11 @@ import re
 from framework import exceptions, flaskservlet
 from framework import framework_helpers
 from framework import permissions
-from framework import servlet
 from proto import usergroup_pb2
 from sitewide import group_helpers
 
 
-class GroupCreate(servlet.Servlet):
+class GroupCreate(flaskservlet.FlaskServlet):
   """Shows a page with a simple form to create a user group."""
 
   _PAGE_TEMPLATE = 'sitewide/group-create-page.ezt'
@@ -103,8 +102,8 @@ class GroupCreate(servlet.Servlet):
       return framework_helpers.FormatAbsoluteURL(
           mr, '/g/%s/' % group_id, include_project=False)
 
-  # def GetGroupCreate(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetGroupCreate(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostGroupCreate(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostGroupCreate(self, **kwargs):
+    return self.handler(**kwargs)

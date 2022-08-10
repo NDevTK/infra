@@ -30,7 +30,7 @@ _MSG_INVALID_ISSUES_INPUT = 'Issues input is invalid'
 _MSG_INVALID_MEMBERS_INPUT = 'One or more editor emails is not valid.'
 
 
-class HotlistCreate(servlet.Servlet):
+class HotlistCreate(flaskservlet.FlaskServlet):
   """HotlistCreate shows a simple page with a form to create a hotlist."""
 
   _PAGE_TEMPLATE = 'features/hotlist-create-page.ezt'
@@ -114,8 +114,8 @@ class HotlistCreate(servlet.Servlet):
               mr.cnxn, hotlist, self.services.user),
           include_project=False)
 
-  # def GetCreateHotlist(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetCreateHotlist(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostCreateHotlist(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostCreateHotlist(self, **kwargs):
+    return self.handler(**kwargs)

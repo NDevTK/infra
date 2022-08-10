@@ -24,16 +24,16 @@ class BannedTest(unittest.TestCase):
     self.services = service_manager.Services()
 
   def testAssertBasePermission(self):
-    servlet = banned.Banned('request', 'response', services=self.services)
+    servlet = banned.Banned(services=self.services)
 
     mr = monorailrequest.MonorailRequest(self.services)
     mr.auth.user_id = 0  # Anon user cannot see banned page.
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       servlet.AssertBasePermission(mr)
     self.assertEqual(404, cm.exception.code)
 
     mr.auth.user_id = 111  # User who is not banned cannot view banned page.
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       servlet.AssertBasePermission(mr)
     self.assertEqual(404, cm.exception.code)
 
@@ -42,7 +42,7 @@ class BannedTest(unittest.TestCase):
     servlet.AssertBasePermission(mr)
 
   def testGatherPageData(self):
-    servlet = banned.Banned('request', 'response', services=self.services)
+    servlet = banned.Banned(services=self.services)
     self.assertNotEqual(servlet.template, None)
 
     _request, mr = testing_helpers.GetRequestObjects()

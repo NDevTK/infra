@@ -12,18 +12,17 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from framework import servlet
+from framework import flaskservlet
 
 
-class ExcessiveActivity(servlet.Servlet):
+class ExcessiveActivity(flaskservlet.FlaskServlet):
   """ExcessiveActivity page shows an error message."""
 
   _PAGE_TEMPLATE = 'framework/excessive-activity-page.ezt'
 
   # pylint: disable=unused-argument
   def GetExcessiveActivity(self, **kwargs):
-    return
-    # return self.handler(**kwargs)
+    return self.handler(**kwargs)
 
   def GatherPageData(self, _mr):
     """Build up a dictionary of data values to use when rendering the page."""

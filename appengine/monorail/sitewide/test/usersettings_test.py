@@ -30,8 +30,7 @@ class UserSettingsTest(unittest.TestCase):
   def setUp(self):
     self.mox = mox.Mox()
     self.services = service_manager.Services(user=fake.UserService())
-    self.servlet = usersettings.UserSettings(
-        'req', 'res', services=self.services)
+    self.servlet = usersettings.UserSettings(services=self.services)
 
   def tearDown(self):
     self.mox.UnsetStubs()

@@ -14,14 +14,14 @@ from six.moves import urllib
 import ezt
 
 from businesslogic import work_env
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
-from framework import servlet
 from framework import template_helpers
 from framework import urls
 
 
-class UserSettings(servlet.Servlet):
+class UserSettings(flaskservlet.FlaskServlet):
   """Shows a page with a simple form to edit user preferences."""
 
   _PAGE_TEMPLATE = 'sitewide/user-settings-page.ezt'
@@ -66,10 +66,8 @@ class UserSettings(servlet.Servlet):
 
   # pylint: disable=unused-argument
   def GetUserSetting(self, **kwargs):
-    return
-    # return self.handler(**kwargs)
+    return self.handler(**kwargs)
 
   # pylint: disable=unused-argument
   def PostUserSetting(self, **kwargs):
-    return
-    # return self.handler(**kwargs)
+    return self.handler(**kwargs)
