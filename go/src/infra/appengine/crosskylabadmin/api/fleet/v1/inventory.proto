@@ -4,8 +4,6 @@
 
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
-
 package crosskylabadmin.fleet;
 
 option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
@@ -29,36 +27,6 @@ service Inventory {
   // DumpStableVersionToDatastore reads the stable version from the LUCI config file
   // and writes it to datastore.
   rpc DumpStableVersionToDatastore(DumpStableVersionToDatastoreRequest) returns (DumpStableVersionToDatastoreResponse);
-}
-
-message GetDutInfoRequest {
-  // id of the DUT to get info for.
-  //
-  // One of id or hostname is required.
-  string id = 1;
-
-  // hostname of the DUT to get info for.
-  //
-  // One of id or hostname is required.
-  string hostname = 2;
-
-  // Indicates if the request must be routed to v1. Otherwise the routing will
-  // be determined by traffic control algorithm.
-  // TODO(guocb) Remove this after inventory v2 migration.
-  bool must_from_v1 = 3;
-}
-
-message GetDutInfoResponse {
-  // spec is the device spec for the requested DUT.
-  //
-  // This is a serialized inventory.DeviceUnderTest protobuf.
-  bytes spec = 1;
-
-  // Timestamp of the latest update of the cached specs in this response.
-  //
-  // Returned specs are guaranteed to be up-to-date with the source of truth as
-  // of this timestamp.
-  google.protobuf.Timestamp updated = 2;
 }
 
 // next tag: 5

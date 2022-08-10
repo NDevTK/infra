@@ -26,21 +26,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-// NewGerritClient returns a new gerrit client.
-//
-// This function is intended to be used within the context of an RPC to this
-// app. The returned gerrit client forwards the oauth token used for the
-// original RPC. In particular, this means that the original oauth credentials
-// must include the gerrit OAuth 2.0 scope.
-func NewGerritClient(c context.Context, host string) (gerritpb.GerritClient, error) {
-	t, err := auth.GetRPCTransport(c, auth.AsCredentialsForwarder)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
-	}
-
-	return gerritapi.NewRESTClient(&http.Client{Transport: t}, host, true)
-}
-
 // NewGerritClientAsSelf returns a new gerrit client using oauth tokens for the
 // current service itself.
 //

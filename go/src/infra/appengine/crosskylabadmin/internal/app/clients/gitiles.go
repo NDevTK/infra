@@ -25,20 +25,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-// NewGitilesClient returns a new gitiles client.
-//
-// This function is intended to be used within the context of an RPC to this
-// app. The returned gitiles client forwards the oauth token used for the
-// original RPC. In particular, this means that the original oauth credentials
-// must include the gerrit OAuth 2.0 scope.
-func NewGitilesClient(c context.Context, host string) (gitiles.GitilesClient, error) {
-	t, err := auth.GetRPCTransport(c, auth.AsCredentialsForwarder)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
-	}
-	return gitilesapi.NewRESTClient(&http.Client{Transport: t}, host, true)
-}
-
 // NewGitilesClientAsSelf returns a new gitiles client using oauth tokens for the
 // current service itself.
 //

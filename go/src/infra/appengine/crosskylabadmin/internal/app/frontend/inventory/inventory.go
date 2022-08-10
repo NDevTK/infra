@@ -117,54 +117,6 @@ func transientErrorRetries() retry.Factory {
 	return transient.Only(next)
 }
 
-func (is *ServerImpl) newGerritClient(c context.Context, host string) (gitstore.GerritClient, error) {
-	if is.GerritFactory != nil {
-		return is.GerritFactory(c, host)
-	}
-	return clients.NewGerritClient(c, host)
-}
-
-func (is *ServerImpl) newGitilesClient(c context.Context, host string) (gitstore.GitilesClient, error) {
-	if is.GitilesFactory != nil {
-		return is.GitilesFactory(c, host)
-	}
-	return clients.NewGitilesClient(c, host)
-}
-
-func (is *ServerImpl) newSwarmingClient(ctx context.Context, host string) (clients.SwarmingClient, error) {
-	if is.SwarmingFactory != nil {
-		return is.SwarmingFactory(ctx, host)
-	}
-	return clients.NewSwarmingClient(ctx, host)
-}
-
-func (is *ServerImpl) newStore(ctx context.Context) (*gitstore.InventoryStore, error) {
-	inventoryConfig := config.Get(ctx).Inventory
-	gerritC, err := is.newGerritClient(ctx, inventoryConfig.GerritHost)
-	if err != nil {
-		return nil, errors.Annotate(err, "create inventory store").Err()
-	}
-	gitilesC, err := is.newGitilesClient(ctx, inventoryConfig.GitilesHost)
-	if err != nil {
-		return nil, errors.Annotate(err, "create inventory store").Err()
-	}
-	return gitstore.NewInventoryStore(gerritC, gitilesC), nil
-}
-
-func (is *ServerImpl) newInventoryClient(ctx context.Context) (inventoryClient, error) {
-	cfg := config.Get(ctx).InventoryProvider
-	gitstore, err := is.newStore(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "create duo client").Err()
-	}
-
-	client, err := newDuoClient(ctx, gitstore, cfg.GetHost(), int(cfg.GetReadTrafficRatio()), int(cfg.GetWriteTrafficRatio()), cfg.GetTestingDeviceUuids(), cfg.GetTestingDeviceNames(), cfg.GetInventoryV2Only())
-	if err != nil {
-		return nil, errors.Annotate(err, "create duo client").Err()
-	}
-	return client, nil
-}
-
 func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.ClientInterface, error) {
 	if is.StableVersionGitClientFactory != nil {
 		return is.StableVersionGitClientFactory(ctx)
