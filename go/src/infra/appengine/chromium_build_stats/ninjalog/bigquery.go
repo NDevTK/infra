@@ -113,6 +113,15 @@ func updateBQTable(ctx context.Context, projectID, table string, initializeTable
 	d := client.Dataset("ninjalog")
 	t := d.Table(table)
 
+	partitioning := &bigquery.TimePartitioning{
+		Field:                  "created_at",
+		RequirePartitionFilter: true,
+		// Daily partitioning is necessary to hold 540 days data which is less than the number of partitioning limit 4000.
+		// https://cloud.google.com/bigquery/quotas#partitioned_tables
+		Type:       bigquery.DayPartitioningType,
+		Expiration: 540 * 24 * time.Hour,
+	}
+
 	if initializeTable {
 		if table == "test" {
 			// Only test table can be deleted.
@@ -137,12 +146,7 @@ func updateBQTable(ctx context.Context, projectID, table string, initializeTable
 					Type: bigquery.TimestampFieldType,
 				},
 			},
-			TimePartitioning: &bigquery.TimePartitioning{
-				Field:                  "created_at",
-				RequirePartitionFilter: true,
-				Type:                   bigquery.HourPartitioningType,
-				Expiration:             540 * 24 * time.Hour,
-			},
+			TimePartitioning: partitioning,
 		})
 		if err != nil {
 			return err
@@ -154,8 +158,9 @@ func updateBQTable(ctx context.Context, projectID, table string, initializeTable
 		return err
 	}
 	_, err = t.Update(ctx, bigquery.TableMetadataToUpdate{
-		Schema:         bqSchema,
-		ExpirationTime: bigquery.NeverExpire,
+		Schema:           bqSchema,
+		ExpirationTime:   bigquery.NeverExpire,
+		TimePartitioning: partitioning,
 	}, md.ETag)
 	return err
 }
