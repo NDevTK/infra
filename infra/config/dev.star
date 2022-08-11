@@ -421,7 +421,7 @@ luci.bucket(
     ],
 )
 
-def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec):
+def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers):
     luci.builder(
         name = name,
         bucket = "loadtest",
@@ -443,17 +443,24 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec):
         },
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
         execution_timeout = sleep_max_sec * steps * time.second + 10 * time.minute,
-        build_numbers = True,
+        build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
     )
 
 # Finishes in ~1min with 10 steps.
-fakebuild_builder("fake-1m", 10, 2, 10)
+fakebuild_builder("fake-1m", 10, 2, 10, True)
+fakebuild_builder("fake-1m-no-bn", 10, 2, 10, False)
 
 # Finishes in ~10min with 100 steps.
-fakebuild_builder("fake-10m", 100, 2, 10)
+fakebuild_builder("fake-10m", 100, 2, 10, True)
+fakebuild_builder("fake-10m-no-bn", 100, 2, 10, False)
 
 # Finishes in ~30min with 300 steps.
-fakebuild_builder("fake-30m", 300, 2, 10)
+fakebuild_builder("fake-30m", 300, 2, 10, True)
+fakebuild_builder("fake-30m-no-bn", 300, 2, 10, False)
 
 # Finishes in ~1h with 600 steps.
-fakebuild_builder("fake-1h", 600, 2, 10)
+fakebuild_builder("fake-1h", 600, 2, 10, True)
+fakebuild_builder("fake-1h-no-bn", 600, 2, 10, False)
