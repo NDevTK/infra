@@ -33,11 +33,11 @@ func wifiRouterRepairPlan() *Plan {
 			"is_wifirouter_tools_present": {
 				Docs: []string{
 					"check whether wifirouter critial tools present: ",
-					"tcpdump, hostapd, dnsmasq, netperf, iperf",
+					"tcpdump, hostapd, dnsmasq, netperf, iperf, iw",
 				},
 				Dependencies:  []string{"cros_ssh"},
 				ExecName:      "cros_is_tool_present",
-				ExecExtraArgs: []string{"tools:tcpdump,hostapd,dnsmasq,netperf,iperf"},
+				ExecExtraArgs: []string{"tools:tcpdump,hostapd,dnsmasq,netperf,iperf,iw"},
 			},
 			"Device is pingable": {
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
