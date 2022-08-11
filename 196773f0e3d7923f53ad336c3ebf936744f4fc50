@@ -33,6 +33,24 @@
       "message": "What happens if package doesn\u0027t have platform? Does that affect anything?",
       "revId": "196773f0e3d7923f53ad336c3ebf936744f4fc50",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "931845ec_7667c36e",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-08-11T00:45:28Z",
+      "side": 1,
+      "message": "No. Platform concept is only a part of recipe. For cipd it\u0027s just part of the package name. For some things there is no platform, ex python, powershell scripts",
+      "parentUuid": "c58d3251_b883c993",
+      "revId": "196773f0e3d7923f53ad336c3ebf936744f4fc50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
