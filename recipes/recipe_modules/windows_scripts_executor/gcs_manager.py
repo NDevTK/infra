@@ -103,8 +103,9 @@ class GCSManager:
         Args:
           gcs_src: sources.GCSSrc proto object referencing an artifact in GCS
     """
-    return self._cache.join(gcs_src.bucket,
-                            helper.conv_to_win_path(gcs_src.source))
+    # source is usually given as a unix path. Ensure this works on windows
+    source = gcs_src.source.split('/')
+    return self._cache.join(gcs_src.bucket, *source)
 
   def get_gs_url(self, gcs_src):
     """ get_gs_url returns the gcs url for the given gcs src
