@@ -42,6 +42,8 @@ func analyzeHistogramTestFile(t *testing.T, filePath, patch, prevDir string) []*
 			date, _ = time.Parse(dateMilestoneFormat, "2020-04-23T00:00:00")
 		case 87:
 			date, _ = time.Parse(dateMilestoneFormat, "2020-10-22T00:00:00")
+		case 88:
+			date, _ = time.Parse(dateMilestoneFormat, "2020-11-12T00:00:00")
 		case 101:
 			date, _ = time.Parse(dateMilestoneFormat, "2022-08-11T00:00:00")
 		default:
