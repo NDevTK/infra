@@ -96,6 +96,7 @@ enum OS {
   IOS = 5;
   CHROME_OS = 6;
   FUCHSIA = 7;
+  LACROS = 8;
 }
 
 // Monorail specific metadata.
