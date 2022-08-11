@@ -107,6 +107,8 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 }
 
 func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.GoldenEyeDevices) error {
+	boardPublicModelMap := make(map[string][]string)
+	boardHasPrivateModelMap := make(map[string]bool)
 	for _, device := range goldenEyeDevices.Devices {
 		if device.LaunchDate == "" {
 			continue
@@ -121,13 +123,19 @@ func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.Go
 			// Already launched board and model, can be added to allowed list
 			for _, board := range device.Boards {
 				logging.Infof(ctx, "Launched Board from Golden Eye Device data %s", board.PublicCodename)
-				var modelNames []string
 				for _, model := range board.Models {
-					modelNames = append(modelNames, model.Name)
+					boardPublicModelMap[board.GetPublicCodename()] = append(boardPublicModelMap[board.GetPublicCodename()], model.Name)
 				}
-				configuration.AddPublicBoardModelData(ctx, board.PublicCodename, modelNames, false)
+			}
+		} else {
+			// Flag the board for private model(s)
+			for _, board := range device.Boards {
+				boardHasPrivateModelMap[board.GetPublicCodename()] = true
 			}
 		}
+	}
+	for board, models := range boardPublicModelMap {
+		configuration.AddPublicBoardModelData(ctx, board, models, boardHasPrivateModelMap[board])
 	}
 	return nil
 }

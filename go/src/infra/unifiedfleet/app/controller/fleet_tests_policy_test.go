@@ -6,6 +6,7 @@ package controller
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/auth/identity"
@@ -15,6 +16,12 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/configuration"
+)
+
+const (
+	LAUNCHED_BOARD                = "launched_board"
+	UNLAUNCHED_BOARD              = "unlaunched_board"
+	LAUNCHED_BOARD_PRIVATE_MODELS = "launched_board_private_models"
 )
 
 func TestIsValidPublicChromiumTest(t *testing.T) {
@@ -316,37 +323,55 @@ func TestImportPublicBoardsAndModels(t *testing.T) {
 	ctx := testingContext()
 	Convey("Import Public Boards and Models", t, func() {
 		Convey("Happy Path", func() {
-			mockDevice := mockDevicesLaunched()
+			mockDevice := mockDevices()
+
 			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+
 			So(err, ShouldBeNil)
 		})
 		Convey("Happy Path Check DataStore", func() {
-			mockDevice := mockDevicesLaunched()
-			err := ImportPublicBoardsAndModels(ctx, mockDevice)
-			entity, err := configuration.GetPublicBoardModelData(ctx, mockDevice.Devices[0].Boards[0].PublicCodename)
+			mockDevice := mockDevices()
+
+			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
+			entity, err := configuration.GetPublicBoardModelData(ctx, LAUNCHED_BOARD)
+
+			So(dataerr, ShouldBeNil)
 			So(err, ShouldBeNil)
-			So(entity.Board, ShouldEqual, mockDevice.Devices[0].Boards[0].PublicCodename)
-			So(entity.Models, ShouldResemble, getModelNamesFromMockBoard(mockDevice.Devices[0].Boards[0]))
+			So(entity.Board, ShouldEqual, LAUNCHED_BOARD)
+			So(len(entity.Models), ShouldEqual, 4)
+			So(entity.BoardHasPrivateModels, ShouldBeFalse)
 		})
 		Convey("Empty Input", func() {
 			mockDevice := &ufspb.GoldenEyeDevices{}
-			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+
+			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
 			entity, err := configuration.GetPublicBoardModelData(ctx, "test")
+
+			So(dataerr, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(entity, ShouldBeNil)
-		})
-		Convey("Unlaunched Devices", func() {
-			mockDevice := mockDevicesUnlaunched()
-			err := ImportPublicBoardsAndModels(ctx, mockDevice)
-			So(err, ShouldBeNil)
 		})
 		Convey("Unlaunched Devices not saved to DataStore", func() {
-			mockDevice := mockDevicesUnlaunched()
-			err := ImportPublicBoardsAndModels(ctx, mockDevice)
-			So(err, ShouldBeNil)
-			entity, err := configuration.GetPublicBoardModelData(ctx, mockDevice.Devices[0].Boards[0].PublicCodename)
+			mockDevice := mockDevices()
+
+			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
+			entity, err := configuration.GetPublicBoardModelData(ctx, UNLAUNCHED_BOARD)
+
+			So(dataerr, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(entity, ShouldBeNil)
+		})
+		Convey("Unlaunched Models not saved to DataStore", func() {
+			mockDevice := mockDevices()
+
+			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
+			entity, err := configuration.GetPublicBoardModelData(ctx, LAUNCHED_BOARD_PRIVATE_MODELS)
+
+			So(dataerr, ShouldBeNil)
+			So(err, ShouldBeNil)
+			So(entity, ShouldNotBeNil)
+			So(len(entity.Models), ShouldEqual, 2)
+			So(entity.BoardHasPrivateModels, ShouldBeTrue)
 		})
 	})
 }
@@ -377,14 +402,14 @@ func TestValidatePublicBoardModel(t *testing.T) {
 	})
 }
 
-func mockDevicesLaunched() *ufspb.GoldenEyeDevices {
+func mockDevices() *ufspb.GoldenEyeDevices {
 	return &ufspb.GoldenEyeDevices{
 		Devices: []*ufspb.GoldenEyeDevice{
 			{
 				LaunchDate: "2022-05-01",
 				Boards: []*ufspb.Board{
 					{
-						PublicCodename: "board1",
+						PublicCodename: LAUNCHED_BOARD,
 						Models: []*ufspb.Model{
 							{Name: "model1"},
 							{Name: "model2"},
@@ -392,21 +417,50 @@ func mockDevicesLaunched() *ufspb.GoldenEyeDevices {
 					},
 				},
 			},
-		},
-	}
-}
-
-func mockDevicesUnlaunched() *ufspb.GoldenEyeDevices {
-	return &ufspb.GoldenEyeDevices{
-		Devices: []*ufspb.GoldenEyeDevice{
 			{
-				LaunchDate: "2023-05-01",
+				LaunchDate: "2022-05-01",
 				Boards: []*ufspb.Board{
 					{
-						PublicCodename: "boardNew",
+						PublicCodename: LAUNCHED_BOARD_PRIVATE_MODELS,
+						Models: []*ufspb.Model{
+							{Name: "modelOld1"},
+							{Name: "modelOld2"},
+						},
+					},
+				},
+			},
+			{
+				LaunchDate: "2021-01-01",
+				Boards: []*ufspb.Board{
+					{
+						PublicCodename: LAUNCHED_BOARD,
+						Models: []*ufspb.Model{
+							{Name: "model3"},
+							{Name: "model4"},
+						},
+					},
+				},
+			},
+			{
+				LaunchDate: time.Now().Add(time.Hour * 10000).Format(DateFormat),
+				Boards: []*ufspb.Board{
+					{
+						PublicCodename: LAUNCHED_BOARD_PRIVATE_MODELS,
 						Models: []*ufspb.Model{
 							{Name: "modelNew1"},
 							{Name: "modelNew2"},
+						},
+					},
+				},
+			},
+			{
+				LaunchDate: time.Now().Add(time.Hour * 10000).Format(DateFormat),
+				Boards: []*ufspb.Board{
+					{
+						PublicCodename: UNLAUNCHED_BOARD,
+						Models: []*ufspb.Model{
+							{Name: "model2New1"},
+							{Name: "model2New2"},
 						},
 					},
 				},
