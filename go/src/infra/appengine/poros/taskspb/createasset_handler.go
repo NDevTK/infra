@@ -26,6 +26,8 @@ import (
 
 	"infra/appengine/poros/api/entities"
 
+	"cloud.google.com/go/compute/metadata"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	protobuf "google.golang.org/protobuf/proto"
@@ -115,7 +117,10 @@ func createAssetFile(ctx context.Context, assetInstanceId string) (string, error
 	if err != nil {
 		return "", err
 	}
-	assetConfiguration := fmt.Sprintf(string(assetFileTemplate), assetInstanceId)
+
+	projectId, _ := metadata.ProjectID()
+	projectUrl := "https://" + projectId + ".appspot.com"
+	assetConfiguration := fmt.Sprintf(string(assetFileTemplate), projectUrl, assetInstanceId)
 	content := []byte(assetConfiguration)
 	tmpfile, err := os.CreateTemp("", "*.deploy.api.textpb")
 	if err != nil {

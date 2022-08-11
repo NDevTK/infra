@@ -1,2 +1,2 @@
-base_url: "https://poros-dev.appspot.com"
+base_url: "%s"
 asset_instance_id: "%s"
