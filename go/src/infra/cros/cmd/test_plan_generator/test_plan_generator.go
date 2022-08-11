@@ -155,7 +155,7 @@ func (c *getTestPlanRun) Run(a subcommands.Application, args []string, env subco
 			log.Print(err)
 			return 6
 		}
-	} else {
+	} else if len(gerritChanges) > 0 {
 		log.Printf("Reading local manifest from %s", c.manifestFile)
 		repoToSrcRootMap, err := manifestutil.GetRepoToRemoteBranchToSourceRootFromFile(c.manifestFile)
 		if err != nil {
@@ -163,6 +163,9 @@ func (c *getTestPlanRun) Run(a subcommands.Application, args []string, env subco
 			return 9
 		}
 		repoToSrcRoot = &repoToSrcRootMap
+	} else {
+		// No need to map non-existent Gerrit changes to path.
+		repoToSrcRoot = &map[string]map[string]string{}
 	}
 
 	testPlan, err := generator.CreateTestPlan(testReqsConfig, sourceTreeConfig, boardPriorityList, bbBuilds, gerritChanges, changeRevs, *repoToSrcRoot)

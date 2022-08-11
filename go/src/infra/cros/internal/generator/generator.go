@@ -65,13 +65,18 @@ perTargetTestReq:
 		targetBuildResults = append(targetBuildResults, *tbr)
 	}
 
-	// Get the source paths of files in the CL(s), and figure out any test pruning
-	// possibilities based on those files.
-	srcPaths, err := srcPaths(gerritChanges, changeRevs, repoToBranchToSrcRoot)
-	if err != nil {
-		return testPlan, err
+	// If there are Gerrit changes, get the source paths of files in the CL(s),
+	// and figure out any test pruning possibilities based on those files.
+	// Otherwise, no pruning is needed so use an empty slice.
+	var gerritSrcPaths []string
+	if len(gerritChanges) > 0 {
+		srcPaths, err := srcPaths(gerritChanges, changeRevs, repoToBranchToSrcRoot)
+		if err != nil {
+			return testPlan, err
+		}
+		gerritSrcPaths = srcPaths
 	}
-	pruneResult, err := extractPruneResult(sourceTreeCfg, srcPaths)
+	pruneResult, err := extractPruneResult(sourceTreeCfg, gerritSrcPaths)
 	if err != nil {
 		return testPlan, err
 	}
