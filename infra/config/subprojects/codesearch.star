@@ -28,6 +28,7 @@ led.users(
     groups = [
         "mdb/chrome-troopers",
         "google/luci-task-force@google.com",
+        "flex-try-led-users",
     ],
     task_realm = "codesearch",
     pool_realm = "pools/codesearch",
