@@ -81,8 +81,8 @@ var Jobs = []*cron.CronTab{
 	{
 		// Sync Goldeneye Data
 		Name:     util.CronJobNames["goldeneyeDevicesSyncCron"],
-		Time:     20 * time.Minute,
-		TrigType: cron.DAILY,
+		Time:     12 * time.Hour,
+		TrigType: cron.EVERY,
 		Job:      getGoldenEyeData,
 	},
 }
