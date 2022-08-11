@@ -93,3 +93,14 @@ func ADBInstallPath(ctx context.Context, run components.Runner, log logger.Logge
 	log.Debugf("adb path: %q", adb.path)
 	return adb.path, nil
 }
+
+// RestartADBDAsRoot restarts adbd on device with root permissions.
+func RestartADBDAsRoot(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	const adbRootCmd = "adb -s %s root"
+	cmd := fmt.Sprintf(adbRootCmd, serialNumber)
+	if _, err := run(ctx, time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "restart adb as root").Err()
+	}
+	log.Debugf("adb runs with root permissions on the device: %q", serialNumber)
+	return nil
+}

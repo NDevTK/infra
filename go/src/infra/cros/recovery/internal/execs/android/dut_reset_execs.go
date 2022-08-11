@@ -16,6 +16,16 @@ import (
 	"infra/cros/recovery/internal/retry"
 )
 
+// restartADBDAsRoot restarts adbd as root on the device.
+func restartADBDAsRoot(ctx context.Context, info *execs.ExecInfo) error {
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	err := adb.RestartADBDAsRoot(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "restart adbd as root").Err()
+	}
+	return nil
+}
+
 // resetDutExec resets DUT.
 func resetDutExec(ctx context.Context, info *execs.ExecInfo) error {
 	serialNumber := info.GetAndroid().GetSerialNumber()
@@ -84,6 +94,7 @@ func connectToWiFiNetwork(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func init() {
+	execs.Register("android_restart_adbd_as_root", restartADBDAsRoot)
 	execs.Register("android_dut_reset", resetDutExec)
 	execs.Register("android_wait_for_offline_dut", waitTillDutOfflineExec)
 	execs.Register("android_wait_for_online_dut", waitTillDutOnlineExec)
