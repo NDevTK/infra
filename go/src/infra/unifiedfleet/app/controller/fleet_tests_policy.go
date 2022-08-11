@@ -77,12 +77,6 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 	}
 
 	// Validate if the board and model are public
-	if req.Board == "" {
-		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Board cannot be empty for public tests.")
-	}
-	if req.Model == "" {
-		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Model cannot be empty for public tests.")
-	}
 	if err := validatePublicBoardModel(ctx, req.Board, req.Model); err != nil {
 		return err
 	}
@@ -181,9 +175,20 @@ func getValidPublicTestNames() []string {
 }
 
 func validatePublicBoardModel(ctx context.Context, board string, model string) error {
+	if board == "" {
+		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Board cannot be empty for public tests.")
+	}
+
 	publicBoardEntity, err := configuration.GetPublicBoardModelData(ctx, board)
 	if err != nil {
 		return &InvalidBoardError{Board: board}
+	}
+	if model == "" {
+		if publicBoardEntity.BoardHasPrivateModels {
+			return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Model cannot be empty as the specified board has unlaunched models.")
+		} else {
+			return nil
+		}
 	}
 	for _, m := range publicBoardEntity.Models {
 		if m == model {

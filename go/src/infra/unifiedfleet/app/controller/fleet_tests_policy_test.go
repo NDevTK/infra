@@ -155,7 +155,47 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Board cannot be empty")
 		})
-		Convey("Missing Models", func() {
+		Convey("Missing Models - returns error if board has private models", func() {
+			configuration.AddPublicBoardModelData(ctx, "fakePrivateBoard", []string{"fakeModelLaunched"}, true)
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "fakePrivateBoard",
+				Image:    "eve-public/R105-14988.0.0",
+			}
+
+			err := IsValidTest(ctx, req)
+
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Model cannot be empty as the specified board has unlaunched models")
+		})
+		Convey("Public Model and Public Board With Private Model - succeeds", func() {
+			configuration.AddPublicBoardModelData(ctx, "fakePrivateBoard", []string{"fakeModelLaunched"}, true)
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "fakePrivateBoard",
+				Model:    "fakeModelLaunched",
+				Image:    "eve-public/R105-14988.0.0",
+			}
+
+			err := IsValidTest(ctx, req)
+
+			So(err, ShouldBeNil)
+		})
+		Convey("Private Model and Public Board With Public Models - returns error", func() {
+			configuration.AddPublicBoardModelData(ctx, "fakePrivateBoard", []string{"fakeModelLaunched"}, true)
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "fakePrivateBoard",
+				Model:    "fakeModelUnLaunched",
+				Image:    "eve-public/R105-14988.0.0",
+			}
+
+			err := IsValidTest(ctx, req)
+
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "private model")
+		})
+		Convey("Missing Models - ok for public boards with only public models", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -164,8 +204,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Model cannot be empty")
+			So(err, ShouldBeNil)
 		})
 		Convey("Missing Image", func() {
 			req := &api.CheckFleetTestsPolicyRequest{

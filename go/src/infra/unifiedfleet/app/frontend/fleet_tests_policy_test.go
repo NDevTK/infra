@@ -135,6 +135,18 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "Board cannot be empty")
 		})
 		Convey("Missing Models", func() {
+			configuration.AddPublicBoardModelData(ctx, "fakeBoard", []string{"fakeModel"}, true)
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName: "tast.lacros",
+				Board:    "fakeBoard",
+				Image:    "R100-14495.0.0-rc1",
+			}
+
+			_, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Model cannot be empty as the specified board has unlaunched models")
+		})
+		Convey("Missing Models - succeeds for boards with only public models", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -142,8 +154,7 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 			}
 
 			_, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Model cannot be empty")
+			So(err, ShouldBeNil)
 		})
 		Convey("Missing Image", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
