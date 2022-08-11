@@ -1,2 +1,2 @@
 #!/bin/sh
-sysctl -n hw.physicalcpu
+sysctl -n hw.logicalcpu
