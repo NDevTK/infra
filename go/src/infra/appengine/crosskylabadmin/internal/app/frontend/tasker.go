@@ -21,7 +21,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
@@ -53,10 +52,4 @@ func runTaskByBotID(ctx context.Context, at util.Task, sc clients.SwarmingClient
 	}
 	logging.Infof(ctx, "successfully kick off task %s for bot %s", tid, botID)
 	return util.URLForTask(ctx, tid), nil
-}
-
-var dutStateForTask = map[fleet.TaskType]string{
-	fleet.TaskType_Cleanup: "needs_cleanup",
-	fleet.TaskType_Repair:  "needs_repair",
-	fleet.TaskType_Reset:   "needs_reset",
 }

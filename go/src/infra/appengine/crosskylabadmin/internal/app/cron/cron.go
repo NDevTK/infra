@@ -105,10 +105,9 @@ func pushBotsForAdminTasksCronHandler(c *router.Context, dutStates ...fleet.DutS
 
 	for _, dutState := range dutStates {
 		logging.Infof(c.Context, fmt.Sprintf("Started push AdminTasks for state %#v", dutState.String()))
-		request := fleet.PushBotsForAdminTasksRequest{
+		if _, err := tsi.PushBotsForAdminTasks(c.Context, &fleet.PushBotsForAdminTasksRequest{
 			TargetDutState: dutState,
-		}
-		if _, err := tsi.PushBotsForAdminTasks(c.Context, &request); err != nil {
+		}); err != nil {
 			return err
 		}
 		logging.Infof(c.Context, fmt.Sprintf("Finished push AdminTasks for state %#v", dutState.String()))
@@ -157,10 +156,9 @@ func pushAdminAuditJobsCronHandler(c *router.Context, auditTask fleet.AuditTask)
 	}
 
 	tsi := frontend.TrackerServerImpl{}
-	req := &fleet.PushBotsForAdminAuditTasksRequest{
+	if _, err := tsi.PushBotsForAdminAuditTasks(c.Context, &fleet.PushBotsForAdminAuditTasksRequest{
 		Task: auditTask,
-	}
-	if _, err := tsi.PushBotsForAdminAuditTasks(c.Context, req); err != nil {
+	}); err != nil {
 		return err
 	}
 	logging.Infof(c.Context, "Successfully finished")
