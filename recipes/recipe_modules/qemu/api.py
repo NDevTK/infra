@@ -8,10 +8,6 @@ from textwrap import dedent
 
 QEMU_PKG = 'infra/3pp/tools/qemu/linux-amd64'
 
-# disk formats available on our linux bots
-DISK_FORMATS = frozenset(
-    ['exfat', 'ext3', 'fat', 'msdos', 'vfat', 'ext2', 'ext4', 'ntfs'])
-
 QMP_HOST = 'localhost:4444'
 
 QMP_SOCKET = 'tcp:' + QMP_HOST + ',server,nowait'
@@ -121,10 +117,22 @@ class QEMUAPI(recipe_api.RecipeApi):
       * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
       * size: size of the disk image in bytes
     """
-    # check if the given format is supported
-    if fs_format not in DISK_FORMATS:
-      raise self.m.step.StepFailure(
-          'Disk format {} not supported'.format(fs_format))
+    # The relation between file system format as recorded by the MBR(msdos)
+    # partition table and the actual format on the partition is given by this
+    # relation. This is mostly because exfat, fat, vfat, and msdos are all
+    # recorded as fat32.
+    FILESYSTEM_AND_PARTITION_ENTRY = {
+        'exfat': 'fat32',
+        'ext3': 'ext3',
+        'ext2': 'ext2',
+        'ext4': 'ext4',
+        'fat': 'fat32',
+        'vfat': 'fat32',
+        'ntfs': 'ntfs',
+        'msdos': 'fat32'
+    }
+    if fs_format not in FILESYSTEM_AND_PARTITION_ENTRY.keys():
+      raise self.m.step.StepFailure('{} not supported'.format(fs_format))
     res = self.m.step(
         name='Check if there is enough space on disk',
         cmd=['df', '--output=avail', self.disks],
@@ -134,18 +142,25 @@ class QEMUAPI(recipe_api.RecipeApi):
       raise self.m.step.StepFailure(
           'No space on the bot. Required {}, available {}'.format(
               size, free_disk))
-    # First create a blank image for given size
+    # Create disk of minimum 100 MiB. We can't create less than 32763.5 KiB
+    # Because we can't format FAT32 on it. Use a minimum of 100 MiB drive. Just
+    # so that we don't have to worry about overhead-space/data ratio. I didn't
+    # come up with that number. That is the minimum partition size that
+    # microsoft recommends for any partition.
+    # https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-biosmbr-based-hard-drive-partitions?view=windows-11#system-partition
+    if size < 104857600:
+      size = 104857600
+    # First create a blank image for given size, We create a msdos style
+    # partition table with one partition only
     self.m.step(
         name='Create blank image {} {}'.format(disk_name, self.disks),
         cmd=[
-            self.path.join('qemu-img'), 'create',
-            self.disks.join(disk_name),
-            str(size)
+            'python3',
+            self.resource('mk_virt_disk.py'), '-p',
+            'pe_type=primary,pe_fs={},fs={},size={}'.format(
+                FILESYSTEM_AND_PARTITION_ENTRY[fs_format], fs_format, size),
+            self.disks.join(disk_name)
         ])
-    self.m.step(
-        name='Format image',
-        cmd=['mkfs.{}'.format(fs_format),
-             self.disks.join(disk_name)])
 
   def mount_disk_image(self, disk_name):
     """ mount_disk_image mounts the given image and returns the mount location
@@ -168,7 +183,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     try:
       res = self.m.step(
           name='Mount loop',
-          cmd=['udisksctl', 'mount', '-b', loop_file],
+          cmd=['udisksctl', 'mount', '-b', loop_file + 'p1'],
           stdout=self.m.raw_io.output())
     except Exception as e:
       # If we fail to mount the loop device, delete it
@@ -188,7 +203,8 @@ class QEMUAPI(recipe_api.RecipeApi):
     """
     # unmount the loop device
     self.m.step(
-        name='Unmount loop', cmd=['udisksctl', 'unmount', '-b', loop_file])
+        name='Unmount loop',
+        cmd=['udisksctl', 'unmount', '-b', loop_file + 'p1'])
     # delete the loop device
     self.m.step(
         name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])

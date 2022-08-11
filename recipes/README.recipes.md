@@ -585,11 +585,11 @@ built-in to the OS image (if available).
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#25)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#21)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API to manage qemu VMs 
 
-&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#63)(self, disk_name, fs_format='fat', min_size=0, include=()):**
+&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#59)(self, disk_name, fs_format='fat', min_size=0, include=()):**
 
 create_disk creates a virtual disk with the given name, format and size.
 
@@ -604,7 +604,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#116)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#112)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -613,9 +613,9 @@ Args:
   * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
   * size: size of the disk image in bytes
 
-&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#37)(self):**
+&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#33)(self):**
 
-&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#41)(self, version):**
+&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#37)(self, version):**
 
 Initialize the module, ensure that qemu exists on the system
 
@@ -626,7 +626,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#150)(self, disk_name):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#165)(self, disk_name):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -636,9 +636,9 @@ Args:
 
 Returns: loop file used for the disk and mount location
 
-&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#33)(self):**
+&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#29)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#219)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#235)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
@@ -648,7 +648,7 @@ Args:
 
 Returns: True if powerdown signal was sent to VM. False otherwise
 
-&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#241)(self, name):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#257)(self, name):**
 
 quit_vm sends a quit signal to the qemu process. Use this if your VM
 doesn't respond to powerdown signal.
@@ -658,7 +658,7 @@ Args:
 
 Returns: True if quit signal was sent to VM. False otherwise
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#196)(self, name, arch, memory, disks):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#212)(self, name, arch, memory, disks):**
 
 start_vm starts a qemu vm with given disks attached
 
@@ -672,14 +672,14 @@ Args:
   * memory: RAM size on the VM
   * disks: list of disks to attach to the VM (except boot)
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#183)(self, loop_file):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#198)(self, loop_file):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#263)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#279)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`
