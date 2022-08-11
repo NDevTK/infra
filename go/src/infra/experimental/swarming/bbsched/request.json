@@ -1,0 +1,7 @@
+{
+    "builder": {
+        "project": "infra",
+        "bucket": "loadtest",
+        "builder": "fake-1m-no-bn"
+    }
+}
