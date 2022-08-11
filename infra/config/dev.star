@@ -464,3 +464,41 @@ fakebuild_builder("fake-30m-no-bn", 300, 2, 10, False)
 # Finishes in ~1h with 600 steps.
 fakebuild_builder("fake-1h", 600, 2, 10, True)
 fakebuild_builder("fake-1h-no-bn", 600, 2, 10, False)
+
+def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, sleep_max_sec, build_numbers):
+    luci.builder(
+        name = name,
+        bucket = "loadtest",
+        executable = luci.executable(
+            name = "fakebuild",
+            cipd_package = "infra/experimental/swarming/fakebuild/${platform}",
+            cipd_version = "latest",
+            cmd = ["fakebuild"],
+        ),
+        dimensions = {
+            "os": "Linux",
+            "cpu": "x86-64",
+            "pool": "infra.loadtest.0",
+        },
+        properties = {
+            "child_builds": {
+                "builder": {
+                    "project": "infra",
+                    "bucket": "loadtest",
+                    "builder": builder,
+                },
+                "children": children,
+                "batch_size": batch_size,
+                "sleep_min_sec": sleep_min_sec,
+                "sleep_max_sec": sleep_max_sec,
+            },
+        },
+        service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
+    )
+
+fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-1m", 2, 10, True)
+fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-1m-no-bn", 2, 10, False)
