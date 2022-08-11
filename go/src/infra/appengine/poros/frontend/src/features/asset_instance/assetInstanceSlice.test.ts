@@ -28,6 +28,7 @@ const testAssetInstance: AssetInstanceModel = {
   assetId: 'test asset id',
   status: 'test status',
   createdBy: '',
+  projectId: 'testProjectId',
   createdAt: undefined,
   modifiedBy: '',
   modifiedAt: undefined,

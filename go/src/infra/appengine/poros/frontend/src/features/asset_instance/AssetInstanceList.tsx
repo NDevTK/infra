@@ -19,7 +19,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Card, CardContent, IconButton, Typography } from '@mui/material';
+import { Card, CardContent, IconButton, Link, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { onSelectRecord, queryAssetInstanceAsync } from './assetInstanceSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -67,7 +67,7 @@ export function AssetInstanceList() {
       flex: 1,
       valueGetter: getAssetName,
     },
-    { field: 'assetId', headerName: 'AssetId', flex: 1 },
+    { field: 'assetId', headerName: 'AssetId', flex: 1, hide: true },
     { field: 'status', headerName: 'Status', flex: 1 },
     {
       field: 'createdAt',
@@ -76,10 +76,23 @@ export function AssetInstanceList() {
       valueGetter: getLocalTime,
     },
     {
+      field: 'createdBy',
+      headerName: 'Created By',
+      flex: 1,
+    },
+    {
       field: 'deleteAt',
       headerName: 'Delete At',
       flex: 1,
       valueGetter: getLocalTime,
+    },
+    {
+      field: 'projectId',
+      headerName: 'Project',
+      flex: 2,
+      renderCell: (cellValues) => {
+        return <Link target={'_blank'} href={`${getProject(cellValues)}`}>{getProject(cellValues)}</Link>;
+      },
     },
     {
       field: 'Edit',
@@ -161,6 +174,12 @@ export function AssetInstanceList() {
     ) {
       return params.row.deleteAt.toLocaleString();
     }
+  }
+
+  function getProject(params: GridValueGetterParams) {
+    if(params.row.projectId == '') return '';
+
+    return `https://console.cloud.google.com/compute/instances?project=${params.row.projectId}`
   }
 
   function getAssetName(params: GridValueGetterParams) {

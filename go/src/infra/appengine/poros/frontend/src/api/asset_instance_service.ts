@@ -66,6 +66,8 @@ export interface AssetInstanceModel {
   status: string;
   /** User who created the record */
   createdBy: string;
+  /** GCP Project on which project will be deployed */
+  projectId: string;
   /** Timestamp for the creation of the record */
   createdAt: Date | undefined;
   /** User who modified the record */
@@ -83,6 +85,7 @@ export const AssetInstanceModel = {
       assetId: '',
       status: '',
       createdBy: '',
+      projectId: '',
       createdAt: undefined,
       modifiedBy: '',
       modifiedAt: undefined,
@@ -100,6 +103,7 @@ export const AssetInstanceModel = {
       createdAt: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
         : undefined,
+      projectId: isSet(object.projectId) ? String(object.projectId) : '',
       modifiedBy: isSet(object.modifiedBy) ? String(object.modifiedBy) : '',
       modifiedAt: isSet(object.modifiedAt)
         ? fromJsonTimestamp(object.modifiedAt)
