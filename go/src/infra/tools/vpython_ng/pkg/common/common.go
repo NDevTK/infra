@@ -9,16 +9,16 @@ import (
 	"runtime"
 )
 
-func Python3(path string) string {
+func Python(path, py string) string {
 	if runtime.GOOS == "windows" {
-		return filepath.Join(path, "bin", "python3.exe")
+		return filepath.Join(path, "bin", py+".exe")
 	}
-	return filepath.Join(path, "bin", "python3")
+	return filepath.Join(path, "bin", py)
 }
 
-func Python3VENV(path string) string {
+func PythonVENV(path, py string) string {
 	if runtime.GOOS == "windows" {
-		return filepath.Join(path, "Scripts", "python3.exe")
+		return filepath.Join(path, "Scripts", py+".exe")
 	}
-	return filepath.Join(path, "bin", "python3")
+	return filepath.Join(path, "bin", py)
 }

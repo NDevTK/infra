@@ -80,11 +80,18 @@ type Application struct {
 	// bootstrapping and execute with the local system interpreter.
 	Bypass bool
 
+	// Help, if true, displays the usage from both vpython and python
+	Help  bool
+	Usage string
+
 	// Path to environment specification file to load. Default probes for one.
 	SpecPath string
 
 	// Path to default specification file to load if no specification is found.
 	DefaultSpecPath string
+
+	// Pattern of default specification file. If empty, uses .vpython3.
+	DefaultSpecPattern string
 
 	// Path to virtual environment root directory.
 	// If explicitly set to empty string, a temporary directory will be used and
@@ -166,6 +173,11 @@ func (a *Application) ParseEnvs() (err error) {
 
 func (a *Application) ParseArgs() (err error) {
 	var fs flag.FlagSet
+	fs.BoolVar(&a.Help, "help", a.Help,
+		"Display help for 'vpython' top-level arguments.")
+	fs.BoolVar(&a.Help, "h", a.Help,
+		"Display help for 'vpython' top-level arguments (same as -help).")
+
 	fs.StringVar(&a.VpythonRoot, "vpython-root", a.VpythonRoot,
 		"Path to virtual environment root directory. "+
 			"If explicitly set to empty string, a temporary directory will be used and cleaned up "+
@@ -185,6 +197,19 @@ func (a *Application) ParseArgs() (err error) {
 	if a.PythonCommandLine, err = python.ParseCommandLine(pythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse python commandline").Err()
 	}
+
+	if a.Help {
+		var usage strings.Builder
+		fmt.Fprintln(&usage, "Usage of vpython:")
+		fs.SetOutput(&usage)
+		fs.PrintDefaults()
+		a.Usage = usage.String()
+
+		a.PythonCommandLine = &python.CommandLine{
+			Target: python.NoTarget{},
+		}
+		a.PythonCommandLine.AddSingleFlag("help")
+	}
 	return nil
 }
 
@@ -200,15 +225,20 @@ func (a *Application) LoadSpec() error {
 		return nil
 	}
 
+	specPattern := a.DefaultSpecPattern
+	if specPattern == "" {
+		specPattern = ".vpython3"
+	}
+
 	opts := vpython.Options{
 		SpecLoader: spec.Loader{
 			CommonFilesystemBarriers: []string{
 				".gclient",
 			},
 			CommonSpecNames: []string{
-				".vpython3",
+				specPattern,
 			},
-			PartnerSuffix: ".vpython3",
+			PartnerSuffix: specPattern,
 		},
 		CommandLine: a.PythonCommandLine,
 		WorkDir:     a.WorkDir,
@@ -287,7 +317,7 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		cmd.Stderr = &out
 		cmd.Dir = p.Directory()
 		if err := builtins.Execute(ctx, cmd); err != nil {
-			logging.Errorf(ctx, "%#v", out.String())
+			logging.Errorf(ctx, "%s", out.String())
 			return err
 		}
 		return nil
@@ -302,7 +332,7 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		a.Must(utilities.RUnlockRecursive(s, pkg))
 	}
 
-	a.PythonExecutable = common.Python3VENV(pkg.Directory())
+	a.PythonExecutable = common.PythonVENV(pkg.Directory(), a.PythonExecutable)
 
 	// Prune used packages
 	if a.PruneThreshold > 0 {
@@ -314,9 +344,9 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 func (a *Application) ExecutePython() error {
 	ctx := a.Context
 
-	if a.Bypass && a.PythonExecutable == "" {
+	if a.Bypass {
 		var err error
-		if a.PythonExecutable, err = exec.LookPath("python3"); err != nil {
+		if a.PythonExecutable, err = exec.LookPath(a.PythonExecutable); err != nil {
 			return errors.Annotate(err, "failed to find python in path").Err()
 		}
 	}

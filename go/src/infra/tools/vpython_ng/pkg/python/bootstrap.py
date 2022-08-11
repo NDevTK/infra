@@ -17,7 +17,7 @@ subprocess.check_call([
 
 # Install wheels to virtual environment
 if 'wheels' in os.environ:
-  pip = glob.glob(os.path.join(os.environ['out'], '*', 'pip3*'))[0]
+  pip = glob.glob(os.path.join(os.environ['out'], '*', 'pip*'))[0]
   subprocess.check_call([
       pip,
       'install',
@@ -32,6 +32,11 @@ if 'wheels' in os.environ:
 
 # Generate all .pyc in the output directory. This prevent generating .pyc on the
 # fly, which modifies derivation output after the build.
-subprocess.check_call([
-    sys.executable, '-m', 'compileall', os.environ['out']
-])
+# It may fail because lack of permission. Ignore the error since it won't affect
+# correctness if .pyc can't be written to the directory anyway.
+try:
+  subprocess.check_call([
+      sys.executable, '-m', 'compileall', os.environ['out']
+  ])
+except subprocess.CalledProcessError as e:
+  print('complieall failed and ignored: {}'.format(e.returncode))

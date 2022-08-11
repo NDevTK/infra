@@ -41,6 +41,7 @@ func cmd(app *application.Application) *exec.Cmd {
 		"-vpython-root",
 		testStorageDir,
 	}, app.Arguments...)
+	app.PythonExecutable = "python3"
 
 	app.Initialize()
 
@@ -50,7 +51,8 @@ func cmd(app *application.Application) *exec.Cmd {
 	So(app.LoadSpec(), ShouldBeNil)
 
 	env := python.Environment{
-		CPython:    python.CPythonFromCIPD("version:2@3.8.10.chromium.24"),
+		Executable: app.PythonExecutable,
+		CPython:    python.CPython3FromCIPD("version:2@3.8.10.chromium.24"),
 		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.10.chromium.7"),
 	}
 	wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())

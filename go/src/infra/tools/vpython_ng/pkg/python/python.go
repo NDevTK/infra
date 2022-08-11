@@ -6,6 +6,7 @@ package python
 
 import (
 	_ "embed"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -20,11 +21,12 @@ import (
 )
 
 type Environment struct {
+	Executable string
 	CPython    cipkg.Generator
 	Virtualenv cipkg.Generator
 }
 
-func CPythonFromCIPD(version string) cipkg.Generator {
+func CPython3FromCIPD(version string) cipkg.Generator {
 	return &builtins.CIPDEnsure{
 		Name: "cpython",
 		Ensure: ensure.File{
@@ -57,7 +59,7 @@ func (e *Environment) Pep425Tags() cipkg.Generator {
 	// Generate an empty virtual environment to probe the pep425tags
 	empty := &utilities.BaseGenerator{
 		Name:    "python_venv",
-		Builder: common.Python3("{{.cpython}}"),
+		Builder: common.Python("{{.cpython}}", e.Executable),
 		Args:    []string{"-c", pythonVenvBootstrapScript},
 		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: e.CPython, Runtime: true},
@@ -66,7 +68,7 @@ func (e *Environment) Pep425Tags() cipkg.Generator {
 	}
 	return &utilities.BaseGenerator{
 		Name:    "python_pep425tags",
-		Builder: common.Python3VENV("{{.python_venv}}"),
+		Builder: common.PythonVENV("{{.python_venv}}", e.Executable),
 		Args:    []string{"-c", pythonPep425TagsScript},
 		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: empty},
@@ -80,7 +82,7 @@ var pythonVenvBootstrapScript string
 func (e *Environment) WithWheels(wheels cipkg.Generator) cipkg.Generator {
 	return &utilities.BaseGenerator{
 		Name:    "python_venv",
-		Builder: common.Python3("{{.cpython}}"),
+		Builder: common.Python("{{.cpython}}", e.Executable),
 		Args:    []string{"-c", pythonVenvBootstrapScript},
 		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: e.CPython, Runtime: true},
@@ -93,13 +95,13 @@ func (e *Environment) WithWheels(wheels cipkg.Generator) cipkg.Generator {
 	}
 }
 
-func CPythonFromRelativePath(subdir string) (cipkg.Generator, error) {
+func CPythonFromRelativePath(subdir, cipdName string) (cipkg.Generator, error) {
 	path, err := os.Executable()
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get executable").Err()
 	}
 	cpythonDir := filepath.Join(filepath.Dir(path), subdir)
-	v, err := os.Open(filepath.Join(cpythonDir, ".versions", "cpython3.cipd_version"))
+	v, err := os.Open(filepath.Join(cpythonDir, ".versions", fmt.Sprintf("%s.cipd_version", cipdName)))
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, errors.Reason("Bundled Python %s not found. Use VPYTHON_BYPASS if prebuilt cpython not available on this platform.", subdir).Err()
