@@ -21,7 +21,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/stdcopy"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/log"
@@ -208,61 +207,19 @@ func (d *dockerClient) Exec(ctx context.Context, containerName string, req *Exec
 			ExitCode: -1,
 		}, errors.Reason("exec container: container is down").Err()
 	}
-	ctx, cancel := context.WithTimeout(ctx, req.Timeout)
-	defer cancel()
-
-	log.Debugf(ctx, "Docker exec cmd %+v on container %q\n", req.Cmd, containerName)
-	execConfig := types.ExecConfig{
-		AttachStdout: true,
-		AttachStderr: true,
-		Privileged:   true,
-		Cmd:          req.Cmd,
-	}
-	cresp, err := d.client.ContainerExecCreate(ctx, containerName, execConfig)
-	if err != nil {
-		return nil, errors.Annotate(err, "exec container: Fail to create exec command.").Err()
-	}
-	execID := cresp.ID
-
-	aresp, err := d.client.ContainerExecAttach(ctx, execID, types.ExecStartCheck{})
-	if err != nil {
-		log.Debugf(ctx, "Fail to attach to PID %q", execID)
-		return &ExecResponse{ExitCode: -1}, errors.Reason("exec container: Fail to attach to exec process").Err()
-	}
-	defer aresp.Close()
-
-	var outBuf, errBuf bytes.Buffer
-	outputDone := make(chan error, 1)
-
-	go func() {
-		// Demultiplexing the exec stdout into two buffers
-		_, err = stdcopy.StdCopy(&outBuf, &errBuf, aresp.Reader)
-		outputDone <- err
-	}()
-
-	select {
-	case err := <-outputDone:
-		if err != nil {
-			log.Debugf(ctx, "Fail to get output docker exec cmd %+v on container %q\n", req.Cmd, containerName)
-			return &ExecResponse{ExitCode: 1}, err
-		}
-		break
-
-	case <-ctx.Done():
-		return &ExecResponse{ExitCode: 124}, errors.Reason("run with timeout %s: exceeded timeout", req.Timeout).Err()
-	}
-
-	// get the exit code
-	iresp, err := d.client.ContainerExecInspect(ctx, execID)
-	if err != nil {
-		return &ExecResponse{ExitCode: 1}, errors.Annotate(err, "docker exec: fail to get exit code").Err()
-	}
-	res := &ExecResponse{ExitCode: iresp.ExitCode, Stdout: outBuf.String(), Stderr: errBuf.String()}
+	// The commands executed is not restricted by logic and it required to run them under sh without TTY.
+	args := []string{"exec", "-i", containerName}
+	args = append(args, req.Cmd...)
+	res, err := runWithTimeout(ctx, req.Timeout, "docker", args...)
 	log.Debugf(ctx, "Run docker exec %q: exitcode: %v", containerName, res.ExitCode)
 	log.Debugf(ctx, "Run docker exec %q: stdout: %v", containerName, res.Stdout)
 	log.Debugf(ctx, "Run docker exec %q: stderr: %v", containerName, res.Stderr)
 	log.Debugf(ctx, "Run docker exec %q: err: %v", containerName, err)
-	return res, nil
+	return &ExecResponse{
+		ExitCode: res.ExitCode,
+		Stdout:   res.Stdout,
+		Stderr:   res.Stderr,
+	}, errors.Annotate(err, "run docker image %q: %v", containerName, res.Stderr).Err()
 }
 
 // PrintAllContainers prints all active containers.
