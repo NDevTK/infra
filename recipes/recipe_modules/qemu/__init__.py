@@ -5,10 +5,11 @@
 DEPS = [
     'recipe_engine/cipd',
     'recipe_engine/path',
+    'recipe_engine/platform',
     'recipe_engine/raw_io',
     'recipe_engine/step',
     'recipe_engine/file',
     'recipe_engine/json',
 ]
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+PYTHON_VERSION_COMPATIBILITY = 'PY3'

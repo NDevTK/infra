@@ -9,8 +9,10 @@ from textwrap import dedent
 QEMU_PKG = 'infra/3pp/tools/qemu/linux-amd64'
 
 QMP_HOST = 'localhost:4444'
+SERIAL_HOST = 'localhost:4445'
 
 QMP_SOCKET = 'tcp:' + QMP_HOST + ',server,nowait'
+SERIAL_SOCKET = 'tcp:' + SERIAL_HOST + ',server,nowait'
 
 
 class QEMUError(Exception):
@@ -53,7 +55,8 @@ class QEMUAPI(recipe_api.RecipeApi):
 
     # download the binaries to the install directory
     e = self.m.cipd.EnsureFile()
-    e.add_package(QEMU_PKG, version)
+    # download latest if nothing is given
+    e.add_package(QEMU_PKG, version if version else 'latest')
     self.m.cipd.ensure(self._install_dir, e, name="Download qemu")
 
   def create_disk(self, disk_name, fs_format='fat', min_size=0, include=()):
@@ -209,28 +212,77 @@ class QEMUAPI(recipe_api.RecipeApi):
     self.m.step(
         name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])
 
-  def start_vm(self, name, arch, memory, disks):
-    """ start_vm starts a qemu vm with given disks attached
+  def start_vm(self, arch, qemu_vm, kvm=False):
+    """ start_vm starts a qemu vm
 
-    QEMU is started with qemu_monitor running a qmp service in a unix
-    domain socket at [QEMU_WORKDIR]/<name>-mon. This will allow us to
-    monitor and control the VM. VM is started as a daemon.
+    QEMU is started with qemu_monitor running a qmp service. It also connects
+    the serial port of the machine to a tcp port.
 
     Args:
-      * name: name of the new VM
-      * arch: architecture to run the VM on
-      * memory: RAM size on the VM
-      * disks: list of disks to attach to the VM (except boot)
+     * arch: The arch that the VM should be based on
+     * qemu_vm: QEMU_VM proto object containing all the config for starting
+                the vm
+     * kvm: If true then VM is run on hardware. It's emulated otherwise
     """
+    host_arch = self.m.platform.arch
+    if kvm:
+      if (host_arch == 'arm' and (arch == 'amd64' or arch == 'x86')) or \
+          (host_arch == 'intel' and arch == 'aarch64'):
+        raise QEMUError('Cannot enable {} kvm on {}'.format(arch, host_arch))
+    # Map the WIB config arch to qemu arch
+    ARCH_TO_QEMU_ARCH = {'amd64': 'x86_64', 'aarch64': 'aarch64', 'x86': 'i386'}
     cmd = [
-        self.path.join('qemu-system-{}'.format(arch)), '-qmp', QMP_SOCKET,
-        '-daemonize', '-m', memory
+        self.path.join('qemu-system-{}'.format(ARCH_TO_QEMU_ARCH[arch])),
+        '-qmp',
+        QMP_SOCKET,  # start a qmp service
+        '--serial',
+        SERIAL_SOCKET,  # serial over tcp
+        '-daemonize',  # run in background
+        '-name',
+        qemu_vm.name  # name the vm
     ]
-    for i, d in enumerate(disks):
-      cmd.append('-drive')
-      cmd.append('file={},format=raw,if=ide,media=disk,index={}'.format(
-          self.disks.join(d), i))
-    self.m.step(name='Start vm {}'.format(name), cmd=cmd)
+    if kvm:
+      # Enable kvm if it was asked for
+      cmd += ['--enable-kvm']
+    if qemu_vm.memory:
+      # Add ram size if given
+      cmd += ['-m', '{}M'.format(qemu_vm.memory)]
+    if qemu_vm.cpu:
+      # Add cpu config if given
+      cmd += ['-cpu', qemu_vm.cpu]
+    if qemu_vm.machine:
+      # Add machine config if given
+      cmd += ['-machine', qemu_vm.machine]
+    if qemu_vm.smp:
+      # Add smp config if given
+      cmd += ['-smp', qemu_vm.smp]
+    for dev in qemu_vm.device:
+      # Add device configs if given
+      cmd += ['-device', dev]
+    for drive in qemu_vm.drives:
+      # Add the file to be used for the drive
+      drive_opts = 'file={},'.format(self.disks.join(drive.name))
+      # Add an id to the drive. Useful in specifying device for it
+      drive_opts += 'id={},'.format(drive.name)
+      if drive.interface:
+        # Add interface if given
+        drive_opts += 'if={},'.format(drive.interface)
+      if drive.media:
+        # Add media if given
+        drive_opts += 'media={},'.format(drive.media)
+      if drive.fmt:
+        # Add format if given
+        drive_opts += 'format={},'.format(drive.fmt)
+      if drive.readonly:
+        # Add readonly if set
+        drive_opts += 'readonly,'
+      # Add drive to the cmd
+      cmd += ['-drive', drive_opts]
+    for extra_arg in qemu_vm.extra_args:
+      # Add any extra args given
+      cmd += [extra_arg]
+    # Start the vm
+    self.m.step(name='Start vm {}'.format(qemu_vm.name), cmd=cmd)
 
   def powerdown_vm(self, name):
     """ powerdown_vm sends a shutdown signal to the given VM. Similar to power

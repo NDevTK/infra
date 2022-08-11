@@ -413,6 +413,7 @@ def VM_CONFIG(
     smp='cores=8',
     memory=8192,
     extra_args=('-device usb-kbd', '--device usb-mouse'),
+    device=(),
 ):
   return vm.VM(
       qemu_vm=vm.QEMU_VM(
@@ -422,6 +423,7 @@ def VM_CONFIG(
           cpu=cpu,
           smp=smp,
           memory=memory,
+          device=device,
           extra_args=list(extra_args)))
 
 

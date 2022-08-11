@@ -581,15 +581,15 @@ provenance will be installed using cipd and verified using the provenance
 built-in to the OS image (if available).
 ### *recipe_modules* / [qemu](/recipes/recipe_modules/qemu)
 
-[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
-PYTHON_VERSION_COMPATIBILITY: PY2+3
+PYTHON_VERSION_COMPATIBILITY: PY3
 
-#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#21)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [QEMUAPI](/recipes/recipe_modules/qemu/api.py#23)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API to manage qemu VMs 
 
-&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#59)(self, disk_name, fs_format='fat', min_size=0, include=()):**
+&mdash; **def [create\_disk](/recipes/recipe_modules/qemu/api.py#62)(self, disk_name, fs_format='fat', min_size=0, include=()):**
 
 create_disk creates a virtual disk with the given name, format and size.
 
@@ -604,7 +604,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#112)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#115)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -613,9 +613,9 @@ Args:
   * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
   * size: size of the disk image in bytes
 
-&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#33)(self):**
+&emsp; **@property**<br>&mdash; **def [disks](/recipes/recipe_modules/qemu/api.py#35)(self):**
 
-&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#37)(self, version):**
+&mdash; **def [init](/recipes/recipe_modules/qemu/api.py#39)(self, version):**
 
 Initialize the module, ensure that qemu exists on the system
 
@@ -626,7 +626,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#165)(self, disk_name):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#168)(self, disk_name):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -636,9 +636,9 @@ Args:
 
 Returns: loop file used for the disk and mount location
 
-&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#29)(self):**
+&emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#31)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#235)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#287)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
@@ -648,7 +648,7 @@ Args:
 
 Returns: True if powerdown signal was sent to VM. False otherwise
 
-&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#257)(self, name):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#309)(self, name):**
 
 quit_vm sends a quit signal to the qemu process. Use this if your VM
 doesn't respond to powerdown signal.
@@ -658,28 +658,27 @@ Args:
 
 Returns: True if quit signal was sent to VM. False otherwise
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#212)(self, name, arch, memory, disks):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#215)(self, arch, qemu_vm, kvm=False):**
 
-start_vm starts a qemu vm with given disks attached
+start_vm starts a qemu vm
 
-QEMU is started with qemu_monitor running a qmp service in a unix
-domain socket at [QEMU_WORKDIR]/<name>-mon. This will allow us to
-monitor and control the VM. VM is started as a daemon.
+QEMU is started with qemu_monitor running a qmp service. It also connects
+the serial port of the machine to a tcp port.
 
 Args:
-  * name: name of the new VM
-  * arch: architecture to run the VM on
-  * memory: RAM size on the VM
-  * disks: list of disks to attach to the VM (except boot)
+ * arch: The arch that the VM should be based on
+ * qemu_vm: QEMU_VM proto object containing all the config for starting
+            the vm
+ * kvm: If true then VM is run on hardware. It's emulated otherwise
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#198)(self, loop_file):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#201)(self, loop_file):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#279)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#331)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`
@@ -1714,11 +1713,11 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/quit_vm.py#15)(api):**
 ### *recipes* / [qemu:examples/start\_vm](/recipes/recipe_modules/qemu/examples/start_vm.py)
 
-[DEPS](/recipes/recipe_modules/qemu/examples/start_vm.py#9): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipe_modules/qemu/examples/start_vm.py#12): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/start_vm.py#14)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/start_vm.py#22)(api, qemu_vm):**
 ### *recipes* / [qemu:examples/status\_vm](/recipes/recipe_modules/qemu/examples/status_vm.py)
 
 [DEPS](/recipes/recipe_modules/qemu/examples/status_vm.py#9): [qemu](#recipe_modules-qemu), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
