@@ -343,6 +343,7 @@ func deployActions() map[string]*Action {
 				"Read DUT serial-number from DUT (Satlab)",
 				"Read device SKU",
 				"servo_type_label",
+				"Read RO_VPD from DUT",
 			},
 			ExecName: "sample_pass",
 		},

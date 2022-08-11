@@ -28,6 +28,7 @@ func crosRepairPlan() *Plan {
 			"Can list RW VPD Keys",
 			"Verify keys of RW_VPD",
 			"Verify RO_VPD sku_number",
+			"Verify RO_VPD data on DUT",
 			"Update Servo NIC mac address",
 			"Match provision labels",
 			"Set state: ready",
@@ -2104,6 +2105,36 @@ func crosRepairActions() map[string]*Action {
 				"sku_number:FAKE-SKU",
 			},
 			AllowFailAfterRecovery: true,
+		},
+		"Read RO_VPD from DUT": {
+			Docs: []string{
+				"Record data that is present in RO_VPD from the following keys: wifi_sar.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_update_ro_vpd_inventory",
+		},
+		"Verify RO_VPD data on DUT": {
+			Docs: []string{
+				"Verify if data from RO_VPD key: wifi_sar that was present on deploy is still present.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_match_ro_vpd_inventory",
+			RecoveryActions: []string{
+				"Restore RO_VPD on DUT",
+			},
+		},
+		"Restore RO_VPD on DUT": {
+			Docs: []string{
+				"Restore data from RO_VPD key: wifi_sar that was present on deploy.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_set_ro_vpd",
 		},
 	}
 }

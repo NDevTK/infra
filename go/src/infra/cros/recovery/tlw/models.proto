@@ -513,6 +513,8 @@ message ChromeOS {
   PeripheralWifiState peripheral_wifi_state = 20;
   // RPMOutlet of the DUT setup.
   RPMOutlet rpm_outlet = 21;
+  // Map of key value pairs from RO_VPD.
+  map<string, string> ro_vpd_map = 22;
 }
 
 // Android specific DUT details
