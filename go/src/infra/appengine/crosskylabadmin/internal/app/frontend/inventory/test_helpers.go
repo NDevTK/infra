@@ -24,7 +24,6 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/libs/git"
 )
@@ -34,8 +33,6 @@ type testFixture struct {
 	C context.Context
 
 	Inventory *ServerImpl
-
-	MockTracker *fleet.MockTrackerServer
 }
 
 type fakeGitClient struct {
@@ -65,12 +62,7 @@ func newTestFixtureWithContext(ctx context.Context, t *testing.T) (testFixture, 
 	tf := testFixture{T: t, C: ctx}
 	mc := gomock.NewController(t)
 
-	tf.MockTracker = fleet.NewMockTrackerServer(mc)
-	tf.Inventory = &ServerImpl{
-		TrackerFactory: func() fleet.TrackerServer {
-			return tf.MockTracker
-		},
-	}
+	tf.Inventory = &ServerImpl{}
 
 	validate := func() {
 		mc.Finish()

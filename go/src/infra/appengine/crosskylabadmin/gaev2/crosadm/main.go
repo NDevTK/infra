@@ -44,9 +44,7 @@ func installServices(r prpc.Registrar) {
 	})
 	// The primary use case for this API is the stable version API.
 	fleet.RegisterInventoryServer(r, &fleet.DecoratedInventory{
-		Service: &inventory.ServerImpl{
-			TrackerFactory: frontend.TrackerFactory,
-		},
+		Service: &inventory.ServerImpl{},
 		Prelude: frontend.CheckAccess,
 	})
 }

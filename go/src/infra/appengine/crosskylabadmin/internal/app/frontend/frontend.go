@@ -58,7 +58,7 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 		Prelude: CheckAccess,
 	})
 	fleet.RegisterInventoryServer(&api, &fleet.DecoratedInventory{
-		Service: &inventory.ServerImpl{TrackerFactory: TrackerFactory},
+		Service: &inventory.ServerImpl{},
 		Prelude: CheckAccess,
 	})
 
@@ -81,13 +81,6 @@ func CheckAccess(c context.Context, _ string, _ proto.Message) (context.Context,
 }
 
 var cachedTracker fleet.TrackerServer
-
-func TrackerFactory() fleet.TrackerServer {
-	if cachedTracker == nil {
-		cachedTracker = &TrackerServerImpl{}
-	}
-	return cachedTracker
-}
 
 // Assuming the version number for major, minor and patch are less than 1000.
 var versionRegex = regexp.MustCompile(`[0-9]{1,3}`)

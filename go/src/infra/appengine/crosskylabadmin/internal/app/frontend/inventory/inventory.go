@@ -37,21 +37,12 @@ import (
 	"infra/libs/git"
 )
 
-// TrackerFactory is a constructor for a TrackerServer object.
-type TrackerFactory func() fleet.TrackerServer
-
 // StableVersionGitClientFactory is a constructor for a git client pointed at the source of truth
 // for the stable version information
 type StableVersionGitClientFactory func(c context.Context) (git.ClientInterface, error)
 
 // ServerImpl implements the fleet.InventoryServer interface.
 type ServerImpl struct {
-	// TrackerServerFactory is a required factory function for creating a tracker object.
-	//
-	// TODO(pprabhu) Move tracker/tasker to individual sub-packages and inject
-	// dependencies directly (instead of factory functions).
-	TrackerFactory TrackerFactory
-
 	// StableVersionGitClientFactory
 	StableVersionGitClientFactory StableVersionGitClientFactory
 }
