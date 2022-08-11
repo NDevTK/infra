@@ -28,7 +28,6 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/test"
 	"infra/appengine/crosskylabadmin/internal/tq"
 )
 
@@ -56,8 +55,8 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		defer validate()
 
 		sbots := []*swarming.SwarmingRpcsBotInfo{
-			test.BotForDUT("dut_1", "ready", ""),
-			test.BotForDUT("dut_2", "repair_failed", ""),
+			BotForDUT("dut_1", "ready", ""),
+			BotForDUT("dut_2", "repair_failed", ""),
 		}
 		tf.MockSwarming.EXPECT().ListAliveBotsInPool(
 			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
@@ -74,8 +73,8 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		defer validate()
 
 		sbots := []*swarming.SwarmingRpcsBotInfo{
-			test.BotForDUT("dut_1", "ready", ""),
-			test.BotForDUT("dut_1", "repair_failed", ""),
+			BotForDUT("dut_1", "ready", ""),
+			BotForDUT("dut_1", "repair_failed", ""),
 		}
 		tf.MockSwarming.EXPECT().ListAliveBotsInPool(
 			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
@@ -89,13 +88,13 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 }
 func TestPushBotsForAdminTasks(t *testing.T) {
 	Convey("Handling 4 different state of cros bots", t, func() {
-		bot1 := test.BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_CROS;id:id1")
-		bot2 := test.BotForDUT("dut_2", "repair_failed", "label-os_type:OS_TYPE_CROS;id:id2")
-		bot3 := test.BotForDUT("dut_3", "needs_reset", "label-os_type:OS_TYPE_JETSTREAM;id:id3")
-		bot4 := test.BotForDUT("dut_4", "needs_manual_repair", "label-os_type:OS_TYPE_JETSTREAM;id:id4")
-		bot5 := test.BotForDUT("dut_5", "needs_replacement", "label-os_type:OS_TYPE_JETSTREAM;id:id5")
-		bot1LabStation := test.BotForDUT("dut_1l", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;id:lab_id1")
-		bot1SchedulingUnit := test.BotForDUT("dut1su", "needs_repair", "id:su_id1")
+		bot1 := BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_CROS;id:id1")
+		bot2 := BotForDUT("dut_2", "repair_failed", "label-os_type:OS_TYPE_CROS;id:id2")
+		bot3 := BotForDUT("dut_3", "needs_reset", "label-os_type:OS_TYPE_JETSTREAM;id:id3")
+		bot4 := BotForDUT("dut_4", "needs_manual_repair", "label-os_type:OS_TYPE_JETSTREAM;id:id4")
+		bot5 := BotForDUT("dut_5", "needs_replacement", "label-os_type:OS_TYPE_JETSTREAM;id:id5")
+		bot1LabStation := BotForDUT("dut_1l", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;id:lab_id1")
+		bot1SchedulingUnit := BotForDUT("dut1su", "needs_repair", "id:su_id1")
 		appendPaths := func(paths map[string]*tq.Task) (arr []string) {
 			for _, v := range paths {
 				arr = append(arr, v.Path)
@@ -197,14 +196,14 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 
 func TestPushBotsForAdminAuditTasks(t *testing.T) {
 	Convey("Handling types of cros bots", t, func() {
-		bot3 := test.BotForDUT("dut_3", "needs_repair", "label-os_type:OS_TYPE_MOBLAB;id:id3")
-		bot4 := test.BotForDUT("dut_4", "ready", "label-os_type:OS_TYPE_MOBLAB;id:id4")
-		bot5 := test.BotForDUT("dut_5", "needs_deploy", "label-os_type:OS_TYPE_MOBLAB;id:id5")
-		bot6 := test.BotForDUT("dut_6", "needs_reset", "label-os_type:OS_TYPE_MOBLAB;id:id6")
+		bot3 := BotForDUT("dut_3", "needs_repair", "label-os_type:OS_TYPE_MOBLAB;id:id3")
+		bot4 := BotForDUT("dut_4", "ready", "label-os_type:OS_TYPE_MOBLAB;id:id4")
+		bot5 := BotForDUT("dut_5", "needs_deploy", "label-os_type:OS_TYPE_MOBLAB;id:id5")
+		bot6 := BotForDUT("dut_6", "needs_reset", "label-os_type:OS_TYPE_MOBLAB;id:id6")
 		bot6.State = "{\"storage_state\":[\"NEED_REPLACEMENT\"],\"servo_usb_state\":[\"NEED_REPLACEMENT\"], \"rpm_state\": [\"UNKNOWN\"]}"
-		bot7 := test.BotForDUT("dut_7", "needs_replacement", "label-os_type:OS_TYPE_MOBLAB;id:id7")
-		bot2LabStation := test.BotForDUT("dut_2l", "ready", "label-os_type:OS_TYPE_LABSTATION;id:lab_id2")
-		bot1SchedulingUnit := test.BotForDUT("dut1su", "ready", "id:su_id1")
+		bot7 := BotForDUT("dut_7", "needs_replacement", "label-os_type:OS_TYPE_MOBLAB;id:id7")
+		bot2LabStation := BotForDUT("dut_2l", "ready", "label-os_type:OS_TYPE_LABSTATION;id:lab_id2")
+		bot1SchedulingUnit := BotForDUT("dut1su", "ready", "id:su_id1")
 		appendPaths := func(paths map[string]*tq.Task) (arr []string) {
 			for _, v := range paths {
 				arr = append(arr, v.Path)
@@ -264,8 +263,8 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		defer validate()
 		tqt := tq.GetTestable(tf.C)
 		tqt.CreateQueue(repairLabstationQ)
-		bot1 := test.BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;label-pool:labstation_main;id:lab_1")
-		bot2 := test.BotForDUT("dut_2", "ready", "label-os_type:OS_TYPE_LABSTATION;label-pool:servo_verification;id:lab_2")
+		bot1 := BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;label-pool:labstation_main;id:lab_1")
+		bot2 := BotForDUT("dut_2", "ready", "label-os_type:OS_TYPE_LABSTATION;label-pool:servo_verification;id:lab_2")
 		bots := []*swarming.SwarmingRpcsBotInfo{bot1, bot2}
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
