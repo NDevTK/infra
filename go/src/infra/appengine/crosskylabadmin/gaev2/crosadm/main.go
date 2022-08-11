@@ -16,7 +16,6 @@ import (
 
 	"infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/frontend"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/inventory"
 )
 
 // Main is the entrypoint for the GAEv2 version of CrOSSkylabAdmin.
@@ -44,7 +43,7 @@ func installServices(r prpc.Registrar) {
 	})
 	// The primary use case for this API is the stable version API.
 	fleet.RegisterInventoryServer(r, &fleet.DecoratedInventory{
-		Service: &inventory.ServerImpl{},
+		Service: &frontend.ServerImpl{},
 		Prelude: frontend.CheckAccess,
 	})
 }

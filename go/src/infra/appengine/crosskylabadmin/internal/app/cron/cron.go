@@ -33,7 +33,6 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/inventory"
 )
 
 // InstallHandlers installs handlers for cron jobs that are part of this app.
@@ -200,7 +199,7 @@ func dumpStableVersionToDatastoreHandler(c *router.Context) error {
 		}
 		return nil
 	}
-	inv := &inventory.ServerImpl{}
+	inv := &frontend.ServerImpl{}
 	_, err := inv.DumpStableVersionToDatastore(c.Context, &fleet.DumpStableVersionToDatastoreRequest{})
 	if err != nil {
 		logging.Infof(c.Context, "end dumpStableVersionToDatastoreHandler with err (%s)", err)

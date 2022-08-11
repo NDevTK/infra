@@ -24,6 +24,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"go.chromium.org/luci/appengine/gaetesting"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -31,25 +33,18 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/clients/mock"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/libs/git"
 )
 
 type testFixture struct {
 	T *testing.T
 	C context.Context
 
-	Tracker fleet.TrackerServer
+	Tracker   fleet.TrackerServer
+	Inventory *ServerImpl
 
 	MockSwarming       *mock.MockSwarmingClient
 	MockBotTasksCursor *mock.MockBotTasksCursor
-}
-
-// CloneWithFreshMocks creates a new testFixtures with its own mock setup, but
-// shared appengine service state with the original.
-//
-// CloneWithFreshMocks should be used inside test helper functions that need to
-// record-replay mock interactions independent of the test.
-func (tf *testFixture) CloneWithFreshMocks() (testFixture, func()) {
-	return newTestFixtureWithContext(tf.C, tf.T)
 }
 
 // newTextFixture creates a new testFixture to be used in unittests.
@@ -72,6 +67,7 @@ func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, fu
 		},
 	}
 	tf.MockBotTasksCursor = mock.NewMockBotTasksCursor(mc)
+	tf.Inventory = &ServerImpl{}
 
 	validate := func() {
 		mc.Finish()
@@ -99,12 +95,44 @@ func testingContext() context.Context {
 			RepairIdleDuration:         durationpb.New(10),
 			RepairAttemptDelayDuration: durationpb.New(10),
 		},
+		StableVersionConfig: &config.StableVersionConfig{
+			GerritHost:            "xxx-fake-gerrit-review.googlesource.com",
+			GitilesHost:           "xxx-gitiles.googlesource.com",
+			Project:               "xxx-project",
+			Branch:                "xxx-branch",
+			StableVersionDataPath: "xxx-stable_version_data_path",
+		},
 	})
 	datastore.GetTestable(c).Consistent(true)
+	c = gologger.StdConfig.Use(c)
+	c = logging.SetLevel(c, logging.Debug)
 	return c
 }
 
-// expecteDefaultPerBotRefresh sets up the default expectations for refreshing
+type fakeGitClient struct {
+	getFile func(ctx context.Context, path string) (string, error)
+}
+
+func (f *fakeGitClient) GetFile(ctx context.Context, path string) (string, error) {
+	return f.getFile(ctx, path)
+}
+
+func (f *fakeGitClient) SwitchProject(ctx context.Context, project string) error {
+	return nil
+}
+
+func (tf *testFixture) setStableVersionFactory(stableVersionFileContent string) {
+	is := tf.Inventory
+	is.StableVersionGitClientFactory = func(c context.Context) (git.ClientInterface, error) {
+		gc := &fakeGitClient{}
+		gc.getFile = func(ctx context.Context, path string) (string, error) {
+			return stableVersionFileContent, nil
+		}
+		return gc, nil
+	}
+}
+
+// expectDefaultPerBotRefresh sets up the default expectations for refreshing
 // each bot, once the list of bots is known.
 //
 // This is useful for tests that only target the initial Swarming bot listing

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package inventory
+package frontend
 
 import (
 	"context"
@@ -36,6 +36,98 @@ var testLooksLikeFakeServoTests = []struct {
 	{`FAKE_SERVO_HOST`, false},
 	{`chromeos6-row3-rack11-labstation`, true},
 }
+
+const (
+	emptyStableVersions = `{
+	"cros": [],
+	"faft": [],
+	"firmware": []
+}`
+
+	stableVersions = `{
+    "cros":[
+        {
+            "key":{
+                "buildTarget":{
+                    "name":"auron_paine"
+                },
+                "modelId":{
+                    "value":""
+                }
+            },
+            "version":"R78-12499.40.0"
+        }
+    ],
+    "faft":[
+        {
+            "key": {
+                "buildTarget": {
+                    "name": "auron_paine"
+                },
+                "modelId": {
+                    "value": "auron_paine"
+                }
+            },
+            "version": "auron_paine-firmware/R39-6301.58.98"
+        }
+    ],
+    "firmware":[
+        {
+            "key": {
+                "buildTarget": {
+                    "name": "auron_paine"
+                },
+                "modelId": {
+                    "value": "auron_paine"
+                }
+            },
+            "version": "Google_Auron_paine.6301.58.98"
+        }
+    ]
+}`
+
+	stableVersionWithEmptyVersions = `{
+    "cros":[
+        {
+            "key":{
+                "buildTarget":{
+                    "name":"auron_paine"
+                },
+                "modelId":{
+                    "value":""
+                }
+            },
+            "version":""
+        }
+    ],
+    "faft":[
+        {
+            "key": {
+                "buildTarget": {
+                    "name": "auron_paine"
+                },
+                "modelId": {
+                    "value": "auron_paine"
+                }
+            },
+            "version": ""
+        }
+    ],
+    "firmware":[
+        {
+            "key": {
+                "buildTarget": {
+                    "name": "auron_paine"
+                },
+                "modelId": {
+                    "value": "auron_paine"
+                }
+            },
+            "version": ""
+        }
+    ]
+}`
+)
 
 func TestLooksLikeFakeServo(t *testing.T) {
 	for _, tt := range testLooksLikeFakeServoTests {
@@ -383,6 +475,77 @@ func TestGetStableVersion(t *testing.T) {
 		)
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
+	})
+}
+
+func TestDumpStableVersionToDatastore(t *testing.T) {
+	Convey("Dump Stable version smoke test", t, func() {
+		ctx := testingContext()
+		tf, validate := newTestFixtureWithContext(ctx, t)
+		defer validate()
+		tf.setStableVersionFactory("{}")
+		is := tf.Inventory
+		resp, err := is.DumpStableVersionToDatastore(ctx, nil)
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+	})
+	Convey("Update Datastore from empty stableversions file", t, func() {
+		ctx := testingContext()
+		tf, validate := newTestFixtureWithContext(ctx, t)
+		defer validate()
+		tf.setStableVersionFactory(emptyStableVersions)
+		_, err := tf.Inventory.DumpStableVersionToDatastore(ctx, nil)
+		So(err, ShouldBeNil)
+	})
+	Convey("Update Datastore from non-empty stableversions file", t, func() {
+		ctx := testingContext()
+		tf, validate := newTestFixtureWithContext(ctx, t)
+		defer validate()
+		tf.setStableVersionFactory(stableVersions)
+		_, err := tf.Inventory.DumpStableVersionToDatastore(ctx, nil)
+		So(err, ShouldBeNil)
+		cros, err := dssv.GetCrosStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldBeNil)
+		So(cros, ShouldEqual, "R78-12499.40.0")
+		firmware, err := dssv.GetFirmwareStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldBeNil)
+		So(firmware, ShouldEqual, "Google_Auron_paine.6301.58.98")
+		faft, err := dssv.GetFaftStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldBeNil)
+		So(faft, ShouldEqual, "auron_paine-firmware/R39-6301.58.98")
+	})
+	Convey("skip entries with empty version strings", t, func() {
+		ctx := testingContext()
+		tf, validate := newTestFixtureWithContext(ctx, t)
+		tf.setStableVersionFactory(stableVersionWithEmptyVersions)
+		defer validate()
+		resp, err := tf.Inventory.DumpStableVersionToDatastore(ctx, nil)
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		_, err = dssv.GetCrosStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldNotBeNil)
+		_, err = dssv.GetFirmwareStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldNotBeNil)
+		_, err = dssv.GetFaftStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestStableVersionFileParsing(t *testing.T) {
+	Convey("Parse non-empty stableversions", t, func() {
+		ctx := testingContext()
+		parsed, err := parseStableVersions(stableVersions)
+		So(err, ShouldBeNil)
+		So(parsed, ShouldNotBeNil)
+		So(len(parsed.GetCros()), ShouldEqual, 1)
+		So(parsed.GetCros()[0].GetVersion(), ShouldEqual, "R78-12499.40.0")
+		So(parsed.GetCros()[0].GetKey(), ShouldNotBeNil)
+		So(parsed.GetCros()[0].GetKey().GetBuildTarget(), ShouldNotBeNil)
+		So(parsed.GetCros()[0].GetKey().GetBuildTarget().GetName(), ShouldEqual, "auron_paine")
+		records := getStableVersionRecords(ctx, parsed)
+		So(len(records.cros), ShouldEqual, 1)
+		So(len(records.firmware), ShouldEqual, 1)
+		So(len(records.faft), ShouldEqual, 1)
 	})
 }
 

@@ -38,7 +38,6 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/inventory"
 )
 
 // SupportedClientMajorVersionNumber indicates the minimum major client version
@@ -58,7 +57,7 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 		Prelude: CheckAccess,
 	})
 	fleet.RegisterInventoryServer(&api, &fleet.DecoratedInventory{
-		Service: &inventory.ServerImpl{},
+		Service: &ServerImpl{},
 		Prelude: CheckAccess,
 	})
 
