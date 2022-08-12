@@ -56,6 +56,10 @@ func CheckADBVendorKey(ctx context.Context, run components.Runner, log logger.Lo
 // StartADBServer ensures that there is adb server running.
 func StartADBServer(ctx context.Context, run components.Runner, log logger.Logger, vendorKey string) error {
 	const adbStartServerCmd = "ADB_VENDOR_KEYS=%s adb start-server"
+	// Ensure adb run path exists since it will get wiped on every associated host reboot.
+	if _, err := run(ctx, time.Minute, "mkdir -p /run/arc/adb"); err != nil {
+		return errors.Annotate(err, "start adb server").Err()
+	}
 	cmd := fmt.Sprintf(adbStartServerCmd, vendorKey)
 	if _, err := run(ctx, time.Minute, cmd); err != nil {
 		return errors.Annotate(err, "start adb server").Err()
