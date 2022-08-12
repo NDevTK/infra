@@ -8,8 +8,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -90,8 +92,10 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 	}
 
 	// Fetch source
+	source := create.GetSource()
+
 	var src stdenv.Source
-	switch source := create.GetSource(); source.GetMethod().(type) {
+	switch source.GetMethod().(type) {
 	case *Spec_Create_Source_Git:
 		// source.GetGit()
 	case *Spec_Create_Source_Url:
@@ -109,6 +113,20 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 		// source.GetCipd()
 	case *Spec_Create_Source_Script:
 		// source.GetScript()
+	}
+
+	// Get patches
+	var patches []string
+	for _, pdir := range source.GetPatchDir() {
+		dir, err := fs.ReadDir(def.Dir, pdir)
+		if err != nil {
+			return nil, err
+		}
+
+		prefix := fmt.Sprintf("{{.%s}}", defDrv.Name)
+		for _, d := range dir {
+			patches = append(patches, filepath.Join(prefix, pdir, d.Name()))
+		}
 	}
 
 	// Get build commands
@@ -154,6 +172,7 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 		Source:       src,
 		Dependencies: deps,
 		Env: []string{
+			fmt.Sprintf("patches=%s", strings.Join(patches, string(os.PathListSeparator))),
 			fmt.Sprintf("fromSpecInstall=%s", fromSpecInstall),
 			fmt.Sprintf("_3PP_PLATFORM=%s", l.Platform),
 			fmt.Sprintf("CROSS_TRIPLE=%s", "x86_64-pc-linux-gnu"), // TODO(fancl): Get from platform

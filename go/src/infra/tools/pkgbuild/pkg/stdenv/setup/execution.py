@@ -96,6 +96,8 @@ class Execution:
   ENV_SOURCES = 'srcs'
   ENV_SOURCE_ROOT = 'sourceRoot'
 
+  ENV_PATCHES = 'patches'
+
   ENV_CONFIGURE_SCRIPT = 'configureScript'
   ENV_CONFIGURE_FLAGS = 'configureFlags'
 
@@ -227,9 +229,7 @@ class Execution:
     """Activate all dependencies in deps** environment variables."""
 
     def pkgs(name: str) -> List[pathlib.Path]:
-      if e := self.env.get(name):
-        return map(pathlib.Path, e.split(os.path.pathsep))
-      return []
+      return map(pathlib.Path, _split(self.env.get(name), os.path.pathsep))
 
     for pkg in pkgs('depsBuildBuild'):
       self.activate_pkg(pkg, PlatType.BUILD, PlatType.BUILD)
@@ -284,7 +284,7 @@ class Execution:
 
   def unpack_phase(self) -> None:
     """Upack the source code archives listed in ENV_SOURCES."""
-    srcs = self.env[Execution.ENV_SOURCES].split(os.path.pathsep)
+    srcs = _split(self.env[Execution.ENV_SOURCES], os.path.pathsep)
 
     # To determine the source directory created by unpacking the
     # source archives, we record the contents of the current
@@ -309,6 +309,12 @@ class Execution:
 
     if Execution.ENV_SOURCE_ROOT not in self.env:
       raise RuntimeError('unpacker appears to have produced no directorie')
+
+  def patch_phase(self) -> None:
+    """Apply Patches in ENV_PATCHES to the source code."""
+    if patches := _split(self.env.get(Execution.ENV_PATCHES), os.path.pathsep):
+      self.execute_cmd(['git', 'apply', '-v'] + patches)
+    pass
 
   def configure_phase(self) -> None:
     """Run configure command in the source directory."""
@@ -368,6 +374,24 @@ def _phase_hook(prefix: str, phase: str) -> str:
   return prefix + phase[0].upper() + phase.rstrip('Phase')[1:]
 
 
+def _split(s: str, sep: Optional[str] = None) -> List[str]:
+  """Fix python's "broken" split behaviour.
+
+  Args:
+    s: String to be splitted
+    sep: Separator
+
+  Returns:
+    List of splitted string
+
+  Return an empty list when s is empty, whether there is a sep or not.
+  See also: https://bugs.python.org/issue28937
+  """
+  if not s:
+    return []
+  return s.split(sep)
+
+
 def main(exe=None) -> None:
   """The entrypoint of the setup package.
 
@@ -400,7 +424,7 @@ def main(exe=None) -> None:
   exe.env['prefix'] = exe.env['out']
 
   # Generic Builder
-  for phase in ('unpackPhase', 'configurePhase', 'buildPhase', 'installPhase'):
+  for phase in ('unpackPhase', 'patchPhase', 'configurePhase', 'buildPhase', 'installPhase'):
     if Execution.ENV_SOURCE_ROOT in exe.env:
       os.chdir(exe.env[Execution.ENV_SOURCE_ROOT])
     exe.execute_all_hooks(_phase_hook('pre', phase))
