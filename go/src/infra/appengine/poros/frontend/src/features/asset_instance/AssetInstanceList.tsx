@@ -63,7 +63,7 @@ export function AssetInstanceList() {
     { field: 'assetInstanceId', headerName: 'Id', flex: 1, hide: true },
     {
       field: 'assetName',
-      headerName: 'Asset Name',
+      headerName: 'Lab Name',
       flex: 1,
       valueGetter: getAssetName,
     },
@@ -201,7 +201,7 @@ export function AssetInstanceList() {
               }}
               xs={8}
             >
-              <Typography variant="h6">AssetInstances</Typography>
+              <Typography variant="h6">Lab Instances</Typography>
             </Grid>
             <Grid
               item

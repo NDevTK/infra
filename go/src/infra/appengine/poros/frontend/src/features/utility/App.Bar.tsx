@@ -176,7 +176,7 @@ export default function SideDrawerWithAppBar() {
       component: ResourceList,
     },
     {
-      text: 'AssetInstances',
+      text: 'Lab Instances',
       icon: LibraryBooksIcon,
       path: '/assetInstances',
       entityIdentifier: 'assetInstances',
@@ -257,7 +257,7 @@ export default function SideDrawerWithAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Poros
+            Poros Deployment Manager
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

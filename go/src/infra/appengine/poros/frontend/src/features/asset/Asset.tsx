@@ -445,7 +445,7 @@ export const Asset = () => {
             xs={8}
           >
             <Typography variant="h5" data-testid="form-heading">
-              Asset
+              Lab Template
             </Typography>
           </Grid>
           <Grid

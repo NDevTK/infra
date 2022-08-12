@@ -13,7 +13,9 @@ Project Vision & Design Document
 - Vision :  go/chrome-enterprise-lab2.0-vision
 - Design :  go/enterprise-deployment-manager-design-phase-1
 
-## Backend
+## Local deployment
+
+### Backend
 
 Running the server:
 
@@ -23,7 +25,7 @@ go run main.go
 
 This will set up the backend server running on port `8800`
 
-## Frontend
+### Frontend
 
 Running the frontend:
 
@@ -41,4 +43,10 @@ Formatting:
 
 ```sh
 npm run fix
+```
+
+### Launch local instance with one command
+
+```sh
+make runlocal
 ```

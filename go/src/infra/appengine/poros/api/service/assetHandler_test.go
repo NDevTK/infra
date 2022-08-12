@@ -391,7 +391,7 @@ func TestDefaultResourcesWithActiveDirectory(t *testing.T) {
 		response, err := handler.GetDefaultResources(ctx, resourceRequest)
 		defaultResources := response.GetAssetResources()
 		So(err, ShouldBeNil)
-		want := []string{"primary", "test1.com", "dc", "Joe"}
+		want := []string{"primary", "test1.com", "domain-controller", "Joe"}
 		get := []string{defaultResources[0].GetAliasName(), defaultResources[1].GetAliasName(), defaultResources[2].GetAliasName(), defaultResources[3].GetAliasName()}
 		So(defaultResources, ShouldHaveLength, 4)
 		So(want, ShouldResemble, get)
