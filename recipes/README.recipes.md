@@ -84,6 +84,7 @@
   * [windows_scripts_executor:examples/gcs_test](#recipes-windows_scripts_executor_examples_gcs_test) (Python3 ✅)
   * [windows_scripts_executor:examples/git_test](#recipes-windows_scripts_executor_examples_git_test) (Python3 ✅)
   * [windows_scripts_executor:examples/online_windows_customization](#recipes-windows_scripts_executor_examples_online_windows_customization) (Python3 ✅)
+  * [windows_scripts_executor:examples/powershell_expression](#recipes-windows_scripts_executor_examples_powershell_expression) (Python3 ✅)
   * [windows_scripts_executor:examples/test](#recipes-windows_scripts_executor_examples_test) (Python3 ✅)
   * [windows_sdk:examples/full](#recipes-windows_sdk_examples_full) (Python3 ✅)
   * [zip:examples/full](#recipes-zip_examples_full) (Python3 ✅)
@@ -1890,6 +1891,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/online_windows_customization.py#31)(api, config):**
+### *recipes* / [windows\_scripts\_executor:examples/powershell\_expression](/recipes/recipe_modules/windows_scripts_executor/examples/powershell_expression.py)
+
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/powershell_expression.py#19): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/powershell_expression.py#34)(api, config):**
 ### *recipes* / [windows\_scripts\_executor:examples/test](/recipes/recipe_modules/windows_scripts_executor/examples/test.py)
 
 [DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/test.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]

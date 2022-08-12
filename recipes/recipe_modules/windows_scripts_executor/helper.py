@@ -18,6 +18,8 @@ def get_src_from_action(action):
     return [action.add_windows_package.src]
   if action.WhichOneof('action') == 'add_windows_driver':
     return [action.add_windows_driver.src]
+  if action.WhichOneof('action') == 'powershell_expr':
+    return action.powershell_expr.srcs.values()
   return []
 
 
@@ -37,6 +39,9 @@ def pin_src_from_action(action, sources):
   if action.WhichOneof('action') == 'add_windows_driver':
     action.add_windows_driver.src.CopyFrom(
         sources.pin(action.add_windows_driver.src))
+  if action.WhichOneof('action') == 'powershell_expr':
+    for _, src in action.powershell_expr.srcs.items():
+      src.CopyFrom(sources.pin(src))
 
 
 def get_build_offline_customization(offline_customization):
@@ -98,24 +103,40 @@ def get_build_actions(action):
         add_file=actions.AddFile(
             src=action.add_file.src,
             dst=action.add_file.dst,
-        ))
+        ),
+        timeout=action.timeout,
+    )
   if action.WhichOneof('action') == 'add_windows_package':
     return actions.Action(
         add_windows_package=actions.AddWindowsPackage(
             src=action.add_windows_package.src,
             args=action.add_windows_package.args,
-        ))
+        ),
+        timeout=action.timeout,
+    )
   if action.WhichOneof('action') == 'add_windows_driver':
     return actions.Action(
         add_windows_driver=actions.AddWindowsDriver(
             src=action.add_windows_driver.src,
             args=action.add_windows_driver.args,
-        ))
+        ),
+        timeout=action.timeout,
+    )
   if action.WhichOneof('action') == 'edit_offline_registry':
     eor = actions.EditOfflineRegistry()
     eor.CopyFrom(action.edit_offline_registry)
     eor.name = ''
-    return actions.Action(edit_offline_registry=eor)
+    return actions.Action(edit_offline_registry=eor, timeout=action.timeout)
+  if action.WhichOneof('action') == 'powershell_expr':
+    return actions.Action(
+        powershell_expr=actions.PowershellExpr(
+            srcs=action.powershell_expr.srcs,
+            continue_ctx=action.powershell_expr.continue_ctx,
+            logs=action.powershell_expr.logs,
+            return_codes=action.powershell_expr.return_codes,
+            expr=action.powershell_expr.expr),
+        timeout=action.timeout,
+    )
 
 
 def conv_to_win_path(path):

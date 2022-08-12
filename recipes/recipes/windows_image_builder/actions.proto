@@ -36,10 +36,12 @@ message Action {
     EditOfflineRegistry edit_offline_registry = 3;
     // Adds a driver to offline windows image
     AddWindowsDriver add_windows_driver = 4;
+    // Executes a powershell expression
+    PowershellExpr powershell_expr = 5;
   }
 
   // Timeout in seconds
-  int32 timeout = 5;
+  int32 timeout = 6;
 }
 
 // AddFile uses robocopy to copy the file to image mount dir. Due to the way
@@ -117,4 +119,34 @@ message AddWindowsDriver {
 
   // Args for the install command. Ex: ['-Recurse', '-ForceUnsigned']
   repeated string args = 3;
+}
+
+// PowershellExpr executes the given expression in powershell. It is possible to
+// use external artifacts. These are given by the `srcs` map. The key for the
+// srcs is available as a powershell var. The flag continue_ctx determines if
+// we should keep the context running after execution. Using this you can chain
+// multiple expressions and if all of them have the flag set, all the
+// expressions are executed in the same powershell session. If unset the
+// powershell session is exited after the expression is executed.
+message PowershellExpr {
+  // Name of the step. This will be displayed in milo
+  string name = 1;
+
+  // map of artifacts to be downloaded. This will be available as a powershell
+  // var for reference in the powershell expression. For example, if the srcs
+  // contain `'example_py': Src(CIPDSrc(...))`. This will be available as a
+  // powershell var `$example_py`.
+  map<string, sources.Src> srcs = 2;
+
+  // If set the session is kept alive after executing the expression.
+  bool continue_ctx = 3;
+
+  // List of return codes to treat as success. Default is [0].
+  repeated int32 return_codes = 4;
+
+  // List of file to be copied to milo. To be used to display logs in milo
+  repeated string logs = 5;
+
+  // Expression to be executed.
+  string expr = 6;
 }

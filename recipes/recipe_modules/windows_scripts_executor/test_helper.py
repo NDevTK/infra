@@ -326,6 +326,26 @@ def ADD_FILE_VM(api, image, customization, name, retcode=0, success=True):
       success=success)
 
 
+def POWERSHELL_EXPR_VM(api,
+                       image,
+                       customization,
+                       name,
+                       output,
+                       error='',
+                       retcode=0,
+                       success=True):
+  return VM_POWERSHELL_EXEC(
+      api,
+      image,
+      customization,
+      name,
+      output,
+      error,
+      logs={},
+      retcode=retcode,
+      success=success)
+
+
 def DISK_SPACE(api,
                image,
                customization,

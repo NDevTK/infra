@@ -355,6 +355,8 @@ class OnlineWindowsCustomization(customization.Customization):
     a = action.WhichOneof('action')
     if a == 'add_file':
       return self.add_file(action.add_file, ctx, action.timeout)
+    if a == 'powershell_expr':
+      return self.powershell_expr(action.powershell_expr, ctx, action.timeout)
     raise self.m.step.StepFailure(
         'Executing {} not supported yet'.format(a))  # pragma: nocover
 
@@ -384,6 +386,40 @@ class OnlineWindowsCustomization(customization.Customization):
         cont=False,
         timeout=timeout,
         retcode=(0, 1, 2, 3))
+
+  def powershell_expr(self, pwsh_expr, ctx, timeout):
+    ''' powershell_expr runs a given powershell expression and executes it
+
+    Args:
+      * pwsh_expr: action.PowershellExpr proto object containing the
+      expression to be executed
+      * ctx: Context to be set before executing the expression
+      * timeout: timeout in seconds for the given expression
+    '''
+    # copy the global ctx
+    ps_ctx = {}
+    if ctx:
+      for var, val in ctx.items():
+        ps_ctx[var] = val
+
+    # add all the srcs as context for the expression
+    if pwsh_expr.srcs:
+      for var, src in pwsh_expr.srcs.items():
+        win_src = helper.conv_to_win_path(self._source.get_rel_src(src))
+        ps_ctx[var] = '$deps_img\\{}'.format(win_src)
+
+    r_codes = pwsh_expr.return_codes
+    # Default successful return code is 0
+    r_codes = (0,) if not r_codes else r_codes
+
+    self.execute_powershell(
+        pwsh_expr.name,
+        ps_ctx,
+        pwsh_expr.expr,
+        cont=pwsh_expr.continue_ctx,
+        logs=pwsh_expr.logs,
+        timeout=timeout,
+        retcode=r_codes)
 
   def execute_powershell(self,
                          name,
