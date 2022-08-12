@@ -1,9 +1,10 @@
 create {
   verify { test: "python_test.py" }
   source {
-    patch_version: "chromium.43"
+    patch_version: "chromium.44"
     cpe_base_address: "cpe:/a:python:python"
   }
+  package { version_file: ".versions/cpython.cipd_version" }
 }
 
 create {
