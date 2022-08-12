@@ -56,7 +56,9 @@ class OfflineWinPECustomization(customization.Customization):
     self._source.download(wpec.image_src)
     for off_action in wpec.offline_customization:
       for action in off_action.actions:
-        self._source.download(helper.get_src_from_action(action))
+        srcs = helper.get_src_from_action(action)
+        for src in srcs:
+          self._source.download(src)
 
   def get_canonical_cfg(self):
     """ get_canonical_cfg returns canonical config after removing name and dest

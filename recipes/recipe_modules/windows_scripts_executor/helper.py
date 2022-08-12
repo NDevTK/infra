@@ -9,17 +9,26 @@ from PB.recipes.infra.windows_image_builder import actions
 def get_src_from_action(action):
   """ get_src_from_action returns src ref in action if any
       Args:
-        action: proto Action object that might contain a src
+        * action: proto Action object that might contain a src
+      Returns an iterable of sources.Src proto object
   """
   if action.WhichOneof('action') == 'add_file':
-    return action.add_file.src
+    return [action.add_file.src]
   if action.WhichOneof('action') == 'add_windows_package':
-    return action.add_windows_package.src
+    return [action.add_windows_package.src]
   if action.WhichOneof('action') == 'add_windows_driver':
-    return action.add_windows_driver.src
+    return [action.add_windows_driver.src]
+  return []
 
 
 def pin_src_from_action(action, sources):
+  """ pin_src_from_action replaces all the src objects in the given action with
+  volatile/deterministic refs and replaces them with deterministic refs
+
+  Args:
+    * action: proto Action object containing an executable action
+    * sources: sources object from sources.py
+  """
   if action.WhichOneof('action') == 'add_file':
     action.add_file.src.CopyFrom(sources.pin(action.add_file.src))
   if action.WhichOneof('action') == 'add_windows_package':
@@ -34,7 +43,7 @@ def get_build_offline_customization(offline_customization):
   """ get_build_offline_customization returns actions.OfflineAction object
       same as oc, but with all name strings reset
       Args:
-        offline_customization: actions.OfflineAction proto object representing
+        * offline_customization: actions.OfflineAction proto object representing
         a sub-customization to be performed.
       Example:
         Given a config
@@ -55,8 +64,8 @@ def get_build_offline_customization(offline_customization):
 def ensure_dirs(m_file, dirs):
   """ ensure_dirs ensures that the given dirs are created on the bot
       Args:
-        m_file: ref to recipe_engine/file module object
-        dirs: list of paths to dirs that need to be ensured
+        * m_file: ref to recipe_engine/file module object
+        * dirs: list of paths to dirs that need to be ensured
   """
   for d in dirs:
     m_file.ensure_directory('Ensure {}'.format(d), d)

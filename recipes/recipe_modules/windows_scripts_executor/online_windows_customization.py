@@ -58,7 +58,9 @@ class OnlineWindowsCustomization(customization.Customization):
       # pin the refs in the actions
       for online_action in boot.online_actions:
         for action in online_action.actions:
-          self._source.download(helper.get_src_from_action(action))
+          srcs = helper.get_src_from_action(action)
+          for src in srcs:
+            self._source.download(src)
 
   def get_canonical_cfg(self):
     """ get_canonical_cfg returns canonical config after removing name and dest
@@ -271,10 +273,11 @@ class OnlineWindowsCustomization(customization.Customization):
       # create dependency disk
       for online_action in oc.online_actions:
         for action in online_action.actions:
-          src = helper.get_src_from_action(action)
-          if src.WhichOneof('src'):
-            local_src = self._source.get_local_src(src)
-            deps[local_src] = self._source.get_rel_src(src)
+          srcs = helper.get_src_from_action(action)
+          for src in srcs:
+            if src.WhichOneof('src'):
+              local_src = self._source.get_local_src(src)
+              deps[local_src] = self._source.get_rel_src(src)
       if len(deps) > 0:
         deps_disk = drive_pb.Drive(
             name='deps.img',
