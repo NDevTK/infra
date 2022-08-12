@@ -27,6 +27,8 @@ message CIPDSrc {
   string refs = 2;
   // Platform support for the package
   string platform = 3;
+  // Filename (optional, if not given we use the directory)
+  string filename = 4;
 }
 
 // Ref to git file to be used as source

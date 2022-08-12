@@ -95,6 +95,9 @@ class CIPDManager:
     if cipd_src.platform:
       # platform is typically added to the package name in cipd.
       package.append(cipd_src.platform)
+    if cipd_src.filename:
+      # filename is typically added to the package name in cipd.
+      package.append(cipd_src.filename)
     # return the deref
     return self._cache.join(cipd_src.refs, *package)
 

@@ -267,6 +267,36 @@
     ]
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]\\test_cust\\workdir"
+    ],
+    "infra_step": true,
+    "name": "Ensure [CLEANUP]\\test_cust\\workdir"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]\\test_cust\\workdir"
+    ],
+    "infra_step": true,
+    "name": "Ensure [CLEANUP]\\test_cust\\workdir (2)"
+  },
+  {
     "cmd": [],
     "name": "Process the customizations"
   },

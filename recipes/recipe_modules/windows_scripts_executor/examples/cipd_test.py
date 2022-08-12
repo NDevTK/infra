@@ -80,7 +80,7 @@ def GenTests(api):
                   package='infra/files/cipd-2',
                   refs='latest',
                   platform='windows-amd64',
-              ),),
+                  filename='cipd-2.py'),),
           dst='Windows\\Users\\',
       ))
 

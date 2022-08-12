@@ -40,6 +40,7 @@ class OfflineWinPECustomization(customization.Customization):
     self._workdir = self.m.path['cleanup'].join(self._name, 'workdir')
     self._scratchpad = self.m.path['cleanup'].join(self._name, 'sp')
     self._canon_cust = None
+    helper.ensure_dirs(self.m.file, [self._workdir])
 
   def pin_sources(self):
     """ pins the given config by replacing the sources in customization """
@@ -119,9 +120,6 @@ class OfflineWinPECustomization(customization.Customization):
     wpec = self._customization.offline_winpe_customization
     if wpec and len(wpec.offline_customization) > 0:
       with self.m.step.nest('offline winpe customization ' + wpec.name):
-        #src = self._source.get_local_src(wpec.image_src)
-        #if not src:
-        #  src = self._workdir.join('media', 'sources', 'boot.wim')
         self.init_win_pe_image(self._arch, wpec.image_src)
         try:
           for action in wpec.offline_customization:
@@ -145,7 +143,7 @@ class OfflineWinPECustomization(customization.Customization):
     """
     with self.m.step.nest('Init WinPE image modification ' + arch + ' in ' +
                           str(self._workdir)):
-      # Path to boot.wim. This is where we expect it to always be
+      # Path to boot.wim. This is where COPY-PE generates the image
       wim_path = self._workdir.join('media', 'sources', 'boot.wim')
       # Use WhichOneOf to test for emptiness
       # https://developers.google.com/protocol-buffers/docs/reference/python-generated#oneof
@@ -166,10 +164,21 @@ class OfflineWinPECustomization(customization.Customization):
               'Unpack {}'.format(self._source.get_url(image)),
               self._source.get_local_src(image), self._workdir)
         else:
-          # image was from cipd. Link the cipd dir to workdir
-          self.m.file.symlink(
-              'Link {} to workdir'.format(self._source.get_url(image)),
-              image_path, self._workdir)
+          # Path to copy the image to
+          wim_path = self._workdir.join(self.m.path.basename(image_path))
+          # image was from remote source. Copy to workdir
+          self.m.file.copy(
+              'Copy {} to workdir'.format(self._source.get_url(image)),
+              image_path, wim_path)
+          # I can't figure out a way to get this to work with cipd. Somehow the
+          # wim gets set to ReadOnly. I tried changing the permissions before
+          # uploading to cipd. But, It was still set ReadOnly.
+          self.m.powershell(
+              'Set RW access',
+              'Set-ItemProperty',
+              args=[
+                  '-Path', wim_path, '-Name', 'IsReadOnly', '-Value', '$false'
+              ])
       # ensure that the destination exists
       dest = self._workdir.join('mount')
       self.m.file.ensure_directory('Ensure mount point', dest)
