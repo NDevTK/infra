@@ -52,3 +52,7 @@ dispatch:
   # Global config validation is implemented in Go, so serve it from there.
   - url: "*/api/config/*"
     service: default-go
+
+  # /push-handlers is for all Go pubsub subscriptions.
+  - url: "*/push-handlers/*"
+    service: default-go
