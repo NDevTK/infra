@@ -346,6 +346,68 @@ def POWERSHELL_EXPR_VM(api,
       success=success)
 
 
+def SHUTDOWN_VM(api, image, customization, vm_name, retcode=0):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          'Shutting down {}'.format(vm_name),
+          'Powershell> Shutdown {}'.format(vm_name)),
+      stdout=pwsh_json_res(
+          api,
+          output='',
+          error='',
+          logs=None,
+          retcode=retcode,
+          success=not bool(retcode)))
+
+
+def STATUS_VM(api, image, customization, vm_name, running=False):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          'Shutting down {}'.format(vm_name), 'Status {}'.format(vm_name)),
+      stdout=api.json.output({
+          'return': {
+              'running': True,
+              'singlestep': False,
+              'status': 'running'
+          }
+      }) if running else api.json.output(
+          {'return': {
+              'Error': '[Errno i111] Connection refused',
+          }}))
+
+
+def POWERDOWN_VM(api, image, customization, vm_name, success=False):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          'Shutting down {}'.format(vm_name), 'Powerdown {}'.format(vm_name)),
+      stdout=api.json.output({'return': {}})
+      if success else api.json.output({'return': {
+          'Error': 'QMP ERROR',
+      }}))
+
+
+def QUIT_VM(api, image, customization, vm_name, success=True):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          'Shutting down {}'.format(vm_name), 'Quit {}'.format(vm_name)),
+      stdout=api.json.output({'return': {}})
+      if success else api.json.output({'return': {
+          'Error': 'QMP FAILURE',
+      }}))
+
+
 def DISK_SPACE(api,
                image,
                customization,

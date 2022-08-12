@@ -13,21 +13,58 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 
 def RunSteps(api):
-  api.qemu.powerdown_vm(name='test')
+  assert (api.qemu.powerdown_vm(name='test'))
 
 
 def GenTests(api):
+  # Happy path. We sent `system_powerdown` signal and got
+  # {
+  #   "return": {}
+  # }
+  yield (
+      api.test('Test powerdown_vm') + api.post_process(StatusSuccess) +
+      api.step_data(
+          'Powerdown test', stdout=api.json.output({
+              'return': {},
+          }), retcode=0) + api.post_process(DropExpectation))
 
-  yield (api.test('Test powerdown_vm') + api.post_process(StatusSuccess) +
-         api.step_data(
-             'Powerdown test', api.json.output({
-                 'return': {},
-             }), retcode=0) + api.post_process(DropExpectation))
-
-  yield (api.test('Test qemu fail') + api.post_process(StatusSuccess) +
-         api.step_data(
+  # Failed as VM is already down. We sent `system_powerdown` signal and got
+  # {
+  #   "return": {
+  #       "Error": "[Errno 111] Connection refused"
+  #   }
+  # }.
+  # This is still a happy path. As VM is already down
+  yield (api.test('Test powerdown_vm vm not running') +
+         api.post_process(StatusSuccess) + api.step_data(
              'Powerdown test',
-             api.raw_io.output("""
+             stdout=api.json.output({
+                 'return': {
+                     'Error': '[Errno 111] Connection refused'
+                 },
+             }),
+             retcode=0) + api.post_process(DropExpectation))
+
+  # We sent `system_powerdown` signal and got
+  # {
+  #   "return": {
+  #       "Error": "QMP FAILURE"
+  #   }
+  # }
+  yield (api.test('Test powerdown_vm qmp failure') + api.step_data(
+      'Powerdown test',
+      stdout=api.json.output({
+          'return': {
+              'Error': 'QMP FAILURE'
+          },
+      }),
+      retcode=0) + api.expect_exception('AssertionError') +
+         api.post_process(DropExpectation))
+
+  # Test failure to powerdown_vm. Failure to find qmp.py
+  yield (api.test('Test qemu fail') + api.step_data(
+      'Powerdown test',
+      stdout=api.raw_io.output("""
               [No write since last change]
               Traceback (most recent call last):
               File \"/something/qemu/resources/qmp.py\", line 74, in <module>
@@ -36,4 +73,5 @@ def GenTests(api):
                   sock.connect(args.sock)
               FileNotFoundError: [Errno 2] No such file or directory
             """),
-             retcode=1) + api.post_process(DropExpectation))
+      retcode=1) + api.expect_exception('AssertionError') +
+         api.post_process(DropExpectation))

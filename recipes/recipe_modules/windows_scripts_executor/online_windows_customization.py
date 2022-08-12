@@ -316,6 +316,76 @@ class OnlineWindowsCustomization(customization.Customization):
                   ['sleep', '{}'.format(boot_time)])
       return qemu_vm
 
+  def shutdown_vm(self, vm_name):
+    ''' shutdown_vm sends `Stop-Computer` signal to the powershell session
+
+    Args:
+      * vm_name: name of the vm
+    '''
+    try:
+      self.execute_powershell(
+          'Shutdown {}'.format(vm_name), ctx={}, expr='robocopy')
+      # The command was sent successfully. VM must be shutting down
+      return True
+    except Exception:
+      # catch the step failure. This probably happened because the vm is
+      # down. Return none if the shutdown attempt fails
+      return False
+
+  def safely_shutdown_vm(self, oc):
+    ''' safely_shutdown_vm attempts to shutdown the vm safely.
+
+    There are 3 ways to stop a vm
+    * shutdown_vm: This attempts to send a `Stop-Computer` powershell command.
+    This is same as clicking on shutdown in windows.
+    * powerdown_vm: This attempts to mimic the powerbutton on the system being
+    pressed. Sometimes this is ignored by the OS.
+    * quit_vm: This is basically a kill signal sent to QEMU. QEMU honors this
+    by killing the VM and the OS is not shutdown safely.
+
+    We first attempt to shutdown_vm. If that fails we do powerdown_vm. If the
+    vm is still up then kill it.
+
+    Args:
+      * oc: OnlineCustomization proto object
+    '''
+    vm_name = oc.vm_config.qemu_vm.name
+
+    with self.m.step.nest('Shutting down {}'.format(vm_name), status='last'):
+      # Give 5 minutes for the VM to quit if shutdown time is not given.
+      shutdown_time = 300
+      if oc.win_vm_config and oc.win_vm_config.shutdown_time > 0:
+        shutdown_time = oc.win_vm_config.shutdown_time
+
+      # Try to shutdown the vm through powershell
+      if not self.shutdown_vm(vm_name):
+        # Powershell session must be down. Try sending the powerdown signal
+        self.m.qemu.powerdown_vm(vm_name)
+
+      # wait for shutdown to complete
+      self.m.step('Wait for vm to stop', ['sleep', '{}'.format(shutdown_time)])
+
+      # TODO(anushruth): Poll for vm status instead of sleeping for given time
+      # check the vm status. If we receive
+      # {
+      #   "return": {
+      #   "Error": "[Errno 111] Connection refused"
+      #   }
+      # }
+      # It means that VM is down
+      resp = self.m.qemu.vm_status(vm_name)
+      if 'return' in resp and 'Error' in resp['return'] and \
+          'Connection refused' in resp['return']['Error']:
+        # The VM is already down. Return True
+        return True
+
+      # If we reach to this point. Then VM is not gonna shutdown. Kill it
+      self.m.qemu.quit_vm(vm_name)
+
+      # Raise an error as we couldn't terminate safely
+      raise self.m.step.StepFailure(
+          'Unable to shutdown vm {}. Force killed'.format(vm_name))
+
   def execute_customization(self):
     ''' execute_customization runs all the online customizations included in
     the given customization.
@@ -338,11 +408,14 @@ class OnlineWindowsCustomization(customization.Customization):
     with self.m.step.nest('Execute online customization {}'.format(oc.name)):
       # Boot up the vm
       self.start_qemu(oc)
-      for online_action in oc.online_actions:
-        with self.m.step.nest('Execute online action {}'.format(
-            online_action.name)):
-          for action in online_action.actions:
-            self.execute_action(action, oc.win_vm_config.context)
+      try:
+        for online_action in oc.online_actions:
+          with self.m.step.nest('Execute online action {}'.format(
+              online_action.name)):
+            for action in online_action.actions:
+              self.execute_action(action, oc.win_vm_config.context)
+      finally:
+        self.safely_shutdown_vm(oc)
 
   def execute_action(self, action, ctx):
     ''' execute_action runs the given action in the given context

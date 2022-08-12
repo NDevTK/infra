@@ -95,6 +95,11 @@ def GenTests(api):
          # Mock successful execution of powershell expression
          t.POWERSHELL_EXPR_VM(api, image, cust, 'Install HL3',
                               'HL3 installed successfully') +
+         # Mock shutdown vm. successfully shut down vm
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         # Mock stats vm check. VM offline
+         t.STATUS_VM(api, image, cust, vm_name) +
+         # Successfully executed the recipe
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))
 
   yield (api.test('powershell_expr test fail') +
@@ -114,4 +119,8 @@ def GenTests(api):
              'Failed to install, not arm device',
              retcode=12,
              success=False) + api.post_process(StatusFailure) +
-         api.post_process(DropExpectation))
+         # Mock shutdown vm. successfully shut down vm
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         # Mock stats vm check. VM offline
+         t.STATUS_VM(api, image, cust, vm_name) +
+         api.post_process(StatusFailure) + api.post_process(DropExpectation))

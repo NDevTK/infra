@@ -87,10 +87,12 @@ def GenTests(api):
         vm_config=WIN_VM,
         action_list=[ACTION_ADD_FILE],
         win_config=windows_pb.WindowsVMConfig(
-            boot_time=300, context={
+            boot_time=300,
+            context={
                 '$system_img': 'C:',
                 '$deps_img': 'D:'
-            }))
+            },
+            shutdown_time=300))
 
   yield (api.test('execute_customization_happy_path[AARCH64_KVM]') +
          api.platform('linux', 64, 'arm') +
@@ -99,6 +101,8 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
+         t.STATUS_VM(api, image, cust, vm_name) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[AMD64_KVM]') +
@@ -108,6 +112,8 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         t.STATUS_VM(api, image, cust, vm_name) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[X86_KVM]') +
@@ -117,6 +123,8 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         t.STATUS_VM(api, image, cust, vm_name) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_fail_add_file') +
@@ -126,4 +134,18 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         t.STATUS_VM(api, image, cust, vm_name) +
+         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+
+  yield (api.test('execute_customization_fail_safe_shutdown') +
+         api.platform('linux', 64, 'intel') +
+         api.properties(IMAGE(wib.ARCH_AMD64)) +
+         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+             api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         t.STATUS_VM(api, image, cust, vm_name, running=True) +
+         t.QUIT_VM(api, image, cust, vm_name, success=True) +
          api.post_process(StatusFailure) + api.post_process(DropExpectation))

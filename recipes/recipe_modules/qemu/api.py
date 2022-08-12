@@ -292,13 +292,32 @@ class QEMUAPI(recipe_api.RecipeApi):
     Returns: True if powerdown signal was sent to VM. False otherwise
     """
     try:
-      self.m.step(
+      res = self.m.step(
           name='Powerdown {}'.format(name),
           cmd=[
               'python3',
               self.resource('qmp.py'), '-c', 'system_powerdown', '-s', QMP_HOST
-          ])
-      return True
+          ],
+          stdout=self.m.json.output())
+      resp = res.stdout
+      if 'Error' in resp['return'] and \
+          'Connection refused' in resp['return']['Error']:
+        # If we cannot connect to the VM. The response would be
+        # {
+        #   "return": {
+        #       "Error": "[Errno 111] Connection refused"
+        #   }
+        # }
+        # The VM has powered down.
+        return True
+      if not resp['return']:
+        # If we send the powerdown signal successfully. The response will be
+        # {
+        #   "return": {}
+        # }
+        return True
+      # return False in all other cases
+      return False
     except Exception:
       # Failed to power down. Is it already powered down?
       # avoid raising exception
@@ -314,13 +333,32 @@ class QEMUAPI(recipe_api.RecipeApi):
     Returns: True if quit signal was sent to VM. False otherwise
     """
     try:
-      self.m.step(
+      res = self.m.step(
           name='Quit {}'.format(name),
           cmd=[
               'python3',
               self.resource('qmp.py'), '-c', 'quit', '-s', QMP_HOST
-          ])
-      return True
+          ],
+          stdout=self.m.json.output())
+      resp = res.stdout
+      if 'Error' in resp['return'] and \
+          'Connection refused' in resp['return']['Error']:
+        # If we cannot connect to the VM. The response would be
+        # {
+        #   "return": {
+        #       "Error": "[Errno 111] Connection refused"
+        #   }
+        # }
+        # The VM has powered down.
+        return True
+      if not resp['return']:
+        # If we send the kill signal successfully. The response will be
+        # {
+        #   "return": {}
+        # }
+        return True
+      # return false for all other cases
+      return False
     except Exception:
       # Failed to power down. Is it already powered down?
       # avoid raising exception

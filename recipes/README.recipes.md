@@ -85,6 +85,7 @@
   * [windows_scripts_executor:examples/git_test](#recipes-windows_scripts_executor_examples_git_test) (Python3 ✅)
   * [windows_scripts_executor:examples/online_windows_customization](#recipes-windows_scripts_executor_examples_online_windows_customization) (Python3 ✅)
   * [windows_scripts_executor:examples/powershell_expression](#recipes-windows_scripts_executor_examples_powershell_expression) (Python3 ✅)
+  * [windows_scripts_executor:examples/shutdown_vm](#recipes-windows_scripts_executor_examples_shutdown_vm) (Python3 ✅)
   * [windows_scripts_executor:examples/test](#recipes-windows_scripts_executor_examples_test) (Python3 ✅)
   * [windows_sdk:examples/full](#recipes-windows_sdk_examples_full) (Python3 ✅)
   * [zip:examples/full](#recipes-zip_examples_full) (Python3 ✅)
@@ -650,7 +651,7 @@ Args:
 
 Returns: True if powerdown signal was sent to VM. False otherwise
 
-&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#307)(self, name):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#326)(self, name):**
 
 quit_vm sends a quit signal to the qemu process. Use this if your VM
 doesn't respond to powerdown signal.
@@ -680,7 +681,7 @@ unmount_disk_image unmounts the disk mounted using the given loop_file
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#329)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#367)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`
@@ -1898,6 +1899,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/powershell_expression.py#34)(api, config):**
+### *recipes* / [windows\_scripts\_executor:examples/shutdown\_vm](/recipes/recipe_modules/windows_scripts_executor/examples/shutdown_vm.py)
+
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/shutdown_vm.py#19): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/shutdown_vm.py#34)(api, config):**
 ### *recipes* / [windows\_scripts\_executor:examples/test](/recipes/recipe_modules/windows_scripts_executor/examples/test.py)
 
 [DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/test.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
