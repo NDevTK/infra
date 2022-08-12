@@ -250,7 +250,7 @@ export function AssetInstanceList() {
         </CardContent>
       </Card>
       <hr style={{ height: 1, visibility: 'hidden' }} />
-      <div ref={ref}>
+      <div style={{maxWidth: '80vw', margin: 'auto'}} ref={ref}>
         {showLogs ? (
           <Card>
             <AssetInstanceLogs></AssetInstanceLogs>
