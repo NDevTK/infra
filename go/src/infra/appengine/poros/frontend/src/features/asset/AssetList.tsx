@@ -97,7 +97,7 @@ export function AssetList() {
       },
     },
     {
-      field: 'Spin',
+      field: 'Deploy',
       renderCell: (cellValues) => {
         return (
           <IconButton
@@ -204,7 +204,7 @@ export function AssetList() {
               }}
               xs={8}
             >
-              <Typography variant="h6">Assets</Typography>
+              <Typography variant="h6">Lab templates</Typography>
             </Grid>
             <Grid
               item
