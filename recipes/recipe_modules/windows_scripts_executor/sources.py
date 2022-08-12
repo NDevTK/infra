@@ -16,41 +16,35 @@ class Source:
       implementation details on how each is handled.
   """
 
-  def __init__(self, cache, step, path, m_file, raw_io, cipd, gsutil, gitiles,
-               git, archive):
+  def __init__(self, cache, module):
     """ __init__ generates the src managers (git, gcs and cipd) and stores them
-        in class variables.
-        Args:
-          cache: path to dir that can be used to download artifacts
-          step: ref to recipe_engine/step module object
-          path: ref to recipe_engine/path module object
-          m_file: ref to recipe_engine/file module object
-          raw_io: ref to recipe_engine/raw_io module object
-          cipd: ref to recipe_engine/cipd module object
-          gsutil: ref to depot_tools/gsutil module object
-          gitiles: ref to depot_tools/gitiles module object
-          git: ref to depot_tools/git module object
-          archive: ref to recipe_engine/archive object
+    in class variables.
+
+    Args:
+      * cache: path to dir that can be used to download artifacts
+      * module: module object with all dependencies
     """
+    self.m = module
     # dir to store CIPD downloaded packages
     cipd_dir = cache.join('CIPDPkgs')
     # dir to store GIT downloaded packages
     git_dir = cache.join('GITPkgs')
     # dir to store GCS downloaded packages
     gcs_dir = cache.join('GCSPkgs')
-    helper.ensure_dirs(m_file, [
+    helper.ensure_dirs(self.m.file, [
         cipd_dir, git_dir, gcs_dir,
         gcs_dir.join('chrome-gce-images', 'WIB-WIM')
     ])
-    self._cipd = cipd_manager.CIPDManager(step, cipd, path, cipd_dir)
-    self._gcs = gcs_manager.GCSManager(step, gsutil, path, m_file, raw_io,
-                                       archive, gcs_dir)
-    self._git = git_manager.GITManager(step, gitiles, git, m_file, path,
-                                       git_dir)
-    self._step = step
+    self._cipd = cipd_manager.CIPDManager(module, cipd_dir)
+    self._gcs = gcs_manager.GCSManager(module, gcs_dir)
+    self._git = git_manager.GITManager(module, git_dir)
 
   def pin(self, src):
-    """ pin pins all the recorded packages to static refs """
+    """ pin pins all the recorded packages to static refs
+
+    Args:
+      * src: sources.Src proto object that contains ref to an artifact
+    """
     if src and src.WhichOneof('src') == 'git_src':
       src.git_src.CopyFrom(self._git.pin_package(src.git_src))
       return src
@@ -62,7 +56,11 @@ class Source:
       return src
 
   def download(self, src):
-    """ download downloads all the pinned packages to cache on disk """
+    """ download downloads all the pinned packages to cache on disk
+
+    Args:
+      * src: sources.Src proto object that contains ref to an artifact
+    """
     if src and src.WhichOneof('src') == 'git_src':
       return self._git.download_package(src.git_src)
     if src and src.WhichOneof('src') == 'gcs_src':
@@ -72,8 +70,9 @@ class Source:
 
   def get_local_src(self, src):
     """ get_local_src returns path on the disk that points to the given src ref
-        Args:
-          src: sources.Src proto object that is ref to a downloaded artifact
+
+    Args:
+      * src: sources.Src proto object that is ref to a downloaded artifact
     """
     if src and src.WhichOneof('src') == 'gcs_src':
       return self._gcs.get_local_src(src.gcs_src)
@@ -86,8 +85,9 @@ class Source:
 
   def get_url(self, src):
     """ get_url returns string containing an url referencing the given src
-        Args:
-          src: sources.Src proto object that contains ref to an artifact
+
+    Args:
+      * src: sources.Src proto object that contains ref to an artifact
     """
     if src and src.WhichOneof('src') == 'gcs_src':
       return self._gcs.get_gs_url(src.gcs_src)
@@ -97,7 +97,12 @@ class Source:
       return self._git.get_gitiles_url(src.git_src)
 
   def upload_package(self, dest, source):
-    """ upload_package uploads a given package to the given destination"""
+    """ upload_package uploads a given package to the given destination
+
+    Args:
+      * dest: dest_pb.Dest proto object representing the upload to be done
+      * source: The contents of the package to be uploaded
+    """
     if dest.WhichOneof('dest') == 'gcs_src':
       self._gcs.upload_package(dest, source)
     if dest and dest.WhichOneof('dest') == 'cipd_src':
@@ -105,8 +110,9 @@ class Source:
 
   def exists(self, src):
     """ exists Returns True if the given src exists
-        Args:
-          src: {sources.Src | dest.Dest} proto object representing an artifact
+
+    Args:
+      * src: {sources.Src | dest.Dest} proto object representing an artifact
     """
     # TODO(anushruth): add support for git and cipd
     if isinstance(src, src_pb.Src):  #pragma: no cover

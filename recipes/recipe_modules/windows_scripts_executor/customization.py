@@ -12,33 +12,19 @@ class Customization(object):
       recipes.
   """
 
-  def __init__(self,
-               image,
-               cust,
-               arch,
-               scripts,
-               configs,
-               step,
-               path,
-               powershell,
-               m_file,
-               archive,
-               source,
-               qemu=None):
+  def __init__(self, image, cust, arch, scripts, configs, module, source):
     """ __init__ copies common module objects to class references. These are
-        commonly used for all customizations
-        Args:
-          image: wib.Image proto object
-          cust: wib.Customization proto object
-          arch: string representing architecture to build the image for
-          scripts: path to the scripts resource dir
-          step: module object for recipe_engine/step
-          path: module object for recipe_engine/path
-          powershell: module object for recipe_modules/powershell
-          m_file: module object for recipe_engine/file
-          archive: module object for recipe_engine/archive
-          source: module object for Source from sources.py
-          qemu: module object for qemu
+    commonly used for all customizations
+
+    Args:
+      * image: wib.Image proto object
+      * cust: wib.Customization proto object
+      * arch: string representing architecture to build the image for
+      * scripts: path to the scripts resource dir
+      * configs: dir to store configs in
+      * module: module object with all dependencies
+      * source: module object for Source from sources.py
+      * qemu: module object for qemu
     """
     # generate a copy of image
     self._image = wib.Image()
@@ -53,20 +39,15 @@ class Customization(object):
     self._image.customizations.append(self._customization)
     self._arch = arch
     self._scripts = scripts
-    self._step = step
-    self._path = path
-    self._powershell = powershell
+    self.m = module
     self._source = source
-    self._file = m_file
-    self._archive = archive
     self._key = ''
     self._configs = configs
-    self._qemu = qemu
     self._name = ''
 
   def name(self):
     """ name returns the name of the customization object. This needs to be
-        set by the inheriting class"""
+    set by the inheriting class"""
     return self._name
 
   def customization(self):
@@ -79,8 +60,8 @@ class Customization(object):
 
   def set_key(self, key):
     """ set_key is used to set the identification keys for the customization
-        Args:
-          key: string representing the unique key for this customization
+    Args:
+      * key: string representing the unique key for this customization
     """
     self._key = key
 
@@ -91,15 +72,16 @@ class Customization(object):
 
   def execute_script(self, name, command, *args, **kwargs):
     """ Executes the windows powershell script
-        Args:
-          name: string representing step name
-          command: string|path representing command to be run
-          args: args to be passed on to the command
-          kwargs: logs and ret_codes, logs ([]str) are list os paths to watch
-                  and record logs from. ret_codes ([]int) is a list of ints,
-                  these will be treated as success return codes upon execution
+
+    Args:
+      * name: string representing step name
+      * command: string|path representing command to be run
+      * args: args to be passed on to the command
+      * kwargs: logs and ret_codes, logs ([]str) are list os paths to watch
+                and record logs from. ret_codes ([]int) is a list of ints,
+                these will be treated as success return codes upon execution
     """
     logs = kwargs['logs']
     ret_codes = kwargs['ret_codes']
-    return self._powershell(
+    return self.m.powershell(
         name, command, logs=logs, ret_codes=ret_codes, args=list(args))

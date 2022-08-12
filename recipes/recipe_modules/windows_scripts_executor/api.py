@@ -18,7 +18,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def __init__(self, *args, **kwargs):
     super(WindowsPSExecutorAPI, self).__init__(*args, **kwargs)
-    self._scripts = self.resource('WindowsPowerShell\Scripts')
+    self._scripts = self.resource
     self._workdir = ''
     self._sources = None
     self._configs_dir = None
@@ -30,19 +30,17 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     """ init initializes all the dirs and sub modules required.
     """
     with self.m.step.nest('Initialize the config engine'):
-      self._sources = sources.Source(self.m.path['cache'].join('Pkgs'),
-                                     self.m.step, self.m.path, self.m.file,
-                                     self.m.raw_io, self.m.cipd, self.m.gsutil,
-                                     self.m.gitiles, self.m.git, self.m.archive)
+      self._sources = sources.Source(self.m.path['cache'].join('Pkgs'), self.m)
 
       self._configs_dir = self.m.path['cleanup'].join('configs')
       helper.ensure_dirs(self.m.file, [self._configs_dir])
 
   def init_customizations(self, config):
     """ init_customizations initializes the given config and returns
-        list of customizations
-        Args:
-          config: wib.Image proto config
+    list of customizations
+
+    Args:
+      * config: wib.Image proto config
     """
     # ensure that arch is specified in the image
     if config.arch == wib.Arch.ARCH_UNSPECIFIED:
@@ -61,11 +59,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 arch=arch,
                 scripts=self._scripts,
                 configs=self._configs_dir,
-                step=self.m.step,
-                path=self.m.path,
-                powershell=self.m.powershell,
-                m_file=self.m.file,
-                archive=self.m.archive,
+                module=self.m,
                 source=self._sources))
       if cust.WhichOneof('customization') == 'online_windows_customization':
         custs.append(
@@ -75,22 +69,19 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 arch=arch,
                 scripts=self._scripts,
                 configs=self._configs_dir,
-                step=self.m.step,
-                path=self.m.path,
-                powershell=self.m.powershell,
-                m_file=self.m.file,
-                archive=self.m.archive,
-                source=self._sources,
-                qemu=self.m.qemu))
+                module=self.m,
+                source=self._sources))
 
     return custs
 
   def process_customizations(self, custs):
     """ process_customizations pins all the volatile srcs, generates
-        canonnical configs, filters customizations that need to be executed.
-        Returns list of customizations that can be executed.
-        Args:
-          custs: List of customizations from customization.py
+    canonnical configs, filters customizations that need to be executed.
+
+    Args:
+      * custs: List of customizations from customization.py
+
+    Returns list of customizations that can be executed.
     """
     with self.m.step.nest('Process the customizations'):
       self.pin_customizations(custs)
@@ -99,8 +90,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def pin_customizations(self, customizations):
     """ pin_customizations pins all the sources in the customizations
-        Args:
-          customizations: List of Customizations object from customizations.py
+
+    Args:
+      * customizations: List of Customizations object from customizations.py
     """
     for cust in customizations:
       with self.m.step.nest('Pin resources from {}'.format(cust.name())):
@@ -108,85 +100,87 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def gen_canonical_configs(self, customizations):
     """ gen_canonical_configs strips all the names in the config and returns
-        individual configs containing one customization per image.
-        Args:
-          customizations: List of Customizations object from customizations.py
-        Example:
-          Given an Image
+    individual configs containing one customization per image.
 
-            Image{
-              arch: x86,
-              name: "windows10_x86_GCE",
-              customizations: [
-                Customization{
-                  OfflineWinPECustomization{
-                    name: "winpe_networking"
-                    image_dest: GCSSrc{
-                      bucket: "chrome-win-wim"
-                      source: "rel/win10_networking.wim"
-                    }
-                    ...
-                  }
-                },
-                Customization{
-                  OfflineWinPECustomization{
-                    name: "winpe_diskpart"
-                    image_src: Src{
-                      gcs_src: GCSSrc{
-                        bucket: "chrome-win-wim"
-                        source: "rel/win10_networking.wim"
-                      }
-                    }
-                    ...
+    Example:
+      Given an Image
+
+        Image{
+          arch: x86,
+          name: "windows10_x86_GCE",
+          customizations: [
+            Customization{
+              OfflineWinPECustomization{
+                name: "winpe_networking"
+                image_dest: GCSSrc{
+                  bucket: "chrome-win-wim"
+                  source: "rel/win10_networking.wim"
+                }
+                ...
+              }
+            },
+            Customization{
+              OfflineWinPECustomization{
+                name: "winpe_diskpart"
+                image_src: Src{
+                  gcs_src: GCSSrc{
+                    bucket: "chrome-win-wim"
+                    source: "rel/win10_networking.wim"
                   }
                 }
-              ]
+                ...
+              }
             }
+          ]
+        }
 
-          Writes two configs: windows10_x86_GCE-winpe_networking.cfg with
+      Writes two configs: windows10_x86_GCE-winpe_networking.cfg with
 
-            Image{
-              arch: x86,
-              name: "",
-              customizations: [
-                Customization{
-                  OfflineWinPECustomization{
-                    name: ""
-                    image_dest: GCSSrc{
-                      bucket: "chrome-win-wim"
-                      source: "rel/win10_networking.wim"
-                    }
-                    ...
-                  }
-               }
-              ]
-            }
+        Image{
+          arch: x86,
+          name: "",
+          customizations: [
+            Customization{
+              OfflineWinPECustomization{
+                name: ""
+                image_dest: GCSSrc{
+                  bucket: "chrome-win-wim"
+                  source: "rel/win10_networking.wim"
+                }
+                ...
+              }
+           }
+          ]
+        }
 
-          and windows10_x86_GCE-winpe_diskpart.cfg with
+      and windows10_x86_GCE-winpe_diskpart.cfg with
 
-            Image{
-              arch: x86,
-              name: "",
-              customizations: [
-                Customization{
-                  OfflineWinPECustomization{
-                    name: ""
-                    image_src: Src{
-                      gcs_src: GCSSrc{
-                        bucket: "chrome-win-wim"
-                        source: "rel/win10_networking.wim"
-                      }
-                    }
-                    ...
+        Image{
+          arch: x86,
+          name: "",
+          customizations: [
+            Customization{
+              OfflineWinPECustomization{
+                name: ""
+                image_src: Src{
+                  gcs_src: GCSSrc{
+                    bucket: "chrome-win-wim"
+                    source: "rel/win10_networking.wim"
                   }
                 }
-              ]
+                ...
+              }
             }
+          ]
+        }
 
-          to disk, calculates the hash for each config and sets the key for each
-          of them. The strings representing name of the image, customization,...
-          etc,. are set to empty before calculating the hash to maintain the
-          uniqueness of the hash.
+      to disk, calculates the hash for each config and sets the key for each
+      of them. The strings representing name of the image, customization,...
+      etc,. are set to empty before calculating the hash to maintain the
+      uniqueness of the hash.
+
+    Args:
+      * customizations: List of Customizations object from customizations.py
     """
     for cust in customizations:
       # create a new image object, with same arch and containing only one
@@ -215,9 +209,10 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def filter_executable_customizations(self, customizations):
     """ filter_executable_customizations generates a list of customizations
-        that need to be executed.
-        Args:
-          customizations: List of Customizations object from customizations.py
+    that need to be executed.
+
+    Args:
+      * customizations: List of Customizations object from customizations.py
     """
     exec_customizations = []
     for cust in customizations:
@@ -229,9 +224,10 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def download_all_packages(self, custs):
     """ download_all_packages downloads all the packages referenced by given
-        custs.
-        Args:
-          customizations: List of Customizations object from customizations.py
+    custs.
+
+    Args:
+      * custs: List of Customizations object from customizations.py
     """
     for cust in custs:
       with self.m.step.nest('Download resources for {}'.format(cust.name())):
@@ -239,8 +235,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def execute_customizations(self, custs):
     """ Executes the windows image builder user config.
-        Args:
-          customizations: List of Customizations object from customizations.py
+
+    Args:
+      * custs: List of Customizations object from customizations.py
     """
     for cust in custs:
       with self.m.step.nest('execute config {}'.format(cust.image().name)):
@@ -248,9 +245,10 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
   def get_executable_configs(self, custs):  # pragma: no cover
     """ get_executable_config takes list of customizations and returns a list
-        of wib.Image proto objects that can be used to trigger other builders
-        Args:
-          custs: list of customizations refs generated by process_customizations
+    of wib.Image proto objects that can be used to trigger other builders
+
+    Args:
+      * custs: list of customizations refs generated by process_customizations
     """
     images = []
     for cust in custs:

@@ -30,8 +30,8 @@ class OnlineWindowsCustomization(customization.Customization):
     assert self.customization().WhichOneof(
         'customization') == 'online_windows_customization'
     self._name = self.customization().online_windows_customization.name
-    self._workdir = self._path['cleanup'].join(self._name, 'workdir')
-    self._scratchpad = self._path['cleanup'].join(self._name, 'sp')
+    self._workdir = self.m.path['cleanup'].join(self._name, 'workdir')
+    self._scratchpad = self.m.path['cleanup'].join(self._name, 'sp')
     self._canon_cust = None
 
   def pin_sources(self):
@@ -98,6 +98,7 @@ class OnlineWindowsCustomization(customization.Customization):
   def get_canonical_online_customization(self, cust):
     """ get_canonical_online_customization returns canonical
     OnlineCustomization object.
+
     Example:
       Given a onlinewc.OnlineCustomization object
 
@@ -113,6 +114,9 @@ class OnlineWindowsCustomization(customization.Customization):
         vm_config: vm.VM{...},
         online_actions: [...],
       }
+
+    Args:
+      * cust: onlinewc.OnlineCustomization proto object
     """
     # convert online_actions to canonical form
     online_actions = [
@@ -157,6 +161,9 @@ class OnlineWindowsCustomization(customization.Customization):
           drives: [...]
         }
       }
+
+    Args:
+      * vm_config: vm_pb.VM proto object representing a VM
     """
     cfg = vm_config.qemu_vm
     machine = cfg.machine
@@ -179,6 +186,7 @@ class OnlineWindowsCustomization(customization.Customization):
   def get_canonical_drive_config(self, drive):
     """ get_canonical_drive_config takes a drive_pb.Drive object and returns a
     canonical drive_pb.Drive object
+
     Example:
       Given a Drive object
 
@@ -199,6 +207,9 @@ class OnlineWindowsCustomization(customization.Customization):
         media: "cdrom"
         fmt: "raw"
       }
+
+    Args:
+      * drive: drive_pb.Drive proto object representing a drive image.
     """
     return drive_pb.Drive(
         input_src=drive.input_src,

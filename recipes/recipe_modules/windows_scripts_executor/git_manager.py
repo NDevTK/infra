@@ -19,27 +19,14 @@ class GITManager:
     download them.
   """
 
-  def __init__(self, step, gitiles, git, f, path, cache):
+  def __init__(self, module, cache):
     """ __init__ copies few module objects and cache dir path into class vars
-        Args:
-          step: module object for recipe_engine/step
-          git: module object for depot_tools/git
-          gitiles: module object for depot_tools/gitiles
-          f: module object for recipe_engine/file
-          path: module object for recipe_engine/path
-          cache: path to cache file dir. Files from git will be saved here
+
+    Args:
+      * module: module object with all dependencies
+      * cache: path to cache file dir. Files from git will be saved here
     """
-    # step is an instance of recipe_engine/step instance
-    self._step = step
-    # gitiles is depot tools module instance. For use in pinning the sources
-    self._gitiles = gitiles
-    # git is depot tools module instance. For use in downloading the sources
-    self._git = git
-    # f is recipe_modules/file instance
-    self._file = f
-    # path instance
-    self._path = path
-    # cache will be used to download the artifacts to
+    self.m = module
     self._cache = cache
     # cache stored as dict with url as key and pinned src as value
     self._pinning_cache = {}
@@ -48,24 +35,33 @@ class GITManager:
 
   def pin_package(self, git_src):
     """ pin_package replaces a volatile ref to deterministic ref in given
-        git_src """
+    git_src
+
+    Args:
+      * git_src: proto GITSrc object representing a volatol
+    """
     url = self.get_gitiles_url(git_src)
     if url in self._pinning_cache:
       return self._pinning_cache[url]
     else:
-      commits, _ = self._gitiles.log(git_src.repo,
-                                     git_src.ref + '/' + git_src.src)
+      commits, _ = self.m.gitiles.log(git_src.repo,
+                                      git_src.ref + '/' + git_src.src)
       # pin the file to the latest available commit
       git_src.ref = commits[0]['commit']
       self._pinning_cache[url] = git_src
       return git_src
 
   def download_package(self, git_src):
-    with self._step.nest('Download {}'.format(self.get_gitiles_url(git_src))):
+    """ download_package downloads the given package to the downloads dir
+
+    Args:
+      * git_src: proto GITSrc object representing the artifact to be downloaded
+    """
+    with self.m.step.nest('Download {}'.format(self.get_gitiles_url(git_src))):
       local_path = self.get_local_src(git_src)
       if not local_path in self._downloads_cache:
         download_path = self._cache.join(git_src.ref)
-        self._git.checkout(
+        self.m.git.checkout(
             step_suffix=git_src.src,
             url=git_src.repo,
             dir_path=download_path,
@@ -76,16 +72,18 @@ class GITManager:
 
   def get_gitiles_url(self, git_src):
     """ get_gitiles_url returns string representing an url for the given source
-        Args:
-          git_src: sources.GITSrc object representing an object
+
+    Args:
+      * git_src: sources.GITSrc object representing an object
     """
     return GIT_URL.format(git_src.repo, git_src.ref, git_src.src)
 
   def get_local_src(self, git_src):
     """ get_local_src returns the location of the downloaded package in
-        disk
-        Args:
-          git_src: sources.GITSrc object
+    disk
+
+    Args:
+      * git_src: sources.GITSrc object
     """
     # src is usually given as a unix path. Ensure this works on windows too
     src = git_src.src.split('/')
