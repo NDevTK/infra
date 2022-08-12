@@ -42,7 +42,11 @@ func main() {
 
 	app.Must(app.LoadSpec())
 
-	cpython, err := python.CPythonFromRelativePath("3.8", "cpython3")
+	bundle := "3.8"
+	if app.InterpreterPath != "" {
+		bundle = app.InterpreterPath
+	}
+	cpython, err := python.CPythonFromPath(bundle, "cpython3")
 	if err != nil {
 		app.Fatal(err)
 	}

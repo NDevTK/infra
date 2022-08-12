@@ -61,6 +61,11 @@ const (
 	// `python` on PATH.
 	BypassENV = "VPYTHON_BYPASS"
 
+	// InterpreterENV is an environment variable that override the default
+	// searching behaviour for the bundled interpreter. It should only be used
+	// for testing and debugging purpose.
+	InterpreterENV = "VPYTHON_INTERPRETER"
+
 	// BypassSentinel must be the BypassENV value (verbatim) in order to trigger
 	// vpython bypass.
 	BypassSentinel = "manually managed python not supported by chrome operations"
@@ -105,6 +110,10 @@ type Application struct {
 	// WorkDir is the Python working directory. If empty, the current working
 	// directory will be used.
 	WorkDir string
+
+	// InterpreterPath is the path to the python interpreter cipd package. If
+	// empty, uses the bundled python from paths relative to the vpython binary.
+	InterpreterPath string
 
 	// Context used through runtime. By default it will be context.Background.
 	Context context.Context
@@ -163,6 +172,15 @@ func (a *Application) ParseEnvs() (err error) {
 
 	// Get default spec path
 	a.DefaultSpecPath = e.Get(DefaultSpecENV)
+
+	// Get interpreter path
+	if p := e.Get(InterpreterENV); p != "" {
+		p, err = filepath.Abs(p)
+		if err != nil {
+			return err
+		}
+		a.InterpreterPath = p
+	}
 
 	// Check if it's in bypass mode
 	if e.Get(BypassENV) == BypassSentinel {

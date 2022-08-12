@@ -95,18 +95,19 @@ func (e *Environment) WithWheels(wheels cipkg.Generator) cipkg.Generator {
 	}
 }
 
-func CPythonFromRelativePath(subdir, cipdName string) (cipkg.Generator, error) {
-	path, err := os.Executable()
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to get executable").Err()
+func CPythonFromPath(dir, cipdName string) (cipkg.Generator, error) {
+	cpythonDir := dir
+	if !filepath.IsAbs(dir) {
+		path, err := os.Executable()
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to get executable").Err()
+		}
+		cpythonDir = filepath.Join(filepath.Dir(path), dir)
 	}
-	cpythonDir := filepath.Join(filepath.Dir(path), subdir)
+
 	v, err := os.Open(filepath.Join(cpythonDir, ".versions", fmt.Sprintf("%s.cipd_version", cipdName)))
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, errors.Reason("Bundled Python %s not found. Use VPYTHON_BYPASS if prebuilt cpython not available on this platform.", subdir).Err()
-		}
-		return nil, errors.Annotate(err, "failed to open version file").Err()
+		return nil, errors.Annotate(err, "Bundled Python %s not found. Use VPYTHON_BYPASS if prebuilt cpython not available on this platform", dir).Err()
 	}
 	defer v.Close()
 	version, err := io.ReadAll(v)

@@ -77,10 +77,16 @@ func main() {
 
 	app.Must(app.LoadSpec())
 
+	// Update the Python Runtime based on vpython spec, if specified.
 	if v := app.VpythonSpec.PythonVersion; v != "" {
 		rt = GetPythonRuntime(v)
 	}
-	cpython, err := python.CPythonFromRelativePath(rt.Version, rt.CIPDName)
+
+	bundle := rt.Version
+	if app.InterpreterPath != "" {
+		bundle = app.InterpreterPath
+	}
+	cpython, err := python.CPythonFromPath(bundle, rt.CIPDName)
 	if err != nil {
 		app.Fatal(err)
 	}
