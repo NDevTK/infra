@@ -38,6 +38,7 @@ class Source:
     self._cipd = cipd_manager.CIPDManager(module, cipd_dir)
     self._gcs = gcs_manager.GCSManager(module, gcs_dir)
     self._git = git_manager.GITManager(module, git_dir)
+    self.cache = cache
 
   def pin(self, src):
     """ pin pins all the recorded packages to static refs
@@ -82,6 +83,16 @@ class Source:
       return self._cipd.get_local_src(src.cipd_src)
     if src and src.WhichOneof('src') == 'local_src':  # pragma: no cover
       return src.local_src
+
+  def get_rel_src(self, src):
+    """ get_rel_src returns relative path on the disk, relative to the cache
+    directory.
+
+    Args:
+      * src: sources.Src proto object that is a ref to a downloaded artifact
+    """
+    local_src = self.get_local_src(src)
+    return self.m.path.relpath(local_src, self.cache)
 
   def get_url(self, src):
     """ get_url returns string containing an url referencing the given src

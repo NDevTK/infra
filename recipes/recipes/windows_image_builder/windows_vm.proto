@@ -1,0 +1,18 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.infra.windows_image_builder.windows_vm;
+
+message WindowsVMConfig {
+  // The set amount of time in seconds to wait for the VM to finish booting up.
+  // Will sleep for this time and then attempt to connect to vm.
+  int32 boot_time = 1;
+
+  // The set amount of time in seconds to wait for VM to completely shutdown.
+  // Will sleep for this time and then proceed to validate that the vm is
+  // shutdown
+  int32 shutdown_time = 2;
+}

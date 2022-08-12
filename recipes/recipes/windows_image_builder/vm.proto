@@ -20,33 +20,36 @@ message QEMU_VM {
   // name represents the VM name
   string name = 1;
 
+  // version represents the qemu version to use
+  string version = 2;
+
   // machine to emulate on the VM
   // Run qemu-system-${ARCH} -machine help to list available machines
   // E.g. 'pc-i440fx-7.1', 'raspi3b'
-  string machine = 2;
+  string machine = 3;
 
   // cpu to emulate on VM
   // Run qemu-system-${ARCH} -cpu help to list available cpus
   // E.g. 'Broadwell-v1', 'cortex-a53'
-  string cpu = 3;
+  string cpu = 4;
 
   // SMP support (Symmetric Multiprocessing)
   // Options include: clusters=<num>, cores=<num>, cpus=<num>, dies=<num>
   // maxcpus=<num>, sockets=<num>, threads=<num>
   // E.g. cpus=4,cores=2
-  string smp = 4;
+  string smp = 5;
 
   // memory represents the RAM size for the VM in megs
   // E.g. 1024 -> 1024MB
-  int32 memory = 5;
+  int32 memory = 6;
 
   // Device driver support
   // E.g 'usb-kdb', 'usb-mouse'
-  repeated string device = 6;
+  repeated string device = 7;
 
   // extra_args to pass on to QEMU
-  repeated string extra_args = 7;
+  repeated string extra_args = 8;
 
   // Drives to attach to the VM
-  repeated drive.Drive drives = 8;
+  repeated drive.Drive drives = 9;
 }

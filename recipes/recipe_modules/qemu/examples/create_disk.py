@@ -21,19 +21,19 @@ def RunSteps(api):
   # mock cleanup to be a file
   api.path.mock_add_paths(api.path['cleanup'], 'FILE')
   api.qemu.create_disk('ext4_disk', 'ext4', 2048,
-                       [api.path['cache'], api.path['cleanup']])
+                       {api.path['cache']: 'got_cache/i_need_it'})
 
 
 def GenTests(api):
   yield (api.test('Test create_disk pass') + api.post_process(StatusSuccess) +
          api.step_data(
-             'Copy files to disk.Mount loop',
+             'Copy files to ext4_disk.Mount loop',
              api.raw_io.stream_output(
                  'Mounted /dev/loop6 at /media/chrome-bot/test'),
              retcode=0) +
          # mock the free disk size to say there is enough
          api.step_data(
-             'Check if there is enough space on disk',
+             'Check free space on disk for fat_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
                            27815012
@@ -41,7 +41,7 @@ def GenTests(api):
              retcode=0) +
          # mock the free disk size to say there is enough
          api.step_data(
-             'Check if there is enough space on disk (2)',
+             'Check free space on disk for ext4_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
                            13907506
@@ -50,12 +50,12 @@ def GenTests(api):
 
   yield (api.test('Test create_disk fail (mount permission)') +
          api.post_process(StatusFailure) + api.step_data(
-             'Copy files to disk.Mount loop',
+             'Copy files to ext4_disk.Mount loop',
              api.raw_io.stream_output('Permission denied: /dev/loop6'),
              retcode=1) +
          # mock the free disk size to say there is enough
          api.step_data(
-             'Check if there is enough space on disk',
+             'Check free space on disk for fat_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
                            27815012
@@ -63,13 +63,13 @@ def GenTests(api):
              retcode=0) +
          # mock the free disk size to say there is enough
          api.step_data(
-             'Check if there is enough space on disk (2)',
+             'Check free space on disk for ext4_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
                            13907506
                         ''')),
              retcode=0) + api.step_data(
-                 'Copy files to disk.Mount loop',
+                 'Copy files to ext4_disk.Mount loop',
                  api.raw_io.stream_output('Permission denied: /dev/loop6'),
                  retcode=1) + api.post_process(DropExpectation))
 
@@ -77,7 +77,7 @@ def GenTests(api):
          api.post_process(StatusFailure) +
          # mock the free disk size to say there is enough
          api.step_data(
-             'Check if there is enough space on disk',
+             'Check free space on disk for fat_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
                            27815012
@@ -85,7 +85,7 @@ def GenTests(api):
              retcode=0) +
          # mock the free disk size to say not enough
          api.step_data(
-             'Check if there is enough space on disk (2)',
+             'Check free space on disk for ext4_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
                            13907504

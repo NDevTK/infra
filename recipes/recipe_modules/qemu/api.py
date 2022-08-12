@@ -59,7 +59,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     e.add_package(QEMU_PKG, version if version else 'latest')
     self.m.cipd.ensure(self._install_dir, e, name="Download qemu")
 
-  def create_disk(self, disk_name, fs_format='fat', min_size=0, include=()):
+  def create_disk(self, disk_name, fs_format='fat', min_size=0, include=None):
     """ create_disk creates a virtual disk with the given name, format and size.
 
     Optionally it is possible to specify a list of paths to copy to the disk.
@@ -83,8 +83,8 @@ class QEMUAPI(recipe_api.RecipeApi):
                         ''')
       # use du to estimate the size on disk
       res = self.m.step(
-          name='Estimate size required for disk',
-          cmd=['du', '-scb'] + include,
+          name='Estimate size required for {}'.format(disk_name),
+          cmd=['du', '-scb'] + list(include.keys()),
           stdout=self.m.raw_io.output(),
           step_test_data=lambda: self.m.raw_io.test_api.stream_output(test_res))
       # read total from last line of the output
@@ -97,18 +97,16 @@ class QEMUAPI(recipe_api.RecipeApi):
     self.create_empty_disk(disk_name, fs_format, min_size)
     if include:
       # copy files to the disk
-      with self.m.step.nest(name='Copy files to disk'):
+      with self.m.step.nest(name='Copy files to {}'.format(disk_name)):
         loop_file, mount_loc = self.mount_disk_image(disk_name)
         try:
-          for f in include:
-            if self.m.path.isdir(f):
-              self.m.file.copytree(
-                  name='Copy {}'.format(f),
-                  source=f,
-                  dest='{}/{}'.format(mount_loc, self.m.path.basename(f)))
-            if self.m.path.isfile(f):
-              self.m.file.copy(
-                  name='Copy {}'.format(f), source=f, dest=mount_loc)
+          for src, dest in include.items():
+            dest = '{}/{}'.format(mount_loc, dest)
+            self.m.file.copytree(
+                name='Copy {}'.format(src),
+                source=src
+                if self.m.path.isdir(src) else self.m.path.dirname(src),
+                dest=dest)
         finally:
           self.unmount_disk_image(loop_file)
 
@@ -137,7 +135,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     if fs_format not in FILESYSTEM_AND_PARTITION_ENTRY.keys():
       raise self.m.step.StepFailure('{} not supported'.format(fs_format))
     res = self.m.step(
-        name='Check if there is enough space on disk',
+        name='Check free space on disk for {}'.format(disk_name),
         cmd=['df', '--output=avail', self.disks],
         stdout=self.m.raw_io.output())
     free_disk = int(res.stdout.splitlines()[-1].strip())

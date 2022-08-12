@@ -15,6 +15,8 @@ from PB.recipes.infra.windows_image_builder import (online_windows_customization
 from recipe_engine.post_process import DropExpectation, StatusFailure
 from recipe_engine.post_process import StatusSuccess, StepCommandRE
 
+from textwrap import dedent
+
 #    Step data mock methods. Use these to mock the step outputs
 
 # _gcs_stat is the mock output of gsutil stat command
@@ -43,6 +45,16 @@ def NEST(*args):
 def NEST_CONFIG_STEP(image):
   """ generate config step name for nesting """
   return 'execute config {}'.format(image)
+
+
+def NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization):
+  """ NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP returns step name for the same"""
+  return 'Execute online windows customization {}'.format(customization)
+
+
+def NEST_ONLINE_CUSTOMIZATION_STEP(on_cust):
+  """ NEST_ONLINE_CUSTOMIZATION_STEP returns step name for the same."""
+  return 'Execute online customization {}'.format(on_cust)
 
 
 def NEST_WINPE_CUSTOMIZATION_STEP(customization):
@@ -79,6 +91,11 @@ def NEST_DOWNLOAD_ALL_SRC(cust):
 def NEST_UPLOAD_CUST_OUTPUT(cust):
   """ Upload all gcs artifacts step name"""
   return 'Upload the output of {}'.format(cust)
+
+
+def NEST_BOOT_VM(vm_name):
+  """ NEST_BOOT_VM returns step name for the same."""
+  return 'Boot {}'.format(vm_name)
 
 
 def json_res(api, success=True, err_msg='Failed step'):
@@ -251,6 +268,36 @@ def EDIT_REGISTRY(api, name, image, customization, success=True):
       stdout=json_res(api, success))
 
 
+def DISK_SPACE(api,
+               image,
+               customization,
+               vm_name,
+               disk,
+               size=27815012,
+               success=True):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'), NEST_BOOT_VM(vm_name),
+          'Check free space on disk for {}'.format(disk)),
+      api.raw_io.stream_output(
+          dedent('''Avail
+                         {}
+                 '''.format(size))),
+      retcode=0 if success else 1)
+
+
+def MOUNT_DISK(api, image, customization, vm_name, disk, success=True):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'), NEST_BOOT_VM(vm_name),
+          'Copy files to {}.Mount loop'.format(disk)),
+      api.raw_io.stream_output('Mounted /dev/loop6 at /media/chrome-bot/test'),
+      retcode=0 if success else 1)
+
 
 #    Assert methods to validate that a certain step was run
 
@@ -384,7 +431,12 @@ def WPE_IMAGE(image,
       ])
 
 
-def WIN_IMAGE(image, arch, customization, vm_config, action_list):
+def WIN_IMAGE(image,
+              arch,
+              customization,
+              vm_config,
+              action_list,
+              win_config=None):
   """ generates a winpe customization image """
   return wib.Image(
       name=image,
@@ -395,7 +447,8 @@ def WIN_IMAGE(image, arch, customization, vm_config, action_list):
                   name=customization,
                   online_customizations=[
                       owc.OnlineCustomization(
-                          name='WinPEBoot',
+                          name='windows_cust',
+                          win_vm_config=win_config,
                           vm_config=vm_config,
                           online_actions=[
                               actions.OnlineAction(
@@ -414,10 +467,12 @@ def VM_CONFIG(
     memory=8192,
     extra_args=('-device usb-kbd', '--device usb-mouse'),
     device=(),
+    version='latest',
 ):
   return vm.VM(
       qemu_vm=vm.QEMU_VM(
           name=name,
+          version=version,
           drives=drives,
           machine=machine,
           cpu=cpu,

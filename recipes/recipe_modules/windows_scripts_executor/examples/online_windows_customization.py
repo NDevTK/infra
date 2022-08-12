@@ -64,7 +64,8 @@ def GenTests(api):
               source='Release/22621.1_MULTI_ARM64_EN-US.ISO')),
   )
 
-  AARCH64_VM = t.VM_CONFIG(name='WinArm', drives=[SYSTEM, INSTALL])
+  AARCH64_VM = t.VM_CONFIG(
+      name='WinArm', version='latest', drives=[SYSTEM, INSTALL])
 
   yield (api.test('pin_download_all_deps') + api.properties(
       t.WIN_IMAGE(

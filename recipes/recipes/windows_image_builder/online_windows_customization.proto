@@ -8,6 +8,7 @@ package recipes.infra.windows_image_builder.online_windows_customization;
 
 import  "recipes/infra/windows_image_builder/actions.proto";
 import  "recipes/infra/windows_image_builder/vm.proto";
+import "recipes/infra/windows_image_builder/windows_vm.proto";
 
 /* OnlineWinCustomization mounts the given image to a vm and executes it.
  * You can also mount other images to this vm for modifying.
@@ -32,6 +33,9 @@ message OnlineCustomization {
   // VM config to run this boot
   vm.VM vm_config = 2;
 
+  // Windows VM settings and params
+  windows_vm.WindowsVMConfig win_vm_config = 3;
+
   // List of online actions to perform for this customization
-  repeated actions.OnlineAction online_actions = 3;
+  repeated actions.OnlineAction online_actions = 4;
 }
