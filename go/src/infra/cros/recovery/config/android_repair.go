@@ -202,7 +202,6 @@ func androidRepairPlan() *Plan {
 					"Validate associated host",
 					"Validate adb",
 					"DUT is accessible over adb",
-					"android_restart_adbd_as_root",
 					"android_dut_reset",
 					"Wait for DUT",
 					"Connect to WiFi network",
@@ -242,7 +241,7 @@ func androidRepairPlan() *Plan {
 					"Validate associated host",
 					"Validate adb",
 					"DUT is accessible over adb",
-					"android_restart_adbd_as_root",
+					"Ensure adbd run as root",
 					"android_enable_wifi",
 				},
 				ExecName: "android_connect_wifi_network",
@@ -251,6 +250,11 @@ func androidRepairPlan() *Plan {
 					"wifi_security:" + wifiSecurity,
 					"wifi_password:" + wifiPassword,
 				},
+			},
+			"Ensure adbd run as root": {
+				Docs:       []string{"Restart adbd with root permission."},
+				ExecName:   "android_restart_adbd_as_root",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 		},
 	}

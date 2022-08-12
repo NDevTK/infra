@@ -23,6 +23,9 @@ func restartADBDAsRoot(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "restart adbd as root").Err()
 	}
+	// Android device may be not available or flaky for a short period of time after switch to root adb mode.
+	// So we want to wait 20 seconds here to avoid timing issue causes later action fails.
+	time.Sleep(20 * time.Second)
 	return nil
 }
 
