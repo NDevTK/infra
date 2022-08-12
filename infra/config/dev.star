@@ -500,5 +500,13 @@ def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, s
         },
     )
 
+# Total build in one build tree:
+# 1 + 10 + 10*20 + 10*20*20 = 4211
+fakebuild_tree_builder("fake-tree-0", 10, 0, "fake-tree-1", 2, 10, True)
+fakebuild_tree_builder("fake-tree-0-no-bn", 10, 0, "fake-tree-1-no-bn", 2, 10, False)
+
+fakebuild_tree_builder("fake-tree-1", 20, 0, "fake-tree-2", 2, 10, True)
+fakebuild_tree_builder("fake-tree-1-no-bn", 20, 0, "fake-tree-2-no-bn", 2, 10, False)
+
 fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-1m", 2, 10, True)
 fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-1m-no-bn", 2, 10, False)
