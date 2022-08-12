@@ -1652,6 +1652,9 @@ Operation will be faster as only name/id will be retrieved from the service.`
 	// AttachedDeviceTypeHelpText help text for attached device type filters
 	AttachedDeviceTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidAttachedDeviceTypeStr(), ", "))
 
+	// DevboardTypeHelpText help text for devboard type filters
+	DevboardTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidDevboardTypeStr(), ", "))
+
 	// AddRPMLongDesc long description for AddRPMCmd
 	AddRPMLongDesc string = `Add a rpm to UFS.
 
@@ -2169,6 +2172,19 @@ For now, only used on Satlab.
 Examples:
 shivas add devboard-machine -name {name}
 Adds a devboard machine to UFS.
+
+For now, only used on Satlab.
+`
+
+	// GetDevboardMachineLongDescADHText description for GetDevboardMachine
+	GetDevboardMachineLongDesc string = `Get devboard machine details by filters.
+
+Example:
+
+shivas get devboard-machine {name1} {name2}
+shivas get devboard-machine -rack satlab-example-rack -zone satlab
+
+Gets the devboard machine and prints the output in user format.
 
 For now, only used on Satlab.
 `

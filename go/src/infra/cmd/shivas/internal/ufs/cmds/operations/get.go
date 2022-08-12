@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/attacheddevicemachine"
 	"infra/cmd/shivas/internal/ufs/subcmds/cachingservice"
 	"infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
+	"infra/cmd/shivas/internal/ufs/subcmds/devboard"
 	"infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"infra/cmd/shivas/internal/ufs/subcmds/dut"
 	"infra/cmd/shivas/internal/ufs/subcmds/host"
@@ -72,6 +73,7 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		asset.GetAssetCmd,
 		dut.GetDutCmd,
+		devboard.GetDevboardMachineCmd,
 		cachingservice.GetCachingServiceCmd,
 		schedulingunit.GetSchedulingUnitCmd,
 		machine.GetMachineCmd,

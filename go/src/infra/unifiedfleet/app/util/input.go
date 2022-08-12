@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -963,6 +964,42 @@ func ToUFSAttachedDeviceType(deviceType string) ufspb.AttachedDeviceType {
 		return ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_UNSPECIFIED
 	}
 	return ufspb.AttachedDeviceType(ufspb.AttachedDeviceType_value[v])
+}
+
+// GetDevboardType returns the board type string for a devboard.
+func GetDevboardType(b *ufspb.Devboard) string {
+	var m protoreflect.ProtoMessage
+	if b2 := b.GetAndreiboard(); b2 != nil {
+		m = b2
+	} else if b2 := b.GetIcetower(); b2 != nil {
+		m = b2
+	}
+	if b != nil {
+		d := m.ProtoReflect().Descriptor()
+		return string(d.FullName())
+	}
+	return ""
+}
+
+// StrToUFSDevboardType refers a map between a string to a UFS defined map.
+var StrToUFSDevboardType = map[string]string{
+	"andreiboard": "unifiedfleet.api.v1.models.Andreiboard",
+	"icetower":    "unifiedfleet.api.v1.models.Icetower",
+}
+
+// ValidDevboardTypeStr returns a valid str list for attached device type strings.
+func ValidDevboardTypeStr() []string {
+	ks := make([]string, 0, len(StrToUFSDevboardType))
+	for k := range StrToUFSDevboardType {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+// IsDevboardType checks if a string refers to a valid Devboard type.
+func IsDevboardType(deviceType string) bool {
+	_, ok := StrToUFSDevboardType[deviceType]
+	return ok
 }
 
 // StrToModemType refers a map between modem type and and enum value.
