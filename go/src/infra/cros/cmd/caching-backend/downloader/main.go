@@ -23,6 +23,8 @@ package main
 
 import (
 	"archive/tar"
+	"compress/bzip2"
+	"compress/gzip"
 	"context"
 	"encoding/base64"
 	"encoding/binary"
@@ -32,11 +34,13 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/ulikunitz/xz"
 )
 
 var (
@@ -75,6 +79,7 @@ func innerMain() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/download/", c.downloadHandler)
 	mux.HandleFunc("/extract/", c.extractHandler)
+	mux.HandleFunc("/decompress/", c.decompressHandler)
 
 	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: mux}
@@ -94,7 +99,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 	startTime := time.Now()
 	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
 	log.Printf("%s request started", id)
-	defer log.Printf("%s request completed in %s", id, time.Since(startTime))
+	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
 	defer cancel()
@@ -213,16 +218,16 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
 	log.Printf("%s request started", id)
-	defer log.Printf("%s request completed in %s", id, time.Since(startTime))
+	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
 	defer cancel()
 
 	switch r.Method {
 	case http.MethodHead:
-		handleExtractHEAD(ctx, w, r, c.cacheServerURL, id)
+		handleExtract(ctx, w, r, c.cacheServerURL, id, false)
 	case http.MethodGet:
-		handleExtractGET(ctx, w, r, c.cacheServerURL, id)
+		handleExtract(ctx, w, r, c.cacheServerURL, id, true)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
@@ -230,70 +235,80 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleExtractHEAD handles extract HEAD request.
+// handleExtract handles extract HEAD/GET requests.
 // It downloads the tar from cache server(nginx). It then, extracts
 // the target file and writes stat to ResponseWriter header.
-// It returns *tar.Header which is used by handleExtractGET.
-func handleExtractHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) (*tar.Reader, error) {
+// If wantBody is true which essentially is GET, it will copy content to
+// ResponseWriter body.
+func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string, wantBody bool) {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
-		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Printf(err.Error())
-		return nil, err
+		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
+		http.Error(w, errStr, http.StatusBadRequest)
+		log.Printf(errStr)
+		return
 	}
 
 	queryFile := r.URL.Query().Get("file")
 	if queryFile == "" {
-		err := fmt.Errorf("%s extract file query not specified from %s", reqID, objectName.path)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Printf(err.Error())
-		return nil, err
+		errStr := fmt.Sprintf("%s extract file query not specified from %s", reqID, objectName.path)
+		http.Error(w, errStr, http.StatusBadRequest)
+		log.Printf(errStr)
+		return
 	}
 
 	//TODO(b/240166634): handle compressed tar file extraction.
 	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
-	res, err := downloadURL(ctx, reqURL)
+	res, err := downloadURL(ctx, w, reqURL, reqID)
 	if err != nil {
-		err := fmt.Errorf("%s: %s", reqID, err)
+		return
+	}
+	defer res.Body.Close()
+
+	tarReader, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
+	if err != nil {
+		errStr := fmt.Sprintf("%s extractTarAndWriteHeader failed: %s", reqID, err)
+		log.Printf(errStr)
+		return
+	}
+
+	if wantBody {
+		if n, err := io.Copy(w, tarReader); err != nil {
+			log.Printf("%s copy to body failed at byte %v: %s", reqID, n, err)
+		}
+	}
+}
+
+// downloadURL downloads the reqURL and returns the content in response.
+// It writes to client header if error occurs or relays non 200 status code
+// from upstream.
+func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqID string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		err := fmt.Errorf("%s download request %q: %w", reqID, reqURL, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf(err.Error())
 		return nil, err
 	}
 
-	tarReader, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		err := fmt.Errorf("%s extractTarAndWriteHeader failed: %s", reqID, err)
+		err := fmt.Errorf("%s download %q: %w", reqID, reqURL, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf(err.Error())
 		return nil, err
 	}
-	return tarReader, nil
-}
 
-// handleExtractGET handles extract GET request.
-// It downloads the tar from cache server(nginx). It then, extracts
-// the target file and writes to ResponseWriter header and body.
-func handleExtractGET(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) {
-	tarReader, err := handleExtractHEAD(ctx, w, r, cacheServerURL, reqID)
-	if err != nil {
-		return
-	}
-
-	if n, err := io.Copy(w, tarReader); err != nil {
-		log.Printf("%s copy to body failed at byte %v: %s", reqID, n, err)
-	}
-}
-
-// downloadURL downloads the reqURL and returns the content in response.
-func downloadURL(ctx context.Context, reqURL string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("create download request for %q: %w", reqURL, err)
-	}
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("download %q: %w", reqURL, err)
+	if res.StatusCode != http.StatusOK {
+		defer res.Body.Close()
+		upstreamErr, err := io.ReadAll(res.Body)
+		err = fmt.Errorf("%s %s respond %v status: %s", reqID, reqURL, res.StatusCode, upstreamErr)
+		if err != nil {
+			err = fmt.Errorf("%s failed to read upstream %v response of %q: %w", reqID, res.StatusCode, reqURL, err)
+		}
+		http.Error(w, err.Error(), res.StatusCode)
+		log.Printf(err.Error())
+		return nil, err
 	}
 	return res, nil
 }
@@ -326,4 +341,115 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 			return tarReader, nil
 		}
 	}
+}
+
+// decompressHandler handles the /decompress/bucket/path/to/file requests.
+// It decompresses compressed file and returns content to body for GET method.
+func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+	log.Printf("%s request started", id)
+	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
+
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
+	defer cancel()
+
+	switch r.Method {
+	case http.MethodGet:
+		handleDecompressGET(ctx, w, r, c.cacheServerURL, id)
+	default:
+		errStr := fmt.Sprintf("%s unsupported method", id)
+		http.Error(w, errStr, http.StatusBadRequest)
+		log.Printf(errStr)
+	}
+}
+
+type compressReaderFunc func(io.Reader) (io.ReadCloser, error)
+
+func newGZIPReader(r io.Reader) (io.ReadCloser, error) {
+	return gzip.NewReader(r)
+}
+
+func newBZ2Reader(r io.Reader) (io.ReadCloser, error) {
+	return io.NopCloser(bzip2.NewReader(r)), nil
+}
+
+func newXZReader(r io.Reader) (io.ReadCloser, error) {
+	dReader, err := xz.NewReader(r)
+	if err != nil {
+		return nil, fmt.Errorf("new xz reader: %w", err)
+	}
+	return io.NopCloser(dReader), nil
+}
+
+var compressReaderMap = map[string]compressReaderFunc{
+	".gz":  newGZIPReader,
+	".tgz": newGZIPReader,
+	".bz2": newBZ2Reader,
+	".xz":  newXZReader,
+}
+
+// handleDecompressGET handles decompress GET method.
+// It supports file types in allowedCompressExt.
+// Due to the content-size requirement, it decompresses the downloaded file
+// into the memory to get the size, then copies content to ResonpseWriter.
+func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) {
+	objectName, err := parseURL(r.URL.Path)
+	if err != nil {
+		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
+		http.Error(w, errStr, http.StatusBadRequest)
+		log.Printf(errStr)
+		return
+	}
+
+	fileExt := filepath.Ext(objectName.path)
+	newReader, ok := compressReaderMap[fileExt]
+	if !ok {
+		errStr := fmt.Sprintf("%s decompress does not support %s extension", reqID, fileExt)
+		http.Error(w, errStr, http.StatusBadRequest)
+		log.Printf(errStr)
+		return
+	}
+
+	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
+	res, err := downloadURL(ctx, w, reqURL, reqID)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+
+	dReader, err := newReader(res.Body)
+	if err != nil {
+		errStr := fmt.Sprintf("%s newReader error: %s", reqID, err)
+		http.Error(w, errStr, http.StatusInternalServerError)
+		log.Printf(errStr)
+		return
+	}
+	defer dReader.Close()
+
+	rMem, err := io.ReadAll(dReader)
+	if err != nil {
+		errStr := fmt.Sprintf("%s ReadAll failed: %s", reqID, err)
+		http.Error(w, errStr, http.StatusInternalServerError)
+		log.Printf(errStr)
+		return
+	}
+
+	if err := decompressWrite(ctx, w, rMem); err != nil {
+		log.Printf("%s decompressWrite failed: %s", reqID, err)
+	}
+}
+
+// decompressWrite writes memory buffer to w Response
+func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) error {
+	w.Header().Set("Accept-Ranges", "bytes")
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Length", strconv.Itoa(len(mem)))
+	w.WriteHeader(http.StatusOK)
+
+	n, err := w.Write(mem)
+	if err != nil {
+		return fmt.Errorf("write to client failed at byte %v: %w", n, err)
+	}
+	return nil
 }

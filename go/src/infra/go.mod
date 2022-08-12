@@ -51,6 +51,7 @@ require (
 	github.com/pkg/profile v1.6.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/smartystreets/goconvey v1.7.2
+	github.com/ulikunitz/xz v0.5.10
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
 	go.chromium.org/chromiumos/config/go v0.0.0-20211012171127-50826c369fec
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000

@@ -7,6 +7,7 @@ package main
 import (
 	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -17,6 +18,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/storage"
+	"github.com/ulikunitz/xz"
 )
 
 func TestDownloadHandler(t *testing.T) {
@@ -318,6 +320,166 @@ func TestParseURLErrors(t *testing.T) {
 			_, err := parseURL(tc.url)
 			if err == nil || tc.wantErrMsg != err.Error() {
 				t.Errorf("parseURL(%v) error got: %v, want %v", tc.url, err, tc.wantErrMsg)
+			}
+		})
+	}
+}
+
+func TestDecompressGZIPHandler(t *testing.T) {
+	t.Parallel()
+	compressFiles := map[string]string{
+		"bucket/f1.gz": "this is file1\n",
+		"bucket/f2.gz": "this is file2",
+	}
+
+	objects := map[string]*fakeGSObject{}
+	gsa := &archiveServer{
+		gsClient: &fakeGSClient{
+			objects: objects,
+		},
+	}
+	for fName, fContent := range compressFiles {
+		var buf bytes.Buffer
+		func() {
+			w := gzip.NewWriter(&buf)
+			defer w.Close()
+			if _, err := w.Write([]byte(fContent)); err != nil {
+				t.Fatalf("error writing %s content %s: %s", fName, fContent, err)
+			}
+		}()
+		objects[fName] = &fakeGSObject{
+			exists: true,
+			attrs: &storage.ObjectAttrs{
+				Size:        int64(len(buf.String())),
+				ContentType: "gzip",
+			},
+			content: buf.String(),
+		}
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/decompress/", gsa.decompressHandler)
+	mux.HandleFunc("/download/", gsa.downloadHandler)
+	s := httptest.NewServer(mux)
+	defer s.Close()
+	gsa.cacheServerURL = s.URL
+	tests := []struct {
+		url               string
+		wantStatusCode    int
+		wantContentLength int64
+		wantBody          string
+	}{
+		{
+			url:               "/decompress/bucket/f1.gz",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(compressFiles["bucket/f1.gz"])),
+			wantBody:          compressFiles["bucket/f1.gz"],
+		},
+	}
+	for _, tc := range tests {
+		tc := tc
+		got, err := http.Get(fmt.Sprintf("%s%s", s.URL, tc.url))
+		if err != nil {
+			t.Fatalf("decompress gzip http.Get(%s) failed unexpectedly. err=%s", tc.url, err)
+		}
+		t.Run(tc.url, func(t *testing.T) {
+			t.Parallel()
+			defer got.Body.Close()
+			if got.StatusCode != tc.wantStatusCode {
+				t.Errorf("decompress gzip StatusCode=%v, want %v", got.StatusCode, tc.wantStatusCode)
+			}
+			if got.ContentLength != tc.wantContentLength {
+				t.Errorf("decompress gzip ContentLength=%v, want %v", got.ContentLength, tc.wantContentLength)
+			}
+
+			gotRead, err := io.ReadAll(got.Body)
+			if err != nil {
+				t.Fatalf("decompress gzip %s read body failed unexpectedly. err=%s", tc.url, err)
+			}
+			if gotBody := string(gotRead); gotBody != tc.wantBody {
+				t.Errorf("decompress gzip Body=%s, want %s", gotBody, tc.wantBody)
+			}
+		})
+	}
+}
+
+func TestDecompressXZHandler(t *testing.T) {
+	t.Parallel()
+	compressFiles := map[string]string{
+		"bucket/f1.xz": "this is file1",
+		"bucket/f2.xz": "this is file2",
+	}
+
+	objects := map[string]*fakeGSObject{}
+	gsa := &archiveServer{
+		gsClient: &fakeGSClient{
+			objects: objects,
+		},
+	}
+	for fName, fContent := range compressFiles {
+		var buf bytes.Buffer
+		func() {
+			w, err := xz.NewWriter(&buf)
+			defer w.Close()
+			if err != nil {
+				t.Fatalf("xz NewWriter error: %s", err)
+			}
+			if _, err := w.Write([]byte(fContent)); err != nil {
+				t.Fatalf("writing %s content %s error: %s", fName, fContent, err)
+			}
+		}()
+		objects[fName] = &fakeGSObject{
+			exists: true,
+			attrs: &storage.ObjectAttrs{
+				Size:        int64(buf.Len()),
+				ContentType: "xz",
+			},
+			content: buf.String(),
+		}
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/decompress/", gsa.decompressHandler)
+	mux.HandleFunc("/download/", gsa.downloadHandler)
+	s := httptest.NewServer(mux)
+	defer s.Close()
+	gsa.cacheServerURL = s.URL
+	tests := []struct {
+		url               string
+		wantStatusCode    int
+		wantContentLength int64
+		wantBody          string
+	}{
+		{
+			url:               "/decompress/bucket/f1.xz",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(compressFiles["bucket/f1.xz"])),
+			wantBody:          compressFiles["bucket/f1.xz"],
+		},
+	}
+	for _, tc := range tests {
+		tc := tc
+		url := fmt.Sprintf("%s%s", s.URL, tc.url)
+		got, err := http.Get(url)
+		if err != nil {
+			t.Fatalf("decompress xz http.Get(%s) failed unexpectedly. err=%s", url, err)
+		}
+		t.Run(tc.url, func(t *testing.T) {
+			t.Parallel()
+			defer got.Body.Close()
+			if got.StatusCode != tc.wantStatusCode {
+				t.Errorf("decompress xz StatusCode=%v, want %v", got.StatusCode, tc.wantStatusCode)
+			}
+			if got.ContentLength != tc.wantContentLength {
+				t.Errorf("decompress xz ContentLength=%v, want %v", got.ContentLength, tc.wantContentLength)
+			}
+
+			gotRead, err := io.ReadAll(got.Body)
+			if err != nil {
+				t.Fatalf("decompress xz %s read body failed unexpectedly. err=%s", url, err)
+			}
+			if gotBody := string(gotRead); gotBody != tc.wantBody {
+				t.Errorf("decompress xz Body=%s, want %s", gotBody, tc.wantBody)
 			}
 		})
 	}
