@@ -60,7 +60,7 @@ export const AssetInstance = () => {
           xs={8}
         >
           <Typography id="form-heading" data-testid="form-heading" variant="h5">
-            AssetInstance
+            Lab Instance
           </Typography>
         </Grid>
       </Grid>
