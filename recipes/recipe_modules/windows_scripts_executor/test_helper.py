@@ -57,6 +57,11 @@ def NEST_ONLINE_CUSTOMIZATION_STEP(on_cust):
   return 'Execute online customization {}'.format(on_cust)
 
 
+def NEST_ONLINE_ACTION_STEP(oa):
+  """ NEST_ONLINE_ACTION_STEP returns step name for the same."""
+  return 'Execute online action {}'.format(oa)
+
+
 def NEST_WINPE_CUSTOMIZATION_STEP(customization):
   """ generate winpe customization step name for nesting """
   return 'offline winpe customization {}'.format(customization)
@@ -110,6 +115,25 @@ def json_res(api, success=True, err_msg='Failed step'):
               'Message': err_msg,
           },
       }
+  })
+
+
+def pwsh_json_res(
+    api,
+    output,
+    error,
+    logs,
+    success=True,
+    retcode=0,
+):
+  """ generate a api.json object to mock outputs """
+  return api.json.output({
+      'Success': success,
+      'Output': output,
+      'Logs': logs,
+      'Error': error,
+      'PWD': 'C:\\Users\\Spongebob\\Documents',
+      'RetCode': retcode,
   })
 
 
@@ -266,6 +290,40 @@ def EDIT_REGISTRY(api, name, image, customization, success=True):
           'PowerShell> Edit Offline Registry Key Features and Property {}'
           .format(name)),
       stdout=json_res(api, success))
+
+
+def VM_POWERSHELL_EXEC(api,
+                       image,
+                       customization,
+                       title,
+                       output,
+                       error,
+                       logs,
+                       retcode=0,
+                       success=True):
+  """ mock the powershell execution in the vm step """
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          NEST_ONLINE_ACTION_STEP('work_block'),
+          'Powershell> {}'.format(title)),
+      stdout=pwsh_json_res(
+          api, output, error, logs, retcode=retcode, success=success))
+
+
+def ADD_FILE_VM(api, image, customization, name, retcode=0, success=True):
+  return VM_POWERSHELL_EXEC(
+      api,
+      image,
+      customization,
+      'Add File: {}'.format(name),
+      '-----ROBOCOPY-----',
+      '' if success else '-------ROBOCOPY----\nERROR',
+      logs={},
+      retcode=retcode,
+      success=success)
 
 
 def DISK_SPACE(api,

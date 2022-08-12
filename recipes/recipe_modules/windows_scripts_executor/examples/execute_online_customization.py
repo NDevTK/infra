@@ -38,6 +38,10 @@ def RunSteps(api, config):
 
 
 def GenTests(api):
+  image = 'Win10'
+  cust = 'test'
+  vm_name = 'Win10'
+
   SYSTEM = t.VM_DRIVE(
       name='system.img',
       ip=None,
@@ -59,7 +63,7 @@ def GenTests(api):
   )
 
   WIN_VM = t.VM_CONFIG(
-      name='Win10',
+      name=vm_name,
       drives=[SYSTEM, INSTALL],
       device=['-device ide-hd,drive=system.img'],
   )
@@ -77,33 +81,49 @@ def GenTests(api):
 
   def IMAGE(arch):
     return t.WIN_IMAGE(
-        'Win10',
+        image,
         arch,
-        'test',
+        cust,
         vm_config=WIN_VM,
         action_list=[ACTION_ADD_FILE],
-        win_config=windows_pb.WindowsVMConfig(boot_time=300,))
+        win_config=windows_pb.WindowsVMConfig(
+            boot_time=300, context={
+                '$system_img': 'C:',
+                '$deps_img': 'D:'
+            }))
 
   yield (api.test('execute_customization_happy_path[AARCH64_KVM]') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
-         t.DISK_SPACE(api, 'Win10', 'test', 'Win10', 'system.img') +
-         t.DISK_SPACE(api, 'Win10', 'test', 'Win10', 'deps.img') +
-         t.MOUNT_DISK(api, 'Win10', 'test', 'Win10', 'deps.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[AMD64_KVM]') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AMD64)) +
-         t.DISK_SPACE(api, 'Win10', 'test', 'Win10', 'system.img') +
-         t.DISK_SPACE(api, 'Win10', 'test', 'Win10', 'deps.img') +
-         t.MOUNT_DISK(api, 'Win10', 'test', 'Win10', 'deps.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[X86_KVM]') +
          api.platform('linux', 32, 'intel') +
          api.properties(IMAGE(wib.ARCH_X86)) +
-         t.DISK_SPACE(api, 'Win10', 'test', 'Win10', 'system.img') +
-         t.DISK_SPACE(api, 'Win10', 'test', 'Win10', 'deps.img') +
-         t.MOUNT_DISK(api, 'Win10', 'test', 'Win10', 'deps.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          api.post_process(DropExpectation))
+
+  yield (api.test('execute_customization_fail_add_file') +
+         api.platform('linux', 64, 'intel') +
+         api.properties(IMAGE(wib.ARCH_AMD64)) +
+         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+             api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         api.post_process(StatusFailure) + api.post_process(DropExpectation))

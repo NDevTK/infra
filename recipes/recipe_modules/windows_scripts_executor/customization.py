@@ -24,7 +24,6 @@ class Customization(object):
       * configs: dir to store configs in
       * module: module object with all dependencies
       * source: module object for Source from sources.py
-      * qemu: module object for qemu
     """
     # generate a copy of image
     self._image = wib.Image()

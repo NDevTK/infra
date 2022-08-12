@@ -15,4 +15,10 @@ message WindowsVMConfig {
   // Will sleep for this time and then proceed to validate that the vm is
   // shutdown
   int32 shutdown_time = 2;
+
+  // Powershell context for running any actions. This will create a powershell
+  // variable for the key containing expression in value. If the context
+  // contains `context{ 'foo': 'bar' }`. This will create a powershell var foo
+  // `$foo = "bar"` and can be used as part of any actions that follow.
+  map<string, string> context = 3;
 }

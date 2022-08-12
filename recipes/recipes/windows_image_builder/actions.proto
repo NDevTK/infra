@@ -37,6 +37,9 @@ message Action {
     // Adds a driver to offline windows image
     AddWindowsDriver add_windows_driver = 4;
   }
+
+  // Timeout in seconds
+  int32 timeout = 5;
 }
 
 // AddFile uses robocopy to copy the file to image mount dir. Due to the way

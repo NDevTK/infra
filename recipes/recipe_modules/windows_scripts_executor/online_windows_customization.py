@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from . import customization
@@ -334,6 +334,109 @@ class OnlineWindowsCustomization(customization.Customization):
     '''
     with self.m.step.nest('Execute online customization {}'.format(oc.name)):
       # Boot up the vm
-      qemu_vm = self.start_qemu(oc)
-      # TODO(anushruth): Execute all the actions on the VM.
-      return qemu_vm
+      self.start_qemu(oc)
+      for online_action in oc.online_actions:
+        with self.m.step.nest('Execute online action {}'.format(
+            online_action.name)):
+          for action in online_action.actions:
+            self.execute_action(action, oc.win_vm_config.context)
+
+  def execute_action(self, action, ctx):
+    ''' execute_action runs the given action in the given context
+
+    Args:
+      * action: actions.Action proto object representing the action to be
+      performed
+      * ctx: dict representing a global context.
+    '''
+    a = action.WhichOneof('action')
+    if a == 'add_file':
+      return self.add_file(action.add_file, ctx, action.timeout)
+    raise self.m.step.StepFailure(
+        'Executing {} not supported yet'.format(a))  # pragma: nocover
+
+  def add_file(self, add_file, ctx, timeout):
+    ''' add_file copy a file from remote to local destination
+
+    Args:
+      * add_file: actions.AddFile proto object representing the operation
+      * ctx: global context for the operation
+      * timeout: maximum time this copy operation is expected to take
+    '''
+    rel_src = self._source.get_rel_src(add_file.src)
+    local_src = self._source.get_local_src(add_file.src)
+    # src_file contains the file/dir name to be copied
+    src_file = '*'
+    if not self.m.path.isdir(local_src):
+      # if the src is a file then src is the dir name and src_file is filename
+      src_file = self.m.path.basename(rel_src)
+      rel_src = self.m.path.dirname(rel_src)
+    # powershell expression to copy the artifacts. Using robocopy
+    expr = 'robocopy $deps_img\\{} {} {} /e'.format(
+        helper.conv_to_win_path(rel_src), add_file.dst, src_file)
+    self.execute_powershell(
+        'Add File: {}'.format(add_file.name),
+        ctx,
+        expr,
+        cont=False,
+        timeout=timeout,
+        retcode=(0, 1, 2, 3))
+
+  def execute_powershell(self,
+                         name,
+                         ctx,
+                         expr,
+                         logs=(),
+                         cont=False,
+                         timeout=300,
+                         retcode=(0,)):
+    ''' execute_powershell runs the given powershell expression on the vm.
+
+    If cont is true, the session is kept alive. This means the next expression
+    will be run in the same context and can use the results of the last
+    expression
+
+    Args:
+      * name: name of the step
+      * ctx: context dictionary. This is a set of key value pairs that can be
+      used in the expression
+      * expr: powershell expression to be executed
+      * logs: optional log files to read
+      * cont: If true the session is kept alive. If false exit the session
+      after execution.
+      * timeout: time in seconds to wait for the expression to execute.
+      * retcode: iterable containing all possible return codes to treat as
+      success
+    '''
+    # use the serial_port_over_tcp script to execute the expression
+    cmd = [
+        'python3',
+        self._scripts('serial_port_over_tcp.py'), '-s', 'localhost:4445'
+    ]
+    # add all the context to the expression
+    for k, v in ctx.items():
+      cmd += ['-l', '{}="{}"'.format(k, v)]
+    # add logs to read back if any
+    for log in logs:
+      cmd += ['-L', log]  # pragma: nocover
+    if timeout:
+      cmd += ['-t', timeout]  # pragma: nocover
+    # add the expression to the script
+    cmd += ['-e', expr]
+    # continue session if required
+    if cont:
+      cmd += ['-c']  # pragma: nocover
+    res = self.m.step(
+        'Powershell> {}'.format(name), cmd=cmd, stdout=self.m.json.output())
+    ret = res.stdout
+    # Update the step presentation
+    if 'Logs' in ret and ret['Logs']:  # pragma: nocover
+      for log_file, log in ret['Logs'].items():
+        res.presentation.logs[log_file] = log
+    if 'Output' in ret and ret['Output']:
+      res.presentation.logs['stdout'] = ret['Output']
+    if 'Error' in ret and ret['Error']:
+      res.presentation.logs['stderr'] = ret['Error']
+    # Throw error if return code is not what we expect. Ignore success
+    if 'RetCode' in ret and int(ret['RetCode']) not in retcode:
+      raise self.m.step.StepFailure('Error in execution. Check stdout, stderr')

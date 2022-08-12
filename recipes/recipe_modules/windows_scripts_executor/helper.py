@@ -107,3 +107,7 @@ def get_build_actions(action):
     eor.CopyFrom(action.edit_offline_registry)
     eor.name = ''
     return actions.Action(edit_offline_registry=eor)
+
+
+def conv_to_win_path(path):
+  return '\\'.join(path.split('/'))

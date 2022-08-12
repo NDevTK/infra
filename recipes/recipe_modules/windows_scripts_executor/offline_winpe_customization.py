@@ -138,6 +138,7 @@ class OfflineWinPECustomization(customization.Customization):
     Args:
       * arch: string representing architecture of the image
       * image: sources.Src object ref an image to be modified
+      * dest: destination to upload artifacts to
       * index: index of the image to be mounted
     """
     with self.m.step.nest('Init WinPE image modification ' + arch + ' in ' +
