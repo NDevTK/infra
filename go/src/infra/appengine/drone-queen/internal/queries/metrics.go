@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/drone-queen/internal/entities"
 )
@@ -38,6 +39,14 @@ var (
 	// agentLoadTracker tracks the load of all agents.
 	agentLoadTracker     = make(map[entities.DroneID]agentLoad)
 	agentLoadTrackerLock = sync.Mutex{}
+
+	suCount = metric.NewInt(
+		"chromeos/drone-queen/scheduling-unit/count",
+		"count of scheduling units reported to the drone queen",
+		nil,
+		field.Bool("assigned"),
+		field.String("hive"),
+	)
 )
 
 // agentLoad is a struct to record drone agent load info.
@@ -71,6 +80,8 @@ func init() {
 			agentCount.Set(ctx, int64(v), k)
 		}
 	})
+
+	tsmon.RegisterCallback(setSchedulingUnitCountMetrics)
 }
 
 func updateAgentLoad(d entities.DroneID, l agentLoad) {
@@ -83,4 +94,34 @@ func deleteAgentLoad(d entities.DroneID) {
 	agentLoadTrackerLock.Lock()
 	defer agentLoadTrackerLock.Unlock()
 	delete(agentLoadTracker, d)
+}
+
+// setSchedulingUnitCountMetrics collects the metric of scheduling units
+// reported to the queen.
+// For historical reason, we still use the term "DUT" here which has the
+// equivalent meaning to "scheduling unit" in the function scope.
+func setSchedulingUnitCountMetrics(ctx context.Context) {
+	dutGroupKey := entities.DUTGroupKey(ctx)
+	q := datastore.NewQuery(entities.DUTKind).Ancestor(dutGroupKey)
+	var duts []entities.DUT
+	if err := datastore.GetAll(ctx, q, &duts); err != nil {
+		return
+	}
+	assignedSUByHive := make(map[string]int)
+	unassignedSUByHive := make(map[string]int)
+	for _, d := range duts {
+		if d.AssignedDrone != "" {
+			assignedSUByHive[d.Hive]++
+		} else {
+			unassignedSUByHive[d.Hive]++
+		}
+	}
+
+	for k, v := range assignedSUByHive {
+		suCount.Set(ctx, int64(v), true, k)
+	}
+
+	for k, v := range unassignedSUByHive {
+		suCount.Set(ctx, int64(v), false, k)
+	}
 }
