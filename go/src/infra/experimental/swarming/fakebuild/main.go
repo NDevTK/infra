@@ -65,13 +65,22 @@ func sleepStep(ctx context.Context, inputs *fakebuildpb.Inputs, idx int) {
 	clock.Sleep(ctx, time.Duration(secs)*time.Second)
 }
 
-func generateTags() []*bbpb.StringPair {
-	tags := strpair.Map{}
+func generateGerritChangesAndTags(req *bbpb.ScheduleBuildRequest) {
 	clNum := rand.Int63n(5000000)
-	for i := 0; i < 4; i++ {
+
+	var changes []*bbpb.GerritChange
+	tags := strpair.Map{}
+	for i := 1; i <= 4; i++ {
+		changes = append(changes, &bbpb.GerritChange{
+			Host:     "chromium-review.googlesource.com",
+			Project:  "chromium/src",
+			Change:   clNum,
+			Patchset: int64(i),
+		})
 		tags.Add("buildset", fmt.Sprintf("patch/gerrit/chromium-review.googlesource.com/%d/%d", clNum, i))
 	}
-	return protoutil.StringPairs(tags)
+	req.GerritChanges = changes
+	req.Tags = protoutil.StringPairs(tags)
 }
 
 func generateRequest(builder *bbpb.BuilderID, batchSize int) *bbpb.BatchRequest {
@@ -79,12 +88,13 @@ func generateRequest(builder *bbpb.BuilderID, batchSize int) *bbpb.BatchRequest 
 		Requests: []*bbpb.BatchRequest_Request{},
 	}
 	for i := 0; i < batchSize; i++ {
+		subReq := &bbpb.ScheduleBuildRequest{
+			Builder: builder,
+		}
+		generateGerritChangesAndTags(subReq)
 		req.Requests = append(req.Requests, &bbpb.BatchRequest_Request{
 			Request: &bbpb.BatchRequest_Request_ScheduleBuild{
-				ScheduleBuild: &bbpb.ScheduleBuildRequest{
-					Builder: builder,
-					Tags:    generateTags(), // generate a list of tags which need to be indexed.
-				},
+				ScheduleBuild: subReq,
 			},
 		})
 	}
