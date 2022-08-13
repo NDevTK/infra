@@ -107,7 +107,7 @@ func GetLabelValuesStr(jsonGetPath string, pm proto.Message) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ConstructLabelValuesString(labelVals), nil
+	return ConstructLabelValuesString(labelVals)
 }
 
 // ConstructLabelValuesString takes label values and returns them as a string.
@@ -115,13 +115,17 @@ func GetLabelValuesStr(jsonGetPath string, pm proto.Message) (string, error) {
 // It takes an interface of label values parsed from a json object and returns a
 // comma-separated string of the values. The interfaces supported are primitive
 // types and iterable interfaces.
-func ConstructLabelValuesString(labelVals interface{}) string {
+func ConstructLabelValuesString(labelVals interface{}) (string, error) {
 	var rsp string
 	switch x := labelVals.(type) {
 	case []interface{}:
 		valsArr := []string{}
 		for _, i := range x {
-			valsArr = append(valsArr, i.(string))
+			i, ok := i.(string)
+			if !ok {
+				return "", fmt.Errorf("cannot cast to string: %s", i)
+			}
+			valsArr = append(valsArr, i)
 		}
 		rsp = strings.Join(valsArr, ",")
 	case bool:
@@ -129,9 +133,13 @@ func ConstructLabelValuesString(labelVals interface{}) string {
 	case float64:
 		rsp = strconv.FormatFloat(labelVals.(float64), 'f', -1, 64)
 	default:
-		rsp = labelVals.(string)
+		var ok bool
+		rsp, ok = labelVals.(string)
+		if !ok {
+			return "", fmt.Errorf("cannot cast to string: %s", rsp)
+		}
 	}
-	return rsp
+	return rsp, nil
 }
 
 // ConstructJsonPaths returns config paths defined by a DutAttribute.
