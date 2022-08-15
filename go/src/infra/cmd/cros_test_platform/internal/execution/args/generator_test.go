@@ -17,6 +17,36 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
+func TestHasVariant(t *testing.T) {
+	Convey("Given a request that build has variant", t, func() {
+		ctx := context.Background()
+		inv := basicInvocation()
+		setTestName(inv, "foo-name")
+		var params test_platform.Request_Params
+		var dummyWorkerConfig = &config.Config_SkylabWorker{}
+		setBuild(&params, "foo-arc-r-postsubmit/R106-12222.0.0")
+		setRequestKeyval(&params, "suite", "foo-suite")
+		setRequestMaximumDuration(&params, 1000)
+		setPrimayDeviceBoard(&params, "foo")
+		setPrimayDeviceModel(&params, "model")
+		setRunViaCft(&params, true)
+		Convey("when generating a test runner request's args", func() {
+			g := Generator{
+				Invocation:       inv,
+				Params:           &params,
+				WorkerConfig:     dummyWorkerConfig,
+				ParentRequestUID: "TestPlanRuns/12345678/foo",
+			}
+			got, err := g.GenerateArgs(ctx)
+			So(err, ShouldBeNil)
+			Convey("the container metadata key is correct has variant", func() {
+				So(got.CFTTestRunnerRequest.PrimaryDut.ContainerMetadataKey, ShouldEqual, "foo-arc-r")
+			})
+
+		})
+	})
+}
+
 func TestDisplayNameTagsForUnamedRequest(t *testing.T) {
 	Convey("Given a request does not specify a display name", t, func() {
 		ctx := context.Background()

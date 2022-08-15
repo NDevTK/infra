@@ -122,3 +122,7 @@ func setSecondaryDevice(p *test_platform.Request_Params, board, model, cros_buil
 	}
 	p.SecondaryDevices = append(p.SecondaryDevices, device)
 }
+
+func setRunViaCft(p *test_platform.Request_Params, run_via_cft bool) {
+	p.RunViaCft = run_via_cft
+}

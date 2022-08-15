@@ -633,6 +633,17 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		ModelName:   g.Params.GetHardwareAttributes().GetModel(),
 	}
 
+	// TODO(b/242007010): use buildTarget when the root cause of buildTarget not having variant fixed.
+	buildTargetInferred := buildTarget
+	for _, sd := range g.Params.GetSoftwareDependencies() {
+		if b := sd.GetChromeosBuild(); b != "" {
+			builderNameSliced := strings.Split(strings.Split(b, "/")[0], "-")
+			buildTargetInferred = strings.Join(builderNameSliced[0:len(builderNameSliced)-1], "-")
+			logging.Infof(ctx, "Using %s as new buildTargetInferred", buildTargetInferred)
+			break
+		}
+	}
+
 	testName := g.Invocation.Test.Name
 	if !strings.HasPrefix(testName, "tauto.") {
 		testName = fmt.Sprintf("tauto.%s", testName)
@@ -660,7 +671,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 			DutModel:             dutModel,
 			ProvisionState:       provsionState,
-			ContainerMetadataKey: buildTarget,
+			ContainerMetadataKey: buildTargetInferred,
 		},
 		ContainerMetadata:            g.Params.GetExecutionParam().GetContainerMetadata(),
 		TestSuites:                   testSuites,
