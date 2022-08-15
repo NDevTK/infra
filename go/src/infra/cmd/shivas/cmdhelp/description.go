@@ -2166,6 +2166,19 @@ Adds a devboard LSE to UFS.
 For now, only used on Satlab.
 `
 
+	// GetDevboardLSELongDescText description for GetDevboardLSE
+	GetDevboardLSELongDesc string = `Get devboard LSE details by filters.
+
+Example:
+
+shivas get devboard-lse {name1} {name2}
+shivas get devboard-lse -rack satlab-example-rack -zone satlab
+
+Gets the devboard LSE and prints the output in user format.
+
+For now, only used on Satlab.
+`
+
 	// AddDevboardMachineLongDesc long description for AddDevboardMachineCmd
 	AddDevboardMachineLongDesc string = `Add a devboard machine.
 

@@ -67,6 +67,7 @@ var (
 	VMTitle                    = []string{"VM Name", "OS Version", "OS Image", "MAC Address", "Zone", "Host", "Vlan", "IP", "State", "DeploymentTicket", "Description", "UpdateTime"}
 	RackTitle                  = []string{"Rack Name", "Bbnum", "Zone", "Capacity", "State", "Realm", "UpdateTime"}
 	AttachedDeviceLSETitle     = []string{"Host", "OS Version", "OS Image", "Zone", "Rack", "Machine(s)", "State", "Schedulable", "Associated Hostname", "Associated Host Port", "Description", "UpdateTime"}
+	DevboardLSETitle           = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Manufacturer", "DeviceType", "Model", "Build Target", "State", "Realm", "UpdateTime"} // XXXXXXXXXx
 	MachineLSETitle            = []string{"Host", "OS Version", "OS Image", "Zone", "Virtual Datacenter", "Rack", "Machine(s)", "Nic", "Vlan", "IP", "State", "VM capacity", "DeploymentTicket", "Description", "UpdateTime"}
 	MachineLSEFullTitle        = []string{"Host", "OS Version", "OS Image", "Manufacturer", "Machine", "Zone", "Virtual Datacenter", "Rack", "Nic", "IP", "Vlan", "MAC Address", "State", "VM capacity", "Description", "UpdateTime"}
 	MachineLSEDeploymentTitle  = []string{"Serial Number", "Hostname", "Deployment Identifier", "Deployment Env", "UpdateTime"}

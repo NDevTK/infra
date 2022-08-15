@@ -74,6 +74,7 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		asset.GetAssetCmd,
 		dut.GetDutCmd,
 		devboard.GetDevboardMachineCmd,
+		devboard.GetDevboardLSECmd,
 		cachingservice.GetCachingServiceCmd,
 		schedulingunit.GetSchedulingUnitCmd,
 		machine.GetMachineCmd,
