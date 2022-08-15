@@ -1,9 +1,14 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 .PHONY: mallet
 mallet:
-	go build -o mallet -- .
+	@$(RM) -rf ./mallet
+	env CGO_ENABLED=0 go build -o ./mallet -- .
 
 .PHONY: test
-test: check-environment
+test:
 	go test ./...
 
 .PHONY: check
