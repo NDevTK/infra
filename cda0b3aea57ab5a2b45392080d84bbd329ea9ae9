@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1029a5f2_2646b3cf",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 2692,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-15T19:27:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7fe5bd9e_70253dd2",
+      "range": {
+        "startLine": 2692,
+        "startChar": 2,
+        "endLine": 2692,
+        "endChar": 58
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2208d4bc_1bf7abaf",
@@ -88,6 +112,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8741ffbc_fecfa817",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-15T19:27:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "180cc3a0_44a2a6d1",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 2
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "97c3a548_b7e877e0",
@@ -101,6 +149,30 @@
       "writtenOn": "2022-08-02T21:38:25Z",
       "side": 1,
       "message": "need to test the case that database contains the old format of hwiddata",
+      "range": {
+        "startLine": 107,
+        "startChar": 5,
+        "endLine": 107,
+        "endChar": 22
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43366398_1c198611",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-15T19:27:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "97c3a548_b7e877e0",
       "range": {
         "startLine": 107,
         "startChar": 5,
@@ -256,6 +328,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1eb29429_befceffb",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-15T19:27:25Z",
+      "side": 1,
+      "message": "Go doesn\u0027t prevent it. It will try a best guess match. And the protos are quite similar so it ends up giving some fields. But the `DutLabel` field remains empty if it is not the right proto format.",
+      "parentUuid": "0b063eeb_925b344d",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 39
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "91d797ba_58f8282d",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
         "patchSetId": 6
@@ -267,6 +363,30 @@
       "writtenOn": "2022-08-02T21:38:25Z",
       "side": 1,
       "message": "need to test:\n\ndata contains old format, you try to update new one. \ndata contains new format, you try to update old one (in case for DUTs some cases work, some cases not)\ndata contains new format, you try to update new one.",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 23
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc38a890_e3488065",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-15T19:27:25Z",
+      "side": 1,
+      "message": "It\u0027s not possible to update from new to old. The method `UpdateHwidData` takes in only the new `HwidData` format.\n\nOthers are covered.",
+      "parentUuid": "91d797ba_58f8282d",
       "range": {
         "startLine": 75,
         "startChar": 5,
@@ -290,6 +410,24 @@
       "writtenOn": "2022-08-02T21:49:17Z",
       "side": 1,
       "message": "Can you add tests which parses the entities(one with DutLabel and another with HwidData) directly, without the update/get calls to the database so we can test exactly on the input.",
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "242be4d8_43eb1b91",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-15T19:27:25Z",
+      "side": 1,
+      "message": "I think the tests in `TestUpdateHwidData` should cover these. I only use `GetProto()` there.",
+      "parentUuid": "d060ff83_11fc62fb",
       "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
