@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/adb"
+	"infra/cros/recovery/internal/components/android/adb"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"

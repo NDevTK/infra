@@ -33,6 +33,26 @@ func WaitForDevice(ctx context.Context, run components.Runner, log logger.Logger
 	if _, err := run(ctx, time.Minute, cmd); err != nil {
 		return errors.Annotate(err, "wait for device").Err()
 	}
+	// DUT may still be flaky after a reset even success in wait-for-device, so we need an additional check here
+	// to ensure we can get correct DUT state at least 3 times in a row.
+	waitForStableCount := 30
+	successCount := 0
+	for waitForStableCount > 0 {
+		waitForStableCount -= 1
+		if err := IsDeviceAccessible(ctx, run, log, serialNumber); err != nil {
+			successCount = 0
+		} else {
+			successCount += 1
+			log.Debugf("Device is accessible, current success count %d", successCount)
+		}
+		if successCount > 2 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	if successCount < 3 {
+		return errors.Reason("failed to wait DUT become stable").Err()
+	}
 	log.Debugf("Attached device is available: %q", serialNumber)
 	return nil
 }

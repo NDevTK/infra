@@ -179,6 +179,7 @@ func androidRepairPlan() *Plan {
 				},
 				ExecName: "android_dut_is_accessible",
 				RecoveryActions: []string{
+					"Reboot device if in fastboot mode",
 					"Schedule associated host reboot and fail",
 				},
 			},
@@ -254,6 +255,32 @@ func androidRepairPlan() *Plan {
 			"Ensure adbd run as root": {
 				Docs:       []string{"Restart adbd with root permission."},
 				ExecName:   "android_restart_adbd_as_root",
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Reboot device if in fastboot mode": {
+				Docs: []string{
+					"Reboot the device via fastboot if the device is in fastboot mode.",
+					"This action will also restart adb server as we may need to re-auth.",
+				},
+				Dependencies: []string{
+					"android_device_in_fastboot_mode",
+					"android_reboot_device_via_fastboot",
+					"Sleep 60s while device resets",
+					"Stop ADB server",
+					"Start ADB server",
+					"android_wait_for_online_dut",
+				},
+				ExecName: "sample_pass",
+			},
+			"Start ADB server": {
+				Docs:          []string{"Start adb server, this action will always run."},
+				ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbVendorKey)},
+				ExecName:      "android_associated_host_start_adb",
+				RunControl:    RunControl_ALWAYS_RUN,
+			},
+			"Stop ADB server": {
+				Docs:       []string{"Stop adb server, this action will always run."},
+				ExecName:   "android_associated_host_stop_adb",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 		},
