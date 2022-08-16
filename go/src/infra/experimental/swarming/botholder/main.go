@@ -14,6 +14,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -185,7 +186,14 @@ func initAuth(ctx context.Context) (*auth.Authenticator, error) {
 		opts.ServiceAccountJSONPath = auth.GCEServiceAccount
 		opts.SecretsDir = ""
 	}
-	opts.Transport = auth.NewModifyingTransport(http.DefaultTransport, func(req *http.Request) error {
+	opts.Transport = auth.NewModifyingTransport(&http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   60 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+		IdleConnTimeout:     90 * time.Second,
+		TLSHandshakeTimeout: 60 * time.Second,
+	}, func(req *http.Request) error {
 		req.Header.Set("User-Agent", "botholder")
 		return nil
 	})
