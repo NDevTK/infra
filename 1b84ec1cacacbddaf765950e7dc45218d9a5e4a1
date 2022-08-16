@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0553e3c6_6441dab5",
+        "filename": "go/src/infra/unifiedfleet/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-08-16T20:25:05Z",
+      "side": 1,
+      "message": "\u003e \"refernce\" is a possible misspelling of \"reference\".\n\nPlease fix.",
+      "parentUuid": "7415d0c6_f76fad5d",
+      "range": {
+        "startLine": 3,
+        "startChar": 35,
+        "endLine": 3,
+        "endChar": 43
+      },
+      "revId": "1b84ec1cacacbddaf765950e7dc45218d9a5e4a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
