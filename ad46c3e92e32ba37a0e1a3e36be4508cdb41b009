@@ -34,6 +34,24 @@
       "parentUuid": "aaeac5fd_0faa574c",
       "revId": "ad46c3e92e32ba37a0e1a3e36be4508cdb41b009",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7df0d26_2db66a5b",
+        "filename": "go/src/infra/cros/recovery/config/config_servo.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 1500,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-08-16T01:14:05Z",
+      "side": 1,
+      "message": "Looked at `Is servo_v4(p1) used with type-c connector`, it looks like it works for both servo_v4 and v4p1 and just check if the servo is connected via type_c.",
+      "parentUuid": "980e1065_775fce31",
+      "revId": "ad46c3e92e32ba37a0e1a3e36be4508cdb41b009",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
