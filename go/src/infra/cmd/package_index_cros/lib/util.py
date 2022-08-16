@@ -64,7 +64,7 @@ class CrosSdk:
   """Handles requests to cros_sdk."""
 
   @staticmethod
-  def _Exec(cmd, *, capture_output=False) -> cros_build_lib.CommandResult:
+  def _Exec(cmd, *, capture_output=False) -> cros_build_lib.CompletedProcess:
     shell = True
     if isinstance(cmd, List):
       shell = False
@@ -89,7 +89,7 @@ class CrosSdk:
     Runs cros_workon start with given packages.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     cmd = ['cros_workon', f"--board={self.setup.board}", "start"
           ] + package_names
@@ -100,7 +100,7 @@ class CrosSdk:
     Runs cros_workon stop with given packages.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     cmd = ['cros_workon', f"--board={self.setup.board}", "stop"] + package_names
     CrosSdk._Exec(cmd)
@@ -113,7 +113,7 @@ class CrosSdk:
     Returns a handler to stop workon with 'with' statement.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     check_workon_cmd = ['cros_workon', f"--board={self.setup.board}", "list"]
 
@@ -147,7 +147,7 @@ class CrosSdk:
     Builds given packages and preserves build artifcats.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     features = ['noclean']
     if self.setup.with_tests:
@@ -165,7 +165,7 @@ class CrosSdk:
     |chroot_build_dir|  is package's build dir inside chroot.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     ninja_cmd = ['ninja', '-C', chroot_build_dir, '-t', 'compdb', 'cc', 'cxx']
 
@@ -181,7 +181,7 @@ class CrosSdk:
     |chroot_build_dir| is a package's build dir inside chroot.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     gn_desc_cmd = [
         'gn',
@@ -206,7 +206,7 @@ class CrosSdk:
     called via cros_sdk wrapper.
 
     Raises:
-      * cros_build_lib.CommandResult if command failed.
+      * cros_build_lib.CompletedProcess if command failed.
     """
     cmd = [
         'sudo',
