@@ -399,6 +399,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1dab2d4b_8423adc1",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-16T04:26:27Z",
+      "side": 1,
+      "message": "just use this as an example:\n\nthis CL may be reverted as sometime the new data cannot be written in/read, after it\u0027s reverted, datastore already contain some new data, but UpdateHwidData is taking old format. In this case, we still need to make sure new-to-old is working.",
+      "parentUuid": "fc38a890_e3488065",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 23
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d060ff83_11fc62fb",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
         "patchSetId": 6
