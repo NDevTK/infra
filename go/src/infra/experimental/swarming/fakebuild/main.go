@@ -192,7 +192,7 @@ func searchBuild(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuild
 	defer func() { step.End(nil) }()
 
 	clNum := rand.Int63n(5000000)
-	patchset := rand.Int63n(20)
+	patchset := rand.Int63n(20) + int64(1) // make sure patchset is greater than 0.
 
 	// Mimic CV's SearchBuilds RPCs.
 	req := &bbpb.SearchBuildsRequest{
