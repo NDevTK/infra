@@ -10,7 +10,7 @@ option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 
 import "google/protobuf/timestamp.proto";
 
-// Next tag: 14
+// Next tag: 16
 enum State {
   STATE_UNSPECIFIED = 0;
   // Equlavant to the concept in ChromeOS lab: needs_deploy
@@ -41,6 +41,9 @@ enum State {
   STATE_READY = 13;
   // Resource is in the process of being built out or assembled.
   STATE_BUILD = 14;
+  // Resource is not detected and has gone missing. Possibly still physically
+  // connected but needs a repair.
+  STATE_MISSING = 15;
 }
 
 // There's no exposed API for users to directly retrieve a state record.

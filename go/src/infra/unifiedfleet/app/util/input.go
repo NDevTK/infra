@@ -328,6 +328,7 @@ var StrToUFSState = map[string]string{
 	"deploying":            "STATE_DEPLOYING",
 	"ready":                "STATE_READY",
 	"build":                "STATE_BUILD",
+	"missing":              "STATE_MISSING",
 }
 
 // StateToDescription refers a map between a State to its description.
@@ -345,6 +346,7 @@ var StateToDescription = map[string]string{
 	"deploying":            "Deploying the resource with required configs just before it is READY",
 	"ready":                "Resource is ready for use or free to use",
 	"build":                "Resource is in the process of being built out or assembled",
+	"missing":              "Resource is not detected and has gone missing",
 }
 
 // IsUFSState checks if a string refers to a valid UFS state.
