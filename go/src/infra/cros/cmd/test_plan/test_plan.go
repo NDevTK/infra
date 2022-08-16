@@ -50,7 +50,7 @@ func app(authOpts auth.Options) *cli.Application {
 		Context: logCfg.Use,
 		Commands: []*subcommands.Command{
 			cmdRelevantPlans(authOpts),
-			cmdValidate,
+			cmdValidate(authOpts),
 
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
@@ -219,10 +219,11 @@ func (r *relevantPlansRun) run(ctx context.Context) error {
 	return writePlans(ctx, plans, r.out)
 }
 
-var cmdValidate = &subcommands.Command{
-	UsageLine: "validate TARGET1 [TARGET2...]",
-	ShortDesc: "validate metadata files",
-	LongDesc: text.Doc(`
+func cmdValidate(authOpts auth.Options) *subcommands.Command {
+	return &subcommands.Command{
+		UsageLine: "validate DIR1 [DIR2...]",
+		ShortDesc: "validate metadata files",
+		LongDesc: text.Doc(`
 		Validate metadata files.
 
 		Validation logic on "DIR_METADATA" files specific to ChromeOS test planning.
@@ -235,29 +236,60 @@ var cmdValidate = &subcommands.Command{
 
 		The subcommand returns a non-zero exit code if any of the files is invalid.
 	`),
-	CommandRun: func() subcommands.CommandRun {
-		r := &validateRun{}
-		return r
-	},
+		CommandRun: func() subcommands.CommandRun {
+			r := &validateRun{}
+			r.authFlags = authcli.Flags{}
+			r.authFlags.Register(r.GetFlags(), authOpts)
+			return r
+		},
+	}
 }
 
 type validateRun struct {
 	subcommands.CommandRunBase
+	authFlags authcli.Flags
 }
 
 func (r *validateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	return errToCode(a, r.run(a, args, env))
 }
 
+func (r *validateRun) validateFlags(args []string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("at least one directory must be specified as a positional argument")
+	}
+
+	return nil
+}
+
 func (r *validateRun) run(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, r, env)
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, args...)
 
+	if err := r.validateFlags(args); err != nil {
+		return err
+	}
+
+	authOpts, err := r.authFlags.Options()
 	if err != nil {
 		return err
 	}
 
-	return testplan.ValidateMapping(mapping)
+	authedClient, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).Client()
+	if err != nil {
+		return err
+	}
+
+	gerritClient, err := igerrit.NewClient(authedClient)
+	if err != nil {
+		return err
+	}
+
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, args...)
+	if err != nil {
+		return err
+	}
+
+	return testplan.ValidateMapping(ctx, gerritClient, mapping)
 }
 
 func main() {

@@ -1,9 +1,11 @@
 package testplan
 
 import (
+	"context"
 	"testing"
 
 	"infra/cros/internal/assert"
+	"infra/cros/internal/gerrit"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
@@ -12,6 +14,32 @@ import (
 )
 
 func TestValidateMapping(t *testing.T) {
+	ctx := context.Background()
+	testStarlarkContent := "testcontent"
+	client := &gerrit.MockClient{
+		T: t,
+		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "test/repo",
+				Ref:     "HEAD",
+				Path:    "a/b/c/test.star",
+			}: &testStarlarkContent,
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "test/repo1",
+				Ref:     "HEAD",
+				Path:    "a/b/c/test.star",
+			}: &testStarlarkContent,
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "test/repo2",
+				Ref:     "HEAD",
+				Path:    "test2.star",
+			}: &testStarlarkContent,
+		},
+	}
+
 	tests := []struct {
 		name    string
 		mapping *dirmd.Mapping
@@ -40,7 +68,7 @@ func TestValidateMapping(t *testing.T) {
 											{
 												Host:    "chromium.googlesource.com",
 												Project: "test/repo",
-												Path:    "a/b/c/text.txt",
+												Path:    "a/b/c/test.star",
 											},
 										},
 									},
@@ -95,7 +123,7 @@ func TestValidateMapping(t *testing.T) {
 											{
 												Host:    "chromium.googlesource.com",
 												Project: "test/repo",
-												Path:    "a/b/c/text.txt",
+												Path:    "a/b/c/test.star",
 											},
 										},
 										PathRegexps:        []string{"a/b/c/d/.*"},
@@ -122,7 +150,7 @@ func TestValidateMapping(t *testing.T) {
 											{
 												Host:    "chromium.googlesource.com",
 												Project: "test/repo",
-												Path:    "a/b/c/text.txt",
+												Path:    "a/b/c/test.star",
 											},
 										},
 										PathRegexps:        []string{"a/b/c/d/.*"},
@@ -139,12 +167,25 @@ func TestValidateMapping(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assert.NilError(t, ValidateMapping(test.mapping))
+			assert.NilError(t, ValidateMapping(ctx, client, test.mapping))
 		})
 	}
 }
 
 func TestValidateMappingErrors(t *testing.T) {
+	ctx := context.Background()
+	client := &gerrit.MockClient{
+		T: t,
+		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "testrepo",
+				Ref:     "HEAD",
+				Path:    "testfile.star",
+			}: nil,
+		},
+	}
+
 	tests := []struct {
 		name           string
 		mapping        *dirmd.Mapping
@@ -184,7 +225,7 @@ func TestValidateMappingErrors(t *testing.T) {
 											{
 												Host:    "chromium.googlesource.com",
 												Project: "testrepo",
-												Path:    "testfile",
+												Path:    "testfile.star",
 											},
 										},
 										PathRegexps: []string{"a/b/c/d/["},
@@ -211,7 +252,7 @@ func TestValidateMappingErrors(t *testing.T) {
 											{
 												Host:    "chromium.googlesource.com",
 												Project: "testrepo",
-												Path:    "testfile",
+												Path:    "testfile.star",
 											},
 										},
 										PathRegexps: []string{`a/b/e/.*\.txt`},
@@ -224,11 +265,60 @@ func TestValidateMappingErrors(t *testing.T) {
 			},
 			"path_regexp(_exclude)s defined in a directory that is not the root of the repo must have the sub-directory as a prefix",
 		},
+		{
+			"invalid file type",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					".": {Chromeos: &chromeos.ChromeOS{
+						Cq: &chromeos.ChromeOS_CQ{
+							SourceTestPlans: []*plan.SourceTestPlan{
+								{
+									TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+										{
+											Host:    "chromium.googlesource.com",
+											Project: "testrepo",
+											Path:    "testfile.txt",
+										},
+									},
+								},
+							},
+						},
+					},
+					},
+				},
+			},
+			"all TestPlanStarlarkFile must specify \".star\" files, got \"testfile.txt\"",
+		},
+		{
+			"starlark file missing",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					".": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "testrepo",
+												Path:    "testfile.star",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"failed downloading file",
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := ValidateMapping(test.mapping)
+			err := ValidateMapping(ctx, client, test.mapping)
 			assert.ErrorContains(t, err, test.errorSubstring)
 		})
 	}
