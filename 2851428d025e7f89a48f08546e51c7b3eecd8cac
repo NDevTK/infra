@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "210c2ae6_ab2b7f7e",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 2851,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-16T05:09:45Z",
+      "side": 1,
+      "message": "hwid out of date, server fails, and use the cached info",
+      "range": {
+        "startLine": 2851,
+        "startChar": 46,
+        "endLine": 2851,
+        "endChar": 79
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "630601d5_500a0db9",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 2878,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-16T05:09:45Z",
+      "side": 1,
+      "message": "you don\u0027t need this as you can compare the return directly with expiredHwidData?",
+      "range": {
+        "startLine": 2854,
+        "startChar": 3,
+        "endLine": 2878,
+        "endChar": 4
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfb177be_f21cef8c",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-16T05:09:45Z",
+      "side": 1,
+      "message": "do you have similar variables in other *_test.go file? e.g. hwidMockData in dut_test.go seems exactly the same as mockHwidData() here.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 1
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a649b597_416d7d37",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-16T05:09:45Z",
+      "side": 1,
+      "message": "fakeUpdateLegacyHwidData? also this function is not only used in hwid_test.go, should be moved to some common file e.g. testing.go. Same as fakeUpdateHwidData probably",
+      "range": {
+        "startLine": 132,
+        "startChar": 5,
+        "endLine": 132,
+        "endChar": 23
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "236a41e0_725aa147",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-16T05:09:45Z",
+      "side": 1,
+      "message": "check error?",
+      "range": {
+        "startLine": 122,
+        "startChar": 2,
+        "endLine": 122,
+        "endChar": 44
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
