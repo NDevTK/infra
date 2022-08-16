@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
@@ -131,20 +132,47 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 	if timeout < time.Second {
 		return nil, errors.Reason("start: timeout %v is less than 1 second", timeout).Err()
 	}
-	// TODO: migrate to use docker SDK.
-	// TODO: move logic to separate method with tests.
-	args := generateCommandArray(containerName, req)
-	res, err := runWithTimeout(ctx, timeout, "docker", args...)
-	log.Debugf(ctx, "Executing docker run command\ndocker ")
-	log.Debugf(ctx, "Run docker exec %q: exitcode: %v", containerName, res.ExitCode)
-	log.Debugf(ctx, "Run docker exec %q: stdout: %v", containerName, res.Stdout)
-	log.Debugf(ctx, "Run docker exec %q: stderr: %v", containerName, res.Stderr)
-	log.Debugf(ctx, "Run docker exec %q: err: %v", containerName, err)
-	return &StartResponse{
-		ExitCode: res.ExitCode,
-		Stdout:   res.Stdout,
-		Stderr:   res.Stderr,
-	}, errors.Annotate(err, "run docker image %q: %s", containerName, res.Stderr).Err()
+	err := d.Pull(ctx, req.ImageName, timeout)
+	if err != nil {
+		return nil, errors.Reason("Fail to pull Docker image: %q", req.ImageName).Err()
+	}
+	config := &container.Config{
+		Image: req.ImageName,
+		Env:   req.EnvVar,
+		Cmd:   req.Exec,
+	}
+	hostConfig := &container.HostConfig{
+		Privileged:  true,
+		Binds:       req.Volumes,
+		NetworkMode: container.NetworkMode(req.Network),
+		AutoRemove:  true,
+	}
+	c, err := d.client.ContainerCreate(ctx, config, hostConfig, nil, nil, containerName)
+	if err != nil {
+		return nil, errors.Annotate(err, "Fail to pull Docker image: %q", req.ImageName).Err()
+	}
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	outputDone := make(chan error, 1)
+
+	go func() {
+		// Demultiplexing the exec stdout into two buffers
+		err = d.client.ContainerStart(ctx, c.ID, types.ContainerStartOptions{})
+		outputDone <- err
+	}()
+	select {
+	case err := <-outputDone:
+		if err != nil {
+			log.Debugf(ctx, "Fail to start docker container %q with cmd %+v using image %q\n", containerName, req.Exec, req.ImageName)
+			return &StartResponse{ExitCode: 1}, err
+		}
+		break
+
+	case <-ctx.Done():
+		return &StartResponse{ExitCode: 124}, errors.Reason("Start container with timeout %s: exceeded timeout", timeout).Err()
+	}
+	return &StartResponse{}, err
 }
 
 // generateCommandArray takes the raw ContainerArgs we get and convert to an array of strings used to form the docker run command in Start
