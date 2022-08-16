@@ -20,14 +20,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 )
 
-// defaultExcludePrefixes excludes the iOS simulator runtime which will be
-// packaged separately. In the past this has excluded parts of Xcode.app that
+// defaultExcludePrefixes excludes everything not packaged in "ios" or "mac"
+// packages. In the past this has excluded parts of Xcode.app that
 // are not necessary when uploading Xcode contents, but as each release of Xcode
 // may change what is required, proceed with caution before adding new folders
 // to exclude.
-var defaultExcludePrefixes = []string{
-	XcodeIOSSimulatorRuntimeRelPath,
-}
+var defaultExcludePrefixes = []string{}
 
 // iosPrefixes excludes parts of Xcode.app not required for building
 // Chrome on Mac OS, but is useful for iOS.
@@ -114,7 +112,9 @@ func makePackage(args MakePackageArgs) (packageDef cipd.PackageDef, err error) {
 
 // Makes Xcode's CIPD package definitions, including "mac" and "ios" package
 // types.
-func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string) (p Packages, err error) {
+// Legacy iOS package contains all runtimes in Xcode (default before spring
+// 2021), while new iOS package contains no runtimes.
+func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string, legacyIOSPackage bool) (p Packages, err error) {
 	absXcodeAppPath, err := filepath.Abs(xcodeAppPath)
 	if err != nil {
 		err = errors.Annotate(err, "failed to create an absolute path from %s", xcodeAppPath).Err()
@@ -140,12 +140,18 @@ func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string) (p Package
 		err = errors.Annotate(err, "failed to create mac cipd pakcage").Err()
 	}
 
+	excludePrefixesForiOSPackage := make([]string, len(defaultExcludePrefixes))
+	copy(excludePrefixesForiOSPackage, defaultExcludePrefixes)
+	if !legacyIOSPackage {
+		excludePrefixesForiOSPackage = append(excludePrefixesForMacPackage, XcodeIOSSimulatorRuntimeRelPath)
+	}
+
 	iosMakePackageArgs := MakePackageArgs{
 		cipdPackageName:   IosPackageName,
 		cipdPackagePrefix: cipdPackagePrefix,
 		rootPath:          absXcodeAppPath,
 		includePrefixes:   iosPrefixes,
-		excludePrefixes:   defaultExcludePrefixes,
+		excludePrefixes:   excludePrefixesForiOSPackage,
 	}
 	ios, err := makePackage(iosMakePackageArgs)
 	if err != nil {
@@ -237,6 +243,7 @@ type PackageXcodeArgs struct {
 	serviceAccountJSON string
 	outputDir          string
 	skipRefTag         bool
+	legacyIOSPackage   bool
 }
 
 func packageXcode(ctx context.Context, args PackageXcodeArgs) error {
@@ -245,7 +252,7 @@ func packageXcode(ctx context.Context, args PackageXcodeArgs) error {
 		return errors.Annotate(err, "this doesn't look like a valid Xcode.app folder: %s", args.xcodeAppPath).Err()
 	}
 
-	packages, err := makeXcodePackages(args.xcodeAppPath, args.cipdPackagePrefix)
+	packages, err := makeXcodePackages(args.xcodeAppPath, args.cipdPackagePrefix, args.legacyIOSPackage)
 	if err != nil {
 		return err
 	}
@@ -285,28 +292,33 @@ type PackageRuntimeAndXcodeArgs struct {
 	serviceAccountJSON string
 	outputDir          string
 	skipRefTag         bool
+	legacyIOSPackage   bool
 }
 
 // Packages runtime & rest of Xcode.
 func packageRuntimeAndXcode(ctx context.Context, args PackageRuntimeAndXcodeArgs) error {
-	runtimePath := filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeRelPath, XcodeIOSSimulatorRuntimeFilename)
-	packageRuntimeArgs := PackageRuntimeArgs{
-		xcodeAppPath:       args.xcodeAppPath,
-		runtimePath:        runtimePath,
-		cipdPackagePrefix:  args.cipdPackagePrefix,
-		serviceAccountJSON: args.serviceAccountJSON,
-		outputDir:          args.outputDir,
-		skipRefTag:         args.skipRefTag,
+	if !args.legacyIOSPackage {
+		runtimePath := filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeRelPath, XcodeIOSSimulatorRuntimeFilename)
+		packageRuntimeArgs := PackageRuntimeArgs{
+			xcodeAppPath:       args.xcodeAppPath,
+			runtimePath:        runtimePath,
+			cipdPackagePrefix:  args.cipdPackagePrefix,
+			serviceAccountJSON: args.serviceAccountJSON,
+			outputDir:          args.outputDir,
+			skipRefTag:         args.skipRefTag,
+		}
+		if err := packageRuntime(ctx, packageRuntimeArgs); err != nil {
+			return errors.Annotate(err, "Error when packaging runtime.").Err()
+		}
 	}
-	if err := packageRuntime(ctx, packageRuntimeArgs); err != nil {
-		return errors.Annotate(err, "Error when packaging runtime.").Err()
-	}
+
 	packageXcodeArgs := PackageXcodeArgs{
 		xcodeAppPath:       args.xcodeAppPath,
 		cipdPackagePrefix:  args.cipdPackagePrefix,
 		serviceAccountJSON: args.serviceAccountJSON,
 		outputDir:          args.outputDir,
 		skipRefTag:         args.skipRefTag,
+		legacyIOSPackage:   args.legacyIOSPackage,
 	}
 	if err := packageXcode(ctx, packageXcodeArgs); err != nil {
 		return errors.Annotate(err, "Error when packaging rest of Xcode.").Err()

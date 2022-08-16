@@ -93,12 +93,14 @@ type uploadRun struct {
 	xcodePath          string
 	serviceAccountJSON string
 	skipRefTag         bool
+	legacyIOSPackage   bool
 }
 
 type packageRun struct {
 	commonFlags
-	xcodePath string
-	outputDir string
+	xcodePath        string
+	outputDir        string
+	legacyIOSPackage bool
 }
 
 type uploadRuntimeRun struct {
@@ -184,6 +186,7 @@ func (c *uploadRun) Run(a subcommands.Application, args []string, env subcommand
 		serviceAccountJSON: c.serviceAccountJSON,
 		outputDir:          "",
 		skipRefTag:         c.skipRefTag,
+		legacyIOSPackage:   c.legacyIOSPackage,
 	}
 	if err := packageRuntimeAndXcode(ctx, packageRuntimeAndXcodeArgs); err != nil {
 		errors.Log(ctx, err)
@@ -211,6 +214,7 @@ func (c *packageRun) Run(a subcommands.Application, args []string, env subcomman
 		serviceAccountJSON: "",
 		outputDir:          c.outputDir,
 		skipRefTag:         false,
+		legacyIOSPackage:   c.legacyIOSPackage,
 	}
 	if err := packageRuntimeAndXcode(ctx, packageRuntimeAndXcodeArgs); err != nil {
 		errors.Log(ctx, err)
@@ -317,6 +321,7 @@ func uploadFlagVars(c *uploadRun) {
 	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
 	c.Flags.StringVar(&c.xcodePath, "xcode-path", "", "Path to Xcode.app to be uploaded. (required)")
 	c.Flags.BoolVar(&c.skipRefTag, "skip-ref-tag", false, "Whether to skip attaching CIPD tags or refs for Xcode packages to be uploaded.")
+	c.Flags.BoolVar(&c.legacyIOSPackage, "legacy-ios-package", false, "Whether to upload Xcode with iOS runtimes packed in \"ios\" pacakage, but not in separate CIPD packages.")
 }
 
 func packageFlagVars(c *packageRun) {

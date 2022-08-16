@@ -95,7 +95,7 @@ func TestMakePackages(t *testing.T) {
 
 	Convey("makeXcodePackages works", t, func() {
 		Convey("for a valid directory", func() {
-			packages, err := makeXcodePackages("testdata/WalkDir", "test/prefix")
+			packages, err := makeXcodePackages("testdata/WalkDir", "test/prefix", false)
 			So(err, ShouldBeNil)
 			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
 			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
@@ -114,8 +114,41 @@ func TestMakePackages(t *testing.T) {
 			})
 		})
 
+		Convey("for a valid real Xcode directory", func() {
+			packages, err := makeXcodePackages("testdata/Xcode-new.app", "test/prefix", false)
+			So(err, ShouldBeNil)
+			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
+			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
+			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
+				{VersionFile: ".xcode_versions/mac.cipd_version"},
+				{File: path("Contents/Developer/usr/bin/xyz.txt")},
+				{File: path("Contents/Resources/LicenseInfo.plist")},
+				{File: path("Contents/version.plist")},
+			})
+			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
+				{VersionFile: ".xcode_versions/ios.cipd_version"},
+			})
+		})
+
+		Convey("for a valid real directory legacy iOS package", func() {
+			packages, err := makeXcodePackages("testdata/Xcode-new.app", "test/prefix", true)
+			So(err, ShouldBeNil)
+			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
+			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
+			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
+				{VersionFile: ".xcode_versions/mac.cipd_version"},
+				{File: path("Contents/Developer/usr/bin/xyz.txt")},
+				{File: path("Contents/Resources/LicenseInfo.plist")},
+				{File: path("Contents/version.plist")},
+			})
+			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
+				{VersionFile: ".xcode_versions/ios.cipd_version"},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
+			})
+		})
+
 		Convey("for a nonexistent directory", func() {
-			_, err := makeXcodePackages("testdata/nonexistent", "")
+			_, err := makeXcodePackages("testdata/nonexistent", "", false)
 			So(err, ShouldNotBeNil)
 		})
 	})
@@ -164,6 +197,7 @@ func TestPackageXcode(t *testing.T) {
 				serviceAccountJSON: "",
 				outputDir:          "",
 				skipRefTag:         false,
+				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
 			So(err, ShouldBeNil)
@@ -188,6 +222,7 @@ func TestPackageXcode(t *testing.T) {
 				serviceAccountJSON: "",
 				outputDir:          "",
 				skipRefTag:         true,
+				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
 			So(err, ShouldBeNil)
@@ -212,6 +247,7 @@ func TestPackageXcode(t *testing.T) {
 				serviceAccountJSON: "test-sa",
 				outputDir:          "",
 				skipRefTag:         false,
+				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
 			So(err, ShouldBeNil)
@@ -239,6 +275,7 @@ func TestPackageXcode(t *testing.T) {
 				serviceAccountJSON: "",
 				outputDir:          "testdata/outdir",
 				skipRefTag:         false,
+				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
 			So(err, ShouldBeNil)
@@ -274,6 +311,7 @@ func TestPackageRuntimeAndXcode(t *testing.T) {
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "",
+				legacyIOSPackage:   false,
 			}
 			err := packageRuntimeAndXcode(ctx, packageRuntimeAndXcodeArgs)
 			So(err, ShouldBeNil)
@@ -300,6 +338,30 @@ func TestPackageRuntimeAndXcode(t *testing.T) {
 				So(s.Calls[i].Args, ShouldContain, "build_version:TESTBUILDVERSION")
 				So(s.Calls[i].Args, ShouldContain, "testbuildversion")
 
+				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
+			}
+		})
+
+		Convey("package an Xcode and runtime within it legacy", func() {
+			packageRuntimeAndXcodeArgs := PackageRuntimeAndXcodeArgs{
+				xcodeAppPath:       "testdata/Xcode-new.app",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				legacyIOSPackage:   true,
+			}
+			err := packageRuntimeAndXcode(ctx, packageRuntimeAndXcodeArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 2)
+
+			for i := 0; i < 2; i++ {
+				So(s.Calls[i].Executable, ShouldEqual, "cipd")
+				So(s.Calls[i].Args, ShouldContain, "create")
+				So(s.Calls[i].Args, ShouldContain, "-verification-timeout")
+				So(s.Calls[i].Args, ShouldContain, "60m")
+				So(s.Calls[i].Args, ShouldContain, "xcode_version:TESTXCODEVERSION")
+				So(s.Calls[i].Args, ShouldContain, "build_version:TESTBUILDVERSION")
+				So(s.Calls[i].Args, ShouldContain, "testbuildversion")
 				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
 			}
 		})
