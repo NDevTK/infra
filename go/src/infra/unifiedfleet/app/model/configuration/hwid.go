@@ -32,6 +32,16 @@ type HwidDataEntity struct {
 
 // GetProto returns the unmarshaled HwidData.
 func (e *HwidDataEntity) GetProto() (proto.Message, error) {
+	p := &ufspb.HwidData{}
+	if err := proto.Unmarshal(e.HwidData, p); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+// GetDutLabelProto returns the unmarshaled HwidData.
+// TODO (b/240771930): Remove this method once datastore data is overwritten.
+func (e *HwidDataEntity) GetDutLabelProto() (proto.Message, error) {
 	p := &ufspb.DutLabel{}
 	if err := proto.Unmarshal(e.HwidData, p); err != nil {
 		return nil, err
@@ -40,19 +50,43 @@ func (e *HwidDataEntity) GetProto() (proto.Message, error) {
 }
 
 // UpdateHwidData updates HwidData in datastore.
-func UpdateHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string) (*HwidDataEntity, error) {
+func UpdateHwidData(ctx context.Context, d *ufspb.HwidData, hwid string) (*HwidDataEntity, error) {
 	hwidData, err := proto.Marshal(d)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to marshal HwidData %s", d).Err()
 	}
 
 	if hwid == "" {
-		return nil, status.Errorf(codes.Internal, "Empty hwid")
+		return nil, status.Errorf(codes.InvalidArgument, "empty hwid")
 	}
 
 	entity := &HwidDataEntity{
 		ID:       hwid,
 		HwidData: hwidData,
+		Updated:  time.Now().UTC(),
+	}
+	if err := datastore.Put(ctx, entity); err != nil {
+		return nil, err
+	}
+	return entity, nil
+}
+
+// UpdateLegacyHwidData updates HwidDataEntity with DutLabel as HwidData instead
+// of HwidData proto in datastore. This is also the previous implementation of
+// UpdateHwidData.
+func UpdateLegacyHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string) (*HwidDataEntity, error) {
+	dutLabel, err := proto.Marshal(d)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to marshal DutLabel %s", d).Err()
+	}
+
+	if hwid == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "empty hwid")
+	}
+
+	entity := &HwidDataEntity{
+		ID:       hwid,
+		HwidData: dutLabel,
 		Updated:  time.Now().UTC(),
 	}
 	if err := datastore.Put(ctx, entity); err != nil {
@@ -77,27 +111,47 @@ func GetHwidData(ctx context.Context, hwid string) (*HwidDataEntity, error) {
 	return entity, nil
 }
 
-// ParseHwidDataV1 returns sku and variant.
+// ParseHwidDataV1 returns the HwidData proto based on the datastore entity.
 //
 // It parses a given HwidDataEntity into the ufspb.HwidData proto containing
-// sku and variant. No error is returned if the entity is nil.
+// all DutLabels. No error is returned if the entity is nil.
 func ParseHwidDataV1(ent *HwidDataEntity) (*ufspb.HwidData, error) {
 	if ent == nil {
 		return nil, nil
 	}
 
+	var data ufspb.HwidData
+	data.Hwid = ent.ID
+
+	// Try to get HwidData proto. Try DutLabel proto if fail.
+	// TODO (b/240771930): Remove DutLabel conditional once datastore data is
+	// overwritten.
 	entData, err := ent.GetProto()
 	if err != nil {
 		return nil, err
 	}
-
-	hwidData, ok := entData.(*ufspb.DutLabel)
+	hwidData, ok := entData.(*ufspb.HwidData)
 	if !ok {
-		return nil, errors.Reason("Failed to cast data to DutLabel: %s", entData).Err()
+		return nil, errors.Reason("Failed to cast data to HwidData: %s", entData).Err()
+	}
+	data.DutLabel = hwidData.GetDutLabel()
+
+	// Unmarshaling into the wrong type of proto will not fail. So must check if
+	// data actually has DutLabel. The correct proto type will always have a
+	// DutLabel field after unmarshaling.
+	if data.DutLabel == nil {
+		entData, err = ent.GetDutLabelProto()
+		if err != nil {
+			return nil, err
+		}
+		dutLabel, ok := entData.(*ufspb.DutLabel)
+		if !ok {
+			return nil, errors.Reason("Failed to cast data to DutLabel: %s", entData).Err()
+		}
+		data.DutLabel = dutLabel
 	}
 
-	var data ufspb.HwidData
-	for _, l := range hwidData.GetLabels() {
+	for _, l := range data.DutLabel.GetLabels() {
 		switch strings.ToLower(l.GetName()) {
 		case "sku":
 			data.Sku = l.GetValue()

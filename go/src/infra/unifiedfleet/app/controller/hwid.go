@@ -26,10 +26,10 @@ const cacheAge = time.Hour
 // HwidData proto. It will try the following in order:
 // 1. Query from datastore. If under an hour old, return data.
 // 2. If over an hour old or no data in datastore, attempt to query new data
-//    from HWID server.
+// from HWID server.
 // 3. If HWID server data available, cache into datastore and return data.
 // 4. If server fails, return expired datastore data if present. If not, return
-//    nil and error.
+// nil and error.
 func GetHwidDataV1(ctx context.Context, c hwid.ClientInterface, hwid string) (data *ufspb.HwidData, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -69,7 +69,11 @@ func fetchHwidData(ctx context.Context, c hwid.ClientInterface, hwid string) (*c
 		return nil, err
 	}
 
-	resp, err := configuration.UpdateHwidData(ctx, newData, hwid)
+	hwidData := &ufspb.HwidData{
+		DutLabel: newData,
+	}
+
+	resp, err := configuration.UpdateHwidData(ctx, hwidData, hwid)
 	if err != nil {
 		return nil, err
 	}
