@@ -140,7 +140,7 @@ func TestExtracHandler(t *testing.T) {
 				t.Fatalf("ExtractHandler error writing header: %s", err)
 			}
 			if _, err := tw.Write([]byte(content)); err != nil {
-				t.Fatalf("ExtractHadnler rror writing content: %s", err)
+				t.Fatalf("ExtractHadnler error writing content: %s", err)
 			}
 		}
 		fakeObjects[tarName] = &fakeGSObject{
@@ -151,11 +151,31 @@ func TestExtracHandler(t *testing.T) {
 			},
 			content: buf.String(),
 		}
+
+		gzTarName := tarName[:len(tarName)-3] + "tgz"
+		var zbuf bytes.Buffer
+		func() {
+			w := gzip.NewWriter(&zbuf)
+			defer w.Close()
+			if _, err := w.Write(buf.Bytes()); err != nil {
+				t.Fatalf("error writing %s content %s: %s", gzTarName, buf.Bytes(), err)
+			}
+		}()
+		fakeObjects[gzTarName] = &fakeGSObject{
+			exists: true,
+			attrs: &storage.ObjectAttrs{
+				Size: int64(len(zbuf.String())),
+				//ContentType: "tgz",
+			},
+			content: zbuf.String(),
+		}
+
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/extract/", gsa.extractHandler)
 	mux.HandleFunc("/download/", gsa.downloadHandler)
+	mux.HandleFunc("/decompress/", gsa.decompressHandler)
 	s := httptest.NewServer(mux)
 	defer s.Close()
 	gsa.cacheServerURL = s.URL
@@ -173,7 +193,19 @@ func TestExtracHandler(t *testing.T) {
 			wantBody:          tarFiles["bucket/extract.tar"]["f1.txt"],
 		},
 		{
+			url:               "/extract/bucket/extract.tgz?file=f1.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f1.txt"])),
+			wantBody:          tarFiles["bucket/extract.tar"]["f1.txt"],
+		},
+		{
 			url:               "/extract/bucket/extract.tar?file=f2.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f2.txt"])),
+			wantBody:          tarFiles["bucket/extract.tar"]["f2.txt"],
+		},
+		{
+			url:               "/extract/bucket/extract.tgz?file=f2.txt",
 			wantStatusCode:    200,
 			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f2.txt"])),
 			wantBody:          tarFiles["bucket/extract.tar"]["f2.txt"],
@@ -185,7 +217,19 @@ func TestExtracHandler(t *testing.T) {
 			wantBody:          tarFiles["bucket/extract.tar"]["f3.txt"],
 		},
 		{
+			url:               "/extract/bucket/extract.tgz?file=f3.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket/extract.tar"]["f3.txt"])),
+			wantBody:          tarFiles["bucket/extract.tar"]["f3.txt"],
+		},
+		{
 			url:               "/extract/bucket2/extract.tar?file=f1.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f1.txt"])),
+			wantBody:          tarFiles["bucket2/extract.tar"]["f1.txt"],
+		},
+		{
+			url:               "/extract/bucket2/extract.tgz?file=f1.txt",
 			wantStatusCode:    200,
 			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f1.txt"])),
 			wantBody:          tarFiles["bucket2/extract.tar"]["f1.txt"],
@@ -197,7 +241,19 @@ func TestExtracHandler(t *testing.T) {
 			wantBody:          tarFiles["bucket2/extract.tar"]["f2.txt"],
 		},
 		{
+			url:               "/extract/bucket2/extract.tgz?file=f2.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f2.txt"])),
+			wantBody:          tarFiles["bucket2/extract.tar"]["f2.txt"],
+		},
+		{
 			url:               "/extract/bucket2/extract.tar?file=f3.txt",
+			wantStatusCode:    200,
+			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f3.txt"])),
+			wantBody:          tarFiles["bucket2/extract.tar"]["f3.txt"],
+		},
+		{
+			url:               "/extract/bucket2/extract.tgz?file=f3.txt",
 			wantStatusCode:    200,
 			wantContentLength: int64(len(tarFiles["bucket2/extract.tar"]["f3.txt"])),
 			wantBody:          tarFiles["bucket2/extract.tar"]["f3.txt"],

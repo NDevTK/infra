@@ -257,8 +257,11 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	//TODO(b/240166634): handle compressed tar file extraction.
-	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
+	action := "download"
+	if _, ok := compressReaderMap[filepath.Ext(objectName.path)]; ok {
+		action = "decompress"
+	}
+	reqURL := fmt.Sprintf("%s/%s/%s/%s", cacheServerURL, action, objectName.bucket, objectName.path)
 	res, err := downloadURL(ctx, w, reqURL, reqID)
 	if err != nil {
 		return
@@ -267,8 +270,7 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 
 	tarReader, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
 	if err != nil {
-		errStr := fmt.Sprintf("%s extractTarAndWriteHeader failed: %s", reqID, err)
-		log.Printf(errStr)
+		log.Printf(fmt.Sprintf("%s extractTarAndWriteHeader failed: %s", reqID, err))
 		return
 	}
 
