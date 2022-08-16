@@ -714,32 +714,13 @@ var testValidatePublicChromiumOnChromeOsData = []struct {
 			release:  "sample-release",
 			priority: 256,
 		},
-		`model is required for public users`,
+		"",
 		[]string{"tast.lacros"},
 		[]string{"tast.lacros"},
-		nil,
+		[]string{""},
 		"",
 		true,
-		`model is required for public users`,
-		true,
-	},
-	{ // No Models Specified
-		testCommonFlags{
-			board:    "eve",
-			models:   []string{},
-			repeats:  7,
-			pool:     "",
-			image:    "sample-image",
-			release:  "sample-release",
-			priority: 256,
-		},
-		`model is required for public users`,
-		[]string{"tast.lacros"},
-		[]string{"tast.lacros"},
-		nil,
 		"",
-		true,
-		`model is required for public users`,
 		true,
 	},
 }
@@ -752,7 +733,9 @@ func TestValidatePublicChromiumTest(t *testing.T) {
 			t.Parallel()
 
 			ctx := context.Background()
-			ctx = context.WithValue(ctx, "status", tt.ufsError)
+			if tt.ufsError != "" {
+				ctx = context.WithValue(ctx, "status", tt.ufsError)
+			}
 
 			results, err := tt.testCommonFlags.verifyFleetTestsPolicy(ctx, &fakeUfsClient{}, tt.testCmdName, tt.testNames, true)
 

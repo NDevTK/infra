@@ -658,8 +658,8 @@ func (c *testCommonFlags) verifyFleetTestsPolicy(ctx context.Context, ufsClient 
 	}
 
 	if len(c.models) == 0 {
-		return nil, fmt.Errorf("model is required for public users' crosfleet %s run(s)",
-			cmdName)
+		// Model is optional when the board has all public models
+		c.models = []string{""}
 	}
 	for _, model := range c.models {
 		for _, testName := range testNames {
