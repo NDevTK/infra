@@ -75,6 +75,7 @@
   * [update_submodules_mirror](#recipes-update_submodules_mirror) (Python3 ✅)
   * [windows_adk:examples/ensure](#recipes-windows_adk_examples_ensure)
   * [windows_image_builder/offline](#recipes-windows_image_builder_offline) (Python3 ✅)
+  * [windows_image_builder/online_windows_customization](#recipes-windows_image_builder_online_windows_customization) (Python3 ✅)
   * [windows_image_builder/winpe_customization](#recipes-windows_image_builder_winpe_customization) (Python3 ✅)
   * [windows_scripts_executor:examples/add_windows_driver](#recipes-windows_scripts_executor_examples_add_windows_driver) (Python3 ✅)
   * [windows_scripts_executor:examples/add_windows_package](#recipes-windows_scripts_executor_examples_add_windows_package) (Python3 ✅)
@@ -1827,6 +1828,15 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/offline.py#43)(api, inputs):**
 
 This recipe runs windows offline builder for a given user config.
+### *recipes* / [windows\_image\_builder/online\_windows\_customization](/recipes/recipes/windows_image_builder/online_windows_customization.py)
+
+[DEPS](/recipes/recipes/windows_image_builder/online_windows_customization.py#17): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/online_windows_customization.py#32)(api, image):**
+
+This recipe executes offline_winpe_customization.
 ### *recipes* / [windows\_image\_builder/winpe\_customization](/recipes/recipes/windows_image_builder/winpe_customization.py)
 
 [DEPS](/recipes/recipes/windows_image_builder/winpe_customization.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
