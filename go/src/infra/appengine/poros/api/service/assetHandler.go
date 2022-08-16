@@ -331,7 +331,7 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 		resourceData = [][]string{
 			{"network", "primary"},
 			{"ad_domain", "test1.com"},
-			{"domain_controller_machine", "domain-controller"},
+			{"domain_controller_machine", "domain-controll"},
 			{"user", "Joe"},
 		}
 		break
@@ -339,7 +339,7 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 		resourceData = [][]string{
 			{"network", "primary"},
 			{"ad_domain", "test1.com"},
-			{"domain_controller_machine", "domain-controller"},
+			{"domain_controller_machine", "domain-controll"},
 			{"user", "Joe"},
 			{"win2016", "Splunk"},
 		}

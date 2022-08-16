@@ -399,7 +399,7 @@ export const Asset = () => {
         onClose={() => dispatch(setDeleteAssetDialogClose())}
         open={deleteAssetDialogOpen}
       >
-        <DialogTitle>Do you want to delete this asset?</DialogTitle>
+        <DialogTitle>Do you want to delete this template?</DialogTitle>
         <Stack
           direction="row"
           spacing={6}

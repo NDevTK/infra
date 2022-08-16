@@ -166,7 +166,7 @@ export function AssetList() {
   return (
     <div>
       <Dialog onClose={handleSpinClose} open={spinDialogOpen}>
-        <DialogTitle>Do you want to spin this asset?</DialogTitle>
+        <DialogTitle>Do you want to deploy this template?</DialogTitle>
         <Stack
           direction="row"
           spacing={6}
