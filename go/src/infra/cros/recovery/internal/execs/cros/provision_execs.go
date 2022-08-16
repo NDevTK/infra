@@ -108,8 +108,55 @@ func isLastProvisionSuccessfulExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
+// chartOSMap is the required version for chart devices.
+// It is used until new stable version tool is ready.
+var chartOSMap = map[string]string{
+	"scarlet,dru": "scarlet-release/R102-14695.107.0",
+}
+
+// getChartOS returns the required os of chart if predefined in chartOSMap
+func getChartOS(ctx context.Context, info *execs.ExecInfo) (string, error) {
+	b := fmt.Sprintf("%s,%s", info.GetChromeos().GetBoard(), info.GetChromeos().GetModel())
+	expectedOS, ok := chartOSMap[b]
+	if !ok {
+		return "", errors.Reason("os not defined for %s device", b).Err()
+	}
+	return expectedOS, nil
+}
+
+// isCameraboxTabletOnOSVersionExec check if the tablet is on the required os
+// version.
+func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	expectedOS, err := getChartOS(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "camerabox tablet match os version").Err()
+	}
+	log.Debugf(ctx, "Expected version: %s", expectedOS)
+	fromDevice, err := releaseBuildPath(ctx, info.DefaultRunner())
+	if err != nil {
+		return errors.Annotate(err, "camerabox tablet match os version").Err()
+	}
+	log.Debugf(ctx, "Version on device: %s", fromDevice)
+	if fromDevice != expectedOS {
+		return errors.Reason("camerabox tablet os version: mismatch, expected %q, found %q", expectedOS, fromDevice).Err()
+	}
+	return nil
+}
+
+// provisionCameraboxTabletExec
+func provisionCameraboxTabletExec(ctx context.Context, info *execs.ExecInfo) error {
+	chartOSName, err := getChartOS(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "camerabox tablet match os version").Err()
+	}
+	info.ActionArgs = []string{fmt.Sprintf("os_name:%s", chartOSName)}
+	return provisionExec(ctx, info)
+}
+
 func init() {
 	execs.Register("cros_provision", provisionExec)
 	execs.Register("servo_download_image_to_usb", downloadImageToUSBExec)
 	execs.Register("cros_is_last_provision_successful", isLastProvisionSuccessfulExec)
+	execs.Register("is_camerabox_tablet_on_os_version", isCameraboxTabletOnOSVersionExec)
+	execs.Register("provision_camerabox_tablet", provisionCameraboxTabletExec)
 }

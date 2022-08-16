@@ -16,6 +16,7 @@ func crosRepairPlan() *Plan {
 			"Device is SSHable",
 			"Verify internal storage",
 			"Check if last provision was good",
+			"Check if OS on required version for camerabox tablet",
 			"Verify system info",
 			"Python is present",
 			"Verify that device is not enrolled",
@@ -2135,6 +2136,31 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 			},
 			ExecName: "cros_set_ro_vpd",
+		},
+		"Check if OS on required version for camerabox tablet": {
+			Docs: []string{
+				"Check if the camerabox tablet os is the same as required version",
+			},
+			Dependencies: []string{
+				"Internal storage is responsive",
+				"Read OS version",
+			},
+			Conditions: []string{
+				"is_camerabox_tablet_pool",
+			},
+			ExecName: "is_camerabox_tablet_on_os_version",
+			RecoveryActions: []string{
+				"provision_camerabox_tablet",
+			},
+		},
+		"is_camerabox_tablet_pool": {
+			Docs: []string{
+				"Verify device is in camerabox_tablet pool.",
+			},
+			ExecName: "dut_is_in_pool",
+			ExecExtraArgs: []string{
+				"camerabox_tablet",
+			},
 		},
 	}
 }
