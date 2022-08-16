@@ -423,6 +423,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b7c8aa6d_b656157a",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-16T21:57:01Z",
+      "side": 1,
+      "message": "What I meant is we are changing the `UpdateHwidData` method signature so it can no longer take the old format. I changed `fakeUpdateLegacyHwidData` to be `UpdateLegacyHwidData` and that is the old implementation. Also added tests for `UpdateLegacyHwidData`.",
+      "parentUuid": "1dab2d4b_8423adc1",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 23
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d060ff83_11fc62fb",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
         "patchSetId": 6

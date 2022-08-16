@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "65b45eee_a5c72fe7",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 2851,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-16T21:57:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "210c2ae6_ab2b7f7e",
+      "range": {
+        "startLine": 2851,
+        "startChar": 46,
+        "endLine": 2851,
+        "endChar": 79
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "630601d5_500a0db9",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "80e71284_b66cdda8",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 2878,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-16T21:57:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "630601d5_500a0db9",
+      "range": {
+        "startLine": 2854,
+        "startChar": 3,
+        "endLine": 2878,
+        "endChar": 4
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dfb177be_f21cef8c",
@@ -60,6 +108,30 @@
       "writtenOn": "2022-08-16T05:09:45Z",
       "side": 1,
       "message": "do you have similar variables in other *_test.go file? e.g. hwidMockData in dut_test.go seems exactly the same as mockHwidData() here.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 1
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3154e6ad_5e040ca1",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-16T21:57:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfb177be_f21cef8c",
       "range": {
         "startLine": 29,
         "startChar": 0,
@@ -95,6 +167,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "65bdcd41_7e2b109d",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-16T21:57:01Z",
+      "side": 1,
+      "message": "It doesn\u0027t look like `testing.go` has other common methods. It seems like the pattern we follow is to put the shared method in the most relevant file? So I put all the HwidData fake helpers into `hwid_test.go`. WDYT?",
+      "parentUuid": "a649b597_416d7d37",
+      "range": {
+        "startLine": 132,
+        "startChar": 5,
+        "endLine": 132,
+        "endChar": 23
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "236a41e0_725aa147",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
         "patchSetId": 9
@@ -106,6 +202,30 @@
       "writtenOn": "2022-08-16T05:09:45Z",
       "side": 1,
       "message": "check error?",
+      "range": {
+        "startLine": 122,
+        "startChar": 2,
+        "endLine": 122,
+        "endChar": 44
+      },
+      "revId": "2851428d025e7f89a48f08546e51c7b3eecd8cac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f76e39d9_410ca42d",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-16T21:57:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "236a41e0_725aa147",
       "range": {
         "startLine": 122,
         "startChar": 2,
