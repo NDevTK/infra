@@ -66,13 +66,13 @@ func AnalyzeOneChangeLog(c context.Context, signal *gfim.CompileFailureSignal, c
 
 	// Check files and line number extracted from output
 	criteria := &ScoringCriteria{
-		TouchedSameFile:    5,
+		TouchedSameFile:    10,
 		TouchedRelatedFile: 2,
-		TouchedSameLine:    10,
+		TouchedSameLine:    20,
 	}
 	for file, lines := range signal.Files {
 		for _, diff := range changelog.ChangeLogDiffs {
-			e := updateJustification(c, justification, file, lines, diff, criteria)
+			e := updateJustification(c, justification, file, lines, diff, criteria, gfim.JustificationType_FAILURELOG)
 			if e != nil {
 				return nil, e
 			}
@@ -81,7 +81,7 @@ func AnalyzeOneChangeLog(c context.Context, signal *gfim.CompileFailureSignal, c
 
 	// Check for dependency.
 	criteria = &ScoringCriteria{
-		TouchedSameFile:    3,
+		TouchedSameFile:    2,
 		TouchedRelatedFile: 1,
 	}
 
@@ -93,9 +93,13 @@ func AnalyzeOneChangeLog(c context.Context, signal *gfim.CompileFailureSignal, c
 		oldPathDeps, oldPathOk := signal.DependencyMap[oldPathName]
 		newPathDeps, newPathOk := signal.DependencyMap[newPathName]
 		if oldPathOk || newPathOk {
-			deps := append(oldPathDeps, newPathDeps...)
+			// Only process modified files once
+			deps := oldPathDeps
+			if oldPathName != newPathName {
+				deps = append(oldPathDeps, newPathDeps...)
+			}
 			for _, dep := range deps {
-				e := updateJustification(c, justification, dep, []int{}, diff, criteria)
+				e := updateJustification(c, justification, dep, []int{}, diff, criteria, gfim.JustificationType_DEPENDENCY)
 				if e != nil {
 					return nil, e
 				}
@@ -107,7 +111,7 @@ func AnalyzeOneChangeLog(c context.Context, signal *gfim.CompileFailureSignal, c
 	return justification, nil
 }
 
-func updateJustification(c context.Context, justification *gfim.SuspectJustification, fileInLog string, lines []int, diff gfim.ChangeLogDiff, criteria *ScoringCriteria) error {
+func updateJustification(c context.Context, justification *gfim.SuspectJustification, fileInLog string, lines []int, diff gfim.ChangeLogDiff, criteria *ScoringCriteria, justificationType gfim.JustificationType) error {
 	// TODO (crbug.com/1295566): In case of MODIFY, also query Gitiles for the
 	// changed region and compared with lines. If they intersect, increase the score.
 	// This may lead to a better score indicator.
@@ -129,28 +133,42 @@ func updateJustification(c context.Context, justification *gfim.SuspectJustifica
 		reason := ""
 		if IsSameFile(filePath, fileInLog) {
 			score = criteria.TouchedSameFile
-			reason = getReasonSameFile(filePath, diff.Type)
+			reason = getReasonSameFile(filePath, diff.Type, justificationType)
 		} else if IsRelated(filePath, fileInLog) {
 			score = criteria.TouchedRelatedFile
-			reason = getReasonRelatedFile(filePath, diff.Type, fileInLog)
+			reason = getReasonRelatedFile(filePath, diff.Type, fileInLog, justificationType)
 		}
 		if score > 0 {
-			justification.AddItem(score, filePath, reason)
+			justification.AddItem(score, filePath, reason, justificationType)
 		}
 	}
 	return nil
 }
 
-func getReasonSameFile(filePath string, changeType gfim.ChangeType) string {
+func getReasonSameFile(filePath string, changeType gfim.ChangeType, justificationType gfim.JustificationType) string {
 	m := getChangeTypeActionMap()
 	action := m[string(changeType)]
-	return fmt.Sprintf("The file \"%s\" was %s and it was in the failure log.", filePath, action)
+	switch justificationType {
+	case gfim.JustificationType_FAILURELOG:
+		return fmt.Sprintf("The file \"%s\" was %s and it was in the failure log.", filePath, action)
+	case gfim.JustificationType_DEPENDENCY:
+		return fmt.Sprintf("The file \"%s\" was %s and it was in the dependency.", filePath, action)
+	default:
+		return ""
+	}
 }
 
-func getReasonRelatedFile(filePath string, changeType gfim.ChangeType, relatedFile string) string {
+func getReasonRelatedFile(filePath string, changeType gfim.ChangeType, relatedFile string, justificationType gfim.JustificationType) string {
 	m := getChangeTypeActionMap()
 	action := m[string(changeType)]
-	return fmt.Sprintf("The file \"%s\" was %s. It was related to the file %s which was in the failure log.", filePath, action, relatedFile)
+	switch justificationType {
+	case gfim.JustificationType_FAILURELOG:
+		return fmt.Sprintf("The file \"%s\" was %s. It was related to the file %s which was in the failure log.", filePath, action, relatedFile)
+	case gfim.JustificationType_DEPENDENCY:
+		return fmt.Sprintf("The file \"%s\" was %s. It was related to the dependency %s.", filePath, action, relatedFile)
+	default:
+		return ""
+	}
 }
 
 func getChangeTypeActionMap() map[string]string {

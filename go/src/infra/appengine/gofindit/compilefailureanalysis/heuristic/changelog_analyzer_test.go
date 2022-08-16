@@ -50,6 +50,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 				{
 					Dependencies: []string{
 						"x/y/aa_impl_mac.cc",
+						"y/z/bb_impl.cc",
 					},
 				},
 			},
@@ -86,6 +87,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 				ChangeLogDiffs: []gfim.ChangeLogDiff{
 					{
 						Type:    gfim.ChangeType_MODIFY,
+						OldPath: "content/util.c",
 						NewPath: "content/util.c",
 					},
 					{
@@ -101,6 +103,11 @@ func TestChangeLogAnalyzer(t *testing.T) {
 						Type:    gfim.ChangeType_DELETE,
 						OldPath: "x/y/aa.h",
 					},
+					{
+						Type:    gfim.ChangeType_MODIFY,
+						OldPath: "y/z/bb.cc",
+						NewPath: "y/z/bb.cc",
+					},
 				},
 			}
 			justification, err := AnalyzeOneChangeLog(c, signal, cl)
@@ -108,19 +115,28 @@ func TestChangeLogAnalyzer(t *testing.T) {
 			So(justification, ShouldResemble, &gfim.SuspectJustification{
 				Items: []*gfim.SuspectJustificationItem{
 					{
-						Score:    5,
+						Score:    10,
 						FilePath: "dir/a/b/x.cc",
 						Reason:   `The file "dir/a/b/x.cc" was added and it was in the failure log.`,
+						Type:     gfim.JustificationType_FAILURELOG,
 					},
 					{
 						Score:    2,
 						FilePath: "content/util.c",
 						Reason:   "The file \"content/util.c\" was modified. It was related to the file obj/content/util.o which was in the failure log.",
+						Type:     gfim.JustificationType_FAILURELOG,
 					},
 					{
 						Score:    1,
 						FilePath: "x/y/aa.h",
-						Reason:   "The file \"x/y/aa.h\" was deleted. It was related to the file x/y/aa_impl_mac.cc which was in the failure log.",
+						Reason:   "The file \"x/y/aa.h\" was deleted. It was related to the dependency x/y/aa_impl_mac.cc.",
+						Type:     gfim.JustificationType_DEPENDENCY,
+					},
+					{
+						Score:    1,
+						FilePath: "y/z/bb.cc",
+						Reason:   "The file \"y/z/bb.cc\" was modified. It was related to the dependency y/z/bb_impl.cc.",
+						Type:     gfim.JustificationType_DEPENDENCY,
 					},
 				},
 			})
@@ -181,9 +197,10 @@ func TestChangeLogAnalyzer(t *testing.T) {
 						Justification: &gfim.SuspectJustification{
 							Items: []*gfim.SuspectJustificationItem{
 								{
-									Score:    5,
+									Score:    10,
 									FilePath: "dir/a/b/x.cc",
 									Reason:   `The file "dir/a/b/x.cc" was added and it was in the failure log.`,
+									Type:     gfim.JustificationType_FAILURELOG,
 								},
 							},
 						},
@@ -197,6 +214,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 									Score:    2,
 									FilePath: "content/util.c",
 									Reason:   "The file \"content/util.c\" was modified. It was related to the file obj/content/util.o which was in the failure log.",
+									Type:     gfim.JustificationType_FAILURELOG,
 								},
 							},
 						},

@@ -9,6 +9,16 @@ import (
 	"strings"
 )
 
+type JustificationType int64
+
+const (
+	JustificationType_UNSPECIFIED JustificationType = 0
+	// If a commit touches a file in the failure log
+	JustificationType_FAILURELOG JustificationType = 1
+	// If a commit touches a file in the dependency
+	JustificationType_DEPENDENCY JustificationType = 2
+)
+
 // SuspectJustification represents the heuristic analysis of a CL.
 // It how likely the suspect is the real culprit and also the reason for suspecting.
 type SuspectJustification struct {
@@ -21,14 +31,28 @@ type SuspectJustificationItem struct {
 	Score    int
 	FilePath string
 	Reason   string
+	Type     JustificationType
 }
 
 func (justification *SuspectJustification) GetScore() int {
 	score := 0
+	dependencyScore := 0
 	for _, item := range justification.Items {
-		score += item.Score
+		switch item.Type {
+		case JustificationType_FAILURELOG:
+			score += item.Score
+		case JustificationType_DEPENDENCY:
+			dependencyScore += item.Score
+		default:
+			// Do nothing
+		}
 	}
-	return score
+	// Maximum score a suspect can gain from dependency
+	dependencyScoreThreshold := 9
+	if dependencyScore > dependencyScoreThreshold {
+		dependencyScore = dependencyScoreThreshold
+	}
+	return score + dependencyScore
 }
 
 func (justification *SuspectJustification) GetReasons() string {
@@ -42,11 +66,12 @@ func (justification *SuspectJustification) GetReasons() string {
 	return strings.Join(reasons, "\n")
 }
 
-func (justification *SuspectJustification) AddItem(score int, filePath string, reason string) {
+func (justification *SuspectJustification) AddItem(score int, filePath string, reason string, justificationType JustificationType) {
 	item := &SuspectJustificationItem{
 		Score:    score,
 		FilePath: filePath,
 		Reason:   reason,
+		Type:     justificationType,
 	}
 	if justification.Items == nil {
 		justification.Items = []*SuspectJustificationItem{}

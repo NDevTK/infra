@@ -176,9 +176,10 @@ func GetCompileLogs(c context.Context, bbid int64) (*model.CompileLogs, error) {
 // real culprit.
 func GetConfidenceLevel(score int) gfipb.SuspectConfidenceLevel {
 	switch {
-	case score > 10:
+	// score >= 10 means at least the suspect touched a file in the failure log
+	case score >= 10:
 		return gfipb.SuspectConfidenceLevel_HIGH
-	case score > 5:
+	case score >= 5:
 		return gfipb.SuspectConfidenceLevel_MEDIUM
 	default:
 		return gfipb.SuspectConfidenceLevel_LOW
