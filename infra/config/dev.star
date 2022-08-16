@@ -509,5 +509,41 @@ fakebuild_tree_builder("fake-tree-0-no-bn", 10, 0, "fake-tree-1-no-bn", 2, 10, F
 fakebuild_tree_builder("fake-tree-1", 20, 0, "fake-tree-2", 2, 10, True)
 fakebuild_tree_builder("fake-tree-1-no-bn", 20, 0, "fake-tree-2-no-bn", 2, 10, False)
 
-fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-1m", 2, 10, True)
-fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-1m-no-bn", 2, 10, False)
+def fakebuild_search_builder(name, steps, search_steps, sleep_min_sec, sleep_max_sec, build_numbers):
+    luci.builder(
+        name = name,
+        bucket = "loadtest",
+        executable = luci.executable(
+            name = "fakebuild",
+            cipd_package = "infra/experimental/swarming/fakebuild/${platform}",
+            cipd_version = "latest",
+            cmd = ["fakebuild"],
+        ),
+        dimensions = {
+            "os": "Linux",
+            "cpu": "x86-64",
+            "pool": "infra.loadtest.0",
+        },
+        properties = {
+            "steps": steps,
+            "sleep_min_sec": sleep_min_sec,
+            "sleep_max_sec": sleep_max_sec,
+            "search_builds": {
+                "steps": search_steps,
+                "sleep_min_sec": sleep_min_sec,
+                "sleep_max_sec": sleep_max_sec,
+            },
+        },
+        service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
+    )
+
+# Builders run 100 sleep steps then do 10 search builds.
+fakebuild_search_builder("fake-search", 100, 10, 2, 10, True)
+fakebuild_search_builder("fake-search-no-bn", 100, 10, 2, 10, False)
+
+fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-search", 2, 10, True)
+fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-search-no-bn", 2, 10, False)
