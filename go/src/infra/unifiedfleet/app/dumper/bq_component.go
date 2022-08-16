@@ -6,7 +6,6 @@ package dumper
 
 import (
 	"context"
-	"fmt"
 
 	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/proto"
@@ -62,9 +61,9 @@ var configurationDumpToolkit = map[string]getAllFunc{
 	"ips":                    getAllIPMsgs,
 }
 
-func dumpHelper(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, table, curTimeStr string) error {
-	uploader := bqlib.InitBQUploaderWithClient(ctx, bqClient, ufsDatasetName, fmt.Sprintf("%s$%s", table, curTimeStr))
-	logging.Infof(ctx, "Dumping %d %s records to BigQuery", len(msgs), table)
+func dumpHelper(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, tableName string) error {
+	uploader := bqlib.InitBQUploaderWithClient(ctx, bqClient, ufsDatasetName, tableName)
+	logging.Infof(ctx, "Dumping %d %s records to BigQuery", len(msgs), tableName)
 	f := func() error {
 		if err := uploader.Put(ctx, msgs...); err != nil {
 			return err

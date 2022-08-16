@@ -206,7 +206,8 @@ func dumpChangeSnapshotHelper(ctx context.Context, bqClient *bigquery.Client) er
 	}
 	logging.Debugf(ctx, "Uploading all %d snapshots...", len(snapshots))
 	for tableName, ms := range msgs {
-		if err := dumpHelper(ctx, bqClient, ms, tableName, curTimeStr); err != nil {
+		table := fmt.Sprintf("%s$%s", tableName, curTimeStr)
+		if err := dumpHelper(ctx, bqClient, ms, table); err != nil {
 			return err
 		}
 	}
@@ -230,8 +231,10 @@ func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeS
 		name := k
 		if hourly {
 			name = fmt.Sprintf("%s_hourly", k)
+		} else {
+			name = fmt.Sprintf("%s$%s", k, curTimeStr)
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
+		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
 	}
@@ -248,8 +251,10 @@ func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr
 		name := k
 		if hourly {
 			name = fmt.Sprintf("%s_hourly", k)
+		} else {
+			name = fmt.Sprintf("%s$%s", k, curTimeStr)
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
+		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
 	}
@@ -266,8 +271,10 @@ func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr st
 		name := k
 		if hourly {
 			name = fmt.Sprintf("%s_hourly", k)
+		} else {
+			name = fmt.Sprintf("%s$%s", k, curTimeStr)
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
+		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
 	}
@@ -284,8 +291,10 @@ func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string
 		name := k
 		if hourly {
 			name = fmt.Sprintf("%s_hourly", k)
+		} else {
+			name = fmt.Sprintf("%s$%s", k, curTimeStr)
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, name, curTimeStr); err != nil {
+		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
 	}
