@@ -22,6 +22,7 @@ const (
 	LAUNCHED_BOARD                = "launched_board"
 	UNLAUNCHED_BOARD              = "unlaunched_board"
 	LAUNCHED_BOARD_PRIVATE_MODELS = "launched_board_private_models"
+	VALID_IMAGE_EVE               = "chromiumos-image-archive/eve-public/R105-14988.0.0"
 )
 
 func TestIsValidPublicChromiumTest(t *testing.T) {
@@ -37,7 +38,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -49,7 +50,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "private",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -63,7 +64,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			newCtx := auth.WithState(ctx, &authtest.FakeState{
 				Identity: "user:abc@def.com",
@@ -78,7 +79,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "private",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(ctx, &authtest.FakeState{
 				Identity: "user:abc@def.com",
@@ -93,7 +94,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "private",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -107,7 +108,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "private",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -121,7 +122,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/LATEST-14695.113.3",
+				Image:    "chromiumos-image-archive/eve-public/LATEST-14695.113.3",
 			}
 
 			err := IsValidTest(ctx, req)
@@ -135,7 +136,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -147,7 +148,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -160,7 +161,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "fakePrivateBoard",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -174,7 +175,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "fakePrivateBoard",
 				Model:    "fakeModelLaunched",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -187,7 +188,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "fakePrivateBoard",
 				Model:    "fakeModelUnLaunched",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -199,7 +200,7 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 
 			err := IsValidTest(ctx, req)
@@ -229,7 +230,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				Identity:       "user:abc@def.com",
@@ -246,7 +247,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName:           "tast.lacros",
 				Board:              "eve",
 				Model:              "eve",
-				Image:              "eve-public/R105-14988.0.0",
+				Image:              VALID_IMAGE_EVE,
 				TestServiceAccount: "user:abc@def.com",
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
@@ -266,7 +267,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName:           "tast.lacros",
 				Board:              "eve",
 				Model:              "eve",
-				Image:              "eve-public/R105-14988.0.0",
+				Image:              VALID_IMAGE_EVE,
 				TestServiceAccount: "abc@def.com",
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
@@ -283,7 +284,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				Identity: identity.AnonymousIdentity,
@@ -299,7 +300,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				Identity: "user:abc@def.com",
@@ -315,7 +316,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(testingContext(), nil)
 
@@ -329,7 +330,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				FakeDB: nil,
@@ -344,7 +345,7 @@ func TestIsPublicGroupMember(t *testing.T) {
 				TestName: "tast.lacros",
 				Board:    "eve",
 				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				Image:    VALID_IMAGE_EVE,
 			}
 			ctx := auth.WithState(testingContext(), &authtest.FakeState{
 				IdentityGroups: []string{"public-chromium-in-chromeos-builders"},
