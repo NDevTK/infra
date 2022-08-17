@@ -879,6 +879,14 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "sample_fail",
 			},
+			"Is servo v4p1": {
+				Docs: []string{
+					"Verify that a servo has version v4p1 specifically.",
+				},
+				Conditions:    []string{},
+				ExecName:      "servo_has_servo_version",
+				ExecExtraArgs: []string{"v4p1"},
+			},
 			"Is servo_v4(p1) with type-a connector": {
 				Docs: []string{
 					"Verify whether servo V4(p1) device is connect to DUT using Type-A connection.",
