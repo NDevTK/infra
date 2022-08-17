@@ -344,6 +344,10 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 			{"win2016", "Splunk"},
 		}
 		break
+	case "virtual_machine":
+		resourceData = [][]string{
+			{"network", "primary"},
+		}
 	default:
 		resourceData = [][]string{}
 	}

@@ -193,6 +193,7 @@ export const Asset = () => {
               inputProps={{ 'data-testid': 'type' }}
             >
               <MenuItem value={'active_directory'}>Active Directory</MenuItem>
+              <MenuItem value={'virtual_machine'}>VMs only</MenuItem>
               <MenuItem value={'active_directory_splunk'}>
                 Active Directory with Splunk
               </MenuItem>
