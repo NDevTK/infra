@@ -872,20 +872,20 @@ class ServletRegistry(object):
   def RegisterMONSetUrl(self, service):
     flaskapp_mon = flask.Flask(__name__)
     _MON_URL = [
-        # (
-        #     '/clientmon',
-        #     clientmon.ClientMonitor(services=service).GetClientMonitor, ['GET'
-        #                                                                 ]),
-        # (
-        #     '/clientmon.do',
-        #     clientmon.ClientMonitor(services=service).PostClientMonitor,
-        #     ['POST']),
-        # (
-        #     '/jstsmon.do',
-        #     ts_mon_js.FlaskMonorailTSMonJSHandler(
-        #         services=service).PostMonorailTSMonJSHandler,
-        #     ['POST'],
-        # )
+        (
+            '/clientmon',
+            clientmon.ClientMonitor(services=service).GetClientMonitor, ['GET'
+                                                                        ]),
+        (
+            '/clientmon.do',
+            clientmon.ClientMonitor(services=service).PostClientMonitor,
+            ['POST']),
+        (
+            '/jstsmon.do',
+            ts_mon_js.FlaskMonorailTSMonJSHandler(
+                services=service).PostMonorailTSMonJSHandler,
+            ['POST'],
+        )
     ]
 
     flaskapp_mon = self._AddFlaskUrlRules(flaskapp_mon, _MON_URL)

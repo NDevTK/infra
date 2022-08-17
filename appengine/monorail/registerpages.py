@@ -29,13 +29,11 @@ from features import notify
 from features import rerankhotlist
 from features import savedqueries
 
-from framework import clientmon
 from framework import csp_report
 from framework import deleteusers
 from framework import trimvisitedpages
 from framework import reap
 from framework import registerpages_helpers
-from framework import ts_mon_js
 from framework import urls
 from framework import warmup
 
@@ -334,12 +332,8 @@ class ServletRegistry(object):
                 reap.Reap,
             urls.LOAD_API_CLIENT_CONFIGS_CRON:
                 (client_config_svc.LoadApiClientConfigs),
-            urls.CLIENT_MON:
-                clientmon.ClientMonitor,
             urls.TRIM_VISITED_PAGES_CRON:
                 trimvisitedpages.TrimVisitedPages,
-            urls.TS_MON_JS:
-                ts_mon_js.MonorailTSMonJSHandler,
             urls.WARMUP:
                 warmup.Warmup,
             urls.START:

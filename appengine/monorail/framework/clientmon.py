@@ -19,8 +19,7 @@ from framework import jsonfeed
 from infra_libs import ts_mon
 
 
-# TODO: convert to FlaskJsonFeed while convert to Flask
-class ClientMonitor(jsonfeed.JsonFeed):
+class ClientMonitor(jsonfeed.FlaskJsonFeed):
   """JSON feed to track client side js errors in ts_mon."""
 
   js_errors = ts_mon.CounterMetric('frontend/js_errors',
@@ -37,9 +36,7 @@ class ClientMonitor(jsonfeed.JsonFeed):
       Dict of values used by EZT for rendering the page.
     """
 
-    # TODO: uncomment while convert to flask
-    # post_data = mr.request.values
-    post_data = mr.request.POST
+    post_data = mr.request.values
     errors = post_data.get('errors')
     try:
       errors = json.loads(errors)
@@ -55,8 +52,8 @@ class ClientMonitor(jsonfeed.JsonFeed):
 
     return {}
 
-  # def GetClientMonitor(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetClientMonitor(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostClientMonitor(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostClientMonitor(self, **kwargs):
+    return self.handler(**kwargs)
