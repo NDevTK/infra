@@ -245,6 +245,11 @@ export function AssetInstanceList() {
               ) => {
                 event.defaultMuiPrevented = true;
               }}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: 'createdAt', sort: 'desc' }],
+                },
+              }}
             />
           </div>
         </CardContent>
