@@ -172,7 +172,7 @@ export class FailureTable extends LitElement {
                     </td>` :
         html`<td class="group" style=${indentStyle(group.level)} @click=${() => this.toggleExpand(group)}>
                         <mwc-icon>${group.isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}</mwc-icon>
-                        ${group.name || 'none'}
+                        ${group.key.value || 'none'} ${group.key.type == 'test' ? html`- <a href="https://ci.chromium.org/ui/test/${this.project}/${group.key.value}" target="_blank">history</a>` : null}
                     </td>`}
                 <td class="number">
                     ${group.failure ?

@@ -15,12 +15,15 @@ import TableRow from '@mui/material/TableRow';
 
 import {
   FailureGroup,
+  GroupKey,
   VariantGroup,
 } from '../../../../tools/failures_tools';
-import { failureLink } from '../../../../tools/urlHandling/links';
+import { failureLink, testHistoryLink } from '../../../../tools/urlHandling/links';
 import { DistinctClusterFailure } from '../../../../services/cluster';
 
 interface Props {
+  project: string;
+  parentKeys?: GroupKey[];
   group: FailureGroup;
   variantGroups: VariantGroup[];
   children?: ReactNode;
@@ -32,6 +35,8 @@ interface VariantPair {
 }
 
 const FailuresTableRows = ({
+  project,
+  parentKeys = [],
   group,
   variantGroups,
   children = null,
@@ -57,6 +62,10 @@ const FailuresTableRows = ({
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return unselectedVariantPairs.filter((vp) => vp != null).map((vp) => vp!);
   };
+
+  const query = parentKeys.filter((v) => v.type == 'variant').map((v) => {
+    return 'V:' + encodeURIComponent(v.key || '') + '=' + encodeURIComponent(v.value);
+  }).join(' ');
 
   return (
     <>
@@ -102,7 +111,22 @@ const FailuresTableRows = ({
                   {expanded ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
                 </IconButton>
               </Grid>
-              <Grid item sx={{ overflowWrap: 'anywhere' }}>{group.name || 'none'}</Grid>
+              <Grid item sx={{ overflowWrap: 'anywhere' }}>
+                {/** Place test name or variant value in a separate span to allow better testability */}
+                <span>{group.key.value || 'none'}</span>
+                {group.key.type == 'test' ? (
+                <>
+                  &nbsp;-&nbsp;
+                  <Link
+                    sx={{ display: 'inline-flex' }}
+                    aria-label='Test history link'
+                    href={testHistoryLink(project, group.key.value, query)}
+                    underline='hover'
+                    target="_blank">
+                      History
+                  </Link>
+                </>) : null}
+              </Grid>
             </Grid>
           )}
         </TableCell>

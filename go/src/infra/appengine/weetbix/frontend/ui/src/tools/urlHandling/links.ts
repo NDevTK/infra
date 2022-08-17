@@ -38,3 +38,7 @@ export const clName = (cl: Changelist) => {
   const host = cl.host.replace('-review.googlesource.com', '');
   return `${host}/${cl.change}/${cl.patchset}`;
 };
+
+export const testHistoryLink = (project: string, testId: string, query: string) => {
+  return `https://ci.chromium.org/ui/test/${encodeURIComponent(project)}/${encodeURIComponent(testId)}?q=${encodeURIComponent(query)}`;
+};

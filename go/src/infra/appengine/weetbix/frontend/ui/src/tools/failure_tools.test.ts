@@ -212,7 +212,7 @@ describe('groupFailures', () => {
       newMockFailure().build(),
     ];
     let unique = 0;
-    const groups: FailureGroup[] = groupFailures(failures, () => ['' + unique++]);
+    const groups: FailureGroup[] = groupFailures(failures, () => [{ type: 'variant', key: 'v1', value: '' + unique++ }]);
     expect(groups.length).toBe(3);
     expect(groups[0].children.length).toBe(1);
   });
@@ -222,7 +222,7 @@ describe('groupFailures', () => {
       newMockFailure().build(),
       newMockFailure().build(),
     ];
-    const groups: FailureGroup[] = groupFailures(failures, () => ['group1']);
+    const groups: FailureGroup[] = groupFailures(failures, () => [{ type: 'variant', key: 'v1', value: 'group1' }]);
     expect(groups.length).toBe(1);
     expect(groups[0].children.length).toBe(3);
   });
@@ -233,7 +233,10 @@ describe('groupFailures', () => {
       newMockFailure().withVariantGroups('v1', 'b').withVariantGroups('v2', 'a').build(),
       newMockFailure().withVariantGroups('v1', 'b').withVariantGroups('v2', 'b').build(),
     ];
-    const groups: FailureGroup[] = groupFailures(failures, (f) => [f.variant?.def['v1'] || '', f.variant?.def['v2'] || '']);
+    const groups: FailureGroup[] = groupFailures(failures, (f) => [
+      { type: 'variant', key: 'v1', value: f.variant?.def['v1'] || '' },
+      { type: 'variant', key: 'v2', value: f.variant?.def['v2'] || '' },
+    ]);
     expect(groups.length).toBe(2);
     expect(groups[0].children.length).toBe(2);
     expect(groups[1].children.length).toBe(2);
@@ -247,14 +250,14 @@ describe('treeDistinctValues', () => {
     g.failures = values.size;
   };
   it('should have count of 1 for a valid feature', () => {
-    const groups = groupFailures([newMockFailure().build()], () => ['group']);
+    const groups = groupFailures([newMockFailure().build()], () => [{ type: 'variant', key: 'v1', value: 'group' }]);
 
     treeDistinctValues(groups[0], () => new Set(['a']), setFailures);
 
     expect(groups[0].failures).toBe(1);
   });
   it('should have count of 0 for an invalid feature', () => {
-    const groups = groupFailures([newMockFailure().build()], () => ['group']);
+    const groups = groupFailures([newMockFailure().build()], () => [{ type: 'variant', key: 'v1', value: 'group' }]);
 
     treeDistinctValues(groups[0], () => new Set(), setFailures);
 
@@ -265,7 +268,7 @@ describe('treeDistinctValues', () => {
     const groups = groupFailures([
       newMockFailure().build(),
       newMockFailure().build(),
-    ], () => ['group']);
+    ], () => [{ type: 'variant', key: 'v1', value: 'group' }]);
 
     treeDistinctValues(groups[0], () => new Set(['a']), setFailures);
 
@@ -275,7 +278,7 @@ describe('treeDistinctValues', () => {
     const groups = groupFailures([
       newMockFailure().withTestId('a').build(),
       newMockFailure().withTestId('b').build(),
-    ], () => ['group']);
+    ], () => [{ type: 'variant', key: 'v1', value: 'group' }]);
 
     treeDistinctValues(groups[0], (f) => f.testId ? new Set([f.testId]) : new Set(), setFailures);
 
@@ -285,7 +288,7 @@ describe('treeDistinctValues', () => {
     const groups = groupFailures([
       newMockFailure().withTestId('a').withVariantGroups('group', 'a').build(),
       newMockFailure().withTestId('a').withVariantGroups('group', 'b').build(),
-    ], (f) => ['top', f.variant?.def['group'] || '']);
+    ], (f) => [{ type: 'variant', key: 'v1', value: 'top' }, { type: 'variant', key: 'v1', value: f.variant?.def['group'] || '' }]);
 
     treeDistinctValues(groups[0], (f) => f.testId ? new Set([f.testId]) : new Set(), setFailures);
 
@@ -297,7 +300,7 @@ describe('treeDistinctValues', () => {
     const groups = groupFailures([
       newMockFailure().withTestId('a').withVariantGroups('group', 'a').build(),
       newMockFailure().withTestId('b').withVariantGroups('group', 'b').build(),
-    ], (f) => ['top', f.variant?.def['group'] || '']);
+    ], (f) => [{ type: 'variant', key: 'v1', value: 'top' }, { type: 'variant', key: 'v1', value: f.variant?.def['group'] || '' }]);
 
     treeDistinctValues(groups[0], (f) => f.testId ? new Set([f.testId]) : new Set(), setFailures);
 
@@ -310,51 +313,51 @@ describe('treeDistinctValues', () => {
 describe('sortFailureGroups', () => {
   it('sorts top level groups ascending', () => {
     let groups: FailureGroup[] = [
-      newMockGroup('c').withFailures(3).build(),
-      newMockGroup('a').withFailures(1).build(),
-      newMockGroup('b').withFailures(2).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'c' }).withFailures(3).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'a' }).withFailures(1).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'b' }).withFailures(2).build(),
     ];
 
     groups = sortFailureGroups(groups, 'failures', true);
 
-    expect(groups.map((g) => g.name)).toEqual(['a', 'b', 'c']);
+    expect(groups.map((g) => g.key.value)).toEqual(['a', 'b', 'c']);
   });
   it('sorts top level groups descending', () => {
     let groups: FailureGroup[] = [
-      newMockGroup('c').withFailures(3).build(),
-      newMockGroup('a').withFailures(1).build(),
-      newMockGroup('b').withFailures(2).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'c' }).withFailures(3).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'a' }).withFailures(1).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'b' }).withFailures(2).build(),
     ];
 
     groups = sortFailureGroups(groups, 'failures', false);
 
-    expect(groups.map((g) => g.name)).toEqual(['c', 'b', 'a']);
+    expect(groups.map((g) => g.key.value)).toEqual(['c', 'b', 'a']);
   });
   it('sorts child groups', () => {
     let groups: FailureGroup[] = [
-      newMockGroup('c').withFailures(3).build(),
-      newMockGroup('a').withFailures(1).withChildren([
-        newMockGroup('a3').withFailures(3).build(),
-        newMockGroup('a2').withFailures(2).build(),
-        newMockGroup('a1').withFailures(1).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'c' }).withFailures(3).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'a' }).withFailures(1).withChildren([
+        newMockGroup({ type: 'variant', key: 'v2', value: 'a3' }).withFailures(3).build(),
+        newMockGroup({ type: 'variant', key: 'v2', value: 'a2' }).withFailures(2).build(),
+        newMockGroup({ type: 'variant', key: 'v2', value: 'a1' }).withFailures(1).build(),
       ]).build(),
-      newMockGroup('b').withFailures(2).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'b' }).withFailures(2).build(),
     ];
 
     groups = sortFailureGroups(groups, 'failures', true);
 
-    expect(groups.map((g) => g.name)).toEqual(['a', 'b', 'c']);
-    expect(groups[0].children.map((g) => g.name)).toEqual(['a1', 'a2', 'a3']);
+    expect(groups.map((g) => g.key.value)).toEqual(['a', 'b', 'c']);
+    expect(groups[0].children.map((g) => g.key.value)).toEqual(['a1', 'a2', 'a3']);
   });
   it('sorts on an alternate metric', () => {
     let groups: FailureGroup[] = [
-      newMockGroup('c').withPresubmitRejects(3).build(),
-      newMockGroup('a').withPresubmitRejects(1).build(),
-      newMockGroup('b').withPresubmitRejects(2).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'c' }).withPresubmitRejects(3).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'a' }).withPresubmitRejects(1).build(),
+      newMockGroup({ type: 'variant', key: 'v1', value: 'b' }).withPresubmitRejects(2).build(),
     ];
 
     groups = sortFailureGroups(groups, 'presubmitRejects', true);
 
-    expect(groups.map((g) => g.name)).toEqual(['a', 'b', 'c']);
+    expect(groups.map((g) => g.key.value)).toEqual(['a', 'b', 'c']);
   });
 });

@@ -43,8 +43,9 @@ export const countDistictVariantValues = (failures: DistinctClusterFailure[]): V
 // group a number of failures into a tree of failure groups.
 // grouper is a function that returns a list of keys, one corresponding to each level of the grouping tree.
 // impactFilter controls how metric counts are aggregated from failures into parent groups (see treeCounts and rejected... functions).
-export const groupFailures = (failures: DistinctClusterFailure[], grouper: (f: DistinctClusterFailure) => string[]): FailureGroup[] => {
+export const groupFailures = (failures: DistinctClusterFailure[], grouper: (f: DistinctClusterFailure) => GroupKey[]): FailureGroup[] => {
   const topGroups: FailureGroup[] = [];
+  const leafKey: GroupKey = { type: 'leaf', value: '' };
   failures.forEach((f) => {
     const keys = grouper(f);
     let groups = topGroups;
@@ -58,7 +59,7 @@ export const groupFailures = (failures: DistinctClusterFailure[], grouper: (f: D
       level += 1;
       groups = group.children;
     }
-    const failureGroup = newGroup('', failureTime.toISOString());
+    const failureGroup = newGroup(leafKey, failureTime.toISOString());
     failureGroup.failure = f;
     failureGroup.level = level;
     groups.push(failureGroup);
@@ -67,10 +68,10 @@ export const groupFailures = (failures: DistinctClusterFailure[], grouper: (f: D
 };
 
 // Create a new group.
-export const newGroup = (name: string, failureTime: string): FailureGroup => {
+export const newGroup = (key: GroupKey, failureTime: string): FailureGroup => {
   return {
-    id: name || nanoid(),
-    name: name,
+    id: key.value || nanoid(),
+    key: key,
     criticalFailuresExonerated: 0,
     failures: 0,
     invocationFailures: 0,
@@ -82,16 +83,16 @@ export const newGroup = (name: string, failureTime: string): FailureGroup => {
   };
 };
 
-// Find a group by name in the given list of groups, create a new one and insert it if it is not found.
+// Find a group by key in the given list of groups, create a new one and insert it if it is not found.
 // failureTime is only used when creating a new group.
 export const getOrCreateGroup = (
-    groups: FailureGroup[], name: string, failureTime: string,
+    groups: FailureGroup[], key: GroupKey, failureTime: string,
 ): FailureGroup => {
-  let group = groups.filter((g) => g.name == name)?.[0];
+  let group = groups.filter((g) => keyEqual(g.key, key))?.[0];
   if (group) {
     return group;
   }
-  group = newGroup(name, failureTime);
+  group = newGroup(key, failureTime);
   groups.push(group);
   return group;
 };
@@ -307,8 +308,11 @@ export const groupAndCountFailures = (
     }
     const groups = groupFailures(currentFailures, (failure) => {
       const variantValues = variantGroups.filter((v) => v.isSelected)
-          .map((v) => failure.variant?.def[v.key] || '');
-      return [...variantValues, failure.testId || ''];
+          .map((v) => {
+            const key: GroupKey = { type: 'variant', key: v.key, value: failure.variant?.def[v.key] || '' };
+            return key;
+          });
+      return [...variantValues, { type: 'test', value: failure.testId || '' }];
     });
     return groups;
   }
@@ -368,80 +372,35 @@ export const ImpactFilters: ImpactFilter[] = [
 
 export const defaultImpactFilter: ImpactFilter = ImpactFilters[0];
 
-// // The reason a test result was exonerated.
-// type ExonerationReason =
-//     // The exoneration reason is not known to Weetbix.
-//     'EXONERATION_REASON_UNSPECIFIED'
-//     // Similar unexpected results were observed in presubmit run(s) for other,
-//     // unrelated CL(s). (This is suggestive of the issue being present
-//     // on mainline but is not confirmed as there are possible confounding
-//     // factors, like how tests are run on CLs vs how tests are run on
-//     // mainline branches.)
-//     // Applies to unexpected results in presubmit/CQ runs only.
-//     | 'OCCURS_ON_OTHER_CLS'
-//     // Similar unexpected results were observed on a mainline branch
-//     // (i.e. against a build without unsubmitted changes applied).
-//     // (For avoidance of doubt, this includes both flakily and
-//     // deterministically occurring unexpected results.)
-//     // Applies to unexpected results in presubmit/CQ runs only.
-//     | 'OCCURS_ON_MAINLINE'
-//     // The tests are not critical to the test subject (e.g. CL) passing.
-//     // This could be because more data is being collected to determine if
-//     // the tests are stable enough to be made critical (as is often the
-//     // case for experimental test suites).
-//     | 'NOT_CRITICAL';
-
-// // ClusterFailure is the data returned by the server for each failure.
-// export interface ClusterFailure {
-//     realm: string | null;
-//     testId: string | null;
-//     variant: Variant[] | null;
-//     presubmitRunId: PresubmitRunId | null;
-//     presubmitRunOwner: string | null;
-//     presubmitRunMode: string | null;
-//     changelist: Changelist | null;
-//     partitionTime: string | null;
-//     exonerations: Exoneration[] | null;
-//     isBuildCritical: boolean | null;
-//     buildStatus: string | null;
-//     ingestedInvocationId: string | null;
-//     isIngestedInvocationBlocked: boolean | null;
-//     count: number;
-// }
-
-// // Exoneration relieves a test of responsibility for causing the
-// // test subject (e.g. a presubmit run or build) to fail.
-// export interface Exoneration {
-//   reason: ExonerationReason;
-// }
-
-// // Key/Value Variant pairs for failures.
-// export interface Variant {
-//     key: string | null;
-//     value: string | null;
-// }
-
-// // Presubmit Run Ids of failures returned from the server.
-// export interface PresubmitRunId {
-//     system: string | null;
-//     id: string | null;
-// }
-
-// // Changelist represents a gerrit patchset.
-// export interface Changelist {
-//     host: string;
-//     change: number;
-//     patchset: number;
-// }
-
 // Metrics that can be used for sorting FailureGroups.
 // Each value is a property of FailureGroup.
 export type MetricName = 'presubmitRejects' | 'invocationFailures' | 'criticalFailuresExonerated' | 'failures' | 'latestFailureTime';
 
+export type GroupType = 'test' | 'variant' | 'leaf';
+
+export interface GroupKey {
+  // The type of group.
+  // This could be a group for a test, for a variant value,
+  // or a leaf (for individual failures).
+  type: GroupType;
+
+  // For variant-based grouping keys, the name of the variant.
+  // Unspecified otherwise.
+  key?: string;
+
+  // The name of the group. E.g. the name of the test or the variant value.
+  // May be empty for leaf nodes.
+  value: string;
+}
+
+export const keyEqual = (a: GroupKey, b: GroupKey) => {
+  return a.value === b.value && a.key === b.key && a.type === b.type;
+};
+
 // FailureGroups are nodes in the failure tree hierarchy.
 export interface FailureGroup {
     id: string;
-    name: string;
+    key: GroupKey;
     criticalFailuresExonerated: number;
     failures: number;
     invocationFailures: number;

@@ -171,6 +171,8 @@ const FailuresTable = ({
             {
               groups.map((group) => (
                 <FailuresTableGroup
+                  project={project}
+                  parentKeys={[]}
                   key={group.id}
                   group={group}
                   variantGroups={variantGroups}/>

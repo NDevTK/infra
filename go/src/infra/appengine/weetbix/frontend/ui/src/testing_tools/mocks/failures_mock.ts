@@ -7,6 +7,7 @@ import { DistinctClusterFailure } from '../../services/cluster';
 
 import {
   FailureGroup,
+  GroupKey,
   VariantGroup,
   ImpactFilter,
   ImpactFilters,
@@ -88,16 +89,16 @@ class ClusterFailureBuilder {
   }
 }
 
-export const newMockGroup = (name: string): FailureGroupBuilder => {
-  return new FailureGroupBuilder(name);
+export const newMockGroup = (key: GroupKey): FailureGroupBuilder => {
+  return new FailureGroupBuilder(key);
 };
 
 class FailureGroupBuilder {
   failureGroup: FailureGroup;
-  constructor(name: string) {
+  constructor(key: GroupKey) {
     this.failureGroup = {
-      id: name,
-      name,
+      id: key.value,
+      key,
       children: [],
       criticalFailuresExonerated: 0,
       failures: 0,
@@ -177,15 +178,18 @@ export const createMockVariantGroups = (): VariantGroup[] => {
       ));
 };
 
-export const createDefaultMockFailureGroup = (name = 'testgroup'): FailureGroup => {
-  return newMockGroup(name).withFailures(1).build();
+export const createDefaultMockFailureGroup = (key: GroupKey | null = null): FailureGroup => {
+  if (!key) {
+    key = { type: 'test', value: 'testgroup' };
+  }
+  return newMockGroup(key).withFailures(1).build();
 };
 
 export const createDefaultMockFailureGroupWithChildren = (): FailureGroup => {
-  return newMockGroup('testgroup')
+  return newMockGroup({ type: 'test', value: 'testgroup' })
       .withChildren([
-        newMockGroup('a3').withFailures(3).build(),
-        newMockGroup('a2').withFailures(2).build(),
-        newMockGroup('a1').withFailures(1).build(),
+        newMockGroup({ type: 'leaf', value: 'a3' }).withFailures(3).build(),
+        newMockGroup({ type: 'leaf', value: 'a2' }).withFailures(2).build(),
+        newMockGroup({ type: 'leaf', value: 'a1' }).withFailures(1).build(),
       ]).build();
 };
