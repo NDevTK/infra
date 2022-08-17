@@ -52,6 +52,24 @@
       "parentUuid": "980e1065_775fce31",
       "revId": "ad46c3e92e32ba37a0e1a3e36be4508cdb41b009",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c15f2ab_3920fb98",
+        "filename": "go/src/infra/cros/recovery/config/config_servo.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 1500,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-08-17T20:54:54Z",
+      "side": 1,
+      "message": "I added a new thing to check the servo version specifically.",
+      "parentUuid": "c7df0d26_2db66a5b",
+      "revId": "ad46c3e92e32ba37a0e1a3e36be4508cdb41b009",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
