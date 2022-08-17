@@ -146,6 +146,7 @@ def builder(
                 by_timestamp = True,
             ),
         ),
+        experiments = {"luci.buildbucket.backend_go": 50},
     )
 
 def _tree_closing_notifiers():
