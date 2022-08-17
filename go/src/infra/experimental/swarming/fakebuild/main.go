@@ -92,13 +92,13 @@ func gerritChange(change, patchset int64) *bbpb.GerritChange {
 }
 
 func generateGerritChangesAndTags(req *bbpb.ScheduleBuildRequest) {
-	clNum := rand.Int63n(5000000)
+	change := rand.Int63n(5000000)
 
 	var changes []*bbpb.GerritChange
 	tags := strpair.Map{}
 	for i := 1; i <= 4; i++ {
-		changes = append(changes, gerritChange(clNum, int64(i)))
-		tags.Add("buildset", fmt.Sprintf("patch/gerrit/chromium-review.googlesource.com/%d/%d", clNum, i))
+		changes = append(changes, gerritChange(change, int64(i)))
+		tags.Add("buildset", fmt.Sprintf("patch/gerrit/chromium-review.googlesource.com/%d/%d", change, i))
 	}
 	req.GerritChanges = changes
 	req.Tags = protoutil.StringPairs(tags)
@@ -187,17 +187,45 @@ func scheduleChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs
 	return nil
 }
 
-func searchBuild(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuildpb.SearchBuilds, idx int) error {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("search builds (%d)", idx))
+func searchBuildStep(ctx context.Context, stepName string, bbClient bbpb.BuildsClient, req *bbpb.SearchBuildsRequest, sbs *fakebuildpb.SearchBuilds) error {
+	step, ctx := build.StartStep(ctx, stepName)
 	defer func() { step.End(nil) }()
 
-	clNum := rand.Int63n(5000000)
-	patchset := rand.Int63n(20) + int64(1) // make sure patchset is greater than 0.
+	res, err := bbClient.SearchBuilds(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, stepName).Err()
+	}
+	log := step.Log("response")
+	marsh := jsonpb.Marshaler{Indent: "  "}
+	if err = marsh.Marshal(log, res); err != nil {
+		return errors.Annotate(err, "failed to marshal proto").Err()
+	}
+	secs := randomSecs(sbs.SleepMinSec, sbs.SleepMaxSec)
+	clock.Sleep(ctx, time.Duration(secs)*time.Second)
+	return nil
+}
 
-	// Mimic CV's SearchBuilds RPCs.
+// searchBuildsByBuildsetTag simulates milo to search related builds by buildset tag.
+func searchBuildsByBuildsetTag(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuildpb.SearchBuilds) error {
+	change := rand.Int63n(5000000)
+	patchset := rand.Int63n(20)
 	req := &bbpb.SearchBuildsRequest{
 		Predicate: &bbpb.BuildPredicate{
-			GerritChanges:       []*bbpb.GerritChange{gerritChange(clNum, patchset)},
+			Tags:                []*bbpb.StringPair{{Key: "buildset", Value: fmt.Sprintf("patch/gerrit/chromium-review.googlesource.com/%d/%d", change, patchset)}},
+			IncludeExperimental: true,
+		},
+	}
+	return searchBuildStep(ctx, fmt.Sprintf("search related builds for CL %d/%d", change, patchset), bbClient, req, sbs)
+}
+
+// SearchBuildsByGerritChange simulates CV to search builds by gerrit change.
+func SearchBuildsByGerritChange(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuildpb.SearchBuilds, idx int) error {
+	change := rand.Int63n(5000000)
+	patchset := rand.Int63n(20)
+
+	req := &bbpb.SearchBuildsRequest{
+		Predicate: &bbpb.BuildPredicate{
+			GerritChanges:       []*bbpb.GerritChange{gerritChange(change, patchset)},
 			IncludeExperimental: true,
 		},
 		Mask: &bbpb.BuildMask{
@@ -217,19 +245,23 @@ func searchBuild(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuild
 			},
 		},
 	}
-	res, err := bbClient.SearchBuilds(ctx, req)
-	if err != nil {
-		return errors.Annotate(err, "search %d", idx).Err()
-	}
-	log := step.Log("response")
-	marsh := jsonpb.Marshaler{Indent: "  "}
-	if err = marsh.Marshal(log, res); err != nil {
-		return errors.Annotate(err, "failed to marshal proto").Err()
-	}
+	return searchBuildStep(ctx, fmt.Sprintf("search builds (%d)", idx), bbClient, req, sbs)
+}
 
-	secs := randomSecs(sbs.SleepMinSec, sbs.SleepMaxSec)
-	clock.Sleep(ctx, time.Duration(secs)*time.Second)
-	return nil
+func searchBuildsByBuilder(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuildpb.SearchBuilds) error {
+	req := &bbpb.SearchBuildsRequest{
+		Predicate: &bbpb.BuildPredicate{
+			Builder: &bbpb.BuilderID{
+				Project: "infra",
+				Bucket:  "loadtest",
+				Builder: "fake-1m-no-bn",
+			},
+			Status:              bbpb.Status_ENDED_MASK,
+			IncludeExperimental: true,
+		},
+		PageSize: 200,
+	}
+	return searchBuildStep(ctx, "search builds by builder", bbClient, req, sbs)
 }
 
 func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakebuildpb.Inputs) error {
@@ -237,10 +269,19 @@ func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakeb
 	if sbs == nil {
 		return nil
 	}
-	for i := 0; i < int(sbs.Steps); i++ {
-		if err := searchBuild(ctx, bbClient, sbs, i); err != nil {
+
+	steps := int(sbs.Steps)
+	if steps > 2 {
+		steps = steps - 2
+	}
+
+	for i := 0; i < steps; i++ {
+		if err := SearchBuildsByGerritChange(ctx, bbClient, sbs, i); err != nil {
 			return errors.Annotate(err, "search build %d", i).Err()
 		}
 	}
-	return nil
+	if err := searchBuildsByBuildsetTag(ctx, bbClient, sbs); err != nil {
+		return err
+	}
+	return searchBuildsByBuilder(ctx, bbClient, sbs)
 }
