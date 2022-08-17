@@ -4,10 +4,10 @@
 
 import { AnalysisSummary } from '../../components/analysis_overview/analysis_overview';
 
-export const getMockAnalysisSummary = (id: number): AnalysisSummary => {
+export const getMockAnalysisSummary = (id: string): AnalysisSummary => {
   return {
-    id: id,
-    status: 'VERIFYING',
+    analysisID: id,
+    status: 'FOUND',
     failureType: 'Compile failure',
     buildID: id,
     builder: 'mock-builder-cc64',

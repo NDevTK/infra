@@ -28,7 +28,7 @@
   border-top: 1px solid lightgray;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
-  background-color: lightgray;
+  background-color: gainsboro;
   opacity: 80%;
 }
 
@@ -41,12 +41,22 @@
   opacity: 100%;
 }
 
+.roundedTab:disabled{
+  background: repeating-linear-gradient(
+    135deg,
+    gainsboro,
+    gainsboro 1rem,
+    lightgray 1rem,
+    lightgray 2rem
+  )
+}
+
 .tabPanel {
   border-left: 1px solid lightgray;
   border-right: 1px solid lightgray;
   border-bottom: 1px solid lightgray;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
 }
 
 .tabPanelContents {

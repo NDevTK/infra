@@ -5,15 +5,15 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { getMockSuspectSummary } from '../../testing_tools/mocks/suspect_mock';
+import { getMockPrimeSuspect } from '../../testing_tools/mocks/prime_suspect_mock';
 import { SuspectsOverview } from './suspects_overview';
-import { SuspectSummary } from '../../services/analysis_details';
+import { PrimeSuspect } from '../../services/analysis_details';
 
 describe('Test SuspectsOverview component', () => {
   test('if all suspect details are displayed', async () => {
     const mockSuspects = [
-      getMockSuspectSummary('c234de'),
-      getMockSuspectSummary('412533'),
+      getMockPrimeSuspect('c234de'),
+      getMockPrimeSuspect('412533'),
     ];
 
     render(<SuspectsOverview suspects={mockSuspects} />);
@@ -24,13 +24,13 @@ describe('Test SuspectsOverview component', () => {
     expect(screen.queryAllByRole('link')).toHaveLength(mockSuspects.length);
 
     // check the target URL for a suspect CL
-    expect(screen.getByText(mockSuspects[1].title).getAttribute('href')).toBe(
-      mockSuspects[1].url
-    );
+    expect(
+      screen.getByText(mockSuspects[1].cl.title).getAttribute('href')
+    ).toBe(mockSuspects[1].cl.reviewURL);
   });
 
   test('if an appropriate message is displayed for no suspects', async () => {
-    const mockSuspects: SuspectSummary[] = [];
+    const mockSuspects: PrimeSuspect[] = [];
 
     render(<SuspectsOverview suspects={mockSuspects} />);
 

@@ -15,7 +15,12 @@ describe('Test HeuristicAnalysisTable component', () => {
       getMockHeuristicSuspect('673e20'),
     ];
 
-    render(<HeuristicAnalysisTable suspects={mockSuspects} />);
+    const mockHeuristicDetails = {
+      isComplete: true,
+      suspects: mockSuspects,
+    };
+
+    render(<HeuristicAnalysisTable results={mockHeuristicDetails} />);
 
     await screen.findByText('Suspect CL');
 
@@ -23,11 +28,30 @@ describe('Test HeuristicAnalysisTable component', () => {
   });
 
   test('if an appropriate message is displayed for no suspects', async () => {
-    render(<HeuristicAnalysisTable suspects={[]} />);
+    const mockHeuristicDetails = {
+      isComplete: true,
+      suspects: [],
+    };
+    render(<HeuristicAnalysisTable results={mockHeuristicDetails} />);
 
     await screen.findByText('Suspect CL');
 
     expect(screen.queryAllByRole('link')).toHaveLength(0);
     expect(screen.getByText('No suspects to display')).toBeInTheDocument();
+  });
+
+  test('if no misleading message is shown for an incomplete analysis', async () => {
+    const mockHeuristicDetails = {
+      isComplete: false,
+      suspects: [],
+    };
+    render(<HeuristicAnalysisTable results={mockHeuristicDetails} />);
+
+    await screen.findByText('Suspect CL');
+
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
+    expect(
+      screen.queryByText('No suspects to display')
+    ).not.toBeInTheDocument();
   });
 });

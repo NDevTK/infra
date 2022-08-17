@@ -12,11 +12,13 @@ import TableRow from '@mui/material/TableRow';
 import { AssociatedBug, SuspectRange } from '../../services/analysis_details';
 import { PlainTable } from '../plain_table/plain_table';
 
+import { linkToBuild } from '../../tools/link_constructors';
+
 export interface AnalysisSummary {
-  id: number;
+  analysisID: string;
   status: string;
   failureType: string;
-  buildID: number;
+  buildID: string;
   builder: string;
   suspectRange: SuspectRange;
   bugs: AssociatedBug[];
@@ -39,10 +41,10 @@ export const AnalysisOverview = ({ analysis }: Props) => {
         <TableBody data-testid='analysis_overview_table_body'>
           <TableRow>
             <TableCell variant='head'>Analysis ID</TableCell>
-            <TableCell>{analysis.id}</TableCell>
+            <TableCell>{analysis.analysisID}</TableCell>
             <TableCell variant='head'>Buildbucket ID</TableCell>
             <TableCell>
-              <a href={`${analysis.buildID}`}>{analysis.buildID}</a>
+              <a href={linkToBuild(analysis.buildID)}>{analysis.buildID}</a>
             </TableCell>
           </TableRow>
           <TableRow>

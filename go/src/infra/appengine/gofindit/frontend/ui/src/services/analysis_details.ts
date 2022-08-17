@@ -17,16 +17,16 @@ export const getAnalysisDetails = async (
 };
 
 export interface AnalysisDetails {
-  id: number;
+  analysisID: string;
   status: string;
+  buildID: string;
   failureType: string;
-  buildID: number;
   builder: string;
   suspectRange: SuspectRange;
   bugs: AssociatedBug[];
-  revertChangeList: ChangeListDetails;
-  suspects: SuspectSummary[];
-  heuristicAnalysis: HeuristicSuspect[];
+  revertCL: RevertCL;
+  primeSuspects: PrimeSuspect[];
+  heuristicResults: HeuristicDetails;
 }
 
 export interface SuspectRange {
@@ -34,26 +34,33 @@ export interface SuspectRange {
   url: string;
 }
 
-export interface HeuristicSuspect {
-  commitID: string;
-  reviewURL: string;
-  score: number;
-  confidence: string;
-  justification: string[];
+export interface HeuristicDetails {
+  isComplete: boolean;
+  suspects: HeuristicSuspect[];
 }
 
-export interface ChangeListDetails {
+export interface CL {
+  commitID: string;
   title: string;
-  url: string;
+  reviewURL: string;
+}
+
+export interface RevertCL {
+  cl: CL;
   status: string;
   submitTime: string;
   commitPosition: string;
 }
 
-export interface SuspectSummary {
-  id: string;
-  title: string;
-  url: string;
+export interface HeuristicSuspect {
+  cl: CL;
+  score: string;
+  confidence: string;
+  justification: string[];
+}
+
+export interface PrimeSuspect {
+  cl: CL;
   culpritStatus: string;
   accuseSource: string;
 }

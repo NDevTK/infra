@@ -12,10 +12,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { SuspectSummary } from '../../services/analysis_details';
+import { PrimeSuspect } from '../../services/analysis_details';
 
 interface Props {
-  suspects: SuspectSummary[];
+  suspects: PrimeSuspect[];
 }
 
 export const SuspectsOverview = ({ suspects }: Props) => {
@@ -31,9 +31,9 @@ export const SuspectsOverview = ({ suspects }: Props) => {
         </TableHead>
         <TableBody>
           {suspects.map((suspect) => (
-            <TableRow key={suspect.id}>
+            <TableRow key={suspect.cl.commitID}>
               <TableCell>
-                <a href={suspect.url}>{suspect.title}</a>
+                <a href={suspect.cl.reviewURL}>{suspect.cl.title}</a>
               </TableCell>
               <TableCell>{suspect.accuseSource}</TableCell>
               <TableCell>{suspect.culpritStatus}</TableCell>

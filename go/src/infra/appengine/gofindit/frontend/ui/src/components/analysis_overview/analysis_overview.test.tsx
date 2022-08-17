@@ -10,14 +10,14 @@ import { getMockAnalysisSummary } from '../../testing_tools/mocks/analysis_summa
 
 describe('Test AnalysisOverview component', () => {
   test('if all analysis summary details are displayed', async () => {
-    const mockSummary = getMockAnalysisSummary(1);
+    const mockSummary = getMockAnalysisSummary('1');
 
     render(<AnalysisOverview analysis={mockSummary} />);
 
     await screen.findByTestId('analysis_overview_table_body');
 
     const expectedStaticFields = [
-      ['analysis ID', 'id'],
+      ['analysis ID', 'analysisID'],
       ['status', 'status'],
       ['buildbucket ID', 'buildID'],
       ['builder', 'builder'],
@@ -56,7 +56,7 @@ describe('Test AnalysisOverview component', () => {
   });
 
   test('if there are no bugs, then related bugs section is not shown', async () => {
-    let mockSummary = getMockAnalysisSummary(2);
+    let mockSummary = getMockAnalysisSummary('2');
     mockSummary.bugs = [];
 
     const { container } = render(<AnalysisOverview analysis={mockSummary} />);

@@ -29,7 +29,7 @@ export const App = () => {
         <Route path='/' element={<BaseLayout />}>
           <Route index element={<FailureAnalysesPage />} />
           <Route path='trigger' element={<TriggerAnalysisPage />} />
-          <Route path='analysis/b/:buildId' element={<AnalysisDetailsPage />} />
+          <Route path='analysis/b/:buildID' element={<AnalysisDetailsPage />} />
           <Route path='statistics' element={<StatisticsPage />} />
         </Route>
       </Routes>

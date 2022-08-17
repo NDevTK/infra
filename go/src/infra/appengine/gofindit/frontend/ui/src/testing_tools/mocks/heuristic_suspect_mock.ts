@@ -6,9 +6,12 @@ import { HeuristicSuspect } from '../../services/analysis_details';
 
 export const getMockHeuristicSuspect = (commitID: string): HeuristicSuspect => {
   return {
-    commitID: commitID,
-    reviewURL: 'https://chromium-review.googlesource.com/placeholder/+12341223',
-    score: 15,
+    cl: {
+      commitID: commitID,
+      title: 'Title of this heuristic suspect',
+      reviewURL: `https://chromium-review.googlesource.com/placeholder/+${commitID}`,
+    },
+    score: '15',
     confidence: 'HIGH',
     justification: [
       'The file "dir/a/b/x.cc" was added and it was in the failure log.',

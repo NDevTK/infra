@@ -27,7 +27,7 @@ describe('Test HeuristicAnalysisTable component', () => {
     await screen.findByTestId('heuristic_analysis_table_row');
 
     expect(screen.getByRole('link').getAttribute('href')).toBe(
-      mockSuspect.reviewURL
+      mockSuspect.cl.reviewURL
     );
     expect(screen.getByText(mockSuspect.confidence)).toBeInTheDocument();
     expect(screen.getByText(mockSuspect.score)).toBeInTheDocument();

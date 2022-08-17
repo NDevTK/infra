@@ -7,14 +7,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
-import { ChangeListDetails } from '../../services/analysis_details';
+import { RevertCL } from '../../services/analysis_details';
 import { PlainTable } from '../plain_table/plain_table';
 
 interface Props {
-  changeList: ChangeListDetails;
+  revertCL: RevertCL;
 }
 
-export const ChangeListOverview = ({ changeList }: Props) => {
+export const RevertCLOverview = ({ revertCL }: Props) => {
   return (
     <TableContainer>
       <PlainTable>
@@ -25,20 +25,20 @@ export const ChangeListOverview = ({ changeList }: Props) => {
         <TableBody data-testid='change_list_overview_table_body'>
           <TableRow>
             <TableCell variant='head' colSpan={2}>
-              <a href={changeList.url}>{changeList.title}</a>
+              <a href={revertCL.cl.reviewURL}>{revertCL.cl.title}</a>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell variant='head'>Status</TableCell>
-            <TableCell>{changeList.status}</TableCell>
+            <TableCell>{revertCL.status}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell variant='head'>Submitted time</TableCell>
-            <TableCell>{changeList.submitTime}</TableCell>
+            <TableCell>{revertCL.submitTime}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell variant='head'>Commit position</TableCell>
-            <TableCell>{changeList.commitPosition}</TableCell>
+            <TableCell>{revertCL.commitPosition}</TableCell>
           </TableRow>
         </TableBody>
       </PlainTable>

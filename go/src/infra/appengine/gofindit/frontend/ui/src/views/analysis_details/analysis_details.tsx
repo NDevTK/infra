@@ -16,7 +16,7 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 
 import { AnalysisOverview } from '../../components/analysis_overview/analysis_overview';
-import { ChangeListOverview } from '../../components/change_list_overview/change_list_overview';
+import { RevertCLOverview } from '../../components/revert_cl_overview/revert_cl_overview';
 import { HeuristicAnalysisTable } from '../../components/heuristic_analysis_table/heuristic_analysis_table';
 import { SuspectsOverview } from '../../components/suspects_overview/suspects_overview';
 import { getAnalysisDetails } from '../../services/analysis_details';
@@ -53,15 +53,16 @@ export const AnalysisDetailsPage = () => {
     setCurrentTab(newTab);
   };
 
-  const { buildId } = useParams();
+  const { buildID } = useParams();
 
   const {
     isLoading,
     isError,
     data: analysisDetails,
-  } = useQuery(['analysis', buildId], () => getAnalysisDetails(buildId!));
+  } = useQuery(['analysis', buildID], () => getAnalysisDetails(buildID!));
 
   if (isLoading) {
+    // TODO: update layout so this loading bar spans the entire screen
     return <LinearProgress />;
   }
 
@@ -71,13 +72,18 @@ export const AnalysisDetailsPage = () => {
         <div className='section'>
           <Alert severity='error'>
             <AlertTitle>Failed to load analysis details</AlertTitle>
+            {/* TODO: display more error detail for input issues e.g.
+                Build not found, No analysis for that build, etc */}
             An error occurred when querying for the analysis details using build
-            ID "{`${buildId}`}".
+            ID "{`${buildID}`}".
           </Alert>
         </div>
       </main>
     );
   }
+
+  // TODO: display alert if the build ID queried is not the first failed build
+  //       linked to the failure analysis
 
   return (
     <main>
@@ -87,20 +93,20 @@ export const AnalysisDetailsPage = () => {
         </Typography>
         <AnalysisOverview analysis={analysisDetails} />
       </div>
-      {analysisDetails.revertChangeList! && (
+      {analysisDetails.revertCL! && (
         <div className='section'>
           <Typography variant='h4' gutterBottom>
             Revert CL
           </Typography>
-          <ChangeListOverview changeList={analysisDetails.revertChangeList} />
+          <RevertCLOverview revertCL={analysisDetails.revertCL} />
         </div>
       )}
-      {analysisDetails.suspects.length > 0 && (
+      {analysisDetails.primeSuspects.length > 0 && (
         <div className='section'>
           <Typography variant='h4' gutterBottom>
             Suspect Summary
           </Typography>
-          <SuspectsOverview suspects={analysisDetails.suspects} />
+          <SuspectsOverview suspects={analysisDetails.primeSuspects} />
         </div>
       )}
       <div className='section'>
@@ -113,15 +119,27 @@ export const AnalysisDetailsPage = () => {
           aria-label='Analysis components tabs'
           className='roundedTabs'
         >
-          {Object.values(AnalysisComponentTabs).map((tab) => (
-            <Tab className='roundedTab' key={tab} value={tab} label={tab} />
-          ))}
+          <Tab
+            className='roundedTab'
+            value={AnalysisComponentTabs.HEURISTIC}
+            label={AnalysisComponentTabs.HEURISTIC}
+          />
+          <Tab
+            className='roundedTab'
+            disabled
+            value={AnalysisComponentTabs.NTH_SECTION}
+            label={AnalysisComponentTabs.NTH_SECTION}
+          />
+          <Tab
+            className='roundedTab'
+            disabled
+            value={AnalysisComponentTabs.CULPRIT_VERIFICATION}
+            label={AnalysisComponentTabs.CULPRIT_VERIFICATION}
+          />
         </Tabs>
         <TabPanel value={currentTab} name={AnalysisComponentTabs.HEURISTIC}>
           {/* TODO: Show alert if there are no heuristic results yet */}
-          <HeuristicAnalysisTable
-            suspects={analysisDetails.heuristicAnalysis}
-          />
+          <HeuristicAnalysisTable results={analysisDetails.heuristicResults} />
         </TabPanel>
         <TabPanel value={currentTab} name={AnalysisComponentTabs.NTH_SECTION}>
           {/* TODO: Replace with nth section analysis results */}
