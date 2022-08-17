@@ -1137,10 +1137,10 @@ func crosRepairActions() map[string]*Action {
 				"The action will be skipped if the required image is already loaded.",
 			},
 			Conditions: []string{
+				"dut_servo_host_present",
 				"Stable version image is missing from servo usbkey",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
 				"servo_servod_echo_host",
 			},
 			ExecName:    "servo_download_image_to_usb",
@@ -1152,10 +1152,10 @@ func crosRepairActions() map[string]*Action {
 				"The action will be skipped if the required image is already loaded.",
 			},
 			Conditions: []string{
+				"dut_servo_host_present",
 				"Stable version image is missing from servo usbkey",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
 				"servo_servod_echo_host",
 			},
 			ExecName:               "servo_download_image_to_usb",
