@@ -255,6 +255,7 @@ func deepRepairClosingPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Remove in-use flag on servo-host",
+			"Turn off servo usbkey power",
 			"Stop servod",
 		},
 		Actions: map[string]*Action{
@@ -264,6 +265,22 @@ func deepRepairClosingPlan() *Plan {
 					"dut_servo_host_present",
 				},
 				ExecName:               "cros_remove_servo_in_use",
+				AllowFailAfterRecovery: true,
+			},
+			"Turn off servo usbkey power": {
+				Docs: []string{
+					"Ensure that servo usbkey power is in off state.",
+				},
+				Conditions: []string{
+					"Is not servo_v3",
+					"dut_servo_host_present",
+				},
+				ExecName: "servo_set",
+				ExecExtraArgs: []string{
+					"command:image_usbkey_pwr",
+					"string_value:off",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 			},
 			"Stop servod": {
@@ -282,6 +299,15 @@ func deepRepairClosingPlan() *Plan {
 					"invert_result:true",
 				},
 				ExecName: "dut_check_model",
+			},
+			"Is not servo_v3": {
+				Docs: []string{
+					"Verify that servo_v3 isn ot used in setup.",
+				},
+				Conditions: []string{
+					"is_servo_v3",
+				},
+				ExecName: "sample_fail",
 			},
 		},
 	}

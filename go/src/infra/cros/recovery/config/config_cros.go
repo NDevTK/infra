@@ -63,6 +63,7 @@ func crosClosePlan() *Plan {
 			"Remove request to reboot if servo is good",
 			"Update DUT state for failures more than threshold",
 			"Update DUT state based on servo state",
+			"Turn off servo usbkey power",
 			"Stop servod",
 		},
 		Actions: map[string]*Action{
@@ -222,6 +223,22 @@ func crosClosePlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:needs_manual_repair",
 				},
+				AllowFailAfterRecovery: true,
+			},
+			"Turn off servo usbkey power": {
+				Docs: []string{
+					"Ensure that servo usbkey power is in off state.",
+				},
+				Conditions: []string{
+					"Is not servo_v3",
+					"dut_servo_host_present",
+				},
+				ExecName: "servo_set",
+				ExecExtraArgs: []string{
+					"command:image_usbkey_pwr",
+					"string_value:off",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 			},
 			"Stop servod": {
