@@ -349,6 +349,52 @@ func searchBuildsByBuilder(ctx context.Context, bbClient bbpb.BuildsClient, sbs 
 	return searchBuildStep(ctx, "search builds by builder", bbClient, req, sbs)
 }
 
+func getMostRecentRootBuild(ctx context.Context, bbClient bbpb.BuildsClient) (int64, error) {
+	req := &bbpb.SearchBuildsRequest{
+		Predicate: &bbpb.BuildPredicate{
+			Builder: &bbpb.BuilderID{
+				Project: "infra",
+				Bucket:  "loadtest",
+				Builder: "fake-tree-0-no-bn",
+			},
+			Status: bbpb.Status_ENDED_MASK,
+		},
+		PageSize: 1,
+		Mask: &bbpb.BuildMask{
+			Fields: &fieldmaskpb.FieldMask{
+				Paths: []string{
+					"id",
+				},
+			},
+		},
+	}
+	res, err := bbClient.SearchBuilds(ctx, req)
+	if err != nil {
+		return 0, err
+	}
+	if len(res.GetBuilds()) == 0 {
+		return 0, errors.Reason("got empty search build response").Err()
+	}
+	return res.Builds[0].Id, nil
+}
+
+func searchBuildsByAncestor(ctx context.Context, bbClient bbpb.BuildsClient, sbs *fakebuildpb.SearchBuilds) error {
+	ancestorID, err := getMostRecentRootBuild(ctx, bbClient)
+	if err != nil {
+		return err
+	}
+	req := &bbpb.SearchBuildsRequest{
+		Predicate: &bbpb.BuildPredicate{
+			Builder: &bbpb.BuilderID{
+				Project: "infra",
+				Bucket:  "loadtest",
+			},
+			DescendantOf: ancestorID,
+		},
+	}
+	return searchBuildStep(ctx, fmt.Sprintf("search builds by ancestor %d", ancestorID), bbClient, req, sbs)
+}
+
 func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakebuildpb.Inputs) error {
 	sbs := inputs.GetSearchBuilds()
 	if sbs == nil {
@@ -356,8 +402,8 @@ func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakeb
 	}
 
 	steps := int(sbs.Steps)
-	if steps > 2 {
-		steps = steps - 2
+	if steps > 3 {
+		steps = steps - 3
 	}
 
 	for i := 0; i < steps; i++ {
@@ -368,5 +414,8 @@ func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakeb
 	if err := searchBuildsByBuildsetTag(ctx, bbClient, sbs); err != nil {
 		return err
 	}
-	return searchBuildsByBuilder(ctx, bbClient, sbs)
+	if err := searchBuildsByBuilder(ctx, bbClient, sbs); err != nil {
+		return err
+	}
+	return searchBuildsByAncestor(ctx, bbClient, sbs)
 }
