@@ -93,7 +93,7 @@ export const ResourceModel = {
     return {
       resourceId: '',
       name: '',
-      type: 'machine',
+      type: 'ad_joined_machine',
       operatingSystem: '',
       description: '',
       imageProject: '',

@@ -48,7 +48,7 @@ import {
 } from '../utility/utilitySlice';
 
 export const Resource = () => {
-  const [activeResourceType, setActiveResourceType] = React.useState('machine');
+  const [activeResourceType, setActiveResourceType] = React.useState('ad_joined_machine');
   const name: string = useAppSelector((state) => state.resource.record.name);
   const type: string = useAppSelector((state) => state.resource.record.type);
   const operatingSystem: string = useAppSelector(
@@ -126,15 +126,15 @@ export const Resource = () => {
       dispatch(setDescriptionValidFalse());
       valid = false;
     }
-    if (type === 'machine' && operatingSystem === '') {
+    if (type === 'ad_joined_machine' && operatingSystem === '') {
       dispatch(setOperatingSystemValidFalse());
       valid = false;
     }
-    if (type === 'machine' && imageProject === '') {
+    if (type === 'ad_joined_machine' && imageProject === '') {
       dispatch(setImageProjectValidFalse());
       valid = false;
     }
-    if (type === 'machine' && imageFamily === '') {
+    if (type === 'ad_joined_machine' && imageFamily === '') {
       dispatch(setImageFamilyValidFalse());
       valid = false;
     }
@@ -175,7 +175,7 @@ export const Resource = () => {
               label="Type"
               id="type"
               inputProps={{ 'data-testid': 'type' }}
-              defaultValue="machine"
+              defaultValue="ad_joined_machine"
               value={type}
               onChange={(e) => {
                 setActiveResourceType(e.target.value);
@@ -185,7 +185,7 @@ export const Resource = () => {
               variant="standard"
               placeholder="Type"
             >
-              <MenuItem value={'machine'}>Machine</MenuItem>
+              <MenuItem value={'ad_joined_machine'}>AD Joined Machine</MenuItem>
               {/* <MenuItem value={'domain'}>Domain</MenuItem> */}
             </Select>
             {!recordValidation.typeValid && (
@@ -434,13 +434,13 @@ export const Resource = () => {
 
         {renderTypeDropdown()}
 
-        {activeResourceType == 'machine'
+        {activeResourceType == 'ad_joined_machine'
           ? renderOperatingSystemDropdown()
           : null}
 
-        {activeResourceType == 'machine' ? renderImageProjectInput() : null}
+        {activeResourceType == 'ad_joined_machine' ? renderImageProjectInput() : null}
 
-        {activeResourceType == 'machine' ? renderImageFamilyInput() : null}
+        {activeResourceType == 'ad_joined_machine' ? renderImageFamilyInput() : null}
 
         <Grid container spacing={2} padding={1} paddingTop={6}>
           <Grid item xs={12}>

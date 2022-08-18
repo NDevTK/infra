@@ -17,10 +17,10 @@ type ResourceEntity struct {
 	Description string
 	// Type of the resource
 	Type string
-	//  Operating system of the machine (If Type is machine)
+	//  Operating system of the machine (If Type is machine or ad_joined_machine)
 	OperatingSystem string
 	// TODO: crbug/1328854 move the image info as part of property later phases
-	// image associated to the machine
+	// image associated to the machine or ad_joined_machine
 	Image string
 	// Gcp project where image resides
 	ImageProject string

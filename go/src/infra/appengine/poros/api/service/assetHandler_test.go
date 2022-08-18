@@ -420,7 +420,7 @@ func createDefaultResources(ctx context.Context) error {
 
 func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.AssetResourceModel, *proto.ResourceModel, error) {
 	resHandler := &ResourceHandler{}
-	resourceRequest := mockCreateResourceRequest("win2016mock", "mock windows machine", "machine", "windows_machine", "project-2", "family-2")
+	resourceRequest := mockCreateResourceRequest("win2016mock", "mock windows machine", "ad_joined_machine", "windows_machine", "project-2", "family-2")
 	resource, err := resHandler.Create(ctx, resourceRequest)
 	if err != nil {
 		return nil, nil, nil, err
