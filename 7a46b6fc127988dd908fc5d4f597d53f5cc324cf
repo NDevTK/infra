@@ -33,6 +33,24 @@
       "message": "We can remove this condition as we\u0027ll stop use smarthub power cycle servo_v4p1",
       "revId": "7a46b6fc127988dd908fc5d4f597d53f5cc324cf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a69d15a_22987055",
+        "filename": "go/src/infra/cros/recovery/config/config_servo.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 1513,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-08-18T20:51:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e1720f6_6bd07cf6",
+      "revId": "7a46b6fc127988dd908fc5d4f597d53f5cc324cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
