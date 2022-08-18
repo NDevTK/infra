@@ -32,7 +32,7 @@ func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // servoVerifyV4Exec verifies whether the servo attached to the servo
-// host is of type V4.
+// host is of type V4 or V4p1.
 func servoVerifyV4Exec(ctx context.Context, info *execs.ExecInfo) error {
 	sType, err := WrappedServoType(ctx, info)
 	if err != nil {
@@ -42,6 +42,21 @@ func servoVerifyV4Exec(ctx context.Context, info *execs.ExecInfo) error {
 	if !sType.IsV4() {
 		log.Debugf(ctx, "Servo Verify V4: servo type is neither V4, or V4P1.")
 		return errors.Reason("servo verify v4: servo type %q is not V4.", sType).Err()
+	}
+	return nil
+}
+
+// servoVerifyV4Exec verifies whether the servo attached to the servo
+// host is of type V4p1.
+func servoVerifyV4p1Exec(ctx context.Context, info *execs.ExecInfo) error {
+	sType, err := WrappedServoType(ctx, info)
+	if err != nil {
+		log.Debugf(ctx, "Servo Verify V4p1: could not determine the servo type")
+		return errors.Annotate(err, "servo verify v4p1").Err()
+	}
+	if !sType.IsV4() {
+		log.Debugf(ctx, "Servo Verify V4: servo type is not V4P1.")
+		return errors.Reason("servo verify v4p1: servo type %q is not V4p1.", sType).Err()
 	}
 	return nil
 }
@@ -149,6 +164,7 @@ func servoTypeRegexMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("is_servo_v3", servoVerifyV3Exec)
 	execs.Register("is_servo_v4", servoVerifyV4Exec)
+	execs.Register("is_servo_v4p1", servoVerifyV4p1Exec)
 	execs.Register("is_servo_micro", servoVerifyServoMicroExec)
 	execs.Register("is_dual_setup_configured", servoIsDualSetupConfiguredExec)
 	execs.Register("is_dual_setup", servoVerifyDualSetupExec)
