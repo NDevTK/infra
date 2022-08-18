@@ -37,7 +37,7 @@ const (
 )
 
 func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
-	log.Printf("provision: started %v", opName)
+	log.Printf("provision: started %v on hostname=%v", opName, req.GetName())
 
 	// Set a timeout for provisioning.
 	// TODO(kimjae): Tie the context with timeout to op by passing to lroMgr.
@@ -46,7 +46,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 
 	defer func() {
 		provisionDutCounter.Add(ctx, 1)
-		log.Printf("provision: finished %v", opName)
+		log.Printf("provision: finished %v on hostname=%v", opName, req.GetName())
 	}()
 
 	var p *provisionState
@@ -384,8 +384,8 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 }
 
 func (s *Server) provisionLacros(req *tls.ProvisionLacrosRequest, opName string) {
-	log.Printf("provisionLacros: started %v", opName)
-	defer log.Printf("provisionLacros: finished %v", opName)
+	log.Printf("provisionLacros: started %v on hostname=%v", opName, req.GetName())
+	defer log.Printf("provisionLacros: finished %v on hostname=%v", opName, req.GetName())
 
 	// Set a timeout for provisioning Lacros.
 	// TODO(kimjae): Tie the context with timeout to op by passing to lroMgr.
