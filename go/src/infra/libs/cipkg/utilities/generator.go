@@ -83,7 +83,7 @@ func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cip
 
 	return cipkg.Derivation{
 			Name:     g.Name,
-			Platform: ctx.Platform.Build,
+			Platform: ctx.Platforms.Build.String(),
 			Builder:  builder,
 			Args:     args,
 			Env:      env,

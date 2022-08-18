@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -19,6 +18,7 @@ import (
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 
+	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
@@ -27,30 +27,58 @@ import (
 func main() {
 	ctx := gologger.StdConfig.Use(context.Background())
 	ctx = logging.SetLevel(ctx, logging.Error)
+
+	// TODO(fancl): properly parse the args
 	storageDir, specDir := os.Args[1], os.Args[2]
+	targetCIPD := platform.CurrentPlatform()
+	if len(os.Args) > 3 {
+		targetCIPD = os.Args[3]
+	}
+
 	if err := stdenv.Init(); err != nil {
 		log.Fatal(err)
 	}
-	s := spec.NewSpecLoader(specDir, "linux-amd64")
+
+	s := spec.NewSpecLoader(specDir, targetCIPD)
 	g, err := s.FromSpec("curl")
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := build(ctx, storageDir, g); err != nil {
+	target, err := parseCIPDPlatform(targetCIPD)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := build(ctx, storageDir, target, g); err != nil {
 		log.Fatal(err)
 	}
 }
-func build(ctx context.Context, path string, out cipkg.Generator) error {
+
+func parseCIPDPlatform(plat string) (cipkg.Platform, error) {
+	idx := strings.Index(plat, "-")
+	if idx == -1 {
+		return nil, errors.Reason("invalid cipd target platform: %s", plat).Err()
+	}
+	os, arch := plat[:idx], plat[idx+1:]
+	if os == "mac" {
+		os = "darwin"
+	}
+	if arch == "armv6l" {
+		arch = "arm"
+	}
+	return utilities.NewPlatform(os, arch), nil
+}
+
+func build(ctx context.Context, path string, target cipkg.Platform, out cipkg.Generator) error {
 	s, err := utilities.NewLocalStorage(path)
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
 	}
 	// Generate derivations
 	bctx := &cipkg.BuildContext{
-		Platform: cipkg.Platform{
-			Build:  fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
-			Host:   fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
-			Target: fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
+		Platforms: cipkg.Platforms{
+			Build:  utilities.CurrentPlatform(),
+			Host:   target,
+			Target: target,
 		},
 		Storage: s,
 		Context: ctx,

@@ -14,24 +14,31 @@ import (
 // Storage: The package storage for add and get packages.
 // TODO: Maybe change to GenerationContext since it's not used in build?
 type BuildContext struct {
-	Platform Platform
-	Storage  Storage
+	Platforms Platforms
+	Storage   Storage
 	context.Context
 }
 
-func (ctx *BuildContext) WithPlatform(plat Platform) *BuildContext {
+func (ctx *BuildContext) WithPlatform(plats Platforms) *BuildContext {
 	return &BuildContext{
-		Platform: plat,
-		Storage:  ctx.Storage,
-		Context:  ctx,
+		Platforms: plats,
+		Storage:   ctx.Storage,
+		Context:   ctx,
 	}
 }
 
 // Cross-compile platform tuple.
-type Platform struct {
-	Build  string
-	Host   string
-	Target string
+type Platforms struct {
+	Build  Platform
+	Host   Platform
+	Target Platform
+}
+
+type Platform interface {
+	OS() string
+	Arch() string
+	Get(key string) string
+	String() string
 }
 
 // Storage represents the management interface for packages. Generator relies on

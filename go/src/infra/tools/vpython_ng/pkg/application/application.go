@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -304,11 +303,12 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 	}
 
 	// Generate derivations
+	curPlat := utilities.CurrentPlatform()
 	bctx := &cipkg.BuildContext{
-		Platform: cipkg.Platform{
-			Build:  fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
-			Host:   fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
-			Target: fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
+		Platforms: cipkg.Platforms{
+			Build:  curPlat,
+			Host:   curPlat,
+			Target: curPlat,
 		},
 		Storage: s,
 		Context: ctx,

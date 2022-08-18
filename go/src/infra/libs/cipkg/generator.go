@@ -56,24 +56,24 @@ type Dependency struct {
 }
 
 func (dep *Dependency) Generate(ctx *BuildContext) (Package, error) {
-	var plat Platform
+	var plats Platforms
 	switch dep.Type {
 	case DepsBuildBuild:
-		plat = Platform{ctx.Platform.Build, ctx.Platform.Build, ctx.Platform.Build}
+		plats = Platforms{ctx.Platforms.Build, ctx.Platforms.Build, ctx.Platforms.Build}
 	case DepsBuildHost:
-		plat = Platform{ctx.Platform.Build, ctx.Platform.Build, ctx.Platform.Host}
+		plats = Platforms{ctx.Platforms.Build, ctx.Platforms.Build, ctx.Platforms.Host}
 	case DepsBuildTarget:
-		plat = Platform{ctx.Platform.Build, ctx.Platform.Build, ctx.Platform.Target}
+		plats = Platforms{ctx.Platforms.Build, ctx.Platforms.Build, ctx.Platforms.Target}
 	case DepsHostHost:
-		plat = Platform{ctx.Platform.Build, ctx.Platform.Host, ctx.Platform.Host}
+		plats = Platforms{ctx.Platforms.Build, ctx.Platforms.Host, ctx.Platforms.Host}
 	case DepsHostTarget:
-		plat = Platform{ctx.Platform.Build, ctx.Platform.Host, ctx.Platform.Target}
+		plats = Platforms{ctx.Platforms.Build, ctx.Platforms.Host, ctx.Platforms.Target}
 	case DepsTargetTarget:
-		plat = Platform{ctx.Platform.Build, ctx.Platform.Target, ctx.Platform.Target}
+		plats = Platforms{ctx.Platforms.Build, ctx.Platforms.Target, ctx.Platforms.Target}
 	default:
 		return nil, ErrUnknowDependencyType
 	}
-	drv, meta, err := dep.Generator.Generate(ctx.WithPlatform(plat))
+	drv, meta, err := dep.Generator.Generate(ctx.WithPlatform(plats))
 	if err != nil {
 		return nil, err
 	}

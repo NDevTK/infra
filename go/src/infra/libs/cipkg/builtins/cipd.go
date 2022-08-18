@@ -42,9 +42,10 @@ func (c *CIPDEnsure) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.
 	// for cross-compile
 	expander := c.Expander
 	if expander == nil {
-		// TODO: Replace with proper parser for platform
-		h := strings.Split(ctx.Platform.Host, "_")
-		expander = template.Platform{OS: cipdOS(h[0]), Arch: cipdArch(h[1])}.Expander()
+		expander = template.Platform{
+			OS:   cipdOS(ctx.Platforms.Host.OS()),
+			Arch: cipdArch(ctx.Platforms.Host.Arch()),
+		}.Expander()
 	}
 
 	ef, err := expandEnsureFile(&c.Ensure, expander)
