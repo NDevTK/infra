@@ -56,8 +56,14 @@ func main() {
 			Options: prpc.DefaultOptions(),
 		})
 
-		if err := scheduleChildBuilds(ctx, bbClient, inputs); err != nil {
+		buildIds, err := scheduleChildBuilds(ctx, bbClient, inputs)
+		if err != nil {
 			return err
+		}
+		if len(buildIds) > 0 {
+			if err = waitChildBuilds(ctx, bbClient, buildIds, inputs); err != nil {
+				return err
+			}
 		}
 		return searchBuilds(ctx, bbClient, inputs)
 	})
@@ -104,13 +110,16 @@ func generateGerritChangesAndTags(req *bbpb.ScheduleBuildRequest) {
 	req.Tags = protoutil.StringPairs(tags)
 }
 
-func generateScheduleRequest(builder *bbpb.BuilderID, batchSize int) *bbpb.BatchRequest {
+func generateScheduleRequest(builder *bbpb.BuilderID, waitForChildren bool, batchSize int) *bbpb.BatchRequest {
 	req := &bbpb.BatchRequest{
 		Requests: []*bbpb.BatchRequest_Request{},
 	}
 	for i := 0; i < batchSize; i++ {
 		subReq := &bbpb.ScheduleBuildRequest{
 			Builder: builder,
+		}
+		if waitForChildren {
+			subReq.CanOutliveParent = bbpb.Trinary_NO
 		}
 		generateGerritChangesAndTags(subReq)
 		req.Requests = append(req.Requests, &bbpb.BatchRequest_Request{
@@ -122,30 +131,39 @@ func generateScheduleRequest(builder *bbpb.BuilderID, batchSize int) *bbpb.Batch
 	return req
 }
 
-func scheduleOneBatch(ctx context.Context, bbClient bbpb.BuildsClient, idx, batchSize int, cbs *fakebuildpb.ChildBuilds) error {
+func scheduleOneBatch(ctx context.Context, bbClient bbpb.BuildsClient, idx, batchSize int, cbs *fakebuildpb.ChildBuilds) ([]int64, error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("schedule children (%d)", idx))
 	defer func() { step.End(nil) }()
 
-	req := generateScheduleRequest(cbs.Builder, batchSize)
+	buildIDs := make([]int64, 0, batchSize)
+	req := generateScheduleRequest(cbs.Builder, cbs.WaitForChildren, batchSize)
 	res, err := bbClient.Batch(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "batch %d", idx).Err()
+		return nil, errors.Annotate(err, "batch %d", idx).Err()
 	}
+	for _, r := range res.GetResponses() {
+		b := r.GetScheduleBuild()
+		if b == nil {
+			continue
+		}
+		buildIDs = append(buildIDs, b.Id)
+	}
+
 	log := step.Log("response")
 	marsh := jsonpb.Marshaler{Indent: "  "}
 	if err = marsh.Marshal(log, res); err != nil {
-		return errors.Annotate(err, "failed to marshal proto").Err()
+		return nil, errors.Annotate(err, "failed to marshal proto").Err()
 	}
 
 	secs := randomSecs(cbs.SleepMinSec, cbs.SleepMaxSec)
 	clock.Sleep(ctx, time.Duration(secs)*time.Second)
-	return nil
+	return buildIDs, nil
 }
 
-func scheduleChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakebuildpb.Inputs) error {
+func scheduleChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakebuildpb.Inputs) ([]int64, error) {
 	cbs := inputs.GetChildBuilds()
 	if cbs == nil {
-		return nil
+		return nil, nil
 	}
 
 	numBatch := 1
@@ -169,6 +187,7 @@ func scheduleChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs
 	step, ctx := build.StartStep(ctx, "schedule children")
 	defer func() { step.End(nil) }()
 
+	buildIDs := make([]int64, 0, cbs.Children)
 	for i := 0; i < numBatch; i++ {
 		var batchSize int64
 		switch {
@@ -180,8 +199,74 @@ func scheduleChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs
 		default:
 			batchSize = cbs.BatchSize
 		}
-		if err := scheduleOneBatch(ctx, bbClient, i, int(batchSize), cbs); err != nil {
+		if batchBuildIds, err := scheduleOneBatch(ctx, bbClient, i, int(batchSize), cbs); err != nil {
+			return nil, err
+		} else {
+			buildIDs = append(buildIDs, batchBuildIds...)
+		}
+	}
+	return buildIDs, nil
+}
+
+// getBuild gets a build and returns if the build is ended.
+func getBuild(ctx context.Context, bbClient bbpb.BuildsClient, bID int64) (bool, error) {
+	req := &bbpb.GetBuildRequest{
+		Id: bID,
+		Mask: &bbpb.BuildMask{
+			Fields: &fieldmaskpb.FieldMask{
+				Paths: []string{
+					"status",
+				},
+			},
+		},
+	}
+	bld, err := bbClient.GetBuild(ctx, req)
+	if err != nil {
+		return false, errors.Annotate(err, "get build %d", bID).Err()
+	}
+	if bld != nil && protoutil.IsEnded(bld.Status) {
+		return true, nil
+	}
+	return false, nil
+}
+
+func waitOnce(ctx context.Context, bbClient bbpb.BuildsClient, buildIds []int64, cbs *fakebuildpb.ChildBuilds, idx int) ([]int64, error) {
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("wait build (%d)", idx))
+	defer func() { step.End(nil) }()
+	finishedBuilds := make([]int64, 0, len(buildIds))
+	for _, bID := range buildIds {
+		// Send GetBuild requests instead of Batch to better compare the performance
+		// with prod.
+		ended, err := getBuild(ctx, bbClient, bID)
+		if err != nil {
+			return nil, err
+		}
+		if ended {
+			finishedBuilds = append(finishedBuilds, bID)
+		}
+	}
+
+	secs := cbs.SleepMaxSec
+	if idx < 20 {
+		secs = randomSecs(cbs.SleepMinSec, cbs.SleepMaxSec)
+	}
+	clock.Sleep(ctx, time.Duration(secs)*time.Second)
+	return finishedBuilds, nil
+}
+
+func waitChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, buildIds []int64, inputs *fakebuildpb.Inputs) error {
+	cbs := inputs.GetChildBuilds()
+	if cbs == nil || !cbs.WaitForChildren || len(buildIds) == 0 {
+		return nil
+	}
+
+	for idx := 0; idx < 100; idx++ {
+		endedBuilds, err := waitOnce(ctx, bbClient, buildIds, cbs, idx)
+		if err != nil {
 			return err
+		}
+		if len(endedBuilds) == len(buildIds) {
+			return nil
 		}
 	}
 	return nil

@@ -19,6 +19,7 @@ message ChildBuilds {
   int64 batch_size = 3;
   int64 sleep_min_sec = 4;  // how long to sleep after a batch, min
   int64 sleep_max_sec = 5;  // how long to sleep after a batch, max
+  bool wait_for_children = 6;
 }
 
 message SearchBuilds {
