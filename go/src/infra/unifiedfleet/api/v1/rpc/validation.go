@@ -1257,7 +1257,7 @@ func (r *UpdateAssetRequest) Validate() error {
 
 // Validate validates input requests of GetAsset.
 func (r *GetAssetRequest) Validate() error {
-	return validateResourceName(assetRegex, AssetNameFormat, r.Name)
+	return validateResourceNameAllowAllCharacters(assetRegex, AssetNameFormat, r.Name)
 }
 
 // Validate validates input requests of ListAssets.
@@ -1270,7 +1270,7 @@ func (r *ListAssetsRequest) Validate() error {
 
 // Validate validates input requests of DeleteAsset.
 func (r *DeleteAssetRequest) Validate() error {
-	return validateResourceName(assetRegex, AssetNameFormat, r.Name)
+	return validateResourceNameAllowAllCharacters(assetRegex, AssetNameFormat, r.Name)
 }
 
 // Validate validates input requests of GetChromeOSDeviceDataRequest.
@@ -1475,6 +1475,17 @@ func validateResourceName(resourceRegex *regexp.Regexp, resourceNameFormat, name
 	}
 	if !IDRegex.MatchString(util.RemovePrefix(name)) {
 		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+	}
+	return nil
+}
+
+func validateResourceNameAllowAllCharacters(resourceRegex *regexp.Regexp, resourceNameFormat, name string) error {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return status.Errorf(codes.InvalidArgument, EmptyName)
+	}
+	if !resourceRegex.MatchString(name) {
+		return status.Errorf(codes.InvalidArgument, resourceNameFormat)
 	}
 	return nil
 }
