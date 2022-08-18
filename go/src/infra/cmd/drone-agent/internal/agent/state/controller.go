@@ -102,7 +102,9 @@ func runBotForDUT(h ControllerHook, dutID string, s dutSignals) {
 				_ = b.Drain()
 				stop = true
 			case <-s.terminate:
-				_ = b.Terminate()
+				if err = b.TerminateOrKill(); err != nil {
+					log.Printf("Failed to terminate or kill bot: %s", err)
+				}
 				stop = true
 			case <-wait:
 				break listenForSignals

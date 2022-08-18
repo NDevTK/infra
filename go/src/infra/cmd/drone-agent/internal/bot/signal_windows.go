@@ -7,7 +7,7 @@
 
 package bot
 
-// Terminate implements Bot.
-func (b realBot) Terminate() error {
+// TerminateOrKill implements Bot.
+func (b realBot) TerminateOrKill() error {
 	panic("windows not supported")
 }

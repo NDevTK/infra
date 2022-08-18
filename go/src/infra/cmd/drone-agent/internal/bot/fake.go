@@ -41,8 +41,8 @@ func (b *FakeBot) Drain() error {
 	return nil
 }
 
-// Terminate implements Bot.
-func (b *FakeBot) Terminate() error {
+// TerminateOrKill implements Bot.
+func (b *FakeBot) TerminateOrKill() error {
 	if f := b.TerminateFunc; f != nil {
 		return f(b)
 	}

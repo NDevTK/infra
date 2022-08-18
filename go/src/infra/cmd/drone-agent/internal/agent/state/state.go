@@ -10,6 +10,7 @@ import (
 	"context"
 	"time"
 
+	"infra/cmd/drone-agent/internal/bot"
 	"infra/cmd/drone-agent/internal/delay"
 )
 
@@ -34,13 +35,9 @@ func (s *State) UUID() string {
 	return s.uuid
 }
 
-// GraceInterval is the amount of time to provide for bots to
-// terminate gracefully.
-const GraceInterval = 3 * time.Minute
-
 // WithExpire sets up the delayable expiration context.
 func (s *State) WithExpire(ctx context.Context, t time.Time) context.Context {
-	t = t.Add(-GraceInterval)
+	t = t.Add(-bot.GraceInterval)
 	ctx, s.expireTimer = delay.WithTimer(ctx, t)
 	return ctx
 }

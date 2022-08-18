@@ -13,9 +13,14 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 )
+
+// GraceInterval is the amount of time to provide for bots to
+// terminate gracefully.
+const GraceInterval = 3 * time.Minute
 
 // Bot is the interface for interacting with a started Swarming bot.
 // Wait must be called to ensure the process is waited for.
@@ -28,20 +33,26 @@ type Bot interface {
 	// bots by waiting for the currently running task to finish before
 	// exiting.
 	Drain() error
-	// Terminate terminates the bot with SIGTERM.  Swarming bots handle
-	// SIGTERM by aborting the currently running task and exiting.
-	Terminate() error
+	// TerminateOrKill terminates the bot with SIGTERM, then force kills it
+	// after a grace period.
+	// Swarming bots handle SIGTERM by aborting the currently running task and
+	// exiting, but it can be hours long.
+	// It rely on Wait() to be called to notify if the bot process has been
+	// terminated.
+	TerminateOrKill() error
 }
 
 type realBot struct {
-	config  Config
-	cmd     *exec.Cmd
-	logFile *os.File
+	config     Config
+	cmd        *exec.Cmd
+	logFile    *os.File
+	terminated chan struct{}
 }
 
 // Wait implements Bot.
 func (b realBot) Wait() error {
 	err := b.cmd.Wait()
+	close(b.terminated)
 	_ = b.logFile.Close()
 	log.Printf("Done waiting for bot %s", b.config.BotID)
 	return err
@@ -96,9 +107,10 @@ func (s Starter) Start(c Config) (b Bot, err error) {
 	}
 	log.Printf("Bot for %s started", c.BotID)
 	return realBot{
-		config:  c,
-		cmd:     cmd,
-		logFile: f,
+		config:     c,
+		cmd:        cmd,
+		logFile:    f,
+		terminated: make(chan struct{}),
 	}, nil
 }
 
