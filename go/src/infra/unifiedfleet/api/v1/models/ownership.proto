@@ -9,6 +9,12 @@ package unifiedfleet.api.v1.models;
 option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 
 message OwnershipData {
+   // resource group to which this bot belongs to
    repeated string resource_group = 1;
+   // security level of the bot ex:trusted, untrusted etc
    string security_level = 2;
+   // security pool to which this bot belongs to
+   string pool_name = 3;
+   //swarming instance to which this bot will communicate
+   string swarming_instance = 4;
 }
