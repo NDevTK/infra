@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/attacheddevicemachine"
 	"infra/cmd/shivas/internal/ufs/subcmds/cachingservice"
 	"infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
+	"infra/cmd/shivas/internal/ufs/subcmds/devboard"
 	"infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"infra/cmd/shivas/internal/ufs/subcmds/dut"
 	"infra/cmd/shivas/internal/ufs/subcmds/host"
@@ -77,6 +78,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		machine.DeleteMachineCmd,
 		attacheddevicemachine.DeleteAttachedDeviceMachineCmd,
 		attacheddevicemachine.DeleteADMCmd,
+		devboard.DeleteDevboardMachineCmd,
 		host.DeleteHostCmd,
 		attacheddevicehost.DeleteAttachedDeviceHostCmd,
 		attacheddevicehost.DeleteADHCmd,

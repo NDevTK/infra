@@ -69,6 +69,26 @@ func PrintExistingAttachedDeviceMachine(ctx context.Context, ic ufsAPI.FleetClie
 	return res, nil
 }
 
+// PrintExistingDevboardMachine prints the old devboard machine in update/delete operations.
+func PrintExistingDevboardMachine(ctx context.Context, ic ufsAPI.FleetClient, name string) (*ufspb.Machine, error) {
+	res, err := ic.GetMachine(ctx, &ufsAPI.GetMachineRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, name),
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "Failed to get devboard machine").Err()
+	}
+	if res == nil {
+		return nil, errors.Reason("The returned resp is empty").Err()
+	}
+	if res.GetDevboard() == nil {
+		return nil, errors.Reason("Machine %s is not an devboard machine.", name).Err()
+	}
+	res.Name = ufsUtil.RemovePrefix(res.Name)
+	fmt.Println("The devboard machine before delete/update:")
+	PrintProtoJSON(res, !NoEmitMode(false))
+	return res, nil
+}
+
 // PrintExistingDrac prints the old drac in update/delete operations
 func PrintExistingDrac(ctx context.Context, ic ufsAPI.FleetClient, name string) error {
 	res, err := ic.GetDrac(ctx, &ufsAPI.GetDracRequest{
