@@ -260,7 +260,10 @@ func waitChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, buildIds [
 		return nil
 	}
 
-	for idx := 0; idx < 100; idx++ {
+	step, ctx := build.StartStep(ctx, "wait children")
+	defer func() { step.End(nil) }()
+
+	for idx := 0; idx < 200; idx++ {
 		endedBuilds, err := waitOnce(ctx, bbClient, buildIds, cbs, idx)
 		if err != nil {
 			return err
@@ -401,6 +404,17 @@ func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakeb
 		return nil
 	}
 
+	if err := searchBuildsByBuildsetTag(ctx, bbClient, sbs); err != nil {
+		return err
+	}
+	if err := searchBuildsByBuilder(ctx, bbClient, sbs); err != nil {
+		return err
+	}
+
+	if err := searchBuildsByAncestor(ctx, bbClient, sbs); err != nil {
+		return err
+	}
+
 	steps := int(sbs.Steps)
 	if steps > 3 {
 		steps = steps - 3
@@ -411,11 +425,5 @@ func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakeb
 			return errors.Annotate(err, "search build %d", i).Err()
 		}
 	}
-	if err := searchBuildsByBuildsetTag(ctx, bbClient, sbs); err != nil {
-		return err
-	}
-	if err := searchBuildsByBuilder(ctx, bbClient, sbs); err != nil {
-		return err
-	}
-	return searchBuildsByAncestor(ctx, bbClient, sbs)
+	return nil
 }
