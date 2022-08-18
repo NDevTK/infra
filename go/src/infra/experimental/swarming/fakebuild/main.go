@@ -11,6 +11,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -141,13 +142,17 @@ func scheduleOneBatch(ctx context.Context, bbClient bbpb.BuildsClient, idx, batc
 	if err != nil {
 		return nil, errors.Annotate(err, "batch %d", idx).Err()
 	}
+
+	summary := make([]string, 0, batchSize)
 	for _, r := range res.GetResponses() {
 		b := r.GetScheduleBuild()
 		if b == nil {
 			continue
 		}
 		buildIDs = append(buildIDs, b.Id)
+		summary = append(summary, fmt.Sprintf("* [%d](https://luci-milo-dev.appspot.com/b/%d)", b.Id, b.Id))
 	}
+	step.SetSummaryMarkdown(strings.Join(summary, "\n"))
 
 	log := step.Log("response")
 	marsh := jsonpb.Marshaler{Indent: "  "}
