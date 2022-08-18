@@ -61,6 +61,12 @@ func (s *ServoType) IsV4() bool {
 	return strings.Contains(s.str, SERVO_V4)
 }
 
+// IsV4p1 returns true if and only if the servo has a servo_v4p1 component.
+func (s *ServoType) IsV4p1() bool {
+	// TODO(gregorynisbet): Should this be contains or hasPrefix?
+	return strings.Contains(s.str, SERVO_V4P1)
+}
+
 // IsC2D2 checks whether the servo has a c2d2 component.
 func (s *ServoType) IsC2D2() bool {
 	return strings.Contains(s.str, C2D2)
