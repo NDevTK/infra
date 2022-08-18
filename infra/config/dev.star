@@ -465,7 +465,7 @@ fakebuild_builder("fake-30m-no-bn", 300, 2, 10, False)
 fakebuild_builder("fake-1h", 600, 2, 10, True)
 fakebuild_builder("fake-1h-no-bn", 600, 2, 10, False)
 
-def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, sleep_max_sec, build_numbers, schedule = None):
+def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, sleep_max_sec, build_numbers, schedule = None, wait_for_children = False):
     luci.builder(
         name = name,
         bucket = "loadtest",
@@ -491,6 +491,7 @@ def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, s
                 "batch_size": batch_size,
                 "sleep_min_sec": sleep_min_sec,
                 "sleep_max_sec": sleep_max_sec,
+                "wait_for_children": wait_for_children,
             },
         },
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
@@ -546,4 +547,4 @@ fakebuild_search_builder("fake-search", 100, 10, 2, 10, True)
 fakebuild_search_builder("fake-search-no-bn", 100, 10, 2, 10, False)
 
 fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-search", 2, 10, True)
-fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-search-no-bn", 2, 10, False)
+fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-search-no-bn", 2, 10, False, wait_for_children = True)
