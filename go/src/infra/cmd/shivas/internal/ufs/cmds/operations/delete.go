@@ -82,6 +82,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		host.DeleteHostCmd,
 		attacheddevicehost.DeleteAttachedDeviceHostCmd,
 		attacheddevicehost.DeleteADHCmd,
+		devboard.DeleteDevboardLSECmd,
 		kvm.DeleteKVMCmd,
 		rpm.DeleteRPMCmd,
 		switches.DeleteSwitchCmd,
