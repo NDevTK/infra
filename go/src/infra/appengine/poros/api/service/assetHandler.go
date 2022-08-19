@@ -335,15 +335,6 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 			{"user", "Joe"},
 		}
 		break
-	case "active_directory_splunk":
-		resourceData = [][]string{
-			{"network", "primary"},
-			{"ad_domain", "test1.com"},
-			{"domain_controller_machine", "domain-controll"},
-			{"user", "Joe"},
-			{"win2016", "Splunk"},
-		}
-		break
 	case "virtual_machine":
 		resourceData = [][]string{
 			{"network", "primary"},

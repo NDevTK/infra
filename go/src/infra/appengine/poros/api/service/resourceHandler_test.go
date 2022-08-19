@@ -135,7 +135,7 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 		entity.Name = "Test Resource Name Updated"
 		entity.Description = "Test Resource description Updated"
 		entity.Type = "ad_joined_machine"
-		entity.OperatingSystem = "linux_system"
+		entity.OperatingSystem = "windows_system"
 		entity.ImageProject = "image-project-updated"
 		entity.ImageFamily = "image-family-updated"
 
@@ -145,7 +145,7 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 		}
 		updatedEntity, err := handler.Update(ctx, updateRequest)
 		So(err, ShouldBeNil)
-		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "linux_system", "image-project-updated", "image-family-updated"}
+		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "windows_system", "image-project-updated", "image-family-updated"}
 		get := []string{updatedEntity.GetName(), updatedEntity.GetDescription(), updatedEntity.GetType(), updatedEntity.GetOperatingSystem(), updatedEntity.GetImageProject(), updatedEntity.GetImageFamily()}
 		So(get, ShouldResemble, want)
 
@@ -154,7 +154,7 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 			ResourceId: entity.GetResourceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		want = []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "linux_system", "image-project-updated", "image-family-updated"}
+		want = []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "windows_system", "image-project-updated", "image-family-updated"}
 		get = []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
 		So(get, ShouldResemble, want)
 	})
@@ -358,7 +358,7 @@ func TestListResources(t *testing.T) {
 	t.Parallel()
 
 	resourceRequest1 := mockCreateResourceRequest("Test Resource1", "Test Resource description", "ad_joined_machine", "windows_system", "image-project-1", "image-family-1")
-	resourceRequest2 := mockCreateResourceRequest("Test Resource2", "Test Resource description2", "ad_joined_machine", "linux_system", "image-project-2", "image-family-2")
+	resourceRequest2 := mockCreateResourceRequest("Test Resource2", "Test Resource description2", "ad_joined_machine", "windows_system", "image-project-2", "image-family-2")
 
 	Convey("Get all resources from datastore", t, func() {
 		ctx := memory.Use(context.Background())

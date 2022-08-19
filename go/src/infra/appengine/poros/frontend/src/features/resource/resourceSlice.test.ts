@@ -56,13 +56,6 @@ test('should change description of selected record', () => {
   );
 });
 
-test('should change operating system of selected record', () => {
-  store.dispatch(setOperatingSystem('linux_machine'));
-  expect(store.getState().resource.record.operatingSystem).toEqual(
-    'linux_machine'
-  );
-});
-
 test('should change image project of selected record', () => {
   store.dispatch(setImageProject('test-project'));
   expect(store.getState().resource.record.imageProject).toEqual('test-project');

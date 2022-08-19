@@ -194,9 +194,6 @@ export const Asset = () => {
             >
               <MenuItem value={'active_directory'}>Active Directory</MenuItem>
               <MenuItem value={'virtual_machine'}>VMs only</MenuItem>
-              <MenuItem value={'active_directory_splunk'}>
-                Active Directory with Splunk
-              </MenuItem>
             </Select>
           </FormControl>
         </Grid>

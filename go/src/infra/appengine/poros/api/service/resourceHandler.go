@@ -72,13 +72,13 @@ func validateResourceEntity(entity *ResourceEntity) error {
 	if entity.Type == "" {
 		return errors.New("type cannot be empty")
 	}
-	if entity.Type == "ad_joined_machine" && entity.OperatingSystem == "" {
+	if (entity.Type == "ad_joined_machine" || entity.Type == "machine") && entity.OperatingSystem == "" {
 		return errors.New("Operating System cannot be empty")
 	}
-	if entity.Type == "ad_joined_machine" && entity.ImageProject == "" {
+	if (entity.Type == "ad_joined_machine" || entity.Type == "machine") && entity.ImageProject == "" {
 		return errors.New("VM Image Project needs to be specified")
 	}
-	if entity.Type == "ad_joined_machine" && entity.ImageFamily == "" {
+	if (entity.Type == "ad_joined_machine" || entity.Type == "machine") && entity.ImageFamily == "" {
 		return errors.New("VM Image Family needs to be specified")
 	}
 	return nil

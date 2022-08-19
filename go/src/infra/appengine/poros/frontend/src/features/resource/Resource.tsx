@@ -126,15 +126,15 @@ export const Resource = () => {
       dispatch(setDescriptionValidFalse());
       valid = false;
     }
-    if (type === 'ad_joined_machine' && operatingSystem === '') {
+    if ((type === 'ad_joined_machine' || type === 'machine') && operatingSystem === '') {
       dispatch(setOperatingSystemValidFalse());
       valid = false;
     }
-    if (type === 'ad_joined_machine' && imageProject === '') {
+    if ((type === 'ad_joined_machine' || type === 'machine') && imageProject === '') {
       dispatch(setImageProjectValidFalse());
       valid = false;
     }
-    if (type === 'ad_joined_machine' && imageFamily === '') {
+    if ((type === 'ad_joined_machine' || type === 'machine') && imageFamily === '') {
       dispatch(setImageFamilyValidFalse());
       valid = false;
     }
@@ -186,6 +186,7 @@ export const Resource = () => {
               placeholder="Type"
             >
               <MenuItem value={'ad_joined_machine'}>AD Joined Machine</MenuItem>
+              <MenuItem value={'machine'}>Machine</MenuItem>
               {/* <MenuItem value={'domain'}>Domain</MenuItem> */}
             </Select>
             {!recordValidation.typeValid && (
@@ -226,8 +227,6 @@ export const Resource = () => {
               >
                 windows_machine
               </MenuItem>
-              <MenuItem value={'linux_machine'}>linux_machine</MenuItem>
-              <MenuItem value={'chromeos_machine'}>chromeos_machine</MenuItem>
             </Select>
             {!recordValidation.operatingSystemValid && (
               <FormHelperText style={{ color: 'red' }}>
@@ -434,13 +433,13 @@ export const Resource = () => {
 
         {renderTypeDropdown()}
 
-        {activeResourceType == 'ad_joined_machine'
+        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine')
           ? renderOperatingSystemDropdown()
           : null}
 
-        {activeResourceType == 'ad_joined_machine' ? renderImageProjectInput() : null}
+        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine') ? renderImageProjectInput() : null}
 
-        {activeResourceType == 'ad_joined_machine' ? renderImageFamilyInput() : null}
+        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine') ? renderImageFamilyInput() : null}
 
         <Grid container spacing={2} padding={1} paddingTop={6}>
           <Grid item xs={12}>
