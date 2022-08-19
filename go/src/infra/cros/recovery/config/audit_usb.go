@@ -75,6 +75,10 @@ func CrosAuditUSBConfig() *Configuration {
 				},
 				Conditions: []string{
 					"Is not servo_v3",
+					// Disable power-cycle by smart hub for v4p1 due to b/243042046,
+					// The built-in reboot and ethernet power control in v4p1 also
+					// makes power-cycle the entire device unnecessary.
+					"Serial number is not servo_v4p1",
 				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
@@ -191,6 +195,15 @@ func CrosAuditUSBConfig() *Configuration {
 				},
 				Conditions: []string{
 					"Is servo_v3 used",
+				},
+				ExecName: "sample_fail",
+			},
+			"Serial number is not servo_v4p1": {
+				Docs: []string{
+					"Verify that the servo serial number is not a servo_v4p1 serial number",
+				},
+				Conditions: []string{
+					"is_servo_v4p1_by_serial_number",
 				},
 				ExecName: "sample_fail",
 			},

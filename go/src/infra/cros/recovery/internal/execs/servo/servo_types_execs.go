@@ -61,6 +61,17 @@ func servoVerifyV4p1Exec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// servoVerifyV4p1BySerialNumberExec verifies whether the servo attached to the servo
+// host is of type v4p1 based on its serial number.
+func servoVerifyV4p1BySerialNumberExec(ctx context.Context, info *execs.ExecInfo) error {
+	const servoV4p1SerialPrefix = "SERVOV4P1"
+	sn := info.GetChromeos().GetServo().GetSerialNumber()
+	if !strings.HasPrefix(sn, servoV4p1SerialPrefix) {
+		return errors.Reason("servo verify v4p1 by serial number: the serial number %s does not have expected prefix %s.", sn, servoV4p1SerialPrefix).Err()
+	}
+	return nil
+}
+
 // servoVerifyServoMicroExec verifies whether the servo attached to
 // the servo host is of type servo micro.
 func servoVerifyServoMicroExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -165,6 +176,7 @@ func init() {
 	execs.Register("is_servo_v3", servoVerifyV3Exec)
 	execs.Register("is_servo_v4", servoVerifyV4Exec)
 	execs.Register("is_servo_v4p1", servoVerifyV4p1Exec)
+	execs.Register("is_servo_v4p1_by_serial_number", servoVerifyV4p1BySerialNumberExec)
 	execs.Register("is_servo_micro", servoVerifyServoMicroExec)
 	execs.Register("is_dual_setup_configured", servoIsDualSetupConfiguredExec)
 	execs.Register("is_dual_setup", servoVerifyDualSetupExec)
