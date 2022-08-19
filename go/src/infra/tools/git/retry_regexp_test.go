@@ -56,9 +56,20 @@ func TestDefaultGitRetryRegexps(t *testing.T) {
 			`fatal: fetch-pack: expected hash then LF at end of http-fetch output`,
 			`fatal: fetch-pack: unable to finish http-fetch`,
 			`fatal: fetch-pack: pack downloaded from $URI does not match expected hash $HASH`,
+			`error: https://fuchsia.googlesource.com/a/fuchsia did not send all necessary objects`,
 		} {
 			Convey(fmt.Sprintf(`Matches line: %q`, line), func() {
 				So(DefaultGitRetryRegexp.MatchString(line), ShouldBeTrue)
+			})
+		}
+	})
+
+	Convey(`Default Git retry regexps match not expected lines`, t, func() {
+		for _, line := range []string{
+			`error: /b/s/w/ir/cache/git/chromium.googlesource.com-external-gitlab.com-wg1-jpeg--xl did not send all necessary objects`,
+		} {
+			Convey(fmt.Sprintf(`Matches line: %q`, line), func() {
+				So(DefaultGitRetryRegexp.MatchString(line), ShouldBeFalse)
 			})
 		}
 	})
