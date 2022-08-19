@@ -37,7 +37,7 @@ func TestAnalyzeFailure(t *testing.T) {
 	defer ctl.Finish()
 	mc := buildbucket.NewMockedClient(c, ctl)
 	c = mc.Ctx
-	c = gitiles.MockedGitilesClientContext(c)
+	c = gitiles.MockedGitilesClientContext(c, map[string]string{})
 	res := &bbpb.Build{
 		Input: &bbpb.Build_Input{
 			GitilesCommit: &bbpb.GitilesCommit{

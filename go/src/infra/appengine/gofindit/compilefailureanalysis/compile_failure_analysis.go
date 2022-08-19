@@ -86,14 +86,21 @@ func AnalyzeFailure(
 	return analysis, nil
 }
 
-func verifyHeuristicResults(c context.Context, heuristicAnalysis *gfim.CompileHeuristicAnalysis, failedBuildId int64) error {
+// verifyHeuristicResults verifies if the suspects of heuristic analysis are the real culprit.
+// analysisID is CompileFailureAnalysis ID. It is meant to be propagated all the way to the
+// recipe, so we can identify the analysis in buildbucket.
+func verifyHeuristicResults(c context.Context, heuristicAnalysis *gfim.CompileHeuristicAnalysis, failedBuildID int64, analysisID int64) error {
 	// TODO (nqmtuan): Move the verification into a task queue
 	suspects, err := getHeuristicSuspectsToVerify(c, heuristicAnalysis)
 	if err != nil {
 		return err
 	}
 	for _, suspect := range suspects {
-		culpritverification.VerifyCulprit(c, &suspect.GitilesCommit, failedBuildId)
+		err := culpritverification.VerifySuspect(c, suspect, failedBuildID, analysisID)
+		if err != nil {
+			// Just log the error and continue for other suspects
+			logging.Errorf(c, "Error in verifying suspect %d for analysis %d", suspect.Id, analysisID)
+		}
 	}
 	return nil
 }

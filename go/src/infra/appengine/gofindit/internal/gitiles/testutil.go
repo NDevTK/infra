@@ -8,13 +8,19 @@ import (
 	"context"
 )
 
-type MockedGitilesClient struct{}
+type MockedGitilesClient struct {
+	Data map[string]string // Data for MockedGitilesClient to return
+}
 
 func (cl *MockedGitilesClient) sendRequest(c context.Context, url string, params map[string]string) (string, error) {
-	// TODO: properly mock some value when we need it
+	if val, ok := cl.Data[url]; ok {
+		return val, nil
+	}
 	return `{"logs":[]}`, nil
 }
 
-func MockedGitilesClientContext(c context.Context) context.Context {
-	return context.WithValue(c, MockedGitilesClientKey, &MockedGitilesClient{})
+func MockedGitilesClientContext(c context.Context, data map[string]string) context.Context {
+	return context.WithValue(c, MockedGitilesClientKey, &MockedGitilesClient{
+		Data: data,
+	})
 }

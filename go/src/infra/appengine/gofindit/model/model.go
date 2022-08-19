@@ -23,6 +23,28 @@ const (
 	BuildFailureType_Other   BuildFailureType = "Other"
 )
 
+type RerunBuildType string
+
+const (
+	RerunBuildType_CulpritVerification RerunBuildType = "Culprit Verification"
+	RerunBuildType_NthSection          RerunBuildType = "NthSection"
+)
+
+type SuspectVerificationStatus string
+
+const (
+	// The suspect is not verified and no verification is happening
+	SuspectVerificationStatus_Unverified = "Unverified"
+	// The suspect is under verification
+	SuspectVerificationStatus_UnderVerification = "Under Verification"
+	// The suspect is confirmed to be culprit
+	SuspectVerificationStatus_ConfirmedCulprit = "Confirmed Culprit"
+	// This is a false positive - the suspect is not the culprit
+	SuspectVerificationStatus_Vindicated = "Vindicated"
+	// Some error happened during verification
+	SuspectVerificationStatus_VerificationError = "Verification Error"
+)
+
 // LuciBuild represents one LUCI build
 type LuciBuild struct {
 	BuildId     int64  `gae:"build_id"`
@@ -106,15 +128,33 @@ type CompileFailureInRerunBuild struct {
 	OutputTargets string `gae:"output_targets"`
 }
 
-// CompileRerunBuild is one rerun build for CompileNthSectionAnalysis.
+// CompileRerunBuild is one rerun build for CompileFailureAnalysis.
+// The rerun build may be for nth-section analysis or for culprit verification.
 type CompileRerunBuild struct {
-	// Id is the build Id.
+	// Id is the buildbucket Id for the rerun build.
 	Id int64 `gae:"$id"`
-	// Key to the parent CompileNthSectionAnalysis.
-	ParentAnalysis *datastore.Key `gae:"$parent"`
+	// Type for the rerun build
+	Type RerunBuildType `gae:"rerun_type"`
+	// Key to the Suspect, if this is for culprit verification
+	Suspect *datastore.Key `gae:"suspect"`
+	// LUCI build data
 	LuciBuild
-	// Failures occurring in the rerun build.
-	Failures []CompileFailureInRerunBuild `gae:"failures"`
+}
+
+// SingleRerun represents one rerun for a particular compile/test failures for a particular commit.
+// Multiple SingleRerun may present in one RerunBuild for different commits.
+type SingleRerun struct {
+	Id int64 `gae:"$id"`
+	// Key to the parent CompileRerunBuild
+	RerunBuild *datastore.Key `gae:"rerun_build"`
+	// The commit that this SingleRerun runs on
+	buildbucketpb.GitilesCommit
+	// Time when the rerun starts.
+	StartTime time.Time `gae:"start_time"`
+	// Time when the rerun ends.
+	EndTime time.Time `gae:"end_time"`
+	// Status of the rerun
+	Status gofinditpb.RerunStatus
 }
 
 // Culprit is the culprit of rerun analysis.
@@ -126,6 +166,8 @@ type Culprit struct {
 
 // Suspect is the suspect of heuristic analysis.
 type Suspect struct {
+	Id int64 `gae:"$id"`
+
 	// Key to the CompileFailureHeuristicAnalysis that results in this suspect.
 	ParentAnalysis *datastore.Key `gae:"$parent"`
 
@@ -144,6 +186,15 @@ type Suspect struct {
 	// A short, human-readable string that concisely describes a fact about the
 	// suspect. e.g. 'add a/b/x.cc'
 	Justification string `gae:"justification,noindex"`
+
+	// Whether if a suspect has been verified
+	VerificationStatus SuspectVerificationStatus `gae:"verification_status"`
+
+	// Key to the CompileRerunBuild of the suspect, for culprit verification purpose.
+	SuspectRerunBuild *datastore.Key `gae:"suspect_rerun_build"`
+
+	// Key to the CompileRerunBuild of the parent commit of the suspect, for culprit verification purpose.
+	ParentRerunBuild *datastore.Key `gae:"parent_rerun_build"`
 }
 
 // CompileHeuristicAnalysis is heuristic analysis for compile failures.

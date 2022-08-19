@@ -99,6 +99,7 @@ func saveResultsToDatastore(c context.Context, analysis *gfim.CompileHeuristicAn
 				Ref:     gitilesRef,
 				Id:      item.Commit,
 			},
+			VerificationStatus: gfim.SuspectVerificationStatus_Unverified,
 		}
 		suspects[i] = suspect
 	}

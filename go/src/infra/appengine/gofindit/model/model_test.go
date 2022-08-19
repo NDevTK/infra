@@ -93,22 +93,6 @@ func TestDatastoreModel(t *testing.T) {
 			}
 			So(datastore.Put(c, nthsection_analysis), ShouldBeNil)
 
-			rerun_build := &CompileRerunBuild{
-				ParentAnalysis: datastore.KeyForObj(c, nthsection_analysis),
-				LuciBuild: LuciBuild{
-					BuildId:     88128398584903,
-					Project:     "chromium",
-					Bucket:      "ci",
-					Builder:     "android",
-					BuildNumber: 123,
-					Status:      buildbucketpb.Status_SUCCESS,
-					StartTime:   cl.Now(),
-					EndTime:     cl.Now(),
-					CreateTime:  cl.Now(),
-				},
-			}
-			So(datastore.Put(c, rerun_build), ShouldBeNil)
-
 			culprit := &Culprit{
 				ParentAnalysis: datastore.KeyForObj(c, compile_failure_analysis),
 				GitilesCommit: buildbucketpb.GitilesCommit{
@@ -135,6 +119,24 @@ func TestDatastoreModel(t *testing.T) {
 				Justification: "The CL touch the file abc.cc, and it is in the log",
 			}
 			So(datastore.Put(c, suspect), ShouldBeNil)
+
+			rerun_build := &CompileRerunBuild{
+				Suspect: datastore.KeyForObj(c, suspect),
+				Type:    RerunBuildType_NthSection,
+				LuciBuild: LuciBuild{
+					BuildId:     88128398584903,
+					Project:     "chromium",
+					Bucket:      "ci",
+					Builder:     "android",
+					BuildNumber: 123,
+					Status:      buildbucketpb.Status_SUCCESS,
+					StartTime:   cl.Now(),
+					EndTime:     cl.Now(),
+					CreateTime:  cl.Now(),
+				},
+			}
+			So(datastore.Put(c, rerun_build), ShouldBeNil)
+
 		})
 	})
 }

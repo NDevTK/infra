@@ -92,13 +92,16 @@ message UpdateAnalysisRequest {
 // RPC called from bots to update the analysis progress
 message UpdateAnalysisProgressRequest {
   // The analysis that the bot runs
-  string analysis_id = 1;
+  int64 analysis_id = 1;
   // Bot id
   string bot_id = 2;
+  // BuildbucketID of the rerun build
+  // We use this to determine which rerun build to map back.
+  int64 bbid = 3;
   // The revision that the bot runs
-  buildbucket.v2.GitilesCommit gitiles_commit = 3;
+  buildbucket.v2.GitilesCommit gitiles_commit = 4;
   // Result of the rerun
-  RerunResult rerun_result = 4;
+  RerunResult rerun_result = 5;
 }
 
 message UpdateAnalysisProgressResponse {
