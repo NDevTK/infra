@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "29fd5f54_7bf00d1a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "There isn\u0027t quite a nice way to split this that makes it easier to review I think... Once I change the proto, everything that uses the proto has to change. Which is basically all the files I touch here.\n\nA flag could be used? But seems like it would further complicate the maintenance and development with all the colliding names. A rollback seems to be the better choice. Not sure if it will make anything easier to review or maintain even in the short term. How were you thinking the flag would help here?",
+      "parentUuid": "3e35c3ff_37f07ede",
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0f8eb50_d2fb0824",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd8c76d4_9f29d3b2",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/machine_lse.proto",
+        "patchSetId": 10
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "HwidData is not a proto specific to MachineLse and is used/shared with other parts of the code. Didn\u0027t make sense to keep it here.",
+      "parentUuid": "c0f8eb50_d2fb0824",
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd44272b_b89f7823",
@@ -65,6 +101,30 @@
       "writtenOn": "2022-08-22T18:21:53Z",
       "side": 1,
       "message": "Could you also set sku and variant in HwidData? It seems weird that the entity we store in database does not 100% equal to the HwidData in proto. Plus in unittest, you store the entire hwidData with sku and variant.",
+      "range": {
+        "startLine": 72,
+        "startChar": 20,
+        "endLine": 72,
+        "endChar": 28
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "524eac1b_24a7be04",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd44272b_b89f7823",
       "range": {
         "startLine": 72,
         "startChar": 20,
@@ -98,6 +158,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2534303_33a0e432",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "When we run the tests, the update time and the cache time both use `time.Now().UTC()`. But because of when the lines of code get executed, there can be a tiny diff. 1 millisecond is tolerable.",
+      "parentUuid": "c2178b98_38cd3a2a",
+      "range": {
+        "startLine": 195,
+        "startChar": 2,
+        "endLine": 197,
+        "endChar": 3
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ef7b98a6_eb1d93fe",
@@ -111,6 +195,30 @@
       "writtenOn": "2022-08-22T18:21:53Z",
       "side": 1,
       "message": "add comments:\n// Verify datastore contains the expired hwiddata",
+      "range": {
+        "startLine": 355,
+        "startChar": 2,
+        "endLine": 359,
+        "endChar": 3
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cba326f7_ccb1cc8e",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ef7b98a6_eb1d93fe",
       "range": {
         "startLine": 355,
         "startChar": 2,
@@ -144,6 +252,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9dbe6cf_b3f0d7dc",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1246a82_aacc1eee",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 125,
+        "endChar": 0
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1e29d8a_5463dde8",
@@ -157,6 +289,30 @@
       "writtenOn": "2022-08-22T18:21:53Z",
       "side": 1,
       "message": "I think you should store the entire hwid data into database, and fetch it like:\n\nif Data.DutLabel \u003d\u003d nil {\n    parseLegacyHWIDData(...)\n    reset data.sku \u0026 data.variant\n    return \u0026data, nil\n} else {\n    return hwidData, nil (hwidData is the one you get from line #133)\n}",
+      "range": {
+        "startLine": 139,
+        "startChar": 2,
+        "endLine": 162,
+        "endChar": 18
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a051a6a_9750ccd4",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1e29d8a_5463dde8",
       "range": {
         "startLine": 139,
         "startChar": 2,

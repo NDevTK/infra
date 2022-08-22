@@ -495,6 +495,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d78aba4a_f0504677",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-22T22:57:12Z",
+      "side": 1,
+      "message": "I think the revert case is covered in the tests now? When we revert, `UpdateHwidData` will revert to use the implementation in `UpdateLegacyHwidData`. But the function name will be `UpdateHwidData`. Not sure if I am missing something else.",
+      "parentUuid": "fbfb1ca4_4d181c59",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 23
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d060ff83_11fc62fb",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
         "patchSetId": 6
