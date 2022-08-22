@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c14e7f41_52c2ffc8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1346454
+      },
+      "writtenOn": "2022-08-22T20:55:12Z",
+      "side": 1,
+      "message": "The bug you used in the commit msg is already closed.",
+      "revId": "9593c6902a170b0fb9d354c7065cdb8a5b930128",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
