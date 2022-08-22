@@ -17,7 +17,6 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/cmd/mallet/internal/cmd/f20"
-	"infra/cmd/mallet/internal/cmd/inventory"
 	"infra/cmd/mallet/internal/cmd/meta"
 	"infra/cmd/mallet/internal/cmd/tasks"
 	"infra/cmd/mallet/internal/runlocal/cmds/run"
@@ -39,8 +38,6 @@ func getApplication() *cli.Application {
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
 			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
-			subcommands.Section("Readonly"),
-			inventory.DutList,
 			subcommands.Section("Experiments"),
 			tasks.Recovery,
 			run.LabpackCmd,
