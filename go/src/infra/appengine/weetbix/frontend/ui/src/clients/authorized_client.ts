@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { PrpcClient } from '@chopsui/prpc-client';
+
 import { obtainAuthState } from '../api/auth_state';
 
 export class AuthorizedPrpcClient {
@@ -16,7 +17,8 @@ export class AuthorizedPrpcClient {
     // Only allow insecure connections in Weetbix in local development,
     // where risk of man-in-the-middle attack to server is negligible.
     const insecure = document.location.protocol === 'http:' && !host;
-    if (insecure && document.location.hostname !== 'localhost') {
+    const hostname = document.location.hostname;
+    if (insecure && hostname !== 'localhost' && hostname !== '127.0.0.1') {
       // Server misconfiguration.
       throw new Error('Weetbix should never be served over http: outside local development.');
     }
