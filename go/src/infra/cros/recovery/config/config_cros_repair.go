@@ -454,9 +454,146 @@ func crosRepairActions() map[string]*Action {
 				"lsusb -vv -d 03eb:2042 |grep \"Remote Wakeup\"",
 			},
 			RecoveryActions: []string{
-				// TODO(b:233368615): update keyboard firmware.
+				"Flash keyboard map",
 			},
 			AllowFailAfterRecovery: true,
+		},
+		"Flash keyboard map": {
+			Dependencies: []string{
+				"servod_echo",
+				"set_at_hwb_on",
+				"set_atmega_rst_on",
+				"Sleep for atmega reset",
+				"set_atmega_rst_off",
+				"Sleep for atmega reset",
+				"set_at_hwb_off",
+				"Sleep for usb present delay",
+				"Check if expected Atmel chip",
+				"Transfer keyboard hex",
+				"Erase keyboard map",
+				"Write keyboard map",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"lsusb -vv -d 03eb:2042 |grep \"Remote Wakeup\"",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"set_at_hwb_on": {
+			Docs: []string{
+				"set servo's 'at_hwb' command to 'on' value.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:at_hwb",
+				"string_value:on",
+			},
+		},
+		"set_atmega_rst_on": {
+			Docs: []string{
+				"set servo's 'atmega_rst' command to 'on' value.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:atmega_rst",
+				"string_value:on",
+			},
+		},
+		"Sleep for atmega reset": {
+			Docs: []string{
+				"In legacy repair, the atmega reset delay in 0.2 seconds. ",
+				"However, here we are being more conservative, and sleep ",
+				"for 1 second.",
+			},
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:1",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"set_atmega_rst_off": {
+			Docs: []string{
+				"set servo's 'atmega_rst' command to 'off' value.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:atmega_rst",
+				"string_value:off",
+			},
+		},
+		"set_at_hwb_off": {
+			Docs: []string{
+				"set servo's 'at_hwb' command to 'off' value.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:at_hwb",
+				"string_value:off",
+			},
+		},
+		"Sleep for usb present delay": {
+			Docs: []string{
+				"We need to wait for USB Present Delay, which is 1 second.",
+			},
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:1",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Check if expected Atmel chip": {
+			Docs: []string{
+				"We check whether the chip is of the expected type.",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"lsusb -d 03eb | grep \"Atmel Corp. atmega32u4 DFU bootloader\"",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 30,
+			},
+		},
+		"Transfer keyboard hex": {
+			Docs: []string{
+				"We will transfer the keyboard hex embedded in repair package to the DUT.",
+			},
+			ExecName: "transfer_keyboard_hex",
+		},
+		"Erase keyboard map": {
+			Docs: []string{
+				"Erase pre-existing keyboard map.",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"dfu-programmer atmega32u4 erase --force",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 120,
+			},
+		},
+		"Write keyboard map": {
+			Docs: []string{
+				"Write new keyboard map using the copied keyboard hex.",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"dfu-programmer atmega32u4 flash /tmp/keyboard.hex",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 120,
+			},
 		},
 		"Update Servo NIC mac address": {
 			Conditions: []string{
