@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/docker"
+	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // DockerClient is an interface fulfilled by the recovery docker lib
@@ -30,6 +31,7 @@ type ServodContainerOptions struct {
 	model         string
 	servoSerial   string
 	withServod    bool
+	servoSetup    ufspb.ServoSetupType
 }
 
 func (opts *ServodContainerOptions) Validate() error {
@@ -69,7 +71,7 @@ func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs
 	return &docker.ContainerArgs{
 		Detached:   true,
 		ImageName:  dockerServodImageName(),
-		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial),
+		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial, opts.servoSetup),
 		Volumes:    generateVols(opts.servoSerial),
 		Network:    "default_satlab",
 		Privileged: true,
@@ -78,7 +80,7 @@ func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs
 }
 
 // generateEnvVars builds a string array of env vars needed to launch servod in docker
-func generateEnvVars(board string, model string, servoSerial string) []string {
+func generateEnvVars(board string, model string, servoSerial string, servoSetup ufspb.ServoSetupType) []string {
 	port := 9999
 	var envVars []string
 
@@ -86,6 +88,10 @@ func generateEnvVars(board string, model string, servoSerial string) []string {
 	envVars = append(envVars, fmt.Sprintf("MODEL=%s", model))
 	envVars = append(envVars, fmt.Sprintf("SERIAL=%s", servoSerial))
 	envVars = append(envVars, fmt.Sprintf("PORT=%d", port))
+
+	if servoSetup == ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4 {
+		envVars = append(envVars, "DUAL_V4=1")
+	}
 
 	return envVars
 }

@@ -12,6 +12,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/common/errors"
+
+	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // TestStartServodContainerStartsContainer tests for the execution of `docker.Start()` in various conditions and ensures we use the correct args to do so
@@ -33,7 +35,7 @@ func TestStartServodContainerStartsContainer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		dockerArgs := buildServodContainerArgs(ServodContainerOptions{tc.containerName, "board", "model", "serial", true})
+		dockerArgs := buildServodContainerArgs(ServodContainerOptions{tc.containerName, "board", "model", "serial", true, ufspb.ServoSetupType_SERVO_SETUP_REGULAR})
 
 		startServodContainer(context.Background(), &tc.fc, tc.containerName, dockerArgs)
 		if tc.fc.containerLaunched != tc.expectContainerLaunch {
@@ -59,7 +61,7 @@ func TestBuildServodDockerArgs(t *testing.T) {
 	}
 
 	tests := []test{
-		{ServodContainerOptions{"test_container", "board", "model", "serial", false},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_REGULAR},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
@@ -72,7 +74,7 @@ func TestBuildServodDockerArgs(t *testing.T) {
 				Exec:         []string{"tail", "-f", "/dev/null"},
 			},
 		},
-		{ServodContainerOptions{"test_container", "board2", "model2", "serial2", true},
+		{ServodContainerOptions{"test_container", "board2", "model2", "serial2", true, ufspb.ServoSetupType_SERVO_SETUP_REGULAR},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
@@ -83,6 +85,19 @@ func TestBuildServodDockerArgs(t *testing.T) {
 				Network:      "default_satlab",
 				Privileged:   true,
 				Exec:         []string{"bash", "/start_servod.sh"},
+			},
+		},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4},
+			&docker.ContainerArgs{
+				Detached:     true,
+				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
+				PublishPorts: nil,
+				ExposePorts:  nil,
+				EnvVar:       []string{"BOARD=board", "MODEL=model", "SERIAL=serial", "PORT=9999", "DUAL_V4=1"},
+				Volumes:      []string{"/dev:/dev", "serial_log:/var/log/servod_9999/"},
+				Network:      "default_satlab",
+				Privileged:   true,
+				Exec:         []string{"tail", "-f", "/dev/null"},
 			},
 		},
 	}
