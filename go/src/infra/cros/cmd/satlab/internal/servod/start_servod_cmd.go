@@ -150,6 +150,11 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 		if opts.containerName == "" {
 			opts.containerName = ufsMetadata.servodContainerName
 		}
+		// checking against the command itself rather than options because we always have a value in opts
+		// and we only want to replace with UFS if the user passes nothing
+		if c.servoSetup == "" {
+			opts.servoSetup = ufsMetadata.servoSetup
+		}
 
 		// If any field still is "", means that both user input and UFS fetch did not provide the appropriate field
 		if err := opts.Validate(); err != nil {
@@ -187,6 +192,7 @@ func fetchMetadataFromUFS(ctx context.Context, ufsClient ufs.UFSClient, host str
 	servo := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo()
 	servoSerial := servo.GetServoSerial()
 	servodContainerName := servo.GetDockerContainerName()
+	servoSetup := servo.GetServoSetup()
 
 	asset, err := ufsClient.GetAsset(ctx, &ufsApi.GetAssetRequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, assetId),
@@ -198,7 +204,7 @@ func fetchMetadataFromUFS(ctx context.Context, ufsClient ufs.UFSClient, host str
 	model := asset.GetModel()
 	board := asset.GetInfo().GetReferenceBoard()
 
-	return ufsMetadata{board: board, model: model, servoSerial: servoSerial, servodContainerName: servodContainerName}, nil
+	return ufsMetadata{board: board, model: model, servoSerial: servoSerial, servodContainerName: servodContainerName, servoSetup: servoSetup}, nil
 }
 
 // ufsMetadata is bag of data for fields we want to extract from UFS
@@ -207,6 +213,7 @@ type ufsMetadata struct {
 	model               string
 	servoSerial         string
 	servodContainerName string
+	servoSetup          ufspb.ServoSetupType
 }
 
 // validate validates input arguments
