@@ -16,6 +16,121 @@
       "message": "ping",
       "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd44272b_b89f7823",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-22T18:21:53Z",
+      "side": 1,
+      "message": "Could you also set sku and variant in HwidData? It seems weird that the entity we store in database does not 100% equal to the HwidData in proto. Plus in unittest, you store the entire hwidData with sku and variant.",
+      "range": {
+        "startLine": 72,
+        "startChar": 20,
+        "endLine": 72,
+        "endChar": 28
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2178b98_38cd3a2a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-22T18:21:53Z",
+      "side": 1,
+      "message": "just curious, what\u0027s this verification for?",
+      "range": {
+        "startLine": 195,
+        "startChar": 2,
+        "endLine": 197,
+        "endChar": 3
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef7b98a6_eb1d93fe",
+        "filename": "go/src/infra/unifiedfleet/app/controller/hwid_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-22T18:21:53Z",
+      "side": 1,
+      "message": "add comments:\n// Verify datastore contains the expired hwiddata",
+      "range": {
+        "startLine": 355,
+        "startChar": 2,
+        "endLine": 359,
+        "endChar": 3
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1246a82_aacc1eee",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-22T18:21:53Z",
+      "side": 1,
+      "message": "data :\u003d \u0026ufspb.HwidData{Hwid: ent.ID}\n\nfinally in line #162, return data, nil\n\nGenerally we should initialize a pointer.",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 125,
+        "endChar": 0
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1e29d8a_5463dde8",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-08-22T18:21:53Z",
+      "side": 1,
+      "message": "I think you should store the entire hwid data into database, and fetch it like:\n\nif Data.DutLabel \u003d\u003d nil {\n    parseLegacyHWIDData(...)\n    reset data.sku \u0026 data.variant\n    return \u0026data, nil\n} else {\n    return hwidData, nil (hwidData is the one you get from line #133)\n}",
+      "range": {
+        "startLine": 139,
+        "startChar": 2,
+        "endLine": 162,
+        "endChar": 18
+      },
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
