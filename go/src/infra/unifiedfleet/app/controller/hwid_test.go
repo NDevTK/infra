@@ -26,6 +26,62 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
+func mockHwidData() *ufspb.HwidData {
+	return &ufspb.HwidData{
+		Sku:     "test-sku",
+		Variant: "test-variant",
+		Hwid:    "test",
+		DutLabel: &ufspb.DutLabel{
+			PossibleLabels: []string{
+				"test-possible-1",
+				"test-possible-2",
+			},
+			Labels: []*ufspb.DutLabel_Label{
+				{
+					Name:  "test-label-1",
+					Value: "test-value-1",
+				},
+				{
+					Name:  "Sku",
+					Value: "test-sku",
+				},
+				{
+					Name:  "variant",
+					Value: "test-variant",
+				},
+			},
+		},
+	}
+}
+
+func mockHwidDataNoServer() *ufspb.HwidData {
+	return &ufspb.HwidData{
+		Sku:     "test-sku-no-server",
+		Variant: "test-variant-no-server",
+		Hwid:    "test-no-server",
+		DutLabel: &ufspb.DutLabel{
+			PossibleLabels: []string{
+				"test-possible-1",
+				"test-possible-2",
+			},
+			Labels: []*ufspb.DutLabel_Label{
+				{
+					Name:  "test-label-1",
+					Value: "test-value-1",
+				},
+				{
+					Name:  "Sku",
+					Value: "test-sku-no-server",
+				},
+				{
+					Name:  "variant",
+					Value: "test-variant-no-server",
+				},
+			},
+		},
+	}
+}
+
 func mockDutLabel() *ufspb.DutLabel {
 	return &ufspb.DutLabel{
 		PossibleLabels: []string{
@@ -39,40 +95,18 @@ func mockDutLabel() *ufspb.DutLabel {
 			},
 			{
 				Name:  "Sku",
-				Value: "test-sku",
+				Value: "test-legacy-sku",
 			},
 			{
 				Name:  "variant",
-				Value: "test-variant",
+				Value: "test-legacy-variant",
 			},
 		},
 	}
 }
 
-func mockDutLabelNoServer() *ufspb.DutLabel {
-	return &ufspb.DutLabel{
-		PossibleLabels: []string{
-			"test-possible-1",
-			"test-possible-2",
-		},
-		Labels: []*ufspb.DutLabel_Label{
-			{
-				Name:  "test-label-1",
-				Value: "test-value-1",
-			},
-			{
-				Name:  "Sku",
-				Value: "test-sku-no-server",
-			},
-			{
-				Name:  "variant",
-				Value: "test-variant-no-server",
-			},
-		},
-	}
-}
-
-func fakeUpdateHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string, updatedTime time.Time) (*configuration.HwidDataEntity, error) {
+// fakeUpdateHwidData updates HwidDataEntity with HwidData in datastore.
+func fakeUpdateHwidData(ctx context.Context, d *ufspb.HwidData, hwid string, updatedTime time.Time) (*configuration.HwidDataEntity, error) {
 	hwidData, err := proto.Marshal(d)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to marshal HwidData %s", d).Err()
@@ -88,6 +122,25 @@ func fakeUpdateHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string, upd
 		Updated:  updatedTime,
 	}
 
+	if err := datastore.Put(ctx, entity); err != nil {
+		return nil, err
+	}
+	return entity, nil
+}
+
+// fakeUpdateLegacyHwidData updates HwidDataEntity with DutLabel as HwidData instead of
+// HwidData proto in datastore.
+func fakeUpdateLegacyHwidData(ctx context.Context, d *ufspb.DutLabel, hwid string, updatedTime time.Time) (*configuration.HwidDataEntity, error) {
+	dutLabel, err := proto.Marshal(d)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to marshal DutLabel %s", d).Err()
+	}
+
+	entity := &configuration.HwidDataEntity{
+		ID:       hwid,
+		HwidData: dutLabel,
+		Updated:  updatedTime,
+	}
 	if err := datastore.Put(ctx, entity); err != nil {
 		return nil, err
 	}
@@ -120,19 +173,65 @@ func TestGetHwidDataV1(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Fake hwid server responded with error: %s", err)
 		}
-		if diff := cmp.Diff(mockDutLabel(), serverRsp, protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(mockHwidData().GetDutLabel(), serverRsp, protocmp.Transform()); diff != "" {
 			t.Errorf("Fake hwid server returned unexpected diff (-want +got):\n%s", diff)
 		}
 
 		// Test getting data from datastore.
 		cacheTime := time.Now().UTC().Add(-30 * time.Minute)
-		_, err = fakeUpdateHwidData(ctx, mockDutLabel(), id, cacheTime)
+		_, err = fakeUpdateHwidData(ctx, mockHwidData(), id, cacheTime)
+		if err != nil {
+			t.Fatalf("fakeUpdateHwidData failed: %s", err)
+		}
+		want := mockHwidData()
+		got, err := GetHwidDataV1(ctx, client, id)
+		if err != nil {
+			t.Fatalf("GetHwidDataV1 failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+		}
+		hwidEnt, _ := configuration.GetHwidData(ctx, id)
+		if diff := cmp.Diff(cacheTime, hwidEnt.Updated, cmpopts.EquateApproxTime(1*time.Millisecond)); diff != "" {
+			t.Errorf("Cache time has unexpected diff (-want +got):\n%s", diff)
+		}
+		datastore.Delete(ctx, hwidEnt)
+	})
+
+	t.Run("happy path - get legacy cached data from datastore", func(t *testing.T) {
+		// Cache should be returned and not updated. Server should not be called.
+		id := "test-legacy"
+
+		// Test getting data from datastore.
+		cacheTime := time.Now().UTC().Add(-30 * time.Minute)
+		_, err = fakeUpdateLegacyHwidData(ctx, mockDutLabel(), id, cacheTime)
 		if err != nil {
 			t.Fatalf("fakeUpdateHwidData failed: %s", err)
 		}
 		want := &ufspb.HwidData{
-			Sku:     "test-sku",
-			Variant: "test-variant",
+			Sku:     "test-legacy-sku",
+			Variant: "test-legacy-variant",
+			Hwid:    "test-legacy",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-legacy-sku",
+					},
+					{
+						Name:  "variant",
+						Value: "test-legacy-variant",
+					},
+				},
+			},
 		}
 		got, err := GetHwidDataV1(ctx, client, id)
 		if err != nil {
@@ -163,14 +262,11 @@ func TestGetHwidDataV1(t *testing.T) {
 		}
 
 		// Test getting data from datastore.
-		hwidEnt, err := configuration.UpdateHwidData(ctx, mockDutLabelNoServer(), id)
+		hwidEnt, err := configuration.UpdateHwidData(ctx, mockHwidDataNoServer(), id)
 		if err != nil {
 			t.Fatalf("UpdateHwidData failed: %s", err)
 		}
-		want := &ufspb.HwidData{
-			Sku:     "test-sku-no-server",
-			Variant: "test-variant-no-server",
-		}
+		want := mockHwidDataNoServer()
 		got, err := GetHwidDataV1(ctx, client, id)
 		if err != nil {
 			t.Fatalf("GetHwidDataV1 failed: %s", err)
@@ -193,10 +289,7 @@ func TestGetHwidDataV1(t *testing.T) {
 		}
 
 		// Test method and get data from server.
-		want := &ufspb.HwidData{
-			Sku:     "test-sku",
-			Variant: "test-variant",
-		}
+		want := mockHwidData()
 		got, err := GetHwidDataV1(ctx, client, id)
 		if err != nil {
 			t.Fatalf("GetHwidDataV1 failed: %s", err)
@@ -232,24 +325,44 @@ func TestGetHwidDataV1(t *testing.T) {
 		id := "test"
 
 		// Add expired data to datastore.
-		expiredTime := time.Now().Add(-2 * time.Hour).UTC()
-		fakeUpdateHwidData(ctx, mockDutLabelNoServer(), "test", expiredTime)
-		want := &ufspb.HwidData{
-			Sku:     "test-sku-no-server",
-			Variant: "test-variant-no-server",
+		expHwidData := &ufspb.HwidData{
+			Sku:     "test-sku-expired",
+			Variant: "test-variant-expired",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "test-label-1",
+						Value: "test-value-1",
+					},
+					{
+						Name:  "Sku",
+						Value: "test-sku-expired",
+					},
+					{
+						Name:  "variant",
+						Value: "test-variant-expired",
+					},
+				},
+			},
 		}
+		expiredTime := time.Now().Add(-2 * time.Hour).UTC()
+		fakeUpdateHwidData(ctx, expHwidData, "test", expiredTime)
 		hwidEntExp, _ := configuration.GetHwidData(ctx, id)
-		dataExp, _ := configuration.ParseHwidDataV1(hwidEntExp)
-		if diff := cmp.Diff(want, dataExp, protocmp.Transform()); diff != "" {
+		parsedExpData, _ := configuration.ParseHwidDataV1(hwidEntExp)
+
+		// Verify datastore contains the expired hwiddata
+		if diff := cmp.Diff(expHwidData, parsedExpData, protocmp.Transform()); diff != "" {
 			t.Errorf("GetHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
 		}
 
 		// Calling GetHwidDataV1 should immediately cache new data into datastore
 		// and return the new data.
-		want = &ufspb.HwidData{
-			Sku:     "test-sku",
-			Variant: "test-variant",
-		}
+		want := mockHwidData()
 		got, err := GetHwidDataV1(ctx, client, id)
 		if err != nil {
 			t.Fatalf("GetHwidDataV1 failed: %s", err)
