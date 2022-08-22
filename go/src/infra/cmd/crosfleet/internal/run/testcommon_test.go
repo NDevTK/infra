@@ -28,6 +28,7 @@ var testValidateArgsData = []struct {
 	testCommonFlags
 	args                    []string
 	wantValidationErrString string
+	mainArgType             string
 }{
 	{ // All errors raised
 		testCommonFlags{
@@ -38,14 +39,17 @@ var testValidateArgsData = []struct {
 			image:    "sample-image",
 			release:  "sample-release",
 			priority: 256,
+			cft:      true,
 		},
 		[]string{},
 		`missing board flag
 missing pool flag
+missing harness flag
 cannot specify both image and release branch
 priority flag should be in [50, 255]
 total number of CTP runs launched (# models specified * repeats) cannot exceed 12
-missing suite arg`,
+missing test arg`,
+		"test",
 	},
 	{ // One error raised
 		testCommonFlags{
@@ -58,6 +62,7 @@ missing suite arg`,
 		},
 		[]string{"sample-suite-name"},
 		"total number of CTP runs launched (# models specified * repeats) cannot exceed 12",
+		"suite",
 	},
 	{ // One error raised
 		testCommonFlags{
@@ -71,6 +76,7 @@ missing suite arg`,
 		},
 		[]string{"sample-suite-name"},
 		"number of requested secondary-boards: 2 does not match with number of requested secondary-images: 0",
+		"suite",
 	},
 	{ // One error raised
 		testCommonFlags{
@@ -84,6 +90,7 @@ missing suite arg`,
 		},
 		[]string{"sample-suite-name"},
 		"number of requested secondary-boards: 0 does not match with number of requested secondary-models: 2",
+		"suite",
 	},
 	{ // One error raised
 		testCommonFlags{
@@ -97,6 +104,7 @@ missing suite arg`,
 		},
 		[]string{"sample-suite-name"},
 		"number of requested secondary-boards: 0 does not match with number of requested secondary-lacros-paths: 2",
+		"suite",
 	},
 	{ // No errors raised
 		testCommonFlags{
@@ -109,6 +117,35 @@ missing suite arg`,
 		},
 		[]string{"sample-suite-name"},
 		"",
+		"suite",
+	},
+	{ // No errors raised
+		testCommonFlags{
+			board:    "sample-board",
+			models:   []string{"model1", "model2"},
+			repeats:  6,
+			pool:     "sample-pool",
+			release:  "sample-release",
+			priority: 255,
+		},
+		[]string{"sample-suite-name"},
+		"",
+		"test",
+	},
+	{ // No errors raised
+		testCommonFlags{
+			board:       "sample-board",
+			models:      []string{"model1", "model2"},
+			repeats:     6,
+			pool:        "sample-pool",
+			release:     "sample-release",
+			priority:    255,
+			cft:         true,
+			testHarness: "sample-harness",
+		},
+		[]string{"sample-suite-name"},
+		"",
+		"test",
 	},
 }
 
@@ -122,7 +159,7 @@ func TestValidateArgs(t *testing.T) {
 			if err := flagSet.Parse(tt.args); err != nil {
 				t.Fatalf("unexpected error parsing command line args %v for test: %v", tt.args, err)
 			}
-			gotValidationErr := tt.testCommonFlags.validateArgs(&flagSet, "suite")
+			gotValidationErr := tt.testCommonFlags.validateArgs(&flagSet, tt.mainArgType)
 			gotValidationErrString := common.ErrToString(gotValidationErr)
 			if tt.wantValidationErrString != gotValidationErrString {
 				t.Errorf("unexpected error: wanted '%s', got '%s'", tt.wantValidationErrString, gotValidationErrString)
