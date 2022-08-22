@@ -67,7 +67,7 @@ class TSMonJSFlaskHandler(object):
 
     if not self._metrics:
       self.response.status_code = 400
-      self.response.response = 'No metrics have been registered.'
+      self.response.data = 'No metrics have been registered.'
       logging.warning('gae_ts_mon error: No metrics have been registered.')
       return self.response
 
@@ -76,25 +76,25 @@ class TSMonJSFlaskHandler(object):
       body = json.loads(self.request.get_data(as_text=True))
     except ValueError:
       self.response.status_code = 400
-      self.response.response = 'Invalid JSON.'
+      self.response.data = 'Invalid JSON.'
       logging.warning('gae_ts_mon error: Invalid JSON.')
       return self.response
 
     if not self.xsrf_is_valid(body):
       self.response.status_code = 403
-      self.response.response = 'XSRF token invalid.'
+      self.response.data = 'XSRF token invalid.'
       logging.warning('gae_ts_mon error: XSRF token invalid.')
       return self.response
 
     if not isinstance(body, dict):
       self.response.status_code = 400
-      self.response.response = 'Body must be a dictionary.'
+      self.response.data = 'Body must be a dictionary.'
       logging.warning('gae_ts_mon error: Body must be a dictionary.')
       return self.response
 
     if 'metrics' not in body:
       self.response.status_code = 400
-      self.response.response = 'Key "metrics" must be in body.'
+      self.response.data = 'Key "metrics" must be in body.'
       logging.warning('gae_ts_mon error: Key "metrics" must be in body.')
       logging.warning('Request body: %s', body)
       return self.response
@@ -105,7 +105,7 @@ class TSMonJSFlaskHandler(object):
 
       if not metric:
         self.response.status_code = 400
-        self.response.response = ('Metric "%s" is not defined.' %
+        self.response.data = ('Metric "%s" is not defined.' %
                                   cgi.escape(name))
         logging.warning('gae_ts_mon error: Metric "%s" is not defined.', name)
         return self.response
@@ -117,7 +117,7 @@ class TSMonJSFlaskHandler(object):
         metric_field_keys = set(fs.name for fs in metric.field_spec)
         if set(fields.keys()) != metric_field_keys:
           self.response.status_code = 400
-          self.response.response = (
+          self.response.data = (
               'Supplied fields do not match metric "%s".' % cgi.escape(name))
           logging.warning(
               'gae_ts_mon error: Supplied fields do not match metric "%s".',
@@ -129,7 +129,7 @@ class TSMonJSFlaskHandler(object):
         start_time = cell.get('start_time')
         if metric.is_cumulative() and not start_time:
           self.response.status_code = 400
-          self.response.response = 'Cumulative metrics must have start_time.'
+          self.response.data = 'Cumulative metrics must have start_time.'
           logging.warning(
               'gae_ts_mon error: Cumulative metrics must have start_time.')
           logging.warning('Metric name: %s', name)
@@ -137,7 +137,7 @@ class TSMonJSFlaskHandler(object):
 
         if metric.is_cumulative() and not self._start_time_is_valid(start_time):
           self.response.status_code = 400
-          self.response.response = ('Invalid start_time: %s.' %
+          self.response.data = ('Invalid start_time: %s.' %
                                     cgi.escape(str(start_time)))
           logging.warning('gae_ts_mon error: Invalid start_time: %s.',
                           start_time)
@@ -148,7 +148,7 @@ class TSMonJSFlaskHandler(object):
                                 metrics.NonCumulativeDistributionMetric))):
           if not isinstance(value, dict):
             self.response.status_code = 400
-            self.response.response = (
+            self.response.data = (
                 'Distribution metric values must be a dict.')
             logging.warning(
                 'gae_ts_mon error: Distribution metric values must be a dict.')
@@ -166,7 +166,7 @@ class TSMonJSFlaskHandler(object):
           metric.dangerously_set_start_time(start_time)
 
     self.response.status_code = 201
-    self.response.response = 'Ok.'
+    self.response.data = 'Ok.'
     return self.response
 
   def xsrf_is_valid(self, _body):
