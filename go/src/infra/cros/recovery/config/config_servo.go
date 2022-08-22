@@ -23,7 +23,6 @@ func servoRepairPlan() *Plan {
 			"Device is SSHable",
 			"Servo_v3 uptime is not long",
 			"Power-cycle by smart-hub",
-			"Power-cycle servo-v4p1 network",
 			"Set state:SERVO_HOST_ISSUE",
 			"Mark labstation as servod is in-use",
 			"Set state:BROKEN",
@@ -880,12 +879,6 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "sample_fail",
 			},
-			"Is servo v4p1": {
-				Docs: []string{
-					"Verify that the servo is a servo v4p1",
-				},
-				ExecName: "is_servo_v4p1",
-			},
 			"Serial number is not servo_v4p1": {
 				Docs: []string{
 					"Verify that the servo serial number is not a servo_v4p1 serial number",
@@ -1502,30 +1495,6 @@ func servoRepairPlan() *Plan {
 					"wait_timeout:30",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
-			},
-			"SmartHub is not present in setup": {
-				Docs: []string{
-					"Specify if smart usbhub is present in setup.",
-				},
-				ExecName: "servo_is_smarthub_expected",
-				ExecExtraArgs: []string{
-					"reverse:true",
-				},
-			},
-			"Power-cycle servo-v4p1 network": {
-				Docs: []string{
-					"Try to reset network controller of servo_v4p1 when smart usbhub not present.",
-					"For a servo v4p1 specifically, we power-cycle the ethernet hub using the capabilities",
-					"of the servo itself.",
-					"As mentioned in b/243042046, if we power-cycle a v4p1 that can cause us to lose the ability",
-					"to see the USB key connected to the servo.",
-				},
-				Conditions: []string{
-					"Is servo v4p1",
-				},
-				ExecName:               "servo_v4p1_network_reset",
-				RunControl:             RunControl_RUN_ONCE,
-				AllowFailAfterRecovery: true,
 			},
 			"Power-cycle by smart-hub": {
 				Docs: []string{
