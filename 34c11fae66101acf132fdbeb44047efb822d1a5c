@@ -16,6 +16,24 @@
       "message": "The two CLs should be just one.",
       "revId": "34c11fae66101acf132fdbeb44047efb822d1a5c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93e7f941_6a64f742",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2022-08-22T22:21:41Z",
+      "side": 1,
+      "message": "Sure, put all into the first commit: https://chromium-review.googlesource.com/c/infra/infra/+/3846897\n\nclosing this CL",
+      "parentUuid": "7357637b_eb4ce739",
+      "revId": "34c11fae66101acf132fdbeb44047efb822d1a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
