@@ -247,7 +247,7 @@ export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): Fe
     }
     if (failure.changelists !== undefined && failure.changelists.length > 0 &&
         failure.presubmitRun !== undefined && failure.presubmitRun.owner == 'user' &&
-        failure.isBuildCritical && failure.presubmitRun.mode == 'PRESUBMIT_RUN_MODE_FULL_RUN') {
+        failure.isBuildCritical && failure.presubmitRun.mode == 'FULL_RUN') {
       values.add(failure.changelists[0].host + '/' + failure.changelists[0].change);
     }
     return values;

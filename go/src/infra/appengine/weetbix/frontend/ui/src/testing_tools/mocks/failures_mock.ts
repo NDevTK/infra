@@ -22,7 +22,7 @@ class ClusterFailureBuilder {
       presubmitRun: {
         presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
         owner: 'user',
-        mode: 'PRESUBMIT_RUN_MODE_FULL_RUN',
+        mode: 'FULL_RUN',
       },
       changelists: [{
         host: 'clproject-review.googlesource.com',
@@ -57,7 +57,7 @@ class ClusterFailureBuilder {
     this.failure.presubmitRun = {
       presubmitRunId: { system: 'cv', id: 'presubmitRunId' },
       owner: 'user',
-      mode: 'PRESUBMIT_RUN_MODE_DRY_RUN',
+      mode: 'DRY_RUN',
     };
     return this;
   }

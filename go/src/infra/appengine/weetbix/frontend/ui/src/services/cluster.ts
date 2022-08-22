@@ -201,9 +201,9 @@ export type ExonerationReason =
 // Refer to weetbix.v1.PresubmitRunMode for documentation.
 export type PresubmitRunMode =
     'PRESUBMIT_RUN_MODE_UNSPECIFIED'
-    | 'PRESUBMIT_RUN_MODE_DRY_RUN'
-    | 'PRESUBMIT_RUN_MODE_FULL_RUN'
-    | 'PRESUBMIT_RUN_MODE_QUICK_DRY_RUN';
+    | 'DRY_RUN'
+    | 'FULL_RUN'
+    | 'QUICK_DRY_RUN';
 
 // Refer to weetbix.v1.BuildStatus for documentation.
 export type BuildStatus =
