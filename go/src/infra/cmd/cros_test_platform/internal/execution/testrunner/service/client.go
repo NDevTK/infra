@@ -33,6 +33,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
+
+	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 
@@ -86,6 +88,7 @@ type task struct {
 type clientImpl struct {
 	swarmingClient swarmingClient
 	bbClient       buildbucketpb.BuildsClient
+	recorderClient resultpb.RecorderClient
 	builder        *buildbucketpb.BuilderID
 	knownTasks     map[TaskReference]*task
 	ufsClient      ufsapi.FleetClient
@@ -102,7 +105,7 @@ type swarmingClient interface {
 }
 
 // NewClient creates a concrete instance of a Client.
-func NewClient(ctx context.Context, cfg *config.Config) (Client, error) {
+func NewClient(ctx context.Context, cfg *config.Config, rdbHost string) (Client, error) {
 	sc, err := newSwarmingClient(ctx, cfg.SkylabSwarming)
 	if err != nil {
 		return nil, errors.Annotate(err, "create test_runner service client").Err()
@@ -113,9 +116,14 @@ func NewClient(ctx context.Context, cfg *config.Config) (Client, error) {
 	}
 
 	ufsclient, err := NewUFSClient(ctx)
+	rc, err := newRecorderClient(ctx, rdbHost)
+	if err != nil {
+		return nil, errors.Annotate(err, "create test_runner service client").Err()
+	}
 	return &clientImpl{
 		swarmingClient: sc,
 		bbClient:       bbc,
+		recorderClient: rc,
 		builder: &buildbucketpb.BuilderID{
 			Project: cfg.TestRunner.Buildbucket.Project,
 			Bucket:  cfg.TestRunner.Buildbucket.Bucket,
@@ -136,6 +144,18 @@ func newBBClient(ctx context.Context, cfg *config.Config_Buildbucket) (buildbuck
 		Host: cfg.Host,
 	}
 	return buildbucketpb.NewBuildsPRPCClient(pClient), nil
+}
+
+func newRecorderClient(ctx context.Context, host string) (resultpb.RecorderClient, error) {
+	hClient, err := httpClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "create recorder client").Err()
+	}
+	pClient := &prpc.Client{
+		C:    hClient,
+		Host: host,
+	}
+	return resultpb.NewRecorderPRPCClient(pClient), nil
 }
 
 // TODO(crbug.com/1115207): dedupe with swarmingHTTPClient.
@@ -267,11 +287,50 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 	if err != nil {
 		return "", errors.Annotate(err, "launch task for %s", args.TestRunnerRequest.GetTest().GetAutotest().GetName()).Err()
 	}
+
+	c.inheritResultdbInvocation(ctx, resp.Id)
+
 	tr := NewTaskReference()
 	c.knownTasks[tr] = &task{
 		bbID: resp.Id,
 	}
 	return tr, nil
+}
+
+// Inherit the test_runner build's ResultDB invocation.
+func (c *clientImpl) inheritResultdbInvocation(ctx context.Context, buildId int64) {
+	rdbCtx := lucictx.GetResultDB(ctx)
+
+	// Do not attach the resultdb token if it's empty.
+	if rdbCtx == nil || rdbCtx.CurrentInvocation.UpdateToken == "" {
+		return
+	}
+
+	ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(resultpb.UpdateTokenMetadataKey, rdbCtx.CurrentInvocation.UpdateToken))
+	parentInv := rdbCtx.CurrentInvocation.Name
+
+	var inv string
+	// The ScheduleBuild response does not populate the invocation, so we need
+	// to request it from buildbucket.
+	req := &buildbucketpb.GetBuildRequest{
+		Id: buildId,
+		Fields: &field_mask.FieldMask{Paths: []string{
+			"id",
+			"infra.resultdb.invocation",
+		}},
+	}
+	b, err := c.bbClient.GetBuild(ctx, req)
+	if err != nil && b.GetInfra().GetResultdb().GetInvocation() != "" {
+		inv = b.GetInfra().GetResultdb().GetInvocation()
+	} else {
+		// As a fallback, the ResultDB invocation for the child build can be
+		// inferred using the Buildbucket id.
+		inv = fmt.Sprintf("invocations/build-%d", buildId)
+	}
+
+	rreq := resultpb.UpdateIncludedInvocationsRequest{IncludingInvocation: parentInv, AddInvocations: []string{inv}}
+	c.recorderClient.UpdateIncludedInvocations(ctx, &rreq)
+
 }
 
 // getBuildFieldMask is the list of buildbucket fields that are needed.

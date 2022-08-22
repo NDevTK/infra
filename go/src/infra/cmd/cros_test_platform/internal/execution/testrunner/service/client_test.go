@@ -25,6 +25,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
 	"go.chromium.org/luci/lucictx"
+	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
@@ -142,6 +143,22 @@ func TestLaunchRequest(t *testing.T) {
 				gotRequest = r
 			},
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+		tf.ctx = lucictx.SetResultDB(tf.ctx, &lucictx.ResultDB{
+			Hostname: "host",
+			CurrentInvocation: &lucictx.ResultDBInvocation{
+				Name:        "parent-invocation",
+				UpdateToken: "fake-token",
+			},
+		})
+		tf.bb.EXPECT().GetBuild(
+			gomock.Any(),
+			gomock.Any(),
+		)
+		tf.rc.EXPECT().UpdateIncludedInvocations(
+			gomock.Any(),
+			gomock.Any(),
+		)
 
 		t, err := tf.skylab.LaunchTask(tf.ctx, args)
 		So(err, ShouldBeNil)
@@ -385,18 +402,30 @@ func TestAbortedTask(t *testing.T) {
 type testFixture struct {
 	ctx    context.Context
 	bb     *buildbucket_pb.MockBuildsClient
+	rc     *resultpb.MockRecorderClient
 	skylab *clientImpl
 }
 
 func newTestFixture(t *testing.T) (*testFixture, func()) {
 	ctrl := gomock.NewController(t)
 	bb := buildbucket_pb.NewMockBuildsClient(ctrl)
+	rc := resultpb.NewMockRecorderClient(ctrl)
+	ctx := context.Background()
+	ctx = lucictx.SetResultDB(ctx, &lucictx.ResultDB{
+		Hostname: "host",
+		// The test context will not have an update token by default.
+		CurrentInvocation: &lucictx.ResultDBInvocation{
+			Name: "parent-invocation",
+		},
+	})
 	return &testFixture{
-		ctx: context.Background(),
+		ctx: ctx,
 		bb:  bb,
+		rc:  rc,
 		skylab: &clientImpl{
-			bbClient:   bb,
-			knownTasks: make(map[TaskReference]*task),
+			bbClient:       bb,
+			recorderClient: rc,
+			knownTasks:     make(map[TaskReference]*task),
 		},
 	}, ctrl.Finish
 }

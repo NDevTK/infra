@@ -49,10 +49,6 @@ func Run(ctx context.Context, args Args) error {
 	}
 
 	cfg := extractOneConfig(request.TaggedRequests)
-	skylab, err := trservice.NewClient(ctx, cfg)
-	if err != nil {
-		return err
-	}
 
 	deadline, err := inferDeadline(request)
 	if err != nil {
@@ -74,6 +70,11 @@ func Run(ctx context.Context, args Args) error {
 	} else {
 		ea.Build = &bbpb.Build{}
 		ea.Send = func() {}
+	}
+
+	skylab, err := trservice.NewClient(ctx, cfg, ea.Build.GetInfra().GetResultdb().GetHostname())
+	if err != nil {
+		return err
 	}
 
 	var resps map[string]*steps.ExecuteResponse
