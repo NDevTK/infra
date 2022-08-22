@@ -96,6 +96,21 @@ func TestStartServodCmd(t *testing.T) {
 			"docker_servod",
 			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR}),
 		},
+		{
+			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: true},
+			"docker_servod",
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR}),
+		},
+		{
+			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "regular"},
+			"docker_servod",
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR}),
+		},
+		{
+			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "dual_v4"},
+			"docker_servod",
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4}),
+		},
 	}
 
 	for _, tc := range tests {

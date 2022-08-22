@@ -6,6 +6,7 @@ package servod
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -18,6 +19,7 @@ import (
 	"infra/cros/cmd/satlab/internal/components/ufs"
 	"infra/cros/cmd/satlab/internal/site"
 	"infra/cros/recovery/docker"
+	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -36,6 +38,7 @@ var StartServodCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.servoSerial, "servo-serial", "", "Servo Serial of DUT")
 		c.Flags.StringVar(&c.servodContainerName, "servod-container-name", "", "Container name to run servod in; likely <host>-docker_servod")
 		c.Flags.BoolVar(&c.noServodProcess, "no-servod", false, "Start container without the servod process running")
+		c.Flags.StringVar(&c.servoSetup, "servo-setup", "", "Servo setup of DUT; Should not have 'SERVO_SETUP' prefix (ex. use 'dual_v4' rather than 'SERVO_SETUP_DUAL_V4'")
 
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
@@ -60,6 +63,7 @@ type startServodRun struct {
 	servoSerial         string
 	servodContainerName string
 	noServodProcess     bool
+	servoSetup          string
 }
 
 // Run is what is called when a user inputs the startServodRun command
@@ -107,12 +111,18 @@ func (c *startServodRun) innerRun(a subcommands.Application, args []string, env 
 // 	1. if the user does not provide all arguments needed to start the docker container, fetches from UFS
 //  2. execute the docker command with the information either provided by the user or from UFS
 func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerClient, ufs ufs.UFSClient) error {
+	servoSetupEnum, err := getServoSetupEnum(c.servoSetup)
+	if err != nil {
+		return err
+	}
+
 	opts := ServodContainerOptions{
 		containerName: c.servodContainerName,
 		board:         c.board,
 		model:         c.model,
 		servoSerial:   c.servoSerial,
 		withServod:    !c.noServodProcess, // notice negation here
+		servoSetup:    servoSetupEnum,
 	}
 
 	// If user provides all needed data, we can skip the UFS fetch entirely which has utility for a DUT not deployed in UFS or when UFS is unreachable
@@ -151,7 +161,7 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 	if c.commonFlags.Verbose {
 		fmt.Printf("Attempting to launch container with command:\n\t%s\n", docker.StartCommandString(opts.containerName, dockerArgs))
 	}
-	_, err := startServodContainer(ctx, d, opts.containerName, dockerArgs)
+	_, err = startServodContainer(ctx, d, opts.containerName, dockerArgs)
 
 	if err != nil {
 		return errors.Reason(fmt.Sprintf("Error launching docker container: %s", err)).Err()
@@ -215,6 +225,24 @@ func (c *startServodRun) validate(dhbSatlabID string, positionalArgs []string) e
 	c.host = site.GetFullyQualifiedHostname(c.commonFlags.SatlabID, dhbSatlabID, site.Satlab, c.host)
 
 	return nil
+}
+
+// getServoSetupEnum takes a human readable string and returns the ServoSetupType enum.
+// It does so by taking the input string, converting to capitals, and prefixing with SERVO_SETUP_.
+// So "dual_v4" -> SERVO_SETUP_DUAL_V4, or "SERVO_SETUP_REGULAR" -> "SERVO_SETUP_SERVO_SETUP_REGULAR".
+func getServoSetupEnum(servoSetupString string) (ufspb.ServoSetupType, error) {
+	if servoSetupString == "" {
+		return ufspb.ServoSetupType_SERVO_SETUP_REGULAR, nil
+	}
+
+	formatted_enum := fmt.Sprintf("SERVO_SETUP_%s", strings.ToUpper(servoSetupString))
+
+	enum_val, ok := ufspb.ServoSetupType_value[formatted_enum]
+	if !ok {
+		return ufspb.ServoSetupType_SERVO_SETUP_INVALID, errors.Reason("Invalid servo setup value: %s. It should be any value in ServoSetup enum servo.pb without the SERVO_SETUP_ prefix", servoSetupString).Err()
+	}
+
+	return ufspb.ServoSetupType(enum_val), nil
 }
 
 // hasEmptyString checks a list of strings for ""
