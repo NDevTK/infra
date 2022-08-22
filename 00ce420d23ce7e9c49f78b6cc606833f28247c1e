@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c0f8eb50_d2fb0824",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/machine_lse.proto",
+        "patchSetId": 10
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-08-22T19:08:31Z",
+      "side": 1,
+      "message": "Why are we making this change?",
+      "revId": "00ce420d23ce7e9c49f78b6cc606833f28247c1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bd44272b_b89f7823",
         "filename": "go/src/infra/unifiedfleet/app/controller/hwid.go",
         "patchSetId": 10
