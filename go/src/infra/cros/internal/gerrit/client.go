@@ -133,6 +133,8 @@ func NewTestClient(gitilesClients map[string]gitilespb.GitilesClient) *ProdClien
 //
 // fetchFilesFromGitiles returns a map from path in the git project to the
 // contents of the file at that path for each requested path.
+//
+// If one of paths is not found, an error is returned.
 func (c *ProdClient) FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string) (*map[string]string, error) {
 	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
@@ -216,6 +218,8 @@ func obtainGitilesBytes(ctx context.Context, gc gitilespb.GitilesClient, project
 // extractGitilesArchive returns a map from path to the content of the file at
 // that path in the archives for each requested path found in the archive.
 //
+// If one of paths is not found, an error is returned.
+//
 // This function takes ownership of data. Caller should not use the byte array
 // concurrent to / after this call. See io.Reader interface for more details.
 func extractGitilesArchive(ctx context.Context, data []byte, paths []string) (*map[string]string, error) {
@@ -228,6 +232,7 @@ func extractGitilesArchive(ctx context.Context, data []byte, paths []string) (*m
 	}
 
 	res := make(map[string]string)
+	foundPaths := make(map[string]bool)
 	// Do two passes to resolve links.
 	for i := 0; i < 2; i++ {
 		abuf := bytes.NewBuffer(data)
@@ -277,6 +282,13 @@ func extractGitilesArchive(ctx context.Context, data []byte, paths []string) (*m
 				return nil, errors.Annotate(err, "extract gitiles archive").Err()
 			}
 			res[requestedFile] = string(data)
+			foundPaths[requestedFile] = true
+		}
+	}
+
+	for _, path := range paths {
+		if _, found := foundPaths[path]; !found {
+			return nil, fmt.Errorf("path %q not found", path)
 		}
 	}
 	return &res, nil

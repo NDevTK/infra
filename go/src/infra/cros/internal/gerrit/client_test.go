@@ -182,6 +182,54 @@ yZyOACgAAA==
 	}
 }
 
+func TestFetchFilesFromGitiles_error(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	// This is a base64-encoded .tar.gz file. It contains one file, contents pair:
+	// dir/file1, This is a gzipped file!
+	base64Enc := `H4sIADj/sFwAA+2VQU7DMBBFs+4phgu0HntmTBfds+yCCxjFtJYIjZxGKpweh6pBhYJYYBCtnyxF
+iiP5O877WbrdjXe1j7M6xCoPSinLDJV9BSrNlrWB4f4eRkBDTGhFUIFCEdYV7DLlOaLvti6mKJ13
+j+4uurVrTj7XxtC4+LSKm749Nb/fCYzXfwIS9KFeaJkrvp5oC802NH6BzIzKIOqpzA1pPfnroIUs
+JOtnudc4+I8KmZT+6H/y5dh/spT859zBBi7c/+H8l+M/4D48ePzxNdL7EKJv9b8loXT+VtiW/v8N
+vu7/pOsUtTZkSv+fJ4P/eax/4+D/p/1v1Dv/WUQqUBkzjVy4/7fr0EEaDlbPoW19DcPXcFV0LxQK
+hTPnBcGXkjUAEgAA
+`
+	encodedZip, err := base64.StdEncoding.DecodeString(base64Enc)
+	if err != nil {
+		t.Error(err)
+	}
+
+	gitilesMock := mock_gitiles.NewMockGitilesClient(ctl)
+	gitilesMock.EXPECT().Archive(gomock.Any(), gomock.Any()).Return(
+		&gitilespb.ArchiveResponse{
+			Contents: encodedZip,
+		},
+		nil,
+	)
+	host := "limited-review.googlesource.com"
+	project := "chromiumos/for/the/win"
+	ref := "main"
+	paths := []string{"dir/file1", "notfoundfile"}
+	mockMap := map[string]gitilespb.GitilesClient{
+		host: gitilesMock,
+	}
+	gc := &ProdClient{
+		isTestClient:  true,
+		gitilesClient: mockMap,
+	}
+
+	_, err = gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths)
+	if err == nil {
+		t.Fatal("expected error from FetchFilesFromGitiles")
+	}
+
+	expectedErr := "path \"notfoundfile\" not found"
+	if err.Error() != "path \"notfoundfile\" not found" {
+		t.Errorf("expected error %q, got %q", expectedErr, err.Error())
+	}
+}
+
 func TestBranches(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
