@@ -44,7 +44,7 @@ Do not build automation around this subcommand.`,
 		c.envFlags.Register(&c.Flags)
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.printer.Register(&c.Flags)
-		c.testCommonFlags.register(&c.Flags)
+		c.testCommonFlags.register(&c.Flags, testPlanCmdName)
 		return c
 	},
 }

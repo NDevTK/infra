@@ -8,16 +8,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"math"
+	"strings"
+	"sync"
+	"time"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	crosfleetpb "infra/cmd/crosfleet/internal/proto"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
-	"math"
-	"strings"
-	"sync"
-	"time"
 
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
@@ -80,6 +81,7 @@ type testCommonFlags struct {
 	lacrosPath           string
 	secondaryLacrosPaths []string
 	cft                  bool
+	testHarness          string
 }
 
 type fleetValidationResults struct {
@@ -90,7 +92,7 @@ type fleetValidationResults struct {
 }
 
 // Registers run command-specific flags
-func (c *testCommonFlags) register(f *flag.FlagSet) {
+func (c *testCommonFlags) register(f *flag.FlagSet, mainArgType string) {
 	f.StringVar(&c.image, "image", "", `Optional fully specified image name to run test against, e.g. octopus-release/R89-13609.0.0.
 If no value for image or release is passed, test will run against the latest green postsubmit build for the given board.`)
 	f.Var(luciflag.CommaList(&c.secondaryImages), "secondary-images", "Comma-separated list of image name(or 'skip' if no provision needed for a secondary dut) for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
@@ -123,6 +125,10 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.lacrosPath, "lacros-path", "", "Optional GCS path pointing to a lacros artifact.")
 	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
 	f.BoolVar(&c.cft, "cft", false, "Run via CFT.")
+
+	if mainArgType == testCmdName {
+		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
+	}
 }
 
 // validateAndAutocompleteFlags returns any errors after validating the CLI
@@ -138,8 +144,7 @@ func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *f
 		c.image = releaseImage(c.board, c.release)
 	} else if c.image == "" {
 		// If no release or image was specified, determine the latest green
-		// postsubmit
-		// image for the given board.
+		// postsubmit image for the given board.
 		latestImage, err := latestImage(ctx, c.board, bbService, authFlags)
 		if err != nil {
 			return fmt.Errorf("error determining the latest image for board %s: %v", c.board, err)
@@ -157,6 +162,12 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	}
 	if c.pool == "" {
 		errors = append(errors, "missing pool flag")
+	}
+
+	// If running an individual test via CTP, we require the test harness to be
+	// specified.
+	if mainArgType == testCmdName && c.cft && c.testHarness == "" {
+		errors = append(errors, fmt.Sprintf("missing harness flag"))
 	}
 	if c.image != "" && c.release != "" {
 		errors = append(errors, "cannot specify both image and release branch")
@@ -183,8 +194,8 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	if len(c.secondaryBoards) != len(c.secondaryImages) {
 		errors = append(errors, fmt.Sprintf("number of requested secondary-boards: %d does not match with number of requested secondary-images: %d", len(c.secondaryBoards), len(c.secondaryImages)))
 	}
-
-	// If lacros provision required for secondary DUTs, then we require provide a path for each secondary DUT.
+	// If lacros provision required for secondary DUTs, then we require a path for
+	// each secondary DUT.
 	if len(c.secondaryLacrosPaths) > 0 && len(c.secondaryLacrosPaths) != len(c.secondaryBoards) {
 		errors = append(errors, fmt.Sprintf("number of requested secondary-boards: %d does not match with number of requested secondary-lacros-paths: %d", len(c.secondaryBoards), len(c.secondaryLacrosPaths)))
 	}

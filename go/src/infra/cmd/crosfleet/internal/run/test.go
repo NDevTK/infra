@@ -27,7 +27,7 @@ var test = &subcommands.Command{
 	ShortDesc: "runs an individual test",
 	LongDesc: `Launches an individual test task with the given test name.
 
-You must supply -board and -pool.
+You must supply -board and -pool. If running via CFT, you must supply -harness.
 
 This command does not wait for the task to start running.
 
@@ -38,7 +38,7 @@ Do not build automation around this subcommand.`,
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.printer.Register(&c.Flags)
-		c.testCommonFlags.register(&c.Flags)
+		c.testCommonFlags.register(&c.Flags, testCmdName)
 		c.Flags.StringVar(&c.testArgs, "test-args", "", "Test arguments string (meaning depends on test).")
 		return c
 	},
@@ -94,14 +94,14 @@ func (c *testRun) innerRun(a subcommands.Application, args []string, env subcomm
 		printer:     c.printer,
 		cmdName:     testCmdName,
 		bbClient:    ctpBBClient,
-		testPlan:    testPlanForTests(c.testArgs, args),
+		testPlan:    testPlanForTests(c.testArgs, c.testCommonFlags.testHarness, args),
 		cliFlags:    &c.testCommonFlags,
 	}
 	return testLauncher.launchAndOutputTests(ctx)
 }
 
 // testPlanForTests constructs a Test Platform test plan for the given tests.
-func testPlanForTests(testArgs string, testNames []string) *test_platform.Request_TestPlan {
+func testPlanForTests(testArgs string, testHarness string, testNames []string) *test_platform.Request_TestPlan {
 	// Due to crbug/984103, the first autotest arg gets dropped somewhere between here and
 	// when autotest reads the args. Add a dummy arg to prevent this bug for now.
 	// TODO(crbug/984103): Remove the dummy arg once the underlying bug is fixed.
@@ -110,10 +110,14 @@ func testPlanForTests(testArgs string, testNames []string) *test_platform.Reques
 	}
 	testPlan := &test_platform.Request_TestPlan{}
 	for _, testName := range testNames {
+		requestTestName := testName
+		if testHarness != "" {
+			requestTestName = testHarness + "." + requestTestName
+		}
 		testRequest := &test_platform.Request_Test{
 			Harness: &test_platform.Request_Test_Autotest_{
 				Autotest: &test_platform.Request_Test_Autotest{
-					Name:     testName,
+					Name:     requestTestName,
 					TestArgs: testArgs,
 				},
 			},
