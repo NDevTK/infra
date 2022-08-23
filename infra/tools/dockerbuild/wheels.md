@@ -7291,6 +7291,18 @@ wheel: <
 
 * *universal*
 
+### 10.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/websockets-py3"
+  version: "version:10.3"
+>
+```
+
+
+* *universal*
+
 ## **wheel**
 
 ### 0.33.1

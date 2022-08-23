@@ -1055,6 +1055,7 @@ SPECS.update({
         UniversalSource('tlslite-ng', '0.7.6'),
         UniversalSource('websocket_client', '0.40.0'),
         UniversalSource('websockets', '10.1', pyversions=['py3']),
+        UniversalSource('websockets', '10.3', pyversions=['py3']),
     )
 })
 
