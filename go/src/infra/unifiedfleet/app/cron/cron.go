@@ -152,34 +152,34 @@ func Run(ctx context.Context, cronTab *CronTab) {
 		start := clock.Now(ctx)
 		start = start.In(location)
 		var trigTime time.Time
-		switch cronTab.TrigType {
-		case EVERY:
-			// Introduce env DUMPER_IMMEDIATELY_TRIGGER for local test
-			// Otherwise, just add the interval specified to the start time.
-			if strings.ToLower(os.Getenv("DUMPER_IMMEDIATELY_TRIGGER")) == "true" && count == 0 {
-				trigTime = start
-			} else {
+		// Introduce env DUMPER_IMMEDIATELY_TRIGGER for local test
+		// Otherwise, just add the interval specified to the start time.
+		if strings.ToLower(os.Getenv("DUMPER_IMMEDIATELY_TRIGGER")) == "true" && count == 0 {
+			trigTime = start
+		} else {
+			switch cronTab.TrigType {
+			case EVERY:
 				trigTime = start.Add(cronTab.Time)
+
+			case HOURLY:
+				trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 1*time.Hour)
+
+			case DAILY:
+				trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 24*time.Hour)
+
+			case WEEKDAYS:
+				trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 24*time.Hour)
+				trigTime = skipDays(trigTime, false)
+
+			case WEEKEND:
+				trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 24*time.Hour)
+				trigTime = skipDays(trigTime, true)
+
+			default:
+				// Don't start the cron if the tab is bad
+				logging.Errorf(ctx, "Unable to trigger %s. Bad type of trigger", cronTab.Name)
+				return
 			}
-
-		case HOURLY:
-			trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 1*time.Hour)
-
-		case DAILY:
-			trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 24*time.Hour)
-
-		case WEEKDAYS:
-			trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 24*time.Hour)
-			trigTime = skipDays(trigTime, false)
-
-		case WEEKEND:
-			trigTime = estimateTriggerTime(ctx, start, cronTab.Time, 24*time.Hour)
-			trigTime = skipDays(trigTime, true)
-
-		default:
-			// Don't start the cron if the tab is bad
-			logging.Errorf(ctx, "Unable to trigger %s. Bad type of trigger", cronTab.Name)
-			return
 		}
 
 		// Wait until trigTime.
