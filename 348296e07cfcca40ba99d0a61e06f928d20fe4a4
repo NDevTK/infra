@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae27b431_82e8a6d3",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 475,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-08-23T17:17:22Z",
+      "side": 1,
+      "message": "I think we need to add a separate test for when bucket is specified and leave the default case as it is because it is still the most widely used one. What do you think?",
+      "revId": "348296e07cfcca40ba99d0a61e06f928d20fe4a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
