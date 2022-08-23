@@ -11,10 +11,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"infra/libs/fleet/boxster/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -32,8 +29,10 @@ type TleSource struct {
 }
 
 var TLE_LABEL_MAPPING = map[string]*TleSource{
-	"dut_id":                      createTleSourceForConfig("lab_config", "name"),
-	"dut_name":                    createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.hostname"),
+	"attr-cr50-phase":             createTleSourceForConfig("dut_state", "cr50_phase"),
+	"attr-cr50-key-env":           createTleSourceForConfig("dut_state", "cr50_key_env"),
+	"attr-dut-id":                 createTleSourceForConfig("lab_config", "name"),
+	"attr-dut-name":               createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.hostname"),
 	"hwid":                        createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
 	"serial_number":               createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
 	"misc-license":                createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.licenses..type"),
@@ -46,10 +45,16 @@ var TLE_LABEL_MAPPING = map[string]*TleSource{
 	"peripheral-bluetooth-state":  createTleSourceForConfig("dut_state", "bluetooth_state"),
 	"peripheral-camerabox-facing": createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.facing"),
 	"peripheral-camerabox-light":  createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.light"),
+	"peripheral-carrier":          createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.carrier"),
 	"peripheral-chameleon":        createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"peripheral-chaos":            createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.chaos"),
+	"peripheral-mimo":             createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.touch.mimo"),
 	"peripheral-num-btpeer":       createTleSourceForConfig("dut_state", "working_bluetooth_btpeer"),
+	"peripheral-servo":            createTleSourceForConfig("lab_config", "UNIMPLEMENTED"),
+	"peripheral-servo-component":  createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.servo..servo_component[*]"),
 	"peripheral-servo-state":      createTleSourceForConfig("dut_state", "servo"),
 	"peripheral-servo-usb-state":  createTleSourceForConfig("dut_state", "servo_usb_state"),
+	"peripheral-wifi-state":       createTleSourceForConfig("dut_state", "wifi_state"),
 	"peripheral-wificell":         createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.peripherals.wifi.wificell"),
 	"swarming-pool":               createTleSourceForConfig("lab_config", "chromeos_machine_lse.device_lse.dut.pools"),
 }
@@ -92,7 +97,7 @@ func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb
 	case labConfigSourceStr:
 		return constructTleLabels(labelNames, labelMapping.path, lse)
 	default:
-		return nil, errors.New(fmt.Sprintf("%s is not a valid label source", labelMapping.configType))
+		return nil, fmt.Errorf("%s is not a valid label source", labelMapping.configType)
 	}
 }
 
@@ -114,5 +119,5 @@ func getTleLabelMapping(label string) (*TleSource, error) {
 	if val, ok := TLE_LABEL_MAPPING[label]; ok {
 		return val, nil
 	}
-	return nil, status.Errorf(codes.NotFound, "No TLE label mapping found for %s", label)
+	return nil, fmt.Errorf("no TLE label mapping found for %s", label)
 }
