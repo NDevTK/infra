@@ -16,6 +16,24 @@
       "message": "I think we need to add a separate test for when bucket is specified and leave the default case as it is because it is still the most widely used one. What do you think?",
       "revId": "348296e07cfcca40ba99d0a61e06f928d20fe4a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82db69cb_e465ea9a",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 475,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-08-23T19:34:16Z",
+      "side": 1,
+      "message": "software dependencies are handled in the helper function `softwareDependencies()` and we test what things look like there without the bucket specified. We don\u0027t need to cover every case here.\n\nThe default value is also only filled in when the CLI command is run end-to-end, so we can\u0027t really test that the default is getting set.",
+      "parentUuid": "ae27b431_82e8a6d3",
+      "revId": "348296e07cfcca40ba99d0a61e06f928d20fe4a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
