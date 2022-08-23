@@ -223,6 +223,20 @@ class OnlineWindowsCustomization(customization.Customization):
         size=drive.size,
         filesystem=drive.filesystem)
 
+  def get_output(self):
+    """ return the output of executing this config. Doesn't guarantee that the
+    output exists"""
+    if self.get_key():
+      self.m.step('DEBUG', cmd=[self.get_key(), self._name])
+      output = src_pb.GCSSrc(
+          bucket='chrome-gce-images',
+          source='WIB-WIN/{}.iso'.format(self.get_key()))
+      return dest_pb.Dest(
+          gcs_src=output,
+          tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
+      )
+    return None  # pragma: no cover
+
   def process_disks(self, drive, include=None):
     ''' process_disks processes the disk and prepares them to be used on a VM.
 

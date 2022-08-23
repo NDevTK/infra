@@ -28,9 +28,7 @@ class Customization(object):
     # generate a copy of image
     self._image = wib.Image()
     self._image.CopyFrom(image)
-    # remove all customizations from the image
-    for _ in image.customizations:
-      image.customizations.pop()
+    self._image.ClearField('customizations')
     # generate a copy of customization
     self._customization = wib.Customization()
     self._customization.CopyFrom(cust)

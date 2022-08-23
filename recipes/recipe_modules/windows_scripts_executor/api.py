@@ -195,7 +195,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
           'Write config {}'.format(cfg_file),
           cfg_file,
           canon_image,
-          codec='TEXTPB')
+          codec='BINARY')
       # estimate the unique hash for the config (identifier for the image built
       # by this config)
       key = self.m.file.file_hash(cfg_file)

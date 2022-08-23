@@ -34,6 +34,8 @@ PROPERTIES = wib.Image
 def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
+  custs = api.windows_scripts_executor.process_customizations(custs)
+  custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.execute_customizations(custs)
 
 
@@ -94,6 +96,8 @@ def GenTests(api):
             },
             shutdown_time=300))
 
+  key_win = '58d14c6fc3a92d22be294beda85d0a471c70af02dad2cfddfa80626ac1604d12'
+
   yield (api.test('execute_customization_happy_path[AARCH64_KVM]') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
@@ -102,8 +106,9 @@ def GenTests(api):
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
-         t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(DropExpectation))
+         t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win),
+             False) + api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[AMD64_KVM]') +
          api.platform('linux', 64, 'intel') +
@@ -113,39 +118,45 @@ def GenTests(api):
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
-         t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(DropExpectation))
+         t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win),
+             False) + api.post_process(DropExpectation))
 
-  yield (api.test('execute_customization_happy_path[X86_KVM]') +
-         api.platform('linux', 32, 'intel') +
-         api.properties(IMAGE(wib.ARCH_X86)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
-         t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
-         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
-         t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(DropExpectation))
+  yield (
+      api.test('execute_customization_happy_path[X86_KVM]') +
+      api.platform('linux', 32, 'intel') + api.properties(IMAGE(wib.ARCH_X86)) +
+      t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+      t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+      t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+      t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
+      t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+      t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
+          api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win), False) +
+      api.post_process(DropExpectation))
 
-  yield (api.test('execute_customization_fail_add_file') +
-         api.platform('linux', 64, 'intel') +
-         api.properties(IMAGE(wib.ARCH_AMD64)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
-             api, image, cust, 'Bootstrap example.py', 8, success=False) +
-         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
-         t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+  yield (
+      api.test('execute_customization_fail_add_file') +
+      api.platform('linux', 64, 'intel') +
+      api.properties(IMAGE(wib.ARCH_AMD64)) +
+      t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+      t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+      t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+          api, image, cust, 'Bootstrap example.py', 8, success=False) +
+      t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+      t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
+          api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win), False) +
+      api.post_process(StatusFailure) + api.post_process(DropExpectation))
 
-  yield (api.test('execute_customization_fail_safe_shutdown') +
-         api.platform('linux', 64, 'intel') +
-         api.properties(IMAGE(wib.ARCH_AMD64)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
-             api, image, cust, 'Bootstrap example.py', 8, success=False) +
-         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
-         t.STATUS_VM(api, image, cust, vm_name, running=True) +
-         t.QUIT_VM(api, image, cust, vm_name, success=True) +
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+  yield (
+      api.test('execute_customization_fail_safe_shutdown') +
+      api.platform('linux', 64, 'intel') +
+      api.properties(IMAGE(wib.ARCH_AMD64)) +
+      t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+      t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+      t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+          api, image, cust, 'Bootstrap example.py', 8, success=False) +
+      t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+      t.STATUS_VM(api, image, cust, vm_name, running=True) +
+      t.QUIT_VM(api, image, cust, vm_name, success=True) + t.MOCK_CUST_OUTPUT(
+          api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win), False) +
+      api.post_process(StatusFailure) + api.post_process(DropExpectation))

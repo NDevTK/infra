@@ -1,9 +1,0 @@
-[
-  {
-    "failure": {
-      "failure": {},
-      "humanReason": "`config_path` is a required property"
-    },
-    "name": "$result"
-  }
-]
