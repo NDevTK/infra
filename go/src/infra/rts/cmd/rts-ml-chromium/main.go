@@ -40,6 +40,7 @@ func main() {
 			return logCfg.Use(ctx)
 		},
 		Commands: []*subcommands.Command{
+			cmdFileGraph(&authOpt),
 			cmdCreateModel(&authOpt),
 			cmdSelect(),
 			cmdGenTrainingData(&authOpt),

@@ -3,6 +3,249 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+# [VPYTHON:BEGIN]
+# wheel: <
+#   name: "infra/python/wheels/tensorflow/${vpython_platform}"
+#   version: "version:2.7.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/keras-py3"
+#   version: "version:2.7.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/h5py/${vpython_platform}"
+#   version: "version:3.6.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/absl-py-py3"
+#   version: "version:0.11.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/tensorboard-py3"
+#   version: "version:2.6.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/werkzeug-py3"
+#   version: "version:2.0.1"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/google-auth-oauthlib-py3"
+#   version: "version:0.4.5"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/requests-oauthlib-py3"
+#   version: "version:1.3.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/oauthlib-py3"
+#   version: "version:3.1.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/tensorboard-data-server-py3"
+#   version: "version:0.6.1"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/tensorboard-plugin-wit-py3"
+#   version: "version:1.8.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/markdown-py3"
+#   version: "version:3.0.1"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/tensorflow-io-gcs-filesystem/${vpython_platform}"
+#   version: "version:0.23.1"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/tensorflow-estimator-py3"
+#   version: "version:2.7.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/astunparse-py3"
+#   version: "version:1.6.3"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/termcolor-py2_py3"
+#   version: "version:1.1.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/google-pasta-py3"
+#   version: "version:0.2.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/gast-py3"
+#   version: "version:0.4.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/keras-preprocessing-py2_py3"
+#   version: "version:1.1.2"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/libclang/${vpython_platform}"
+#   version: "version:12.0.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/flatbuffers-py2_py3"
+#   version: "version:1.12"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/opt-einsum-py3"
+#   version: "version:3.3.0"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/wrapt/${vpython_platform}"
+#   version: "version:1.13.3"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/six-py2_py3"
+#   version: "version:1.15.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/google-auth-py2_py3"
+#   version: "version:1.25.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/pyasn1-py2_py3"
+#   version: "version:0.4.5"
+# >
+# wheel: <
+#   name: "infra/python/wheels/pyasn1_modules-py2_py3"
+#   version: "version:0.2.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/rsa-py2_py3"
+#   version: "version:3.4.2"
+# >
+# wheel: <
+#   name: "infra/python/wheels/cachetools-py2_py3"
+#   version: "version:2.0.1"
+# >
+# wheel: <
+#   name: "infra/python/wheels/numpy/${vpython_platform}"
+#   version: "version:1.2x.supported.1"
+# >
+# wheel: <
+#   name: "infra/python/wheels/requests-py2_py3"
+#   version: "version:2.26.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/certifi-py2_py3"
+#   version: "version:2020.11.8"
+# >
+# wheel: <
+#   name: "infra/python/wheels/idna-py2_py3"
+#   version: "version:2.8"
+# >
+# wheel: <
+#   name: "infra/python/wheels/urllib3-py2_py3"
+#   version: "version:1.24.3"
+# >
+# wheel: <
+#   name: "infra/python/wheels/charset_normalizer-py3"
+#   version: "version:2.0.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/grpcio/${vpython_platform}"
+#   version: "version:1.44.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/protobuf-py3"
+#   version: "version:3.20.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/typing-extensions-py3"
+#   version: "version:4.0.1"
+#   match_tag: <
+#     platform: "manylinux1_x86_64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/pandas/${vpython_platform}"
+#   version: "version:1.3.2.chromium.1"
+#   not_match_tag: <
+#     platform: "linux_aarch64"
+#   >
+# >
+# wheel: <
+#   name: "infra/python/wheels/pytz-py2_py3"
+#   version: "version:2018.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/python-dateutil-py2_py3"
+#   version: "version:2.7.3"
+# >
+# [VPYTHON:END]
+
 import argparse
 import io
 import os

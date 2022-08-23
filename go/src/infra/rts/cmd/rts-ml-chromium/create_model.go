@@ -179,7 +179,6 @@ func (r *createModelRun) writeFileGraphModel(ctx context.Context, dir string) er
 
 	if err := r.writeFileGraph(ctx, filepath.Join(dir, "graph.fg")); err != nil {
 		return errors.Annotate(err, "failed to write file graph").Err()
-
 	}
 
 	if err := r.writeStrategyConfig(ctx, dir); err != nil {

@@ -17,6 +17,9 @@ platforms:
   - windows-amd64
 go_packages:
   - infra/rts/cmd/rts-ml-chromium
+copies:
+  - src: ../src/infra/rts/cmd/rts-ml-chromium/ml_cli_logit.py
+    dst: ml_cli_logit.py
 install_mode: copy
 root: ../../go/bin
 data:

@@ -140,7 +140,10 @@ func (r *genTrainingDataRun) ValidateFlags() error {
 // Generates training data and creates a csv file intended for a ml model
 // to be trained on
 func (r *genTrainingDataRun) GenTrainData(ctx context.Context) error {
-	r.loadAffinityFileGraph(ctx)
+	err := r.loadAffinityFileGraph(ctx)
+	if err != nil {
+		return err
+	}
 	file, err := os.Create(r.out)
 	if err != nil {
 		return err
