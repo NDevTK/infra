@@ -252,14 +252,16 @@ var testSoftwareDependenciesData = []struct {
 }{
 	{ // Invalid label
 		testCommonFlags{
+			bucket:          "",
 			image:           "",
 			provisionLabels: map[string]string{"foo-invalid": "bar"},
 		},
 		nil,
 		"invalid provisionable label foo-invalid",
 	},
-	{ // No labels or image
+	{ // No labels, bucket, or image
 		testCommonFlags{
+			bucket:          "",
 			image:           "",
 			provisionLabels: nil,
 		},
@@ -268,6 +270,7 @@ var testSoftwareDependenciesData = []struct {
 	},
 	{ // Image, Lacros path, and one label
 		testCommonFlags{
+			bucket:     "sample-bucket",
 			image:      "sample-image",
 			lacrosPath: "sample-lacros-path",
 			provisionLabels: map[string]string{
@@ -276,6 +279,7 @@ var testSoftwareDependenciesData = []struct {
 		},
 		[]*test_platform.Request_Params_SoftwareDependency{
 			{Dep: &test_platform.Request_Params_SoftwareDependency_RwFirmwareBuild{RwFirmwareBuild: "foo-rw"}},
+			{Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuildGcsBucket{ChromeosBuildGcsBucket: "sample-bucket"}},
 			{Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: "sample-image"}},
 			{Dep: &test_platform.Request_Params_SoftwareDependency_LacrosGcsPath{LacrosGcsPath: "sample-lacros-path"}},
 		},
@@ -426,6 +430,7 @@ func TestTestPlatformRequest(t *testing.T) {
 	cliFlags := &testCommonFlags{
 		board:           "sample-board",
 		image:           "sample-image",
+		bucket:          "sample-bucket",
 		pool:            "MANAGED_POOL_SUITES",
 		qsAccount:       "sample-qs-account",
 		priority:        100,
@@ -455,6 +460,7 @@ func TestTestPlatformRequest(t *testing.T) {
 			},
 			SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
 				{Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: "foo-cros"}},
+				{Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuildGcsBucket{ChromeosBuildGcsBucket: "sample-bucket"}},
 				{Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: "sample-image"}},
 			},
 			Decorations: &test_platform.Request_Params_Decorations{
@@ -466,9 +472,9 @@ func TestTestPlatformRequest(t *testing.T) {
 				Allow: false,
 			},
 			Metadata: &test_platform.Request_Params_Metadata{
-				TestMetadataUrl:        "gs://chromeos-image-archive/sample-image",
-				DebugSymbolsArchiveUrl: "gs://chromeos-image-archive/sample-image",
-				ContainerMetadataUrl:   "gs://chromeos-image-archive/sample-image/metadata/containers.jsonpb",
+				TestMetadataUrl:        "gs://sample-bucket/sample-image",
+				DebugSymbolsArchiveUrl: "gs://sample-bucket/sample-image",
+				ContainerMetadataUrl:   "gs://sample-bucket/sample-image/metadata/containers.jsonpb",
 			},
 			Time: &test_platform.Request_Params_Time{
 				MaximumDuration: ptypes.DurationProto(

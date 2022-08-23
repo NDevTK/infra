@@ -38,8 +38,8 @@ const (
 	MinSwarmingPriority = int64(50)
 	// MaxSwarmingPriority is the highest-allowed priority for a Swarming task.
 	MaxSwarmingPriority = int64(255)
-	// imageArchiveBaseURL is the base URL for the ChromeOS image archive.
-	imageArchiveBaseURL = "gs://chromeos-image-archive"
+	// defaultImageBucket is the GS bucket for the ChromeOS image archive.
+	defaultImageBucket = "chromeos-image-archive"
 	// containerMetadataURLSuffix is the URL suffix for the container metadata
 	// URL in the ChromeOS image archive.
 	containerMetadataURLSuffix = "metadata/containers.jsonpb"
@@ -82,6 +82,7 @@ type testCommonFlags struct {
 	secondaryLacrosPaths []string
 	cft                  bool
 	testHarness          string
+	bucket               string
 }
 
 type fleetValidationResults struct {
@@ -98,6 +99,7 @@ If no value for image or release is passed, test will run against the latest gre
 	f.Var(luciflag.CommaList(&c.secondaryImages), "secondary-images", "Comma-separated list of image name(or 'skip' if no provision needed for a secondary dut) for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
 	f.StringVar(&c.release, "release", "", `Optional ChromeOS release branch to run test against, e.g. R89-13609.0.0.
 If no value for image or release is passed, test will run against the latest green postsubmit build for the given board.`)
+	f.StringVar(&c.bucket, "bucket", defaultImageBucket, "Google Storage bucket where the specified image(s) are stored.")
 	f.StringVar(&c.board, "board", "", "Board to run tests on.")
 	f.Var(luciflag.CommaList(&c.secondaryBoards), "secondary-boards", "Comma-separated list of boards for secondary DUTs to run tests on, a.k.a multi-DUTs testing.")
 	f.Var(luciflag.StringSlice(&c.models), "model", fmt.Sprintf(`Model to run tests on; may be specified multiple times.
@@ -456,7 +458,7 @@ func (l *ctpRunLauncher) testPlatformRequest(model string, buildTags map[string]
 	if err != nil {
 		return nil, err
 	}
-	gsPath := imageArchiveBaseURL + "/" + l.cliFlags.image
+	gsPath := fmt.Sprintf("gs://%s/%s", l.cliFlags.bucket, l.cliFlags.image)
 
 	request := &test_platform.Request{
 		TestPlan: l.testPlan,
@@ -503,6 +505,13 @@ func (c *testCommonFlags) softwareDependencies() ([]*test_platform.Request_Param
 	deps, err := softwareDepsFromProvisionLabels(c.provisionLabels)
 	if err != nil {
 		return nil, err
+	}
+	// Add build image GS bucket.
+	if c.bucket != "" {
+		deps = append(deps, &test_platform.Request_Params_SoftwareDependency{
+			Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuildGcsBucket{
+				ChromeosBuildGcsBucket: c.bucket,
+			}})
 	}
 	// Add build image dependency.
 	if c.image != "" {
