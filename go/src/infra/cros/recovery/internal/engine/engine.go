@@ -203,10 +203,10 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			log.Debugf(ctx, "Action %q: finished.", actionName)
 		}
 	}()
-	a := r.getAction(actionName)
-	if len(a.GetDocs()) > 0 && step != nil {
+	act := r.getAction(actionName)
+	if len(act.GetDocs()) > 0 && step != nil {
 		docLog := step.Log("docs")
-		if _, err := io.WriteString(docLog, strings.Join(a.GetDocs(), "\n")); err != nil {
+		if _, err := io.WriteString(docLog, strings.Join(act.GetDocs(), "\n")); err != nil {
 			log.Debugf(ctx, "Fail write docs for %q, Error: %s", actionName, err)
 		}
 	}
@@ -216,7 +216,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			// Return nil error so we can continue execution of next actions...
 			return nil
 		}
-		if a.GetAllowFailAfterRecovery() {
+		if act.GetAllowFailAfterRecovery() {
 			log.Infof(ctx, "Action %q: fail (cached). Error: %s", actionName, aErr)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
 			// Return error to report for step and metrics but stop from return to parent.
@@ -242,7 +242,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		if startOverTag.In(err) {
 			return errors.Annotate(err, "run action %q", actionName).Err()
 		}
-		if a.GetAllowFailAfterRecovery() {
+		if act.GetAllowFailAfterRecovery() {
 			log.Infof(ctx, "Action %q: one of dependencies fail. Error: %s", actionName, err)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
 			// Return error to report for step and metrics but stop from return to parent.
@@ -254,7 +254,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		if startOverTag.In(err) {
 			return errors.Annotate(err, "run action %q", actionName).Err()
 		}
-		if a.GetAllowFailAfterRecovery() {
+		if act.GetAllowFailAfterRecovery() {
 			log.Infof(ctx, "Action %q: fail. Error: %s", actionName, err)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
 			// Return error to report for step and metrics but stop from return to parent.
