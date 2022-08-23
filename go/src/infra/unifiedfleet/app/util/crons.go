@@ -14,4 +14,5 @@ var CronJobNames = map[string]string{
 	"droneQueenSyncCron":         "ufs.push_to_drone_queen",
 	"InventoryMetricsReportCron": "ufs.report_inventory",
 	"goldeneyeDevicesSyncCron":   "ufs.sync_goldeneye_devices.sync",
+	"SwarmingLabelsDiffCron":     "ufs.swarming_labels_diff",
 }

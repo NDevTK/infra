@@ -85,6 +85,13 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.EVERY,
 		Job:      getGoldenEyeData,
 	},
+	{
+		// Compare differences between Swarming label generators
+		Name:     util.CronJobNames["SwarmingLabelsDiffCron"],
+		Time:     5 * time.Minute,
+		TrigType: cron.DAILY,
+		Job:      swarmingLabelsDiffHandler,
+	},
 }
 
 // InitServer initializes a cron server.
