@@ -1663,6 +1663,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err
 				}
+				dut.RoVpdMap = labData.GetRoVpdMap()
 			}
 		}
 		if _, err = inventory.BatchUpdateMachineLSEs(ctx, []*ufspb.MachineLSE{lse}); err != nil {

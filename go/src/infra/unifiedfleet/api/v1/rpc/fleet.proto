@@ -1778,6 +1778,7 @@ message ChromeOsRecoveryData {
     repeated BluetoothPeer bluetooth_peers = 6;
     // ServoUsbDrive contains details of the servo's plugged USB drive.
     chromiumos.test.lab.api.UsbDrive servo_usb_drive = 7;
+    map<string, string> ro_vpd_map = 8;
   }
 
   // Used for updating back essential configs from repair/deploy task.

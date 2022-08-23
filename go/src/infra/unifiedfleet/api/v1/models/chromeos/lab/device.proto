@@ -62,6 +62,8 @@ message DeviceUnderTest{
   ModemInfo modeminfo = 6;
 
   repeated SIMInfo siminfo = 7;
+
+  map<string, string> ro_vpd_map = 8;
 }
 
 // Next Tag: 5
