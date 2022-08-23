@@ -15,8 +15,7 @@ from framework import jsonfeed
 from tracker import tracker_constants
 
 
-# TODO: change to FlaskInternalTask when convert to flask
-class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
+class RecomputeDerivedFieldsTask(jsonfeed.FlaskInternalTask):
   """JSON servlet that recomputes derived fields on a batch of issues."""
 
   def HandleRequest(self, mr):
@@ -36,15 +35,14 @@ class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
         'success': True,
         }
 
-  # def GetRecomputeDerivedFieldsTask(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetRecomputeDerivedFieldsTask(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostRecomputeDerivedFieldsTask(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostRecomputeDerivedFieldsTask(self, **kwargs):
+    return self.handler(**kwargs)
 
 
-# TODO: change to FlaskInternalTask when convert to Flask
-class ReindexQueueCron(jsonfeed.InternalTask):
+class ReindexQueueCron(jsonfeed.FlaskInternalTask):
   """JSON servlet that reindexes some issues each minute, as needed."""
 
   def HandleRequest(self, mr):
@@ -57,8 +55,8 @@ class ReindexQueueCron(jsonfeed.InternalTask):
         'num_reindexed': num_reindexed,
         }
 
-  # def GetReindexQueueCron(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetReindexQueueCron(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostReindexQueueCron(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostReindexQueueCron(self, **kwargs):
+    return self.handler(**kwargs)

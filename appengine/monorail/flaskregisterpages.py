@@ -665,114 +665,113 @@ class ServletRegistry(object):
   def RegisterTaskUrl(self, service):
     flaskapp_task = flask.Flask(__name__)
     _TASK_URL = [
-        # (
-        #     '/banSpammer',
-        #     banspammer.BanSpammerTask(services=service).GetBanSpammer,
-        #     ['GET']),
-        # (
-        #     '/banSpammer.do',
-        #     banspammer.BanSpammerTask(services=service).PostBanSpammer,
-        #     ['POST']),
-        # (
-        #     '/sendWipeoutUserListsTask',
-        #     deleteusers.SendWipeoutUserListsTask(
-        #         services=service).GetSendWipeoutUserListsTask, ['GET']),
-        # (
-        #     '/sendWipeoutUserListsTask.do',
-        #     deleteusers.SendWipeoutUserListsTask(
-        #         services=service).PostSendWipeoutUserListsTask, ['POST']),
-        # (
-        #     '/deleteWipeoutUsersTask',
-        #     deleteusers.DeleteWipeoutUsersTask(
-        #         services=service).GetDeleteWipeoutUsersTask, ['GET']),
-        # (
-        #     '/deleteWipeoutUsersTask.do',
-        #     deleteusers.DeleteWipeoutUsersTask(
-        #         services=service).PostDeleteWipeoutUsersTask, ['POST']),
-        # (
-        #     '/deleteUsersTask',
-        #     deleteusers.DeleteUsersTask(services=service).GetDeleteUsersTask,
-        #     ['GET']),
-        # (
-        #     '/deleteUsersTask.do',
-        #     deleteusers.DeleteUsersTask(services=service).PostDeleteUsersTask,
-        #     ['POST']),
-        # (
-        #     '/notifyRulesDeleted',
-        #     notify.NotifyRulesDeletedTask(
-        #         services=service).GetNotifyRulesDeletedTask, ['GET']),
-        # (
-        #     '/notifyRulesDeleted.do',
-        #     notify.NotifyRulesDeletedTask(
-        #         services=service).PostNotifyRulesDeletedTask, ['POST']),
-        # (
-        #     '/notifyIssueChange', notify.NotifyIssueChangeTask(
-        #         services=service).GetNotifyIssueChangeTask, ['GET']),
-        # (
-        #     '/notifyIssueChange.do',
-        #     notify.NotifyIssueChangeTask(
-        #         services=service).PostNotifyIssueChangeTask, ['POST']),
-        # (
-        #     '/notifyBlockingChange',
-        #     notify.NotifyBlockingChangeTask(
-        #         services=service).GetNotifyBlockingChangeTask, ['GET']),
-        # (
-        #     '/notifyBlockingChange.do',
-        #     notify.NotifyBlockingChangeTask(
-        #         services=service).PostNotifyBlockingChangeTask, ['POST']),
-        # (
-        #     '/notifyBulkEdit', notify.NotifyBulkChangeTask(
-        #         services=service).GetNotifyBulkChangeTask, ['GET']),
-        # (
-        #     '/notifyBulkEdit.do', notify.NotifyBulkChangeTask(
-        #         services=service).PostNotifyBulkChangeTask, ['POST']),
-        # (
-        #     '/notifyApprovalChange',
-        #     notify.NotifyApprovalChangeTask(
-        #         services=service).GetNotifyApprovalChangeTask, ['GET']),
-        # (
-        #     '/notifyApprovalChange.do',
-        #     notify.NotifyApprovalChangeTask(
-        #         services=service).PostNotifyApprovalChangeTask, ['POST']),
-        # (
-        #     '/publishPubsubIssueChange',
-        #     pubsub.PublishPubsubIssueChangeTask(
-        #         services=service).GetPublishPubsubIssueChangeTask, ['GET']),
-        # (
-        #     '/publishPubsubIssueChange.do',
-        #     pubsub.PublishPubsubIssueChangeTask(
-        #         services=service).PostPublishPubsubIssueChangeTask, ['POST']),
-        # (
-        #     '/issueDateAction', dateaction.IssueDateActionTask(
-        #         services=service).GetIssueDateActionTask, ['GET']),
-        # (
-        #     '/issueDateAction.do',
-        #     dateaction.IssueDateActionTask(
-        #         services=service).PostIssueDateActionTask, ['POST']),
-        # (
-        #     '/fltConversionTask',
-        #     fltconversion.FLTConvertTask(services=service).GetFLTConvertTask,
-        #     ['GET']),
-        # (
-        #     '/fltConversionTask.do',
-        #     fltconversion.FLTConvertTask(services=service).PostFLTConvertTask,
-        #     ['POST']),
-        # (
-        #     '/outboundEmail',
-        #     notify.OutboundEmailTask(services=service).GetOutboundEmailTask,
-        #     ['GET']),
-        # (
-        #     '/outboundEmail.do',
-        #     notify.OutboundEmailTask(services=service).PostOutboundEmailTask,
-        #     ['POST']),
-        # (
-        #     '/recomputeDerivedFields',
-        #     filterrules.RecomputeDerivedFieldsTask(
-        #         services=service).GetRecomputeDerivedFieldsTask, ['GET']),
-        # (
-        #     '/recomputeDerivedFields.do',
-        #     filterrules.RecomputeDerivedFieldsTask(
-        #         services=service).PostRecomputeDerivedFieldsTask, ['POST']),
+        (
+            '/banSpammer',
+            banspammer.BanSpammerTask(services=service).GetBanSpammer, ['GET']),
+        (
+            '/banSpammer.do',
+            banspammer.BanSpammerTask(services=service).PostBanSpammer,
+            ['POST']),
+        (
+            '/sendWipeoutUserListsTask',
+            deleteusers.SendWipeoutUserListsTask(
+                services=service).GetSendWipeoutUserListsTask, ['GET']),
+        (
+            '/sendWipeoutUserListsTask.do',
+            deleteusers.SendWipeoutUserListsTask(
+                services=service).PostSendWipeoutUserListsTask, ['POST']),
+        (
+            '/deleteWipeoutUsersTask',
+            deleteusers.DeleteWipeoutUsersTask(
+                services=service).GetDeleteWipeoutUsersTask, ['GET']),
+        (
+            '/deleteWipeoutUsersTask.do',
+            deleteusers.DeleteWipeoutUsersTask(
+                services=service).PostDeleteWipeoutUsersTask, ['POST']),
+        (
+            '/deleteUsersTask',
+            deleteusers.DeleteUsersTask(services=service).GetDeleteUsersTask,
+            ['GET']),
+        (
+            '/deleteUsersTask.do',
+            deleteusers.DeleteUsersTask(services=service).PostDeleteUsersTask,
+            ['POST']),
+        (
+            '/notifyRulesDeleted',
+            notify.NotifyRulesDeletedTask(
+                services=service).GetNotifyRulesDeletedTask, ['GET']),
+        (
+            '/notifyRulesDeleted.do',
+            notify.NotifyRulesDeletedTask(
+                services=service).PostNotifyRulesDeletedTask, ['POST']),
+        (
+            '/notifyIssueChange', notify.NotifyIssueChangeTask(
+                services=service).GetNotifyIssueChangeTask, ['GET']),
+        (
+            '/notifyIssueChange.do',
+            notify.NotifyIssueChangeTask(
+                services=service).PostNotifyIssueChangeTask, ['POST']),
+        (
+            '/notifyBlockingChange',
+            notify.NotifyBlockingChangeTask(
+                services=service).GetNotifyBlockingChangeTask, ['GET']),
+        (
+            '/notifyBlockingChange.do',
+            notify.NotifyBlockingChangeTask(
+                services=service).PostNotifyBlockingChangeTask, ['POST']),
+        (
+            '/notifyBulkEdit', notify.NotifyBulkChangeTask(
+                services=service).GetNotifyBulkChangeTask, ['GET']),
+        (
+            '/notifyBulkEdit.do', notify.NotifyBulkChangeTask(
+                services=service).PostNotifyBulkChangeTask, ['POST']),
+        (
+            '/notifyApprovalChange',
+            notify.NotifyApprovalChangeTask(
+                services=service).GetNotifyApprovalChangeTask, ['GET']),
+        (
+            '/notifyApprovalChange.do',
+            notify.NotifyApprovalChangeTask(
+                services=service).PostNotifyApprovalChangeTask, ['POST']),
+        (
+            '/publishPubsubIssueChange',
+            pubsub.PublishPubsubIssueChangeTask(
+                services=service).GetPublishPubsubIssueChangeTask, ['GET']),
+        (
+            '/publishPubsubIssueChange.do',
+            pubsub.PublishPubsubIssueChangeTask(
+                services=service).PostPublishPubsubIssueChangeTask, ['POST']),
+        (
+            '/issueDateAction', dateaction.IssueDateActionTask(
+                services=service).GetIssueDateActionTask, ['GET']),
+        (
+            '/issueDateAction.do',
+            dateaction.IssueDateActionTask(
+                services=service).PostIssueDateActionTask, ['POST']),
+        (
+            '/fltConversionTask',
+            fltconversion.FLTConvertTask(services=service).GetFLTConvertTask,
+            ['GET']),
+        (
+            '/fltConversionTask.do',
+            fltconversion.FLTConvertTask(services=service).PostFLTConvertTask,
+            ['POST']),
+        (
+            '/outboundEmail',
+            notify.OutboundEmailTask(services=service).GetOutboundEmailTask,
+            ['GET']),
+        (
+            '/outboundEmail.do',
+            notify.OutboundEmailTask(services=service).PostOutboundEmailTask,
+            ['POST']),
+        (
+            '/recomputeDerivedFields',
+            filterrules.RecomputeDerivedFieldsTask(
+                services=service).GetRecomputeDerivedFieldsTask, ['GET']),
+        (
+            '/recomputeDerivedFields.do',
+            filterrules.RecomputeDerivedFieldsTask(
+                services=service).PostRecomputeDerivedFieldsTask, ['POST']),
     ]
 
     for rule in _TASK_URL:
@@ -784,54 +783,52 @@ class ServletRegistry(object):
   def RegisterCronUrl(self, service):
     flaskapp_cron = flask.Flask(__name__)
     _CRON_URL = [
-        # (
-        #     '/wipeoutSync',
-        #     deleteusers.WipeoutSyncCron(services=service).GetWipeoutSyncCron,
-        #     ['GET']),
-        # (
-        #     '/wipeoutSync.do',
-        #     deleteusers.WipeoutSyncCron(services=service).PostWipeoutSyncCron,
-        #     ['POST']),
-        # (
-        #     '/reindexQueue',
-        #     filterrules.ReindexQueueCron(
-        #       services=service).GetReindexQueueCron,
-        #     ['GET']),
-        # (
-        #     '/reindexQueue.do',
-        #     filterrules.ReindexQueueCron(
-        #       services=service).PostReindexQueueCron,
-        #     ['POST']),
-        # (
-        #     '/dateAction',
-        #     dateaction.DateActionCron(services=service).GetDateActionCron,
-        #     ['GET']),
-        # (
-        #     '/dateAction.do',
-        #     dateaction.DateActionCron(services=service).PostDateActionCron,
-        #     ['POST']),
-        # (
-        #     '/ramCacheConsolidate',
-        #     cachemanager_svc.RamCacheConsolidate(
-        #         services=service).GetRamCacheConsolidate, ['GET']),
-        # (
-        #     '/ramCacheConsolidate.do',
-        #     cachemanager_svc.RamCacheConsolidate(
-        #         services=service).PostRamCacheConsolidate, ['POST']),
-        # ('/reap', reap.Reap(services=service).GetReap, ['GET']),
-        # ('/reap.do', reap.Reap(services=service).PostReap, ['POST']),
-        # (
-        #     '/loadApiClientConfigs',
-        #     client_config_svc.LoadApiClientConfigs().GetLoadApiClientConfigs,
-        #     ['GET']),
-        # (
-        #     '/trimVisitedPages',
-        #     trimvisitedpages.TrimVisitedPages(
-        #         services=service).GetTrimVisitedPages, ['GET']),
-        # (
-        #     '/trimVisitedPages.do',
-        #     trimvisitedpages.TrimVisitedPages(
-        #         services=service).PostTrimVisitedPages, ['POST']),
+        (
+            '/wipeoutSync',
+            deleteusers.WipeoutSyncCron(services=service).GetWipeoutSyncCron,
+            ['GET']),
+        (
+            '/wipeoutSync.do',
+            deleteusers.WipeoutSyncCron(services=service).PostWipeoutSyncCron,
+            ['POST']),
+        (
+            '/reindexQueue',
+            filterrules.ReindexQueueCron(services=service).GetReindexQueueCron,
+            ['GET']),
+        (
+            '/reindexQueue.do',
+            filterrules.ReindexQueueCron(services=service).PostReindexQueueCron,
+            ['POST']),
+        (
+            '/dateAction',
+            dateaction.DateActionCron(services=service).GetDateActionCron,
+            ['GET']),
+        (
+            '/dateAction.do',
+            dateaction.DateActionCron(services=service).PostDateActionCron,
+            ['POST']),
+        (
+            '/ramCacheConsolidate',
+            cachemanager_svc.RamCacheConsolidate(
+                services=service).GetRamCacheConsolidate, ['GET']),
+        (
+            '/ramCacheConsolidate.do',
+            cachemanager_svc.RamCacheConsolidate(
+                services=service).PostRamCacheConsolidate, ['POST']),
+        ('/reap', reap.Reap(services=service).GetReap, ['GET']),
+        ('/reap.do', reap.Reap(services=service).PostReap, ['POST']),
+        (
+            '/loadApiClientConfigs',
+            client_config_svc.LoadApiClientConfigs().GetLoadApiClientConfigs,
+            ['GET']),
+        (
+            '/trimVisitedPages',
+            trimvisitedpages.TrimVisitedPages(
+                services=service).GetTrimVisitedPages, ['GET']),
+        (
+            '/trimVisitedPages.do',
+            trimvisitedpages.TrimVisitedPages(
+                services=service).PostTrimVisitedPages, ['POST']),
     ]
 
     for rule in _CRON_URL:

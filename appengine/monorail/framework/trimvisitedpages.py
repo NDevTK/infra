@@ -11,8 +11,7 @@ from __future__ import absolute_import
 from framework import jsonfeed
 
 
-# TODO: change to FlaskInternalTask when convert to Flask
-class TrimVisitedPages(jsonfeed.InternalTask):
+class TrimVisitedPages(jsonfeed.FlaskInternalTask):
 
   """Look for users with more than 10 visited hotlists and deletes extras."""
 
@@ -20,8 +19,8 @@ class TrimVisitedPages(jsonfeed.InternalTask):
     """Delete old RecentHotlist2User rows when there are too many"""
     self.services.user.TrimUserVisitedHotlists(mr.cnxn)
 
-  # def GetTrimVisitedPages(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetTrimVisitedPages(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostTrimVisitedPages(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostTrimVisitedPages(self, **kwargs):
+    return self.handler(**kwargs)

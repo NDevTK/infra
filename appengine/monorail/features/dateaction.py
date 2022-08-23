@@ -40,8 +40,7 @@ from tracker import tracker_views
 TEMPLATE_PATH = framework_constants.TEMPLATE_PATH
 
 
-# TODO: change to FlaskInternalTask when convert to Flask
-class DateActionCron(jsonfeed.InternalTask):
+class DateActionCron(jsonfeed.FlaskInternalTask):
   """Find and process issues with date-type values that arrived today."""
 
   def HandleRequest(self, mr):
@@ -86,11 +85,11 @@ class DateActionCron(jsonfeed.InternalTask):
         urls.ISSUE_DATE_ACTION_TASK + '.do', params)
     cloud_tasks_helpers.create_task(task)
 
-  # def GetDateActionCron(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetDateActionCron(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostDateActionCron(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostDateActionCron(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 def _GetTimestampRange(now):
@@ -234,8 +233,8 @@ class IssueDateActionTask(notify_helpers.NotifyTaskBase):
     date_str = timestr.TimestampToDateWidgetStr(timestamp)
     return 'The %s date has arrived: %s' % (field.field_name, date_str)
 
-  # def GetIssueDateActionTask(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetIssueDateActionTask(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostIssueDateActionTask(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostIssueDateActionTask(self, **kwargs):
+    return self.handler(**kwargs)

@@ -171,8 +171,7 @@ class RamCacheConsolidateTest(unittest.TestCase):
         sql.SQLTableManager)
     self.services = service_manager.Services(
         cache_manager=self.cache_manager)
-    self.servlet = cachemanager_svc.RamCacheConsolidate(
-        'req', 'res', services=self.services)
+    self.servlet = cachemanager_svc.RamCacheConsolidate(services=self.services)
 
   def testHandleRequest_NothingToDo(self):
     mr = testing_helpers.MakeMonorailRequest()

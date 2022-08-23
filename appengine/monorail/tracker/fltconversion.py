@@ -134,8 +134,7 @@ ProjectInfo = collections.namedtuple(
     'phase_map, approvals_to_labels, labels_re')
 
 
-# TODO: change to FlaskInternalTask when convert to flask
-class FLTConvertTask(jsonfeed.InternalTask):
+class FLTConvertTask(jsonfeed.FlaskInternalTask):
   """FLTConvert converts current Type=Launch issues into Type=FLT-Launch."""
 
   def AssertBasePermission(self, mr):
@@ -531,11 +530,11 @@ class FLTConvertTask(jsonfeed.InternalTask):
     return tracker_bizobj.MakeFieldValue(
         field_id, None, None, user_id, None, None, False)
 
-  # def GetFLTConvertTask(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetFLTConvertTask(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostFLTConvertTask(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostFLTConvertTask(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 def ConvertMLabels(
