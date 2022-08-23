@@ -4829,6 +4829,20 @@ wheel: <
 
 * *universal*
 
+## **pproxy-py3**
+
+### 2.7.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pproxy-py3"
+  version: "version:2.7.8"
+>
+```
+
+
+* *universal*
+
 ## **proto-plus-py3**
 
 ### 1.13.0

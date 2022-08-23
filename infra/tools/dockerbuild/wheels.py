@@ -1035,6 +1035,7 @@ SPECS.update({
         UniversalSource('perfect-hash', '0.2.1'),
         UniversalSource('portpicker', '1.3.0'),
         UniversalSource('portpicker', '1.3.1'),
+        UniversalSource('pproxy', '2.7.8', pyversions=['py3']),
         UniversalSource('proto-plus', '1.13.0', pyversions=['py3']),
         UniversalSource('protobuf-to-dict', '0.1.0'),
         UniversalSource('protorpc', '0.12.0'),
