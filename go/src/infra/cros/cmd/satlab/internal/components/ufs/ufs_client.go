@@ -23,6 +23,7 @@ import (
 type UFSClient interface {
 	GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error)
 	GetAsset(context.Context, *ufsApi.GetAssetRequest) (*ufsModels.Asset, error)
+	GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error)
 }
 
 // implementation of UFS client
@@ -38,6 +39,11 @@ func (c *clientImpl) GetDut(ctx context.Context, req *ufsApi.GetMachineLSEReques
 // GetAsset fetches information about the underlying asset behind a DUT
 func (c *clientImpl) GetAsset(ctx context.Context, req *ufsApi.GetAssetRequest) (*ufsModels.Asset, error) {
 	return c.client.GetAsset(ctx, req)
+}
+
+// GetMachine fetches information about the machine we request.
+func (c *clientImpl) GetMachine(ctx context.Context, req *ufsApi.GetMachineRequest) (*ufsModels.Machine, error) {
+	return c.client.GetMachine(ctx, req)
 }
 
 // NewUFSClient creates a new client to access UFS, but only exposing specific methods needed for Satlab CLI

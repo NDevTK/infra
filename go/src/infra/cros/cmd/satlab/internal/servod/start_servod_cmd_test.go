@@ -64,6 +64,25 @@ func (f *FakeUFSClient) GetAsset(context.Context, *ufsApi.GetAssetRequest) (*ufs
 	}, nil
 }
 
+// GetMachine returns a hardcoded machine.
+// If the fake UFS client calling it was designated to have bad data, instead returns machine with all default fields.
+func (f *FakeUFSClient) GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error) {
+	if f.badData {
+		return &ufsModels.Machine{}, nil
+	}
+
+	chromeOsMachine := ufsModels.ChromeOSMachine{
+		BuildTarget: "ufsBoard",
+		Model:       "ufsModel",
+	}
+
+	m := ufsModels.Machine_ChromeosMachine{ChromeosMachine: &chromeOsMachine}
+
+	return &ufsModels.Machine{
+		Device: &m,
+	}, nil
+}
+
 // TestStartServodCmd tests the innerRun function of our command with fake UFS and docker clients, comparing the args we use to actually launch docker w/what is expected
 // It tests input entirely, partially, and not at all user given
 func TestStartServodCmd(t *testing.T) {
