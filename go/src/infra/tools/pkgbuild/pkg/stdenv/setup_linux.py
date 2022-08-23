@@ -48,7 +48,7 @@ def main() -> None:
       env.extend(('--env', 'LDFLAGS='))
 
     impage = [
-        'gcr.io/chromium-container-registry/infra-dockerbuild/manylinux-x64-py3:v1.4.18',
+        exe.env['dockerImage'],
     ]
 
     subprocess.check_call(docker + volumes + env + impage + ctx.args)

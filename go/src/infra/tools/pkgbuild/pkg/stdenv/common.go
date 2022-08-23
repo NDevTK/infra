@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 )
 
-// TODO(fancl): Use all:setup after go 1.18
+// TODO(fancl): Use all:setup after go 1.18.
 //go:embed setup/*
 var stdenv embed.FS
 

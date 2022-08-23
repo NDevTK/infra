@@ -28,7 +28,7 @@ func main() {
 	ctx := gologger.StdConfig.Use(context.Background())
 	ctx = logging.SetLevel(ctx, logging.Error)
 
-	// TODO(fancl): properly parse the args
+	// TODO(fancl): properly parse the args.
 	storageDir, specDir := os.Args[1], os.Args[2]
 	targetCIPD := platform.CurrentPlatform()
 	if len(os.Args) > 3 {

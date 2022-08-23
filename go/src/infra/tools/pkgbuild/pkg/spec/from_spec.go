@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// TODO: Use all:from_spec/build-support after go 1.18
+// TODO(fancl): Use all:from_spec/build-support after go 1.18.
 //go:embed from_spec/*
 var fromSpecSupport embed.FS
 
@@ -175,9 +175,13 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 			fmt.Sprintf("patches=%s", strings.Join(patches, string(os.PathListSeparator))),
 			fmt.Sprintf("fromSpecInstall=%s", fromSpecInstall),
 			fmt.Sprintf("_3PP_PLATFORM=%s", l.Platform),
-			fmt.Sprintf("CROSS_TRIPLE=%s", "x86_64-pc-linux-gnu"), // TODO(fancl): Get from platform
 		},
 	}
+
+	if strings.HasPrefix(l.Platform, "mac-") {
+		// TODO(fancl): Set CROSS_TRIPLE and MACOSX_DEPLOYMENT_TARGET for Mac.
+	}
+
 	l.pkgs[pkg] = g
 	return g, nil
 }

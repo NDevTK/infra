@@ -214,7 +214,7 @@ class Execution:
 
     # Only dependencies whose host platform matches the host platform are
     # guaranteed their libraries can be linked.
-    # TODO(fancl): Move this to pkg-config package
+    # TODO(fancl): Move this to pkg-config package.
     if host == PlatType.HOST:
       self.add_to_search_path(
           Execution.ENV_PKG_CONFIG_PATH, pkg.joinpath('lib', 'pkgconfig'))
@@ -322,7 +322,7 @@ class Execution:
       if os.path.isfile('configure'):
         script = os.path.abspath('configure')
       elif os.path.isabs('CMakeLists.txt'):
-        # TODO(fancl): Add cmake support
+        # TODO(fancl): Add cmake support.
         pass
 
     if not script:

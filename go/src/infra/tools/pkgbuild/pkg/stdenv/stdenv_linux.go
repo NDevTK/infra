@@ -21,7 +21,27 @@ var (
 	}
 )
 
-func (g *Generator) getSource() (cipkg.Generator, error) {
+// Return the dockcross image for the platform.
+// TODO(fancl): build the container using pkgbuild.
+func containers(plat cipkg.Platform) string {
+	const prefix = "gcr.io/chromium-container-registry/infra-dockerbuild/"
+	const version = ":v1.4.18"
+	if plat.OS() != "linux" {
+		return ""
+	}
+	switch plat.Arch() {
+	case "amd64":
+		return prefix + "manylinux-x64-py3" + version
+	case "arm64":
+		return prefix + "linux-arm64-py3" + version
+	case "arm":
+		return prefix + "linux-armv6-py3" + version
+	default:
+		return ""
+	}
+}
+
+func (g *Generator) fetchSource() (cipkg.Generator, error) {
 	switch s := g.Source.(type) {
 	case *SourceGit:
 		panic("unimplemented")
@@ -38,53 +58,15 @@ func (g *Generator) getSource() (cipkg.Generator, error) {
 	}
 }
 
-// pre_hook is defined as a function in python to create a closure because
-// execute_cmd and activate_pkg share some variables.
-const preHook = `
-def pre_hook(exe):
-  dependencies = []
-
-  def execute_cmd(exe):
-    ctx = exe.current_context
-    cwd = os.getcwd()
-    out = exe.env['out']
-
-    volumes = [
-        '--volume', f'{cwd}:{cwd}',
-        '--volume', f'{out}:{out}',
-    ]
-    for dep in dependencies:
-      volumes.extend(('--volume', f'{dep}:{dep}'))
-  
-    docker = [
-        'docker', 'run', '--rm',
-        '--workdir', cwd,
-        '--user', f'{os.getuid()}:{os.getgid()}',
-    ]
-
-    impage = [
-        'gcr.io/chromium-container-registry/infra-dockerbuild/manylinux-x64-py3:v1.4.18',
-    ]
-
-    subprocess.check_call(docker + volumes + impage + ctx.args, env=exe.env)
-    return True
-
-  def activate_pkg(exe):
-    ctx = exe.current_context
-    dependencies.append(str(ctx.pkg))
-    return True
-
-  exe.add_hook('executeCmd', execute_cmd)
-  exe.add_hook('activatePkg', activate_pkg)
-
-
-pre_hook(exe)
-`
-
 func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	src, err := g.getSource()
+	src, err := g.fetchSource()
 	if err != nil {
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+	}
+
+	containers := containers(ctx.Platforms.Host)
+	if containers == "" {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("containers not available for %s", ctx.Platforms.Host)
 	}
 
 	base := &utilities.BaseGenerator{
@@ -94,6 +76,7 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 		Env: append([]string{
 			"buildFlags=",
 			"installFlags=",
+			fmt.Sprintf("dockerImage=%s", containers),
 			fmt.Sprintf("srcs={{.%s_source}}", g.Name),
 		}, g.Env...),
 		Dependencies: append([]utilities.BaseDependency{
