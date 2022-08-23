@@ -55,7 +55,7 @@ var AuditDutsCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.runVerifyDUTStorage, "dut-storage", false, "Run the verifier for DUT storage.")
 		c.Flags.BoolVar(&c.runVerifyRpmConfig, "rpm-config", false, "Run the verifier to check and cache mac address of DUT NIC to Servo.")
 		c.Flags.IntVar(&c.expirationMins, "expiration-mins", 10, "The expiration minutes of the task request.")
-		c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
+		c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow.")
 		return c
 	},
 }
