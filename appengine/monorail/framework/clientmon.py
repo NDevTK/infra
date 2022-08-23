@@ -52,8 +52,5 @@ class ClientMonitor(jsonfeed.FlaskJsonFeed):
 
     return {}
 
-  def GetClientMonitor(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostClientMonitor(self, **kwargs):
     return self.handler(**kwargs)

@@ -873,10 +873,6 @@ class ServletRegistry(object):
     flaskapp_mon = flask.Flask(__name__)
     _MON_URL = [
         (
-            '/clientmon',
-            clientmon.ClientMonitor(services=service).GetClientMonitor, ['GET'
-                                                                        ]),
-        (
             '/clientmon.do',
             clientmon.ClientMonitor(services=service).PostClientMonitor,
             ['POST']),
