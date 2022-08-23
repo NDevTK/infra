@@ -125,4 +125,8 @@ class CIPDManager:
       else:
         pkg.add_file(root.join(filename))  # pragma: no cover
       self.m.cipd.create_from_pkg(
-          pkg, refs=[dest.cipd_src.refs], tags=dest.tags, compression_level=0)
+          pkg,
+          refs=[dest.cipd_src.refs],
+          tags=dest.tags,
+          compression_level=0,
+          verification_timeout='30m')

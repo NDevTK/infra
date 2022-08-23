@@ -512,7 +512,7 @@ def CHECK_CIPD_UPLOAD(api, image, cust, dest):
       Post check the upload to GCS
   """
   # Wildcard args for everything + tags
-  args = ['.*'] * (14 + len(dest.tags) * 2)
+  args = ['.*'] * (16 + len(dest.tags) * 2)
   # ref arg check
   args[7] = dest.cipd_src.refs  # check for correct refs
   # tags added in reverse order
