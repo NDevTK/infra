@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
@@ -107,11 +108,11 @@ func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb
 // given path. For each given label name, a full label in the form of
 // `${name}:val1,val2` is constructed and returned as part of an array.
 func constructTleLabels(labelNames []string, path string, pm proto.Message) ([]string, error) {
-	valuesStr, err := swarming.GetLabelValuesStr(fmt.Sprintf("$.%s", path), pm)
+	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", path), pm)
 	if err != nil {
 		return nil, err
 	}
-	return swarming.FormLabels(labelNames, valuesStr)
+	return swarming.FormLabels(labelNames, strings.Join(valsArr, ","))
 }
 
 // getTleLabelMapping gets the predefined label mapping based on a label name.

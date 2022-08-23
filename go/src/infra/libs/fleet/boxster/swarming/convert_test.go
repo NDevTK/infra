@@ -223,28 +223,28 @@ func TestGetLabelNames(t *testing.T) {
 	})
 }
 
-func TestConstructLabelValuesString(t *testing.T) {
+func TestParseLabelValuesToArray(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestConstructLabelValuesString", t, func() {
+	Convey("TestParseLabelValuesToArray", t, func() {
 		Convey("get label names values from []interface{} - string castable", func() {
 			var labelVals []interface{}
 			labelVals = append(labelVals, "label-1", "label-2")
 
-			got, err := ConstructLabelValuesString(labelVals)
+			got, err := ParseLabelValuesToArray(labelVals)
 			So(err, ShouldBeNil)
 			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, "label-1,label-2")
+			So(got, ShouldResemble, []string{"label-1", "label-2"})
 		})
 
 		Convey("get label names values from []interface{} - string not castable", func() {
 			var labelVals []interface{}
 			labelVals = append(labelVals, []string{"label-1"}, []string{"label-2"})
 
-			got, err := ConstructLabelValuesString(labelVals)
+			got, err := ParseLabelValuesToArray(labelVals)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "cannot cast to string")
-			So(got, ShouldEqual, "")
+			So(got, ShouldResemble, []string(nil))
 		})
 
 		Convey("get label names values from struct - string not castable", func() {
@@ -254,30 +254,30 @@ func TestConstructLabelValuesString(t *testing.T) {
 			}
 			labelVals := testStruct{10, "test"}
 
-			got, err := ConstructLabelValuesString(labelVals)
+			got, err := ParseLabelValuesToArray(labelVals)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "cannot cast to string")
-			So(got, ShouldEqual, "")
+			So(got, ShouldResemble, []string(nil))
 		})
 
 		Convey("get label names values from []interface{} - boolean castable", func() {
 			var labelVals interface{}
 			labelVals = true
 
-			got, err := ConstructLabelValuesString(labelVals)
+			got, err := ParseLabelValuesToArray(labelVals)
 			So(err, ShouldBeNil)
 			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, "true")
+			So(got, ShouldResemble, []string{"true"})
 		})
 
 		Convey("get label names values from []interface{} - float64 castable", func() {
 			var labelVals interface{}
 			labelVals = 1238764.987
 
-			got, err := ConstructLabelValuesString(labelVals)
+			got, err := ParseLabelValuesToArray(labelVals)
 			So(err, ShouldBeNil)
 			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, "1238764.987")
+			So(got, ShouldResemble, []string{"1238764.987"})
 		})
 	})
 }
@@ -296,12 +296,12 @@ func TestGetFlatConfigLabelValuesStr(t *testing.T) {
 		t.Fatalf("Error unmarshalling test FlatConfig: %s", err)
 	}
 
-	Convey("GetLabelValuesStr", t, func() {
+	Convey("GetLabelValues", t, func() {
 		Convey("convert label with existing correct field path - single value", func() {
-			got, err := GetLabelValuesStr("$.hw_design.id.value", &fc)
+			got, err := GetLabelValues("$.hw_design.id.value", &fc)
 			So(err, ShouldBeNil)
 			So(got, ShouldNotBeNil)
-			So(got, ShouldEqual, "Test")
+			So(got, ShouldResemble, []string{"Test"})
 		})
 	})
 }

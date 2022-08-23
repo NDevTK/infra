@@ -44,10 +44,11 @@ func ConvertAll(dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) ([]st
 	}
 
 	for _, p := range jsonPaths {
-		valuesStr, err := GetLabelValuesStr(p, flatConfig)
+		valsArr, err := GetLabelValues(p, flatConfig)
 		if err != nil {
 			return nil, err
 		}
+		valuesStr := strings.Join(valsArr, ",")
 		if err == nil && valuesStr != "" {
 			return FormLabels(labelNames, valuesStr)
 		}
@@ -87,57 +88,56 @@ func GetLabelNames(dutAttr *api.DutAttribute) ([]string, error) {
 	return append([]string{name}, dutAttr.GetAliases()...), nil
 }
 
-// GetLabelValuesStr takes a path and returns the proto value.
+// GetLabelValues takes a path and returns the proto value.
 //
 // It uses a jsonpath string to try to find corresponding values in a proto. It
 // returns a comma-separated string of the values found.
-func GetLabelValuesStr(jsonGetPath string, pm proto.Message) (string, error) {
+func GetLabelValues(jsonGetPath string, pm proto.Message) ([]string, error) {
 	js, err := LabelMarshaler.MarshalToString(pm)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	pmJson := interface{}(nil)
 	err = json.Unmarshal([]byte(js), &pmJson)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	labelVals, err := jsonpath.Get(jsonGetPath, pmJson)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return ConstructLabelValuesString(labelVals)
+	return ParseLabelValuesToArray(labelVals)
 }
 
-// ConstructLabelValuesString takes label values and returns them as a string.
+// ParseLabelValuesToArray takes label values and returns a string array.
 //
 // It takes an interface of label values parsed from a json object and returns a
-// comma-separated string of the values. The interfaces supported are primitive
-// types and iterable interfaces.
-func ConstructLabelValuesString(labelVals interface{}) (string, error) {
-	var rsp string
+// an array of the values casted to string. The interfaces supported are
+// primitive types and iterable interfaces.
+func ParseLabelValuesToArray(labelVals interface{}) ([]string, error) {
+	var rsp []string
 	switch x := labelVals.(type) {
 	case []interface{}:
-		valsArr := []string{}
 		for _, i := range x {
 			i, ok := i.(string)
 			if !ok {
-				return "", fmt.Errorf("cannot cast to string: %s", i)
+				return nil, fmt.Errorf("cannot cast to string: %s", i)
 			}
-			valsArr = append(valsArr, i)
+			rsp = append(rsp, i)
 		}
-		rsp = strings.Join(valsArr, ",")
 	case bool:
-		rsp = strconv.FormatBool(labelVals.(bool))
+		rsp = append(rsp, strconv.FormatBool(labelVals.(bool)))
 	case float64:
-		rsp = strconv.FormatFloat(labelVals.(float64), 'f', -1, 64)
+		rsp = append(rsp, strconv.FormatFloat(labelVals.(float64), 'f', -1, 64))
 	default:
 		var ok bool
-		rsp, ok = labelVals.(string)
+		val, ok := labelVals.(string)
 		if !ok {
-			return "", fmt.Errorf("cannot cast to string: %s", rsp)
+			return nil, fmt.Errorf("cannot cast to string: %s", val)
 		}
+		rsp = append(rsp, val)
 	}
 	return rsp, nil
 }
@@ -154,7 +154,7 @@ func ConstructJsonPaths(dutAttr *api.DutAttribute) ([]string, error) {
 	} else if dutAttr.GetHwidSource() != nil {
 		return generateHwidSourcePaths(dutAttr), nil
 	}
-	return []string{}, errors.New("no supported config source found")
+	return nil, errors.New("no supported config source found")
 }
 
 // generateFlatConfigSourcePaths returns config paths defined by a DutAttribute.
