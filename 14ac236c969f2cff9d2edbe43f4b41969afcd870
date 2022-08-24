@@ -16,6 +16,103 @@
       "message": "Example page: https://51136-ce01291-aredul-gofindit-frontend-a-dot-chops-gofindit-dev.appspot.com/analysis/b/8805649486750528289",
       "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22ca5cea_a7174a53",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.test.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-08-24T04:10:20Z",
+      "side": 1,
+      "message": "Maybe: \"the table\"?",
+      "range": {
+        "startLine": 102,
+        "startChar": 56,
+        "endLine": 102,
+        "endChar": 58
+      },
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9d6c6cd_cb8e8806",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-08-24T04:10:20Z",
+      "side": 1,
+      "message": "Nits: I think \"ID\" is a more correct name than \"Id\"?",
+      "range": {
+        "startLine": 86,
+        "startChar": 33,
+        "endLine": 86,
+        "endChar": 43
+      },
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95b3a231_c02dc046",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-08-24T04:10:20Z",
+      "side": 1,
+      "message": "Nits: Maybe use a Link here (https://mui.com/material-ui/react-link/#main-content)",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "631f9102_4f8c5277",
+        "filename": "go/src/infra/appengine/gofindit/proto/gofindit.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-08-24T04:10:20Z",
+      "side": 1,
+      "message": "I think builder name alone is not enough to identify the builder. You can use BuilderID from Buildbucket proto for this https://source.corp.google.com/chops_infra_internal/infra/go/src/go.chromium.org/luci/buildbucket/proto/builder_common.proto;l\u003d15",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "902e78cf_c31a140f",
+        "filename": "go/src/infra/appengine/gofindit/proto/gofindit.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-08-24T04:10:20Z",
+      "side": 1,
+      "message": "Is this for compile, test...? Should we use enum here?",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
