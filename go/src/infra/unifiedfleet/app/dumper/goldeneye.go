@@ -24,6 +24,9 @@ const (
 )
 
 func getGoldenEyeData(ctx context.Context) (retErr error) {
+	defer func() {
+		getGoldenEyeDataTick.Add(ctx, 1, retErr == nil)
+	}()
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
 		logging.Warningf(ctx, "failed to create cloud storage client while reading golden eye data")

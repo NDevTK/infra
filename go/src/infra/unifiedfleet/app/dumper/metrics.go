@@ -54,4 +54,10 @@ var (
 		nil,
 		field.Bool("success"),
 	)
+	getGoldenEyeDataTick = metric.NewCounter(
+		"chromeos/ufs/dumper/sync_goldeneye_data",
+		"getGoldenEyeData attempt every 12 hours",
+		nil,
+		field.Bool("success"),
+	)
 )
