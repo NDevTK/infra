@@ -5,13 +5,12 @@
 package handlers
 
 import (
-	"infra/appengine/gofindit/frontend/handlers/api"
-
 	"go.chromium.org/luci/server/router"
 )
 
 // RegisterRoutes registers routes explicitly handled by the handler.
 func RegisterRoutes(r *router.Router, mw router.MiddlewareChain) {
-	r.GET("/api/analysis/b/:bbid", mw, api.GetAnalysisDetails)
+	r.GET("/api/authState", mw, GetAuthState)
+	r.GET("/api/analysis/b/:bbid", mw, GetAnalysisDetails)
 	r.GET("/", mw, IndexPage)
 }

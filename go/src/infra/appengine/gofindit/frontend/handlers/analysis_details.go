@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// package api contains the utility functions and APIs required to populate the
-// GoFindit frontend
-package api
+package handlers
 
 import (
 	"context"

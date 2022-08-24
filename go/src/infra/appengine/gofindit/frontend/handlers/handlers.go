@@ -7,11 +7,23 @@
 package handlers
 
 import (
+	"encoding/json"
+	"net/http"
+
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
-	"go.chromium.org/luci/server/templates"
 )
 
-// IndexPage serves a GET request for the index page for the frontend
-func IndexPage(ctx *router.Context) {
-	templates.MustRender(ctx.Context, ctx.Writer, "pages/index.html", templates.Args{})
+func respondWithJSON(ctx *router.Context, data interface{}) {
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		logging.Errorf(ctx.Context, "Error when marshalling JSON for response: %s", err)
+		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+		return
+	}
+
+	ctx.Writer.Header().Add("Content-Type", "application/json")
+	if _, err := ctx.Writer.Write(bytes); err != nil {
+		logging.Errorf(ctx.Context, "Writing JSON response: %s", err)
+	}
 }
