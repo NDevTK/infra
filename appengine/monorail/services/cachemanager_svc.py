@@ -44,6 +44,7 @@ import collections
 import logging
 
 from framework import jsonfeed
+from framework import logger
 from framework import sql
 
 
@@ -119,11 +120,19 @@ class CacheManager(object):
   def StoreInvalidateRows(self, cnxn, kind, keys):
     """Store rows to let all jobs know to invalidate the given keys."""
     assert kind in INVALIDATE_KIND_VALUES
+    logger.log(
+        {
+            'log_type': 'cache/invalidate/rows',
+            'kind': kind,
+            'count': len(keys),
+            'keys': str(keys),
+        })
     self.invalidate_tbl.InsertRows(
         cnxn, ['kind', 'cache_key'], [(kind, key) for key in keys])
 
   def StoreInvalidateAll(self, cnxn, kind):
     """Store a value to tell all jobs to invalidate all items of this kind."""
+    logger.log({'log_type': 'cache/invalidate/all', 'kind': kind})
     last_timestep = self.invalidate_tbl.InsertRow(
         cnxn, kind=kind, cache_key=INVALIDATE_ALL_KEYS)
     self.invalidate_tbl.Delete(
