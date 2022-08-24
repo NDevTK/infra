@@ -169,24 +169,24 @@ func fetchMetadataFromUFS(ctx context.Context, ufsClient ufs.UFSClient, host str
 		return ufsMetadata{}, errors.Reason("Error fetching DUT %s from UFS: %s", host, err).Err()
 	}
 
-	if len(dut.GetMachines()) == 0 {
-		return ufsMetadata{}, errors.Reason("Fetched DUT %s has no assetID", host).Err()
-	}
-	assetId := dut.GetMachines()[0]
-
 	servo := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo()
 	servoSerial := servo.GetServoSerial()
 	servodContainerName := servo.GetDockerContainerName()
 
-	asset, err := ufsClient.GetAsset(ctx, &ufsApi.GetAssetRequest{
-		Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, assetId),
+	if len(dut.GetMachines()) == 0 {
+		return ufsMetadata{}, errors.Reason("Fetched DUT %s has no machineId", host).Err()
+	}
+	machineId := dut.GetMachines()[0]
+
+	machine, err := ufsClient.GetMachine(ctx, &ufsApi.GetMachineRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, machineId),
 	})
 	if err != nil {
-		return ufsMetadata{}, errors.Reason("Error fetching asset %s from UFS: %s", host, err).Err()
+		return ufsMetadata{}, errors.Reason("Error fetching machine %s from UFS: %s", host, err).Err()
 	}
 
-	model := asset.GetModel()
-	board := asset.GetInfo().GetReferenceBoard()
+	model := machine.GetChromeosMachine().GetModel()
+	board := machine.GetChromeosMachine().GetBuildTarget()
 
 	return ufsMetadata{board: board, model: model, servoSerial: servoSerial, servodContainerName: servodContainerName}, nil
 }
