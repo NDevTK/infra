@@ -144,6 +144,10 @@ func (r *genTrainingDataRun) GenTrainData(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	err = os.MkdirAll(filepath.Dir(r.out), 0755)
+	if err != nil {
+		return err
+	}
 	file, err := os.Create(r.out)
 	if err != nil {
 		return err
