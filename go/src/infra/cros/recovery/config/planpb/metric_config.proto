@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromeos.recovery;
+
+option go_package = "infra/cros/recovery/config;config";
+
+// MetricsConfig configures a single action.
+message MetricsConfig {
+  // upload_policy is the policy for uploading the individual action.
+  UploadPolicy upload_policy = 1;
+
+  // UploadPolicy specifies what to do with the metrics created by the action in question.
+  enum UploadPolicy {
+    // DEFAULT_UPLOAD_POLICY uploads everything.
+    DEFAULT_UPLOAD_POLICY = 0;
+
+    // SKIP_ALL skips uploading all metrics.
+    SKIP_ALL = 1;
+  }
+}
