@@ -612,6 +612,9 @@ func crosRepairActions() map[string]*Action {
 				"is_servo_v3",
 			},
 			ExecName: "sample_fail",
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
 		},
 		"servod_control_exist_for_mac_address": {
 			Conditions: []string{
