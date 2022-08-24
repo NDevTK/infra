@@ -166,6 +166,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
 			BluetoothPeers:      createBluetoothPeerHosts(p),
 			RpmOutlet:           createRPMOutlet(p.GetRpm(), ds),
+			RoVpdMap:            dut.GetRoVpdMap(),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -369,6 +370,7 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 				State:    convertBluetoothPeerStateToUFS(btp.GetState()),
 			})
 		}
+		labData.RoVpdMap = ch.GetRoVpdMap()
 	}
 	return labData
 }
