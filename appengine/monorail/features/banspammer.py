@@ -8,6 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import logging
 import json
 import time
 
@@ -16,10 +17,10 @@ from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import jsonfeed
+from framework import servlet
 from framework import urls
 
-
-class BanSpammer(flaskservlet.FlaskServlet):
+class BanSpammer(servlet.Servlet):
   """Ban a user and mark their content as spam"""
 
   def AssertBasePermission(self, mr):
@@ -56,11 +57,12 @@ class BanSpammer(flaskservlet.FlaskServlet):
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
 
-  def PostBanSpammerPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostBanSpammerPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class BanSpammerTask(jsonfeed.FlaskInternalTask):
+# when convert to flask switch jsonfeed.FlaskInternalTask
+class BanSpammerTask(jsonfeed.InternalTask):
   """This task will update all of the comments and issues created by the
      target user with is_spam=True, and also add a manual verdict attached
      to the user who originated the ban request. This is a potentially long
@@ -94,13 +96,18 @@ class BanSpammerTask(jsonfeed.FlaskInternalTask):
             self.services.issue, self.services.user, comment.id,
             reporter_id, is_spammer)
 
-    return json.dumps({
-        'comments': len(comments),
-        'issues': len(issues),
+    # remove the self.response.body when convert to flask
+    self.response.body = json.dumps({
+      'comments': len(comments),
+      'issues': len(issues),
     })
+  # return json.dumps({
+  #     'comments': len(comments),
+  #     'issues': len(issues),
+  #   })
 
-  def GetBanSpammer(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetBanSpammer(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostBanSpammer(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostBanSpammer(self, **kwargs):
+  #   return self.handler(**kwargs)

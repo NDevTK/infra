@@ -36,7 +36,8 @@ class DateActionCronTest(unittest.TestCase):
     self.services = service_manager.Services(
         user=fake.UserService(),
         issue=fake.IssueService())
-    self.servlet = dateaction.DateActionCron(services=self.services)
+    self.servlet = dateaction.DateActionCron(
+        'req', 'res', services=self.services)
     self.TIMESTAMP_MIN = (
         NOW // framework_constants.SECS_PER_DAY *
         framework_constants.SECS_PER_DAY)
@@ -127,7 +128,8 @@ class IssueDateActionTaskTest(unittest.TestCase):
         project=fake.ProjectService(),
         config=fake.ConfigService(),
         issue_star=fake.IssueStarService())
-    self.servlet = dateaction.IssueDateActionTask(services=self.services)
+    self.servlet = dateaction.IssueDateActionTask(
+        'req', 'res', services=self.services)
 
     self.config = self.services.config.GetProjectConfig('cnxn', 789)
     self.config.field_defs = [
