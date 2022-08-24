@@ -32,7 +32,8 @@ def authorize():
   return credentials.authorize(httplib2.Http(timeout=60))
 
 
-class WipeoutSyncCron(jsonfeed.FlaskInternalTask):
+# TODO: change to FlaskInternalTask when convert to Flask
+class WipeoutSyncCron(jsonfeed.InternalTask):
   """Enqueue tasks for sending user lists to wipeout-lite and deleting deleted
      users fetched from wipeout-lite."""
 
@@ -61,14 +62,15 @@ class WipeoutSyncCron(jsonfeed.FlaskInternalTask):
     cloud_tasks_helpers.create_task(
         task, queue=framework_constants.QUEUE_FETCH_WIPEOUT_DELETED_USERS)
 
-  def GetWipeoutSyncCron(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetWipeoutSyncCron(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostWipeoutSyncCron(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostWipeoutSyncCron(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class SendWipeoutUserListsTask(jsonfeed.FlaskInternalTask):
+# TODO: Set to FlaskInternalTask when convert
+class SendWipeoutUserListsTask(jsonfeed.InternalTask):
   """Sends a batch of monorail users to wipeout-lite."""
 
   def HandleRequest(self, mr):
@@ -93,14 +95,15 @@ class SendWipeoutUserListsTask(jsonfeed.FlaskInternalTask):
     logging.info(
         'Received response, %s with contents, %s', resp, data)
 
-  def GetSendWipeoutUserListsTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetSendWipeoutUserListsTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostSendWipeoutUserListsTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostSendWipeoutUserListsTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class DeleteWipeoutUsersTask(jsonfeed.FlaskInternalTask):
+# TODO: Set to FlaskInternalTask when convert
+class DeleteWipeoutUsersTask(jsonfeed.InternalTask):
   """Fetches deleted users from wipeout-lite and enqueues tasks to delete
      those users from Monorail's DB."""
 
@@ -134,14 +137,15 @@ class DeleteWipeoutUsersTask(jsonfeed.FlaskInternalTask):
         'Received response, %s with contents, %s', resp, data)
     return json.loads(data)
 
-  def GetDeleteWipeoutUsersTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetDeleteWipeoutUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostDeleteWipeoutUsersTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostDeleteWipeoutUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class DeleteUsersTask(jsonfeed.FlaskInternalTask):
+# TODO: Set to FlaskInternalTask when convert
+class DeleteUsersTask(jsonfeed.InternalTask):
   """Deletes users from Monorail's DB."""
 
   def HandleRequest(self, mr):
@@ -156,8 +160,8 @@ class DeleteUsersTask(jsonfeed.FlaskInternalTask):
     with work_env.WorkEnv(mr, self.services) as we:
       we.ExpungeUsers(emails, check_perms=False)
 
-  def GetDeleteUsersTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetDeleteUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostDeleteUsersTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostDeleteUsersTask(self, **kwargs):
+  #   return self.handler(**kwargs)

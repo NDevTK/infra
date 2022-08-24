@@ -26,7 +26,8 @@ from framework import exceptions
 from framework import jsonfeed
 
 
-class PublishPubsubIssueChangeTask(jsonfeed.FlaskInternalTask):
+# TODO: change to FlaskInternalTask when convert to flask
+class PublishPubsubIssueChangeTask(jsonfeed.InternalTask):
   """JSON servlet that pushes issue update messages onto a pub/sub topic."""
 
   def HandleRequest(self, mr):
@@ -70,11 +71,11 @@ class PublishPubsubIssueChangeTask(jsonfeed.FlaskInternalTask):
 
     return {}
 
-  def GetPublishPubsubIssueChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetPublishPubsubIssueChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostPublishPubsubIssueChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostPublishPubsubIssueChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def set_up_pubsub_api():

@@ -219,11 +219,11 @@ class NotifyIssueChangeTask(notify_helpers.NotifyTaskBase):
 
     return email_tasks
 
-  def GetNotifyIssueChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetNotifyIssueChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostNotifyIssueChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostNotifyIssueChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class NotifyBlockingChangeTask(notify_helpers.NotifyTaskBase):
@@ -356,11 +356,11 @@ class NotifyBlockingChangeTask(notify_helpers.NotifyTaskBase):
 
     return one_issue_email_tasks
 
-  def GetNotifyBlockingChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetNotifyBlockingChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostNotifyBlockingChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostNotifyBlockingChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class NotifyBulkChangeTask(notify_helpers.NotifyTaskBase):
@@ -724,11 +724,11 @@ class NotifyBulkChangeTask(notify_helpers.NotifyTaskBase):
 
     return subject, body
 
-  def GetNotifyBulkChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetNotifyBulkChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostNotifyBulkChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostNotifyBulkChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 # For now, this class will not be used to send approval comment notifications
@@ -919,11 +919,11 @@ class NotifyApprovalChangeTask(notify_helpers.NotifyTaskBase):
 
     return list(set(recipient_ids))
 
-  def GetNotifyApprovalChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetNotifyApprovalChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostNotifyApprovalChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostNotifyApprovalChangeTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
@@ -991,14 +991,15 @@ class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
 
     return email_tasks
 
-  def GetNotifyRulesDeletedTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetNotifyRulesDeletedTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostNotifyRulesDeletedTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostNotifyRulesDeletedTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class OutboundEmailTask(jsonfeed.FlaskInternalTask):
+# TODO: change to FlaskInternalTask when convert to flask
+class OutboundEmailTask(jsonfeed.InternalTask):
   """JSON servlet that sends one email.
 
   Handles tasks enqueued from notify_helpers._EnqueueOutboundEmail.
@@ -1017,9 +1018,9 @@ class OutboundEmailTask(jsonfeed.FlaskInternalTask):
     # To avoid urlencoding the email body, the most salient parameters to this
     # method are passed as a json-encoded POST body.
     try:
-      email_params = json.loads(self.request.get_data(as_text=True))
+      email_params = json.loads(self.request.body)
     except ValueError:
-      logging.error(self.request.get_data(as_text=True))
+      logging.error(self.request.body)
       raise
     # If running on a GAFYD domain, you must define an app alias on the
     # Application Settings admin web page.
@@ -1084,8 +1085,8 @@ class OutboundEmailTask(jsonfeed.FlaskInternalTask):
         sender=sender, to=to, subject=subject, body=body, html_body=html_body,
         reply_to=reply_to, references=references)
 
-  def GetOutboundEmailTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetOutboundEmailTask(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostOutboundEmailTask(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostOutboundEmailTask(self, **kwargs):
+  #   return self.handler(**kwargs)

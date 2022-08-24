@@ -14,7 +14,6 @@ import os
 import time
 from six.moves import urllib
 import webapp2
-import flask
 
 from google.appengine.api import app_identity
 from google.appengine.api import urlfetch
@@ -48,7 +47,7 @@ class ClientConfig(db.Model):
 
 # Note: The cron job must have hit the servlet before this will work.
 # when convert to flask replace the webapp2.RequestHandler to Object
-class LoadApiClientConfigs():
+class LoadApiClientConfigs(webapp2.RequestHandler):
 
   config_loads = ts_mon.CounterMetric(
       'monorail/client_config_svc/loads',
@@ -119,36 +118,35 @@ class LoadApiClientConfigs():
 
     return content_text
 
-  def GetLoadApiClientConfigs(self):
-    global service_account_map
-    global qpm_dict
-    authorization_token, _ = app_identity.get_access_token(
-        framework_constants.OAUTH_SCOPE)
-    response = urlfetch.fetch(
-        LUCI_CONFIG_URL,
-        method=urlfetch.GET,
-        follow_redirects=False,
-        headers={
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer ' + authorization_token
-        })
+  # def GetLoadApiClientConfigs(self):
+  #   global service_account_map
+  #   global qpm_dict
+  #   authorization_token, _ = app_identity.get_access_token(
+  #     framework_constants.OAUTH_SCOPE)
+  #   response = urlfetch.fetch(
+  #     LUCI_CONFIG_URL,
+  #     method=urlfetch.GET,
+  #     follow_redirects=False,
+  #     headers={'Content-Type': 'application/json; charset=UTF-8',
+  #             'Authorization': 'Bearer ' + authorization_token})
 
-    if response.status_code != 200:
-      logging.error('Invalid response from luci-config: %r', response)
-      self.config_loads.increment({'success': False, 'type': 'luci-cfg-error'})
-      flask.abort(500, 'Invalid response from luci-config')
+  #   if response.status_code != 200:
+  #    logging.error('Invalid response from luci-config: %r', response)
+  #    self.config_loads.increment({'success': False, 'type': 'luci-cfg-error'})
+  #    flask.abort(500, 'Invalid response from luci-config')
 
-    try:
-      content_text = self._process_response(response)
-    except Exception as e:
-      flask.abort(500, str(e))
+  #   try:
+  #     content_text = self._process_response(response)
+  #   except Exception as e:
+  #     flask.abort(500, str(e))
 
-    logging.info('luci-config content decoded: %r.', content_text)
-    configs = ClientConfig(configs=content_text, key_name='api_client_configs')
-    configs.put()
-    service_account_map = None
-    qpm_dict = None
-    self.config_loads.increment({'success': True, 'type': 'success'})
+  #   logging.info('luci-config content decoded: %r.', content_text)
+  #   configs = ClientConfig(configs=content_text,
+  #                           key_name='api_client_configs')
+  #   configs.put()
+  #   service_account_map = None
+  #   qpm_dict = None
+  #   self.config_loads.increment({'success': True, 'type': 'success'})
 
 
 class ClientConfigService(object):
