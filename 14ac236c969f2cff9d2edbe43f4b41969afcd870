@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13387675_f19c0b49",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.test.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-08-24T06:45:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22ca5cea_a7174a53",
+      "range": {
+        "startLine": 102,
+        "startChar": 56,
+        "endLine": 102,
+        "endChar": 58
+      },
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e9d6c6cd_cb8e8806",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-08-24T04:10:20Z",
       "side": 1,
       "message": "Nits: I think \"ID\" is a more correct name than \"Id\"?",
+      "range": {
+        "startLine": 86,
+        "startChar": 33,
+        "endLine": 86,
+        "endChar": 43
+      },
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "708ea142_f581260e",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-08-24T06:45:20Z",
+      "side": 1,
+      "message": "This is the field name generated from the proto. `analysis_id` -\u003e `analysisId`.",
+      "parentUuid": "e9d6c6cd_cb8e8806",
       "range": {
         "startLine": 86,
         "startChar": 33,
@@ -81,6 +129,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6dc9519_a7aaab2f",
+        "filename": "go/src/infra/appengine/gofindit/frontend/ui/src/components/analysis_overview/analysis_overview.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-08-24T06:45:20Z",
+      "side": 1,
+      "message": "Done. Also now using a \u003cLink /\u003e instead of \u003ca /\u003e elsewhere.",
+      "parentUuid": "95b3a231_c02dc046",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "631f9102_4f8c5277",
@@ -98,6 +164,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6884ca4_67e7fbf4",
+        "filename": "go/src/infra/appengine/gofindit/proto/gofindit.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-08-24T06:45:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "631f9102_4f8c5277",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "902e78cf_c31a140f",
@@ -111,6 +195,24 @@
       "writtenOn": "2022-08-24T04:10:20Z",
       "side": 1,
       "message": "Is this for compile, test...? Should we use enum here?",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3287620c_2c2d2448",
+        "filename": "go/src/infra/appengine/gofindit/proto/gofindit.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-08-24T06:45:20Z",
+      "side": 1,
+      "message": "I have thought about adding a `BuildFailureType` enum, then using that instead of the `BuildFailureType` type in `model/model.go`. The issue with that is all the builds already in datastore will have a `BuildFailureType` of `\"Compile\"` as opposed to `1` if we use an enum here.\n\nWhat would be your recommendation? It doesn\u0027t seem ideal to have a `BuildFailureType` enum in the proto as well as a `BuildFailureType` type in the model.",
+      "parentUuid": "902e78cf_c31a140f",
       "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
