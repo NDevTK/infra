@@ -4,13 +4,10 @@
 
 """Monitoring ts_mon custom to monorail."""
 
-import os
-import sys
-lib_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
-
-from google.cloud import logging
 from infra_libs import ts_mon
+
 from framework import framework_helpers
+from framework import logger
 import settings
 
 
@@ -49,11 +46,9 @@ def IncrementAPIRequestsCount(
   API_REQUESTS_COUNT.increment_by(1, fields)
 
   if not settings.unit_test_mode:
-    logging_client = logging.Client()
-    logger = logging_client.logger("request_log")
-    logger.log_struct(
+    logger.log(
         {
-            'log_type': "IncrementAPIRequestsCount",
+            'log_type': 'IncrementAPIRequestsCount',
             'client_id': client_id,
             'client_email': client_email,
             'requests_count': str(API_REQUESTS_COUNT.get(fields)),

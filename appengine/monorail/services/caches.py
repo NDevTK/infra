@@ -27,6 +27,7 @@ from google.appengine.api import memcache
 
 import settings
 from framework import framework_constants
+from framework import logger
 
 
 DEFAULT_MAX_SIZE = 10000
@@ -253,6 +254,16 @@ class AbstractTwoLevelCache(object):
         self._WriteToMemcache(retrieved_dict)
 
     still_missing_keys = [key for key in keys if key not in result_dict]
+    if still_missing_keys:
+      # The keys were not found in the caches or the DB.
+      logger.log(
+          {
+              'log_type': 'database/missing_keys',
+              'kind': self.cache.kind,
+              'prefix': self.prefix,
+              'count': len(still_missing_keys),
+              'keys': str(still_missing_keys)
+          })
     return result_dict, still_missing_keys
 
   def LocalInvalidateAll(self):
@@ -329,6 +340,14 @@ class AbstractTwoLevelCache(object):
   def _DeleteFromMemcache(self, keys):
     # type: (Sequence[str]) -> None
     """Delete key-values from memcache. """
+    logger.log(
+        {
+            'log_type': 'cache/memcache/delete',
+            'kind': self.cache.kind,
+            'prefix': self.prefix,
+            'count': len(keys),
+            'keys': str(keys)
+        })
     memcache.delete_multi(
         [self._KeyToStr(key) for key in keys],
         seconds=5,
