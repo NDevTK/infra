@@ -19,4 +19,5 @@ test-slow:
 
 .PHONY: gen
 gen:
+	@find . -name '*.pb.go' -delete
 	go generate ./...
