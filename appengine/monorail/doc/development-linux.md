@@ -7,19 +7,18 @@ machine:
     1.  `sudo apt-get install git build-essential automake`
     1. [Install Chrome depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) and ensure it is in your `$PATH`.
 
-1. Check out the Monorail source code repository
-    1. `mkdir -p ~/src/chrome/`
-    1. `cd ~/src/chrome/`
-    1. `fetch infra` (Googlers may alternatively `fetch infra_internal`)
+1. Check out the Monorail source code repository:
+    1. `mkdir ~/src/`
+    1. `cd ~/src/`
+    1. `fetch infra` (Googlers may alternatively `fetch infra_internal`, but note that `gclient sync` will then always sync based on the current `infra_internal` branch instead of the current `infra` branch.)
     1. `cd infra/appengine/monorail`
-    1. `gclient runhook`
-    1. `gclient sync`
 
-1. Install and configure the AppEngine SDK:
-    1. It should be fetched for you by `gclient runhooks` above, otherwise, follow https://developers.google.com/appengine/downloads#Google_App_Engine_SDK_for_Python
-1. Configure the AppEngine SDK: https://cloud.google.com/appengine/docs/standard/python3/setting-up-environment
+1. Install and configure the gcloud CLI:
+    1. It should be fetched for you by `fetch infra` above under `~/src/gcloud/bin`. Add it to your `PATH` in `.bashrc`.
+    1. Otherwise, follow https://cloud.google.com/sdk/docs/install (Googlers on Linux may use `sudo apt-get install -y google-cloud-sdk`)
+1. Configure gcloud:
     1. `gcloud auth login`
-    1. `gcloud config set project monorail-prod`
+    1. `gcloud config set project monorail-dev`
 
 1. Install and configure Docker:
     1. `sudo apt install docker-ce` (Googlers will need to follow instructions at go/docker)
