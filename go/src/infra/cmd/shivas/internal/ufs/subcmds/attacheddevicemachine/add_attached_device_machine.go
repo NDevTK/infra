@@ -177,7 +177,7 @@ func (c *addAttachedDeviceMachine) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-devicetype' cannot be specified at the same time.")
 		}
 		if c.buildTarget != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-target' cannot be specified at the same time.")
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-build-target' cannot be specified at the same time.")
 		}
 		if c.model != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-model' cannot be specified at the same time.")
@@ -205,7 +205,7 @@ func (c *addAttachedDeviceMachine) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid attached device type, please check help info for '-devicetype'.", c.deviceType)
 		}
 		if c.buildTarget == "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-target' is required, no mode ('-f') is setup.")
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-build-target' is required, no mode ('-f') is setup.")
 		}
 		if c.model == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-model' is required, no mode ('-f') is setup.")
