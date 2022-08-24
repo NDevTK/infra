@@ -86,8 +86,10 @@ func prepareTemplates(opts *server.Options) *templates.Bundle {
 			}
 
 			return templates.Args{
-				"User":      auth.CurrentUser(ctx).Email,
-				"LogoutURL": logoutURL,
+				"UserAvatar": auth.CurrentUser(ctx).Picture,
+				"UserEmail":  auth.CurrentUser(ctx).Email,
+				"UserName":   auth.CurrentUser(ctx).Name,
+				"LogoutURL":  logoutURL,
 			}, nil
 		},
 	}

@@ -13,6 +13,15 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Toolbar from '@mui/material/Toolbar';
 
+declare global {
+  interface Window {
+    avatar: string;
+    email: string;
+    fullName: string;
+    logoutURL: string;
+  }
+}
+
 function getCurrentLink(linkPatterns: string[]) {
   const { pathname } = useLocation();
 
@@ -53,6 +62,8 @@ export const BaseLayout = () => {
               value='/trigger'
               to='/trigger'
               color='inherit'
+              // TODO: remove below once the New Analysis page is implemented
+              disabled
             />
             <Tab
               className='navTab'
@@ -61,12 +72,14 @@ export const BaseLayout = () => {
               value='/statistics'
               to='/statistics'
               color='inherit'
+              // TODO: remove below once the Statistics page is implemented
+              disabled
             />
           </Tabs>
           {/* TODO: add login/logout links */}
         </Toolbar>
       </AppBar>
-      <Container>
+      <Container className='pageContent'>
         <Outlet />
       </Container>
     </Box>

@@ -11,3 +11,7 @@
   font-size: 1.3rem;
   text-transform: none;
 }
+
+.pageContent {
+  padding: 2rem;
+}

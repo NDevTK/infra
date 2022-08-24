@@ -74,11 +74,19 @@ export interface Analysis {
   nthSectionResult?: NthSectionAnalysisResult;
   culprit?: GitilesCommit;
   culpritAction?: CulpritAction[];
+  builder: BuilderID;
+  failureType: string;
 }
 
 export interface BuildFailure {
   bbid: string;
   failedStepName: string;
+}
+
+export interface BuilderID {
+  project: string;
+  bucket: string;
+  builder: string;
 }
 
 export interface HeuristicAnalysisResult {

@@ -4,6 +4,7 @@
 
 import './suspects_overview.css';
 
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { PrimeSuspect } from '../../services/analysis_details';
+import { PrimeSuspect } from '../../services/gofindit';
 
 interface Props {
   suspects: PrimeSuspect[];
@@ -33,7 +34,14 @@ export const SuspectsOverview = ({ suspects }: Props) => {
           {suspects.map((suspect) => (
             <TableRow key={suspect.cl.commitID}>
               <TableCell>
-                <a href={suspect.cl.reviewURL}>{suspect.cl.title}</a>
+                <Link
+                  href={suspect.cl.reviewURL}
+                  target='_blank'
+                  rel='noreferrer'
+                  underline='always'
+                >
+                  {suspect.cl.title}
+                </Link>
               </TableCell>
               <TableCell>{suspect.accuseSource}</TableCell>
               <TableCell>{suspect.culpritStatus}</TableCell>

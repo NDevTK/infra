@@ -11,7 +11,12 @@
   border-bottom: 1px solid lightgray;
 }
 
+.section:first-child {
+  padding-top: 0rem;
+}
+
 .section:last-child {
+  padding-bottom: 0rem;
   border-bottom: none;
 }
 

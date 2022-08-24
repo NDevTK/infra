@@ -8,6 +8,7 @@ package gofindit;
 
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
+import "go.chromium.org/luci/buildbucket/proto/builder_common.proto";
 import "go.chromium.org/luci/buildbucket/proto/common.proto";
 
 option go_package = "infra/appengine/gofindit/proto;gofindit";
@@ -141,6 +142,10 @@ message Analysis {
   // More than one action may be taken, for example, reverting the culprit and
   // commenting on the bug.
   repeated CulpritAction culprit_action = 12;
+  // Builder for the first failed build
+  buildbucket.v2.BuilderID builder = 13;
+  // Type of the failure associated with the analysis
+  string failure_type = 14;
 }
 
 message HeuristicAnalysisResult {
