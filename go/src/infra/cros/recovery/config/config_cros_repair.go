@@ -127,6 +127,9 @@ func crosRepairActions() map[string]*Action {
 				"Reset power using servo if booted from USB",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
+			},
 		},
 		"Verify internal storage": {
 			Docs: []string{
