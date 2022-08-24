@@ -225,7 +225,7 @@ func (a *Application) ParseArgs() (err error) {
 		a.PythonCommandLine = &python.CommandLine{
 			Target: python.NoTarget{},
 		}
-		a.PythonCommandLine.AddSingleFlag("help")
+		a.PythonCommandLine.AddSingleFlag("h")
 	}
 	return nil
 }
