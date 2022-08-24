@@ -175,14 +175,23 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 	}()
 	var step *build.Step
+	act := r.getAction(actionName)
 	if r.args != nil {
-		// Keep this up to date with recovery.go
-		action := &metrics.Action{
-			SwarmingTaskID: r.args.SwarmingTaskID,
-			BuildbucketID:  r.args.BuildbucketID,
-		}
-		if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
-			defer actionCloser(rErr)
+		policy := act.GetMetricsConfig().GetUploadPolicy()
+		switch policy {
+		case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
+			// Keep this up to date with recovery.go
+			action := &metrics.Action{
+				SwarmingTaskID: r.args.SwarmingTaskID,
+				BuildbucketID:  r.args.BuildbucketID,
+			}
+			if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
+				defer actionCloser(rErr)
+			}
+		case config.MetricsConfig_SKIP_ALL:
+			log.Debugf(ctx, "Action %q: skipping metrics upload")
+		default:
+			return errors.Reason("bad policy %q %d", policy.String(), policy.Number()).Err()
 		}
 		if r.args.ShowSteps {
 			stepName := fmt.Sprintf("%s: %s", stepNamePrefix, actionName)
@@ -203,7 +212,6 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			log.Debugf(ctx, "Action %q: finished.", actionName)
 		}
 	}()
-	act := r.getAction(actionName)
 	if len(act.GetDocs()) > 0 && step != nil {
 		docLog := step.Log("docs")
 		if _, err := io.WriteString(docLog, strings.Join(act.GetDocs(), "\n")); err != nil {
