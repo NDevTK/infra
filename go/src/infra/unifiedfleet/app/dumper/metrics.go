@@ -16,6 +16,20 @@ var (
 		nil,
 		field.Bool("success"), // If the attempt succeed
 	)
+	dumpToBQDailyTick = metric.NewCounter(
+		"chromeos/ufs/dumper/dump_to_bq_daily",
+		"dumpToBQ daily attempt",
+		nil,
+		field.Bool("success"),
+		field.String("namespace"),
+	)
+	dumpToBQHourlyTick = metric.NewCounter(
+		"chromeos/ufs/dumper/dump_to_bq_hourly",
+		"dumpToBQ hourly attempt",
+		nil,
+		field.Bool("success"),
+		field.String("namespace"),
+	)
 	dumpChangeEventTick = metric.NewCounter(
 		"chromeos/ufs/dumper/dump_change_event",
 		"dumpChangeEvent attempt",

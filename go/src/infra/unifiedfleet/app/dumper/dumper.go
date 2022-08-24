@@ -136,7 +136,8 @@ func dumpHourly(ctx context.Context) error {
 
 func dumpToBQ(ctx context.Context, bqClient *bigquery.Client) (err error) {
 	defer func() {
-		dumpToBQTick.Add(ctx, 1, err == nil)
+		ns := util.GetNamespaceFromCtx(ctx)
+		dumpToBQDailyTick.Add(ctx, 1, err == nil, ns)
 	}()
 	logging.Infof(ctx, "Dumping to BQ")
 	curTime := time.Now()
@@ -165,7 +166,8 @@ func dumpToBQ(ctx context.Context, bqClient *bigquery.Client) (err error) {
 
 func dumpToBQHourly(ctx context.Context, bqClient *bigquery.Client) (err error) {
 	defer func() {
-		dumpToBQTick.Add(ctx, 1, err == nil)
+		ns := util.GetNamespaceFromCtx(ctx)
+		dumpToBQHourlyTick.Add(ctx, 1, err == nil, ns)
 	}()
 	logging.Infof(ctx, "Dumping to BQ")
 	curTime := time.Now()
