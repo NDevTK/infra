@@ -9,43 +9,41 @@ import { nanoid } from '@reduxjs/toolkit';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-import { HeuristicSuspect } from '../../../services/analysis_details';
+import { getCommitShortHash } from '../../../tools/link_constructors';
+import { HeuristicSuspect } from '../../../services/gofindit';
 
 interface Props {
   suspect: HeuristicSuspect;
 }
 
-const getCommitShortHash = (commitID: string) => {
-  return commitID.substring(0, 7);
-};
-
 export const HeuristicAnalysisTableRow = ({ suspect }: Props) => {
-  const { cl, score, confidence, justification } = suspect;
-  const reasonCount = justification.length;
+  const { gitilesCommit, reviewUrl, justification, score, confidenceLevel } =
+    suspect;
 
-  let clDescription = '';
-  if (cl.title) {
-    clDescription = `: ${cl.title}`;
-  }
+  const reasons = justification.split('\n');
+  const reasonCount = reasons.length;
+
+  // TODO: use the title of the suspect commit for link its code review
+  const commitTitle = '';
 
   return (
     <>
       <TableRow data-testid='heuristic_analysis_table_row'>
         <TableCell rowSpan={reasonCount} className='overviewCell'>
-          <a href={cl.reviewURL}>
-            {getCommitShortHash(cl.commitID)}
-            {clDescription}
+          <a href={reviewUrl}>
+            {getCommitShortHash(gitilesCommit.id)}
+            {commitTitle}
           </a>
         </TableCell>
         <TableCell rowSpan={reasonCount} className='overviewCell'>
-          {confidence}
+          {confidenceLevel}
         </TableCell>
         <TableCell rowSpan={reasonCount} className='overviewCell' align='right'>
           {score}
         </TableCell>
-        {reasonCount > 0 && <TableCell>{justification[0]}</TableCell>}
+        {reasonCount > 0 && <TableCell>{reasons[0]}</TableCell>}
       </TableRow>
-      {justification.slice(1).map((reason) => (
+      {reasons.slice(1).map((reason) => (
         <TableRow key={nanoid()}>
           <TableCell>{reason}</TableCell>
         </TableRow>

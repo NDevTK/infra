@@ -9,7 +9,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 
 import { HeuristicAnalysisTableRow } from './heuristic_analysis_table_row';
-import { HeuristicSuspect } from '../../../services/analysis_details';
+import { HeuristicSuspect } from '../../../services/gofindit';
 import { getMockHeuristicSuspect } from '../../../testing_tools/mocks/heuristic_suspect_mock';
 
 describe('Test HeuristicAnalysisTable component', () => {
@@ -27,11 +27,13 @@ describe('Test HeuristicAnalysisTable component', () => {
     await screen.findByTestId('heuristic_analysis_table_row');
 
     expect(screen.getByRole('link').getAttribute('href')).toBe(
-      mockSuspect.cl.reviewURL
+      mockSuspect.reviewUrl
     );
-    expect(screen.getByText(mockSuspect.confidence)).toBeInTheDocument();
+    expect(screen.getByText(mockSuspect.confidenceLevel)).toBeInTheDocument();
     expect(screen.getByText(mockSuspect.score)).toBeInTheDocument();
-    mockSuspect.justification.forEach((reason) => {
+
+    const reasons = mockSuspect.justification.split('\n');
+    reasons.forEach((reason) => {
       expect(screen.getByText(reason)).toBeInTheDocument();
     });
   });

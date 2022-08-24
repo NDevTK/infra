@@ -6,6 +6,7 @@ This is the rewrite in Golang of the Python2 version of Findit (findit-for-me.ap
 ## Local Development
 To run the server locally, firstly you need to authenticate
 ```
+gcloud config set project chops-gofindit-dev
 gcloud auth application-default login
 ```
 and
@@ -31,7 +32,7 @@ npm test
 ### Running GoFindit
 In the root gofindit directory, run
 ```
-go run main.go
+go run main.go -cloud-project chops-gofindit-dev
 ```
 
 This will start a web server running at http://localhost:8800. Navigate to this URL using your preferred browser. Once you "log in", the GoFindit frontend

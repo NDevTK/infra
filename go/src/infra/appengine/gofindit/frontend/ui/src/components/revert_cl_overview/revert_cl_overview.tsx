@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
-import { RevertCL } from '../../services/analysis_details';
+import { RevertCL } from '../../services/gofindit';
 import { PlainTable } from '../plain_table/plain_table';
 
 interface Props {
