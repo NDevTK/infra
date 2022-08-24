@@ -215,6 +215,24 @@
       "parentUuid": "902e78cf_c31a140f",
       "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e66d5e3f_d2e52e38",
+        "filename": "go/src/infra/appengine/gofindit/proto/gofindit.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2022-08-24T07:17:05Z",
+      "side": 1,
+      "message": "The main reason why I used a string enum instead of int enum in model.go was because I don\u0027t need to cross-refer to the code when looking at datastore. But it seems to create a problem down the road.\n\nI did a quick search and it seems like although we have BuildFailureType data in datastore, we don\u0027t actually use it anywhere, and if we rebrand to LUCI bisection, the old data will not be there anymore.\n\nMy main concern is that if we change the BuildFailureType from string-\u003e int in model, would it break things like `datastore.get(c, build)`. If such statements succeed but do not populate the failureType, it is good because we don\u0027t need the data now. But if it results in errors, we may need some work around:\n1. Use string in proto, as you are doing.\n2. Use int enum in proto, and string in model, and have some mapping\n3. Use int enum in proto, and change the name \"FailureType\" field in LuciFailedBuild to something else to refer to that enum.",
+      "parentUuid": "3287620c_2c2d2448",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
