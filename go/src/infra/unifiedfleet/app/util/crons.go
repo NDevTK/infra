@@ -5,7 +5,7 @@
 package util
 
 var CronJobNames = map[string]string{
-	"mainBQCron":                 "ufs.dumper",
+	"mainBQCronDaily":            "ufs.dumper.daily",
 	"mainBQCronHourly":           "ufs.dumper.hourly",
 	"changeEventToBQCron":        "ufs.change_event.BqDump",
 	"snapshotToBQCron":           "ufs.snapshot_msg.BqDump",

@@ -25,7 +25,7 @@ import (
 var Jobs = []*cron.CronTab{
 	{
 		// Dump configs, registrations, inventory and states to BQ
-		Name:     util.CronJobNames["mainBQCron"],
+		Name:     util.CronJobNames["mainBQCronDaily"],
 		Time:     20 * time.Minute,
 		TrigType: cron.DAILY,
 		Job:      dump,
