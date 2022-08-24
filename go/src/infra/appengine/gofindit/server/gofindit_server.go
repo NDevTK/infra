@@ -51,6 +51,7 @@ func (server *GoFinditServer) QueryAnalysis(c context.Context, req *gfipb.QueryA
 	}
 	bbid := req.BuildFailure.GetBbid()
 	logging.Infof(c, "QueryAnalysis for build %d", bbid)
+
 	analysis, err := GetAnalysisForBuild(c, bbid)
 	if err != nil {
 		logging.Errorf(c, "Could not query analysis for build %d: %s", bbid, err)
@@ -97,6 +98,19 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 		LastPassedBbid:  analysis.LastPassedBuildId,
 	}
 
+	// Check whether the analysis has an associated first failed build
+	if analysis.FirstFailedBuildId != 0 {
+		// Add details from first failed build
+		firstFailedBuild, err := GetBuild(c, analysis.FirstFailedBuildId)
+		if err != nil {
+			return nil, err
+		}
+		if firstFailedBuild != nil {
+			result.Builder = firstFailedBuild.Builder
+			result.FailureType = string(firstFailedBuild.FailureType)
+		}
+	}
+
 	heuristicAnalysis, err := GetHeuristicAnalysis(c, analysis)
 	if err != nil {
 		return nil, err
@@ -131,6 +145,10 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 	result.HeuristicResult = heuristicResult
 
 	// TODO (nqmtuan): query for nth-section result
+
+	// TODO (aredulla): get culprit actions, such as the revert CL for the culprit
+	//                  and any related bugs
+
 	return result, nil
 }
 

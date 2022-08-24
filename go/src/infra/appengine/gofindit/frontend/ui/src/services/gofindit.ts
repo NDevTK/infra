@@ -74,6 +74,8 @@ export interface Analysis {
   nthSectionResult?: NthSectionAnalysisResult;
   culprit?: GitilesCommit;
   culpritAction?: CulpritAction[];
+  builder: string;
+  failureType: string;
 }
 
 export interface BuildFailure {
