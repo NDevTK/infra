@@ -40,7 +40,8 @@ import (
 )
 
 const (
-	ACCESS_GROUP = "gofindit-access"
+	ACCESS_GROUP         = "gofindit-access"
+	ACCESS_GROUP_FOR_BOT = "gofindit-bot-access"
 )
 
 // checkAccess is middleware that checks if the user is authorized to
@@ -111,6 +112,17 @@ func checkAPIAccess(ctx context.Context, methodName string, req proto.Message) (
 	}
 }
 
+func checkBotAPIAccess(ctx context.Context, methodName string, req proto.Message) (context.Context, error) {
+	switch yes, err := auth.IsMember(ctx, ACCESS_GROUP_FOR_BOT); {
+	case err != nil:
+		return nil, status.Errorf(codes.Internal, "error when checking group membership for bot")
+	case !yes:
+		return nil, status.Errorf(codes.PermissionDenied, "%s does not have access to method %s of GoFindit", auth.CurrentIdentity(ctx), methodName)
+	default:
+		return ctx, nil
+	}
+}
+
 func main() {
 	modules := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
@@ -147,6 +159,12 @@ func main() {
 		gfipb.RegisterGoFinditServiceServer(srv.PRPC, &gfipb.DecoratedGoFinditService{
 			Service: &gfis.GoFinditServer{},
 			Prelude: checkAPIAccess,
+		})
+
+		// Installs PRPC service to communicate with recipes
+		gfipb.RegisterGoFinditBotServiceServer(srv.PRPC, &gfipb.DecoratedGoFinditBotService{
+			Service: &gfis.GoFinditBotServer{},
+			Prelude: checkBotAPIAccess,
 		})
 
 		srv.Routes.GET("/test", mwc, func(c *router.Context) {

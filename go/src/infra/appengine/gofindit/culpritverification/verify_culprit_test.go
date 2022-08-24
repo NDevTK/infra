@@ -100,6 +100,7 @@ func TestVerifySuspect(t *testing.T) {
 		err := VerifySuspect(c, suspect, 8000, 444)
 		So(err, ShouldBeNil)
 		So(suspect.VerificationStatus, ShouldEqual, model.SuspectVerificationStatus_UnderVerification)
+		datastore.GetTestable(c).CatchupIndexes()
 
 		// Check that 2 rerun builds were created, and linked to suspect
 		rerun1 := &model.CompileRerunBuild{
@@ -143,5 +144,18 @@ func TestVerifySuspect(t *testing.T) {
 				StartTime:     res2.StartTime.AsTime(),
 			},
 		})
+
+		// Check that 2 SingleRerun model was created
+		q := datastore.NewQuery("SingleRerun").Eq("rerun_build", datastore.KeyForObj(c, rerun1))
+		singleReruns := []*model.SingleRerun{}
+		err = datastore.GetAll(c, q, &singleReruns)
+		So(err, ShouldBeNil)
+		So(len(singleReruns), ShouldEqual, 1)
+
+		q = datastore.NewQuery("SingleRerun").Eq("rerun_build", datastore.KeyForObj(c, rerun2))
+		singleReruns = []*model.SingleRerun{}
+		err = datastore.GetAll(c, q, &singleReruns)
+		So(err, ShouldBeNil)
+		So(len(singleReruns), ShouldEqual, 1)
 	})
 }

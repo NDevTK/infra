@@ -10,6 +10,7 @@ import (
 
 	"infra/appengine/gofindit/internal/gitiles"
 	gfim "infra/appengine/gofindit/model"
+	gfipb "infra/appengine/gofindit/proto"
 	"infra/appengine/gofindit/rerun"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -48,6 +49,8 @@ func VerifySuspect(c context.Context, suspect *gfim.Suspect, failedBuildID int64
 }
 
 func createRerunBuildModel(c context.Context, build *buildbucketpb.Build, suspect *gfim.Suspect) (*gfim.CompileRerunBuild, error) {
+	gitilesCommit := *build.GetInput().GetGitilesCommit()
+	startTime := build.StartTime.AsTime()
 	rerunBuild := &gfim.CompileRerunBuild{
 		Id:      build.GetId(),
 		Type:    gfim.RerunBuildType_CulpritVerification,
@@ -58,9 +61,9 @@ func createRerunBuildModel(c context.Context, build *buildbucketpb.Build, suspec
 			Bucket:        build.Builder.Bucket,
 			Builder:       build.Builder.Builder,
 			CreateTime:    build.CreateTime.AsTime(),
-			StartTime:     build.StartTime.AsTime(),
+			StartTime:     startTime,
 			Status:        build.GetStatus(),
-			GitilesCommit: *build.GetInput().GetGitilesCommit(),
+			GitilesCommit: gitilesCommit,
 		},
 	}
 	err := datastore.Put(c, rerunBuild)
@@ -68,6 +71,21 @@ func createRerunBuildModel(c context.Context, build *buildbucketpb.Build, suspec
 		logging.Errorf(c, "Error in creating CompileRerunBuild model for build %d", build.GetId())
 		return nil, err
 	}
+
+	// Create the first SingleRerun for CompileRerunBuild
+	// It will be updated when we receive updates from recipe
+	singleRerun := &gfim.SingleRerun{
+		RerunBuild:    datastore.KeyForObj(c, rerunBuild),
+		Status:        gfipb.RerunStatus_IN_PROGRESS,
+		GitilesCommit: gitilesCommit,
+		StartTime:     startTime,
+	}
+	err = datastore.Put(c, singleRerun)
+	if err != nil {
+		logging.Errorf(c, "Error in creating SingleRerun model for build %d", build.GetId())
+		return nil, err
+	}
+
 	return rerunBuild, nil
 }
 
