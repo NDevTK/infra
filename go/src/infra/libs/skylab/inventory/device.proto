@@ -687,12 +687,13 @@ message SIMInfo {
   repeated SIMProfileInfo profile_info = 5;
 }
 
-// Next Tag: 5
+// Next Tag: 6
 message SIMProfileInfo {
   optional string iccid = 1;
   optional string sim_pin = 2;
   optional string sim_puk = 3;
   optional NetworkProvider carrier_name = 4;
+  optional string own_number = 5;
 }
 // Next Tag: 5
 enum NetworkProvider {
