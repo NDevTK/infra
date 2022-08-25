@@ -86,8 +86,10 @@ func prepareTemplates(opts *server.Options) *templates.Bundle {
 			}
 
 			return templates.Args{
-				"User":      auth.CurrentUser(ctx).Email,
-				"LogoutURL": logoutURL,
+				"UserAvatar": auth.CurrentUser(ctx).Picture,
+				"UserEmail":  auth.CurrentUser(ctx).Email,
+				"UserName":   auth.CurrentUser(ctx).Name,
+				"LogoutURL":  logoutURL,
 			}, nil
 		},
 	}
@@ -182,7 +184,7 @@ func main() {
 					EndTime:     clock.Now(c.Context),
 					CreateTime:  clock.Now(c.Context),
 				},
-				FailureType: model.BuildFailureType_Compile,
+				BuildFailureType: gfipb.BuildFailureType_COMPILE,
 			}
 			if e := datastore.Put(c.Context, failed_build); e != nil {
 				logging.Errorf(c.Context, "Got error when saving LuciFailedBuild entity: %v", e)

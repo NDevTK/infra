@@ -14,15 +14,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 )
 
-type BuildFailureType string
-
-const (
-	BuildFailureType_Compile BuildFailureType = "Compile"
-	BuildFailureType_Test    BuildFailureType = "Test"
-	BuildFailureType_Infra   BuildFailureType = "Infra"
-	BuildFailureType_Other   BuildFailureType = "Other"
-)
-
 type RerunBuildType string
 
 const (
@@ -63,8 +54,10 @@ type LuciFailedBuild struct {
 	// Id is the build Id
 	Id int64 `gae:"$id"`
 	LuciBuild
-	// e.g. compile, test, infra...
-	FailureType BuildFailureType `gae:"failure_type"`
+	// Obsolete field - specify BuildFailureType instead
+	FailureType string `gae:"failure_type"`
+	// Failure type for the build
+	BuildFailureType gofinditpb.BuildFailureType `gae:"build_failure_type"`
 }
 
 // CompileFailure represents a compile failure in one or more targets.

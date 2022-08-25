@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { RevertCL } from '../../services/analysis_details';
+import { RevertCL } from '../../services/gofindit';
 
 export const getMockRevertCL = (commitID: string): RevertCL => {
   return {

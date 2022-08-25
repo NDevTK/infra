@@ -11,6 +11,7 @@ import { Route, Routes } from 'react-router-dom';
 import { BaseLayout } from './src/layouts/base';
 import { AnalysisDetailsPage } from './src/views/analysis_details/analysis_details';
 import { FailureAnalysesPage } from './src/views/failure_analyses';
+import { NotFoundPage } from './src/views/not_found';
 import { StatisticsPage } from './src/views/statistics';
 import { TriggerAnalysisPage } from './src/views/trigger_analysis';
 
@@ -29,8 +30,9 @@ export const App = () => {
         <Route path='/' element={<BaseLayout />}>
           <Route index element={<FailureAnalysesPage />} />
           <Route path='trigger' element={<TriggerAnalysisPage />} />
-          <Route path='analysis/b/:buildID' element={<AnalysisDetailsPage />} />
+          <Route path='analysis/b/:bbid' element={<AnalysisDetailsPage />} />
           <Route path='statistics' element={<StatisticsPage />} />
+          <Route path='*' element={<NotFoundPage />} />
         </Route>
       </Routes>
     </QueryClientProvider>

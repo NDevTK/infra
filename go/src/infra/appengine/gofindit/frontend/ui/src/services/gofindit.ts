@@ -48,6 +48,13 @@ export type CulpritActionType =
   | 'CULPRIT_CL_COMMENTED'
   | 'BUG_COMMENTED';
 
+export type BuildFailureType =
+  | 'BUILD_FAILURE_TYPE_UNSPECIFIED'
+  | 'COMPILE'
+  | 'TEST'
+  | 'INFRA'
+  | 'OTHER';
+
 export function isAnalysisComplete(status: AnalysisStatus) {
   const completeStatuses: Array<AnalysisStatus> = [
     'FOUND',
@@ -74,11 +81,19 @@ export interface Analysis {
   nthSectionResult?: NthSectionAnalysisResult;
   culprit?: GitilesCommit;
   culpritAction?: CulpritAction[];
+  builder: BuilderID;
+  buildFailureType: BuildFailureType;
 }
 
 export interface BuildFailure {
   bbid: string;
   failedStepName: string;
+}
+
+export interface BuilderID {
+  project: string;
+  bucket: string;
+  builder: string;
 }
 
 export interface HeuristicAnalysisResult {

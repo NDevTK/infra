@@ -13,6 +13,7 @@ import (
 	"infra/appengine/gofindit/compilefailureanalysis"
 	"infra/appengine/gofindit/internal/buildbucket"
 	"infra/appengine/gofindit/model"
+	gfipb "infra/appengine/gofindit/proto"
 
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -208,7 +209,7 @@ func createCompileFailureModel(c context.Context, failedBuild *buildbucketpb.Bui
 				CreateTime:    failedBuild.CreateTime.AsTime(),
 				GitilesCommit: gitilesCommit,
 			},
-			FailureType: model.BuildFailureType_Compile,
+			BuildFailureType: gfipb.BuildFailureType_COMPILE,
 		}
 		e := datastore.Put(c, buildModel)
 		if e != nil {

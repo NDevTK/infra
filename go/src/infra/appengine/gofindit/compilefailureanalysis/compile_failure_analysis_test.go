@@ -88,7 +88,7 @@ func TestAnalyzeFailure(t *testing.T) {
 				EndTime:     cl.Now(),
 				CreateTime:  cl.Now(),
 			},
-			FailureType: model.BuildFailureType_Compile,
+			BuildFailureType: gofindit.BuildFailureType_COMPILE,
 		}
 		So(datastore.Put(c, failed_build), ShouldBeNil)
 

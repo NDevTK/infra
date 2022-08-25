@@ -4,31 +4,74 @@
 
 import './analysis_overview.css';
 
+import Link from '@mui/material/Link';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
-import { AssociatedBug, SuspectRange } from '../../services/analysis_details';
+import { Analysis } from '../../services/gofindit';
 import { PlainTable } from '../plain_table/plain_table';
 
-import { linkToBuild } from '../../tools/link_constructors';
-
-export interface AnalysisSummary {
-  analysisID: string;
-  status: string;
-  failureType: string;
-  buildID: string;
-  builder: string;
-  suspectRange: SuspectRange;
-  bugs: AssociatedBug[];
-}
+import {
+  ExternalLink,
+  linkToBuild,
+  linkToCommit,
+  linkToCommitRange,
+} from '../../tools/link_constructors';
 
 interface Props {
-  analysis: AnalysisSummary;
+  analysis: Analysis;
+}
+
+function getSuspectRange(analysis: Analysis): ExternalLink {
+  if (analysis.culprit) {
+    return linkToCommit(analysis.culprit);
+  }
+
+  if (analysis.nthSectionResult) {
+    const result = analysis.nthSectionResult;
+
+    if (result.culprit) {
+      return linkToCommit(result.culprit);
+    }
+
+    if (result.remainingNthSectionRange) {
+      return linkToCommitRange(
+        result.remainingNthSectionRange.lastPassed,
+        result.remainingNthSectionRange.firstFailed
+      );
+    }
+  }
+
+  return {
+    linkText: '',
+    url: '',
+  };
+}
+
+function getBugLinks(analysis: Analysis): ExternalLink[] {
+  let bugLinks: ExternalLink[] = [];
+
+  if (analysis.culpritAction) {
+    analysis.culpritAction.forEach((action) => {
+      if (action.actionType === 'BUG_COMMENTED' && action.bugUrl) {
+        // TODO: construct short link text for bug
+        bugLinks.push({
+          linkText: action.bugUrl,
+          url: action.bugUrl,
+        });
+      }
+    });
+  }
+
+  return bugLinks;
 }
 
 export const AnalysisOverview = ({ analysis }: Props) => {
+  const buildLink = linkToBuild(analysis.firstFailedBbid);
+  const suspectRange = getSuspectRange(analysis);
+  const bugLinks = getBugLinks(analysis);
   return (
     <TableContainer>
       <PlainTable>
@@ -41,29 +84,44 @@ export const AnalysisOverview = ({ analysis }: Props) => {
         <TableBody data-testid='analysis_overview_table_body'>
           <TableRow>
             <TableCell variant='head'>Analysis ID</TableCell>
-            <TableCell>{analysis.analysisID}</TableCell>
+            <TableCell>{analysis.analysisId}</TableCell>
             <TableCell variant='head'>Buildbucket ID</TableCell>
             <TableCell>
-              <a href={linkToBuild(analysis.buildID)}>{analysis.buildID}</a>
+              <Link
+                href={buildLink.url}
+                target='_blank'
+                rel='noreferrer'
+                underline='always'
+              >
+                {buildLink.linkText}
+              </Link>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell variant='head'>Status</TableCell>
             <TableCell>{analysis.status}</TableCell>
             <TableCell variant='head'>Builder</TableCell>
-            <TableCell>{analysis.builder}</TableCell>
+            <TableCell>
+              {`${analysis.builder.project}/${analysis.builder.bucket}/${analysis.builder.builder}`}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell variant='head'>Suspect range</TableCell>
             <TableCell>
-              <a href={analysis.suspectRange.url}>
-                {analysis.suspectRange.linkText}
-              </a>
+              <Link
+                data-testid='analysis_overview_suspect_range'
+                href={suspectRange.url}
+                target='_blank'
+                rel='noreferrer'
+                underline='always'
+              >
+                {suspectRange.linkText}
+              </Link>
             </TableCell>
             <TableCell variant='head'>Failure type</TableCell>
-            <TableCell>{analysis.failureType}</TableCell>
+            <TableCell>{analysis.buildFailureType}</TableCell>
           </TableRow>
-          {analysis.bugs.length > 0 && (
+          {bugLinks.length > 0 && (
             <>
               <TableRow>
                 <TableCell>
@@ -73,9 +131,16 @@ export const AnalysisOverview = ({ analysis }: Props) => {
               <TableRow>
                 <TableCell variant='head'>Related bugs</TableCell>
                 <TableCell colSpan={3}>
-                  {analysis.bugs.map((bug) => (
-                    <span className='bugLink' key={bug.url}>
-                      <a href={bug.url}>{bug.linkText}</a>
+                  {bugLinks.map((bugLink) => (
+                    <span className='bugLink' key={bugLink.url}>
+                      <Link
+                        href={bugLink.url}
+                        target='_blank'
+                        rel='noreferrer'
+                        underline='always'
+                      >
+                        {bugLink.linkText}
+                      </Link>
                     </span>
                   ))}
                 </TableCell>

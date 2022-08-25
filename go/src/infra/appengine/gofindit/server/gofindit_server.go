@@ -11,6 +11,7 @@ import (
 	gfim "infra/appengine/gofindit/model"
 	gfipb "infra/appengine/gofindit/proto"
 
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
@@ -51,6 +52,7 @@ func (server *GoFinditServer) QueryAnalysis(c context.Context, req *gfipb.QueryA
 	}
 	bbid := req.BuildFailure.GetBbid()
 	logging.Infof(c, "QueryAnalysis for build %d", bbid)
+
 	analysis, err := GetAnalysisForBuild(c, bbid)
 	if err != nil {
 		logging.Errorf(c, "Could not query analysis for build %d: %s", bbid, err)
@@ -97,6 +99,23 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 		LastPassedBbid:  analysis.LastPassedBuildId,
 	}
 
+	// Check whether the analysis has an associated first failed build
+	if analysis.FirstFailedBuildId != 0 {
+		// Add details from first failed build
+		firstFailedBuild, err := GetBuild(c, analysis.FirstFailedBuildId)
+		if err != nil {
+			return nil, err
+		}
+		if firstFailedBuild != nil {
+			result.Builder = &buildbucketpb.BuilderID{
+				Project: firstFailedBuild.Project,
+				Bucket:  firstFailedBuild.Bucket,
+				Builder: firstFailedBuild.Builder,
+			}
+			result.BuildFailureType = firstFailedBuild.BuildFailureType
+		}
+	}
+
 	heuristicAnalysis, err := GetHeuristicAnalysis(c, analysis)
 	if err != nil {
 		return nil, err
@@ -131,6 +150,10 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 	result.HeuristicResult = heuristicResult
 
 	// TODO (nqmtuan): query for nth-section result
+
+	// TODO (aredulla): get culprit actions, such as the revert CL for the culprit
+	//                  and any related bugs
+
 	return result, nil
 }
 
