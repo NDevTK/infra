@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 )
@@ -66,6 +67,12 @@ func TestQueryAnalysis(t *testing.T) {
 		// Prepares datastore
 		failed_build := &model.LuciFailedBuild{
 			Id: 123,
+			LuciBuild: model.LuciBuild{
+				Project: "chromium/test",
+				Bucket:  "ci",
+				Builder: "android",
+			},
+			BuildFailureType: gfipb.BuildFailureType_COMPILE,
 		}
 		So(datastore.Put(c, failed_build), ShouldBeNil)
 		datastore.GetTestable(c).CatchupIndexes()
@@ -78,7 +85,8 @@ func TestQueryAnalysis(t *testing.T) {
 		datastore.GetTestable(c).CatchupIndexes()
 
 		compile_failure_analysis := &model.CompileFailureAnalysis{
-			CompileFailure: datastore.KeyForObj(c, compile_failure),
+			CompileFailure:     datastore.KeyForObj(c, compile_failure),
+			FirstFailedBuildId: 123,
 		}
 		So(datastore.Put(c, compile_failure_analysis), ShouldBeNil)
 		datastore.GetTestable(c).CatchupIndexes()
@@ -93,6 +101,14 @@ func TestQueryAnalysis(t *testing.T) {
 		res, err := server.QueryAnalysis(c, req)
 		So(err, ShouldBeNil)
 		So(len(res.Analyses), ShouldEqual, 1)
+
+		analysis := res.Analyses[0]
+		So(analysis.Builder, ShouldResemble, &buildbucketpb.BuilderID{
+			Project: "chromium/test",
+			Bucket:  "ci",
+			Builder: "android",
+		})
+		So(analysis.BuildFailureType, ShouldEqual, gfipb.BuildFailureType_COMPILE)
 	})
 
 	Convey("Analysis found for a similar failure", t, func() {

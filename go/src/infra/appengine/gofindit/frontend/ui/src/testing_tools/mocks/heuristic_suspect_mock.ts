@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { HeuristicSuspect } from '../../services/analysis_details';
+import { HeuristicSuspect } from '../../services/gofindit';
 
 export const getMockHeuristicSuspect = (commitID: string): HeuristicSuspect => {
   return {
-    cl: {
-      commitID: commitID,
-      title: 'Title of this heuristic suspect',
-      reviewURL: `https://chromium-review.googlesource.com/placeholder/+${commitID}`,
+    gitilesCommit: {
+      host: 'not.a.real.host',
+      project: 'chromium',
+      id: commitID,
+      ref: 'ref/main',
+      position: '1',
     },
+    reviewUrl: `https://chromium-review.googlesource.com/placeholder/+${commitID}`,
     score: '15',
-    confidence: 'HIGH',
-    justification: [
-      'The file "dir/a/b/x.cc" was added and it was in the failure log.',
+    justification:
+      'The file "dir/a/b/x.cc" was added and it was in the failure log.\n' +
       'The file "content/util.c" was modified. It was related to the file obj/content/util.o which was in the failure log.',
-    ],
+    confidenceLevel: 'HIGH',
   };
 };

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import Link from '@mui/material/Link';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
-import { RevertCL } from '../../services/analysis_details';
+import { RevertCL } from '../../services/gofindit';
 import { PlainTable } from '../plain_table/plain_table';
 
 interface Props {
@@ -25,7 +26,14 @@ export const RevertCLOverview = ({ revertCL }: Props) => {
         <TableBody data-testid='change_list_overview_table_body'>
           <TableRow>
             <TableCell variant='head' colSpan={2}>
-              <a href={revertCL.cl.reviewURL}>{revertCL.cl.title}</a>
+              <Link
+                href={revertCL.cl.reviewURL}
+                target='_blank'
+                rel='noreferrer'
+                underline='always'
+              >
+                {revertCL.cl.title}
+              </Link>
             </TableCell>
           </TableRow>
           <TableRow>

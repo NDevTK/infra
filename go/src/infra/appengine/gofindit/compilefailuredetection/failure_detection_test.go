@@ -8,6 +8,7 @@ import (
 	"context"
 	"infra/appengine/gofindit/internal/buildbucket"
 	"infra/appengine/gofindit/model"
+	gfipb "infra/appengine/gofindit/proto"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -298,7 +299,7 @@ func TestFailureDetection(t *testing.T) {
 				LuciBuild: model.LuciBuild{
 					BuildId: 8001,
 				},
-				FailureType: model.BuildFailureType_Compile,
+				BuildFailureType: gfipb.BuildFailureType_COMPILE,
 			}
 			So(datastore.Put(c, failed_build), ShouldBeNil)
 			datastore.GetTestable(c).CatchupIndexes()
@@ -381,7 +382,7 @@ func TestFailureDetection(t *testing.T) {
 					StartTime:  (&timestamppb.Timestamp{Seconds: 100}).AsTime(),
 					Status:     buildbucketpb.Status_FAILURE,
 				},
-				FailureType: model.BuildFailureType_Compile,
+				BuildFailureType: gfipb.BuildFailureType_COMPILE,
 			})
 		})
 	})
