@@ -48,6 +48,7 @@ var builderNameMap = map[TaskName]string{
 	AuditRPM:     "audit-rpm",
 	AuditStorage: "audit-storage",
 	AuditUSB:     "audit-usb",
+	Recovery:     "repair",
 }
 
 // NormalizeTaskName takes a task name from anywhere and normalizes it.
