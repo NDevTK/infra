@@ -189,6 +189,33 @@ func TestLegacyCache(t *testing.T) {
 	})
 }
 
+func TestParseArguments(t *testing.T) {
+	parseArgs := func(args ...string) error {
+		app := &application.Application{
+			Arguments: args,
+		}
+		app.Initialize()
+		return app.ParseArgs()
+	}
+
+	Convey("Test unknown argument", t, func() {
+		err := parseArgs(
+			"-vpython-spec",
+			testData("default.vpython3"),
+			"-vpython-test",
+		)
+		So(err.Error(), ShouldContainSubstring, "-vpython-test")
+
+		err = parseArgs(
+			"-vpython-spec",
+			testData("default.vpython3"),
+			"--",
+			"-vpython-test",
+		)
+		So(err, ShouldBeNil)
+	})
+}
+
 func BenchmarkStartup(b *testing.B) {
 	Convey("Benchmark startup", b, func() {
 		c := func() *exec.Cmd {

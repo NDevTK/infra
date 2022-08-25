@@ -211,6 +211,25 @@ func (a *Application) ParseArgs() (err error) {
 		return errors.Annotate(err, "failed to parse flags").Err()
 	}
 
+	// Check if there are any '-vpython-*' options remain. Passing these flags
+	// to python can create confusing errors.
+	for _, arg := range pythonArgs {
+		// Stop checking options
+		if arg == "--" {
+			break
+		}
+
+		// Not an option
+		if !strings.HasPrefix(arg, "-") {
+			continue
+		}
+
+		// An vpython option shouldn't be passed to python
+		if strings.HasPrefix(strings.TrimLeft(arg, "-"), "vpython-") {
+			return errors.Reason("unknown vpython argument: %s", arg).Err()
+		}
+	}
+
 	if a.PythonCommandLine, err = python.ParseCommandLine(pythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse python commandline").Err()
 	}
