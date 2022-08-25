@@ -83,24 +83,15 @@ func (f *fakeGetPoolsClient) GetMachineLSE(ctx context.Context, in *ufsAPI.GetMa
 	return fakeMachine, nil
 }
 
-// GetMachineLSE always returns a fake machine.
-func (f *fakeGetPoolsClient) GetChromeOSDeviceData(ctx context.Context, in *ufsAPI.GetChromeOSDeviceDataRequest, opts ...grpc.CallOption) (*models.ChromeOSDeviceData, error) {
-	if f.names == nil {
-		f.names = map[string]bool{}
-	}
-	f.names[in.GetHostname()] = true
-	return &models.ChromeOSDeviceData{
-		LabConfig: fakeMachine,
-	}, nil
-}
-
 // GetDeviceData always returns a fake host.
+// This function never returns a scheduling unit, although multi-dut scheduling units are supported in real life.
 func (f *fakeGetPoolsClient) GetDeviceData(ctx context.Context, in *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error) {
 	if f.names == nil {
 		f.names = map[string]bool{}
 	}
 	f.names[in.GetHostname()] = true
 	return &ufsAPI.GetDeviceDataResponse{
+		ResourceType: ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE,
 		Resource: &ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData{
 			ChromeOsDeviceData: &models.ChromeOSDeviceData{
 				LabConfig: fakeMachine,

@@ -46,7 +46,6 @@ func setupContext(ctx context.Context, namespace string) context.Context {
 // Client exposes a deliberately chosen subset of the UFS functionality.
 type Client interface {
 	GetMachineLSE(context.Context, *ufsAPI.GetMachineLSERequest, ...grpc.CallOption) (*models.MachineLSE, error)
-	GetChromeOSDeviceData(context.Context, *ufsAPI.GetChromeOSDeviceDataRequest, ...grpc.CallOption) (*models.ChromeOSDeviceData, error)
 	GetDeviceData(context.Context, *ufsAPI.GetDeviceDataRequest, ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error)
 }
 
@@ -118,25 +117,12 @@ func GetPools(ctx context.Context, client Client, botID string) ([]string, error
 	}
 
 	pools, err := getPoolsForGenericDevice(ctx, client, botID, ufsUtil.OSNamespace)
-	if err == nil {
-		logging.Infof(ctx, "Successfully got pools for generic device %q in namespace %q", botID, ufsUtil.OSNamespace)
-		return pools, err
-	} else {
-		logging.Infof(ctx, "Encountered error for bot %q and namespace %q: %s", botID, ufsUtil.OSNamespace, err)
-	}
-
-	res, err := client.GetChromeOSDeviceData(ctx, &ufsAPI.GetChromeOSDeviceDataRequest{
-		Hostname: heuristics.NormalizeBotNameToDeviceName(botID),
-	})
 	if err != nil {
-		return nil, errors.Annotate(err, "get pools").Err()
+		logging.Infof(ctx, "Encountered error for bot %q and namespace %q: %s", botID, ufsUtil.OSNamespace, err)
+		return nil, err
 	}
-	if res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
-		// We have a non-labstation DUT.
-		return res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), nil
-	}
-	// We have a labstation DUT.
-	return res.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
+	logging.Infof(ctx, "Successfully got pools for generic device %q in namespace %q", botID, ufsUtil.OSNamespace)
+	return pools, err
 }
 
 func GetDutV1(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
