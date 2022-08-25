@@ -258,12 +258,20 @@ class MonorailConnection(object):
     DB_RESULT_ROWS.add(cursor.rowcount)
 
     if stmt_str.startswith('INSERT') or stmt_str.startswith('REPLACE'):
-      formatted_statement = '%s %s' % (stmt_str, stmt_args)
+      formatted_statement = ('%s %s' % (stmt_str, stmt_args)).replace('\n', ' ')
     else:
-      formatted_statement = stmt_str % tuple(stmt_args)
+      formatted_statement = (stmt_str % tuple(stmt_args)).replace('\n', ' ')
     logging.info(
         '%d rows in %d ms: %s', cursor.rowcount, int(duration),
-        formatted_statement.replace('\n', ' '))
+        formatted_statement)
+    if duration >= 2000:
+      logger.log({
+          'log_type': 'database/query',
+          'statement': formatted_statement,
+          'type': formatted_statement.split(' ')[0],
+          'duration': duration / 1000,
+          'row_count': cursor.rowcount,
+      })
 
     if commit and not stmt_str.startswith('SELECT'):
       try:
