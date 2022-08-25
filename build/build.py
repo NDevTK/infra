@@ -48,31 +48,41 @@ EXE_SUFFIX = '.exe' if IS_WINDOWS else ''
 
 # All GOARCHs we are willing to cross-compile for.
 KNOWN_GOARCHS = frozenset([
-  '386',
-  'amd64',
-  'arm',
-  'arm64',
-  'mips',
-  'mips64',
-  'mips64le',
-  'mipsle',
-  'ppc64',
-  'ppc64le',
-  'riscv64',
-  's390x',
+    '386',
+    'amd64',
+    'arm',
+    'arm64',
+    'mips',
+    'mips64',
+    'mips64le',
+    'mipsle',
+    'ppc64',
+    'ppc64le',
+    'riscv64',
+    's390x',
+])
+
+# All platforms support 'go build -race'.
+RACE_SUPPORTED_PLATFORMS = frozenset([
+    'linux-amd64',
+    'freebsd-amd64',
+    'darwin-amd64',
+    'windows-amd64',
+    'linux-ppc64le',
+    'linux-arm64',
 ])
 
 # A package prefix => cwd to use when building this package.
 INFRA_MODULE_MAP = {
-  # The luci-go module is checked out separately, use its go.mod.
-  'go.chromium.org/luci/':
-      os.path.join(ROOT, 'go', 'src', 'go.chromium.org', 'luci'),
-  # All infra packages should use go.mod in infra.git.
- 'infra/':
-      os.path.join(ROOT, 'go', 'src', 'infra'),
-  # Use infra's go.mod when building goldctl.
-  'go.skia.org/infra/gold-client/cmd/goldctl':
-      os.path.join(ROOT, 'go', 'src', 'infra')
+    # The luci-go module is checked out separately, use its go.mod.
+    'go.chromium.org/luci/':
+        os.path.join(ROOT, 'go', 'src', 'go.chromium.org', 'luci'),
+    # All infra packages should use go.mod in infra.git.
+    'infra/':
+        os.path.join(ROOT, 'go', 'src', 'infra'),
+    # Use infra's go.mod when building goldctl.
+    'go.skia.org/infra/gold-client/cmd/goldctl':
+        os.path.join(ROOT, 'go', 'src', 'infra')
 }
 
 
@@ -147,13 +157,42 @@ class PackageDef(collections.namedtuple(
       return root
     return os.path.abspath(os.path.join(os.path.dirname(self.path), root))
 
+  def with_race(self, target_goos, target_goarch):
+    """Returns True if should build with `-race` flag.
+
+    To build with race:
+      - race should be enabled on the target_goos or in general;
+      - cgo should be enabled on target_goos;
+      - target_goos should be one of the supported platforms.
+    """
+    val = self.pkg_def.get('go_build_environ', {}).get('race')
+    if isinstance(val, dict):
+      val = val.get(target_goos)
+
+    if not val:
+      return False
+
+    cgo_enabled = self.cgo_enabled(target_goos)
+    if not cgo_enabled:
+      print(
+          'go build -race cannot be enabled because CGO is not enabled on %s' %
+          target_goos)
+      return False
+
+    platform = '%s-%s' % (target_goos, target_goarch)
+    if platform in RACE_SUPPORTED_PLATFORMS:
+      return True
+    print('go build -race is not supported on %s' % platform)
+    return False
+
   def validate(self):
     """Raises PackageDefException if the package definition looks invalid."""
     for var_name in self.pkg_def.get('go_build_environ', {}):
-      if var_name != 'CGO_ENABLED':
+      if var_name not in ['CGO_ENABLED', 'race']:
         raise PackageDefException(
             self.path,
-            'Only "CGO_ENABLED" is supported in "go_build_environ" currently')
+            'Only "CGO_ENABLED" and "race" is supported in "go_build_environ" currently'
+        )
 
   def should_visit(self):
     """Returns True if package targets the current platform."""
@@ -189,7 +228,7 @@ class PackageDef(collections.namedtuple(
     pkg_def['root'] = build_root
 
     bat_files = [
-      d['file'] for d in pkg_def['data'] if d.get('generate_bat_shim')
+        d['file'] for d in pkg_def['data'] if d.get('generate_bat_shim')
     ]
 
     def process_cipd_export(ensure_contents,
@@ -297,8 +336,9 @@ class PackageDef(collections.namedtuple(
 #
 # If a field has value None, it will be popped from the environment in
 # 'apply_to_environ'.
-class GoEnviron(collections.namedtuple(
-    'GoEnviron', ['GOOS', 'GOARCH', 'CGO_ENABLED', 'cwd'])):
+class GoEnviron(
+    collections.namedtuple(
+        'GoEnviron', ['GOOS', 'GOARCH', 'CGO_ENABLED', 'cwd', 'with_race'])):
 
   @staticmethod
   def host_native():
@@ -307,7 +347,9 @@ class GoEnviron(collections.namedtuple(
         GOOS=None,
         GOARCH=None,
         CGO_ENABLED=None,
-        cwd=os.getcwd())
+        cwd=os.getcwd(),
+        with_race=False,
+    )
 
   @staticmethod
   def from_environ():
@@ -325,7 +367,9 @@ class GoEnviron(collections.namedtuple(
         GOOS=os.environ.get('GOOS'),
         GOARCH=os.environ.get('GOARCH'),
         CGO_ENABLED=cgo,
-        cwd=os.getcwd())
+        cwd=os.getcwd(),
+        with_race=False,
+    )
 
   def apply_to_environ(self):
     """Applies GoEnviron to the current os.environ and cwd."""
@@ -560,11 +604,9 @@ def print_go_step_title(title):
   go_mod = None
   if os.environ.get('GO111MODULE') != 'off' and os.path.exists('go.mod'):
     go_mod = os.path.abspath('go.mod')
-  go_vars = [
-    (k, os.environ[k])
-    for k in ('GOOS', 'GOARCH', 'GOARM', 'CGO_ENABLED')
-    if k in os.environ
-  ]
+  go_vars = [(k, os.environ[k])
+             for k in ('GOOS', 'GOARCH', 'GOARM', 'CGO_ENABLED')
+             if k in os.environ]
   if go_vars or go_mod:
     title += '\n' + '-' * 80
   if go_mod:
@@ -690,16 +732,19 @@ def run_go_install(go_workspace, go_environ, packages):
     packages: list of go packages to build (can include '...' patterns).
     rebuild: if True, will forcefully rebuild all dependences.
   """
+  args = [
+      'python', '-u',
+      os.path.join(go_workspace, get_env_dot_py()), 'go', 'install',
+      '-trimpath', '-ldflags=-buildid=', '-v'
+  ]
+  if go_environ.with_race:
+    args.append('-race')
+
+  args += list(packages)
   with workspace_env(go_environ):
     print_go_step_title('Building:\n  %s' % '\n  '.join(packages))
     subprocess.check_call(
-        args=[
-            'python', '-u',
-            os.path.join(go_workspace, get_env_dot_py()), 'go', 'install',
-            '-trimpath', '-ldflags=-buildid=', '-v'
-        ] + list(packages),
-        executable=sys.executable,
-        stderr=subprocess.STDOUT)
+        args=args, executable=sys.executable, stderr=subprocess.STDOUT)
 
 
 def run_go_build(go_workspace, go_environ, package, output):
@@ -711,16 +756,22 @@ def run_go_build(go_workspace, go_environ, package, output):
     package: go package to build.
     output: where to put the resulting binary.
   """
+  args = [
+      'python', '-u',
+      os.path.join(go_workspace, get_env_dot_py()), 'go', 'build', '-trimpath',
+      '-ldflags=-buildid=', '-v', '-o', output
+  ]
+  if go_environ.with_race:
+    args.append('-race')
+
+  args.append(package)
   with workspace_env(go_environ):
-    print_go_step_title('Building %s' % (package,))
+    if go_environ.with_race:
+      print_go_step_title('Building %s with race' % (package,))
+    else:
+      print_go_step_title('Building %s without race' % (package,))
     subprocess.check_call(
-        args=[
-            'python', '-u',
-            os.path.join(go_workspace, get_env_dot_py()), 'go', 'build',
-            '-trimpath', '-ldflags=-buildid=', '-v', '-o', output, package
-        ],
-        executable=sys.executable,
-        stderr=subprocess.STDOUT)
+        args=args, executable=sys.executable, stderr=subprocess.STDOUT)
 
 
 def find_main_module(module_map, pkg):
@@ -766,29 +817,32 @@ def build_go_code(go_workspace, module_map, pkg_defs):
 
   # The OS we compiling for (defaulting to the host OS).
   target_goos = default_environ.GOOS or get_host_goos()
+  host_vars = get_host_package_vars()
+  target_goarch = default_environ.GOARCH or host_vars['platform'].split('-')[1]
 
   # Grab a set of all go packages we need to build and install into GOBIN,
   # figuring out a go environment (and cwd) they want.
-  go_packages = {}  # go package name => GoEnviron
+  go_packages = {}  # go package name => [GoEnviron]
+
   for pkg_def in pkg_defs:
     pkg_env = default_environ
+    pkg_env = pkg_env._replace(
+        with_race=pkg_def.with_race(target_goos, target_goarch))
     if not is_cross_compiling():
       cgo_enabled = pkg_def.cgo_enabled(target_goos)
       if cgo_enabled is not None:
-        pkg_env = default_environ._replace(CGO_ENABLED=cgo_enabled)
+        pkg_env = pkg_env._replace(CGO_ENABLED=cgo_enabled)
     for name in pkg_def.go_packages:
       pkg_env = pkg_env._replace(cwd=find_main_module(module_map, name))
-      if name in go_packages and go_packages[name] != pkg_env:
-        raise BuildException(
-            'Go package %s is being built in two different go environments '
-            '(%s and %s), this is not supported' %
-            (name, pkg_env, go_packages[name]))
-      go_packages[name] = pkg_env
+      if name not in go_packages:
+        go_packages[name] = []
+      go_packages[name].append(pkg_env)
 
   # Group packages by the environment they want.
   packages_per_env = {}  # GoEnviron => [str]
-  for name, pkg_env in go_packages.iteritems():
-    packages_per_env.setdefault(pkg_env, []).append(name)
+  for name, pkg_envs in go_packages.iteritems():
+    for pkg_env in pkg_envs:
+      packages_per_env.setdefault(pkg_env, []).append(name)
 
   # Execute build command for each individual environment.
   for pkg_env, to_install in sorted(packages_per_env.iteritems()):
@@ -909,8 +963,8 @@ def get_target_package_vars():
     goos = 'mac'
 
   return {
-    'exe_suffix': '.exe' if goos == 'windows' else '',
-    'platform': '%s-%s' % (goos, arch),
+      'exe_suffix': '.exe' if goos == 'windows' else '',
+      'platform': '%s-%s' % (goos, arch),
   }
 
 
@@ -942,9 +996,9 @@ def get_host_package_vars():
   """
   # linux, mac or windows.
   platform_variant = {
-    'darwin': 'mac',
-    'linux2': 'linux',
-    'win32': 'windows',
+      'darwin': 'mac',
+      'linux2': 'linux',
+      'win32': 'windows',
   }.get(sys.platform)
   if not platform_variant:
     raise ValueError('Unknown OS: %s' % sys.platform)
@@ -979,19 +1033,19 @@ def get_host_package_vars():
     platform_arch = '386'
 
   return {
-    # e.g. '.exe' or ''.
-    'exe_suffix': EXE_SUFFIX,
-    # e.g. 'linux-amd64'
-    'platform': '%s-%s' % (platform_variant, platform_arch),
+      # e.g. '.exe' or ''.
+      'exe_suffix': EXE_SUFFIX,
+      # e.g. 'linux-amd64'
+      'platform': '%s-%s' % (platform_variant, platform_arch),
   }
 
 
 def get_host_goos():
   """Returns GOOS value matching the host that builds the package."""
   goos = {
-    'darwin': 'darwin',
-    'linux2': 'linux',
-    'win32': 'windows',
+      'darwin': 'darwin',
+      'linux2': 'linux',
+      'win32': 'windows',
   }.get(sys.platform)
   if not goos:
     raise ValueError('Unknown OS: %s' % sys.platform)
@@ -1320,9 +1374,9 @@ def run(
   # Build the world.
   if build:
     should_refresh_python = (
-      want_refresh_python and
-      any(p.uses_python_env for p in packages_to_visit) and
-      not is_cross_compiling())
+        want_refresh_python and
+        any(p.uses_python_env for p in packages_to_visit) and
+        not is_cross_compiling())
 
     build_callback(packages_to_visit, should_refresh_python)
 
@@ -1341,9 +1395,10 @@ def run(
             cipd_exe, pkg_def, out_file, package_vars, sign_id=sign_id)
       if upload:
         if pkg_def.uses_python_env and not builder:
-          print ('Not uploading %s, since it uses a system Python enviornment '
-                 'and that enviornment is only valid on builders.' % (
-                   pkg_def.name,))
+          print(
+              'Not uploading %s, since it uses a system Python enviornment '
+              'and that enviornment is only valid on builders.' %
+              (pkg_def.name,))
           continue
 
         on_change_tags, pkg_path = pkg_def.on_change_info(package_vars)
@@ -1390,10 +1445,10 @@ def run(
   if json_output:
     with open(json_output, 'w') as f:
       summary = {
-        'failed': failed,
-        'succeeded': succeeded,
-        'tags': sorted(tags),
-        'vars': package_vars,
+          'failed': failed,
+          'succeeded': succeeded,
+          'tags': sorted(tags),
+          'vars': package_vars,
       }
       json.dump(summary, f, sort_keys=True, indent=2, separators=(',', ': '))
 
@@ -1411,9 +1466,9 @@ def build_infra(pkg_defs, should_refresh_python):
     run_python(
         script=os.path.join(ROOT, 'bootstrap', 'bootstrap.py'),
         args=[
-          '--deps_file',
-          os.path.join(ROOT, 'bootstrap', 'deps.pyl'),
-          os.path.join(ROOT, 'ENV'),
+            '--deps_file',
+            os.path.join(ROOT, 'bootstrap', 'deps.pyl'),
+            os.path.join(ROOT, 'ENV'),
         ])
   # Build all necessary go binaries.
   build_go_code(os.path.join(ROOT, 'go'), INFRA_MODULE_MAP, pkg_defs)
@@ -1459,10 +1514,12 @@ def main(
       '--tags', metavar='KEY:VALUE', type=str, dest='tags', nargs='*',
       help='tags to attach to uploaded package instances')
   parser.add_argument(
-      '--no-freshen-python-env', action='store_false', dest='refresh_python',
-      default=True, help=(
-        'skip freshening the python env. '+
-        'Only use if you know the env is clean.'))
+      '--no-freshen-python-env',
+      action='store_false',
+      dest='refresh_python',
+      default=True,
+      help=('skip freshening the python env. ' +
+            'Only use if you know the env is clean.'))
   args = parser.parse_args(args)
   if not args.build and not args.upload:
     parser.error('--no-rebuild doesn\'t make sense without --upload')
