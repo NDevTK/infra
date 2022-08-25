@@ -108,6 +108,8 @@ func basicReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	return d
 }
 
+// assignLastStringValueAndDropKey assign the last string value matching the key to `to`
+// and drop the key
 func assignLastStringValueAndDropKey(d Dimensions, to *string, key string) Dimensions {
 	if v, ok := getLastStringValue(d, key); ok {
 		*to = v
@@ -116,6 +118,7 @@ func assignLastStringValueAndDropKey(d Dimensions, to *string, key string) Dimen
 	return d
 }
 
+// getLastStringValue return the last string value matching the key
 func getLastStringValue(d Dimensions, key string) (string, bool) {
 	if vs, ok := d[key]; ok {
 		if len(vs) > 0 {
@@ -126,6 +129,8 @@ func getLastStringValue(d Dimensions, key string) (string, bool) {
 	return "", false
 }
 
+// assignLastBoolValueAndDropKey assign the last bool value matching the key to `to`
+// and drop the key
 func assignLastBoolValueAndDropKey(d Dimensions, to *bool, key string) Dimensions {
 	if v, ok := getLastBoolValue(d, key); ok {
 		*to = v
@@ -134,6 +139,7 @@ func assignLastBoolValueAndDropKey(d Dimensions, to *bool, key string) Dimension
 	return d
 }
 
+// getLastBoolValue return the last bool value matching the key
 func getLastBoolValue(d Dimensions, key string) (bool, bool) {
 	if s, ok := getLastStringValue(d, key); ok {
 		return strings.ToLower(s) == "true", true
@@ -141,6 +147,8 @@ func getLastBoolValue(d Dimensions, key string) (bool, bool) {
 	return false, false
 }
 
+// assignLastInt32ValueAndDropKey assign the last int32 value matching the key to `to`
+// and drop the key
 func assignLastInt32ValueAndDropKey(d Dimensions, to *int32, key string) Dimensions {
 	if v, ok := getLastInt32Value(d, key); ok {
 		*to = v
@@ -149,6 +157,7 @@ func assignLastInt32ValueAndDropKey(d Dimensions, to *int32, key string) Dimensi
 	return d
 }
 
+// getLastInt32Value return the last int32 value matching the key
 func getLastInt32Value(d Dimensions, key string) (int32, bool) {
 	if s, ok := getLastStringValue(d, key); ok {
 		if c, err := strconv.ParseInt(s, 10, 32); err == nil {
@@ -159,6 +168,8 @@ func getLastInt32Value(d Dimensions, key string) (int32, bool) {
 	return int32(-1), false
 }
 
+// assignLastIntValueAndDropKey assign the last int value matching the key to `to`
+// and drop the key
 func assignLastIntValueAndDropKey(d Dimensions, to *int, key string) Dimensions {
 	if v, ok := getLastIntValue(d, key); ok {
 		*to = v
@@ -167,6 +178,7 @@ func assignLastIntValueAndDropKey(d Dimensions, to *int, key string) Dimensions 
 	return d
 }
 
+// getLastIntValue return the last int value matching the key
 func getLastIntValue(d Dimensions, key string) (int, bool) {
 	if s, ok := getLastStringValue(d, key); ok {
 		if c, err := strconv.Atoi(s); err == nil {

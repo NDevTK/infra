@@ -145,6 +145,36 @@ modeminfo: {
   supported_bands: "bands"
 	sim_count: 1
 }
+siminfo: [{
+	slot_id: 1
+	type: 1
+	eid: "eid"
+	test_esim: true
+	profile_info: {
+		iccid: "iccid"
+		sim_pin: "pin"
+		sim_puk: "puk"
+		carrier_name: 1
+	}
+},
+{
+	slot_id: 2
+	type: 2
+	eid: "eid2"
+	test_esim: false
+	profile_info: [{
+		iccid: "iccid2"
+		sim_pin: "pin2"
+		sim_puk: "puk2"
+		carrier_name: 2
+	},
+	{
+		iccid: "iccid3"
+		sim_pin: "pin3"
+		sim_puk: "puk3"
+		carrier_name: 3
+	}]
+}]
 `
 
 var fullLabels = []string{
@@ -223,6 +253,27 @@ var fullLabels = []string{
 	"servo_topology:eyJtYWluIjp7InR5cGUiOiJzZXJ2b192NCIsInN5c2ZzX3Byb2R1Y3QiOiJTZXJ2byBWNCIsInNlcmlhbCI6IkMxOTAzMTQ1NTkxIiwidXNiX2h1Yl9wb3J0IjoiNi40LjEifSwiY2hpbGRyZW4iOlt7InR5cGUiOiJjY2RfY3I1MCIsInN5c2ZzX3Byb2R1Y3QiOiJDcjUwIiwic2VyaWFsIjoiMDY4MUQwM0EtOTJEQ0NENjQiLCJ1c2JfaHViX3BvcnQiOiI2LjQuMiJ9XX0=",
 	"servo_type:servo_v3",
 	"servo_usb_state:NEED_REPLACEMENT",
+	"sim_1_0_carrier_name:NETWORK_TEST",
+	"sim_1_0_iccid:iccid",
+	"sim_1_0_pin:pin",
+	"sim_1_0_puk:puk",
+	"sim_1_eid:eid",
+	"sim_1_num_profiles:1",
+	"sim_1_test_esim:True",
+	"sim_1_type:SIM_PHYSICAL",
+	"sim_2_0_carrier_name:NETWORK_ATT",
+	"sim_2_0_iccid:iccid2",
+	"sim_2_0_pin:pin2",
+	"sim_2_0_puk:puk2",
+	"sim_2_1_carrier_name:NETWORK_TMOBILE",
+	"sim_2_1_iccid:iccid3",
+	"sim_2_1_pin:pin3",
+	"sim_2_1_puk:puk3",
+	"sim_2_eid:eid2",
+	"sim_2_num_profiles:2",
+	"sim_2_type:SIM_DIGITAL",
+	"sim_slot_id:1",
+	"sim_slot_id:2",
 	"sku:eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB",
 	"smart_usbhub",
 	"storage:storageval",
@@ -604,6 +655,36 @@ modeminfo: {
   supported_bands: "bands"
 	sim_count: 1
 }
+siminfo: [{
+	slot_id: 1
+	type: 1
+	eid: "eid"
+	test_esim: true
+	profile_info: {
+		iccid: "iccid"
+		sim_pin: "pin"
+		sim_puk: "puk"
+		carrier_name: 1
+	}
+},
+{
+	slot_id: 2
+	type: 2
+	eid: "eid2"
+	test_esim: false
+	profile_info: [{
+		iccid: "iccid2"
+		sim_pin: "pin2"
+		sim_puk: "puk2"
+		carrier_name: 2
+	},
+	{
+		iccid: "iccid3"
+		sim_pin: "pin3"
+		sim_puk: "puk3"
+		carrier_name: 3
+	}]
+}]
 `
 
 var fullLabelsSpecial = []string{
@@ -678,6 +759,27 @@ var fullLabelsSpecial = []string{
 	"servo_state:broken",
 	"servo_type:servo_v4",
 	"servo_usb_state:NEED_REPLACEMENT",
+	"sim_1_0_carrier_name:NETWORK_TEST",
+	"sim_1_0_iccid:iccid",
+	"sim_1_0_pin:pin",
+	"sim_1_0_puk:puk",
+	"sim_1_eid:eid",
+	"sim_1_num_profiles:1",
+	"sim_1_test_esim:True",
+	"sim_1_type:SIM_PHYSICAL",
+	"sim_2_0_carrier_name:NETWORK_ATT",
+	"sim_2_0_iccid:iccid2",
+	"sim_2_0_pin:pin2",
+	"sim_2_0_puk:puk2",
+	"sim_2_1_carrier_name:NETWORK_TMOBILE",
+	"sim_2_1_iccid:iccid3",
+	"sim_2_1_pin:pin3",
+	"sim_2_1_puk:puk3",
+	"sim_2_eid:eid2",
+	"sim_2_num_profiles:2",
+	"sim_2_type:SIM_DIGITAL",
+	"sim_slot_id:1",
+	"sim_slot_id:2",
 	"sku:eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB",
 	"smart_usbhub",
 	"storage:storageval",
