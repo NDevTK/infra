@@ -33,6 +33,75 @@
       "message": "Have you tried running it locally? It should be safe, it doesn\u0027t upload anything by default. e.g.\n\n  build.py bbagent",
       "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "643af320_4301ebcf",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 751,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-08-25T19:22:43Z",
+      "side": 1,
+      "message": "I think it should be part of GoEnviron, then go_packages_with_race dict below won\u0027t be necessary. GoEnviron defines how we want to build our Go packages (and \u0027-race\u0027 is locally part of this description). The name is unfortunate, since originally it was setting only env vars (but not anymore, e.g. cwd is not an env var).",
+      "range": {
+        "startLine": 751,
+        "startChar": 4,
+        "endLine": 751,
+        "endChar": 13
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc98c79f_6742f212",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-08-25T19:22:43Z",
+      "side": 1,
+      "message": "this looks incorrect, it will produce \n\n```\n[..., \u0027-\u0027, \u0027r\u0027, \u0027a\u0027, \u0027c\u0027, \u0027e\u0027]\n```",
+      "range": {
+        "startLine": 759,
+        "startChar": 4,
+        "endLine": 759,
+        "endChar": 19
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ced82b4_6d164345",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 835,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-08-25T19:22:43Z",
+      "side": 1,
+      "message": "I thought we are planning build a separate special package with race bbageint? If so, this exception will be happening (unless we disable real bbagent at the same time).\n\nAlso I don\u0027t quite remember why this limit exists... It is possible with the Go version we use now, it is no longer relevant.",
+      "range": {
+        "startLine": 831,
+        "startChar": 0,
+        "endLine": 835,
+        "endChar": 19
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
