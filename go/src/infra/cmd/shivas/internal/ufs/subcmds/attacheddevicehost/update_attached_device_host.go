@@ -264,7 +264,8 @@ func (c *updateAttachedDeviceHost) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
 		}
 		if c.osVersion == "" && c.assocHostname == "" && c.assocHostPort == "" &&
-			c.description == "" && len(c.tags) == 0 && c.state == "" && !c.flagInputs["schedulable"] {
+			c.description == "" && len(c.tags) == 0 && c.state == "" &&
+			!c.flagInputs["schedulable"] && c.machineName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 	}
