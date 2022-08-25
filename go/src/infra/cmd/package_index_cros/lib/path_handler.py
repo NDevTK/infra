@@ -44,10 +44,10 @@ class PathHandler:
         os.path.join(to_dir, os.path.relpath(path, from_dir)))
 
   def FromChroot(self, chroot_path: str):
-    return path_util.FromChrootPath(chroot_path, self.setup.cros_dir)
+    return path_util.FromChrootPath(chroot_path, chroot_path=self.setup.chroot_dir)
 
   def ToChroot(self, path: str):
-    return path_util.ToChrootPath(path, self.setup.cros_dir)
+    return path_util.ToChrootPath(path, chroot_path=self.setup.chroot_dir)
 
   def NormalizePath(self,
                     chroot_path: str,

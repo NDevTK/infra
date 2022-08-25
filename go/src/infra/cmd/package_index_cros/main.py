@@ -81,13 +81,12 @@ def _BuildParser():
     and want to regenerate, you may
     skip this option."""))
 
-  parser.add_argument(
-      '--with-tests',
-      '--with_tests',
-      action='store_true',
-      default=False,
-      dest='with_tests',
-      help=textwrap.dedent("""\
+  parser.add_argument('--with-tests',
+                      '--with_tests',
+                      action='store_true',
+                      default=False,
+                      dest='with_tests',
+                      help=textwrap.dedent("""\
     Build tests alongside packages before generating.
     This assumes --with-build is set."""))
 
@@ -105,34 +104,41 @@ def _BuildParser():
                       dest='force',
                       help='If set, clear cache')
 
-  parser.add_argument(
-      '--keep-going',
-      '--keep_going',
-      action='store_true',
-      default=False,
-      dest='keep_going',
-      help="""\
+  parser.add_argument('--keep-going',
+                      '--keep_going',
+                      action='store_true',
+                      default=False,
+                      dest='keep_going',
+                      help="""\
     If set, skips failed packages and continues execution.""")
 
-  parser.add_argument(
-      '--skip-packages',
-      '--skip_packages',
-      type=str,
-      default='',
-      dest='skip_packages',
-      help="""\
+  parser.add_argument('--skip-packages',
+                      '--skip_packages',
+                      type=str,
+                      default='',
+                      dest='skip_packages',
+                      help="""\
     String with space-separated list of full named
     packages to be ignored and skipped.""")
 
-  parser.add_argument(
-      '--ignore-unsupported',
-      '--ignore_unsupported',
-      action='store_true',
-      default=False,
-      dest='ignore_unsupported',
-      help=textwrap.dedent("""\
+  parser.add_argument('--ignore-unsupported',
+                      '--ignore_unsupported',
+                      action='store_true',
+                      default=False,
+                      dest='ignore_unsupported',
+                      help=textwrap.dedent("""\
     Ignore unsupported packages from the list of specified
     packages when doing dependency resolution."""))
+
+  parser.add_argument('--chroot',
+                      type=str,
+                      default='',
+                      dest='chroot_dir',
+                      help=textwrap.dedent("""\
+    Set custom chroot path instead of default one.
+    WARNING: Only works with chroot paths outside of checkout. Paths inside
+    checkout are currently ignored and always resolved as
+    '/cros_checkout/chroot'."""))
 
   compile_commands_args = parser.add_mutually_exclusive_group()
   compile_commands_args.add_argument('--compile-commands',
@@ -209,10 +215,10 @@ def main():
   from lib.conductor import Conductor
   from lib.util import Setup
 
-  setup = Setup(
-      args.board,
-      skip_packages=args.skip_packages.split(' '),
-      with_tests=args.with_tests)
+  setup = Setup(args.board,
+                skip_packages=args.skip_packages.split(' '),
+                with_tests=args.with_tests,
+                chroot_dir=args.chroot_dir)
   cache_provider = CacheProvider(package_cache=PackageCache(setup))
 
   if args.force:
@@ -220,15 +226,13 @@ def main():
 
   cache_provider.package_cache = None
   conductor = Conductor(setup=setup, cache_provider=cache_provider)
-  conductor.Prepare(
-      package_names=args.packages,
-      with_build=args.with_build,
-      ignore_unsupported=args.ignore_unsupported)
-  conductor.DoMagic(
-      cdb_output_file=args.compile_commands_file,
-      targets_output_file=args.gn_targets_file,
-      build_output_dir=args.build_dir,
-      keep_going=args.keep_going)
+  conductor.Prepare(package_names=args.packages,
+                    with_build=args.with_build,
+                    ignore_unsupported=args.ignore_unsupported)
+  conductor.DoMagic(cdb_output_file=args.compile_commands_file,
+                    targets_output_file=args.gn_targets_file,
+                    build_output_dir=args.build_dir,
+                    keep_going=args.keep_going)
 
 
 if __name__ == '__main__':

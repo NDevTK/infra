@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+from chromite.lib import constants
 from chromite.lib import cros_build_lib
 from chromite.lib import git
 from chromite.lib import path_util
@@ -24,7 +25,8 @@ class Setup:
                board: str,
                *,
                skip_packages: List[str] = None,
-               with_tests: bool = False):
+               with_tests: bool = False,
+               chroot_dir: str = None):
     self.board = board
 
     checkout_info = path_util.DetermineCheckout()
@@ -33,7 +35,13 @@ class Setup:
           'Script is executed outside of ChromeOS checkout')
 
     self.cros_dir = checkout_info.root
-    self.chroot_dir = path_util.FromChrootPath('/', self.cros_dir)
+    if chroot_dir:
+      self.chroot_dir = os.path.realpath(chroot_dir)
+      assert not self.chroot_dir.startswith(self.cros_dir), (
+          f"Custom chroot dir inside {self.cros_dir} is not supported, and "
+          f"chromite resolves it to {constants.DEFAULT_CHROOT_DIR}.")
+    else:
+      self.chroot_dir = path_util.FromChrootPath('/', self.cros_dir)
     self.board_dir = os.path.join(self.chroot_dir, 'build', self.board)
     self.src_dir = os.path.join(self.cros_dir, 'src')
     self.platform2_dir = os.path.join(self.src_dir, 'platform2')
@@ -63,8 +71,11 @@ class Setup:
 class CrosSdk:
   """Handles requests to cros_sdk."""
 
-  @staticmethod
-  def _Exec(cmd, *, capture_output=False) -> cros_build_lib.CompletedProcess:
+  def _Exec(self,
+            cmd: List[str],
+            *,
+            capture_output: bool = False,
+            with_sudo: bool = False) -> cros_build_lib.CompletedProcess:
     shell = True
     if isinstance(cmd, List):
       shell = False
@@ -72,13 +83,15 @@ class CrosSdk:
     encoding = 'utf-8' if capture_output else None
 
     g_logger.debug("Executing: '%s'", cmd)
-    res = cros_build_lib.run(cmd,
-                             enter_chroot=True,
-                             shell=shell,
-                             capture_output=capture_output,
-                             encoding=encoding,
-                             check=True,
-                             print_cmd=False)
+    run_func = cros_build_lib.sudo_run if with_sudo else cros_build_lib.run
+    res = run_func(cmd,
+                   enter_chroot=True,
+                   shell=shell,
+                   capture_output=capture_output,
+                   encoding=encoding,
+                   check=True,
+                   print_cmd=False,
+                   chroot_args=['--chroot', self.setup.chroot_dir])
     return res
 
   def __init__(self, setup: Setup):
@@ -93,7 +106,7 @@ class CrosSdk:
     """
     cmd = ['cros_workon', f"--board={self.setup.board}", "start"
           ] + package_names
-    CrosSdk._Exec(cmd)
+    self._Exec(cmd)
 
   def StopWorkonPackages(self, package_names: List[str]) -> None:
     """
@@ -103,7 +116,7 @@ class CrosSdk:
       * cros_build_lib.CompletedProcess if command failed.
     """
     cmd = ['cros_workon', f"--board={self.setup.board}", "stop"] + package_names
-    CrosSdk._Exec(cmd)
+    self._Exec(cmd)
 
   def StartWorkonPackagesSafe(self, package_names: List[str]):
     """
@@ -117,7 +130,7 @@ class CrosSdk:
     """
     check_workon_cmd = ['cros_workon', f"--board={self.setup.board}", "list"]
 
-    output = CrosSdk._Exec(check_workon_cmd, capture_output=True).stdout
+    output = self._Exec(check_workon_cmd, capture_output=True).stdout
     workon_packages = set(output.split('\n'))
     non_workon_packages = [p for p in package_names if not p in workon_packages]
 
@@ -153,10 +166,10 @@ class CrosSdk:
     if self.setup.with_tests:
       features.append('test')
     cmd = ' '.join([
-        'sudo', f'FEATURES="{" ".join(features)}"', 'parallel_emerge',
-        '--board', self.setup.board
+        f'FEATURES="{" ".join(features)}"', 'parallel_emerge', '--board',
+        self.setup.board
     ] + package_names)
-    CrosSdk._Exec(cmd)
+    self._Exec(cmd, with_sudo=True)
 
   def GenerateCompileCommands(self, chroot_build_dir: str) -> str:
     """
@@ -169,7 +182,7 @@ class CrosSdk:
     """
     ninja_cmd = ['ninja', '-C', chroot_build_dir, '-t', 'compdb', 'cc', 'cxx']
 
-    return CrosSdk._Exec(ninja_cmd, capture_output=True).stdout
+    return self._Exec(ninja_cmd, capture_output=True).stdout
 
   def GenerateGnTargets(self, chroot_root_dir: str,
                         chroot_build_dir: str) -> str:
@@ -192,7 +205,7 @@ class CrosSdk:
         '--format=json',
     ]
 
-    return CrosSdk._Exec(gn_desc_cmd, capture_output=True).stdout
+    return self._Exec(gn_desc_cmd, capture_output=True).stdout
 
   def GenerateDependencyTree(self, package_names: List[str]):
     """
@@ -208,8 +221,6 @@ class CrosSdk:
     Raises:
       * cros_build_lib.CompletedProcess if command failed.
     """
-    cmd = [
-        'sudo',
-        path_util.ToChrootPath(PRINT_DEPS_SCRIPT_PATH), self.setup.board
-    ] + package_names
-    return CrosSdk._Exec(cmd, capture_output=True).stdout
+    cmd = [path_util.ToChrootPath(PRINT_DEPS_SCRIPT_PATH), self.setup.board
+          ] + package_names
+    return self._Exec(cmd, capture_output=True, with_sudo=True).stdout
