@@ -13,13 +13,14 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 import {
-  HeuristicDetails,
+  HeuristicAnalysisResult,
   HeuristicSuspect,
-} from '../../services/analysis_details';
+  isAnalysisComplete,
+} from '../../services/gofindit';
 import { HeuristicAnalysisTableRow } from './heuristic_analysis_table_row/heuristic_analysis_table_row';
 
 interface Props {
-  results: HeuristicDetails;
+  result?: HeuristicAnalysisResult;
 }
 
 const NoDataMessageRow = (message: string) => {
@@ -36,17 +37,20 @@ function getInProgressRow() {
   return NoDataMessageRow('Heuristic analysis is in progress');
 }
 
-function getRows(suspects: HeuristicSuspect[]) {
-  if (suspects.length == 0) {
+function getRows(suspects: HeuristicSuspect[] | undefined) {
+  if (!suspects || suspects.length == 0) {
     return NoDataMessageRow('No suspects to display');
   } else {
     return suspects.map((suspect) => (
-      <HeuristicAnalysisTableRow key={suspect.cl.commitID} suspect={suspect} />
+      <HeuristicAnalysisTableRow
+        key={suspect.gitilesCommit.id}
+        suspect={suspect}
+      />
     ));
   }
 }
 
-export const HeuristicAnalysisTable = ({ results }: Props) => {
+export const HeuristicAnalysisTable = ({ result }: Props) => {
   return (
     <TableContainer component={Paper} className='heuristicTableContainer'>
       <Table className='heuristicTable' size='small'>
@@ -59,7 +63,9 @@ export const HeuristicAnalysisTable = ({ results }: Props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {results.isComplete ? getRows(results.suspects) : getInProgressRow()}
+          {result && isAnalysisComplete(result.status)
+            ? getRows(result.suspects)
+            : getInProgressRow()}
         </TableBody>
       </Table>
     </TableContainer>

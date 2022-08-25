@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { RevertCL } from '../../services/analysis_details';
+import { RevertCL } from '../../services/gofindit';
 import { RevertCLOverview } from './revert_cl_overview';
 import { getMockRevertCL } from '../../testing_tools/mocks/revert_cl_mock';
 

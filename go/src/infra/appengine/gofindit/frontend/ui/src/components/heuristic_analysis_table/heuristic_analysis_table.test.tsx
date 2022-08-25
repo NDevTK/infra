@@ -7,6 +7,7 @@ import { render, screen } from '@testing-library/react';
 
 import { HeuristicAnalysisTable } from './heuristic_analysis_table';
 import { getMockHeuristicSuspect } from '../../testing_tools/mocks/heuristic_suspect_mock';
+import { HeuristicAnalysisResult } from '../../services/gofindit';
 
 describe('Test HeuristicAnalysisTable component', () => {
   test('if heuristic suspects are displayed', async () => {
@@ -15,12 +16,12 @@ describe('Test HeuristicAnalysisTable component', () => {
       getMockHeuristicSuspect('673e20'),
     ];
 
-    const mockHeuristicDetails = {
-      isComplete: true,
+    const mockHeuristicAnalysisResult: HeuristicAnalysisResult = {
+      status: 'FOUND',
       suspects: mockSuspects,
     };
 
-    render(<HeuristicAnalysisTable results={mockHeuristicDetails} />);
+    render(<HeuristicAnalysisTable result={mockHeuristicAnalysisResult} />);
 
     await screen.findByText('Suspect CL');
 
@@ -28,11 +29,11 @@ describe('Test HeuristicAnalysisTable component', () => {
   });
 
   test('if an appropriate message is displayed for no suspects', async () => {
-    const mockHeuristicDetails = {
-      isComplete: true,
+    const mockHeuristicAnalysisResult: HeuristicAnalysisResult = {
+      status: 'NOTFOUND',
       suspects: [],
     };
-    render(<HeuristicAnalysisTable results={mockHeuristicDetails} />);
+    render(<HeuristicAnalysisTable result={mockHeuristicAnalysisResult} />);
 
     await screen.findByText('Suspect CL');
 
@@ -41,11 +42,11 @@ describe('Test HeuristicAnalysisTable component', () => {
   });
 
   test('if no misleading message is shown for an incomplete analysis', async () => {
-    const mockHeuristicDetails = {
-      isComplete: false,
+    const mockHeuristicAnalysisResult: HeuristicAnalysisResult = {
+      status: 'RUNNING',
       suspects: [],
     };
-    render(<HeuristicAnalysisTable results={mockHeuristicDetails} />);
+    render(<HeuristicAnalysisTable result={mockHeuristicAnalysisResult} />);
 
     await screen.findByText('Suspect CL');
 

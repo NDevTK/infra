@@ -39,7 +39,7 @@ func TestDatastoreModel(t *testing.T) {
 					EndTime:     cl.Now(),
 					CreateTime:  cl.Now(),
 				},
-				FailureType: BuildFailureType_Compile,
+				BuildFailureType: gofinditpb.BuildFailureType_COMPILE,
 			}
 			So(datastore.Put(c, failed_build), ShouldBeNil)
 
