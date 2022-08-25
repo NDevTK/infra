@@ -233,6 +233,24 @@
       "parentUuid": "3287620c_2c2d2448",
       "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "965bc4e9_458f668c",
+        "filename": "go/src/infra/appengine/gofindit/proto/gofindit.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2022-08-25T04:01:08Z",
+      "side": 1,
+      "message": "I think the third option is best in the long run. I have added a field `BuildFailureType` into the `LuciFailedBuild` struct, which we can use from now on. Once we move to LUCI Bisection, and the datastore no longer has a `failure_type` value, we can remove the obsolete field `LuciFailedBuild.FailureType`.",
+      "parentUuid": "e66d5e3f_d2e52e38",
+      "revId": "14ac236c969f2cff9d2edbe43f4b41969afcd870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
