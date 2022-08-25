@@ -37,6 +37,46 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1df96774_aca85596",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2022-08-25T19:23:15Z",
+      "side": 1,
+      "message": "can we log a warning?",
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72fe466c_381513c8",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2022-08-25T19:23:15Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be a target_goarch instead?",
+      "range": {
+        "startLine": 179,
+        "startChar": 25,
+        "endLine": 179,
+        "endChar": 31
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "643af320_4301ebcf",
         "filename": "build/build.py",
         "patchSetId": 3
