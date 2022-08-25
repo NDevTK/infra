@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "be29fc62_03e9141d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-25T22:50:37Z",
+      "side": 1,
+      "message": "Thanks! I\u0027ll give it a try.",
+      "parentUuid": "371261fc_78fbf232",
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1df96774_aca85596",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "29a735cd_66749489",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-25T22:50:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1df96774_aca85596",
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "72fe466c_381513c8",
@@ -65,6 +101,30 @@
       "writtenOn": "2022-08-25T19:23:15Z",
       "side": 1,
       "message": "shouldn\u0027t this be a target_goarch instead?",
+      "range": {
+        "startLine": 179,
+        "startChar": 25,
+        "endLine": 179,
+        "endChar": 31
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e81bc0e_4820bd08",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-25T22:50:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72fe466c_381513c8",
       "range": {
         "startLine": 179,
         "startChar": 25,
@@ -98,6 +158,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd729d0a_c1bae592",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 751,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-25T22:50:37Z",
+      "side": 1,
+      "message": "Done.\n\nIt still feels a bit weird though... Since `race` is a user configuration, and it has nothing to do with os.",
+      "parentUuid": "643af320_4301ebcf",
+      "range": {
+        "startLine": 751,
+        "startChar": 4,
+        "endLine": 751,
+        "endChar": 13
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc98c79f_6742f212",
@@ -121,6 +205,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e63e9ee7_a089aec3",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-25T22:50:37Z",
+      "side": 1,
+      "message": "Ah yes... Done.",
+      "parentUuid": "bc98c79f_6742f212",
+      "range": {
+        "startLine": 759,
+        "startChar": 4,
+        "endLine": 759,
+        "endChar": 19
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ced82b4_6d164345",
@@ -134,6 +242,30 @@
       "writtenOn": "2022-08-25T19:22:43Z",
       "side": 1,
       "message": "I thought we are planning build a separate special package with race bbageint? If so, this exception will be happening (unless we disable real bbagent at the same time).\n\nAlso I don\u0027t quite remember why this limit exists... It is possible with the Go version we use now, it is no longer relevant.",
+      "range": {
+        "startLine": 831,
+        "startChar": 0,
+        "endLine": 835,
+        "endChar": 19
+      },
+      "revId": "7cbc01d1acbd7dc0a44eb4874ffa9a3275da7496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7948e995_ec02932f",
+        "filename": "build/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 835,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-25T22:50:37Z",
+      "side": 1,
+      "message": "Ah my bad... I got it confused with the package... Fixed",
+      "parentUuid": "7ced82b4_6d164345",
       "range": {
         "startLine": 831,
         "startChar": 0,
