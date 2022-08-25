@@ -67,7 +67,8 @@ type CompileFailure struct {
 	// The key to LuciFailedBuild that the failure belongs to.
 	Build *datastore.Key `gae:"$parent"`
 
-	// The list of output targets that failed to compile
+	// The list of output targets that failed to compile.
+	// This is to speed up the compilation process, as we only want to rerun failed targets.
 	OutputTargets []string `gae:"output_targets"`
 
 	// Compile rule, e.g. ACTION, CXX, etc.

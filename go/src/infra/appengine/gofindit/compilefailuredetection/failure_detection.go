@@ -14,6 +14,7 @@ import (
 	"infra/appengine/gofindit/internal/buildbucket"
 	"infra/appengine/gofindit/model"
 	gfipb "infra/appengine/gofindit/proto"
+	"infra/appengine/gofindit/util"
 
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -250,7 +251,7 @@ func searchAnalysis(c context.Context, lastPassedBuildId int64, firstFailedBuild
 // hasCompileStepStatus checks if the compile step for a build has the specified status.
 func hasCompileStepStatus(c context.Context, build *buildbucketpb.Build, status buildbucketpb.Status) bool {
 	for _, step := range build.Steps {
-		if step.Name == "compile" && step.Status == status {
+		if util.IsCompileStep(step) && step.Status == status {
 			return true
 		}
 	}

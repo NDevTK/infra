@@ -67,7 +67,13 @@ func TestAnalyzeFailure(t *testing.T) {
 
 	// Mock logdog
 	ninjaLogJson := map[string]interface{}{
-		"failures": []interface{}{},
+		"failures": []map[string]interface{}{
+			{
+				"output_nodes": []string{
+					"obj/net/net_unittests__library/ssl_server_socket_unittest.o",
+				},
+			},
+		},
 	}
 	ninjaLogStr, _ := json.Marshal(ninjaLogJson)
 	c = logdog.MockClientContext(c, map[string]string{
@@ -93,16 +99,17 @@ func TestAnalyzeFailure(t *testing.T) {
 		So(datastore.Put(c, failed_build), ShouldBeNil)
 
 		compile_failure := &model.CompileFailure{
-			Build:         datastore.KeyForObj(c, failed_build),
-			OutputTargets: []string{"abc.xyx"},
-			Rule:          "CXX",
-			Dependencies:  []string{"dep"},
+			Build: datastore.KeyForObj(c, failed_build),
 		}
 		So(datastore.Put(c, compile_failure), ShouldBeNil)
 
 		compile_failure_analysis, err := AnalyzeFailure(c, compile_failure, 123, 456)
 		So(err, ShouldBeNil)
 		datastore.GetTestable(c).CatchupIndexes()
+
+		err = datastore.Get(c, compile_failure)
+		So(err, ShouldBeNil)
+		So(compile_failure.OutputTargets, ShouldResemble, []string{"obj/net/net_unittests__library/ssl_server_socket_unittest.o"})
 
 		// Make sure that the analysis is created
 		q := datastore.NewQuery("CompileFailureAnalysis").Eq("compile_failure", datastore.KeyForObj(c, compile_failure))

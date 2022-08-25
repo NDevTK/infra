@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package heuristic
+package compilelog
 
 import (
 	"context"
@@ -16,10 +16,10 @@ import (
 
 	"infra/appengine/gofindit/internal/buildbucket"
 	"infra/appengine/gofindit/internal/logdog"
-	"infra/appengine/gofindit/model"
+	gfim "infra/appengine/gofindit/model"
 )
 
-func TestAnalyzeFailure(t *testing.T) {
+func TestGetCompileLogs(t *testing.T) {
 	t.Parallel()
 	c := memory.Use(context.Background())
 
@@ -71,9 +71,9 @@ func TestAnalyzeFailure(t *testing.T) {
 		})
 		logs, err := GetCompileLogs(c, 12345)
 		So(err, ShouldBeNil)
-		So(*logs, ShouldResemble, model.CompileLogs{
-			NinjaLog: &model.NinjaLog{
-				Failures: []*model.NinjaLogFailure{
+		So(*logs, ShouldResemble, gfim.CompileLogs{
+			NinjaLog: &gfim.NinjaLog{
+				Failures: []*gfim.NinjaLogFailure{
 					{
 						Dependencies: []string{"d1", "d2"},
 						Output:       "/opt/s/w/ir/cache/goma/client/gomacc blah blah...",
@@ -90,5 +90,29 @@ func TestAnalyzeFailure(t *testing.T) {
 		_, err := GetCompileLogs(c, 12345)
 		So(err, ShouldNotBeNil)
 	})
+}
 
+func TestGetFailedTargets(t *testing.T) {
+	t.Parallel()
+
+	Convey("No Ninja log", t, func() {
+		compileLogs := &gfim.CompileLogs{}
+		So(GetFailedTargets(compileLogs), ShouldResemble, []string{})
+	})
+
+	Convey("Have Ninja log", t, func() {
+		compileLogs := &gfim.CompileLogs{
+			NinjaLog: &gfim.NinjaLog{
+				Failures: []*gfim.NinjaLogFailure{
+					{
+						OutputNodes: []string{"node1", "node2"},
+					},
+					{
+						OutputNodes: []string{"node3", "node4"},
+					},
+				},
+			},
+		}
+		So(GetFailedTargets(compileLogs), ShouldResemble, []string{"node1", "node2", "node3", "node4"})
+	})
 }

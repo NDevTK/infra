@@ -10,6 +10,7 @@ package compilefailureanalysis
 import (
 	"context"
 	"fmt"
+	"infra/appengine/gofindit/compilefailureanalysis/compilelog"
 	"infra/appengine/gofindit/compilefailureanalysis/heuristic"
 	"infra/appengine/gofindit/compilefailureanalysis/nthsection"
 	"infra/appengine/gofindit/culpritverification"
@@ -38,6 +39,19 @@ func AnalyzeFailure(
 	}
 
 	logging.Infof(c, "Regression range: %v", regression_range)
+
+	// Get failed targets
+	compileLogs, e := compilelog.GetCompileLogs(c, firstFailedBuildID)
+	if e != nil {
+		return nil, e
+	}
+	failedTargets := compilelog.GetFailedTargets(compileLogs)
+	cf.OutputTargets = failedTargets
+	e = datastore.Put(c, cf)
+	if e != nil {
+		return nil, e
+	}
+
 	// Creates a new CompileFailureAnalysis entity in datastore
 	analysis := &gfim.CompileFailureAnalysis{
 		CompileFailure:         datastore.KeyForObj(c, cf),
@@ -47,6 +61,7 @@ func AnalyzeFailure(
 		LastPassedBuildId:      lastPassedBuildID,
 		InitialRegressionRange: regression_range,
 	}
+
 	e = datastore.Put(c, analysis)
 	if e != nil {
 		return nil, e
@@ -60,7 +75,7 @@ func AnalyzeFailure(
 	}
 
 	// Heuristic analysis
-	heuristicResult, e := heuristic.Analyze(c, analysis, regression_range)
+	heuristicResult, e := heuristic.Analyze(c, analysis, regression_range, compileLogs)
 	if e != nil {
 		logging.Errorf(c, "Error during heuristic analysis for build %d: %v", e)
 		// As we only run heuristic analysis now, returns the error if heuristic
