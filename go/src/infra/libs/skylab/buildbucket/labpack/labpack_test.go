@@ -72,7 +72,7 @@ func TestScheduleTask(t *testing.T) {
 		})
 		Convey("audit-rpm", func() {
 			_, bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
-				BuilderName: "audit-rpm",
+				TaskName: "audit-rpm",
 			})
 			So(err, ShouldBeNil)
 			So(bbid, ShouldEqual, 0)

@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	structbuilder "google.golang.org/protobuf/types/known/structpb"
 
+	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 )
 
@@ -21,8 +22,6 @@ type Params struct {
 	BuilderProject string
 	// BuilderBucket -- treated as "labpack_runner" by default.
 	BuilderBucket string
-	// BuilderName -- treated as "labpack_builder" by default
-	BuilderName string
 	// UnitName is the DUT or similar that we are scheduling against.
 	// For example, a DUT hostname is a valid UnitName.
 	UnitName string
@@ -99,10 +98,6 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 		return "", 0, errors.Reason("schedule task: params cannot be nil").Err()
 	}
 
-	// Apply defaults.
-	if params.BuilderName == "" {
-		params.BuilderName = "labpack_builder"
-	}
 	if params.BuilderProject == "" {
 		params.BuilderProject = "chromeos"
 	}
@@ -110,12 +105,17 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 		params.BuilderBucket = "labpack_runner"
 	}
 
+	tn, err := tasknames.NormalizeTaskName(params.TaskName)
+	if err != nil {
+		return "", 0, err
+	}
 	props, err := structbuilder.NewStruct(params.AsMap())
 	if err != nil {
 		return "", 0, err
 	}
+
 	p := &buildbucket.ScheduleLabpackTaskParams{
-		BuilderName:      params.BuilderName,
+		BuilderName:      tn.BuilderName(),
 		BuilderBucket:    params.BuilderBucket,
 		BuilderProject:   params.BuilderProject,
 		UnitName:         params.UnitName,
@@ -128,7 +128,7 @@ func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion,
 		log.Println("Request to use prod CIPD version")
 	case CIPDLatest:
 		log.Println("Request to use latest CIPD version")
-		p.BuilderName = fmt.Sprintf("%s-latest", params.BuilderName)
+		p.BuilderName = fmt.Sprintf("%s-latest", tn.BuilderName())
 	default:
 		return "", 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
 	}
