@@ -62,6 +62,16 @@ KNOWN_GOARCHS = frozenset([
   's390x',
 ])
 
+# All platforms support 'go build -race'.
+RACE_SUPPORTED_PLATFORMS = frozenset([
+    'linux-amd64',
+    'freebsd-amd64',
+    'darwin-amd64',
+    'windows-amd64',
+    'linux-ppc64le',
+    'linux-arm64',
+])
+
 # A package prefix => cwd to use when building this package.
 INFRA_MODULE_MAP = {
   # The luci-go module is checked out separately, use its go.mod.
@@ -147,6 +157,29 @@ class PackageDef(collections.namedtuple(
       return root
     return os.path.abspath(os.path.join(os.path.dirname(self.path), root))
 
+  def with_race(self, target_goos):
+    """Returns True if should build with `-race` flag.
+
+    To build with race:
+      - race should be enabled on the target_goos or in general;
+      - cgo should be enabled on target_goos;
+      - target_goos should be one of the supported platforms.
+    """
+    val = self.pkg_def.get('go_build_flags', {}).get('race')
+    if isinstance(val, dict):
+      val = val.get(target_goos)
+
+    if not val:
+      return False
+
+    cgo_enabled = self.cgo_enabled(target_goos)
+    if not cgo_enabled:
+      return False
+
+    goarch = os.environ['GOARCH']
+    platform = '%s-%s' % (target_goos, goarch)
+    return platform in RACE_SUPPORTED_PLATFORMS
+
   def validate(self):
     """Raises PackageDefException if the package definition looks invalid."""
     for var_name in self.pkg_def.get('go_build_environ', {}):
@@ -154,6 +187,11 @@ class PackageDef(collections.namedtuple(
         raise PackageDefException(
             self.path,
             'Only "CGO_ENABLED" is supported in "go_build_environ" currently')
+
+    for flag in self.pkg_def.get('go_build_flags', {}):
+      if flag != 'race':
+        raise PackageDefException(
+            self.path, 'Only "race" is supported in "go_build_flags" currently')
 
   def should_visit(self):
     """Returns True if package targets the current platform."""
@@ -702,7 +740,7 @@ def run_go_install(go_workspace, go_environ, packages):
         stderr=subprocess.STDOUT)
 
 
-def run_go_build(go_workspace, go_environ, package, output):
+def run_go_build(go_workspace, go_environ, package, output, with_race):
   """Builds single Go package.
 
   Args:
@@ -710,17 +748,19 @@ def run_go_build(go_workspace, go_environ, package, output):
     go_environ: instance of GoEnviron object with go related env vars.
     package: go package to build.
     output: where to put the resulting binary.
+    with_race: whether attach '-race' flag to the cmd.
   """
+  args = [
+      'python', '-u',
+      os.path.join(go_workspace, get_env_dot_py()), 'go', 'build', '-trimpath',
+      '-ldflags=-buildid=', '-v', '-o', output, package
+  ]
+  if with_race:
+    args += '-race'
   with workspace_env(go_environ):
     print_go_step_title('Building %s' % (package,))
     subprocess.check_call(
-        args=[
-            'python', '-u',
-            os.path.join(go_workspace, get_env_dot_py()), 'go', 'build',
-            '-trimpath', '-ldflags=-buildid=', '-v', '-o', output, package
-        ],
-        executable=sys.executable,
-        stderr=subprocess.STDOUT)
+        args=args, executable=sys.executable, stderr=subprocess.STDOUT)
 
 
 def find_main_module(module_map, pkg):
@@ -770,8 +810,11 @@ def build_go_code(go_workspace, module_map, pkg_defs):
   # Grab a set of all go packages we need to build and install into GOBIN,
   # figuring out a go environment (and cwd) they want.
   go_packages = {}  # go package name => GoEnviron
+  go_packages_with_race = {}  # go package name => True|False
+
   for pkg_def in pkg_defs:
     pkg_env = default_environ
+    with_race = pkg_def.with_race(target_goos)
     if not is_cross_compiling():
       cgo_enabled = pkg_def.cgo_enabled(target_goos)
       if cgo_enabled is not None:
@@ -784,6 +827,13 @@ def build_go_code(go_workspace, module_map, pkg_defs):
             '(%s and %s), this is not supported' %
             (name, pkg_env, go_packages[name]))
       go_packages[name] = pkg_env
+
+      if name in go_packages_with_race and go_packages_with_race[
+          name] != with_race:
+        raise BuildException(
+            'Go package %s is being built with and without race at the same time'
+            % name)
+      go_packages_with_race[name] = with_race
 
   # Group packages by the environment they want.
   packages_per_env = {}  # GoEnviron => [str]
@@ -820,7 +870,8 @@ def build_go_code(go_workspace, module_map, pkg_defs):
       exe_suffix = get_package_vars()['exe_suffix']
       for pkg in to_install:
         bin_name = pkg[pkg.rfind('/')+1:] + exe_suffix
-        run_go_build(go_workspace, pkg_env, pkg, os.path.join(go_bin, bin_name))
+        run_go_build(go_workspace, pkg_env, pkg, os.path.join(go_bin, bin_name),
+                     go_packages_with_race.get(pkg, False))
 
 
 def enumerate_packages(package_def_dir, package_def_files):
