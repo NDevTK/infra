@@ -67,12 +67,32 @@ go_build_environ:
   # If given, overrides CGO_ENABLED env var when building a **native** variant
   # of this package (i.e. when not cross-compiling).
   #
-  # Note that is is also possible to specify this on per-target GOOS basis, by
+  # Note that it is also possible to specify this on per-target GOOS basis, by
   # using a dictionary as a value, e.g. {'darwin': 1, 'windows': 0, 'linux': 0}.
   #
   # When cross-compiling CGO_ENABLED is taken from the host environment as
   # usual, defaulting to 0.
   CGO_ENABLED: 0
+
+# Flags when building go code. Only race is recognized currently.
+go_build_flags:
+  # If given, attach the flags to the go build command.
+  #
+  # Note that it is also possible to specify this on per-target GOOS basis, by
+  # using a dictionary as a value, e.g. {'darwin': 1, 'windows': 0, 'linux': 0}.
+  #
+  # The flag will only be attached to the go build command if:
+  #   * the flag is given;
+  #   * it is supported on the platform:
+  #     * As of Aug 2022, it is only supported on 
+  #       * linux/amd64
+  #       * freebsd/amd64
+  #       * darwin/amd64
+  #       * windows/amd64
+  #       * linux/ppc64le
+  #       * linux/arm64 (only for 48-bit VMA)
+  #   * CGO is enabled.
+  race: 1
 
 # Path to the root of the package source files on the system we're building
 # the package from. Can be absolute or relative to the path of the *.yaml
