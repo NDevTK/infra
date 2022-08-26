@@ -105,6 +105,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 				"Reset power using servo if booted from USB",
+				"Check if request labstation reboot",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
@@ -2320,6 +2321,33 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"camerabox_tablet",
 			},
+		},
+		"Check if request labstation reboot": {
+			Docs: []string{
+				"Check if there's a need to reboot the connected labstation.",
+			},
+			Dependencies: []string{
+				"Check if servo is not connected by hub",
+				"Create request to reboot labstation",
+			},
+			// Request labstation reboot may bring DUT back but it happens in an
+			// asynchronous task so we make this action always fail to avoid an
+			// unnecessary retry of critical actions that triggered this action,
+			// e.g. "Device is pingable" will get retried.
+			ExecName: "sample_fail",
+		},
+		"Check if servo is not connected by hub": {
+			Docs: []string{
+				"Check if the servo is not connected by hub.",
+			},
+			ExecName: "servo_not_connected_by_hub",
+		},
+		"Create request to reboot labstation": {
+			Docs: []string{
+				"Try to create reboot flag file request in the connected labstation.",
+			},
+			ExecName:   "labstation_create_reboot_request",
+			RunControl: RunControl_RUN_ONCE,
 		},
 	}
 }
