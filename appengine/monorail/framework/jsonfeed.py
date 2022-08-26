@@ -171,7 +171,7 @@ class FlaskJsonFeed(flaskservlet.FlaskServlet):
       if self.CHECK_SAME_APP and not settings.local_mode:
         calling_app_id = request.headers.get('X-Appengine-Inbound-Appid')
         if calling_app_id != app_identity.get_application_id():
-          self.response.status = http_client.FORBIDDEN
+          self.response.status_code = http_client.FORBIDDEN
           return
 
       self._CheckForMovedProject(mr, request)
@@ -188,7 +188,7 @@ class FlaskJsonFeed(flaskservlet.FlaskServlet):
       self.abort(400, msg)
     except permissions.PermissionException as e:
       logging.info('Trapped PermissionException %s', e)
-      self.response.status = http_client.FORBIDDEN
+      self.response.status_code = http_client.FORBIDDEN
 
   # pylint: disable=unused-argument
   # pylint: disable=arguments-differ
