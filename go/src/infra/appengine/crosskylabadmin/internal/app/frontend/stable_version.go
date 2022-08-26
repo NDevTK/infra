@@ -396,6 +396,17 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 		return nil, errors.Annotate(err, "parse json").Err()
 	}
 	m := getStableVersionRecords(ctx, stableVersions)
+
+	datastore.Run(ctx, datastore.NewQuery(dssv.CrosStableVersionKind), func(ent *dssv.CrosStableVersionEntity) {
+		// do nothing.
+	})
+	datastore.Run(ctx, datastore.NewQuery(dssv.FirmwareStableVersionKind), func(ent *dssv.FirmwareStableVersionEntity) {
+		// do nothing.
+	})
+	datastore.Run(ctx, datastore.NewQuery(dssv.FaftStableVersionKind), func(ent *dssv.FaftStableVersionEntity) {
+		// do nothing.
+	})
+
 	merr := errors.NewMultiError()
 	if err := dssv.PutManyCrosStableVersion(ctx, m.cros); err != nil {
 		merr = append(merr, errors.Annotate(err, "put cros stable version").Err())
