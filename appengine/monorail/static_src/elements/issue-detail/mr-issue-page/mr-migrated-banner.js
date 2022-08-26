@@ -7,7 +7,7 @@ import {LitElement, html, css} from 'lit-element';
 import {connectStore} from 'reducers/base.js';
 import * as issueV0 from 'reducers/issueV0.js';
 import {SHARED_STYLES} from 'shared/shared-styles.js';
-
+import {migratedTypes} from 'shared/issue-fields.js';
 
 /**
  * `<mr-migrated-banner>`
@@ -57,10 +57,7 @@ export class MrMigratedBanner extends connectStore(LitElement) {
         class="warning-icon material-icons"
         icon="warning"
       >warning</i>
-      <p>
-        This issue has been migrated to ${this._link}. Please see
-        ${this._link} for the latest version of this discussion.
-      </p>
+      ${this._link}
     `;
   }
 
@@ -72,6 +69,7 @@ export class MrMigratedBanner extends connectStore(LitElement) {
         type: Boolean,
         reflect: true,
       },
+      migratedType: {type: migratedTypes}
     };
   }
 
@@ -85,6 +83,7 @@ export class MrMigratedBanner extends connectStore(LitElement) {
   /** @override */
   stateChanged(state) {
     this.migratedId = issueV0.migratedId(state);
+    this.migratedType = issueV0.migratedType(state);
   }
 
    /** @override */
@@ -100,7 +99,13 @@ export class MrMigratedBanner extends connectStore(LitElement) {
    * @return {string} the link of the issue in Issue Tracker.
    */
   get _link() {
-    return html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+    if (this.migratedType === migratedTypes.BUGANIZER_TYPE) {
+      const link = 
+        html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+      return html`<p>This issue has moved to ${link}. Updates should be posted in ${link}.</p>`;
+    } else {
+      return html`<p>This issue has been migrated to Launch, see link in final comment below.</p>`;
+    }
   }
 }
 

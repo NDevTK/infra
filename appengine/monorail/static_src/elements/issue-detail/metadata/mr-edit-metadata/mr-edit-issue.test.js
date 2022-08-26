@@ -7,6 +7,7 @@ import {assert} from 'chai';
 import {prpcClient} from 'prpc-client-instance.js';
 import {MrEditIssue, allowRemovedRestrictions} from './mr-edit-issue.js';
 import {clientLoggerFake} from 'shared/test/fakes.js';
+import {migratedTypes} from 'shared/issue-fields.js';
 
 let element;
 let clock;
@@ -308,16 +309,34 @@ describe('allowRemovedRestrictions', () => {
 
     it('shows notice if issue migrated', async () => {
       element.migratedId = '1234';
-
+      element.migratedType = migratedTypes.LAUNCH_TYPE
       await element.updateComplete;
 
       assert.isNotNull(element.querySelector('.migrated-banner'));
       assert.isNotNull(element.querySelector('.legacy-edit'));
     });
 
+    it('shows buganizer link when migrated to buganizer', async () => {
+      element.migratedId = '1234';
+      element.migratedType = migratedTypes.BUGANIZER_TYPE
+      await element.updateComplete;
+
+      const link = element.querySelector('.migrated-banner a');
+      assert.include(link.textContent, 'b/1234');
+    });
+
+    it('shows launch banner when migrated to launch', async () => {
+      element.migratedId = '1234';
+      element.migratedType = migratedTypes.LAUNCH_TYPE
+      await element.updateComplete;
+
+      const link = element.querySelector('.migrated-banner');
+      assert.include(link.textContent, 'This issue has been migrated to Launch, see link in final comment below');
+    });
+
     it('hides edit form if issue migrated', async () => {
       element.migratedId = '1234';
-
+      element.migratedType = migratedTypes.LAUNCH_TYPE
       await element.updateComplete;
 
       const editForm = element.querySelector('mr-edit-metadata');
@@ -326,7 +345,7 @@ describe('allowRemovedRestrictions', () => {
 
     it('unhides edit form on button click', async () => {
       element.migratedId = '1234';
-
+      element.migratedType = migratedTypes.LAUNCH_TYPE
       await element.updateComplete;
 
       const button = element.querySelector('.legacy-edit');

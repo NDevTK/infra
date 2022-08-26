@@ -12,6 +12,7 @@ import {fieldTypes} from 'shared/issue-fields.js';
 import {issueToIssueRef, issueRefToString} from 'shared/convertersV0.js';
 import {prpcClient} from 'prpc-client-instance.js';
 import {getSigninInstance} from 'shared/gapi-loader.js';
+import {migratedTypes} from 'shared/issue-fields.js';
 
 let prpcCall;
 let dispatch;
@@ -323,6 +324,48 @@ describe('issue', () => {
       {label: 'migrated-to-b-1234'},
       {label: 'migrated-to-b-6789'},
     ]})), '1234');
+
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+      {label: 'IgnoreThis'},
+      {label: 'IgnoreThis2'},
+      {label: 'migrated-to-launch-6789'},
+    ]})), '6789');
+
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+      {label: 'migrated-to-launch-1234'},
+    ]})), '1234');
+
+    // We assume there's only one migrated-to-* label.
+    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+      {label: 'migrated-to-launch-1234'},
+      {label: 'migrated-to-b-6789'},
+    ]})), '1234');
+  });
+
+  it('migratedType', () => {
+    assert.equal(issueV0.migratedType(wrapIssue()), migratedTypes.NONE);
+    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: []})), migratedTypes.NONE);
+
+    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+      {label: 'IgnoreThis'},
+      {label: 'IgnoreThis2'},
+    ]})), migratedTypes.NONE);
+
+    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+      {label: 'IgnoreThis'},
+      {label: 'IgnoreThis2'},
+      {label: 'migrated-to-b-6789'},
+    ]})), migratedTypes.BUGANIZER_TYPE);
+
+    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+      {label: 'migrated-to-launch-1234'},
+    ]})), migratedTypes.LAUNCH_TYPE);
+
+    // We assume there's only one migrated-to-b-* label.
+    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+      {label: 'migrated-to-launch-1234'},
+      {label: 'migrated-to-b-6789'},
+    ]})), migratedTypes.LAUNCH_TYPE);
   });
 
 

@@ -12,7 +12,7 @@ import * as ui from 'reducers/ui.js';
 import {arrayToEnglish} from 'shared/helpers.js';
 import './mr-edit-metadata.js';
 import 'shared/typedef.js';
-
+import {migratedTypes} from 'shared/issue-fields.js';
 import ClientLogger from 'monitoring/client-logger.js';
 
 const DEBOUNCED_PRESUBMIT_TIME_OUT = 400;
@@ -45,11 +45,7 @@ export class MrEditIssue extends connectStore(LitElement) {
             class="warning-icon material-icons"
             icon="warning"
           >warning</i>
-          <p>
-            This issue has moved to
-            ${this._migratedLink}. Updates should be posted in
-            ${this._migratedLink}.
-          </p>
+          ${this._migratedLink}
         </div>
         <chops-button
           class="legacy-edit"
@@ -128,6 +124,12 @@ export class MrEditIssue extends connectStore(LitElement) {
        */
       migratedId: {
         type: String,
+      },
+      /**
+       * Type of the issue migrated to.
+       */
+       migratedType: {
+        type: migratedTypes,
       },
       /**
        * All comments, including descriptions.
@@ -211,7 +213,7 @@ export class MrEditIssue extends connectStore(LitElement) {
   /** @override */
   stateChanged(state) {
     this.migratedId = issueV0.migratedId(state);
-
+    this.migratedType = issueV0.migratedType(state);
     this.issue = issueV0.viewedIssue(state);
     this.issueRef = issueV0.viewedIssueRef(state);
     this.comments = issueV0.comments(state);
@@ -347,10 +349,16 @@ export class MrEditIssue extends connectStore(LitElement) {
   }
 
   /**
-   * @return {string} the link of the issue in Issue Tracker.
+   * @return {string} the link of the issue in Issue Tracker or Launch.
    */
-  get _migratedLink() {
-    return html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+   get _migratedLink() {
+    if (this.migratedType === migratedTypes.BUGANIZER_TYPE) {
+      const link = 
+        html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+      return html`<p>This issue has moved to ${link}. Updates should be posted in ${link}.</p>`;
+    } else {
+      return html`<p>This issue has been migrated to Launch, see link in final comment below.</p>`;
+    }
   }
 
   /**

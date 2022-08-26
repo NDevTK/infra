@@ -14,7 +14,7 @@ import {combineReducers} from 'redux';
 import {createSelector} from 'reselect';
 import {autolink} from 'autolink.js';
 import {fieldTypes, extractTypeForIssue,
-  fieldValuesToMap} from 'shared/issue-fields.js';
+  fieldValuesToMap, migratedTypes} from 'shared/issue-fields.js';
 import {removePrefix, objectToMap} from 'shared/helpers.js';
 import {issueRefToString, issueToIssueRefString,
   issueStringToRef, issueNameToRefString} from 'shared/convertersV0.js';
@@ -493,7 +493,9 @@ export const reducer = combineReducers({
 const RESTRICT_VIEW_PREFIX = 'restrict-view-';
 const RESTRICT_EDIT_PREFIX = 'restrict-editissue-';
 const RESTRICT_COMMENT_PREFIX = 'restrict-addissuecomment-';
-const MIGRATED_ISSUE_PREFIX = 'migrated-to-b-';
+const MIGRATED_ISSUE_PREFIX = 'migrated-to-';
+const MIGRATED_BUGANIZER_ISSUE_PREFIX = 'migrated-to-b-';
+const MIGRATED_LAUNCH_ISSUE_PREFIX = 'migrated-to-launch-';
 
 /**
  * Selector to retrieve all normalized Issue data in the Redux store,
@@ -704,22 +706,49 @@ export const restrictions = createSelector(
     },
 );
 
-// Gets the Issue Tracker ID of a moved issue.
+// Gets the Issue Tracker or Launch ID of a moved issue.
 export const migratedId = createSelector(
   labelRefs,
   (labelRefs) => {
     if (!labelRefs) return '';
 
-    // Assume that there's only one migrated-to-b-* label. Or at least drop any
+    // Assume that there's only one migrated-to-* label. Or at least drop any
+    // labels besides the first one.
+    const migrationLabel = labelRefs.find((labelRef) => {
+      return labelRef.label.toLowerCase().startsWith(MIGRATED_ISSUE_PREFIX);
+    });
+    
+    if (migrationLabel) {
+      if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_BUGANIZER_ISSUE_PREFIX)) {
+        return migrationLabel.label.substring(MIGRATED_BUGANIZER_ISSUE_PREFIX.length);
+      } else if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_LAUNCH_ISSUE_PREFIX)) {
+        return migrationLabel.label.substring(MIGRATED_LAUNCH_ISSUE_PREFIX.length);
+      }
+    }
+    return '';
+  },
+);
+
+// Gets the Issue Migrated Type of a moved issue.
+export const migratedType = createSelector(
+  labelRefs,
+  (labelRefs) => {
+    if (!labelRefs) return migratedTypes.NONE;
+
+    // Assume that there's only one migrated-to-* label. Or at least drop any
     // labels besides the first one.
     const migrationLabel = labelRefs.find((labelRef) => {
       return labelRef.label.toLowerCase().startsWith(MIGRATED_ISSUE_PREFIX);
     });
 
     if (migrationLabel) {
-      return migrationLabel.label.substring(MIGRATED_ISSUE_PREFIX.length);
+      if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_BUGANIZER_ISSUE_PREFIX)) {
+        return migratedTypes.BUGANIZER_TYPE;
+      } else if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_LAUNCH_ISSUE_PREFIX)) {
+        return migratedTypes.LAUNCH_TYPE;
+      }
     }
-    return '';
+    return migratedTypes.NONE;
   },
 );
 

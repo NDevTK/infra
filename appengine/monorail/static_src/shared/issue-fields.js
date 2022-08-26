@@ -37,6 +37,13 @@ export const fieldTypes = Object.freeze({
   PROJECT_TYPE: 'PROJECT_TYPE',
 });
 
+/** @enum {string} */
+export const migratedTypes = Object.freeze({
+  BUGANIZER_TYPE: 'BUGANIZER_TYPE',
+  LAUNCH_TYPE: 'LAUNCH_TYPE',
+  NONE: 'NONE',
+});
+
 const GROUPABLE_FIELD_TYPES = new Set([
   fieldTypes.DATE_TYPE,
   fieldTypes.ENUM_TYPE,
