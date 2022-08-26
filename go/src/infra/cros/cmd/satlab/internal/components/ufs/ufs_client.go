@@ -22,7 +22,6 @@ import (
 // add more methods if additional UFS reqs needed
 type UFSClient interface {
 	GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error)
-	GetAsset(context.Context, *ufsApi.GetAssetRequest) (*ufsModels.Asset, error)
 	GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error)
 }
 
@@ -34,11 +33,6 @@ type clientImpl struct {
 // GetDut uses the GetMachineLSE method to fetch info about lab setup
 func (c *clientImpl) GetDut(ctx context.Context, req *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error) {
 	return c.client.GetMachineLSE(ctx, req)
-}
-
-// GetAsset fetches information about the underlying asset behind a DUT
-func (c *clientImpl) GetAsset(ctx context.Context, req *ufsApi.GetAssetRequest) (*ufsModels.Asset, error) {
-	return c.client.GetAsset(ctx, req)
 }
 
 // GetMachine fetches information about the machine we request.

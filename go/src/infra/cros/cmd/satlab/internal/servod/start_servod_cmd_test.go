@@ -52,18 +52,6 @@ func (f *FakeUFSClient) GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*
 	}, nil
 }
 
-// GetAsset returns a hardcoded asset
-func (f *FakeUFSClient) GetAsset(context.Context, *ufsApi.GetAssetRequest) (*ufsModels.Asset, error) {
-	if f.badData {
-		return &ufsModels.Asset{}, nil
-	}
-
-	return &ufsModels.Asset{
-		Model: "ufsModel",
-		Info:  &ufsModels.AssetInfo{ReferenceBoard: "ufsBoard"},
-	}, nil
-}
-
 // GetMachine returns a hardcoded machine.
 // If the fake UFS client calling it was designated to have bad data, instead returns machine with all default fields.
 func (f *FakeUFSClient) GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error) {
