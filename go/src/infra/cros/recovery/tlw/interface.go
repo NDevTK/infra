@@ -74,6 +74,8 @@ const (
 	DUTSetupTypeAndroid DUTSetupType = "ANDROID"
 	// Special setup for IOS devices.
 	DUTSetupTypeIOS DUTSetupType = "IOS"
+	// Special setup for CrOSVM fake devices.
+	DUTSetupTypeCrosVM DUTSetupType = "CROSVM"
 )
 
 const (

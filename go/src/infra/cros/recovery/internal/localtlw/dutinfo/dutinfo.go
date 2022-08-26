@@ -135,6 +135,10 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		setup = tlw.DUTSetupTypeJetstream
 	}
 
+	if machine.GetChromeosMachine().GetModel() == "betty" {
+		setup = tlw.DUTSetupTypeCrosVM
+	}
+
 	audio := &tlw.DUTAudio{
 		LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		InBox:         p.GetAudio().GetAudioBox(),

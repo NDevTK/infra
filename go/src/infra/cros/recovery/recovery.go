@@ -262,6 +262,8 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 			return config.LabstationRepairConfig(), nil
 		case tlw.DUTSetupTypeAndroid:
 			return config.AndroidRepairConfig(), nil
+		case tlw.DUTSetupTypeCrosVM:
+			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -280,6 +282,8 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosAuditRPMConfig(), nil
+		case tlw.DUTSetupTypeCrosVM:
+			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -287,6 +291,8 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosAuditStorageConfig(), nil
+		case tlw.DUTSetupTypeCrosVM:
+			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -294,6 +300,8 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosAuditUSBConfig(), nil
+		case tlw.DUTSetupTypeCrosVM:
+			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
