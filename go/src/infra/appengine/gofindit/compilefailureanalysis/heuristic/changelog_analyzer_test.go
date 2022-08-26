@@ -156,7 +156,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 			cls := []*gfim.ChangeLog{
 				{
 					Commit:  "abcd",
-					Message: "blah blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/123\n bla",
+					Message: "First blah blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/123\n bla",
 					ChangeLogDiffs: []gfim.ChangeLogDiff{
 						{
 							Type:    gfim.ChangeType_MODIFY,
@@ -166,7 +166,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 				},
 				{
 					Commit:  "efgh",
-					Message: "blah blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/456\n bla",
+					Message: "Second blah blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/456\n bla",
 					ChangeLogDiffs: []gfim.ChangeLogDiff{
 						{
 							Type:    gfim.ChangeType_RENAME,
@@ -177,7 +177,7 @@ func TestChangeLogAnalyzer(t *testing.T) {
 				},
 				{
 					Commit:  "wxyz",
-					Message: "blah blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/789\n bla",
+					Message: "Third blah blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/789\n bla",
 					ChangeLogDiffs: []gfim.ChangeLogDiff{
 						{
 							Type:    gfim.ChangeType_ADD,
@@ -192,8 +192,9 @@ func TestChangeLogAnalyzer(t *testing.T) {
 			So(analysisResult, ShouldResemble, &gfim.HeuristicAnalysisResult{
 				Items: []*gfim.HeuristicAnalysisResultItem{
 					{
-						Commit:    "wxyz",
-						ReviewUrl: "https://chromium-review.googlesource.com/c/chromium/src/+/789",
+						Commit:      "wxyz",
+						ReviewUrl:   "https://chromium-review.googlesource.com/c/chromium/src/+/789",
+						ReviewTitle: "Third blah blah",
 						Justification: &gfim.SuspectJustification{
 							Items: []*gfim.SuspectJustificationItem{
 								{
@@ -206,8 +207,9 @@ func TestChangeLogAnalyzer(t *testing.T) {
 						},
 					},
 					{
-						Commit:    "abcd",
-						ReviewUrl: "https://chromium-review.googlesource.com/c/chromium/src/+/123",
+						Commit:      "abcd",
+						ReviewUrl:   "https://chromium-review.googlesource.com/c/chromium/src/+/123",
+						ReviewTitle: "First blah blah",
 						Justification: &gfim.SuspectJustification{
 							Items: []*gfim.SuspectJustificationItem{
 								{

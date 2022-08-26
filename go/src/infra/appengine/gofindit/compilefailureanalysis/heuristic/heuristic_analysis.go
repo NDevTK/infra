@@ -64,7 +64,7 @@ func Analyze(
 	}
 
 	for _, item := range analysisResult.Items {
-		logging.Infof(c, "Commit %s, with review URL %s, has score of %d", item.Commit, item.ReviewUrl, item.Justification.GetScore())
+		logging.Infof(c, "Commit %s (%s), with review URL %s, has score of %d", item.Commit, item.ReviewTitle, item.ReviewUrl, item.Justification.GetScore())
 	}
 
 	// Updates heuristic analysis

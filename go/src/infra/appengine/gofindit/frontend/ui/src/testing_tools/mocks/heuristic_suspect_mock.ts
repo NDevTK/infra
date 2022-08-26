@@ -14,6 +14,7 @@ export const getMockHeuristicSuspect = (commitID: string): HeuristicSuspect => {
       position: '1',
     },
     reviewUrl: `https://chromium-review.googlesource.com/placeholder/+${commitID}`,
+    reviewTitle: '[MyApp] Added new functionality to improve my app',
     score: '15',
     justification:
       'The file "dir/a/b/x.cc" was added and it was in the failure log.\n' +

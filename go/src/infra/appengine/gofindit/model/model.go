@@ -171,6 +171,9 @@ type Suspect struct {
 	// The Url where the suspect was reviewed
 	ReviewUrl string `gae:"review_url"`
 
+	// Title of the review for the suspect
+	ReviewTitle string `gae:"review_title"`
+
 	// Score is an integer representing the how confident we believe the suspect
 	// is indeed the culprit.
 	// A higher score means a stronger signal that the suspect is responsible for

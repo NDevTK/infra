@@ -139,6 +139,11 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 			Justification:   suspect.Justification,
 			ConfidenceLevel: heuristic.GetConfidenceLevel(suspect.Score),
 		}
+
+		// TODO: check access permissions before including the review title.
+		//       For now, we will include it by default as LUCI Bisection access
+		//       should already be restricted to internal users only.
+		pbSuspects[i].ReviewTitle = suspect.ReviewTitle
 	}
 	heuristicResult := &gfipb.HeuristicAnalysisResult{
 		Status:    heuristicAnalysis.Status,

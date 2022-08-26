@@ -26,12 +26,17 @@ describe('Test HeuristicAnalysisTable component', () => {
 
     await screen.findByTestId('heuristic_analysis_table_row');
 
-    expect(screen.getByRole('link').getAttribute('href')).toBe(
-      mockSuspect.reviewUrl
-    );
+    // Check there is a link to the suspect's code review
+    const suspectReviewLink = screen.getByRole('link');
+    expect(suspectReviewLink).toBeInTheDocument();
+    expect(suspectReviewLink.getAttribute('href')).toBe(mockSuspect.reviewUrl);
+    if (mockSuspect.reviewTitle) {
+      expect(suspectReviewLink.textContent).toContain(mockSuspect.reviewTitle);
+    }
+
+    // Check confidence level, score and reasons are displayed
     expect(screen.getByText(mockSuspect.confidenceLevel)).toBeInTheDocument();
     expect(screen.getByText(mockSuspect.score)).toBeInTheDocument();
-
     const reasons = mockSuspect.justification.split('\n');
     reasons.forEach((reason) => {
       expect(screen.getByText(reason)).toBeInTheDocument();

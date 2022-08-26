@@ -31,20 +31,25 @@ func AnalyzeChangeLogs(c context.Context, signal *gfim.CompileFailureSignal, cha
 	result := &gfim.HeuristicAnalysisResult{}
 	for _, changelog := range changelogs {
 		justification, err := AnalyzeOneChangeLog(c, signal, changelog)
-		commit := changelog.Commit
-		if err != nil {
-			logging.Errorf(c, "Error analyze change log for commit %s. Error: %w", commit, err)
-			continue
-		}
-		reviewUrl, err := changelog.GetReviewUrl()
-		if err != nil {
-			logging.Errorf(c, "Error getting reviewUrl for commit: %s. Error: %w", commit, err)
-			continue
-		}
-
-		// We only care about those relevant CLs
+		// We only care about the relevant CLs
 		if justification.GetScore() > 0 {
-			result.AddItem(commit, reviewUrl, justification)
+			commit := changelog.Commit
+			if err != nil {
+				logging.Errorf(c, "Error analyzing change log for commit %s. Error: %w", commit, err)
+				continue
+			}
+			reviewUrl, err := changelog.GetReviewUrl()
+			if err != nil {
+				logging.Errorf(c, "Error getting review URL for commit: %s. Error: %w", commit, err)
+				continue
+			}
+			reviewTitle, err := changelog.GetReviewTitle()
+			if err != nil {
+				// Just log the error from getting the review title - suspect should still be added
+				logging.Errorf(c, "Error getting review title for commit: %s. Error: %w", commit, err)
+			}
+
+			result.AddItem(commit, reviewUrl, reviewTitle, justification)
 		}
 	}
 	result.Sort()

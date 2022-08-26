@@ -14,14 +14,16 @@ type HeuristicAnalysisResult struct {
 type HeuristicAnalysisResultItem struct {
 	Commit        string
 	ReviewUrl     string
+	ReviewTitle   string
 	Justification *SuspectJustification
 }
 
 // AddItem adds a suspect to HeuristicAnalysisResult.
-func (r *HeuristicAnalysisResult) AddItem(commit string, reviewUrl string, justification *SuspectJustification) {
+func (r *HeuristicAnalysisResult) AddItem(commit string, reviewUrl string, reviewTitle string, justification *SuspectJustification) {
 	item := &HeuristicAnalysisResultItem{
 		Commit:        commit,
 		ReviewUrl:     reviewUrl,
+		ReviewTitle:   reviewTitle,
 		Justification: justification,
 	}
 	r.Items = append(r.Items, item)

@@ -18,14 +18,22 @@ interface Props {
 }
 
 export const HeuristicAnalysisTableRow = ({ suspect }: Props) => {
-  const { gitilesCommit, reviewUrl, justification, score, confidenceLevel } =
-    suspect;
+  const {
+    gitilesCommit,
+    reviewUrl,
+    reviewTitle,
+    justification,
+    score,
+    confidenceLevel,
+  } = suspect;
 
   const reasons = justification.split('\n');
   const reasonCount = reasons.length;
 
-  // TODO: use the title of the suspect commit for link its code review
-  const commitTitle = '';
+  let suspectDescription = getCommitShortHash(gitilesCommit.id);
+  if (reviewTitle) {
+    suspectDescription += `: ${reviewTitle}`;
+  }
 
   return (
     <>
@@ -37,8 +45,7 @@ export const HeuristicAnalysisTableRow = ({ suspect }: Props) => {
             rel='noreferrer'
             underline='always'
           >
-            {getCommitShortHash(gitilesCommit.id)}
-            {commitTitle}
+            {suspectDescription}
           </Link>
         </TableCell>
         <TableCell rowSpan={reasonCount} className='overviewCell'>

@@ -115,6 +115,7 @@ func TestDatastoreModel(t *testing.T) {
 					Position: 3433,
 				},
 				ReviewUrl:     "http://review-url.com",
+				ReviewTitle:   "Added new functionality",
 				Score:         100,
 				Justification: "The CL touch the file abc.cc, and it is in the log",
 			}

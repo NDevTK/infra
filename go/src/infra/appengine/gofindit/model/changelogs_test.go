@@ -24,4 +24,20 @@ func TestChangeLogs(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(reviewUrl, ShouldEqual, "https://chromium-review.googlesource.com/c/chromium/src/+/3472129")
 	})
+
+	Convey("GetReviewTitle", t, func() {
+		cl := &ChangeLog{
+			Message: "",
+		}
+		reviewTitle, err := cl.GetReviewTitle()
+		So(err, ShouldNotBeNil)
+		So(reviewTitle, ShouldEqual, "")
+
+		cl = &ChangeLog{
+			Message: "Use TestActivationManager for all page activations\n\nblah blah\n\nChange-Id: blah\nBug: blah\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/3472129\nReviewed-by: blah blah\n",
+		}
+		reviewTitle, err = cl.GetReviewTitle()
+		So(err, ShouldBeNil)
+		So(reviewTitle, ShouldEqual, "Use TestActivationManager for all page activations")
+	})
 }

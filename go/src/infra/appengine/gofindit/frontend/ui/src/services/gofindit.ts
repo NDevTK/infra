@@ -104,6 +104,7 @@ export interface HeuristicAnalysisResult {
 export interface HeuristicSuspect {
   gitilesCommit: GitilesCommit;
   reviewUrl: string;
+  reviewTitle?: string;
   score: string;
   justification: string;
   confidenceLevel: SuspectConfidenceLevel;
@@ -131,7 +132,7 @@ export interface RegressionRange {
 export interface CulpritAction {
   actionType: CulpritActionType;
   revertClUrl?: string;
-  bugUrl: string;
+  bugUrl?: string;
 }
 
 export interface CL {

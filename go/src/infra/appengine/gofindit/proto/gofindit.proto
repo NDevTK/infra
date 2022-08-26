@@ -176,6 +176,8 @@ message HeuristicSuspect {
   bool verified = 5;
   // The level of confidence we have for the suspect.
   SuspectConfidenceLevel confidence_level = 6;
+  // Title of the review for the commit
+  string reviewTitle = 7;
 }
 
 message NthSectionAnalysisResult {

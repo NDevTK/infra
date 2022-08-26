@@ -57,7 +57,17 @@ func (cl *ChangeLog) GetReviewUrl() (string, error) {
 	pattern := regexp.MustCompile("\\nReviewed-on: (https://.+)\\n")
 	matches := pattern.FindStringSubmatch(cl.Message)
 	if matches == nil {
-		return "", fmt.Errorf("Could not find review CL. Message: %s", cl.Message)
+		return "", fmt.Errorf("Could not find review CL URL. Message: %s", cl.Message)
+	}
+	return matches[1], nil
+}
+
+// GetReviewTitle returns the review title from the changelog.
+func (cl *ChangeLog) GetReviewTitle() (string, error) {
+	pattern := regexp.MustCompile("\\A([^\\n]+)\\n")
+	matches := pattern.FindStringSubmatch(cl.Message)
+	if matches == nil {
+		return "", fmt.Errorf("Could not find review title. Message: %s", cl.Message)
 	}
 	return matches[1], nil
 }
