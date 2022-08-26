@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e70bfad_96a5a498",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-08-26T05:51:23Z",
+      "side": 1,
+      "message": "LGTM mod comment. Also note that a lot of this change will disappear once this CL is rebased because of https://chromium-review.googlesource.com/c/infra/infra/+/3858130",
+      "revId": "0de852313af26748aefe05a01d9e690ada6f3f6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e3c6e324_045b57ab",
