@@ -12,7 +12,23 @@ func AndroidDeployConfig() *Configuration {
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
-			PlanAndroid: setAllowFail(androidRepairPlan(), false),
+			PlanAndroid: setAllowFail(androidDeployPlan(), false),
 			PlanClosing: setAllowFail(androidClosePlan(), true),
 		}}
+}
+
+func androidDeployPlan() *Plan {
+	return &Plan{
+		CriticalActions: []string{
+			"Set state: needs_deploy",
+			"Validate DUT info",
+			"Validate associated host",
+			"Lock associated host",
+			"Validate adb",
+			"DUT is accessible over adb",
+			"Reset DUT",
+			"Set state: ready",
+		},
+		Actions: androidRepairDeployActions(),
+	}
 }
