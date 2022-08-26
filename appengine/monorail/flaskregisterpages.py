@@ -843,24 +843,22 @@ class ServletRegistry(object):
   def RegisterBackendUrl(self, service):
     flaskapp_backend = flask.Flask(__name__)
     _BACKEND_URL = [
-        # (
-        #     '/search',
-        #     backendsearch.BackendSearch(services=service).GetBackendSearch,
-        #     ['GET']),
-        # (
-        #     '/search.do',
-        #     backendsearch.BackendSearch(services=service).PostBackendSearch,
-        #     ['POST']),
-        # (
-        #     '/nonviewable',
-        #     backendnonviewable.BackendNonviewable(
-        #         services=service).GetBackendNonviewable,
-        #     ['GET']),
-        # (
-        #     '/nonviewable.do',
-        #     backendnonviewable.BackendNonviewable(
-        #        services=service).PostBackendNonviewable,
-        #     ['POST']),
+        (
+            '/search',
+            backendsearch.BackendSearch(services=service).GetBackendSearch,
+            ['GET']),
+        (
+            '/search.do',
+            backendsearch.BackendSearch(services=service).PostBackendSearch,
+            ['POST']),
+        (
+            '/nonviewable',
+            backendnonviewable.BackendNonviewable(
+                services=service).GetBackendNonviewable, ['GET']),
+        (
+            '/nonviewable.do',
+            backendnonviewable.BackendNonviewable(
+                services=service).PostBackendNonviewable, ['POST']),
     ]
 
     for rule in _BACKEND_URL:

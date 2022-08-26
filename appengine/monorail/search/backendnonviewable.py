@@ -37,8 +37,7 @@ from search import search_helpers
 NONVIEWABLE_MEMCACHE_EXPIRATION = 15 * framework_constants.SECS_PER_MINUTE
 
 
-# Change to FlaskInternalTask
-class BackendNonviewable(jsonfeed.InternalTask):
+class BackendNonviewable(jsonfeed.FlaskInternalTask):
   """JSON servlet for getting issue IDs that the specified user cannot view."""
 
   CHECK_SAME_APP = True
@@ -137,8 +136,8 @@ class BackendNonviewable(jsonfeed.InternalTask):
 
     return ok_iids
 
-  # def GetBackendNonviewable(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetBackendNonviewable(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostBackendNonviewable(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostBackendNonviewable(self, **kwargs):
+    return self.handler(**kwargs)

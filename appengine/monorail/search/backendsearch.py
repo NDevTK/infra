@@ -31,8 +31,7 @@ from search import backendsearchpipeline
 from tracker import tracker_constants
 
 
-# Change to FlaskInternalTask
-class BackendSearch(jsonfeed.InternalTask):
+class BackendSearch(jsonfeed.FlaskInternalTask):
   """JSON servlet for issue search in a GAE backend."""
 
   CHECK_SAME_APP = True
@@ -76,8 +75,8 @@ class BackendSearch(jsonfeed.InternalTask):
         'error': error_message,
     }
 
-  # def GetBackendSearch(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetBackendSearch(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostBackendSearch(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostBackendSearch(self, **kwargs):
+    return self.handler(**kwargs)

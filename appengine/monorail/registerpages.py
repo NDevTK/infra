@@ -47,9 +47,6 @@ from project import projectsummary
 from project import projectupdates
 from project import redirects
 
-from search import backendnonviewable
-from search import backendsearch
-
 from services import cachemanager_svc
 from services import client_config_svc
 
@@ -190,8 +187,6 @@ class ServletRegistry(object):
     """Register page and form handlers for the issue tracker."""
     self._SetupServlets({
         # Note: the following are at URLs that are not externaly accessible.
-        urls.BACKEND_SEARCH: backendsearch.BackendSearch,
-        urls.BACKEND_NONVIEWABLE: backendnonviewable.BackendNonviewable,
         urls.RECOMPUTE_DERIVED_FIELDS_TASK:
             filterrules.RecomputeDerivedFieldsTask,
         urls.REINDEX_QUEUE_CRON: filterrules.ReindexQueueCron,

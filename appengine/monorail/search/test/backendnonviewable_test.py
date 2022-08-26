@@ -39,8 +39,7 @@ class BackendNonviewableTest(unittest.TestCase):
     self.mr.shard_id = 2
     self.mr.invalidation_timestep = 12345
 
-    self.servlet = backendnonviewable.BackendNonviewable(
-        'req', 'res', services=self.services)
+    self.servlet = backendnonviewable.BackendNonviewable(services=self.services)
 
     self.mox = mox.Mox()
     self.testbed = testbed.Testbed()

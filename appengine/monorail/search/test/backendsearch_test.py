@@ -34,8 +34,7 @@ class BackendSearchTest(unittest.TestCase):
     self.mr.specified_logged_in_user_id = 111
     self.mr.specified_me_user_ids = [222]
     self.mr.shard_id = 2
-    self.servlet = backendsearch.BackendSearch(
-        'req', 'res', services=self.services)
+    self.servlet = backendsearch.BackendSearch(services=self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):
