@@ -96,7 +96,7 @@ func AnalyzeFailure(
 	// Verifies heuristic analysis result.
 	// TODO (nqmtuan): Enable verifyHeuristicResults when we fully implemented
 	// the culprit verification. Enabling it now will create a lot of noises.
-	// verifyHeuristicResults(c, heuristicResult, firstFailedBuildID)
+	// verifyHeuristicResults(c, heuristicResult, firstFailedBuildID, analysis.Id)
 
 	return analysis, nil
 }

@@ -97,6 +97,20 @@ func TestVerifySuspect(t *testing.T) {
 		So(datastore.Put(c, suspect), ShouldBeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 
+		compileFailure := &model.CompileFailure{
+			Id:            111,
+			OutputTargets: []string{"target1"},
+		}
+		So(datastore.Put(c, compileFailure), ShouldBeNil)
+		datastore.GetTestable(c).CatchupIndexes()
+
+		analysis := &model.CompileFailureAnalysis{
+			Id:             444,
+			CompileFailure: datastore.KeyForObj(c, compileFailure),
+		}
+		So(datastore.Put(c, analysis), ShouldBeNil)
+		datastore.GetTestable(c).CatchupIndexes()
+
 		err := VerifySuspect(c, suspect, 8000, 444)
 		So(err, ShouldBeNil)
 		So(suspect.VerificationStatus, ShouldEqual, model.SuspectVerificationStatus_UnderVerification)

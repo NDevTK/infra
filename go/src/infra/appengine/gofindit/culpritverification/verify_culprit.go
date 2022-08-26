@@ -12,6 +12,7 @@ import (
 	gfim "infra/appengine/gofindit/model"
 	gfipb "infra/appengine/gofindit/proto"
 	"infra/appengine/gofindit/rerun"
+	"infra/appengine/gofindit/server"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
@@ -22,10 +23,18 @@ import (
 // analysisID is CompileFailureAnalysis ID. It is meant to be propagated all the way to the
 // recipe, so we can identify the analysis in buildbucket.
 func VerifySuspect(c context.Context, suspect *gfim.Suspect, failedBuildID int64, analysisID int64) error {
-	logging.Infof(c, "Verifying suspect %d for build %d", datastore.KeyForObj(c, suspect).IntID())
-	suspectBuild, parentBuild, err := VerifyCommit(c, &suspect.GitilesCommit, failedBuildID, analysisID)
+	logging.Infof(c, "Verifying suspect %d for build %d", datastore.KeyForObj(c, suspect).IntID(), failedBuildID)
+	// Get failed compile targets
+	compileFailure, err := server.GetCompileFailureForAnalysis(c, analysisID)
 	if err != nil {
-		logging.Errorf(c, "Error triggering rerun for build %d", failedBuildID)
+		return err
+	}
+	failedTargets := compileFailure.OutputTargets
+
+	// Verify the suspect
+	suspectBuild, parentBuild, err := VerifyCommit(c, &suspect.GitilesCommit, failedBuildID, analysisID, failedTargets)
+	if err != nil {
+		logging.Errorf(c, "Error triggering rerun for build %d: %s", failedBuildID, err)
 		return err
 	}
 	suspectRerunBuildModel, err := createRerunBuildModel(c, suspectBuild, suspect)
@@ -93,7 +102,7 @@ func createRerunBuildModel(c context.Context, build *buildbucketpb.Build, suspec
 // Returns 2 builds:
 // - The 1st build is the rerun build for the commit
 // - The 2nd build is the rerun build for the parent commit
-func VerifyCommit(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildID int64, analysisID int64) (*buildbucketpb.Build, *buildbucketpb.Build, error) {
+func VerifyCommit(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildID int64, analysisID int64, compileTargets []string) (*buildbucketpb.Build, *buildbucketpb.Build, error) {
 	// Query Gitiles to get parent commit
 	repoUrl := gitiles.GetRepoUrl(c, commit)
 	p, err := gitiles.GetParentCommit(c, repoUrl, commit.Id)
@@ -108,12 +117,12 @@ func VerifyCommit(c context.Context, commit *buildbucketpb.GitilesCommit, failed
 	}
 
 	// Trigger a rerun with commit and parent commit
-	build1, err := rerun.TriggerRerun(c, commit, failedBuildID, analysisID)
+	build1, err := rerun.TriggerRerun(c, commit, failedBuildID, analysisID, compileTargets)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	build2, err := rerun.TriggerRerun(c, parentCommit, failedBuildID, analysisID)
+	build2, err := rerun.TriggerRerun(c, parentCommit, failedBuildID, analysisID, compileTargets)
 	if err != nil {
 		return nil, nil, err
 	}

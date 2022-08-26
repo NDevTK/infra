@@ -80,7 +80,7 @@ func TestRerun(t *testing.T) {
 			},
 		}
 		mc.Client.EXPECT().GetBuild(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).AnyTimes()
-		props, dimens, err := getRerunPropertiesAndDimensions(c, 1234, 4646418413256704)
+		props, dimens, err := getRerunPropertiesAndDimensions(c, 1234, 4646418413256704, []string{"target"})
 		So(err, ShouldBeNil)
 		So(props, ShouldResemble, &structpb.Struct{
 			Fields: map[string]*structpb.Value{
@@ -91,7 +91,8 @@ func TestRerun(t *testing.T) {
 						"bs_key_1": structpb.NewStringValue("bs_val_1"),
 					},
 				}),
-				"analysis_id": structpb.NewNumberValue(4646418413256704),
+				"analysis_id":     structpb.NewNumberValue(4646418413256704),
+				"compile_targets": structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("target")}}),
 			},
 		})
 		So(dimens, ShouldResemble, []*bbpb.RequestedDimension{

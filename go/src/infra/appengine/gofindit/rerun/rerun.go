@@ -20,9 +20,9 @@ import (
 )
 
 // TriggerRerun triggers a rerun build for a particular build bucket build and Gitiles commit.
-func TriggerRerun(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildID int64, analysisID int64) (*buildbucketpb.Build, error) {
+func TriggerRerun(c context.Context, commit *buildbucketpb.GitilesCommit, failedBuildID int64, analysisID int64, compileTargets []string) (*buildbucketpb.Build, error) {
 	logging.Infof(c, "triggerRerun with commit %s", commit.Id)
-	properties, dimensions, err := getRerunPropertiesAndDimensions(c, failedBuildID, analysisID)
+	properties, dimensions, err := getRerunPropertiesAndDimensions(c, failedBuildID, analysisID, compileTargets)
 	if err != nil {
 		logging.Errorf(c, "Failed getRerunPropertiesAndDimension for build %d", failedBuildID)
 		return nil, err
@@ -59,7 +59,7 @@ func getRerunTags(c context.Context, bbid int64) []*buildbucketpb.StringPair {
 }
 
 // getRerunProperty returns the properties and dimensions for a rerun of a buildID
-func getRerunPropertiesAndDimensions(c context.Context, bbid int64, analysisID int64) (*structpb.Struct, []*buildbucketpb.RequestedDimension, error) {
+func getRerunPropertiesAndDimensions(c context.Context, bbid int64, analysisID int64, compileTargets []string) (*structpb.Struct, []*buildbucketpb.RequestedDimension, error) {
 	build, err := buildbucket.GetBuild(c, bbid, &buildbucketpb.BuildMask{
 		Fields: &fieldmaskpb.FieldMask{
 			Paths: []string{"input.properties", "builder", "infra.swarming.task_dimensions"},
@@ -68,7 +68,7 @@ func getRerunPropertiesAndDimensions(c context.Context, bbid int64, analysisID i
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get properties for build %d: %w", bbid, err)
 	}
-	properties, err := getRerunProperties(c, build, analysisID)
+	properties, err := getRerunProperties(c, build, analysisID, compileTargets)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -76,7 +76,7 @@ func getRerunPropertiesAndDimensions(c context.Context, bbid int64, analysisID i
 	return properties, dimens, nil
 }
 
-func getRerunProperties(c context.Context, build *buildbucketpb.Build, analysisID int64) (*structpb.Struct, error) {
+func getRerunProperties(c context.Context, build *buildbucketpb.Build, analysisID int64, compileTargets []string) (*structpb.Struct, error) {
 	fields := map[string]interface{}{}
 	properties := build.GetInput().GetProperties()
 	if properties != nil {
@@ -93,6 +93,9 @@ func getRerunProperties(c context.Context, build *buildbucketpb.Build, analysisI
 		}
 	}
 	fields["analysis_id"] = analysisID
+	if len(compileTargets) > 0 {
+		fields["compile_targets"] = compileTargets
+	}
 	spb, err := toStructPB(fields)
 	if err != nil {
 		return nil, fmt.Errorf("cannot convert %v to structpb: %w", fields, err)

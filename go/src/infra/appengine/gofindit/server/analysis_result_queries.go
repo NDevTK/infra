@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO (nqmtuan): Perhaps move this file to a different util package
 package server
 
 import (
@@ -105,4 +106,27 @@ func GetSuspects(c context.Context, heuristicAnalysis *gfim.CompileHeuristicAnal
 	}
 
 	return suspects, nil
+}
+
+// GetCompileFailureForAnalysis gets CompileFailure for analysisID.
+func GetCompileFailureForAnalysis(c context.Context, analysisID int64) (*gfim.CompileFailure, error) {
+	analysis := &gfim.CompileFailureAnalysis{
+		Id: analysisID,
+	}
+	err := datastore.Get(c, analysis)
+	if err != nil {
+		logging.Errorf(c, "Error getting analysis %d: %s", analysisID, err)
+		return nil, err
+	}
+	compileFailure := &gfim.CompileFailure{
+		Id: analysis.CompileFailure.IntID(),
+		// We need to specify the parent here because this is a multi-part key.
+		Build: analysis.CompileFailure.Parent(),
+	}
+	err = datastore.Get(c, compileFailure)
+	if err != nil {
+		logging.Errorf(c, "Error getting compile failure for analysisID %d: %s", analysisID, err)
+		return nil, err
+	}
+	return compileFailure, nil
 }

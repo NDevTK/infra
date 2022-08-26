@@ -238,3 +238,40 @@ func TestGetSuspects(t *testing.T) {
 		So(suspects[3].Score, ShouldEqual, 1)
 	})
 }
+
+func TestGetCompileFailureForAnalysis(t *testing.T) {
+	t.Parallel()
+	c := memory.Use(context.Background())
+	datastore.GetTestable(c).AutoIndex(true)
+
+	Convey("No analysis found", t, func() {
+		_, err := GetCompileFailureForAnalysis(c, 100)
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("Have analysis for compile failure", t, func() {
+		build := &gfim.LuciFailedBuild{
+			Id: 111,
+		}
+		So(datastore.Put(c, build), ShouldBeNil)
+		datastore.GetTestable(c).CatchupIndexes()
+
+		compileFailure := &gfim.CompileFailure{
+			Id:    123,
+			Build: datastore.KeyForObj(c, build),
+		}
+		So(datastore.Put(c, compileFailure), ShouldBeNil)
+		datastore.GetTestable(c).CatchupIndexes()
+
+		analysis := &gfim.CompileFailureAnalysis{
+			Id:             456,
+			CompileFailure: datastore.KeyForObj(c, compileFailure),
+		}
+		So(datastore.Put(c, analysis), ShouldBeNil)
+		datastore.GetTestable(c).CatchupIndexes()
+
+		cf, err := GetCompileFailureForAnalysis(c, 456)
+		So(err, ShouldBeNil)
+		So(cf.Id, ShouldEqual, 123)
+	})
+}
