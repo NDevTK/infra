@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -57,7 +56,7 @@ func startServodContainer(ctx context.Context, d DockerClient, servoContainerNam
 		return nil, err
 	}
 
-	fmt.Printf("Launched container. To access, run:\n\tdocker exec -it %s bash\n", strings.TrimSuffix(res.Stdout, "\n"))
+	fmt.Printf("Launched container. To access, run:\n\tdocker exec -it %s bash\n", servoContainerName)
 	return res, nil
 }
 
