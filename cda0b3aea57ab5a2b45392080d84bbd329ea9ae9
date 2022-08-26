@@ -517,6 +517,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9599494_1aa5fb1d",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-26T13:25:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d78aba4a_f0504677",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 23
+      },
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d060ff83_11fc62fb",
@@ -548,6 +572,24 @@
       "side": 1,
       "message": "I think the tests in `TestUpdateHwidData` should cover these. I only use `GetProto()` there.",
       "parentUuid": "d060ff83_11fc62fb",
+      "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac83e7c4_80f88522",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/hwid_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-08-26T13:25:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "242be4d8_43eb1b91",
       "revId": "cda0b3aea57ab5a2b45392080d84bbd329ea9ae9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
