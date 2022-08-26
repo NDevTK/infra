@@ -34,19 +34,19 @@ const (
 	firmwareStableVersionKind = "firmwareStableVersion"
 )
 
-type crosStableVersionEntity struct {
+type CrosStableVersionEntity struct {
 	_kind string `gae:"$kind,crosStableVersion"`
 	ID    string `gae:"$id"`
 	Cros  string
 }
 
-type faftStableVersionEntity struct {
+type FaftStableVersionEntity struct {
 	_kind string `gae:"$kind,faftStableVersion"`
 	ID    string `gae:"$id"`
 	Faft  string
 }
 
-type firmwareStableVersionEntity struct {
+type FirmwareStableVersionEntity struct {
 	_kind    string `gae:"$kind,firmwareStableVersion"`
 	ID       string `gae:"$id"`
 	Firmware string
@@ -61,7 +61,7 @@ func GetCrosStableVersion(ctx context.Context, buildTarget string, model string)
 	justBoard, err := libsv.JoinBuildTargetModel(buildTarget, "")
 
 	// look up stable version by combined key
-	entity := &crosStableVersionEntity{ID: key}
+	entity := &CrosStableVersionEntity{ID: key}
 	err = datastore.Get(ctx, entity)
 	if err == nil {
 		return entity.Cros, nil
@@ -70,7 +70,7 @@ func GetCrosStableVersion(ctx context.Context, buildTarget string, model string)
 
 	// look up stable version by combined key with empty model.
 	// This will look like xxx-board;
-	entity = &crosStableVersionEntity{ID: justBoard}
+	entity = &CrosStableVersionEntity{ID: justBoard}
 	err = datastore.Get(ctx, entity)
 	if err == nil {
 		return entity.Cros, nil
@@ -78,7 +78,7 @@ func GetCrosStableVersion(ctx context.Context, buildTarget string, model string)
 	logging.Infof(ctx, "failed to find per-board stable version in new format %q", err.Error())
 
 	// fall back to looking up stable version by build target alone.
-	entity = &crosStableVersionEntity{ID: libsv.FallbackBuildTargetKey(buildTarget)}
+	entity = &CrosStableVersionEntity{ID: libsv.FallbackBuildTargetKey(buildTarget)}
 	if err := datastore.Get(ctx, entity); err != nil {
 		if datastore.IsErrNoSuchEntity(err) {
 			return "", status.Errorf(codes.NotFound, fmt.Sprintf("Entity not found for %s", key))
@@ -101,9 +101,9 @@ func PutSingleCrosStableVersion(ctx context.Context, buildTarget string, model s
 // PutManyCrosStableVersion writes many stable versions for ChromeOS to datastore
 func PutManyCrosStableVersion(ctx context.Context, crosOfKey map[string]string) error {
 	removeEmptyKeyOrValue(ctx, crosOfKey)
-	var entities []*crosStableVersionEntity
+	var entities []*CrosStableVersionEntity
 	for key, cros := range crosOfKey {
-		entities = append(entities, &crosStableVersionEntity{ID: key, Cros: cros})
+		entities = append(entities, &CrosStableVersionEntity{ID: key, Cros: cros})
 	}
 	if err := datastore.Put(ctx, entities); err != nil {
 		return errors.Annotate(err, "PutManyCrosStableVersion").Err()
@@ -117,7 +117,7 @@ func GetFirmwareStableVersion(ctx context.Context, buildTarget string, model str
 	if err != nil {
 		return "", errors.Annotate(err, "GetFirmwareStableVersion").Err()
 	}
-	entity := &firmwareStableVersionEntity{ID: key}
+	entity := &FirmwareStableVersionEntity{ID: key}
 	if err := datastore.Get(ctx, entity); err != nil {
 		if datastore.IsErrNoSuchEntity(err) {
 			return "", status.Errorf(codes.NotFound, fmt.Sprintf("Entity not found for %s", key))
@@ -139,9 +139,9 @@ func PutSingleFirmwareStableVersion(ctx context.Context, buildTarget string, mod
 // PutManyFirmwareStableVersion takes a map from build_target+model keys to firmware versions and persists it to datastore
 func PutManyFirmwareStableVersion(ctx context.Context, firmwareOfJoinedKey map[string]string) error {
 	removeEmptyKeyOrValue(ctx, firmwareOfJoinedKey)
-	var entities []*firmwareStableVersionEntity
+	var entities []*FirmwareStableVersionEntity
 	for key, firmware := range firmwareOfJoinedKey {
-		entities = append(entities, &firmwareStableVersionEntity{ID: key, Firmware: firmware})
+		entities = append(entities, &FirmwareStableVersionEntity{ID: key, Firmware: firmware})
 	}
 	if err := datastore.Put(ctx, entities); err != nil {
 		return errors.Annotate(err, "PutManyFirmwareStableVersion").Err()
@@ -155,7 +155,7 @@ func GetFaftStableVersion(ctx context.Context, buildTarget string, model string)
 	if err != nil {
 		return "", errors.Annotate(err, "GetFaftStableVersion").Err()
 	}
-	entity := &faftStableVersionEntity{ID: key}
+	entity := &FaftStableVersionEntity{ID: key}
 	if err := datastore.Get(ctx, entity); err != nil {
 		if datastore.IsErrNoSuchEntity(err) {
 			return "", status.Errorf(codes.NotFound, fmt.Sprintf("Entity not found for %s", key))
@@ -177,9 +177,9 @@ func PutSingleFaftStableVersion(ctx context.Context, buildTarget string, model s
 // PutManyFaftStableVersion takes a model, buildtarget, and faft stableversion and persists it to datastore
 func PutManyFaftStableVersion(ctx context.Context, faftOfJoinedKey map[string]string) error {
 	removeEmptyKeyOrValue(ctx, faftOfJoinedKey)
-	var entities []*faftStableVersionEntity
+	var entities []*FaftStableVersionEntity
 	for key, faft := range faftOfJoinedKey {
-		entities = append(entities, &faftStableVersionEntity{ID: key, Faft: faft})
+		entities = append(entities, &FaftStableVersionEntity{ID: key, Faft: faft})
 	}
 	if err := datastore.Put(ctx, entities); err != nil {
 		return errors.Annotate(err, "PutManyFaftStableVersion").Err()
