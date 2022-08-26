@@ -237,28 +237,7 @@ func (d *dockerClient) Exec(ctx context.Context, containerName string, req *Exec
 			ExitCode: -1,
 		}, errors.Reason("exec container: container is down").Err()
 	}
-	r, err := d.execSDK(ctx, containerName, req)
-	if err == nil && r.ExitCode == 0 {
-		return r, err
-	}
-	// Docker exec using SDK return error or exit code not 0.
-	// Retry exec with docker CLI.
-	log.Debugf(ctx, "Run docker execSDK %q: err: %v exitcode: %v", containerName, err, r.ExitCode)
-	log.Debugf(ctx, "Retry docker exec %q using docker CLI")
-
-	// The commands executed is not restricted by logic and it required to run them under sh without TTY.
-	args := []string{"exec", "-i", containerName}
-	args = append(args, req.Cmd...)
-	res, err := runWithTimeout(ctx, req.Timeout, "docker", args...)
-	log.Debugf(ctx, "Run docker exec %q: exitcode: %v", containerName, res.ExitCode)
-	log.Debugf(ctx, "Run docker exec %q: stdout: %v", containerName, res.Stdout)
-	log.Debugf(ctx, "Run docker exec %q: stderr: %v", containerName, res.Stderr)
-	log.Debugf(ctx, "Run docker exec %q: err: %v", containerName, err)
-	return &ExecResponse{
-		ExitCode: res.ExitCode,
-		Stdout:   res.Stdout,
-		Stderr:   res.Stderr,
-	}, errors.Annotate(err, "run docker image %q: %v", containerName, res.Stderr).Err()
+	return d.execSDK(ctx, containerName, req)
 }
 
 // Run executes command on running container using docker SDK.
