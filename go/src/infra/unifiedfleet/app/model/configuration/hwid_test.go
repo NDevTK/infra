@@ -265,7 +265,7 @@ func TestGetHwidData(t *testing.T) {
 	})
 }
 
-func TestParseHwidDataV1(t *testing.T) {
+func TestParseHwidData(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
@@ -278,12 +278,12 @@ func TestParseHwidDataV1(t *testing.T) {
 
 	t.Run("parse nil HwidDataEntity", func(t *testing.T) {
 		var want *ufspb.HwidData = nil
-		got, err := ParseHwidDataV1(nil)
+		got, err := ParseHwidData(nil)
 		if err != nil {
-			t.Fatalf("ParseHwidDataV1 failed: %s", err)
+			t.Fatalf("ParseHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("ParseHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("ParseHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
 
@@ -293,12 +293,12 @@ func TestParseHwidDataV1(t *testing.T) {
 		if err != nil {
 			t.Fatalf("GetHwidData failed: %s", err)
 		}
-		got, err := ParseHwidDataV1(ent)
+		got, err := ParseHwidData(ent)
 		if err != nil {
-			t.Fatalf("ParseHwidDataV1 failed: %s", err)
+			t.Fatalf("ParseHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("ParseHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("ParseHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
 
@@ -338,12 +338,12 @@ func TestParseHwidDataV1(t *testing.T) {
 		if err != nil {
 			t.Fatalf("GetHwidData failed: %s", err)
 		}
-		got, err := ParseHwidDataV1(ent)
+		got, err := ParseHwidData(ent)
 		if err != nil {
-			t.Fatalf("ParseHwidDataV1 failed: %s", err)
+			t.Fatalf("ParseHwidData failed: %s", err)
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("ParseHwidDataV1 returned unexpected diff (-want +got):\n%s", diff)
+			t.Errorf("ParseHwidData returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
 }

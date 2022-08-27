@@ -963,7 +963,7 @@ func getHwidData(ctx context.Context, hwid string) (*ufspb.HwidData, error) {
 		return nil, err
 	}
 
-	d, err := GetHwidDataV1(ctx, hwidClient, hwid)
+	d, err := GetHwidData(ctx, hwidClient, hwid)
 	if err != nil {
 		return nil, err
 	}

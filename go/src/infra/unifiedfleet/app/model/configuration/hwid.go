@@ -111,11 +111,11 @@ func GetHwidData(ctx context.Context, hwid string) (*HwidDataEntity, error) {
 	return entity, nil
 }
 
-// ParseHwidDataV1 returns the HwidData proto based on the datastore entity.
+// ParseHwidData returns the HwidData proto based on the datastore entity.
 //
 // It parses a given HwidDataEntity into the ufspb.HwidData proto containing
 // all DutLabels. No error is returned if the entity is nil.
-func ParseHwidDataV1(ent *HwidDataEntity) (*ufspb.HwidData, error) {
+func ParseHwidData(ent *HwidDataEntity) (*ufspb.HwidData, error) {
 	if ent == nil {
 		return nil, nil
 	}

@@ -22,7 +22,7 @@ import (
 
 const cacheAge = time.Hour
 
-// GetHwidDataV1 takes an hwid and returns the Sku and Variant in the form of
+// GetHwidData takes an hwid and returns the Sku and Variant in the form of
 // HwidData proto. It will try the following in order:
 // 1. Query from datastore. If under an hour old, return data.
 // 2. If over an hour old or no data in datastore, attempt to query new data
@@ -30,7 +30,7 @@ const cacheAge = time.Hour
 // 3. If HWID server data available, cache into datastore and return data.
 // 4. If server fails, return expired datastore data if present. If not, return
 // nil and error.
-func GetHwidDataV1(ctx context.Context, c hwid.ClientInterface, hwid string) (data *ufspb.HwidData, err error) {
+func GetHwidData(ctx context.Context, c hwid.ClientInterface, hwid string) (data *ufspb.HwidData, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = errors.Reason("Recovered from %v\n%s", r, debug.Stack()).Err()
@@ -58,7 +58,7 @@ func GetHwidDataV1(ctx context.Context, c hwid.ClientInterface, hwid string) (da
 			hwidEnt = hwidEntNew
 		}
 	}
-	return configuration.ParseHwidDataV1(hwidEnt)
+	return configuration.ParseHwidData(hwidEnt)
 }
 
 // fetchHwidData queries the hwid server with an hwid and stores the results
