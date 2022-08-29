@@ -22,6 +22,29 @@
       },
       "revId": "a14a68dbbaee31560e2560e068da630d2d5d4e9e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "728a8e6b_4c7d599e",
+        "filename": "build/packages/bbagent_race.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-08-29T18:49:37Z",
+      "side": 1,
+      "message": "let\u0027s keep only linux-amd64, we don\u0027t really have cgo anywhere else",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 15
+      },
+      "revId": "a14a68dbbaee31560e2560e068da630d2d5d4e9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
