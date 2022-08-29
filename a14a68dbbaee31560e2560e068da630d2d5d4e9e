@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "09b8b8da_a3e7f271",
+        "filename": "build/packages/bbagent_race.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-29T20:15:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d42ba426_cb5c0209",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 50
+      },
+      "revId": "a14a68dbbaee31560e2560e068da630d2d5d4e9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "728a8e6b_4c7d599e",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-08-29T18:49:37Z",
       "side": 1,
       "message": "let\u0027s keep only linux-amd64, we don\u0027t really have cgo anywhere else",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 15
+      },
+      "revId": "a14a68dbbaee31560e2560e068da630d2d5d4e9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "344a3ca0_3e7d3a8f",
+        "filename": "build/packages/bbagent_race.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-08-29T20:15:19Z",
+      "side": 1,
+      "message": "As suggested in the chat, I\u0027ll keep the mac and windows platforms, but make linux-amd64 the only linux platform.",
+      "parentUuid": "728a8e6b_4c7d599e",
       "range": {
         "startLine": 4,
         "startChar": 0,
