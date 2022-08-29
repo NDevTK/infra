@@ -1,0 +1,23 @@
+package: experimental/luci/bbagent_race/${platform}
+description: Runs LUCI Executables, part of buildbucket.
+platforms:
+- linux-amd64
+- mac-amd64
+- mac-arm64
+- windows-386
+- windows-amd64
+go_build_environ:
+  CGO_ENABLED:
+    linux:  1
+    mac:  0
+    windows: 0
+  race:
+    linux: 1
+    mac: 0
+    windows: 0
+go_packages:
+- go.chromium.org/luci/buildbucket/cmd/bbagent
+install_mode: copy
+root: ../../go/bin
+data:
+- file: bbagent${exe_suffix}
