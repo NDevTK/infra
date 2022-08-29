@@ -36,6 +36,8 @@ func (fs *FleetServerImpl) CheckFleetTestsPolicy(ctx context.Context, req *api.C
 		statusCode = api.TestStatus_NOT_A_PUBLIC_TEST
 	case *controller.InvalidImageError:
 		statusCode = api.TestStatus_NOT_A_PUBLIC_IMAGE
+	case *controller.InvalidQsAccountError:
+		statusCode = api.TestStatus_INVALID_QS_ACCOUNT
 	default:
 		return nil, err
 	}

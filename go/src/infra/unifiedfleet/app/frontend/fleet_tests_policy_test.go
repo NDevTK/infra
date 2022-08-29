@@ -23,10 +23,11 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 	Convey("Check Fleet Policy For Tests", t, func() {
 		Convey("happy path", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
-				TestName: "tast.lacros",
-				Board:    "eve",
-				Model:    "eve",
-				Image:    "eve-public/R105-14988.0.0",
+				TestName:  "tast.lacros",
+				Board:     "eve",
+				Model:     "eve",
+				Image:     "eve-public/R105-14988.0.0",
+				QsAccount: "chromium",
 			}
 
 			res, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
@@ -166,6 +167,19 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 			_, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Image cannot be empty")
+		})
+		Convey("Invalid QsAccount", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName:  "tast.lacros",
+				Board:     "eve",
+				Model:     "eve",
+				Image:     "eve-public/R105-14988.0.0",
+				QsAccount: "invalid",
+			}
+
+			res, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
+			So(err, ShouldBeNil)
+			So(res.TestStatus.Code, ShouldEqual, api.TestStatus_INVALID_QS_ACCOUNT)
 		})
 	})
 }

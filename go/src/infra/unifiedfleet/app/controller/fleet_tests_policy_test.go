@@ -35,10 +35,11 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 	Convey("Is Valid Public Chromium Test", t, func() {
 		Convey("happy path", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
-				TestName: "tast.lacros",
-				Board:    "eve",
-				Model:    "eve",
-				Image:    VALID_IMAGE_EVE,
+				TestName:  "tast.lacros",
+				Board:     "eve",
+				Model:     "eve",
+				Image:     VALID_IMAGE_EVE,
+				QsAccount: "chromium",
 			}
 
 			err := IsValidTest(ctx, req)
@@ -218,6 +219,21 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Image cannot be empty")
+		})
+		Convey("Invalid QsAccount and public auth group member", func() {
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName:  "tast.lacros",
+				Board:     "eve",
+				Model:     "eve",
+				Image:     VALID_IMAGE_EVE,
+				QsAccount: "invalid",
+			}
+
+			err := IsValidTest(ctx, req)
+			err, ok := err.(*InvalidQsAccountError)
+
+			So(err, ShouldNotBeNil)
+			So(ok, ShouldBeTrue)
 		})
 	})
 }

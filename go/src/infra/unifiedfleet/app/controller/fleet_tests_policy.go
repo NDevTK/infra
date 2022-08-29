@@ -64,6 +64,15 @@ func (e *InvalidTestError) Error() string {
 	return fmt.Sprintf("Public user cannnot run the not allowlisted test : %s", e.TestName)
 }
 
+// InvalidQsAccountError is the error raised when an invalid quota scheduler account is specified for a public test
+type InvalidQsAccountError struct {
+	QsAccount string
+}
+
+func (e *InvalidQsAccountError) Error() string {
+	return fmt.Sprintf("Cannot run public tests on a quota scheduler account which is not allowlisted : %s", e.QsAccount)
+}
+
 func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) error {
 	isMemberInPublicGroup, err := isPublicGroupMember(ctx, req)
 	if err != nil {
@@ -95,6 +104,10 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 	}
 	if !contains(getValidPublicImages(), req.Image) {
 		return &InvalidImageError{Image: req.Image}
+	}
+
+	if req.QsAccount != "" && !contains(getValidQuotaSchedulerAccounts(), req.QsAccount) {
+		return &InvalidQsAccountError{QsAccount: req.QsAccount}
 	}
 
 	return nil
@@ -200,6 +213,10 @@ func validatePublicBoardModel(ctx context.Context, board string, model string) e
 
 func getValidPublicImages() []string {
 	return []string{"eve-public/R105-14988.0.0", "octopus-public/R105-14988.0.0"}
+}
+
+func getValidQuotaSchedulerAccounts() []string {
+	return []string{"chromium", "chromium_fyi"}
 }
 
 func contains(listItems []string, name string) bool {
