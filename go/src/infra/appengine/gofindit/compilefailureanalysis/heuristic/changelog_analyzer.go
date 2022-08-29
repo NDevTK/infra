@@ -31,26 +31,28 @@ func AnalyzeChangeLogs(c context.Context, signal *gfim.CompileFailureSignal, cha
 	result := &gfim.HeuristicAnalysisResult{}
 	for _, changelog := range changelogs {
 		justification, err := AnalyzeOneChangeLog(c, signal, changelog)
-		// We only care about the relevant CLs
-		if justification.GetScore() > 0 {
-			commit := changelog.Commit
-			if err != nil {
-				logging.Errorf(c, "Error analyzing change log for commit %s. Error: %w", commit, err)
-				continue
-			}
-			reviewUrl, err := changelog.GetReviewUrl()
-			if err != nil {
-				logging.Errorf(c, "Error getting review URL for commit: %s. Error: %w", commit, err)
-				continue
-			}
-			reviewTitle, err := changelog.GetReviewTitle()
-			if err != nil {
-				// Just log the error from getting the review title - suspect should still be added
-				logging.Errorf(c, "Error getting review title for commit: %s. Error: %w", commit, err)
-			}
-
-			result.AddItem(commit, reviewUrl, reviewTitle, justification)
+		commit := changelog.Commit
+		if err != nil {
+			logging.Errorf(c, "Error analyzing change log for commit %s. Error: %w", commit, err)
+			continue
 		}
+
+		// We only care about the relevant CLs
+		if justification.GetScore() <= 0 {
+			continue
+		}
+
+		reviewUrl, err := changelog.GetReviewUrl()
+		if err != nil {
+			logging.Errorf(c, "Error getting review URL for commit: %s. Error: %w", commit, err)
+			continue
+		}
+		reviewTitle, err := changelog.GetReviewTitle()
+		if err != nil {
+			// Just log the error from getting the review title - suspect should still be added
+			logging.Errorf(c, "Error getting review title for commit: %s. Error: %w", commit, err)
+		}
+		result.AddItem(commit, reviewUrl, reviewTitle, justification)
 	}
 	result.Sort()
 	return result, nil
