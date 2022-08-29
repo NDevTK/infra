@@ -459,6 +459,7 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, 
                 wait_for_warm_cache = 5 * time.minute,
             ),
         ] if wait_missing_cache else [],
+        wait_for_capacity = True if wait_missing_cache else None,
     )
 
 # Finishes in ~1min with 10 steps.
