@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d42ba426_cb5c0209",
+        "filename": "build/packages/bbagent_race.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2022-08-29T18:46:10Z",
+      "side": 1,
+      "message": "let\u0027s just put it in experimental? Maybe experimental/luci/bbagent_race/${platform}?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 50
+      },
+      "revId": "a14a68dbbaee31560e2560e068da630d2d5d4e9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
