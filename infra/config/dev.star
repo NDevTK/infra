@@ -421,7 +421,7 @@ luci.bucket(
     ],
 )
 
-def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers):
+def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, wait_missing_cache):
     luci.builder(
         name = name,
         bucket = "loadtest",
@@ -447,23 +447,36 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers):
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
         },
+        caches = [
+            swarming.cache(
+                path = "missing1",
+                name = "missing1",
+                wait_for_warm_cache = 3 * time.minute,
+            ),
+            swarming.cache(
+                path = "missing2",
+                name = "missing2",
+                wait_for_warm_cache = 5 * time.minute,
+            ),
+        ] if wait_missing_cache else [],
     )
 
 # Finishes in ~1min with 10 steps.
-fakebuild_builder("fake-1m", 10, 2, 10, True)
-fakebuild_builder("fake-1m-no-bn", 10, 2, 10, False)
+fakebuild_builder("fake-1m", 10, 2, 10, True, False)
+fakebuild_builder("fake-1m-no-bn", 10, 2, 10, False, False)
+fakebuild_builder("fake-1m-exp-slices", 10, 2, 10, False, True)
 
 # Finishes in ~10min with 100 steps.
-fakebuild_builder("fake-10m", 100, 2, 10, True)
-fakebuild_builder("fake-10m-no-bn", 100, 2, 10, False)
+fakebuild_builder("fake-10m", 100, 2, 10, True, False)
+fakebuild_builder("fake-10m-no-bn", 100, 2, 10, False, False)
 
 # Finishes in ~30min with 300 steps.
-fakebuild_builder("fake-30m", 300, 2, 10, True)
-fakebuild_builder("fake-30m-no-bn", 300, 2, 10, False)
+fakebuild_builder("fake-30m", 300, 2, 10, True, False)
+fakebuild_builder("fake-30m-no-bn", 300, 2, 10, False, False)
 
 # Finishes in ~1h with 600 steps.
-fakebuild_builder("fake-1h", 600, 2, 10, True)
-fakebuild_builder("fake-1h-no-bn", 600, 2, 10, False)
+fakebuild_builder("fake-1h", 600, 2, 10, True, False)
+fakebuild_builder("fake-1h-no-bn", 600, 2, 10, False, False)
 
 def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, sleep_max_sec, build_numbers, schedule = None, wait_for_children = False):
     luci.builder(
