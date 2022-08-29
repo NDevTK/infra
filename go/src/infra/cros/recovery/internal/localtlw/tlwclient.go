@@ -379,7 +379,13 @@ func dockerVerifyServodDaemonIsUp(ctx context.Context, dc docker.Client, contain
 		Timeout: 2 * time.Minute,
 		Cmd:     []string{"servodtool", "instance", "wait-for-active", "-p", fmt.Sprintf("%d", servodPort), "--timeout", fmt.Sprintf("%d", waitTime)},
 	}
-	_, err := dc.Exec(ctx, containerName, eReq)
+	res, err := dc.Exec(ctx, containerName, eReq)
+	// When the wait time is less request timeout, the cmd can finish with nil error
+	// exitcode can be 1 if the wait time is exceeded.
+	if res != nil && res.ExitCode != 0 {
+		log.Debugf(ctx, "servodtool did not response before %s", waitTime)
+		return errors.Reason(res.Stderr).Err()
+	}
 	return errors.Annotate(err, "docker verify servod daemon is up").Err()
 }
 
