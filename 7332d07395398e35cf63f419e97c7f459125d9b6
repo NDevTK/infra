@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b97a5f3_cef9fa8c",
+        "filename": "build/build.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 818,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-08-29T18:16:13Z",
+      "side": 1,
+      "message": "nit: please make it \n\n```\ntarget_goarch \u003d default_environ.GOARCH or get_host_goarch()\n```\n\nIt is weird this code is structurally different from the one that populates target_goos",
+      "range": {
+        "startLine": 817,
+        "startChar": 2,
+        "endLine": 818,
+        "endChar": 79
+      },
+      "revId": "7332d07395398e35cf63f419e97c7f459125d9b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

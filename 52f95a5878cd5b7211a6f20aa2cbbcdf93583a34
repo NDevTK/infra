@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08a4afdf_1fcf99ea",
+        "filename": "build/build.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 784,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-08-29T18:16:13Z",
+      "side": 0,
+      "message": "I think I remembered why this is not supported. The script first builds and installs (with \"go install\") **everything**, and later splits it up into individual CIPD packages.\n\n\"go install\" installs everything into a shared GOBIN directory. When building the same package twice with different options (aka \"different go environments\"), only the last binary will end up in GOBIN (the first will be overwritten). And the last binary would be packaged into both CIPD packages, which is wrong.\n\nPlease keep this check, it is important safeguard. We\u0027ll need to figure out some other way to work around it (e.g. maybe allowing providing a custom per-package binary name to \"go install\" and then checking it is unique across all build configurations).",
+      "range": {
+        "startLine": 784,
+        "startChar": 26,
+        "endLine": 784,
+        "endChar": 47
+      },
+      "revId": "52f95a5878cd5b7211a6f20aa2cbbcdf93583a34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
