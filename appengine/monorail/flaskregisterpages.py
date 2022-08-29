@@ -848,17 +848,9 @@ class ServletRegistry(object):
             backendsearch.BackendSearch(services=service).GetBackendSearch,
             ['GET']),
         (
-            '/search.do',
-            backendsearch.BackendSearch(services=service).PostBackendSearch,
-            ['POST']),
-        (
             '/nonviewable',
             backendnonviewable.BackendNonviewable(
                 services=service).GetBackendNonviewable, ['GET']),
-        (
-            '/nonviewable.do',
-            backendnonviewable.BackendNonviewable(
-                services=service).PostBackendNonviewable, ['POST']),
     ]
 
     for rule in _BACKEND_URL:
