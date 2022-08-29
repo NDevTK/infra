@@ -15,6 +15,7 @@ func init() {
 
 }
 
+// siminfoConverter converts Skylab inventory SIMInfo labels to Autotest labels
 func siminfoConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 
 	for _, s := range ls.GetSiminfo() {
@@ -63,6 +64,7 @@ func siminfoConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	}
 }
 
+// siminfoReverter converts Autotest SIMInfo labels back to Skylab inventory labels
 func siminfoReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 
 	num_sim := len(d["label-sim_slot_id"])

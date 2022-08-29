@@ -5,6 +5,7 @@
 package labels
 
 import (
+	"strconv"
 	"strings"
 
 	"infra/libs/skylab/inventory"
@@ -118,4 +119,84 @@ func basicReverter(ls *inventory.SchedulableLabels, labels []string) []string {
 		i--
 	}
 	return labels
+}
+
+// assignLastStringValueAndDropKey assign the last string value matching the key to `to`
+// and drop the key
+func assignLastStringValueAndDropKey(d map[string][]string, to *string, key string) map[string][]string {
+	if v, ok := getLastStringValue(d, key); ok {
+		*to = v
+	}
+	delete(d, key)
+	return d
+}
+
+// getLastStringValue return the last string value matching the key
+func getLastStringValue(d map[string][]string, key string) (string, bool) {
+	if vs, ok := d[key]; ok {
+		if len(vs) > 0 {
+			return vs[len(vs)-1], true
+		}
+		return "", false
+	}
+	return "", false
+}
+
+// assignLastBoolValueAndDropKey assign the last bool value matching the key to `to`
+// and drop the key
+func assignLastBoolValueAndDropKey(d map[string][]string, to *bool, key string) map[string][]string {
+	if v, ok := getLastBoolValue(d, key); ok {
+		*to = v
+	}
+	delete(d, key)
+	return d
+}
+
+// getLastBoolValue return the last bool value matching the key
+func getLastBoolValue(d map[string][]string, key string) (bool, bool) {
+	if s, ok := getLastStringValue(d, key); ok {
+		return strings.ToLower(s) == "true", true
+	}
+	return false, false
+}
+
+// assignLastInt32ValueAndDropKey assign the last int32 value matching the key to `to`
+// and drop the key
+func assignLastInt32ValueAndDropKey(d map[string][]string, to *int32, key string) map[string][]string {
+	if v, ok := getLastInt32Value(d, key); ok {
+		*to = v
+	}
+	delete(d, key)
+	return d
+}
+
+// getLastInt32Value return the last int32 value matching the key
+func getLastInt32Value(d map[string][]string, key string) (int32, bool) {
+	if s, ok := getLastStringValue(d, key); ok {
+		if c, err := strconv.ParseInt(s, 10, 32); err == nil {
+			return int32(c), true
+		}
+		return int32(-1), false
+	}
+	return int32(-1), false
+}
+
+// assignLastIntValueAndDropKey assign the last int value matching the key to `to`
+// and drop the key
+func assignLastIntValueAndDropKey(d map[string][]string, to *int, key string) map[string][]string {
+	if v, ok := getLastIntValue(d, key); ok {
+		*to = v
+	}
+	delete(d, key)
+	return d
+}
+
+// getLastIntValue return the last int value matching the key
+func getLastIntValue(d map[string][]string, key string) (int, bool) {
+	if s, ok := getLastStringValue(d, key); ok {
+		if c, err := strconv.Atoi(s); err == nil {
+			return c, true
+		}
+	}
+	return -1, false
 }
