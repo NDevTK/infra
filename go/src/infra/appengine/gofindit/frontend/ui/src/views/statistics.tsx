@@ -5,7 +5,7 @@
 export const StatisticsPage = () => {
   return (
     <main>
-      <h1>GoFindit Statistics</h1>
+      <h1>LUCI Bisection Statistics</h1>
     </main>
   );
 };

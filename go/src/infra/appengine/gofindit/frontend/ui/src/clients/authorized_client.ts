@@ -13,15 +13,15 @@ export class AuthorizedPrpcClient {
   useIDToken: boolean;
 
   // Initializes a new AuthorizedPrpcClient that connects to host.
-  // To connect to GoFindit, leave host unspecified.
+  // To connect to LUCI Bisection, leave host unspecified.
   constructor(host?: string, useIDToken?: boolean) {
-    // Only allow insecure connections in GoFindit in local development,
+    // Only allow insecure connections in LUCI Bisection in local development,
     // where risk of man-in-the-middle attack to server is negligible.
     const insecure = document.location.protocol === 'http:' && !host;
     if (insecure && document.location.hostname !== 'localhost') {
       // Server misconfiguration.
       throw new Error(
-        'GoFindit should never be served over http: outside local development.'
+        'LUCI Bisection should never be served over http: outside local development.'
       );
     }
 

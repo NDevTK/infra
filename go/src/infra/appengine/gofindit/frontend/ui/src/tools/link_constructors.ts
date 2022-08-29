@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { GitilesCommit } from '../services/gofindit';
+import { GitilesCommit } from '../services/luci_bisection';
 
 export interface ExternalLink {
   linkText: string;

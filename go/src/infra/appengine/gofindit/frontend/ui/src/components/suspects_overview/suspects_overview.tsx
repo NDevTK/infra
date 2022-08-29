@@ -13,7 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { PrimeSuspect } from '../../services/gofindit';
+import { PrimeSuspect } from '../../services/luci_bisection';
 
 interface Props {
   suspects: PrimeSuspect[];

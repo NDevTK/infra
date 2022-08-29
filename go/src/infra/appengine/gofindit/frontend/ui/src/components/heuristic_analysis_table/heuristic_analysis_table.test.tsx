@@ -7,7 +7,7 @@ import { render, screen } from '@testing-library/react';
 
 import { HeuristicAnalysisTable } from './heuristic_analysis_table';
 import { getMockHeuristicSuspect } from '../../testing_tools/mocks/heuristic_suspect_mock';
-import { HeuristicAnalysisResult } from '../../services/gofindit';
+import { HeuristicAnalysisResult } from '../../services/luci_bisection';
 
 describe('Test HeuristicAnalysisTable component', () => {
   test('if heuristic suspects are displayed', async () => {

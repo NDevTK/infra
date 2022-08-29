@@ -22,9 +22,9 @@ import { HeuristicAnalysisTable } from '../../components/heuristic_analysis_tabl
 // import { SuspectsOverview } from '../../components/suspects_overview/suspects_overview';
 
 import {
-  getGoFinditService,
+  getLUCIBisectionService,
   QueryAnalysisRequest,
-} from '../../services/gofindit';
+} from '../../services/luci_bisection';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -60,7 +60,7 @@ export const AnalysisDetailsPage = () => {
 
   const { bbid } = useParams();
 
-  const gfiService = getGoFinditService();
+  const gfiService = getLUCIBisectionService();
 
   const {
     isLoading,

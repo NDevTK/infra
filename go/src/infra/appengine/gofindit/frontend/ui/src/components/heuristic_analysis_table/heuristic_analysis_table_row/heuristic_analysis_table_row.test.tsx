@@ -9,7 +9,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 
 import { HeuristicAnalysisTableRow } from './heuristic_analysis_table_row';
-import { HeuristicSuspect } from '../../../services/gofindit';
+import { HeuristicSuspect } from '../../../services/luci_bisection';
 import { getMockHeuristicSuspect } from '../../../testing_tools/mocks/heuristic_suspect_mock';
 
 describe('Test HeuristicAnalysisTable component', () => {

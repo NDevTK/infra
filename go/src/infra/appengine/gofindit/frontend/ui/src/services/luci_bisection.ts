@@ -4,14 +4,16 @@
 
 import { AuthorizedPrpcClient } from '../clients/authorized_client';
 
-export const getGoFinditService = () => {
+export const getLUCIBisectionService = () => {
   const client = new AuthorizedPrpcClient();
-  return new GoFinditService(client);
+  return new LUCIBisectionService(client);
 };
 
-// A service to handle GoFindit-related pRPC requests.
-export class GoFinditService {
+// A service to handle LUCI Bisection-related pRPC requests.
+export class LUCIBisectionService {
   // The name of the pRPC service to connect to.
+  // TODO: update this once the pRPC service is renamed
+  //       from GoFindit to LUCI Bisection
   private static SERVICE = 'gofindit.GoFinditService';
 
   client: AuthorizedPrpcClient;
@@ -23,7 +25,11 @@ export class GoFinditService {
   async queryAnalysis(
     request: QueryAnalysisRequest
   ): Promise<QueryAnalysisResponse> {
-    return this.client.call(GoFinditService.SERVICE, 'QueryAnalysis', request);
+    return this.client.call(
+      LUCIBisectionService.SERVICE,
+      'QueryAnalysis',
+      request
+    );
   }
 }
 

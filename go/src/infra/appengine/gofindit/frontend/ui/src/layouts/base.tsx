@@ -51,7 +51,7 @@ export const BaseLayout = () => {
             <Tab
               className='logoNavTab'
               component={Link}
-              label='GoFindit'
+              label='LUCI Bisection'
               value='/'
               to='/'
             />

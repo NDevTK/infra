@@ -11,7 +11,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
 import { getCommitShortHash } from '../../../tools/link_constructors';
-import { HeuristicSuspect } from '../../../services/gofindit';
+import { HeuristicSuspect } from '../../../services/luci_bisection';
 
 interface Props {
   suspect: HeuristicSuspect;

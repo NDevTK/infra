@@ -1,7 +1,7 @@
 {
-    "name": "gofindit",
+    "name": "luci-bisection",
     "version": "1.0.0",
-    "description": "GoFindit UI",
+    "description": "LUCI Bisection UI",
     "private": true,
     "scripts": {
         "build": "tsc --noEmit --skipLibCheck && node esbuild.mjs",

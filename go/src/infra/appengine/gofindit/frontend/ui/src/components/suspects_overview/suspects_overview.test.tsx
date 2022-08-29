@@ -7,7 +7,7 @@ import { render, screen } from '@testing-library/react';
 
 import { getMockPrimeSuspect } from '../../testing_tools/mocks/prime_suspect_mock';
 import { SuspectsOverview } from './suspects_overview';
-import { PrimeSuspect } from '../../services/gofindit';
+import { PrimeSuspect } from '../../services/luci_bisection';
 
 describe('Test SuspectsOverview component', () => {
   test('if all suspect details are displayed', async () => {

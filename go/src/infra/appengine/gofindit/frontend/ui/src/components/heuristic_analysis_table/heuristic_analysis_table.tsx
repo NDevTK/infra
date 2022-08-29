@@ -16,7 +16,7 @@ import {
   HeuristicAnalysisResult,
   HeuristicSuspect,
   isAnalysisComplete,
-} from '../../services/gofindit';
+} from '../../services/luci_bisection';
 import { HeuristicAnalysisTableRow } from './heuristic_analysis_table_row/heuristic_analysis_table_row';
 
 interface Props {

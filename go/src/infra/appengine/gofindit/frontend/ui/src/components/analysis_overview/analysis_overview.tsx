@@ -10,7 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
-import { Analysis } from '../../services/gofindit';
+import { Analysis } from '../../services/luci_bisection';
 import { PlainTable } from '../plain_table/plain_table';
 
 import {

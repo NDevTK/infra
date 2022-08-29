@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { PrimeSuspect } from '../../services/gofindit';
+import { PrimeSuspect } from '../../services/luci_bisection';
 
 export const getMockPrimeSuspect = (commitID: string): PrimeSuspect => {
   return {

@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { Analysis } from '../../services/gofindit';
+import { Analysis } from '../../services/luci_bisection';
 import { AnalysisOverview } from './analysis_overview';
 import { getMockAnalysis } from '../../testing_tools/mocks/analysis_mock';
 
