@@ -195,11 +195,11 @@ func hasCriticalKernelErrorExec(ctx context.Context, info *execs.ExecInfo) error
 func isNotVirtualMachineExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	out, err := run(ctx, time.Minute, `cat /proc/cpuinfo | grep "model name"`)
-	if err != nil {
-		return errors.Annotate(err, "not virtual machine").Err()
-	}
 	if strings.Contains(strings.ToLower(out), "qemu") {
-		return errors.Reason("not virtual machine: qemu is virtual machine").Err()
+		return errors.Reason("is not virtual machine: qemu is a virtual machine").Err()
+	}
+	if err != nil {
+		log.Debugf(ctx, "Is Not Virtual Machine: error while determining whether cpuinfo contains model name (non-critical):%s.", err)
 	}
 	return nil
 }
