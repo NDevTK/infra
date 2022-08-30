@@ -72,50 +72,38 @@ def RunSteps(api):
   chrome_path = _getChrome(api)
   chrome_bin = chrome_path.join('chrome')
 
-  # Check if the plugin uses JavaScript or TypeScript.
-  # TODO(crbug.com/1196790): Clean up once all plugins use TypeScript.
-  tsconfig_path = test_dir.join('web', 'tsconfig.json')
-  if api.path.exists(tsconfig_path):  # pragma: no cover
-    # Karma requires the binary be named chromium, not chrome when running
-    # ChromiumHeadless.
-    chromium_bin = chrome_path.join('chromium')
-    api.step('rename to chromium', ['mv', chrome_bin, chromium_bin])
+  # Karma requires the binary be named chromium, not chrome when running
+  # ChromiumHeadless.
+  chromium_bin = chrome_path.join('chromium')
+  api.step('rename to chromium', ['mv', chrome_bin, chromium_bin])
 
-    # TypeScript plugin tests require that the plugin be located within the
-    # Gerrit repo. Move and rename the plugin.
-    plugins_dir = None
-    with api.step.nest('set up plugin layout'):
-      plugins_dir = api.path['start_dir'].join('gerrit', 'plugins')
-      api.step('move test repo', ['mv', test_dir, plugins_dir])
-      api.step('rename test repo',
-               ['mv', plugins_dir.join(test_name), plugins_dir.join(plugin)])
+  # TypeScript plugin tests require that the plugin be located within the
+  # Gerrit repo. Move and rename the plugin.
+  plugins_dir = None
+  with api.step.nest('set up plugin layout'):
+    plugins_dir = api.path['start_dir'].join('gerrit', 'plugins')
+    api.step('move test repo', ['mv', test_dir, plugins_dir])
+    api.step('rename test repo',
+             ['mv', plugins_dir.join(test_name),
+              plugins_dir.join(plugin)])
 
-    bazel_path = _getBazel(api)
+  bazel_path = _getBazel(api)
 
-    env = {
-        'CHROMIUM_BIN':
-            str(chromium_bin),
-        'PATH':
-            api.path.pathsep.join(
-                [str(bazel_path),
-                 str(node_path),
-                 str(chrome_path), '%(PATH)s']),
-    }
+  env = {
+      'CHROMIUM_BIN':
+          str(chromium_bin),
+      'PATH':
+          api.path.pathsep.join(
+              [str(bazel_path),
+               str(node_path),
+               str(chrome_path), '%(PATH)s']),
+  }
 
-    with api.context(env=env, cwd=plugins_dir.join(plugin)):
-      api.step('run karma tests', [
-          'bazel', 'test', '--test_output=all', 'web:karma_test',
-          '--test_arg=ChromiumHeadless'
-      ])
-  else:
-    env = {
-        'LAUNCHPAD_CHROME': chrome_bin,
-        'PATH': api.path.pathsep.join([str(node_path), '%(PATH)s'])
-    }
-
-    with api.context(env=env, cwd=test_dir):
-      api.step('npm install', ['npm', 'install'])
-      api.step('run wct tests', ['npx', 'wct', '--expanded'])
+  with api.context(env=env, cwd=plugins_dir.join(plugin)):
+    api.step('run karma tests', [
+        'bazel', 'test', '--test_output=all', 'web:karma_test',
+        '--test_arg=ChromiumHeadless'
+    ])
 
 
 def GenTests(api):

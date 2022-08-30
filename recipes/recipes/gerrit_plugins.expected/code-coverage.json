@@ -316,14 +316,10 @@
   },
   {
     "cmd": [
-      "npm",
-      "install"
+      "mv",
+      "[CLEANUP]/chrome_tmp_1/zip/chrome-linux/chrome",
+      "[CLEANUP]/chrome_tmp_1/zip/chrome-linux/chromium"
     ],
-    "cwd": "[START_DIR]/gerrit_plugins_code_coverage",
-    "env": {
-      "LAUNCHPAD_CHROME": "[CLEANUP]/chrome_tmp_1/zip/chrome-linux/chrome",
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
     "luci_context": {
       "realm": {
         "name": "infra/gerrit-plugins/code-coverage:try"
@@ -336,18 +332,127 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "npm install"
+    "name": "rename to chromium"
+  },
+  {
+    "cmd": [],
+    "name": "set up plugin layout"
   },
   {
     "cmd": [
-      "npx",
-      "wct",
-      "--expanded"
+      "mv",
+      "[START_DIR]/gerrit_plugins_code_coverage",
+      "[START_DIR]/gerrit/plugins"
     ],
-    "cwd": "[START_DIR]/gerrit_plugins_code_coverage",
+    "luci_context": {
+      "realm": {
+        "name": "infra/gerrit-plugins/code-coverage:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "set up plugin layout.move test repo",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "mv",
+      "[START_DIR]/gerrit/plugins/gerrit_plugins_code_coverage",
+      "[START_DIR]/gerrit/plugins/code-coverage"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "infra/gerrit-plugins/code-coverage:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "set up plugin layout.rename test repo",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get bazel"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://bazel/5.0.0/release/bazel-5.0.0-linux-x86_64",
+      "[CLEANUP]/bazel_tmp_1/bazel"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra/gerrit-plugins/code-coverage:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get bazel.gsutil download",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "chmod",
+      "+x",
+      "[CLEANUP]/bazel_tmp_1/bazel"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "infra/gerrit-plugins/code-coverage:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get bazel.make bazel executable",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bazel",
+      "test",
+      "--test_output=all",
+      "web:karma_test",
+      "--test_arg=ChromiumHeadless"
+    ],
+    "cwd": "[START_DIR]/gerrit/plugins/code-coverage",
     "env": {
-      "LAUNCHPAD_CHROME": "[CLEANUP]/chrome_tmp_1/zip/chrome-linux/chrome",
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
+      "CHROMIUM_BIN": "[CLEANUP]/chrome_tmp_1/zip/chrome-linux/chromium",
+      "PATH": "[CLEANUP]/bazel_tmp_1:[START_DIR]/packages/bin:[CLEANUP]/chrome_tmp_1/zip/chrome-linux:<PATH>"
     },
     "luci_context": {
       "realm": {
@@ -361,7 +466,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "run wct tests"
+    "name": "run karma tests"
   },
   {
     "name": "$result"
