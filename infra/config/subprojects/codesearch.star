@@ -154,17 +154,6 @@ def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores 
         triggered_by = "codesearch-gen-chromium-initiator",
     )
 
-def chromiumos_genfiles(name):
-    builder(
-        name = name,
-        executable = build.recipe("chromiumos_codesearch"),
-        builder_group_property_name = "builder_group",
-        execution_timeout = 9 * time.hour,
-        category = "gen",
-        # Gen builders are triggered by the initiator's recipe.
-        triggered_by = "codesearch-gen-chromiumos-initiator",
-    )
-
 # buildifier: disable=function-docstring
 def update_submodules_mirror(
         name,
@@ -402,17 +391,3 @@ update_submodules_mirror(
     target_repo = "https://chromium.googlesource.com/codesearch/chromium/tools/build",
     triggered_by = build.poller(),
 )
-
-# Runs every four hours (at predictable times).
-builder(
-    name = "codesearch-gen-chromiumos-initiator",
-    executable = build.recipe("chromiumos_codesearch_initiator"),
-    builder_group_property_name = "builder_group",
-    execution_timeout = 5 * time.hour,
-    category = "gen|init",
-    schedule = "0 */4 * * *",
-)
-
-chromiumos_genfiles("codesearch-gen-chromiumos-amd64-generic")
-chromiumos_genfiles("codesearch-gen-chromiumos-arm-generic")
-chromiumos_genfiles("codesearch-gen-chromiumos-arm64-generic")
