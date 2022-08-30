@@ -23,6 +23,7 @@ from api.v3.api_proto import user_objects_pb2
 from framework import exceptions
 from framework import monorailcontext
 from framework import permissions
+from framework import sorting
 from features import features_constants
 from testing import fake
 from services import features_svc
@@ -38,6 +39,7 @@ class HotlistsServicerTest(unittest.TestCase):
         issue=fake.IssueService(),
         project=fake.ProjectService(),
         config=fake.ConfigService(),
+        cache_manager=fake.CacheManager(),
         user=fake.UserService(),
         usergroup=fake.UserGroupService())
     self.hotlists_svcr = hotlists_servicer.HotlistsServicer(
@@ -110,6 +112,7 @@ class HotlistsServicerTest(unittest.TestCase):
         is_private=True)
     self.hotlist_resource_name = rnc.ConvertHotlistName(
         self.hotlist_1.hotlist_id)
+    sorting.InitializeArtValues(self.services)
 
   def CallWrapped(self, wrapped_handler, mc, *args, **kwargs):
     self.converter = converters.Converter(mc, self.services)
