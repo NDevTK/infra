@@ -79,9 +79,8 @@ def RunSteps(api):
 
   # TypeScript plugin tests require that the plugin be located within the
   # Gerrit repo. Move and rename the plugin.
-  plugins_dir = None
+  plugins_dir = api.path['start_dir'].join('gerrit', 'plugins')
   with api.step.nest('set up plugin layout'):
-    plugins_dir = api.path['start_dir'].join('gerrit', 'plugins')
     api.step('move test repo', ['mv', test_dir, plugins_dir])
     api.step('rename test repo',
              ['mv', plugins_dir.join(test_name),
@@ -100,6 +99,8 @@ def RunSteps(api):
   }
 
   with api.context(env=env, cwd=plugins_dir.join(plugin)):
+    api.step('npm install @open-wc/testing',
+             ['npm', 'install', '@open-wc/testing'])
     api.step('run karma tests', [
         'bazel', 'test', '--test_output=all', 'web:karma_test',
         '--test_arg=ChromiumHeadless'
