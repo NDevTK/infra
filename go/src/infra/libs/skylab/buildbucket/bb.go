@@ -112,9 +112,7 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 	b := &buildbucket_pb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "labpack_runner",
-		// The builder is empty because the name of the builder is completely determined by
-		// the name of the task. For example, "recovery" maps to "repair" and "repair-latest".
-		Builder: "",
+		Builder: "labpack_builder",
 	}
 	if params.BuilderName != "" {
 		b.Builder = params.BuilderName
@@ -124,9 +122,6 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 	}
 	if params.BuilderBucket != "" {
 		b.Bucket = params.BuilderBucket
-	}
-	if b.Builder == "" {
-		return "", -1, errors.Reason("ScheduleLabpackTask: builder must be provided").Err()
 	}
 	bbReq := &buildbucket_pb.ScheduleBuildRequest{
 		Builder:    b,
