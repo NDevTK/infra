@@ -684,10 +684,11 @@ func (c *testCommonFlags) verifyFleetTestsPolicy(ctx context.Context, ufsClient 
 	for _, model := range c.models {
 		for _, testName := range testNames {
 			resp, err := ufsClient.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{
-				TestName: testName,
-				Board:    c.board,
-				Model:    model,
-				Image:    c.image,
+				TestName:  testName,
+				Board:     c.board,
+				Model:     model,
+				Image:     c.image,
+				QsAccount: c.qsAccount,
 			})
 			if err != nil {
 				results.testValidationErrors = append(results.testValidationErrors, err.Error())
@@ -699,9 +700,9 @@ func (c *testCommonFlags) verifyFleetTestsPolicy(ctx context.Context, ufsClient 
 				validTestNamesMap[testName] = true
 				continue
 			}
-			if resp.TestStatus.Code == ufsapi.TestStatus_NOT_A_PUBLIC_BOARD || resp.TestStatus.Code == ufsapi.TestStatus_NOT_A_PUBLIC_IMAGE {
-				// No tests can be run with Invalid Board or Image so returning early to avoid unnecessary calls to UFS
-				// results.anyValidTests = false
+			if resp.TestStatus.Code == ufsapi.TestStatus_NOT_A_PUBLIC_BOARD || resp.TestStatus.Code == ufsapi.TestStatus_NOT_A_PUBLIC_IMAGE ||
+				resp.TestStatus.Code == ufsapi.TestStatus_INVALID_QS_ACCOUNT {
+				// No tests can be run with Invalid Board, Image or QsAccount so returning early to avoid unnecessary calls to UFS
 				return nil, fmt.Errorf(resp.TestStatus.Message)
 			}
 			results.testValidationErrors = append(results.testValidationErrors, resp.TestStatus.Message)

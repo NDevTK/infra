@@ -616,10 +616,11 @@ func TestSecondaryDevices(t *testing.T) {
 }
 
 const (
-	INVALID_BOARD = "Invalid Board"
-	INVALID_MODEL = "Invalid Model"
-	INVALID_IMAGE = "Invalid Image"
-	INVALID_TEST  = "Invalid Test"
+	INVALID_BOARD      = "Invalid Board"
+	INVALID_MODEL      = "Invalid Model"
+	INVALID_IMAGE      = "Invalid Image"
+	INVALID_TEST       = "Invalid Test"
+	INVALID_QS_ACCOUNT = "Invalid QSAccount"
 )
 
 var testValidatePublicChromiumOnChromeOsData = []struct {
@@ -766,6 +767,26 @@ var testValidatePublicChromiumOnChromeOsData = []struct {
 		"",
 		true,
 	},
+	{ // Invalid QsAccount
+		testCommonFlags{
+			board:     "eve",
+			models:    []string{"eve", "kevin"},
+			repeats:   7,
+			pool:      "",
+			image:     "sample-image",
+			release:   "sample-release",
+			priority:  256,
+			qsAccount: "sample-acct",
+		},
+		INVALID_QS_ACCOUNT,
+		[]string{"tast.lacros"},
+		nil,
+		nil,
+		"",
+		false,
+		INVALID_QS_ACCOUNT,
+		true,
+	},
 }
 
 func TestValidatePublicChromiumTest(t *testing.T) {
@@ -842,6 +863,8 @@ func (f *fakeUfsClient) CheckFleetTestsPolicy(ctx context.Context, in *ufsapi.Ch
 			status = ufsapi.TestStatus_NOT_A_PUBLIC_IMAGE
 		} else if msg == INVALID_TEST {
 			status = ufsapi.TestStatus_NOT_A_PUBLIC_TEST
+		} else if msg == INVALID_QS_ACCOUNT {
+			status = ufsapi.TestStatus_INVALID_QS_ACCOUNT
 		}
 		response.TestStatus = &ufsapi.TestStatus{
 			Code:    status,
