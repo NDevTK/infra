@@ -210,6 +210,7 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Env
 	p := &labpack.Params{
 		BuilderProject: "",
 		BuilderBucket:  "",
+		BuilderName:    tn.BuilderName(),
 		UnitName:       host,
 		TaskName:       tn.String(),
 		EnableRecovery: false,
