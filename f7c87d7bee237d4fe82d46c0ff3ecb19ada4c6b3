@@ -16,6 +16,23 @@
       "message": "Hi Gavin,\n\nThe fix should address crrev.com/c/3850761/comments/fcac6d1f_a566846c.",
       "revId": "f7c87d7bee237d4fe82d46c0ff3ecb19ada4c6b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a50e68a_9c27106a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2022-08-30T17:11:15Z",
+      "side": 1,
+      "message": "thanks for the fix!",
+      "revId": "f7c87d7bee237d4fe82d46c0ff3ecb19ada4c6b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
