@@ -24,7 +24,6 @@
   "devDependencies": {
     "@types/gapi.auth2": "0.0.51",
     "@types/sinon": "^7.5.2",
-    "tslint": "^5.18.0",
-    "typescript": "^3.7.0"
+    "tslint": "^5.18.0"
   }
 }

@@ -1,23 +1,26 @@
 {
   "name": "@chopsui/trusted-types-policy",
-  "version": "1.0.0",
+  "version": "0.3.2",
   "description": "Creates a secure TrustedTypes policy using DOMPurify as the sanitizer.",
+  "author": "The Chromium Authors",
+  "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
     "url": "https://chromium.googlesource.com/infra/infra/crdx/chopsui-npm.git"
   },
+  "module": "dist/create-policy.js",
+  "main": "dist/create-policy.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "lint": "eslint src/*",
     "test": "jest"
   },
-  "module": "dist/create-policy.js",
-  "main": "dist/create-policy.js",
   "devDependencies": {
     "@types/jest": "^28.1.7",
     "@types/trusted-types": "^2.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.33.1",
-    "@typescript-eslint/parser": "^5.33.1",
     "eslint": "^8.22.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-jest": "^26.8.3",

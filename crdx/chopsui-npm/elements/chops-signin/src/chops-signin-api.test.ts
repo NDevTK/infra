@@ -12,13 +12,14 @@ function clearGapiHandlers() {
 }
 
 function getGapiHandlers() {
-  return Object.keys(window).filter(key => key.startsWith('gapi0'));
+  return Object.keys(window).filter(key => key.startsWith('gapir'));
 }
 
 beforeEach(() => {
   window.gapi = (sinon.stub() as unknown) as typeof window.gapi;
   window.gapi.load = sinon.stub();
   const authStub: Partial<gapi.auth2.GoogleAuth> = new Promise(resolve =>
+    //@ts-ignore
     resolve()
   );
   authStub.currentUser = (sinon.stub() as unknown) as typeof authStub.currentUser;

@@ -15,7 +15,6 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: isDebug ? ['Chrome_latest'] : ['ChromeHeadless'],
-
     client: {
       mocha: {
         reporter: 'html',
@@ -61,17 +60,20 @@ module.exports = function(config) {
         modules: ['node_modules'],
         alias: {
           '@chopsui/chops-checkbox': path.resolve(
-            'elements/chops-checkbox/chops-checkbox.js'),
+              'elements/chops-checkbox/chops-checkbox.js'),
         },
       },
       module: {
         rules: [
           {
             test: /\.js$/,
-            loader: 'istanbul-instrumenter-loader',
+            loader: 'babel-loader',
             include: path.resolve('elements/'),
             exclude: [/\.test.js$/, /node_modules/],
-            query: {esModules: true},
+            options: {
+              // presets: ['@babel/preset-env'],
+              plugins: ['babel-plugin-istanbul'],
+            },
           },
         ],
       },

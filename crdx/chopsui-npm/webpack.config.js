@@ -8,14 +8,14 @@ module.exports = {
   entry: {
     'elements/chops-button': './elements/chops-button/chops-button.js',
     'elements/chops-checkbox': './elements/chops-checkbox/chops-checkbox.js',
-    'elements/chops-header': './elements/chops-header/chops-header.js',
+    'elements/chops-header': './elements/chops-header/dist/chops-header.js',
     'elements/chops-input': './elements/chops-input/chops-input.js',
     'elements/chops-loading': './elements/chops-loading/chops-loading.js',
     'elements/chops-login': './elements/chops-login/index.js',
     'elements/chops-radio': './elements/chops-radio/chops-radio.js',
     'elements/chops-radio-group':
       './elements/chops-radio-group/chops-radio-group.js',
-    'elements/chops-signin': './elements/chops-signin/index.js',
+    'elements/chops-signin': './elements/chops-signin/dist/chops-signin.js',
     'elements/chops-switch': './elements/chops-switch/chops-switch.js',
     'elements/chops-tab': './elements/chops-tab/chops-tab.js',
     'elements/chops-tab-bar': './elements/chops-tab-bar/chops-tab-bar.js',
@@ -26,7 +26,7 @@ module.exports = {
     modules: ['node_modules', 'elements'],
     alias: {
       '@chopsui/chops-checkbox': path.resolve(
-        'elements/chops-checkbox/chops-checkbox.js'),
+          'elements/chops-checkbox/chops-checkbox.js'),
     },
   },
 };

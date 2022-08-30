@@ -1,7 +1,8 @@
 {
   "packages": [
-    "elements/*",
-    "test-helpers/*"
+    "trusted-types-policy",
+    "test-helpers",
+    "elements/*"
   ],
   "version": "0.3.2"
 }
