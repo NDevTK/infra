@@ -33,6 +33,24 @@
       "message": "thanks for the fix!",
       "revId": "f7c87d7bee237d4fe82d46c0ff3ecb19ada4c6b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5498a95_da010894",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1380654
+      },
+      "writtenOn": "2022-08-31T09:10:49Z",
+      "side": 1,
+      "message": "I abandoned running the script for a while.\n\nI\u0027ll try to do that at least once a week to catch breaks earlier.",
+      "parentUuid": "5a50e68a_9c27106a",
+      "revId": "f7c87d7bee237d4fe82d46c0ff3ecb19ada4c6b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
