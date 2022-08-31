@@ -101,6 +101,7 @@ def RunSteps(api):
   with api.context(env=env, cwd=plugins_dir.join(plugin)):
     api.step('npm install @open-wc/testing',
              ['npm', 'install', '@open-wc/testing'])
+    api.step('bazel clean --expunge', ['bazel', 'clean', '--expunge'])
     api.step('run karma tests', [
         'bazel', 'test', '--test_output=all', 'web:karma_test',
         '--test_arg=ChromiumHeadless'
