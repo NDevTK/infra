@@ -353,6 +353,34 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and reboot",
 			},
 		},
+		"Repair CBI": {
+			Docs: []string{
+				"Restore backup CBI contents from UFS. go/cbi-auto-recovery-dd",
+			},
+			Conditions: []string{
+				"CBI is corrupt",
+			},
+			ExecName:               "cros_repair_cbi",
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"CBI is corrupt": {
+			Docs: []string{
+				"Check if CBI has been corrupted.",
+			},
+			ExecName:   "cros_cbi_is_corrupt",
+			RunControl: RunControl_RUN_ONCE,
+			Conditions: []string{
+				"CBI is present",
+			},
+		},
+		"CBI is present": {
+			Docs: []string{
+				"Check if CBI is present on the DUT (most devices manufactured after 2020 should have CBI) go/cros-board-info",
+			},
+			ExecName:   "cros_cbi_is_present",
+			RunControl: RunControl_RUN_ONCE,
+		},
 		"Login UI is up": {
 			Docs: []string{
 				"Check the command 'stop ui' won't crash the DUT.",
