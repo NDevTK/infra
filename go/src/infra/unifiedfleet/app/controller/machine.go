@@ -466,6 +466,18 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			oldMachine.GetAttachedDevice().BuildTarget = machine.GetAttachedDevice().GetBuildTarget()
 		case "admModel":
 			oldMachine.GetAttachedDevice().Model = machine.GetAttachedDevice().GetModel()
+		case "devboard.andreiboard.ultradebug_serial":
+			d := oldMachine.GetDevboard()
+			if d == nil {
+				d = &ufspb.Devboard{}
+				oldMachine.Device = &ufspb.Machine_Devboard{Devboard: d}
+			}
+			b := d.GetAndreiboard()
+			if b == nil {
+				b = &ufspb.Andreiboard{}
+				d.Board = &ufspb.Devboard_Andreiboard{Andreiboard: b}
+			}
+			b.UltradebugSerial = machine.GetDevboard().GetAndreiboard().GetUltradebugSerial()
 		}
 	}
 	// For partial update, validate kvm interface just before updating in case
@@ -1167,6 +1179,10 @@ func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMas
 			case "admModel":
 				if machine.GetAttachedDevice() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+				}
+			case "devboard.andreiboard.ultradebug_serial":
+				if machine.GetDevboard().GetAndreiboard() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - andreiboard cannot be empty/nil.")
 				}
 			case "tags":
 			case "serialNumber":
