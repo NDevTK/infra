@@ -44,7 +44,8 @@ class PathHandler:
         os.path.join(to_dir, os.path.relpath(path, from_dir)))
 
   def FromChroot(self, chroot_path: str):
-    return path_util.FromChrootPath(chroot_path, chroot_path=self.setup.chroot_dir)
+    return path_util.FromChrootPath(chroot_path,
+                                    chroot_path=self.setup.chroot_dir)
 
   def ToChroot(self, path: str):
     return path_util.ToChrootPath(path, chroot_path=self.setup.chroot_dir)
@@ -380,11 +381,19 @@ class PathHandler:
   # 1. Group 1: arg prefix
   # 2. Group 2: path
   g_argument_regexes = (
-      f"^"
+      "^"
       f"({g_argument_prefix_regex}?)"
       # Path may be inside quote marks.
       f'(?:\\\\")?({g_path_regex})(?:\\\\")?'
       "$")
+
+  # Matches:
+  # //some_target
+  # //some_target:subtarget
+  g_gn_target_regex = ("^(?:"
+                       f"(?:\/\/{g_common_name_regex})"
+                       f"(?:\:{g_common_name_regex})?"
+                       ")$")
 
   @staticmethod
   def FixPathInArgument(
@@ -407,7 +416,11 @@ class PathHandler:
     """
     match = re.match(PathHandler.g_argument_regexes, arg)
     if not match:
-      assert '/' not in arg, f"Unknown arg with possible path: {arg}"
+      if not re.match(PathHandler.g_gn_target_regex, arg):
+        assert '/' not in arg, f"Unknown arg with possible path: {arg}"
+
+      # Argument is a gn target. Nothing to fix.
+
       return (arg, '')
 
     assert '/' in arg, f"Unknown arg: {arg}"
