@@ -295,9 +295,9 @@ class Execution:
         files = os.listdir(src)
         assert len(files) == 1
         src = os.path.join(src, files[0])
-        self.execute_one_hook('unpackCmd', Execution.HookContext.UnpackCmd(
-            src=src,
-        ))
+        if not self.execute_one_hook(
+            'unpackCmd', Execution.HookContext.UnpackCmd(src=src)):
+          raise RuntimeError('unpacker not available')
 
     if not self.execute_one_hook('setSourceRoot'):
       dirs_after = set(f for f in os.listdir() if os.path.isdir(f))
@@ -424,12 +424,20 @@ def main(exe=None) -> None:
   exe.env['prefix'] = exe.env['out']
 
   # Generic Builder
-  for phase in ('unpackPhase', 'patchPhase', 'configurePhase', 'buildPhase', 'installPhase'):
+  for phase in (
+      'unpackPhase',
+      'patchPhase',
+      'configurePhase',
+      'buildPhase',
+      'installPhase',
+  ):
+    exe.execute_all_hooks(_phase_hook('pre', phase))
+    if _phase_hook('skip', phase) not in exe.env:
+      exe.execute_phase(phase)
+    exe.execute_all_hooks(_phase_hook('post', phase))
+
     if Execution.ENV_SOURCE_ROOT in exe.env:
       os.chdir(exe.env[Execution.ENV_SOURCE_ROOT])
-    exe.execute_all_hooks(_phase_hook('pre', phase))
-    exe.execute_phase(phase)
-    exe.execute_all_hooks(_phase_hook('post', phase))
 
   exe.execute_all_hooks('postHook')
 

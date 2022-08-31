@@ -39,16 +39,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	s := spec.NewSpecLoader(specDir, targetCIPD)
-	g, err := s.FromSpec("curl")
+	l := spec.NewSpecLoader(specDir)
+
+	pkgs, err := packages(l, targetCIPD)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	target, err := parseCIPDPlatform(targetCIPD)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := build(ctx, storageDir, target, g); err != nil {
+	if err := build(ctx, storageDir, target, pkgs...); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -68,7 +70,27 @@ func parseCIPDPlatform(plat string) (cipkg.Platform, error) {
 	return utilities.NewPlatform(os, arch), nil
 }
 
-func build(ctx context.Context, path string, target cipkg.Platform, out cipkg.Generator) error {
+// Return the list of packages' generators to be built for the target platform
+// e.g. linux-amd64.
+func packages(l *spec.SpecLoader, target string) ([]cipkg.Generator, error) {
+	pkgs := []string{
+		"curl",
+		"ninja",
+	}
+
+	var gs []cipkg.Generator
+	for _, pkg := range pkgs {
+		g, err := l.FromSpec(pkg, target)
+		if err != nil {
+			return nil, err
+		}
+		gs = append(gs, g)
+	}
+
+	return gs, nil
+}
+
+func build(ctx context.Context, path string, target cipkg.Platform, gens ...cipkg.Generator) error {
 	s, err := utilities.NewLocalStorage(path)
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
@@ -83,41 +105,44 @@ func build(ctx context.Context, path string, target cipkg.Platform, out cipkg.Ge
 		Storage: s,
 		Context: ctx,
 	}
-	drv, meta, err := out.Generate(bctx)
-	if err != nil {
-		return errors.Annotate(err, "failed to generate venv derivation").Err()
-	}
-	pkg := s.Add(drv, meta)
-	// Build derivations
-	b := utilities.NewBuilder(s)
-	if err := b.Add(pkg); err != nil {
-		return errors.Annotate(err, "failed to add package to builder").Err()
-	}
-	var temp = filepath.Join(path, "temp")
-	if err := os.RemoveAll(temp); err != nil {
-		return err
-	}
-	if err := os.Mkdir(temp, os.ModePerm); err != nil {
-		return err
-	}
-	if err := b.BuildAll(func(p cipkg.Package) error {
-		id := p.Derivation().ID()
-		d, err := os.MkdirTemp(temp, fmt.Sprintf("%s-", id))
+
+	for _, g := range gens {
+		drv, meta, err := g.Generate(bctx)
 		if err != nil {
+			return errors.Annotate(err, "failed to generate venv derivation").Err()
+		}
+		pkg := s.Add(drv, meta)
+		// Build derivations
+		b := utilities.NewBuilder(s)
+		if err := b.Add(pkg); err != nil {
+			return errors.Annotate(err, "failed to add package to builder").Err()
+		}
+		var temp = filepath.Join(path, "temp")
+		if err := os.RemoveAll(temp); err != nil {
 			return err
 		}
-		var out strings.Builder
-		cmd := utilities.CommandFromPackage(p)
-		cmd.Stdout = &out
-		cmd.Stderr = &out
-		cmd.Dir = d
-		if err := builtins.Execute(ctx, cmd); err != nil {
-			logging.Errorf(ctx, "%s", out.String())
+		if err := os.Mkdir(temp, os.ModePerm); err != nil {
 			return err
 		}
-		return nil
-	}); err != nil {
-		return errors.Annotate(err, "failed to build package").Err()
+		if err := b.BuildAll(func(p cipkg.Package) error {
+			id := p.Derivation().ID()
+			d, err := os.MkdirTemp(temp, fmt.Sprintf("%s-", id))
+			if err != nil {
+				return err
+			}
+			var out strings.Builder
+			cmd := utilities.CommandFromPackage(p)
+			cmd.Stdout = &out
+			cmd.Stderr = &out
+			cmd.Dir = d
+			if err := builtins.Execute(ctx, cmd); err != nil {
+				logging.Errorf(ctx, "%s", out.String())
+				return err
+			}
+			return nil
+		}); err != nil {
+			return errors.Annotate(err, "failed to build package").Err()
+		}
 	}
 	s.Prune(ctx, time.Hour*24, 256)
 	return nil

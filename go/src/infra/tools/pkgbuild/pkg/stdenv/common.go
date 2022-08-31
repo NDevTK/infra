@@ -99,7 +99,15 @@ type Source interface {
 }
 
 type SourceGit struct {
-	Repository string
+	// The url to the git repository. Support any protocol used by the git
+	// command line interfaces.
+	URL string
+
+	// The reference for the git repo. Can be anything supported by git checkout.
+	// Typical use cases:
+	// - refs/tags/xxx
+	// - 8e8722e14772727b0e1cd5bd925a0f089611a60b
+	Ref string
 }
 
 func (s *SourceGit) isSourceMethod() {}

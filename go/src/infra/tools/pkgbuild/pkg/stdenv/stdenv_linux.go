@@ -41,25 +41,41 @@ func containers(plat cipkg.Platform) string {
 	}
 }
 
-func (g *Generator) fetchSource() (cipkg.Generator, error) {
+func (g *Generator) fetchSource() (gen cipkg.Generator, envs []string, err error) {
+	name := fmt.Sprintf("%s_source", g.Name)
 	switch s := g.Source.(type) {
 	case *SourceGit:
-		panic("unimplemented")
+		const gitCommand = `cd "${out}" && "$0" clone "$1" src && cd src && "$0" checkout "$2" `
+		return &utilities.BaseGenerator{
+				Name:    name,
+				Builder: "{{.posixUtils_import}}/bin/bash",
+				Args:    []string{"-c", gitCommand, "{{.stdenv_git}}/bin/git", s.URL, s.Ref},
+				Dependencies: append([]utilities.BaseDependency{
+					{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
+					{Type: cipkg.DepsBuildHost, Generator: common.Git},
+				}),
+			}, []string{
+				// We don't need unpacking the source for git
+				"skipUnpack=1",
+				fmt.Sprintf("sourceRoot={{.%s_source}}/src", g.Name),
+			}, nil
 	case *SourceURL:
 		return &builtins.FetchURL{
-			Name:          fmt.Sprintf("%s_source", g.Name),
-			URL:           s.URL,
-			Filename:      s.Filename,
-			HashAlgorithm: s.HashAlgorithm,
-			HashString:    s.HashString,
-		}, nil
+				Name:          name,
+				URL:           s.URL,
+				Filename:      s.Filename,
+				HashAlgorithm: s.HashAlgorithm,
+				HashString:    s.HashString,
+			}, []string{
+				fmt.Sprintf("srcs={{.%s_source}}", g.Name),
+			}, nil
 	default:
-		return nil, fmt.Errorf("unknown source type %#v:", s)
+		return nil, nil, fmt.Errorf("unknown source type %#v:", s)
 	}
 }
 
 func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	src, err := g.fetchSource()
+	src, srcEnvs, err := g.fetchSource()
 	if err != nil {
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
@@ -69,16 +85,19 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("containers not available for %s", ctx.Platforms.Host)
 	}
 
+	envs := []string{
+		"buildFlags=",
+		"installFlags=",
+		fmt.Sprintf("dockerImage=%s", containers),
+	}
+	envs = append(envs, srcEnvs...)
+	envs = append(envs, g.Env...)
+
 	base := &utilities.BaseGenerator{
 		Name:    g.Name,
 		Builder: "{{.stdenv_python3}}/bin/python3",
 		Args:    []string{"-I", "-B", "{{.setup_linux}}/setup_linux.py", "{{.stdenv}}"},
-		Env: append([]string{
-			"buildFlags=",
-			"installFlags=",
-			fmt.Sprintf("dockerImage=%s", containers),
-			fmt.Sprintf("srcs={{.%s_source}}", g.Name),
-		}, g.Env...),
+		Env:     envs,
 		Dependencies: append([]utilities.BaseDependency{
 			{Type: cipkg.DepsBuildHost, Generator: src},
 			{Type: cipkg.DepsBuildHost, Generator: common.Stdenv},

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -18,6 +19,7 @@ import (
 	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/stdenv"
 
+	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -29,19 +31,12 @@ var fromSpecSupport embed.FS
 type SpecLoader struct {
 	Directory string
 
-	// Ideally we shouldn't have a separated Platform in the loader. But it's
-	// difficult to translate spec into stdenv generator because we need the
-	// Platform to construct the Spec.Create and call SpecLoader.FromSpec
-	// recursively for dependencies.
-	Platform string
-
 	pkgs map[string]*stdenv.Generator
 }
 
-func NewSpecLoader(dir string, plat string) *SpecLoader {
+func NewSpecLoader(dir string) *SpecLoader {
 	return &SpecLoader{
 		Directory: dir,
-		Platform:  plat,
 		pkgs:      make(map[string]*stdenv.Generator),
 	}
 }
@@ -50,10 +45,26 @@ func (l *SpecLoader) LoadPackageDef(pkg string) (*PackageDef, error) {
 	return LoadPackageDef(l.Directory, pkg)
 }
 
-func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
+// FromSpec convert the 3pp spec to stdenv generator.
+// Ideally we should use the Host Platform in BuildContext during the
+// generation. But it's much easier to construct the Spec.Create before
+// generate and call SpecLoader.FromSpec recursively for dependencies.
+func (l *SpecLoader) FromSpec(pkg, host string) (*stdenv.Generator, error) {
 	if g, ok := l.pkgs[pkg]; ok {
+		if g == nil {
+			return nil, fmt.Errorf("circular dependency detected: %s %s", pkg, host)
+		}
 		return g, nil
 	}
+
+	// Mark the package visited to prevent circular dependency.
+	// Remove the mark if we end up with not updating the result.
+	l.pkgs[pkg] = nil
+	defer func() {
+		if l.pkgs[pkg] == nil {
+			delete(l.pkgs, pkg)
+		}
+	}()
 
 	def, err := l.LoadPackageDef(pkg)
 	if err != nil {
@@ -79,7 +90,7 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 
 	for _, c := range def.Spec.GetCreate() {
 		if c.GetPlatformRe() != "" {
-			matched, err := regexp.MatchString(c.GetPlatformRe(), l.Platform)
+			matched, err := regexp.MatchString(c.GetPlatformRe(), host)
 			if err != nil {
 				return nil, err
 			}
@@ -97,16 +108,24 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 	var src stdenv.Source
 	switch source.GetMethod().(type) {
 	case *Spec_Create_Source_Git:
-		// source.GetGit()
+		s := source.GetGit()
+		ref, err := resolveGitRef(s)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve git ref: %w", err)
+		}
+		src = &stdenv.SourceGit{
+			URL: s.GetRepo(),
+			Ref: ref,
+		}
 	case *Spec_Create_Source_Url:
-		u := source.GetUrl()
-		ext := u.GetExtension()
+		s := source.GetUrl()
+		ext := s.GetExtension()
 		if ext == "" {
 			ext = ".tar.gz"
 		}
 		src = &stdenv.SourceURL{
-			URL:           u.GetDownloadUrl(),
-			Filename:      fmt.Sprintf("%s-%s%s", def.Name, u.GetVersion(), ext),
+			URL:           s.GetDownloadUrl(),
+			Filename:      fmt.Sprintf("%s-%s%s", def.Name, s.GetVersion(), ext),
 			HashAlgorithm: builtins.HashIgnore,
 		}
 	case *Spec_Create_Source_Cipd:
@@ -147,7 +166,7 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 		{Type: cipkg.DepsBuildHost, Generator: fromSpecDrv},
 	}
 	for _, dep := range build.GetTool() {
-		g, err := l.FromSpec(dep)
+		g, err := l.FromSpec(dep, platform.CurrentPlatform())
 		if err != nil {
 			return nil, err
 		}
@@ -157,7 +176,7 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 		})
 	}
 	for _, dep := range build.GetDep() {
-		g, err := l.FromSpec(dep)
+		g, err := l.FromSpec(dep, host)
 		if err != nil {
 			return nil, err
 		}
@@ -174,14 +193,58 @@ func (l *SpecLoader) FromSpec(pkg string) (*stdenv.Generator, error) {
 		Env: []string{
 			fmt.Sprintf("patches=%s", strings.Join(patches, string(os.PathListSeparator))),
 			fmt.Sprintf("fromSpecInstall=%s", fromSpecInstall),
-			fmt.Sprintf("_3PP_PLATFORM=%s", l.Platform),
+			fmt.Sprintf("_3PP_PLATFORM=%s", host),
 		},
 	}
 
-	if strings.HasPrefix(l.Platform, "mac-") {
+	if strings.HasPrefix(host, "mac-") {
 		// TODO(fancl): Set CROSS_TRIPLE and MACOSX_DEPLOYMENT_TARGET for Mac.
 	}
 
 	l.pkgs[pkg] = g
 	return g, nil
+}
+
+//go:embed resolve_git.py
+var resolveGitScript string
+
+type tagInfo struct {
+	// Regulated semantic versioning tag e.g. 1.2.3
+	// This may not be the corresponding git tag.
+	Tag string
+
+	// Git commit for the tag.
+	Commit string
+}
+
+// resolveGitTag require python3 and git in the PATH.
+func resolveGitRef(git *GitSource) (string, error) {
+	cmd := exec.Command("python3", "-c", resolveGitScript)
+	cmd.Stderr = os.Stderr
+
+	in, err := cmd.StdinPipe()
+	if err != nil {
+		return "", err
+	}
+	out, err := cmd.StdoutPipe()
+	if err := cmd.Start(); err != nil {
+		return "", err
+	}
+
+	if err := json.NewEncoder(in).Encode(git); err != nil {
+		return "", err
+	}
+	in.Close()
+
+	var info tagInfo
+	if err := json.NewDecoder(out).Decode(&info); err != nil {
+		return "", err
+	}
+	out.Close()
+
+	if err := cmd.Wait(); err != nil {
+		return "", err
+	}
+
+	return info.Commit, nil
 }
