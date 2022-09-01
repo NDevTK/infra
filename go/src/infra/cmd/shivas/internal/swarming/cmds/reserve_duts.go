@@ -23,7 +23,6 @@ import (
 	"infra/cros/recovery/config"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 )
 
 type reserveDuts struct {
@@ -108,8 +107,8 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 // scheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
 func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string) (string, int64, error) {
 	// TODO(b/229896419): refactor to hide labpack.Params struct.
-	v := labpack.CIPDProd
-	p := &labpack.Params{
+	v := buildbucket.CIPDProd
+	p := &buildbucket.Params{
 		UnitName:     host,
 		TaskName:     string(tasknames.Custom),
 		AdminService: e.AdminService,
@@ -127,7 +126,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 			fmt.Sprintf("comment:%s", c.comment),
 		},
 	}
-	url, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)
 	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
 }
 

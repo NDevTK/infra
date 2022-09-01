@@ -16,7 +16,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/cros/recovery/tasknames"
-	"infra/libs/skylab/buildbucket/labpack"
+	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
 
@@ -33,7 +33,7 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 
 	bbURL, cErr := createBuildbucketTask(ctx, createBuildbucketTaskRequest{
 		taskName: tn,
-		taskType: labpack.CIPDProd,
+		taskType: buildbucket.CIPDProd,
 		botID:    botID,
 	})
 	if cErr != nil {

@@ -20,7 +20,6 @@ import (
 	"infra/cros/recovery/config"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 )
 
 // Recovery subcommand: Recovering the devices.
@@ -68,15 +67,15 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 	if len(args) == 0 {
 		return errors.Reason("create recovery task: unit is not specified").Err()
 	}
-	v := labpack.CIPDProd
+	v := buildbucket.CIPDProd
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
-		url, _, err := labpack.ScheduleTask(
+		url, _, err := buildbucket.ScheduleTask(
 			ctx,
 			bc,
 			v,
-			&labpack.Params{
+			&buildbucket.Params{
 				UnitName:         unit,
 				TaskName:         string(tasknames.Custom),
 				AdminService:     e.AdminService,
