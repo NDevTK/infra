@@ -994,6 +994,7 @@ SPECS.update({
         UniversalSource('configparser', '3.5.0'),
         UniversalSource('crontab', '0.22.0'),
         UniversalSource('distlib', '0.3.0', pyversions=['py3']),
+        UniversalSource('docopt', '0.6.2'),
         UniversalSource('ezt', '1.1'),
         UniversalSource('fixtures', '4.0.1'),
         UniversalSource('future', '0.16.0'),

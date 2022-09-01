@@ -1650,6 +1650,20 @@ wheel: <
 
 * *universal*
 
+## **docopt**
+
+### 0.6.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/docopt-py2_py3"
+  version: "version:0.6.2"
+>
+```
+
+
+* *universal*
+
 ## **ecdsa**
 
 ### 0.17.0
