@@ -48,6 +48,7 @@ func getApplication() *cli.Application {
 			tasks.CustomProvision,
 			tasks.DownloadToUsbDrive,
 			tasks.DeepRepair,
+			tasks.TestShivas,
 		},
 	}
 }
