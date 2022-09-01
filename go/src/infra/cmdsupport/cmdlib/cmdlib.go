@@ -9,8 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 
@@ -41,14 +39,6 @@ type commonFlags struct {
 // Register adds shared flags.
 func (f *commonFlags) Register(fl *flag.FlagSet) {
 	fl.BoolVar(&f.debug, "debug", false, "Enable debug output.")
-}
-
-func (f commonFlags) DebugLogger(a subcommands.Application) *log.Logger {
-	out := ioutil.Discard
-	if f.debug {
-		out = a.GetErr()
-	}
-	return log.New(out, a.GetName(), log.LstdFlags|log.Lshortfile)
 }
 
 // NewAuthenticator creates a new authenticator based on flags.
