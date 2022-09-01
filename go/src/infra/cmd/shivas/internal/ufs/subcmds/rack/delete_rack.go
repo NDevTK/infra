@@ -34,6 +34,7 @@ Deletes the given rack and deletes the switches, kvms and rpms associated with t
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
+		c.Flags.BoolVar(&c.skipYes, "yes", true, "Skip yes option by saying yes.")
 		return c
 	},
 }
@@ -43,6 +44,8 @@ type deleteRack struct {
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
+
+	skipYes bool
 }
 
 func (c *deleteRack) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -79,11 +82,12 @@ func (c *deleteRack) innerRun(a subcommands.Application, args []string, env subc
 	if err := utils.PrintExistingRack(ctx, ic, args[0]); err != nil {
 		return err
 	}
-
-	prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)
-	if prompt != nil && !prompt(fmt.Sprintf("Are you sure you want to delete the rack: %s. "+
-		"This will also delete switches, kvms and rpms associated with the rack.", args[0])) {
-		return nil
+	if !c.skipYes {
+		prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)
+		if prompt != nil && !prompt(fmt.Sprintf("Are you sure you want to delete the rack: %s. "+
+			"This will also delete switches, kvms and rpms associated with the rack.", args[0])) {
+			return nil
+		}
 	}
 	_, err = ic.DeleteRack(ctx, &ufsAPI.DeleteRackRequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.RackCollection, args[0]),
