@@ -43,6 +43,7 @@ Deletes the Asset(s).`,
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.BoolVar(&c.scan, "scan", false, "Use barcode scanner to delete multiple assets.")
+		c.Flags.BoolVar(&c.skipYes, "yes", true, "Skip yes option by saying yes.")
 		return c
 	},
 }
@@ -52,6 +53,7 @@ type deleteAsset struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 	scan      bool
+	skipYes   bool
 }
 
 func (c *deleteAsset) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -82,9 +84,11 @@ func (c *deleteAsset) innerRun(a subcommands.Application, args []string, env sub
 		c.scanAndDelete(ctx, ic, a.GetOut(), os.Stdin)
 		return nil
 	}
-	prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)
-	if prompt != nil && !prompt(fmt.Sprintf("Are you sure you want to delete the asset(s): %s", args)) {
-		return nil
+	if !c.skipYes {
+		prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)
+		if prompt != nil && !prompt(fmt.Sprintf("Are you sure you want to delete the asset(s): %s", args)) {
+			return nil
+		}
 	}
 	assets := utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	fmt.Fprintln(a.GetOut(), "\nAsset(s) before deletion:")
