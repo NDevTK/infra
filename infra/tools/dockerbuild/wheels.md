@@ -492,6 +492,20 @@ wheel: <
 
 * *universal*
 
+## **anytree**
+
+### 2.8.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/anytree-py2_py3"
+  version: "version:2.8.0"
+>
+```
+
+
+* *universal*
+
 ## **apache-beam**
 
 ### 2.0.0
@@ -5390,6 +5404,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pyglet-py2_py3"
   version: "version:1.5.0"
+>
+```
+
+
+* *universal*
+
+## **pykwalify**
+
+### 1.8.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pykwalify-py2_py3"
+  version: "version:1.8.0"
 >
 ```
 
