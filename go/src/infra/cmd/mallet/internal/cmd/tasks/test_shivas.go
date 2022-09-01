@@ -5,6 +5,10 @@
 package tasks
 
 import (
+	"fmt"
+	"os/exec"
+	"path/filepath"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
@@ -12,6 +16,14 @@ import (
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 )
+
+// mallet test-shivas runs an integration test on shivas.
+//
+// It uses the `./dev-shivas` (which is `shivas` built with a dev tag) to manipulate
+// a UFS instance running locally.
+//
+// The `dev-shivas` target is incapable of manipulating prod data, so this tool, too, should
+// only be capable of talking to the dev shivas.
 
 // Perform an integration test on shivas
 var TestShivas = &subcommands.Command{
@@ -42,5 +54,15 @@ func (c *testShivasRun) Run(a subcommands.Application, args []string, env subcom
 }
 
 func (c *testShivasRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return errors.Reason("test shivas: not yet implemented").Err()
+	if len(args) != 0 {
+		return errors.Reason("test shivas: positional arguments are not supported").Err()
+	}
+	if c.dir == "" {
+		return errors.Reason("test shivas: argument -dir must be provided").Err()
+	}
+	if err := exec.Command(filepath.Join(c.dir, "dev-shivas"), "help").Run(); err != nil {
+		return errors.Annotate(err, `test shivas: "dev-shivas help" failed`).Err()
+	}
+	fmt.Fprintf(a.GetErr(), "OK\n")
+	return nil
 }
