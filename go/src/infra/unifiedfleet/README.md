@@ -22,6 +22,14 @@ luci-auth login -scopes "https://www.googleapis.com/auth/cloud-platform https://
 ```
 to setup local auth for the service.
 
+## Debugging UFS service using VSCode
+
+If you're using VSCode, you can attach to your locally running service through
+the debug menu. When prompted, find the `ufs-service` process and debug through
+VSCode as usual. If you get an error, try following the prompt to modify your
+[Yama](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/debugging.md#Allowing-attaching-to-foreign-processes)
+settings and try again.
+
 ## Testing dumper service locally
 
 Run dumper locally on your workstation.
