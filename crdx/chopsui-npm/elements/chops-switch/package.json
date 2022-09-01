@@ -13,5 +13,6 @@
   "dependencies": {
     "@chopsui/chops-checkbox": "^0.3.3",
     "lit-element": "^2.0.0"
-  }
+  },
+  "gitHead": "c2b99a3de5e65b3328905e51fb06e7a2fa66dc44"
 }

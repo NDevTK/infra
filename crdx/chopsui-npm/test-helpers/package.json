@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "axe-core": "^3.2.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
