@@ -396,6 +396,14 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 		return nil, errors.Annotate(err, "parse json").Err()
 	}
 	m := getStableVersionRecords(ctx, stableVersions)
+
+	// The satlab versions are stored in another table. We can safely just delete everything.
+	for _, kind := range []string{dssv.CrosStableVersionKind, dssv.FirmwareStableVersionKind, dssv.FaftStableVersionKind} {
+		if err := dssv.DeleteAll(ctx, kind); err != nil {
+			return nil, errors.Annotate(err, "dump stable version: clearing entries of kind %q", kind).Err()
+		}
+	}
+
 	merr := errors.NewMultiError()
 	if err := dssv.PutManyCrosStableVersion(ctx, m.cros); err != nil {
 		merr = append(merr, errors.Annotate(err, "put cros stable version").Err())
