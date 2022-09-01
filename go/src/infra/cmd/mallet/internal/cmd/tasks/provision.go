@@ -17,7 +17,6 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 )
 
 // Recovery subcommand: Recovering the devices.
@@ -67,13 +66,13 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	}
 	unit := args[0]
 	e := c.envFlags.Env()
-	v := labpack.CIPDProd
+	v := buildbucket.CIPDProd
 	configuration := b64.StdEncoding.EncodeToString([]byte(c.createPlan()))
-	url, _, err := labpack.ScheduleTask(
+	url, _, err := buildbucket.ScheduleTask(
 		ctx,
 		bc,
 		v,
-		&labpack.Params{
+		&buildbucket.Params{
 			UnitName:         unit,
 			TaskName:         string(tasknames.Custom),
 			AdminService:     e.AdminService,

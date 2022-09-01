@@ -21,7 +21,6 @@ import (
 	"infra/cros/recovery/config"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/swarming"
 )
 
@@ -71,9 +70,9 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 	if len(args) == 0 {
 		return errors.Reason("deep repair: unit is not specified").Err()
 	}
-	v := labpack.CIPDProd
+	v := buildbucket.CIPDProd
 	if c.latest {
-		v = labpack.CIPDLatest
+		v = buildbucket.CIPDLatest
 	}
 	// Admin session used to created common tag across created tasks.
 	if c.adminSession == "" {
@@ -83,11 +82,11 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
-		url, _, err := labpack.ScheduleTask(
+		url, _, err := buildbucket.ScheduleTask(
 			ctx,
 			bc,
 			v,
-			&labpack.Params{
+			&buildbucket.Params{
 				UnitName:         unit,
 				TaskName:         string(tasknames.Custom),
 				AdminService:     e.AdminService,

@@ -18,7 +18,6 @@ import (
 	"infra/cmd/shivas/utils"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/worker"
 	"infra/libs/swarming"
 )
@@ -128,8 +127,8 @@ func (c *repairDuts) taskName() string {
 
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
 func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair bool, adminSession string) (*swarming.TaskInfo, error) {
-	v := labpack.CIPDProd
-	p := &labpack.Params{
+	v := buildbucket.CIPDProd
+	p := &buildbucket.Params{
 		UnitName:       host,
 		TaskName:       string(tasknames.Recovery),
 		EnableRecovery: runRepair,
@@ -148,7 +147,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	url, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return nil, err
 	}
