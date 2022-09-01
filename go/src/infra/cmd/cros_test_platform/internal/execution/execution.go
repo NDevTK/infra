@@ -82,13 +82,17 @@ func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.
 			}
 			board := ""
 			model := ""
+			qsAccount := ""
 			if r.RequestParams.SoftwareAttributes != nil && r.RequestParams.SoftwareAttributes.BuildTarget != nil {
 				board = r.RequestParams.SoftwareAttributes.BuildTarget.Name
 			}
 			if r.RequestParams.HardwareAttributes != nil {
 				model = r.RequestParams.HardwareAttributes.Model
 			}
-			validTest, err = verifyFleetTestsPolicy(ctx, c, board, model, ts.Name, image, args.Build.CreatedBy)
+			if r.RequestParams.Scheduling != nil {
+				qsAccount = r.RequestParams.Scheduling.QsAccount
+			}
+			validTest, err = verifyFleetTestsPolicy(ctx, c, board, model, ts.Name, image, args.Build.CreatedBy, qsAccount)
 			if !validTest {
 				logging.Errorf(ctx, "Fleet Validation failed for test %v due to error %v, failing test run.", requestTaskSet, err)
 				return nil, fmt.Errorf("Fleet Validation failed for test %v due to error %v, failing test run.", requestTaskSet, err)
@@ -248,13 +252,14 @@ func constructRequestUID(buildID int64, key string) string {
 //
 // This method calls UFS CheckFleetTestsPolicy RPC for a testName, board, image and model combination.
 func verifyFleetTestsPolicy(ctx context.Context, client trservice.Client, board string, model string,
-	testName string, image string, serviceAccount string) (bool, error) {
+	testName string, image string, serviceAccount string, qsAccount string) (bool, error) {
 	resp, err := client.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{
 		TestName:           testName,
 		Board:              board,
 		Model:              model,
 		Image:              image,
 		TestServiceAccount: serviceAccount,
+		QsAccount:          qsAccount,
 	})
 	if err != nil {
 		return false, err
