@@ -5,136 +5,16 @@
 package labpack
 
 import (
-	"context"
-	"fmt"
-	"log"
-
-	"go.chromium.org/luci/common/errors"
-	structbuilder "google.golang.org/protobuf/types/known/structpb"
-
 	"infra/libs/skylab/buildbucket"
 )
 
-// Params are the parameters to the labpack job.
-type Params struct {
-	// BuilderProject -- treated as "chromeos" by default.
-	BuilderProject string
-	// BuilderBucket -- treated as "labpack_runner" by default.
-	BuilderBucket string
-	// BuilderName -- treated as "labpack_builder" by default
-	BuilderName string
-	// UnitName is the DUT or similar that we are scheduling against.
-	// For example, a DUT hostname is a valid UnitName.
-	UnitName string
-	// TaskName is used to drive the recovery process, e.g. "labstation_deploy".
-	TaskName string
-	// Whether recovery actions are enabled or not.
-	EnableRecovery bool
-	// Hostname of the admin service.
-	AdminService string
-	// Hostname of the inventory service.
-	InventoryService string
-	// Whether to update the inventory or not when the task is finished.
-	UpdateInventory bool
-	// NoStepper determines whether the log stepper things.
-	NoStepper bool
-	// NoMetrics determines whether metrics recording (Karte) is in effect.
-	NoMetrics bool
-	// ExpectedState is the state that the DUT must be in in order for the task to trigger.
-	// For example, a repair task MUST NOT be eligible to run on a "ready" DUT since that would
-	// be a waste of resources.
-	ExpectedState string
-	// Configuration is a base64-encoded string of the job config.
-	Configuration string
-	// Extra tags setting to the swarming task.
-	ExtraTags []string
-}
+type Params = buildbucket.Params
 
-// AsMap takes the parameters and flattens it into a map with string keys.
-//
-// Note that some fields, for example "builder_name" and "expected_state" intentionally do NOT
-// end up as properties here.
-func (p *Params) AsMap() map[string]interface{} {
-	return map[string]interface{}{
-		"unit_name":         p.UnitName,
-		"task_name":         p.TaskName,
-		"enable_recovery":   p.EnableRecovery,
-		"admin_service":     p.AdminService,
-		"inventory_service": p.InventoryService,
-		"update_inventory":  p.UpdateInventory,
-		"no_stepper":        p.NoStepper,
-		"no_metrics":        p.NoMetrics,
-		"configuration":     p.Configuration,
-	}
-}
-
-// CIPD version used for scheduling PARIS.
-type CIPDVersion string
+type CIPDVersion = buildbucket.CIPDVersion
 
 const (
-	// Use prod version of CIPD package.
-	CIPDProd CIPDVersion = "prod"
-	// Use latest version of CIPD package.
-	CIPDLatest CIPDVersion = "latest"
+	CIPDProd   CIPDVersion = buildbucket.CIPDProd
+	CIPDLatest CIPDVersion = buildbucket.CIPDLatest
 )
 
-// Validate takes a cipd version and checks whether it's valid.
-func (v CIPDVersion) Validate() error {
-	switch v {
-	case CIPDProd:
-		return nil
-	case CIPDLatest:
-		return nil
-	default:
-		return errors.Reason("validate cipd version: unrecognized version %q", string(v)).Err()
-	}
-}
-
-// ScheduleTask schedules a buildbucket task.
-func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion, params *Params) (string, int64, error) {
-	if client == nil {
-		return "", 0, errors.Reason("schedule task: client cannot be nil").Err()
-	}
-	if params == nil {
-		return "", 0, errors.Reason("schedule task: params cannot be nil").Err()
-	}
-
-	// Apply defaults.
-	if params.BuilderName == "" {
-		params.BuilderName = "labpack_builder"
-	}
-	if params.BuilderProject == "" {
-		params.BuilderProject = "chromeos"
-	}
-	if params.BuilderBucket == "" {
-		params.BuilderBucket = "labpack_runner"
-	}
-
-	props, err := structbuilder.NewStruct(params.AsMap())
-	if err != nil {
-		return "", 0, err
-	}
-	p := &buildbucket.ScheduleLabpackTaskParams{
-		BuilderName:      params.BuilderName,
-		BuilderBucket:    params.BuilderBucket,
-		BuilderProject:   params.BuilderProject,
-		UnitName:         params.UnitName,
-		ExpectedDUTState: params.ExpectedState,
-		Props:            props,
-		ExtraTags:        params.ExtraTags,
-	}
-	switch v {
-	case CIPDProd:
-		log.Println("Request to use prod CIPD version")
-	case CIPDLatest:
-		log.Println("Request to use latest CIPD version")
-		p.BuilderName = fmt.Sprintf("%s-latest", params.BuilderName)
-	default:
-		return "", 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
-	}
-	url, taskID, err := client.ScheduleLabpackTask(ctx, p)
-	if err != nil {
-		return "", 0, errors.Annotate(err, "scheduling task").Err()
-	}
-	return url, taskID, nil
-}
+var ScheduleTask = buildbucket.ScheduleTask
