@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff6f495a_42a0dd40",
+        "filename": "go/src/infra/cros/cmd/myjob/OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1516607
+      },
+      "writtenOn": "2022-09-01T22:13:25Z",
+      "side": 0,
+      "message": "worth adding CQW folks as well? Will myjobs be supported by the CI on call rotation?",
+      "revId": "74917bc1b329582382ab1176b60731a89cabcc96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd500d8d_436b0fc5",
+        "filename": "go/src/infra/cros/cmd/myjob/README",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1516607
+      },
+      "writtenOn": "2022-09-01T22:13:25Z",
+      "side": 0,
+      "message": "nit: link to design doc while in active development?",
+      "revId": "74917bc1b329582382ab1176b60731a89cabcc96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
