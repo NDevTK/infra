@@ -32,15 +32,6 @@ var JSONPBUnmarshaller = jsonpb.Unmarshaler{
 	AllowUnknownFields: true,
 }
 
-type commonFlags struct {
-	debug bool
-}
-
-// Register adds shared flags.
-func (f *commonFlags) Register(fl *flag.FlagSet) {
-	fl.BoolVar(&f.debug, "debug", false, "Enable debug output.")
-}
-
 // NewAuthenticator creates a new authenticator based on flags.
 func NewAuthenticator(ctx context.Context, f *authcli.Flags) (*auth.Authenticator, error) {
 	o, err := f.Options()
