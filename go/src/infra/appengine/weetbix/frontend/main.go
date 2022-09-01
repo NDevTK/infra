@@ -9,40 +9,16 @@ import (
 	"net/http"
 
 	"go.chromium.org/luci/auth/identity"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/config/server/cfgmodule"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/cron"
-	"go.chromium.org/luci/server/encryptedcookies"
 	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
-	"go.chromium.org/luci/server/gaeemulation"
-	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
-	"go.chromium.org/luci/server/secrets"
-	spanmodule "go.chromium.org/luci/server/span"
 	"go.chromium.org/luci/server/templates"
-	"go.chromium.org/luci/server/tq"
 
-	"infra/appengine/weetbix/app"
 	"infra/appengine/weetbix/frontend/handlers"
-	"infra/appengine/weetbix/internal/admin"
-	adminpb "infra/appengine/weetbix/internal/admin/proto"
-	"infra/appengine/weetbix/internal/analysis"
-	"infra/appengine/weetbix/internal/analyzedtestvariants"
-	"infra/appengine/weetbix/internal/clustering/reclustering/orchestrator"
 	"infra/appengine/weetbix/internal/config"
-	"infra/appengine/weetbix/internal/metrics"
-	"infra/appengine/weetbix/internal/services/reclustering"
-	"infra/appengine/weetbix/internal/services/resultcollector"
-	"infra/appengine/weetbix/internal/services/resultingester"
-	"infra/appengine/weetbix/internal/services/testvariantbqexporter"
-	"infra/appengine/weetbix/internal/services/testvariantupdator"
-	"infra/appengine/weetbix/internal/span"
-	weetbixpb "infra/appengine/weetbix/proto/v1"
-	"infra/appengine/weetbix/rpc"
+	weetbixserver "infra/appengine/weetbix/server"
 )
 
 // authGroup is the name of the LUCI Auth group that controls whether the user
@@ -120,71 +96,16 @@ func pageBase(srv *server.Server) router.MiddlewareChain {
 }
 
 func main() {
-	modules := []module.Module{
-		cfgmodule.NewModuleFromFlags(),
-		cron.NewModuleFromFlags(),
-		encryptedcookies.NewModuleFromFlags(), // Required for auth sessions.
-		gaeemulation.NewModuleFromFlags(),     // Needed by cfgmodule.
-		secrets.NewModuleFromFlags(),          // Needed by encryptedcookies.
-		spanmodule.NewModuleFromFlags(),
-		tq.NewModuleFromFlags(),
-	}
-	server.Main(nil, modules, func(srv *server.Server) error {
+	weetbixserver.Main(func(srv *server.Server) error {
+		// Only the frontend service serves frontend UI. This is because
+		// the frontend relies upon other assets (javascript, files) and
+		// it is annoying to deploy them with every backend service.
 		mw := pageBase(srv)
-
 		handlers := handlers.NewHandlers(srv.Options.CloudProject, srv.Options.Prod)
 		handlers.RegisterRoutes(srv.Routes, mw)
 		srv.Routes.Static("/static/", mw, http.Dir("./ui/dist"))
 		// Anything that is not found, serve app html and let the client side router handle it.
 		srv.Routes.NotFound(mw, handlers.IndexPage)
-
-		// Register pPRC servers.
-		srv.PRPC.AccessControl = prpc.AllowOriginAll
-		srv.PRPC.Authenticator = &auth.Authenticator{
-			Methods: []auth.Method{
-				&auth.GoogleOAuth2Method{
-					Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
-				},
-			},
-		}
-		// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
-		srv.PRPC.HackFixFieldMasksForJSON = true
-		srv.RegisterUnaryServerInterceptor(span.SpannerDefaultsInterceptor())
-
-		ac, err := analysis.NewClient(srv.Context, srv.Options.CloudProject)
-		if err != nil {
-			return errors.Annotate(err, "creating analysis client").Err()
-		}
-		weetbixpb.RegisterClustersServer(srv.PRPC, rpc.NewClustersServer(ac))
-		weetbixpb.RegisterRulesServer(srv.PRPC, rpc.NewRulesSever())
-		weetbixpb.RegisterProjectsServer(srv.PRPC, rpc.NewProjectsServer())
-		weetbixpb.RegisterInitDataGeneratorServer(srv.PRPC, rpc.NewInitDataGeneratorServer())
-		weetbixpb.RegisterTestVariantsServer(srv.PRPC, rpc.NewTestVariantsServer())
-		weetbixpb.RegisterTestHistoryServer(srv.PRPC, rpc.NewTestHistoryServer())
-		adminpb.RegisterAdminServer(srv.PRPC, admin.CreateServer())
-
-		// GAE crons.
-		cron.RegisterHandler("read-config", config.Update)
-		cron.RegisterHandler("update-analysis-and-bugs", handlers.UpdateAnalysisAndBugs)
-		cron.RegisterHandler("export-test-variants", testvariantbqexporter.ScheduleTasks)
-		cron.RegisterHandler("purge-test-variants", analyzedtestvariants.Purge)
-		cron.RegisterHandler("reclustering", orchestrator.CronHandler)
-		cron.RegisterHandler("global-metrics", metrics.GlobalMetrics)
-
-		// Pub/Sub subscription endpoints.
-		srv.Routes.POST("/_ah/push-handlers/buildbucket", nil, app.BuildbucketPubSubHandler)
-		srv.Routes.POST("/_ah/push-handlers/cvrun", nil, app.CVRunPubSubHandler)
-
-		// Register task queue tasks.
-		if err := reclustering.RegisterTaskHandler(srv); err != nil {
-			return errors.Annotate(err, "register reclustering").Err()
-		}
-		if err := resultingester.RegisterTaskHandler(srv); err != nil {
-			return errors.Annotate(err, "register result ingester").Err()
-		}
-		resultcollector.RegisterTaskClass()
-		testvariantbqexporter.RegisterTaskClass()
-		testvariantupdator.RegisterTaskClass()
 
 		return nil
 	})
