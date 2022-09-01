@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
@@ -18,8 +17,6 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
-
-	"infra/libs/skylab/common/errctx"
 )
 
 // JSONPBMarshaller marshals protobufs as JSON.
@@ -114,13 +111,4 @@ func NewQuietUsageError(flags flag.FlagSet, format string, a ...interface{}) err
 		flags: flags,
 		quiet: true,
 	}
-}
-
-// MaybeWithTimeout creates a new context that has a timeout if the provided timeout is positive.
-func MaybeWithTimeout(ctx context.Context, timeoutMins int) (context.Context, func(error)) {
-	if timeoutMins >= 0 {
-		return errctx.WithTimeout(ctx, time.Duration(timeoutMins)*time.Minute,
-			fmt.Errorf("timed out after %d minutes while waiting for task(s) to complete", timeoutMins))
-	}
-	return errctx.WithCancel(ctx)
 }

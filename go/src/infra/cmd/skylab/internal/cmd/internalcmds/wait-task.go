@@ -7,22 +7,22 @@ package internalcmds
 import (
 	"context"
 	"fmt"
-	"infra/cmd/skylab/internal/bb"
-	"infra/cmd/skylab/internal/site"
 	"io"
 	"strconv"
 	"time"
 
 	"github.com/maruel/subcommands"
-
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmdsupport/cmdlib"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_tool"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cmd/skylab/internal/bb"
+	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
+	"infra/cmd/skylab/internal/site"
+	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/common/errctx"
 )
 
 // WaitTask subcommand: wait for a task to finish.
@@ -77,7 +77,7 @@ func (c *waitTaskRun) innerRunBuildbucket(a subcommands.Application, env subcomm
 	}
 
 	ctx := cli.GetContext(a, c, env)
-	ctx, cancel := cmdlib.MaybeWithTimeout(ctx, c.timeoutMins)
+	ctx, cancel := maybeWithTimeout(ctx, c.timeoutMins)
 	defer cancel(context.Canceled)
 
 	bClient, err := bb.NewClient(ctx, c.envFlags.Env().CTPBuilderInfo, c.authFlags)
@@ -174,4 +174,12 @@ func printJSONResults(w io.Writer, m *skylab_tool.WaitTaskResult) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func maybeWithTimeout(ctx context.Context, timeoutMins int) (context.Context, func(error)) {
+	if timeoutMins >= 0 {
+		return errctx.WithTimeout(ctx, time.Duration(timeoutMins)*time.Minute,
+			fmt.Errorf("timed out after %d minutes while waiting for task(s) to complete", timeoutMins))
+	}
+	return errctx.WithCancel(ctx)
 }
