@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package labpack
+package buildbucket
 
 import (
 	"context"
@@ -11,8 +11,6 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
-
-	"infra/libs/skylab/buildbucket"
 )
 
 // TestAsMap tests structbuilder-compatibility.
@@ -50,7 +48,7 @@ type FakeClient struct {
 	startID int64
 }
 
-func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams) (string, int64, error) {
+func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error) {
 	id := c.startID
 	c.startID++
 	return "", id, nil

@@ -23,7 +23,6 @@ import (
 	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/common/heuristics"
 )
 
@@ -110,9 +109,9 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		return createLegacyRepairTask(ctx, botID, expectedState)
 	}
 
-	cipdVersion := labpack.CIPDProd
+	cipdVersion := buildbucket.CIPDProd
 	if taskType == heuristics.LatestTaskType {
-		cipdVersion = labpack.CIPDLatest
+		cipdVersion = buildbucket.CIPDLatest
 	}
 
 	url, err := createBuildbucketTask(ctx, createBuildbucketTaskRequest{
@@ -196,7 +195,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 type createBuildbucketTaskRequest struct {
 	// taskName is the name of the task, e.g. taskname.Recovery
 	taskName tasknames.TaskName
-	taskType labpack.CIPDVersion
+	taskType buildbucket.CIPDVersion
 	// botID is the ID of the bot, for example, "crossk-chromeos...".
 	botID         string
 	expectedState string
@@ -228,7 +227,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		logging.Errorf(ctx, "error creating buildbucket client: %q", err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
-	p := &labpack.Params{
+	p := &buildbucket.Params{
 		UnitName:       heuristics.NormalizeBotNameToDeviceName(params.botID),
 		TaskName:       params.taskName.String(),
 		EnableRecovery: true,
@@ -243,7 +242,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}
-	url, _, err := labpack.ScheduleTask(ctx, bc, params.taskType, p)
+	url, _, err := buildbucket.ScheduleTask(ctx, bc, params.taskType, p)
 	if err != nil {
 		logging.Errorf(ctx, "error scheduling task: %q", err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
