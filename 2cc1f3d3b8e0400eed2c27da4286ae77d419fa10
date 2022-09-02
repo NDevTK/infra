@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57ed91b7_948455ff",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/stableversion.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-09-02T22:48:05Z",
+      "side": 1,
+      "message": "An earlier version of this CL had `key datastore.Key` (without the asterisk) which should have worked according to the `datastore.Run` documentation.\n\nHowever, this resulted in a panic for some strange reason, so I updated the CL to use a pointer.",
+      "revId": "2cc1f3d3b8e0400eed2c27da4286ae77d419fa10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
