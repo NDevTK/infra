@@ -15,8 +15,8 @@ import (
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery"
-	"infra/cros/recovery/tasknames"
 	"infra/cros/recovery/tlw"
+	"infra/libs/skylab/buildbucket"
 )
 
 // RecoveryConfig subcommand: For now, print the config file content to terminal/file.
@@ -57,12 +57,12 @@ func (c *printConfigRun) Run(a subcommands.Application, args []string, env subco
 // innerRun executes internal logic of output file content.
 func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	tn := tasknames.Recovery
+	tn := buildbucket.Recovery
 	switch {
 	case c.deployTask:
-		tn = tasknames.Deploy
+		tn = buildbucket.Deploy
 	case c.auditRPM:
-		tn = tasknames.AuditRPM
+		tn = buildbucket.AuditRPM
 	}
 	var dsl []tlw.DUTSetupType
 	if c.cros {

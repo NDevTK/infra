@@ -17,7 +17,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/shivas/site"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/worker"
 	"infra/libs/swarming"
@@ -185,13 +184,13 @@ func (c *auditRun) collectActions() (string, error) {
 func (c *auditRun) getTaskNames() ([]string, error) {
 	var a []string
 	if c.runVerifyDUTStorage {
-		a = append(a, tasknames.AuditStorage.String())
+		a = append(a, buildbucket.AuditStorage.String())
 	}
 	if c.runVerifyServoUSB {
-		a = append(a, tasknames.AuditUSB.String())
+		a = append(a, buildbucket.AuditUSB.String())
 	}
 	if c.runVerifyRpmConfig {
-		a = append(a, tasknames.AuditRPM.String())
+		a = append(a, buildbucket.AuditRPM.String())
 	}
 	if len(a) == 0 {
 		return nil, errors.Reason("get task names: no actions was specified to run").Err()
@@ -201,7 +200,7 @@ func (c *auditRun) getTaskNames() ([]string, error) {
 
 // scheduleAuditBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
 func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, taskName string, host string, adminSession string) (*swarming.TaskInfo, error) {
-	tn, err := tasknames.NormalizeTaskName(taskName)
+	tn, err := buildbucket.NormalizeTaskName(taskName)
 	if err != nil {
 		return nil, errors.Annotate(err, "schedule audit builder").Err()
 	}

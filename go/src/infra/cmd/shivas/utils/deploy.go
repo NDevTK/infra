@@ -12,7 +12,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/shivas/site"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/swarming"
 )
@@ -25,7 +24,7 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 	v := buildbucket.CIPDProd
 	p := &buildbucket.Params{
 		UnitName:       unit,
-		TaskName:       string(tasknames.Deploy),
+		TaskName:       string(buildbucket.Deploy),
 		EnableRecovery: true,
 		AdminService:   e.AdminService,
 		// NOTE: We use the UFS service, not the Inventory service here.
