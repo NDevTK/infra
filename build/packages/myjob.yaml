@@ -1,0 +1,10 @@
+package: chromiumos/infra/myjob/${platform}
+description: CLI to create ChromeOS builders with common configurations. See go/cros-myjob
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/myjob
+root: ../../go/bin
+data:
+  - file: myjob${exe_suffix}
+  - version_file: .versions/myjob${exe_suffix}.cipd_version
