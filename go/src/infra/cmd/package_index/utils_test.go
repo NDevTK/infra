@@ -336,7 +336,7 @@ func TestSetVname(t *testing.T) {
 			*projectFlag = "chromiumos"
 
 			Convey("Filepath has chroot prefix", func() {
-				p := "chroot/build/amd64-generic/rest/of/path"
+				p := "cache/cros_chroot/chroot/build/amd64-generic/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
 				Convey("Should prefix vnameProto with path to gen files", func() {
