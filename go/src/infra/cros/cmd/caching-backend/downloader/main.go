@@ -304,9 +304,10 @@ func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqI
 	if res.StatusCode != http.StatusOK {
 		defer res.Body.Close()
 		upstreamErr, err := io.ReadAll(res.Body)
-		err = fmt.Errorf("%s %s respond %v status: %s", reqID, reqURL, res.StatusCode, upstreamErr)
 		if err != nil {
 			err = fmt.Errorf("%s failed to read upstream %v response of %q: %w", reqID, res.StatusCode, reqURL, err)
+		} else {
+			err = fmt.Errorf("%s %s respond %v status: %s", reqID, reqURL, res.StatusCode, upstreamErr)
 		}
 		http.Error(w, err.Error(), res.StatusCode)
 		log.Printf(err.Error())
@@ -431,7 +432,7 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 
 	rMem, err := io.ReadAll(dReader)
 	if err != nil {
-		errStr := fmt.Sprintf("%s ReadAll failed: %s", reqID, err)
+		errStr := fmt.Sprintf("%s ReadAll failed after %v bytes: %s", reqID, len(rMem), err)
 		http.Error(w, errStr, http.StatusInternalServerError)
 		log.Printf(errStr)
 		return
