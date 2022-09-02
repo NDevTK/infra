@@ -5,7 +5,7 @@
 import * as DOMPurify from 'dompurify';
 
 // Required import because we have 2 modules with the same name
-import { trustedTypes } from '../node_modules/trusted-types';
+import { trustedTypes } from 'trusted-types';
 
 export default function createInnerHTMLSanitizingPolicy() {
   if (!window.trustedTypes || !window.trustedTypes.createPolicy) {
