@@ -29,9 +29,9 @@ import (
 )
 
 const (
-	crosStableVersionKind     = "crosStableVersion"
-	faftStableversionKind     = "faftStableVersion"
-	firmwareStableVersionKind = "firmwareStableVersion"
+	CrosStableVersionKind     = "crosStableVersion"
+	FaftStableVersionKind     = "faftStableVersion"
+	FirmwareStableVersionKind = "firmwareStableVersion"
 )
 
 type CrosStableVersionEntity struct {
