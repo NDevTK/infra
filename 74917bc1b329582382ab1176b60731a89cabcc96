@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "11519b8b_a12c4582",
+        "filename": "go/src/infra/cros/cmd/myjob/OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2022-09-02T14:55:56Z",
+      "side": 0,
+      "message": "Makes sense to me! Done.",
+      "parentUuid": "ff6f495a_42a0dd40",
+      "revId": "74917bc1b329582382ab1176b60731a89cabcc96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd500d8d_436b0fc5",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-09-01T22:13:25Z",
       "side": 0,
       "message": "nit: link to design doc while in active development?",
+      "revId": "74917bc1b329582382ab1176b60731a89cabcc96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a8507b0_c6a988e0",
+        "filename": "go/src/infra/cros/cmd/myjob/README",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2022-09-02T14:55:56Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "bd500d8d_436b0fc5",
       "revId": "74917bc1b329582382ab1176b60731a89cabcc96",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
