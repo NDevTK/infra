@@ -1,0 +1,8 @@
+# ChromeOS Myjobs
+
+This package implements the `cros myjob` CLI, a successor to the old `cros
+tryjob` CLI. It enables users to run ad-hoc ChromeOS builders with common
+custom configurations.
+
+This tool is currently under active development. You can find the design doc at:
+go/cros-myjob
