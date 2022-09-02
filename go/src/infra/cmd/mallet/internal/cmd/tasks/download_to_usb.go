@@ -18,7 +18,6 @@ import (
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/config"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 )
 
@@ -77,7 +76,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 			v,
 			&buildbucket.Params{
 				UnitName:         unit,
-				TaskName:         string(tasknames.Custom),
+				TaskName:         string(buildbucket.Custom),
 				AdminService:     e.AdminService,
 				InventoryService: e.UFSService,
 				NoMetrics:        true,

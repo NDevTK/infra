@@ -17,7 +17,6 @@ import (
 
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/swarming"
 )
@@ -58,16 +57,16 @@ type auditRun struct {
 }
 
 // names maps readable names provided at the command line to task names.
-var names = map[string]tasknames.TaskName{
-	"usb":     tasknames.AuditUSB,
-	"storage": tasknames.AuditStorage,
-	"rpm":     tasknames.AuditRPM,
+var names = map[string]buildbucket.TaskName{
+	"usb":     buildbucket.AuditUSB,
+	"storage": buildbucket.AuditStorage,
+	"rpm":     buildbucket.AuditRPM,
 }
 
-var allTasks = []tasknames.TaskName{tasknames.AuditUSB, tasknames.AuditStorage, tasknames.AuditRPM}
+var allTasks = []buildbucket.TaskName{buildbucket.AuditUSB, buildbucket.AuditStorage, buildbucket.AuditRPM}
 
 // getTaskNames gets the name of a task.
-func (c auditRun) getTaskNames() ([]tasknames.TaskName, error) {
+func (c auditRun) getTaskNames() ([]buildbucket.TaskName, error) {
 	if c.all {
 		if c.auditType != "" {
 			return nil, errors.Reason(`get task name: "-type" and "-all" are mutually exclusive.`).Err()
@@ -78,7 +77,7 @@ func (c auditRun) getTaskNames() ([]tasknames.TaskName, error) {
 	if !ok {
 		return nil, errors.Reason(`get task name: unrecognized task name %q, try "-type rpm"`, c.auditType).Err()
 	}
-	return []tasknames.TaskName{out}, nil
+	return []buildbucket.TaskName{out}, nil
 }
 
 // Run runs the audit task.

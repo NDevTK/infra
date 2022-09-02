@@ -15,7 +15,6 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -26,7 +25,7 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 	// We're also using Paris in a slightly different way than legacy.
 	// Each audit action will correspond to one paris job, always.
 	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q taskname %q", botID, randFloat, actions, taskname)
-	tn, err := tasknames.NormalizeTaskName(taskname)
+	tn, err := buildbucket.NormalizeTaskName(taskname)
 	if err != nil {
 		logging.Errorf(ctx, "error when normalizing task name: %q", err)
 	}

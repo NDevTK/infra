@@ -21,7 +21,6 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cros/recovery/config"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 )
 
@@ -110,7 +109,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 	v := buildbucket.CIPDProd
 	p := &buildbucket.Params{
 		UnitName:     host,
-		TaskName:     string(tasknames.Custom),
+		TaskName:     string(buildbucket.Custom),
 		AdminService: e.AdminService,
 		// NOTE: We use the UFS service, not the Inventory service here.
 		InventoryService: e.UnifiedFleetService,

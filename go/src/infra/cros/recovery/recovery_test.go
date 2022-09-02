@@ -17,135 +17,135 @@ import (
 	"infra/cros/recovery/config"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/logger"
-	"infra/cros/recovery/tasknames"
 	"infra/cros/recovery/tlw"
+	"infra/libs/skylab/buildbucket"
 )
 
 // Test cases for TestDUTPlans
 var dutPlansCases = []struct {
 	name         string
 	setupType    tlw.DUTSetupType
-	taskName     tasknames.TaskName
+	taskName     buildbucket.TaskName
 	expPlanNames []string
 }{
 	{
 		"default no task",
 		tlw.DUTSetupTypeUnspecified,
-		tasknames.TaskName(""),
+		buildbucket.TaskName(""),
 		nil,
 	},
 	{
 		"default recovery",
 		tlw.DUTSetupTypeUnspecified,
-		tasknames.Recovery,
+		buildbucket.Recovery,
 		nil,
 	},
 	{
 		"default deploy",
 		tlw.DUTSetupTypeUnspecified,
-		tasknames.Deploy,
+		buildbucket.Deploy,
 		nil,
 	},
 	{
 		"default custom",
 		tlw.DUTSetupTypeUnspecified,
-		tasknames.Custom,
+		buildbucket.Custom,
 		nil,
 	},
 	{
 		"cros no task",
 		tlw.DUTSetupTypeCros,
-		tasknames.TaskName(""),
+		buildbucket.TaskName(""),
 		nil,
 	},
 	{
 		"cros recovery",
 		tlw.DUTSetupTypeCros,
-		tasknames.Recovery,
+		buildbucket.Recovery,
 		[]string{"servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
 	},
 	{
 		"cros deploy",
 		tlw.DUTSetupTypeCros,
-		tasknames.Deploy,
+		buildbucket.Deploy,
 		[]string{"servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
 	},
 	{
 		"cros custom",
 		tlw.DUTSetupTypeCros,
-		tasknames.Custom,
+		buildbucket.Custom,
 		nil,
 	},
 	{
 		"labstation no task",
 		tlw.DUTSetupTypeCros,
-		tasknames.TaskName(""),
+		buildbucket.TaskName(""),
 		nil,
 	},
 	{
 		"labstation recovery",
 		tlw.DUTSetupTypeLabstation,
-		tasknames.Recovery,
+		buildbucket.Recovery,
 		[]string{"cros"},
 	},
 	{
 		"labstation deploy",
 		tlw.DUTSetupTypeLabstation,
-		tasknames.Deploy,
+		buildbucket.Deploy,
 		[]string{"cros"},
 	},
 	{
 		"labstation custom",
 		tlw.DUTSetupTypeLabstation,
-		tasknames.Custom,
+		buildbucket.Custom,
 		nil,
 	},
 	{
 		"android no task",
 		tlw.DUTSetupTypeAndroid,
-		tasknames.TaskName(""),
+		buildbucket.TaskName(""),
 		nil,
 	},
 	{
 		"android recovery",
 		tlw.DUTSetupTypeAndroid,
-		tasknames.Recovery,
+		buildbucket.Recovery,
 		[]string{"android", "close"},
 	},
 	{
 		"android deploy",
 		tlw.DUTSetupTypeAndroid,
-		tasknames.Deploy,
+		buildbucket.Deploy,
 		[]string{"android", "close"},
 	},
 	{
 		"android custom",
 		tlw.DUTSetupTypeAndroid,
-		tasknames.Custom,
+		buildbucket.Custom,
 		nil,
 	},
 	{
 		"android no task",
 		tlw.DUTSetupTypeAndroid,
-		tasknames.TaskName(""),
+		buildbucket.TaskName(""),
 		nil,
 	},
 	{
 		"chromeos audit RPM",
 		tlw.DUTSetupTypeCros,
-		tasknames.AuditRPM,
+		buildbucket.AuditRPM,
 		[]string{"servo", "cros", "close"},
 	},
 	{
 		"labstation does not have audit RPM",
 		tlw.DUTSetupTypeLabstation,
-		tasknames.AuditRPM,
+		buildbucket.AuditRPM,
 		nil,
 	},
 	{
 		"android does not have audit RPM",
 		tlw.DUTSetupTypeAndroid,
-		tasknames.AuditRPM,
+		buildbucket.AuditRPM,
 		nil,
 	},
 }
