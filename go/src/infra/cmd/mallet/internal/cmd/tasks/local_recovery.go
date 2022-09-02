@@ -29,7 +29,7 @@ import (
 	"infra/cros/recovery"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tasknames"
+	"infra/libs/skylab/buildbucket"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -99,7 +99,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	if unit == "" {
 		return errors.New("unit is not specified")
 	}
-	tn, err := tasknames.NormalizeTaskName(c.taskName)
+	tn, err := buildbucket.NormalizeTaskName(c.taskName)
 	if err != nil {
 		return errors.Annotate(err, "local recovery").Err()
 	}

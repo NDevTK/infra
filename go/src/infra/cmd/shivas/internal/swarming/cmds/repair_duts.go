@@ -16,7 +16,6 @@ import (
 
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/worker"
 	"infra/libs/swarming"
@@ -130,7 +129,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 	v := buildbucket.CIPDProd
 	p := &buildbucket.Params{
 		UnitName:       host,
-		TaskName:       string(tasknames.Recovery),
+		TaskName:       string(buildbucket.Recovery),
 		EnableRecovery: runRepair,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.

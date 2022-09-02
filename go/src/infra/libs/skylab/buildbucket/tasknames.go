@@ -4,7 +4,7 @@
 
 // This package contains constants for recoverylib, including task names for example.
 // For more information, see b:208688399.
-package tasknames
+package buildbucket
 
 import (
 	"errors"
