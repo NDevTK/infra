@@ -17,7 +17,6 @@ import (
 
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/swarming"
 )
@@ -92,9 +91,9 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 			}
 			configuration = b64.StdEncoding.EncodeToString(b)
 		}
-		task := string(tasknames.Recovery)
+		task := string(buildbucket.Recovery)
 		if c.deployTask {
-			task = string(tasknames.Deploy)
+			task = string(buildbucket.Deploy)
 		}
 
 		v := buildbucket.CIPDProd
