@@ -47,7 +47,7 @@ func (tn TaskName) BuilderName() string {
 var builderNameMap = map[TaskName]string{
 	AuditRPM:     "audit-rpm",
 	AuditStorage: "audit-storage",
-	AuditUSB:     "audit-usb",
+	AuditUSB:     "audit-servo-usb-key",
 	Recovery:     "repair",
 }
 
