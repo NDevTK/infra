@@ -100,12 +100,15 @@ func (c *testShivasRun) addRemoveDUT() error {
 		return e
 	}
 
-	cleanup := func() {
-		exec.Command(c.devShivas(), "delete", "dut", "-yes", "-namespace", "os", dut).Run()
-		exec.Command(c.devShivas(), "delete", "asset", "-yes", "-namespace", "os", asset).Run()
-		exec.Command(c.devShivas(), "delete", "rack", "-yes", "-namespace", "os", rack).Run()
+	cleanup := func() error {
+		var merr errors.MultiError
+		merr.MaybeAdd(exec.Command(c.devShivas(), "delete", "dut", "-yes", "-namespace", "os", dut).Run())
+		merr.MaybeAdd(exec.Command(c.devShivas(), "delete", "asset", "-yes", "-namespace", "os", asset).Run())
+		merr.MaybeAdd(exec.Command(c.devShivas(), "delete", "rack", "-yes", "-namespace", "os", rack).Run())
+		return merr.AsError()
 	}
 
+	// intentionally ignore the errors during initial cleanup and final cleanup.
 	cleanup()
 	defer cleanup()
 
@@ -118,14 +121,7 @@ func (c *testShivasRun) addRemoveDUT() error {
 	if out, err := exec.Command(c.devShivas(), "add", "dut", "-namespace", "os", "-asset", asset, "-board", eve, "-model", eve, "-name", dut).CombinedOutput(); !strings.Contains(string(out), "Success") || err != nil {
 		return errors.Annotate(f(err), "add remove DUT: add dut: %q", out).Err()
 	}
-	if out, err := exec.Command(c.devShivas(), "delete", "dut", "-yes", "-namespace", "os", dut).CombinedOutput(); err != nil {
-		return errors.Annotate(f(err), "add remove DUT: delete dut: %q", out).Err()
-	}
-	if out, err := exec.Command(c.devShivas(), "delete", "asset", "-yes", "-namespace", "os", asset).CombinedOutput(); err != nil {
-		return errors.Annotate(f(err), "add remove DUT: delete asset: %q", out).Err()
-	}
-	if out, err := exec.Command(c.devShivas(), "delete", "rack", "-yes", "-namespace", "os", rack).CombinedOutput(); err != nil {
-		return errors.Annotate(f(err), "add remove DUT: delete rack: %q", out).Err()
-	}
-	return nil
+
+	// Try to clean up and track whether we succeeded or failed.
+	return errors.Annotate(cleanup(), "add dut: cleanup").Err()
 }
