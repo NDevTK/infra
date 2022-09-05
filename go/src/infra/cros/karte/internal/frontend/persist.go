@@ -9,11 +9,11 @@ import (
 
 	cloudBQ "cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/datastore"
 	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/idserialize"
 )
