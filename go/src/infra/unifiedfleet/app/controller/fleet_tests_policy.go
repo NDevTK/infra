@@ -212,11 +212,15 @@ func validatePublicBoardModel(ctx context.Context, board string, model string) e
 }
 
 func getValidPublicImages() []string {
-	return []string{"eve-public/R105-14988.0.0", "octopus-public/R105-14988.0.0"}
+	// Pointing to Images in chromiumos-image-archive bucket -
+	// gs://chromiumos-image-archive/eve-public/R105-14988.0.0, gs://chromiumos-image-archive/octopus-public/R105-14988.0.0,
+	// gs://chromiumos-image-archive/kevin64-public/R105-14988.0.0, gs://chromiumos-image-archive/jacuzzi-public/R105-14988.0.0
+	return []string{"eve-public/R105-14988.0.0", "octopus-public/R105-14988.0.0", "kevin64-public/R105-14988.0.0", "jacuzzi-public/R105-14988.0.0"}
 }
 
 func getValidQuotaSchedulerAccounts() []string {
-	return []string{"chromium", "chromium_fyi"}
+	// Lacros FYI is temporary enabled till chromium and chromium_fyi qs accounts are created
+	return []string{"chromium", "chromium_fyi", "lacros_fyi"}
 }
 
 func contains(listItems []string, name string) bool {
