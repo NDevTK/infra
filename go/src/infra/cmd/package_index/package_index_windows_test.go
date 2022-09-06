@@ -34,7 +34,9 @@ type unitKey struct {
 }
 
 func TestPackageIndexWindows(t *testing.T) {
-	t.Parallel()
+	// We can't run those tests in parallel without significant refactoring
+	// of the tests as they reuse many structs among test runs.
+	// t.Parallel()
 
 	Convey("Package index windows", t, func() {
 		// Setup.
