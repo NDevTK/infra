@@ -6,6 +6,7 @@ package dumper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -37,6 +38,21 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.HOURLY,
 		Job:      dumpHourly,
 	},
+	{
+		// Dump configs, registrations, inventory and states to Pub/Sub
+		Name:     util.CronJobNames["pubSubCronDaily"],
+		Time:     20 * time.Minute,
+		TrigType: cron.DAILY,
+		Job:      exportToPubSub,
+	},
+	// TODO(juahurta|b/220373240): Add back once the daily cron job has been verified.
+	// {
+	// 	// Dump configs, registrations, inventory and states to BQ
+	// 	Name:     util.CronJobNames["pubSubCronHourly"],
+	// 	Time:     30 * time.Minute,
+	// 	TrigType: cron.HOURLY,
+	// 	Job:      exportToPubSubHourly,
+	// },
 	{
 		// Dump change events to BQ
 		Name:     util.CronJobNames["changeEventToBQCron"],
@@ -267,4 +283,61 @@ func exportToBQ(ctx context.Context, f func(ctx context.Context, bqClient *bigqu
 		}
 	}
 	return mErr
+}
+
+// export datastore rows to pubsub
+func exportToPubSub(ctx context.Context) error {
+	ctx = logging.SetLevel(ctx, logging.Info)
+	if err := dumpInventoryToPubSub(ctx, false); err != nil {
+		return err
+	}
+	if err := dumpRegistrationToPubSub(ctx, false); err != nil {
+		return err
+	}
+	return nil
+}
+
+func exportToPubSubHourly(ctx context.Context) error {
+	ctx = logging.SetLevel(ctx, logging.Info)
+	if err := dumpInventoryToPubSub(ctx, true); err != nil {
+		return err
+	}
+	if err := dumpRegistrationToPubSub(ctx, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func dumpInventoryToPubSub(ctx context.Context, hourly bool) error {
+	for key, function := range inventoryDumpToolkit {
+		if key == "machine_lses" {
+			if hourly {
+				key = fmt.Sprintf("%s_hourly", key)
+			}
+			logging.Infof(ctx, "dumping %s to pubsub", key)
+			msgs, err := function(ctx)
+			if err != nil {
+				return err
+			}
+			publishToTopic(ctx, msgs, getProject(ctx), key)
+		}
+	}
+	return nil
+}
+
+func dumpRegistrationToPubSub(ctx context.Context, hourly bool) error {
+	for key, function := range registrationDumpToolkit {
+		if key == "machine" {
+			if hourly {
+				key = fmt.Sprintf("%s_hourly", key)
+			}
+			logging.Infof(ctx, "dumping %s to pubsub", key)
+			msgs, err := function(ctx)
+			if err != nil {
+				return err
+			}
+			publishToTopic(ctx, msgs, getProject(ctx), key)
+		}
+	}
+	return nil
 }
