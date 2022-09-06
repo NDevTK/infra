@@ -1754,10 +1754,8 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 				"The action is only for deployment as not limited by pools.",
 			},
-			Conditions: []string{
-				"Pools allowed to stay in DEV mode",
-			},
 			Dependencies: []string{
+				"Pools allowed to stay in DEV mode",
 				"Install OS in DEV mode by USB-drive",
 			},
 			ExecName:   "sample_pass",
