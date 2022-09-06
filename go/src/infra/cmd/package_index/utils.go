@@ -195,14 +195,25 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 		filepath = filepath[4:]
 	}
 
-	// By default for OS, generated files are in chroot/build/${board}/ and
-	// src/out/${board}/. But in the codesearch repo, these files are at
-	// gen/${board}/chroot/build/${board} and gen/${board}/src/out/${board}/.
+	// By default for OS, generated files are in:
+	//   * cache/cros_chroot/chroot/build/${board}/
+	//   * src/out/${board}/
+	//
+	// But in the codesearch repo, these files are at:
+	//   * gen/${board}/chroot/build/${board}/
+	//   * gen/${board}/src/out/${board}/
+	//
 	// For references to work correctly, set vname to point to files in the repo.
-	if *projectFlag == "chromiumos" &&
-		(strings.HasPrefix(filepath, "chroot/build/") || strings.HasPrefix(filepath, "src/out/")) {
-		board := strings.Split(filepath, "/")[2]
-		filepath = fmt.Sprintf("gen/%s/%s", board, filepath)
+	if *projectFlag == "chromiumos" {
+		split := strings.Split(filepath, "/")
+
+		if strings.HasPrefix(filepath, "cache/cros_chroot/") {
+			filepath = fmt.Sprintf("gen/%s/%s", split[4], strings.Join(split[2:], "/"))
+		}
+
+		if strings.HasPrefix(filepath, "src/out/") {
+			filepath = fmt.Sprintf("gen/%s/%s", split[2], filepath)
+		}
 	}
 
 	vnameProto.Corpus = defaultCorpus
