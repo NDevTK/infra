@@ -60,6 +60,9 @@ var missingBoardAllowList map[string]bool = stringSliceToStringSet([]string{
 	// - b:212595053
 	// - b:213332740
 	"reven",
+	// Unblock labstation release, see b:245408210 and b:237304594 for more information.
+	"fizz-labstation",
+	"guado_labstation",
 })
 
 var failedToLookupAllowList map[string]bool = stringSliceToStringSet([]string{
