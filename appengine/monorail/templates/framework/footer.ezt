@@ -26,7 +26,7 @@ a.src=g;m.parentNode.insertBefore(a,m)
   if (path.startsWith('/u')) {
     [# Keep anything that looks like an email address out of GA.]
     ga('set', 'title', 'A user page');
-    ga('set', 'location', path.replace(_EMAIL_REGEX, 'user@example.com'));
+    ga('set', 'location', path.replace(_EMAIL_REGEX, 'user_email'));
   }
 
   ga('send', 'pageview');
