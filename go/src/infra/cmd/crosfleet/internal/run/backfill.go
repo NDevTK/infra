@@ -7,13 +7,14 @@ package run
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
-	"os"
-	"strconv"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -48,16 +49,18 @@ Do not build automation around this subcommand.`,
 		c.Flags.Var(flagx.KeyVals(&c.buildTags), "tag", `Tag to identify build(s) to backfill, in format key=val or key:val; may be specified multiple times.
 Mutually exclusive with -id.`)
 		c.Flags.Var(flagx.KeyVals(&c.buildTags), "tags", "Comma-separated build tags in same format as -tag. Mutually exclusive with -id.")
+		c.Flags.BoolVar(&c.allowDupes, "allow-duplicates", false, "For development purposes only: allow duplicate backfills for the given id/tag(s).")
 		return c
 	},
 }
 
 type backfillRun struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
-	envFlags  common.EnvFlags
-	buildID   int64
-	buildTags map[string]string
+	authFlags  authcli.Flags
+	envFlags   common.EnvFlags
+	buildID    int64
+	buildTags  map[string]string
+	allowDupes bool
 }
 
 func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
@@ -96,14 +99,16 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 
 	for _, original := range originalBuilds {
 		backfillTags := backfillTags(original)
-		backfillAlreadyRunning, runningBackfillID, err := ctpBBClient.AnyIncompleteBuildsWithTags(ctx, backfillTags)
-		if err != nil {
-			return err
-		}
-		if backfillAlreadyRunning {
-			runningBackfillURL := ctpBBClient.BuildURL(runningBackfillID)
-			fmt.Fprintf(os.Stdout, "Backfill already running at %s\nfor original build %d\n", runningBackfillURL, original.Id)
-			continue
+		if !args.allowDupes {
+			backfillAlreadyRunning, runningBackfillID, err := ctpBBClient.AnyIncompleteBuildsWithTags(ctx, backfillTags)
+			if err != nil {
+				return err
+			}
+			if backfillAlreadyRunning {
+				runningBackfillURL := ctpBBClient.BuildURL(runningBackfillID)
+				fmt.Fprintf(os.Stdout, "Backfill already running at %s\nfor original build %d\n", runningBackfillURL, original.Id)
+				continue
+			}
 		}
 		newBackfill, err := ctpBBClient.ScheduleBuild(ctx, map[string]interface{}{
 			"requests": original.Input.Properties.GetFields()["requests"],
