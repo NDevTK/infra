@@ -257,6 +257,9 @@ func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr
 		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
+		if name == "machines" || name == "machines_hourly" {
+			publishToTopic(ctx, msgs, bqClient.Project(), name)
+		}
 	}
 	return nil
 }
@@ -277,6 +280,10 @@ func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr st
 		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
+		if name == "machine_lses" || name == "machine_lses_hourly" {
+			publishToTopic(ctx, msgs, bqClient.Project(), name)
+		}
+
 	}
 	return nil
 }
