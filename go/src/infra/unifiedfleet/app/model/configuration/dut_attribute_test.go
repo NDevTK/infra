@@ -46,7 +46,7 @@ func TestUpdateDutAttribute(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateDutAttribute failed: %s", err)
 		}
-		if diff := cmp.Diff(want, got); diff != "" {
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -63,7 +63,7 @@ func TestUpdateDutAttribute(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateDutAttribute failed: %s", err)
 		}
-		if diff := cmp.Diff(attr2update, got); diff != "" {
+		if diff := cmp.Diff(attr2update, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -79,7 +79,7 @@ func TestUpdateDutAttribute(t *testing.T) {
 		}
 
 		var attrNil *api.DutAttribute = nil
-		if diff := cmp.Diff(attrNil, got); diff != "" {
+		if diff := cmp.Diff(attrNil, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -95,7 +95,7 @@ func TestUpdateDutAttribute(t *testing.T) {
 		}
 
 		var attrNil *api.DutAttribute = nil
-		if diff := cmp.Diff(attrNil, got); diff != "" {
+		if diff := cmp.Diff(attrNil, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
