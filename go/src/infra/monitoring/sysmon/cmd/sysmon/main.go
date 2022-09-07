@@ -21,6 +21,8 @@ import (
 	"infra/monitoring/sysmon/puppet"
 	"infra/monitoring/sysmon/system"
 
+	"infra/cmdsupport/service"
+
 	// Hacks for OSX 10.11.
 	_ "go.chromium.org/luci/hacks/osx_clock_gettime_fix"
 	_ "go.chromium.org/luci/hacks/osx_crypto_rand_entropy"
@@ -55,9 +57,21 @@ func main() {
 	system.Register() // Should be registered last.
 
 	if tsmonFlags.Flush == "auto" {
-		// tsmon's auto-flusher goroutine will call the metric callbacks and flush
-		// the metrics every minute.
-		select {}
+		stop := make(chan struct{})
+
+		// Support running as a Windows Service, or as a regular background process.
+		s := &service.Service{
+			Start: func() int {
+				// tsmon's auto-flusher goroutine will call the metric callbacks and flush
+				// the metrics every minute.
+				<-stop
+				return 0
+			},
+			Stop: func() {
+				close(stop)
+			},
+		}
+		os.Exit(service.Run(s))
 	} else {
 		// Flush once and exit.
 		tsmon.Flush(c)
