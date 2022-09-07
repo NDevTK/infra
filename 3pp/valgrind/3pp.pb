@@ -7,6 +7,7 @@ create {
       tag_pattern: "VALGRIND_%s"
       version_join: "_"
     }
+    cpe_base_address: "cpe:/a:valgrind:valgrind"
   }
   build {}
 }
