@@ -12,12 +12,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/appengine"
 
-	gofindit "infra/appengine/gofindit/proto"
 	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/model"
 	"infra/appengine/sheriff-o-matic/som/model/gen"
 	"infra/monitoring/messages"
+
+	gofindit "go.chromium.org/luci/bisection/proto"
 
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/errors"

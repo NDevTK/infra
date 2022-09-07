@@ -9,10 +9,11 @@ package messages
 
 import (
 	"encoding/json"
-	gfipb "infra/appengine/gofindit/proto"
 	"log"
 	"os"
 	"time"
+
+	gfipb "go.chromium.org/luci/bisection/proto"
 )
 
 var (

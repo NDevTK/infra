@@ -3,8 +3,9 @@ package client
 import (
 	"context"
 
-	gfipb "infra/appengine/gofindit/proto"
 	"infra/monitoring/messages"
+
+	gfipb "go.chromium.org/luci/bisection/proto"
 )
 
 // CrBug returns bug information.

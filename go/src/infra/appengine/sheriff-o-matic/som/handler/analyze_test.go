@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
-	gfipb "infra/appengine/gofindit/proto"
 	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/monitoring/messages"
+
+	gfipb "go.chromium.org/luci/bisection/proto"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"

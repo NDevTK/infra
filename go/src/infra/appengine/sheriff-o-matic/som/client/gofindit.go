@@ -8,7 +8,7 @@ import (
 	"context"
 	"net/http"
 
-	gfipb "infra/appengine/gofindit/proto"
+	gfipb "go.chromium.org/luci/bisection/proto"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
