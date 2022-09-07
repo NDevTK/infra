@@ -135,7 +135,8 @@ func (p *provisionState) provisionOS(ctx context.Context) error {
 	if board, err := getBoard(p.c); err == nil && strings.HasPrefix(board, "reven") {
 		log.Printf("provisionOS: skip clearing TPM owner for board=%s, %s", board, err)
 	} else if err := clearTPM(p.c); err != nil {
-		return fmt.Errorf("provisionOS: failed to clear TPM owner, %s", err)
+		// TODO(b/241184939): Return error once flashrom doesn't have failures.
+		log.Printf("provisionOS: failed to clear TPM owner, %s", err)
 	}
 
 	if p.preventReboot {
