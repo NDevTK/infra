@@ -5,7 +5,7 @@ from typing import Dict, List
 
 from .logger import g_logger
 from .package import Package
-from .util import Setup
+from .setup import Setup
 
 
 class _BuildDirMerger:

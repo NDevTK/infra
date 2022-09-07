@@ -1,14 +1,14 @@
 import filecmp
 import json
 import os
-from typing import Dict, NamedTuple, List, Set, Tuple
+from typing import Dict, NamedTuple, List, Set
 
+from .cros_sdk import CrosSdk
 from .logger import g_logger
 from .package import PackagePathException
 from .package import Package
 from .path_handler import PathHandler
-from .util import CrosSdk
-from .util import Setup
+from .setup import Setup
 
 
 class Cdb:

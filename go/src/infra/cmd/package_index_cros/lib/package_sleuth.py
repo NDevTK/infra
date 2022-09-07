@@ -4,10 +4,10 @@ from typing import Dict, List, NamedTuple, Set
 from chromite.lib import portage_util
 
 import lib.package as pkg
+from .cros_sdk import CrosSdk
 from .cache import PackageCache
 from .logger import g_logger
-from .util import Setup
-from .util import CrosSdk
+from .setup import Setup
 
 
 class PackageSleuth:

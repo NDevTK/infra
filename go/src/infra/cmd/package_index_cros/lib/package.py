@@ -8,7 +8,7 @@ from chromite.lib import portage_util
 
 import lib.constants as constants
 from .logger import g_logger
-from .util import Setup
+from .setup import Setup
 
 
 class PackageSupport(IntEnum):

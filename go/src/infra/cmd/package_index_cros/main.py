@@ -213,7 +213,7 @@ def main():
   from lib.cache import CacheProvider
   from lib.cache import PackageCache
   from lib.conductor import Conductor
-  from lib.util import Setup
+  from lib.setup import Setup
 
   setup = Setup(args.board,
                 skip_packages=args.skip_packages.split(' '),

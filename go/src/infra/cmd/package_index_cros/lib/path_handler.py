@@ -7,7 +7,7 @@ from chromite.lib import path_util
 from .logger import g_logger
 from .package import PackagePathException
 from .package import Package
-from .util import Setup
+from .setup import Setup
 
 
 class PathHandler:

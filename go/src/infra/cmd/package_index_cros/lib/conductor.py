@@ -5,12 +5,12 @@ import lib.constants as constants
 from .build_dir import BuildDirGenerator
 from .cache import CacheProvider
 from .cdb import CdbGenerator
+from .cros_sdk import CrosSdk
 from .gn_targets import GnTargetsGenerator
 from .logger import g_logger
 from .package import Package
 from .package_sleuth import PackageSleuth
-from .util import CrosSdk
-from .util import Setup
+from .setup import Setup
 
 
 class Conductor:

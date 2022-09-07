@@ -5,7 +5,7 @@ from typing import List
 from .constants import CACHE_PACKAGES_PATH_TEMPALATE
 from .logger import g_logger
 from .package import Package
-from .util import Setup
+from .setup import Setup
 
 
 class PackageCache:

@@ -3,12 +3,12 @@ import json
 import os
 from typing import Dict, List
 
+from .cros_sdk import CrosSdk
 from .logger import g_logger
 from .package import PackagePathException
 from .package import Package
 from .path_handler import PathHandler
-from .util import CrosSdk
-from .util import Setup
+from .setup import Setup
 
 
 class GnTargets:
