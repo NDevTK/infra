@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -118,7 +119,7 @@ func TestGetUFSDeviceLicenses(t *testing.T) {
 				Type: tls.License_WINDOWS_10_PRO,
 			},
 		}
-		if diff := cmp.Diff(want, got); diff != "" {
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("getUFSDeviceLicenses(fakeClient) returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -129,7 +130,7 @@ func TestGetUFSDeviceLicenses(t *testing.T) {
 			t.Fatalf("getUFSDeviceLicenses(fakeClient) failed: %s", err)
 		}
 		var want []*tls.License
-		if diff := cmp.Diff(want, got); diff != "" {
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("getUFSDeviceLicenses(fakeClient) returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -141,7 +142,7 @@ func TestGetUFSDeviceLicenses(t *testing.T) {
 			t.Errorf("getUFSDeviceLicenses(fakeClient) succeeded with non existent device %s", hostname)
 		}
 		var want []*tls.License
-		if diff := cmp.Diff(want, got); diff != "" {
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("getUFSDeviceLicenses(fakeClient) returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
