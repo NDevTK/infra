@@ -33,9 +33,19 @@ func TestInstallXcode(t *testing.T) {
 		}
 
 		Convey("for accepted license, mac", func() {
+			s.ReturnOutput = []string{
+				"cipd dry run",
+				"cipd ensures",
+				"chomod prints nothing",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch installs packages",
+				"xcrun simctl list prints a list of all simulators installed",
+				"Developer mode is currently enabled.\n",
+			}
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
+			So(s.Calls, ShouldHaveLength, 8)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -67,12 +77,6 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[7].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[7].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[8].Executable, ShouldEqual, "sudo")
-			So(s.Calls[8].Args, ShouldResemble, []string{
-				"/usr/sbin/DevToolsSecurity",
-				"-enable",
-			})
 		})
 
 		Convey("for already installed package with Developer mode enabled and -runFirstLaunch needs to run", func() {
@@ -129,8 +133,8 @@ func TestInstallXcode(t *testing.T) {
 				"Developer mode is currently disabled.",
 			}
 			err := installXcode(ctx, installArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 8)
+			So(err.Error(), ShouldContainSubstring, "Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable.")
+			So(s.Calls, ShouldHaveLength, 7)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -154,19 +158,23 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[6].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[6].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[7].Executable, ShouldEqual, "sudo")
-			So(s.Calls[7].Args, ShouldResemble, []string{
-				"/usr/sbin/DevToolsSecurity",
-				"-enable",
-			})
 		})
 
 		Convey("with a service account", func() {
+			s.ReturnOutput = []string{
+				"cipd dry run",
+				"cipd ensures",
+				"chomod prints nothing",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch installs packages",
+				"xcrun simctl list prints a list of all simulators installed",
+				"Developer mode is currently enabled.\n",
+			}
 			installArgs.serviceAccountJSON = "test/service-account.json"
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
+			So(s.Calls, ShouldHaveLength, 8)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -200,9 +208,6 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[7].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[7].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[8].Executable, ShouldEqual, "sudo")
-			So(s.Calls[8].Args, ShouldResemble, []string{"/usr/sbin/DevToolsSecurity", "-enable"})
 		})
 
 		Convey("for new license, ios", func() {
@@ -218,14 +223,14 @@ func TestInstallXcode(t *testing.T) {
 				"xcodebuild -runFirstLaunch",
 				"xcrun simctl list prints a list of all simulators installed",
 				"xcode-select -s prints nothing",
-				"Developer mode is currently disabled.",
+				"Developer mode is currently enabled.",
 			}
 
 			installArgs.xcodeAppPath = "testdata/Xcode-new.app"
 			installArgs.kind = iosKind
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(len(s.Calls), ShouldEqual, 12)
+			So(len(s.Calls), ShouldEqual, 11)
 
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
@@ -264,9 +269,6 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[10].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[10].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[11].Executable, ShouldEqual, "sudo")
-			So(s.Calls[11].Args, ShouldResemble, []string{"/usr/sbin/DevToolsSecurity", "-enable"})
 		})
 
 	})
@@ -286,13 +288,27 @@ func TestInstallXcode(t *testing.T) {
 		}
 
 		Convey("install with runtime", func() {
+			s.ReturnOutput = []string{
+				"cipd dry run",                   // 0 (index in s.Calls, same below)
+				"cipd ensures",                   // 1
+				"chomod prints nothing",          // 2
+				"",                               // 3: successfully resolved (by returning no error)
+				"cipd dry run",                   // 4
+				"cipd ensures",                   // 5
+				"chomod prints nothing",          // 6
+				"",                               // 7: No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing", // 8
+				"xcodebuild -runFirstLaunch installs packages",                // 9
+				"xcrun simctl list prints a list of all simulators installed", // 10
+				"Developer mode is currently enabled.\n",                      // 11
+			}
 			installArgsForTest := installArgs
 			installArgsForTest.withRuntime = true
 			// Clean up the added runtime dir.
 			defer os.RemoveAll("testdata/Xcode-old.app/Contents/Developer/Platforms")
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 13)
+			So(s.Calls, ShouldHaveLength, 12)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -349,21 +365,25 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[11].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[11].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[12].Executable, ShouldEqual, "sudo")
-			So(s.Calls[12].Args, ShouldResemble, []string{
-				"/usr/sbin/DevToolsSecurity",
-				"-enable",
-			})
 		})
 
 		Convey("with runtime but runtime already exist", func() {
+			s.ReturnOutput = []string{
+				"cipd dry run",                   // 0 (index in s.Calls, same below)
+				"cipd ensures",                   // 1
+				"chomod prints nothing",          // 2
+				"",                               // 3: No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing", // 4
+				"xcodebuild -runFirstLaunch installs packages",                // 5
+				"xcrun simctl list prints a list of all simulators installed", // 6
+				"Developer mode is currently enabled.\n",                      // 7
+			}
 			installArgsForTest := installArgs
 			installArgsForTest.withRuntime = true
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-with-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
+			So(s.Calls, ShouldHaveLength, 8)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-with-runtime.app",
@@ -395,21 +415,25 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[7].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[7].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[8].Executable, ShouldEqual, "sudo")
-			So(s.Calls[8].Args, ShouldResemble, []string{
-				"/usr/sbin/DevToolsSecurity",
-				"-enable",
-			})
 		})
 
 		Convey("without runtime", func() {
+			s.ReturnOutput = []string{
+				"cipd dry run",                   // 0 (index in s.Calls, same below)
+				"cipd ensures",                   // 1
+				"chomod prints nothing",          // 2
+				"",                               // 3: No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing", // 4
+				"xcodebuild -runFirstLaunch installs packages",                // 5
+				"xcrun simctl list prints a list of all simulators installed", // 6
+				"Developer mode is currently enabled.\n",                      // 7
+			}
 			installArgsForTest := installArgs
 			installArgsForTest.withRuntime = false
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-old.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
+			So(s.Calls, ShouldHaveLength, 8)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -441,12 +465,6 @@ func TestInstallXcode(t *testing.T) {
 
 			So(s.Calls[7].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
 			So(s.Calls[7].Args, ShouldResemble, []string{"-status"})
-
-			So(s.Calls[8].Executable, ShouldEqual, "sudo")
-			So(s.Calls[8].Args, ShouldResemble, []string{
-				"/usr/sbin/DevToolsSecurity",
-				"-enable",
-			})
 		})
 	})
 

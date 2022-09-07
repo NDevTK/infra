@@ -178,16 +178,13 @@ func finalizeInstall(ctx context.Context, xcodeAppPath, xcodeVersion, packageIns
 	})
 }
 
-func enableDeveloperMode(ctx context.Context) error {
+func checkDeveloperMode(ctx context.Context) error {
 	out, err := RunOutput(ctx, "/usr/sbin/DevToolsSecurity", "-status")
 	if err != nil {
 		return errors.Annotate(err, "failed to run /usr/sbin/DevToolsSecurity -status").Err()
 	}
 	if !strings.Contains(out, "Developer mode is currently enabled.") {
-		err = RunCommand(ctx, "sudo", "/usr/sbin/DevToolsSecurity", "-enable")
-		if err != nil {
-			return errors.Annotate(err, "failed to run sudo /usr/sbin/DevToolsSecurity -enable").Err()
-		}
+		return errors.Reason("Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable.").Err()
 	}
 	return nil
 }
@@ -246,7 +243,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	if err := finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
 		return err
 	}
-	return enableDeveloperMode(ctx)
+	return checkDeveloperMode(ctx)
 }
 
 // Tests whether the input |ref| exists as a ref in CIPD |packagePath|.
