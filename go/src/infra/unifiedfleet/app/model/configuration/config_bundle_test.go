@@ -60,7 +60,7 @@ func TestUpdateConfigBundle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateConfigBundle failed: %s", err)
 		}
-		if diff := cmp.Diff(want, got); diff != "" {
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -77,7 +77,7 @@ func TestUpdateConfigBundle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateConfigBundle failed: %s", err)
 		}
-		if diff := cmp.Diff(cb2update, got); diff != "" {
+		if diff := cmp.Diff(cb2update, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -93,7 +93,7 @@ func TestUpdateConfigBundle(t *testing.T) {
 		}
 
 		var cbNil *payload.ConfigBundle = nil
-		if diff := cmp.Diff(cbNil, got); diff != "" {
+		if diff := cmp.Diff(cbNil, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -206,7 +206,7 @@ func TestUpdateFlatConfig(t *testing.T) {
 		}
 
 		var cbNil *payload.FlatConfig = nil
-		if diff := cmp.Diff(cbNil, got); diff != "" {
+		if diff := cmp.Diff(cbNil, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})

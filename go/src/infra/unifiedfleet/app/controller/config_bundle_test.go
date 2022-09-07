@@ -103,7 +103,7 @@ func TestUpdateConfigBundle(t *testing.T) {
 		}
 
 		cbNil := payload.ConfigBundle{}
-		if diff := cmp.Diff(cbNil, got); diff != "" {
+		if diff := cmp.Diff(cbNil, got, protocmp.Transform()); diff != "" {
 			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
