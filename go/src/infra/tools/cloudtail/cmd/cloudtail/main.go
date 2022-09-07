@@ -30,6 +30,7 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/target"
 
+	"infra/cmdsupport/service"
 	"infra/libs/infraenv"
 	"infra/tools/cloudtail"
 )
@@ -434,7 +435,9 @@ func cmdTail(defaultAuthOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "tail [options] -path PATH",
 		ShortDesc: "tails a file and sends each line as a log entry",
-		LongDesc:  "Tails a file and sends each line as a log entry. Stops by SIGINT.",
+		LongDesc: "Tails a file and sends each line as a log entry. " +
+			"On Windows, supports running as a Windows Service or as a regular command. " +
+			"Stops by SIGINT or Windows Service Stop command.",
 		CommandRun: func() subcommands.CommandRun {
 			c := &tailRun{}
 			c.commonOptions.registerFlags(&c.Flags, defaultAuthOpts, true)
@@ -489,28 +492,42 @@ func (c *tailRun) Run(a subcommands.Application, args []string, env subcommands.
 		return 1
 	}
 
-	// Send the stop signal through tailer.Stop to properly flush everything.
-	// In 'tail' mode, unlike 'pipe' mode, Ctrl+C is the only stop signal
-	// (there's no EOF). At the same time start a countdown that will abort
-	// the context and unblock everything even if some data wasn't sent.
-	catchCtrlC(func() error {
-		go func() {
-			time.Sleep(c.flushTimeout)
-			abort()
-		}()
-		tailer.Stop()
-		return nil
-	})
-	tailer.Run(ctx) // this will block until some time after tailer.Stop is called
+	// Support running as a Windows Service.
+	// If on other platforms, or Windows command line, service.Run(s) will just call Start()
+	s := &service.Service{
+		Start: func() int {
+			tailer.Run(ctx) // this will block until some time after tailer.Stop is called
 
-	// Wait until we flush everything or until the timeout. Second SIGINT
-	// kills the process immediately anyhow (see catchCtrlC).
-	if err := state.buffer.Stop(ctx); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return 1
+			// Wait until we flush everything or until the timeout. Second SIGINT
+			// kills the process immediately anyhow (see catchCtrlC).
+			if err := state.buffer.Stop(ctx); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 1
+			}
+
+			return 0
+		},
+
+		// Send the stop signal through tailer. Stop to properly flush everything.
+		// In 'tail' mode, unlike 'pipe' mode, Ctrl+C or Windows Service Stop event
+		// are the only stop signals (there's no EOF). At the same time start a
+		// countdown that will abort the context and unblock everything even if
+		// some data wasn't sent.
+		Stop: func() {
+			go func() {
+				time.Sleep(c.flushTimeout)
+				abort()
+			}()
+			tailer.Stop()
+		},
 	}
 
-	return 0
+	catchCtrlC(func() error {
+		s.Stop()
+		return nil
+	})
+
+	return service.Run(s)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
