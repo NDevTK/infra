@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 import unittest
 
-import webapp2
+import flask
 
 from framework import warmup
 
@@ -18,28 +18,31 @@ from framework import warmup
 class WarmupTest(unittest.TestCase):
 
   def testHandleWarmup(self):
-    app = webapp2.WSGIApplication([('/', warmup.Warmup)])
+    app = flask.Flask(__name__)
+    app.add_url_rule('/', view_func=warmup.Warmup)
 
-    request = webapp2.Request.blank('/')
-    response = request.get_response(app)
+    with app.test_client() as client:
+      response = client.get('/')
 
-    self.assertEqual(response.status_int, 200)
-    self.assertEqual(response.body, '')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.data, '')
 
   def testHandleStart(self):
-    app = webapp2.WSGIApplication([('/', warmup.Start)])
+    app = flask.Flask(__name__)
+    app.add_url_rule('/', view_func=warmup.Start)
 
-    request = webapp2.Request.blank('/')
-    response = request.get_response(app)
+    with app.test_client() as client:
+      response = client.get('/')
 
-    self.assertEqual(response.status_int, 200)
-    self.assertEqual(response.body, '')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.data, '')
 
   def testHandleStop(self):
-    app = webapp2.WSGIApplication([('/', warmup.Stop)])
+    app = flask.Flask(__name__)
+    app.add_url_rule('/', view_func=warmup.Stop)
 
-    request = webapp2.Request.blank('/')
-    response = request.get_response(app)
+    with app.test_client() as client:
+      response = client.get('/')
 
-    self.assertEqual(response.status_int, 200)
-    self.assertEqual(response.body, '')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.data, '')

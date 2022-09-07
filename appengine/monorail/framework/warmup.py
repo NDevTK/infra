@@ -10,43 +10,26 @@ from __future__ import absolute_import
 
 import logging
 
-import webapp2
 
-
-# TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
-class Warmup(webapp2.RequestHandler):
+def Warmup():
   """Placeholder for warmup work.  Used only to enable min_idle_instances."""
-
-  def get(self):
-    """Don't do anything that could cause a jam when many instances start."""
-    logging.info('/_ah/startup does nothing in Monorail.')
-    logging.info('However it is needed for min_idle_instances in app.yaml.')
-
-  # def GetWarmup(self, **kwargs):
-  #   return self.handler(**kwargs)
+  # Don't do anything that could cause a jam when many instances start.
+  logging.info('/_ah/startup does nothing in Monorail.')
+  logging.info('However it is needed for min_idle_instances in app.yaml.')
+  return ''
 
 
-# TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
-class Start(webapp2.RequestHandler):
+def Start():
   """Placeholder for start work.  Used only to enable manual_scaling."""
-
-  def get(self):
-    """Don't do anything that could cause a jam when many instances start."""
-    logging.info('/_ah/start does nothing in Monorail.')
-    logging.info('However it is needed for manual_scaling in app.yaml.')
-
-  # def GetStart(self, **kwargs):
-  #   return self.handler(**kwargs)
+  # Don't do anything that could cause a jam when many instances start.
+  logging.info('/_ah/start does nothing in Monorail.')
+  logging.info('However it is needed for manual_scaling in app.yaml.')
+  return ''
 
 
-# TODO(https://crbug.com/monorail/6511): Convert to FlaskInternalTask
-class Stop(webapp2.RequestHandler):
+def Stop():
   """Placeholder for stop work.  Used only to enable manual_scaling."""
-
-  def get(self):
-    """Don't do anything that could cause a jam when many instances start."""
-    logging.info('/_ah/stop does nothing in Monorail.')
-    logging.info('However it is needed for manual_scaling in app.yaml.')
-
-  # def GetStop(self, **kwargs):
-  #   return self.handler(**kwargs)
+  # Don't do anything that could cause a jam when many instances start."""
+  logging.info('/_ah/stop does nothing in Monorail.')
+  logging.info('However it is needed for manual_scaling in app.yaml.')
+  return ''

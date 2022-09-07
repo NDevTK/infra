@@ -15,12 +15,11 @@ import re
 import time
 from six.moves import urllib
 
+import flask
 import ezt
 
 from google.appengine.api import mail
-from google.appengine.ext.webapp.mail_handlers import BounceNotificationHandler
 
-import webapp2
 
 import settings
 from features import alert2issue
@@ -51,36 +50,36 @@ MSG_TEMPLATES = {
     }
 
 
-class InboundEmail(webapp2.RequestHandler):
+class InboundEmail(object):
   """Servlet to handle inbound email messages."""
 
-  def __init__(self, request, response, services=None, *args, **kwargs):
-    super(InboundEmail, self).__init__(request, response, *args, **kwargs)
-    self.services = services or self.app.config.get('services')
+  def __init__(self, services=None):
+    self.services = services or flask.current_app.config['services']
     self._templates = {}
+    self.request = flask.request
     for name, template_path in MSG_TEMPLATES.items():
       self._templates[name] = template_helpers.MonorailTemplate(
           TEMPLATE_PATH_BASE + template_path,
           compress_whitespace=False, base_format=ezt.FORMAT_RAW)
 
-  # def HandleInboundEmail(self, project_addr=None):
-  #   if self.request.method == 'POST':
-  #     self.post(project_addr)
-  #   elif self.request.method == 'GET':
-  #     self.get(project_addr)
+  def HandleInboundEmail(self, project_addr=None):
+    if self.request.method == 'POST':
+      self.post(project_addr)
+    elif self.request.method == 'GET':
+      self.get(project_addr)
 
   def get(self, project_addr=None):
     logging.info('\n\n\nGET for InboundEmail and project_addr is %r',
                  project_addr)
     self.Handler(
-        mail.InboundEmailMessage(self.request.body),
+        mail.InboundEmailMessage(self.request.get_data()),
         urllib.parse.unquote(project_addr))
 
   def post(self, project_addr=None):
     logging.info('\n\n\nPOST for InboundEmail and project_addr is %r',
                  project_addr)
     self.Handler(
-        mail.InboundEmailMessage(self.request.body),
+        mail.InboundEmailMessage(self.request.get_data()),
         urllib.parse.unquote(project_addr))
 
   def Handler(self, inbound_email_message, project_addr):
@@ -294,29 +293,37 @@ BAD_WRAP_RE = re.compile('=\r\n')
 BAD_EQ_RE = re.compile('=3D')
 
 
-class BouncedEmail(BounceNotificationHandler):
+class BouncedEmail(object):
   """Handler to notice when email to given user is bouncing."""
 
-  # For docs on AppEngine's bounce email handling, see:
-  # https://cloud.google.com/appengine/docs/python/mail/bounce
-  # Source code is in file:
-  # google_appengine/google/appengine/ext/webapp/mail_handlers.py
+  # For docs on AppEngine's bounce email see:
+  # https://cloud.google.com/appengine/docs/standard/python3/reference
+  # /services/bundled/google/appengine/api/mail/BounceNotification
 
-  def post(self):
+  def __init__(self, services=None):
+    self.request = flask.request
+    self.form_dict = None
+    self.services = services or flask.current_app.config['services']
+
+  def postBouncedEmail(self):
+    if self.form_dict is None:
+      logging.info(self.request)
+      self.form_dict = dict(self.request.form)
     try:
-      super(BouncedEmail, self).post()
+      # Context: https://crbug.com/monorail/11083
+      bounce_message = mail.BounceNotification(self.form_dict)
+      self.receive(bounce_message)
     except AttributeError:
-      # Work-around for
-      # https://code.google.com/p/googleappengine/issues/detail?id=13512
-      raw_message = self.request.POST.get('raw-message')
+      # Context: https://crbug.com/monorail/2105
+      raw_message = self.form_dict.get('raw-message')
       logging.info('raw_message %r', raw_message)
       raw_message = BAD_WRAP_RE.sub('', raw_message)
       raw_message = BAD_EQ_RE.sub('=', raw_message)
       logging.info('fixed raw_message %r', raw_message)
       mime_message = email.message_from_string(raw_message)
       logging.info('get_payload gives %r', mime_message.get_payload())
-      self.request.POST['raw-message'] = mime_message
-      super(BouncedEmail, self).post()  # Retry with mime_message
+      self.form_dict['raw-message'] = mime_message
+      self.postBouncedEmail()  # Retry with mime_message
 
 
   def receive(self, bounce_message):
@@ -336,8 +343,7 @@ class BouncedEmail(BounceNotificationHandler):
         logging.info(
             'bounce message original headers: %r', original_message.items())
 
-    app_config = webapp2.WSGIApplication.app.config
-    services = app_config['services']
+    services = self.services
     cnxn = sql.MonorailConnection()
 
     try:

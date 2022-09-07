@@ -24,7 +24,6 @@ from features import hotlistpeople
 from features import filterrules
 from features import pubsub
 from features import userhotlists
-from features import inboundemail
 from features import notify
 from features import rerankhotlist
 from features import savedqueries
@@ -35,7 +34,6 @@ from framework import trimvisitedpages
 from framework import reap
 from framework import registerpages_helpers
 from framework import urls
-from framework import warmup
 
 from project import peopledetail
 from project import peoplelist
@@ -150,7 +148,6 @@ class ServletRegistry(object):
     self._RegisterIssueHandlers()
     self._RegisterWebComponentsHanders()
     self._RegisterRedirects()
-    self._RegisterInboundMail()
 
     # Register pRPC API routes
     prpc_server = prpc.Server(
@@ -329,12 +326,6 @@ class ServletRegistry(object):
                 (client_config_svc.LoadApiClientConfigs),
             urls.TRIM_VISITED_PAGES_CRON:
                 trimvisitedpages.TrimVisitedPages,
-            urls.WARMUP:
-                warmup.Warmup,
-            urls.START:
-                warmup.Start,
-            urls.STOP:
-                warmup.Stop
         })
 
   def _RegisterSitewideHandlers(self):
@@ -397,19 +388,6 @@ class ServletRegistry(object):
         '/people': redirect,
         '/people/': redirect,
         })
-
-  def _RegisterInboundMail(self):
-    """Register a handler for inbound email and email bounces."""
-    self.routes.append(
-        webapp2.Route(
-            '/_ah/mail/<project_addr:.+>',
-            handler=inboundemail.InboundEmail,
-            methods=['POST', 'GET']))
-    self.routes.append(
-        webapp2.Route(
-            '/_ah/bounce',
-            handler=inboundemail.BouncedEmail,
-            methods=['POST', 'GET']))
 
   def _RegisterErrorPages(self):
     """Register handlers for errors."""
