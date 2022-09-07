@@ -14,6 +14,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/cros/cmd/labservice/internal/ufs/cache"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -158,7 +159,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 			},
 		},
 	}
-	if diff := cmp.Diff(want, got); diff != "" {
+	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 		t.Errorf("GetDutTopology() mismatch (-want +got):\n%s", diff)
 	}
 }
@@ -224,7 +225,7 @@ func TestGetAndroidDutTopology_single(t *testing.T) {
 			},
 		},
 	}
-	if diff := cmp.Diff(want, got); diff != "" {
+	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 		t.Errorf("GetDutTopology() mismatch (-want +got):\n%s", diff)
 	}
 }
