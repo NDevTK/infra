@@ -298,7 +298,7 @@ func TestPEP425TagSelector(t *testing.T) {
 				{Python: "py27", Abi: "none", Platform: "any"},
 				{Python: "py27", Abi: "foo", Platform: "bar"},
 			})
-			So(tag, ShouldResemble, &vpython.PEP425Tag{Python: "py27", Abi: "foo", Platform: "bar"})
+			So(tag, ShouldResembleProto, &vpython.PEP425Tag{Python: "py27", Abi: "foo", Platform: "bar"})
 
 			expander := make(template.Expander)
 			err := addPEP425CIPDTemplateForTag(expander, tag)

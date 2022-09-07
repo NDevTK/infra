@@ -7,11 +7,9 @@ package controller
 import (
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
-	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/proto"
 )
 
 func mockConfigBundle(id string, programId string, name string) *payload.ConfigBundle {
@@ -46,12 +44,12 @@ func TestUpdateConfigBundle(t *testing.T) {
 			t.Fatalf("UpdateConfigBundle failed: %s", err)
 		}
 
-		got := payload.ConfigBundle{}
-		if err := proto.Unmarshal(gotBytes, &got); err != nil {
+		got := &payload.ConfigBundle{}
+		if err := proto.Unmarshal(gotBytes, got); err != nil {
 			t.Fatalf("UpdateConfigBundle failed to unmarshal ConfigBundle bytes: %s", err)
 		}
-		if diff := cmp.Diff(cb1, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(cb1, got) {
+			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s\n%s", cb1, got)
 		}
 	})
 
@@ -76,12 +74,12 @@ func TestUpdateConfigBundle(t *testing.T) {
 			t.Fatalf("UpdateConfigBundle failed: %s", err)
 		}
 
-		got := payload.ConfigBundle{}
-		if err := proto.Unmarshal(gotBytes, &got); err != nil {
+		got := &payload.ConfigBundle{}
+		if err := proto.Unmarshal(gotBytes, got); err != nil {
 			t.Fatalf("UpdateConfigBundle failed to unmarshal ConfigBundle bytes: %s", err)
 		}
-		if diff := cmp.Diff(cb2update, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(cb2update, got) {
+			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s\n%s", cb2update, got)
 		}
 	})
 
@@ -97,14 +95,14 @@ func TestUpdateConfigBundle(t *testing.T) {
 			t.Errorf("UpdateConfigBundle succeeded with empty IDs")
 		}
 
-		got := payload.ConfigBundle{}
-		if err := proto.Unmarshal(gotBytes, &got); err != nil {
+		got := &payload.ConfigBundle{}
+		if err := proto.Unmarshal(gotBytes, got); err != nil {
 			t.Fatalf("UpdateConfigBundle failed to unmarshal ConfigBundle bytes: %s", err)
 		}
 
-		cbNil := payload.ConfigBundle{}
-		if diff := cmp.Diff(cbNil, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		cbNil := &payload.ConfigBundle{}
+		if !proto.Equal(cbNil, got) {
+			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s\n%s", cbNil, got)
 		}
 	})
 }

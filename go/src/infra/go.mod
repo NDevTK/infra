@@ -55,16 +55,16 @@ require (
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
 	go.chromium.org/chromiumos/config/go v0.0.0-20211012171127-50826c369fec
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000
-	go.chromium.org/luci v0.0.0-20201029184154-594d11850ebf
+	go.chromium.org/luci v0.0.0-20220907173800-9129d25df9a6
 	go.opencensus.io v0.23.0
 	go.skia.org/infra v0.0.0-20220804201638-51bed25131db
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
-	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
+	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
 	golang.org/x/tools v0.1.11-0.20220407163324-91bcfb1bdf9c
 	golang.org/x/tools/gopls v0.8.3
@@ -73,10 +73,10 @@ require (
 	google.golang.org/api v0.80.0
 	google.golang.org/appengine v1.6.8-0.20220404170424-ca3835e9b4d6
 	google.golang.org/appengine/v2 v2.0.1
-	google.golang.org/genproto v0.0.0-20220523171625-347a074981d8
-	google.golang.org/grpc v1.46.2
+	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
+	google.golang.org/grpc v1.49.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
-	google.golang.org/protobuf v1.28.0
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
@@ -84,7 +84,7 @@ require (
 	k8s.io/api v0.22.12
 	k8s.io/apimachinery v0.22.12
 	k8s.io/client-go v0.22.12
-	k8s.io/metrics v0.22.1
+	k8s.io/metrics v0.22.12
 	sigs.k8s.io/yaml v1.3.0
 )
 

@@ -289,7 +289,7 @@ func TestPEP425TagSelector(t *testing.T) {
 				{Python: "py27", Abi: "none", Platform: "any"},
 				{Python: "py27", Abi: "foo", Platform: "bar"},
 			})
-			So(tag, ShouldResemble, &vpython.PEP425Tag{Python: "py27", Abi: "foo", Platform: "bar"})
+			So(tag, ShouldResembleProto, &vpython.PEP425Tag{Python: "py27", Abi: "foo", Platform: "bar"})
 
 			_, err := getPEP425CIPDTemplateForTag(tag)
 			So(err, ShouldErrLike, "failed to infer CIPD platform for tag")

@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -60,8 +61,8 @@ func TestUpdateConfigBundle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateConfigBundle failed: %s", err)
 		}
-		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(want, got) {
+			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s\n%s", want, got)
 		}
 	})
 
@@ -77,8 +78,8 @@ func TestUpdateConfigBundle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateConfigBundle failed: %s", err)
 		}
-		if diff := cmp.Diff(cb2update, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(cb2update, got) {
+			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s\n%s", cb2update, got)
 		}
 	})
 
@@ -93,8 +94,8 @@ func TestUpdateConfigBundle(t *testing.T) {
 		}
 
 		var cbNil *payload.ConfigBundle = nil
-		if diff := cmp.Diff(cbNil, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(cbNil, got) {
+			t.Errorf("UpdateConfigBundle returned unexpected diff (-want +got):\n%s\n%s", cbNil, got)
 		}
 	})
 }
@@ -115,8 +116,8 @@ func TestGetConfigBundle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("GetConfigBundle failed: %s", err)
 		}
-		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("GetConfigBundle returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(want, got) {
+			t.Errorf("GetConfigBundle returned unexpected diff (-want +got):\n%s\n%s", want, got)
 		}
 	})
 
@@ -173,8 +174,8 @@ func TestUpdateFlatConfig(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateFlatConfig failed: %s", err)
 		}
-		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(want, got) {
+			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s\n%s", want, got)
 		}
 	})
 
@@ -190,8 +191,8 @@ func TestUpdateFlatConfig(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateFlatConfig failed: %s", err)
 		}
-		if diff := cmp.Diff(cb2update, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(cb2update, got) {
+			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s\n%s", cb2update, got)
 		}
 	})
 
@@ -206,8 +207,8 @@ func TestUpdateFlatConfig(t *testing.T) {
 		}
 
 		var cbNil *payload.FlatConfig = nil
-		if diff := cmp.Diff(cbNil, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(cbNil, got) {
+			t.Errorf("UpdateFlatConfig returned unexpected diff (-want +got):\n%s\n%s", cbNil, got)
 		}
 	})
 }

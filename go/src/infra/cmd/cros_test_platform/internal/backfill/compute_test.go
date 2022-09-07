@@ -7,9 +7,9 @@ package backfill
 import (
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestPlanComputationForFailedRun(t *testing.T) {
@@ -143,8 +143,8 @@ func TestPlanComputationForFailedRun(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Error in Compute(): %s", err)
 			}
-			if diff := pretty.Compare(c.Want, br.GetRequest()); diff != "" {
-				t.Errorf("Incorrect backfill request, -want +got: %s", diff)
+			if !proto.Equal(c.Want, br.GetRequest()) {
+				t.Errorf("Incorrect backfill request, -want +got: %s\n%s", c.Want, br.GetRequest())
 			}
 		})
 	}

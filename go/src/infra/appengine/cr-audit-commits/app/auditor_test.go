@@ -309,12 +309,12 @@ func TestTaskAuditor(t *testing.T) {
 					}).Return(&gitilespb.RefsResponse{
 						Revisions: strmap{"refs/heads/master/refs/heads/master": "deadbeef"},
 					}, nil)
-					gitilesMockClient.EXPECT().Log(gomock.Any(), &gitilespb.LogRequest{
+					gitilesMockClient.EXPECT().Log(gomock.Any(), proto.MatcherEqual(&gitilespb.LogRequest{
 						Project:            "dummy",
 						Committish:         "deadbeef",
 						ExcludeAncestorsOf: "123456",
 						PageSize:           int32(config.MaxCommitsPerRefUpdate),
-					}).Return(&gitilespb.LogResponse{
+					})).Return(&gitilespb.LogResponse{
 						Log: []*git.Commit{
 							{Id: "deadbeef"},
 							{
@@ -503,12 +503,12 @@ func TestTaskAuditor(t *testing.T) {
 					}).Return(&gitilespb.RefsResponse{
 						Revisions: strmap{"refs/heads/master/refs/heads/master": "abcdef000123123"},
 					}, nil)
-					gitilesMockClient.EXPECT().Log(gomock.Any(), &gitilespb.LogRequest{
+					gitilesMockClient.EXPECT().Log(gomock.Any(), proto.MatcherEqual(&gitilespb.LogRequest{
 						Project:            "dummy",
 						Committish:         "abcdef000123123",
 						ExcludeAncestorsOf: "999999",
 						PageSize:           int32(config.MaxCommitsPerRefUpdate),
-					}).Return(&gitilespb.LogResponse{
+					})).Return(&gitilespb.LogResponse{
 						Log: []*git.Commit{},
 					}, nil)
 

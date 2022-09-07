@@ -8,14 +8,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/google/go-cmp/cmp"
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/testing/protocmp"
-
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestFindCacheServer_single(t *testing.T) {
@@ -43,8 +41,8 @@ func TestFindCacheServer_single(t *testing.T) {
 		Address: "200.200.200.208",
 		Port:    55,
 	}
-	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-		t.Errorf("FindCacheServer() mismatch (-want +got):\n%s", diff)
+	if !proto.Equal(want, got) {
+		t.Errorf("FindCacheServer() mismatch (-want +got):\n%s\n%s", want, got)
 	}
 }
 

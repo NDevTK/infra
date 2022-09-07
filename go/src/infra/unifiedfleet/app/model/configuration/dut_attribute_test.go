@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
@@ -46,8 +47,8 @@ func TestUpdateDutAttribute(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateDutAttribute failed: %s", err)
 		}
-		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(want, got) {
+			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s\n%s", want, got)
 		}
 	})
 
@@ -63,8 +64,8 @@ func TestUpdateDutAttribute(t *testing.T) {
 		if err != nil {
 			t.Fatalf("UpdateDutAttribute failed: %s", err)
 		}
-		if diff := cmp.Diff(attr2update, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(attr2update, got) {
+			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s\n%s", attr2update, got)
 		}
 	})
 
@@ -79,8 +80,8 @@ func TestUpdateDutAttribute(t *testing.T) {
 		}
 
 		var attrNil *api.DutAttribute = nil
-		if diff := cmp.Diff(attrNil, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(attrNil, got) {
+			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s\n%s", attrNil, got)
 		}
 	})
 
@@ -95,8 +96,8 @@ func TestUpdateDutAttribute(t *testing.T) {
 		}
 
 		var attrNil *api.DutAttribute = nil
-		if diff := cmp.Diff(attrNil, got, protocmp.Transform()); diff != "" {
-			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s", diff)
+		if !proto.Equal(attrNil, got) {
+			t.Errorf("UpdateDutAttribute returned unexpected diff (-want +got):\n%s\n%s", attrNil, got)
 		}
 	})
 }

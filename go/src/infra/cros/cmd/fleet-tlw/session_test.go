@@ -9,13 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -62,8 +60,8 @@ func TestSessionServer(t *testing.T) {
 	t.Run("check created session", func(t *testing.T) {
 		want := proto.Clone(got).(*access.Session)
 		want.ExpireTime = expire
-		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("session mismatch (-want +got):\n%s", diff)
+		if !proto.Equal(want, got) {
+			t.Errorf("session mismatch (-want +got):\n%s\n%s", want, got)
 		}
 	})
 	t.Run("connect to TLW", func(t *testing.T) {
@@ -97,8 +95,8 @@ func TestSessionServer(t *testing.T) {
 	t.Run("check updated session", func(t *testing.T) {
 		want := proto.Clone(got).(*access.Session)
 		want.ExpireTime = expire
-		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-			t.Errorf("session mismatch (-want +got):\n%s", diff)
+		if !proto.Equal(want, got) {
+			t.Errorf("session mismatch (-want +got):\n%s\n%s", want, got)
 		}
 	})
 	_, err = s.DeleteSession(ctx, &access.DeleteSessionRequest{

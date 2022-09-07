@@ -10,9 +10,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestGetSubnets_single(t *testing.T) {
@@ -61,7 +62,13 @@ func TestGetSubnets_single(t *testing.T) {
 	sort.Slice(got, func(i, j int) bool {
 		return bytes.Compare(got[i].IPNet.IP, got[j].IPNet.IP) > 0
 	})
+	// for i := 0; i < len(want); i++ {
+	// 	if !proto.Equal(want[i], got[i]) {
+	// 		t.Errorf("getSubnets() mismatch (-want +got):\n%s\n%s", want[i], got[i])
+	// 	}
+	// }
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("getSubnets() mismatch (-want +got):\n%s", diff)
 	}
+
 }
