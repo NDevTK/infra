@@ -7,14 +7,16 @@ package cros
 
 import (
 	"context"
-
+	"infra/cros/recovery/internal/components/cros/cbi"
 	"infra/cros/recovery/internal/execs"
+
+	"go.chromium.org/luci/common/errors"
 )
 
-// repairCbi repairs CBI contents on the DUT by writing the CBI contents stored in UFS to
-// CBI EEPROM on the DUT.
+// repairCbi repairs CBI contents on the DUT by writing the CBI contents stored
+// in UFS to CBI EEPROM on the DUT.
 // TODO(b/235000813) Implement
-func repairCbi(ctx context.Context, info *execs.ExecInfo) error {
+func repairCBI(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
@@ -25,15 +27,20 @@ func cbiIsCorrupt(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// cbiIsPresent checks if CBI is present on the DUT using
-// the ectool locatechip utility.
-// TODO(b/235000813) Implement
+// cbiIsPresent checks if CBI contents are found on the DUT.
 func cbiIsPresent(ctx context.Context, info *execs.ExecInfo) error {
+	cbiLocation, err := cbi.GetCBILocation(ctx, info.NewRunner(info.RunArgs.DUT.Name))
+	if err != nil {
+		return errors.Annotate(err, "CBI is present").Err()
+	}
+	if cbiLocation == nil {
+		return errors.Reason("No CBI contents were found on the DUT, but encountered no error. This shouldn't ever happen. Please submit a bug.").Err()
+	}
 	return nil
 }
 
 func init() {
-	execs.Register("cros_repair_cbi", repairCbi)
+	execs.Register("cros_repair_cbi", repairCBI)
 	execs.Register("cros_cbi_is_corrupt", cbiIsCorrupt)
 	execs.Register("cros_cbi_is_present", cbiIsPresent)
 }
