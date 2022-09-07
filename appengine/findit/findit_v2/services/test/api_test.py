@@ -5,6 +5,7 @@
 from datetime import datetime
 import mock
 
+from go.chromium.org.luci.buildbucket.proto import common_pb2
 from go.chromium.org.luci.buildbucket.proto.build_pb2 import Build
 from google.protobuf.field_mask_pb2 import FieldMask
 
@@ -92,6 +93,7 @@ class APITest(WaterfallTestCase):
     build.input.gitiles_commit.project = 'project/name'
     build.input.gitiles_commit.ref = 'ref/heads/master'
     build.input.gitiles_commit.id = 'git_sha'
+    build.status = common_pb2.FAILURE
     mocked_GetV2Build.return_value = build
     self.assertTrue(
         api.OnBuildCompletion('project', 'ci', 'builder', 123, 'FAILURE'))
@@ -183,6 +185,7 @@ class APITest(WaterfallTestCase):
     build.input.gitiles_commit.project = 'project/name'
     build.input.gitiles_commit.ref = 'ref/heads/master'
     build.input.gitiles_commit.id = 'git_sha'
+    build.status = common_pb2.FAILURE
     mocked_GetV2Build.return_value = build
     self.assertTrue(
         api.OnBuildCompletion('project', 'ci', 'builder-supported', 123,

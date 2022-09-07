@@ -14,6 +14,7 @@ from findit_v2.services.analysis.compile_failure import compile_analysis
 from findit_v2.services.analysis.test_failure import test_analysis
 from findit_v2.services.detection import api as detection_api
 from findit_v2.services.failure_type import StepTypeEnum
+from go.chromium.org.luci.buildbucket.proto import common_pb2
 
 
 def OnSupportedBuildCompletion(project, bucket, builder_name, build_id,
@@ -35,6 +36,10 @@ def OnSupportedBuildCompletion(project, bucket, builder_name, build_id,
 
   build, context = build_util.GetBuildAndContextForAnalysis(project, build_id)
   if not build:
+    return False
+
+  # Only process builds with FAILURE status
+  if build.status != common_pb2.FAILURE:
     return False
 
   detection_api.OnBuildFailure(context, build)
