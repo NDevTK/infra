@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ac3c52d_82cead3b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2022-09-08T23:45:45Z",
+      "side": 1,
+      "message": "Apologies for taking awhile to get this back out, mind taking a look to see if this checks out ok?",
+      "revId": "d707a9cb134223b088db5c2c396368257016cd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b69e8e5d_a95fec66",
+        "filename": "go/src/infra/unifiedfleet/app/dumper/dumper.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2022-09-08T23:45:45Z",
+      "side": 1,
+      "message": "Unsure if this is the correct method of obtaining the GCP project name.",
+      "range": {
+        "startLine": 338,
+        "startChar": 29,
+        "endLine": 338,
+        "endChar": 44
+      },
+      "revId": "d707a9cb134223b088db5c2c396368257016cd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
