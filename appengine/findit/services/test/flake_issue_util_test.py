@@ -317,7 +317,7 @@ class FlakeReportUtilTest(WaterfallTestCase):
   @mock.patch.object(
       flake_issue_util, 'SearchOpenIssueIdForFlakyTest', return_value=None)
   @mock.patch.object(monorail_util, 'UpdateBug')
-  @mock.patch.object(monorail_util, 'CreateBug', return_value=666661)
+  @mock.patch.object(flake_issue_util, '_PLACEHOLDER_MONORAIL_ISSUE', 666661)
   @mock.patch.object(monorail_util, 'GetMonorailIssueForIssueId')
   def testCreateIssue(self, mock_issue, mock_create_bug_fn, mock_update_bug_fn,
                       *_):
@@ -340,49 +340,6 @@ class FlakeReportUtilTest(WaterfallTestCase):
         flake_issue_util.GetFlakeGroupsForActionsOnBugs([(flake, occurrences,
                                                           None)]))
     flake_issue_util.ReportFlakesToMonorail(groups_wo_issue, groups_w_issue)
-
-    expected_status = 'Untriaged'
-    expected_summary = 'test_label is flaky'
-
-    expected_wrong_result_link = (
-        'https://bugs.chromium.org/p/chromium/issues/entry?status=Unconfirmed&'
-        'labels=Pri-1,Test-Flake-Detection-Wrong,Type-Bug&'
-        'components=Infra%3ETest%3EFlakiness&'
-        'summary=Flake%20Detection%20-%20Wrong%20'
-        'result%3A%20test&comment=Link%20to%20flake%20details%3A%20'
-        'https://analysis.chromium.org'
-        '/p/chromium/flake-portal/flakes/occurrences?key={}%0A%0AIssue%20'
-        'Description:%0A%0A').format(flake.key.urlsafe())
-
-    expected_description = textwrap.dedent("""
-test_label is flaky.
-
-3 flake occurrences of this test have been detected within the
-past 24 hours. List of all flake occurrences can be found at:
-https://analysis.chromium.org/p/chromium/flake-portal/flakes/occurrences?key={}.
-
-Unless the culprit CL is found and reverted, please disable this test first
-within 30 minutes then find an appropriate owner.
-
-If the result above is wrong, please file a bug using this link:
-{}
-
-Automatically posted by Flake Portal (https://goo.gl/Ne6KtC).""").format(
-        flake.key.urlsafe(), expected_wrong_result_link)
-
-    expected_labels = ['Type-Bug', 'Test-Flaky', 'Test-Flake-Detected', 'Pri-1']
-
-    self.assertTrue(mock_create_bug_fn.called)
-    self.assertFalse(mock_update_bug_fn.called)
-    issue = mock_create_bug_fn.call_args_list[0][0][0]
-    self.assertEqual(expected_status, issue.status)
-    self.assertEqual(expected_summary, issue.summary)
-    self.assertEqual(expected_description, issue.description)
-    self.assertItemsEqual(expected_labels, issue.labels)
-    self.assertEqual(['Blink'], issue.components)
-    self.assertEqual(1, len(issue.field_values))
-    self.assertEqual('Flaky-Test', issue.field_values[0].to_dict()['fieldName'])
-    self.assertEqual('test', issue.field_values[0].to_dict()['fieldValue'])
 
     flake = Flake.Get('chromium', 'step', 'test')
     flake_issue = FlakeIssue.Get('chromium', 666661)
@@ -452,11 +409,6 @@ If the result above is wrong, please file a bug using this link:
 
 Automatically posted by Flake Portal (https://goo.gl/Ne6KtC).""").format(
         flake.key.urlsafe(), expected_wrong_result_link)
-
-    self.assertTrue(mock_create_bug_fn.called)
-    self.assertFalse(mock_update_bug_fn.called)
-    issue = mock_create_bug_fn.call_args_list[0][0][0]
-    self.assertEqual(expected_description, issue.description)
 
   @mock.patch.object(
       flake_issue_util,
@@ -1197,7 +1149,7 @@ Automatically posted by Flake Portal (https://goo.gl/Ne6KtC).""").format(
           'updated': '2018-12-07T17:52:45',
           'id': '234567',
       }))
-  @mock.patch.object(monorail_util, 'CreateBug', return_value=234567)
+  @mock.patch.object(flake_issue_util, '_PLACEHOLDER_MONORAIL_ISSUE', 234567)
   @mock.patch.object(monorail_util, 'PostCommentOnMonorailBug')
   def testCreateIssueForAGroup(self, mock_first_comment, mock_create_bug, *_):
     flake1 = self._CreateFlake('s1', 'suite1.t1', 'suite1.t1')
@@ -1224,15 +1176,6 @@ Automatically posted by Flake Portal (https://goo.gl/Ne6KtC).""").format(
         flake_issue.last_updated_time_by_flake_detection)
     self.assertTrue(mock_first_comment.called)
 
-    expected_labels = [
-        'Type-Bug',
-        'Test-Flaky',
-        'Test-Flake-Detected',
-        'Pri-1',
-    ]
-    issue = mock_create_bug.call_args_list[0][0][0]
-    self.assertEqual(['Blink'], issue.components)
-    self.assertItemsEqual(expected_labels, issue.labels)
 
   @mock.patch.object(
       time_util, 'GetUTCNow', return_value=datetime.datetime(2018, 1, 2))
@@ -1246,7 +1189,7 @@ Automatically posted by Flake Portal (https://goo.gl/Ne6KtC).""").format(
           'id': '234567',
       }))
   @mock.patch.object(monorail_util, 'PostCommentOnMonorailBug')
-  @mock.patch.object(monorail_util, 'CreateBug', return_value=234567)
+  @mock.patch.object(flake_issue_util, '_PLACEHOLDER_MONORAIL_ISSUE', 234567)
   def testCreateIssueForAJavaTestGroup(self, mock_create_bug, *_):
     flake1 = self._CreateFlake('s1', 'org.chromium.rest#t1',
                                'org.chromium.rest#t1')
@@ -1271,23 +1214,6 @@ Automatically posted by Flake Portal (https://goo.gl/Ne6KtC).""").format(
 
     flake_issue_util._CreateIssuesForFlakes([flake_group], 30)
 
-    issue = mock_create_bug.call_args_list[0][0][0]
-    expected_description = textwrap.dedent("""
-Tests in s1 is flaky.
-
-2 flake occurrences of tests below have been detected within
-the past 24 hours:
-
-org.chromium.rest#t1
-org.chromium.rest#t2
-
-See go/clank-flakiness-manual for instructions on reproducing and fixing flaky tests.
-
-Please try to find and revert the culprit if the culprit is obvious.
-Otherwise please find an appropriate owner.
-
-""").format()
-    self.assertEqual(expected_description, issue.description)
 
   @mock.patch.object(
       time_util, 'GetUTCNow', return_value=datetime.datetime(2018, 1, 2))

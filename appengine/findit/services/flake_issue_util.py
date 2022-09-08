@@ -26,6 +26,10 @@ from waterfall import waterfall_config
 # The default number of entities to query for at a time should paging be needed.
 _PAGE_SIZE = 1000
 
+# The ID of the placeholder monorail issue to link to instead of creating new
+# bugs.
+_PLACEHOLDER_MONORAIL_ISSUE = 1361126
+
 
 class FlakeGroup(object):
 
@@ -752,11 +756,6 @@ def _CreateIssueForFlake(issue_generator, target_flake, create_or_update_bug):
   issue_id = SearchOpenIssueIdForFlakyTest(target_flake.normalized_test_name,
                                            monorail_project)
 
-  if not issue_id:
-    # Reopens a recently closed bug if possible.
-    issue_id = SearchRecentlyClosedIssueIdForFlakyTest(
-        target_flake.normalized_test_name, monorail_project)
-
   if issue_id:
     logging.info('An existing issue %s was found, attach it to flake: %s.',
                  FlakeIssue.GetLinkForIssue(monorail_project, issue_id),
@@ -772,15 +771,10 @@ def _CreateIssueForFlake(issue_generator, target_flake, create_or_update_bug):
     # No existing bug found, and cannot create bug, bail out.
     return None
 
-  logging.info('No existing open issue was found, create a new one.')
-  issue_id = monorail_util.CreateIssueWithIssueGenerator(
-      issue_generator=issue_generator)
-
-  if not issue_id:
-    logging.warning('Failed to create monorail bug for flake: %s.',
-                    target_flake.key)
-    return None
-  logging.info('%s was created for flake: %s.',
+  # Link to crbug.com/1361126 instead of creating a new issue.
+  # We do a search here as the minimum risk change.
+  issue_id = _PLACEHOLDER_MONORAIL_ISSUE
+  logging.info('Placeholder issue %s was linked to flake: %s.',
                FlakeIssue.GetLinkForIssue(monorail_project, issue_id),
                target_flake.key)
   _AssignIssueToFlake(issue_id, target_flake)
@@ -804,14 +798,17 @@ def _CreateIssueForFlakeGroup(flake_group):
       flake_group.flakes,
       flake_group.num_occurrences,
       canonical_step_name=flake_group.canonical_step_name)
-  issue_id = monorail_util.CreateIssueWithIssueGenerator(
-      issue_generator=issue_generator)
+
+  # Link to crbug.com/1361126 instead of creating a new issue.
+  # We do a search here as the minimum risk change.
+  issue_id = _PLACEHOLDER_MONORAIL_ISSUE
   if not issue_id:
-    logging.warning('Failed to create monorail bug for flake group: %s.',
-                    flake_group.canonical_step_name)
+    logging.warning(
+        'Failed to find placeholder monorail bug for flake group: %s.',
+        flake_group.canonical_step_name)
     return None
   logging.info(
-      '%s was created for flake_group: %s.',
+      'Placeholder issue %s was linked to flake_group: %s.',
       FlakeIssue.GetLinkForIssue(issue_generator.GetMonorailProject(),
                                  issue_id), flake_group.canonical_step_name)
 
