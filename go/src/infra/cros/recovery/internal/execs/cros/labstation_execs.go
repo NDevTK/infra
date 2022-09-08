@@ -16,8 +16,6 @@ import (
 )
 
 const (
-	// Default minimum labstation uptime.
-	minLabstationUptime = 6 * time.Hour
 	// Threshold of messages log size we can keep. It should use expression(bcwkMG) that supported by `find` cli.
 	currentMessagesLogSizeThreshold = "300M"
 	oldMessagesLogSizeThreshold     = "50M"
