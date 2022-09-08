@@ -19,7 +19,7 @@ import (
 )
 
 // PersistAction persists a single action.
-func (_ *karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistActionRequest) (*kartepb.PersistActionResponse, error) {
+func (*karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistActionRequest) (*kartepb.PersistActionResponse, error) {
 	client, err := cloudBQ.NewClient(ctx, cloudBQ.DetectProjectID)
 	if err != nil {
 		logging.Errorf(ctx, "Cannot create bigquery client: %s", err)
@@ -85,7 +85,7 @@ type bqPersister interface {
 }
 
 // persistActionRangeImpl is the implementation of persist range action.
-func (_ *karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersister, req *kartepb.PersistActionRangeRequest) (*kartepb.PersistActionRangeResponse, error) {
+func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersister, req *kartepb.PersistActionRangeRequest) (*kartepb.PersistActionRangeResponse, error) {
 	start := idserialize.IDInfo{
 		Version:        req.GetStartVersion(),
 		CoarseTime:     uint64(req.GetStartTime().GetSeconds()),
