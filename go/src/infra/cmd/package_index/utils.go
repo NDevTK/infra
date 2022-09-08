@@ -135,13 +135,15 @@ func injectUnitBuildDetails(ctx context.Context, unitProto *kpb.CompilationUnit,
 // to all imported files.
 //
 // Args:
-//   regex: compiled regex that matches import statement. It can have only
-//   one group which yields import filename
-//   fpath: path to file that will be inspected, absolute path
-//   importPaths: list of import directories, should be absolute path
+//
+//	regex: compiled regex that matches import statement. It can have only
+//	one group which yields import filename
+//	fpath: path to file that will be inspected, absolute path
+//	importPaths: list of import directories, should be absolute path
 //
 // Returns:
-//   set containing all imports
+//
+//	set containing all imports
 //
 // For example, if content of .proto file is following:
 // import "foo.proto"
@@ -196,7 +198,7 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 	}
 
 	// By default for OS, generated files are in:
-	//   * cache/cros_chroot/chroot/build/${board}/
+	//   * ../../../../cache/cros_chroot/chroot/build/${board}/
 	//   * src/out/${board}/
 	//
 	// But in the codesearch repo, these files are at:
@@ -205,14 +207,15 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 	//
 	// For references to work correctly, set vname to point to files in the repo.
 	if *projectFlag == "chromiumos" {
-		split := strings.Split(filepath, "/")
-
-		if strings.HasPrefix(filepath, "cache/cros_chroot/") {
-			filepath = fmt.Sprintf("gen/%s/%s", split[4], strings.Join(split[2:], "/"))
+		chrootPathIndex := strings.Index(filepath, "cache/cros_chroot/")
+		if chrootPathIndex >= 0 {
+			// Strip everything up until and including "cache/cros_chroot/"
+			filepath = filepath[chrootPathIndex+len("cache/cros_chroot/"):]
+			filepath = fmt.Sprintf("gen/%s/%s", strings.Split(filepath, "/")[2], filepath)
 		}
 
 		if strings.HasPrefix(filepath, "src/out/") {
-			filepath = fmt.Sprintf("gen/%s/%s", split[2], filepath)
+			filepath = fmt.Sprintf("gen/%s/%s", strings.Split(filepath, "/")[2], filepath)
 		}
 	}
 
