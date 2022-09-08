@@ -1,3 +1,6 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """Resolve the latest git version based on GitSource."""
 import dataclasses
 import enum
@@ -101,8 +104,8 @@ def _parse_version(v: str) -> packaging.version.Version:
 def _to_versions(
     raw_ls_remote_lines: str,
     version_join: str,
-    tag_re: re.Pattern[str],
-    tag_filter_re: re.Pattern[str],
+    tag_re: re.Pattern,
+    tag_filter_re: re.Pattern,
 ) -> List[Tuple[str, str]]:
   """Converts raw ls-remote output lines to versions.
 

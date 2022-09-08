@@ -6,6 +6,9 @@ package stdenv
 import (
 	"crypto"
 	"embed"
+	"fmt"
+	"io/fs"
+	"runtime"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -18,17 +21,33 @@ import (
 //go:embed setup/*
 var stdenv embed.FS
 
+// Initialize resources defined in each platforms.
+func init() {
+	files, err := fs.Sub(setupFiles, "resources")
+	if err != nil {
+		panic(err)
+	}
+	setup = &builtins.CopyFiles{
+		Name:  "setup",
+		Files: files,
+		FileMode: func(f fs.File) (fs.FileMode, error) {
+			return fs.ModePerm, nil
+		},
+	}
+}
+
 var common struct {
 	// Static files
 	Stdenv cipkg.Generator
 
-	// Import from host environment
-	PosixUtils cipkg.Generator
-	Docker     cipkg.Generator
-
 	// Prebuilt binaries
 	Git     cipkg.Generator
 	Python3 cipkg.Generator
+
+	// Import from host environment
+	PosixUtils cipkg.Generator
+	Docker     cipkg.Generator
+	XCode      cipkg.Generator
 }
 
 var cipdPackages = []ensure.PackageDef{}
@@ -39,25 +58,6 @@ const (
 )
 
 func Init() (err error) {
-	common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import",
-		"bash",
-		"chmod",
-		"cp",
-		"file",
-		"find",
-		"grep",
-		"id",
-		"mkdir",
-		"mktemp",
-		"rm",
-		"sed",
-		"touch",
-	)
-
-	if common.Docker, err = builtins.FromPath("docker"); err != nil {
-		return
-	}
-
 	common.Git = &builtins.CIPDEnsure{
 		Name: "stdenv_git",
 		Ensure: ensure.File{
@@ -84,6 +84,59 @@ func Init() (err error) {
 		Files: stdenv,
 	}
 
+	if common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import",
+		"awk",
+		"basename",
+		"bash",
+		"cat",
+		"cut",
+		"chmod",
+		"cp",
+		"expr",
+		"file",
+		"find",
+		"grep",
+		"id",
+		"ls",
+		"mkdir",
+		"mktemp",
+		"mv",
+		"od",
+		"rm",
+		"sed",
+		"sh",
+		"sleep",
+		"sort",
+		"touch",
+		"tr",
+		"which",
+		"uname",
+	); err != nil {
+		return
+	}
+
+	// OS specified
+	switch runtime.GOOS {
+	case "linux":
+		if common.Docker, err = builtins.FromPath("docker"); err != nil {
+			return
+		}
+	case "darwin":
+		if common.XCode, err = builtins.FromPathBatch("xcode",
+			"ar",
+			"cc",
+			"c++",
+			"clang",
+			"clang++",
+			"gcc",
+			"g++",
+			"make",
+			"xcrun",
+		); err != nil {
+			return
+		}
+	}
+
 	return
 }
 
@@ -92,6 +145,33 @@ type Generator struct {
 	Source       Source
 	Env          []string
 	Dependencies []utilities.BaseDependency
+}
+
+func (g *Generator) fetchSource() (cipkg.Generator, error) {
+	name := fmt.Sprintf("%s_source", g.Name)
+	switch s := g.Source.(type) {
+	case *SourceGit:
+		const gitCommand = `cd "${out}" && "$0" clone "$1" src && cd src && "$0" checkout "$2" `
+		return &utilities.BaseGenerator{
+			Name:    name,
+			Builder: "{{.posixUtils_import}}/bin/bash",
+			Args:    []string{"-c", gitCommand, "{{.stdenv_git}}/bin/git", s.URL, s.Ref},
+			Dependencies: append([]utilities.BaseDependency{
+				{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
+				{Type: cipkg.DepsBuildHost, Generator: common.Git},
+			}),
+		}, nil
+	case *SourceURL:
+		return &builtins.FetchURL{
+			Name:          name,
+			URL:           s.URL,
+			Filename:      s.Filename,
+			HashAlgorithm: s.HashAlgorithm,
+			HashString:    s.HashString,
+		}, nil
+	default:
+		return nil, fmt.Errorf("unknown source type %#v:", s)
+	}
 }
 
 type Source interface {

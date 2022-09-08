@@ -411,6 +411,7 @@ def main(exe=None) -> None:
     exe = Execution()
 
   # Extra default hooks
+  exe.add_hook('unpackCmd', extract.copy_cmd)
   exe.add_hook('unpackCmd', extract.unpack_cmd)
 
   ##############################################################################

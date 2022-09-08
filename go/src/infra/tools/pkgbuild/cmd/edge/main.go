@@ -39,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	l := spec.NewSpecLoader(specDir)
+	l := spec.NewSpecLoader(os.DirFS(specDir))
 
 	pkgs, err := packages(l, targetCIPD)
 	if err != nil {

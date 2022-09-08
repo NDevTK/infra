@@ -5,6 +5,7 @@
 import fnmatch
 import os
 import posixpath
+import shutil
 import tarfile
 import zipfile
 
@@ -144,4 +145,16 @@ def unpack_cmd(exe, include_files: str = '*') -> bool:
   else:
     return False
 
+  return True
+
+
+def copy_cmd(exe) -> bool:
+  ctx = exe.current_context
+  dst = os.path.join(os.getcwd(), 'src')
+
+  src = os.path.abspath(ctx.src)
+  if not os.path.isdir(src):
+    return False
+
+  shutil.copytree(src, dst, symlinks=False)
   return True

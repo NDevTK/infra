@@ -29,12 +29,12 @@ var fromSpecSupport embed.FS
 
 // Load 3pp Spec and convert it into a stdenv generator.
 type SpecLoader struct {
-	Directory string
+	Directory fs.FS
 
 	pkgs map[string]*stdenv.Generator
 }
 
-func NewSpecLoader(dir string) *SpecLoader {
+func NewSpecLoader(dir fs.FS) *SpecLoader {
 	return &SpecLoader{
 		Directory: dir,
 		pkgs:      make(map[string]*stdenv.Generator),

@@ -17,13 +17,17 @@ import (
 const CopyFilesBuilder = BuiltinBuilderPrefix + "copyFiles"
 
 var (
-	copyFilesHashMap       = make(map[string]fs.FS)
+	copyFilesHashMap       = make(map[string]*CopyFiles)
 	copyFilesHashAlgorithm = crypto.SHA256
 )
 
 type CopyFiles struct {
 	Name  string
 	Files fs.FS
+
+	// Override the default Stat function to get FileMode. This can be used for
+	// embedded files since golang's embed strips all the mode bits from files.
+	FileMode func(f fs.File) (fs.FileMode, error)
 }
 
 func (cf *CopyFiles) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
@@ -52,12 +56,13 @@ func (cf *CopyFiles) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.
 		}
 
 		// Hash file mode
-		var mode [4]byte
-		finfo, err := f.Stat()
+		m, err := cf.fileMode(f)
 		if err != nil {
-			return fmt.Errorf("get file info failed: %s: %w", path, err)
+			return fmt.Errorf("get file mode failed: %s: %w", path, err)
 		}
-		binary.LittleEndian.PutUint32(mode[:], uint32(finfo.Mode()))
+
+		var mode [4]byte
+		binary.LittleEndian.PutUint32(mode[:], uint32(m))
 		if _, err := h.Write(mode[:]); err != nil {
 			return fmt.Errorf("write mode failed: %s: %w", path, err)
 		}
@@ -65,12 +70,24 @@ func (cf *CopyFiles) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.
 		return nil
 	})
 	hashValue := fmt.Sprintf("%s:%x", copyFilesHashAlgorithm, h.Sum(nil))
-	copyFilesHashMap[hashValue] = cf.Files
+	copyFilesHashMap[hashValue] = cf
 	return cipkg.Derivation{
 		Name:    cf.Name,
 		Builder: CopyFilesBuilder,
 		Args:    []string{hashValue},
 	}, cipkg.PackageMetadata{}, nil
+}
+
+func (cf *CopyFiles) fileMode(f fs.File) (fs.FileMode, error) {
+	if cf.FileMode != nil {
+		return cf.FileMode(f)
+	}
+
+	finfo, err := f.Stat()
+	if err != nil {
+		return 0, err
+	}
+	return finfo.Mode(), nil
 }
 
 func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
@@ -81,8 +98,8 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 	out := GetEnv("out", cmd.Env)
 
 	h := copyFilesHashAlgorithm.New()
-	files := copyFilesHashMap[cmd.Args[1]]
-	fs.WalkDir(files, ".", func(path string, d fs.DirEntry, err error) error {
+	cf := copyFilesHashMap[cmd.Args[1]]
+	fs.WalkDir(cf.Files, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -107,7 +124,7 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 		if err != nil {
 			return fmt.Errorf("create dst file failed: %s: %w", dst, err)
 		}
-		srcFile, err := files.Open(path)
+		srcFile, err := cf.Files.Open(path)
 		if err != nil {
 			return fmt.Errorf("open src file failed: %s: %w", dst, err)
 		}
@@ -117,16 +134,16 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 		}
 
 		// Hash and copy file mode
-		srcInfo, err := srcFile.Stat()
+		m, err := cf.fileMode(srcFile)
 		if err != nil {
-			return fmt.Errorf("get file info failed: %s: %w", path, err)
+			return fmt.Errorf("get file mode failed: %s: %w", path, err)
 		}
-		if err := dstFile.Chmod(srcInfo.Mode()); err != nil {
+		if err := dstFile.Chmod(m); err != nil {
 			return fmt.Errorf("chmod failed: %s: %w", dst, err)
 		}
 
 		var mode [4]byte
-		binary.LittleEndian.PutUint32(mode[:], uint32(srcInfo.Mode()))
+		binary.LittleEndian.PutUint32(mode[:], uint32(m))
 		if _, err := h.Write(mode[:]); err != nil {
 			return fmt.Errorf("write mode failed: %s: %w", path, err)
 		}

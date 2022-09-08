@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"google.golang.org/protobuf/encoding/prototext"
@@ -24,12 +22,15 @@ type PackageDef struct {
 	Dir  fs.FS
 }
 
-func LoadPackageDef(dir, pkg string) (*PackageDef, error) {
+func LoadPackageDef(dir fs.FS, pkg string) (*PackageDef, error) {
 	// TODO(fancl): Is there a way we can verify the package version from spec?
 	_, s := path.Split(pkg)              // toos/go117@1.17.10 => go117@1.17.10
 	name := strings.SplitN(s, "@", 2)[0] // go117@1.17.10 => go117
 
-	pkgDir := os.DirFS(filepath.Join(dir, name))
+	pkgDir, err := fs.Sub(dir, name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open 3pp package dir: %w", err)
+	}
 	f, err := pkgDir.Open("3pp.pb")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open 3pp spec: %w", err)
