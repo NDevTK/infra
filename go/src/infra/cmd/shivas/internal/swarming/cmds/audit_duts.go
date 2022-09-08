@@ -19,7 +19,6 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/worker"
 	"infra/libs/swarming"
 )
@@ -206,8 +205,8 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Env
 	if err != nil {
 		return nil, errors.Annotate(err, "schedule audit builder").Err()
 	}
-	v := labpack.CIPDProd
-	p := &labpack.Params{
+	v := buildbucket.CIPDProd
+	p := &buildbucket.Params{
 		BuilderProject: "",
 		BuilderBucket:  "",
 		BuilderName:    tn.BuilderName(),
@@ -229,7 +228,7 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Env
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	url, taskID, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return nil, err
 	}

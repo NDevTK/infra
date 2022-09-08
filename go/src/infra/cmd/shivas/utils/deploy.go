@@ -14,7 +14,6 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/swarming"
 )
 
@@ -23,8 +22,8 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 	if unit == "" {
 		return errors.Reason("schedule deploy task: unit name is empty").Err()
 	}
-	v := labpack.CIPDProd
-	p := &labpack.Params{
+	v := buildbucket.CIPDProd
+	p := &buildbucket.Params{
 		UnitName:       unit,
 		TaskName:       string(tasknames.Deploy),
 		EnableRecovery: true,
@@ -39,7 +38,7 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	url, _, err := labpack.ScheduleTask(ctx, bc, v, p)
+	url, _, err := buildbucket.ScheduleTask(ctx, bc, v, p)
 	if err != nil {
 		return errors.Annotate(err, "schedule deploy task").Err()
 	}

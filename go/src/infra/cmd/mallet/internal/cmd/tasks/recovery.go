@@ -19,7 +19,6 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/swarming"
 )
 
@@ -98,15 +97,15 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 			task = string(tasknames.Deploy)
 		}
 
-		v := labpack.CIPDProd
+		v := buildbucket.CIPDProd
 		if c.latest {
-			v = labpack.CIPDLatest
+			v = buildbucket.CIPDLatest
 		}
-		url, _, err := labpack.ScheduleTask(
+		url, _, err := buildbucket.ScheduleTask(
 			ctx,
 			bc,
 			v,
-			&labpack.Params{
+			&buildbucket.Params{
 				UnitName:         unit,
 				TaskName:         task,
 				EnableRecovery:   !c.onlyVerify,
