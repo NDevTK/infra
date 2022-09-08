@@ -2202,6 +2202,19 @@ Gets the devboard machine and prints the output in user format.
 For now, only used on Satlab.
 `
 
+	// UpdateDevboardMachineLongDesc description for UpdateDevboardMachineCmd
+	UpdateDevboardMachineText string = `Update a devboard machine by name to UFS.
+
+Examples:
+shivas update devboard-machine -name machine1 -ultradebug XXX_NEW
+Update UltraDebug serial connected to the devboard machine.
+
+shivas update devboard-machine -name machine1 -tags -
+Delete tags of an existing devboard machine entry.
+
+For now, only used on Satlab.
+`
+
 	// DeleteDevboardMachineLongDesc description for DeleteDevboardMachineCmd
 	DeleteDevboardMachineLongDesc string = `Delete a devboard machine.
 
