@@ -6,7 +6,6 @@ package querygs
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/gcloud/gs"
@@ -31,11 +30,11 @@ func (r *Reader) validateFaft(faftVersion string) (string, error) {
 
 	err := fmt.Errorf("validate faft: internal error no paths selected")
 	for _, path := range paths {
+		// If we encounter an error here, do NOT log it. It leads to confusing log messages that look
+		// like errors that are entirely routine.
 		err = (r.exst)(gs.Path(path))
 		if err == nil {
 			return path, nil
-		} else {
-			fmt.Fprintf(os.Stderr, "%q %s\n", path, err.Error())
 		}
 	}
 
