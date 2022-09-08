@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -431,9 +431,9 @@ func extractFailureReasonFromResultParts(ctx context.Context, parts []*GTestRunR
 		logging.Warningf(ctx, "SummaryBase64 is not valid UTF-8 %q", f.SummaryBase64)
 		return nil
 	}
-	// Even on Windows, paths reported in the result parts use forward slashes,
-	// so use path instead of filepath.
-	_, fileName := path.Split(f.File)
+	// On Windows, paths reported in the result parts use forward or
+	// backward slashes, so use a splitting method that accepts either.
+	_, fileName := filepath.Split(f.File)
 	summary := strings.TrimSpace(trimGoogleTestTrace(string(summaryBytes)))
 
 	// Contextualise the assertion failure with the file name and line number.
