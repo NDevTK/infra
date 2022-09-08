@@ -1,7 +1,6 @@
 import filecmp
 import json
 import os
-import re
 from typing import Dict, NamedTuple, List, Set
 
 from .cros_sdk import CrosSdk
@@ -24,7 +23,7 @@ class Cdb:
   class FileFieldException(CdbException, PackagePathException):
     """Exception to indicate failure while resolving file field"""
 
-  class ArgumentsFieldException(CdbException, PackagePathException):
+  class ArgumentsFieldExcpetion(CdbException, PackagePathException):
     """Exception to indicate a failure while resolving command or arguments field"""
 
   class OutputFieldException(CdbException, PackagePathException):
@@ -44,10 +43,6 @@ class Cdb:
     chroot: Set[str]
 
   g_clang_additional_args = ['-stdlib=libc++']
-  g_clang_unsupported_args = [
-      '-fdebug-info-for-profiling', '-mretpoline', '-mretpoline-external-thunk',
-      '-mfentry', '-mno-sched-prolog', '-fconserve-stack'
-  ]
 
   def __init__(self,
                cdb_data: List,
@@ -143,12 +138,12 @@ class Cdb:
        'Arguments and command field are missing'
 
     if 'arguments' in entry:
-      compiler, *arguments = entry['arguments']
+      arguments = entry['arguments']
     else:
-      compiler, *arguments = entry['command'].split(' ')
+      arguments = entry['command'].split(' ')
 
     # First argument is always a compiler.
-    actual_arguments = [self._FixArgumentsCompiler(compiler)]
+    actual_arguments = [self._FixArgumentsCompiler(arguments[0])]
     actual_include_args = Cdb._IncludePathOrder(set(), set(), set())
 
     for arg in arguments:
@@ -173,10 +168,6 @@ class Cdb:
           actual_include_args.chroot.add(actual_arg)
         else:
           raise NotImplementedError(f"Unexpected include path: {actual_path}")
-      elif arg in Cdb.g_clang_unsupported_args:
-        # Remove a few compiler options that might not be available in the
-        # potentially older clang version outside the chroot.
-        continue
       else:
         arg_prefix, actual_path = PathHandler.FixPathInArgument(arg, Fixer)
         actual_arg = arg_prefix + actual_path
@@ -259,20 +250,12 @@ class Cdb:
     return fixed_path
 
   def _FixArgumentsCompiler(self, compiler: str) -> str:
-    if compiler == 'cc':
-      return compiler
-
-    if re.match(r'^(aarch64|arm)', compiler):
-      # We should call clang directly instead of using CrOS wrappers.
-      return CrosSdk(self.setup).Which(compiler)
-
     if compiler.endswith('clang++'):
       return 'clang++'
-
-    if compiler.endswith('clang'):
+    elif compiler.endswith('clang'):
       return 'clang'
-
-    raise NotImplementedError(f"Unknown compiler: '{compiler}'")
+    else:
+      raise NotImplementedError(f"Unknown compiler: '{compiler}'")
 
 
 class CdbGenerator:

@@ -167,22 +167,3 @@ class CrosSdk:
         self.setup.board
     ] + package_names
     return self._Exec(cmd, capture_output=True, with_sudo=True).stdout
-
-
-def Which(self, command: str) -> str:
-  """
-    Calls which inside chroot on given command and returns command full path
-    outside of chroot.
-
-    If command not found, returns None.
-
-    Raises:
-      * cros_build_lib.CompletedProcess if command failed.
-    """
-
-  cmd = ['which', command]
-  chroot_command = self._Exec(cmd, capture_output=True)
-  if not chroot_command:
-    return None
-
-  return PathHandler(self.setup).FromChroot(chroot_command)
