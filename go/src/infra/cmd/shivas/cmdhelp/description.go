@@ -2205,9 +2205,6 @@ For now, only used on Satlab.
 	// DeleteDevboardMachineLongDesc description for DeleteDevboardMachineCmd
 	DeleteDevboardMachineLongDesc string = `Delete a devboard machine.
 
-This cmd requires the user to set the NAMESPACE in env. Otherwise, it will
-default to operate in the browser lab namespace.
-
 Example:
 shivas delete devboard-machine {name}
 Deletes the given devboard machine based on machine name.
@@ -2217,9 +2214,6 @@ For now, only used on Satlab.
 
 	// DeleteDevboardLSELongDesc description for DeleteDevboardLSECmd
 	DeleteDevboardLSELongDesc string = `Delete a devboard LSE.
-
-This cmd requires the user to set the NAMESPACE in env. Otherwise, it will
-default to operate in the browser lab namespace.
 
 Example:
 shivas delete devboard-lse {name}
