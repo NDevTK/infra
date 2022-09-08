@@ -112,6 +112,27 @@ type ObservationEntity struct {
 	ValueNumber float64 `gae:"value_number"`
 }
 
+func (e *ObservationEntity) GetType() string {
+	if e.ValueString != "" {
+		return "string"
+	}
+	return "num"
+}
+
+func (e *ObservationEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
+	if e == nil {
+		return nil
+	}
+	return &kbqpb.Observation{
+		Name:        e.ID,
+		ActionName:  e.ActionID,
+		MetricKind:  e.MetricKind,
+		Type:        e.GetType(),
+		ValueString: e.ValueString,
+		ValueNumber: e.ValueNumber,
+	}
+}
+
 // cmp compares two ObservationEntities. ObservationEntities are linearly ordered by all their fields.
 // This order is not related to the semantics of an ObservationEntity.
 func (e *ObservationEntity) cmp(o *ObservationEntity) int {
@@ -399,6 +420,15 @@ func newObservationEntitiesQuery(token string, filter string) (*ObservationEntit
 		Token: token,
 		Query: q,
 	}, nil
+}
+
+// getObservationsByActionRangeQuery takes a start and an end actionId.
+func getObservationsByActionRangeQuery(start string, end string) *ObservationEntitiesQuery {
+	q := datastore.NewQuery(ObservationKind).Gte("action_id", start).Lt("action_id", end)
+	return &ObservationEntitiesQuery{
+		Token: "",
+		Query: q,
+	}
 }
 
 // convertActionToActionEntity takes an action and converts it to an action entity.
