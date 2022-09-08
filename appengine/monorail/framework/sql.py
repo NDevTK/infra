@@ -23,6 +23,7 @@ if not settings.unit_test_mode:
 
 from framework import exceptions
 from framework import framework_helpers
+from framework import logger
 
 from infra_libs import ts_mon
 
