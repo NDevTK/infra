@@ -58,8 +58,8 @@ def get_installer_suffix(platform):
   raise ValueError('fetch.py is only supported for windows-386, windows-amd64')
 
 
-# Only look at versions in 3.9.x for now.
-_VERSION_LIMIT = parse_version("3.10.0a0")
+# Only look at versions in 3.10.x for now.
+_VERSION_LIMIT = parse_version("3.11.0a0")
 
 
 def do_latest(platform):
