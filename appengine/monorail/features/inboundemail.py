@@ -301,29 +301,27 @@ class BouncedEmail(object):
   # /services/bundled/google/appengine/api/mail/BounceNotification
 
   def __init__(self, services=None):
-    self.request = flask.request
-    self.form_dict = None
     self.services = services or flask.current_app.config['services']
 
   def postBouncedEmail(self):
-    if self.form_dict is None:
-      logging.info(self.request)
-      self.form_dict = dict(self.request.form)
     try:
       # Context: https://crbug.com/monorail/11083
-      bounce_message = mail.BounceNotification(self.form_dict)
+      bounce_message = mail.BounceNotification(flask.request.form)
       self.receive(bounce_message)
     except AttributeError:
       # Context: https://crbug.com/monorail/2105
-      raw_message = self.form_dict.get('raw-message')
+      raw_message = flask.request.form.get('raw-message')
       logging.info('raw_message %r', raw_message)
       raw_message = BAD_WRAP_RE.sub('', raw_message)
       raw_message = BAD_EQ_RE.sub('=', raw_message)
       logging.info('fixed raw_message %r', raw_message)
       mime_message = email.message_from_string(raw_message)
       logging.info('get_payload gives %r', mime_message.get_payload())
-      self.form_dict['raw-message'] = mime_message
-      self.postBouncedEmail()  # Retry with mime_message
+      new_form_dict = flask.request.form.copy()
+      new_form_dict['raw-message'] = mime_message
+      # Retry with mime_message
+      bounce_message = mail.BounceNotification(new_form_dict)
+      self.receive(bounce_message)
 
 
   def receive(self, bounce_message):
@@ -353,6 +351,6 @@ class BouncedEmail(object):
       services.user.UpdateUser(cnxn, user_id, user)
     except exceptions.NoSuchUserException:
       logging.info('User %r not found, ignoring', email_addr)
-      logging.info('Received bounce post ... [%s]', self.request)
+      logging.info('Received bounce post ... [%s]', flask.request)
       logging.info('Bounce original: %s', bounce_message.original)
       logging.info('Bounce notification: %s', bounce_message.notification)
