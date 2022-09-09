@@ -39,6 +39,30 @@
       },
       "revId": "d707a9cb134223b088db5c2c396368257016cd66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "021c99ac_8e6f8e09",
+        "filename": "go/src/infra/unifiedfleet/app/dumper/dumper.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2022-09-09T00:06:47Z",
+      "side": 1,
+      "message": "Another option I considered was making the bq client then taking the project name out of it like before. This seemed like overkill to generate that to throw it away instantly. If that is the best method forward through I can quickly adjust it.",
+      "parentUuid": "b69e8e5d_a95fec66",
+      "range": {
+        "startLine": 338,
+        "startChar": 29,
+        "endLine": 338,
+        "endChar": 44
+      },
+      "revId": "d707a9cb134223b088db5c2c396368257016cd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
