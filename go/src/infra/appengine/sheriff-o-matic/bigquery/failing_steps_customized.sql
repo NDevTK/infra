@@ -63,10 +63,10 @@ WITH
           realm,
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `chops-weetbix.chromium.clustered_failures` cf
+      FROM `luci-analysis.chromium.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-    UNION ALL ( -- TODO: should only query the Weetbix projects relevant to the tree rather than all of them.
+    UNION ALL ( -- TODO: should only query the LUCI Analysis projects relevant to the tree rather than all of them.
       SELECT
         'chrome' as project,
         cluster_algorithm,
@@ -84,7 +84,7 @@ WITH
           realm,
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `chops-weetbix.chrome.clustered_failures` cf
+      FROM `luci-analysis.chrome.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
       UNION ALL (
@@ -105,7 +105,7 @@ WITH
           realm,
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `chops-weetbix.chromeos.clustered_failures` cf
+      FROM `luci-analysis.chromeos.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
       UNION ALL (
@@ -126,7 +126,7 @@ WITH
           realm,
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `chops-weetbix.fuchsia.clustered_failures` cf
+      FROM `luci-analysis.fuchsia.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
       UNION ALL (
@@ -147,7 +147,7 @@ WITH
           realm,
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `chops-weetbix.turquoise.clustered_failures` cf
+      FROM `luci-analysis.turquoise.clustered_failures` cf
       WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
       GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
     )
