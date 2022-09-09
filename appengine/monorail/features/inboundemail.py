@@ -13,12 +13,17 @@ import logging
 import os
 import re
 import time
+import six
 from six.moves import urllib
 
 import flask
 import ezt
 
 from google.appengine.api import mail
+if six.PY2:
+  from google.appengine.ext.webapp.mail_handlers import BounceNotification
+else:
+  from google.appengine.api.mail import BounceNotification
 
 
 import settings
@@ -306,7 +311,7 @@ class BouncedEmail(object):
   def postBouncedEmail(self):
     try:
       # Context: https://crbug.com/monorail/11083
-      bounce_message = mail.BounceNotification(flask.request.form)
+      bounce_message = BounceNotification(flask.request.form)
       self.receive(bounce_message)
     except AttributeError:
       # Context: https://crbug.com/monorail/2105
@@ -320,7 +325,7 @@ class BouncedEmail(object):
       new_form_dict = flask.request.form.copy()
       new_form_dict['raw-message'] = mime_message
       # Retry with mime_message
-      bounce_message = mail.BounceNotification(new_form_dict)
+      bounce_message = BounceNotification(new_form_dict)
       self.receive(bounce_message)
 
 
