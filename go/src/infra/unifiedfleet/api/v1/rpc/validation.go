@@ -1234,6 +1234,9 @@ func (r *CreateAssetRequest) Validate() error {
 	if !assetRegex.MatchString(name) {
 		return status.Errorf(codes.InvalidArgument, "Invalid asset name %s", name)
 	}
+	if !IDRegex.MatchString(util.RemovePrefix(name)) {
+		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+	}
 	if r.GetAsset().GetLocation() == nil {
 		return status.Errorf(codes.InvalidArgument, "Asset location missing")
 	}

@@ -5,6 +5,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
@@ -123,11 +124,107 @@ func TestValidateDutId(t *testing.T) {
 		})
 		Convey("Attached device - invalid device Id - returns error", func() {
 			req := &UpdateDeviceRecoveryDataRequest{
-				DeviceId:     "deviceId-foo",
+				DeviceId:     "deviceId-***",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_ATTACHED_DEVICE,
 			}
 			err := req.validateDutId()
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
+func TestCreateAssetValidate(t *testing.T) {
+	Convey("CreateAssetRequest Validate", t, func() {
+		Convey("Valid request - successful path", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Name: "assets/asset-1",
+					Location: &ufspb.Location{
+						Rack: "rack",
+						Zone: ufspb.Zone_ZONE_CHROMEOS1,
+					},
+				},
+			}
+			err := req.Validate()
 			So(err, ShouldBeNil)
+		})
+		Convey("Empty asset - returns error", func() {
+			req := &CreateAssetRequest{}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Empty asset name - returns error", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Location: &ufspb.Location{
+						Rack: "rack",
+						Zone: ufspb.Zone_ZONE_CHROMEOS1,
+					},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Invalid asset name format - returns error", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Name: "asset-1",
+					Location: &ufspb.Location{
+						Rack: "rack",
+						Zone: ufspb.Zone_ZONE_CHROMEOS1,
+					},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Invalid asset name characters - returns error", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Name: "assets/asset-@#%^&",
+					Location: &ufspb.Location{
+						Rack: "rack",
+						Zone: ufspb.Zone_ZONE_CHROMEOS1,
+					},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Missing location - returns error", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Name: "assets/asset-1",
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Location zone unspecified - returns error", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Name: "assets/asset-1",
+					Location: &ufspb.Location{
+						Rack: "rack",
+						Zone: ufspb.Zone_ZONE_UNSPECIFIED,
+					},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Location rack empty - returns error", func() {
+			req := &CreateAssetRequest{
+				Asset: &ufspb.Asset{
+					Name: "assets/asset-1",
+					Location: &ufspb.Location{
+						Rack: "",
+						Zone: ufspb.Zone_ZONE_CHROMEOS1,
+					},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
 		})
 	})
 }
