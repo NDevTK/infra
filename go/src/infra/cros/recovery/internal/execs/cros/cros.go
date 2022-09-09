@@ -58,9 +58,6 @@ func releaseBuildPath(ctx context.Context, run execs.Runner) (string, error) {
 	return strings.TrimSpace(parts[1]), nil
 }
 
-// uptimePattern is a decimal number, possibly containing a decimal point.
-var uptimePattern = regexp.MustCompile(`^(\d+\.?\d*)\s+(\d+\.?\d*)$`)
-
 // uptime returns uptime of resource.
 func uptime(ctx context.Context, run execs.Runner) (*time.Duration, error) {
 	// Received value represent two parts where the first value represents the total number
