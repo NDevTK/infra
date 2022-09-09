@@ -234,7 +234,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 			return &tlw.RunResult{
 				Command:  fullCmd,
 				ExitCode: 124,
-				Stderr:   fmt.Sprintf("run: excited timeout %s", timeout),
+				Stderr:   fmt.Sprintf("run: exited due to timeout %s", timeout),
 			}
 		}
 	}

@@ -334,8 +334,8 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 	case err := <-cw:
 		return errors.Annotate(err, "run exec %q with timeout %s", a.ExecName, timeout).Err()
 	case <-ctx.Done():
-		log.Infof(ctx, "Run exec %q with timeout %s: excited timeout", a.ExecName, timeout)
-		return errors.Reason("run exec %q with timeout %s: excited timeout", a.ExecName, timeout).Err()
+		log.Infof(ctx, "Run exec %q with timeout %s: exited due to timeout", a.ExecName, timeout)
+		return errors.Reason("run exec %q with timeout %s: exited due to timeout", a.ExecName, timeout).Err()
 	}
 }
 
