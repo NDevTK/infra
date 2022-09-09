@@ -97,8 +97,9 @@ def _parse_version(v: str) -> packaging.version.Version:
   try:
     return packaging.version.Version(v)
   except packaging.version.InvalidVersion:
-    # Return 0.0.0 for "invalid" versions because they are not comparable.
-    return  packaging.version.Version('0')
+    # At some point we need to stop using legacy versions by treating any
+    # versions with a0 a1 suffix as invalid.
+    return packaging.version.LegacyVersion(v)
 
 
 def _to_versions(

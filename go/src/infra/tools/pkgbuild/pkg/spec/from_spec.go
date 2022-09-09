@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -85,6 +86,13 @@ func (l *SpecLoader) FromSpec(pkg, host string) (*stdenv.Generator, error) {
 		Files: fromSpecFS,
 	}
 
+	// Basic package info
+	upload := def.Spec.GetUpload()
+	name := upload.GetPkgNameOverride()
+	if name == "" {
+		name = def.Name
+	}
+
 	// Construct Create from Spec
 	create := &Spec_Create{}
 
@@ -115,7 +123,10 @@ func (l *SpecLoader) FromSpec(pkg, host string) (*stdenv.Generator, error) {
 		}
 		src = &stdenv.SourceGit{
 			URL: s.GetRepo(),
-			Ref: ref,
+			Ref: ref.Commit,
+
+			CacheKey: path.Join("infra/3pp/sources/git", gitCachePath(s.GetRepo())) + "?subdir=src",
+			Version:  fmt.Sprintf("2@%s", ref.Tag),
 		}
 	case *Spec_Create_Source_Url:
 		s := source.GetUrl()
@@ -125,8 +136,11 @@ func (l *SpecLoader) FromSpec(pkg, host string) (*stdenv.Generator, error) {
 		}
 		src = &stdenv.SourceURL{
 			URL:           s.GetDownloadUrl(),
-			Filename:      fmt.Sprintf("%s-%s%s", def.Name, s.GetVersion(), ext),
+			Filename:      fmt.Sprintf("raw_source_0%s", ext),
 			HashAlgorithm: builtins.HashIgnore,
+
+			CacheKey: path.Join("infra/3pp/sources/url", upload.GetPkgPrefix(), name, host),
+			Version:  fmt.Sprintf("2@%s", s.GetVersion()),
 		}
 	case *Spec_Create_Source_Cipd:
 		// source.GetCipd()
@@ -218,33 +232,40 @@ type tagInfo struct {
 }
 
 // resolveGitTag require python3 and git in the PATH.
-func resolveGitRef(git *GitSource) (string, error) {
+func resolveGitRef(git *GitSource) (tagInfo, error) {
 	cmd := exec.Command("python3", "-c", resolveGitScript)
 	cmd.Stderr = os.Stderr
 
 	in, err := cmd.StdinPipe()
 	if err != nil {
-		return "", err
+		return tagInfo{}, err
 	}
 	out, err := cmd.StdoutPipe()
 	if err := cmd.Start(); err != nil {
-		return "", err
+		return tagInfo{}, err
 	}
 
 	if err := json.NewEncoder(in).Encode(git); err != nil {
-		return "", err
+		return tagInfo{}, err
 	}
 	in.Close()
 
 	var info tagInfo
 	if err := json.NewDecoder(out).Decode(&info); err != nil {
-		return "", err
+		return tagInfo{}, err
 	}
 	out.Close()
 
 	if err := cmd.Wait(); err != nil {
-		return "", err
+		return tagInfo{}, err
 	}
 
-	return info.Commit, nil
+	return info, nil
+}
+
+func gitCachePath(url string) string {
+	url = strings.TrimPrefix(url, "https://chromium.googlesource.com/external/")
+	url = strings.TrimPrefix(url, "https://")
+	url = strings.TrimPrefix(url, "http://")
+	return path.Clean(url)
 }
