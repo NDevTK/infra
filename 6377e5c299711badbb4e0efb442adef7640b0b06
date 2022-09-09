@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8e00497_98adb8f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2022-09-09T23:35:29Z",
+      "side": 1,
+      "message": "Tested locally using shivas and dumper running locally. Logs:\n\n```\n[D2022-09-09T23:26:16.938053Z 2955412 0 cron_frontend.go:26] Check access for TriggerCronJob\n[I2022-09-09T23:26:16.938103Z 2955412 0 cron_frontend.go:37] user:juahurta@google.com is a member of [mdb/chrome-fleet-software-team]\n[I2022-09-09T23:26:16.938187Z 2955412 0 server.go:1463] 200 POST \"http://127.0.0.1:8800/prpc/unifiedfleet.api.v1.cron.Cron/TriggerCronJob\" (0.044764s)\n[I2022-09-09T23:26:16.938277Z 2955412 0 dumper.go:317] dumping machine_lses to pubsub              {\"activity\":\"ufs.dumper.pubsub.daily\"}\n[I2022-09-09T23:26:20.808781Z 2955412 0 pubsub_component.go:24] dumping 5293 messages to pubsub             {\"activity\":\"ufs.dumper.pubsub.daily\"}\n[I2022-09-09T23:26:40.758194Z 2955412 0 pubsub_component.go:53] dumped all 5293 messages to pubsub topic projects/unified-fleet-system-dev/topic/machine_lses {\"activity\":\"ufs.dumper.pubsub.daily\"}\n[I2022-09-09T23:26:40.758259Z 2955412 0 dumper.go:336] dumping machines to pubsub                  {\"activity\":\"ufs.dumper.pubsub.daily\"}\n[I2022-09-09T23:26:43.871670Z 2955412 0 pubsub_component.go:24] dumping 6714 messages to pubsub             {\"activity\":\"ufs.dumper.pubsub.daily\"}\n```\n\nThe following pantheon link shows topic creation and message publication succeeded: http://shortn/_7RAX4E0hBw",
+      "revId": "6377e5c299711badbb4e0efb442adef7640b0b06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
