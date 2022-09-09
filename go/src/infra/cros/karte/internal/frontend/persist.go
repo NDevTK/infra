@@ -124,7 +124,7 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 	tally := 0
 
 	for q.Token != stopToken {
-		batch, _, err := q.Next(ctx, stride)
+		batch, ancillaryData, err := q.Next(ctx, stride)
 		if err != nil {
 			return nil, errors.Annotate(err, "persist action range").Err()
 		}
@@ -141,6 +141,29 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 		if err := insertCb(ctx, batch); err != nil {
 			logging.Errorf(ctx, "cannot insert action: %s", err)
 			return nil, status.Errorf(codes.Aborted, "error persisting single record: %s", err)
+		}
+
+		// Add the observations associated with this batch to bigquery in a batch of 1000.
+		var hopper []cloudBQ.ValueSaver
+		big := ancillaryData.BiggestVersion
+		query := datastore.NewQuery(ObservationKind).Gt("action_id", big)
+		if rErr := datastore.Run(ctx, query, func(o *ObservationEntity) error {
+			hopper = append(hopper, o.ConvertToValueSaver())
+			if len(hopper) >= stride {
+				if err := client.getInserter("entities", "observations")(ctx, hopper); err != nil {
+					return errors.Annotate(err, "offloading records").Err()
+				}
+				hopper = nil
+			}
+			return nil
+		}); rErr != nil {
+			return nil, errors.Annotate(rErr, "persist action range implementation: persisting observations").Err()
+		}
+		if len(hopper) > 0 {
+			if err := client.getInserter("entities", "observations")(ctx, hopper); err != nil {
+				return nil, errors.Annotate(err, "offloading records").Err()
+			}
+			hopper = nil
 		}
 	}
 

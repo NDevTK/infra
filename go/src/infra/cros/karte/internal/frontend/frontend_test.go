@@ -258,6 +258,15 @@ func (c *fakeClient) getInserter(dataset string, table string) bqInserter {
 	}
 }
 
+// size returns the total number of items.
+func (c *fakeClient) size() int {
+	out := 0
+	for _, row := range c.items {
+		out += len(row)
+	}
+	return out
+}
+
 // TestPersistActionRangeImpl_SmokeTest tests that persisting a range of actions
 // returns a non-error response given an empty dataset
 func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
