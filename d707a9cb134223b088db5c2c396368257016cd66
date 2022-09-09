@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2691e732_5df32c7a",
+        "filename": "go/src/infra/unifiedfleet/app/dumper/dumper.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-09-09T00:17:15Z",
+      "side": 1,
+      "message": "Can we have only the pubSubCronDaily first. This way we can test if this works. And if it does break something, it will do so in middle of the night, and we need not be too worried. We can add the pubSubCronHourly later, once everything is sorted out",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 3
+      },
+      "revId": "d707a9cb134223b088db5c2c396368257016cd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b69e8e5d_a95fec66",
         "filename": "go/src/infra/unifiedfleet/app/dumper/dumper.go",
         "patchSetId": 2
