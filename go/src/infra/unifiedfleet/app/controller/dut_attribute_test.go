@@ -58,7 +58,7 @@ func TestGetDutAttribute(t *testing.T) {
 	})
 
 	t.Run("get DutAttribute by non-existent ID", func(t *testing.T) {
-		id := "attr2"
+		const id = "attr2"
 		_, err := GetDutAttribute(ctx, id)
 		if err == nil {
 			t.Errorf("GetDutAttribute succeeded with non-existent ID: %s", id)

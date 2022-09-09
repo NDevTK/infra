@@ -11,17 +11,17 @@ import (
 func TestValidateHostnames(t *testing.T) {
 	Convey("ValidateHostnames", t, func() {
 		Convey("Different hostnames - successful path", func() {
-			h1, h2 := "h1", "h2"
+			const h1, h2 = "h1", "h2"
 			err := validateHostnames([]string{h1, h2}, "")
 			So(err, ShouldBeNil)
 		})
 		Convey("Duplicated hostnames - returns error", func() {
-			h1, h2 := "h1", "h1"
+			const h1, h2 = "h1", "h1"
 			err := validateHostnames([]string{h1, h2}, "")
 			So(err, ShouldNotBeNil)
 		})
 		Convey("Empty hostname - returns error", func() {
-			h1, h2 := "", "h1"
+			const h1, h2 = "", "h1"
 			err := validateHostnames([]string{h1, h2}, "")
 			So(err, ShouldNotBeNil)
 		})

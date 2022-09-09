@@ -2891,7 +2891,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 					},
 				},
 			}
-			hwid := "test"
+			const hwid = "test"
 			fakeUpdateHwidData(ctx, expiredHwidData, hwid, expiredTime)
 
 			machineHwid := &ufspb.Machine{
@@ -3205,10 +3205,10 @@ func TestUpdateRecoveryData(t *testing.T) {
 	ctx := external.WithTestingContext(testingContext())
 	Convey("UpdateRecoveryData", t, func() {
 		Convey("Update ChromeOS device", func() {
-			dutName := "dut-1"
-			dutMachine := "dut-machine-1"
-			labstationName := "labstation-1"
-			labstationMachine := "labstation-machine-1"
+			const dutName = "dut-1"
+			const dutMachine = "dut-machine-1"
+			const labstationName = "labstation-1"
+			const labstationMachine = "labstation-machine-1"
 			req := &ufsAPI.UpdateDeviceRecoveryDataRequest{
 				DeviceId:     dutMachine,
 				Hostname:     dutName,
