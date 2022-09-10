@@ -950,9 +950,9 @@ func TestUpdateDutMeta(t *testing.T) {
 func TestUpdateRecoveryDutData(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	serialNumber := "serialNumber"
-	hwID := "hwID"
-	deviceSku := "deviceSku"
+	const serialNumber = "serialNumber"
+	const hwID = "hwID"
+	const deviceSku = "deviceSku"
 	dutData := &ufsAPI.ChromeOsRecoveryData_DutData{
 		SerialNumber: serialNumber,
 		HwID:         hwID,
@@ -960,7 +960,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 	}
 	Convey("UpdateRecoveryDutData for an OS machine", t, func() {
 		Convey("Update a non-OS machine", func() {
-			machineName := "machine-dutdata-1"
+			const machineName = "machine-dutdata-1"
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
 				Name: machineName,
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -997,8 +997,8 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
 		})
 		Convey("Update a OS machine - successful path", func() {
-			machineName := "machine-dutdata-2"
-			assetTag := "machine-testassetdata-2"
+			const machineName = "machine-dutdata-2"
+			const assetTag = "machine-testassetdata-2"
 			machine := &ufspb.Machine{
 				Name: machineName,
 				Device: &ufspb.Machine_ChromeosMachine{

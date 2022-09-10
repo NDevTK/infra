@@ -20,7 +20,7 @@ func TestAddPublicBoardData(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 
 	t.Run("add non-existent Public Board", func(t *testing.T) {
-		expectedBoardName := "board1"
+		const expectedBoardName = "board1"
 		expectedModels := []string{"model1", "model2"}
 		got, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels, true)
 		if err != nil {
@@ -38,7 +38,7 @@ func TestAddPublicBoardData(t *testing.T) {
 	})
 
 	t.Run("add existing Board", func(t *testing.T) {
-		expectedBoardName := "board1"
+		const expectedBoardName = "board1"
 		expectedModels := []string{"model1", "model2"}
 
 		// Insert board1 into datastore
@@ -74,7 +74,7 @@ func TestGetPublicBoardModelData(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 
 	t.Run("get PublicBoardModelData by existing ID", func(t *testing.T) {
-		expectedBoardName := "board1"
+		const expectedBoardName = "board1"
 		expectedModels := []string{"model1", "model2"}
 		_, err := AddPublicBoardModelData(ctx, expectedBoardName, expectedModels, true)
 		if err != nil {
@@ -97,7 +97,7 @@ func TestGetPublicBoardModelData(t *testing.T) {
 	})
 
 	t.Run("get PublicBoardModelData for previous data model with no boolean for tracking private models", func(t *testing.T) {
-		expectedBoardName := "board1"
+		const expectedBoardName = "board1"
 		expectedModels := []string{"model1", "model2"}
 		entity := &PublicBoardModelDataEntity{
 			Board:  expectedBoardName,
@@ -124,7 +124,7 @@ func TestGetPublicBoardModelData(t *testing.T) {
 	})
 
 	t.Run("get PublicBoardModelData by non-existent ID", func(t *testing.T) {
-		expectedBoardName := "board2"
+		const expectedBoardName = "board2"
 		_, err := GetPublicBoardModelData(ctx, expectedBoardName)
 		if err == nil {
 			t.Errorf("GetPublicBoardModelData succeeded with non-existent ID: %s", expectedBoardName)

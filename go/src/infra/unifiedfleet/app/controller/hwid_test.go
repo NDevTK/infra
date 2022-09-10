@@ -166,7 +166,7 @@ func TestGetHwidData(t *testing.T) {
 	t.Run("happy path - get cached data from datastore", func(t *testing.T) {
 		// Server should respond but since cache is within range, cache should be
 		// returned and not updated.
-		id := "test"
+		const id = "test"
 
 		// Test if server is responding.
 		serverRsp, err := client.QueryHwid(ctx, id)
@@ -200,7 +200,7 @@ func TestGetHwidData(t *testing.T) {
 
 	t.Run("happy path - get legacy cached data from datastore", func(t *testing.T) {
 		// Cache should be returned and not updated. Server should not be called.
-		id := "test-legacy"
+		const id = "test-legacy"
 
 		// Test getting data from datastore.
 		cacheTime := time.Now().UTC().Add(-30 * time.Minute)
@@ -250,7 +250,7 @@ func TestGetHwidData(t *testing.T) {
 	t.Run("get cached data from datastore; hwid server errors", func(t *testing.T) {
 		// Server should respond nil so method should return last cached entity from
 		// the datastore.
-		id := "test-no-server"
+		const id = "test-no-server"
 
 		// Test if server is responding nil.
 		serverRsp, err := client.QueryHwid(ctx, id)
@@ -280,7 +280,7 @@ func TestGetHwidData(t *testing.T) {
 	t.Run("empty datastore; get data from hwid server and update cache", func(t *testing.T) {
 		// Datastore is empty so query hwid server. Server should respond with
 		// DutLabel data and cache in datastore.
-		id := "test"
+		const id = "test"
 
 		// No data should exist in datastore for id.
 		_, err := configuration.GetHwidData(ctx, id)
@@ -322,7 +322,7 @@ func TestGetHwidData(t *testing.T) {
 	t.Run("datastore data expired; update cache with hwid server", func(t *testing.T) {
 		// Datastore data is expired so query hwid server. Server should respond
 		// with DutLabel data and cache in datastore.
-		id := "test"
+		const id = "test"
 
 		// Add expired data to datastore.
 		expHwidData := &ufspb.HwidData{
