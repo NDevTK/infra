@@ -21,7 +21,6 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/appengine/crosskylabadmin/site"
-	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -194,7 +193,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 // createBuildbucketTaskRequest consists of the parameters needed to schedule a buildbucket repair task.
 type createBuildbucketTaskRequest struct {
 	// taskName is the name of the task, e.g. taskname.Recovery
-	taskName tasknames.TaskName
+	taskName buildbucket.TaskName
 	taskType buildbucket.CIPDVersion
 	// botID is the ID of the bot, for example, "crossk-chromeos...".
 	botID         string
@@ -206,9 +205,9 @@ type createBuildbucketTaskRequest struct {
 // We rely on this signal to decide whether to fall back to the legacy flow.
 func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequest) (string, error) {
 	if params.taskName == "" {
-		params.taskName = tasknames.Recovery
+		params.taskName = buildbucket.Recovery
 	}
-	if err := tasknames.ValidateTaskName(params.taskName); err != nil {
+	if err := buildbucket.ValidateTaskName(params.taskName); err != nil {
 		return "", errors.Annotate(err, "create buildbucket task: unsupported task name: %q", params.taskName).Err()
 	}
 	if err := params.taskType.Validate(); err != nil {

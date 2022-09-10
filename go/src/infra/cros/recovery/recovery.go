@@ -25,8 +25,8 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tasknames"
 	"infra/cros/recovery/tlw"
+	"infra/libs/skylab/buildbucket"
 )
 
 const (
@@ -208,7 +208,7 @@ func loadConfiguration(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rc *co
 	}
 	cr := args.configReader
 	if cr == nil {
-		if args.TaskName == tasknames.Custom {
+		if args.TaskName == buildbucket.Custom {
 			return nil, errors.Reason("load configuration: expected config to be provided for custom tasks").Err()
 		}
 		// Get default configuration if not provided.
@@ -230,7 +230,7 @@ func loadConfiguration(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rc *co
 }
 
 // ParsedDefaultConfiguration returns parsed default configuration for requested task and setup.
-func ParsedDefaultConfiguration(ctx context.Context, tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.Configuration, error) {
+func ParsedDefaultConfiguration(ctx context.Context, tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config.Configuration, error) {
 	if c, err := defaultConfiguration(tn, ds); err != nil {
 		return nil, errors.Annotate(err, "parse default configuration").Err()
 	} else if cv, err := config.Validate(ctx, c, execs.Exist); err != nil {
@@ -252,9 +252,9 @@ func parseConfiguration(ctx context.Context, cr io.Reader) (*config.Configuratio
 }
 
 // defaultConfiguration provides configuration based on type of setup and task name.
-func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.Configuration, error) {
+func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config.Configuration, error) {
 	switch tn {
-	case tasknames.Recovery:
+	case buildbucket.Recovery:
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosRepairConfig(), nil
@@ -267,7 +267,7 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
-	case tasknames.Deploy:
+	case buildbucket.Deploy:
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosDeployConfig(), nil
@@ -278,7 +278,7 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
-	case tasknames.AuditRPM:
+	case buildbucket.AuditRPM:
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosAuditRPMConfig(), nil
@@ -287,7 +287,7 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
-	case tasknames.AuditStorage:
+	case buildbucket.AuditStorage:
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosAuditStorageConfig(), nil
@@ -296,7 +296,7 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
-	case tasknames.AuditUSB:
+	case buildbucket.AuditUSB:
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosAuditUSBConfig(), nil
@@ -305,7 +305,7 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
-	case tasknames.Custom:
+	case buildbucket.Custom:
 		return nil, errors.Reason("Setup type: %q does not have default configuration for custom tasks", ds).Err()
 	default:
 		return nil, errors.Reason("TaskName: %q is not supported..", tn).Err()
@@ -541,7 +541,7 @@ type RunArgs struct {
 	// Metrics is the metrics sink and event search API.
 	Metrics metrics.Metrics
 	// TaskName used to drive the recovery process.
-	TaskName tasknames.TaskName
+	TaskName buildbucket.TaskName
 	// EnableRecovery tells if recovery actions are enabled.
 	EnableRecovery bool
 	// EnableUpdateInventory tells if update inventory after finishing the plans is enabled.

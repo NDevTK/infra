@@ -33,8 +33,8 @@ import (
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tasknames"
 	"infra/cros/recovery/upload"
+	"infra/libs/skylab/buildbucket"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -313,11 +313,11 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 }
 
 // Mapping of all supported tasks.
-var supportedTasks = map[string]tasknames.TaskName{
-	string(tasknames.AuditRPM):     tasknames.AuditRPM,
-	string(tasknames.AuditStorage): tasknames.AuditStorage,
-	string(tasknames.AuditUSB):     tasknames.AuditUSB,
-	string(tasknames.Custom):       tasknames.Custom,
-	string(tasknames.Deploy):       tasknames.Deploy,
-	string(tasknames.Recovery):     tasknames.Recovery,
+var supportedTasks = map[string]buildbucket.TaskName{
+	string(buildbucket.AuditRPM):     buildbucket.AuditRPM,
+	string(buildbucket.AuditStorage): buildbucket.AuditStorage,
+	string(buildbucket.AuditUSB):     buildbucket.AuditUSB,
+	string(buildbucket.Custom):       buildbucket.Custom,
+	string(buildbucket.Deploy):       buildbucket.Deploy,
+	string(buildbucket.Recovery):     buildbucket.Recovery,
 }
