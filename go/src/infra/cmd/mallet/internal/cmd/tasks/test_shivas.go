@@ -33,6 +33,8 @@ var TestShivas = &subcommands.Command{
 	LongDesc:  "Test shivas CLI",
 	CommandRun: func() subcommands.CommandRun {
 		c := &testShivasRun{}
+		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
+		c.envFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.dir, "dir", "", `directory where shivas command is located`)
 		return c
 	},
@@ -73,7 +75,10 @@ func (c *testShivasRun) innerRun(a subcommands.Application, args []string, env s
 		return errors.Annotate(err, `test shivas: "dev-shivas help" failed`).Err()
 	}
 	if err := c.addRemoveDUT(); err != nil {
-		return errors.Annotate(err, "test shivas").Err()
+		return errors.Annotate(err, "test shivas: add remove dut").Err()
+	}
+	if err := c.auditServoUSB(); err != nil {
+		return errors.Annotate(err, "test shivas: audit servo usb").Err()
 	}
 
 	fmt.Fprintf(a.GetErr(), "OK\n")
@@ -124,4 +129,51 @@ func (c *testShivasRun) addRemoveDUT() error {
 
 	// Try to clean up and track whether we succeeded or failed.
 	return errors.Annotate(cleanup(), "add dut: cleanup").Err()
+}
+
+// auditServoUSB tests launching an audit-servo-usb task.
+func (c *testShivasRun) auditServoUSB() error {
+	const zone = "cros_googler_desk"
+	const rack = "ee49b4de-c6e5-4790-a0d3-b9e184666386"
+	const asset = "d7c3d309-9ce3-4dfe-9812-9683c2b22b87"
+	const dut = "674a87bd-c6e9-4dad-ae51-b08ddd48677d"
+	const eve = "eve"
+
+	f := func(e error) error {
+		if e == nil {
+			return errors.Reason("command exited zero but another problem was detected").Err()
+		}
+		return e
+	}
+
+	cleanup := func() {
+		exec.Command(c.devShivas(), "delete", "dut", "-yes", "-namespace", "os", dut).Run()
+		exec.Command(c.devShivas(), "delete", "asset", "-yes", "-namespace", "os", asset).Run()
+		exec.Command(c.devShivas(), "delete", "rack", "-yes", "-namespace", "os", rack).Run()
+	}
+
+	cleanup()
+	defer cleanup()
+
+	// Create the DUT.
+	if out, err := exec.Command(c.devShivas(), "add", "rack", "-namespace", "os", "-zone", zone, "-name", rack).CombinedOutput(); !strings.Contains(string(out), "Success") || err != nil {
+		return errors.Annotate(f(err), "add remove DUT: add rack: %q", out).Err()
+	}
+	if out, err := exec.Command(c.devShivas(), "add", "asset", "-namespace", "os", "-zone", zone, "-type", "dut", "-rack", rack, "-name", asset).CombinedOutput(); !strings.Contains(string(out), "Success") || err != nil {
+		return errors.Annotate(f(err), "add remove DUT: add asset: %q", out).Err()
+	}
+	if out, err := exec.Command(c.devShivas(), "add", "dut", "-namespace", "os", "-asset", asset, "-board", eve, "-model", eve, "-name", dut).CombinedOutput(); !strings.Contains(string(out), "Success") || err != nil {
+		return errors.Annotate(f(err), "add remove DUT: add dut: %q", out).Err()
+	}
+
+	// Launch an audit task.
+	// See b:244778016 for more details.
+	//
+	// TODO(gregorynisbet): For now, we expect audit tasks launched against the dev version of UFS to fail with an error containing
+	//                      "Method Not Allowed". In future CLs, fix this so that we actually launch a swarming task in the dev instance.
+	if out, err := exec.Command(c.devShivas(), "audit", "-servo-usb", dut).CombinedOutput(); !strings.Contains(string(out), "Method Not Allowed") {
+		return errors.Annotate(f(err), "audit DUT: launch audit task: %q", out).Err()
+	}
+
+	return nil
 }
