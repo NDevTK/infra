@@ -5358,6 +5358,20 @@ wheel: <
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
 
+## **pyelftools**
+
+### 0.29
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyelftools-py2_py3"
+  version: "version:0.29"
+>
+```
+
+
+* *universal*
+
 ## **pyfakefs**
 
 ### 3.7.2

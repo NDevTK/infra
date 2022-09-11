@@ -1322,6 +1322,7 @@ SPECS.update({
         Universal('pyasn1_modules', '0.2.4'),
         Universal('pyasn1_modules', '0.2.8'),
         Universal('pycparser', '2.21'),
+        Universal('pyelftools', '0.29'),
         Universal('pyfakefs', '3.7.2'),
         Universal('pyglet', '1.5.0'),
         Universal('pykwalify', '1.8.0'),
