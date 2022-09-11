@@ -14,6 +14,8 @@ ee1f0a4d96b1ed901b0d60168c749081b597db2c Allow multiple versions of a wheel as l
 0587bc796cbcf7a8260972d895502d497918cd8e Add deploy doc for vpython
 ```
 
+**SEND A PSA** to [g/luci-announce](https://groups.google.com/a/google.com/g/luci-announce) if there is any breaking change.
+
 ## LUCI builds
 
 NOTE: Because buildbucket has a painless canary support, it's preferred to deploy in buildbucket canary before swarming or puppet.
