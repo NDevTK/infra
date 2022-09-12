@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e08d93ff_4379ccf1",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/resolve_git.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-12T00:35:31Z",
+      "side": 1,
+      "message": "I think we should research this some more. As best I can find, https://peps.python.org/pep-0440/ still allows for the alpha/beta/rc suffixes, and I couldn\u0027t find something that supersedes this.",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbbc3f23_c7408f4f",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/storage/cipd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-12T00:35:31Z",
+      "side": 1,
+      "message": "I\u0027d suggest clearer logging, maybe \"copied source from cache\"",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbd206cd_89b56d69",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/storage/cipd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-12T00:35:31Z",
+      "side": 1,
+      "message": "I think we will need to support having some kind of override for the top-level package location. See the package_prefix and source_cache_prefix properties in the current recipe. (in addition, we\u0027ll likely want to preserve the current notion of experimental mode)",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
