@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9dde432c_fbbc75a1",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/resolve_git.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-12T05:42:04Z",
+      "side": 1,
+      "message": "I misread the comments in the code. The difference is LegacyVersion support versions before PEP440. Although they do exist in the cpython code base, we don\u0027t use them anyway and any furture versions will comply with PEP440. From https://github.com/pypa/pip/blob/main/src/pip/_vendor/packaging/version.py a0 a1 suffixes are supported by the new packaging.version.Version (and I have verified that). Revert this change.",
+      "parentUuid": "622bcf9c_a390733e",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cbbc3f23_c7408f4f",
@@ -156,6 +174,24 @@
       "side": 1,
       "message": "Looks good re: SpecLoader config.\n\nI guess maybe we will need to wait and see whether we need to add a separate notion of experimental mode. As it is in the current recipe, the recipe engine sets experimental mode where appropriate and this auto-prepends the experimental package prefix, which is nice.",
       "parentUuid": "5d5d67f9_17dee1bc",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc2bd691_29022572",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/storage/cipd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-12T05:42:04Z",
+      "side": 1,
+      "message": "It will be implemented by changing the SpecLoader config. I\u0027m working on another CL which cleanup the main implementation to provide some usable options (including experimental mode).",
+      "parentUuid": "53c30ceb_b4815dec",
       "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
