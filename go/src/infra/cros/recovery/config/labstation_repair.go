@@ -28,6 +28,8 @@ func LabstationRepairConfig() *Configuration {
 					"Update provisioned info",
 					"booted_from_right_kernel",
 					"reboot_by_request",
+					// TODO(b/245824583): remove this action once the bug fixed.
+					"Cleanup bluetooth",
 					"Update inventory info",
 					"dut_state_ready",
 				},
@@ -288,6 +290,41 @@ func LabstationRepairConfig() *Configuration {
 							"Device is SSHable",
 						},
 						ExecName:               "cros_log_clean_up",
+						AllowFailAfterRecovery: true,
+					},
+					"Attempt to remove bluetooth device": {
+						Docs: []string{
+							"Attempt to remove bluetooth device from the labstation.",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName:               "cros_remove_bt_devices",
+						AllowFailAfterRecovery: true,
+					},
+					"Attempt to power off bluetooth adapter": {
+						Docs: []string{
+							"Attempt to power off bluetooth adapter on the labstation.",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName: "cros_run_shell_command",
+						ExecExtraArgs: []string{
+							"bluetoothctl power off",
+						},
+						AllowFailAfterRecovery: true,
+					},
+					"Cleanup bluetooth": {
+						Docs: []string{
+							"Attempt to remove bluetooth device and then power off BT adapter.",
+							"This action should be removed once b/245824583 got fixed.",
+						},
+						Dependencies: []string{
+							"Attempt to remove bluetooth device",
+							"Attempt to power off bluetooth adapter",
+						},
+						ExecName:               "sample_pass",
 						AllowFailAfterRecovery: true,
 					},
 				},
