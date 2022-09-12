@@ -5,7 +5,6 @@
 package configuration
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -292,8 +291,8 @@ func TestGenerateFCIdFromCrosMachine(t *testing.T) {
 
 	t.Run("generate id from cros machine with no board", func(t *testing.T) {
 		machine := mockChromeOSMachine("chromeos-asset-3", "", "model", "")
-		wantErrMsg := fmt.Sprintf("empty board value")
-		want := ""
+		const wantErrMsg = "empty board value"
+		const want = ""
 		got, gotErr := GenerateFCIdFromCrosMachine(machine)
 
 		if gotErr == nil {
@@ -311,8 +310,8 @@ func TestGenerateFCIdFromCrosMachine(t *testing.T) {
 
 	t.Run("generate id from cros machine with no model", func(t *testing.T) {
 		machine := mockChromeOSMachine("chromeos-asset-4", "bt", "", "")
-		wantErrMsg := fmt.Sprintf("empty model value")
-		want := ""
+		const wantErrMsg = "empty model value"
+		const want = ""
 		got, gotErr := GenerateFCIdFromCrosMachine(machine)
 
 		if gotErr == nil {
@@ -330,8 +329,8 @@ func TestGenerateFCIdFromCrosMachine(t *testing.T) {
 
 	t.Run("generate id from cros machine with no board or model", func(t *testing.T) {
 		machine := mockChromeOSMachine("chromeos-asset-5", "", "", "")
-		wantErrMsg := fmt.Sprintf("empty board value")
-		want := ""
+		const wantErrMsg = "empty board value"
+		const want = ""
 		got, gotErr := GenerateFCIdFromCrosMachine(machine)
 
 		if gotErr == nil {
