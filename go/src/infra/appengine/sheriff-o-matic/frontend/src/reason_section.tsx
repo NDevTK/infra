@@ -44,9 +44,9 @@ const historyLink = (t: AlertReasonTestJson): string => {
 const similarFailuresLink = (t: AlertReasonTestJson): string => {
     const [project, algorithm, id] = t.cluster_name.split('/', 3);
     if (algorithm.startsWith('rules')) {
-        return `https://chops-weetbix.appspot.com/p/${project}/rules/${id}`;
+        return `https://luci-analysis.appspot.com/p/${project}/rules/${id}`;
     }
-    return `https://chops-weetbix.appspot.com/p/${project}/clusters/${algorithm}/${id}`;
+    return `https://luci-analysis.appspot.com/p/${project}/clusters/${algorithm}/${id}`;
 }
 
 const chromiumTrees = ['chromium', 'chromium.gpu', 'chromium.perf', 'chrome_browser_release'];
