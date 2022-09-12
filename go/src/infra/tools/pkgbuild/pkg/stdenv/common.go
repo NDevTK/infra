@@ -151,7 +151,7 @@ func (g *Generator) fetchSource() (cipkg.Generator, error) {
 	name := fmt.Sprintf("%s_source", g.Name)
 	switch s := g.Source.(type) {
 	case *SourceGit:
-		const gitCommand = `cd "${out}" && "$0" clone "$1" src && cd src && "$0" checkout "$2" `
+		const gitCommand = `cd "${out}" && "$0" clone "$1" src && cd src && "$0" checkout "$2" && rm -rf .git`
 		return &utilities.BaseGenerator{
 			Name:    name,
 			Builder: "{{.posixUtils_import}}/bin/bash",
@@ -160,14 +160,22 @@ func (g *Generator) fetchSource() (cipkg.Generator, error) {
 				{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
 				{Type: cipkg.DepsBuildHost, Generator: common.Git},
 			}),
+			Version:  s.Version,
+			CacheKey: s.CacheKey,
 		}, nil
 	case *SourceURL:
-		return &builtins.FetchURL{
-			Name:          name,
-			URL:           s.URL,
-			Filename:      s.Filename,
-			HashAlgorithm: s.HashAlgorithm,
-			HashString:    s.HashString,
+		return &utilities.WithMetadata{
+			Generator: &builtins.FetchURL{
+				Name:          name,
+				URL:           s.URL,
+				Filename:      s.Filename,
+				HashAlgorithm: s.HashAlgorithm,
+				HashString:    s.HashString,
+			},
+			Metadata: cipkg.PackageMetadata{
+				Version:  s.Version,
+				CacheKey: s.CacheKey,
+			},
 		}, nil
 	default:
 		return nil, fmt.Errorf("unknown source type %#v:", s)
@@ -188,6 +196,9 @@ type SourceGit struct {
 	// - refs/tags/xxx
 	// - 8e8722e14772727b0e1cd5bd925a0f089611a60b
 	Ref string
+
+	CacheKey string
+	Version  string
 }
 
 func (s *SourceGit) isSourceMethod() {}
@@ -197,6 +208,9 @@ type SourceURL struct {
 	Filename      string
 	HashAlgorithm crypto.Hash
 	HashString    string
+
+	CacheKey string
+	Version  string
 }
 
 func (s *SourceURL) isSourceMethod() {}
