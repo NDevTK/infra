@@ -48,6 +48,8 @@ file a bug [here](https://bugs.chromium.org/p/chromium/issues/entry?template=+Vp
 [Python VirtualEnvs]: https://virtualenv.pypa.io/en/stable/
 [PyPI]: https://pypi.python.org/
 [vpython spec]: https://chromium.googlesource.com/chromium/src.git/+/main/.vpython
+[script specific vpython3 spec]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/gsutil.vpython3
+[common vpython3 spec]: https://chromium.googlesource.com/website/+/main/.vpython3
 [LUCI]: https://chrome-internal.googlesource.com/infradata/config/+/main/configs/cr-buildbucket/settings.cfg
 [depot_tools]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/cipd_manifest.txt#38
 [wheels.md]: https://chromium.googlesource.com/infra/infra/+/main/infra/tools/dockerbuild/wheels.md

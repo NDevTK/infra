@@ -130,7 +130,7 @@ On this system, there is a `psutil`, but it's really old and doesn't have the
 `pids` member. Let's file an infra ticket to upgrade it on all bots ... but now
 some other builder is red because it depended on that older version...
 
-Enter VirtualEnv (featuring `vpython`)!
+Enter VirtualEnv (featuring `vpython` and `vpython3`)!
 
 We can use `vpython` to download `psutil` and create a VirtualEnv just for this
 script! Because we have a separate, hermetic, and isolated VirtualEnv for this
@@ -291,8 +291,8 @@ Some Recommendations (see below for specifics):
       it gets copied elsewhere.
 * If your entire collection of scripts wants to share the same environment,
   use a single
-  [Common Specification](#common-specification) (`.vpython`) at the root
-  of your script collection.
+  [Common Specification](#common-specification) (`.vpython` or `.vpython3`) at
+  the root of your script collection.
 
 In all cases except *Script-Specific Specification*, specification will be
 probed only based on the `realpath` of the file.
@@ -303,7 +303,8 @@ please [contact Chrome Operations](#Contact).
 #### Script-Specific Specification
 
 A specification protobuf can be dropped alongside a Python script to implicitly
-pair `vpython` with the script.
+pair `vpython` with the script. If you are using `vpython3` use the suffix
+`.vpython3` in all the examples below.
 
 If the script is a symbolic link, vpython will:
 
@@ -314,7 +315,8 @@ e.g: For symbolic link `/A/B -> /C/D`, vpython will first check `/A/B.vpython`,
 then `/C/D.vpython`.
 
 For a script named `foo.py`, a `vpython` specification would appear in the same
-directory alongside it and be named `foo.py.vpython`.
+directory alongside it and be named `foo.py.vpython`. (Or `foo.py.vpython3` if
+you are using `vpython3`.)
 
 * foo.py.vpython
   ```protobuf
