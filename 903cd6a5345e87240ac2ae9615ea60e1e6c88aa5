@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "622bcf9c_a390733e",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/resolve_git.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-12T05:07:02Z",
+      "side": 1,
+      "message": "We might, we have had requests for example to make preleases of git available.\n\nI guess what I\u0027m saying is that I don\u0027t quite understand the \u0027packaging\u0027 module\u0027s stance that these versions are invalid (i.e. legacy), if they comply with the relevant PEP. Is there a document somewhere describing the situation?",
+      "parentUuid": "5b926596_625fb472",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cbbc3f23_c7408f4f",
         "filename": "go/src/infra/tools/pkgbuild/pkg/storage/cipd.go",
         "patchSetId": 1
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "Updated. It can also be prebuilt packages.",
       "parentUuid": "cbbc3f23_c7408f4f",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92a0f9cb_79879af6",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/storage/cipd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-12T05:07:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b06069a2_66e1911e",
       "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -102,6 +138,24 @@
       "side": 1,
       "message": "Added an optional config for SpecLoader for these prefixes. Also my thought is that we can switch to experimental mode by changing the top level config, WDYT?",
       "parentUuid": "cbd206cd_89b56d69",
+      "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53c30ceb_b4815dec",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/storage/cipd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-12T05:07:02Z",
+      "side": 1,
+      "message": "Looks good re: SpecLoader config.\n\nI guess maybe we will need to wait and see whether we need to add a separate notion of experimental mode. As it is in the current recipe, the recipe engine sets experimental mode where appropriate and this auto-prepends the experimental package prefix, which is nice.",
+      "parentUuid": "5d5d67f9_17dee1bc",
       "revId": "903cd6a5345e87240ac2ae9615ea60e1e6c88aa5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
