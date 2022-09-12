@@ -49,6 +49,7 @@ func getApplication() *cli.Application {
 			tasks.DownloadToUsbDrive,
 			tasks.DeepRepair,
 			tasks.TestShivas,
+			tasks.EthernetHook,
 		},
 	}
 }
