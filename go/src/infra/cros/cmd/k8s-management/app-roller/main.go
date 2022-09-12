@@ -40,13 +40,13 @@ import (
 	"regexp"
 	"strings"
 	"sync"
-	"text/template"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/google"
+	"github.com/google/safetext/yamltemplate"
 	"github.com/jdxcode/netrc"
 	"gopkg.in/yaml.v2"
 	k8sMetaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -207,7 +207,7 @@ func resolveImages(images []image, auth authn.Authenticator) (map[string]string,
 
 // genAppYaml generates real YAML file for an application.
 func genAppYaml(yamlTemplate string, imageMap map[string]string) (string, error) {
-	t, err := template.New("base").Parse(yamlTemplate)
+	t, err := yamltemplate.New("base").Parse(yamlTemplate)
 	if err != nil {
 		return "", fmt.Errorf("gen YAML: %s", err)
 	}

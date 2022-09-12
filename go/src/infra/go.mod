@@ -32,6 +32,7 @@ require (
 	github.com/google/cel-go v0.7.3
 	github.com/google/go-cmp v0.5.8
 	github.com/google/go-containerregistry v0.6.0
+	github.com/google/safetext v0.0.0-20220905092116-b49f7bc46da2
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.3.0
@@ -180,7 +181,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.3.0 // indirect
 	k8s.io/klog/v2 v2.20.0 // indirect
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
