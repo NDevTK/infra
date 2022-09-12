@@ -11,6 +11,7 @@ option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 import "google/protobuf/timestamp.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
+import "infra/unifiedfleet/api/v1/models/location.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
 
 // CachingService refers to caching service information in the chromeos lab
@@ -45,4 +46,7 @@ message CachingService {
   // Particular subnets which the caching service serves/supports. One caching
   // service can support multiple subnets in the case of P2P network.
   repeated string serving_subnets = 9;
+  // The UFS zones the caching service serves. One caching service can support
+  // multiple zones, e.g. [CHROMEOS2, CHROMEOS4, CHROMEOS6]
+  repeated Zone zones = 10;
 }
