@@ -56,7 +56,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get test data: %v", err)
 	}
-	l := spec.NewSpecLoader(specs)
+	l := spec.NewSpecLoader(specs, nil)
 
 	Convey("Select platform", t, func() {
 		cipdPlat := platform.CurrentPlatform()

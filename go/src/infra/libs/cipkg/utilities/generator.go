@@ -25,6 +25,9 @@ type BaseGenerator struct {
 	Args         []string
 	Env          []string
 	Dependencies []BaseDependency
+
+	Version  string
+	CacheKey string
 }
 
 type BaseGeneratorResult struct {
@@ -89,7 +92,9 @@ func (g *BaseGenerator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cip
 			Env:      env,
 			Inputs:   inputs,
 		}, cipkg.PackageMetadata{
+			Version:      g.Version,
 			Dependencies: rDeps,
+			CacheKey:     g.CacheKey,
 		}, nil
 }
 
@@ -115,4 +120,18 @@ func render(tmpl *template.Template, raw string, data interface{}) (string, erro
 		return "", err
 	}
 	return b.String(), nil
+}
+
+type WithMetadata struct {
+	Generator cipkg.Generator
+	Metadata  cipkg.PackageMetadata
+}
+
+func (g *WithMetadata) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
+	drv, _, err := g.Generator.Generate(ctx)
+	if err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+	}
+
+	return drv, g.Metadata, nil
 }
