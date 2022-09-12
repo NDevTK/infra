@@ -69,7 +69,7 @@ func swarmingLabelsDiffHandler(ctx context.Context) error {
 	logs = append(logs, fmt.Sprintf("Found %d MachineLSEs", len(lseRes.Passed())))
 	logs = append(logs, "##############################\n\n")
 
-	if _, err := fmt.Fprintf(writer, strings.Join(logs, "\n\n")); err != nil {
+	if _, err := fmt.Fprint(writer, strings.Join(logs, "\n\n")); err != nil {
 		return err
 	}
 
@@ -176,7 +176,7 @@ func logSwarmingDiff(ids string, oldLabels, ufsLabels []string, writer *storage.
 	logs = append(logs, fmt.Sprintf("Old labels: %s", strings.Join(oldLabels, "\n\t")))
 	logs = append(logs, fmt.Sprintf("UFS labels: %s", strings.Join(ufsLabels, "\n\t")))
 	logs = append(logs, "##############################\n\n")
-	if _, err := fmt.Fprintf(writer, strings.Join(logs, "\n\n")); err != nil {
+	if _, err := fmt.Fprint(writer, strings.Join(logs, "\n\n")); err != nil {
 		return err
 	}
 	return nil
