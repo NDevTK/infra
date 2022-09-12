@@ -8,6 +8,7 @@ package utilization
 import (
 	"context"
 	"fmt"
+	"infra/cros/dutstate"
 	invV1 "infra/libs/skylab/inventory"
 
 	"go.chromium.org/luci/common/api/swarming/swarming/v1"
@@ -62,7 +63,21 @@ func (b bucket) String() string {
 // the corresponding metric is immediately reset.
 type status string
 
-var allStatuses = []status{"[None]", "Ready", "RepairFailed", "NeedsRepair", "NeedsReset", "Running"}
+var allStatuses = []status{
+	"[None]",
+	"Ready",
+	"RepairFailed",
+	"NeedsRepair",
+	"NeedsReset",
+	"Running",
+	"NeedsDeploy",
+	"Deploying",
+	"Reserved",
+	"ManualRepair",
+	"NeedsManualRepair",
+	"NeedsReplacement",
+	"Unknown",
+}
 
 // counter collects number of DUTs per bucket and status.
 type counter map[bucket]map[status]int
@@ -108,8 +123,6 @@ func getBucketForBotInfo(bi *swarming.SwarmingRpcsBotInfo) bucket {
 }
 
 func getStatusForBotInfo(bi *swarming.SwarmingRpcsBotInfo) status {
-	// dutState values are defined at
-	// https://chromium.googlesource.com/infra/infra/+/e70c5ed1f9dddec833fad7e87567c0ded19fd565/go/src/infra/cmd/skylab_swarming_worker/internal/botinfo/botinfo.go#32
 	dutState := ""
 	for _, d := range bi.Dimensions {
 		switch d.Key {
@@ -129,23 +142,37 @@ func getStatusForBotInfo(bi *swarming.SwarmingRpcsBotInfo) status {
 	botBusy := bi.TaskId != ""
 
 	switch dutState {
-	case "ready":
+	case dutstate.Ready.String():
 		if botBusy {
 			return "Running"
 		}
 		return "Ready"
 	case "running":
 		return "Running"
-	case "needs_reset":
+	case dutstate.NeedsReset.String():
 		// We count time spent waiting for a reset task to be assigned as time
 		// spent Resetting.
 		return "NeedsReset"
-	case "needs_repair":
+	case dutstate.NeedsRepair.String():
 		// We count time spent waiting for a repair task to be assigned as time
 		// spent Repairing.
 		return "NeedsRepair"
-	case "repair_failed":
+	case dutstate.RepairFailed.String():
 		return "RepairFailed"
+	case dutstate.NeedsDeploy.String():
+		return "NeedsDeploy"
+	case dutstate.Deploying.String():
+		return "Deploying"
+	case dutstate.Reserved.String():
+		return "Reserved"
+	case dutstate.ManualRepair.String():
+		return "ManualRepair"
+	case dutstate.NeedsManualRepair.String():
+		return "NeedsManualRepair"
+	case dutstate.NeedsReplacement.String():
+		return "NeedsReplacement"
+	case dutstate.Unknown.String():
+		return "Unknown"
 
 	default:
 		return "[None]"
