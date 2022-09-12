@@ -17,16 +17,18 @@ import (
 	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
+	"infra/tools/pkgbuild/pkg/storage"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 func main() {
 	ctx := gologger.StdConfig.Use(context.Background())
-	ctx = logging.SetLevel(ctx, logging.Error)
+	ctx = logging.SetLevel(ctx, logging.Info)
 
 	// TODO(fancl): properly parse the args.
 	storageDir, specDir := os.Args[1], os.Args[2]
@@ -39,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	l := spec.NewSpecLoader(os.DirFS(specDir))
+	l := spec.NewSpecLoader(os.DirFS(specDir), nil)
 
 	pkgs, err := packages(l, targetCIPD)
 	if err != nil {
@@ -95,6 +97,8 @@ func build(ctx context.Context, path string, target cipkg.Platform, gens ...cipk
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
 	}
+	s = storage.NewCIPDStorage(ctx, chromeinfra.CIPDServiceURL, s)
+
 	// Generate derivations
 	bctx := &cipkg.BuildContext{
 		Platforms: cipkg.Platforms{

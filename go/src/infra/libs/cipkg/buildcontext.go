@@ -67,6 +67,9 @@ type PackageMetadata struct {
 
 	// Runtime dependencies for the package.
 	Dependencies []string
+
+	// Key for caching the package. It depends on storage to interpret the key.
+	CacheKey string
 }
 
 // Package is the interface for a package in the storage. The content of a package
