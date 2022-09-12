@@ -60,7 +60,7 @@ func TestGetMostRecentAction(t *testing.T) {
 		t.Errorf("unexpected error while fetching actions: %s", err)
 	}
 
-	expected := "bar"
+	const expected = "bar"
 	actual := resp.GetActions()[0].GetKind()
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
@@ -126,7 +126,7 @@ func TestGetMostRecentActionInKind(t *testing.T) {
 		t.Errorf("unexpected error while fetching actions: %s", err)
 	}
 
-	expected := "2"
+	const expected = "2"
 	var actual string
 	if len(resp.GetActions()) > 0 {
 		actual = resp.GetActions()[0].GetFailReason()
