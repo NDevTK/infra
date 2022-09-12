@@ -327,6 +327,7 @@ class BouncedEmail(object):
       # Retry with mime_message
       bounce_message = BounceNotification(new_form_dict)
       self.receive(bounce_message)
+    return ''
 
 
   def receive(self, bounce_message):
