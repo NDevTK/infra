@@ -18,6 +18,9 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 )
 
+// OAuth scope for the whole of cloud platform.
+const CloudOAuthScope = "https://www.googleapis.com/auth/cloud-platform"
+
 // BBProject is the buildbucket project for the labpack recipe.
 const BBProject = "chromeos"
 
@@ -140,6 +143,13 @@ var DefaultAuthOptions = auth.Options{
 	SecretsDir:   SecretsDir(),
 	Scopes:       []string{auth.OAuthScopeEmail, gitiles.OAuthScope},
 }
+
+// EthernetHookCallbackOptions includes OAuth scopes that include, at minimum, the ability to read from Google Storage.
+var EthernetHookCallbackOptions = func() auth.Options {
+	o := DefaultAuthOptions
+	o.Scopes = append(o.Scopes, CloudOAuthScope)
+	return o
+}()
 
 // VersionNumber is the version number for the tool. It follows the Semantic
 // Versioning Specification (http://semver.org) and the format is:
