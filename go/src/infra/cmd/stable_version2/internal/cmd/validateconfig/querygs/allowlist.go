@@ -56,15 +56,6 @@ var missingBoardAllowList map[string]bool = stringSliceToStringSet([]string{
 	"x86_mario",
 	"x86_zgb",
 	"x86_zgb_he",
-	// For more details on reven, see
-	// - b:212595053
-	// - b:213332740
-	"reven",
-	// Unblock labstation release, see b:245408210 and b:237304594 for more information.
-	"fizz-labstation",
-	"guado_labstation",
-	// See b:246231331 for details.
-	"nissa",
 })
 
 var failedToLookupAllowList map[string]bool = stringSliceToStringSet([]string{

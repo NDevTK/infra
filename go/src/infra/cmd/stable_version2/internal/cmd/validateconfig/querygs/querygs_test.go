@@ -80,7 +80,8 @@ func TestMaybeDownloadFile(t *testing.T) {
 		t.Run(tt.uuid, func(t *testing.T) {
 			var r Reader
 			r.dld = makeConstantDownloader(tt.metadata)
-			e := r.maybeDownloadFile(DONTCARE, DONTCARE)
+			ctx := context.Background()
+			e := r.maybeDownloadFile(ctx, DONTCARE, DONTCARE)
 			if e != nil {
 				msg := fmt.Sprintf("uuid (%s): unexpected error (%s)", tt.uuid, e.Error())
 				t.Errorf(msg)

@@ -95,12 +95,19 @@ type downloader func(gsPath gs.Path) ([]byte, error)
 
 type existenceChecker func(gsPath gs.Path) error
 
+type specialBoardEntry struct {
+	board   string
+	version string
+}
+
 // Reader reads metadata.json files from google storage and caches the result.
 type Reader struct {
 	dld  downloader
 	exst existenceChecker
 	// buildTarget > version > model > version
 	cache *map[string]map[string]map[string]string
+	// Special boards are boards with no firmware versions.
+	specialBoards []specialBoardEntry
 }
 
 // Init creates a new Google Storage Client.
@@ -188,20 +195,20 @@ func (r *Reader) ValidateConfig(ctx context.Context, sv *labPlatform.StableVersi
 
 // allModels returns a mapping from model names to fimrware versions given a buildTaret and CrOS version.
 func (r *Reader) getAllModelsForBuildTarget(ctx context.Context, buildTarget string, version string) (map[string]string, error) {
-	if err := r.maybeDownloadFile(buildTarget, version); err != nil {
+	if err := r.maybeDownloadFile(ctx, buildTarget, version); err != nil {
 		logging.Infof(ctx, "failed to get contents for %q %q", buildTarget, version)
-		return nil, fmt.Errorf("AllModels: %s", err)
+		return nil, fmt.Errorf("all models: downloading: %s", err)
 	}
-	m, err := getAllModels(r.cache, buildTarget, version)
+	m, err := getAllModels(r, buildTarget, version)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("all models: reading: %s", err)
 	}
 	return m, nil
 }
 
 // getFirmwareVersion returns the firmware version for a specific model given the buildTarget and CrOS version.
 func (r *Reader) getFirmwareVersion(ctx context.Context, buildTarget string, model string, version string) (string, error) {
-	if err := r.maybeDownloadFile(buildTarget, version); err != nil {
+	if err := r.maybeDownloadFile(ctx, buildTarget, version); err != nil {
 		logging.Infof(ctx, "failed to get contents for %q %q %q", buildTarget, version, model)
 		return "", fmt.Errorf("FirmwareVersion: %s", err)
 	}
@@ -221,16 +228,16 @@ func (r *Reader) getFirmwareVersion(ctx context.Context, buildTarget string, mod
 }
 
 // maybeDownloadFile fetches a metadata.json corresponding to a buildTarget and version if it doesn't already exist in the cache.
-func (r *Reader) maybeDownloadFile(buildTarget string, crosVersion string) error {
+func (r *Reader) maybeDownloadFile(ctx context.Context, buildTarget string, crosVersion string) error {
 	if r.cache == nil {
 		v := make(map[string]map[string]map[string]string)
 		r.cache = &v
 	}
-	if m, _ := getAllModels(r.cache, buildTarget, crosVersion); m != nil {
+	if m, _ := getAllModels(r, buildTarget, crosVersion); m != nil {
 		return nil
 	}
-	// TODO(gregorynisbet): extend gslib with function to get path
-	remotePath := gs.Path(fmt.Sprintf("gs://chromeos-image-archive/%s-release/%s/metadata.json", buildTarget, crosVersion))
+	rawRemotePath := fmt.Sprintf("gs://chromeos-image-archive/%s-release/%s/metadata.json", buildTarget, crosVersion)
+	remotePath := gs.Path(rawRemotePath)
 	contents, err := (r.dld)(remotePath)
 	if err != nil {
 		return fmt.Errorf("Reader::maybeDownloadFile: fetching file: %s", err)
@@ -239,13 +246,19 @@ func (r *Reader) maybeDownloadFile(buildTarget string, crosVersion string) error
 	if err != nil {
 		return fmt.Errorf("Reader::maybeDownloadFile: parsing metadata.json: %s", err)
 	}
-	// TODO(gregorynisbet): Consider throwing an error or panicking if we encounter
-	// a duplicate when populating the cache.
-	for _, fw := range fws.FirmwareVersions {
-		inferredBuildTarget := fw.GetKey().GetBuildTarget().GetName()
-		inferredModel := fw.GetKey().GetModelId().GetValue()
-		fwversion := fw.GetVersion()
-		set(r.cache, inferredBuildTarget, crosVersion, inferredModel, fwversion)
+	switch len(fws.FirmwareVersions) {
+	case 0:
+		logging.Infof(ctx, "no firmware versions for board %q at %q, creating special board entry", buildTarget, rawRemotePath)
+		r.specialBoards = append(r.specialBoards, specialBoardEntry{buildTarget, crosVersion})
+	default:
+		// TODO(gregorynisbet): Consider throwing an error or panicking if we encounter
+		// a duplicate when populating the cache.
+		for _, fw := range fws.FirmwareVersions {
+			inferredBuildTarget := fw.GetKey().GetBuildTarget().GetName()
+			inferredModel := fw.GetKey().GetModelId().GetValue()
+			fwversion := fw.GetVersion()
+			set(r.cache, inferredBuildTarget, crosVersion, inferredModel, fwversion)
+		}
 	}
 	return nil
 }
@@ -296,15 +309,24 @@ func get(m *map[string]map[string]map[string]string, board string, version strin
 	return (*m)[board][version][model]
 }
 
-func getAllModels(m *map[string]map[string]map[string]string, board string, version string) (map[string]string, error) {
-	if m == nil {
+func getAllModels(r *Reader, board string, version string) (map[string]string, error) {
+	if r == nil {
+		return nil, fmt.Errorf("reader is nil")
+	}
+	// Special boards have no firmware versions, but it is not an error when this happens.
+	for _, entry := range r.specialBoards {
+		if entry.board == board {
+			return nil, nil
+		}
+	}
+	if r.cache == nil {
 		return nil, fmt.Errorf("map is nil")
 	}
-	if (*m)[board] == nil {
-		return nil, fmt.Errorf("board not present")
+	if (*r.cache)[board] == nil {
+		return nil, fmt.Errorf("board %q not present", board)
 	}
-	if (*m)[board][version] == nil {
+	if (*r.cache)[board][version] == nil {
 		return nil, fmt.Errorf("board+version submap is nil")
 	}
-	return (*m)[board][version], nil
+	return (*r.cache)[board][version], nil
 }
