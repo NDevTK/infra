@@ -237,7 +237,8 @@ func (c *addDevboard) initializeLSEAndAsset() (*devboardDeployUFSParams, error) 
 	lse.Description = c.description
 	lse.ResourceState = resourceState
 
-	servo := lse.GetChromeosMachineLse().GetDeviceLse().GetDevboard().GetServo()
+	servo := &chromeosLab.Servo{}
+	lse.GetChromeosMachineLse().GetDeviceLse().GetDevboard().Servo = servo
 	if servoHost != "" {
 		// if servo-host is not provided then do not set any servo field.
 		servo.ServoHostname = servoHost
