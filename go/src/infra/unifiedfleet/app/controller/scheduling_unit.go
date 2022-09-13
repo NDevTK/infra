@@ -130,7 +130,8 @@ func validateCreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit)
 	if err := checkIfMachineLSEsExists(ctx, su.GetMachineLSEs()); err != nil {
 		return err
 	}
-	// Check if DUTs/MachineLSEs already used in other SchedulingUnit.
+	// Check if DUTs/MachineLSEs already used in other SchedulingUnit or specified more than once
+	seenDuts := make(map[string]bool)
 	for _, lse := range su.GetMachineLSEs() {
 		schedulingUnits, err := inventory.QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": lse}, true)
 		if err != nil {
@@ -139,6 +140,10 @@ func validateCreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit)
 		if len(schedulingUnits) > 0 {
 			return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("DUT %s is already associated with SchedulingUnit %s.", lse, schedulingUnits[0].GetName()))
 		}
+		if seenDuts[lse] {
+			return status.Errorf(codes.InvalidArgument, fmt.Sprintf("DUT %s was specified more than once", lse))
+		}
+		seenDuts[lse] = true
 	}
 	return nil
 }
@@ -153,7 +158,8 @@ func validateUpdateSchedulingUnit(ctx context.Context, oldsu *ufspb.SchedulingUn
 	if err := checkIfMachineLSEsExists(ctx, su.GetMachineLSEs()); err != nil {
 		return err
 	}
-	// Check if DUTs/MachineLSEs already used in other SchedulingUnit.
+	// Check if DUTs/MachineLSEs already used in other SchedulingUnit or specified more than once
+	seenDuts := make(map[string]bool)
 	for _, lse := range su.GetMachineLSEs() {
 		schedulingUnits, err := inventory.QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": lse}, true)
 		if err != nil {
@@ -164,6 +170,10 @@ func validateUpdateSchedulingUnit(ctx context.Context, oldsu *ufspb.SchedulingUn
 				return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("DUT %s is already associated with SchedulingUnit %s.", lse, schedulingUnit.GetName()))
 			}
 		}
+		if seenDuts[lse] {
+			return status.Errorf(codes.InvalidArgument, fmt.Sprintf("DUT %s was specified more than once", lse))
+		}
+		seenDuts[lse] = true
 	}
 	return nil
 }

@@ -110,6 +110,27 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 0)
 		})
+
+		Convey("Create new SchedulingUnit - DUT specified more than once", func() {
+			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "dut-3",
+			})
+			So(err, ShouldBeNil)
+
+			su1 := mockSchedulingUnit("su-6")
+			su1.MachineLSEs = []string{"dut-3", "dut-3"}
+			_, err = CreateSchedulingUnit(ctx, su1)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "specified more than once")
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-6")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-6")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 0)
+		})
 	})
 }
 
@@ -204,6 +225,31 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			So(changes, ShouldHaveLength, 0)
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-5")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 0)
+		})
+
+		Convey("UpdateSchedulingUnit - DUT specified more than once", func() {
+			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "dut-5",
+			})
+			So(err, ShouldBeNil)
+
+			su1 := mockSchedulingUnit("su-8")
+			_, err = inventory.CreateSchedulingUnit(ctx, su1)
+			So(err, ShouldBeNil)
+
+			su2 := mockSchedulingUnit("su-8")
+			su2.MachineLSEs = []string{"dut-5", "dut-5"}
+			_, err = UpdateSchedulingUnit(ctx, su2, nil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "specified more than once")
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-8")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-8")
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 0)
 		})
