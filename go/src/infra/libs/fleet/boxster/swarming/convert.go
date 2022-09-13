@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -93,6 +94,14 @@ func GetLabelNames(dutAttr *api.DutAttribute) ([]string, error) {
 // It uses a jsonpath string to try to find corresponding values in a proto. It
 // returns a comma-separated string of the values found.
 func GetLabelValues(jsonGetPath string, pm proto.Message) ([]string, error) {
+	if jsonGetPath == "" {
+		return nil, errors.New("jsonpath cannot be empty")
+	}
+
+	if reflect.ValueOf(pm).IsNil() {
+		return nil, errors.New("proto message cannot be empty")
+	}
+
 	js, err := LabelMarshaler.MarshalToString(pm)
 	if err != nil {
 		return nil, err
