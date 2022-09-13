@@ -171,7 +171,7 @@ func validateLoadRequest(request *skylab_local_state.LoadRequest) error {
 	}
 
 	if request.DutId == "" {
-		missingArgs = append(missingArgs, "Swarming run ID")
+		missingArgs = append(missingArgs, "DUT ID")
 	}
 
 	if len(missingArgs) > 0 {
