@@ -24,10 +24,10 @@ versions-cleanup-prod:
 	gae.py cleanup -A chromeos-skylab-bot-fleet --app-dir $(projdir)/internal/app/appengine
 
 up-staging:
-	gae.py upload -A skylab-staging-bot-fleet --app-dir $(projdir)/internal/app/appengine
+	gae.py upload --app-id=skylab-staging-bot-fleet --app-dir=$(projdir)/gaev2/crosadm
 
 switch-staging:
-	gae.py switch -A skylab-staging-bot-fleet --app-dir $(projdir)/internal/app/appengine
+	gae.py switch --app-id=skylab-staging-bot-fleet --app-dir=$(projdir)/gaev2/crosadm
 
 versions-cleanup-staging:
 	gae.py cleanup -A skylab-staging-bot-fleet --app-dir $(projdir)/internal/app/appengine
