@@ -5,7 +5,8 @@
 package controller
 
 import (
-	"infra/unifiedfleet/app/external"
+	"bytes"
+	"io/ioutil"
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -14,6 +15,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/external"
 )
 
 func parseDutAttribute(t *testing.T, protoText string) api.DutAttribute {
@@ -140,6 +142,27 @@ func TestConvert(t *testing.T) {
 		}
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("Convert returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+}
+
+// Basic test to test integrity and parseability of tle_sources.jsonproto
+func TestTleSourcesJsonproto(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ctx = useTestingCfg(ctx)
+
+	t.Run("read and parse file into proto", func(t *testing.T) {
+		mapFile, err := ioutil.ReadFile("tle_sources.jsonproto")
+		if err != nil {
+			t.Fatalf("Failed to read tle_sources.jsonproto: %s", err)
+		}
+
+		var tleMappings ufspb.TleSources
+		err = jsonpb.Unmarshal(bytes.NewBuffer(mapFile), &tleMappings)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal file into TleSources proto: %s", err)
 		}
 	})
 }

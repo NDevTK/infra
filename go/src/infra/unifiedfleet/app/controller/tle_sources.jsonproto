@@ -1,0 +1,214 @@
+{
+  "tleSources": [
+    {
+      "labelName": "attr-cr50-phase",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "cr50_phase",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "attr-cr50-key-env",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "cr50_key_env",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "attr-dut-id",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "name",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "attr-dut-name",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.hostname",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "hwid",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "UNIMPLEMENTED",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "serial_number",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "UNIMPLEMENTED",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "misc-license",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.licenses..type",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-arc",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "UNIMPLEMENTED",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-atrus",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.audio.atrus",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-audio-board",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.chameleon.audio_board",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-audio-box",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_box",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-audio-cable",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_cable",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-audio-loopback",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "UNIMPLEMENTED",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-bluetooth-state",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "bluetooth_state",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "peripheral-camerabox-facing",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.facing",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "peripheral-camerabox-light",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.light",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "peripheral-carrier",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.carrier",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "peripheral-chameleon",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "UNIMPLEMENTED",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-chaos",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.chaos",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-mimo",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.touch.mimo",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-num-btpeer",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "working_bluetooth_btpeer",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-servo",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "UNIMPLEMENTED",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-servo-component",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.servo..servo_component[*]",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-servo-state",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "servo",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "peripheral-servo-usb-state",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "servo_usb_state",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "peripheral-wifi-state",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "wifi_state",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {
+        "prefix": ""
+      }
+    },
+    {
+      "labelName": "peripheral-wificell",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.wifi.wificell",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    },
+    {
+      "labelName": "swarming-pool",
+      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.pools",
+      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
+      "standardConverter": {}
+    }
+  ]
+}
