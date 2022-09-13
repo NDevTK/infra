@@ -1,0 +1,86 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This proto definition describes the schedulable label protos for TLE sources
+// exposed by UFS.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+// TleSourceType refers to the entity type that a TleSource label is based upon.
+//
+// Next Tag: 3
+enum TleSourceType {
+  TLE_SOURCE_TYPE_UNKNOWN = 0;
+  // Refers to DutState in infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto
+  TLE_SOURCE_TYPE_DUT_STATE = 1;
+  // Refers to MachineLSE in infra/unifiedfleet/api/v1/models/machine_lse.proto
+  TLE_SOURCE_TYPE_LAB_CONFIG = 2;
+}
+
+// TleConverterType refers to the converter type that should be used to extract
+// the label value from the TleSource.
+//
+// Next Tag: 4
+enum TleConverterType {
+  TLE_CONVERTER_TYPE_UNKNOWN = 0;
+  // Refers to the TleConverterStandard type.
+  TLE_CONVERTER_TYPE_STANDARD = 1;
+  // Refers to the TleConverterExistence type.
+  TLE_CONVERTER_TYPE_EXISTENCE = 2;
+  // Refers to the TleConverterDynamic type.
+  TLE_CONVERTER_TYPE_DYNAMIC = 3;
+}
+
+// TleSource refers to the metadata related to a schedulable label that is
+// specific to a Test Lab Environment. This metadata is used to extract the
+// actual label value from the TleSource entity.
+//
+// Next Tag: 8
+message TleSource {
+  // The name of the label. Should match 1-1 with a label id defined by a
+  // DutAttribute.
+  string label_name = 1;
+
+  // The entity type that this label is based upon.
+  TleSourceType source_type = 2;
+
+  // The proto field path to be used in the converter. The path is formatted as
+  // a jsonpath.
+  string field_path = 3;
+
+  // The converter type to be used to extract the label value.
+  TleConverterType converter_type = 4;
+
+  // TleConverter contains the metadata needed for the selected converter type.
+  oneof converter {
+    TleConverterStandard standard_converter = 5;
+    TleConverterExistence existence_converter = 6;
+    TleConverterDynamic dynamic_converter = 7;
+  }
+}
+
+// A collection of TleSource
+message TleSources {
+  repeated TleSource tle_sources = 1;
+}
+
+// TleConverterStandard is the default converter that reads the value directly
+// from a given config path.
+message TleConverterStandard {
+  // If specified, the prefix will be truncated from the label value.
+  string prefix = 1;
+}
+
+// TleConverterExistence determines a boolean value based on a given proto from
+// the config path.
+message TleConverterExistence {}
+
+// TleConverterDynamic is a converter that generates label names in runtime.
+// The label names depend on another proto and cannot be hardcoded
+// exhaustively.
+message TleConverterDynamic {}
