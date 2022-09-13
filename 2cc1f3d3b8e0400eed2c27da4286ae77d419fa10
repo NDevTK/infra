@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bba5001f_2840e285",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/stableversion.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-09-13T00:26:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57ed91b7_948455ff",
+      "revId": "2cc1f3d3b8e0400eed2c27da4286ae77d419fa10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "53920b0c_1841754e",
@@ -48,6 +66,24 @@
       "writtenOn": "2022-09-05T02:51:17Z",
       "side": 1,
       "message": "Add t.Parallel()",
+      "revId": "2cc1f3d3b8e0400eed2c27da4286ae77d419fa10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "941b848e_bed9d94c",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/stableversion_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-09-13T00:26:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53920b0c_1841754e",
       "revId": "2cc1f3d3b8e0400eed2c27da4286ae77d419fa10",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
