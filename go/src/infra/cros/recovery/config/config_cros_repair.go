@@ -1434,6 +1434,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"This action sets the GBB flags to 0x0.",
 			},
+			Dependencies: []string{
+				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'ec'",
+			},
 			ExecName:               "cros_set_gbb_flags",
 			ExecTimeout:            &durationpb.Duration{Seconds: 3600},
 			AllowFailAfterRecovery: true,
