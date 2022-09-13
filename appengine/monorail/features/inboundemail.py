@@ -72,6 +72,7 @@ class InboundEmail(object):
       self.post(project_addr)
     elif self.request.method == 'GET':
       self.get(project_addr)
+    return ''
 
   def get(self, project_addr=None):
     logging.info('\n\n\nGET for InboundEmail and project_addr is %r',
