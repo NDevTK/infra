@@ -102,6 +102,7 @@ func Init() (err error) {
 		"mktemp",
 		"mv",
 		"od",
+		"perl",
 		"rm",
 		"sed",
 		"sh",

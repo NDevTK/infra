@@ -46,7 +46,7 @@ func LoadPackageDef(dir fs.FS, pkg string) (*PackageDef, error) {
 	}
 
 	return &PackageDef{
-		Name: name,
+		Name: strings.ReplaceAll(name, "-", "_"),
 		Spec: &spec,
 		Dir:  pkgDir,
 	}, nil

@@ -8,12 +8,15 @@ import (
 	"context"
 	"embed"
 	"errors"
+	"infra/libs/cipkg"
+	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 	"io/fs"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"testing"
 
@@ -56,26 +59,35 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get test data: %v", err)
 	}
-	l := spec.NewSpecLoader(specs, nil)
+
+	s, err := utilities.NewLocalStorage(storageDir)
+	if err != nil {
+		t.Fatalf("failed to init storage: %v", err)
+	}
+
+	b := &PackageBuilder{
+		Storage: s,
+		Platforms: cipkg.Platforms{
+			Build:  utilities.CurrentPlatform(),
+			Host:   utilities.CurrentPlatform(),
+			Target: utilities.CurrentPlatform(),
+		},
+		CIPDTarget:        platform.CurrentPlatform(),
+		SpecLoader:        spec.NewSpecLoader(specs, nil),
+		BuildTempDir:      filepath.Join(storageDir, "temp"),
+		DerivationBuilder: utilities.NewBuilder(s),
+	}
 
 	Convey("Select platform", t, func() {
-		cipdPlat := platform.CurrentPlatform()
-		plat, err := parseCIPDPlatform(cipdPlat)
-		So(err, ShouldBeNil)
-
 		Convey("Build ninja", func() {
-			g, err := l.FromSpec("ninja", cipdPlat)
-			So(err, ShouldBeNil)
-			err = build(ctx, storageDir, plat, g)
+			_, err := b.Build(ctx, "ninja")
 			So(err, ShouldBeNil)
 		})
 
 		// It takes too long (10+ mins) and downloads code from the internet.
 		// Disable the test until we vendored the code.
 		SkipConvey("Build curl", func() {
-			g, err := l.FromSpec("curl", cipdPlat)
-			So(err, ShouldBeNil)
-			err = build(ctx, storageDir, plat, g)
+			_, err := b.Build(ctx, "curl")
 			So(err, ShouldBeNil)
 		})
 	})

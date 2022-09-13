@@ -288,3 +288,19 @@ func gitCachePath(url string) string {
 	url = strings.TrimPrefix(url, "http://")
 	return path.Clean(url)
 }
+
+// Convert CIPD platform to cipkg platform.
+func ParseCIPDPlatform(plat string) (cipkg.Platform, error) {
+	idx := strings.Index(plat, "-")
+	if idx == -1 {
+		return nil, fmt.Errorf("invalid cipd target platform: %s", plat)
+	}
+	os, arch := plat[:idx], plat[idx+1:]
+	if os == "mac" {
+		os = "darwin"
+	}
+	if arch == "armv6l" {
+		arch = "arm"
+	}
+	return utilities.NewPlatform(os, arch), nil
+}
