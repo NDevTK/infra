@@ -6,7 +6,7 @@ package controller
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -154,7 +154,7 @@ func TestTleSourcesJsonproto(t *testing.T) {
 	ctx = useTestingCfg(ctx)
 
 	t.Run("read and parse file into proto", func(t *testing.T) {
-		mapFile, err := ioutil.ReadFile("tle_sources.jsonproto")
+		mapFile, err := os.ReadFile("tle_sources.jsonproto")
 		if err != nil {
 			t.Fatalf("Failed to read tle_sources.jsonproto: %s", err)
 		}

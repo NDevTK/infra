@@ -5,10 +5,13 @@
 package controller
 
 import (
+	"bytes"
 	"context"
+	"embed"
 	"fmt"
 	"strings"
 
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -19,53 +22,10 @@ import (
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
-const (
-	dutStateSourceStr  = "dut_state"
-	labConfigSourceStr = "lab_config"
-)
-
-type TleSource struct {
-	configType string
-	path       string
-}
-
-var TLE_LABEL_MAPPING = map[string]*TleSource{
-	"attr-cr50-phase":             createTleSourceForConfig(dutStateSourceStr, "cr50_phase"),
-	"attr-cr50-key-env":           createTleSourceForConfig(dutStateSourceStr, "cr50_key_env"),
-	"attr-dut-id":                 createTleSourceForConfig(labConfigSourceStr, "name"),
-	"attr-dut-name":               createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.hostname"),
-	"hwid":                        createTleSourceForConfig(labConfigSourceStr, "UNIMPLEMENTED"),
-	"serial_number":               createTleSourceForConfig(labConfigSourceStr, "UNIMPLEMENTED"),
-	"misc-license":                createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.licenses..type"),
-	"peripheral-arc":              createTleSourceForConfig(labConfigSourceStr, "UNIMPLEMENTED"),
-	"peripheral-atrus":            createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.audio.atrus"),
-	"peripheral-audio-board":      createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.chameleon.audio_board"),
-	"peripheral-audio-box":        createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_box"),
-	"peripheral-audio-cable":      createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.audio.audio_cable"),
-	"peripheral-audio-loopback":   createTleSourceForConfig(labConfigSourceStr, "UNIMPLEMENTED"),
-	"peripheral-bluetooth-state":  createTleSourceForConfig(dutStateSourceStr, "bluetooth_state"),
-	"peripheral-camerabox-facing": createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.facing"),
-	"peripheral-camerabox-light":  createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.light"),
-	"peripheral-carrier":          createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.carrier"),
-	"peripheral-chameleon":        createTleSourceForConfig(labConfigSourceStr, "UNIMPLEMENTED"),
-	"peripheral-chaos":            createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.chaos"),
-	"peripheral-mimo":             createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.touch.mimo"),
-	"peripheral-num-btpeer":       createTleSourceForConfig(dutStateSourceStr, "working_bluetooth_btpeer"),
-	"peripheral-servo":            createTleSourceForConfig(labConfigSourceStr, "UNIMPLEMENTED"),
-	"peripheral-servo-component":  createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.servo..servo_component[*]"),
-	"peripheral-servo-state":      createTleSourceForConfig(dutStateSourceStr, "servo"),
-	"peripheral-servo-usb-state":  createTleSourceForConfig(dutStateSourceStr, "servo_usb_state"),
-	"peripheral-wifi-state":       createTleSourceForConfig(dutStateSourceStr, "wifi_state"),
-	"peripheral-wificell":         createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.peripherals.wifi.wificell"),
-	"swarming-pool":               createTleSourceForConfig(labConfigSourceStr, "chromeos_machine_lse.device_lse.dut.pools"),
-}
-
-func createTleSourceForConfig(configType, path string) *TleSource {
-	return &TleSource{
-		configType: configType,
-		path:       path,
-	}
-}
+// fs is a temporary file system that holds the TleSources mapping file.
+//
+//go:embed tle_sources.jsonproto
+var fs embed.FS
 
 // Convert converts one DutAttribute label to multiple Swarming labels.
 //
@@ -81,24 +41,25 @@ func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload
 
 // convertTleSource handles the label conversion of MachineLSE and DutState.
 func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) ([]string, error) {
-	labelNames, err := swarming.GetLabelNames(dutAttr)
+	labelAliases, err := swarming.GetLabelNames(dutAttr)
 	if err != nil {
 		return nil, err
 	}
+	labelName := dutAttr.GetId().GetValue()
 
-	labelMapping, err := getTleLabelMapping(dutAttr.GetId().GetValue())
+	tleSource, err := getTleLabelMapping(labelName)
 	if err != nil {
 		logging.Warningf(ctx, "fail to find TLE label mapping: %s", err.Error())
 		return nil, nil
 	}
 
-	switch labelMapping.configType {
-	case dutStateSourceStr:
-		return constructTleLabels(labelNames, labelMapping.path, dutState)
-	case labConfigSourceStr:
-		return constructTleLabels(labelNames, labelMapping.path, lse)
+	switch tleSource.GetSourceType() {
+	case ufspb.TleSourceType_TLE_SOURCE_TYPE_DUT_STATE:
+		return constructTleLabels(tleSource, labelAliases, dutState)
+	case ufspb.TleSourceType_TLE_SOURCE_TYPE_LAB_CONFIG:
+		return constructTleLabels(tleSource, labelAliases, lse)
 	default:
-		return nil, fmt.Errorf("%s is not a valid label source", labelMapping.configType)
+		return nil, fmt.Errorf("%s is not a valid label source", tleSource.GetSourceType())
 	}
 }
 
@@ -107,18 +68,38 @@ func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb
 // constructTleLabels retrieves label values from a proto message based on a
 // given path. For each given label name, a full label in the form of
 // `${name}:val1,val2` is constructed and returned as part of an array.
-func constructTleLabels(labelNames []string, path string, pm proto.Message) ([]string, error) {
-	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", path), pm)
+func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
+	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
 	if err != nil {
 		return nil, err
 	}
-	return swarming.FormLabels(labelNames, strings.Join(valsArr, ","))
+
+	switch tleSource.GetConverterType() {
+	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_STANDARD:
+		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
+	default:
+		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
+	}
 }
 
 // getTleLabelMapping gets the predefined label mapping based on a label name.
-func getTleLabelMapping(label string) (*TleSource, error) {
-	if val, ok := TLE_LABEL_MAPPING[label]; ok {
-		return val, nil
+func getTleLabelMapping(labelName string) (*ufspb.TleSource, error) {
+	mapFile, err := fs.ReadFile("tle_sources.jsonproto")
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("no TLE label mapping found for %s", label)
+
+	var tleMappings ufspb.TleSources
+	err = jsonpb.Unmarshal(bytes.NewBuffer(mapFile), &tleMappings)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tleSource := range tleMappings.GetTleSources() {
+		if tleSource.GetLabelName() == labelName {
+			return tleSource, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no TLE label mapping found for %s", labelName)
 }
