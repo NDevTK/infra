@@ -195,14 +195,14 @@ func TestReportResultsRequest(t *testing.T) {
 		}), ShouldBeNil)
 		So(len(comments), ShouldEqual, maxComments+3)
 
-		Convey("Does not report when number of comments exceeds maximum", func() {
+		Convey("Truncates comments when number of comments exceeds maximum", func() {
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err := reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: functionName,
 			}, mock)
 			So(err, ShouldBeNil)
-			So(len(mock.LastComments), ShouldEqual, 0)
+			So(len(mock.LastComments), ShouldEqual, maxComments)
 		})
 	})
 }

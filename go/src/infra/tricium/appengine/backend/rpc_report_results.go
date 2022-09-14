@@ -89,8 +89,8 @@ func reportResults(c context.Context, req *admin.ReportResultsRequest, gerrit gc
 		logging.Fields{
 			"numComments": len(includedComments),
 			"maxComments": maxComments,
-		}.Infof(c, "Too many comments, not reporting results.")
-		return nil
+		}.Warningf(c, "Too many comments, quietly truncating comments list, see crbug.com/1363706.")
+		includedComments = includedComments[:maxComments]
 	}
 	if len(includedComments) == 0 {
 		logging.Infof(c, "No comments to report.")
