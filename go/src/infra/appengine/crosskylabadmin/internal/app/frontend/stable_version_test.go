@@ -24,6 +24,8 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
+
 	"infra/libs/skylab/inventory"
 )
 
@@ -483,6 +485,80 @@ func TestGetStableVersion(t *testing.T) {
 		)
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
+	})
+
+	// This test creates a fake eve device that is a satlab device, and looks up its stable version.
+	// Then we create a hostname-specific stable version and check to make sure that that version overrides the real one.
+	Convey("Satlab DUT by model and then by hostname", t, func() {
+		oldGetDUTOverrideForTests := getDUTOverrideForTests
+		getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
+			return &inventory.DeviceUnderTest{
+				Common: &inventory.CommonDeviceSpecs{
+					Id:       strptr("satlab-hi-host1"),
+					Hostname: strptr("satlab-hi-host1"),
+					Labels: &inventory.SchedulableLabels{
+						Model: strptr("eve"),
+						Board: strptr("eve"),
+					},
+				},
+			}, nil
+		}
+		defer func() {
+			getDUTOverrideForTests = oldGetDUTOverrideForTests
+		}()
+
+		ctx := testingContext()
+		datastore.GetTestable(ctx)
+		tf, validate := newTestFixtureWithContext(ctx, t)
+		defer validate()
+
+		err := dssv.PutSingleCrosStableVersion(ctx, "eve", "eve", "FAKE-CROS")
+		So(err, ShouldBeNil)
+
+		err = dssv.PutSingleFaftStableVersion(ctx, "eve", "eve", "FAKE-FAFT")
+		So(err, ShouldBeNil)
+
+		err = dssv.PutSingleFirmwareStableVersion(ctx, "eve", "eve", "FAKE-FIRMWARE")
+		So(err, ShouldBeNil)
+
+		resp, err := tf.Inventory.GetStableVersion(
+			ctx,
+			&fleet.GetStableVersionRequest{
+				Hostname: "satlab-hi-host1",
+			},
+		)
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		So(resp.GetCrosVersion(), ShouldEqual, "FAKE-CROS")
+		So(resp.GetFirmwareVersion(), ShouldEqual, "FAKE-FIRMWARE")
+		So(resp.GetFaftVersion(), ShouldEqual, "FAKE-FAFT")
+		So(resp.GetServoCrosVersion(), ShouldBeEmpty)
+		So(resp.GetReason(), ShouldContainSubstring, "falling back")
+
+		err = satlab.PutSatlabStableVersionEntry(
+			ctx,
+			&satlab.SatlabStableVersionEntry{
+				ID:      "satlab-hi-host1",
+				OS:      "OVERRIDE-CROS",
+				FW:      "OVERRIDE-FIRMWARE",
+				FWImage: "OVERRIDE-FAFT",
+			},
+		)
+		So(err, ShouldBeNil)
+
+		resp, err = tf.Inventory.GetStableVersion(
+			ctx,
+			&fleet.GetStableVersionRequest{
+				Hostname: "satlab-hi-host1",
+			},
+		)
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		So(resp.GetCrosVersion(), ShouldEqual, "OVERRIDE-CROS")
+		So(resp.GetFirmwareVersion(), ShouldEqual, "OVERRIDE-FIRMWARE")
+		So(resp.GetFaftVersion(), ShouldEqual, "OVERRIDE-FAFT")
+		So(resp.GetServoCrosVersion(), ShouldBeEmpty)
+		So(resp.GetReason(), ShouldContainSubstring, "looked up satlab device using id")
 	})
 }
 

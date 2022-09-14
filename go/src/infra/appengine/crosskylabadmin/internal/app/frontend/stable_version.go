@@ -326,13 +326,20 @@ func looksLikeFakeServo(hostname string) bool {
 	return h == "" || strings.Contains(h, "dummy") || strings.Contains(h, "fake")
 }
 
+// looksLikeServod is a heuristic to detect whether a servod entry.
+// Historically, these used "localhost" as a hostname.
+// Currently, they look like satlab-0⬛⬛⬛⬛⬛⬛⬛⬛⬛-host1-docker_servod.
+func looksLikeServod(hostname string) bool {
+	return hostname == "localhost" || strings.Contains(hostname, "docker_servod")
+}
+
 // getCrosVersionFromServoHost returns the cros version associated with a particular servo host
 // hostname : hostname of the servo host (e.g. labstation)
 // NOTE: If hostname is "localhost", task is for Satlab Containerized servod.
 // NOTE: If hostname is "", this indicates the absence of a relevant servo host. This can happen if the DUT in question is already a labstation, for instance.
 // NOTE: The cros version will be empty "" if the labstation does not exist. Because we don't re-image labstations as part of repair, the absence of a stable CrOS version for a labstation is not an error.
 func getCrosVersionFromServoHost(ctx context.Context, hostname string) (string, error) {
-	if hostname == "" || hostname == "localhost" {
+	if hostname == "" || looksLikeServod(hostname) {
 		logging.Infof(ctx, "Skipping getting cros version. Servo host hostname is %q", hostname)
 		return "", nil
 	}
