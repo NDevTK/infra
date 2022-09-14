@@ -89,8 +89,6 @@ luci.logdog(
 
 luci.bucket(name = "ci")
 
-luci.bucket(name = "empty")
-
 luci.builder.defaults.experiments.set({
     "luci.buildbucket.bbagent_getbuild": 100,
 })
@@ -160,12 +158,6 @@ adhoc_builder(
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
 adhoc_builder(
-    name = "gerrit-hello-world-dup-bionic-64",
-    os = "Ubuntu-18.04",
-    executable = infra.recipe("gerrit_hello_world", use_python3 = True),
-    schedule = "triggered",  # triggered manually via Scheduler UI
-)
-adhoc_builder(
     name = "gsutil-hello-world-bionic-64",
     os = "Ubuntu-18.04",
     executable = infra.recipe("gsutil_hello_world", use_python3 = True),
@@ -210,7 +202,7 @@ adhoc_builder(
         "status": "SUCCESS",
         "steps": [
             {
-                "name": "can_outlive_parent child test",
+                "name": "can_outlive_parent child",
                 "child_build": {
                     "buildbucket": {
                         "builder": {
@@ -223,7 +215,7 @@ adhoc_builder(
                 },
             },
             {
-                "name": "cannot_outlive_parent child test",
+                "name": "cannot_outlive_parent child",
                 "child_build": {
                     "id": "bounded_child",
                     "buildbucket": {
