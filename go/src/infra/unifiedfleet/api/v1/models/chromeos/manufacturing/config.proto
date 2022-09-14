@@ -30,22 +30,23 @@ message ManufacturingConfig {
   Phase device_phase = 2;
 
   // phases for cr50 module. Next Tag: 3
+  // Deprecated. Use DutState proto instead.
   enum CR50Phase {
     CR50_PHASE_INVALID = 0;
     CR50_PHASE_PREPVT = 1;
     CR50_PHASE_PVT = 2;
   }
-
-  CR50Phase cr50_phase = 3;
+  CR50Phase cr50_phase = 3 [deprecated = true];
 
   // key env for cr50 RW version. Next Tag: 3
+  // Deprecated. Use DutState proto instead.
   enum CR50KeyEnv {
     CR50_KEYENV_INVALID = 0;
     CR50_KEYENV_PROD = 1;
     CR50_KEYENV_DEV = 2;
   }
   // Detected based on the cr50 RW version that the DUT is running on.
-  CR50KeyEnv cr50_key_env = 4;
+  CR50KeyEnv cr50_key_env = 4 [deprecated = true];
 
   // wifi chip that is installed on the DUT in manufacturing stage.
   string wifi_chip = 5;
