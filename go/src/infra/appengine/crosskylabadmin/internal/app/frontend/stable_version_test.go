@@ -141,7 +141,15 @@ func TestLooksLikeFakeServo(t *testing.T) {
 	}
 }
 
+// TestGetStableVersion tests the GetStableVersion RPC.
+//
+// We use test fixtures to set up a fake environment and we override getDUT in a hacky way
+// to stub out calls to UFS.
+//
+// We sometimes set up an environment to test by adding records to the a testing datastore instance,
+// which bypasses integerity checks and sometimes call RPCs.
 func TestGetStableVersion(t *testing.T) {
+	// t.Parallel(). These tests modify the getDUT test override and therefore can't be parallel.
 	Convey("Test GetStableVersion RPC -- stable versions exist", t, func() {
 		ctx := testingContext()
 		datastore.GetTestable(ctx)
