@@ -111,8 +111,9 @@ func isLastProvisionSuccessfulExec(ctx context.Context, info *execs.ExecInfo) er
 // chartOSMap is the required version for chart devices.
 // It is used until new stable version tool is ready.
 var chartOSMap = map[string]string{
-	"scarlet,dru": "scarlet-release/R102-14695.107.0",
-	"kukui,krane": "kukui-release/R106-15054.14.0",
+	"scarlet,dru":   "scarlet-release/R102-14695.107.0",
+	"kukui,krane":   "kukui-release/R106-15054.14.0",
+	"nami,pantheon": "nami-release/R106-15054.42.0",
 }
 
 // getChartOS returns the required os of chart if predefined in chartOSMap
