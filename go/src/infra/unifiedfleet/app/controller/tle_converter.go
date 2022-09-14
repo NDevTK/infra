@@ -76,10 +76,22 @@ func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm pr
 
 	switch tleSource.GetConverterType() {
 	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_STANDARD:
+		if tleSource.GetStandardConverter().GetPrefix() != "" {
+			valsArr = truncatePrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
+		}
 		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
 	default:
 		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
 	}
+}
+
+// truncatePrefixForLabelValues returns label values with prefix truncated.
+func truncatePrefixForLabelValues(prefix string, valsArr []string) []string {
+	var processed []string
+	for _, v := range valsArr {
+		processed = append(processed, strings.TrimPrefix(v, prefix))
+	}
+	return processed
 }
 
 // getTleLabelMapping gets the predefined label mapping based on a label name.

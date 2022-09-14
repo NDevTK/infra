@@ -13,7 +13,7 @@
       "fieldPath": "cr50_key_env",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
       "standardConverter": {
-        "prefix": ""
+        "prefix": "CR50_KEYENV_"
       }
     },
     {
@@ -99,7 +99,7 @@
       "fieldPath": "bluetooth_state",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
       "standardConverter": {
-        "prefix": ""
+        "prefix": "HARDWARE_"
       }
     },
     {
@@ -107,27 +107,21 @@
       "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
       "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.facing",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
-      "standardConverter": {
-        "prefix": ""
-      }
+      "standardConverter": {}
     },
     {
       "labelName": "peripheral-camerabox-light",
       "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
       "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.camerabox_info.light",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
-      "standardConverter": {
-        "prefix": ""
-      }
+      "standardConverter": {}
     },
     {
       "labelName": "peripheral-carrier",
       "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
       "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.carrier",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
-      "standardConverter": {
-        "prefix": ""
-      }
+      "standardConverter": {}
     },
     {
       "labelName": "peripheral-chameleon",
@@ -184,7 +178,7 @@
       "fieldPath": "servo_usb_state",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
       "standardConverter": {
-        "prefix": ""
+        "prefix": "HARDWARE_"
       }
     },
     {
@@ -193,7 +187,7 @@
       "fieldPath": "wifi_state",
       "converterType": "TLE_CONVERTER_TYPE_STANDARD",
       "standardConverter": {
-        "prefix": ""
+        "prefix": "HARDWARE_"
       }
     },
     {
