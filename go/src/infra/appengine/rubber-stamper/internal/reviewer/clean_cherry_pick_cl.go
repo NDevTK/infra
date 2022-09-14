@@ -84,7 +84,7 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 
 	// Check whether the change was cherry-picked after the original CL has
 	// been merged.
-	mergeMsg := "The change is not cherry-picked after the original CL has been merged."
+	const mergeMsg = "The change is not cherry-picked after the original CL has been merged."
 	if originalClInfo.Status != gerritpb.ChangeStatus_MERGED {
 		return mergeMsg, nil
 	}

@@ -49,7 +49,7 @@ func TestQueue(t *testing.T) {
 		sched.TaskFailed = func(ctx context.Context, task *tqtesting.Task) { panic("should not fail") }
 
 		Convey("Test deduplication", func() {
-			host := "host"
+			const host = "host"
 			createdTime := timestamppb.New(time.Now().Add(-5 * time.Minute))
 			cls := []*gerritpb.ChangeInfo{
 				{

@@ -426,7 +426,7 @@ func TestReviewBypassFileCheck(t *testing.T) {
 
 		invalidFiles := []string{"dir_a/dir_b/test.json", "dir_a/dir_b/dir_c/ok.json"}
 		hashtags := []string{"Random", "Example_Hashtag"}
-		owner := "userA@example.com"
+		const owner = "userA@example.com"
 
 		Convey("approve", func() {
 			So(bypassFileCheck(ctx, invalidFiles, hashtags, owner, fr), ShouldEqual, true)
@@ -458,8 +458,7 @@ func TestReviewBypassFileCheck(t *testing.T) {
 			So(bypassFileCheck(ctx, invalidFiles, hashtags, owner, fr), ShouldEqual, false)
 		})
 		Convey("decline when owner is not allowed", func() {
-			owner = "userC@example.com"
-			So(bypassFileCheck(ctx, invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+			So(bypassFileCheck(ctx, invalidFiles, hashtags, "userC@example.com", fr), ShouldEqual, false)
 		})
 	})
 }
