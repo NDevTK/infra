@@ -1375,6 +1375,7 @@ SPECS.update({
         Universal('requests', '2.26.0'),
         Universal('requests-oauthlib', '1.2.0'),
         Universal('requests-oauthlib', '1.3.0'),
+        Universal('rich', '12.5.1', pyversions=['py3']),
         Universal('rsa', '3.4.2'),
         Universal('rsa', '4.0'),
         Universal('rsa', '4.7.2', pyversions=['py3']),

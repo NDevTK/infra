@@ -6285,6 +6285,20 @@ wheel: <
 
 * *universal*
 
+## **rich-py3**
+
+### 12.5.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/rich-py3"
+  version: "version:12.5.1"
+>
+```
+
+
+* *universal*
+
 ## **rsa**
 
 ### 3.4.2
