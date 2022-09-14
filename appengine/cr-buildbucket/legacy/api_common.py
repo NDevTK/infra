@@ -118,6 +118,7 @@ class BuildMessage(messages.Message):
   project = messages.StringField(23)
   experimental = messages.BooleanField(24)
   service_account = messages.StringField(25)
+  ancestor_ids = messages.IntegerField(26, repeated=True)
 
 
 def proto_to_timestamp(ts):
@@ -286,6 +287,7 @@ def build_to_message(build_bundle, include_lease_key=False):
       canary=build.canary,
       experimental=build.experimental,
       service_account=sw.task_service_account,
+      ancestor_ids=build.ancestor_ids,
       # when changing this function, make sure build_to_dict would still work
   )
 
@@ -297,7 +299,7 @@ def build_to_message(build_bundle, include_lease_key=False):
 
 
 def build_to_dict(build_bundle, include_lease_key=False):
-  """Converts a build to an externally consumable dict.
+  """Converts a build to an externally-consumable dict.
 
   This function returns a dict that a BuildMessage would be encoded to.
   """
@@ -311,6 +313,7 @@ def build_to_dict(build_bundle, include_lease_key=False):
   # Special cases
   result = {
       'tags': msg.tags,  # a list
+      'ancestor_ids': msg.ancestor_ids,  # a list
   }
 
   for f in msg.all_fields():
