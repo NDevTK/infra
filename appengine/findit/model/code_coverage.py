@@ -276,6 +276,12 @@ class PresubmitCoverageData(ndb.Model):
   # Timestamp this coverage report was last updated.
   update_timestamp = ndb.DateTimeProperty(auto_now=True)
 
+  # number of times `data` field gets updated
+  times_updated = ndb.IntegerProperty(required=False, default=0)
+
+  # number of times `data_unit` field gets updated
+  times_updated_unit = ndb.IntegerProperty(required=False, default=0)
+
   @classmethod
   def _CreateKey(cls, server_host, change, patchset):
     return ndb.Key(cls, '%s$%s$%s' % (server_host, change, patchset))

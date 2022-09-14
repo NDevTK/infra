@@ -467,6 +467,7 @@ class ProcessCodeCoverageData(BaseHandler):
         if entity:
           entity.data = code_coverage_util.MergeFilesCoverageDataForPerCL(
               entity.data, coverage_data)
+          entity.times_updated = entity.times_updated + 1
         else:
           entity = PresubmitCoverageData.Create(
               server_host=patch.host,
@@ -485,6 +486,7 @@ class ProcessCodeCoverageData(BaseHandler):
         if entity:
           entity.data_unit = code_coverage_util.MergeFilesCoverageDataForPerCL(
               entity.data_unit, coverage_data)
+          entity.times_updated_unit = entity.times_updated_unit + 1
         else:
           entity = PresubmitCoverageData.Create(
               server_host=patch.host,
