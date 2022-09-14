@@ -152,7 +152,18 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			return
 		}
 
-		if req.UpdateFirmware {
+		shouldUpdateFirmware := req.UpdateFirmware
+		if shouldUpdateFirmware {
+			// Firmware updater may not exist on some builds(e.g. chromiumos build).
+			if err := checkFirmwareUpdaterExist(p.c); err != nil {
+				log.Printf("Firmware updater does not exist, skipping firmware update.")
+				shouldUpdateFirmware = false
+			}
+		} else {
+			log.Printf("Skipping firmware update by request.")
+		}
+
+		if shouldUpdateFirmware {
 			fwChanged, err := p.updateFirmware(ctx)
 			if err != nil {
 				setError(newOperationError(
@@ -210,8 +221,6 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			} else {
 				log.Printf("Current system firmware: %s is already matched with OS image.", curFW)
 			}
-		} else {
-			log.Printf("Skipping firmware update by request.")
 		}
 
 		log.Printf("provision: time to provision OS took %v", time.Since(t))

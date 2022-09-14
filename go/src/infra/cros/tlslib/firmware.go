@@ -118,3 +118,7 @@ func isFirmwareSlotChanged(c *ssh.Client) (bool, error) {
 	log.Printf("Current active firmware slot: %s, next boot firmware slot: %s", current, next)
 	return current != next, nil
 }
+
+func checkFirmwareUpdaterExist(c *ssh.Client) error {
+	return runCmd(c, fmt.Sprintf("test -f %s", firmwareUpdaterPath))
+}
