@@ -10,6 +10,7 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/master/appengine/find
 import base64
 import difflib
 import json
+import logging
 import urllib2
 
 from google.appengine.ext import ndb
@@ -200,6 +201,49 @@ def FetchMergedChanges(host, project, hashtag=None, author=None):
     more = changes[-1]['_more_changes'] if len(
         changes) > 0 and '_more_changes' in changes[-1].keys() else False
     skip += num_results
+
+
+def FetchLowCoverageRobotComments(host, change, coverage_checker_id):
+  """Returns robot comments for a given change.
+
+  Returns a dict where key is file path and value is list of dict which looks
+  like below
+  {
+    "robot_id":"Chrome Coverage Checker",
+    "robot_run_id":"chromium/src~3763513~3",
+    "author":{
+      "_account_id":1555092,
+      "name":"Findit",
+      "email":"findit-for-me@appspot.gserviceaccount.com",
+      "tags":[
+          "SERVICE_USER"
+      ]
+    },
+    "change_message_id":"7eeb25a18fb7ff668d0f7c3658e70aa388cca431",
+    "patch_set":3,
+    "id":"dcaa3c03_0c93c3b6",
+    "updated":"2022-09-09 00:43:45.000000000",
+    "message":"Please add tests...",
+    "commit_id":"651f0e7d8cd44d035e0759859ba571697094791d"
+    }
+  """
+  query = 'https://%s/changes/%d/robotcomments' % (host, change)
+  status_code, response, _ = FinditHttpClient().Get(query)
+  if status_code != 200:
+    logging.info('Failed to fetch robot comments for change %d', change)
+  # Remove XSSI magic prefix
+  if response.startswith(')]}\''):
+    response = response[4:]
+  comments_per_file = json.loads(response)
+  low_coverage_comments_per_file = {}
+  for f, comments in comments_per_file.items():
+    low_coverage_comments = []
+    for comment in comments:
+      if comment['robot_id'] == coverage_checker_id:
+        low_coverage_comments.append(comment)
+    if low_coverage_comments:
+      low_coverage_comments_per_file[f] = low_coverage_comments
+  return low_coverage_comments_per_file
 
 
 def _CheckChangeDetailsResponseCode(status_code, response):

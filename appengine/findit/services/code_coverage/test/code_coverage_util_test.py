@@ -703,3 +703,40 @@ class CodeCoverageUtilTest(WaterfallTestCase):
     mock_http_client.assert_has_calls([first_call, second_call])
     self.assertEqual(changes[:-1], first_response)
     self.assertEqual(changes[-1:], second_response)
+
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Get')
+  def testFetchLowCoverageRobotComments(self, mock_http_client):
+    host = 'chromium-review.googlesource.com'
+    change = 123456
+    low_coverage_comment = {
+        "robot_id": "Chrome Coverage Checker",
+        "robot_run_id": "chromium/src~3763513~3",
+        "author": {
+            "_account_id": 1555092,
+            "name": "Findit",
+            "email": "findit-for-me@appspot.gserviceaccount.com",
+            "tags": ["SERVICE_USER"]
+        }
+    }
+    some_other_comment = {
+        "robot_id": "Spell Checker",
+        "robot_run_id": "chromium/src~3763513~3",
+        "author": {
+            "_account_id": 1555012,
+            "name": "XYZ",
+            "email": "XYZ@appspot.gserviceaccount.com",
+            "tags": ["SERVICE_USER"]
+        }
+    }
+    response = {
+        'file1.cc': [low_coverage_comment, some_other_comment],
+    }
+    mock_http_client.side_effect = [(200, ')]}\'' + json.dumps(response), None)]
+    call = mock.call(
+        'https://chromium-review.googlesource.com/changes/123456/robotcomments')
+    actual = code_coverage_util.FetchLowCoverageRobotComments(
+        host, change, "Chrome Coverage Checker")
+    mock_http_client.assert_has_calls([call])
+
+    self.assertEqual(len(actual['file1.cc']), 1)
+    self.assertEqual(actual['file1.cc'][0], low_coverage_comment)
