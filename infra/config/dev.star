@@ -266,6 +266,9 @@ adhoc_builder(
             },
         ],
     },
+    experiments = {
+        "luci.buildbucket.use_bbagent_race": 100,
+    },
 )
 
 luci.notifier(
