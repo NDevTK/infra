@@ -5,12 +5,14 @@
 package dumper
 
 import (
-	"cloud.google.com/go/pubsub"
 	"context"
 	"fmt"
+	"os"
+	"sync"
+
+	"cloud.google.com/go/pubsub"
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
-	"sync"
 )
 
 // publishToTopic publishToTopic upload objects to a given pub/sub topic.
@@ -59,7 +61,12 @@ func publishToTopic(ctx context.Context, msgs []proto.Message, projectID, topicI
 func publish(ctx context.Context, projectID, topicID string, msg proto.Message, retChan chan error) {
 	// Create client for Pub/Sub publishing.
 	client, err := pubsub.NewClient(ctx, projectID)
-	defer client.Close()
+	defer func() {
+		if err := client.Close(); err != nil {
+			logging.Errorf(ctx, "fatal error when closing client: %s", err)
+			os.Exit(1)
+		}
+	}()
 	if err != nil {
 		retChan <- fmt.Errorf("failed to create Pub/Sub client for projects/%s/topic/%s", projectID, topicID)
 		return
