@@ -6,7 +6,9 @@ package tasks
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
@@ -14,6 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 
 	"infra/cmd/mallet/internal/site"
@@ -94,5 +97,49 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "printing").Err()
 	}
 
+	query := &storage.Query{
+		Delimiter: "/",
+		Prefix:    "",
+	}
+
+	objectIterator := storageClient.Bucket(c.bucket).Objects(ctx, query)
+
+	const maxObjects = 100
+	tally := 0
+	for i := 0; i < maxObjects; i++ {
+		objectAttrs, err := objectIterator.Next()
+		if err != nil {
+			return errors.Annotate(err, "printing object #%d", i).Err()
+		}
+		if i == 0 {
+			b, err := json.MarshalIndent(objectAttrs, "", "  ")
+
+			if err != nil {
+				return errors.Annotate(err, "failed to marshal object").Err()
+			}
+			fmt.Fprintf(a.GetErr(), "%s\n", string(b))
+		}
+		tally++
+	}
+	switch tally {
+	case 100:
+		fmt.Fprintf(a.GetErr(), "%s\n", "at least 100 items")
+	default:
+		fmt.Fprintf(a.GetErr(), "exactly %d items\n", tally)
+	}
+
 	return nil
+}
+
+func asGoogleAPIError(err error) *googleapi.Error {
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok {
+		return e
+	}
+	return nil
+}
+
+func isNotFound(err error) bool {
+	e := asGoogleAPIError(err)
+	return e != nil && e.Code == http.StatusNotFound
 }
