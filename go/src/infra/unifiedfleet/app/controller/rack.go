@@ -395,45 +395,49 @@ func DeleteRack(ctx context.Context, id string) error {
 //
 // All corresponding entities which are related to the old rack will be updated.
 func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack, err error) {
+	oldRack, err := registration.GetRack(ctx, oldName)
+	// The error type can only be Internal or NotFound
+	if status.Code(err) == codes.NotFound {
+		return nil, status.Errorf(codes.NotFound, ufsds.NotFound)
+	}
+	if err != nil {
+		return nil, errors.Annotate(err, "internal error in getting old rack %s", oldName).Err()
+	}
+
+	// Check if any other resource references this rack.
+	if err = validateRenameRack(ctx, oldRack, newName); err != nil {
+		return nil, errors.Annotate(err, "validate old rack %s", oldName).Err()
+	}
+	hc := getRackClientHistory(oldRack)
 	f := func(ctx context.Context) error {
-		oldRack, err := registration.GetRack(ctx, oldName)
-		if status.Code(err) == codes.Internal {
-			return err
-		}
-		if oldRack == nil {
-			return status.Errorf(codes.NotFound, ufsds.NotFound)
-		}
-
-		// Check if any other resource references this rack.
-		if err = validateRenameRack(ctx, oldRack, newName); err != nil {
-			return err
-		}
-
 		rack = proto.Clone(oldRack).(*ufspb.Rack)
-		hc := getRackClientHistory(oldRack)
+
 		if err := renameRackHelper(ctx, oldName, newName, hc); err != nil {
 			return err
 		}
 
-		// Delete old, create new
+		// Delete the old rack
 		if err := registration.DeleteRack(ctx, oldName); err != nil {
 			return err
 		}
-		rack.Name = newName
-		if _, err := registration.BatchUpdateRacks(ctx, []*ufspb.Rack{rack}); err != nil {
-			return err
+		// Check if new rack name already exists, if not, create the new rack.
+		if err := resourceAlreadyExists(ctx, []*Resource{GetRackResource(newName)}, nil); err == nil {
+			rack.Name = newName
+			if _, err := registration.BatchUpdateRacks(ctx, []*ufspb.Rack{rack}); err != nil {
+				return err
+			}
 		}
 
-		// Log history change events
-		hc.LogRackChanges(&ufspb.Rack{Name: oldName}, &ufspb.Rack{Name: newName})
-		if err := hc.SaveChangeEvents(ctx); err != nil {
-			return err
-		}
 		return nil
 	}
 
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		logging.Errorf(ctx, "Failed to rename rack: %s", err)
+		return nil, errors.Annotate(err, "failed to rename rack %s to %s", oldName, newName).Err()
+	}
+	// Log history change events
+	hc.LogRackChanges(&ufspb.Rack{Name: oldName}, &ufspb.Rack{Name: newName})
+	if err := hc.SaveChangeEvents(ctx); err != nil {
 		return nil, err
 	}
 	return rack, nil
@@ -487,10 +491,6 @@ func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryC
 func validateRenameRack(ctx context.Context, oldRack *ufspb.Rack, newName string) error {
 	// Check permission
 	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, oldRack.GetRealm()); err != nil {
-		return err
-	}
-	// Check if new rack name already exists
-	if err := resourceAlreadyExists(ctx, []*Resource{GetRackResource(newName)}, nil); err != nil {
 		return err
 	}
 	return nil

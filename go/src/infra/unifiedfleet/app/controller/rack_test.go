@@ -917,10 +917,10 @@ func TestRenameRack(t *testing.T) {
 			_, err = RenameRack(ctx, "rename-rack-non-existing", "rename-rack-0-new")
 			So(util.IsNotFoundError(err), ShouldBeTrue)
 		})
-		Convey("RenameRack - new rack already exists", func() {
+		Convey("RenameRack - it's ok that the new rack already exists", func() {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = RenameRack(ctx, "rename-rack", "rename-rack")
-			So(err.Error(), ShouldContainSubstring, "already exists in the system")
+			So(err, ShouldBeNil)
 		})
 	})
 }
