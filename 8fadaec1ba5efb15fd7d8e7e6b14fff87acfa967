@@ -16,6 +16,29 @@
       "message": "This is a possible refactor suggested in https://chromium-review.googlesource.com/c/infra/infra/+/3888367 .\n\n",
       "revId": "8fadaec1ba5efb15fd7d8e7e6b14fff87acfa967",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "060d8a11_e5cc421a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-09-15T02:58:54Z",
+      "side": 1,
+      "message": "Later validateRenameRack may check some other things, passing realm seems too specific.",
+      "range": {
+        "startLine": 408,
+        "startChar": 11,
+        "endLine": 408,
+        "endChar": 54
+      },
+      "revId": "8fadaec1ba5efb15fd7d8e7e6b14fff87acfa967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
