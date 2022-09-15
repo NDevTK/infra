@@ -33,6 +33,24 @@
       "message": "Just an observation, you may be better to pass the actual test log as the summary.  Having the failure reason and the summary as the same content is not really helpful to developers looking at the test failrues.",
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4b80084_22940a96",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-09-15T11:20:59Z",
+      "side": 1,
+      "message": "This CL mainly aims to resolve the missing data issue and unblock Testhaus MVP. The content of the summary_html field was implemented by Navil before for the CQ use case. I personally prefer to leave it as before. Navil may have better insights for the CQ runs.",
+      "parentUuid": "c9f2c013_b2c7e79d",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
