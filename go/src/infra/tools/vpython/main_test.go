@@ -269,7 +269,7 @@ func (tc *testCase) run(t *testing.T, env environ.Env) {
 
 		switch tc.name {
 		case "test_signals":
-			// Singal forwarding is not supported on Windows.
+			// Signal forwarding is not supported on Windows.
 			if runtime.GOOS != "windows" {
 				tc.runTestSignals(c, t, td, env)
 			}
