@@ -16,6 +16,23 @@
       "message": "The error message shows the actual maximum limitation of the summary_html field is 4096 bytes while the preset variable maxPrimaryErrorBytes is 1024. Let me know if you would like me to truncate the string up to 4096 instead of 1024.",
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9f2c013_b2c7e79d",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-09-15T08:18:15Z",
+      "side": 1,
+      "message": "Just an observation, you may be better to pass the actual test log as the summary.  Having the failure reason and the summary as the same content is not really helpful to developers looking at the test failrues.",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
