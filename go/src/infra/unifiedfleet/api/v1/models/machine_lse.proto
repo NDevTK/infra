@@ -196,6 +196,21 @@ message VM {
 
     // Ownership information of the host like ResourceGroup, Security level etc.
     OwnershipData ownership = 16;
+
+    // The following fields are intended to be arbitrary values (rather than bound by an enum)
+    // to provide more flexibility to the Chrome Browser Labs team:
+    //  int32 cpu_cores = 17
+    //  int64 memory = 18
+    //  int64 storage = 19
+
+    // Number of CPUs (eg. 8)
+    int32 cpu_cores = 17;
+
+    // Amount of memory in bytes assigned (eg. 8 000 000 000)
+    int64 memory = 18;
+
+    // Disk capacity in bytes assigned (eg. 512 000 000 000)
+    int64 storage = 19;
 }
 
 // OSVersion refers to the version of Operating System
