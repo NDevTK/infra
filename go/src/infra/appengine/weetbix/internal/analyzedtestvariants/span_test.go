@@ -23,7 +23,7 @@ import (
 func TestAnalyzedTestVariantSpan(t *testing.T) {
 	Convey(`TestAnalyzedTestVariantSpan`, t, func() {
 		ctx := testutil.SpannerTestContext(t)
-		realm := "chromium:ci"
+		const realm = "chromium:ci"
 		status := atvpb.Status_FLAKY
 		now := clock.Now(ctx).UTC()
 		ps := []atvpb.Status{
@@ -34,7 +34,7 @@ func TestAnalyzedTestVariantSpan(t *testing.T) {
 			now.Add(-24 * time.Hour),
 			now.Add(-240 * time.Hour),
 		}
-		builder := "builder"
+		const builder = "builder"
 		ms := []*spanner.Mutation{
 			insert.AnalyzedTestVariant(realm, "ninja://test1", "variantHash1", status,
 				map[string]interface{}{
