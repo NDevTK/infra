@@ -8,10 +8,21 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
+
+// JSONPBMarshaller marshals protobufs as JSON.
+var JSONPBMarshaller = &jsonpb.Marshaler{
+	EmitDefaults: true,
+}
+
+// JSONPBUnmarshaller unmarshals JSON and creates corresponding protobufs.
+var JSONPBUnmarshaller = jsonpb.Unmarshaler{
+	AllowUnknownFields: true,
+}
 
 // ParseJSONProto takes an input string and a proto message indicating the type of message
 // and parses either a single object or an array of objects. It always returns an array, which

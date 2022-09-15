@@ -11,23 +11,12 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 )
-
-// JSONPBMarshaller marshals protobufs as JSON.
-var JSONPBMarshaller = &jsonpb.Marshaler{
-	EmitDefaults: true,
-}
-
-// JSONPBUnmarshaller unmarshals JSON and creates corresponding protobufs.
-var JSONPBUnmarshaller = jsonpb.Unmarshaler{
-	AllowUnknownFields: true,
-}
 
 // NewAuthenticator creates a new authenticator based on flags.
 func NewAuthenticator(ctx context.Context, f *authcli.Flags) (*auth.Authenticator, error) {

@@ -23,6 +23,7 @@ import (
 	"infra/cmd/skylab/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/common/errctx"
+	"infra/libs/skylab/jsonutil"
 )
 
 // WaitTask subcommand: wait for a task to finish.
@@ -170,7 +171,7 @@ func sleepOrCancel(ctx context.Context, duration time.Duration) error {
 }
 
 func printJSONResults(w io.Writer, m *skylab_tool.WaitTaskResult) {
-	err := cmdlib.JSONPBMarshaller.Marshal(w, m)
+	err := jsonutil.JSONPBMarshaller.Marshal(w, m)
 	if err != nil {
 		panic(err)
 	}

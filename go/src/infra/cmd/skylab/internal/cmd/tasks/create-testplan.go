@@ -18,6 +18,7 @@ import (
 	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
 	"infra/cmd/skylab/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/jsonutil"
 )
 
 // CreateTestPlan subcommand: create a testplan task.
@@ -120,7 +121,7 @@ func (c *createTestPlanRun) readTestPlan(path string) (*test_platform.Request_Te
 	defer file.Close()
 
 	testPlan := test_platform.Request_TestPlan{}
-	if err := cmdlib.JSONPBUnmarshaller.Unmarshal(file, &testPlan); err != nil {
+	if err := jsonutil.JSONPBUnmarshaller.Unmarshal(file, &testPlan); err != nil {
 		return nil, errors.Annotate(err, "read test plan").Err()
 	}
 
