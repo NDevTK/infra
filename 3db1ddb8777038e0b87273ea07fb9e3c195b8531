@@ -69,6 +69,24 @@
       "parentUuid": "b4b80084_22940a96",
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7c987df_5d206894",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1128994
+      },
+      "writtenOn": "2022-09-15T22:04:24Z",
+      "side": 1,
+      "message": "Should the truncate be done after the \u003cpre\u003e...\u003c/pre\u003e substitution?",
+      "parentUuid": "dee0e811_168b9b67",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
