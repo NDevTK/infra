@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a112ca6a_60a20bd4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-09-15T05:38:41Z",
+      "side": 1,
+      "message": "The error message shows the actual maximum limitation of the summary_html field is 4096 bytes while the preset variable maxPrimaryErrorBytes is 1024. Let me know if you would like me to truncate the string up to 4096 instead of 1024.",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
