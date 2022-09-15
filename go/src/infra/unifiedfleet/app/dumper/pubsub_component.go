@@ -61,7 +61,7 @@ func publish(ctx context.Context, projectID, topicID string, msg proto.Message, 
 	client, err := pubsub.NewClient(ctx, projectID)
 	defer client.Close()
 	if err != nil {
-		retChan <- fmt.Errorf("Failed to create Pub/Sub client for projects/%s/topic/%s", projectID, topicID)
+		retChan <- fmt.Errorf("failed to create Pub/Sub client for projects/%s/topic/%s", projectID, topicID)
 		return
 	}
 
@@ -86,7 +86,7 @@ func publish(ctx context.Context, projectID, topicID string, msg proto.Message, 
 	// Block and wait to check for publishing errors.
 	_, err = result.Get(ctx)
 	if err != nil {
-		retChan <- fmt.Errorf("Failed to get publishing ID from server\nget: %s", err.Error())
+		retChan <- fmt.Errorf("failed to get publishing ID from server\nget: %s", err.Error())
 		return
 	}
 }
