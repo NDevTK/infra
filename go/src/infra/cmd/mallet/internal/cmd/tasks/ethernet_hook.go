@@ -6,6 +6,7 @@ package tasks
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"cloud.google.com/go/storage"
@@ -92,6 +93,37 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	_, err = fmt.Fprintf(a.GetErr(), "%d\n", bucketAttrs.ProjectNumber)
 	if err != nil {
 		return errors.Annotate(err, "printing").Err()
+	}
+
+	query := &storage.Query{
+		Delimiter: "/",
+		Prefix:    "",
+	}
+
+	objectIterator := storageClient.Bucket(c.bucket).Objects(ctx, query)
+
+	const maxObjects = 100
+	tally := 0
+	for i := 0; i < maxObjects; i++ {
+		objectAttrs, err := objectIterator.Next()
+		if err != nil {
+			return errors.Annotate(err, "printing object #%d", i).Err()
+		}
+		if i == 0 {
+			b, err := json.MarshalIndent(objectAttrs, "", "  ")
+
+			if err != nil {
+				return errors.Annotate(err, "failed to marshal object").Err()
+			}
+			fmt.Fprintf(a.GetErr(), "%s\n", string(b))
+		}
+		tally++
+	}
+	switch tally {
+	case 100:
+		fmt.Fprintf(a.GetErr(), "%s\n", "at least 100 items")
+	default:
+		fmt.Fprintf(a.GetErr(), "exactly %d items\n", tally)
 	}
 
 	return nil
