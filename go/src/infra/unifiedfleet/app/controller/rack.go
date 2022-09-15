@@ -405,7 +405,7 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 		}
 
 		// Check if any other resource references this rack.
-		if err = validateRenameRack(ctx, oldRack, newName); err != nil {
+		if err = validateRenameRack(ctx, oldRack.GetRealm(), newName); err != nil {
 			return err
 		}
 
@@ -484,9 +484,9 @@ func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryC
 }
 
 // validateRenameRack validates if a rack can be renamed
-func validateRenameRack(ctx context.Context, oldRack *ufspb.Rack, newName string) error {
+func validateRenameRack(ctx context.Context, realm string, newName string) error {
 	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, oldRack.GetRealm()); err != nil {
+	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, realm); err != nil {
 		return err
 	}
 	// Check if new rack name already exists
