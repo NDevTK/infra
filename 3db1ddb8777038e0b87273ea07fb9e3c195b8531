@@ -51,6 +51,24 @@
       "parentUuid": "c9f2c013_b2c7e79d",
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dee0e811_168b9b67",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-09-15T11:28:01Z",
+      "side": 1,
+      "message": "Seems Navil is on leave for 10 days. I think this CL itself is safe and no business logic will be changed. If the content of the summary_html needs to be changed regarding the CQ requirement, it can be updated in a separate CL.",
+      "parentUuid": "b4b80084_22940a96",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
