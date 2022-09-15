@@ -72,7 +72,7 @@ class ReapTest(unittest.TestCase):
 
   def testMarkDoomedProjects(self):
     self.setUpMarkDoomedProjects()
-    reaper = reap.Reap('req', 'resp', services=self.services)
+    reaper = reap.Reap(services=self.services)
 
     self.mox.ReplayAll()
     doomed_project_ids = reaper._MarkDoomedProjects(self.cnxn)
@@ -95,7 +95,7 @@ class ReapTest(unittest.TestCase):
 
   def testExpungeDeletableProjects(self):
     self.setUpExpungeParts()
-    reaper = reap.Reap('req', 'resp', services=self.services)
+    reaper = reap.Reap(services=self.services)
 
     self.mox.ReplayAll()
     expunged_project_ids = reaper._ExpungeDeletableProjects(self.cnxn)

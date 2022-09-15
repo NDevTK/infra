@@ -25,8 +25,7 @@ class TestWipeoutSyncCron(unittest.TestCase):
 
   def setUp(self):
     self.services = service_manager.Services(user=fake.UserService())
-    self.task = deleteusers.WipeoutSyncCron(
-        request=None, response=None, services=self.services)
+    self.task = deleteusers.WipeoutSyncCron(services=self.services)
     self.user_1 = self.services.user.TestAddUser('user1@example.com', 111)
     self.user_2 = self.services.user.TestAddUser('user2@example.com', 222)
     self.user_3 = self.services.user.TestAddUser('user3@example.com', 333)
@@ -100,8 +99,7 @@ class SendWipeoutUserListsTaskTest(unittest.TestCase):
 
   def setUp(self):
     self.services = service_manager.Services(user=fake.UserService())
-    self.task = deleteusers.SendWipeoutUserListsTask(
-        request=None, response=None, services=self.services)
+    self.task = deleteusers.SendWipeoutUserListsTask(services=self.services)
     self.task.sendUserLists = mock.Mock()
     deleteusers.authorize = mock.Mock(return_value='service')
     self.user_1 = self.services.user.TestAddUser('user1@example.com', 111)
@@ -143,8 +141,7 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
   def setUp(self):
     self.services = service_manager.Services()
     deleteusers.authorize = mock.Mock(return_value='service')
-    self.task = deleteusers.DeleteWipeoutUsersTask(
-        request=None, response=None, services=self.services)
+    self.task = deleteusers.DeleteWipeoutUsersTask(services=self.services)
     deleted_users = [
         {'id': 'user1@gmail.com'}, {'id': 'user2@gmail.com'},
         {'id': 'user3@gmail.com'}, {'id': 'user4@gmail.com'}]

@@ -10,10 +10,8 @@ from __future__ import absolute_import
 
 import json
 import mock
-import os
 import unittest
 from six.moves import urllib
-import webapp2
 
 import settings
 from features import banspammer
@@ -35,7 +33,7 @@ class BanSpammerTest(unittest.TestCase):
         project=fake.ProjectService(),
         spam=fake.SpamService(),
         user=fake.UserService())
-    self.servlet = banspammer.BanSpammer('req', 'res', services=self.services)
+    self.servlet = banspammer.BanSpammer(services=self.services)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
   def testProcessFormData_noPermission(self, get_client_mock):
@@ -92,17 +90,15 @@ class BanSpammerTaskTest(unittest.TestCase):
     self.services = service_manager.Services(
         issue=fake.IssueService(),
         spam=fake.SpamService())
-    self.res = webapp2.Response()
-    self.servlet = banspammer.BanSpammerTask('req', self.res,
-        services=self.services)
+    self.servlet = banspammer.BanSpammerTask(services=self.services)
 
   def testProcessFormData_okNoIssues(self):
     mr = testing_helpers.MakeMonorailRequest(
         path=urls.BAN_SPAMMER_TASK + '.do', method='POST',
         params={'spammer_id': 111, 'reporter_id': 222})
 
-    self.servlet.HandleRequest(mr)
-    self.assertEqual(self.res.body, json.dumps({'comments': 0, 'issues': 0}))
+    res = self.servlet.HandleRequest(mr)
+    self.assertEqual(res, json.dumps({'comments': 0, 'issues': 0}))
 
   def testProcessFormData_okSomeIssues(self):
     mr = testing_helpers.MakeMonorailRequest(
@@ -114,8 +110,8 @@ class BanSpammerTaskTest(unittest.TestCase):
           1, i, 'issue_summary', 'New', 111, project_name='project-name')
       self.servlet.services.issue.TestAddIssue(issue)
 
-    self.servlet.HandleRequest(mr)
-    self.assertEqual(self.res.body, json.dumps({'comments': 0, 'issues': 10}))
+    res = self.servlet.HandleRequest(mr)
+    self.assertEqual(res, json.dumps({'comments': 0, 'issues': 10}))
 
   def testProcessFormData_okSomeCommentsAndIssues(self):
     mr = testing_helpers.MakeMonorailRequest(
@@ -137,5 +133,5 @@ class BanSpammerTaskTest(unittest.TestCase):
         comment.user_id = 111
         comment.issue_id = issue.issue_id
         self.servlet.services.issue.TestAddComment(comment, issue.local_id)
-    self.servlet.HandleRequest(mr)
-    self.assertEqual(self.res.body, json.dumps({'comments': 50, 'issues': 10}))
+    res = self.servlet.HandleRequest(mr)
+    self.assertEqual(res, json.dumps({'comments': 50, 'issues': 10}))

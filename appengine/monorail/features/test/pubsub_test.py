@@ -38,8 +38,7 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
 
   def testPublishPubsubIssueChangeTask_NoIssueIdParam(self):
     """Test case when issue_id param is not passed."""
-    task = pubsub.PublishPubsubIssueChangeTask(
-        request=None, response=None, services=self.services)
+    task = pubsub.PublishPubsubIssueChangeTask(services=self.services)
     mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 1},
         params={},
@@ -54,8 +53,7 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
   def testPublishPubsubIssueChangeTask_PubSubAPIInitFailure(self):
     """Test case when pub/sub API fails to init."""
     pubsub.set_up_pubsub_api = Mock(return_value=None)
-    task = pubsub.PublishPubsubIssueChangeTask(
-        request=None, response=None, services=self.services)
+    task = pubsub.PublishPubsubIssueChangeTask(services=self.services)
     mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 1},
         params={},
@@ -69,8 +67,7 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
 
   def testPublishPubsubIssueChangeTask_IssueNotFound(self):
     """Test case when issue is not found."""
-    task = pubsub.PublishPubsubIssueChangeTask(
-        request=None, response=None, services=self.services)
+    task = pubsub.PublishPubsubIssueChangeTask(services=self.services)
     mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 1},
         params={'issue_id': 314159},
@@ -87,8 +84,7 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
     issue = fake.MakeTestIssue(789, 543, 'sum', 'New', 111, issue_id=78901,
         project_name='rutabaga')
     self.services.issue.TestAddIssue(issue)
-    task = pubsub.PublishPubsubIssueChangeTask(
-        request=None, response=None, services=self.services)
+    task = pubsub.PublishPubsubIssueChangeTask(services=self.services)
     mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 1},
         params={'issue_id': 78901},

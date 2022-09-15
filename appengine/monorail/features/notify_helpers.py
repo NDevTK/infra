@@ -123,8 +123,7 @@ def AddAllEmailTasks(tasks):
   return notified
 
 
-# TODO: change to FlaskInternalTask when convert to flask
-class NotifyTaskBase(jsonfeed.InternalTask):
+class NotifyTaskBase(jsonfeed.FlaskInternalTask):
   """Abstract base class for notification task handler."""
 
   _EMAIL_TEMPLATE = None  # Subclasses must override this.

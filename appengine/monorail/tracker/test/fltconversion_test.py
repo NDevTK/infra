@@ -33,8 +33,7 @@ class FLTConvertTask(unittest.TestCase):
         config=fake.ConfigService(),
         template=mock.Mock(spec=template_svc.TemplateService),)
     self.mr = testing_helpers.MakeMonorailRequest()
-    self.task = fltconversion.FLTConvertTask(
-        'req', 'res', services=self.services)
+    self.task = fltconversion.FLTConvertTask(services=self.services)
     self.task.mr = self.mr
     self.issue = fake.MakeTestIssue(
         789, 1, 'summary', 'New', 111, issue_id=78901)

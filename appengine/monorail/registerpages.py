@@ -164,10 +164,6 @@ class ServletRegistry(object):
   def _RegisterProjectHandlers(self):
     """Register page and form handlers that operate within a project."""
 
-    self._SetupServlets({
-        # Note: the following are at URLS that are not externally accessible.
-        urls.NOTIFY_RULES_DELETED_TASK: notify.NotifyRulesDeletedTask,
-    })
     self._SetupProjectServlets(
         {
             urls.ADMIN_INTRO: projectsummary.ProjectSummary,
@@ -182,22 +178,6 @@ class ServletRegistry(object):
 
   def _RegisterIssueHandlers(self):
     """Register page and form handlers for the issue tracker."""
-    self._SetupServlets({
-        # Note: the following are at URLs that are not externaly accessible.
-        urls.RECOMPUTE_DERIVED_FIELDS_TASK:
-            filterrules.RecomputeDerivedFieldsTask,
-        urls.REINDEX_QUEUE_CRON: filterrules.ReindexQueueCron,
-        urls.NOTIFY_ISSUE_CHANGE_TASK: notify.NotifyIssueChangeTask,
-        urls.NOTIFY_BLOCKING_CHANGE_TASK: notify.NotifyBlockingChangeTask,
-        urls.NOTIFY_BULK_CHANGE_TASK: notify.NotifyBulkChangeTask,
-        urls.NOTIFY_APPROVAL_CHANGE_TASK: notify.NotifyApprovalChangeTask,
-        urls.OUTBOUND_EMAIL_TASK: notify.OutboundEmailTask,
-        urls.DATE_ACTION_CRON: dateaction.DateActionCron,
-        urls.PUBLISH_PUBSUB_ISSUE_CHANGE_TASK:
-            pubsub.PublishPubsubIssueChangeTask,
-        urls.ISSUE_DATE_ACTION_TASK: dateaction.IssueDateActionTask,
-        urls.FLT_ISSUE_CONVERSION_TASK: fltconversion.FLTConvertTask,
-        })
 
     self._SetupProjectServlets(
         {
@@ -316,28 +296,10 @@ class ServletRegistry(object):
         {
             urls.CSP_REPORT:
                 csp_report.CSPReportPage,
-
-            # These are not externally accessible
-            urls.RAMCACHE_CONSOLIDATE_CRON:
-                cachemanager_svc.RamCacheConsolidate,
-            urls.REAP_CRON:
-                reap.Reap,
-            urls.LOAD_API_CLIENT_CONFIGS_CRON:
-                (client_config_svc.LoadApiClientConfigs),
-            urls.TRIM_VISITED_PAGES_CRON:
-                trimvisitedpages.TrimVisitedPages,
         })
 
   def _RegisterSitewideHandlers(self):
     """Register page and form handlers that aren't associated with projects."""
-    self._SetupServlets({
-        # The user settings page is a site-wide servlet, not under /u/.
-        urls.BAN_SPAMMER_TASK: banspammer.BanSpammerTask,
-        urls.WIPEOUT_SYNC_CRON: deleteusers.WipeoutSyncCron,
-        urls.SEND_WIPEOUT_USER_LISTS_TASK: deleteusers.SendWipeoutUserListsTask,
-        urls.DELETE_WIPEOUT_USERS_TASK: deleteusers.DeleteWipeoutUsersTask,
-        urls.DELETE_USERS_TASK: deleteusers.DeleteUsersTask,
-        })
 
     self._SetupUserServlets({
         urls.USER_PROFILE: userprofile.UserProfile,
