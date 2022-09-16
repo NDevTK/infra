@@ -253,7 +253,8 @@ func USBDrives(ctx context.Context, runner execs.Runner, servoSerial string) ([]
 		}
 		// To detect usb is complicated so we check if any of them will mention it.
 		// TODO: Find better logic to distinguish USB drive from other components.
-		if strings.Contains(strings.ToLower(manufacturer), "usb") || strings.Contains(strings.ToLower(product), "usb") {
+		// Corsair is new USB drive supported smart data check.
+		if strings.Contains(strings.ToLower(manufacturer), "usb") || manufacturer == "Corsair" || strings.Contains(strings.ToLower(product), "usb") {
 			log.Debugf(ctx, "The device found is usb drive!")
 		} else {
 			log.Debugf(ctx, "The device found is usb drive!")
@@ -296,16 +297,20 @@ func allSerialFilePaths(ctx context.Context, runner execs.Runner, servoSerial st
 // other servos connected to the hub we need find the path to the
 // servo-hub. The servod-tool always return direct path to the servo,
 // such as:
-//    /sys/bus/usb/devices/1-3.2.1
-//    base path:  /sys/bus/usb/devices/
-//    root-servo:  1-3.2.1
+//
+//	/sys/bus/usb/devices/1-3.2.1
+//	base path:  /sys/bus/usb/devices/
+//	root-servo:  1-3.2.1
+//
 // The alternative path to the same root servo is
 // '/sys/bus/usb/devices/1-3.2/1-3.2.1/' where '1-3.2' is path to
 // servo-hub. To extract path to servo-hub, remove last digit of the
 // port where root servo connects to the servo-hub.
-//    base path:  /sys/bus/usb/devices/
-//    servo-hub:  1-3.2
-//    root-servo: .1
+//
+//	base path:  /sys/bus/usb/devices/
+//	servo-hub:  1-3.2
+//	root-servo: .1
+//
 // Later we will join only base path with servo-hub.
 func findServoHub(ctx context.Context, runner execs.Runner, servoSerial string) (string, error) {
 	rootServoPath, err := GetRootServoPath(ctx, runner, servoSerial)
