@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/dutstate"
+	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/cros/storage"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
