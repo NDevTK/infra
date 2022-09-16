@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,14 +35,19 @@ func (c RealCommandRunner) RunCommand(ctx context.Context, stdoutBuf, stderrBuf 
 // FakeCommandRunner does not actually run commands.
 // It is used for testing.
 type FakeCommandRunner struct {
+	// Stdout and Stderr will be written to the buffers passed into RunCommand.
 	Stdout string
 	Stderr string
 	// Only one of ExpectedCmd and ExpectedCmdPartial can be set.
-	ExpectedCmd        []string
+	// If ExpectedCmd is set, then that should be exactly the command's name and args, or RunCommand will return an error.
+	ExpectedCmd []string
+	// If ExpectedCmdPartial is set, then that should be a segment of the command's name and args, in order, or RunCommand will return an error.
 	ExpectedCmdPartial []string
-	ExpectedDir        string
-	FailCommand        bool
-	FailError          error
+	// If ExpectedDir is set, then it should be exactly the dir passed into RunCommand.
+	ExpectedDir string
+	// If FailCommand is True, then RunCommand will raise FailError.
+	FailCommand bool
+	FailError   error
 }
 
 // RunCommand runs a command (not actually).
@@ -75,6 +80,7 @@ func (c FakeCommandRunner) RunCommand(ctx context.Context, stdoutBuf, stderrBuf 
 }
 
 // FakeCommandRunnerMulti provides multiple command runners.
+// Each command is expected to be run in the given order.
 type FakeCommandRunnerMulti struct {
 	run            int
 	CommandRunners []FakeCommandRunner
