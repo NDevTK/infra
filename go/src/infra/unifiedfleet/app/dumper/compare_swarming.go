@@ -23,7 +23,6 @@ import (
 	skylabSwarming "infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/model/inventory"
@@ -199,21 +198,6 @@ func sliceDiff(a, b []string) ([]string, []string) {
 		}
 	}
 	return inA, notInA
-}
-
-func getCloudStorageWriter(ctx context.Context, filename string) (*storage.Writer, error) {
-	bucketName := config.Get(ctx).SelfStorageBucket
-	if bucketName == "" {
-		bucketName = "unified-fleet-system.appspot.com"
-	}
-	storageClient, err := storage.NewClient(ctx)
-	if err != nil {
-		logging.Warningf(ctx, "failed to create cloud storage client")
-		return nil, err
-	}
-	bucket := storageClient.Bucket(bucketName)
-	logging.Infof(ctx, "All diff will be saved to https://storage.cloud.google.com/%s/%s", bucketName, filename)
-	return bucket.Object(filename).NewWriter(ctx), nil
 }
 
 // OLD IMPLEMENTATION

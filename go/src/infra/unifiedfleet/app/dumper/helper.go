@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -18,6 +19,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	apibq "infra/unifiedfleet/api/v1/models/bigquery"
 	chromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/model/history"
 	"infra/unifiedfleet/app/util"
@@ -299,4 +301,20 @@ func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string
 		}
 	}
 	return nil
+}
+
+// getCloudStorageWriter creates a storage writer that uses the UFS bucket
+func getCloudStorageWriter(ctx context.Context, filename string) (*storage.Writer, error) {
+	bucketName := config.Get(ctx).SelfStorageBucket
+	if bucketName == "" {
+		bucketName = "unified-fleet-system.appspot.com"
+	}
+	storageClient, err := storage.NewClient(ctx)
+	if err != nil {
+		logging.Warningf(ctx, "failed to create cloud storage client")
+		return nil, err
+	}
+	bucket := storageClient.Bucket(bucketName)
+	logging.Infof(ctx, "The resulting file will be written to https://storage.cloud.google.com/%s/%s", bucketName, filename)
+	return bucket.Object(filename).NewWriter(ctx), nil
 }
