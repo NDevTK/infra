@@ -47,3 +47,28 @@ func ReserveDutConfig() *Configuration {
 		},
 	}
 }
+
+// Restore HWID from inventory.
+func RestoreHWIDFromInventoryConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOS,
+		},
+		Plans: map[string]*Plan{
+			PlanCrOS: {
+				CriticalActions: []string{
+					"dut_has_hwid",
+					"cros_ssh",
+					"Disable software-controlled write-protect for 'host'",
+					"Disable software-controlled write-protect for 'ec'",
+					"cros_update_hwid_from_inventory_to_host",
+					"Simple reboot",
+					"Sleep 1s",
+					"Wait to be SSHable (normal boot)",
+					"cros_match_hwid_to_inventory",
+				},
+				Actions: crosRepairActions(),
+			},
+		},
+	}
+}
