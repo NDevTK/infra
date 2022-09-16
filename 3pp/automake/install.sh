@@ -13,3 +13,20 @@ PREFIX="$1"
   --prefix "$PREFIX" \
   --host "$CROSS_TRIPLE"
 make install -j $(nproc)
+
+mkdir -p "$PREFIX/build-support"
+cat > "$PREFIX/build-support/setup-hook.py" << EOF
+def setup(exe):
+  import os
+
+  def activate_pkg(exe) -> bool:
+    ctx = exe.current_context
+    if (aclocal := ctx.pkg.joinpath('share', 'aclocal')).is_dir():
+      exe.add_to_search_path('ACLOCAL_PATH', aclocal)
+    return True
+
+  exe.add_hook('activatePkg', activate_pkg)
+  pass
+
+setup(exe)
+EOF

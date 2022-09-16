@@ -176,7 +176,8 @@ class Execution:
     return default
 
   def add_to_search_path(
-      self, name: str, path: pathlib.Path, delimiter: str = ':') -> None:
+      self, name: str, path: pathlib.Path,
+      delimiter: str = os.path.pathsep) -> None:
     """Update the environment variable and append the path to it."""
     if not path.is_dir():
       return
@@ -219,6 +220,8 @@ class Execution:
       self.add_to_search_path(
           Execution.ENV_PKG_CONFIG_PATH, pkg.joinpath('lib', 'pkgconfig'))
 
+  def activate_pkg_hook(
+      self, pkg: pathlib.Path, host: PlatType, target: PlatType) -> None:
     if (hook := pkg.joinpath('build-support', 'setup-hook.py')).is_file():
       self.execute_one_hook(str(hook), Execution.HookContext.Setup(
           host=host,
@@ -231,18 +234,20 @@ class Execution:
     def pkgs(name: str) -> List[pathlib.Path]:
       return map(pathlib.Path, _split(self.env.get(name), os.path.pathsep))
 
-    for pkg in pkgs('depsBuildBuild'):
-      self.activate_pkg(pkg, PlatType.BUILD, PlatType.BUILD)
-    for pkg in pkgs('depsBuildHost'):
-      self.activate_pkg(pkg, PlatType.BUILD, PlatType.HOST)
-    for pkg in pkgs('depsBuildTarget'):
-      self.activate_pkg(pkg, PlatType.BUILD, PlatType.TARGET)
-    for pkg in pkgs('depsHostHost'):
-      self.activate_pkg(pkg, PlatType.HOST, PlatType.HOST)
-    for pkg in pkgs('depsHostTarget'):
-      self.activate_pkg(pkg, PlatType.HOST, PlatType.TARGET)
-    for pkg in pkgs('depsTargetTarget'):
-      self.activate_pkg(pkg, PlatType.TARGET, PlatType.TARGET)
+    # Activate the setup-hook first so packages can add activatePkg hook.
+    for activate in (self.activate_pkg_hook, self.activate_pkg):
+      for pkg in pkgs('depsBuildBuild'):
+        activate(pkg, PlatType.BUILD, PlatType.BUILD)
+      for pkg in pkgs('depsBuildHost'):
+        activate(pkg, PlatType.BUILD, PlatType.HOST)
+      for pkg in pkgs('depsBuildTarget'):
+        activate(pkg, PlatType.BUILD, PlatType.TARGET)
+      for pkg in pkgs('depsHostHost'):
+        activate(pkg, PlatType.HOST, PlatType.HOST)
+      for pkg in pkgs('depsHostTarget'):
+        activate(pkg, PlatType.HOST, PlatType.TARGET)
+      for pkg in pkgs('depsTargetTarget'):
+        activate(pkg, PlatType.TARGET, PlatType.TARGET)
 
   def execute_cmd(self, args) -> None:
     """Execute an external command."""
@@ -406,6 +411,9 @@ def main(exe=None) -> None:
 
   Args:
     exe: Optional execution instance for extra initialization.
+
+  Raises:
+    RuntimeError: Failed to execute any phases.
   """
   if not exe:
     exe = Execution()
@@ -432,10 +440,12 @@ def main(exe=None) -> None:
       'buildPhase',
       'installPhase',
   ):
-    exe.execute_all_hooks(_phase_hook('pre', phase))
+    if not exe.execute_all_hooks(_phase_hook('pre', phase)):
+      raise RuntimeError(f'failed to execute pre-hook for {phase}')
     if _phase_hook('skip', phase) not in exe.env:
       exe.execute_phase(phase)
-    exe.execute_all_hooks(_phase_hook('post', phase))
+    if not exe.execute_all_hooks(_phase_hook('post', phase)):
+      raise RuntimeError(f'failed to execute post-hook for {phase}')
 
     if Execution.ENV_SOURCE_ROOT in exe.env:
       os.chdir(exe.env[Execution.ENV_SOURCE_ROOT])

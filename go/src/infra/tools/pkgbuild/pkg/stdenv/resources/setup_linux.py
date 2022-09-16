@@ -17,6 +17,19 @@ import setup
 
 def main() -> None:
   dependencies = []
+  appending_envs = {}
+
+  def pre_unpack(exe) -> bool:
+    envs = subprocess.check_output([
+        'docker', 'run', '--rm',
+        exe.env['dockerImage'],
+        '/usr/bin/env',
+    ])
+    for e in envs.splitlines():
+      k, v = e.decode().split('=', 1)
+      if k in {'PATH'}:
+        appending_envs[k] = v
+    return True
 
   def execute_cmd(exe) -> bool:
     ctx = exe.current_context
@@ -29,7 +42,11 @@ def main() -> None:
         '--volume', f'{out}:{out}',
     ]
     for dep in dependencies:
-      volumes.extend(('--volume', f'{dep}:{dep}'))
+      # Exclude dependencies from builtin:import. The path from the host is not
+      # valid inside the container.
+      stamp = os.path.join(dep, 'build-support', 'builtin_import.stamp')
+      if not os.path.exists(stamp):
+        volumes.extend(('--volume', f'{dep}:{dep}'))
 
     docker = [
         'docker', 'run', '--rm',
@@ -39,9 +56,10 @@ def main() -> None:
 
     env = []
     for k, v in exe.env.items():
-      if k not in {'PATH'}:
-        env.extend(('--env', f'{k}={v}'))
-    # force override LDFLAGS even it's not set. This is because dockcross by
+      if k in appending_envs:
+        v = os.path.pathsep.join([v, appending_envs[k]])
+      env.extend(('--env', f'{k}={v}'))
+    # Force override LDFLAGS even it's not set. This is because dockcross by
     # default set it to '-L/usr/cross/lib', which may override the library
     # path passed to the configure.
     if 'LDFLAGS' not in exe.env:
@@ -60,6 +78,7 @@ def main() -> None:
     return True
 
   exe = setup.Execution()
+  exe.add_hook('preUnpack', pre_unpack)
   exe.add_hook('executeCmd', execute_cmd)
   exe.add_hook('activatePkg', activate_pkg)
 

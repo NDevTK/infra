@@ -85,6 +85,16 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 			return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
 		}
 	}
+
+	if err := os.MkdirAll(filepath.Join(out, "build-support"), os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create build-support: %w", err)
+	}
+	f, err := os.Create(filepath.Join(out, "build-support", "builtin_import.stamp"))
+	if err != nil {
+		return fmt.Errorf("failed to touch import stamp: %w", err)
+	}
+	f.Close()
+
 	return nil
 }
 

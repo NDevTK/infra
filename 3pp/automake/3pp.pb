@@ -9,7 +9,7 @@ create {
     cpe_base_address: "cpe:/a:gnu:automake"
     unpack_archive: true
     patch_dir: "patches"
-    patch_version: "chromium1"
+    patch_version: "chromium.2"
   }
 
   build { tool: "tools/autoconf" }
