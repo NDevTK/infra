@@ -61,7 +61,8 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, 
 			Status:   status,
 		}
 		if c.HumanReadableSummary != "" {
-			tr.SummaryHtml = fmt.Sprintf("<pre>%s</pre>", html.EscapeString(c.HumanReadableSummary))
+			// Limits the maximum size of the summary html message and then sets an offset for the additional html tags.
+			tr.SummaryHtml = fmt.Sprintf("<pre>%s</pre>", html.EscapeString(truncateString(c.HumanReadableSummary, maxSummaryHtmlBytes-100)))
 			tr.FailureReason = &pb.FailureReason{
 				PrimaryErrorMessage: truncateString(c.HumanReadableSummary, maxPrimaryErrorBytes),
 			}
