@@ -108,6 +108,14 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.DAILY,
 		Job:      swarmingLabelsDiffHandler,
 	},
+	{
+		// Compare differences between InvV2 ManufacturingConfig implementation with
+		// UFS implementation
+		Name:     util.CronJobNames["ManufacturingConfigDiffCron"],
+		Time:     5 * time.Minute,
+		TrigType: cron.DAILY,
+		Job:      manufacturingConfigDiffHandler,
+	},
 }
 
 // InitServer initializes a cron server.
