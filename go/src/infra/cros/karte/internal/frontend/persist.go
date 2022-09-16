@@ -105,7 +105,8 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 		return nil, status.Errorf(codes.Aborted, "persist action range impl: failed to build query: %s", err)
 	}
 
-	const stride = 1000
+	// Set the stride size to ten million. Each record is very small, less than 2kB, so this value should be safe.
+	const stride = 10_000_000
 
 	logging.Infof(ctx, "Beginning to insert record to bigquery")
 
