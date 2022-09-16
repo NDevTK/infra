@@ -7,7 +7,7 @@ go_build_environ:
   CGO_ENABLED:
     darwin:  1  # native Go DNS resolved is buggy on OSX (crbug.com/803673)
 go_packages:
-  - infra/tools/vpython_ng/cmd/vpython
+  - infra/tools/vpython/cmd/vpython
 root: ../../go/bin
 upload_on_change:
   - file: vpython
@@ -33,7 +33,7 @@ mac_bundle:
       path: ./
     - cipd_export: |
         @Subdir Contents/Resources/2.7
-        infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.44
+        infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.43
         @Subdir Contents/Resources/3.8
         infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.24
   codesign:
