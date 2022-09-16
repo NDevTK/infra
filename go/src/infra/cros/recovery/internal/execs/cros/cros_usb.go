@@ -7,6 +7,7 @@ package cros
 import (
 	"context"
 	"fmt"
+	"path"
 	"strings"
 	"time"
 
@@ -27,8 +28,51 @@ const usbDetectionDelay = 5
 // badblocks needs to be executed on a drive.
 const badBlocksCommandPrefix = "badblocks -w -e 300 -b 4096 -t random %s"
 
-func runCheckOnHost(ctx context.Context, run execs.Runner, usbPath string, timeout time.Duration) (tlw.HardwareState, error) {
+// The prefix of the smartctl command for running the health test
+// for USB drives that support SMART. The USB drive path will be attached
+// to it when the command needs to be executed on a drive.
+const smartHealthCommandPrefix = "smartctl -H %s | awk '/SMART overall-health self-assessment test result:/ {print $6}'"
+
+// The path to the vendor name for the USB drive. The drive path will be inserted.
+const usbVendorPath = "/sys/block/%s/device/vendor"
+
+// The path to the model name for the USB drive. The drive path will be inserted.
+const usbModelPath = "/sys/block/%s/device/model"
+
+// Expected output of a passing SMART health test.
+const smartPass = "PASSED"
+
+// The map of USB drive vendor:model pairings that currently support SMART.
+var smartUSBs = map[string]string{
+	"Corsair": "Voyager GTX",
+}
+
+func checkUSBSupportsSmart(ctx context.Context, run components.Runner, usbPath string) (bool, error) {
+	usbBasename := path.Base(usbPath)
+	vendorPath := fmt.Sprintf(usbVendorPath, usbBasename)
+	modelPath := fmt.Sprintf(usbModelPath, usbBasename)
+	vendor, err := run(ctx, time.Minute, fmt.Sprintf("cat %s", vendorPath))
+	if err != nil {
+		return false, errors.Annotate(err, "get usb drive vendor on dut failed").Err()
+	}
+	model, err := run(ctx, time.Minute, fmt.Sprintf("cat %s", modelPath))
+	if err != nil {
+		return false, errors.Annotate(err, "get usb drive vendor on dut failed").Err()
+	}
+	v := strings.TrimSpace(vendor)
+	if val, exists := smartUSBs[v]; exists {
+		if strings.Contains(model, val) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func runCheckOnHost(ctx context.Context, run execs.Runner, usbPath string, smartSupport bool, timeout time.Duration) (tlw.HardwareState, error) {
 	command := fmt.Sprintf(badBlocksCommandPrefix, usbPath)
+	if smartSupport {
+		command = fmt.Sprintf(smartHealthCommandPrefix, usbPath)
+	}
 	log.Debugf(ctx, "Run Check On Host: Executing %q", command)
 	// The execution timeout for this audit job is configured at the
 	// level of the action. So the execution of this command will be
@@ -36,6 +80,12 @@ func runCheckOnHost(ctx context.Context, run execs.Runner, usbPath string, timeo
 	out, err := run(ctx, timeout, command)
 	switch {
 	case err == nil:
+		if smartSupport {
+			if !strings.Contains(out, smartPass) {
+				return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
+			}
+			return tlw.HardwareState_HARDWARE_NORMAL, nil
+		}
 		// TODO(vkjoshi@): recheck if this is required, or does stderr need to be examined.
 		if len(out) > 0 {
 			return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
@@ -94,7 +144,12 @@ func auditUSBFromDUTSideKeyExec(ctx context.Context, info *execs.ExecInfo) error
 		log.Errorf(ctx, "Failed to determine dut USB path: %s", err.Error())
 		return errors.Annotate(err, "audit USB from DUT side").Err()
 	}
-	state, err := runCheckOnHost(ctx, dutRunner, dutUSB, timeout)
+	smartSupport, err := checkUSBSupportsSmart(ctx, dutRunner, dutUSB)
+	if err != nil {
+		log.Errorf(ctx, "Failed to determine if dut USB supports SMART: %s", err.Error())
+		return errors.Annotate(err, "audit USB from DUT side").Err()
+	}
+	state, err := runCheckOnHost(ctx, dutRunner, dutUSB, smartSupport, timeout)
 	if err != nil {
 		log.Errorf(ctx, "DUT check failed")
 		return errors.Reason("audit USB from DUT side: could not check DUT usb path %q", dutUSB).Err()
