@@ -152,6 +152,24 @@
       "parentUuid": "c7c987df_5d206894",
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f6fa746_ae93195b",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1128994
+      },
+      "writtenOn": "2022-09-16T01:20:42Z",
+      "side": 1,
+      "message": "I see, should it try to make sure it could still fit after the characters from the tag? Otherwise presumably you\u0027re run into similar oversize issue?",
+      "parentUuid": "db6f9c40_1fd478fc",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
