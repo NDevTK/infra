@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/metadata"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 func TestUFSStateCoverage(t *testing.T) {
@@ -114,5 +115,28 @@ func TestGetIncomingCtxNamespace(t *testing.T) {
 	Convey("Test OSNamespace is set up", t, func() {
 		md := metadata.Pairs(Namespace, OSNamespace)
 		So(GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), ShouldEqual, OSNamespace)
+	})
+}
+
+func TestDevicePhaseCoverage(t *testing.T) {
+	Convey("test the UFS ManufacturingConfig Phase mapping covers all UFS ManufacturingConfig Phase enum", t, func() {
+		got := make(map[string]bool, len(StrToDevicePhase))
+		for _, v := range StrToDevicePhase {
+			got[v] = true
+		}
+		for l := range ufsmfg.ManufacturingConfig_Phase_value {
+			if l == ufsmfg.ManufacturingConfig_PHASE_INVALID.String() {
+				continue
+			}
+			_, ok := got[l]
+			So(ok, ShouldBeTrue)
+		}
+	})
+
+	Convey("test the UFS ManufacturingConfig Phase mapping doesn't cover any non-UFS ManufacturingConfig Phase enum", t, func() {
+		for _, v := range StrToDevicePhase {
+			_, ok := ufsmfg.ManufacturingConfig_Phase_value[v]
+			So(ok, ShouldBeTrue)
+		}
 	})
 }

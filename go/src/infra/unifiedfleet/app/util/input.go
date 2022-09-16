@@ -20,6 +20,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 const (
@@ -1092,4 +1093,27 @@ func ValidModemTypeStr() []string {
 		ks = append(ks, k)
 	}
 	return ks
+}
+
+// StrToDevicePhase refers to a map between a string and the ManufacturingConfig
+// Phase type.
+var StrToDevicePhase = map[string]string{
+	"invalid": ufsmfg.ManufacturingConfig_PHASE_INVALID.String(),
+	"evt":     ufsmfg.ManufacturingConfig_PHASE_EVT.String(),
+	"evt2":    ufsmfg.ManufacturingConfig_PHASE_EVT2.String(),
+	"dvt":     ufsmfg.ManufacturingConfig_PHASE_DVT.String(),
+	"dvt2":    ufsmfg.ManufacturingConfig_PHASE_DVT2.String(),
+	"pvt":     ufsmfg.ManufacturingConfig_PHASE_PVT.String(),
+	"pvt2":    ufsmfg.ManufacturingConfig_PHASE_PVT2.String(),
+	"pvt3":    ufsmfg.ManufacturingConfig_PHASE_PVT3.String(),
+	"mp":      ufsmfg.ManufacturingConfig_PHASE_MP.String(),
+}
+
+// ToUFSDevicePhase converts type string to a UFS attached device type enum.
+func ToUFSDevicePhase(devicePhase string) ufsmfg.ManufacturingConfig_Phase {
+	v, ok := StrToDevicePhase[devicePhase]
+	if !ok {
+		return ufsmfg.ManufacturingConfig_PHASE_INVALID
+	}
+	return ufsmfg.ManufacturingConfig_Phase(ufsmfg.ManufacturingConfig_Phase_value[v])
 }
