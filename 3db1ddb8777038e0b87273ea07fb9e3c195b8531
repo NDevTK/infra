@@ -170,6 +170,24 @@
       "parentUuid": "db6f9c40_1fd478fc",
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53fb7f1a_cd4ca918",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-09-16T02:26:14Z",
+      "side": 1,
+      "message": "Got it. Truncate the whole string with the escape char replacement and the exact html format offset. In addition, added unit test for validation.",
+      "parentUuid": "5f6fa746_ae93195b",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
