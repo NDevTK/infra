@@ -110,6 +110,48 @@
       },
       "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3177030d_66327c5f",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-09-16T00:24:50Z",
+      "side": 1,
+      "message": "Right. I noticed the diff and left a comment at the beginning to collect feedback. Change it to the different max size 4096 now and set an offset for the html tag.",
+      "parentUuid": "fdb31587_2cc76330",
+      "range": {
+        "startLine": 64,
+        "startChar": 106,
+        "endLine": 64,
+        "endChar": 126
+      },
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db6f9c40_1fd478fc",
+        "filename": "go/src/infra/tools/result_adapter/skylab_test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-09-16T00:24:50Z",
+      "side": 1,
+      "message": "I don\u0027t think so because it would probably truncate the second tag \u003c/pre\u003e and break the html format.",
+      "parentUuid": "c7c987df_5d206894",
+      "revId": "3db1ddb8777038e0b87273ea07fb9e3c195b8531",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
