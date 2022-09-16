@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 func mockHwidData() *ufspb.HwidData {
@@ -44,6 +45,52 @@ func mockDutLabel() *ufspb.DutLabel {
 			{
 				Name:  "variant",
 				Value: "test-variant",
+			},
+		},
+	}
+}
+
+// mockHwidDataWithComponents contains components that are used in
+// ManufacturingConfig, namely hwid_component, wireless, and phase.
+func mockHwidDataWithComponents() *ufspb.HwidData {
+	return &ufspb.HwidData{
+		Sku:      "test-sku",
+		Variant:  "test-variant",
+		Hwid:     "test-hwid",
+		DutLabel: mockDutLabelWithComponents(),
+	}
+}
+
+func mockDutLabelWithComponents() *ufspb.DutLabel {
+	return &ufspb.DutLabel{
+		PossibleLabels: []string{
+			"test-possible-1",
+			"test-possible-2",
+		},
+		Labels: []*ufspb.DutLabel_Label{
+			{
+				Name:  "test-label-1",
+				Value: "test-value-1",
+			},
+			{
+				Name:  "Sku",
+				Value: "test-sku",
+			},
+			{
+				Name:  "variant",
+				Value: "test-variant",
+			},
+			{
+				Name:  "hwid_component",
+				Value: "battery/test_battery_1234",
+			},
+			{
+				Name:  "wireless",
+				Value: "wireless/test-chip",
+			},
+			{
+				Name:  "phase",
+				Value: "pvt",
 			},
 		},
 	}
@@ -344,6 +391,111 @@ func TestParseHwidData(t *testing.T) {
 		}
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("ParseHwidData returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+}
+
+func TestParseHwidDataIntoMfgCfg(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+
+	t.Run("parse nil HwidData", func(t *testing.T) {
+		var want *ufsmfg.ManufacturingConfig = nil
+		got, err := ParseHwidDataIntoMfgCfg(nil)
+		if err == nil {
+			t.Fatalf("ParseHwidDataIntoMfgCfg passed without error")
+		}
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+			t.Errorf("ParseHwidDataIntoMfgCfg returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("parse HwidData with components into ManufacturingConfig", func(t *testing.T) {
+		hwidData := mockHwidDataWithComponents()
+		want := &ufsmfg.ManufacturingConfig{
+			ManufacturingId: &ufsmfg.ConfigID{
+				Value: "test-hwid",
+			},
+			DevicePhase: ufsmfg.ManufacturingConfig_PHASE_PVT,
+			HwidComponent: []string{
+				"battery/test_battery_1234",
+			},
+			WifiChip: "wireless/test-chip",
+		}
+		got, err := ParseHwidDataIntoMfgCfg(hwidData)
+		if err != nil {
+			t.Fatalf("ParseHwidDataIntoMfgCfg failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+			t.Errorf("ParseHwidDataIntoMfgCfg returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("parse HwidData without components into ManufacturingConfig", func(t *testing.T) {
+		hwidData := mockHwidData()
+		want := &ufsmfg.ManufacturingConfig{
+			ManufacturingId: &ufsmfg.ConfigID{
+				Value: "test-hwid",
+			},
+		}
+		got, err := ParseHwidDataIntoMfgCfg(hwidData)
+		if err != nil {
+			t.Fatalf("ParseHwidDataIntoMfgCfg failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+			t.Errorf("ParseHwidDataIntoMfgCfg returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("parse HwidData with malformed phase into ManufacturingConfig", func(t *testing.T) {
+		// random-phase is not a valid mapping so default of INVALID phase
+		hwidData := mockHwidDataWithComponents()
+		hwidData.GetDutLabel().Labels = []*ufspb.DutLabel_Label{
+			{
+				Name:  "phase",
+				Value: "random-phase",
+			},
+		}
+		want := &ufsmfg.ManufacturingConfig{
+			ManufacturingId: &ufsmfg.ConfigID{
+				Value: "test-hwid",
+			},
+			DevicePhase: ufsmfg.ManufacturingConfig_PHASE_INVALID,
+		}
+		got, err := ParseHwidDataIntoMfgCfg(hwidData)
+		if err != nil {
+			t.Fatalf("ParseHwidDataIntoMfgCfg failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+			t.Errorf("ParseHwidDataIntoMfgCfg returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("parse HwidData with multiple hwid components into ManufacturingConfig", func(t *testing.T) {
+		hwidData := mockHwidDataWithComponents()
+		hwidData.GetDutLabel().Labels = append(hwidData.GetDutLabel().Labels, &ufspb.DutLabel_Label{
+			Name:  "hwid_component",
+			Value: "video/test-video-1234",
+		})
+
+		want := &ufsmfg.ManufacturingConfig{
+			ManufacturingId: &ufsmfg.ConfigID{
+				Value: "test-hwid",
+			},
+			DevicePhase: ufsmfg.ManufacturingConfig_PHASE_PVT,
+			HwidComponent: []string{
+				"battery/test_battery_1234",
+				"video/test-video-1234",
+			},
+			WifiChip: "wireless/test-chip",
+		}
+		got, err := ParseHwidDataIntoMfgCfg(hwidData)
+		if err != nil {
+			t.Fatalf("ParseHwidDataIntoMfgCfg failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+			t.Errorf("ParseHwidDataIntoMfgCfg returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
 }

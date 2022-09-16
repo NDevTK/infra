@@ -7,6 +7,7 @@ package configuration
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -17,6 +18,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	"infra/unifiedfleet/app/util"
 )
 
 // HwidDataKind is the datastore entity kind HwidData.
@@ -167,4 +170,31 @@ func SetHwidDataWithDutLabels(hwidData *ufspb.HwidData) *ufspb.HwidData {
 		}
 	}
 	return hwidData
+}
+
+// ParseHwidDataIntoMfgCfg takes HWID data from the HWID server and conforms it
+// into the ManufacturingConfig proto format.
+//
+// Note that this ignores the CR50Phase and CR50KeyEnv fields as those have been
+// deprecated in ManufacturingConfig and replaced by StateConfig values.
+func ParseHwidDataIntoMfgCfg(hwidData *ufspb.HwidData) (*ufsmfg.ManufacturingConfig, error) {
+	if reflect.ValueOf(hwidData).IsNil() {
+		return nil, errors.New("HwidData message cannot be empty")
+	}
+	mfgCfg := &ufsmfg.ManufacturingConfig{
+		ManufacturingId: &ufsmfg.ConfigID{
+			Value: hwidData.GetHwid(),
+		},
+	}
+	for _, l := range hwidData.GetDutLabel().GetLabels() {
+		switch strings.ToLower(l.GetName()) {
+		case "hwid_component":
+			mfgCfg.HwidComponent = append(mfgCfg.HwidComponent, l.GetValue())
+		case "wireless":
+			mfgCfg.WifiChip = l.GetValue()
+		case "phase":
+			mfgCfg.DevicePhase = util.ToUFSDevicePhase(l.GetValue())
+		}
+	}
+	return mfgCfg, nil
 }
