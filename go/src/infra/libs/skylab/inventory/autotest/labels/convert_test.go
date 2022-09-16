@@ -155,6 +155,7 @@ siminfo: [{
 		sim_pin: "pin"
 		sim_puk: "puk"
 		carrier_name: 1
+		own_number: "1234567890"
 	}
 },
 {
@@ -167,12 +168,14 @@ siminfo: [{
 		sim_pin: "pin2"
 		sim_puk: "puk2"
 		carrier_name: 2
+		own_number: "2345678901"
 	},
 	{
 		iccid: "iccid3"
 		sim_pin: "pin3"
 		sim_puk: "puk3"
 		carrier_name: 3
+		own_number: "3456789012"
 	}]
 }]
 `
@@ -255,6 +258,7 @@ var fullLabels = []string{
 	"servo_usb_state:NEED_REPLACEMENT",
 	"sim_1_0_carrier_name:NETWORK_TEST",
 	"sim_1_0_iccid:iccid",
+	"sim_1_0_own_number:1234567890",
 	"sim_1_0_pin:pin",
 	"sim_1_0_puk:puk",
 	"sim_1_eid:eid",
@@ -263,10 +267,12 @@ var fullLabels = []string{
 	"sim_1_type:SIM_PHYSICAL",
 	"sim_2_0_carrier_name:NETWORK_ATT",
 	"sim_2_0_iccid:iccid2",
+	"sim_2_0_own_number:2345678901",
 	"sim_2_0_pin:pin2",
 	"sim_2_0_puk:puk2",
 	"sim_2_1_carrier_name:NETWORK_TMOBILE",
 	"sim_2_1_iccid:iccid3",
+	"sim_2_1_own_number:3456789012",
 	"sim_2_1_pin:pin3",
 	"sim_2_1_puk:puk3",
 	"sim_2_eid:eid2",
@@ -665,6 +671,7 @@ siminfo: [{
 		sim_pin: "pin"
 		sim_puk: "puk"
 		carrier_name: 1
+		own_number: ""
 	}
 },
 {
@@ -677,12 +684,14 @@ siminfo: [{
 		sim_pin: "pin2"
 		sim_puk: "puk2"
 		carrier_name: 2
+		own_number: ""
 	},
 	{
 		iccid: "iccid3"
 		sim_pin: "pin3"
 		sim_puk: "puk3"
 		carrier_name: 3
+		own_number: ""
 	}]
 }]
 `
@@ -761,6 +770,7 @@ var fullLabelsSpecial = []string{
 	"servo_usb_state:NEED_REPLACEMENT",
 	"sim_1_0_carrier_name:NETWORK_TEST",
 	"sim_1_0_iccid:iccid",
+	"sim_1_0_own_number:",
 	"sim_1_0_pin:pin",
 	"sim_1_0_puk:puk",
 	"sim_1_eid:eid",
@@ -769,10 +779,12 @@ var fullLabelsSpecial = []string{
 	"sim_1_type:SIM_PHYSICAL",
 	"sim_2_0_carrier_name:NETWORK_ATT",
 	"sim_2_0_iccid:iccid2",
+	"sim_2_0_own_number:",
 	"sim_2_0_pin:pin2",
 	"sim_2_0_puk:puk2",
 	"sim_2_1_carrier_name:NETWORK_TMOBILE",
 	"sim_2_1_iccid:iccid3",
+	"sim_2_1_own_number:",
 	"sim_2_1_pin:pin3",
 	"sim_2_1_puk:puk3",
 	"sim_2_eid:eid2",

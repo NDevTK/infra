@@ -57,6 +57,10 @@ func simInfoConverter(ls *inventory.SchedulableLabels) []string {
 				lv := "sim_" + sim_id + "_" + profile_id + "_carrier_name:" + k.String()
 				labels = append(labels, lv)
 			}
+			if k := p.GetOwnNumber(); k != "" {
+				lv := "sim_" + sim_id + "_" + profile_id + "_own_number:" + k
+				labels = append(labels, lv)
+			}
 		}
 	}
 	return labels
@@ -115,6 +119,8 @@ func simInfoReverter(ls *inventory.SchedulableLabels, labels []string) []string 
 				}
 				delete(d, lv)
 			}
+			lv = "sim_" + sim_id + "_" + profile_id + "_own_number"
+			d = assignLastStringValueAndDropKey(d, s.ProfileInfo[j].OwnNumber, lv)
 		}
 		ls.Siminfo[i] = s
 	}

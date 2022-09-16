@@ -430,12 +430,14 @@ common {
 				sim_pin: "pin1"
 				sim_puk: "puk1"
 				carrier_name: NETWORK_ATT
+				own_number: ""
 			}
 			profile_info {
 				iccid: "iccid2"
 				sim_pin: "pin2"
 				sim_puk: "puk2"
 				carrier_name: NETWORK_TEST
+				own_number: ""
 			}
 		}
 		siminfo {
@@ -448,6 +450,7 @@ common {
 				sim_pin: "pin1"
 				sim_puk: "puk1"
 				carrier_name: NETWORK_ATT
+				own_number: ""
 			}
 		}
 		model: "test_model"

@@ -21,5 +21,6 @@ func NewSimprofileinfo() *SIMProfileInfo {
 		SimPin:      new(string),
 		SimPuk:      new(string),
 		CarrierName: new(NetworkProvider),
+		OwnNumber:   new(string),
 	}
 }

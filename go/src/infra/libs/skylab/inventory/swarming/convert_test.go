@@ -138,6 +138,7 @@ siminfo: [{
 		sim_pin: "pin"
 		sim_puk: "puk"
 		carrier_name: 1
+		own_number: "1234567890"
 	}
 },
 {
@@ -150,12 +151,14 @@ siminfo: [{
 		sim_pin: "pin2"
 		sim_puk: "puk2"
 		carrier_name: 2
+		own_number: "1234567890"
 	},
 	{
 		iccid: "iccid3"
 		sim_pin: "pin3"
 		sim_puk: "puk3"
 		carrier_name: 3
+		own_number:   ""
 	}]
 }]
 `
@@ -283,6 +286,7 @@ siminfo: [{
 		sim_pin: "pin"
 		sim_puk: "puk"
 		carrier_name: 1
+		own_number:   "1234567890"
 	}
 },
 {
@@ -295,12 +299,14 @@ siminfo: [{
 		sim_pin: "pin2"
 		sim_puk: "puk2"
 		carrier_name: 2
+		own_number: "1234567890"
 	},
 	{
 		iccid: "iccid3"
 		sim_pin: "pin3"
 		sim_puk: "puk3"
 		carrier_name: 3
+		own_number:   ""
 	}]
 }]
 `
@@ -372,6 +378,7 @@ var fullDimensions = Dimensions{
 	"label-servo_usb_state":         {"NEED_REPLACEMENT"},
 	"label-sim_1_0_carrier_name":    {"NETWORK_TEST"},
 	"label-sim_1_0_iccid":           {"iccid"},
+	"label-sim_1_0_own_number":      {"1234567890"},
 	"label-sim_1_0_pin":             {"pin"},
 	"label-sim_1_0_puk":             {"puk"},
 	"label-sim_1_eid":               {"eid"},
@@ -380,6 +387,7 @@ var fullDimensions = Dimensions{
 	"label-sim_1_type":              {"SIM_PHYSICAL"},
 	"label-sim_2_0_carrier_name":    {"NETWORK_ATT"},
 	"label-sim_2_0_iccid":           {"iccid2"},
+	"label-sim_2_0_own_number":      {"1234567890"},
 	"label-sim_2_0_pin":             {"pin2"},
 	"label-sim_2_0_puk":             {"puk2"},
 	"label-sim_2_1_carrier_name":    {"NETWORK_TMOBILE"},

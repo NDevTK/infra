@@ -15,7 +15,7 @@ func init() {
 
 }
 
-// siminfoConverter converts Skylab inventory SIMInfo labels to Autotest labels
+// siminfoConverter converts Swarming inventory SIMInfo labels to Autotest labels
 func siminfoConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 
 	for _, s := range ls.GetSiminfo() {
@@ -23,7 +23,9 @@ func siminfoConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 		if v := s.GetSlotId(); v != 0 {
 			sim_id = strconv.Itoa(int(v))
 			appendDim(dims, "label-sim_slot_id", sim_id)
-
+		}
+		if sim_id == "" {
+			continue
 		}
 		if v := s.GetType(); v != inventory.SIMType_SIM_UNKNOWN {
 			lv := "label-sim_" + sim_id + "_type"
@@ -54,17 +56,20 @@ func siminfoConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 			if k := p.GetSimPuk(); k != "" {
 				lv := "label-sim_" + sim_id + "_" + profile_id + "_puk"
 				appendDim(dims, lv, k)
-
 			}
 			if k := p.GetCarrierName(); k != inventory.NetworkProvider_NETWORK_OTHER {
 				lv := "label-sim_" + sim_id + "_" + profile_id + "_carrier_name"
 				appendDim(dims, lv, k.String())
 			}
+			if k := p.GetOwnNumber(); k != "" {
+				lv := "label-sim_" + sim_id + "_" + profile_id + "_own_number"
+				appendDim(dims, lv, k)
+			}
 		}
 	}
 }
 
-// siminfoReverter converts Autotest SIMInfo labels back to Skylab inventory labels
+// siminfoReverter converts Swarming SIMInfo labels back to Skylab inventory labels
 func siminfoReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 
 	num_sim := len(d["label-sim_slot_id"])
@@ -72,6 +77,9 @@ func siminfoReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 
 	for i, v := range d["label-sim_slot_id"] {
 		sim_id := v
+		if sim_id == "" {
+			continue
+		}
 		s := inventory.NewSiminfo()
 		if j, err := strconv.ParseInt(v, 10, 32); err == nil {
 			id := int32(j)
@@ -118,6 +126,8 @@ func siminfoReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 				}
 				delete(d, lv)
 			}
+			lv = "label-sim_" + sim_id + "_" + profile_id + "_own_number"
+			d = assignLastStringValueAndDropKey(d, s.ProfileInfo[j].OwnNumber, lv)
 		}
 		ls.Siminfo[i] = s
 	}
