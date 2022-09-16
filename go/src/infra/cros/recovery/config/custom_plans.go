@@ -48,7 +48,7 @@ func ReserveDutConfig() *Configuration {
 	}
 }
 
-// Restore HWID from inventory.
+// RestoreHWIDFromInventoryConfig reads the configuration from the inventory.
 func RestoreHWIDFromInventoryConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
