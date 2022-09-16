@@ -11,14 +11,22 @@ import (
 func TestGetReleaseOrchestratorName(t *testing.T) {
 	for _, testCase := range []struct {
 		staging  bool
+		branch   string
 		expected string
 	}{
-		{true, "chromeos/staging/staging-release-main-orchestrator"},
-		{false, "chromeos/release/release-main-orchestrator"},
+		{true, "main", "chromeos/staging/staging-release-main-orchestrator"},
+		{false, "main", "chromeos/release/release-main-orchestrator"},
+		{true, "release-R106.15054.B", "chromeos/staging/staging-release-R106.15054.B-orchestrator"},
+		{false, "release-R106.15054.B", "chromeos/release/release-R106.15054.B-orchestrator"},
 	} {
-		r := releaseRun{myjobRunBase: myjobRunBase{staging: testCase.staging}}
+		r := releaseRun{
+			myjobRunBase: myjobRunBase{
+				branch:  testCase.branch,
+				staging: testCase.staging,
+			},
+		}
 		if actual := r.getReleaseOrchestratorName(); actual != testCase.expected {
-			t.Errorf("Incorrect release orch name with staging=%v: got %s; want %s", testCase.staging, actual, testCase.expected)
+			t.Errorf("Incorrect release orch name with staging=%v, branch=%s: got %s; want %s", testCase.staging, testCase.branch, actual, testCase.expected)
 		}
 	}
 }

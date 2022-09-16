@@ -14,8 +14,14 @@ import (
 // myjobRunBase contains data for a single `myjob` command run.
 type myjobRunBase struct {
 	subcommands.CommandRunBase
+	branch    string
 	staging   bool
 	cmdRunner cmd.CommandRunner
+}
+
+// addBranchFlag creates a `-branch` command-line flag to specify the branch.
+func (m *myjobRunBase) addBranchFlag() {
+	m.Flags.StringVar(&m.branch, "branch", "main", "Specify the branch on which to run the builder.")
 }
 
 // addStagingFlag creates a `-staging` command-line flag for a myjob subcommand.

@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
@@ -20,6 +21,7 @@ func getCmdRelease() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			c := &releaseRun{}
 			c.myjobRunBase.cmdRunner = cmd.RealCommandRunner{}
+			c.addBranchFlag()
 			c.addStagingFlag()
 			return c
 		},
@@ -58,13 +60,17 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 // getReleaseOrchestratorName finds the name of the release orchestrator matching the myjob CLI flags.
 func (r *releaseRun) getReleaseOrchestratorName() string {
 	const project = "chromeos"
-	var bucket, builder string
+	var bucket, builder, stagingPrefix string
 	if r.staging {
 		bucket = "staging"
-		builder = "staging-release-main-orchestrator"
+		stagingPrefix = "staging-"
 	} else {
 		bucket = "release"
-		builder = "release-main-orchestrator"
+	}
+	if strings.HasPrefix(r.branch, "release-") {
+		builder = fmt.Sprintf("%s%s-orchestrator", stagingPrefix, r.branch)
+	} else {
+		builder = fmt.Sprintf("%srelease-%s-orchestrator", stagingPrefix, r.branch)
 	}
 	return fmt.Sprintf("%s/%s/%s", project, bucket, builder)
 }
@@ -75,6 +81,7 @@ func (r *releaseRun) runReleaseOrchestrator(ctx context.Context) error {
 	var stdoutBuf, stderrBuf bytes.Buffer
 	err := r.RunCmd(ctx, &stdoutBuf, &stderrBuf, "", "bb", "add", orchName)
 	if err != nil {
+		fmt.Printf("`bb add %s` had stderr:\n%s\n", orchName, stderrBuf.String())
 		return errors.Annotate(err, "running bb add command").Err()
 	}
 	fmt.Println(stdoutBuf.String())
