@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -865,11 +866,6 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	if err != nil {
 		logging.Warningf(ctx, "DeviceConfig for %s not found. Error: %s", id, err)
 	}
-	hwid := machine.GetChromeosMachine().GetHwid()
-	mfgConfig, err := getManufacturingConfigFromInvV2(ctx, invV2Client, hwid)
-	if err != nil {
-		logging.Warningf(ctx, "ManufacturingConfig for %s not found. Error: %s", hwid, err)
-	}
 	isStable, err := getStability(ctx, machine.GetChromeosMachine().GetModel())
 	if err != nil {
 		logging.Warningf(ctx, "stability cannot be set. Error: %s", err)
@@ -878,6 +874,8 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	// Fetch hwid data at last as it may retry and finally exceed the ctx deadline, which
 	// causes the following operations using ctx fails.
 	useCachedHwidManufacturingConfig := config.Get(ctx).GetUseCachedHwidManufacturingConfig()
+	hwid := machine.GetChromeosMachine().GetHwid()
+
 	var hwidData *ufspb.HwidData
 	if useCachedHwidManufacturingConfig {
 		hwidData, err = getHwidData(ctx, hwid)
@@ -887,6 +885,15 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	if err != nil {
 		logging.Warningf(ctx, "Hwid data for %s not found. Error: %s", hwid, err)
 	}
+
+	var mfgConfig *ufsmanufacturing.ManufacturingConfig
+	if !reflect.ValueOf(hwidData).IsNil() {
+		mfgConfig, err = getManufacturingConfigFromUFS(ctx, hwidData)
+		if err != nil {
+			logging.Warningf(ctx, "ManufacturingConfig for %s not found. Error: %s", hwid, err)
+		}
+	}
+
 	enableBoxsterFlag := config.Get(ctx).GetEnableBoxsterLabels()
 	schedulableLabels, err := getSchedulableLabels(ctx, machine, enableBoxsterFlag)
 	if err != nil {
@@ -944,6 +951,12 @@ func getManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.Cr
 	proto.UnmarshalText(s, &mfgConfig)
 	logging.Debugf(ctx, "InvV2 manufacturing config:\n %+v\nUFS manufacturing config:\n %+v ", resp, &mfgConfig)
 	return &mfgConfig, err
+}
+
+// getManufacturingConfigFromUFS get manufacturing config from UFS using cached
+// HwidData
+func getManufacturingConfigFromUFS(ctx context.Context, hwidData *ufspb.HwidData) (*ufsmanufacturing.ManufacturingConfig, error) {
+	return configuration.ParseHwidDataIntoMfgCfg(hwidData)
 }
 
 func getStability(ctx context.Context, model string) (bool, error) {
