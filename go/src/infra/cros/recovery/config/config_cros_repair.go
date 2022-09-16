@@ -180,6 +180,24 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Restore HWID from inventory": {
+			Docs: []string{
+				"Restoring HWID on the host from the inventory data.",
+				"Using recovery from the host as flashing firmware by servo is very slow.",
+			},
+			Dependencies: []string{
+				"Is not Flex device",
+				"Is HWID known",
+				"Device is SSHable",
+				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'ec'",
+				"cros_update_hwid_from_inventory_to_host",
+				"Simple reboot",
+				"Sleep 1s",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName: "cros_match_hwid_to_inventory",
+		},
 		"Read OS version": {
 			Docs: []string{
 				"Read and log current OS version.",
@@ -935,6 +953,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Set default boot as disk",
 				"Quick provision OS",
+				"Restore HWID from inventory",
 			},
 		},
 		"Verify that DUT is not in DEV mode": {
@@ -990,13 +1009,17 @@ func crosRepairActions() map[string]*Action {
 		"Match HWID": {
 			Docs: []string{
 				"Match HWID to value in inventory",
+				"Allowed to fail if HWID is not matched",
 			},
 			Conditions: []string{
 				"Is not Flex device",
 				"Read OS version",
 				"Is HWID known",
 			},
-			ExecName:               "cros_match_hwid_to_inventory",
+			ExecName: "cros_match_hwid_to_inventory",
+			RecoveryActions: []string{
+				"Restore HWID from inventory",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Missing serial-number": {
