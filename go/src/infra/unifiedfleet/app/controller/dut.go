@@ -866,7 +866,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		logging.Warningf(ctx, "DeviceConfig for %s not found. Error: %s", id, err)
 	}
 	hwid := machine.GetChromeosMachine().GetHwid()
-	mfgConfig, err := getManufacturingConfig(ctx, invV2Client, hwid)
+	mfgConfig, err := getManufacturingConfigFromInvV2(ctx, invV2Client, hwid)
 	if err != nil {
 		logging.Warningf(ctx, "ManufacturingConfig for %s not found. Error: %s", hwid, err)
 	}
@@ -931,8 +931,8 @@ func getDeviceConfig(ctx context.Context, inv2Client external.CrosInventoryClien
 	return &devConfig, err
 }
 
-// getManufacturingConfig get manufacturing config form InvV2
-func getManufacturingConfig(ctx context.Context, inv2Client external.CrosInventoryClient, id string) (*ufsmanufacturing.ManufacturingConfig, error) {
+// getManufacturingConfigFromInvV2 gets manufacturing config from InvV2 (legacy)
+func getManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.CrosInventoryClient, id string) (*ufsmanufacturing.ManufacturingConfig, error) {
 	resp, err := inv2Client.GetManufacturingConfig(ctx, &iv2api.GetManufacturingConfigRequest{
 		Name: id,
 	})
