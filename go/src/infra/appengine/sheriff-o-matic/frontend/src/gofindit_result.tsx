@@ -13,6 +13,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 
 interface GoFinditResultProps {
   result: GoFinditAnalyis[];
@@ -21,6 +23,7 @@ interface GoFinditResultProps {
 interface GoFinditAnalyis {
   analysis_id: string;
   heuristic_result: HeuristicAnalysis;
+  culprits: Culprit[];
 }
 
 interface HeuristicAnalysis {
@@ -34,23 +37,72 @@ interface HeuristicSuspect {
   confidence_level: number;
 }
 
+interface Culprit {
+  review_url: string;
+  review_title: string;
+}
+
+interface LuciBisectionCulpritSectionProps {
+  culprits: Culprit[];
+}
+
+export const LuciBisectionCulpritSection = ({ culprits }: LuciBisectionCulpritSectionProps) => {
+  return <>
+    <Link href="https://luci-bisection.appspot.com" target='_blank' rel='noopener'>
+      LUCI Bisection
+    </Link>
+    &nbsp; has identified the following CL(s) as culprit(s) of the failure:
+    <List>
+    {
+      culprits.map((c) => (
+        <ListItem>
+          <Link
+            href={c.review_url}
+            target='_blank'
+            rel='noopener'
+            onClick={() => {
+              ga('send', {
+                hitType: 'event',
+                eventCategory: 'GoFindit',
+                eventAction: 'ClickCulpritLink',
+                eventLabel: c.review_url,
+                transport: 'beacon',
+              });
+            }}
+          >
+            {getCulpritDisplayUrl(c)}
+          </Link>
+        </ListItem>
+      ))
+    }
+    </List>
+  </>
+}
+
 export const GoFinditResult = (props: GoFinditResultProps) => {
   if (props.result == null) {
     return <></>
   }
+
+  // If there is a culprit, display it
+  const culprits = props.result.flatMap(r => r.culprits)
+  if (culprits.length > 0) {
+    return <LuciBisectionCulpritSection culprits={culprits}></LuciBisectionCulpritSection>
+  }
+
   const suspects = props.result.flatMap(r => r.heuristic_result?.suspects)
   if (suspects.length == 0) {
     return <></>;
   }
 
-  const goFinditTooltipTitle = "GoFindit (http://go/gofindit) has identified the following CLs as suspects.\nThis was based on best-guess effort, so it may not be 100% accurate."
+  const goFinditTooltipTitle = "LUCI Bisection (http://luci-bisection.appspot.com) has identified the following CLs as suspects.\nThis was based on best-guess effort, so it may not be 100% accurate."
   return <>
     <TableContainer>
       <Table sx={{ maxWidth: "1000px", tableLayout: "fixed"}}>
         <TableHead>
           <TableRow>
             <TableCell align="left" sx={{ width: "350px"}}>
-              GoFindit Suspected CL
+              LUCI Bisection Suspected CL
               {/* We dont use Tooltip from MUI here as the MUI tooltip is attached in <body> tag
                   so style cannot be applied. */}
               <span title={goFinditTooltipTitle}>
@@ -76,8 +128,8 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
                   onClick={() => {
                     ga('send', {
                       hitType: 'event',
-                      eventCategory: 'GoFindit',
-                      eventAction: 'ClickGerritLink',
+                      eventCategory: 'LuciBisection',
+                      eventAction: 'ClickSuspectLink',
                       eventLabel: s.reviewUrl,
                       transport: 'beacon',
                     });
@@ -121,6 +173,13 @@ function confidenceText(confidenceLevel: number) {
     default:
       return "N/A";
   }
+}
+
+function getCulpritDisplayUrl(c: Culprit) {
+  if (c.review_title == "" || c.review_title == null) {
+    return c.review_url
+  }
+  return c.review_title
 }
 
 export class SomGoFinditResult extends HTMLElement {

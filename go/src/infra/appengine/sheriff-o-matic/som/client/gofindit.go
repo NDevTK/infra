@@ -15,10 +15,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-const (
-	gofinditHost = "chops-gofindit-dev.appspot.com"
-)
-
 type GoFinditClient struct {
 	ServiceClient gfipb.GoFinditServiceClient
 }

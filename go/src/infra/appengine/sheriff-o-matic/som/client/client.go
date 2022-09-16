@@ -275,7 +275,7 @@ func ProdClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient, G
 	crBugs := &CrBugs{}
 
 	var goFinditClient *GoFinditClient
-	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "chops-gofindit.appspot.com")
+	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "luci-bisection.appspot.com")
 	// As goFindit client is not mission-critical, we just log the error
 	// if some error occurs.
 	if err != nil {
@@ -295,7 +295,7 @@ func StagingClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient
 	crBugs := &CrBugs{}
 
 	var goFinditClient *GoFinditClient
-	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "chops-gofindit-dev.appspot.com")
+	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "luci-bisection-dev.appspot.com")
 	// As goFindit client is not mission-critical, we just log the error
 	// if some error occurs.
 	if err != nil {

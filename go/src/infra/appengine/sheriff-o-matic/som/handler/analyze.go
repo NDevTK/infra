@@ -258,8 +258,11 @@ func attachGoFinditResults(c context.Context, failures []*messages.BuildFailure,
 			}
 			bf.GoFinditResult = append(bf.GoFinditResult, res.Analyses...)
 			if len(res.Analyses) > 0 {
+				if len(res.Analyses[0].Culprits) > 0 {
+					logging.Infof(c, "Found LUCI Bisection culprit for build %d", bbid)
+				}
 				if res.Analyses[0].HeuristicResult != nil && res.Analyses[0].HeuristicResult.Status == gofindit.AnalysisStatus_FOUND {
-					logging.Infof(c, "Found GoFindit result for build %d", bbid)
+					logging.Infof(c, "Found LUCI Bisection heuristic result for build %d", bbid)
 				}
 			}
 		}
