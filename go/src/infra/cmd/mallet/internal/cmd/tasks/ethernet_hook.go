@@ -34,6 +34,7 @@ var EthernetHook = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.EthernetHookCallbackOptions)
 		c.Flags.StringVar(&c.date, "date", "", "the date to process")
 		c.Flags.StringVar(&c.bucket, "bucket", "chromeos-test-logs", "the base GS bucket to check for logs")
+		c.Flags.StringVar(&c.prefix, "prefix", "", "prefix of the objects in question")
 		return c
 	},
 }
@@ -48,6 +49,9 @@ type ethernetHookRun struct {
 
 	// Add a default bucket.
 	bucket string
+
+	// The prefix of the Google Storage object within the Google Storage bucket.
+	prefix string
 }
 
 func (c *ethernetHookRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -99,7 +103,7 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 
 	query := &storage.Query{
 		Delimiter: "/",
-		Prefix:    "",
+		Prefix:    c.prefix,
 	}
 
 	objectIterator := storageClient.Bucket(c.bucket).Objects(ctx, query)
