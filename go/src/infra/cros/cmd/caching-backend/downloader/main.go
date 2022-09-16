@@ -329,6 +329,11 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 		}
 
 		header, err := tarReader.Next()
+		if err == io.EOF {
+			err = fmt.Errorf("tarReader: %q not found in the tar file", fileName)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return nil, err
+		}
 		if err != nil {
 			err = fmt.Errorf("tarReader error: %w", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
