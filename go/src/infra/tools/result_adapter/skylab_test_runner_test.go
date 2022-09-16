@@ -6,6 +6,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"strings"
 	"testing"
 
@@ -158,6 +160,37 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			}
 			So(testResults, ShouldHaveLength, 5)
 			So(testResults, ShouldResemble, expected)
+		})
+
+		Convey(`check the oversize failure reason`, func() {
+			// Creates an oversize random failure reason.
+			letterBytes := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			failureReason := make([]byte, maxSummaryHtmlBytes+100)
+			for i := range failureReason {
+				failureReason[i] = letterBytes[rand.Intn(len(letterBytes))]
+			}
+			str := `{
+				"autotest_result": {
+				  "test_cases": [
+					{
+						"verdict": "VERDICT_FAIL",
+						"name": "test3",
+						"human_readable_summary": "%s"
+					}
+				  ]
+				}
+			  }`
+
+			resultString := fmt.Sprintf(str, failureReason)
+			results := &TestRunnerResult{}
+			results.ConvertFromJSON(strings.NewReader(resultString))
+			testResults, err := results.ToProtos(ctx)
+
+			// Checks if the test result conversion succeeded and size limitation was set properly.
+			So(err, ShouldBeNil)
+			So(testResults, ShouldHaveLength, 1)
+			So(len(testResults[0].SummaryHtml), ShouldBeLessThanOrEqualTo, maxSummaryHtmlBytes)
+			So(len(testResults[0].FailureReason.PrimaryErrorMessage), ShouldBeLessThanOrEqualTo, maxPrimaryErrorBytes)
 		})
 	})
 }
