@@ -8,59 +8,19 @@ import (
 	"context"
 	"strconv"
 	"strings"
-	"time"
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
 )
 
-const (
-	readStorageInfoCMD = ". /usr/share/misc/storage-info-common.sh; get_storage_info"
-)
-
-// storageStateMap maps state from storageState type to tlw.HardwareState type
-var storageStateMap = map[storage.StorageState]tlw.HardwareState{
-	storage.StorageStateNormal:    tlw.HardwareState_HARDWARE_NORMAL,
-	storage.StorageStateWarning:   tlw.HardwareState_HARDWARE_ACCEPTABLE,
-	storage.StorageStateCritical:  tlw.HardwareState_HARDWARE_NEED_REPLACEMENT,
-	storage.StorageStateUndefined: tlw.HardwareState_HARDWARE_UNSPECIFIED,
-}
-
-// auditStorageSMARTExec confirms that it is able to audi smartStorage info and mark the dut if it needs replacement.
+// auditStorageSMARTExec confirms that it is able to audit
+// smartStorage info and mark the DUT if it needs replacement.
 func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
-	r := info.DefaultRunner()
-	if info.GetChromeos().GetStorage() == nil {
-		return errors.Reason("audit storage smart: data is not present in dut info").Err()
-	}
-	rawOutput, err := r(ctx, time.Minute, readStorageInfoCMD)
-	if err != nil {
+	if err := storage.AuditStorageSMART(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.RunArgs.DUT); err != nil {
 		return errors.Annotate(err, "audit storage smart").Err()
-	}
-	ss, err := storage.ParseSMARTInfo(ctx, rawOutput)
-	if err != nil {
-		return errors.Annotate(err, "audit storage smart").Err()
-	}
-	log.Debugf(ctx, "Detected storage type: %q", ss.StorageType)
-	log.Debugf(ctx, "Detected storage state: %q", ss.StorageState)
-	convertedHardwareState, ok := storageStateMap[ss.StorageState]
-	if !ok {
-		return errors.Reason("audit storage smart: cannot find corresponding hardware state match in the map").Err()
-	}
-	if convertedHardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
-		return errors.Reason("audit storage smart: DUT storage did not detected or state cannot extracted").Err()
-	}
-	if convertedHardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
-		log.Debugf(ctx, "Detected issue with storage on the DUT")
-		info.GetChromeos().GetStorage().State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-		log.Debugf(ctx, "Audit Storage Smart: setting the dut state to :%s", string(dutstate.NeedsReplacement))
-		info.RunArgs.DUT.State = dutstate.NeedsReplacement
-		return errors.Reason("audit storage smart: hardware state need replacement").Err()
 	}
 	return nil
 }

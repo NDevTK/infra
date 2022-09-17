@@ -9,9 +9,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/dutstate"
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
@@ -299,4 +302,57 @@ func regexpSubmatchToMap(r *regexp.Regexp, source string) (map[string]string, er
 		}
 	}
 	return m, nil
+}
+
+const (
+	readStorageInfoCMD = ". /usr/share/misc/storage-info-common.sh; get_storage_info"
+)
+
+// storageStateMap maps state from storageState type to tlw.HardwareState type
+var storageStateMap = map[StorageState]tlw.HardwareState{
+	StorageStateNormal:    tlw.HardwareState_HARDWARE_NORMAL,
+	StorageStateWarning:   tlw.HardwareState_HARDWARE_ACCEPTABLE,
+	StorageStateCritical:  tlw.HardwareState_HARDWARE_NEED_REPLACEMENT,
+	StorageStateUndefined: tlw.HardwareState_HARDWARE_UNSPECIFIED,
+}
+
+// AuditStorageSMART checks the storage using it SMART capabilities,
+// and mark the DUT for replacement if needed.
+//
+// This is a helper function to encapsulate the logic for SMART-check
+// and intended to be called from the exec, as well as any other place
+// where such a check is required.
+func AuditStorageSMART(ctx context.Context, r components.Runner, storage *tlw.Storage, dut *tlw.Dut) error {
+	if storage == nil {
+		return errors.Reason("audit storage smart: data is not present in dut info").Err()
+	}
+	log.Debugf(ctx, "audit storage smart: initial storage state: %s, initial dut state: %s", storage.State, dut.State)
+	defer func() {
+		log.Debugf(ctx, "audit storage smart: final storage state: %s, final dut state: %s", storage.State, dut.State)
+	}()
+	rawOutput, err := r(ctx, time.Minute, readStorageInfoCMD)
+	if err != nil {
+		return errors.Annotate(err, "audit storage smart").Err()
+	}
+	ss, err := ParseSMARTInfo(ctx, rawOutput)
+	if err != nil {
+		return errors.Annotate(err, "audit storage smart").Err()
+	}
+	log.Debugf(ctx, "Detected storage type: %q", ss.StorageType)
+	log.Debugf(ctx, "Detected storage state: %q", ss.StorageState)
+	convertedHardwareState, ok := storageStateMap[ss.StorageState]
+	if !ok {
+		return errors.Reason("audit storage smart: cannot find corresponding hardware state match in the map").Err()
+	}
+	if convertedHardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
+		return errors.Reason("audit storage smart: DUT storage did not detected or state cannot extracted").Err()
+	}
+	if convertedHardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
+		log.Debugf(ctx, "Detected issue with storage on the DUT")
+		storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		log.Debugf(ctx, "Audit Storage Smart: setting the dut state to :%s", string(dutstate.NeedsReplacement))
+		dut.State = dutstate.NeedsReplacement
+		return errors.Reason("audit storage smart: hardware state need replacement").Err()
+	}
+	return nil
 }
