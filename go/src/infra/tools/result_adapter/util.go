@@ -32,6 +32,9 @@ const (
 
 	// Gitiles URL for webrtc/src repo.
 	webrtcSrcRepo = "https://webrtc.googlesource.com/src/"
+
+	// ResultSink limits the summary html message to 4096 bytes in UTF-8.
+	maxSummaryHtmlBytes = 4096
 )
 
 // summaryTmpl is used to generate SummaryHTML in GTest and JTR-based test
