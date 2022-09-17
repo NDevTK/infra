@@ -28,7 +28,7 @@ var EthernetHook = &subcommands.Command{
 	LongDesc:  `ethernet-hook prints ethernet hook events for a single day.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &ethernetHookRun{}
-		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
+		c.authFlags.Register(&c.Flags, site.EthernetHookCallbackOptions)
 		c.Flags.StringVar(&c.date, "date", "", "the date to process")
 		c.Flags.StringVar(&c.bucket, "bucket", "chromeos-test-logs", "the base GS bucket to check for logs")
 		return c
