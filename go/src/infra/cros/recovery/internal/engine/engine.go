@@ -177,22 +177,6 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	var step *build.Step
 	act := r.getAction(actionName)
 	if r.args != nil {
-		policy := act.GetMetricsConfig().GetUploadPolicy()
-		switch policy {
-		case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
-			// Keep this up to date with recovery.go
-			action := &metrics.Action{
-				SwarmingTaskID: r.args.SwarmingTaskID,
-				BuildbucketID:  r.args.BuildbucketID,
-			}
-			if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
-				defer actionCloser(rErr)
-			}
-		case config.MetricsConfig_SKIP_ALL:
-			log.Debugf(ctx, "Action %q: skipping metrics upload")
-		default:
-			return errors.Reason("bad policy %q %d", policy.String(), policy.Number()).Err()
-		}
 		if r.args.ShowSteps {
 			stepName := fmt.Sprintf("%s: %s", stepNamePrefix, actionName)
 			step, ctx = build.StartStep(ctx, stepName)
@@ -218,6 +202,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			log.Debugf(ctx, "Fail write docs for %q, Error: %s", actionName, err)
 		}
 	}
+	// Please do not create metrics for cached actions as it will lead for creating too many repeated metrics.
 	if aErr, ok := r.actionResultFromCache(actionName); ok {
 		if aErr == nil {
 			log.Infof(ctx, "Action %q: pass (cached).", actionName)
@@ -231,6 +216,25 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			forgiveError = true
 		}
 		return errors.Annotate(aErr, "run action %q: (cached)", actionName).Err()
+	}
+	if r.args != nil {
+		// Only running action can generate metrics as we have real response from each action.
+		policy := act.GetMetricsConfig().GetUploadPolicy()
+		switch policy {
+		case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
+			// Keep this up to date with recovery.go
+			action := &metrics.Action{
+				SwarmingTaskID: r.args.SwarmingTaskID,
+				BuildbucketID:  r.args.BuildbucketID,
+			}
+			if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
+				defer actionCloser(rErr)
+			}
+		case config.MetricsConfig_SKIP_ALL:
+			log.Debugf(ctx, "Action %q: skipping metrics upload")
+		default:
+			return errors.Reason("bad policy %q %d", policy.String(), policy.Number()).Err()
+		}
 	}
 	log.Infof(ctx, "Action %q: started.", actionName)
 	conditionName, err := r.runActionConditions(ctx, actionName)
