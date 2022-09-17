@@ -68,11 +68,11 @@ func createMetricsRecordWhenNewUSBDriveFound(ctx context.Context, info *execs.Ex
 			metrics.NewStringObservation("manufacturer", newDevice.GetManufacturer()),
 		},
 	}
-	if info.RunArgs.Metrics == nil {
+	if info.GetMetrics() == nil {
 		log.Debugf(ctx, "Skip creating metrics with %#v", action)
 		return
 	}
-	if err := info.RunArgs.Metrics.Create(ctx, action); err != nil {
+	if err := info.GetMetrics().Create(ctx, action); err != nil {
 		log.Debugf(ctx, "Fail to create metrics for %q: %s", action.ActionKind, err)
 	}
 }
@@ -85,7 +85,7 @@ func createMetricsRecordWhenUSBDriveReplaced(ctx context.Context, info *execs.Ex
 		newTime = newDevice.GetFirstSeenTime().AsTime()
 	}
 	duration := newTime.Sub(oldDevice.GetFirstSeenTime().AsTime())
-	if info.RunArgs.Metrics == nil {
+	if info.GetMetrics() == nil {
 		return
 	}
 	action := &metrics.Action{
@@ -100,11 +100,11 @@ func createMetricsRecordWhenUSBDriveReplaced(ctx context.Context, info *execs.Ex
 			metrics.NewStringObservation("duration", duration.String()),
 		},
 	}
-	if info.RunArgs.Metrics == nil {
+	if info.GetMetrics() == nil {
 		log.Debugf(ctx, "Skip creating metrics with %#v", action)
 		return
 	}
-	if err := info.RunArgs.Metrics.Create(ctx, action); err != nil {
+	if err := info.GetMetrics().Create(ctx, action); err != nil {
 		log.Debugf(ctx, "Fail to create metrics for %q: %s", action.ActionKind, err)
 	}
 }

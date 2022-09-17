@@ -17,7 +17,7 @@ import (
 // CountFailedRepairFromMetrics determines the number of failed PARIS repair task
 // since the last successful PARIS repair task.
 func CountFailedRepairFromMetrics(ctx context.Context, taskName string, info *execs.ExecInfo) (int, error) {
-	metric := info.RunArgs.Metrics
+	metric := info.GetMetrics()
 	if metric == nil {
 		return 0, errors.Reason("count failed repair from karte: karte metric has not been initialized").Err()
 	}

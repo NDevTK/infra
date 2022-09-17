@@ -47,10 +47,10 @@ func sampleSleepExec(ctx context.Context, i *ExecInfo) error {
 func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
 	// TODO(gregorynisbet): Add more interesting information to the action.
 	action := &metrics.Action{}
-	if info.RunArgs.Metrics != nil {
+	if info.GetMetrics() != nil {
 		action.StartTime = time.Now()
 		// TODO(gregorynisbet): Don't ignore error here.
-		info.RunArgs.Metrics.Create(ctx, action)
+		info.GetMetrics().Create(ctx, action)
 		// TODO(gregorynisbet): Uncomment when update lands.
 		// defer func() { args.Metrics.Update(ctx, action) }()
 	}

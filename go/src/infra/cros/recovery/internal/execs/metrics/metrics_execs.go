@@ -35,7 +35,7 @@ func metricsFoundAtLastTimeExec(ctx context.Context, info *execs.ExecInfo) error
 	// timeFrameHours is the time window for searching the last metric of this metricsKind being recorded.
 	// Default to be 24h.
 	timeFrameHours := argsMap.AsDuration(ctx, "time_frame_hours", 24, time.Hour)
-	metric := info.RunArgs.Metrics
+	metric := info.GetMetrics()
 	if metric == nil {
 		return errors.Reason("metrics found at last time: karte metric has not been initilized").Err()
 	}

@@ -43,7 +43,6 @@ func Register(name string, f ExecFunction) {
 //
 // Keep this type up to date with recovery.go:RunArgs .
 // Also update recovery.go:runDUTPlans .
-//
 type RunArgs struct {
 	// Resource name targeted by plan.
 	ResourceName string
@@ -99,6 +98,11 @@ func (ei *ExecInfo) GetChromeos() *tlw.ChromeOS {
 		return nil
 	}
 	return ei.RunArgs.DUT.GetChromeos()
+}
+
+// GetMetrics returns Metrics.
+func (ei *ExecInfo) GetMetrics() metrics.Metrics {
+	return ei.RunArgs.Metrics
 }
 
 // Run runs exec function provided by this package by name.

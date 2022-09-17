@@ -657,7 +657,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		log.Debugf(ctx, "Servo update servo firmware: Only updating board: %q's firmware", filteredServoBoard)
 	}
 	startTime := time.Now()
-	if info.RunArgs.Metrics != nil {
+	if info.GetMetrics() != nil {
 		// Record fw flash time to karte.
 		action := &metrics.Action{
 			// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
@@ -667,7 +667,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 			StartTime:  startTime,
 			Status:     metrics.ActionStatusSuccess,
 		}
-		if mErr := info.RunArgs.Metrics.Create(ctx, action); mErr != nil {
+		if mErr := info.GetMetrics().Create(ctx, action); mErr != nil {
 			log.Debugf(ctx, "Servo update servo firmware: cannot create karte metrics: %s", mErr)
 		}
 		defer func() {
@@ -678,7 +678,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 				action.Status = metrics.ActionStatusFail
 				action.FailReason = err.Error()
 			}
-			if mErr := info.RunArgs.Metrics.Update(ctx, action); mErr != nil {
+			if mErr := info.GetMetrics().Update(ctx, action); mErr != nil {
 				log.Debugf(ctx, "Servo update servo firmware: Metrics error: %s", mErr)
 			}
 		}()
@@ -703,7 +703,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		return errors.Reason("servo update servo firmware: the number of servo devices to update fw is 0").Err()
 	}
 	failDevices := UpdateDevicesServoFw(ctx, run, req, devicesToUpdate)
-	if info.RunArgs.Metrics != nil {
+	if info.GetMetrics() != nil {
 		// Record every single servo device fw flash time as well as status to karte.
 		for _, device := range devicesToUpdate {
 			eachBoardAction := &metrics.Action{
@@ -725,7 +725,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 			if isDeviceUpdateFailed {
 				eachBoardAction.Status = metrics.ActionStatusFail
 			}
-			if mErr := info.RunArgs.Metrics.Create(ctx, eachBoardAction); mErr != nil {
+			if mErr := info.GetMetrics().Create(ctx, eachBoardAction); mErr != nil {
 				log.Debugf(ctx, "Servo update servo firmware: cannot create karte metrics: %s", mErr)
 			}
 		}

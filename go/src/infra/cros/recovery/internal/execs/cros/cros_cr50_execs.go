@@ -106,14 +106,14 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 		StartTime:  time.Now(),
 		Status:     metrics.ActionStatusFail,
 	}
-	if mErr := info.RunArgs.Metrics.Create(ctx, karteAction); mErr != nil {
+	if mErr := info.GetMetrics().Create(ctx, karteAction); mErr != nil {
 		log.Debugf(ctx, "Reflash cr50 firmware: cannot create karte metrics: %s", mErr)
 	}
 	defer func() {
 		// Recoding cr 50 fw reflash to Karte.
 		log.Debugf(ctx, "Updating cr 50 fw reflash record in Karte.")
 		karteAction.StopTime = time.Now()
-		if mErr := info.RunArgs.Metrics.Update(ctx, karteAction); mErr != nil {
+		if mErr := info.GetMetrics().Update(ctx, karteAction); mErr != nil {
 			log.Debugf(ctx, "Reflash cr 50 fw: Metrics error: %s", mErr)
 		}
 	}()
