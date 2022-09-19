@@ -16,6 +16,17 @@ import (
 	"infra/cros/recovery/logger"
 )
 
+// DeviceMainStoragePath returns the path of the main storage device
+// on the DUT.
+func DeviceMainStoragePath(ctx context.Context, run components.Runner) (string, error) {
+	mainStorageCMD := ". /usr/sbin/write_gpt.sh; . /usr/share/misc/chromeos-common.sh; load_base_vars; get_fixed_dst_drive"
+	mainStorage, err := run(ctx, time.Minute, mainStorageCMD)
+	if err != nil {
+		return "", errors.Annotate(err, "device storage path").Err()
+	}
+	return mainStorage, nil
+}
+
 // IsBootedFromExternalStorage verify that device has been booted from external storage.
 func IsBootedFromExternalStorage(ctx context.Context, run components.Runner, log logger.Logger) error {
 	bootStorage, err := run(ctx, time.Minute, "rootdev", "-s", "-d")
@@ -24,8 +35,7 @@ func IsBootedFromExternalStorage(ctx context.Context, run components.Runner, log
 	} else if bootStorage == "" {
 		return errors.Reason("booted from external storage: booted storage not detected").Err()
 	}
-	mainStorageCMD := ". /usr/sbin/write_gpt.sh; . /usr/share/misc/chromeos-common.sh; load_base_vars; get_fixed_dst_drive"
-	mainStorage, err := run(ctx, time.Minute, mainStorageCMD)
+	mainStorage, err := DeviceMainStoragePath(ctx, run)
 	if err != nil {
 		return errors.Annotate(err, "booted from external storage").Err()
 	}

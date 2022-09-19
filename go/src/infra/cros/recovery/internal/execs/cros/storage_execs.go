@@ -8,6 +8,7 @@ import (
 	"context"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -21,6 +22,28 @@ import (
 func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := storage.AuditStorageSMART(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.RunArgs.DUT); err != nil {
 		return errors.Annotate(err, "audit storage smart").Err()
+	}
+	return nil
+}
+
+// auditStorageBadblocksExec confirms that it is able to audit storage
+// using badblocks, and mark the DUT if it needs replacement.
+func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	bbMode := storage.AuditMode(argsMap.AsString(ctx, "badblocks_mode", "auto"))
+	timeoutRO := argsMap.AsDuration(ctx, "rw_badblocks_timeout", 5400, time.Second)
+	timeoutRW := argsMap.AsDuration(ctx, "ro_badblocks_timeout", 3600, time.Second)
+	bbArgs := storage.BadBlocksArgs{
+		AuditMode: bbMode,
+		Run:       info.DefaultRunner(),
+		Storage:   info.GetChromeos().GetStorage(),
+		Dut:       info.RunArgs.DUT,
+		Metrics:   info.RunArgs.Metrics,
+		TimeoutRW: timeoutRW,
+		TimeoutRO: timeoutRO,
+	}
+	if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
+		return errors.Annotate(err, "audit storage bad blocks").Err()
 	}
 	return nil
 }
@@ -97,6 +120,7 @@ func hasEnoughStorageSpacePercentageExec(ctx context.Context, info *execs.ExecIn
 
 func init() {
 	execs.Register("cros_audit_storage_smart", auditStorageSMARTExec)
+	execs.Register("cros_audit_storage_bad_blocks", auditStorageBadblocksExec)
 	execs.Register("cros_has_enough_storage_space", hasEnoughStorageSpaceExec)
 	execs.Register("cros_has_enough_storage_space_percentage", hasEnoughStorageSpacePercentageExec)
 	execs.Register("cros_has_enough_index_nodes", hasEnoughFreeIndexNodesExec)

@@ -11,6 +11,7 @@ func CrosAuditStorageConfig() *Configuration {
 		"Set state: needs_repair",
 		"Device is SSHable",
 		"Audit storage (SMART only)",
+		"Audit device storage using badblocks",
 	}
 	return &Configuration{
 		PlanNames: []string{

@@ -164,6 +164,18 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_audit_storage_smart",
 			AllowFailAfterRecovery: true,
 		},
+		"Audit device storage using badblocks": {
+			Docs: []string{
+				"Use the badblocks command to audit the storage on the DUT",
+			},
+			ExecName: "cros_audit_storage_bad_blocks",
+			ExecExtraArgs: []string{
+				"badblocks_mode:auto",
+				"rw_badblocks_timeout:5400",
+				"ro_badblocks_timeout:3600",
+			},
+			AllowFailAfterRecovery: true,
+		},
 		"Verify system info": {
 			Conditions: []string{
 				"Is not Flex device",
