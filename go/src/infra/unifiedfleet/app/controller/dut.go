@@ -876,16 +876,23 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 
 	// Fetch hwid data at last as it may retry and finally exceed the ctx deadline, which
 	// causes the following operations using ctx fails.
+	hwidClient, err := GetHwidClient(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to get HwidClient. Error: %s", err)
+		return nil, err
+	}
+
 	useCachedHwidManufacturingConfig := config.Get(ctx).GetUseCachedHwidManufacturingConfig()
 	var hwidData *ufspb.HwidData
 	if useCachedHwidManufacturingConfig {
-		hwidData, err = getHwidData(ctx, hwid)
+		hwidData, err = GetHwidData(ctx, hwidClient, hwid)
 	} else {
 		err = status.Errorf(codes.Internal, "Getting HWID data from Inv v2 has been deprecated. Please use the new service via UFS.")
 	}
 	if err != nil {
 		logging.Warningf(ctx, "Hwid data for %s not found. Error: %s", hwid, err)
 	}
+
 	enableBoxsterFlag := config.Get(ctx).GetEnableBoxsterLabels()
 	schedulableLabels, err := getSchedulableLabels(ctx, machine, enableBoxsterFlag)
 	if err != nil {
@@ -957,21 +964,6 @@ func getStability(ctx context.Context, model string) (bool, error) {
 	}
 	// Return true for any failed case to make sure no models are false negative.
 	return true, err
-}
-
-// getHwidData gets HWID data from HWID server based on a given HWID.
-func getHwidData(ctx context.Context, hwid string) (*ufspb.HwidData, error) {
-	hwidClient, err := GetHwidClient(ctx)
-	if err != nil {
-		logging.Errorf(ctx, "Failed to get HwidClient. Error: %s", err)
-		return nil, err
-	}
-
-	d, err := GetHwidData(ctx, hwidClient, hwid)
-	if err != nil {
-		return nil, err
-	}
-	return d, nil
 }
 
 // getSchedulableLabels gets Swarming schedulable labels based on DutAttributes

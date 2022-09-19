@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsmfgcfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/model/registration"
@@ -41,11 +40,18 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 		}
 	}()
 
+	// Set up clients for Inv v2 and HWID server
 	invV2Client, err := controller.GetInventoryV2Client(ctx)
 	if err != nil {
 		return err
 	}
 
+	hwidClient, err := controller.GetHwidClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Get all machines from UFS datastore
 	machines, err := registration.ListAllMachines(ctx, false)
 	if err != nil {
 		return err
@@ -67,7 +73,7 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 		}
 
 		// UFS implementation
-		hwidData, err := getHwidData(ctx, hwid)
+		hwidData, err := controller.GetHwidData(ctx, hwidClient, hwid)
 		if err != nil {
 			logging.Warningf(ctx, "Hwid data for %s not found. Error: %s", hwid, err)
 		}
@@ -96,20 +102,4 @@ func setupMfgcfgDiffContext(ctx context.Context) context.Context {
 	ctx = logging.SetLevel(ctx, logging.Warning)
 	ctx, _ = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
 	return ctx
-}
-
-// The below methods are implementations copy and pasted from dut.go
-
-func getHwidData(ctx context.Context, hwid string) (*ufspb.HwidData, error) {
-	hwidClient, err := controller.GetHwidClient(ctx)
-	if err != nil {
-		logging.Errorf(ctx, "Failed to get HwidClient. Error: %s", err)
-		return nil, err
-	}
-
-	d, err := controller.GetHwidData(ctx, hwidClient, hwid)
-	if err != nil {
-		return nil, err
-	}
-	return d, nil
 }
