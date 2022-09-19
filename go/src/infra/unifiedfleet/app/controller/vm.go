@@ -300,6 +300,12 @@ func processVMUpdateMask(ctx context.Context, oldVM *ufspb.VM, vm *ufspb.VM, mas
 			oldVM.Description = vm.Description
 		case "deploymentTicket":
 			oldVM.DeploymentTicket = vm.GetDeploymentTicket()
+		case "cpuCores":
+			oldVM.CpuCores = vm.GetCpuCores()
+		case "memory":
+			oldVM.Memory = vm.GetMemory()
+		case "storage":
+			oldVM.Storage = vm.GetStorage()
 		}
 	}
 	// return existing/old vm with new updated values
