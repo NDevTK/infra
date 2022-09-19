@@ -33,6 +33,18 @@ func stopSartUIExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// startUIExec executes the start of UI on the DUT.
+func startUIExec(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.NewRunner(info.RunArgs.DUT.Name)
+	out, err := run(ctx, info.ActionTimeout, "start ui")
+	if err != nil {
+		return errors.Annotate(err, "start UI exec").Err()
+	}
+	log.Debugf(ctx, "Stdout: %q", out)
+	return nil
+}
+
 func init() {
 	execs.Register("cros_stop_start_ui", stopSartUIExec)
+	execs.Register("cros_start_ui", startUIExec)
 }

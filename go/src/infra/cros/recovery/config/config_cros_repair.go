@@ -406,7 +406,6 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_stop_start_ui",
 			ExecTimeout: &durationpb.Duration{Seconds: 45},
 			RecoveryActions: []string{
-				// TODO: need action to start service only.
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Quick provision OS",
@@ -414,6 +413,14 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
+		},
+		"Start UI": {
+			Docs: []string{
+				"If the stop and start of UI timesout, it is an indication that ",
+				"the UI has crashed. This action attempts to start the UI as an ",
+				"attempt to recover the crashed UI.",
+			},
+			ExecName: "cros_start_ui",
 		},
 		"Verify keys of RW_VPD": {
 			Docs: []string{
