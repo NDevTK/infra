@@ -16,6 +16,40 @@
       "message": "I can\u0027t really test it locally :(",
       "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ccc9150_6b5140a2",
+        "filename": "build/build.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1191,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-19T05:36:56Z",
+      "side": 1,
+      "message": "Hm, is there no more-specific error code we can look for in the does-not-exist case? auth_error seems like it ought to be a fatal error if auth is actually misconfigured.",
+      "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "999363b4_ddbab42c",
+        "filename": "build/build.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1215,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-09-19T05:36:56Z",
+      "side": 1,
+      "message": "It seems confusing/unnecessary to have this argument if we only ever pass True. I\u0027d just update the function description to state that it updates the \u0027latest\u0027 ref.",
+      "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
