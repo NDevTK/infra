@@ -26,7 +26,7 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
-//Generalized error messages for resources in the system
+// Generalized error messages for resources in the system
 var (
 	NotFoundErrorMessage      string = "There is no %s with %sID %s in the system.\n"
 	AlreadyExistsErrorMessage string = "%s %s already exists in the system.\n"
@@ -74,7 +74,7 @@ func GetRackLSEProtoTypeResource(rackLSEProtoTypeID string) *Resource {
 	}
 }
 
-//GetMachineResource returns a Resource with MachineEntity
+// GetMachineResource returns a Resource with MachineEntity
 func GetMachineResource(machineID string) *Resource {
 	return &Resource{
 		Kind: registration.MachineKind,
@@ -85,7 +85,7 @@ func GetMachineResource(machineID string) *Resource {
 	}
 }
 
-//GetVMResource returns a Resource with VMEntity
+// GetVMResource returns a Resource with VMEntity
 func GetVMResource(vmID string) *Resource {
 	return &Resource{
 		Kind: inventory.VMKind,
@@ -96,7 +96,7 @@ func GetVMResource(vmID string) *Resource {
 	}
 }
 
-//GetMachineLSEResource returns a Resource with MachineLSEEntity
+// GetMachineLSEResource returns a Resource with MachineLSEEntity
 func GetMachineLSEResource(machinelseID string) *Resource {
 	return &Resource{
 		Kind: inventory.MachineLSEKind,
@@ -107,7 +107,7 @@ func GetMachineLSEResource(machinelseID string) *Resource {
 	}
 }
 
-//GetRackResource returns a Resource with RackEntity
+// GetRackResource returns a Resource with RackEntity
 func GetRackResource(rackID string) *Resource {
 	return &Resource{
 		Kind: registration.RackKind,
@@ -118,7 +118,7 @@ func GetRackResource(rackID string) *Resource {
 	}
 }
 
-//GetKVMResource returns a Resource with KVMEntity
+// GetKVMResource returns a Resource with KVMEntity
 func GetKVMResource(kvmID string) *Resource {
 	return &Resource{
 		Kind: registration.KVMKind,
