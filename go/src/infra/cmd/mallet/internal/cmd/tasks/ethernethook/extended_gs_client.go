@@ -9,7 +9,6 @@ import (
 
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/api/iterator"
 )
 
 // IteratorStatus is an enum that makes it easy to distinguish between iterators that
@@ -39,25 +38,34 @@ func NewExtendedGSClient(client *storage.Client) (*extendedGSClient, error) {
 	return &extendedGSClient{client}, nil
 }
 
+// LsState stores the current iteration state as we're traversing the results of Ls.
+type LsState struct {
+	Attrs *storage.ObjectAttrs
+	Err   error
+}
+
 // LsResult is an iterator over objects.
-type LsResult func() (*storage.ObjectAttrs, IteratorStatus, error)
+type LsResult func(state *LsState) bool
 
 // Ls iterates over items in Google Storage beginning with a prefix.
-func (e *extendedGSClient) Ls(ctx context.Context, bucket string, prefix string) LsResult {
-	query := &storage.Query{
-		Delimiter: "/",
-		Prefix:    prefix,
-	}
+func (e *extendedGSClient) Ls(ctx context.Context, bucket string, query *storage.Query) LsResult {
 	objectIterator := e.Bucket(bucket).Objects(ctx, query)
-	res := func() (*storage.ObjectAttrs, IteratorStatus, error) {
+	res := func(state *LsState) bool {
 		objectAttrs, err := objectIterator.Next()
 		if err != nil {
-			if err == iterator.Done {
-				return nil, done, err
-			}
-			return nil, invalid, err
+			state.Err = err
+			return false
 		}
-		return objectAttrs, keepGoing, nil
+		state.Attrs = objectAttrs
+		return true
 	}
 	return res
+}
+
+// LsSmall synchronously reads a small result set.
+func (e *extendedGSClient) LsSmall(ctx context.Context, bucket string, query *storage.Query) ([]*storage.ObjectAttrs, error) {
+	const maxResultSize = 10000
+	_ = e.Ls(ctx, bucket, query)
+	for {
+	}
 }
