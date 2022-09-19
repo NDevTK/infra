@@ -6,6 +6,7 @@ package ethernethook
 
 import (
 	"context"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/errors"
@@ -55,9 +56,28 @@ func (e *extendedGSClient) Ls(ctx context.Context, bucket string, prefix string)
 			if err == iterator.Done {
 				return nil, done, err
 			}
+			if strings.Contains(err.Error(), "no more items") {
+				return nil, done, err
+			}
 			return nil, invalid, err
 		}
 		return objectAttrs, keepGoing, nil
 	}
 	return res
+}
+
+// LsSync synchronously gets objects.
+func (e *extendedGSClient) LsSync(ctx context.Context, bucket string, prefix string) ([]storage.ObjectAttrs, error) {
+	it := e.Ls(ctx, bucket, prefix)
+	var out []storage.ObjectAttrs
+	for {
+		objectAttrs, status, err := it()
+		switch status {
+		case invalid:
+			return nil, err
+		case done:
+			return out, nil
+		}
+		out = append(out, *objectAttrs)
+	}
 }

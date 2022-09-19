@@ -6,7 +6,6 @@ package tasks
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"cloud.google.com/go/storage"
@@ -94,17 +93,15 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "failed to wrap storage client").Err()
 	}
 
-	it := storageClient.Ls(ctx, c.bucket, c.prefix)
-	for {
-		objectAttrs, _, iErr := it()
-		if iErr != nil {
-			break
-		}
-		b, err := json.MarshalIndent(objectAttrs, "", "  ")
-		if err != nil {
-			return errors.Annotate(err, "failed to marshal object").Err()
-		}
-		fmt.Fprintf(a.GetErr(), "%s\n", string(b))
+	fmt.Printf("%s\n", c.bucket)
+	fmt.Printf("%s\n", c.prefix)
+	objectAttrs, err := storageClient.LsSync(ctx, c.bucket, c.prefix)
+	if err != nil {
+		return errors.Annotate(err, "searching records").Err()
+	}
+
+	for _, objectAttr := range objectAttrs {
+		fmt.Printf("%s\n", objectAttr.Name)
 	}
 
 	return nil
