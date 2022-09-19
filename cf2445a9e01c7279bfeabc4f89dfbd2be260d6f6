@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c96fa76e_14be9230",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-19T05:17:10Z",
+      "side": 1,
+      "message": "I can\u0027t really test it locally :(",
+      "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
