@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c746f495_0de4525b",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2120,
+      "author": {
+        "id": 1377969
+      },
+      "writtenOn": "2022-09-19T23:46:01Z",
+      "side": 1,
+      "message": "I beleive the futility update logic already had 10 retries, now we might be at 30. On an unhealthy dut where this is failing every time, how often might this run?",
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
