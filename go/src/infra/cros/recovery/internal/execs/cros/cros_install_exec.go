@@ -24,8 +24,8 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 	waitBootTimeout := am.AsDuration(ctx, "boot_timeout", 1, time.Second)
 	waitBootInterval := am.AsDuration(ctx, "retry_interval", 1, time.Second)
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.Name)
-	ping := info.NewPinger(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
+	ping := info.NewPinger(info.GetDut().Name)
 	err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod, info.NewLogger())
 	return errors.Annotate(err, "dev-mode boot from servo usb-drive").Err()
 }
@@ -55,7 +55,7 @@ var storageErrors = map[string]bool{
 // Also can flash firmware  as part of action.
 func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
-	dut := info.RunArgs.DUT
+	dut := info.GetDut()
 	dutRun := info.NewRunner(dut.Name)
 	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
 	dutPing := info.NewPinger(dut.Name)
@@ -76,7 +76,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				if ok {
 					stdErrStr := stdErr.(string)
 					if storageErrors[stdErrStr] {
-						info.RunArgs.DUT.State = dutstate.NeedsReplacement
+						info.GetDut().State = dutstate.NeedsReplacement
 						log.Debugf(ctx, "Install from USB Drive in Recovery Mode: Failed to install ChromeOS due to storage error %s, setting DUT state to %s", stdErrStr, dutstate.NeedsReplacement)
 					}
 				} else {
@@ -122,7 +122,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 // verifyBootInRecoveryModeExec verify that device can boot in recovery mode and reboot to normal mode again.
 func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
-	dut := info.RunArgs.DUT
+	dut := info.GetDut()
 	dutRun := info.NewRunner(dut.Name)
 	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
 	dutPing := info.NewPinger(dut.Name)

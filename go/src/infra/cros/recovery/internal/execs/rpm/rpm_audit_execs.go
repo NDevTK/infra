@@ -59,7 +59,7 @@ func rpmAuditWithBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "rpm audit").Err()
 	}
 	run := info.DefaultRunner()
-	ping := info.NewPinger(info.RunArgs.DUT.Name)
+	ping := info.NewPinger(info.GetDut().Name)
 	am := info.GetActionArgs(ctx)
 	timeOut := am.AsDuration(ctx, "timeout", 120, time.Second)
 	waitInterval := am.AsDuration(ctx, "wait_interval", 5, time.Second)

@@ -21,7 +21,7 @@ func readGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	req := &firmware.ReadAPInfoRequest{
-		FilePath: defaultAPFilePath(info.RunArgs.DUT),
+		FilePath: defaultAPFilePath(info.GetDut()),
 		GBBFlags: true,
 	}
 	res, err := firmware.ReadAPInfoByServo(ctx, req, run, servod, info.NewLogger())
@@ -59,7 +59,7 @@ func checkIfApHasDevSignedImageExec(ctx context.Context, info *execs.ExecInfo) e
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	req := &firmware.ReadAPInfoRequest{
-		FilePath: defaultAPFilePath(info.RunArgs.DUT),
+		FilePath: defaultAPFilePath(info.GetDut()),
 		Keys:     true,
 	}
 	res, err := firmware.ReadAPInfoByServo(ctx, req, run, servod, info.NewLogger())
@@ -76,7 +76,7 @@ func checkIfApHasDevSignedImageExec(ctx context.Context, info *execs.ExecInfo) e
 // Please be sure that.
 func removeAPFileFromServoHostExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	p := defaultAPFilePath(info.RunArgs.DUT)
+	p := defaultAPFilePath(info.GetDut())
 	if _, err := run(ctx, 30*time.Second, "rm", "-f", p); err != nil {
 		// Do not fail if we cannot remove the file.
 		log.Infof(ctx, "Fail to remove AP file %q from servo-host: %s", p, err)
@@ -87,7 +87,7 @@ func removeAPFileFromServoHostExec(ctx context.Context, info *execs.ExecInfo) er
 func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
 	req := &firmware.SetApInfoByServoRequest{
-		FilePath: defaultAPFilePath(info.RunArgs.DUT),
+		FilePath: defaultAPFilePath(info.GetDut()),
 		// Set gbb flags to 0x18 to force dev boot and enable boot from USB.
 		GBBFlags:       am.AsString(ctx, "gbb_flags", ""),
 		UpdateGBBFlags: true,
@@ -113,7 +113,7 @@ func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "cros provision").Err()
 	}
@@ -125,11 +125,11 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	log.Debugf(ctx, "Used gs bucket name: %s", gsBucket)
 	gsImagePath := am.AsString(ctx, "gs_image_path", fmt.Sprintf("%s/%s", gsBucket, imageName))
 	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
-	fwDownloadDir := am.AsString(ctx, "fw_download_dir", defaultFwFolderPath(info.RunArgs.DUT))
+	fwDownloadDir := am.AsString(ctx, "fw_download_dir", defaultFwFolderPath(info.GetDut()))
 	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
 	// Requesting convert GC path to caches service path.
 	// Example: `http://Addr:8082/download/chromeos-image-archive/board-firmware/R99-XXXXX.XX.0`
-	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.RunArgs.DUT.Name, gsImagePath)
+	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
 	if err != nil {
 		return errors.Annotate(err, mn).Err()
 	}

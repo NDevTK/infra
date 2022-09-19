@@ -84,6 +84,14 @@ func (ei *ExecInfo) GetActiveResource() string {
 	return ei.RunArgs.ResourceName
 }
 
+// GetDut returns Dut.
+func (ei *ExecInfo) GetDut() *tlw.Dut {
+	if ei == nil || ei.RunArgs == nil {
+		return nil
+	}
+	return ei.RunArgs.DUT
+}
+
 // GetAndroid returns Android device from DUT.
 func (ei *ExecInfo) GetAndroid() *tlw.Android {
 	if ei == nil || ei.RunArgs == nil || ei.RunArgs.DUT == nil {

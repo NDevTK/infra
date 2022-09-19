@@ -20,7 +20,7 @@ import (
 //
 // If DUT battery still in the factory mode then DUT required re-work.
 func isBatteryCanChangeToExpectedLevelExec(ctx context.Context, info *execs.ExecInfo) error {
-	d := info.RunArgs.DUT
+	d := info.GetDut()
 	log := info.NewLogger()
 	run := info.NewRunner(d.Name)
 	argsMap := info.GetActionArgs(ctx)

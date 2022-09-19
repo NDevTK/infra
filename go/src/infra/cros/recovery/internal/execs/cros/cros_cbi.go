@@ -29,7 +29,7 @@ func cbiIsCorrupt(ctx context.Context, info *execs.ExecInfo) error {
 
 // cbiIsPresent checks if CBI contents are found on the DUT.
 func cbiIsPresent(ctx context.Context, info *execs.ExecInfo) error {
-	cbiLocation, err := cbi.GetCBILocation(ctx, info.NewRunner(info.RunArgs.DUT.Name))
+	cbiLocation, err := cbi.GetCBILocation(ctx, info.NewRunner(info.GetDut().Name))
 	if err != nil {
 		return errors.Annotate(err, "CBI is present").Err()
 	}

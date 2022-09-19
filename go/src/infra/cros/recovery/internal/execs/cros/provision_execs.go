@@ -22,7 +22,7 @@ import (
 // To prevent reboot of device please provide action exec argument 'no_reboot'.
 // To provide custom image data please use 'os_name', 'os_bucket', 'os_image_path'.
 func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "cros provision").Err()
 	}
@@ -51,7 +51,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 //
 // To provide custom image data please use 'os_name', 'os_bucket', 'os_image_path'.
 func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "cros provision").Err()
 	}
@@ -64,7 +64,7 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "Used OS image path: %s", osImagePath)
 	// Requesting convert GC path to caches service path.
 	// Example: `http://Addr:8082/download/chromeos-image-archive/board-release/R99-XXXXX.XX.0/`
-	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.RunArgs.DUT.Name, osImagePath)
+	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.GetDut().Name, osImagePath)
 	if err != nil {
 		return errors.Annotate(err, "download image to usb-drive").Err()
 	}

@@ -22,7 +22,7 @@ import (
 )
 
 func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
 	}
@@ -58,7 +58,7 @@ func createMetricsRecordWhenNewUSBDriveFound(ctx context.Context, info *execs.Ex
 	action := &metrics.Action{
 		// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
-		Hostname:   info.RunArgs.DUT.Name,
+		Hostname:   info.GetDut().Name,
 		ActionKind: metrics.USBDriveDetectionKind,
 		StartTime:  newDevice.GetFirstSeenTime().AsTime(),
 		StopTime:   newDevice.GetFirstSeenTime().AsTime(),
@@ -89,7 +89,7 @@ func createMetricsRecordWhenUSBDriveReplaced(ctx context.Context, info *execs.Ex
 		return
 	}
 	action := &metrics.Action{
-		Hostname:   info.RunArgs.DUT.Name,
+		Hostname:   info.GetDut().Name,
 		ActionKind: metrics.USBDriveReplacedKind,
 		StartTime:  newTime,
 		StopTime:   newTime,

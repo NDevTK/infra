@@ -38,7 +38,7 @@ func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Infof(ctx, "Detected issue with storage on the DUT.")
 		batteryInfo.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		log.Debugf(ctx, "Audit Battery Exec: setting dut state to %s", string(dutstate.NeedsReplacement))
-		info.RunArgs.DUT.State = dutstate.NeedsReplacement
+		info.GetDut().State = dutstate.NeedsReplacement
 	}
 	return nil
 }

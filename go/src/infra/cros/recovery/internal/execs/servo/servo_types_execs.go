@@ -90,8 +90,8 @@ func servoVerifyServoMicroExec(ctx context.Context, info *execs.ExecInfo) error 
 // servoIsDualSetupConfiguredExec checks whether the servo device has
 // been setup in dual mode.
 func servoIsDualSetupConfiguredExec(ctx context.Context, info *execs.ExecInfo) error {
-	if info.RunArgs.DUT != nil && info.RunArgs.DUT.ExtraAttributes != nil {
-		if attrs, ok := info.RunArgs.DUT.ExtraAttributes[tlw.ExtraAttributeServoSetup]; ok {
+	if info.GetDut() != nil && info.GetDut().ExtraAttributes != nil {
+		if attrs, ok := info.GetDut().ExtraAttributes[tlw.ExtraAttributeServoSetup]; ok {
 			for _, a := range attrs {
 				if a == tlw.ExtraAttributeServoSetupDual {
 					log.Debugf(ctx, "Servo Is Dual Setup Configured: servo device is configured to be in dual-setup mode.")

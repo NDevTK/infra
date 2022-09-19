@@ -24,7 +24,7 @@ func CountFailedRepairFromMetrics(ctx context.Context, taskName string, info *ex
 	karteQuery := &metrics.Query{
 		//TODO(gregorynisbet): When karte's Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
-		Hostname:   info.RunArgs.DUT.Name,
+		Hostname:   info.GetDut().Name,
 		ActionKind: fmt.Sprintf(metrics.PerResourceTaskKindGlob, taskName),
 	}
 	queryRes, err := metric.Search(ctx, karteQuery)

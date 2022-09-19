@@ -22,7 +22,7 @@ func notInPoolExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Not in pool: no pools passed as arguments.")
 		return nil
 	}
-	poolMap := getDUTPoolMap(ctx, info.RunArgs.DUT)
+	poolMap := getDUTPoolMap(ctx, info.GetDut())
 	for _, pool := range info.ActionArgs {
 		pool = strings.TrimSpace(pool)
 		if poolMap[pool] {
@@ -41,7 +41,7 @@ func isInPoolExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Is in pool: no pools passed as arguments.")
 		return nil
 	}
-	poolMap := getDUTPoolMap(ctx, info.RunArgs.DUT)
+	poolMap := getDUTPoolMap(ctx, info.GetDut())
 	for _, pool := range info.ActionArgs {
 		pool = strings.TrimSpace(pool)
 		if poolMap[pool] {

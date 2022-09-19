@@ -101,7 +101,7 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 	karteAction := &metrics.Action{
 		// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
-		Hostname:   info.RunArgs.DUT.Name,
+		Hostname:   info.GetDut().Name,
 		ActionKind: metrics.Cr50FwReflashKind,
 		StartTime:  time.Now(),
 		Status:     metrics.ActionStatusFail,
@@ -117,7 +117,7 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 			log.Debugf(ctx, "Reflash cr 50 fw: Metrics error: %s", mErr)
 		}
 	}()
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	// For "gsctool", we use the traditional runner because the exit code of both 0 and 1
 	// indicates successful execution of the command.
 	//

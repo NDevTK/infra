@@ -21,7 +21,7 @@ const (
 )
 
 // updateDeviceSKUExec updates device's SKU label if not present in inventory
-// or keep it the same if the info.RunArgs.DUT already has the value for SKU label.
+// or keep it the same if the info.GetDut() already has the value for SKU label.
 func updateDeviceSKUExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	skuLabelOutput, err := r(ctx, time.Minute, moSysSkuCmd)

@@ -28,7 +28,7 @@ func resetEcExec(ctx context.Context, info *execs.ExecInfo) error {
 	//
 	// Command to reset EC from DUT side.
 	const ecResetCmd = "ectool reboot_ec cold && exit"
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	if out, err := run(ctx, 30*time.Second, ecResetCmd); err != nil {
 		// Client closed connected as rebooting.
 		log.Debugf(ctx, "Client exit as device rebooted: %s", err)

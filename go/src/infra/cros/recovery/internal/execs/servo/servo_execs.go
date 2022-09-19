@@ -70,7 +70,7 @@ const (
 
 // servodInitActionExec init servod options and start servod on servo-host.
 func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
-	d := info.RunArgs.DUT
+	d := info.GetDut()
 	if d == nil || d.Name == "" {
 		return errors.Reason("init servod: DUT is not specified").Err()
 	}
@@ -122,7 +122,7 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func servodStopActionExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := info.RunArgs.Access.StopServod(ctx, info.RunArgs.DUT.Name); err != nil {
+	if err := info.RunArgs.Access.StopServod(ctx, info.GetDut().Name); err != nil {
 		return errors.Annotate(err, "stop servod").Err()
 	}
 	return nil
@@ -186,16 +186,16 @@ func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("servo audit usb key: servo is not present as part of dut info").Err()
 	}
 	dutUsb := ""
-	dutRunner := info.NewRunner(info.RunArgs.DUT.Name)
+	dutRunner := info.NewRunner(info.GetDut().Name)
 	if components_cros.IsSSHable(ctx, dutRunner) == nil {
-		log.Debugf(ctx, "Servo Audit USB-Key Exec: %q is reachable through SSH", info.RunArgs.DUT.Name)
+		log.Debugf(ctx, "Servo Audit USB-Key Exec: %q is reachable through SSH", info.GetDut().Name)
 		var err error = nil
 		dutUsb, err = GetUSBDrivePathOnDut(ctx, dutRunner, info.NewServod())
 		if err != nil {
-			log.Debugf(ctx, "Servo Audit USB-Key Exec: could not determine USB-drive path on DUT: %q, error: %q. This is not critical. We will continue the audit by setting the path to empty string.", info.RunArgs.DUT.Name, err)
+			log.Debugf(ctx, "Servo Audit USB-Key Exec: could not determine USB-drive path on DUT: %q, error: %q. This is not critical. We will continue the audit by setting the path to empty string.", info.GetDut().Name, err)
 		}
 	} else {
-		log.Debugf(ctx, "Servo Audit USB-Key Exec: continue audit from servo-host because DUT %q is not reachable through SSH", info.RunArgs.DUT.Name)
+		log.Debugf(ctx, "Servo Audit USB-Key Exec: continue audit from servo-host because DUT %q is not reachable through SSH", info.GetDut().Name)
 	}
 	if dutUsb != "" {
 		// DUT is reachable, and we found a USB drive on it.
@@ -662,7 +662,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		action := &metrics.Action{
 			// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
 			// change the query to use asset tag instead of using hostname.
-			Hostname:   info.RunArgs.DUT.Name,
+			Hostname:   info.GetDut().Name,
 			ActionKind: metrics.ServoFwUpdateKind,
 			StartTime:  startTime,
 			Status:     metrics.ActionStatusSuccess,
@@ -709,7 +709,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 			eachBoardAction := &metrics.Action{
 				// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
 				// change the query to use asset tag instead of using hostname.
-				Hostname:   info.RunArgs.DUT.Name,
+				Hostname:   info.GetDut().Name,
 				ActionKind: fmt.Sprintf(metrics.ServoEachDeviceFwUpdateKind, device.Type),
 				StartTime:  startTime,
 				StopTime:   time.Now(),

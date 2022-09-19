@@ -29,21 +29,24 @@ const (
 //
 // There are two "flags" that generate 3 possible enrollment states here.
 // Flag 1 - The presence of install attributes file in
-//          /home/.shadow/install_attributes.pb
+//
+//	/home/.shadow/install_attributes.pb
 //
 // Flag 2 - The value of "check_enrollment" from VPD. Can be obtained by
-//          reading the cache file in
-//          /mnt/stateful_partition/unencrypted/cache/vpd/full-v2.txt
+//
+//	reading the cache file in
+//	/mnt/stateful_partition/unencrypted/cache/vpd/full-v2.txt
 //
 // The states:
 // State 1 - Device is enrolled, means flag 1 is true and in flag 2 check_enrollment=1
 // State 2 - Device is consumer owned, means flag 1 is true and in flag 2 check_enrollment=0
 // State 3 - Device is enrolled and has been powerwashed, means flag 1 is
-//           false. If the value in flag 2 is check_enrollment=1 then the
-//           device will perform forced re-enrollment check and depending
-//           on the response from the server might force the device to enroll
-//           again. If the value is check_enrollment=0, then device can be
-//           used like a new device.
+//
+//	false. If the value in flag 2 is check_enrollment=1 then the
+//	device will perform forced re-enrollment check and depending
+//	on the response from the server might force the device to enroll
+//	again. If the value is check_enrollment=0, then device can be
+//	used like a new device.
 //
 // We consider state 1, and first scenario(check_enrollment=1) of state 3
 // as unacceptable state here as they may interfere with normal tests.
@@ -68,7 +71,7 @@ func isEnrollmentInCleanStateExec(ctx context.Context, info *execs.ExecInfo) err
 // ChromeOS device.
 func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	// 1. Reset VPD enrollment state
 	repairTimeout := argsMap.AsDuration(ctx, "repair_timeout", 120, time.Second)
 	log.Debugf(ctx, "enrollment cleanup: using repair timeout :%s", repairTimeout)

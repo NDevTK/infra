@@ -25,7 +25,7 @@ func matchCrosVersionToInvExec(ctx context.Context, info *execs.ExecInfo) error 
 	if err != nil {
 		return errors.Annotate(err, "match cros version to inventory").Err()
 	}
-	osFromInv := info.RunArgs.DUT.ProvisionedInfo.GetCrosVersion()
+	osFromInv := info.GetDut().ProvisionedInfo.GetCrosVersion()
 	if osFromInv == "" {
 		log.Infof(ctx, "No exsiting chromeos version label detected")
 		return nil
@@ -48,7 +48,7 @@ func matchCrosVersionToInvExec(ctx context.Context, info *execs.ExecInfo) error 
 // matchJobRepoURLVersionToInvExec confirms the label/inventory's job_repo_url field contains cros-version on the DUT.
 // if job_repo url is empty, then skipping this check.
 func matchJobRepoURLVersionToInvExec(ctx context.Context, info *execs.ExecInfo) error {
-	jobRepoUrlFromInv := info.RunArgs.DUT.ProvisionedInfo.GetJobRepoUrl()
+	jobRepoUrlFromInv := info.GetDut().ProvisionedInfo.GetJobRepoUrl()
 	if jobRepoUrlFromInv == "" {
 		log.Infof(ctx, "job repo url is empty, skipping check")
 		return nil

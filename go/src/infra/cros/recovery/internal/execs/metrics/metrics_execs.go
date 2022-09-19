@@ -42,7 +42,7 @@ func metricsFoundAtLastTimeExec(ctx context.Context, info *execs.ExecInfo) error
 	karteQuery := &metrics.Query{
 		// TODO: (@gregorynisbet): When karte' Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
-		Hostname:   info.RunArgs.DUT.Name,
+		Hostname:   info.GetDut().Name,
 		ActionKind: metricsKind,
 	}
 	queryRes, err := metric.Search(ctx, karteQuery)

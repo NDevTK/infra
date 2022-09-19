@@ -15,7 +15,7 @@ import (
 
 // isBootedFromExternalStorageExec verify that device has been booted from external storage.
 func isBootedFromExternalStorageExec(ctx context.Context, info *execs.ExecInfo) error {
-	err := cros.IsBootedFromExternalStorage(ctx, info.NewRunner(info.RunArgs.DUT.Name), info.NewLogger())
+	err := cros.IsBootedFromExternalStorage(ctx, info.NewRunner(info.GetDut().Name), info.NewLogger())
 	return errors.Annotate(err, "is booted from external storage").Err()
 }
 

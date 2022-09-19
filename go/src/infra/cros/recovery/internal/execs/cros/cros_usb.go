@@ -134,7 +134,7 @@ func auditUSBFromDUTSideKeyExec(ctx context.Context, info *execs.ExecInfo) error
 	actionArgs := info.GetActionArgs(ctx)
 	timeout := actionArgs.AsDuration(ctx, "audit_timeout", 2, time.Hour)
 
-	dut := info.RunArgs.DUT
+	dut := info.GetDut()
 	servoHost := info.GetChromeos().GetServo()
 	log.Infof(ctx, "Begin servo audit USB from DUT side for %q %q", dut.Name, servoHost.GetName())
 

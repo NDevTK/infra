@@ -58,7 +58,7 @@ func isFirmwareInGoodState(ctx context.Context, info *execs.ExecInfo) error {
 
 // isOnRWFirmwareStableVersionExec confirms that the current RW firmware on DUT is match with model specific stable version.
 func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "on rw firmware stable version").Err()
 	}
@@ -68,7 +68,7 @@ func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) 
 
 // isOnROFirmwareStableVersionExec confirms that the current RO firmware on DUT is match with model specific stable version.
 func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "on ro firmware stable version").Err()
 	}
@@ -79,7 +79,7 @@ func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) 
 // isRWFirmwareStableVersionAvailableExec confirms the stable firmware is up to date with the available firmware.
 func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "rw firmware stable version available").Err()
 	}
@@ -103,7 +103,7 @@ func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.Exe
 // Default mode used is autoupdate.
 // To reboot device by the end please provide `reboot:by_servo` or `reboot:by_host`.
 func runFirmwareUpdaterExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	am := info.GetActionArgs(ctx)
 	logger := info.NewLogger()
 	req := &firmware.FirmwareUpdaterRequest{
@@ -140,7 +140,7 @@ func runFirmwareUpdaterExec(ctx context.Context, info *execs.ExecInfo) error {
 //
 // ChromeOS devices have 'host' and 'ec' FPROMs, provide by 'fprom:ec'.
 func runDisableFPROMWriteProtectExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	am := info.GetActionArgs(ctx)
 	fprom := am.AsString(ctx, "fprom", "")
 	err := firmware.DisableWriteProtect(ctx, run, info.NewLogger(), info.ActionTimeout, fprom)
@@ -148,7 +148,7 @@ func runDisableFPROMWriteProtectExec(ctx context.Context, info *execs.ExecInfo) 
 }
 
 func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	if keys, err := firmware.ReadFirmwareKeysFromHost(ctx, run, info.NewLogger()); err != nil {
 		return errors.Annotate(err, "has dev signed firmware").Err()
 	} else if firmware.IsDevKeys(keys, info.NewLogger()) {
@@ -159,7 +159,7 @@ func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // updateFirmwareFromFirmwareImage update RW/RO firmware to a given firmwarm image(stable_version by default).
 func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "update firmware image").Err()
 	}
@@ -170,11 +170,11 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 	log.Debugf(ctx, "Used gs bucket name: %s", gsBucket)
 	gsImagePath := actionArgs.AsString(ctx, "gs_image_path", fmt.Sprintf("%s/%s", gsBucket, imageName))
 	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
-	fwDownloadDir := actionArgs.AsString(ctx, "fw_download_dir", defaultFwFolderPath(info.RunArgs.DUT))
+	fwDownloadDir := actionArgs.AsString(ctx, "fw_download_dir", defaultFwFolderPath(info.GetDut()))
 	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
 	// Requesting convert GC path to caches service path.
 	// Example: `http://Addr:8082/download/chromeos-image-archive/board-firmware/R99-XXXXX.XX.0`
-	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.RunArgs.DUT.Name, gsImagePath)
+	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
 	if err != nil {
 		return errors.Annotate(err, "update firmware image").Err()
 	}

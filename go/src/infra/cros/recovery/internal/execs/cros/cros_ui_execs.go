@@ -20,7 +20,7 @@ import (
 // this verifier to ensure it works and will trigger reimaging to a good
 // version if it fails.
 func stopSartUIExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	out, err := run(ctx, info.ActionTimeout, "stop ui && start ui")
 	if execs.SSHErrorLinuxTimeout.In(err) {
 		// Timeout Running the command.

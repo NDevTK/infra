@@ -54,7 +54,7 @@ func servodDUTBootRecoveryModeActionExec(ctx context.Context, info *execs.ExecIn
 	if err := info.NewServod().Set(ctx, "power_state", "rec"); err != nil {
 		return errors.Annotate(err, "servod boot in recovery-mode").Err()
 	}
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	return retry.WithTimeout(ctx, 10*time.Second, usbkeyBootTimeout, func() error {
 		_, err := run(ctx, 30*time.Second, "true")
 		return errors.Annotate(err, "servod boot in recovery-mode: check ssh access").Err()
@@ -66,7 +66,7 @@ func servodDUTColdResetActionExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "servod cold_reset dut").Err()
 	}
 	return retry.WithTimeout(ctx, 5*time.Second, dutBootTimeout, func() error {
-		return info.RunArgs.Access.Ping(ctx, info.RunArgs.DUT.Name, 2)
+		return info.RunArgs.Access.Ping(ctx, info.GetDut().Name, 2)
 	}, "servod cold_reset dut: check ping access")
 }
 

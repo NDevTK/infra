@@ -19,8 +19,8 @@ import (
 
 // hasDutNameActionExec verifies that DUT provides name.
 func hasDutNameActionExec(ctx context.Context, info *execs.ExecInfo) error {
-	if info.RunArgs.DUT != nil && info.RunArgs.DUT.Name != "" {
-		log.Debugf(ctx, "DUT name: %q", info.RunArgs.DUT.Name)
+	if info.GetDut() != nil && info.GetDut().Name != "" {
+		log.Debugf(ctx, "DUT name: %q", info.GetDut().Name)
 		return nil
 	}
 	return errors.Reason("dut name is empty").Err()
@@ -29,7 +29,7 @@ func hasDutNameActionExec(ctx context.Context, info *execs.ExecInfo) error {
 // regexNameMatchExec checks if name match to provided regex.
 func regexNameMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 	actionMap := info.GetActionArgs(ctx)
-	d := info.RunArgs.DUT
+	d := info.GetDut()
 	if d == nil {
 		return errors.Reason("regex name match: DUT not found").Err()
 	}
@@ -59,8 +59,8 @@ func setDutStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if dutstate.ConvertToUFSState(state) == ufsProto.State_STATE_UNSPECIFIED {
 		return errors.Reason("set dut state: unsupported state %q", newState).Err()
 	}
-	log.Debugf(ctx, "Old DUT state: %s", info.RunArgs.DUT.State)
-	info.RunArgs.DUT.State = state
+	log.Debugf(ctx, "Old DUT state: %s", info.GetDut().State)
+	info.GetDut().State = state
 	log.Infof(ctx, "New DUT state: %s", newState)
 	return nil
 }

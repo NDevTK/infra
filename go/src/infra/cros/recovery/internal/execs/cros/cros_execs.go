@@ -30,12 +30,12 @@ func sshExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // sshDUTExec verifies ssh access to the DUT.
 func sshDUTExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.ActionTimeout, cros.SSHRetryInteval, info.NewRunner(info.RunArgs.DUT.Name), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.ActionTimeout, cros.SSHRetryInteval, info.NewRunner(info.GetDut().Name), info.NewLogger())
 }
 
 // rebootExec reboots the cros DUT.
 func rebootExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := cros.Reboot(ctx, info.NewRunner(info.RunArgs.DUT.Name), info.ActionTimeout); err != nil {
+	if err := cros.Reboot(ctx, info.NewRunner(info.GetDut().Name), info.ActionTimeout); err != nil {
 		return errors.Annotate(err, "cros reboot").Err()
 	}
 	return nil
@@ -43,7 +43,7 @@ func rebootExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // isOnStableVersionExec matches device OS version to stable CrOS version.
 func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "match os version").Err()
 	}
@@ -63,7 +63,7 @@ func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // notOnStableVersionExec verifies devices OS is not matches stable CrOS version.
 func notOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.RunArgs.DUT.Name)
+	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "match os version").Err()
 	}
@@ -249,7 +249,7 @@ func isToolPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // crosSetGbbFlagsExec sets the GBB flags on the DUT.
 func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	if _, err := run(ctx, info.ActionTimeout, "/usr/share/vboot/bin/set_gbb_flags.sh 0"); err != nil {
 		log.Debugf(ctx, "Cros Set Gbb Flags: %s", err)
 		return errors.Annotate(err, "cros set gbb flags").Err()
@@ -259,7 +259,7 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // crosSwitchToSecureModeExec disables booting into dev-mode on the DUT.
 func crosSwitchToSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	if _, err := run(ctx, info.ActionTimeout, "crossystem", "disable_dev_request=1"); err != nil {
 		log.Debugf(ctx, "Cros Switch to Secure Mode %s", err)
 		return errors.Annotate(err, "cros switch to secure mode").Err()
@@ -281,7 +281,7 @@ func updateCrossystemExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("update crossystem: value cannot be empty").Err()
 	}
 	checkAfterUpdate := argsMap.AsBool(ctx, "check_after_update", false)
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	return errors.Annotate(cros.UpdateCrossystem(ctx, run, command, val, checkAfterUpdate), "update crossystem").Err()
 }
 
@@ -289,7 +289,7 @@ func updateCrossystemExec(ctx context.Context, info *execs.ExecInfo) error {
 func logTypeCStatus(ctx context.Context, info *execs.ExecInfo) error {
 	const status0 = "ectool typecstatus 0"
 	const status1 = "ectool typecstatus 1"
-	run := info.NewRunner(info.RunArgs.DUT.Name)
+	run := info.NewRunner(info.GetDut().Name)
 	out, err := run(ctx, time.Minute, status0)
 	if err != nil {
 		return errors.Annotate(err, "log type C status").Err()
