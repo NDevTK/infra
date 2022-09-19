@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "544bdaef_1079c5a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1524007
+      },
+      "writtenOn": "2022-09-19T14:47:19Z",
+      "side": 1,
+      "message": "I\u0027d love a tech tawk dealing with the overall design of this codebase. As someone relatively new to go, I\u0027d love to understand how to contribute to this and how to think about the organizational structure",
+      "revId": "252f71b8df00bc90d037ca04cf08595e1d7fec87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
