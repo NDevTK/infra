@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "bac0337a_2de877b9",
+        "filename": "build/build.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1191,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-19T05:43:44Z",
+      "side": 1,
+      "message": "No. If there is an specific error code that differentiates auth_error and non-exist, it\u0027s leaking information about wether this path actually exist.\n\nAlso if it\u0027s an auth_error, it will be failed when uploading / tagging the package.",
+      "parentUuid": "9ccc9150_6b5140a2",
+      "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "999363b4_ddbab42c",
         "filename": "build/build.py",
         "patchSetId": 2
@@ -48,6 +66,24 @@
       "writtenOn": "2022-09-19T05:36:56Z",
       "side": 1,
       "message": "It seems confusing/unnecessary to have this argument if we only ever pass True. I\u0027d just update the function description to state that it updates the \u0027latest\u0027 ref.",
+      "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc3c7547_e5922e9c",
+        "filename": "build/build.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1215,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-19T05:43:44Z",
+      "side": 1,
+      "message": "Sorry, we should pass pkg_def.update_latest_ref to it.",
+      "parentUuid": "999363b4_ddbab42c",
       "revId": "cf2445a9e01c7279bfeabc4f89dfbd2be260d6f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
