@@ -2094,8 +2094,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo",
 			ExecExtraArgs: []string{
-				"update_ec_attempt_count:1",
-				"update_ap_attempt_count:1",
+				"update_ec_attempt_count:3",
+				"update_ap_attempt_count:3",
 				"download_timeout:600",
 				"gbb_flags:0x18",
 			},
