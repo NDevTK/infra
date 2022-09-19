@@ -56,6 +56,7 @@ type ethernetHookRun struct {
 	prefix string
 }
 
+// Run runs the ethernet hook command.
 func (c *ethernetHookRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
 	if c.commonFlags.Verbose {
@@ -101,13 +102,14 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "failed to wrap storage client").Err()
 	}
 
-	it := storageClient.Ls(ctx, c.bucket, c.prefix)
-	for {
-		objectAttrs, _, iErr := it()
-		if iErr != nil {
-			break
-		}
-		b, err := json.MarshalIndent(objectAttrs, "", "  ")
+	it := storageClient.Ls(ctx, c.bucket, &storage.Query{
+		Delimiter:                "/",
+		Prefix:                   c.prefix,
+		IncludeTrailingDelimiter: true,
+	})
+	state := ethernethook.LsState{}
+	for it(&state) {
+		b, err := json.MarshalIndent(state.Attrs, "", "  ")
 		if err != nil {
 			return errors.Annotate(err, "failed to marshal object").Err()
 		}
