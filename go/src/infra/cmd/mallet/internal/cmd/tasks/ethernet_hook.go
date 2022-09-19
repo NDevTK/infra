@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/option"
 
+	"infra/cmd/mallet/internal/cmd/tasks/ethernethook"
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 )
@@ -79,7 +80,7 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	if err != nil {
 		return errors.Annotate(err, "failed to get token source").Err()
 	}
-	storageClient, err := storage.NewClient(
+	rawStorageClient, err := storage.NewClient(
 		ctx,
 		option.WithHTTPClient(httpClient),
 		option.WithTokenSource(tokenSource),
@@ -88,46 +89,22 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	if err != nil {
 		return errors.Annotate(err, "failed to set up storage client as %q", email).Err()
 	}
-
-	bucketAttrs, err := storageClient.Bucket(c.bucket).Attrs(ctx)
+	storageClient, err := ethernethook.NewExtendedGSClient(rawStorageClient)
 	if err != nil {
-		return errors.Annotate(err, "get bucket properties for bucket %q as %q", c.bucket, email).Err()
+		return errors.Annotate(err, "failed to wrap storage client").Err()
 	}
 
-	_, err = fmt.Fprintf(a.GetErr(), "%d\n", bucketAttrs.ProjectNumber)
-	if err != nil {
-		return errors.Annotate(err, "printing").Err()
-	}
-
-	query := &storage.Query{
-		Delimiter: "/",
-		Prefix:    c.prefix,
-	}
-
-	objectIterator := storageClient.Bucket(c.bucket).Objects(ctx, query)
-
-	const maxObjects = 100
-	tally := 0
-	for i := 0; i < maxObjects; i++ {
-		objectAttrs, err := objectIterator.Next()
+	it := storageClient.Ls(ctx, c.bucket, c.prefix)
+	for {
+		objectAttrs, _, iErr := it()
+		if iErr != nil {
+			break
+		}
+		b, err := json.MarshalIndent(objectAttrs, "", "  ")
 		if err != nil {
-			return errors.Annotate(err, "printing object #%d", i).Err()
+			return errors.Annotate(err, "failed to marshal object").Err()
 		}
-		if i == 0 {
-			b, err := json.MarshalIndent(objectAttrs, "", "  ")
-
-			if err != nil {
-				return errors.Annotate(err, "failed to marshal object").Err()
-			}
-			fmt.Fprintf(a.GetErr(), "%s\n", string(b))
-		}
-		tally++
-	}
-	switch tally {
-	case 100:
-		fmt.Fprintf(a.GetErr(), "%s\n", "at least 100 items")
-	default:
-		fmt.Fprintf(a.GetErr(), "exactly %d items\n", tally)
+		fmt.Fprintf(a.GetErr(), "%s\n", string(b))
 	}
 
 	return nil
