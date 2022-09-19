@@ -14,14 +14,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	iv2api "infra/appengine/cros/lab_inventory/api/v1"
-	"infra/cros/hwid"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsmfgcfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
-	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 )
@@ -46,7 +41,7 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 		}
 	}()
 
-	invV2Client, err := getInventoryV2Client(ctx)
+	invV2Client, err := controller.GetInventoryV2Client(ctx)
 	if err != nil {
 		return err
 	}
@@ -66,7 +61,7 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 		}
 
 		// Inv V2 implementation
-		mfgCfgInvV2, err := getManufacturingConfigFromInvV2(ctx, invV2Client, hwid)
+		mfgCfgInvV2, err := controller.GetManufacturingConfigFromInvV2(ctx, invV2Client, hwid)
 		if err != nil {
 			logging.Warningf(ctx, "InvV2 ManufacturingConfig for %s not found. Error: %s", hwid, err)
 		}
@@ -79,7 +74,7 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 
 		var mfgCfgUFS *ufsmfgcfg.ManufacturingConfig
 		if !reflect.ValueOf(hwidData).IsNil() {
-			mfgCfgUFS, err = getManufacturingConfigFromUFS(ctx, hwidData)
+			mfgCfgUFS, err = controller.GetManufacturingConfigFromUFS(ctx, hwidData)
 			if err != nil {
 				logging.Warningf(ctx, "UFS ManufacturingConfig for %s not found. Error: %s", hwid, err)
 			}
@@ -105,24 +100,8 @@ func setupMfgcfgDiffContext(ctx context.Context) context.Context {
 
 // The below methods are implementations copy and pasted from dut.go
 
-func getInventoryV2Client(ctx context.Context) (external.CrosInventoryClient, error) {
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return es.NewCrosInventoryInterfaceFactory(ctx, config.Get(ctx).GetCrosInventoryHost())
-}
-
-func getHwidClient(ctx context.Context) (hwid.ClientInterface, error) {
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return es.NewHwidClientInterface(ctx)
-}
-
 func getHwidData(ctx context.Context, hwid string) (*ufspb.HwidData, error) {
-	hwidClient, err := getHwidClient(ctx)
+	hwidClient, err := controller.GetHwidClient(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to get HwidClient. Error: %s", err)
 		return nil, err
@@ -133,21 +112,4 @@ func getHwidData(ctx context.Context, hwid string) (*ufspb.HwidData, error) {
 		return nil, err
 	}
 	return d, nil
-}
-
-func getManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.CrosInventoryClient, id string) (*ufsmfgcfg.ManufacturingConfig, error) {
-	resp, err := inv2Client.GetManufacturingConfig(ctx, &iv2api.GetManufacturingConfigRequest{
-		Name: id,
-	})
-	if err != nil {
-		return nil, err
-	}
-	s := proto.MarshalTextString(resp)
-	var mfgConfig ufsmfgcfg.ManufacturingConfig
-	proto.UnmarshalText(s, &mfgConfig)
-	return &mfgConfig, err
-}
-
-func getManufacturingConfigFromUFS(ctx context.Context, hwidData *ufspb.HwidData) (*ufsmfgcfg.ManufacturingConfig, error) {
-	return configuration.ParseHwidDataIntoMfgCfg(hwidData)
 }

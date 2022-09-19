@@ -20,7 +20,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	iv2api "infra/appengine/cros/lab_inventory/api/v1"
-	"infra/cros/hwid"
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
@@ -369,7 +368,7 @@ func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
 		devCfgIds = append(devCfgIds, fallBackDevConfigID)
 	}
 
-	invV2Client, err := getInventoryV2Client(ctx)
+	invV2Client, err := GetInventoryV2Client(ctx)
 	if err != nil {
 		return err
 	}
@@ -854,7 +853,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 			LabConfig: lse,
 		}, nil
 	}
-	invV2Client, err := getInventoryV2Client(ctx)
+	invV2Client, err := GetInventoryV2Client(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to InvV2Client. Error: %s", err)
 		return &ufspb.ChromeOSDeviceData{
@@ -866,7 +865,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		logging.Warningf(ctx, "DeviceConfig for %s not found. Error: %s", id, err)
 	}
 	hwid := machine.GetChromeosMachine().GetHwid()
-	mfgConfig, err := getManufacturingConfigFromInvV2(ctx, invV2Client, hwid)
+	mfgConfig, err := GetManufacturingConfigFromInvV2(ctx, invV2Client, hwid)
 	if err != nil {
 		logging.Warningf(ctx, "ManufacturingConfig for %s not found. Error: %s", hwid, err)
 	}
@@ -931,8 +930,8 @@ func getDeviceConfig(ctx context.Context, inv2Client external.CrosInventoryClien
 	return &devConfig, err
 }
 
-// getManufacturingConfigFromInvV2 gets manufacturing config from InvV2 (legacy)
-func getManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.CrosInventoryClient, id string) (*ufsmanufacturing.ManufacturingConfig, error) {
+// GetManufacturingConfigFromInvV2 gets manufacturing config from InvV2 (legacy)
+func GetManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.CrosInventoryClient, id string) (*ufsmanufacturing.ManufacturingConfig, error) {
 	resp, err := inv2Client.GetManufacturingConfig(ctx, &iv2api.GetManufacturingConfigRequest{
 		Name: id,
 	})
@@ -946,6 +945,11 @@ func getManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.Cr
 	return &mfgConfig, err
 }
 
+// GetManufacturingConfigFromInvV2 gets manufacturing config from UFS
+func GetManufacturingConfigFromUFS(ctx context.Context, hwidData *ufspb.HwidData) (*ufsmanufacturing.ManufacturingConfig, error) {
+	return configuration.ParseHwidDataIntoMfgCfg(hwidData)
+}
+
 func getStability(ctx context.Context, model string) (bool, error) {
 	stability, err := configuration.GetDeviceStability(ctx, model)
 	if err == nil && stability != nil && stability.GetStability() == dut.DeviceStability_UNSTABLE {
@@ -957,7 +961,7 @@ func getStability(ctx context.Context, model string) (bool, error) {
 
 // getHwidData gets HWID data from HWID server based on a given HWID.
 func getHwidData(ctx context.Context, hwid string) (*ufspb.HwidData, error) {
-	hwidClient, err := getHwidClient(ctx)
+	hwidClient, err := GetHwidClient(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to get HwidClient. Error: %s", err)
 		return nil, err
@@ -978,22 +982,6 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, enableBox
 		return nil, nil
 	}
 	return nil, status.Errorf(codes.Unimplemented, "getSchedulableLabels not yet implemented")
-}
-
-func getInventoryV2Client(ctx context.Context) (external.CrosInventoryClient, error) {
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return es.NewCrosInventoryInterfaceFactory(ctx, config.Get(ctx).GetCrosInventoryHost())
-}
-
-func getHwidClient(ctx context.Context) (hwid.ClientInterface, error) {
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return es.NewHwidClientInterface(ctx)
 }
 
 func getRPMNamePortForOSMachineLSE(lse *ufspb.MachineLSE) (string, string) {

@@ -16,8 +16,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"infra/cros/hwid"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/config"
+	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/caching"
 	"infra/unifiedfleet/app/model/configuration"
 	ufsds "infra/unifiedfleet/app/model/datastore"
@@ -628,4 +631,22 @@ func parseIntTypeFilter(filterMap map[string][]interface{}, filterName string) (
 		filterMap[filterName] = v
 	}
 	return filterMap, nil
+}
+
+// Returns a client for interacting with Inv v2 service
+func GetInventoryV2Client(ctx context.Context) (external.CrosInventoryClient, error) {
+	es, err := external.GetServerInterface(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return es.NewCrosInventoryInterfaceFactory(ctx, config.Get(ctx).GetCrosInventoryHost())
+}
+
+// Returns a client for interacting with HWID service
+func GetHwidClient(ctx context.Context) (hwid.ClientInterface, error) {
+	es, err := external.GetServerInterface(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return es.NewHwidClientInterface(ctx)
 }
