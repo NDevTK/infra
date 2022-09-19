@@ -52,7 +52,7 @@ func (e *extendedGSClient) Ls(ctx context.Context, bucket string, prefix string)
 	res := func() (*storage.ObjectAttrs, IteratorStatus, error) {
 		objectAttrs, err := objectIterator.Next()
 		if err != nil {
-			if err == iterator.Done {
+			if errors.Is(err, iterator.Done) {
 				return nil, done, err
 			}
 			return nil, invalid, err
@@ -60,4 +60,20 @@ func (e *extendedGSClient) Ls(ctx context.Context, bucket string, prefix string)
 		return objectAttrs, keepGoing, nil
 	}
 	return res
+}
+
+// LsSync synchronously gets objects.
+func (e *extendedGSClient) LsSync(ctx context.Context, bucket string, prefix string) ([]*storage.ObjectAttrs, error) {
+	it := e.Ls(ctx, bucket, prefix)
+	var out []*storage.ObjectAttrs
+	for {
+		objectAttrs, status, err := it()
+		if err != nil {
+			if status == done {
+				return out, nil
+			}
+			return nil, err
+		}
+		out = append(out, objectAttrs)
+	}
 }

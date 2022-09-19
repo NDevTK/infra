@@ -6,8 +6,9 @@ package tasks
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"regexp"
 
 	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
@@ -35,7 +36,6 @@ var EthernetHook = &subcommands.Command{
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.date, "date", "", "the date to process")
 		c.Flags.StringVar(&c.bucket, "bucket", "chromeos-test-logs", "the base GS bucket to check for logs")
-		c.Flags.StringVar(&c.prefix, "prefix", "", "prefix of the objects in question")
 		return c
 	},
 }
@@ -51,9 +51,6 @@ type ethernetHookRun struct {
 
 	// Add a default bucket.
 	bucket string
-
-	// The prefix of the Google Storage object within the Google Storage bucket.
-	prefix string
 }
 
 func (c *ethernetHookRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -68,8 +65,21 @@ func (c *ethernetHookRun) Run(a subcommands.Application, args []string, env subc
 	return 0
 }
 
+var dateRegexp = regexp.MustCompile(`\A\d\d\d\d-\d\d-\d\d\z`)
+
+func (c *ethernetHookRun) validate() error {
+	// no validation for c.bucket
+	if ok := dateRegexp.MatchString(c.date); !ok {
+		return errors.Reason("date %q not in YYYY-MM-DD format (the one true date format)", c.date).Err()
+	}
+	return nil
+}
+
 // Print out ethernet-hook-related records.
 func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	if err := c.validate(); err != nil {
+		return errors.Annotate(err, "ethernet hook").Err()
+	}
 	options, err := c.authFlags.Options()
 	if err != nil {
 		return errors.Annotate(err, "failed to get auth options").Err()
@@ -101,18 +111,16 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "failed to wrap storage client").Err()
 	}
 
-	it := storageClient.Ls(ctx, c.bucket, c.prefix)
+	it := storageClient.Ls(ctx, c.bucket, fmt.Sprintf("%s/test-runner/prod/%s", c.bucket, c.date))
 	for {
-		objectAttrs, _, iErr := it()
-		if iErr != nil {
-			break
-		}
-		b, err := json.MarshalIndent(objectAttrs, "", "  ")
+		path, _, err := it()
 		if err != nil {
-			return errors.Annotate(err, "failed to marshal object").Err()
+			return errors.Annotate(err, "ethernet hook").Err()
 		}
-		fmt.Fprintf(a.GetErr(), "%s\n", string(b))
+		contents, err := storageClient.ReadFile(ctx, c.bucket, filepath.Join(path.Prefix, "autoserv/control"))
+		if err != nil {
+			return errors.Annotate(err, "ethernet hook").Err()
+		}
+		fmt.Printf("%s\n", contents)
 	}
-
-	return nil
 }
