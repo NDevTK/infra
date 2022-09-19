@@ -60,3 +60,19 @@ func (e *extendedGSClient) Ls(ctx context.Context, bucket string, prefix string)
 	}
 	return res
 }
+
+// LsSync synchronously gets objects.
+func (e *extendedGSClient) LsSync(ctx context.Context, bucket string, prefix string) ([]storage.ObjectAttrs, error) {
+	it := e.Ls(ctx, bucket, prefix)
+	var out []storage.ObjectAttrs
+	for {
+		objectAttrs, status, err := it()
+		switch status {
+		case invalid:
+			return nil, err
+		case done:
+			return out, nil
+		}
+		out = append(out, *objectAttrs)
+	}
+}
