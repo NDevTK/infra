@@ -13,6 +13,7 @@ import (
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/cros/firmware"
+	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/metrics"
 	"infra/cros/recovery/internal/log"
@@ -82,6 +83,29 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				} else {
 					log.Debugf(ctx, "Install from USB Drive in Recovery Mode: std err not found.")
 				}
+				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+			}
+			// Following the logic in legacy repair, we will now
+			// attempt a storage audit on the DUT.
+			if err := storage.AuditStorageSMART(ctx, dutRun, info.GetChromeos().GetStorage(), dut); err != nil {
+				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+			}
+			// Default values for these variables have also been
+			// included in the action to document their availability
+			// for modification.
+			bbMode := storage.AuditMode(am.AsString(ctx, "badblocks_mode", "auto"))
+			timeoutRO := am.AsDuration(ctx, "rw_badblocks_timeout", 5400, time.Second)
+			timeoutRW := am.AsDuration(ctx, "ro_badblocks_timeout", 3600, time.Second)
+			bbArgs := storage.BadBlocksArgs{
+				AuditMode: bbMode,
+				Run:       dutRun,
+				Storage:   info.GetChromeos().GetStorage(),
+				Dut:       info.RunArgs.DUT,
+				Metrics:   info.RunArgs.Metrics,
+				TimeoutRW: timeoutRW,
+				TimeoutRO: timeoutRO,
+			}
+			if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
 				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 			}
 			logger.Debugf("Install from USB drive: finished install process")

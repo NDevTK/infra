@@ -1792,8 +1792,11 @@ func crosRepairActions() map[string]*Action {
 				"install_timeout:1200",
 				"tpm_reset_timeout:60",
 				"post_install_boot_time:60",
+				"badblocks_mode:auto",
+				"rw_badblocks_timeout:5400",
+				"ro_badblocks_timeout3600",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			ExecTimeout: &durationpb.Duration{Seconds: 7500},
 		},
 		"Install OS in DEV mode by USB-drive (for special pools)": {
 			Docs: []string{
