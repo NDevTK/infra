@@ -189,7 +189,7 @@ func SetApInfoByServo(ctx context.Context, req *SetApInfoByServoRequest, run com
 		return errors.Annotate(err, "set ap info").Err()
 	}
 	log.Debugf("Set AP info: starting flashing AP to the DUT")
-	err = p.ProgramAP(ctx, req.FilePath, req.GBBFlags, req.ForceUpdate)
+	err = p.ProgramAP(ctx, req.FilePath, req.GBBFlags, req.ForceUpdate, false)
 	return errors.Annotate(err, "set ap info: read flags").Err()
 }
 
@@ -397,7 +397,9 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 		for apRetryCount > 0 {
 			apRetryCount -= 1
 			log.Debugf("Program AP attempt %d, maximum retry: %d", req.UpdateApAttemptCount-apRetryCount, req.UpdateApAttemptCount)
-			apErr = p.ProgramAP(ctx, apImage, req.GBBFlags, req.ForceUpdate)
+			// If flash failed in the first attempt, switch to external flashrom instead of libflashrom for remaining attempts.
+			useExternalFlashrom := req.UpdateApAttemptCount-apRetryCount > 1
+			apErr = p.ProgramAP(ctx, apImage, req.GBBFlags, req.ForceUpdate, useExternalFlashrom)
 			if apErr == nil {
 				break
 			} else if apRetryCount > 0 {
