@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
 
 	"infra/cmd/mallet/internal/cmd/tasks/ethernethook"
@@ -31,6 +32,7 @@ var EthernetHook = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &ethernetHookRun{}
 		c.authFlags.Register(&c.Flags, site.EthernetHookCallbackOptions)
+		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.date, "date", "", "the date to process")
 		c.Flags.StringVar(&c.bucket, "bucket", "chromeos-test-logs", "the base GS bucket to check for logs")
 		c.Flags.StringVar(&c.prefix, "prefix", "", "prefix of the objects in question")
@@ -40,8 +42,9 @@ var EthernetHook = &subcommands.Command{
 
 type ethernetHookRun struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
-	envFlags  site.EnvFlags
+	authFlags   authcli.Flags
+	envFlags    site.EnvFlags
+	commonFlags site.CommonFlags
 
 	// Dates are given in YYYY-MM-DD format, the only correct format.
 	date string
@@ -54,7 +57,11 @@ type ethernetHookRun struct {
 }
 
 func (c *ethernetHookRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	if err := c.innerRun(cli.GetContext(a, c, env), a, args, env); err != nil {
+	ctx := cli.GetContext(a, c, env)
+	if c.commonFlags.Verbose {
+		ctx = logging.SetLevel(ctx, logging.Debug)
+	}
+	if err := c.innerRun(ctx, a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
 	}
