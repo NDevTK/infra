@@ -56,6 +56,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "537174d1_79321e4a",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2120,
+      "author": {
+        "id": 1377969
+      },
+      "writtenOn": "2022-09-20T03:37:20Z",
+      "side": 1,
+      "message": "Right you are nik, it ought to detect no diff and so issue no writes if the write works the first time. There will be edge cases but maybe we dont care enough. \n\nHere are the futility retries otabek: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/9f2e9804b492f8fccc060e013b12de9679cca246:src/platform/vboot_reference/futility/updater_utils.c;l\u003d769\n\nI would like to know how often repair logic gets run though if I may?",
+      "parentUuid": "10a6afcc_46606a5d",
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b3c12127_ee0581e2",
         "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
         "patchSetId": 2
