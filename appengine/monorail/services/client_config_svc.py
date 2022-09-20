@@ -46,109 +46,77 @@ class ClientConfig(db.Model):
   configs = db.TextProperty()
 
 
-# Note: The cron job must have hit the servlet before this will work.
-# when convert to flask replace the webapp2.RequestHandler to Object
-class LoadApiClientConfigs():
+_CONFIG_LOADS = ts_mon.CounterMetric(
+    'monorail/client_config_svc/loads', 'Results of fetches from luci-config.',
+    [ts_mon.BooleanField('success'),
+     ts_mon.StringField('type')])
 
-  config_loads = ts_mon.CounterMetric(
-      'monorail/client_config_svc/loads',
-      'Results of fetches from luci-config.',
-      [ts_mon.BooleanField('success'), ts_mon.StringField('type')])
 
-  def get(self):
-    global service_account_map
-    global qpm_dict
-    authorization_token, _ = app_identity.get_access_token(
+def _process_response(response):
+  try:
+    content = json.loads(response.content)
+  except ValueError:
+    logging.error('Response was not JSON: %r', response.content)
+    _CONFIG_LOADS.increment({'success': False, 'type': 'json-load-error'})
+    raise
+
+  try:
+    config_content = content['content']
+  except KeyError:
+    logging.error('JSON contained no content: %r', content)
+    _CONFIG_LOADS.increment({'success': False, 'type': 'json-key-error'})
+    raise
+
+  try:
+    content_text = base64.b64decode(config_content)
+  except TypeError:
+    logging.error('Content was not b64: %r', config_content)
+    _CONFIG_LOADS.increment({'success': False, 'type': 'b64-decode-error'})
+    raise
+
+  try:
+    cfg = api_clients_config_pb2.ClientCfg()
+    text_format.Merge(content_text, cfg)
+  except:
+    logging.error('Content was not a valid ClientCfg proto: %r', content_text)
+    _CONFIG_LOADS.increment({'success': False, 'type': 'proto-load-error'})
+    raise
+
+  return content_text
+
+
+def GetLoadApiClientConfigs():
+  global service_account_map
+  global qpm_dict
+  authorization_token, _ = app_identity.get_access_token(
       framework_constants.OAUTH_SCOPE)
-    response = urlfetch.fetch(
+  response = urlfetch.fetch(
       LUCI_CONFIG_URL,
       method=urlfetch.GET,
       follow_redirects=False,
-      headers={'Content-Type': 'application/json; charset=UTF-8',
-              'Authorization': 'Bearer ' + authorization_token})
+      headers={
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ' + authorization_token
+      })
 
-    if response.status_code != 200:
-      logging.error('Invalid response from luci-config: %r', response)
-      self.config_loads.increment({'success': False, 'type': 'luci-cfg-error'})
-      self.abort(500, 'Invalid response from luci-config')
+  if response.status_code != 200:
+    logging.error('Invalid response from luci-config: %r', response)
+    _CONFIG_LOADS.increment({'success': False, 'type': 'luci-cfg-error'})
+    flask.abort(500, 'Invalid response from luci-config')
 
-    try:
-      content_text = self._process_response(response)
-    except Exception as e:
-      self.abort(500, str(e))
+  try:
+    content_text = _process_response(response)
+  except Exception as e:
+    flask.abort(500, str(e))
 
-    logging.info('luci-config content decoded: %r.', content_text)
-    configs = ClientConfig(configs=content_text,
-                            key_name='api_client_configs')
-    configs.put()
-    service_account_map = None
-    qpm_dict = None
-    self.config_loads.increment({'success': True, 'type': 'success'})
+  logging.info('luci-config content decoded: %r.', content_text)
+  configs = ClientConfig(configs=content_text, key_name='api_client_configs')
+  configs.put()
+  service_account_map = None
+  qpm_dict = None
+  _CONFIG_LOADS.increment({'success': True, 'type': 'success'})
 
-  def _process_response(self, response):
-    try:
-      content = json.loads(response.content)
-    except ValueError:
-      logging.error('Response was not JSON: %r', response.content)
-      self.config_loads.increment({'success': False, 'type': 'json-load-error'})
-      raise
-
-    try:
-      config_content = content['content']
-    except KeyError:
-      logging.error('JSON contained no content: %r', content)
-      self.config_loads.increment({'success': False, 'type': 'json-key-error'})
-      raise
-
-    try:
-      content_text = base64.b64decode(config_content)
-    except TypeError:
-      logging.error('Content was not b64: %r', config_content)
-      self.config_loads.increment({'success': False,
-                                   'type': 'b64-decode-error'})
-      raise
-
-    try:
-      cfg = api_clients_config_pb2.ClientCfg()
-      text_format.Merge(content_text, cfg)
-    except:
-      logging.error('Content was not a valid ClientCfg proto: %r', content_text)
-      self.config_loads.increment({'success': False,
-                                   'type': 'proto-load-error'})
-      raise
-
-    return content_text
-
-  def GetLoadApiClientConfigs(self):
-    global service_account_map
-    global qpm_dict
-    authorization_token, _ = app_identity.get_access_token(
-        framework_constants.OAUTH_SCOPE)
-    response = urlfetch.fetch(
-        LUCI_CONFIG_URL,
-        method=urlfetch.GET,
-        follow_redirects=False,
-        headers={
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer ' + authorization_token
-        })
-
-    if response.status_code != 200:
-      logging.error('Invalid response from luci-config: %r', response)
-      self.config_loads.increment({'success': False, 'type': 'luci-cfg-error'})
-      flask.abort(500, 'Invalid response from luci-config')
-
-    try:
-      content_text = self._process_response(response)
-    except Exception as e:
-      flask.abort(500, str(e))
-
-    logging.info('luci-config content decoded: %r.', content_text)
-    configs = ClientConfig(configs=content_text, key_name='api_client_configs')
-    configs.put()
-    service_account_map = None
-    qpm_dict = None
-    self.config_loads.increment({'success': True, 'type': 'success'})
+  return ''
 
 
 class ClientConfigService(object):

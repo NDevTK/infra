@@ -749,8 +749,7 @@ class ServletRegistry(object):
                 services=service).GetRamCacheConsolidate, ['GET']),
         ('/reap', reap.Reap(services=service).GetReap, ['GET']),
         (
-            '/loadApiClientConfigs',
-            client_config_svc.LoadApiClientConfigs().GetLoadApiClientConfigs,
+            '/loadApiClientConfigs', client_config_svc.GetLoadApiClientConfigs,
             ['GET']),
         (
             '/trimVisitedPages',
