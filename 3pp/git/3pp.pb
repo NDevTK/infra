@@ -1,7 +1,7 @@
 create {
   verify { test: "git_test.py" }
   source {
-    patch_version: "chromium.8"
+    patch_version: "chromium.9"
     cpe_base_address: "cpe:/a:git_project:git"
   }
 }
@@ -20,7 +20,9 @@ create {
     tool: "tools/sed"
 
     dep: "static_libs/curl"
+    dep: "static_libs/libidn2"
     dep: "static_libs/libexpat"
+    dep: "static_libs/openssl"
     dep: "static_libs/pcre2"
     dep: "static_libs/zlib"
   }
@@ -41,7 +43,7 @@ create {
     # So, we remove the .windows.XX suffix here; if git-for-windows produces
     # a new patch version that you need, bump the 'patch_version' at the top of
     # this file. You'll get new builds on other platforms, too, but <shrug>.
-    alter_version_re: "(.*)\.windows\.\d*(.*)"
+    alter_version_re: "(.*)\\.windows\\.\\d*(.*)"
     alter_version_replace: "\\1\\2"
   }
 }
