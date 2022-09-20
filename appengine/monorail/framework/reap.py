@@ -126,6 +126,3 @@ class Reap(jsonfeed.FlaskInternalTask):
 
   def GetReap(self, **kwargs):
     return self.handler(**kwargs)
-
-  def PostReap(self, **kwargs):
-    return self.handler(**kwargs)

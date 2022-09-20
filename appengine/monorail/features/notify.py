@@ -219,9 +219,6 @@ class NotifyIssueChangeTask(notify_helpers.NotifyTaskBase):
 
     return email_tasks
 
-  def GetNotifyIssueChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostNotifyIssueChangeTask(self, **kwargs):
     return self.handler(**kwargs)
 
@@ -355,9 +352,6 @@ class NotifyBlockingChangeTask(notify_helpers.NotifyTaskBase):
         upstream_project, hostport, commenter_view, detail_url)
 
     return one_issue_email_tasks
-
-  def GetNotifyBlockingChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
 
   def PostNotifyBlockingChangeTask(self, **kwargs):
     return self.handler(**kwargs)
@@ -724,9 +718,6 @@ class NotifyBulkChangeTask(notify_helpers.NotifyTaskBase):
 
     return subject, body
 
-  def GetNotifyBulkChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostNotifyBulkChangeTask(self, **kwargs):
     return self.handler(**kwargs)
 
@@ -919,9 +910,6 @@ class NotifyApprovalChangeTask(notify_helpers.NotifyTaskBase):
 
     return list(set(recipient_ids))
 
-  def GetNotifyApprovalChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostNotifyApprovalChangeTask(self, **kwargs):
     return self.handler(**kwargs)
 
@@ -990,9 +978,6 @@ class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
           dict(from_addr=from_addr, to=dest_email, subject=subject, body=body))
 
     return email_tasks
-
-  def GetNotifyRulesDeletedTask(self, **kwargs):
-    return self.handler(**kwargs)
 
   def PostNotifyRulesDeletedTask(self, **kwargs):
     return self.handler(**kwargs)
@@ -1083,9 +1068,6 @@ class OutboundEmailTask(jsonfeed.FlaskInternalTask):
     return dict(
         sender=sender, to=to, subject=subject, body=body, html_body=html_body,
         reply_to=reply_to, references=references)
-
-  def GetOutboundEmailTask(self, **kwargs):
-    return self.handler(**kwargs)
 
   def PostOutboundEmailTask(self, **kwargs):
     return self.handler(**kwargs)

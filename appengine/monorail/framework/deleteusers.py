@@ -64,9 +64,6 @@ class WipeoutSyncCron(jsonfeed.FlaskInternalTask):
   def GetWipeoutSyncCron(self, **kwargs):
     return self.handler(**kwargs)
 
-  def PostWipeoutSyncCron(self, **kwargs):
-    return self.handler(**kwargs)
-
 
 class SendWipeoutUserListsTask(jsonfeed.FlaskInternalTask):
   """Sends a batch of monorail users to wipeout-lite."""
@@ -92,9 +89,6 @@ class SendWipeoutUserListsTask(jsonfeed.FlaskInternalTask):
         body=json.dumps(accounts))
     logging.info(
         'Received response, %s with contents, %s', resp, data)
-
-  def GetSendWipeoutUserListsTask(self, **kwargs):
-    return self.handler(**kwargs)
 
   def PostSendWipeoutUserListsTask(self, **kwargs):
     return self.handler(**kwargs)
@@ -134,9 +128,6 @@ class DeleteWipeoutUsersTask(jsonfeed.FlaskInternalTask):
         'Received response, %s with contents, %s', resp, data)
     return json.loads(data)
 
-  def GetDeleteWipeoutUsersTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostDeleteWipeoutUsersTask(self, **kwargs):
     return self.handler(**kwargs)
 
@@ -155,9 +146,6 @@ class DeleteUsersTask(jsonfeed.FlaskInternalTask):
       return
     with work_env.WorkEnv(mr, self.services) as we:
       we.ExpungeUsers(emails, check_perms=False)
-
-  def GetDeleteUsersTask(self, **kwargs):
-    return self.handler(**kwargs)
 
   def PostDeleteUsersTask(self, **kwargs):
     return self.handler(**kwargs)

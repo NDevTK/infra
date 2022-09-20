@@ -99,8 +99,5 @@ class BanSpammerTask(jsonfeed.FlaskInternalTask):
         'issues': len(issues),
     })
 
-  def GetBanSpammer(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostBanSpammer(self, **kwargs):
     return self.handler(**kwargs)

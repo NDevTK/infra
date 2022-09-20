@@ -35,9 +35,6 @@ class RecomputeDerivedFieldsTask(jsonfeed.FlaskInternalTask):
         'success': True,
         }
 
-  def GetRecomputeDerivedFieldsTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostRecomputeDerivedFieldsTask(self, **kwargs):
     return self.handler(**kwargs)
 
@@ -56,7 +53,4 @@ class ReindexQueueCron(jsonfeed.FlaskInternalTask):
         }
 
   def GetReindexQueueCron(self, **kwargs):
-    return self.handler(**kwargs)
-
-  def PostReindexQueueCron(self, **kwargs):
     return self.handler(**kwargs)

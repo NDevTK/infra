@@ -21,6 +21,3 @@ class TrimVisitedPages(jsonfeed.FlaskInternalTask):
 
   def GetTrimVisitedPages(self, **kwargs):
     return self.handler(**kwargs)
-
-  def PostTrimVisitedPages(self, **kwargs):
-    return self.handler(**kwargs)

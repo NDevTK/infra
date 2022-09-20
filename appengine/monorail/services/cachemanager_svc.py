@@ -176,6 +176,3 @@ class RamCacheConsolidate(jsonfeed.FlaskInternalTask):
 
   def GetRamCacheConsolidate(self, **kwargs):
     return self.handler(**kwargs)
-
-  def PostRamCacheConsolidate(self, **kwargs):
-    return self.handler(**kwargs)

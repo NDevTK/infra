@@ -70,9 +70,6 @@ class PublishPubsubIssueChangeTask(jsonfeed.FlaskInternalTask):
 
     return {}
 
-  def GetPublishPubsubIssueChangeTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostPublishPubsubIssueChangeTask(self, **kwargs):
     return self.handler(**kwargs)
 

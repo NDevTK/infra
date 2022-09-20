@@ -530,9 +530,6 @@ class FLTConvertTask(jsonfeed.FlaskInternalTask):
     return tracker_bizobj.MakeFieldValue(
         field_id, None, None, user_id, None, None, False)
 
-  def GetFLTConvertTask(self, **kwargs):
-    return self.handler(**kwargs)
-
   def PostFLTConvertTask(self, **kwargs):
     return self.handler(**kwargs)
 
