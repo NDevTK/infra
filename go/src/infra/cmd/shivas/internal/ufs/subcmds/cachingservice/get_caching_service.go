@@ -48,8 +48,9 @@ Gets the CachingService and prints the output in the user-specified format.`,
 		c.Flags.IntVar(&c.pageSize, "n", 0, cmdhelp.ListPageSizeDesc)
 		c.Flags.BoolVar(&c.keysOnly, "keys", false, cmdhelp.KeysOnlyText)
 
-		c.Flags.Var(flag.StringSlice(&c.states), "state", "Name(s) of a state to filter by. Can be specified multiple times."+cmdhelp.StateFilterHelpText)
+		c.Flags.Var(flag.StringSlice(&c.states), "state", "Name(s) of a state to filter by. Can be specified multiple times. "+cmdhelp.StateFilterHelpText)
 		c.Flags.Var(flag.StringSlice(&c.subnets), "subnets", "Name(s) of a subnet to filter by. Can be specified multiple times.")
+		c.Flags.Var(flag.StringSlice(&c.zones), "zones", "Name(s) of a zone to filter by. Can be specified multiple times. "+cmdhelp.ZoneFilterHelpText)
 		return c
 	},
 }
@@ -64,6 +65,7 @@ type getCachingService struct {
 	// Filters
 	states  []string
 	subnets []string
+	zones   []string
 
 	pageSize int
 	keysOnly bool
@@ -112,6 +114,7 @@ func (c *getCachingService) formatFilters() []string {
 	filters := make([]string, 0)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.StateFilterName, c.states)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.SubnetsFilterName, c.subnets)...)
+	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.ZonesFilterName, c.zones)...)
 	return filters
 }
 

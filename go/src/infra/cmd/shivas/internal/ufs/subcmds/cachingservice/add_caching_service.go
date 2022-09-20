@@ -43,6 +43,7 @@ var AddCachingServiceCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.name, "name", "", "name of the CachingService")
 		c.Flags.IntVar(&c.port, "port", defaultCachingServicePort, "port number of the CachingService")
 		c.Flags.Var(utils.CSVString(&c.subnets), "subnets", "comma separated subnet list which this CachingService serves/supports")
+		c.Flags.Var(utils.CSVString(&c.zones), "zones", "comma separated zone list which this CachingService serves/supports")
 		c.Flags.StringVar(&c.primary, "primary", "", "primary node ip of the CachingService")
 		c.Flags.StringVar(&c.secondary, "secondary", "", "secondary node ip of the CachingService")
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
@@ -62,6 +63,7 @@ type addCachingService struct {
 	name        string
 	port        int
 	subnets     []string
+	zones       []string
 	primary     string
 	secondary   string
 	state       string
@@ -72,6 +74,7 @@ var mcsvFields = []string{
 	"name",
 	"port",
 	"subnets",
+	"zones",
 	"primary",
 	"secondary",
 	"state",
@@ -144,6 +147,7 @@ func (c *addCachingService) parseArgs(cs *ufspb.CachingService) {
 	cs.Name = c.name
 	cs.Port = int32(c.port)
 	cs.ServingSubnets = c.subnets
+	cs.Zones, _ = parseZones(c.zones)
 	cs.PrimaryNode = c.primary
 	cs.SecondaryNode = c.secondary
 	cs.State = ufsUtil.ToUFSState(c.state)
@@ -160,6 +164,9 @@ func (c *addCachingService) validateArgs() error {
 		}
 		if len(c.subnets) != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-subnets' cannot be specified at the same time.")
+		}
+		if len(c.zones) != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-zones' cannot be specified at the same time.")
 		}
 		if c.primary != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-primary' cannot be specified at the same time.")
@@ -181,8 +188,11 @@ func (c *addCachingService) validateArgs() error {
 		if !ufsAPI.HostnameRegex.MatchString(c.name) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' must be a hostname or ipv4 address.")
 		}
-		if len(c.subnets) == 0 {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-subnets' is required.")
+		if len(c.subnets) != 0 && len(c.zones) != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-subnets' and '-zones' are exclusive.")
+		}
+		if _, err := parseZones(c.zones); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s, please check help info for '-zones'.", err)
 		}
 		if !ufsAPI.HostnameRegex.MatchString(c.primary) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-primary' must be a hostname or ipv4 address.")
@@ -230,6 +240,12 @@ func (c *addCachingService) parseMCSV() ([]*ufspb.CachingService, error) {
 				cs.Port = int32(port)
 			case "subnets":
 				cs.ServingSubnets = strings.Fields(value)
+			case "zones":
+				zs, err := parseZones(strings.Fields(value))
+				if err != nil {
+					return nil, fmt.Errorf("Error in line %d.\n%s. %s", i, err, cmdhelp.ZoneFilterHelpText)
+				}
+				cs.Zones = zs
 			case "primary":
 				if !ufsAPI.HostnameRegex.MatchString(value) {
 					return nil, fmt.Errorf("Error in line %d.\nFailed to parse primary(must be a hostname or ipv4 address) %s", i, value)
@@ -254,4 +270,16 @@ func (c *addCachingService) parseMCSV() ([]*ufspb.CachingService, error) {
 		cachingServices = append(cachingServices, cs)
 	}
 	return cachingServices, nil
+}
+
+// parseZones parse zone strings and returns the zone values.
+func parseZones(zones []string) ([]ufspb.Zone, error) {
+	var r []ufspb.Zone
+	for _, z := range zones {
+		if !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(z)) {
+			return nil, fmt.Errorf("%q is not a valid zone", z)
+		}
+		r = append(r, ufsUtil.ToUFSZone(z))
+	}
+	return r, nil
 }

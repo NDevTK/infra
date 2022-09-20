@@ -36,6 +36,8 @@ var UpdateCachingServiceCmd = &subcommands.Command{
 
 		c.Flags.StringVar(&c.name, "name", "", "name of the CachingService")
 		c.Flags.IntVar(&c.port, "port", defaultCachingServicePort, "port number of the CachingService. "+"To set it to default port 8082, enter -1('-port -1').")
+		c.Flags.Var(utils.CSVString(&c.zones), "zones", "append/clear comma separated zone list which this CachingService serves/supports. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.Var(utils.CSVString(&c.removeZones), "zones-to-remove", "remove comma separated zone list.")
 		c.Flags.Var(utils.CSVString(&c.subnets), "subnets", "append/clear comma separated subnet list which this CachingService serves/supports. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(utils.CSVString(&c.removeSubnets), "subnets-to-remove", "remove comma separated subnet list.")
 		c.Flags.StringVar(&c.primary, "primary", "", "primary node ip of the CachingService. "+cmdhelp.ClearFieldHelpText)
@@ -56,6 +58,8 @@ type updateCachingService struct {
 
 	name          string
 	port          int
+	zones         []string
+	removeZones   []string
 	subnets       []string
 	removeSubnets []string
 	primary       string
@@ -107,6 +111,8 @@ func (c *updateCachingService) innerRun(a subcommands.Application, args []string
 		CachingService: &cs,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
 			"port":              "port",
+			"zones":             "zones",
+			"zones-to-remove":   "zones.remove",
 			"subnets":           "serving_subnets",
 			"subnets-to-remove": "serving_subnets.remove",
 			"primary":           "primary_node",
@@ -131,6 +137,13 @@ func (c *updateCachingService) parseArgs(cs *ufspb.CachingService) {
 		cs.Port = int32(defaultCachingServicePort)
 	} else {
 		cs.Port = int32(c.port)
+	}
+	if len(c.removeZones) > 0 {
+		cs.Zones, _ = parseZones(c.removeZones)
+	} else if ufsUtil.ContainsAnyStrings(c.zones, utils.ClearFieldValue) {
+		cs.Zones = nil
+	} else {
+		cs.Zones, _ = parseZones(c.zones)
 	}
 	if len(c.removeSubnets) > 0 {
 		cs.ServingSubnets = c.removeSubnets
@@ -165,6 +178,12 @@ func (c *updateCachingService) validateArgs() error {
 		if c.port != defaultCachingServicePort {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-port' cannot be specified at the same time.")
 		}
+		if len(c.zones) != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-zones' cannot be specified at the same time.")
+		}
+		if len(c.removeZones) != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-zones-to-remove' cannot be specified at the same time.")
+		}
 		if len(c.subnets) != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-subnets' cannot be specified at the same time.")
 		}
@@ -188,11 +207,19 @@ func (c *updateCachingService) validateArgs() error {
 		if c.name == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f') is specified.")
 		}
+		if len(c.zones) != 0 && len(c.removeZones) != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-zones' and '-zones-to-remove' cannot be specified at the same time.")
+		}
 		if len(c.subnets) != 0 && len(c.removeSubnets) != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-subnets' and '-subnets-to-remove' cannot be specified at the same time.")
 		}
-		if len(c.subnets) == 0 && c.port == defaultCachingServicePort && c.description == "" && c.primary == "" && c.secondary == "" && c.state == "" {
+		if len(c.zones) == 0 && len(c.removeZones) == 0 && len(c.subnets) == 0 && c.port == defaultCachingServicePort && c.description == "" && c.primary == "" && c.secondary == "" && c.state == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
+		}
+		if _, err := parseZones(c.zones); err != nil {
+			if !ufsUtil.ContainsAnyStrings(c.zones, utils.ClearFieldValue) {
+				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s, please check help info for '-zones'.", err)
+			}
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)

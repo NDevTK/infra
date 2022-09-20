@@ -1729,7 +1729,7 @@ Adds a CachingService by reading a JSON file input.
 shivas add cachingService -f CachingService.csv
 Adds a CachingService by reading a MCSV file input.
 
-shivas add cachingService -name {name} -port {portnumber} -subnets "subnet1,subnet2" -primary {primary hostname} -state {state}
+shivas add cachingService -name {name} -port {portnumber} -subnets "subnet1,subnet2" -primary {primary hostname} -state {state} -zones "zone1,zone2"
 Adds a CachingService by specifying several attributes directly.`
 
 	// UpdateCachingServiceLongDesc long description for UpdateCachingServiceCmd
@@ -1739,8 +1739,8 @@ Examples:
 shivas update cachingservice -f cs.json
 Update a CachingService by reading a JSON file input.
 
-shivas update cachingservice -name {cachingservice name} -port {50} -description {description}
-Partial updates a CachingService by parameters. Only specified parameters will be udpated in the CachingService.`
+shivas update cachingservice -name {cachingservice name} -port {50} -description {description} -zones {zones}
+Partial updates a CachingService by parameters. Only specified parameters will be updated in the CachingService.`
 
 	// CachingServiceFileText description for CachingService file input
 	CachingServiceFileText string = `[JSON/MCSV Mode] Path to a file(.json/.csv) containing CachingService specification.
@@ -1755,6 +1755,11 @@ Example CachingService:
 		"127.0.0.0/16",
 		"127.1.0.0/16"
 	],
+	"zones": [
+		"ZONE_CHROMEOS2",
+		"ZONE_CHROMEOS4",
+		"ZONE_CHROMEOS6"
+	],
 	"primary_node": "1.1.1.1",
 	"secondary_node": "2.2.2.2",
 	"state": "STATE_SERVING",
@@ -1763,11 +1768,11 @@ Example CachingService:
 
 [MCSV Mode]
 The file may have multiple or one CachingService csv record
-The header format and sequence should be: [name,port,subnets,primary,secondary,state,desc]
+The header format and sequence should be: [name,port,subnets,zones,primary,secondary,state,desc]
 Example mcsv format:
-name,port,subnets,primary,secondary,state,desc
-127.23.45.56,5555,127.23.45.56/16,1.1.1.1,2.2.2.2,serving,cas1
-45.23.21.22,6666,45.23.21.22/16 45.24.0.0/16,1.1.1.1,2.2.2.2,serving,cas2
+name,port,subnets,zones,primary,secondary,state,desc
+127.23.45.56,5555,127.23.45.56/16,,1.1.1.1,2.2.2.2,serving,cas1
+45.23.21.22,6666,45.23.21.22/16 45.24.0.0/16,chromeos2 chromeos4,1.1.1.1,2.2.2.2,serving,cas2
 
 The protobuf definition of CachingService is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/caching_service.proto`
@@ -1784,6 +1789,11 @@ Example CachingService:
 	"serving_subnets": [
 		"127.0.0.0/16",
 		"127.1.0.0/16"
+	],
+	"zones": [
+		"ZONE_CHROMEOS2",
+		"ZONE_CHROMEOS4",
+		"ZONE_CHROMEOS6"
 	],
 	"primary_node": "1.1.1.1",
 	"secondary_node": "2.2.2.2",
