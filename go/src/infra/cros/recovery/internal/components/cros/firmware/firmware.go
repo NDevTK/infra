@@ -194,7 +194,7 @@ func SetApInfoByServo(ctx context.Context, req *SetApInfoByServoRequest, run com
 }
 
 const (
-	extractFileTimeout = 600 * time.Second
+	extractFileTimeout = 1200 * time.Second
 	ecMonitorFileName  = "npcx_monitor.bin"
 )
 

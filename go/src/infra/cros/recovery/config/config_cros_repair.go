@@ -786,7 +786,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable software-controlled write-protect for 'ec'",
 			},
 			ExecName:    "cros_update_firmware_from_firmware_image",
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			ExecTimeout: &durationpb.Duration{Seconds: 6000},
 			ExecExtraArgs: []string{
 				"mode:recovery",
 				"force:true",
@@ -2012,7 +2012,7 @@ func crosRepairActions() map[string]*Action {
 		"Flash AP (FW) by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP to the DUT by servo",
-				"Set timeout for 50 minutes for now as = 10m(download)+ 10m(extraction-file)+30m(ap-update with retry).",
+				"Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
 				"We will retry up to 3 times since there may be flakiness on flash AP via servo.",
 			},
 			Conditions: []string{
@@ -2028,14 +2028,14 @@ func crosRepairActions() map[string]*Action {
 				"download_timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{
-				Seconds: 3000,
+				Seconds: 5400,
 			},
 			AllowFailAfterRecovery: true,
 		},
 		"Flash EC (FW) by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash EC to the DUT by servo",
-				"Set timeout for 100 minutes for now as = 10m(download)+ 2*10m(extraction-file)+20m(ec-update with retry).",
+				"Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).",
 				"We will retry up to 5 times since there is flakiness on flash EC.",
 			},
 			Conditions: []string{
@@ -2051,14 +2051,14 @@ func crosRepairActions() map[string]*Action {
 				"download_timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{
-				Seconds: 3000,
+				Seconds: 6600,
 			},
 			AllowFailAfterRecovery: true,
 		},
 		"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP only to the DUT by servo",
-				"Set timeout for 90 minutes for now as = 10m(download)+ 7*3m(extraction-file)+30m(ap-update).",
+				"Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
 				"The time will be updated later based on collected metrics",
 				"Each operation with extraction files can take up to a few minutes.",
 				"The AP update on the DUT can take up to 30 minutes",
@@ -2101,7 +2101,7 @@ func crosRepairActions() map[string]*Action {
 		"Update FW from fw-image by servo and set GBB to 0x18": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash EC/AP to the DUT by servo",
-				"Set timeout for 100 minutes for now as = 10m(download)+ 7*3m(extraction-file)+10m(ec-update)+30m(ap-update).",
+				"Set timeout for 180 minutes for now as = 10m(download)+ 6*20m(extraction-file)+10m(ec-update)+40m(ap-update).",
 				"The time will be updated later based on collected metrics",
 				"Each operation with extraction files can take up to a few minutes.",
 				"Ap update on the DUT can take up to 30 minutes",
@@ -2122,7 +2122,7 @@ func crosRepairActions() map[string]*Action {
 				"gbb_flags:0x18",
 			},
 			ExecTimeout: &durationpb.Duration{
-				Seconds: 6000,
+				Seconds: 10800,
 			},
 		},
 		"Boot DUT from USB in DEV mode": {
