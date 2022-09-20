@@ -11,12 +11,10 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import webapp2
+import flask
 import logging
 
 
-class CSPReportPage(webapp2.RequestHandler):
+def postCsp():
   """CSPReportPage serves CSP violation reports."""
-
-  def post(self):
-    logging.error('CSP Violation: %s' % self.request.body)
+  logging.error('CSP Violation: %s' % flask.request.get_data(as_text=True))
