@@ -74,6 +74,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "713e37e8_f6e8ae31",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2120,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-09-20T03:56:16Z",
+      "side": 1,
+      "message": "The retry was introduced as we see scenarios futility update failed on initial attempt(could be read fail, servo flakiness, timeout?) but success on re-run.\n\n\u003eI would like to know how often repair logic gets run though if I may?\n\nAssuming the you\u0027re asking specifically for flash AP action? It does triggered when a DUT is not reachable(via ping/ssh) and simple actions wasn\u0027t enough to bring it back(e.g. RPM power cycle, reset via servo, cr50 reset). See https://chromium.googlesource.com/infra/infra//+/HEAD/go/src/infra/cros/recovery/config/config_cros_repair.go#103",
+      "parentUuid": "537174d1_79321e4a",
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b3c12127_ee0581e2",
         "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
         "patchSetId": 2
@@ -85,6 +103,30 @@
       "writtenOn": "2022-09-20T00:46:25Z",
       "side": 1,
       "message": "do we now use it for all board/models?",
+      "range": {
+        "startLine": 401,
+        "startChar": 3,
+        "endLine": 401,
+        "endChar": 67
+      },
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b454e0bf_ba4c6b32",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 401,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-09-20T03:56:16Z",
+      "side": 1,
+      "message": "Yes, if the first run with futility fails, we re-try with flashrom on labstation.",
+      "parentUuid": "b3c12127_ee0581e2",
       "range": {
         "startLine": 401,
         "startChar": 3,
