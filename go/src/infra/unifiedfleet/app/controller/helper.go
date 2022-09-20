@@ -633,7 +633,7 @@ func parseIntTypeFilter(filterMap map[string][]interface{}, filterName string) (
 	return filterMap, nil
 }
 
-// Returns a client for interacting with Inv v2 service
+// GetInventoryV2Client returns a client for interacting with Inv v2 service
 func GetInventoryV2Client(ctx context.Context) (external.CrosInventoryClient, error) {
 	es, err := external.GetServerInterface(ctx)
 	if err != nil {
@@ -642,7 +642,7 @@ func GetInventoryV2Client(ctx context.Context) (external.CrosInventoryClient, er
 	return es.NewCrosInventoryInterfaceFactory(ctx, config.Get(ctx).GetCrosInventoryHost())
 }
 
-// Returns a client for interacting with HWID service
+// GetHwidClient returns a client for interacting with HWID service
 func GetHwidClient(ctx context.Context) (hwid.ClientInterface, error) {
 	es, err := external.GetServerInterface(ctx)
 	if err != nil {

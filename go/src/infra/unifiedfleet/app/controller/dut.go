@@ -952,7 +952,7 @@ func GetManufacturingConfigFromInvV2(ctx context.Context, inv2Client external.Cr
 	return &mfgConfig, err
 }
 
-// GetManufacturingConfigFromInvV2 gets manufacturing config from UFS
+// GetManufacturingConfigFromUFS gets manufacturing config from UFS
 func GetManufacturingConfigFromUFS(ctx context.Context, hwidData *ufspb.HwidData) (*ufsmanufacturing.ManufacturingConfig, error) {
 	return configuration.ParseHwidDataIntoMfgCfg(hwidData)
 }
