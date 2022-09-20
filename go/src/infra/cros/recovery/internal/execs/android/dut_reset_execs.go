@@ -96,6 +96,24 @@ func connectToWiFiNetwork(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+func resetPublicKey(ctx context.Context, info *execs.ExecInfo) error {
+	actionArgs := info.GetActionArgs(ctx)
+	publicKeyFile := actionArgs.AsString(ctx, "public_key_file", "")
+	if publicKeyFile == "" {
+		return errors.Reason("reset public key: adb public key location is missing").Err()
+	}
+	publicKey := actionArgs.AsString(ctx, "public_key", "")
+	if publicKey == "" {
+		return errors.Reason("reset public key: adb public key value is missing").Err()
+	}
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	err := adb.ResetADBDPublicKey(ctx, newRunner(info), info.NewLogger(), serialNumber, publicKeyFile, publicKey)
+	if err != nil {
+		return errors.Annotate(err, "reset public key").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("android_restart_adbd_as_root", restartADBDAsRoot)
 	execs.Register("android_dut_reset", resetDutExec)
@@ -103,4 +121,5 @@ func init() {
 	execs.Register("android_wait_for_online_dut", waitTillDutOnlineExec)
 	execs.Register("android_enable_wifi", enableWiFi)
 	execs.Register("android_connect_wifi_network", connectToWiFiNetwork)
+	execs.Register("android_reset_public_key", resetPublicKey)
 }

@@ -11,10 +11,12 @@ import (
 )
 
 const (
-	adbVendorKey = "/var/lib/android_keys/arc.adb_key"
-	wifiSSID     = "nearbysharing_1"
-	wifiSecurity = "wpa2"
-	wifiPassword = "password"
+	adbPrivateVendorKeyFile = "/var/lib/android_keys/arc.adb_key"
+	adbPublicVendorKeyFile  = "/data/misc/adb/adb_keys"
+	adbPublicVendorKey      = "QAAAAFt6z0Mt2uLGZef2mgYqun+yAzXyt/L/PeM8G6Hn3I/Kf9CzIW+IyfqmvxUpQDSJuA2EpY5UitmTvtja9Sfy+layAOARANFdY1thUHASmPTlwYQLaoKc0eILqJhzCLS8NU7IZ8Em/XA2uU9nV7dBreexpKf+RQsjsPLz9s3dedwu5nyoJxGXGutIxnoyCZQ9iy66EFz3wBdpDILE/Mdt7yl50y4qz1REDKGPtqOr1KVpE8r5aQQ/6s8kfNZS+/z+J4xJFEvw43C4s3aTtFaE3l1N4J0wvUCRQS2hl43Q7a/IC8LGw/5VPab0VT9CNK33P4mmukpSfSVyahcIukTYiY7u3Byn0Nc9qhPPbSQYNQiofN7w91BWzW46V8CgWzBCKZoKhF7YmTdAm48qmaV0rqMGaf1AtRz5QY0a47seRYCgk9lMx7BeMgIuAZDmYPsUG+mAG+IiQYfvJMIEMBowtc8IlfZv9A7bwLKcs4rRhxFdCzJ7odPgFdgUv7MEAYF+HhnQg6DYEhoqe7YkB98Pb8VbU4f/ZTNkHYtIOxMIb53saW09zop5MlQrR6E7hBeZ5FwMNOK7+yc20ulUlqq38iB6QoHx7lli8dfGpD47J1ETHw7m9uAuxMu75MD4bIxYgmj2Ud1TvmWqXtmg75+E+B1I3osGcw9a2Qxo2ypV1Nkq8b1lmgEAAQA= root@localhost"
+	wifiSSID                = "nearbysharing_1"
+	wifiSecurity            = "wpa2"
+	wifiPassword            = "password"
 )
 
 // AndroidRepairConfig provides config for repair android task.
@@ -153,7 +155,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"This verifier checks whether a valid vendor key is provisioned to associated host of the DUT.",
 			},
 			ExecName:      "android_associated_host_has_vendor_key",
-			ExecExtraArgs: []string{"adb_vendor_key:" + adbVendorKey},
+			ExecExtraArgs: []string{"adb_vendor_key:" + adbPrivateVendorKeyFile},
 		},
 		"Associated host has adb": {
 			Docs: []string{
@@ -169,7 +171,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"Adb server is stopped",
 			},
 			ExecName:      "android_associated_host_start_adb",
-			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbVendorKey)},
+			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbPrivateVendorKeyFile)},
 			RecoveryActions: []string{
 				"Schedule associated host reboot and fail",
 			},
@@ -190,6 +192,7 @@ func androidRepairDeployActions() map[string]*Action {
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
+				"Reset public key",
 			},
 			ExecName: "android_dut_is_accessible",
 			RecoveryActions: []string{
@@ -256,7 +259,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"Validate associated host",
 				"Validate adb",
 				"DUT is accessible over adb",
-				"Ensure adbd run as root",
+				"Ensure adbd runs as root",
 				"android_enable_wifi",
 			},
 			ExecName: "android_connect_wifi_network",
@@ -266,10 +269,23 @@ func androidRepairDeployActions() map[string]*Action {
 				"wifi_password:" + wifiPassword,
 			},
 		},
-		"Ensure adbd run as root": {
+		"Ensure adbd runs as root": {
 			Docs:       []string{"Restart adbd with root permission."},
 			ExecName:   "android_restart_adbd_as_root",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Reset public key": {
+			Docs: []string{"Validates and restores ADB public vendor key."},
+			Dependencies: []string{
+				"Validate associated host",
+				"Validate adb",
+				"Ensure adbd runs as root",
+			},
+			ExecName: "android_reset_public_key",
+			ExecExtraArgs: []string{
+				"public_key:" + adbPublicVendorKey,
+				"public_key_file:" + adbPublicVendorKeyFile,
+			},
 		},
 		"Reboot device if in fastboot mode": {
 			Docs: []string{
@@ -288,7 +304,7 @@ func androidRepairDeployActions() map[string]*Action {
 		},
 		"Start ADB server": {
 			Docs:          []string{"Start adb server, this action will always run."},
-			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbVendorKey)},
+			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbPrivateVendorKeyFile)},
 			ExecName:      "android_associated_host_start_adb",
 			RunControl:    RunControl_ALWAYS_RUN,
 		},

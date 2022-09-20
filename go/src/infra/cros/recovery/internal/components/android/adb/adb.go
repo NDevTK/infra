@@ -108,3 +108,20 @@ func RestartADBDAsRoot(ctx context.Context, run components.Runner, log logger.Lo
 	log.Debugf("adb runs with root permissions on the device: %q", serialNumber)
 	return nil
 }
+
+// ResetADBDPublicKey restores adb public key if it is missing or not matching the given key.
+func ResetADBDPublicKey(ctx context.Context, run components.Runner, log logger.Logger, serialNumber, publicKeyFile, publicKey string) error {
+	const adbCheckPublicKeyCmd = "adb -s %s shell cat %s | grep %q"
+	cmd := fmt.Sprintf(adbCheckPublicKeyCmd, serialNumber, publicKeyFile, publicKey)
+	// Check if the public key exists.
+	if _, err := run(ctx, time.Minute, cmd); err != nil {
+		const adbWritePublicKeyCmd = "adb -s %s shell \"echo \\\"%s\\\" >> %s\""
+		cmd = fmt.Sprintf(adbWritePublicKeyCmd, serialNumber, publicKey, publicKeyFile)
+		// Restore the key if it is missing.
+		if _, err = run(ctx, time.Minute, cmd); err != nil {
+			return errors.Annotate(err, "reset adb public key").Err()
+		}
+	}
+	log.Debugf("adb public vendor key is present: %q", serialNumber)
+	return nil
+}
