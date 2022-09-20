@@ -1188,6 +1188,9 @@ def search_pkg(cipd_exe, pkg_name, service_url, tags, service_account):
   args.append(pkg_name)
   exit_code, json_output = run_cipd(cipd_exe, 'search', args)
   if exit_code:
+    if json_output['error_code'] == 'auth_error':
+      # Maybe the package doesn't exist
+      return None
     print
     print >> sys.stderr, 'FAILED! ' * 10
     raise SearchException('Failed to search the CIPD package, see logs')
@@ -1200,7 +1203,7 @@ def search_pkg(cipd_exe, pkg_name, service_url, tags, service_account):
 
 
 def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
-            service_account):
+            update_latest_ref, service_account):
   """Tag existing cipd package with given tags.
 
   Args:
@@ -1209,6 +1212,7 @@ def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
     pkg_version: version of the cipd package.
     service_url: URL of a package repository service.
     tags: tags to set to the cipd package
+    update_latest_ref: a bool of whether or not to update the 'latest' CIPD ref
     service_account: path to *.json file with service account to use.
 
   Raises:
@@ -1219,6 +1223,8 @@ def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
   args = ['-service-url', service_url]
   for tag in tags:
     args.extend(['-tag', tag])
+  if update_latest_ref:
+    args.extend(['-ref', 'latest'])
   if service_account:
     args.extend(['-service-account-json', service_account])
   args.extend(['-version', pkg_version])
@@ -1418,6 +1424,7 @@ def run(
                 existed_pkg['instance_id'],
                 service_url,
                 tags,
+                pkg_def.update_latest_ref,
                 service_account_json,
             )
             succeeded.append({
