@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "10a6afcc_46606a5d",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2120,
+      "author": {
+        "id": 1408939
+      },
+      "writtenOn": "2022-09-20T01:51:21Z",
+      "side": 1,
+      "message": "I would expect most retries wouldn\u0027t actually modify the flash though.\n\nIf we do write the flash that many times and it still fails, then it might be damaged already. I guess it\u0027s possible that it could write and fail because of a  timeout or something though.",
+      "parentUuid": "c746f495_0de4525b",
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b3c12127_ee0581e2",
         "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
         "patchSetId": 2
