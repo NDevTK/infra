@@ -1,0 +1,81 @@
+// Copyright 2017 The LUCI Authors. All rights reserved.
+// Use of this source code is governed under the Apache License, Version 2.0
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+option go_package = "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython";
+
+package vpython;
+
+import "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython/pep425.proto";
+
+
+// Spec is a "vpython" environment specification.
+message Spec {
+  // The Python version to use. This should be of the form:
+  // "Major[.Minor[.Patch]]"
+  //
+  // If specified,
+  // - The Major version will be enforced absolutely. Python 3 will not be
+  //   preferred over Python 2 because '3' is greater than '2'.
+  // - The remaining versions, if specified, will be regarded as *minimum*
+  //   versions. In other words, if "2.7.4" is specified and the system has
+  //   "2.7.12", that will suffice. Similarly, "2.6" would accept a "2.7"
+  //   interpreter.
+  //
+  // If empty, the default Python interpreter ("python") will be used.
+  string python_version = 1;
+
+  // A definition for a remote package. The type of package depends on the
+  // configured package resolver.
+  message Package {
+    // The name of the package.
+    //
+    // - For CIPD, this is the package name.
+    string name = 1;
+
+    // The package version.
+    //
+    // - For CIPD, this will be any recognized CIPD version (i.e., ID, tag, or
+    //   ref).
+    string version = 2;
+
+    // Optional PEP425 tags to determine whether this package is included on the
+    // target system. If no match tags are specified, this package will always
+    // be included. If match tags are specified, the package will be included if
+    // any system PEP425 tags match at least one of the match tags.
+    //
+    // A match will succeed if any system PEP425 tag field matches the
+    // corresponding field in the PEP425 tag. If the match tag omits a field
+    // (partial), that field will not be considered. For example, if a match
+    // tag specifies just an ABI field, any system PEP425 tag with that ABI will
+    // be considered a successful match, regardless of other field values.
+    repeated vpython.PEP425Tag match_tag = 3;
+
+    // Optional PEP425 tags to determine whether this package is NOT included on
+    // the target system. This has the opposite behavior as "match_tag": if any
+    // host tags match any tags in this list, the package will not be installed
+    // on this host.
+    //
+    // A "not_match_tag" overrides a "match_tag", so if a host has tags that
+    // match entries in both, the package will be not considered a match.
+    repeated vpython.PEP425Tag not_match_tag = 4;
+  }
+  repeated Package wheel = 2;
+
+  // The VirtualEnv package.
+  //
+  // This should be left empty to use the `vpython` default package
+  // (recommended).
+  Package virtualenv = 3;
+
+  // Specification-provided PEP425 verification tags.
+  //
+  // By default, verification will be performed against a default set of
+  // environment parameters. However, a given specification may offer its own
+  // set of PEP425 tags representing the systems that it wants to be verified
+  // against. Verification will pass only if the spec is valid (i.e. all wheels
+  // exist) for _all_ given PEP425Tags.
+  repeated vpython.PEP425Tag verify_pep425_tag = 4;
+}

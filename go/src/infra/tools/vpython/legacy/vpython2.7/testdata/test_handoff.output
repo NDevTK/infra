@@ -1,0 +1,3 @@
+I'm in script A
+sys.executable (expect FAIL): FAIL
+vpython (expect SUCCESS): SUCCESS
