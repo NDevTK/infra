@@ -1325,8 +1325,8 @@ func (r *CreateCachingServiceRequest) Validate() error {
 	if !HostnameRegex.MatchString(id) {
 		return status.Errorf(codes.InvalidArgument, fmt.Sprintf("name: %s", InvalidHostname))
 	}
-	if len(r.GetCachingService().GetServingSubnets()) == 0 {
-		return status.Error(codes.InvalidArgument, "Empty serving subnets.")
+	if len(r.GetCachingService().GetServingSubnets()) != 0 && len(r.GetCachingService().GetZones()) != 0 {
+		return status.Error(codes.InvalidArgument, "Cannot specify both subnets and zones.")
 	}
 	switch n := r.GetCachingService().GetPrimaryNode(); {
 	case n == "":

@@ -578,11 +578,13 @@ func resetOSFilter(filterMap map[string][]interface{}) map[string][]interface{} 
 }
 
 func resetZoneFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	if v, ok := filterMap["zone"]; ok {
-		for i, vz := range v {
-			v[i] = util.ToUFSZone(fmt.Sprintf("%s", vz)).String()
+	for _, k := range []string{"zone", "zones"} {
+		if v, ok := filterMap[k]; ok {
+			for i, vz := range v {
+				v[i] = util.ToUFSZone(fmt.Sprintf("%s", vz)).String()
+			}
+			filterMap[k] = v
 		}
-		filterMap["zone"] = v
 	}
 	return filterMap
 }

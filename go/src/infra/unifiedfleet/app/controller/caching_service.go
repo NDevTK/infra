@@ -122,7 +122,7 @@ func ListCachingServices(ctx context.Context, pageSize int32, pageToken, filter 
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing CachingServices").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
+	filterMap = resetZoneFilter(resetStateFilter(filterMap))
 	return caching.ListCachingServices(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 
@@ -134,6 +134,20 @@ func processCachingServiceUpdateMask(ctx context.Context, oldCs *ufspb.CachingSe
 		switch path {
 		case "port":
 			oldCs.Port = cs.GetPort()
+		case "zones":
+			oldCs.Zones = mergeZones(oldCs.GetZones(), cs.GetZones())
+		case "zones.remove":
+			var zs []ufspb.Zone
+		next:
+			for _, v := range oldCs.GetZones() {
+				for _, n := range cs.GetZones() {
+					if v == n {
+						continue next
+					}
+				}
+				zs = append(zs, v)
+			}
+			oldCs.Zones = zs
 		case "serving_subnet":
 			oldCs.ServingSubnet = cs.GetServingSubnet()
 		case "serving_subnets":
@@ -185,6 +199,8 @@ func validateCachingServiceUpdateMask(ctx context.Context, cs *ufspb.CachingServ
 			case "update_time":
 				return status.Error(codes.InvalidArgument, "validateCachingServiceUpdateMask - update_time cannot be updated, it is a output only field")
 			case "port":
+			case "zones":
+			case "zones.remove":
 			case "serving_subnet":
 			case "serving_subnets":
 			case "serving_subnets.remove":

@@ -84,6 +84,7 @@ var collectionsRe = regexp.MustCompile(`\/{[a-zA-Z0-9]*}$`)
 // Filter names for indexed properties in datastore for different entities
 var (
 	ZoneFilterName                 string = "zone"
+	ZonesFilterName                string = "zones"
 	RackFilterName                 string = "rack"
 	MachineFilterName              string = "machine"
 	HostFilterName                 string = "host"

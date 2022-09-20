@@ -33,6 +33,7 @@ type CSEntity struct {
 	// instead.
 	Subnet  string   `gae:"subnet"`
 	Subnets []string `gae:"subnets"`
+	Zones   []string `gae:"zones"`
 	// ufspb.CachingService cannot be directly used as it contains pointer.
 	CachingService []byte `gae:",noindex"`
 }
@@ -59,8 +60,17 @@ func newCSEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, erro
 		ID:             p.GetName(),
 		State:          p.GetState().String(),
 		Subnets:        p.GetServingSubnets(),
+		Zones:          zonesToStrSlice(p.GetZones()),
 		CachingService: cs,
 	}, nil
+}
+
+func zonesToStrSlice(zones []ufspb.Zone) []string {
+	s := make([]string, len(zones))
+	for i, z := range zones {
+		s[i] = z.String()
+	}
+	return s
 }
 
 func queryAll(ctx context.Context) ([]ufsds.FleetEntity, error) {
@@ -83,7 +93,7 @@ func CreateCachingService(ctx context.Context, cs *ufspb.CachingService) (*ufspb
 
 // BatchUpdateCachingServices updates CachingServices in datastore.
 //
-// This is a non-atomic operation and doesnt check if the object already exists before
+// This is a non-atomic operation and doesn't check if the object already exists before
 // update. Must be used within a transaction where objects are checked before update.
 // Will lead to partial updates if not used in a transaction.
 func BatchUpdateCachingServices(ctx context.Context, cachingServices []*ufspb.CachingService) ([]*ufspb.CachingService, error) {
@@ -199,8 +209,10 @@ func GetCachingServiceIndexedFieldName(input string) (string, error) {
 		field = "state"
 	case util.SubnetsFilterName:
 		field = "subnets"
+	case util.ZonesFilterName:
+		field = "zones"
 	default:
-		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for CachingService are state/subnets", input)
+		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for CachingService are state/subnets/zones", input)
 	}
 	return field, nil
 }

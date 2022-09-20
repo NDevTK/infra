@@ -92,17 +92,19 @@ func TestCreateCachingService(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "Empty secondary node name.")
 		})
 
-		Convey("Create new CachingService with empty subnets", func() {
+		Convey("Create new CachingService with both subnets and zones", func() {
 			cs := mockCachingService("")
 			cs.PrimaryNode = "primary-node-name"
 			cs.SecondaryNode = "secondary-node-name"
+			cs.ServingSubnets = []string{"1.1.1.0/24"}
+			cs.Zones = []ufspb.Zone{ufspb.Zone_ZONE_CHROMEOS1}
 			req := &ufsAPI.CreateCachingServiceRequest{
 				CachingService:   cs,
 				CachingServiceId: "id",
 			}
 			_, err := tf.Fleet.CreateCachingService(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Empty serving subnets.")
+			So(err.Error(), ShouldContainSubstring, "Cannot specify both subnets and zones")
 		})
 	})
 }
