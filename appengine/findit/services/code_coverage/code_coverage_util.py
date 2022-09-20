@@ -209,7 +209,7 @@ def FetchLowCoverageRobotComments(host, change, coverage_checker_id):
   Returns a dict where key is file path and value is list of dict which looks
   like below
   {
-    "robot_id":"Chrome Coverage Checker",
+    "robot_id":"Chromium Coverage Checker",
     "robot_run_id":"chromium/src~3763513~3",
     "author":{
       "_account_id":1555092,

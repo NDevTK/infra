@@ -3,6 +3,7 @@
 # found in the LICENSE file.from datetime import datetime
 
 from datetime import datetime
+import json
 import mock
 import webapp2
 
@@ -500,6 +501,89 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(expected_entity.incremental_percentages,
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(
+      code_coverage_util, 'FetchLowCoverageRobotComments', return_value={})
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(code_coverage_util, 'CalculateAbsolutePercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataRobotComment(self, mocked_get_build,
+                                         mocked_get_validated_data,
+                                         mocked_abs_percentages,
+                                         mocked_inc_percentages,
+                                         mock_http_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/linux-rel',],
+            'allowed_projects_for_robot_comments': ['chromium/src']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'linux-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'linux-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['linux-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+
+    abs_percentages = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=100, covered_lines=10)
+    ]
+    mocked_abs_percentages.return_value = abs_percentages
+
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertTrue('dir/test.cc' in data['robot_comments'])
 
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_FetchAndSaveFileIfNecessary')

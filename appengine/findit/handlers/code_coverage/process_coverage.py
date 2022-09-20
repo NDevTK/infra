@@ -35,6 +35,10 @@ from waterfall import waterfall_config
 
 # The regex to extract the build id from the url path.
 _BUILD_ID_REGEX = re.compile(r'.*/build/(\d+)$')
+_ROBOT_COMMENT_LINE_CHANGE_THRESHOLD = 10
+_ROBOT_COMMENT_COVERAGE_THRESHOLD = 50
+_MINIMUM_DESIRED_ALL_TEST_COVERAGE = 80
+_COVERAGE_CHECKER_ROBOT_ID = 'Chromium Coverage Checker'
 
 
 def _AddDependencyToManifest(path, url, revision,
@@ -65,7 +69,7 @@ def _AddDependencyToManifest(path, url, revision,
           revision=revision))
 
 
-def _GetDisallowedDeps():
+def _GetDisallowedDeps():  # pragma: no cover.
   """Returns a map of disallowed dependencies to skip adding to manifest.
 
   Main use case is to skip dependency repos that have malformed structures, and
@@ -73,6 +77,13 @@ def _GetDisallowedDeps():
   the root of the checkout).
   """
   return waterfall_config.GetCodeCoverageSettings().get('blacklisted_deps', {})
+
+
+def _AreRobotCommentsAllowed(project):
+  """Returns if a given project is eligible for low coverage robot comments.
+  """
+  return project in waterfall_config.GetCodeCoverageSettings().get(
+      'allowed_projects_for_robot_comments', [])
 
 
 def _RetrieveChromeManifest(repo_url, revision,
@@ -501,6 +512,37 @@ class ProcessCodeCoverageData(BaseHandler):
                 entity.data_unit))
         return entity
 
+      def _AddRobotCommentForLowCoverage(entity, files_with_existing_comments):
+        url = 'https://%s/changes/%d/revisions/%d/review' % (
+            patch.host, patch.change, patch.patchset)
+        msg = ('Incremental Coverage (All Tests) '
+               'for this file is below %d %%. '
+               'Please add tests for uncovered lines.')
+        robot_comments = {}
+        for percentage in entity.incremental_percentages:
+          if percentage.path in files_with_existing_comments:
+            continue
+          coverage = (percentage.covered_lines * 100.0) / percentage.total_lines
+          if (percentage.total_lines > _ROBOT_COMMENT_LINE_CHANGE_THRESHOLD and
+              coverage < _ROBOT_COMMENT_COVERAGE_THRESHOLD):
+            #remove leading double-slash(//) from file path
+            robot_comments[percentage.path[2:]] = [{
+                'line':
+                    0,  # file level comment
+                'message':
+                    msg % _MINIMUM_DESIRED_ALL_TEST_COVERAGE,
+                'robot_id':
+                    _COVERAGE_CHECKER_ROBOT_ID,
+                'robot_run_id':
+                    '%s~%d~%d' % (patch.project, patch.change, patch.patchset)
+            }]
+        data = {'robot_comments': robot_comments}
+        headers = {'Content-Type': 'application/json; charset=UTF-8'}
+        logging.info(('Adding low coverage robot comment for '
+                      'project %s, change %d,  patchset %d'), patch.project,
+                     patch.change, patch.patchset)
+        FinditHttpClient().Post(url, json.dumps(data), headers=headers)
+
       entity = yield PresubmitCoverageData.GetAsync(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
       # Update/Create entity with unit test coverage fields populated
@@ -509,6 +551,11 @@ class ProcessCodeCoverageData(BaseHandler):
         entity = _GetEntityForUnit(entity)
       else:
         entity = _GetEntity(entity)
+        if _AreRobotCommentsAllowed(patch.project):
+          _AddRobotCommentForLowCoverage(
+              entity,
+              code_coverage_util.FetchLowCoverageRobotComments(
+                  patch.host, patch.change, _COVERAGE_CHECKER_ROBOT_ID).keys())
       yield entity.put_async()
 
     update_future = _UpdateCoverageDataAsync()
