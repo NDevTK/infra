@@ -151,6 +151,16 @@ var EthernetHookCallbackOptions = func() auth.Options {
 	return o
 }()
 
+// CommonFlags contains generic CLI flags that are theoretically common to all commands.
+type CommonFlags struct {
+	Verbose bool
+}
+
+// Register sets up the common flags.
+func (f *CommonFlags) Register(fl *flag.FlagSet) {
+	fl.BoolVar(&f.Verbose, "verbose", false, `set log level to "debug"`)
+}
+
 // VersionNumber is the version number for the tool. It follows the Semantic
 // Versioning Specification (http://semver.org) and the format is:
 // "MAJOR.MINOR.0+BUILD_TIME".
