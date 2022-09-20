@@ -461,6 +461,9 @@ func validateVMUpdateMask(vm *ufspb.VM, mask *field_mask.FieldMask) error {
 			case "tags":
 			case "description":
 			case "resourceState":
+			case "cpuCores":
+			case "memory":
+			case "storage":
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateUpdateVM - unsupported update mask path %q", path)

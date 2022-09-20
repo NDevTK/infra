@@ -418,19 +418,23 @@ func TestUpdateVM(t *testing.T) {
 				},
 				Tags:         []string{"tag-1"},
 				MachineLseId: "update-host",
+				CpuCores:     16,
 			}
 			_, err := CreateVM(ctx, vm, nil)
 			So(err, ShouldBeNil)
 
 			vm1 := &ufspb.VM{
-				Name: "vm-7",
-				Tags: []string{"tag-2"},
+				Name:   "vm-7",
+				Tags:   []string{"tag-2"},
+				Memory: 1000,
 			}
-			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags"}})
+			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags", "memory"}})
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetTags(), ShouldResemble, []string{"tag-1", "tag-2"})
 			So(resp.GetOsVersion().GetValue(), ShouldEqual, "windows")
+			So(resp.GetCpuCores(), ShouldEqual, 16)
+			So(resp.GetMemory(), ShouldEqual, 1000)
 		})
 	})
 }
