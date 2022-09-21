@@ -4,9 +4,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/maruel/subcommands"
@@ -41,23 +41,32 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	}
 
 	ctx := context.Background()
-	if bbAuthed, err := r.IsBBAuthed(ctx); err != nil {
-		fmt.Println(errors.Annotate(err, "determining whether `bb` is authed").Err())
-		return AuthError
-	} else if !bbAuthed {
-		fmt.Println("bb CLI is not logged in. Please run the following command, then try again:\n\tbb auth-login")
+	if err := r.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
+		fmt.Println(err)
 		return AuthError
 	}
 
+	propsStruct, err := r.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())
+	if err != nil {
+		fmt.Println(err)
+		return CmdError
+	}
+	propsFile, err := writeStructToFile(propsStruct)
+	if err != nil {
+		fmt.Println(errors.Annotate(err, "writing input properties to tempfile").Err())
+		return UnspecifiedError
+	}
+	defer os.Remove(propsFile.Name())
+
 	if err := r.runReleaseOrchestrator(ctx); err != nil {
 		fmt.Println(err.Error())
-		return BBError
+		return CmdError
 	}
 
 	return Success
 }
 
-// getReleaseOrchestratorName finds the name of the release orchestrator matching the myjob CLI flags.
+// getReleaseOrchestratorName finds the full name of the release orchestrator matching the myjob CLI flags.
 func (r *releaseRun) getReleaseOrchestratorName() string {
 	const project = "chromeos"
 	var bucket, builder, stagingPrefix string
@@ -78,12 +87,5 @@ func (r *releaseRun) getReleaseOrchestratorName() string {
 // runReleaseOrchestrator creates a release orchestrator build via `bb add`, and reports it to the user.
 func (r *releaseRun) runReleaseOrchestrator(ctx context.Context) error {
 	orchName := r.getReleaseOrchestratorName()
-	var stdoutBuf, stderrBuf bytes.Buffer
-	err := r.RunCmd(ctx, &stdoutBuf, &stderrBuf, "", "bb", "add", orchName)
-	if err != nil {
-		fmt.Printf("`bb add %s` had stderr:\n%s\n", orchName, stderrBuf.String())
-		return errors.Annotate(err, "running bb add command").Err()
-	}
-	fmt.Println(stdoutBuf.String())
-	return nil
+	return r.BBAdd(ctx, orchName)
 }

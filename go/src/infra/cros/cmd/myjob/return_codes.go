@@ -5,7 +5,8 @@ package main
 
 const (
 	Success             = 0
-	AuthError           = 1
-	BBError             = 2
-	NotImplementedError = 3
+	UnspecifiedError    = 1
+	NotImplementedError = 2
+	AuthError           = 3
+	CmdError            = 4
 )

@@ -4,10 +4,13 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"io"
+	"fmt"
+	"strings"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/errors"
 	"infra/cros/internal/cmd"
 )
 
@@ -29,7 +32,14 @@ func (m *myjobRunBase) addStagingFlag() {
 	m.Flags.BoolVar(&m.staging, "staging", false, "Run a staging builder instead of a prod builder.")
 }
 
-// RunCmd execs (or mocks) a shell command.
-func (m myjobRunBase) RunCmd(ctx context.Context, stdoutBuf, stderrBuf io.Writer, dir, name string, args ...string) error {
-	return m.cmdRunner.RunCommand(ctx, stdoutBuf, stderrBuf, dir, name, args...)
+// RunCmd executes a shell command.
+func (m myjobRunBase) RunCmd(ctx context.Context, name string, args ...string) (stdout, stderr string, err error) {
+	var stdoutBuf, stderrBuf bytes.Buffer
+	err = m.cmdRunner.RunCommand(ctx, &stdoutBuf, &stderrBuf, "", name, args...)
+	stdout = stdoutBuf.String()
+	stderr = stderrBuf.String()
+	if err != nil {
+		return stdout, stderr, errors.Annotate(err, fmt.Sprintf("running `%s %s`", name, strings.Join(args, " "))).Err()
+	}
+	return stdout, stderr, nil
 }

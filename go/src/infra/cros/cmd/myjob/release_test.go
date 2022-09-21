@@ -9,7 +9,7 @@ import (
 
 // TestGetReleaseOrchestratorName tests getReleaseOrchestratorName.
 func TestGetReleaseOrchestratorName(t *testing.T) {
-	for _, testCase := range []struct {
+	for i, testCase := range []struct {
 		staging  bool
 		branch   string
 		expected string
@@ -26,7 +26,7 @@ func TestGetReleaseOrchestratorName(t *testing.T) {
 			},
 		}
 		if actual := r.getReleaseOrchestratorName(); actual != testCase.expected {
-			t.Errorf("Incorrect release orch name with staging=%v, branch=%s: got %s; want %s", testCase.staging, testCase.branch, actual, testCase.expected)
+			t.Errorf("#%d: Incorrect release orch name: got %s; want %s", i, actual, testCase.expected)
 		}
 	}
 }
