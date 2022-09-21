@@ -19,6 +19,8 @@ type GitClient struct {
 func (gc *GitClient) GetFile(ctx context.Context, path string) (string, error) {
 	if path == "test_git_path" {
 		return GitData("../frontend/fake/dhcp_test.conf")
+	} else if path == "test_enc_git_path" {
+		return GitData("../frontend/fake/bots.cfg")
 	}
 	return "", errors.Reason("Unspecified mock path %s", path).Err()
 }
