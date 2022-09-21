@@ -522,6 +522,9 @@ class ProcessCodeCoverageData(BaseHandler):
         for percentage in entity.incremental_percentages:
           if percentage.path in files_with_existing_comments:
             continue
+          #TODO(crbug/1320434): Remove check once the bug is fixed.
+          if percentage.path.endswith("java"):
+            continue
           coverage = (percentage.covered_lines * 100.0) / percentage.total_lines
           if (percentage.total_lines > _ROBOT_COMMENT_LINE_CHANGE_THRESHOLD and
               coverage < _ROBOT_COMMENT_COVERAGE_THRESHOLD):
