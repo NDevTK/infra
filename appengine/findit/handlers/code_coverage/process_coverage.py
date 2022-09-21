@@ -536,12 +536,13 @@ class ProcessCodeCoverageData(BaseHandler):
                 'robot_run_id':
                     '%s~%d~%d' % (patch.project, patch.change, patch.patchset)
             }]
-        data = {'robot_comments': robot_comments}
-        headers = {'Content-Type': 'application/json; charset=UTF-8'}
-        logging.info(('Adding low coverage robot comment for '
-                      'project %s, change %d,  patchset %d'), patch.project,
-                     patch.change, patch.patchset)
-        FinditHttpClient().Post(url, json.dumps(data), headers=headers)
+        if robot_comments:
+          data = {'robot_comments': robot_comments}
+          headers = {'Content-Type': 'application/json; charset=UTF-8'}
+          logging.info(('Adding low coverage robot comment for '
+                        'project %s, change %d,  patchset %d'), patch.project,
+                       patch.change, patch.patchset)
+          FinditHttpClient().Post(url, json.dumps(data), headers=headers)
 
       entity = yield PresubmitCoverageData.GetAsync(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
