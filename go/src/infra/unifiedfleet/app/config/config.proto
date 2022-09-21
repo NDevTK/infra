@@ -45,6 +45,8 @@ message Config {
   repeated UserAgent clients = 19;
   // Allow unrecognized clients
   bool allow_unrecognized_clients = 20;
+  // Ownership config files
+  OwnershipConfig ownership_config = 21;
 }
 
 message OSNetworkConfig {
@@ -59,6 +61,24 @@ message OSNetworkConfig {
   }
 
   repeated OSNetworkTopology cros_network_topology = 4;
+}
+
+message OwnershipConfig {
+  // Git host where the config files should be read from. Ex: chrome-internal.googlesource.com.
+  string gitiles_host = 1;
+  // Project for the config files. Ex: infradata/config.
+  string project = 2;
+  // Git branch from which the files should be fetched. Ex: master, main etc
+  string branch = 3;
+
+  message ENCConfigFile {
+    // Name of the config file
+    string name = 1;
+    // Config file location in the given project
+    string remote_path = 2;
+  }
+
+  repeated ENCConfigFile enc_config = 4;
 }
 
 message PubSub {
