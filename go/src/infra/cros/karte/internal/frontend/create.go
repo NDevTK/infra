@@ -87,7 +87,7 @@ func (k *karteFrontend) CreateObservation(ctx context.Context, req *kartepb.Crea
 	}
 	name, err := idstrategy.Get(ctx).IDForObservation(ctx, req.GetObservation())
 	if err != nil {
-		return nil, errors.Annotate(err, "create-action").Err()
+		return nil, errors.Annotate(err, "create observation").Err()
 	}
 	req.Observation.Name = name
 
