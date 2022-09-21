@@ -8,6 +8,7 @@ import { CacheProvider } from '@emotion/react';
 import createCache, { EmotionCache } from '@emotion/cache';
 
 interface DisableTestButtonProps {
+  failure_bbid: string;
   testName: string;
   bugs: Bug[];
 }
@@ -20,7 +21,8 @@ export const DisableTestButton = (props: DisableTestButtonProps) => {
   const [wasCopied, setWasCopied] = React.useState(false);
   const [error, setError] = React.useState('');
   const onClick = () => {
-    let command = "tools/disable_tests/disable '" + props.testName + "'";
+    let command = "tools/disable_tests/disable";
+    command += " " + props.failure_bbid + " '.*" + props.testName + ".*'"
     if (props.bugs && props.bugs.length === 1) {
       // Add the bug ID if present. Only do it if there's exactly one. If there
       // are more than one we don't know which one to use.
@@ -51,6 +53,7 @@ export class SomDisableButton extends HTMLElement {
   cache: EmotionCache;
   child: HTMLSpanElement;
   props: DisableTestButtonProps = {
+    failure_bbid: '',
     testName: '',
     bugs: [],
   };

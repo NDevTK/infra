@@ -61,6 +61,20 @@ class SomExtensionBuildFailure extends Polymer.Element {
     return extension && extension.builders && extension.builders.length > 0;
   }
 
+  _failure_bbid(extension) {
+    if (!this._haveBuilders(extension)) {
+      return ''
+    }
+    // We cannot use the latest_failure directly due to crbug.com/1366166
+    // So we need to work around
+    const url = extension.builders[0].latest_failure_url
+    if (!url) {
+      return ""
+    }
+    // url is of the form https://ci.chromium.org/.../b<bbid>
+    return url.substring(url.lastIndexOf("/b") + 2)
+  }
+
   _failureCount(builder) {
     // The build number range is inclusive.
     return builder.latest_failure_build_number

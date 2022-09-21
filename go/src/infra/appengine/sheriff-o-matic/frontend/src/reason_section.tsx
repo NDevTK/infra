@@ -9,6 +9,7 @@ import { DisableTestButton } from './disable_button';
 
 
 interface ReasonSectionProps {
+    failure_bbid: string;
     tree: string;
     reason: AlertReasonJson | null | undefined;
     bugs: Bug[];
@@ -70,7 +71,7 @@ export const ReasonSection = (props: ReasonSectionProps) => {
                     <td>{isChromiumTree(props.tree)?<a href={codeSearchLink(t)} target="_blank">Code Search</a>:null}</td>
                     <td><a href={historyLink(t)} target="_blank">History</a></td>
                     <td><a href={similarFailuresLink(t)} target="_blank">Similar Failures</a></td>
-                    <td>{isChromiumTree(props.tree)?<DisableTestButton bugs={props.bugs} testName={t.test_name} />:null}</td>
+                    <td>{isChromiumTree(props.tree)?<DisableTestButton bugs={props.bugs} testName={t.test_name} failure_bbid={props.failure_bbid} />:null}</td>
                 </tr>)}
             </tbody>
         </table>
@@ -84,6 +85,7 @@ export class SomReasonSection extends HTMLElement {
         tree: '',
         reason: null,
         bugs: [],
+        failure_bbid: '',
     };
 
     constructor() {
@@ -113,6 +115,11 @@ export class SomReasonSection extends HTMLElement {
 
     set bugs(value: Bug[]) {
         this.props.bugs = value;
+        this.render();
+    }
+
+    set failure_bbid(value: string) {
+        this.props.failure_bbid = value;
         this.render();
     }
 

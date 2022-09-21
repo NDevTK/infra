@@ -71,7 +71,7 @@
       </template>
     </div>
     <div class="section">
-      <som-reason-section tree="[[tree]]" bugs="[[bugs]]" reason="[[extension.reason]]"></som-reason-section>
+      <som-reason-section tree="[[tree]]" bugs="[[bugs]]" reason="[[extension.reason]]" failure_bbid="[[_failure_bbid(extension)]]"></som-reason-section>
     </div>
     <div id="regressionRanges" class="section">
       <template is="dom-if" if="[[!_haveRegressionRanges(extension.regression_ranges)]]">
