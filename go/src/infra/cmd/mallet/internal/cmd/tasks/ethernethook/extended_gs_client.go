@@ -6,9 +6,11 @@ package ethernethook
 
 import (
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/api/iterator"
 )
 
 // IteratorStatus is an enum that makes it easy to distinguish between iterators that
@@ -69,4 +71,43 @@ func (e *extendedGSClient) Ls(ctx context.Context, bucket string, query *storage
 		return true
 	}
 	return res
+}
+
+// LsSmall synchronously grabs at most 10000 records.
+//
+// We fail and return no records if the limit is exceeded.
+func (e *extendedGSClient) LsSmall(ctx context.Context, bucket string, query *storage.Query) ([]*storage.ObjectAttrs, error) {
+	const smallQueryLimit = 10000
+	var out []*storage.ObjectAttrs
+	it := e.Ls(ctx, bucket, query)
+	state := &LsState{}
+	for it(state) {
+		if len(out) >= smallQueryLimit {
+			return nil, fmt.Errorf("ls small: limit %d on result set size exceeded", smallQueryLimit)
+		}
+		out = append(out, state.Attrs)
+	}
+	if state.Err == nil || errors.Is(state.Err, iterator.Done) {
+		return out, nil
+	}
+	return nil, errors.Annotate(state.Err, "ls small").Err()
+}
+
+// Expand name takes the name of a bucket and an object or prefix in that bucket and produces a GSUrl.
+//
+// If given inconsistent or invalid data, produce an empty string.
+func (_ *extendedGSClient) ExpandName(bucket string, attrs *storage.ObjectAttrs) string {
+	hasPrefix := attrs.Prefix != ""
+	hasName := attrs.Name != ""
+	if hasPrefix && hasName {
+		// Return early. An ObjectAttrs value with both a prefix and a name is in an invalid state.
+		return ""
+	}
+	if !hasPrefix && !hasName {
+		return ""
+	}
+	if hasPrefix {
+		return fmt.Sprintf("gs://%s/%s", bucket, attrs.Prefix)
+	}
+	return fmt.Sprintf("gs://%s/%s", bucket, attrs.Name)
 }

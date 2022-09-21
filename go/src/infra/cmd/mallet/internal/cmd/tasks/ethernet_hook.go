@@ -6,7 +6,6 @@ package tasks
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"cloud.google.com/go/storage"
@@ -36,6 +35,7 @@ var EthernetHook = &subcommands.Command{
 		c.Flags.StringVar(&c.date, "date", "", "the date to process")
 		c.Flags.StringVar(&c.bucket, "bucket", "chromeos-test-logs", "the base GS bucket to check for logs")
 		c.Flags.StringVar(&c.prefix, "prefix", "", "prefix of the objects in question")
+		c.Flags.StringVar(&c.delimiter, "delimiter", "", "delimiter of the objects in question")
 		return c
 	},
 }
@@ -54,6 +54,9 @@ type ethernetHookRun struct {
 
 	// The prefix of the Google Storage object within the Google Storage bucket.
 	prefix string
+
+	// The limit controls what kinds of results are returned: prefixes or full results.
+	delimiter string
 }
 
 // Run runs the ethernet hook command.
@@ -102,18 +105,17 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "failed to wrap storage client").Err()
 	}
 
-	it := storageClient.Ls(ctx, c.bucket, &storage.Query{
-		Delimiter:                "/",
+	out, err := storageClient.LsSmall(ctx, c.bucket, &storage.Query{
+		Delimiter:                c.delimiter,
 		Prefix:                   c.prefix,
 		IncludeTrailingDelimiter: true,
 	})
-	state := ethernethook.LsState{}
-	for it(&state) {
-		b, err := json.MarshalIndent(state.Attrs, "", "  ")
-		if err != nil {
-			return errors.Annotate(err, "failed to marshal object").Err()
-		}
-		fmt.Fprintf(a.GetErr(), "%s\n", string(b))
+	if err != nil {
+		return err
+	}
+
+	for _, item := range out {
+		fmt.Fprintf(a.GetOut(), "%s\n", storageClient.ExpandName(c.bucket, item))
 	}
 
 	return nil
