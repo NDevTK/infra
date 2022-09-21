@@ -88,7 +88,7 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 
 		// Log information on diff if exists
 		if !proto.Equal(mfgCfgInvV2, mfgCfgUFS) {
-			logMsg := fmt.Sprintf("%s %s", machine.GetName(), hwid)
+			logMsg := fmt.Sprintf("%s %s\n", machine.GetName(), hwid)
 			if _, err := fmt.Fprint(writer, logMsg); err != nil {
 				return err
 			}
