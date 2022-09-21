@@ -57,9 +57,13 @@ func (c *stopServodRun) Run(a subcommands.Application, args []string, env subcom
 
 // innerRun contains the actual logic of the stopServodRun command
 func (c *stopServodRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	dhbSatlabID, err := commands.GetDockerHostBoxIdentifier()
-	if err != nil {
-		return err
+	dhbSatlabID := c.commonFlags.SatlabID
+	if dhbSatlabID == "" {
+		var err error
+		dhbSatlabID, err = commands.GetDockerHostBoxIdentifier()
+		if err != nil {
+			return err
+		}
 	}
 	if err := c.validate(dhbSatlabID, args); err != nil {
 		cmdlib.PrintError(a, err)

@@ -78,9 +78,13 @@ func (c *startServodRun) Run(a subcommands.Application, args []string, env subco
 // innerRun handles all orchestration needed to pass appropriate clients, contexts, and commands into the application
 // this pattern is done to facilitate easy testing of the `runOrchestratedCommand` function
 func (c *startServodRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	dhbSatlabID, err := commands.GetDockerHostBoxIdentifier()
-	if err != nil {
-		return err
+	dhbSatlabID := c.commonFlags.SatlabID
+	if dhbSatlabID == "" {
+		var err error
+		dhbSatlabID, err = commands.GetDockerHostBoxIdentifier()
+		if err != nil {
+			return err
+		}
 	}
 
 	if err := c.validate(dhbSatlabID, args); err != nil {
@@ -108,7 +112,7 @@ func (c *startServodRun) innerRun(a subcommands.Application, args []string, env 
 }
 
 // runOrchestratedCommand contains the actual logic behind this command. It does two things
-// 	1. if the user does not provide all arguments needed to start the docker container, fetches from UFS
+//  1. if the user does not provide all arguments needed to start the docker container, fetches from UFS
 //  2. execute the docker command with the information either provided by the user or from UFS
 func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerClient, ufs ufs.UFSClient) error {
 	servoSetupEnum, err := getServoSetupEnum(c.servoSetup)
