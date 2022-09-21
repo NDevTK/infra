@@ -58,7 +58,7 @@ require (
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20220907173800-9129d25df9a6
 	go.opencensus.io v0.23.0
-	go.skia.org/infra v0.0.0-20220804201638-51bed25131db
+	go.skia.org/infra v0.0.0-20220916162150-5898edbc8e08
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
@@ -138,7 +138,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
-	github.com/jcgregorio/logger v0.1.2 // indirect
+	github.com/jcgregorio/logger v0.1.3 // indirect
 	github.com/jcgregorio/slog v0.0.0-20190423190439-e6f2d537f900 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
