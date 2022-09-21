@@ -92,6 +92,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6c8b82d0_bef279fb",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2120,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-09-21T00:32:28Z",
+      "side": 1,
+      "message": "Here is a good example I caught today of retry made futility run success, https://logs.chromium.org/logs/chromeos/buildbucket/cr-buildbucket/8802471225109396465/+/u/step/320/log/1\n\nThe first(with libflashrom) and second attempt(with external flashrom) failed while the third run succeed. (You can search keyword \"Program AP attempt\" to locate start point of each attempt).",
+      "parentUuid": "713e37e8_f6e8ae31",
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b3c12127_ee0581e2",
         "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
         "patchSetId": 2
