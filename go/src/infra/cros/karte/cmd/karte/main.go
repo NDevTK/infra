@@ -31,6 +31,7 @@ func newApplication() *cli.Application {
 			kartecli.Backfill,
 			kartecli.CheckServer,
 			kartecli.CreateAction,
+			kartecli.CreateObservation,
 			kartecli.ListActions,
 			kartecli.ListSwarmingTasks,
 			kartecli.PersistSingleAction,
