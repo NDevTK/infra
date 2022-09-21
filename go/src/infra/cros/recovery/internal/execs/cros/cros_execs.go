@@ -20,22 +20,22 @@ import (
 
 // pingExec verifies the DUT is pingable.
 func pingExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilPingable(ctx, info.ActionTimeout, cros.PingRetryInteval, 2, info.DefaultPinger(), info.NewLogger())
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInteval, 2, info.DefaultPinger(), info.NewLogger())
 }
 
 // sshExec verifies ssh access to the current plan's device (named by the default resource name).
 func sshExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.ActionTimeout, cros.SSHRetryInteval, info.DefaultRunner(), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInteval, info.DefaultRunner(), info.NewLogger())
 }
 
 // sshDUTExec verifies ssh access to the DUT.
 func sshDUTExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.ActionTimeout, cros.SSHRetryInteval, info.NewRunner(info.GetDut().Name), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInteval, info.NewRunner(info.GetDut().Name), info.NewLogger())
 }
 
 // rebootExec reboots the cros DUT.
 func rebootExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := cros.Reboot(ctx, info.NewRunner(info.GetDut().Name), info.ActionTimeout); err != nil {
+	if err := cros.Reboot(ctx, info.NewRunner(info.GetDut().Name), info.GetExecTimeout()); err != nil {
 		return errors.Annotate(err, "cros reboot").Err()
 	}
 	return nil
@@ -130,7 +130,7 @@ func runShellCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	if len(actionArgs) > 0 {
 		log.Debugf(ctx, "Run shell command: arguments %s.", actionArgs)
 		run := info.DefaultRunner()
-		if out, err := run(ctx, info.ActionTimeout, actionArgs[0], actionArgs[1:]...); err != nil {
+		if out, err := run(ctx, info.GetExecTimeout(), actionArgs[0], actionArgs[1:]...); err != nil {
 			return errors.Annotate(err, "run shell command").Err()
 		} else {
 			log.Debugf(ctx, "Run shell command: output: %s", out)
@@ -250,7 +250,7 @@ func isToolPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 // crosSetGbbFlagsExec sets the GBB flags on the DUT.
 func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
-	if _, err := run(ctx, info.ActionTimeout, "/usr/share/vboot/bin/set_gbb_flags.sh 0"); err != nil {
+	if _, err := run(ctx, info.GetExecTimeout(), "/usr/share/vboot/bin/set_gbb_flags.sh 0"); err != nil {
 		log.Debugf(ctx, "Cros Set Gbb Flags: %s", err)
 		return errors.Annotate(err, "cros set gbb flags").Err()
 	}
@@ -260,7 +260,7 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 // crosSwitchToSecureModeExec disables booting into dev-mode on the DUT.
 func crosSwitchToSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
-	if _, err := run(ctx, info.ActionTimeout, "crossystem", "disable_dev_request=1"); err != nil {
+	if _, err := run(ctx, info.GetExecTimeout(), "crossystem", "disable_dev_request=1"); err != nil {
 		log.Debugf(ctx, "Cros Switch to Secure Mode %s", err)
 		return errors.Annotate(err, "cros switch to secure mode").Err()
 	}

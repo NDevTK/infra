@@ -113,6 +113,16 @@ func (ei *ExecInfo) GetMetrics() metrics.Metrics {
 	return ei.RunArgs.Metrics
 }
 
+// GetExecArgs returns list of arguments provided for an exec.
+func (ei *ExecInfo) GetExecArgs() []string {
+	return ei.ActionArgs
+}
+
+// GetExecTimeout returns timeout specified for an exec.
+func (ei *ExecInfo) GetExecTimeout() time.Duration {
+	return ei.ActionTimeout
+}
+
 // Run runs exec function provided by this package by name.
 func Run(ctx context.Context, ei *ExecInfo) error {
 	e, ok := knownExecMap[ei.Name]

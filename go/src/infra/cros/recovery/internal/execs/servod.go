@@ -30,7 +30,7 @@ func (ei *ExecInfo) NewServod() components.Servod {
 	return &iServod{
 		dut:     ei.RunArgs.DUT,
 		a:       ei.RunArgs.Access,
-		timeout: durationpb.New(ei.ActionTimeout),
+		timeout: durationpb.New(ei.GetExecTimeout()),
 	}
 }
 

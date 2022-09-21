@@ -74,7 +74,7 @@ func allowedRebootExec(ctx context.Context, info *execs.ExecInfo) error {
 func filesystemIoNotBlockedExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	cmd := "ps axl | awk '$10 ~ /D/'"
-	output, err := run(ctx, info.ActionTimeout, cmd)
+	output, err := run(ctx, info.GetExecTimeout(), cmd)
 	if err != nil {
 		return errors.Annotate(err, "filesystem is not blocked").Err()
 	}
@@ -93,17 +93,17 @@ func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	// First we want to check if the current messages log larger than the threshold, and if it is
 	// we need rotate logs before we can safely remove it as other process may still writing logs into it.
 	checkCurrentCmd := fmt.Sprintf("find /var/log/messages -size +%s", currentMessagesLogSizeThreshold)
-	if out, _ := run(ctx, info.ActionTimeout, checkCurrentCmd); out != "" {
+	if out, _ := run(ctx, info.GetExecTimeout(), checkCurrentCmd); out != "" {
 		log.Debugf(ctx, "Log cleanup: current messages log larger than %s, will rotate logs.", currentMessagesLogSizeThreshold)
-		if _, err := run(ctx, info.ActionTimeout, "/usr/sbin/chromeos-cleanup-logs"); err != nil {
+		if _, err := run(ctx, info.GetExecTimeout(), "/usr/sbin/chromeos-cleanup-logs"); err != nil {
 			log.Debugf(ctx, "Log cleanup: failed to execute chromeos-cleanup-logs, %v", err)
 		}
 	}
 	// Checking if there are any old logs that larger than the threshold, and if true remove all old logs.
 	checkOldCmd := fmt.Sprintf("find /var/log/messages.* -size +%s", oldMessagesLogSizeThreshold)
-	if out, _ := run(ctx, info.ActionTimeout, checkOldCmd); out != "" {
+	if out, _ := run(ctx, info.GetExecTimeout(), checkOldCmd); out != "" {
 		log.Debugf(ctx, "Log cleanup: detected old messages log that larger than %s", oldMessagesLogSizeThreshold)
-		if _, err := run(ctx, info.ActionTimeout, "rm /var/log/messages.*"); err != nil {
+		if _, err := run(ctx, info.GetExecTimeout(), "rm /var/log/messages.*"); err != nil {
 			return errors.Reason("log cleanup: failed to remove old messages log.").Err()
 		}
 		log.Debugf(ctx, "Log cleanup: successfully removed old messages log.")
@@ -114,7 +114,7 @@ func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 // removeBluetoothDeviceExec removes bluetooth device from the labstation.
 func removeBluetoothDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	out, err := run(ctx, info.ActionTimeout, "bluetoothctl devices")
+	out, err := run(ctx, info.GetExecTimeout(), "bluetoothctl devices")
 	if err != nil {
 		return errors.Reason("remote bluetooth device: failed to get available devices.").Err()
 	}
@@ -123,7 +123,7 @@ func removeBluetoothDeviceExec(ctx context.Context, info *execs.ExecInfo) error 
 	s := strings.Fields(out)
 	if len(s) > 1 {
 		log.Debugf(ctx, "Removing bluetooth device %s", s[1])
-		if _, err := run(ctx, info.ActionTimeout, "bluetoothctl", "remove", s[1]); err != nil {
+		if _, err := run(ctx, info.GetExecTimeout(), "bluetoothctl", "remove", s[1]); err != nil {
 			return errors.Reason("remote bluetooth device: failed to remove bluetooth device.").Err()
 		}
 	}

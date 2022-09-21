@@ -34,7 +34,7 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 // Install ChromeOS from servo USB drive when booted from it.
 func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	err := cros.RunInstallOSCommand(ctx, info.ActionTimeout, run, info.NewLogger())
+	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run, info.NewLogger())
 	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
 }
 

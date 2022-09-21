@@ -21,7 +21,7 @@ import (
 // version if it fails.
 func stopSartUIExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
-	out, err := run(ctx, info.ActionTimeout, "stop ui && start ui")
+	out, err := run(ctx, info.GetExecTimeout(), "stop ui && start ui")
 	if execs.SSHErrorLinuxTimeout.In(err) {
 		// Timeout Running the command.
 		log.Debugf(ctx, "Got timeout when stop ui/start ui. DUT might crash.")
@@ -36,7 +36,7 @@ func stopSartUIExec(ctx context.Context, info *execs.ExecInfo) error {
 // startUIExec executes the start of UI on the DUT.
 func startUIExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.RunArgs.DUT.Name)
-	out, err := run(ctx, info.ActionTimeout, "start ui")
+	out, err := run(ctx, info.GetExecTimeout(), "start ui")
 	if err != nil {
 		return errors.Annotate(err, "start UI exec").Err()
 	}

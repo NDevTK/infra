@@ -37,12 +37,12 @@ func newRunner(info *execs.ExecInfo) components.Runner {
 
 // pingAssociatedHostExec verifies that associated host of the DUT is pingable.
 func pingAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilPingable(ctx, info.ActionTimeout, cros.PingRetryInteval, 2, newPinger(info), info.NewLogger())
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInteval, 2, newPinger(info), info.NewLogger())
 }
 
 // sshAssociatedHostExec verifies ssh access to the associated host of the DUT.
 func sshAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.ActionTimeout, cros.SSHRetryInteval, newRunner(info), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInteval, newRunner(info), info.NewLogger())
 }
 
 // isAssociatedHostLabstationExec verifies that adb is installed at the DUT associated host.
