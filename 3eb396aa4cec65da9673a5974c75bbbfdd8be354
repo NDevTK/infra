@@ -153,6 +153,30 @@
       },
       "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee67c303_5b26ccef",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 401,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-09-21T01:11:28Z",
+      "side": 1,
+      "message": "oh, why not specify which board/model is allowed to use which flashrom so it will take less time? and be more clear.\n\nor maybe we need first collect this info to be more clear and find out if something work for other systems?",
+      "parentUuid": "b454e0bf_ba4c6b32",
+      "range": {
+        "startLine": 401,
+        "startChar": 3,
+        "endLine": 401,
+        "endChar": 67
+      },
+      "revId": "3eb396aa4cec65da9673a5974c75bbbfdd8be354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
