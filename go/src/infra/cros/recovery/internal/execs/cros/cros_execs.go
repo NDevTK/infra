@@ -126,7 +126,7 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 // runShellCommandExec runs a given action exec arguments in shell.
 func runShellCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	// TODO: Convert to single line command and always use linux shell.
-	actionArgs := info.ActionArgs
+	actionArgs := info.GetExecArgs()
 	if len(actionArgs) > 0 {
 		log.Debugf(ctx, "Run shell command: arguments %s.", actionArgs)
 		run := info.DefaultRunner()

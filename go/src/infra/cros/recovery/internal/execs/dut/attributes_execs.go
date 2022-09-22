@@ -18,12 +18,12 @@ import (
 // notInPoolExec verifies that DUT is not used in special pools.
 // List of pools should be listed as part of ActionArgs.
 func notInPoolExec(ctx context.Context, info *execs.ExecInfo) error {
-	if len(info.ActionArgs) == 0 {
+	if len(info.GetExecArgs()) == 0 {
 		log.Debugf(ctx, "Not in pool: no pools passed as arguments.")
 		return nil
 	}
 	poolMap := getDUTPoolMap(ctx, info.GetDut())
-	for _, pool := range info.ActionArgs {
+	for _, pool := range info.GetExecArgs() {
 		pool = strings.TrimSpace(pool)
 		if poolMap[pool] {
 			return errors.Reason("not in pool: dut is in pool %q", pool).Err()
@@ -37,12 +37,12 @@ func notInPoolExec(ctx context.Context, info *execs.ExecInfo) error {
 // isInPoolExec verifies that DUT is used in special pools.
 // List of pools should be listed as part of ActionArgs.
 func isInPoolExec(ctx context.Context, info *execs.ExecInfo) error {
-	if len(info.ActionArgs) == 0 {
+	if len(info.GetExecArgs()) == 0 {
 		log.Debugf(ctx, "Is in pool: no pools passed as arguments.")
 		return nil
 	}
 	poolMap := getDUTPoolMap(ctx, info.GetDut())
-	for _, pool := range info.ActionArgs {
+	for _, pool := range info.GetExecArgs() {
 		pool = strings.TrimSpace(pool)
 		if poolMap[pool] {
 			log.Debugf(ctx, "Is in pools: %q pool listed at the DUT.", pool)
