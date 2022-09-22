@@ -5,8 +5,11 @@
 package karte
 
 import (
+	"math"
+	"strconv"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	kartepb "infra/cros/karte/api"
@@ -52,11 +55,10 @@ func convertTimeToProtobufTimestamp(t time.Time) *timestamppb.Timestamp {
 //
 // This is the error message that we get if we instead use thing.AsTime().
 //
-//   -   StartTime:      s"0001-01-01 00:00:00 +0000 UTC",
-//   +   StartTime:      s"1970-01-01 00:00:00 +0000 UTC",
-//   -   StopTime:       s"0001-01-01 00:00:00 +0000 UTC",
-//   +   StopTime:       s"1970-01-01 00:00:00 +0000 UTC",
-//
+//	-   StartTime:      s"0001-01-01 00:00:00 +0000 UTC",
+//	+   StartTime:      s"1970-01-01 00:00:00 +0000 UTC",
+//	-   StopTime:       s"0001-01-01 00:00:00 +0000 UTC",
+//	+   StopTime:       s"1970-01-01 00:00:00 +0000 UTC",
 func convertProtobufTimestampToTime(t *timestamppb.Timestamp) time.Time {
 	var zero time.Time
 	if t == nil {
@@ -101,4 +103,33 @@ func convertKarteActionToAction(action *kartepb.Action) *metrics.Action {
 		FailReason:     action.GetFailReason(),
 		Hostname:       action.GetHostname(),
 	}
+}
+
+// makeKarteObservation takes an action name and an observation and creates a Karte observation.
+func makeKarteObservation(actionName string, observation *metrics.Observation) (*kartepb.Observation, error) {
+	if actionName == "" {
+		return nil, errors.Reason(`action name is ""`).Err()
+	}
+	if observation == nil {
+		return nil, errors.Reason("observation is nil").Err()
+	}
+	out := &kartepb.Observation{
+		ActionName: actionName,
+		MetricKind: observation.MetricKind,
+	}
+	switch observation.ValueType {
+	case metrics.ValueTypeNumber:
+		f, err := strconv.ParseFloat(observation.Value, 64)
+		if err != nil {
+			f = math.NaN()
+		}
+		out.Value = &kartepb.Observation_ValueNumber{
+			ValueNumber: f,
+		}
+	default:
+		out.Value = &kartepb.Observation_ValueString{
+			ValueString: observation.Value,
+		}
+	}
+	return out, nil
 }

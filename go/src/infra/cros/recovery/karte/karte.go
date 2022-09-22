@@ -28,9 +28,11 @@ func NewMetrics(ctx context.Context, c *kclient.Config, o ...kclient.Option) (me
 	return &client{impl: innerClient}, nil
 }
 
-// Create takes a reference to an action, creates the action in Karte, and reseats the action
-// reference on success.
-// Create mutates its argument action.
+// Create creates a new action in Karte using the following process.
+//
+// 1. Create action in Karte.
+// 2. Record name on action argument by mutating it.
+// 3. Walking the observations and creating them as well.
 func (c *client) Create(ctx context.Context, action *metrics.Action) error {
 	if c == nil {
 		return errors.Reason("create: client cannot be nil").Err()
@@ -41,14 +43,37 @@ func (c *client) Create(ctx context.Context, action *metrics.Action) error {
 			Action: convertActionToKarteAction(action),
 		},
 	)
-	if err == nil {
-		*action = *(convertKarteActionToAction(karteResp))
+	if err != nil {
+		return errors.Annotate(err, "create").Err()
 	}
+	*action = *(convertKarteActionToAction(karteResp))
+	err = c.createObservations(ctx, action.Name, action.Observations...)
 	return errors.Annotate(err, "create").Err()
 }
 
+// createObservations creates observations in karte.
+func (c *client) createObservations(ctx context.Context, actionName string, observations ...*metrics.Observation) error {
+	if actionName == "" {
+		return errors.Reason("actionName cannot be empty").Err()
+	}
+	for _, observation := range observations {
+		obs, err := makeKarteObservation(actionName, observation)
+		if err != nil {
+			return errors.Annotate(err, "create observation").Err()
+		}
+		if _, err := c.impl.CreateObservation(
+			ctx,
+			&kartepb.CreateObservationRequest{
+				Observation: obs,
+			},
+		); err != nil {
+			return errors.Annotate(err, "create observation").Err()
+		}
+	}
+	return nil
+}
+
 // Update takes an action and updates the entry in the Karte service, the source of truth.
-// TODO(gregorynisbet): This implementation is not complete. A metrics action has observations attached to it.
 // Updating Karte will require inspecting those observations and potentially updating or replacing them.
 func (c *client) Update(ctx context.Context, action *metrics.Action) error {
 	a := convertActionToKarteAction(action)
@@ -63,7 +88,8 @@ func (c *client) Update(ctx context.Context, action *metrics.Action) error {
 		return errors.Annotate(err, "karte update").Err()
 	}
 	*action = *convertKarteActionToAction(karteResp)
-	return nil
+	err = c.createObservations(ctx, action.Name, action.Observations...)
+	return errors.Annotate(err, "karte update").Err()
 }
 
 // defaultResultSetSize is the number of records to return by default from Karte.
