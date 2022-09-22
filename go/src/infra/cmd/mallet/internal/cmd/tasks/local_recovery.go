@@ -174,7 +174,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		if err == nil {
 			logger.Infof("internal run: metrics client successfully created.")
 		} else {
-			return errors.Annotate(err, "ineer run: failed to instantiate karte client of server: %q", c.karteServer).Err()
+			return errors.Annotate(err, "inner run: failed to instantiate karte client of server: %q", c.karteServer).Err()
 		}
 	}
 
