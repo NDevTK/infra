@@ -46,7 +46,7 @@ func (c *client) Create(ctx context.Context, action *metrics.Action) error {
 	if err != nil {
 		return errors.Annotate(err, "create").Err()
 	}
-	*action = *(convertKarteActionToAction(karteResp))
+	action.Name = karteResp.GetName()
 	err = c.createObservations(ctx, action.Name, action.Observations...)
 	return errors.Annotate(err, "create").Err()
 }
@@ -87,7 +87,9 @@ func (c *client) Update(ctx context.Context, action *metrics.Action) error {
 	if err != nil {
 		return errors.Annotate(err, "karte update").Err()
 	}
-	*action = *convertKarteActionToAction(karteResp)
+	if action.Name != karteResp.GetName() {
+		return errors.Reason("karte service returned unexpected result: name should be %q but was %q", action.Name, karteResp.GetName()).Err()
+	}
 	err = c.createObservations(ctx, action.Name, action.Observations...)
 	return errors.Annotate(err, "karte update").Err()
 }
