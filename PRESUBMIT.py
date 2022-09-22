@@ -10,6 +10,7 @@ details on the presubmit API built into gcl.
 
 import os
 
+USE_PYTHON3 = True
 
 DISABLED_TESTS = [
     '.*appengine/chromium_status/tests/main_test.py',
@@ -274,7 +275,7 @@ def IgnoredPaths(input_api): # pragma: no cover
   # This computes the list if repository-root-relative paths which are
   # ignored by .gitignore files. There is probably a faster way to do this.
   status_output = input_api.subprocess.check_output(
-      ['git', 'status', '--porcelain', '--ignored'])
+      ['git', 'status', '--porcelain', '--ignored'], text=True)
   statuses = [(line[:2], line[3:]) for line in status_output.splitlines()]
   return [
     input_api.re.escape(path) for (mode, path) in statuses
@@ -366,7 +367,7 @@ def EmptiedFilesCheck(input_api, output_api): # pragma: no cover
 
 def BrokenLinksChecks(input_api, output_api):  # pragma: no cover
   """Complains if there are broken committed symlinks."""
-  stdout = input_api.subprocess.check_output(['git', 'ls-files'])
+  stdout = input_api.subprocess.check_output(['git', 'ls-files'], text=True)
   files = stdout.splitlines()
   output = []
   infra_root = input_api.PresubmitLocalPath()
