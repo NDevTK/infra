@@ -48,7 +48,7 @@ For now only running in testing mode.`,
 		c.envFlags.Register(&c.Flags)
 		// TODO(otabek@) Add more details with instruction how to get default config as example.
 		c.Flags.StringVar(&c.configFile, "config", "", "Path to the custom json config file.")
-		c.Flags.StringVar(&c.karteServer, "karte-server", "", "Use karte metric to record the action.")
+		c.Flags.StringVar(&c.karteServer, "karte-server", "dev", "Use karte metric to record the action (dev by default).")
 
 		c.Flags.StringVar(&c.devJumpHost, "dev-jump-host", "", "Jump host for SSH (Dev-only feature).")
 		c.Flags.StringVar(&c.logRoot, "log-root", "", "Path to the custom json config file.")
