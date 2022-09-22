@@ -20,7 +20,7 @@ import (
 // auditStorageSMARTExec confirms that it is able to audit
 // smartStorage info and mark the DUT if it needs replacement.
 func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := storage.AuditStorageSMART(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.RunArgs.DUT); err != nil {
+	if err := storage.AuditStorageSMART(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.GetDut()); err != nil {
 		return errors.Annotate(err, "audit storage smart").Err()
 	}
 	return nil
@@ -37,8 +37,8 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 		AuditMode: bbMode,
 		Run:       info.DefaultRunner(),
 		Storage:   info.GetChromeos().GetStorage(),
-		Dut:       info.RunArgs.DUT,
-		Metrics:   info.RunArgs.Metrics,
+		Dut:       info.GetDut(),
+		Metrics:   info.GetMetrics(),
 		TimeoutRW: timeoutRW,
 		TimeoutRO: timeoutRO,
 	}
@@ -67,7 +67,7 @@ func hasEnoughStorageSpaceExec(ctx context.Context, info *execs.ExecInfo) error 
 	if convertErr != nil {
 		return errors.Annotate(convertErr, "has enough storage space: convert stateful path min space").Err()
 	}
-	if err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.RunArgs.ResourceName, path, linux.SpaceTypeDisk, pathMinSpaceInGB); err != nil {
+	if err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.GetActiveResource(), path, linux.SpaceTypeDisk, pathMinSpaceInGB); err != nil {
 		return errors.Annotate(err, "has enough storage space").Err()
 	}
 	return nil
@@ -91,7 +91,7 @@ func hasEnoughFreeIndexNodesExec(ctx context.Context, info *execs.ExecInfo) erro
 	if convertErr != nil {
 		return errors.Annotate(convertErr, "has enough storage index nodes: convert stateful path min kilo nodes").Err()
 	}
-	err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.RunArgs.ResourceName, path, linux.SpaceTypeInode, pathMinKiloIndexNodes*1000)
+	err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.GetActiveResource(), path, linux.SpaceTypeInode, pathMinKiloIndexNodes*1000)
 	return errors.Annotate(err, "has enough storage index nodes").Err()
 }
 
@@ -113,7 +113,7 @@ func hasEnoughStorageSpacePercentageExec(ctx context.Context, info *execs.ExecIn
 	if occupiedSpacePercentage, err := linux.PathOccupiedSpacePercentage(ctx, info.DefaultRunner(), path); err != nil {
 		return errors.Annotate(err, "has enough storage space percentage").Err()
 	} else if actualFreePercentage := (100 - occupiedSpacePercentage); pathMinSpaceInPercentage > actualFreePercentage {
-		return errors.Reason("path have enough free space percentage: %s/%s, expect %v%%, actual %v%%", info.RunArgs.ResourceName, path, pathMinSpaceInPercentage, actualFreePercentage).Err()
+		return errors.Reason("path have enough free space percentage: %s/%s, expect %v%%, actual %v%%", info.GetActiveResource(), path, pathMinSpaceInPercentage, actualFreePercentage).Err()
 	}
 	return nil
 }

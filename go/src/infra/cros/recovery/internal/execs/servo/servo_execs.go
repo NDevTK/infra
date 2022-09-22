@@ -115,14 +115,14 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 		Options:  o,
 		NoServod: am.AsBool(ctx, "no_servod", false),
 	}
-	if err := info.RunArgs.Access.InitServod(ctx, req); err != nil {
+	if err := info.GetAccess().InitServod(ctx, req); err != nil {
 		return errors.Annotate(err, "init servod").Err()
 	}
 	return nil
 }
 
 func servodStopActionExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := info.RunArgs.Access.StopServod(ctx, info.GetDut().Name); err != nil {
+	if err := info.GetAccess().StopServod(ctx, info.GetDut().Name); err != nil {
 		return errors.Annotate(err, "stop servod").Err()
 	}
 	return nil

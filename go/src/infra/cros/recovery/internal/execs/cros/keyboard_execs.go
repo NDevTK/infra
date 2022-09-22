@@ -45,8 +45,8 @@ func transferKeyboardHexExec(ctx context.Context, info *execs.ExecInfo) error {
 	// will be used by the dfu-programmer command.
 	keyboardHexDestPath := path.Join("/tmp", "keyboard.hex")
 	log.Debugf(ctx, "Transfer Keybaord Hex: destination path is :%q", keyboardHexDestPath)
-	return info.RunArgs.Access.CopyFileTo(ctx, &tlw.CopyRequest{
-		Resource:        info.RunArgs.ResourceName,
+	return info.GetAccess().CopyFileTo(ctx, &tlw.CopyRequest{
+		Resource:        info.GetActiveResource(),
 		PathSource:      keyboardHexSrcPath,
 		PathDestination: keyboardHexDestPath,
 	})

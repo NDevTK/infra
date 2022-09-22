@@ -123,6 +123,11 @@ func (ei *ExecInfo) GetExecTimeout() time.Duration {
 	return ei.ActionTimeout
 }
 
+// GetAccess returns access to main interface.
+func (ei *ExecInfo) GetAccess() tlw.Access {
+	return ei.RunArgs.Access
+}
+
 // Run runs exec function provided by this package by name.
 func Run(ctx context.Context, ei *ExecInfo) error {
 	e, ok := knownExecMap[ei.Name]

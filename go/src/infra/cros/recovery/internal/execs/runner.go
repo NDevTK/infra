@@ -68,7 +68,7 @@ func (ei *ExecInfo) NewBackgroundRunner(resource string) Runner {
 
 // DefaultRunner returns runner for current resource name specified per plan.
 func (ei *ExecInfo) DefaultRunner() Runner {
-	return ei.NewRunner(ei.RunArgs.ResourceName)
+	return ei.NewRunner(ei.GetActiveResource())
 }
 
 // NewRunner returns a function of type Runner that executes a command

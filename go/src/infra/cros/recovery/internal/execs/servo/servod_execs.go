@@ -66,7 +66,7 @@ func servodDUTColdResetActionExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "servod cold_reset dut").Err()
 	}
 	return retry.WithTimeout(ctx, 5*time.Second, dutBootTimeout, func() error {
-		return info.RunArgs.Access.Ping(ctx, info.GetDut().Name, 2)
+		return info.GetAccess().Ping(ctx, info.GetDut().Name, 2)
 	}, "servod cold_reset dut: check ping access")
 }
 

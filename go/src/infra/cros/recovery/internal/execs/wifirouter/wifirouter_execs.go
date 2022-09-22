@@ -44,7 +44,7 @@ func matchWifirouterBoardAndModelExec(ctx context.Context, info *execs.ExecInfo)
 			return nil
 		}
 	}
-	return errors.Reason("wifirouter %q board model not matching %q", info.RunArgs.ResourceName, info.ActionArgs).Err()
+	return errors.Reason("wifirouter %q board model not matching %q", info.GetActiveResource(), info.ActionArgs).Err()
 }
 
 // wifirouterPresentExec check if wifi router hosts exists
