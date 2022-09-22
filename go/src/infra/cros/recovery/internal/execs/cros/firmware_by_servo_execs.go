@@ -129,7 +129,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
 	// Requesting convert GC path to caches service path.
 	// Example: `http://Addr:8082/download/chromeos-image-archive/board-firmware/R99-XXXXX.XX.0`
-	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
+	downloadPath, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
 	if err != nil {
 		return errors.Annotate(err, mn).Err()
 	}

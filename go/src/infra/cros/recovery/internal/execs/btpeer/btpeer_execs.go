@@ -40,7 +40,7 @@ func getDetectedStatusesExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "get detected statuses").Err()
 	}
-	res, err := Call(ctx, info.RunArgs.Access, h, "GetDetectedStatus")
+	res, err := Call(ctx, info.GetAccess(), h, "GetDetectedStatus")
 	if err != nil {
 		return errors.Annotate(err, "get detected statuses").Err()
 	}

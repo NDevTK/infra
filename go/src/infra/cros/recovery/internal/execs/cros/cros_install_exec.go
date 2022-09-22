@@ -100,8 +100,8 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				AuditMode: bbMode,
 				Run:       dutRun,
 				Storage:   info.GetChromeos().GetStorage(),
-				Dut:       info.RunArgs.DUT,
-				Metrics:   info.RunArgs.Metrics,
+				Dut:       info.GetDut(),
+				Metrics:   info.GetMetrics(),
 				TimeoutRW: timeoutRW,
 				TimeoutRO: timeoutRO,
 			}

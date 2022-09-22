@@ -34,7 +34,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	osImagePath := argsMap.AsString(ctx, "os_image_path", fmt.Sprintf("%s/%s", osImageBucket, osImageName))
 	log.Debugf(ctx, "Used OS image path: %s", osImagePath)
 	req := &tlw.ProvisionRequest{
-		Resource:        info.RunArgs.ResourceName,
+		Resource:        info.GetActiveResource(),
 		PreventReboot:   false,
 		SystemImagePath: osImagePath,
 	}
@@ -43,7 +43,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Cros provision will be perform without reboot.")
 	}
 	log.Debugf(ctx, "Cros provision OS image path: %s", req.SystemImagePath)
-	err = info.RunArgs.Access.Provision(ctx, req)
+	err = info.GetAccess().Provision(ctx, req)
 	return errors.Annotate(err, "cros provision").Err()
 }
 
@@ -64,7 +64,7 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "Used OS image path: %s", osImagePath)
 	// Requesting convert GC path to caches service path.
 	// Example: `http://Addr:8082/download/chromeos-image-archive/board-release/R99-XXXXX.XX.0/`
-	downloadPath, err := info.RunArgs.Access.GetCacheUrl(ctx, info.GetDut().Name, osImagePath)
+	downloadPath, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, osImagePath)
 	if err != nil {
 		return errors.Annotate(err, "download image to usb-drive").Err()
 	}

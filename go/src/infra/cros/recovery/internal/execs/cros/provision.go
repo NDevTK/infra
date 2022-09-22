@@ -42,7 +42,7 @@ func updateJobRepoURLExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("update job repo url: provisioned version not found").Err()
 	}
 	gsPath := fmt.Sprintf("%s/%s", gsCrOSImageBucket, version)
-	jobRepoURL, err := info.RunArgs.Access.GetCacheUrl(ctx, info.GetDut().Name, gsPath)
+	jobRepoURL, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, gsPath)
 	if err != nil {
 		return errors.Annotate(err, "update job repo url").Err()
 	}
