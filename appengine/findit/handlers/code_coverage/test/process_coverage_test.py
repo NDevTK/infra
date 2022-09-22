@@ -547,7 +547,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'dirs': None,
         'files': [{
             'path':
-                '//dir/test.cc',
+                '//dir/myfile.cc',
             'lines': [{
                 'count': 100,
                 'first': 1,
@@ -565,13 +565,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
 
     abs_percentages = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=100, covered_lines=10)
+            path='//dir/myfile.cc', total_lines=100, covered_lines=10)
     ]
     mocked_abs_percentages.return_value = abs_percentages
 
     inc_percentages = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=90, covered_lines=9)
+            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
 
@@ -583,7 +583,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertTrue('dir/test.cc' in data['robot_comments'])
+    self.assertTrue('dir/myfile.cc' in data['robot_comments'])
 
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_FetchAndSaveFileIfNecessary')
