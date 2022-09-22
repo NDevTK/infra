@@ -21,7 +21,7 @@ type versioner struct {
 // Versioner returns versioner to read any version.
 func (ei *ExecInfo) Versioner() components.Versioner {
 	return &versioner{
-		a: ei.RunArgs.Access,
+		a: ei.runArgs.Access,
 	}
 }
 
