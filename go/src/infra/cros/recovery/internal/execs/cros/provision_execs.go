@@ -117,11 +117,15 @@ var chartOSMap = map[string]string{
 }
 
 // getChartOS returns the required os of chart if predefined in chartOSMap
+// TODO: use version service when will be ready.
 func getChartOS(ctx context.Context, info *execs.ExecInfo) (string, error) {
 	b := fmt.Sprintf("%s,%s", info.GetChromeos().GetBoard(), info.GetChromeos().GetModel())
 	expectedOS, ok := chartOSMap[b]
 	if !ok {
-		return "", errors.Reason("os not defined for %s device", b).Err()
+		return "", errors.Reason("get chart os: os not defined for %s device", b).Err()
+	}
+	if expectedOS == "" {
+		return "", errors.Reason("get chart os: os is empty").Err()
 	}
 	return expectedOS, nil
 }
@@ -149,10 +153,18 @@ func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo)
 func provisionCameraboxTabletExec(ctx context.Context, info *execs.ExecInfo) error {
 	chartOSName, err := getChartOS(ctx, info)
 	if err != nil {
-		return errors.Annotate(err, "camerabox tablet match os version").Err()
+		return errors.Annotate(err, "provision camerabox tablet").Err()
 	}
-	info.ActionArgs = []string{fmt.Sprintf("os_name:%s", chartOSName)}
-	return provisionExec(ctx, info)
+	osImagePath := fmt.Sprintf("%s/%s", gsCrOSImageBucket, chartOSName)
+	log.Debugf(ctx, "Used OS image path: %s", osImagePath)
+	req := &tlw.ProvisionRequest{
+		Resource:        info.GetActiveResource(),
+		PreventReboot:   false,
+		SystemImagePath: osImagePath,
+	}
+	log.Debugf(ctx, "Provision camerabox tablet with image path: %s", req.SystemImagePath)
+	err = info.GetAccess().Provision(ctx, req)
+	return errors.Annotate(err, "provision camerabox tablet").Err()
 }
 
 func init() {
