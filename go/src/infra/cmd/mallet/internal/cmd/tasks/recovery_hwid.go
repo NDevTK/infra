@@ -60,9 +60,6 @@ func (c *recoveryHWIDRun) innerRun(a subcommands.Application, args []string, env
 	if len(args) == 0 {
 		return errors.Reason("recovery HWID: unit is not specified").Err()
 	}
-	if len(args) > 1 {
-		return errors.Reason("recovery HWID: too many units specified").Err()
-	}
 	v := buildbucket.CIPDLatest
 	for _, unit := range args {
 		e := c.envFlags.Env()
