@@ -514,7 +514,7 @@ func shouldUpdateGitilesCommit(build *buildbucketpb.Build, commit *gitilesCommit
 	}
 	buildCommit := build.Input.GitilesCommit
 	if buildCommit == nil {
-		return true
+		return false
 	}
 	return buildCommit.Host == commit.Host && buildCommit.Project == commit.Project
 }
