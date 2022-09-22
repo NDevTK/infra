@@ -33,6 +33,24 @@
       "message": "Very minor nit (totally optional): Will it make sense to create a bug about this and mention it here? Because that will remind us to come back and fix this todo in future. Otherwise we might forget this and move on with other tasks with time.",
       "revId": "dad403af8039a27cebe67a420a3b45041802cb9f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "edda67ae_db74f6a9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/provision_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-09-22T16:49:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "56b71c7b_092d11a5",
+      "revId": "dad403af8039a27cebe67a420a3b45041802cb9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
