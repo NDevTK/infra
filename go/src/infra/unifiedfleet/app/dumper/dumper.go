@@ -116,6 +116,13 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.DAILY,
 		Job:      manufacturingConfigDiffHandler,
 	},
+	{
+		// Sync ENC bot configs
+		Name:     util.CronJobNames["encBotConfigSyncCron"],
+		Time:     24 * time.Hour, //TODO(gowriden) - Reduce time to every 5 minutes once completely implemented
+		TrigType: cron.EVERY,
+		Job:      getEncBotConfigs,
+	},
 }
 
 // InitServer initializes a cron server.
