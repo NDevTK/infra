@@ -98,6 +98,20 @@ func GetLabelValues(jsonGetPath string, pm proto.Message) ([]string, error) {
 		return nil, errors.New("jsonpath cannot be empty")
 	}
 
+	pmJson, err := parseProtoIntoJson(pm)
+	if err != nil {
+		return nil, err
+	}
+
+	labelVals, err := jsonpath.Get(jsonGetPath, pmJson)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLabelValuesToArray(labelVals)
+}
+
+// parseProtoIntoJson parses a proto message into a JSON interface.
+func parseProtoIntoJson(pm proto.Message) (interface{}, error) {
 	if reflect.ValueOf(pm).IsNil() {
 		return nil, errors.New("proto message cannot be empty")
 	}
@@ -112,12 +126,7 @@ func GetLabelValues(jsonGetPath string, pm proto.Message) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	labelVals, err := jsonpath.Get(jsonGetPath, pmJson)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLabelValuesToArray(labelVals)
+	return pmJson, nil
 }
 
 // ParseLabelValuesToArray takes label values and returns a string array.
