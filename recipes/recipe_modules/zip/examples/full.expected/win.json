@@ -37,7 +37,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "RECIPE_MODULE[infra::zip]\\resources\\zip.py"
     ],
     "name": "zipping",
@@ -45,7 +45,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "RECIPE_MODULE[infra::zip]\\resources\\zip.py"
     ],
     "name": "zipping more",
@@ -53,7 +53,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "RECIPE_MODULE[infra::zip]\\resources\\zip.py"
     ],
     "name": "zipping more updates",
@@ -68,7 +68,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "RECIPE_MODULE[infra::zip]\\resources\\unzip.py"
     ],
     "name": "unzipping",

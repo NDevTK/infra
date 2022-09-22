@@ -46,7 +46,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "RECIPE_MODULE[infra::zip]/resources/unzip.py"
     ],
     "name": "Unzip gsutil_4.1.zip",

@@ -59,12 +59,14 @@ def zip_with_subprocess(root, output, entries, comment, mode):
   proc = subprocess.Popen(
       args=['zip', '-1', '--recurse-paths', '--symlinks', '-@', output],
       stdin=subprocess.PIPE,
+      universal_newlines=True,
       cwd=root)
   proc.communicate('\n'.join(items_to_zip))
   if proc.returncode == 0 and comment:
     proc = subprocess.Popen(
         args=['zip', '--archive-comment', output],
         stdin=subprocess.PIPE,
+        universal_newlines=True,
         cwd=root)
     proc.communicate(comment)
   return proc.returncode

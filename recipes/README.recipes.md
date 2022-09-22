@@ -1312,7 +1312,7 @@ Raises:
     StepFailure or InfraFailure.
 ### *recipe_modules* / [zip](/recipes/recipe_modules/zip)
 
-[DEPS](/recipes/recipe_modules/zip/__init__.py#7): [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/zip/__init__.py#7): [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 

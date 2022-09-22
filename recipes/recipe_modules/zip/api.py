@@ -85,9 +85,9 @@ class ZipApi(recipe_api.RecipeApi):
         'zip_file': str(zip_file),
         'quiet': quiet,
     }
-    self.m.python(
+    self.m.step(
         name=step_name,
-        script=self.resource('unzip.py'),
+        cmd=['python3', self.resource('unzip.py')],
         stdin=self.m.json.input(script_input))
 
   def get_comment(self, step_name, zip_file):
@@ -165,9 +165,9 @@ class ZipPackage(object):
         'root': str(self._root),
         'mode': str(self._mode),
     }
-    step_result = self._module.m.python(
+    step_result = self._module.m.step(
         name=step_name,
-        script=self._module.resource('zip.py'),
+        cmd=['python3', self._module.resource('zip.py')],
         stdin=self._module.m.json.input(script_input))
     self._module.m.path.mock_add_paths(self._output)
     return step_result
