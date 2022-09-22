@@ -91,6 +91,7 @@ func (k *karteFrontend) CreateObservation(ctx context.Context, req *kartepb.Crea
 	}
 	req.Observation.Name = name
 
+	logging.Infof(ctx, "Creating observation associated with action %q", req.GetObservation().GetActionName())
 	observationEntity, err := convertObservationToObservationEntity(req.GetObservation())
 	if err != nil {
 		return nil, errors.Annotate(err, "create observation").Err()
