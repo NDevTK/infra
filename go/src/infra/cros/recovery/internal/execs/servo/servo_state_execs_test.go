@@ -91,10 +91,7 @@ func TestSetServoStateExec(t *testing.T) {
 					},
 				},
 			}
-			info := &execs.ExecInfo{
-				RunArgs:    args,
-				ActionArgs: tt.actionArgs,
-			}
+			info := execs.NewExecInfo( args,"name",tt.actionArgs,0)
 			actualErr := setServoStateExec(ctx, info)
 			if actualErr != nil && tt.expectedErr != nil {
 				if !strings.Contains(actualErr.Error(), tt.expectedErr.Error()) {
@@ -166,10 +163,7 @@ func TestMatchServoStateExec(t *testing.T) {
 					},
 				},
 			}
-			info := &execs.ExecInfo{
-				RunArgs:    args,
-				ActionArgs: []string{tt.actionArg},
-			}
+			info := execs.NewExecInfo(    args,"name", []string{tt.actionArg},0)
 			actualErr := matchStateExec(ctx, info)
 			if tt.expectedErr == nil {
 				// Expected to pass

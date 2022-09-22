@@ -326,12 +326,7 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 	defer func() { cancel() }()
 	cw := make(chan error, 1)
 	go func() {
-		err := execs.Run(ctx, &execs.ExecInfo{
-			RunArgs:       r.args,
-			Name:          a.ExecName,
-			ActionArgs:    a.GetExecExtraArgs(),
-			ActionTimeout: timeout,
-		})
+		err := execs.Run(ctx, execs.NewExecInfo(r.args,a.ExecName,a.GetExecExtraArgs(),timeout))
 		cw <- err
 	}()
 	select {
