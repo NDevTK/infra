@@ -26,11 +26,6 @@ service Tricium {
   // A run corresponds to an analyze request and is identified with a run ID.
   rpc Progress(ProgressRequest) returns (ProgressResponse);
 
-  // Results requests analysis results from a run.
-  //
-  // A run corresponds to an analyze request and is identified with a run ID.
-  rpc Results(ResultsRequest) returns (ResultsResponse);
-
   // Feedback requests feedback for an analyzer category.
   rpc Feedback(FeedbackRequest) returns (FeedbackResponse);
 
@@ -174,39 +169,6 @@ message FunctionProgress {
   int64 buildbucket_build_id = 8;
 }
 
-message ResultsRequest {
-  // Run ID returned by an analyze request.
-  string run_id = 1;
-
-  // An optional function name.
-  //
-  // If provided, only results for the provided function are returned.
-  // If a function is being run on more than one platform then the merged
-  // results of the function can be returned by exclusion of a specific platform.
-  //
-  // NB! Currently not supported.
-  string function = 2;
-
-  // Optional platform that can be provided together with an function name.
-  //
-  // If provided, only results for the provided platform and function are returned.
-  //
-  // NB! Currently not supported.
-  Platform.Name platform = 3;
-}
-
-message ResultsResponse {
-  Data.Results results = 1;
-
-  // Whether the returned results are merged.
-  //
-  // Results may be merged if a result request for an function running on multiple
-  // platforms was made and the request did not include a specific platform.
-  // Results for a run with no specific function selected will be marked as merged
-  // if any included analyzer results were merged.
-  bool is_merged = 2;
-}
-
 message FeedbackRequest {
   // Name of the project in luci-config to provide feedback for.
   //
@@ -254,7 +216,7 @@ message FeedbackResponse {
 }
 
 message ReportNotUsefulRequest {
-  // ID of comment as returned by the Results endpoint.
+  // ID of comment.
   string comment_id = 1;
 }
 
