@@ -63,12 +63,12 @@ func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
 
 // sampleStepSummaryMarkdownExec sets experimental SummaryMarkdown to new step.
 func sampleStepSummaryMarkdownExec(ctx context.Context, info *ExecInfo) error {
-	if len(info.ActionArgs) == 0 {
+	if len(info.GetExecArgs()) == 0 {
 		return nil
 	}
 	step, _ := build.StartStep(ctx, "Experimental step")
 	defer func() { step.End(nil) }()
-	for _, msg := range info.ActionArgs {
+	for _, msg := range info.GetExecArgs() {
 		step.Modify(func(v *build.StepView) {
 			if v.SummaryMarkdown != "" {
 				v.SummaryMarkdown += "<br/>"

@@ -55,10 +55,10 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 // input will only consist of one path and its corresponding value for storage.
 func hasEnoughStorageSpaceExec(ctx context.Context, info *execs.ExecInfo) error {
 	// TODO: recheck it and simplify. Also do it for hasEnoughStoragePercentageExec
-	if len(info.ActionArgs) != 1 {
+	if len(info.GetExecArgs()) != 1 {
 		return errors.Reason("has enough storage space: input in wrong format").Err()
 	}
-	inputs := strings.Split(info.ActionArgs[0], ":")
+	inputs := strings.Split(info.GetExecArgs()[0], ":")
 	if len(inputs) != 2 {
 		return errors.Reason("has enough storage space: input in wrong format").Err()
 	}
@@ -79,10 +79,10 @@ func hasEnoughStorageSpaceExec(ctx context.Context, info *execs.ExecInfo) error 
 // x is the number of kilos of index nodes.
 // input will only consist of one path and its corresponding value for storage.
 func hasEnoughFreeIndexNodesExec(ctx context.Context, info *execs.ExecInfo) error {
-	if len(info.ActionArgs) != 1 {
+	if len(info.GetExecArgs()) != 1 {
 		return errors.Reason("has enough index nodes: input in wrong format").Err()
 	}
-	inputs := strings.Split(info.ActionArgs[0], ":")
+	inputs := strings.Split(info.GetExecArgs()[0], ":")
 	if len(inputs) != 2 {
 		return errors.Reason("has enough index nodes: input in wrong format").Err()
 	}
