@@ -55,14 +55,16 @@ func TestIsSmartHubExpectedExec(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
-			info := &execs.ExecInfo{
-				RunArgs: &execs.RunArgs{
+			info := execs.NewExecInfo(
+				&execs.RunArgs{
 					DUT: &tlw.Dut{
 						Chromeos: tt.chromeos,
 					},
 				},
-				ActionArgs: tt.actions,
-			}
+				"name",
+				tt.actions,
+				0,
+			)
 			err := isSmartHubExpectedExec(ctx, info)
 			if err == nil && tt.expectedErr {
 				t.Errorf("%q -> error expected but not received", tt.testName)
