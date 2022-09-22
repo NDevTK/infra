@@ -70,20 +70,18 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 			rErr = nil
 		}
 	}()
-	if r.args != nil {
-		// TODO: Generate metrics for plan closing.
-		if r.args.ShowSteps {
-			var step *build.Step
-			step, ctx = build.StartStep(ctx, fmt.Sprintf("Plan: %s", r.planName))
-			if r.plan.GetAllowFail() {
-				step.Log("Allowed to fail!")
-			}
-			defer func() { step.End(rErr) }()
+	// TODO(gregorynisbet): Generate metrics for plan closing.
+	if r.args.ShowSteps {
+		var step *build.Step
+		step, ctx = build.StartStep(ctx, fmt.Sprintf("Plan: %s", r.planName))
+		if r.plan.GetAllowFail() {
+			step.Log("Allowed to fail!")
 		}
-		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
-			i.Indent()
-			defer func() { i.Dedent() }()
-		}
+		defer func() { step.End(rErr) }()
+	}
+	if i, ok := r.args.Logger.(logger.LogIndenter); ok {
+		i.Indent()
+		defer func() { i.Dedent() }()
 	}
 	var restartTally int64
 	var forgivenFailureTally int64
