@@ -22,6 +22,7 @@ lucicfg.config(
     tracked_files = [
         "cr-buildbucket-dev.cfg",
         "luci-logdog-dev.cfg",
+        "luci-milo-dev.cfg",
         "luci-notify-dev.cfg",
         "luci-notify-dev/email-templates/*",
         "luci-scheduler-dev.cfg",
@@ -43,6 +44,7 @@ luci.project(
     dev = True,
     buildbucket = "cr-buildbucket-dev.appspot.com",
     logdog = "luci-logdog-dev.appspot.com",
+    milo = "luci-milo-dev.appspot.com",
     notify = "luci-notify-dev.appspot.com",
     scheduler = "luci-scheduler-dev.appspot.com",
     swarming = "chromium-swarm-dev.appspot.com",
@@ -562,3 +564,41 @@ fakebuild_search_builder("fake-search-no-bn", 100, 10, 2, 10, False)
 
 fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-search", 2, 10, True)
 fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-search-no-bn", 2, 10, False, wait_for_children = True)
+
+# Generate a large number of buckets and builders as a load test for one-bucket-per-model in CrOS.
+# TODO(b/245193301): remove this.
+def _generate_many_buckets():
+    list_view_name = "cros-model-builders"
+    luci.list_view(name = list_view_name)
+
+    for i in range(450):
+        bucket_name = "cros-model-realm" + str(i)
+        builder_name = bucket_name + "-builder"
+        luci.bucket(
+            name = bucket_name,
+            bindings = [
+                luci.binding(
+                    roles = "role/buildbucket.reader",
+                    groups = "project-infra-tryjob-access",
+                ),
+                luci.binding(
+                    roles = "role/buildbucket.limitedReader",
+                    groups = "all",
+                ),
+            ],
+        )
+        luci.builder(
+            name = builder_name,
+            bucket = bucket_name,
+            executable = infra.recipe("gerrit_hello_world", use_python3 = True),
+            schedule = "triggered",  # triggered manually via Scheduler UI
+            dimensions = {"os": "Ubuntu-18.04", "cpu": "x86-64", "pool": "luci.chromium.ci"},
+            service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+            build_numbers = True,
+        )
+        luci.list_view_entry(
+            builder = builder_name,
+            list_view = list_view_name,
+        )
+
+_generate_many_buckets()
