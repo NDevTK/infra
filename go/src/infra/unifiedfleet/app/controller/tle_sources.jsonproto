@@ -154,9 +154,9 @@
     {
       "labelName": "peripheral-servo",
       "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
-      "fieldPath": "UNIMPLEMENTED",
-      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
-      "standardConverter": {}
+      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.servo",
+      "converterType": "TLE_CONVERTER_TYPE_EXISTENCE",
+      "existenceConverter": {}
     },
     {
       "labelName": "peripheral-servo-component",
