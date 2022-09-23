@@ -78,7 +78,19 @@ message TleConverterStandard {
 
 // TleConverterExistence determines a boolean value based on a given proto from
 // the config path.
-message TleConverterExistence {}
+message TleConverterExistence {
+  // The state_existence proto indicates whether existence is determined based
+  // on a state proto. E.g. Servo is based on whether its PeripheralState is
+  // set to a proper state or not.
+  StateExistence state_existence = 1;
+
+  message StateExistence {
+    // A list of states that indicate a false value for existence.
+    // e.g. For Servo, the invalid states are the PeripheralStates UNKNOWN and
+    // NOT_CONNECTED.
+    repeated string invalid_states = 1;
+  }
+}
 
 // TleConverterDynamic is a converter that generates label names in runtime.
 // The label names depend on another proto and cannot be hardcoded
