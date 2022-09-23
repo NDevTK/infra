@@ -192,7 +192,6 @@ func androidRepairDeployActions() map[string]*Action {
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
-				"Reset public key",
 			},
 			ExecName: "android_dut_is_accessible",
 			RecoveryActions: []string{
@@ -220,6 +219,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"Validate associated host",
 				"Validate adb",
 				"DUT is accessible over adb",
+				"Reset public key",
 				"android_dut_reset",
 				"Wait for DUT",
 				"Connect to WiFi network",
@@ -239,12 +239,12 @@ func androidRepairDeployActions() map[string]*Action {
 			Docs: []string{"Waits for DUT to become available."},
 			Dependencies: []string{
 				"android_wait_for_offline_dut",
-				"Sleep 60s while device resets",
+				"Sleep 60s",
 			},
 			ExecName:    "android_wait_for_online_dut",
 			ExecTimeout: &durationpb.Duration{Seconds: 300},
 		},
-		"Sleep 60s while device resets": {
+		"Sleep 60s": {
 			ExecName:      "sample_sleep",
 			ExecExtraArgs: []string{"sleep:60"},
 			ExecTimeout:   &durationpb.Duration{Seconds: 90},
@@ -295,7 +295,7 @@ func androidRepairDeployActions() map[string]*Action {
 			Dependencies: []string{
 				"android_device_in_fastboot_mode",
 				"android_reboot_device_via_fastboot",
-				"Sleep 60s while device resets",
+				"Sleep 60s",
 				"Stop ADB server",
 				"Start ADB server",
 				"android_wait_for_online_dut",
