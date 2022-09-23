@@ -85,7 +85,7 @@ func (r *reportCmd) httpClient(ctx context.Context) (*http.Client, error) {
 	r.clientFactory.init(ctx, opts)
 	httpClient, err := r.clientFactory.http()
 	switch {
-	case err == auth.ErrLoginRequired:
+	case errors.Is(err, auth.ErrLoginRequired):
 		return nil, errors.New("Login required: run `weekly auth-login` or use the -service-account-json flag")
 	case err != nil:
 		return nil, err
