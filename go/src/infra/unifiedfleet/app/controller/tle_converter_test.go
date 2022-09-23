@@ -146,6 +146,86 @@ func TestConvert(t *testing.T) {
 	})
 }
 
+func TestExistenceConverter(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ctx = useTestingCfg(ctx)
+
+	t.Run("existence check - no servo exists in MachineLSE", func(t *testing.T) {
+		dutLseNoServo := mockMachineLSEWithLabConfigs("lse-no-servo")
+		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+		daText := `{
+      "id": {
+        "value": "peripheral-servo"
+      },
+      "aliases": [
+        "label-servo"
+      ],
+      "tleSource": {}
+    }`
+		da := parseDutAttribute(t, daText)
+		want := []string{
+			"peripheral-servo:false",
+			"label-servo:false",
+		}
+		got, err := Convert(ctx, &da, nil, dutLseNoServo, dutState)
+		if err != nil {
+			t.Fatalf("Convert failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Convert returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("existence check - servo exists in MachineLSE", func(t *testing.T) {
+		dutLseWithServo := &ufspb.MachineLSE{
+			Name:     "lse-with-servo",
+			Hostname: "lse-with-servo",
+			Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+						DeviceLse: &ufspb.ChromeOSDeviceLSE{
+							Device: &ufspb.ChromeOSDeviceLSE_Dut{
+								Dut: &chromeosLab.DeviceUnderTest{
+									Hostname: "lse-with-servo",
+									Peripherals: &chromeosLab.Peripherals{
+										Servo: &chromeosLab.Servo{
+											ServoHostname: "test-servo-hostname",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+		daText := `{
+      "id": {
+        "value": "peripheral-servo"
+      },
+      "aliases": [
+        "label-servo"
+      ],
+      "tleSource": {}
+    }`
+		da := parseDutAttribute(t, daText)
+		want := []string{
+			"peripheral-servo:true",
+			"label-servo:true",
+		}
+		got, err := Convert(ctx, &da, nil, dutLseWithServo, dutState)
+		if err != nil {
+			t.Fatalf("Convert failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Convert returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+}
+
 // Basic test to test integrity and parseability of tle_sources.jsonproto
 func TestTleSourcesJsonproto(t *testing.T) {
 	t.Parallel()

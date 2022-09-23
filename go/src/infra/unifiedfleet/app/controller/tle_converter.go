@@ -9,6 +9,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -69,19 +70,24 @@ func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb
 // given path. For each given label name, a full label in the form of
 // `${name}:val1,val2` is constructed and returned as part of an array.
 func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
-	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
-	if err != nil {
-		return nil, err
-	}
-
 	switch tleSource.GetConverterType() {
 	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_STANDARD:
+		valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
+		if err != nil {
+			return nil, err
+		}
 		if tleSource.GetStandardConverter().GetPrefix() != "" {
 			valsArr = truncatePrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
 		}
 		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
+	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_EXISTENCE:
+		val, err := swarming.GetProtoExistence(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
+		if err != nil {
+			return nil, err
+		}
+		return swarming.FormLabels(labelAliases, strconv.FormatBool(val))
 	default:
-		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
+		return nil, fmt.Errorf("converter type not valid: %s", tleSource.GetConverterType())
 	}
 }
 
