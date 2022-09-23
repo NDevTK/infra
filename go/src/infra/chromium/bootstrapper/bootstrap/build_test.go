@@ -302,7 +302,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 				So(err, ShouldBeNil)
-				So(config.commit, ShouldBeNil)
+				So(config.configCommit, ShouldBeNil)
 				So(config.change, ShouldBeNil)
 				So(config.builderProperties, ShouldBeNil)
 			})
@@ -334,7 +334,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
@@ -365,7 +365,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -396,7 +396,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -463,7 +463,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -529,14 +529,13 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/dependency",
 						"id": "dependency-dependency-head"
 					}`)
-					So(config.additionalCommits, ShouldHaveLength, 1)
-					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
@@ -569,13 +568,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
 					}`)
-					So(config.additionalCommits, ShouldHaveLength, 1)
-					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
@@ -606,7 +604,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
@@ -637,7 +635,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
@@ -675,13 +673,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
 					}`)
-					So(config.additionalCommits, ShouldHaveLength, 1)
-					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -719,13 +716,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
 					}`)
-					So(config.additionalCommits, ShouldHaveLength, 1)
-					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -792,7 +788,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
@@ -885,13 +881,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "new-dependency-revision"
 					}`)
-					So(config.additionalCommits, ShouldHaveLength, 1)
-					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -975,13 +970,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldBeNil)
-					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "new-dependency-revision"
 					}`)
-					So(config.additionalCommits, ShouldHaveLength, 1)
-					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
@@ -1035,11 +1029,17 @@ func TestUpdateBuild(t *testing.T) {
 
 		Convey("updates build with gitiles commit, builder properties, $build/chromium_bootstrap module properties and build properties", func() {
 			config := &BootstrapConfig{
-				commit: &gitilesCommit{&buildbucketpb.GitilesCommit{
+				inputCommit: &gitilesCommit{&buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
 					Project: "fake-project",
 					Ref:     "fake-ref",
 					Id:      "fake-revision",
+				}},
+				configCommit: &gitilesCommit{&buildbucketpb.GitilesCommit{
+					Host:    "fake-host2",
+					Project: "fake-project2",
+					Ref:     "fake-ref2",
+					Id:      "fake-revision2",
 				}},
 				buildProperties: jsonToStruct(`{
 					"foo": "build-requested-foo-value",
@@ -1057,14 +1057,6 @@ func TestUpdateBuild(t *testing.T) {
 				skipAnalysisReasons: []string{
 					"skip-analysis-reason1",
 					"skip-analysis-reason2",
-				},
-				additionalCommits: []*gitilesCommit{
-					{&buildbucketpb.GitilesCommit{
-						Host:    "fake-host2",
-						Project: "fake-project2",
-						Ref:     "fake-ref2",
-						Id:      "fake-revision2",
-					}},
 				},
 			}
 			exe := &BootstrappedExe{
@@ -1242,7 +1234,7 @@ func TestUpdateBuild(t *testing.T) {
 
 		Convey("does not update gitiles commit for different repo", func() {
 			config := &BootstrapConfig{
-				commit: &gitilesCommit{&buildbucketpb.GitilesCommit{
+				configCommit: &gitilesCommit{&buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
 					Project: "fake-project",
 					Ref:     "fake-ref",

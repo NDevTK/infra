@@ -67,8 +67,11 @@ func (c *gerritChange) String() string {
 }
 
 type BootstrapConfig struct {
-	// commit is the gitiles commit to read the properties file from.
-	commit *gitilesCommit
+	// inputCommit is the top-level gitiles commit to set as the build's input (if different
+	// from the config commit)
+	inputCommit *gitilesCommit
+	// configCommit is the gitiles commit to read the properties file from.
+	configCommit *gitilesCommit
 	// change is gerrit change that may potentially modify the properties
 	// file.
 	//
@@ -97,9 +100,6 @@ type BootstrapConfig struct {
 	// should skip performing analysis to reduce the targets and tests that
 	// are built and run.
 	skipAnalysisReasons []string
-	// additionalCommits are any additional commits that were retrieved
-	// while determining the commit to read the properties file from.
-	additionalCommits []*gitilesCommit
 }
 
 // GetBootstrapConfig does the necessary work to extract the properties from the
@@ -152,8 +152,8 @@ func (b *BuildBootstrapper) getTopLevelConfig(ctx context.Context, input *Input,
 		return nil, err
 	}
 	return &BootstrapConfig{
-		commit: commit,
-		change: change,
+		configCommit: commit,
+		change:       change,
 	}, nil
 }
 
@@ -168,9 +168,22 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		return nil, err
 	}
 	if commit != nil {
+		// This breaks the property that a builder can be run against any branch: if the
+		// builder is run against a CL for some branch other than the one that the
+		// configured top-level ref pins, then the configured top-level would be wrong for
+		// that CL. TO address this, we would need to provide some configuration to allow
+		// mapping the dependency ref to the top-level ref.
+		inputCommit := &gitilesCommit{
+			GitilesCommit: &buildbucketpb.GitilesCommit{
+				Host:    dependency.TopLevelRepo.Host,
+				Project: dependency.TopLevelRepo.Project,
+				Ref:     dependency.TopLevelRef,
+			},
+		}
 		return &BootstrapConfig{
-			commit: commit,
-			change: change,
+			inputCommit:  inputCommit,
+			configCommit: commit,
+			change:       change,
 		}, nil
 	}
 
@@ -239,8 +252,8 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 
 	return &BootstrapConfig{
 		checkForUnrolledPropertiesFile: true,
-		commit:                         configCommit,
-		additionalCommits:              []*gitilesCommit{commit},
+		inputCommit:                    commit,
+		configCommit:                   configCommit,
 		skipAnalysisReasons:            skipAnalysisReasons,
 	}, nil
 }
@@ -316,7 +329,7 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 
 func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFile string, config *BootstrapConfig) (string, error) {
 	if !config.checkForUnrolledPropertiesFile {
-		return b.downloadFile(ctx, config.commit, propsFile)
+		return b.downloadFile(ctx, config.configCommit, propsFile)
 	}
 
 	var contents string
@@ -328,7 +341,7 @@ func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFil
 		ctx := gob.DisableRetries(ctx)
 
 		var err error
-		contents, err = b.downloadFile(ctx, config.commit, propsFile)
+		contents, err = b.downloadFile(ctx, config.configCommit, propsFile)
 		if grpcutil.Code(err) != codes.NotFound {
 			return err
 		}
@@ -339,7 +352,7 @@ func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFil
 		// attempt to "download" the root of the repo: if it succeeds then we know that the
 		// revision is contained in the repo.
 		if !revisionKnownToExist {
-			_, rootErr := b.downloadFile(ctx, config.commit, "")
+			_, rootErr := b.downloadFile(ctx, config.configCommit, "")
 			// gob flakiness, return the original error since that will make more sense
 			// to users
 			if gob.ErrorIsRetriable(rootErr) {
@@ -356,7 +369,7 @@ func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFil
 			// could still result in some gob flakiness, in which case, this whole
 			// function will be retried, but we won't need to re-check if the revision
 			// exists.
-			contents, err = b.downloadFile(ctx, config.commit, propsFile)
+			contents, err = b.downloadFile(ctx, config.configCommit, propsFile)
 			if grpcutil.Code(err) != codes.NotFound {
 				return err
 			}
@@ -365,12 +378,11 @@ func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFil
 		// The revision exists in the repo and we still got a not found error, so the file
 		// doesn't exist at the pinned revision. Create an error with a helpful message for
 		// users and a tag so the top-level code will sleep.
-		topLevelCommit := config.additionalCommits[0]
 		err = errors.Reason(`dependency properties file %s does not exist in pinned revision %s
 This should resolve once the CL that adds this builder rolls into %s/%s
 If you believe you are seeing this message in error, please contact a trooper
 This build will sleep for 10 minutes to avoid the builder cycling too quickly`,
-			propsFile, config.commit, topLevelCommit.Host, topLevelCommit.Project).Err()
+			propsFile, config.configCommit, config.inputCommit.Host, config.inputCommit.Project).Err()
 		err = SleepBeforeExiting.With(10 * time.Minute).Apply(err)
 		return err
 	})
@@ -483,11 +495,11 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 	}
 
 	commits := []*buildbucketpb.GitilesCommit{}
-	if c.commit != nil {
-		commits = append(commits, c.commit.GitilesCommit)
+	if c.inputCommit != nil {
+		commits = append(commits, c.inputCommit.GitilesCommit)
 	}
-	for _, commit := range c.additionalCommits {
-		commits = append(commits, commit.GitilesCommit)
+	if c.configCommit != nil {
+		commits = append(commits, c.configCommit.GitilesCommit)
 	}
 	modProperties := &ChromiumBootstrapModuleProperties{
 		Commits:             commits,
@@ -501,8 +513,12 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 	}
 
 	build.Input.Properties = properties
-	if shouldUpdateGitilesCommit(build, c.commit) {
-		build.Input.GitilesCommit = c.commit.GitilesCommit
+	inputCommit := c.inputCommit
+	if inputCommit == nil {
+		inputCommit = c.configCommit
+	}
+	if shouldUpdateGitilesCommit(build, inputCommit) {
+		build.Input.GitilesCommit = inputCommit.GitilesCommit
 	}
 
 	return nil
