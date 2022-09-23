@@ -85,12 +85,12 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
   }
 
   // If there is a culprit, display it
-  const culprits = props.result.flatMap(r => r.culprits)
+  const culprits = props.result.flatMap(r => (r.culprits ?? []))
   if (culprits.length > 0) {
     return <LuciBisectionCulpritSection culprits={culprits}></LuciBisectionCulpritSection>
   }
 
-  const suspects = props.result.flatMap(r => r.heuristic_result?.suspects)
+  const suspects = props.result.flatMap(r => (r.heuristic_result?.suspects ?? []))
   if (suspects.length == 0) {
     return <></>;
   }
