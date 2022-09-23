@@ -125,10 +125,17 @@
     },
     {
       "labelName": "peripheral-chameleon",
-      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
-      "fieldPath": "UNIMPLEMENTED",
-      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
-      "standardConverter": {}
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "chameleon",
+      "converterType": "TLE_CONVERTER_TYPE_EXISTENCE",
+      "existenceConverter": {
+        "stateExistence": {
+          "invalidStates": [
+            "UNKNOWN",
+            "NOT_CONNECTED"
+          ]
+        }
+      }
     },
     {
       "labelName": "peripheral-chaos",
@@ -153,10 +160,17 @@
     },
     {
       "labelName": "peripheral-servo",
-      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
-      "fieldPath": "chromeos_machine_lse.device_lse.dut.peripherals.servo",
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "servo",
       "converterType": "TLE_CONVERTER_TYPE_EXISTENCE",
-      "existenceConverter": {}
+      "existenceConverter": {
+        "stateExistence": {
+          "invalidStates": [
+            "UNKNOWN",
+            "NOT_CONNECTED"
+          ]
+        }
+      }
     },
     {
       "labelName": "peripheral-servo-component",
