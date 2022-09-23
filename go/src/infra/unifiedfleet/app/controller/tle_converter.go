@@ -65,6 +65,28 @@ func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb
 	}
 }
 
+// getTleLabelMapping gets the predefined label mapping based on a label name.
+func getTleLabelMapping(labelName string) (*ufspb.TleSource, error) {
+	mapFile, err := fs.ReadFile("tle_sources.jsonproto")
+	if err != nil {
+		return nil, err
+	}
+
+	var tleMappings ufspb.TleSources
+	err = jsonpb.Unmarshal(bytes.NewBuffer(mapFile), &tleMappings)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tleSource := range tleMappings.GetTleSources() {
+		if tleSource.GetLabelName() == labelName {
+			return tleSource, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no TLE label mapping found for %s", labelName)
+}
+
 // constructTleLabels returns label values of a set of label names.
 //
 // constructTleLabels retrieves label values from a proto message based on a
@@ -73,19 +95,27 @@ func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb
 func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
 	switch tleSource.GetConverterType() {
 	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_STANDARD:
-		valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
-		if err != nil {
-			return nil, err
-		}
-		if tleSource.GetStandardConverter().GetPrefix() != "" {
-			valsArr = truncatePrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
-		}
-		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
+		return standardConvert(tleSource, labelAliases, pm)
 	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_EXISTENCE:
 		return existenceConvert(tleSource, labelAliases, pm)
 	default:
 		return nil, fmt.Errorf("converter type not valid: %s", tleSource.GetConverterType())
 	}
+}
+
+// standardConvert takes a field path and retrieves the value from a proto.
+//
+// standardConvert directly retrieves the value and truncates the value with
+// a predetermined prefix if necessary.
+func standardConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
+	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
+	if err != nil {
+		return nil, err
+	}
+	if tleSource.GetStandardConverter().GetPrefix() != "" {
+		valsArr = truncatePrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
+	}
+	return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
 }
 
 // truncatePrefixForLabelValues returns label values with prefix truncated.
@@ -132,26 +162,4 @@ func existenceConvert(tleSource *ufspb.TleSource, labelAliases []string, pm prot
 		}
 	}
 	return swarming.FormLabels(labelAliases, strconv.FormatBool(exists))
-}
-
-// getTleLabelMapping gets the predefined label mapping based on a label name.
-func getTleLabelMapping(labelName string) (*ufspb.TleSource, error) {
-	mapFile, err := fs.ReadFile("tle_sources.jsonproto")
-	if err != nil {
-		return nil, err
-	}
-
-	var tleMappings ufspb.TleSources
-	err = jsonpb.Unmarshal(bytes.NewBuffer(mapFile), &tleMappings)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, tleSource := range tleMappings.GetTleSources() {
-		if tleSource.GetLabelName() == labelName {
-			return tleSource, nil
-		}
-	}
-
-	return nil, fmt.Errorf("no TLE label mapping found for %s", labelName)
 }
