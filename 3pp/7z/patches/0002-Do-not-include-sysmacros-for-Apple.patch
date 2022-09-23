@@ -1,0 +1,39 @@
+From acd3c0488bff534ed4bf8dfe04605923e1bce548 Mon Sep 17 00:00:00 2001
+From: Alan Zhao <ayzhao@google.com>
+Date: Fri, 23 Sep 2022 10:58:45 -0700
+Subject: [PATCH 2/2] Do not include sysmacros for Apple
+
+---
+ CPP/7zip/Common/FileStreams.cpp       | 2 +-
+ CPP/7zip/UI/Common/UpdateCallback.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CPP/7zip/Common/FileStreams.cpp b/CPP/7zip/Common/FileStreams.cpp
+index 7d34d47..e303d17 100755
+--- a/CPP/7zip/Common/FileStreams.cpp
++++ b/CPP/7zip/Common/FileStreams.cpp
+@@ -12,7 +12,7 @@
+ #include <pwd.h>
+ 
+ // for major()/minor():
+-#if defined(__FreeBSD__) || defined(BSD)
++#if defined(__FreeBSD__) || defined(BSD) || __APPLE__
+ #include <sys/types.h>
+ #else
+ #include <sys/sysmacros.h>
+diff --git a/CPP/7zip/UI/Common/UpdateCallback.cpp b/CPP/7zip/UI/Common/UpdateCallback.cpp
+index a518048..c2f99e9 100755
+--- a/CPP/7zip/UI/Common/UpdateCallback.cpp
++++ b/CPP/7zip/UI/Common/UpdateCallback.cpp
+@@ -9,7 +9,7 @@
+ // #include <pwd.h>
+ 
+ // for major()/minor():
+-#if defined(__FreeBSD__) || defined(BSD)
++#if defined(__FreeBSD__) || defined(BSD) || __APPLE__
+ #include <sys/types.h>
+ #else
+ #include <sys/sysmacros.h>
+-- 
+2.37.3.998.g577e59143f-goog
+
