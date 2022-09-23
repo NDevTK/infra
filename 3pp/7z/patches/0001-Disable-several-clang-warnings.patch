@@ -1,0 +1,55 @@
+From 9ebe679860429bce484386f9fdd96e1c42fe140c Mon Sep 17 00:00:00 2001
+From: Alan Zhao <ayzhao@google.com>
+Date: Thu, 22 Sep 2022 23:46:21 -0700
+Subject: [PATCH] Disable several clang warnings
+
+These silences are required to get 7z to build. The alternative, which
+is to fix the code, is unwieldy because these errors trigger in so many
+places that the resulting patch files would become very unmanagable.
+Additionally, the 7z source code doesn't have a Git repository, and
+there are no known ways to contribute fixes upstream.
+---
+ CPP/7zip/warn_clang.mak | 7 +++++++
+ CPP/7zip/warn_gcc.mak   | 3 ++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/CPP/7zip/warn_clang.mak b/CPP/7zip/warn_clang.mak
+index a299fbc..496279b 100755
+--- a/CPP/7zip/warn_clang.mak
++++ b/CPP/7zip/warn_clang.mak
+@@ -30,6 +30,13 @@ CFLAGS_WARN_CLANG_12= $(CFLAGS_WARN_CLANG_3_8) \
+ 
+ CFLAGS_WARN_1 = \
+   -Wno-deprecated-copy-dtor \
++  -Wno-unknown-warning-option \
++  -Wno-reserved-identifier \
++  -Wno-suggest-override \
++  -Wno-suggest-destructor-override \
++  -Wno-declaration-after-statement \
++  -Wno-unused-but-set-variable \
++  -Wno-poison-system-directories \
+ 
+ 
+ 
+diff --git a/CPP/7zip/warn_gcc.mak b/CPP/7zip/warn_gcc.mak
+index afc0c9d..2337832 100755
+--- a/CPP/7zip/warn_gcc.mak
++++ b/CPP/7zip/warn_gcc.mak
+@@ -39,6 +39,7 @@ CFLAGS_WARN_GCC_9 = \
+   -Wunused \
+   -Wunused-macros \
+   -Wconversion \
++  -Wno-address-of-packed-member \
+ 
+ #  -Wno-sign-conversion \
+ 
+@@ -54,4 +55,4 @@ CFLAGS_WARN = $(CFLAGS_WARN_GCC_9) \
+ 
+ #  $(CFLAGS_WARN_GCC_PPMD_UNALIGNED)
+ 
+-  
+\ No newline at end of file
++  
+-- 
+2.37.3.998.g577e59143f-goog
+
