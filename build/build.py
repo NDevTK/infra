@@ -1211,8 +1211,8 @@ def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
     pkg_name: name of the cipd package.
     pkg_version: version of the cipd package.
     service_url: URL of a package repository service.
-    tags: tags to set to the cipd package
-    update_latest_ref: a bool of whether or not to update the 'latest' CIPD ref
+    tags: tags to set to the cipd package.
+    update_latest_ref: a bool of whether or not to update the 'latest' CIPD ref.
     service_account: path to *.json file with service account to use.
 
   Raises:
@@ -1229,7 +1229,7 @@ def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
     args.extend(['-service-account-json', service_account])
   args.extend(['-version', pkg_version])
   args.append(pkg_name)
-  exit_code, _ = run_cipd(cipd_exe, 'set-tag', args)
+  exit_code, _ = run_cipd(cipd_exe, 'attach', args)
   if exit_code:
     print
     print >> sys.stderr, 'FAILED! ' * 10
