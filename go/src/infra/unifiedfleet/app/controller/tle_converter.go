@@ -9,6 +9,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -81,11 +82,7 @@ func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm pr
 		}
 		return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
 	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_EXISTENCE:
-		val, err := swarming.GetProtoExistence(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
-		if err != nil {
-			return nil, err
-		}
-		return swarming.FormLabels(labelAliases, strconv.FormatBool(val))
+		return existenceConvert(tleSource, labelAliases, pm)
 	default:
 		return nil, fmt.Errorf("converter type not valid: %s", tleSource.GetConverterType())
 	}
@@ -98,6 +95,43 @@ func truncatePrefixForLabelValues(prefix string, valsArr []string) []string {
 		processed = append(processed, strings.TrimPrefix(v, prefix))
 	}
 	return processed
+}
+
+// existenceConvert determines the existence of an entity and returns a boolean.
+//
+// existenceConvert has two usages. Both checks existence based on proto values.
+// One checks the existence of an entity by checking the state config. If
+// the state of the entity is in an invalid state, then the entity is deemed to
+// not exist for the sake of scheduling labels. The other checks if the
+// destination of a field path exists or not.
+func existenceConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
+	var exists bool
+	var err error
+	if !reflect.ValueOf(tleSource.GetExistenceConverter().GetStateExistence()).IsNil() {
+		exists = true
+		valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
+		if err != nil {
+			return nil, err
+		}
+		// Set to not exist if any state value is invalid
+		for _, v := range valsArr {
+			for _, invalidState := range tleSource.GetExistenceConverter().GetStateExistence().GetInvalidStates() {
+				if v == invalidState {
+					exists = false
+					break
+				}
+			}
+			if !exists {
+				break
+			}
+		}
+	} else {
+		exists, err = swarming.GetProtoExistence(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return swarming.FormLabels(labelAliases, strconv.FormatBool(exists))
 }
 
 // getTleLabelMapping gets the predefined label mapping based on a label name.

@@ -153,8 +153,9 @@ func TestExistenceConverter(t *testing.T) {
 	ctx = useTestingCfg(ctx)
 
 	t.Run("existence check - no servo exists in MachineLSE", func(t *testing.T) {
-		dutLseNoServo := mockMachineLSEWithLabConfigs("lse-no-servo")
-		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+		dutLse := mockMachineLSEWithLabConfigs("lse-1")
+		dutState := mockDutState("dutstate-no-servo", "dutstate-hostname-no-servo")
+		dutState.Servo = chromeosLab.PeripheralState_NOT_CONNECTED
 		daText := `{
       "id": {
         "value": "peripheral-servo"
@@ -169,7 +170,7 @@ func TestExistenceConverter(t *testing.T) {
 			"peripheral-servo:false",
 			"label-servo:false",
 		}
-		got, err := Convert(ctx, &da, nil, dutLseNoServo, dutState)
+		got, err := Convert(ctx, &da, nil, dutLse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -179,29 +180,9 @@ func TestExistenceConverter(t *testing.T) {
 	})
 
 	t.Run("existence check - servo exists in MachineLSE", func(t *testing.T) {
-		dutLseWithServo := &ufspb.MachineLSE{
-			Name:     "lse-with-servo",
-			Hostname: "lse-with-servo",
-			Lse: &ufspb.MachineLSE_ChromeosMachineLse{
-				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
-					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
-						DeviceLse: &ufspb.ChromeOSDeviceLSE{
-							Device: &ufspb.ChromeOSDeviceLSE_Dut{
-								Dut: &chromeosLab.DeviceUnderTest{
-									Hostname: "lse-with-servo",
-									Peripherals: &chromeosLab.Peripherals{
-										Servo: &chromeosLab.Servo{
-											ServoHostname: "test-servo-hostname",
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+		dutLse := mockMachineLSEWithLabConfigs("lse-1")
+		dutState := mockDutState("dutstate-with-servo", "dutstate-hostname-with-servo")
+		dutState.Servo = chromeosLab.PeripheralState_WORKING
 		daText := `{
       "id": {
         "value": "peripheral-servo"
@@ -216,7 +197,7 @@ func TestExistenceConverter(t *testing.T) {
 			"peripheral-servo:true",
 			"label-servo:true",
 		}
-		got, err := Convert(ctx, &da, nil, dutLseWithServo, dutState)
+		got, err := Convert(ctx, &da, nil, dutLse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
