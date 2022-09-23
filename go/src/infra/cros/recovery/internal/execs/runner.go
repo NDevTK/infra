@@ -52,7 +52,7 @@ type Runner = components.Runner
 
 // NewRunner returns runner for requested resource specified per plan.
 func (ei *ExecInfo) NewRunner(resource string) Runner {
-	return ei.RunArgs.NewRunner(resource)
+	return ei.runArgs.NewRunner(resource)
 }
 
 // NewBackgroundRunner returns runner for requested resource specified
@@ -63,7 +63,7 @@ func (ei *ExecInfo) NewRunner(resource string) Runner {
 // implementation that will submit a command for background execution,
 // and will return without waiting for it to complete.
 func (ei *ExecInfo) NewBackgroundRunner(resource string) Runner {
-	return ei.RunArgs.NewRunner(resource)
+	return ei.runArgs.NewRunner(resource)
 }
 
 // DefaultRunner returns runner for current resource name specified per plan.

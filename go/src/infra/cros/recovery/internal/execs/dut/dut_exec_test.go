@@ -50,12 +50,14 @@ func TestSetDUTState(t *testing.T) {
 		cs := c
 		t.Run(cs.actionArg, func(t *testing.T) {
 			ctx := context.Background()
-			info := &execs.ExecInfo{
-				RunArgs: &execs.RunArgs{
+			info := execs.NewExecInfo(
+				&execs.RunArgs{
 					DUT: &tlw.Dut{},
 				},
-				ActionArgs: []string{cs.actionArg},
-			}
+				"",
+				[]string{cs.actionArg},
+				0,
+			)
 			err := setDutStateExec(ctx, info)
 			if cs.errorMessage == "" {
 				if err != nil {

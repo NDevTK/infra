@@ -50,9 +50,7 @@ func TestServoVerifyV3Exec(t *testing.T) {
 					},
 				},
 			}
-			info := &execs.ExecInfo{
-				RunArgs: args,
-			}
+			info := execs.NewExecInfo(args, "name", nil, 0)
 			actualErr := servoVerifyV3Exec(ctx, info)
 			if tt.expectedErr && actualErr == nil {
 				t.Errorf("%q expected error, but did not get it", tt.testName)
