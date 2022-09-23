@@ -110,6 +110,28 @@ func GetLabelValues(jsonGetPath string, pm proto.Message) ([]string, error) {
 	return ParseLabelValuesToArray(labelVals)
 }
 
+// GetProtoExistence takes a path and returns the whether the proto exists.
+//
+// It uses a jsonpath string to try to find corresponding values in a proto. If
+// the destination proto is not nil, then it exists and the method returns true.
+func GetProtoExistence(jsonGetPath string, pm proto.Message) (bool, error) {
+	if jsonGetPath == "" {
+		return false, errors.New("jsonpath cannot be empty")
+	}
+
+	pmJson, err := parseProtoIntoJson(pm)
+	if err != nil {
+		return false, err
+	}
+
+	// Get only succeeds if the path is valid
+	res, err := jsonpath.Get(jsonGetPath, pmJson)
+	if err != nil {
+		return false, err
+	}
+	return !isNil(res), nil
+}
+
 // parseProtoIntoJson parses a proto message into a JSON interface.
 func parseProtoIntoJson(pm proto.Message) (interface{}, error) {
 	if reflect.ValueOf(pm).IsNil() {
@@ -198,4 +220,16 @@ func generateHwidSourcePaths(dutAttr *api.DutAttribute) []string {
 		rsp = append(rsp, fmt.Sprintf(`$.hw_components[?(@.%s != null)].%s`, componentType, f.GetPath()))
 	}
 	return rsp
+}
+
+// isNil takes an unknown interface and determines the nil-ness of it.
+func isNil(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+	switch reflect.TypeOf(i).Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return reflect.ValueOf(i).IsNil() || reflect.ValueOf(i).Len() == 0
+	}
+	return false
 }

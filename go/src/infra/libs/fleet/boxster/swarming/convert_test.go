@@ -351,3 +351,65 @@ func TestGetFlatConfigLabelValuesStr(t *testing.T) {
 		})
 	})
 }
+
+func TestGetProtoExistence(t *testing.T) {
+	t.Parallel()
+
+	b, err := ioutil.ReadFile("test_flat_config.cfg")
+	if err != nil {
+		t.Fatalf("Error reading test FlatConfig: %s", err)
+	}
+
+	var fc payload.FlatConfig
+	unmarshaller := &jsonpb.Unmarshaler{AllowUnknownFields: false}
+	if err = unmarshaller.Unmarshal(bytes.NewBuffer(b), &fc); err != nil {
+		t.Fatalf("Error unmarshalling test FlatConfig: %s", err)
+	}
+
+	Convey("TestGetProtoExistence", t, func() {
+		Convey("get proto existence using a null jsonpath", func() {
+			got, err := GetProtoExistence("", &fc)
+			So(err, ShouldNotBeNil)
+			So(got, ShouldBeFalse)
+			So(err.Error(), ShouldContainSubstring, "jsonpath cannot be empty")
+		})
+
+		Convey("get proto existence using a null proto message", func() {
+			var nilConfig *payload.FlatConfig
+			got, err := GetProtoExistence("test-path", nilConfig)
+			So(err, ShouldNotBeNil)
+			So(got, ShouldBeFalse)
+			So(err.Error(), ShouldContainSubstring, "proto message cannot be empty")
+		})
+
+		Convey("get proto existence with a field path - single value", func() {
+			got, err := GetProtoExistence("hw_design.id.value", &fc)
+			So(err, ShouldBeNil)
+			So(got, ShouldBeTrue)
+		})
+
+		Convey("get proto existence with a non-terminal field path", func() {
+			// $.hw_components[?(@.soc) != null] specifies all objects inside
+			// hw_components that contains the field "soc". This exists in the cfg.
+			got, err := GetProtoExistence("$.hw_components[?(@.soc != null)]", &fc)
+			So(err, ShouldBeNil)
+			So(got, ShouldBeTrue)
+		})
+
+		Convey("get proto existence with a non-terminal field path with no match", func() {
+			// $.hw_components[?(@.soc) != null] specifies all objects inside
+			// hw_components that contains the field "society". This does not exist
+			// and should evaluate to an empty slice.
+			got, err := GetProtoExistence("$.hw_components[?(@.society != null)]", &fc)
+			So(err, ShouldBeNil)
+			So(got, ShouldBeFalse)
+		})
+
+		Convey("get proto existence with a field path - no matching value", func() {
+			got, err := GetProtoExistence("hw_design_config.hardware_features.embedded_controller.ec_type", &fc)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "unknown parameter")
+			So(got, ShouldBeFalse)
+		})
+	})
+}
