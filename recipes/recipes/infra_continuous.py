@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from PB.go.chromium.org.luci.buildbucket.proto.common import FAILURE, SUCCESS
+from PB.recipe_engine.result import RawResult
+
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
 
 DEPS = [
@@ -182,7 +185,7 @@ def RunSteps(api):
   # api.buildbucket.gitiles_commit.id except when the build was triggered
   # manually (commit id is empty in that case).
   rev = co.bot_update_step.presentation.properties['got_revision']
-  build_main(api, co, buildername, project_name, repo_url, rev)
+  return build_main(api, co, buildername, project_name, repo_url, rev)
 
 
 def build_main(api, checkout, buildername, project_name, repo_url, rev):
@@ -207,6 +210,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
             api.resultdb.wrap(
                 ['vpython', '-u', api.path['checkout'].join('go', 'test.py')]))
 
+    fails = []
     for plat in CIPD_PACKAGE_BUILDERS.get(buildername, []):
       options = plat.split(':')
       plat = options.pop(0)
@@ -216,19 +220,30 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
       else:
         goos, goarch = plat.split('-', 1)
 
-      with api.infra_cipd.context(api.path['checkout'], goos, goarch):
-        if api.platform.is_mac:
-          api.infra_cipd.build_without_env_refresh(
-              api.properties.get('signing_identity'))
-        else:
-          api.infra_cipd.build_without_env_refresh()
-        if 'test' in options:
-          api.infra_cipd.test()
-        if is_packager:
-          if api.runtime.is_experimental:
-            api.step('no CIPD package upload in experimental mode', cmd=None)
+      try:
+        with api.infra_cipd.context(api.path['checkout'], goos, goarch):
+          if api.platform.is_mac:
+            api.infra_cipd.build_without_env_refresh(
+                api.properties.get('signing_identity'))
           else:
-            api.infra_cipd.upload(api.infra_cipd.tags(repo_url, rev))
+            api.infra_cipd.build_without_env_refresh()
+          if 'test' in options:
+            api.infra_cipd.test()
+          if is_packager:
+            if api.runtime.is_experimental:
+              api.step('no CIPD package upload in experimental mode', cmd=None)
+            else:
+              api.infra_cipd.upload(api.infra_cipd.tags(repo_url, rev))
+      except api.step.StepFailure:
+        fails.append(plat)
+
+  status = SUCCESS
+  summary = []
+  if fails:
+    status = FAILURE
+    summary.append('Failed to build some CIPD packages for platform(s):')
+    summary.extend('  * %s' % f for f in fails)
+  return RawResult(status=status, summary_markdown='\n'.join(summary))
 
 
 def run_python_tests(api, project_name):
@@ -279,3 +294,9 @@ def GenTests(api):
 
   yield test('internal-packager-linux', 'infra-internal-packager-linux-64',
              INTERNAL_REPO, 'infra-internal', 'prod', 'linux')
+
+  yield (
+      test('packager-cipd-fail', 'infra-packager-linux-xc1',
+             PUBLIC_REPO, 'infra', 'prod', 'linux') +
+      api.step_data('[GOOS:linux GOARCH:arm]cipd - build packages', retcode=1)
+  )
