@@ -28,8 +28,8 @@ type iServod struct {
 // NewServod returns a struct of type components.Servod that allowes communication with servod service.
 func (ei *ExecInfo) NewServod() components.Servod {
 	return &iServod{
-		dut:     ei.RunArgs.DUT,
-		a:       ei.RunArgs.Access,
+		dut:     ei.GetDut(),
+		a:       ei.GetAccess(),
 		timeout: durationpb.New(ei.GetExecTimeout()),
 	}
 }
