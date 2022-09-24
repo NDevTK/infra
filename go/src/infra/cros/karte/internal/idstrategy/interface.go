@@ -132,7 +132,7 @@ func makeRawID(t time.Time, disambiguation uint32) (string, error) {
 		return "", errors.New("make id: timestamp is zero")
 	}
 
-	// TODO(gregorynisbet): Add support for sub-seconds.
+	// TODO(b/248630633): Add support for sub-seconds.
 	offsetCoarse := uint64(endOfTime - t.Unix())
 	offsetFine := uint32(0)
 

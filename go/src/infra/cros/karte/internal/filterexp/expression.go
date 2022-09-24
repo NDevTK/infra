@@ -16,8 +16,6 @@ import (
 )
 
 // comparisons are the valid comparisons.
-// TODO(gregorynisbet): Factor these into a symbols package or similar to isolate
-//                      details about how CEL names infix operators.
 var comparisons = map[string]bool{
 	"_<_":  true,
 	"_<=_": true,

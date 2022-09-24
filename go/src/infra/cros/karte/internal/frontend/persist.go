@@ -110,8 +110,8 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 
 	logging.Infof(ctx, "Beginning to insert record to bigquery")
 
-	// TODO(gregorynisbet): This function doesn't need to exist.
-	//                      Remove this function eventually as part of using ValueSaver everywhere.
+	// TODO(b/248629687): This function doesn't need to exist.
+	//                    Remove this function eventually as part of using ValueSaver everywhere.
 	insertCb := func(ctx context.Context, ents []*ActionEntity) error {
 		valueSavers := make([]cloudBQ.ValueSaver, 0, len(ents))
 		for _, ent := range ents {
@@ -132,8 +132,8 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 
 		tally += len(batch)
 
-		// TODO(gregorynisbet): A batch length of zero signals the successful end of the offload attempt.
-		//                      Replace this with a better API for next.
+		// TODO(b/248629691): A batch length of zero signals the successful end of the offload attempt.
+		//                    Replace this with a better API for next.
 		if len(batch) == 0 {
 			break
 		}
