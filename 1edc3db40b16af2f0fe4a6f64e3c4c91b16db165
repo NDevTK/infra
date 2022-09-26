@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1b1101b_b7760649",
+        "filename": "3pp/7z/3pp.pb",
+        "patchSetId": 23
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-26T01:41:47Z",
+      "side": 1,
+      "message": "We can use _3PP_PLATFORM env in the install script (https://source.chromium.org/chromium/infra/infra/+/main:recipes/recipe_modules/support_3pp/spec.proto;l\u003d28) to avoid matching each platform in the spec and duplicating the install script. WDYT?",
+      "revId": "1edc3db40b16af2f0fe4a6f64e3c4c91b16db165",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd25ca64_8621f6e1",
+        "filename": "3pp/7z/patches/0002-Do-not-include-sysmacros-for-Apple.patch",
+        "patchSetId": 23
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-09-26T01:41:47Z",
+      "side": 1,
+      "message": "Maybe add a one line comment describing sys/sysmacros.h is also not available on Mac?",
+      "revId": "1edc3db40b16af2f0fe4a6f64e3c4c91b16db165",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
