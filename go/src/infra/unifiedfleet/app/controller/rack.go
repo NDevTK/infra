@@ -409,12 +409,12 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 		return nil, errors.Annotate(err, "validate old rack %s", oldName).Err()
 	}
 	hc := getRackClientHistory(oldRack)
+	// Move this function out of transaction as there may be 500+ entities attached to the old rack.
+	if err := renameRackHelper(ctx, oldName, newName, hc); err != nil {
+		return nil, errors.Annotate(err, "update entities attached to old rack").Err()
+	}
 	f := func(ctx context.Context) error {
 		rack = proto.Clone(oldRack).(*ufspb.Rack)
-
-		if err := renameRackHelper(ctx, oldName, newName, hc); err != nil {
-			return err
-		}
 
 		// Delete the old rack
 		if err := registration.DeleteRack(ctx, oldName); err != nil {
@@ -427,7 +427,6 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 				return err
 			}
 		}
-
 		return nil
 	}
 
