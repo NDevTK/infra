@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "425bbf47_79764e89",
+        "filename": "3pp/7z/3pp.pb",
+        "patchSetId": 23
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1535487
+      },
+      "writtenOn": "2022-09-26T19:45:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1b1101b_b7760649",
+      "revId": "1edc3db40b16af2f0fe4a6f64e3c4c91b16db165",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd25ca64_8621f6e1",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-09-26T01:41:47Z",
       "side": 1,
       "message": "Maybe add a one line comment describing sys/sysmacros.h is also not available on Mac?",
+      "revId": "1edc3db40b16af2f0fe4a6f64e3c4c91b16db165",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e7e3185_7565696b",
+        "filename": "3pp/7z/patches/0002-Do-not-include-sysmacros-for-Apple.patch",
+        "patchSetId": 23
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1535487
+      },
+      "writtenOn": "2022-09-26T19:45:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd25ca64_8621f6e1",
       "revId": "1edc3db40b16af2f0fe4a6f64e3c4c91b16db165",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
