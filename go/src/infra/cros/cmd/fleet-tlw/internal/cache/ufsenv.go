@@ -69,12 +69,16 @@ func (e *ufsEnv) refreshSubnets() error {
 // fetchCachingSubnets fetches caching services info from UFS and constructs
 // caching subnets.
 func (e *ufsEnv) fetchCachingSubnets() ([]Subnet, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	log.Printf("Fetching caching subnets from UFS")
 	cachingServices, err := fetchCachingServicesFromUFS(ctx, e.client)
 	if err != nil {
 		return nil, fmt.Errorf("fetch caching subnets: %s", err)
 	}
+	log.Printf("Fetching caching subnets from UFS done")
+
 	var result []Subnet
 	m := make(map[string][]string)
 	for _, s := range cachingServices {
