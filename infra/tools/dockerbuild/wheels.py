@@ -630,7 +630,6 @@ SPECS.update({
             ],
             skip_plat=[
                 'linux-armv6-py3',
-                'linux-arm64-py3',
             ],
             patch_version='chromium.1',
             pyversions=['py3'],
@@ -897,11 +896,13 @@ SPECS.update({
             [
                 'manylinux-x64-py3',
                 'manylinux-x64-py3.9',
+                'linux-arm64-py3',
                 'mac-x64-cp38',
                 'mac-arm64-cp38',
                 'windows-x64-py3',
                 'windows-x86-py3',
             ],
+            arch_map={'linux-arm64-py3': ['manylinux2014_aarch64']},
         ),
         Prebuilt(
             'pywin32',

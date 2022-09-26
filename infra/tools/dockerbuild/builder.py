@@ -215,7 +215,11 @@ def BuildPackageFromPyPiWheel(system, wheel):
     # SetupPythonPackages doesn't know this, and infers that we need it for
     # docker based on the platform, and hence copies it to the temporary
     # directory.
-    interpreter, env = SetupPythonPackages(system, wheel, tdir)
+    #
+    # Ignore the environment returned by SetupPythonPackages.
+    # Setting PYTHONHOME interferes with pip invoking lsb_release_info,
+    # and we don't need this anyway since we aren't compiling.
+    interpreter, _ = SetupPythonPackages(system, wheel, tdir)
     util.check_run(
         system,
         None,
@@ -232,8 +236,7 @@ def BuildPackageFromPyPiWheel(system, wheel):
         ] + ['--platform=%s' % p for p in wheel.download_platform] + [
             '%s==%s' % (wheel.spec.name, wheel.spec.version),
         ],
-        cwd=tdir,
-        env=env)
+        cwd=tdir)
 
     wheel_name = StageWheelForPackage(system, tdir, wheel)
 
@@ -463,6 +466,12 @@ def BuildPackageFromSource(system,
         cmd = PrepareBuildDependenciesCmd(system, wheel, build_dir, tdeps, deps)
         util.check_run(
             system, dx, tdir, [interpreter] + cmd, cwd=build_dir, env=extra_env)
+
+      util.copy_to(util.resource_path('constraints.txt'), build_dir)
+      # Use the environment variable, rather than the --constraint flag,
+      # otherwise the constraints are not passed through when pip installs
+      # dependencies (https://github.com/pypa/pip/issues/8439).
+      extra_env['PIP_CONSTRAINT'] = 'constraints.txt'
 
       # TODO: Perhaps we should pass --build-option --universal for universal
       # py2.py3 wheels, to ensure the filename is right even if the wheel

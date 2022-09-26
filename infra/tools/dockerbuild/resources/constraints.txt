@@ -1,0 +1,10 @@
+# Constraints file used for 'pip wheel'.
+#
+# This can be used for any packages where, for example, we need to pin to an
+# older version for compatibility issues. If there are no packages that
+# currently need to be pinned, the file can be empty.
+
+# TODO(crbug/1366221) setuptools 62.4.0 requires us to have correct prefixes
+# set in the cpython sysconfig data. Until we have that fixed, constrain
+# setuptools to a working version.
+setuptools<62.4.0
