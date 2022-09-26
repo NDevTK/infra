@@ -7,7 +7,6 @@ package provision
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -20,7 +19,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
-	"infra/cros/cmd/cros-tool-runner/internal/docker"
 	"infra/cros/cmd/cros-tool-runner/internal/services"
 )
 
@@ -59,18 +57,9 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	dutSshInfo := device.GetDut().GetChromeos().GetSsh()
 	log.Printf("Preparing for provisioning of %q, with: %s", dutName, device.GetProvisionState())
 
-	// Create separate network to run docker independent.
-	log.Printf("--> Creating the network for %q ...", dutName)
-	networkName := fmt.Sprintf("%s_network", dutName)
-
-	if err := docker.CreateNetwork(ctx, networkName); err != nil {
-		res.Err = errors.Annotate(err, "run provision").Err()
-		return res
-	}
-	defer func() {
-		docker.RemoveNetwork(ctx, networkName)
-	}()
-	log.Printf("--> Network was created for %q ...", dutName)
+	// Use the host network.
+	var networkName string
+	networkName = "host"
 
 	// Create temp results dir for cros-dut
 	crosDutResultsDir, err := ioutil.TempDir("", crosDutResultsTempDir)
@@ -104,7 +93,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 		Dut:            device.GetDut(),
 		ProvisionState: device.GetProvisionState(),
 		DutServer: &lab_api.IpEndpoint{
-			Address: dutService.Name,
+			Address: "localhost",
 			Port:    int32(dutService.ServicePort),
 		},
 	}

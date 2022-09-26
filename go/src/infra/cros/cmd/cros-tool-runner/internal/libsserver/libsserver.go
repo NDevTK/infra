@@ -29,7 +29,7 @@ var defaultRegisteredLibs []byte
 
 // TestLibsServer represents a Test Libs Service Server.
 type TestLibsServer struct {
-	port         string
+	Port         int32
 	listener     *net.Listener
 	server       *grpc.Server
 	logger       *log.Logger
@@ -96,8 +96,9 @@ func (s *TestLibsServer) updateServerFromReq(req *pb.CrosToolRunnerTestRequest) 
 	if chromeOS == nil {
 		return
 	}
+	fmt.Printf("Servo:\n%s", chromeOS.Servo)
 	addrs := make(map[string]string)
-	if chromeOS.Servo != nil {
+	if chromeOS.Servo != nil && chromeOS.Servo.Present == true {
 		addrs["servo"] = fmt.Sprintf("%s:%d", chromeOS.Servo.ServodAddress.Address,
 			chromeOS.Servo.ServodAddress.Port)
 	}
@@ -106,14 +107,13 @@ func (s *TestLibsServer) updateServerFromReq(req *pb.CrosToolRunnerTestRequest) 
 
 // Serve creates and runs a grpc server with predefined parameters.
 func (s *TestLibsServer) Serve() error {
-	// TODO (kathrelkeld): port is hardcoded for now but will eventually randomized
-	// and written to a common file accessible by cros-test.
-	l, err := net.Listen("tcp", ":1108")
+	l, err := net.Listen("tcp", ":0")
 	if err != nil {
+		fmt.Printf("Fatal err %s", err)
 		log.Fatalln(err)
 	}
 	s.listener = &l
-	s.port = fmt.Sprint(l.Addr().(*net.TCPAddr).Port)
+	s.Port = int32(l.Addr().(*net.TCPAddr).Port)
 
 	if s.server != nil {
 		s.server.Stop()
@@ -122,7 +122,7 @@ func (s *TestLibsServer) Serve() error {
 	pb.RegisterTestLibsServiceServer(server, s)
 	s.server = server
 
-	s.logger.Println("Running TestLibsServer on port", s.port)
+	s.logger.Println("Running TestLibsServer on port", s.Port)
 	return server.Serve(*s.listener)
 }
 

@@ -42,9 +42,6 @@ const (
 	// Default dut address port
 	DefaultDutAddressPort = "22"
 
-	// Default dut server port in non-host network
-	DefaultDutServerPort = 80
-
 	// Root directory for the cros-test artifacts inside docker.
 	CrosTestRootDirInsideDocker = "/tmp/test"
 
@@ -66,7 +63,7 @@ func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, 
 	if err != nil {
 		log.Printf("create cros-dut service: %s", err)
 	}
-	return startDutService(ctx, p, r, dutName, networkName, cacheServer, dutSshInfo, DefaultDutServerPort, dir, t)
+	return startDutService(ctx, p, r, dutName, networkName, cacheServer, dutSshInfo, 0, dir, t)
 }
 
 // startDutService starts cros-dut service.
@@ -93,7 +90,32 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		Detach:      true,
 		Network:     networkName,
 	}
-	return startService(ctx, d, false)
+	d, err := startService(ctx, d, false)
+	if err != nil {
+		return d, err
+	}
+
+	// After starting the DUTService, find the port it binded to.
+	var dsPort int
+	err = common.Poll(ctx, func(ctx context.Context) error {
+		var err error
+		var filePath string
+		filePath, err = common.FindFile("log.txt", dir)
+
+		if err != nil {
+			return errors.Annotate(err, "failed to find file cros-dut log file").Err()
+		}
+		dsPort, err = dutServerPort(filePath)
+		if err != nil {
+			return errors.Annotate(err, "failed to extract dut server port from %s", filePath).Err()
+		}
+		return nil
+	}, &common.PollOptions{Timeout: time.Minute, Interval: time.Second})
+	if err != nil {
+		return d, err
+	}
+	d.ServicePort = dsPort
+	return d, nil
 }
 
 type DutServerInfo struct {
@@ -132,25 +154,7 @@ func CreateDutServicesForHostNetwork(ctx context.Context, image *build_api.Conta
 			return nil, errors.Annotate(err, "create dut services: failed to run cros-dut").Err()
 		}
 		dockerContainers = append(dockerContainers, d)
-
-		var dsPort int
-		err = common.Poll(ctx, func(ctx context.Context) error {
-			var err error
-			var filePath string
-			filePath, err = common.FindFile("log.txt", logDir)
-			if err != nil {
-				return errors.Annotate(err, "failed to find file cros-dut log file").Err()
-			}
-			dsPort, err = dutServerPort(filePath)
-			if err != nil {
-				return errors.Annotate(err, "failed to extract dut server port from %s", filePath).Err()
-			}
-			return nil
-		}, &common.PollOptions{Timeout: time.Minute, Interval: time.Second})
-		if err != nil {
-			return nil, errors.Annotate(err, "create dut services: failed to extract dut server port").Err()
-		}
-		dutServers = append(dutServers, &DutServerInfo{Docker: d, Port: int32(dsPort)})
+		dutServers = append(dutServers, &DutServerInfo{Docker: d, Port: int32(d.ServicePort)})
 
 	}
 	// There are no errors so don't clean up existing dockers.
