@@ -88,10 +88,17 @@
     },
     {
       "labelName": "peripheral-audio-loopback",
-      "sourceType": "TLE_SOURCE_TYPE_LAB_CONFIG",
-      "fieldPath": "UNIMPLEMENTED",
-      "converterType": "TLE_CONVERTER_TYPE_STANDARD",
-      "standardConverter": {}
+      "sourceType": "TLE_SOURCE_TYPE_DUT_STATE",
+      "fieldPath": "audio_loopback_dongle",
+      "converterType": "TLE_CONVERTER_TYPE_EXISTENCE",
+      "existenceConverter": {
+        "stateExistence": {
+          "invalidStates": [
+            "UNKNOWN",
+            "NOT_CONNECTED"
+          ]
+        }
+      }
     },
     {
       "labelName": "peripheral-bluetooth-state",
