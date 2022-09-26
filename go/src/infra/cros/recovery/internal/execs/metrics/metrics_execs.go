@@ -40,7 +40,7 @@ func metricsFoundAtLastTimeExec(ctx context.Context, info *execs.ExecInfo) error
 		return errors.Reason("metrics found at last time: karte metric has not been initilized").Err()
 	}
 	karteQuery := &metrics.Query{
-		// TODO: (@gregorynisbet): When karte' Search API is capable of taking in asset tag,
+		// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
 		Hostname:   info.GetDut().Name,
 		ActionKind: metricsKind,

@@ -65,7 +65,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 	} else { // Guard against incorrectly setting up Karte client. See b:217746479 for details.
 		log.Debugf(ctx, "run: metrics is non-nil")
 		start := time.Now()
-		// TODO(gregorynisbet): Create a helper function to make this more compact.
+		// TODO(b/242900597): Create a helper function to make this more compact.
 		defer (func() {
 			// Keep this call up to date with NewMetric in execs.go.
 			// Keep this up to date with runPlan in engine.go
@@ -593,7 +593,7 @@ func (a *RunArgs) verify() error {
 	case a.Access == nil:
 		return errors.Reason("access point is not provided").Err()
 	case a.LogRoot == "":
-		// TODO(gregorynisbet): Upgrade this to a real error.
+		// TODO(otabek): Upgrade this to a real error.
 		fmt.Fprintf(os.Stderr, "%s\n", "log root cannot be empty!\n")
 	}
 	fmt.Fprintf(os.Stderr, "log root is %q\n", a.LogRoot)

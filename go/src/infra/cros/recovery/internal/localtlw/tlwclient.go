@@ -349,7 +349,7 @@ func (c *tlwClient) prepareServodContainer(ctx context.Context, dut *tlw.Dut, o 
 	// We always need to call pull before start as it will verify that image we used is latest.
 	// If pull is missed the image will be used from local docker cache.
 	// Image is small is expected to be download in less 1 minute but for safety we set 5.
-	// TODO: Need collect info how long it takes in field.
+	// TODO(gregorynisbet): Need collect info how long it takes in field.
 	if err := d.Pull(ctx, containerArgs.ImageName, 5*time.Minute); err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	}
@@ -540,7 +540,7 @@ func (c *tlwClient) CallBluetoothPeer(ctx context.Context, req *tlw.CallBluetoot
 	if err != nil {
 		return fail(err)
 	}
-	// TODO: Change bluetooth peer's CallBluetoothPeerRequest to include timeout.
+	// TODO(otabek): Change bluetooth peer's CallBluetoothPeerRequest to include timeout.
 	val, err := s.Call(ctx, c.sshPool, 30*time.Second, req.GetMethod(), req.GetArgs())
 	if err != nil {
 		return fail(err)
@@ -715,7 +715,7 @@ func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.
 			res = sv
 		}
 	case tlw.VersionRequest_WIFI_ROUTER:
-		// TODO: need implement
+		// TODO(otabek): need implement
 		res = &tlw.VersionResponse{
 			Value: map[string]string{
 				"os_image": "gale-test-ap-tryjob/R92-13982.81.0-b4959409",

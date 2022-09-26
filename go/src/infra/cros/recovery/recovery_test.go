@@ -399,7 +399,6 @@ func TestRunDUTPlan(t *testing.T) {
 }
 
 // TestVerify is a smoke test for the verify method.
-// TODO(gregorynisbet): Add fake TLW client so we can test a successful path.
 func TestVerify(t *testing.T) {
 	t.Parallel()
 

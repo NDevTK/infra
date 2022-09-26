@@ -305,7 +305,7 @@ func createWifiRouterHosts(wifi *ufslab.Wifi) []*tlw.WifiRouterHost {
 	var routers []*tlw.WifiRouterHost
 	for _, ufsRouter := range wifi.GetWifiRouters() {
 		tlwRpm := tlw.RPMOutlet{
-			// TODO update when http://b/216315183 is done.
+			// TODO(otabek) update when http://b/216315183 is done.
 			//set to unknown till rpm is updated to enable peripherals.
 			//currently,rpm only supports on dut. router rpm state is not defined in proto yet and no api for rpmoutlet for non dut
 			State: convertRPMState(ufslab.PeripheralState_UNKNOWN),

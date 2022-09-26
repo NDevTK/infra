@@ -363,7 +363,7 @@ func AuditStorageSMART(ctx context.Context, r components.Runner, storage *tlw.St
 // isItTimeToRunBadBlocksRO determines if it is time to run the RO
 // badblock again on this device.
 func isItTimeToRunBadBlocksRO(ctx context.Context, metrics metrics.Metrics) error {
-	// TODO: complete the implementation of this function using the
+	// TODO(b/242584223): complete the implementation of this function using the
 	// information about when the last time RO bad-blocks was run for
 	// this device. This is captured by bug b/242584223. The default
 	// value of 'nil' returned here will cause the badblocks check to
@@ -376,7 +376,7 @@ func isItTimeToRunBadBlocksRO(ctx context.Context, metrics metrics.Metrics) erro
 // isItTimeToRunBadBlocksRW determines if it is time to run the RW
 // badblock again on this device.
 func isItTimeToRunBadBlocksRW(ctx context.Context, metrics metrics.Metrics) error {
-	// TODO: complete the implementation of this function using the
+	// TODO(b/242584223): complete the implementation of this function using the
 	// information about when the last time RW bad-blocks was run for
 	// this device. This is captured by bug b/242584223. The default
 	// value of the "not-implemented" error returned here will cause
@@ -498,7 +498,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 		// is empty. This following the logic in legacy repair.
 		return nil
 	}
-	// TODO: (vkjoshi): We shouldn't have to create a new logger to
+	// TODO(b/242570493): We shouldn't have to create a new logger to
 	// pass to IsBootedFromExternalStorage. The method should be able
 	// to obtain the logger from ctx. This will be addressed in
 	// b/242570493. This function currently does not make use of the
@@ -516,7 +516,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
-		// TODO: (vkjoshi): record this execution of badblocks for RW
+		// TODO(b/242584223): record this execution of badblocks for RW
 		// as well as RO, since RO badblocks check is subset of RW
 		// badblocks check. This is being tracked in b/242584223. This
 		// does not have any affect on the correctness of badblocks
@@ -530,7 +530,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
-		// TODO: (vkjoshi): record this execution of badblocks for
+		// TODO(b/242584223): record this execution of badblocks for
 		// RO. This is being tracked in b/242584223. This does not
 		// have any affect on the correctness of badblocks audit, it
 		// will only avoid any unnecessary execution.

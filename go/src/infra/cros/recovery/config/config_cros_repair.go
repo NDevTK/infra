@@ -443,7 +443,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
-				// TODO: Need run tmp reset.
+				// TODO(b/248630303): Need run tmp reset.
 				"Restore RW VPD Keys",
 				"Quick provision OS",
 				"Repair by powerwash",
@@ -849,7 +849,6 @@ func crosRepairActions() map[string]*Action {
 				//TODO(b:234761994, Flex device does not have charge_full file)
 				"Is not Flex device",
 			},
-			// TODO: verify if the battery state is for replacement and escape from the finish the process.
 			ExecName: "cros_audit_battery",
 		},
 		"Battery is expected on device": {

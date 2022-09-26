@@ -408,7 +408,7 @@ func servoLowPPDut5Exec(ctx context.Context, info *execs.ExecInfo) error {
 	if voltageValue < maxPPDut5MVWhenNotConnected {
 		return errors.Reason("servo low ppdut5 exec: the ppdut5_mv value %v is lower than the threshold %d", voltageValue, maxPPDut5MVWhenNotConnected).Err()
 	}
-	// TODO: (vkjoshi@): add metrics to collect the value of the
+	// TODO(vkjoshi@): add metrics to collect the value of the
 	// servod control ppdut5_mv when it is below a certain threshold.
 	// (ref:http://cs/chromeos_public/src/third_party/labpack/files/server/hosts/servo_repair.py?l=640).
 	return nil
@@ -426,7 +426,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		return errors.Reason("servo check servod control exec: command not provided").Err()
 	}
 	var compare func(ctx context.Context) error
-	// TODO (vkjoshi@): revisit the logic of implementations of the
+	// TODO(vkjoshi@): revisit the logic of implementations of the
 	// function 'compare', e.g., will it make sense to use a helper
 	// function for this?
 	const expectedStringKey = "expected_string_value"
@@ -660,7 +660,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 	if info.GetMetrics() != nil {
 		// Record fw flash time to karte.
 		action := &metrics.Action{
-			// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
+			// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
 			// change the query to use asset tag instead of using hostname.
 			Hostname:   info.GetDut().Name,
 			ActionKind: metrics.ServoFwUpdateKind,
@@ -707,7 +707,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		// Record every single servo device fw flash time as well as status to karte.
 		for _, device := range devicesToUpdate {
 			eachBoardAction := &metrics.Action{
-				// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
+				// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
 				// change the query to use asset tag instead of using hostname.
 				Hostname:   info.GetDut().Name,
 				ActionKind: fmt.Sprintf(metrics.ServoEachDeviceFwUpdateKind, device.Type),
@@ -740,7 +740,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 const (
 	// Servod uart command for use in servo v4/v4p1.
 	//
-	// TODO: (@yunzhiyu) use servodUartCmd for both servo v4 /v4p1
+	// TODO(b/198638900) use servodUartCmd for both servo v4 /v4p1
 	// in the future instead of servodUartV4Cmd and servodUartV4P1Cmd separately.
 	// Currently blocked by: (b/198638900).
 	servodUartV4Cmd   = "servo_v4_uart_cmd"
@@ -760,7 +760,7 @@ func servoFakeDisconnectDUTExec(ctx context.Context, info *execs.ExecInfo) error
 	timeoutMS := argsMap.AsInt(ctx, "timeout_in_ms", 2000)
 	disconnectCmd := fmt.Sprintf(`fakedisconnect %d %d`, delayMS, timeoutMS)
 	uartCmd := servodUartV4Cmd
-	// TODO: (yunzhiyu@): change logic to use unified servod cmd: "root.servo_uart_cmd"
+	// TODO(b/204369636): change logic to use unified servod cmd: "root.servo_uart_cmd"
 	// As in the (b/204369636), currently blocked by (b/198638900).
 	if err := info.NewServod().Has(ctx, uartCmd); err != nil {
 		log.Debugf(ctx, "Servod control %q is not supported", servodUartCmd)
@@ -788,7 +788,7 @@ func servoServodCCToggleExec(ctx context.Context, info *execs.ExecInfo) error {
 	// Timeout for initialize configuration channel. Default to be 30s.
 	ccOnTimeout := ccToggleMap.AsInt(ctx, "on_timeout", 30)
 	uartCmd := servodUartV4Cmd
-	// TODO: (yunzhiyu@): change logic to use unified servod cmd: "root.servo_uart_cmd"
+	// TODO(b/204369636): change logic to use unified servod cmd: "root.servo_uart_cmd"
 	// As in the (b/204369636), currently blocked by (b/198638900).
 	if err := info.NewServod().Has(ctx, uartCmd); err != nil {
 		log.Debugf(ctx, "Servod control %q is not supported", servodUartCmd)

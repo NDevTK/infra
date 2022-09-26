@@ -15,10 +15,10 @@ import (
 // GetString retrieves from servod the value of servod command passed
 // as an argument, and returns it as a string.
 func GetString(ctx context.Context, servod components.Servod, command string) (string, error) {
-	// TODO: (vkjoshi@): this function is being moved from the package
+	// TODO(b/222941834): this function is being moved from the package
 	// internal/execs/servo to internal/components/servo. Eventually
 	// all the uses old method will be updated to the usage of this
-	// new method. But b/222941834 will track this task.
+	// new method.
 	res, err := servod.Get(ctx, command)
 	if err != nil {
 		return "", errors.Annotate(err, "servod get").Err()

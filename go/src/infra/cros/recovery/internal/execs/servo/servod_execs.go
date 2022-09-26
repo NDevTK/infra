@@ -94,7 +94,7 @@ func servodCanReadAllExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	// The string 'commands' here is the token from config that
 	// signifies the list of commands that servod may need to support.
-	// TODO (vkjoshi@): if more execs need this token, consider
+	// TODO(vkjoshi): if more execs need this token, consider
 	// extracting this out and creating a constant out of it.
 	commands := argsMap.AsStringSlice(ctx, "commands", nil)
 	// This token controls whether all the loaded servod commands need

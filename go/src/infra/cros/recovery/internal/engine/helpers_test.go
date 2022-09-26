@@ -15,7 +15,6 @@ import (
 // NOTE: For this type, create and update BOTH APPEND ITEMS.
 //       It does NOT emulate the real semantics of update.
 //
-// TODO(gregorynisbet): make a better fake.
 //
 type fakeMetrics struct {
 	actions []*metrics.Action

@@ -587,7 +587,7 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:on",
 				},
 				RecoveryActions: []string{
-					// TODO: need verify if we can enable testlab.
+					// TODO(otabek): need verify if we can enable testlab.
 					"Open gsc testlab",
 					"Stop servod",
 					"Try fake disconnect and stop",
@@ -1012,7 +1012,7 @@ func servoRepairPlan() *Plan {
 				},
 			},
 			"Warm reset pin is detected (servo_v3)": {
-				// TODO: need monitor before make it critical.
+				// TODO(b/248631441): need monitor before make it critical.
 				Docs: []string{
 					"Verify that warm_reset pin is detected by servod.",
 					"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
@@ -1028,7 +1028,7 @@ func servoRepairPlan() *Plan {
 				},
 			},
 			"Warm reset pin is detected (servo_micro)": {
-				// TODO: need monitor before make it critical.
+				// TODO(b/248631441): need monitor before make it critical.
 				Docs: []string{
 					"Verify that warm_reset pin is detected by servod.",
 					"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
@@ -1123,7 +1123,7 @@ func servoRepairPlan() *Plan {
 			"Toggle PD once and stop": {
 				Docs: []string{
 					"Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
-					"TODO: Add dependency for servo initialize.",
+					"TODO(otabek): Add dependency for servo initialize.",
 				},
 				Dependencies: []string{
 					"Toggle PD once",
@@ -1146,7 +1146,7 @@ func servoRepairPlan() *Plan {
 			},
 			"Toggle PD (5 times) and stop": {
 				Docs: []string{
-					"Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO: Add dependency for servo initialize.",
+					"Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize.",
 				},
 				Dependencies: []string{
 					"Toggle PD 5 times",

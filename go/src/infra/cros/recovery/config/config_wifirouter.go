@@ -12,7 +12,7 @@ import (
 
 // galeOsName is used as stable version for gale.
 // It is used until stableversion tool for ap/pcap is ready
-// TODO(b:216192539): need merge it to versioner.
+// TODO(b/248631855): need merge it to versioner.
 const galeOsName = "gale-test-ap-tryjob/R92-13982.81.0-b4959409"
 
 var osNameArg = fmt.Sprintf("os_name:%s", galeOsName)
@@ -58,7 +58,7 @@ func wifiRouterRepairPlan() *Plan {
 			},
 			"is_wifirouter_gale_gale": {
 				Docs: []string{
-					"TODO: hardcoded to only accept model=gale, board=gale routers.",
+					"TODO(b:248631855): hardcoded to only accept model=gale, board=gale routers.",
 					"Remove when stable version is ready",
 				},
 				ExecName: "is_wifirouter_board_model_matching",

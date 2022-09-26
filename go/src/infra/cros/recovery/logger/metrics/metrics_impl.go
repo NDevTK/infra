@@ -56,7 +56,6 @@ func (m *metrics) Update(ctx context.Context, action *Action) error {
 	}
 	a, err := json.MarshalIndent(action, "", "    ")
 	if err != nil {
-		// TODO(gregorynisbet): Check if action is nil.
 		return errors.Annotate(err, "record action for asset %q", action.AssetTag).Err()
 	}
 	m.logger.Debugf("Update action %q: %s\n", action.ActionKind, string(a))

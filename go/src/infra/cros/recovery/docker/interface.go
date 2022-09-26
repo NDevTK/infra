@@ -4,7 +4,7 @@
 
 package docker
 
-// TODO: Move package to common lib when developing finished.
+// TODO(otabek): Move package to common lib when developing finished.
 
 import (
 	"context"

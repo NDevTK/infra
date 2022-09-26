@@ -24,7 +24,7 @@ const (
 	// ActionStatusFail represents a failed action.
 	ActionStatusFail ActionStatus = "fail"
 	// ActionStatusSkip represents a skipped action.
-	// TODO(gregorynisbet): Add support for skipped actions to Karte.
+	// TODO(gregorynisbet): Add support for skipped actions to Karte OR record the number of skipped actions as a plan-level observation.
 	ActionStatusSkip ActionStatus = "skip"
 )
 

@@ -53,10 +53,10 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 }
 
 // createMetricsRecordWhenNewUSBDriveFound creates new metrics record when new USB drive detected in setup.
-// TODO: refactor to reduce copy of better interaction with metrics, avoid passing info.
+// TODO(gregorynisbet): refactor to reduce copy of better interaction with metrics, avoid passing info.
 func createMetricsRecordWhenNewUSBDriveFound(ctx context.Context, info *execs.ExecInfo, newDevice *labApi.UsbDrive) {
 	action := &metrics.Action{
-		// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
+		// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
 		Hostname:   info.GetDut().Name,
 		ActionKind: metrics.USBDriveDetectionKind,
@@ -78,7 +78,7 @@ func createMetricsRecordWhenNewUSBDriveFound(ctx context.Context, info *execs.Ex
 }
 
 // createMetricsRecordWhenUSBDriveReplaced creates new metrics record when detected that device was replace or removed from setup.
-// TODO: refactor to reduce copy of better interaction with metrics, avoid passing info.
+// TODO(b/248635230): refactor to reduce copy of better interaction with metrics, avoid passing info.
 func createMetricsRecordWhenUSBDriveReplaced(ctx context.Context, info *execs.ExecInfo, oldDevice, newDevice *labApi.UsbDrive) {
 	newTime := time.Now()
 	if newDevice != nil {

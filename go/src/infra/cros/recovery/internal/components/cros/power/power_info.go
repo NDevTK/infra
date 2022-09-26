@@ -15,13 +15,12 @@ import (
 	"infra/cros/recovery/internal/execs"
 )
 
-// TODO (vkjoshi@): This has been taken from the package
+// TODO(b/223055228): This has been taken from the package
 // internal/execs/cros/power and moved here. The intent behind this is
 // to place all helper functions, constant and structs within the
 // components package, and place only execs in the execs
 // package. Next, all the places where the original functions are
-// being called will be updated to use this new package. The bug
-// b/223055228 will track this task.
+// being called will be updated to use this new package.
 
 // powerSupplyInfo holds info from power_supply_info.
 type powerSupplyInfo struct {
@@ -29,13 +28,13 @@ type powerSupplyInfo struct {
 	// {
 	// 'Line Power':
 	//  {
-	//	 'online': 'yes',
-	//	 'type': 'main'
+	//    'online': 'yes',
+	//    'type': 'main'
 	//  },
 	// 'Battery':
 	//  {
-	// 	 'vendor': 'xyz',
-	//	 'percentage': '100'
+	//    'vendor': 'xyz',
+	//    'percentage': '100'
 	//  }
 	// }
 	powerInfo map[string]map[string]string

@@ -213,7 +213,7 @@ func dutServoStateMandatesManualRepairExec(ctx context.Context, info *execs.Exec
 }
 
 func init() {
-	// TODO: rename dut to chromeos to mark as data read from ChromeOS.
+	// TODO(gregorynisbet): rename dut to chromeos to mark as data read from ChromeOS.
 	execs.Register("dut_servo_host_present", servoHostPresentExec)
 	execs.Register("dut_has_board_name", hasDutBoardActionExec)
 	execs.Register("dut_has_model_name", hasDutModelActionExec)

@@ -16,8 +16,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// TODO(otabek@) Add cases with verification the cache.
-
 // Predefined exec functions.
 const (
 	exec_pass = "sample_pass"

@@ -87,7 +87,7 @@ func WrappedServoType(ctx context.Context, info *execs.ExecInfo) (*servo.ServoTy
 // ResetUsbkeyAuthorized resets usb-key detected under labstation.
 //
 // This is work around to address issue found for servo_v4p1.
-// TODO(197647872): Remove as soon issue will be addressed.
+// TODO(b/197647872): Remove as soon issue will be addressed.
 func ResetUsbkeyAuthorized(ctx context.Context, run execs.Runner, servoSerial string, servoType string) error {
 	if !strings.HasPrefix(servoSerial, "SERVOV4P1") {
 		log.Debugf(ctx, "Authorized flag reset only for servo_v4p1.")

@@ -14,10 +14,9 @@ import (
 	"infra/cros/recovery/internal/log"
 )
 
-// TODO: (vkjoshi@) These constants are repeated from the package
+// TODO(b/222941834): These constants are repeated from the package
 // "internal/execs/servo". Over a period of time, all such utilities
-// that help exec functions will be migrated within components. Bug
-// b/222941834 will track this.
+// that help exec functions will be migrated within components.
 const (
 	// servodPdRoleCmd is the servod command for
 	servodPdRoleCmd = "servo_pd_role"

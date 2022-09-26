@@ -47,7 +47,6 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 // copyFileToLogExec grabs the file from the host and copy to the log directory.
 //
 // For now implementation support only servo-host.
-// TODO: Extend support to collect logs from any host.
 func copyFileToLogExec(ctx context.Context, info *execs.ExecInfo) error {
 	resource := info.GetChromeos().GetServo().GetName()
 	run := info.NewRunner(resource)

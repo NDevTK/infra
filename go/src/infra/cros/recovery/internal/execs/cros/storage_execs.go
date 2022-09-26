@@ -54,7 +54,7 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 // x is the number of GB of the disk space.
 // input will only consist of one path and its corresponding value for storage.
 func hasEnoughStorageSpaceExec(ctx context.Context, info *execs.ExecInfo) error {
-	// TODO: recheck it and simplify. Also do it for hasEnoughStoragePercentageExec
+	// TODO(gregorynisbet): recheck it and simplify. Also do it for hasEnoughStoragePercentageExec
 	if len(info.GetExecArgs()) != 1 {
 		return errors.Reason("has enough storage space: input in wrong format").Err()
 	}

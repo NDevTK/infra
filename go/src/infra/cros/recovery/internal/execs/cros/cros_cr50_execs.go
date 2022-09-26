@@ -99,7 +99,7 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 		updateCmd = fmt.Sprintf(updateCmd, "prod")
 	}
 	karteAction := &metrics.Action{
-		// TODO(@gregorynisbet): When karte' Search API is capable of taking in asset tag,
+		// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
 		// change the query to use asset tag instead of using hostname.
 		Hostname:   info.GetDut().Name,
 		ActionKind: metrics.Cr50FwReflashKind,

@@ -66,7 +66,7 @@ func packToXMLRPCValues(values ...interface{}) []*xmlrpc.Value {
 				},
 			})
 		default:
-			// TODO(otabek@): Extend for more type if required. For now recovery is not using these types.
+			// Extend for more type if required. For now recovery is not using these types.
 			message := fmt.Sprintf("%q is not a supported yet to be pack XMLRPC Value ", reflect.TypeOf(val))
 			r = append(r, &xmlrpc.Value{
 				ScalarOneof: &xmlrpc.Value_String_{

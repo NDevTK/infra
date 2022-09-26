@@ -50,7 +50,7 @@ func servoAuditNICMacAddressExec(ctx context.Context, info *execs.ExecInfo) erro
 		return errors.Annotate(err, "servo audit nic mac address").Err()
 	}
 	// get the mac address from the servo cache.
-	// TODO: to use ServodGetString help function.
+	// TODO(gregorynisbet): to use ServodGetString help function.
 	cachedMacAddressFromServo, err := servodGetString(ctx, info.NewServod(), macAddressServoCmd)
 	if err != nil {
 		return errors.Annotate(err, "servo audit nic mac address").Err()

@@ -4,7 +4,7 @@
 
 package docker
 
-// TODO: Move package to common lib when developing finished.
+// TODO(otabek): Move package to common lib when developing finished.
 
 import (
 	"bytes"
@@ -29,7 +29,7 @@ import (
 	"infra/cros/recovery/internal/log"
 )
 
-// TODO (otabek): Add basic unittest for each method.
+// TODO(otabek): Add basic unittest for each method.
 
 const (
 	// Connection to docker service can be set by socket or by open tcp connection.

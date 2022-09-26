@@ -58,7 +58,7 @@ func (ei *ExecInfo) NewRunner(resource string) Runner {
 // NewBackgroundRunner returns runner for requested resource specified
 // per plan.
 //
-// TODO: (vkjoshi@) (b/222698101) At this time this method is a
+// TODO(b/222698101): At this time this method is a
 // placeholder. This will eventually be replaced with an
 // implementation that will submit a command for background execution,
 // and will return without waiting for it to complete.

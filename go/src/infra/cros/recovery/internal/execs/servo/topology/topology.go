@@ -252,7 +252,7 @@ func USBDrives(ctx context.Context, runner execs.Runner, servoSerial string) ([]
 			log.Debugf(ctx, "Fail to read USB device product name: %q", err)
 		}
 		// To detect usb is complicated so we check if any of them will mention it.
-		// TODO: Find better logic to distinguish USB drive from other components.
+		// TODO(otabek): Find better logic to distinguish USB drive from other components.
 		// Corsair is new USB drive supported smart data check.
 		if strings.Contains(strings.ToLower(manufacturer), "usb") || manufacturer == "Corsair" || strings.Contains(strings.ToLower(product), "usb") {
 			log.Debugf(ctx, "The device found is usb drive!")
