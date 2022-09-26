@@ -14,11 +14,11 @@ import (
 
 	"infra/cmd/crosfleet/internal/common"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"google.golang.org/grpc"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 
 	models "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
@@ -477,8 +477,7 @@ func TestTestPlatformRequest(t *testing.T) {
 				ContainerMetadataUrl:   "gs://sample-bucket/sample-image/metadata/containers.jsonpb",
 			},
 			Time: &test_platform.Request_Params_Time{
-				MaximumDuration: ptypes.DurationProto(
-					time.Duration(1800000000000)),
+				MaximumDuration: durationpb.New(time.Duration(1800000000000)),
 			},
 			RunViaCft: true,
 		},
