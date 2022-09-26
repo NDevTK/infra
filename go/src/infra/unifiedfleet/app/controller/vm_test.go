@@ -578,6 +578,13 @@ func TestListVMs(t *testing.T) {
 			Vlan:          "vlan-2",
 			ResourceState: ufspb.State_STATE_DEPLOYED_TESTING,
 		},
+		{
+			Name:     "vm-list-5",
+			Vlan:     "vlan-3",
+			CpuCores: 8,
+			Memory:   1234,
+			Storage:  9876,
+		},
 	}
 	Convey("ListVMs", t, func() {
 		_, err := inventory.BatchUpdateVMs(ctx, vms)
@@ -606,6 +613,13 @@ func TestListVMs(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldHaveLength, 1)
 			So(resp[0].GetName(), ShouldEqual, "vm-list-4")
+		})
+		Convey("List VMs - resource filters", func() {
+			resp, _, err := ListVMs(ctx, 5, "", "cpucores=8 & memory=1234 & storage=9876", false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldHaveLength, 1)
+			So(resp[0].GetName(), ShouldEqual, "vm-list-5")
 		})
 	})
 }

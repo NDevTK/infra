@@ -5,7 +5,6 @@
 package inventory
 
 import (
-	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -75,11 +74,22 @@ func TestListVMs(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	vms := make([]*ufspb.VM, 0, 4)
-	for i := 0; i < 4; i++ {
-		vm := mockVM(fmt.Sprintf("vm-%d", i))
-		vms = append(vms, vm)
+
+	vm1 := &ufspb.VM{
+		Name:          "vm-1",
+		ResourceState: ufspb.State_STATE_DECOMMISSIONED,
 	}
+	vm2 := &ufspb.VM{
+		Name: "vm-2",
+		Tags: []string{"tag-1", "tag-2"},
+	}
+	vm3 := &ufspb.VM{
+		Name:   "vm-3",
+		Memory: 1234,
+	}
+	vm4 := mockVM("vm-4")
+	vms := []*ufspb.VM{vm1, vm2, vm3, vm4}
+
 	Convey("ListVMs", t, func() {
 		_, err := BatchUpdateVMs(ctx, vms)
 		So(err, ShouldBeNil)
@@ -110,6 +120,35 @@ func TestListVMs(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, vms[3:])
+		})
+	})
+	Convey("ListVMs with Filters", t, func() {
+		_, err := BatchUpdateVMs(ctx, vms)
+		So(err, ShouldBeNil)
+		filterMap := make(map[string][]interface{})
+		Convey("List vms - Filter by state", func() {
+			filterMap["state"] = []interface{}{"STATE_DECOMMISSIONED"}
+			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, []*ufspb.VM{vm1})
+		})
+		Convey("List vms - Filter by tags", func() {
+			filterMap["tags"] = []interface{}{"tag-1"}
+			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, []*ufspb.VM{vm2})
+		})
+		Convey("List vms - Filter by memory", func() {
+			filterMap["memory"] = []interface{}{1234}
+			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, []*ufspb.VM{vm3})
 		})
 	})
 }

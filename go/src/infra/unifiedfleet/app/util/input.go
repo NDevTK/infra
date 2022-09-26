@@ -129,6 +129,9 @@ var (
 	SerialNumberFilterName         string = "serialnumber"
 	BbnumFilterName                string = "bbnum"
 	AssetTagFilterName             string = "assettag"
+	CpuCoresFilterName             string = "cpucores"
+	MemoryFilterName               string = "memory"
+	StorageFilterName              string = "storage"
 )
 
 const separator string = "/"

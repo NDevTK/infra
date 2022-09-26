@@ -363,6 +363,10 @@ func ListVMs(ctx context.Context, pageSize int32, pageToken, filter string, keys
 	filterMap = resetStateFilter(filterMap)
 	filterMap = resetOSFilter(filterMap)
 	filterMap = resetZoneFilter(filterMap)
+	filterMap, err = parseIntTypeFilter(filterMap, "cpu_cores", "memory", "storage")
+	if err != nil {
+		return nil, "", errors.Annotate(err, "filter value for cpu_cores, memory, and/or storage cannot be parsed").Err()
+	}
 	return inventory.ListVMs(ctx, pageSize, pageSize, pageToken, filterMap, keysOnly, nil)
 }
 

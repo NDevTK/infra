@@ -621,16 +621,18 @@ func resetDeviceTypeFilter(filterMap map[string][]interface{}) map[string][]inte
 	return filterMap
 }
 
-func parseIntTypeFilter(filterMap map[string][]interface{}, filterName string) (map[string][]interface{}, error) {
-	if v, ok := filterMap[filterName]; ok {
-		for i, vz := range v {
-			intNum, err := strconv.ParseInt(fmt.Sprintf("%s", vz), 10, 32)
-			if err != nil {
-				return filterMap, err
+func parseIntTypeFilter(filterMap map[string][]interface{}, filterNames ...string) (map[string][]interface{}, error) {
+	for _, filterName := range filterNames {
+		if v, ok := filterMap[filterName]; ok {
+			for i, vz := range v {
+				intNum, err := strconv.ParseInt(fmt.Sprintf("%s", vz), 10, 64)
+				if err != nil {
+					return filterMap, err
+				}
+				v[i] = intNum
 			}
-			v[i] = intNum
+			filterMap[filterName] = v
 		}
-		filterMap[filterName] = v
 	}
 	return filterMap, nil
 }
