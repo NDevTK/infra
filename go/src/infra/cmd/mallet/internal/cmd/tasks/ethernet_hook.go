@@ -32,7 +32,6 @@ var EthernetHook = &subcommands.Command{
 		c := &ethernetHookRun{}
 		c.authFlags.Register(&c.Flags, site.EthernetHookCallbackOptions)
 		c.commonFlags.Register(&c.Flags)
-		c.Flags.StringVar(&c.date, "date", "", "the date to process")
 		c.Flags.StringVar(&c.bucket, "bucket", "chromeos-test-logs", "the base GS bucket to check for logs")
 		c.Flags.StringVar(&c.prefix, "prefix", "", "prefix of the objects in question")
 		c.Flags.StringVar(&c.delimiter, "delimiter", "", "delimiter of the objects in question")
@@ -45,9 +44,6 @@ type ethernetHookRun struct {
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
-
-	// Dates are given in YYYY-MM-DD format, the only correct format.
-	date string
 
 	// Add a default bucket.
 	bucket string
@@ -103,6 +99,35 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	storageClient, err := ethernethook.NewExtendedGSClient(rawStorageClient)
 	if err != nil {
 		return errors.Annotate(err, "failed to wrap storage client").Err()
+	}
+
+	gsURL := fmt.Sprintf("gs://%s/%s", c.bucket, c.prefix)
+	sections := storageClient.CountSections(gsURL)
+	switch sections {
+	case 0:
+		return errors.Reason("query %q is not even close to right", gsURL).Err()
+	case 1:
+		return errors.Reason("query %q has a bucket but no builder, channel, or date", gsURL).Err()
+	case 2:
+		return errors.Reason("query %q has a bucket and a builder but no channel or date", gsURL).Err()
+	case 3:
+		return errors.Reason("query %q has a bucket, a builder, and a channel, but no date", gsURL).Err()
+	case 4:
+		// Scan a day, list the buckets in there up to a limit of 40.
+		const scanLimit = 40
+		it := storageClient.Ls(ctx, c.bucket, &storage.Query{
+			Delimiter:                "/",
+			Prefix:                   storageClient.EnsureTrailingSlash(c.prefix),
+			IncludeTrailingDelimiter: true,
+		})
+		var state ethernethook.LsState
+		for i := 0; i < scanLimit; i++ {
+			if ok := it(&state); !ok {
+				break
+			}
+			fmt.Fprintf(a.GetOut(), "%s\n", storageClient.ExpandName(c.bucket, state.Attrs))
+		}
+		return errors.Annotate(state.Err, "processing gsURL %q", gsURL).Err()
 	}
 
 	d, err := ethernethook.NewRegexDownloader(

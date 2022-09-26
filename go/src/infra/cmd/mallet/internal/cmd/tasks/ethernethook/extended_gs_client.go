@@ -7,6 +7,7 @@ package ethernethook
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/errors"
@@ -110,4 +111,29 @@ func (_ *extendedGSClient) ExpandName(bucket string, attrs *storage.ObjectAttrs)
 		return fmt.Sprintf("gs://%s/%s", bucket, attrs.Prefix)
 	}
 	return fmt.Sprintf("gs://%s/%s", bucket, attrs.Name)
+}
+
+// CountSections counts the number of sections excluding the protocol specifier in a Google Storage URL.
+func (_ *extendedGSClient) CountSections(gsURL string) int {
+	trimLead := regexp.MustCompile(`\Ags://`)
+	trimTail := regexp.MustCompile(`/*\z`)
+	gsURL = trimLead.ReplaceAllString(gsURL, "")
+	gsURL = trimTail.ReplaceAllString(gsURL, "")
+	if gsURL == "" {
+		return 0
+	}
+	tally := 0
+	for _, ch := range gsURL {
+		if ch == '/' {
+			tally++
+		}
+	}
+	return 1 + tally
+}
+
+// EnsureTrailingSlash ensures exactly one trailing slash.
+func (_ *extendedGSClient) EnsureTrailingSlash(s string) string {
+	trimTail := regexp.MustCompile(`/*\z`)
+	s = trimTail.ReplaceAllString(s, "")
+	return fmt.Sprintf("%s/", s)
 }
