@@ -42,21 +42,54 @@ func psURL(p *evalpb.GerritPatchset) string {
 
 // PrintResults prints the results to w.
 func PrintResults(res *evalpb.Results, w io.Writer, minChangeRecall float32) error {
+	return PrintSpecificResults(res, w, minChangeRecall, true, true)
+}
+
+func PrintSpecificResults(res *evalpb.Results, w io.Writer, minChangeRecall float32, printTestRecall bool, printDistance bool) error {
 	p := newPrinter(w)
 
-	p.printf("ChangeRecall | Savings | TestRecall | Distance\n")
-	p.printf("----------------------------------------------\n")
-	for _, t := range res.Thresholds {
-		if t.ChangeRecall < minChangeRecall {
+	p.printf("ChangeRecall | Savings")
+	if printTestRecall {
+		p.printf(" | TestRecall")
+	}
+	if printDistance {
+		p.printf(" | Distance")
+	}
+	p.printf("\n")
+	p.printf("----------------------")
+	if printTestRecall {
+		p.printf("-------------")
+	}
+	if printDistance {
+		p.printf("-----------")
+	}
+	p.printf("\n")
+
+	for i, t := range res.Thresholds {
+		if t.ChangeRecall < minChangeRecall || (i > 0 &&
+			res.Thresholds[i].ChangeRecall == res.Thresholds[i-1].ChangeRecall &&
+			res.Thresholds[i].Savings == res.Thresholds[i-1].Savings &&
+			res.Thresholds[i].TestRecall == res.Thresholds[i-1].TestRecall) {
 			continue
 		}
 		p.printf(
-			"%7s      | % 7s | %7s    | %6.3f\n",
+			"%7s      | % 7s ",
 			scoreString(t.ChangeRecall),
 			scoreString(t.Savings),
-			scoreString(t.TestRecall),
-			t.MaxDistance,
 		)
+		if printTestRecall {
+			p.printf(
+				"| %7s    ",
+				scoreString(t.TestRecall),
+			)
+		}
+		if printDistance {
+			p.printf(
+				"| %6.3f",
+				t.MaxDistance,
+			)
+		}
+		p.printf("\n")
 	}
 	p.printf("\nbased on %d rejections, %d test failures, %s testing time\n", res.TotalRejections, res.TotalTestFailures, res.TotalDuration.AsDuration())
 	return p.err
