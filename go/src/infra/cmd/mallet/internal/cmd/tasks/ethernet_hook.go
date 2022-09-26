@@ -78,7 +78,7 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	if err != nil {
 		return errors.Annotate(err, "failed to get auth options").Err()
 	}
-	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, options)
+	authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, options)
 	httpClient, err := authenticator.Client()
 	if err != nil {
 		return errors.Annotate(err, "failed to set up http client").Err()
@@ -105,17 +105,30 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "failed to wrap storage client").Err()
 	}
 
-	out, err := storageClient.LsSmall(ctx, c.bucket, &storage.Query{
-		Delimiter:                c.delimiter,
-		Prefix:                   c.prefix,
-		IncludeTrailingDelimiter: true,
-	})
+	d, err := ethernethook.NewRegexDownloader(
+		c.bucket,
+		&storage.Query{
+			Delimiter:                c.delimiter,
+			Prefix:                   c.prefix,
+			IncludeTrailingDelimiter: true,
+		},
+		[]string{
+			`result_summary.html\z`,
+			`recover_duts.log\z`,
+			`sysinfo/lspci\z`,
+			`dmesg.gz\z`,
+		},
+	)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "initializing").Err()
 	}
 
-	for _, item := range out {
-		fmt.Fprintf(a.GetOut(), "%s\n", storageClient.ExpandName(c.bucket, item))
+	if err := d.FindPaths(ctx, storageClient); err != nil {
+		return errors.Annotate(err, "finding paths").Err()
+	}
+
+	for _, objectAttrs := range d.Attrs {
+		fmt.Fprintf(a.GetOut(), "%s\n", storageClient.ExpandName(c.bucket, objectAttrs))
 	}
 
 	return nil
