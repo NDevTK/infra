@@ -310,10 +310,12 @@ def build_to_dict(build_bundle, include_lease_key=False):
 
   msg = build_to_message(build_bundle, include_lease_key=include_lease_key)
 
-  # Special cases
+  # Special cases.
   result = {
-      'tags': msg.tags,  # a list
-      'ancestor_ids': msg.ancestor_ids,  # a list
+      # tags is a list of strings, no need to change.
+      'tags': msg.tags,
+      # ancestor_ids are build IDs, which are represented in JSON as strings.
+      'ancestor_ids': [str(x) for x in msg.ancestor_ids]
   }
 
   for f in msg.all_fields():

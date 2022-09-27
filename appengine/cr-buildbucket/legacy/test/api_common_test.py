@@ -94,7 +94,7 @@ class ApiCommonTests(testing.AppengineTestCase):
         'canary': False,
         'service_account': 'service@example.com',
         'url': 'https://ci.example.com/8991715593768927232',
-        'ancestor_ids': [123456789, 222111222],
+        'ancestor_ids': ['123456789012345678', '112233445566778899'],
     }
 
     bundle = test_util.build_bundle(
@@ -125,7 +125,7 @@ class ApiCommonTests(testing.AppengineTestCase):
     )
     # ancestor_ids is an OUTPUT_ONLY property so passing it to
     # test_util.build_bundle has no effect, but it can be set directly.
-    bundle.build.ancestor_ids = [123456789, 222111222]
+    bundle.build.ancestor_ids = [123456789012345678, 112233445566778899]
 
     self.assertEqual(
         expected, test_util.ununicode(api_common.build_to_dict(bundle))
