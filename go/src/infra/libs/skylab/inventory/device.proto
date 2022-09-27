@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 39
+// NEXT TAG: 40
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -298,6 +298,16 @@ message SchedulableLabels {
 
   // Come from manufacturing config: crbug.com/1046971
   optional string wifi_chip = 32;
+
+  // devboard_type specifies the type of devboard
+  optional DevboardType devboard_type = 39;
+
+  // NEXT TAG: 3
+  enum DevboardType {
+    DEVBOARD_TYPE_INVALID = 0;
+    DEVBOARD_TYPE_ANDREIBOARD =1;
+    DEVBOARD_TYPE_ICETOWER = 2;
+  }
 }
 
 // Keep sorted by field name.
