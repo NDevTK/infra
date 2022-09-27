@@ -94,6 +94,9 @@ func (s *singleTaskDownloader) ProcessTask(ctx context.Context, e *extendedGSCli
 	if err := s.FindResultsSummary(ctx, e); err != nil {
 		return errors.Annotate(err, "process task").Err()
 	}
+	if err := s.FindRecoverLog(ctx, e); err != nil {
+		return errors.Annotate(err, "process task").Err()
+	}
 	return nil
 }
 
@@ -125,10 +128,39 @@ func (s *singleTaskDownloader) FindResultsSummary(ctx context.Context, e *extend
 			return errors.Reason("find results summary: failed to read contents of %q", name).Err()
 		}
 		entry.Content = buf.String()
+		s.OutputMap["result_summary"] = entry
+		return nil
+	}
+	return errors.Reason("find results summary: no result found").Err()
+}
+
+// FindRecoverLog finds and attaches the recovery log.
+func (s *singleTaskDownloader) FindRecoverLog(ctx context.Context, e *extendedGSClient) error {
+	var entry Entry
+	if ok := s.Len() > 0; !ok {
+		return errors.Reason("find results summary: no results were read").Err()
+	}
+	for _, attrs := range s.downloader.Attrs {
+		name := e.ExpandName(s.bucket, attrs)
+		if ok := regexp.MustCompile(`recover_duts.log\z`).MatchString(name); !ok {
+			continue
+		}
+		entry.GSURL = name
+		reader, err := e.Bucket(s.bucket).Object(attrs.Name).NewReader(ctx)
+		if err != nil {
+			// If we didn't abandon the loop earlier, then this error really is unrecoverable.
+			// We have to know what's in the file.
+			return errors.Reason("find results summary: failed to instantiate reader for %q", name).Err()
+		}
+		buf := new(strings.Builder)
+		if _, err := io.Copy(buf, reader); err != nil {
+			return errors.Reason("find results summary: failed to read contents of %q", name).Err()
+		}
+		entry.Content = buf.String()
 	}
 	if entry.GSURL == "" {
 		return errors.Reason("find results summary: no result found").Err()
 	}
-	s.OutputMap["result_summary"] = entry
+	s.OutputMap["recover_duts"] = entry
 	return nil
 }
