@@ -263,6 +263,13 @@ make install BASEMODLIBS=$BASEMODLIBS
 # isn't propagated when a VirtualEnv is cut.
 cat "$SCRIPT_DIR/ssl_suffix.py" >> $PREFIX/lib/python*/ssl.py
 
+# Replace paths to the install location in _sysconfigdata with a
+# placeholder string. This can then be reliably replaced with the
+# real install location when we need to build wheels.
+for f in "${PREFIX}/lib/python*/_sysconfigdata*.py"; do
+  sed -e "s?${PREFIX}?[INSTALL_PREFIX]?g" -i $f
+done
+
 # TODO: maybe strip python executable?
 
 $INTERP "$(which pip_bootstrap.py)" "$PREFIX"
