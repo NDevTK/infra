@@ -455,6 +455,42 @@ func TestConvertServoTypeWorking(t *testing.T) {
 	}
 }
 
+// Test cases for ModemInfo proto convert
+var modemInfoConvertCases = []struct {
+	testState    string
+	expectLabels []string
+}{
+	{"", []string{}},
+	{"type: 1", []string{"modem_type:qualcomm_sc7180", "modem_imei:", "modem_supported_bands:", "modem_sim_count:0"}},
+	{"type: 1 imei:\"imei\"", []string{"modem_type:qualcomm_sc7180", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:0"}},
+	{"type: 1 imei:\"imei\", sim_count:1", []string{"modem_type:qualcomm_sc7180", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:1"}},
+	{"type: 1 imei:\"imei\", supported_bands:\"bands\" sim_count:1", []string{"modem_type:qualcomm_sc7180", "modem_imei:imei", "modem_supported_bands:bands", "modem_sim_count:1"}},
+}
+
+// TestConvertModemInfo validates modeminfo converter
+func TestConvertModemInfo(t *testing.T) {
+	for _, testCase := range modemInfoConvertCases {
+		t.Run("Modem Type is "+string(testCase.testState), func(t *testing.T) {
+			var ls inventory.SchedulableLabels
+			var protoText string = ""
+			if testCase.testState != "" {
+				protoText = fmt.Sprintf(`modeminfo: { %s }`, testCase.testState)
+			}
+			if err := proto.UnmarshalText(protoText, &ls); err != nil {
+				t.Fatalf("Error unmarshalling example text: %s", err)
+			}
+			want := append(testCase.expectLabels, baseExpectedLabels...)
+			got := Convert(&ls)
+			if diff := prettyConfig.Compare(want, got); diff != "" {
+				t.Errorf(
+					"Convert ModemInfo %#v got labels differ -want +got, %s",
+					testCase.testState,
+					diff)
+			}
+		})
+	}
+}
+
 func TestRevertEmpty(t *testing.T) {
 	t.Parallel()
 	want := inventory.NewSchedulableLabels()
