@@ -329,9 +329,32 @@ func looksLikeFakeServo(hostname string) bool {
 // looksLikeServod is a heuristic to detect whether a servod entry.
 // Historically, these used "localhost" as a hostname.
 // Currently, they look like satlab-0⬛⬛⬛⬛⬛⬛⬛⬛⬛-host1-docker_servod.
-func looksLikeServod(hostname string) bool {
-	return hostname == "localhost" || strings.Contains(hostname, "docker_servod")
+//
+// The suffix can only be "docker_servod".
+// I am intentionally keeping the number of supported suffixes small so that misnamed devices are surfaced in a reasonably
+// intuitive way.
+// See b/187895178 comment #13 for details.
+func validateServod(hostname string) error {
+	if hostname == "localhost" {
+		return nil
+	}
+	if strings.Contains(hostname, "docker_servod") {
+		return nil
+	}
+	// TODO(gregorynisbet): Consider removing this special case. Formerly, there was a `hostname == ""` check at the sole call site.
+	if hostname == "" {
+		return nil
+	}
+	// Detect common errors and give a helpful error message to our users.
+	// Any error that isn't validateServodFallbackError indicates that we should not fall back.
+	if strings.Contains(hostname, "docker-servod") {
+		return errors.New(`validate servod: use "docker_servod" with an underscore, not "docker-servod" with a hyphen`)
+	}
+	return validateServodFallbackError
 }
+
+// validateServodFallbackError indicates that we should fallback.
+var validateServodFallbackError = errors.New("validate servod: should fall back")
 
 // getCrosVersionFromServoHost returns the cros version associated with a particular servo host
 // hostname : hostname of the servo host (e.g. labstation)
@@ -339,10 +362,17 @@ func looksLikeServod(hostname string) bool {
 // NOTE: If hostname is "", this indicates the absence of a relevant servo host. This can happen if the DUT in question is already a labstation, for instance.
 // NOTE: The cros version will be empty "" if the labstation does not exist. Because we don't re-image labstations as part of repair, the absence of a stable CrOS version for a labstation is not an error.
 func getCrosVersionFromServoHost(ctx context.Context, hostname string) (string, error) {
-	if hostname == "" || looksLikeServod(hostname) {
+	err := validateServod(hostname)
+	if err == nil {
 		logging.Infof(ctx, "Skipping getting cros version. Servo host hostname is %q", hostname)
 		return "", nil
 	}
+
+	if ok := errors.Is(err, validateServodFallbackError); !ok {
+		logging.Errorf(ctx, "Encountered non-recoverable error %s", err)
+		return "", errors.Annotate(err, "get cros version form servohost for hostname %q", hostname).Err()
+	}
+
 	if heuristics.LooksLikeLabstation(hostname) {
 		dut, err := getDUT(ctx, hostname)
 		if err != nil {
