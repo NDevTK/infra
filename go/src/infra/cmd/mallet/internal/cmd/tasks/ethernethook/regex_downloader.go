@@ -15,12 +15,18 @@ import (
 
 // NewRegexDownloader creates an object that manages the common pattern of downloading files matching certain regexes
 // and a query. For example, grabbing both `dmesg.gz` and `status.log` out.
-func NewRegexDownloader(bucket string, query *storage.Query, patterns []string) (*regexDownloader, error) {
+func NewRegexDownloader(bucket string, query *storage.Query, inputPatterns patternMap) (*regexDownloader, error) {
+	if bucket == "" {
+		return nil, errors.Reason("new regex downloader: bucket cannot be empty").Err()
+	}
+	if query == nil {
+		return nil, errors.Reason("new regex downloader: query cannot be empty").Err()
+	}
 	var out regexDownloader
 	out.bucket = bucket
 	out.query = query
 	var mErr errors.MultiError
-	for _, pattern := range patterns {
+	for _, pattern := range inputPatterns.Values() {
 		r, cErr := regexp.Compile(pattern)
 		if cErr != nil {
 			mErr = append(mErr, cErr)
@@ -82,4 +88,9 @@ func (d *regexDownloader) FindPaths(ctx context.Context, e *extendedGSClient) er
 		return nil
 	}
 	return errors.Annotate(state.Err, "regex downloader find paths").Err()
+}
+
+// Len returns the length of the stored attributes. A length greater than zero indicates that we succesffully scanned the area described by the query.
+func (d *regexDownloader) Len() int {
+	return len(d.Attrs)
 }
