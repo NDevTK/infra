@@ -130,7 +130,7 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 				Options: site.DefaultPRPCOptions,
 			},
 		)
-		return c.getHostInfoStore(ctx, invWithSVClient, ic, args)
+		return c.getHostInfoStore(ctx, a, invWithSVClient, ic, args)
 	}
 
 	emit := !utils.NoEmitMode(c.outputFlags.NoEmit())
@@ -149,12 +149,12 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 }
 
 // getHostInfoStore gets the host-info-store file content from the ufsAPT.FleetClient and print it out.
-func (c *getDut) getHostInfoStore(ctx context.Context, invWithSVClient fleet.InventoryClient, ic ufsAPI.FleetClient, hostnames []string) error {
+func (c *getDut) getHostInfoStore(ctx context.Context, a subcommands.Application, invWithSVClient fleet.InventoryClient, ic ufsAPI.FleetClient, hostnames []string) error {
 	g := hostinfo.NewGetter(ic, invWithSVClient)
 	for _, hostname := range hostnames {
 		contents, err := g.GetContentsForHostname(ctx, hostname)
 		if err != nil {
-			// TODO: log an error message
+			fmt.Fprintf(a.GetErr(), "%s\n", err)
 			continue
 		}
 		fmt.Printf("%s\n", contents)
