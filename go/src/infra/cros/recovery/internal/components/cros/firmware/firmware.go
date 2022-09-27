@@ -407,7 +407,7 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 			}
 		}
 		if apErr != nil {
-			return errors.Annotate(err, "install firmware via servo").Err()
+			return errors.Annotate(apErr, "install firmware via servo").Err()
 		}
 		log.Infof("Finished program AP image %q", apImage)
 	}
