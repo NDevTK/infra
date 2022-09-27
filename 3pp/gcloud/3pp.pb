@@ -1,5 +1,5 @@
 create {
-  platform_re: "linux-amd64|mac-amd64"
+  platform_re: ".*-(amd64|arm64)"
   source {
     script { name: "fetch.py" }
     unpack_archive: true

@@ -29,6 +29,7 @@ def get_download_url(version, platform):
       'arch': {
         '386':   'x86',
         'amd64': 'x86_64',
+        'arm64': 'arm',
       }[targ_arch],
       'ext': ext
     })
