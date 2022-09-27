@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n1go.chromium.org/luci/buildbucket/proto/step.proto\x12\x0e\x62uildbucket.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"\xd8\x02\n\x04Step\x12\x0c\n\x04name\x18\x01 \x01(\t\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12&\n\x06status\x18\x04 \x01(\x0e\x32\x16.buildbucket.v2.Status\x12!\n\x04logs\x18\x05 \x03(\x0b\x32\x13.buildbucket.v2.Log\x12\x34\n\x0bmerge_build\x18\x06 \x01(\x0b\x32\x1f.buildbucket.v2.Step.MergeBuild\x12\x18\n\x10summary_markdown\x18\x07 \x01(\t\x1aI\n\nMergeBuild\x12\x1a\n\x12\x66rom_logdog_stream\x18\x01 \x01(\t\x12\x1f\n\x17legacy_global_namespace\x18\x02 \x01(\x08\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n1go.chromium.org/luci/buildbucket/proto/step.proto\x12\x0e\x62uildbucket.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"\x82\x03\n\x04Step\x12\x0c\n\x04name\x18\x01 \x01(\t\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12&\n\x06status\x18\x04 \x01(\x0e\x32\x16.buildbucket.v2.Status\x12!\n\x04logs\x18\x05 \x03(\x0b\x32\x13.buildbucket.v2.Log\x12\x34\n\x0bmerge_build\x18\x06 \x01(\x0b\x32\x1f.buildbucket.v2.Step.MergeBuild\x12\x18\n\x10summary_markdown\x18\x07 \x01(\t\x12(\n\x04tags\x18\x08 \x03(\x0b\x32\x1a.buildbucket.v2.StringPair\x1aI\n\nMergeBuild\x12\x1a\n\x12\x66rom_logdog_stream\x18\x01 \x01(\t\x12\x1f\n\x17legacy_global_namespace\x18\x02 \x01(\x08\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,])
 
@@ -62,8 +62,8 @@ _STEP_MERGEBUILD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=427,
-  serialized_end=500,
+  serialized_start=469,
+  serialized_end=542,
 )
 
 _STEP = _descriptor.Descriptor(
@@ -123,6 +123,13 @@ _STEP = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='tags', full_name='buildbucket.v2.Step.tags', index=7,
+      number=8, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -136,7 +143,7 @@ _STEP = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=156,
-  serialized_end=500,
+  serialized_end=542,
 )
 
 _STEP_MERGEBUILD.containing_type = _STEP
@@ -145,6 +152,7 @@ _STEP.fields_by_name['end_time'].message_type = google_dot_protobuf_dot_timestam
 _STEP.fields_by_name['status'].enum_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._STATUS
 _STEP.fields_by_name['logs'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._LOG
 _STEP.fields_by_name['merge_build'].message_type = _STEP_MERGEBUILD
+_STEP.fields_by_name['tags'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._STRINGPAIR
 DESCRIPTOR.message_types_by_name['Step'] = _STEP
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

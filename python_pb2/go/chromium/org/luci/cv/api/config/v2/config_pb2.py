@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+go.chromium.org/luci/cv/api/config/v2;cfgpb\242\376#C\nAhttps://luci-config.appspot.com/schemas/projects:commit-queue.cfg',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n2go.chromium.org/luci/cv/api/config/v2/config.proto\x12\tcv.config\x1a\x1egoogle/protobuf/duration.proto\x1a/go.chromium.org/luci/common/proto/options.proto\"\xdd\x01\n\x06\x43onfig\x12\x1f\n\x13\x64raining_start_time\x18\x01 \x01(\tB\x02\x18\x01\x12\x1a\n\x0e\x63q_status_host\x18\x02 \x01(\tB\x02\x18\x01\x12\x30\n\x0esubmit_options\x18\x03 \x01(\x0b\x32\x18.cv.config.SubmitOptions\x12-\n\rconfig_groups\x18\x04 \x03(\x0b\x32\x16.cv.config.ConfigGroup\x12\x35\n\x16project_scoped_account\x18\x05 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\"\xec\x03\n\x0b\x43onfigGroup\x12\x0c\n\x04name\x18\x06 \x01(\t\x12-\n\x06gerrit\x18\x01 \x03(\x0b\x32\x1d.cv.config.ConfigGroup.Gerrit\x12*\n\x0b\x63ombine_cls\x18\x04 \x01(\x0b\x32\x15.cv.config.CombineCLs\x12\'\n\tverifiers\x18\x02 \x01(\x0b\x32\x14.cv.config.Verifiers\x12#\n\x08\x66\x61llback\x18\x05 \x01(\x0e\x32\x11.cv.config.Toggle\x12)\n\x10\x61\x64\x64itional_modes\x18\x07 \x03(\x0b\x32\x0f.cv.config.Mode\x12)\n\x0buser_limits\x18\x08 \x03(\x0b\x32\x14.cv.config.UserLimit\x12\x30\n\x12user_limit_default\x18\t \x01(\x0b\x32\x14.cv.config.UserLimit\x1a\x97\x01\n\x06Gerrit\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x37\n\x08projects\x18\x02 \x03(\x0b\x32%.cv.config.ConfigGroup.Gerrit.Project\x1aG\n\x07Project\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nref_regexp\x18\x02 \x03(\t\x12\x1a\n\x12ref_regexp_exclude\x18\x03 \x03(\tJ\x04\x08\x03\x10\x04\"R\n\rSubmitOptions\x12\x11\n\tmax_burst\x18\x01 \x01(\x05\x12.\n\x0b\x62urst_delay\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\"`\n\x04Mode\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x0e\x63q_label_value\x18\x02 \x01(\x05\x12\x18\n\x10triggering_label\x18\x03 \x01(\t\x12\x18\n\x10triggering_value\x18\x04 \x01(\x05\"D\n\nCombineCLs\x12\x36\n\x13stabilization_delay\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\"\x83\r\n\tVerifiers\x12?\n\x11gerrit_cq_ability\x18\x01 \x01(\x0b\x32$.cv.config.Verifiers.GerritCQAbility\x12\x34\n\x0btree_status\x18\x02 \x01(\x0b\x32\x1f.cv.config.Verifiers.TreeStatus\x12+\n\x06tryjob\x18\x03 \x01(\x0b\x32\x1b.cv.config.Verifiers.Tryjob\x12/\n\x08\x63qlinter\x18\x04 \x01(\x0b\x32\x1d.cv.config.Verifiers.CQLinter\x12\'\n\x04\x66\x61ke\x18\x05 \x01(\x0b\x32\x19.cv.config.Verifiers.Fake\x1a\xee\x01\n\x0fGerritCQAbility\x12\x16\n\x0e\x63ommitter_list\x18\x01 \x03(\t\x12\x1b\n\x13\x64ry_run_access_list\x18\x02 \x03(\t\x12#\n\x1b\x61llow_submit_with_open_deps\x18\x03 \x01(\x08\x12Q\n\x1a\x61llow_owner_if_submittable\x18\x04 \x01(\x0e\x32-.cv.config.Verifiers.GerritCQAbility.CQAction\".\n\x08\x43QAction\x12\t\n\x05UNSET\x10\x00\x12\x0b\n\x07\x44RY_RUN\x10\x01\x12\n\n\x06\x43OMMIT\x10\x02\x1a\x19\n\nTreeStatus\x12\x0b\n\x03url\x18\x01 \x01(\t\x1a\xa2\x08\n\x06Tryjob\x12\x35\n\x08\x62uilders\x18\x01 \x03(\x0b\x32#.cv.config.Verifiers.Tryjob.Builder\x12=\n\x0cretry_config\x18\x02 \x01(\x0b\x32\'.cv.config.Verifiers.Tryjob.RetryConfig\x12\x33\n\x14\x63\x61ncel_stale_tryjobs\x18\x03 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\x1a\xe5\x04\n\x07\x42uilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x17\n\x0fincludable_only\x18\t \x01(\x08\x12\x32\n\x11result_visibility\x18\n \x01(\x0e\x32\x17.cv.config.CommentLevel\x12\x15\n\rdisable_reuse\x18\x02 \x01(\x08\x12\'\n\x0c\x63\x61ncel_stale\x18\x0b \x01(\x0e\x32\x11.cv.config.Toggle\x12\x14\n\x0ctriggered_by\x18\x03 \x01(\t\x12\x1d\n\x15\x65xperiment_percentage\x18\x04 \x01(\x02\x12\x44\n\requivalent_to\x18\x05 \x01(\x0b\x32-.cv.config.Verifiers.Tryjob.EquivalentBuilder\x12\x1b\n\x0flocation_regexp\x18\x06 \x03(\tB\x02\x18\x01\x12#\n\x17location_regexp_exclude\x18\x07 \x03(\tB\x02\x18\x01\x12L\n\x10location_filters\x18\x0f \x03(\x0b\x32\x32.cv.config.Verifiers.Tryjob.Builder.LocationFilter\x12\x1d\n\x15owner_whitelist_group\x18\x08 \x03(\t\x12\x16\n\x0emode_allowlist\x18\x0e \x03(\t\x1aq\n\x0eLocationFilter\x12\x1a\n\x12gerrit_host_regexp\x18\x01 \x01(\t\x12\x1d\n\x15gerrit_project_regexp\x18\x02 \x01(\t\x12\x13\n\x0bpath_regexp\x18\x03 \x01(\t\x12\x0f\n\x07\x65xclude\x18\x04 \x01(\x08J\x04\x08\x0c\x10\rJ\x04\x08\r\x10\x0e\x1aT\n\x11\x45quivalentBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\npercentage\x18\x02 \x01(\x02\x12\x1d\n\x15owner_whitelist_group\x18\x03 \x01(\t\x1a!\n\x11IncludableBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x1a\x8b\x01\n\x0bRetryConfig\x12\x14\n\x0csingle_quota\x18\x01 \x01(\x05\x12\x14\n\x0cglobal_quota\x18\x02 \x01(\x05\x12\x16\n\x0e\x66\x61ilure_weight\x18\x03 \x01(\x05\x12 \n\x18transient_failure_weight\x18\x04 \x01(\x05\x12\x16\n\x0etimeout_weight\x18\x05 \x01(\x05\x1a\n\n\x08\x43QLinter\x1a;\n\x04\x46\x61ke\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x0e\x65ventual_state\x18\x02 \x01(\t\x12\r\n\x05\x64\x65lay\x18\x03 \x01(\x05\"\xaa\x02\n\tUserLimit\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nprincipals\x18\x02 \x03(\t\x12%\n\x03run\x18\x05 \x01(\x0b\x32\x18.cv.config.UserLimit.Run\x12+\n\x06tryjob\x18\x06 \x01(\x0b\x32\x1b.cv.config.UserLimit.Tryjob\x1a\x36\n\x05Limit\x12\x0f\n\x05value\x18\x01 \x01(\x03H\x00\x12\x13\n\tunlimited\x18\x02 \x01(\x08H\x00\x42\x07\n\x05limit\x1a\x35\n\x03Run\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit\x1a\x38\n\x06Tryjob\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit*]\n\x0c\x43ommentLevel\x12\x17\n\x13\x43OMMENT_LEVEL_UNSET\x10\x00\x12\x16\n\x12\x43OMMENT_LEVEL_FULL\x10\x01\x12\x1c\n\x18\x43OMMENT_LEVEL_RESTRICTED\x10\x02*$\n\x06Toggle\x12\t\n\x05UNSET\x10\x00\x12\x07\n\x03YES\x10\x01\x12\x06\n\x02NO\x10\x02\x42tZ+go.chromium.org/luci/cv/api/config/v2;cfgpb\xa2\xfe#C\nAhttps://luci-config.appspot.com/schemas/projects:commit-queue.cfgb\x06proto3'
+  serialized_pb=b'\n2go.chromium.org/luci/cv/api/config/v2/config.proto\x12\tcv.config\x1a\x1egoogle/protobuf/duration.proto\x1a/go.chromium.org/luci/common/proto/options.proto\"\xdd\x01\n\x06\x43onfig\x12\x1f\n\x13\x64raining_start_time\x18\x01 \x01(\tB\x02\x18\x01\x12\x1a\n\x0e\x63q_status_host\x18\x02 \x01(\tB\x02\x18\x01\x12\x30\n\x0esubmit_options\x18\x03 \x01(\x0b\x32\x18.cv.config.SubmitOptions\x12-\n\rconfig_groups\x18\x04 \x03(\x0b\x32\x16.cv.config.ConfigGroup\x12\x35\n\x16project_scoped_account\x18\x05 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\"\xec\x03\n\x0b\x43onfigGroup\x12\x0c\n\x04name\x18\x06 \x01(\t\x12-\n\x06gerrit\x18\x01 \x03(\x0b\x32\x1d.cv.config.ConfigGroup.Gerrit\x12*\n\x0b\x63ombine_cls\x18\x04 \x01(\x0b\x32\x15.cv.config.CombineCLs\x12\'\n\tverifiers\x18\x02 \x01(\x0b\x32\x14.cv.config.Verifiers\x12#\n\x08\x66\x61llback\x18\x05 \x01(\x0e\x32\x11.cv.config.Toggle\x12)\n\x10\x61\x64\x64itional_modes\x18\x07 \x03(\x0b\x32\x0f.cv.config.Mode\x12)\n\x0buser_limits\x18\x08 \x03(\x0b\x32\x14.cv.config.UserLimit\x12\x30\n\x12user_limit_default\x18\t \x01(\x0b\x32\x14.cv.config.UserLimit\x1a\x97\x01\n\x06Gerrit\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x37\n\x08projects\x18\x02 \x03(\x0b\x32%.cv.config.ConfigGroup.Gerrit.Project\x1aG\n\x07Project\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nref_regexp\x18\x02 \x03(\t\x12\x1a\n\x12ref_regexp_exclude\x18\x03 \x03(\tJ\x04\x08\x03\x10\x04\"R\n\rSubmitOptions\x12\x11\n\tmax_burst\x18\x01 \x01(\x05\x12.\n\x0b\x62urst_delay\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\"`\n\x04Mode\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x0e\x63q_label_value\x18\x02 \x01(\x05\x12\x18\n\x10triggering_label\x18\x03 \x01(\t\x12\x18\n\x10triggering_value\x18\x04 \x01(\x05\"D\n\nCombineCLs\x12\x36\n\x13stabilization_delay\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\"\xa9\r\n\tVerifiers\x12?\n\x11gerrit_cq_ability\x18\x01 \x01(\x0b\x32$.cv.config.Verifiers.GerritCQAbility\x12\x34\n\x0btree_status\x18\x02 \x01(\x0b\x32\x1f.cv.config.Verifiers.TreeStatus\x12+\n\x06tryjob\x18\x03 \x01(\x0b\x32\x1b.cv.config.Verifiers.Tryjob\x12/\n\x08\x63qlinter\x18\x04 \x01(\x0b\x32\x1d.cv.config.Verifiers.CQLinter\x12\'\n\x04\x66\x61ke\x18\x05 \x01(\x0b\x32\x19.cv.config.Verifiers.Fake\x1a\x94\x02\n\x0fGerritCQAbility\x12\x16\n\x0e\x63ommitter_list\x18\x01 \x03(\t\x12\x1b\n\x13\x64ry_run_access_list\x18\x02 \x03(\t\x12$\n\x1cnew_patchset_run_access_list\x18\x05 \x03(\t\x12#\n\x1b\x61llow_submit_with_open_deps\x18\x03 \x01(\x08\x12Q\n\x1a\x61llow_owner_if_submittable\x18\x04 \x01(\x0e\x32-.cv.config.Verifiers.GerritCQAbility.CQAction\".\n\x08\x43QAction\x12\t\n\x05UNSET\x10\x00\x12\x0b\n\x07\x44RY_RUN\x10\x01\x12\n\n\x06\x43OMMIT\x10\x02\x1a\x19\n\nTreeStatus\x12\x0b\n\x03url\x18\x01 \x01(\t\x1a\xa2\x08\n\x06Tryjob\x12\x35\n\x08\x62uilders\x18\x01 \x03(\x0b\x32#.cv.config.Verifiers.Tryjob.Builder\x12=\n\x0cretry_config\x18\x02 \x01(\x0b\x32\'.cv.config.Verifiers.Tryjob.RetryConfig\x12\x33\n\x14\x63\x61ncel_stale_tryjobs\x18\x03 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\x1a\xe5\x04\n\x07\x42uilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x17\n\x0fincludable_only\x18\t \x01(\x08\x12\x32\n\x11result_visibility\x18\n \x01(\x0e\x32\x17.cv.config.CommentLevel\x12\x15\n\rdisable_reuse\x18\x02 \x01(\x08\x12\'\n\x0c\x63\x61ncel_stale\x18\x0b \x01(\x0e\x32\x11.cv.config.Toggle\x12\x14\n\x0ctriggered_by\x18\x03 \x01(\t\x12\x1d\n\x15\x65xperiment_percentage\x18\x04 \x01(\x02\x12\x44\n\requivalent_to\x18\x05 \x01(\x0b\x32-.cv.config.Verifiers.Tryjob.EquivalentBuilder\x12\x1b\n\x0flocation_regexp\x18\x06 \x03(\tB\x02\x18\x01\x12#\n\x17location_regexp_exclude\x18\x07 \x03(\tB\x02\x18\x01\x12L\n\x10location_filters\x18\x0f \x03(\x0b\x32\x32.cv.config.Verifiers.Tryjob.Builder.LocationFilter\x12\x1d\n\x15owner_whitelist_group\x18\x08 \x03(\t\x12\x16\n\x0emode_allowlist\x18\x0e \x03(\t\x1aq\n\x0eLocationFilter\x12\x1a\n\x12gerrit_host_regexp\x18\x01 \x01(\t\x12\x1d\n\x15gerrit_project_regexp\x18\x02 \x01(\t\x12\x13\n\x0bpath_regexp\x18\x03 \x01(\t\x12\x0f\n\x07\x65xclude\x18\x04 \x01(\x08J\x04\x08\x0c\x10\rJ\x04\x08\r\x10\x0e\x1aT\n\x11\x45quivalentBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\npercentage\x18\x02 \x01(\x02\x12\x1d\n\x15owner_whitelist_group\x18\x03 \x01(\t\x1a!\n\x11IncludableBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x1a\x8b\x01\n\x0bRetryConfig\x12\x14\n\x0csingle_quota\x18\x01 \x01(\x05\x12\x14\n\x0cglobal_quota\x18\x02 \x01(\x05\x12\x16\n\x0e\x66\x61ilure_weight\x18\x03 \x01(\x05\x12 \n\x18transient_failure_weight\x18\x04 \x01(\x05\x12\x16\n\x0etimeout_weight\x18\x05 \x01(\x05\x1a\n\n\x08\x43QLinter\x1a;\n\x04\x46\x61ke\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x0e\x65ventual_state\x18\x02 \x01(\t\x12\r\n\x05\x64\x65lay\x18\x03 \x01(\x05\"\xaa\x02\n\tUserLimit\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nprincipals\x18\x02 \x03(\t\x12%\n\x03run\x18\x05 \x01(\x0b\x32\x18.cv.config.UserLimit.Run\x12+\n\x06tryjob\x18\x06 \x01(\x0b\x32\x1b.cv.config.UserLimit.Tryjob\x1a\x36\n\x05Limit\x12\x0f\n\x05value\x18\x01 \x01(\x03H\x00\x12\x13\n\tunlimited\x18\x02 \x01(\x08H\x00\x42\x07\n\x05limit\x1a\x35\n\x03Run\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit\x1a\x38\n\x06Tryjob\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit*]\n\x0c\x43ommentLevel\x12\x17\n\x13\x43OMMENT_LEVEL_UNSET\x10\x00\x12\x16\n\x12\x43OMMENT_LEVEL_FULL\x10\x01\x12\x1c\n\x18\x43OMMENT_LEVEL_RESTRICTED\x10\x02*$\n\x06Toggle\x12\t\n\x05UNSET\x10\x00\x12\x07\n\x03YES\x10\x01\x12\x06\n\x02NO\x10\x02\x42tZ+go.chromium.org/luci/cv/api/config/v2;cfgpb\xa2\xfe#C\nAhttps://luci-config.appspot.com/schemas/projects:commit-queue.cfgb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_common_dot_proto_dot_options__pb2.DESCRIPTOR,])
 
@@ -51,8 +51,8 @@ _COMMENTLEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3088,
-  serialized_end=3181,
+  serialized_start=3126,
+  serialized_end=3219,
 )
 _sym_db.RegisterEnumDescriptor(_COMMENTLEVEL)
 
@@ -82,8 +82,8 @@ _TOGGLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3183,
-  serialized_end=3219,
+  serialized_start=3221,
+  serialized_end=3257,
 )
 _sym_db.RegisterEnumDescriptor(_TOGGLE)
 
@@ -121,8 +121,8 @@ _VERIFIERS_GERRITCQABILITY_CQACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1578,
-  serialized_end=1624,
+  serialized_start=1616,
+  serialized_end=1662,
 )
 _sym_db.RegisterEnumDescriptor(_VERIFIERS_GERRITCQABILITY_CQACTION)
 
@@ -498,14 +498,21 @@ _VERIFIERS_GERRITCQABILITY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='allow_submit_with_open_deps', full_name='cv.config.Verifiers.GerritCQAbility.allow_submit_with_open_deps', index=2,
+      name='new_patchset_run_access_list', full_name='cv.config.Verifiers.GerritCQAbility.new_patchset_run_access_list', index=2,
+      number=5, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='allow_submit_with_open_deps', full_name='cv.config.Verifiers.GerritCQAbility.allow_submit_with_open_deps', index=3,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='allow_owner_if_submittable', full_name='cv.config.Verifiers.GerritCQAbility.allow_owner_if_submittable', index=3,
+      name='allow_owner_if_submittable', full_name='cv.config.Verifiers.GerritCQAbility.allow_owner_if_submittable', index=4,
       number=4, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -525,7 +532,7 @@ _VERIFIERS_GERRITCQABILITY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1386,
-  serialized_end=1624,
+  serialized_end=1662,
 )
 
 _VERIFIERS_TREESTATUS = _descriptor.Descriptor(
@@ -555,8 +562,8 @@ _VERIFIERS_TREESTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1626,
-  serialized_end=1651,
+  serialized_start=1664,
+  serialized_end=1689,
 )
 
 _VERIFIERS_TRYJOB_BUILDER_LOCATIONFILTER = _descriptor.Descriptor(
@@ -607,8 +614,8 @@ _VERIFIERS_TRYJOB_BUILDER_LOCATIONFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2324,
-  serialized_end=2437,
+  serialized_start=2362,
+  serialized_end=2475,
 )
 
 _VERIFIERS_TRYJOB_BUILDER = _descriptor.Descriptor(
@@ -722,8 +729,8 @@ _VERIFIERS_TRYJOB_BUILDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1836,
-  serialized_end=2449,
+  serialized_start=1874,
+  serialized_end=2487,
 )
 
 _VERIFIERS_TRYJOB_EQUIVALENTBUILDER = _descriptor.Descriptor(
@@ -767,8 +774,8 @@ _VERIFIERS_TRYJOB_EQUIVALENTBUILDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2451,
-  serialized_end=2535,
+  serialized_start=2489,
+  serialized_end=2573,
 )
 
 _VERIFIERS_TRYJOB_INCLUDABLEBUILDER = _descriptor.Descriptor(
@@ -798,8 +805,8 @@ _VERIFIERS_TRYJOB_INCLUDABLEBUILDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2537,
-  serialized_end=2570,
+  serialized_start=2575,
+  serialized_end=2608,
 )
 
 _VERIFIERS_TRYJOB_RETRYCONFIG = _descriptor.Descriptor(
@@ -857,8 +864,8 @@ _VERIFIERS_TRYJOB_RETRYCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2573,
-  serialized_end=2712,
+  serialized_start=2611,
+  serialized_end=2750,
 )
 
 _VERIFIERS_TRYJOB = _descriptor.Descriptor(
@@ -902,8 +909,8 @@ _VERIFIERS_TRYJOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1654,
-  serialized_end=2712,
+  serialized_start=1692,
+  serialized_end=2750,
 )
 
 _VERIFIERS_CQLINTER = _descriptor.Descriptor(
@@ -926,8 +933,8 @@ _VERIFIERS_CQLINTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2714,
-  serialized_end=2724,
+  serialized_start=2752,
+  serialized_end=2762,
 )
 
 _VERIFIERS_FAKE = _descriptor.Descriptor(
@@ -971,8 +978,8 @@ _VERIFIERS_FAKE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2726,
-  serialized_end=2785,
+  serialized_start=2764,
+  serialized_end=2823,
 )
 
 _VERIFIERS = _descriptor.Descriptor(
@@ -1031,7 +1038,7 @@ _VERIFIERS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1118,
-  serialized_end=2785,
+  serialized_end=2823,
 )
 
 
@@ -1074,8 +1081,8 @@ _USERLIMIT_LIMIT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=2919,
-  serialized_end=2973,
+  serialized_start=2957,
+  serialized_end=3011,
 )
 
 _USERLIMIT_RUN = _descriptor.Descriptor(
@@ -1105,8 +1112,8 @@ _USERLIMIT_RUN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2975,
-  serialized_end=3028,
+  serialized_start=3013,
+  serialized_end=3066,
 )
 
 _USERLIMIT_TRYJOB = _descriptor.Descriptor(
@@ -1136,8 +1143,8 @@ _USERLIMIT_TRYJOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3030,
-  serialized_end=3086,
+  serialized_start=3068,
+  serialized_end=3124,
 )
 
 _USERLIMIT = _descriptor.Descriptor(
@@ -1188,8 +1195,8 @@ _USERLIMIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2788,
-  serialized_end=3086,
+  serialized_start=2826,
+  serialized_end=3124,
 )
 
 _CONFIG.fields_by_name['submit_options'].message_type = _SUBMITOPTIONS
