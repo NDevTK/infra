@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
-	"infra/cros/recovery/internal/components/linux"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
 )
@@ -53,7 +53,7 @@ func IsSSHable(ctx context.Context, run components.Runner) error {
 func IsFileSystemWritable(ctx context.Context, run components.Runner, log logger.Logger, testDirs []string) error {
 	for _, testDir := range testDirs {
 		if err := linux.IsPathWritable(ctx, run, testDir); err != nil {
-			errors.Annotate(err, "file system writable").Err()
+			return errors.Annotate(err, "file system writable").Err()
 		}
 		log.Debugf("Directory %s is writable.", testDir)
 	}
