@@ -59,6 +59,9 @@ Partial update a vm by parameters. Only specified parameters will be updated in 
 		c.Flags.BoolVar(&c.deleteVlan, "delete-vlan", false, "if deleting the ip assignment for the vm")
 		c.Flags.StringVar(&c.ip, "ip", "", "the ip to assign the vm to")
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
+		c.Flags.IntVar(&c.cpuCores, "cpu-cores", 0, "number of CPU cores. To clear this field set it to -1.")
+		c.Flags.StringVar(&c.memory, "memory", "", "amount of memory in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText+" "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.storage, "storage", "", "disk storage capacity in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText+" "+cmdhelp.ClearFieldHelpText)
 		return c
 	},
 }
@@ -83,6 +86,9 @@ type updateVM struct {
 	tags             []string
 	description      string
 	deploymentTicket string
+	cpuCores         int
+	memory           string
+	storage          string
 }
 
 func (c *updateVM) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -117,7 +123,7 @@ func (c *updateVM) innerRun(a subcommands.Application, args []string, env subcom
 		Options: site.DefaultPRPCOptions,
 	})
 
-	// Parse the josn input
+	// Parse the json input
 	var vm ufspb.VM
 	if c.newSpecsFile != "" {
 		if err = utils.ParseJSONFile(c.newSpecsFile, &vm); err != nil {
@@ -149,14 +155,17 @@ func (c *updateVM) innerRun(a subcommands.Application, args []string, env subcom
 		Vm:            &vm,
 		NetworkOption: nwOpt,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"host":     "machineLseId",
-			"state":    "resourceState",
-			"mac":      "macAddress",
-			"os":       "osVersion",
-			"os-image": "osImage",
-			"tag":      "tags",
-			"desc":     "description",
-			"ticket":   "deploymentTicket",
+			"host":      "machineLseId",
+			"state":     "resourceState",
+			"mac":       "macAddress",
+			"os":        "osVersion",
+			"os-image":  "osImage",
+			"tag":       "tags",
+			"desc":      "description",
+			"ticket":    "deploymentTicket",
+			"cpu-cores": "cpuCores",
+			"memory":    "memory",
+			"storage":   "storage",
 		}),
 	})
 	if err != nil {
@@ -220,6 +229,21 @@ func (c *updateVM) parseArgs(vm *ufspb.VM) {
 	} else {
 		vm.DeploymentTicket = c.deploymentTicket
 	}
+	if c.cpuCores == -1 {
+		vm.CpuCores = 0
+	} else {
+		vm.CpuCores = int32(c.cpuCores)
+	}
+	if c.memory == utils.ClearFieldValue {
+		vm.Memory = 0
+	} else {
+		vm.Memory, _ = utils.ConvertToBytes(c.memory)
+	}
+	if c.storage == utils.ClearFieldValue {
+		vm.Storage = 0
+	} else {
+		vm.Storage, _ = utils.ConvertToBytes(c.storage)
+	}
 }
 
 func (c *updateVM) validateArgs() error {
@@ -228,11 +252,18 @@ func (c *updateVM) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f') is specified.")
 		}
 		if c.vlanName == "" && !c.deleteVlan && c.ip == "" && c.state == "" && c.deploymentTicket == "" &&
-			c.hostName == "" && c.osVersion == "" && c.osImage == "" && c.macAddress == "" && len(c.tags) == 0 && c.description == "" {
+			c.hostName == "" && c.osVersion == "" && c.osImage == "" && c.macAddress == "" && len(c.tags) == 0 && c.description == "" &&
+			c.cpuCores == 0 && c.memory == "" && c.storage == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
+		}
+		if _, err := utils.ConvertToBytes(c.memory); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -memory flag was used incorrectly: %w", err)
+		}
+		if _, err := utils.ConvertToBytes(c.storage); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -storage flag was used incorrectly: %w", err)
 		}
 	} else {
 		if c.vmName != "" {
@@ -261,6 +292,15 @@ func (c *updateVM) validateArgs() error {
 		}
 		if c.deploymentTicket != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-ticket' cannot be specified at the same time.")
+		}
+		if c.cpuCores != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-cpu-cores' cannot be specified at the same time.")
+		}
+		if c.memory != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-memory' cannot be specified at the same time.")
+		}
+		if c.storage != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-storage' cannot be specified at the same time.")
 		}
 	}
 	return nil

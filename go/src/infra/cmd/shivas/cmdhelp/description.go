@@ -17,6 +17,9 @@ var (
 	// ListPageSizeDesc description for List PageSize
 	ListPageSizeDesc string = `number of items to get. The service may return fewer than this value.`
 
+	// ByteUnitsAcceptedText description for accepted byte multiples
+	ByteUnitsAcceptedText string = `Accepts the following unit suffixes: B, KB, KiB, MB, MiB, GB, GiB.`
+
 	//AddSwitchLongDesc long description for AddSwitchCmd
 	AddSwitchLongDesc string = `Create a switch to UFS.
 

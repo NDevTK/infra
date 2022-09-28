@@ -55,6 +55,9 @@ Add a VM by parameters.`,
 		c.Flags.StringVar(&c.vlanName, "vlan", "", "name of the vlan to assign this vm to")
 		c.Flags.StringVar(&c.ip, "ip", "", "the ip to assign the vm to")
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
+		c.Flags.IntVar(&c.cpuCores, "cpu-cores", 0, "number of CPU cores")
+		c.Flags.StringVar(&c.memory, "memory", "0", "amount of memory in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText)
+		c.Flags.StringVar(&c.storage, "storage", "0", "disk storage capacity in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText)
 		return c
 	},
 }
@@ -76,6 +79,9 @@ type addVM struct {
 	ip               string
 	deploymentTicket string
 	state            string
+	cpuCores         int
+	memory           string
+	storage          string
 }
 
 func (c *addVM) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -164,6 +170,9 @@ func (c *addVM) parseArgs(vm *ufspb.VM) {
 	vm.Tags = c.tags
 	vm.DeploymentTicket = c.deploymentTicket
 	vm.ResourceState = ufsUtil.ToUFSState(c.state)
+	vm.CpuCores = int32(c.cpuCores)
+	vm.Memory, _ = utils.ConvertToBytes(c.memory)
+	vm.Storage, _ = utils.ConvertToBytes(c.storage)
 }
 
 func (c *addVM) parseNetworkOpt() *ufsAPI.NetworkOption {
@@ -209,6 +218,15 @@ func (c *addVM) validateArgs() error {
 		if c.state != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-state' cannot be specified at the same time.")
 		}
+		if c.cpuCores != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-cpu-cores' cannot be specified at the same time.")
+		}
+		if c.memory != "0" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-memoryb' cannot be specified at the same time.")
+		}
+		if c.storage != "0" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-storage' cannot be specified at the same time.")
+		}
 	} else {
 		if c.hostName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-host' is required.")
@@ -218,6 +236,12 @@ func (c *addVM) validateArgs() error {
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
+		}
+		if _, err := utils.ConvertToBytes(c.memory); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -memory flag was used incorrectly: %w", err)
+		}
+		if _, err := utils.ConvertToBytes(c.storage); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -storage flag was used incorrectly: %w", err)
 		}
 	}
 	return nil
