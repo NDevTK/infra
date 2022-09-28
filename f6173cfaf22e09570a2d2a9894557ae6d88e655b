@@ -22,6 +22,30 @@
       },
       "revId": "f6173cfaf22e09570a2d2a9894557ae6d88e655b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "189e8bd7_1315564f",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/ethernethook/single_task_downloader.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-09-28T17:18:01Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "3f953114_5c7bf2d3",
+      "range": {
+        "startLine": 120,
+        "startChar": 2,
+        "endLine": 120,
+        "endChar": 10
+      },
+      "revId": "f6173cfaf22e09570a2d2a9894557ae6d88e655b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
