@@ -26,20 +26,22 @@ const VMKind string = "ChromeVM"
 
 // VMEntity is a datastore entity that tracks VM.
 type VMEntity struct {
-	_kind      string   `gae:"$kind,ChromeVM"`
-	ID         string   `gae:"$id"`
-	OSVersion  string   `gae:"os_version"`
-	Vlan       string   `gae:"vlan_id"`
-	HostID     string   `gae:"host_id"`
-	State      string   `gae:"state"`
-	Lab        string   `gae:"lab"` // deprecated
-	Zone       string   `gae:"zone"`
-	Tags       []string `gae:"tags"`
-	OS         []string `gae:"os"`
-	MacAddress string   `gae:"mac_address"`
-	CpuCores   int32    `gae:"cpu_cores"`
-	Memory     int64    `gae:"memory"`
-	Storage    int64    `gae:"storage"`
+	_kind          string   `gae:"$kind,ChromeVM"`
+	ID             string   `gae:"$id"`
+	OSVersion      string   `gae:"os_version"`
+	Vlan           string   `gae:"vlan_id"`
+	HostID         string   `gae:"host_id"`
+	State          string   `gae:"state"`
+	Lab            string   `gae:"lab"` // deprecated
+	Zone           string   `gae:"zone"`
+	Tags           []string `gae:"tags"`
+	OS             []string `gae:"os"`
+	MacAddress     string   `gae:"mac_address"`
+	CpuCores       int32    `gae:"cpu_cores"`
+	Memory         int64    `gae:"memory"`
+	Storage        int64    `gae:"storage"`
+	Pool           string   `gae:"pool"`
+	SwarmingServer string   `gae:"swarming_server"`
 	// Follow others entities, store ufspb.VM bytes.
 	VM []byte `gae:",noindex"`
 }
@@ -62,20 +64,29 @@ func newVMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, erro
 	if err != nil {
 		return nil, errors.Annotate(err, "fail to marshal VM %s", p).Err()
 	}
+
+	poolName := ""
+	swarmingInstance := ""
+	if p.GetOwnership() != nil {
+		poolName = p.GetOwnership().PoolName
+		swarmingInstance = p.GetOwnership().SwarmingInstance
+	}
 	return &VMEntity{
-		ID:         p.GetName(),
-		OSVersion:  p.GetOsVersion().GetValue(),
-		Vlan:       p.GetVlan(),
-		HostID:     p.GetMachineLseId(),
-		State:      p.GetResourceState().String(),
-		Zone:       p.GetZone(),
-		Tags:       p.GetTags(),
-		OS:         ufsds.GetOSIndex(p.GetOsVersion().GetValue()),
-		MacAddress: p.GetMacAddress(),
-		CpuCores:   p.GetCpuCores(),
-		Memory:     p.GetMemory(),
-		Storage:    p.GetStorage(),
-		VM:         vm,
+		ID:             p.GetName(),
+		OSVersion:      p.GetOsVersion().GetValue(),
+		Vlan:           p.GetVlan(),
+		HostID:         p.GetMachineLseId(),
+		State:          p.GetResourceState().String(),
+		Zone:           p.GetZone(),
+		Tags:           p.GetTags(),
+		OS:             ufsds.GetOSIndex(p.GetOsVersion().GetValue()),
+		MacAddress:     p.GetMacAddress(),
+		CpuCores:       p.GetCpuCores(),
+		Memory:         p.GetMemory(),
+		Storage:        p.GetStorage(),
+		Pool:           poolName,
+		SwarmingServer: swarmingInstance,
+		VM:             vm,
 	}, nil
 }
 
@@ -200,6 +211,9 @@ func BatchUpdateVMs(ctx context.Context, vms []*ufspb.VM) ([]*ufspb.VM, error) {
 	updateTime := ptypes.TimestampNow()
 	for i, v := range vms {
 		v.UpdateTime = updateTime
+
+		// Redact ownership data
+		redactVMOwnership(ctx, v)
 		protos[i] = v
 	}
 	_, err := ufsds.PutAll(ctx, protos, newVMEntity, true)
@@ -217,9 +231,48 @@ func ImportVMs(ctx context.Context, vms []*ufspb.VM) (*ufsds.OpResults, error) {
 		if m.UpdateTime == nil {
 			m.UpdateTime = utime
 		}
+		// Redact ownership data
+		redactVMOwnership(ctx, m)
+
 		protos[i] = m
 	}
 	return ufsds.Insert(ctx, protos, newVMEntity, true, true)
+}
+
+// UpdateVMOwnership updates VM ownership in datastore.
+func UpdateVMOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData) (*ufspb.VM, error) {
+	return putVMOwnership(ctx, id, ownership, true)
+}
+
+// Updates the ownership data for an existing VM.
+func putVMOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData, update bool) (*ufspb.VM, error) {
+	vm, err := GetVM(ctx, id)
+	if err != nil {
+		return vm, err
+	}
+	vm.Ownership = ownership
+
+	vm.UpdateTime = ptypes.TimestampNow()
+	pm, err := ufsds.Put(ctx, vm, newVMEntity, update)
+	if err == nil {
+		return pm.(*ufspb.VM), err
+	}
+	return nil, err
+}
+
+// Redacts VM ownership for updates by either changing the ownership to existing values or
+// for new entities setting the ownership to nil as we don't want to allow user updates to these values.
+func redactVMOwnership(ctx context.Context, vm *ufspb.VM) {
+	if vm == nil {
+		return
+	}
+	// Redact ownership data
+	existingVM, err := GetVM(ctx, vm.Name)
+	if err == nil {
+		vm.Ownership = existingVM.Ownership
+	} else {
+		vm.Ownership = nil
+	}
 }
 
 // ListVMs lists the vms

@@ -11,10 +11,13 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
 
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
+	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -87,7 +90,12 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 		for _, botId := range botsIds {
 			// TODO(b/248039146) - Bot can be one of machine, machine_lse or vm. Store ownership accordingly
 			_, err := registration.UpdateMachineOwnership(ctx, botId, ownershipData)
-			logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
+			if err != nil && status.Code(err) == codes.NotFound {
+				_, err = inventory.UpdateVMOwnership(ctx, botId, ownershipData)
+			}
+			if err != nil {
+				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
+			}
 		}
 	}
 }
