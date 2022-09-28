@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f953114_5c7bf2d3",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/ethernethook/single_task_downloader.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-09-28T04:42:33Z",
+      "side": 1,
+      "message": "did you mean break if we want to stop execution?\n\nmaybe use return here to set the value from line 125 and the end of the function will be only error that we did not found anything!",
+      "range": {
+        "startLine": 120,
+        "startChar": 2,
+        "endLine": 120,
+        "endChar": 10
+      },
+      "revId": "f6173cfaf22e09570a2d2a9894557ae6d88e655b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
