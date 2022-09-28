@@ -6,13 +6,13 @@ the expected results of removing a specific test suite from a specific builder.
 1. Fetch a sample of rejections, e.g. for the previous month of all builders:
    ```bash
    go run ./cmd/rts-suite-analysis fetch-rejections \
-     -from 2022-08-01 -to 2021-09-01 \
+     -from 2022-08-01 -to 2022-09-01 \
      -out samples.rej
    ```
 1. Fetch a sample of test durations, e.g. for for the past week of all builders.
    ```bash
    go run ./cmd/rts-suite-analysis fetch-durations \
-     -from 2022-08-25 -to 2021-09-01 \
+     -from 2022-08-25 -to 2022-09-01 \
      -out samples.dur
    ```
    Note: Duration data is expensive to collect/analyze. To reduce this cost only
