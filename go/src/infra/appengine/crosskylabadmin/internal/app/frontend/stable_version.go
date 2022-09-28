@@ -391,13 +391,9 @@ func getCrosVersionFromServoHost(ctx context.Context, hostname string) (string, 
 		return out, nil
 	}
 	if looksLikeServo(hostname) {
-		// TODO(gregorynisbet): getting the stable version of a beaglebone servo is dependent on the fallback
-		// behavior
-		out, err := dssv.GetCrosStableVersion(ctx, beagleboneServo, beagleboneServo)
-		if err != nil {
-			return "", errors.Annotate(err, "getting beaglebone servo stable version").Err()
-		}
-		return out, nil
+		// We do not need versions for servos.
+		// See b/249370593 for details.
+		return "", nil
 	}
 	return "", errors.Reason("unrecognized hostname %q is not a labstation or beaglebone servo", hostname).Err()
 }

@@ -225,7 +225,7 @@ func TestGetStableVersion(t *testing.T) {
 		So(resp.CrosVersion, ShouldEqual, "xxx-cros-version")
 		So(resp.FaftVersion, ShouldEqual, "xxx-faft-version")
 		So(resp.FirmwareVersion, ShouldEqual, "xxx-firmware-version")
-		So(resp.ServoCrosVersion, ShouldEqual, "xxx-beaglebone-cros-version")
+		So(resp.ServoCrosVersion, ShouldEqual, "")
 	})
 
 	Convey("Test GetStableVersion RPC -- look up by hostname labstation", t, func() {
