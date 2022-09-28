@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 
 	"golang.org/x/crypto/ssh"
@@ -43,6 +44,8 @@ type FirmwareManifestData struct {
 	SignatureId string `json:"signature_id"`
 }
 
+var firmwareManifestRegexp = regexp.MustCompile("FIRMWARE_MANIFEST_KEY='(.*)'")
+
 // getAvailableFirmwareVersion read firmware manifest from current OS and extract available firmware version based on model.
 func getAvailableFirmwareVersion(c *ssh.Client) (string, error) {
 	out, err := runCmdOutput(c, fmt.Sprintf("%s --manifest", firmwareUpdaterPath))
@@ -66,9 +69,11 @@ func getAvailableFirmwareVersion(c *ssh.Client) (string, error) {
 
 // getFirmwareTarget returns firmware target of the DUT, which will be used to as key to fetch expected firmware from manifest.
 func getFirmwareTarget(c *ssh.Client) (string, error) {
-	out, err := runCmdOutput(c, "crosid | grep FIRMWARE_MANIFEST_KEY | cut -d\"'\" -f2")
-	if err == nil && out != "" {
-		return strings.TrimSuffix(out, "\n"), nil
+	if out, err := runCmdOutput(c, "crosid"); err == nil {
+		fwLine := firmwareManifestRegexp.FindString(out)
+		if fwLine != "" {
+			return strings.TrimLeft(strings.TrimRight(fwLine, "'"), "FIRMWARE_MANIFEST_KEY='"), nil
+		}
 	}
 	log.Printf("getFirmwareTarget: failed to get FIRMWARE_MANIFEST_KEY from crosid, fallback to use cros_config.")
 	return runCmdOutput(c, "cros_config / name")
