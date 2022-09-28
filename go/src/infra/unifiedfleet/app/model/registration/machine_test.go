@@ -39,6 +39,12 @@ func mockChromeBrowserMachine(id, lab, name string) *ufspb.Machine {
 	}
 }
 
+func mockChromeBrowserMachineWithOwnership(id, lab, name string, ownership *ufspb.OwnershipData) *ufspb.Machine {
+	machine := mockChromeBrowserMachine(id, lab, name)
+	machine.Ownership = ownership
+	return machine
+}
+
 func mockAttachedDevice(id, lab, buildTarget string) *ufspb.Machine {
 	return &ufspb.Machine{
 		Name: id,
@@ -60,6 +66,15 @@ func assertMachineEqual(a *ufspb.Machine, b *ufspb.Machine) {
 		b.GetAttachedDevice().GetBuildTarget())
 }
 
+func assertMachineWithOwnershipEqual(a *ufspb.Machine, b *ufspb.Machine) {
+	if a.GetOwnership() == nil && b.GetOwnership() == nil {
+		return
+	}
+	assertMachineEqual(a, b)
+	So(a.GetOwnership().PoolName, ShouldEqual, b.GetOwnership().PoolName)
+	So(a.GetOwnership().SwarmingInstance, ShouldEqual, b.GetOwnership().SwarmingInstance)
+}
+
 func getMachineNames(machines []*ufspb.Machine) []string {
 	names := make([]string, len(machines))
 	for i, p := range machines {
@@ -75,6 +90,13 @@ func TestCreateMachine(t *testing.T) {
 	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "samus")
 	chromeOSMachine2 := mockChromeOSMachine("", "chromeoslab", "samus")
 	attchedDevice1 := mockAttachedDevice("attached-device-1", "chromeoslab", "goldfish")
+	chromeBrowserMachine1 := mockChromeBrowserMachine("chrome-asset-1", "chromelab", "machine-1")
+
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	chromeBrowserMachineWithOwnership := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	Convey("CreateMachine", t, func() {
 		Convey("Create new os machine", func() {
 			resp, err := CreateMachine(ctx, chromeOSMachine1)
@@ -98,6 +120,11 @@ func TestCreateMachine(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
 		})
+		Convey("Create new browser machine with ownership data - ownership is not saved", func() {
+			resp, err := CreateMachine(ctx, chromeBrowserMachineWithOwnership)
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachine1)
+		})
 	})
 }
 
@@ -107,6 +134,12 @@ func TestUpdateMachine(t *testing.T) {
 	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "samus")
 	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "veyron")
 	chromeBrowserMachine1 := mockChromeBrowserMachine("chrome-asset-1", "chromelab", "machine-1")
+
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	chromeBrowserMachineWithOwnership := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	chromeOSMachine3 := mockChromeOSMachine("", "chromeoslab", "samus")
 	Convey("UpdateMachine", t, func() {
 		Convey("Update existing machine", func() {
@@ -130,6 +163,68 @@ func TestUpdateMachine(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
 		})
+		Convey("Update existing machine - does not update ownership", func() {
+			resp, err := CreateMachine(ctx, chromeBrowserMachine1)
+			So(err, ShouldBeNil)
+			assertMachineEqual(resp, chromeBrowserMachine1)
+
+			resp, err = UpdateMachine(ctx, chromeBrowserMachineWithOwnership)
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachine1)
+			So(resp.GetOwnership(), ShouldBeNil)
+		})
+	})
+}
+
+func TestUpdateMachineOwnership(t *testing.T) {
+	// Tests the ownership update scenarios for a machine
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	ownershipData2 := &ufspb.OwnershipData{
+		PoolName:         "pool2",
+		SwarmingInstance: "test-swarming",
+	}
+	chromeBrowserMachine1 := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
+	chromeBrowserMachine1copy := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
+	chromeBrowserMachine2 := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-2", ownershipData2)
+	chromeBrowserMachine2_oldOwnership := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-2", ownershipData)
+
+	Convey("UpdateMachine", t, func() {
+		Convey("Update existing machine with ownership data", func() {
+			resp, err := CreateMachine(ctx, chromeBrowserMachine1)
+			So(err, ShouldBeNil)
+			assertMachineEqual(resp, chromeBrowserMachine1)
+
+			// Ownership data should be updated
+			resp, err = UpdateMachineOwnership(ctx, resp.Name, ownershipData)
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachine1copy)
+
+			// Regular Update calls should not override ownership data
+			resp, err = UpdateMachine(ctx, chromeBrowserMachine2)
+			So(err, ShouldBeNil)
+			assertMachineEqual(resp, chromeBrowserMachine2)
+
+			resp, err = GetMachine(ctx, "chrome-asset-1")
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachine2_oldOwnership)
+		})
+		Convey("Update non-existing machine with ownership", func() {
+			resp, err := UpdateMachineOwnership(ctx, "dummy", ownershipData)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+		Convey("Update machine with ownership - invalid ID", func() {
+			resp, err := UpdateMachineOwnership(ctx, "", ownershipData)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
 	})
 }
 
@@ -137,6 +232,13 @@ func TestGetMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-3", "chromeoslab", "samus")
+
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	chromeBrowserMachine1 := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
+	chromeBrowserMachinecopy := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	Convey("GetMachine", t, func() {
 		Convey("Get machine by existing ID", func() {
 			resp, err := CreateMachine(ctx, chromeOSMachine1)
@@ -157,6 +259,21 @@ func TestGetMachine(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
+		Convey("Get machine with ownership by existing ID", func() {
+			resp, err := CreateMachine(ctx, chromeBrowserMachine1)
+			So(err, ShouldBeNil)
+			assertMachineEqual(resp, chromeBrowserMachine1)
+			So(resp.GetOwnership(), ShouldBeNil)
+
+			// Ownership data should be updated
+			resp, err = UpdateMachineOwnership(ctx, resp.Name, ownershipData)
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachinecopy)
+
+			resp, err = GetMachine(ctx, "chrome-asset-1")
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachinecopy)
 		})
 	})
 }
@@ -207,6 +324,13 @@ func TestDeleteMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-2", "chromeoslab", "samus")
+
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	chromeBrowserMachine1 := mockChromeBrowserMachineWithOwnership("chrome-asset-3", "chromelab", "machine-1", ownershipData)
+	chromeBrowserMachinecopy := mockChromeBrowserMachineWithOwnership("chrome-asset-3", "chromelab", "machine-1", ownershipData)
 	Convey("DeleteMachine", t, func() {
 		Convey("Delete machine by existing ID", func() {
 			resp, cerr := CreateMachine(ctx, chromeOSMachine2)
@@ -228,6 +352,19 @@ func TestDeleteMachine(t *testing.T) {
 			err := DeleteMachine(ctx, "")
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
+		Convey("Delete machine - with ownershipdata", func() {
+			resp, cerr := CreateMachine(ctx, chromeBrowserMachine1)
+			So(cerr, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachine1)
+
+			// Ownership data should be updated
+			resp, err := UpdateMachineOwnership(ctx, resp.Name, ownershipData)
+			So(err, ShouldBeNil)
+			assertMachineWithOwnershipEqual(resp, chromeBrowserMachinecopy)
+
+			err = DeleteMachine(ctx, "chrome-asset-3")
+			So(err, ShouldBeNil)
 		})
 	})
 }

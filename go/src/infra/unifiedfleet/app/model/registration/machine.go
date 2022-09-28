@@ -46,6 +46,8 @@ type MachineEntity struct {
 	BuildTarget      string   `gae:"build_target"`
 	DeviceType       string   `gae:"device_type"`
 	Phase            string   `gae:"phase"`
+	Pool             string   `gae:"pool"`
+	SwarmingServer   string   `gae:"swarming_server"`
 	// ufspb.Machine cannot be directly used as it contains pointer.
 	Machine []byte `gae:",noindex"`
 }
@@ -84,6 +86,13 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 		deviceType = util.GetDevboardType(p.GetDevboard())
 	}
 
+	var poolName string
+	var swarmingInstance string
+	if p.GetOwnership() != nil {
+		poolName = p.GetOwnership().PoolName
+		swarmingInstance = p.GetOwnership().SwarmingInstance
+	}
+
 	return &MachineEntity{
 		ID:               p.GetName(),
 		SerialNumber:     p.GetSerialNumber(),
@@ -101,6 +110,8 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 		BuildTarget:      buildTarget,
 		DeviceType:       deviceType,
 		Phase:            p.GetChromeosMachine().GetPhase(),
+		Pool:             poolName,
+		SwarmingServer:   swarmingInstance,
 	}, nil
 }
 
@@ -144,6 +155,11 @@ func CreateMachine(ctx context.Context, machine *ufspb.Machine) (*ufspb.Machine,
 // UpdateMachine updates machine in datastore.
 func UpdateMachine(ctx context.Context, machine *ufspb.Machine) (*ufspb.Machine, error) {
 	return putMachine(ctx, machine, true)
+}
+
+// UpdateMachineOwnership updates machine ownership in datastore.
+func UpdateMachineOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData) (*ufspb.Machine, error) {
+	return putMachineOwnership(ctx, id, ownership, true)
 }
 
 // GetMachine returns machine for the given id from datastore.
@@ -283,6 +299,10 @@ func ImportMachines(ctx context.Context, machines []*ufspb.Machine) (*ufsds.OpRe
 	utime := ptypes.TimestampNow()
 	for i, m := range machines {
 		m.UpdateTime = utime
+
+		// Redact ownership data
+		redactMachineOwnership(ctx, m)
+
 		protos[i] = m
 	}
 	return ufsds.Insert(ctx, protos, newMachineEntity, true, true)
@@ -299,6 +319,10 @@ func BatchUpdateMachines(ctx context.Context, machines []*ufspb.Machine) ([]*ufs
 
 func putMachine(ctx context.Context, machine *ufspb.Machine, update bool) (*ufspb.Machine, error) {
 	machine.UpdateTime = ptypes.TimestampNow()
+
+	// Redact ownership data
+	redactMachineOwnership(ctx, machine)
+
 	pm, err := ufsds.Put(ctx, machine, newMachineEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Machine), err
@@ -306,11 +330,45 @@ func putMachine(ctx context.Context, machine *ufspb.Machine, update bool) (*ufsp
 	return nil, err
 }
 
+// Updates the ownership data for an existing machine.
+func putMachineOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData, update bool) (*ufspb.Machine, error) {
+	machine, err := GetMachine(ctx, id)
+	if err != nil {
+		return machine, err
+	}
+	machine.Ownership = ownership
+	machine.UpdateTime = ptypes.TimestampNow()
+	pm, err := ufsds.Put(ctx, machine, newMachineEntity, update)
+	if err == nil {
+		return pm.(*ufspb.Machine), err
+	}
+	return nil, err
+}
+
+// Redacts machine ownership for updates by either changing the ownership to existing values or
+// for new entities setting the ownership to nil as we don't want to allow user updates to these values.
+func redactMachineOwnership(ctx context.Context, machine *ufspb.Machine) {
+	if machine == nil {
+		return
+	}
+	// Redact ownership data
+	existingMachine, err := GetMachine(ctx, machine.Name)
+	if err == nil {
+		machine.Ownership = existingMachine.Ownership
+	} else {
+		machine.Ownership = nil
+	}
+}
+
 func putAllMachine(ctx context.Context, machines []*ufspb.Machine, update bool) ([]*ufspb.Machine, error) {
 	protos := make([]proto.Message, len(machines))
 	updateTime := ptypes.TimestampNow()
 	for i, machine := range machines {
 		machine.UpdateTime = updateTime
+
+		// Redact ownership data
+		redactMachineOwnership(ctx, machine)
+
 		protos[i] = machine
 	}
 	_, err := ufsds.PutAll(ctx, protos, newMachineEntity, update)
