@@ -6,8 +6,8 @@ package kbqpb
 
 import (
 	"cloud.google.com/go/bigquery"
+	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/scalars"
 )
 

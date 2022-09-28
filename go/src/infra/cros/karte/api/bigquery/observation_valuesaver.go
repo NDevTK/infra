@@ -6,8 +6,7 @@ package kbqpb
 
 import (
 	"cloud.google.com/go/bigquery"
-
-	"infra/cros/karte/internal/errors"
+	"go.chromium.org/luci/common/errors"
 )
 
 // Save populates a row, which is a string that points to interface{}'s and produces an insertID, which is, in this case,

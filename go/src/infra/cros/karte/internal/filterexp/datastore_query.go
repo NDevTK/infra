@@ -5,11 +5,10 @@
 package filterexp
 
 import (
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"infra/cros/karte/internal/errors"
 )
 
 // ApplyConditions takes a datastore query and a list of conditions to impose
@@ -18,16 +17,15 @@ import (
 //
 // sample usage:
 //
-//   ApplyConditions(
-//     q,
-//     []Expresson{
-//       NewApplication(
-//        "_==_",
-//        NewIdentifier("a"),
-//        NewConstant("b"),
-//     },
-//   )
-//
+//	ApplyConditions(
+//	  q,
+//	  []Expresson{
+//	    NewApplication(
+//	     "_==_",
+//	     NewIdentifier("a"),
+//	     NewConstant("b"),
+//	  },
+//	)
 func ApplyConditions(q *datastore.Query, conditions []Expression) (*datastore.Query, error) {
 	if conditions == nil {
 		return q, nil
@@ -43,7 +41,7 @@ func ApplyConditions(q *datastore.Query, conditions []Expression) (*datastore.Qu
 		case "_==_":
 			q = q.Eq(r.field, r.value)
 		default:
-			return nil, errors.Errorf("apply conditions: comparator %q not yet implemented", r.comparator)
+			return nil, errors.Reason("apply conditions: comparator %q not yet implemented", r.comparator).Err()
 		}
 	}
 

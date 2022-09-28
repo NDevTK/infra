@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/grpc/prpc"
@@ -17,7 +18,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/scalars"
 )
 

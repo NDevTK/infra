@@ -5,10 +5,10 @@
 package cli
 
 import (
-	"infra/cros/karte/internal/site"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+
+	"infra/cros/karte/internal/site"
 )
 
 // Backfill backfills a single swarming task to Karte.

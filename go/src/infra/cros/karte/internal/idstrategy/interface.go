@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/data/rand/mathrand"
+	"go.chromium.org/luci/common/errors"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/idserialize"
 	"infra/cros/karte/internal/scalars"
 )
@@ -24,7 +24,6 @@ import (
 // - zzzz (current)
 // - zzzy (next)
 // - zzzx (next-next)
-//
 const IDVersion = "zzzz"
 
 // key is an opaque key type for storing things in the context.

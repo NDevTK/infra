@@ -12,11 +12,11 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/client"
 	"infra/cros/karte/internal/commonflags"
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
 

@@ -8,11 +8,10 @@ import (
 	"reflect"
 
 	"github.com/google/cel-go/cel"
+	"go.chromium.org/luci/common/errors"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"infra/cros/karte/internal/errors"
 )
 
 // comparisons are the valid comparisons.
@@ -35,7 +34,8 @@ func isComparison(name string) bool {
 // Alternative #1: an expression is a constant.
 // Alternative #2: an expression is a symbol.
 // Alternative #3: an expression is a fixed function applied to
-//                 a list of arguments.
+//
+//	a list of arguments.
 type Expression interface {
 	// IsExpression is a placeholder method for type safety.
 	isExpression()
@@ -100,7 +100,7 @@ func Parse(program string) ([]Expression, error) {
 		hopper = hopper[0 : len(hopper)-1]
 		v, ok := current.ExprKind.(*exprpb.Expr_CallExpr)
 		if !ok {
-			return nil, errors.Errorf("parse program: unexpected expression kind %q", reflect.TypeOf(current).Name())
+			return nil, errors.Reason("parse program: unexpected expression kind %q", reflect.TypeOf(current).Name()).Err()
 		}
 		c := v.CallExpr
 		switch {
@@ -118,7 +118,7 @@ func Parse(program string) ([]Expression, error) {
 			}
 			out = append(out, item)
 		default:
-			return nil, errors.Errorf("parse program: unsupported top-level function %q", c.Function)
+			return nil, errors.Reason("parse program: unsupported top-level function %q", c.Function).Err()
 		}
 	}
 
@@ -156,8 +156,7 @@ func NewApplication(head string, tail ...Expression) Expression {
 //
 // It is intended to be called in the following way:
 //
-//   hopper, ... = processConjunct(hopper, ...)
-//
+//	hopper, ... = processConjunct(hopper, ...)
 func processConjunct(hopper []*exprpb.Expr, e *exprpb.Expr_Call) ([]*exprpb.Expr, error) {
 	for _, item := range e.Args {
 		if _, ok := item.ExprKind.(*exprpb.Expr_CallExpr); !ok {
@@ -175,10 +174,9 @@ func processConjunct(hopper []*exprpb.Expr, e *exprpb.Expr_Call) ([]*exprpb.Expr
 //
 // It is intended to be called in the following way:
 //
-//   item, err := processComparison(out, ...)
-//   ...
-//   out := append(out, item)
-//
+//	item, err := processComparison(out, ...)
+//	...
+//	out := append(out, item)
 func processComparison(comparisons []Expression, e *exprpb.Expr_Call) (Expression, error) {
 	newExpr := Application{Head: e.Function}
 	for _, item := range e.Args {
@@ -192,7 +190,7 @@ func processComparison(comparisons []Expression, e *exprpb.Expr_Call) (Expressio
 		case *exprpb.Expr_IdentExpr:
 			newExpr.Tail = append(newExpr.Tail, NewIdentifier(v.IdentExpr.Name))
 		default:
-			return nil, errors.Errorf("process comparison: unknown argument type %q", reflect.TypeOf(item).Name())
+			return nil, errors.Reason("process comparison: unknown argument type %q", reflect.TypeOf(item).Name()).Err()
 		}
 	}
 	return &newExpr, nil
@@ -205,6 +203,6 @@ func extractConstantValue(e *exprpb.Constant) (Expression, error) {
 	case *exprpb.Constant_StringValue:
 		return NewConstant(v.StringValue), nil
 	default:
-		return nil, errors.Errorf("extract constant value: type %q not implemented", reflect.TypeOf(v).Name())
+		return nil, errors.Reason("extract constant value: type %q not implemented", reflect.TypeOf(v).Name()).Err()
 	}
 }

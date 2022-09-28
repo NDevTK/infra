@@ -25,7 +25,6 @@ const EventsTableName = "events_table"
 // to the dev instance rather than the prod instance.
 //
 // TODO(gregorynisbet): Add non readonly commands to karte CLI.
-//
 const DefaultCLIKarteServer = DevKarteServer
 
 // DevKarteServer is the dev cloud project for Karte.

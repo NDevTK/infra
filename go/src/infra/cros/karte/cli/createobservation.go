@@ -11,10 +11,10 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/client"
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
 
@@ -56,7 +56,7 @@ func (c *createObservationRun) Run(a subcommands.Application, args []string, env
 // innerRun creates an observation and returns an error.
 func (c *createObservationRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if len(args) != 0 {
-		return fmt.Errorf("positional arguments are not accepted")
+		return errors.Reason("positional arguments are not accepted").Err()
 	}
 	authOptions, err := c.authFlags.Options()
 	if err != nil {

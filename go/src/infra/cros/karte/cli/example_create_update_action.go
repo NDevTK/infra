@@ -7,16 +7,17 @@ package cli
 import (
 	"context"
 	"fmt"
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/client"
-	"infra/cros/karte/internal/errors"
-	"infra/cros/karte/internal/scalars"
-	"infra/cros/karte/internal/site"
 	"time"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
+
+	kartepb "infra/cros/karte/api"
+	"infra/cros/karte/client"
+	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/site"
 )
 
 // ExampleCreateUpdateAction is a CLI command that creates an action on the Karte server.
@@ -50,7 +51,7 @@ func (c *exampleCreateUpdateActionRun) Run(a subcommands.Application, args []str
 // innerRun creates an action and returns an error.
 func (c *exampleCreateUpdateActionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if len(args) != 0 {
-		return fmt.Errorf("positional arguments are not accepted")
+		return errors.Reason("positional arguments are not accepted").Err()
 	}
 	authOptions, err := c.authFlags.Options()
 	if err != nil {

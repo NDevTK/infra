@@ -8,9 +8,7 @@
 // - ListObservations
 // - UpdateAction
 //
-//
 // Karte also has a cron interface.
 //
 // - PersistToBigquery
-//
 package kartepb

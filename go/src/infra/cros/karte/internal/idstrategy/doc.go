@@ -7,5 +7,4 @@
 //
 // ProdStrategy  -- Uses the current time and an entropy source.
 // NaiveStrategy -- Has a global in-memory counter and produces entity1, entity2, ...
-//
 package idstrategy

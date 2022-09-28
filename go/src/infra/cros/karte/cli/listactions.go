@@ -12,11 +12,11 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/client"
 	"infra/cros/karte/internal/commonflags"
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
 
@@ -58,7 +58,7 @@ func (c *listActionsRun) Run(a subcommands.Application, args []string, env subco
 
 func (c *listActionsRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if len(args) > 0 {
-		return fmt.Errorf("list-actions: positional arguments not supported")
+		return errors.Reason("list-actions: positional arguments not supported").Err()
 	}
 	authOptions, err := c.authFlags.Options()
 	if err != nil {

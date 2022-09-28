@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
 
