@@ -7,6 +7,7 @@ package android
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -155,6 +156,30 @@ func scheduleRebootExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// restoreADBVendorKeyExec create adb vendor private key used for testing on the associated host.
+func restoreADBVendorKeyExec(ctx context.Context, info *execs.ExecInfo) error {
+	run := newRunner(info)
+	actionArgs := info.GetActionArgs(ctx)
+	vendorKeyFile := actionArgs.AsString(ctx, "vendor_key_file", "")
+	if vendorKeyFile == "" {
+		return errors.Reason("restore adb vendor key: vendor_key_file is not provided in action args").Err()
+	}
+	vendorKeyContent := actionArgs.AsString(ctx, "vendor_key_content", "")
+	if vendorKeyContent == "" {
+		return errors.Reason("restore adb vendor key: vendor_key_content is not provided in action args").Err()
+	}
+	if _, err := run(ctx, time.Minute, fmt.Sprintf("mkdir -p %s", filepath.Dir(vendorKeyFile))); err != nil {
+		return errors.Annotate(err, "restore adb vendor key").Err()
+	}
+	if _, err := run(ctx, time.Minute, fmt.Sprintf("echo \"%s\" > %s", vendorKeyContent, vendorKeyFile)); err != nil {
+		return errors.Annotate(err, "restore adb vendor key").Err()
+	}
+	if _, err := run(ctx, time.Minute, fmt.Sprintf("chmod 600 %s", vendorKeyFile)); err != nil {
+		return errors.Annotate(err, "restore adb vendor key").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("android_associated_host_ping", pingAssociatedHostExec)
 	execs.Register("android_associated_host_ssh", sshAssociatedHostExec)
@@ -168,4 +193,5 @@ func init() {
 	execs.Register("android_associated_host_has_no_other_locks", hasNoOtherInUseFlagsExec)
 	execs.Register("android_associated_host_unlock", removeInUseFlagExec)
 	execs.Register("android_associated_host_schedule_reboot", scheduleRebootExec)
+	execs.Register("android_associated_host_restore_vendor_key", restoreADBVendorKeyExec)
 }
