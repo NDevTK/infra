@@ -10,6 +10,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -20,6 +22,12 @@ import (
 
 	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
 	"infra/cros/internal/cmd"
+)
+
+const (
+	// Maximum build milestone until which SSP is not supported.
+	// Context: b/248294114
+	MaxBuildMilestoneNotSupportingSSP = 105
 )
 
 // RunTest subcommand: Run a test against one or multiple DUTs.
@@ -124,6 +132,32 @@ func runTestStep(ctx context.Context, r *phosphorus.RunTestRequest) (*autoservRe
 
 	dir := filepath.Join(r.Config.Task.ResultsDir, "autoserv_test")
 
+	requireSSP := !r.GetAutotest().GetIsClientTest()
+
+	// SSP is not supported for builds before a certain milestone.
+	// Context: b/248294114
+	if r.GetAutotest().GetName() == "autoupdate_EndToEndTest" {
+		keyvals := r.GetAutotest().GetKeyvals()
+		build, ok := keyvals["build"]
+		if ok {
+			buildVersionRegex := regexp.MustCompile(`^.*/R(\d{3,})-.*`)
+			matches := buildVersionRegex.FindStringSubmatch(build)
+			if len(matches) > 1 {
+				buildMilestone, err := strconv.Atoi(matches[1])
+				if err != nil {
+					log.Printf("Failed to convert build milestone %s", matches[1])
+				} else if buildMilestone <= MaxBuildMilestoneNotSupportingSSP {
+					log.Printf("Setting requireSSP as false for build milestone %d", buildMilestone)
+					requireSSP = false
+				}
+			} else {
+				log.Printf("Failed to match to regex to acquire build milestone")
+			}
+		} else {
+			log.Printf("`build` not found in keyvals")
+		}
+	}
+
 	t := &atutil.Test{
 		Args:               r.GetAutotest().GetTestArgs(),
 		ClientTest:         r.GetAutotest().GetIsClientTest(),
@@ -133,7 +167,7 @@ func runTestStep(ctx context.Context, r *phosphorus.RunTestRequest) (*autoservRe
 		Keyvals:            r.GetAutotest().GetKeyvals(),
 		Name:               r.GetAutotest().GetDisplayName(),
 		PeerDuts:           r.GetAutotest().GetPeerDuts(),
-		RequireSSP:         !r.GetAutotest().GetIsClientTest(),
+		RequireSSP:         requireSSP,
 		ResultsDir:         dir,
 		SSPBaseImageName:   r.Config.GetTask().GetSspBaseImageName(),
 	}
