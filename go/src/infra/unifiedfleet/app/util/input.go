@@ -941,6 +941,7 @@ func ValidateTags(tags []string) bool {
 
 // StrToUFSAttachedDeviceType refers a map between a string to a UFS defined map.
 var StrToUFSAttachedDeviceType = map[string]string{
+	"unspecified":    "ATTACHED_DEVICE_TYPE_UNSPECIFIED",
 	"apple_phone":    "ATTACHED_DEVICE_TYPE_APPLE_PHONE",
 	"android_phone":  "ATTACHED_DEVICE_TYPE_ANDROID_PHONE",
 	"apple_tablet":   "ATTACHED_DEVICE_TYPE_APPLE_TABLET",
