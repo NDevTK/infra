@@ -198,14 +198,10 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			}
 			expectedFw, err := getAvailableFirmwareVersion(p.c)
 			if err != nil {
-				setError(newOperationError(
-					codes.Aborted,
-					fmt.Sprintf("provision: failed to get available firmware version from the new OS, %s", err),
-					tls.ProvisionDutResponse_REASON_UPDATE_FIRMWARE_FAILED.String()))
-				return
-			}
-			// We expected the firmware on the DUT is updated at this point unless preventReboot is requested.
-			if curFW != expectedFw && !req.PreventReboot {
+				// Forgive the this error since it's not a firmware or updater issue.
+				log.Printf("(Non-critical) Cannot get available firmware version from the DUT, %s", err.Error())
+			} else if curFW != expectedFw && !req.PreventReboot {
+				// We expected the firmware on the DUT is updated at this point unless preventReboot is requested.
 				setError(newOperationError(
 					codes.Aborted,
 					fmt.Sprintf("provision: firmware didn't updated to expected version, current version: %s, expected version: %s", curFW, expectedFw),
@@ -213,10 +209,14 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 				return
 			}
 			if fwChanged {
-				if req.PreventReboot {
-					log.Printf("Firmware updated but prevent reboot is requested, expected firmware(in the next reboot): %s", expectedFw)
+				if expectedFw != "" {
+					if req.PreventReboot {
+						log.Printf("Firmware updated but prevent reboot is requested, expected firmware(in the next reboot): %s", expectedFw)
+					} else {
+						log.Printf("Firmware update completed successfully, it has been updated to %s.", curFW)
+					}
 				} else {
-					log.Printf("Firmware update completed successfully, it has been updated to %s.", curFW)
+					log.Printf("(Non-critical) Firmware updater run success, but unable to verify due to cannot get expected firmware.")
 				}
 			} else {
 				log.Printf("Current system firmware: %s is already matched with OS image.", curFW)
