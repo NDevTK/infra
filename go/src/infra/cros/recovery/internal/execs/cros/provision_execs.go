@@ -22,12 +22,18 @@ import (
 // To prevent reboot of device please provide action exec argument 'no_reboot'.
 // To provide custom image data please use 'os_name', 'os_bucket', 'os_image_path'.
 func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
-	if err != nil {
-		return errors.Annotate(err, "cros provision").Err()
-	}
 	argsMap := info.GetActionArgs(ctx)
-	osImageName := argsMap.AsString(ctx, "os_name", sv.OSImage)
+	osImageName := argsMap.AsString(ctx, "os_name", "")
+	if osImageName == "" {
+		sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+		if err != nil {
+			return errors.Annotate(err, "cros provision").Err()
+		}
+		osImageName = sv.OSImage
+	}
+	if osImageName == "" {
+		return errors.Reason("cros provision: os image not provided").Err()
+	}
 	log.Debugf(ctx, "Used OS image name: %s", osImageName)
 	osImageBucket := argsMap.AsString(ctx, "os_bucket", gsCrOSImageBucket)
 	log.Debugf(ctx, "Used OS bucket name: %s", osImageBucket)
@@ -43,7 +49,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Cros provision will be perform without reboot.")
 	}
 	log.Debugf(ctx, "Cros provision OS image path: %s", req.SystemImagePath)
-	err = info.GetAccess().Provision(ctx, req)
+	err := info.GetAccess().Provision(ctx, req)
 	return errors.Annotate(err, "cros provision").Err()
 }
 
