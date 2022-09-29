@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9e70816_2bd8e4ec",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/schedulingunit/add_scheduling_unit.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-09-29T18:38:00Z",
+      "side": 1,
+      "message": "Please add space before and after the operator \u0027+\u0027 here and in line 51",
+      "range": {
+        "startLine": 54,
+        "startChar": 128,
+        "endLine": 54,
+        "endChar": 129
+      },
+      "revId": "76a9c511e18e4cb62319c7ca1daa608615d2d514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
