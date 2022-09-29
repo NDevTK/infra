@@ -65,6 +65,7 @@ import sys
 from pkg_resources import parse_version
 
 from . import build_platform
+from .builder import BuildDependencies
 
 # This is the NumPy-ecosystem list of platforms that their mac-x64 wheel
 # supports.
@@ -79,6 +80,18 @@ _NUMPY_MAC_x64 = [
 _NUMPY_MAC_ARM = [
     'macosx_11_0_arm64',
 ]
+
+# Override build dependencies for old versions of numpy because old setuptools
+# not working properly on newer version of Mac (crbug/1368909).
+# These dependencies are from numpy v1.23.3.
+_NUMPY_BUILD_DEPS = BuildDependencies(
+    remote=[
+        'setuptools==59.2.0',
+        'wheel==0.37.0',
+        'Cython>=0.29.30,<3.0',
+    ],
+    local=[],
+)
 
 # Workaround for windows to avoid file paths exceeding 260 limit.
 # These samples are not required for building opencv.
@@ -139,6 +152,7 @@ def select_numpy(_system, wheel):
   return SourceOrPrebuilt(
       'numpy',
       '1.21.1',
+      build_deps=_NUMPY_BUILD_DEPS,
       packaged=[
           'mac-arm64-cp38',
       ],
@@ -149,6 +163,7 @@ def select_numpy(_system, wheel):
           'mac-x64-py3',
           'mac-x64-cp38',
       ],
+      patch_version='chromium.1',
       pyversions=['py3'],
   )
 
@@ -158,7 +173,7 @@ SPECS.update({
         'ConditionalWheel',
         ConditionalWheel(
             'numpy',
-            '1.2x.supported.1',
+            '1.2x.supported.2',
             select_numpy,
         ),
     )
@@ -170,7 +185,6 @@ SPECS.update({
 # some platforms, but should fallback to tarballs for platforms which are
 # missing prebuilt wheels.
 from .wheel_wheel import SourceOrPrebuilt
-from .builder import BuildDependencies
 
 _CFFI_DEPENDENCY = SourceOrPrebuilt(
     'cffi',
@@ -179,7 +193,7 @@ _CFFI_DEPENDENCY = SourceOrPrebuilt(
     packaged=(),
 )
 
-_NUMPY_DEPENDENCY = SPECS['numpy-1.2x.supported.1']
+_NUMPY_DEPENDENCY = SPECS['numpy-1.2x.supported.2']
 
 # lxml doesn't emmbed dependencies in the repo. Instead it downloads
 # the dependencies' source code in the build script. We use
@@ -502,42 +516,8 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'numpy',
-            '1.18.5',
-            skip_plat=[
-                'mac-arm64-cp38',
-            ],
-            packaged=[],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.19.2',
-            skip_plat=[
-                'mac-arm64-cp38',
-                'windows-x86-py3',
-                'windows-x64-py3',
-            ],
-            packaged=[],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.19.5',
-            packaged=[],
-            only_plat=[
-                'manylinux-x64-py3',
-                'manylinux-x64-py3.9',
-                'linux-armv6-py3',
-                'linux-arm64-py3',
-                'mac-x64-cp38',
-                'windows-x86-py3',
-                'windows-x64-py3',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
             '1.20.3',
+            build_deps=_NUMPY_BUILD_DEPS,
             packaged=[
                 'mac-x64-cp38',
             ],
@@ -545,22 +525,26 @@ SPECS.update({
             skip_plat=[
                 'mac-arm64-cp38',
             ],
+            patch_version='chromium.1',
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
             'numpy',
             '1.21.1',
+            build_deps=_NUMPY_BUILD_DEPS,
             packaged=[
                 'mac-arm64-cp38',
             ],
             arch_map={
                 'mac-arm64-cp38': _NUMPY_MAC_ARM,
             },
+            patch_version='chromium.1',
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
             'numpy',
             '1.22.1',
+            build_deps=_NUMPY_BUILD_DEPS,
             packaged=[
                 'mac-arm64-cp38',
             ],
@@ -571,6 +555,7 @@ SPECS.update({
                 'linux-armv6-py3',
                 'linux-arm64-py3',
             ],
+            patch_version='chromium.1',
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(

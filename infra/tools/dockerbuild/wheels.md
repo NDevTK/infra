@@ -4142,12 +4142,12 @@ wheel: <
 
 ## **numpy**
 
-### 1.2x.supported.1
+### 1.2x.supported.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.2x.supported.1"
+  version: "version:1.2x.supported.2"
 >
 ```
 
@@ -4161,12 +4161,12 @@ wheel: <
 * *windows-x64-py3*
 * *windows-x86-py3*
 
-### 1.18.5
+### 1.20.3.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.18.5"
+  version: "version:1.20.3.chromium.1"
 >
 ```
 
@@ -4179,64 +4179,12 @@ wheel: <
 * *windows-x64-py3*
 * *windows-x86-py3*
 
-### 1.19.2
+### 1.21.1.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.19.2"
->
-```
-
-
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *manylinux-x64-py3.9*
-
-### 1.19.5
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.19.5"
->
-```
-
-
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *manylinux-x64-py3.9*
-* *windows-x64-py3*
-* *windows-x86-py3*
-
-### 1.20.3
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.20.3"
->
-```
-
-
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *manylinux-x64-py3.9*
-* *windows-x64-py3*
-* *windows-x86-py3*
-
-### 1.21.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.21.1"
+  version: "version:1.21.1.chromium.1"
 >
 ```
 
@@ -4250,12 +4198,12 @@ wheel: <
 * *windows-x64-py3*
 * *windows-x86-py3*
 
-### 1.22.1
+### 1.22.1.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.22.1"
+  version: "version:1.22.1.chromium.1"
 >
 ```
 
