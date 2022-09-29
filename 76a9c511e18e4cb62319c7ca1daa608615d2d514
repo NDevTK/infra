@@ -22,6 +22,30 @@
       },
       "revId": "76a9c511e18e4cb62319c7ca1daa608615d2d514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac5334ae_bfeb53cd",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/schedulingunit/add_scheduling_unit.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2022-09-29T19:37:52Z",
+      "side": 1,
+      "message": "Unfortunately, this is forced by the auto-formatter `gofmt`, even when I try to add the spaces. I\u0027ll have to leave it as is.",
+      "parentUuid": "f9e70816_2bd8e4ec",
+      "range": {
+        "startLine": 54,
+        "startChar": 128,
+        "endLine": 54,
+        "endChar": 129
+      },
+      "revId": "76a9c511e18e4cb62319c7ca1daa608615d2d514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
