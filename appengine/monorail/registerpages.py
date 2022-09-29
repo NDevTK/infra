@@ -149,7 +149,7 @@ class ServletRegistry(object):
     self._RegisterRedirects()
 
     # Register pRPC API routes
-    prpc_server = prpc.FlaskServer(
+    prpc_server = prpc.Server(
         allowed_origins=client_config_svc.GetAllowedOriginsSet())
     api_routes_v0.RegisterApiHandlers(prpc_server, services)
     api_routes_v3.RegisterApiHandlers(prpc_server, services)
