@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 
 	"go.chromium.org/luci/common/errors"
@@ -108,7 +109,16 @@ func CopyFileTo(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) e
 // remote machine. This function can handle both, a single file, as
 // well as a single directory, as the source.
 func copyToHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
-	addr := net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
+	// TODO(b/249617502): Add greater validation for the address here.
+	//
+	// Based on reading the code for net.JoinHostPort, net.JoinHostPort assumes that the
+	// presence of a ":" means that we are dealing with an IPv6 address. That assumption is
+	// not correct here, so, on the sad path where we already have a colon, just do nothing
+	// because we already have a host and a port.
+	addr := req.Resource
+	if ok := strings.Contains(addr, ":"); !ok {
+		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
+	}
 	client, err := pool.Get(addr)
 	if err != nil {
 		return errors.Annotate(err, "copy to helper: failed to get client %q from pool", addr).Err()
