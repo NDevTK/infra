@@ -16,6 +16,24 @@
       "message": "i see the fix in patch 4 but in 7 it was reverted, that is expected?",
       "revId": "28fa2277837e53ae00313464450ecaef70172bf0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef432044_a92608a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-09-29T17:49:40Z",
+      "side": 1,
+      "message": "No, it was a mistake.",
+      "parentUuid": "ea75d88d_7e2adae3",
+      "revId": "28fa2277837e53ae00313464450ecaef70172bf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
