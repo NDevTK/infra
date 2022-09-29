@@ -24,6 +24,9 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
+// defaultSchedulingUnitExposeType is the default label expose type for the SchedulingUnit.
+const defaultSchedulingUnitExposeType = "default"
+
 // AddSchedulingUnitCmd add SchedulingUnit to the system.
 var AddSchedulingUnitCmd = &subcommands.Command{
 	UsageLine: "schedulingunit",
@@ -48,7 +51,7 @@ var AddSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.schedulingUnitType, "type", "all", "Type of SchedulingUnit. "+cmdhelp.SchedulingUnitTypesHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
 		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "primary dut hostname")
-		c.Flags.StringVar(&c.exposeType, "expose-type", "default", "type of labels to expose to scheduling unit"+cmdhelp.SchedulingUnitExposeTypesHelpText)
+		c.Flags.StringVar(&c.exposeType, "expose-type", defaultSchedulingUnitExposeType, "type of labels to expose to scheduling unit"+cmdhelp.SchedulingUnitExposeTypesHelpText)
 		return c
 	},
 }
@@ -173,7 +176,7 @@ func (c *addSchedulingUnit) validateArgs() error {
 		if c.primaryDut != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-primary-dut' cannot be specified at the same time.")
 		}
-		if c.exposeType != "" {
+		if c.exposeType != defaultSchedulingUnitExposeType {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-expose-type' cannot be specified at the same time.")
 		}
 	}
