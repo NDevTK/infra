@@ -73,7 +73,7 @@ class Mpi4py(SourceOrPrebuilt):
             '/usr/cross/lib',
         ])
 
-      interpreter, extra_env = SetupPythonPackages(system, wheel, tdir)
+      interpreter, extra_env = SetupPythonPackages(system, wheel, tdir, tdir)
       cmd = [
           interpreter,
           '-m',

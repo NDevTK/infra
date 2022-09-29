@@ -8,6 +8,7 @@ import os
 import platform
 import re
 import shutil
+import stat
 import subprocess
 import sys
 
@@ -219,7 +220,7 @@ def BuildPackageFromPyPiWheel(system, wheel):
     # Ignore the environment returned by SetupPythonPackages.
     # Setting PYTHONHOME interferes with pip invoking lsb_release_info,
     # and we don't need this anyway since we aren't compiling.
-    interpreter, _ = SetupPythonPackages(system, wheel, tdir)
+    interpreter, _ = SetupPythonPackages(system, wheel, tdir, tdir)
     util.check_run(
         system,
         None,
@@ -290,9 +291,45 @@ def HostCipdPlatform():
 CIPD_PYTHON_LOCK = concurrency.KeyedLock()
 
 
-def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
+def _FixSysconfigPaths(python_dir, wheel_platform, work_root):
+  # For POSIX platforms (everything except Windows), there is a
+  # _sysconfigdata module generated at build time that can be queried
+  # for the various include and lib paths for the Python installation.
+  #
+  # In our 3pp cpython3 packages, we replace these with the string
+  # "[INSTALL_PREFIX]" for easy substitution with the real install
+  # location.
+  if wheel_platform.name.startswith('windows'):
+    # Nothing needs to be done for Windows.
+    return
+
+  # When using docker, translate the Python directory so that it
+  # works inside the container.
+  if wheel_platform.dockcross_base:
+    python_dir = '/work/' + os.path.relpath(python_dir, work_root)
+
+  for config_data in glob.iglob('%s/lib/python*/_sysconfigdata*.py' %
+                                python_dir):
+    output_lines = []
+    with open(config_data, 'r') as f:
+      for line in f:
+        output_lines.append(line.replace('[INSTALL_PREFIX]', python_dir))
+    st = os.stat(config_data)
+    os.chmod(config_data, st.st_mode | stat.S_IWUSR)
+    with open(config_data, 'w') as f:
+      f.writelines(output_lines)
+
+
+# Track which python packages we have installed during this invocation.
+# Each package is reinstalled the first time it is used during each
+# dockerbuild run, to pick up version changes.
+_initialized_cipd_python = set()
+
+
+def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir,
+                              work_root):
   PY_CIPD_VERSION_MAP = {
-      '38': 'version:2@3.8.10.chromium.23',
+      '38': 'version:2@3.8.10.chromium.25',
       '39': 'version:2@3.9.8.chromium.20',
   }
 
@@ -304,13 +341,19 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
   # to ensure we don't try to install the same package to it multiple times
   # concurrently.
   with CIPD_PYTHON_LOCK.get(package_ident):
-    if not os.path.exists(common_dir):
+    if package_ident not in _initialized_cipd_python:
+      if os.path.exists(common_dir):
+        shutil.rmtree(common_dir)
       os.makedirs(common_dir)
       system.cipd.init(common_dir)
 
       cipd_pkg = 'infra/3pp/tools/cpython3/%s' % cipd_platform
       version = PY_CIPD_VERSION_MAP[wheel.pyversion]
       system.cipd.install(cipd_pkg, version, common_dir)
+      # Note: this assumes we use CIPD install_mode 'copy' for the cpython3
+      # package, or else we might be modifying a shared cache copy.
+      _FixSysconfigPaths(common_dir, wheel.plat, work_root)
+      _initialized_cipd_python.add(package_ident)
 
   # For docker builds, we need the Python interpreter in the base working dir
   # for this particular build. Ideally we'd just mount the cipd_python directory
@@ -332,6 +375,8 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
       # Don't copy the '__pycache__' bytecode cache directory, to avoid races
       # between Python processes running out of the common dir and us.
       shutil.copytree(common_dir, pkg_dir, ignore=lambda *_: {'__pycache__'})
+      # We must fix up paths every time the installation is copied.
+      _FixSysconfigPaths(pkg_dir, wheel.plat, work_root)
   else:
     pkg_dir = common_dir
 
@@ -339,13 +384,14 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir):
   return pkg_dir, interpreter
 
 
-def SetupPythonPackages(system, wheel, base_dir):
+def SetupPythonPackages(system, wheel, base_dir, work_root):
   """Installs python package(s) from CIPD and sets up the build environment.
 
   Args:
      system (System): A System object.
      wheel (Wheel): The Wheel object to install a build environment for.
      base_dir (str): The top-level build directory for the wheel.
+     work_root (str): The root working directory, used for dockcross.
 
   Returns: A tuple (path to the python interpreter to run,
                     dict of environment variables to be set).
@@ -361,7 +407,7 @@ def SetupPythonPackages(system, wheel, base_dir):
     host_platform = 'windows-386'
 
   _, interpreter = _InstallCipdPythonPackage(system, host_platform, wheel,
-                                             base_dir)
+                                             base_dir, work_root)
   env = wheel.plat.env.copy()
 
   # If we are cross-compiling, also install the target-platform python and set
@@ -370,7 +416,7 @@ def SetupPythonPackages(system, wheel, base_dir):
   # sysconfigdata module.
   if not wheel.spec.universal and host_platform != wheel.plat.cipd_platform:
     pkg_dir, _ = _InstallCipdPythonPackage(system, wheel.plat.cipd_platform,
-                                           wheel, base_dir)
+                                           wheel, base_dir, work_root)
     env['PYTHONHOME'] = pkg_dir
     # Set _PYTHON_SYSCONFIGDATA_NAME to point to the target-architecture
     # sysconfig module.
@@ -434,7 +480,7 @@ def BuildPackageFromSource(system,
       cmd = ['git', 'apply', '-p1', patch]
       subprocess.check_call(cmd, cwd=build_dir)
 
-    interpreter, extra_env = SetupPythonPackages(system, wheel, build_dir)
+    interpreter, extra_env = SetupPythonPackages(system, wheel, build_dir, tdir)
 
     if dx.platform:
       extra_env.update({

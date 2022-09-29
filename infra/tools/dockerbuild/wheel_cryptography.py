@@ -99,7 +99,7 @@ class Cryptography(Builder):
           env=wheel.plat.env,
       )
 
-      py_binary, env = SetupPythonPackages(system, wheel, tdir)
+      py_binary, env = SetupPythonPackages(system, wheel, tdir, tdir)
       py_binary = dx.workrel(tdir, py_binary)
 
       # Dockcross containers already contain cffi installed on the system.
