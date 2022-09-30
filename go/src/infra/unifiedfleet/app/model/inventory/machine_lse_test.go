@@ -23,12 +23,24 @@ func mockMachineLSE(id string) *ufspb.MachineLSE {
 	}
 }
 
+func mockMachineLSEWithOwnership(id string, ownership *ufspb.OwnershipData) *ufspb.MachineLSE {
+	machine := mockMachineLSE(id)
+	machine.Ownership = ownership
+	return machine
+}
+
 func TestCreateMachineLSE(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSE1 := mockMachineLSE("machineLSE-1")
 	machineLSE2 := mockMachineLSE("")
+
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	machineLSE3Ownership := mockMachineLSEWithOwnership("machineLSE-3", ownershipData)
 	Convey("CreateMachineLSE", t, func() {
 		Convey("Create new machineLSE", func() {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
@@ -46,6 +58,12 @@ func TestCreateMachineLSE(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
+		Convey("Create machineLSE with ownership data - ownership is not saved", func() {
+			resp, err := CreateMachineLSE(ctx, machineLSE3Ownership)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSE3Ownership)
+			So(resp.Ownership, ShouldBeNil)
 		})
 	})
 }
@@ -76,6 +94,56 @@ func TestUpdateMachineLSE(t *testing.T) {
 		})
 		Convey("Update machineLSE - invalid ID", func() {
 			resp, err := UpdateMachineLSE(ctx, machineLSE4)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
+	})
+}
+
+func TestUpdateMachineOwnership(t *testing.T) {
+	// Tests the ownership update scenarios for a machine
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	ownershipData2 := &ufspb.OwnershipData{
+		PoolName:         "pool2",
+		SwarmingInstance: "test-swarming",
+	}
+	machineLSE1 := mockMachineLSEWithOwnership("machineLSE-1", ownershipData)
+	machineLSE2 := mockMachineLSEWithOwnership("machineLSE-1", ownershipData2)
+
+	Convey("UpdateMachine", t, func() {
+		Convey("Update existing machine with ownership data", func() {
+			resp, err := CreateMachineLSE(ctx, machineLSE1)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSE1)
+
+			// Ownership data should be updated
+			resp, err = UpdateMachineLSEOwnership(ctx, resp.Name, ownershipData)
+			So(err, ShouldBeNil)
+			So(resp.GetOwnership(), ShouldResembleProto, ownershipData)
+
+			// Regular Update calls should not override ownership data
+			resp, err = UpdateMachineLSE(ctx, machineLSE2)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSE2)
+
+			resp, err = GetMachineLSE(ctx, "machineLSE-1")
+			So(err, ShouldBeNil)
+			So(resp.GetOwnership(), ShouldResembleProto, ownershipData)
+		})
+		Convey("Update non-existing machine with ownership", func() {
+			resp, err := UpdateMachineLSEOwnership(ctx, "dummy", ownershipData)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+		Convey("Update machine with ownership - invalid ID", func() {
+			resp, err := UpdateMachineLSEOwnership(ctx, "", ownershipData)
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
@@ -157,6 +225,11 @@ func TestDeleteMachineLSE(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	machineLSE1 := mockMachineLSE("machineLSE-1")
+	ownershipData := &ufspb.OwnershipData{
+		PoolName:         "pool1",
+		SwarmingInstance: "test-swarming",
+	}
+	machineLSE2 := mockMachineLSEWithOwnership("machineLSE-2", ownershipData)
 	Convey("DeleteMachineLSE", t, func() {
 		Convey("Delete machineLSE by existing ID", func() {
 			resp, cerr := CreateMachineLSE(ctx, machineLSE1)
@@ -178,6 +251,23 @@ func TestDeleteMachineLSE(t *testing.T) {
 			err := DeleteMachineLSE(ctx, "")
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
+		Convey("Delete machineLSE - with ownershipdata", func() {
+			resp, cerr := CreateMachineLSE(ctx, machineLSE2)
+			So(cerr, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSE2)
+
+			// Ownership data should be updated
+			resp, err := UpdateMachineLSEOwnership(ctx, resp.Name, ownershipData)
+			So(err, ShouldBeNil)
+			So(resp.GetOwnership(), ShouldResembleProto, ownershipData)
+
+			err = DeleteMachineLSE(ctx, "machineLSE-2")
+			So(err, ShouldBeNil)
+			res, err := GetMachineLSE(ctx, "machineLSE-2")
+			So(res, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
 		})
 	})
 }

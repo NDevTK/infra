@@ -48,6 +48,8 @@ type MachineLSEEntity struct {
 	Pools                 []string `gae:"pools"`
 	AssociatedHostname    string   `gae:"associated_hostname"`
 	AssociatedHostPort    string   `gae:"associated_host_port"`
+	Pool                  string   `gae:"pool"`
+	SwarmingServer        string   `gae:"swarming_server"`
 	// ufspb.MachineLSE cannot be directly used as it contains pointer.
 	MachineLSE []byte `gae:",noindex"`
 }
@@ -92,6 +94,14 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		os = ufsds.GetOSIndex(p.GetAttachedDeviceLse().GetOsVersion().GetValue())
 	}
 
+	// Ownership config for browser bots
+	var poolName string
+	var swarmingInstance string
+	if p.GetOwnership() != nil {
+		poolName = p.GetOwnership().PoolName
+		swarmingInstance = p.GetOwnership().SwarmingInstance
+	}
+
 	return &MachineLSEEntity{
 		ID:                    p.GetName(),
 		MachineIDs:            p.GetMachines(),
@@ -113,6 +123,8 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		Pools:                 pools,
 		AssociatedHostname:    p.GetAttachedDeviceLse().GetAssociatedHostname(),
 		AssociatedHostPort:    p.GetAttachedDeviceLse().GetAssociatedHostPort(),
+		Pool:                  poolName,
+		SwarmingServer:        swarmingInstance,
 		MachineLSE:            machineLSE,
 	}, nil
 }
@@ -227,6 +239,11 @@ func CreateMachineLSE(ctx context.Context, machineLSE *ufspb.MachineLSE) (*ufspb
 // UpdateMachineLSE updates machineLSE in datastore.
 func UpdateMachineLSE(ctx context.Context, machineLSE *ufspb.MachineLSE) (*ufspb.MachineLSE, error) {
 	return putMachineLSE(ctx, machineLSE, true)
+}
+
+// UpdateMachineLSEOwnership updates machineLSE ownership in datastore.
+func UpdateMachineLSEOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData) (*ufspb.MachineLSE, error) {
+	return putMachineLSEOwnership(ctx, id, ownership, true)
 }
 
 // GetMachineLSE returns machine for the given id from datastore.
@@ -376,6 +393,10 @@ func BatchUpdateMachineLSEs(ctx context.Context, machineLSEs []*ufspb.MachineLSE
 
 func putMachineLSE(ctx context.Context, machineLSE *ufspb.MachineLSE, update bool) (*ufspb.MachineLSE, error) {
 	machineLSE.UpdateTime = ptypes.TimestampNow()
+
+	// Redact ownership data
+	redactMachineLSEOwnership(ctx, machineLSE)
+
 	pm, err := ufsds.Put(ctx, machineLSE, newMachineLSEEntity, update)
 	if err != nil {
 		return nil, errors.Annotate(err, "put machine LSE").Err()
@@ -388,6 +409,10 @@ func putAllMachineLSE(ctx context.Context, machineLSEs []*ufspb.MachineLSE, upda
 	updateTime := ptypes.TimestampNow()
 	for i, machineLSE := range machineLSEs {
 		machineLSE.UpdateTime = updateTime
+
+		// Redact ownership data
+		redactMachineLSEOwnership(ctx, machineLSE)
+
 		protos[i] = machineLSE
 	}
 	_, err := ufsds.PutAll(ctx, protos, newMachineLSEEntity, update)
@@ -395,6 +420,37 @@ func putAllMachineLSE(ctx context.Context, machineLSEs []*ufspb.MachineLSE, upda
 		return machineLSEs, err
 	}
 	return nil, err
+}
+
+// Updates the ownership data for an existing machineLSE.
+func putMachineLSEOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData, update bool) (*ufspb.MachineLSE, error) {
+	machineLSE, err := GetMachineLSE(ctx, id)
+	if err != nil {
+		return machineLSE, err
+	}
+	machineLSE.Ownership = ownership
+	machineLSE.UpdateTime = ptypes.TimestampNow()
+	pm, err := ufsds.Put(ctx, machineLSE, newMachineLSEEntity, update)
+	if err == nil {
+		return pm.(*ufspb.MachineLSE), err
+	}
+	return nil, err
+}
+
+// Redacts machineLSE ownership for updates by either changing the ownership to existing values or
+// for new entities setting the ownership to nil as we don't want to allow user updates to these values.
+func redactMachineLSEOwnership(ctx context.Context, machineLSE *ufspb.MachineLSE) {
+	if machineLSE == nil {
+		return
+	}
+
+	// Redact ownership data
+	existingMachineLSE, err := GetMachineLSE(ctx, machineLSE.Name)
+	if err == nil {
+		machineLSE.Ownership = existingMachineLSE.Ownership
+	} else {
+		machineLSE.Ownership = nil
+	}
 }
 
 // ImportMachineLSEs creates or updates a batch of machine lses in datastore
@@ -405,6 +461,10 @@ func ImportMachineLSEs(ctx context.Context, lses []*ufspb.MachineLSE) (*ufsds.Op
 		if m.UpdateTime == nil {
 			m.UpdateTime = utime
 		}
+
+		// Redact ownership data
+		redactMachineLSEOwnership(ctx, m)
+
 		protos[i] = m
 	}
 	return ufsds.Insert(ctx, protos, newMachineLSEEntity, true, true)
