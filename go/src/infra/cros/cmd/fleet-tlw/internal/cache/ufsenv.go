@@ -82,10 +82,11 @@ func (e *ufsEnv) fetchCachingSubnets() ([]Subnet, error) {
 		if state := s.GetState(); state != ufsmodels.State_STATE_SERVING {
 			continue
 		}
-		svc, subnets, err := extractBackendInfo(s)
+		svc, err := cachingServiceName(s)
 		if err != nil {
 			return nil, err
 		}
+		subnets := s.GetServingSubnets()
 		for _, s := range subnets {
 			m[s] = append(m[s], svc)
 		}
@@ -102,22 +103,20 @@ func (e *ufsEnv) fetchCachingSubnets() ([]Subnet, error) {
 	return result, nil
 }
 
-// extractBackendInfo extracts the caching service name (http://host:port) and
-// the serving subnets from the data structure returned by UFS.
-func extractBackendInfo(s *ufsmodels.CachingService) (name string, subnets []string, err error) {
-	// The name returned has a prefix of "cachingservice/".
+// cachingServiceName returns a caching service name in format of
+// 'http://host:port'.
+func cachingServiceName(s *ufsmodels.CachingService) (string, error) {
+	// The name ufsmodels.CachingService has a prefix of "cachingservice/".
 	nameParts := strings.Split(s.GetName(), "/")
 	if len(nameParts) != 2 {
-		return "", nil, fmt.Errorf("extract cache backend info: wrong format service name: %q", s.GetName())
+		return "", fmt.Errorf("caching service name: %q isn't in format of 'cachingservice/<name>'", s.GetName())
 	}
 	port := strconv.Itoa(int(s.GetPort()))
 	ip, err := lookupHost(nameParts[1])
 	if err != nil {
-		return "", nil, fmt.Errorf("extract backend info: %s", err)
+		return "", fmt.Errorf("caching service name: %s", err)
 	}
-	name = fmt.Sprintf("http://%s", net.JoinHostPort(ip, port))
-	subnets = s.GetServingSubnets()
-	return name, subnets, nil
+	return fmt.Sprintf("http://%s", net.JoinHostPort(ip, port)), nil
 }
 
 func fetchCachingServicesFromUFS(c ufsapi.FleetClient) ([]*ufsmodels.CachingService, error) {
