@@ -30,13 +30,14 @@ func main() {
 			return logCfg.Use(ctx)
 		},
 		Commands: []*subcommands.Command{
+			cmdCrosTestResult(),
+			cmdGo(),
 			cmdGtest(),
+			cmdGtestJson(),
 			cmdJSON(),
 			cmdSingle(),
-			cmdGo(),
 			cmdTast(),
 			cmdSkylabTestRunner(),
-			cmdGtestJson(),
 
 			{}, // a separator
 			subcommands.CmdHelp,
