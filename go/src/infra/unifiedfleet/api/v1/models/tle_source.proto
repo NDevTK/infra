@@ -72,8 +72,11 @@ message TleSources {
 // TleConverterStandard is the default converter that reads the value directly
 // from a given config path.
 message TleConverterStandard {
-  // If specified, the prefix will be truncated from the label value.
+  // If specified, the prefix will be used to append or truncate from the label
+  // value.
   string prefix = 1;
+  // If true, it specifies append. If false, it specifies truncate.
+  bool append_prefix = 2;
 }
 
 // TleConverterExistence determines a boolean value based on a given proto from
