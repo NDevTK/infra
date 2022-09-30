@@ -289,12 +289,12 @@ class OnlineWindowsCustomization(customization.Customization):
           include=include)
     else:
       disk_image = self._source.get_local_src(drive.input_src)
-      if not str(disk_image).endswith(drive.name):
-        # add file name if it doesn't have it
-        disk_image = disk_image.join(drive.name)
-      # copy the disk image to workdir
-      self.m.file.copy('Staging disk image {}'.format(drive.name), disk_image,
-                       self.m.qemu.disks.join(drive.name))
+      self.m.archive.extract(
+          'Unpack {} to staging dir'.format(drive.name),
+          disk_image,
+          self.m.qemu.disks,
+          include_files=[drive.name],
+          archive_type='zip')
 
   def start_qemu(self, oc):
     ''' start_qemu starts a qemu vm with given config and drives.
@@ -433,6 +433,32 @@ class OnlineWindowsCustomization(customization.Customization):
       raise self.m.step.StepFailure(
           'Unable to shutdown vm {}. Force killed'.format(vm_name))
 
+  def upload_disks(self):
+    """ upload_disks compresses and then uploads the disk image.
+
+    Ideally this should be used minimally to avoid network traffic. But in
+    situations where this is unavoidable. We can upload the disk for use in
+    another build. Unlike offline builder. This only uploads the disk if
+    specified by the config. The disk images are compressed before upload.
+    """
+    owc = self.customization().online_windows_customization
+    if owc and len(owc.online_customizations) > 0:
+      for oc in owc.online_customizations:
+        drives = oc.vm_config.qemu_vm.drives
+        for drive in drives:
+          if drive.output_dests:
+            pkg = self.m.qemu.disks.join(drive.name)
+            # compress disk images as they are pretty big
+            compressed_pkg = self.m.qemu.disks.join('{}.zip'.format(drive.name))
+            self.m.archive.package(pkg).archive(
+                'Archive {} for upload'.format(drive.name), compressed_pkg)
+            for dest in drive.output_dests:
+              self._source.upload_package(dest, compressed_pkg)
+            # delete the compressed disk image
+            self.m.file.remove(
+                'Delete compressed {} after upload'.format(drive.name),
+                compressed_pkg)
+
   def execute_customization(self):
     ''' execute_customization runs all the online customizations included in
     the given customization.
@@ -443,6 +469,8 @@ class OnlineWindowsCustomization(customization.Customization):
           owc.name)):
         for oc in owc.online_customizations:
           self.execute_online_customization(oc)
+    # upload the results of the customization
+    self.upload_disks()
 
   def execute_online_customization(self, oc):
     ''' execute_online_customization performs all the required initialization,

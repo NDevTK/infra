@@ -50,9 +50,11 @@ def GenTests(api):
   SYSTEM = t.VM_DRIVE(
       name='system',
       ip=None,
-      op=dest.Dest(
-          gcs_src=sources.GCSSrc(
-              bucket='chrome-windows-images', source='WIN-OUT/system.img')),
+      op=[
+          dest.Dest(
+              gcs_src=sources.GCSSrc(
+                  bucket='chrome-windows-images', source='WIN-OUT/system.img'))
+      ],
   )
 
   INSTALL = t.VM_DRIVE(
