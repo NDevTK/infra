@@ -128,9 +128,36 @@ func (s *singleTaskDownloader) FindResultsSummary(ctx context.Context, e *extend
 		}
 		entry.Content = buf.String()
 		s.OutputArr = append(s.OutputArr, entry)
+		swarmingTaskID, err := findSwarmingTaskID(strings.Split(entry.Content, "\n"))
+		if err != nil {
+			return errors.Annotate(err, "find results summary").Err()
+		}
+		s.SwarmingTaskID = swarmingTaskID
 		return nil
 	}
 	return errors.Reason("find results summary: no result found").Err()
+}
+
+// findSwarmingTaskID finds the swarming task ID from the contents of the thing.
+func findSwarmingTaskID(contents []string) (string, error) {
+	for i, line := range contents {
+		linum := 1 + i
+		if strings.Contains(line, "swarming") {
+			// Do NOT use a capture group here, that will result in a result set of length two
+			// if there is a successful match.
+			r := regexp.MustCompile(`swarming-[0-9a-f]+`)
+			patterns := r.FindStringSubmatch(line)
+			switch len(patterns) {
+			case 0:
+				continue
+			case 1:
+				return strings.TrimPrefix(patterns[0], "swarming-"), nil
+			default:
+				return "", errors.Reason("find swarming task ID: invalid data with %d patterns %q on line #%d %q", len(patterns), strings.Join(patterns, ","), linum, line).Err()
+			}
+		}
+	}
+	return "", errors.Reason("find swarming task ID: no swarming task ID found").Err()
 }
 
 // FindRecoverLog finds and attaches the recovery log.
