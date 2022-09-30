@@ -22,6 +22,7 @@ type patternMap struct {
 	recoverDUTsPat string
 	lspciPat       string
 	dmesgPat       string
+	messagesPat    string
 }
 
 // values returns the patterns in order.
@@ -31,6 +32,7 @@ func (p patternMap) Values() []string {
 		p.recoverDUTsPat,
 		p.lspciPat,
 		p.dmesgPat,
+		p.messagesPat,
 	}
 }
 
@@ -40,6 +42,7 @@ var patterns = patternMap{
 	recoverDUTsPat: `recover_duts.log\z`,
 	lspciPat:       `sysinfo/lspci\z`,
 	dmesgPat:       `dmesg.gz\z`,
+	messagesPat:    `messages\z`,
 }
 
 // NewSingleTaskDownloader creates an object that manages downloads corresponding to a single swarming task.
@@ -98,6 +101,9 @@ func (s *singleTaskDownloader) ProcessTask(ctx context.Context, e *extendedGSCli
 		return errors.Annotate(err, "process task").Err()
 	}
 	if _, err := s.FindDmesg(ctx, e); err != nil {
+		return errors.Annotate(err, "process task").Err()
+	}
+	if _, err := s.FindMessages(ctx, e); err != nil {
 		return errors.Annotate(err, "process task").Err()
 	}
 	return nil
@@ -244,4 +250,35 @@ func gzipDecodeString(input string) (string, error) {
 		return "", errors.Annotate(err, "gzip decode string: reading string").Err()
 	}
 	return string(output), err
+}
+
+// FindMessages finds and attaches all the message logs.
+func (s *singleTaskDownloader) FindMessages(ctx context.Context, e *extendedGSClient) ([]Entry, error) {
+	var out []Entry
+	if ok := s.Len() > 0; !ok {
+		return nil, errors.Reason("find messages: no results were read").Err()
+	}
+	for _, attrs := range s.downloader.Attrs {
+		var entry Entry
+		name := e.ExpandName(s.bucket, attrs)
+		if ok := regexp.MustCompile(`messages\z`).MatchString(name); !ok {
+			continue
+		}
+		entry.GSURL = name
+		reader, err := e.Bucket(s.bucket).Object(attrs.Name).NewReader(ctx)
+		if err != nil {
+			// If we didn't abandon the loop earlier, then this error really is unrecoverable.
+			// We have to know what's in the file.
+			return nil, errors.Reason("find messages: failed to instantiate reader for %q", name).Err()
+		}
+		buf := new(strings.Builder)
+		if _, err := io.Copy(buf, reader); err != nil {
+			return nil, errors.Annotate(err, "find messages: failed to read contents of %q", name).Err()
+		}
+		entry.Content = buf.String()
+		entry.Name = "messages"
+		s.OutputArr = append(s.OutputArr, entry)
+		out = append(out, entry)
+	}
+	return out, nil
 }
