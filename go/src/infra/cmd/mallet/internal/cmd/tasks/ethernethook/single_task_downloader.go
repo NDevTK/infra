@@ -94,7 +94,7 @@ func (s *singleTaskDownloader) ProcessTask(ctx context.Context, e *extendedGSCli
 	if err := s.downloader.FindPaths(ctx, e); err != nil {
 		return errors.Annotate(err, "process task").Err()
 	}
-	if err := s.FindResultsSummary(ctx, e); err != nil {
+	if _, err := s.FindResultsSummary(ctx, e); err != nil {
 		return errors.Annotate(err, "process task").Err()
 	}
 	if err := s.FindRecoverLog(ctx, e); err != nil {
@@ -115,38 +115,51 @@ func (s *singleTaskDownloader) Len() int {
 }
 
 // FindResultsSummary finds the results_summary.html and records its output.
-func (s *singleTaskDownloader) FindResultsSummary(ctx context.Context, e *extendedGSClient) error {
-	var entry Entry
+//
+// This function modifies s.OutputArr.
+func (s *singleTaskDownloader) FindResultsSummary(ctx context.Context, e *extendedGSClient) ([]Entry, error) {
+	var out []Entry
 	if ok := s.Len() > 0; !ok {
-		return errors.Reason("find results summary: no results were read").Err()
+		return nil, errors.Reason("find results summary: no results were read").Err()
 	}
 	for _, attrs := range s.downloader.Attrs {
 		name := e.ExpandName(s.bucket, attrs)
 		if ok := regexp.MustCompile(`result_summary.html\z`).MatchString(name); !ok {
 			continue
 		}
+		var entry Entry
 		entry.Name = "results_summary"
 		entry.GSURL = name
 		reader, err := e.Bucket(s.bucket).Object(attrs.Name).NewReader(ctx)
 		if err != nil {
 			// If we didn't abandon the loop earlier, then this error really is unrecoverable.
 			// We have to know what's in the file.
-			return errors.Reason("find results summary: failed to instantiate reader for %q", name).Err()
+			return nil, errors.Reason("find results summary: failed to instantiate reader for %q", name).Err()
 		}
 		buf := new(strings.Builder)
 		if _, err := io.Copy(buf, reader); err != nil {
-			return errors.Reason("find results summary: failed to read contents of %q", name).Err()
+			return nil, errors.Reason("find results summary: failed to read contents of %q", name).Err()
 		}
 		entry.Content = buf.String()
 		s.OutputArr = append(s.OutputArr, entry)
 		swarmingTaskID, err := findSwarmingTaskID(strings.Split(entry.Content, "\n"))
 		if err != nil {
-			return errors.Annotate(err, "find results summary").Err()
+			return nil, errors.Annotate(err, "find results summary").Err()
+		}
+		switch {
+		case s.SwarmingTaskID == "" || s.SwarmingTaskID == swarmingTaskID:
+			s.SwarmingTaskID = swarmingTaskID
+		default:
+			return nil, errors.Reason("found two swarming task IDs %q and %q", s.SwarmingTaskID, swarmingTaskID).Err()
 		}
 		s.SwarmingTaskID = swarmingTaskID
-		return nil
+		out = append(out, entry)
 	}
-	return errors.Reason("find results summary: no result found").Err()
+	if len(out) == 0 {
+		return nil, errors.Reason("find results summary: no result found").Err()
+	}
+	s.OutputArr = append(s.OutputArr, out...)
+	return out, nil
 }
 
 // findSwarmingTaskID finds the swarming task ID from the contents of the thing.
