@@ -69,14 +69,15 @@ func getAvailableFirmwareVersion(c *ssh.Client) (string, error) {
 
 // getFirmwareTarget returns firmware target of the DUT, which will be used to as key to fetch expected firmware from manifest.
 func getFirmwareTarget(c *ssh.Client) (string, error) {
-	if out, err := runCmdOutput(c, "crosid"); err == nil {
-		fwLine := firmwareManifestRegexp.FindString(out)
-		if fwLine != "" {
-			return strings.TrimLeft(strings.TrimRight(fwLine, "'"), "FIRMWARE_MANIFEST_KEY='"), nil
-		}
+	out, err := runCmdOutput(c, "crosid")
+	if err != nil {
+		return "", err
 	}
-	log.Printf("getFirmwareTarget: failed to get FIRMWARE_MANIFEST_KEY from crosid, fallback to use cros_config.")
-	return runCmdOutput(c, "cros_config / name")
+	fwLine := firmwareManifestRegexp.FindString(out)
+	if fwLine != "" {
+		return strings.TrimLeft(strings.TrimRight(fwLine, "'"), "FIRMWARE_MANIFEST_KEY='"), nil
+	}
+	return "", fmt.Errorf("getFirmwareTarget: unable to parse FIRMWARE_MANIFEST_KEY from crosid.")
 }
 
 // getCurrentFirmwareVersion read current system firmware version on the DUT.
