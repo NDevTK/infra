@@ -105,14 +105,18 @@ func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm pr
 
 // standardConvert takes a field path and retrieves the value from a proto.
 //
-// standardConvert directly retrieves the value and truncates the value with
-// a predetermined prefix if necessary.
+// standardConvert will do one of 3 things:
+//  1. Return the value retrieved directly
+//  2. Truncate the value based on a prefix
+//  3. Append the value with a predetermined prefix
 func standardConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
 	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
 	if err != nil {
 		return nil, err
 	}
-	if tleSource.GetStandardConverter().GetPrefix() != "" {
+	if tleSource.GetStandardConverter().GetAppendPrefix() && tleSource.GetStandardConverter().GetPrefix() != "" {
+		valsArr = appendPrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
+	} else {
 		valsArr = truncatePrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
 	}
 	return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
@@ -123,6 +127,15 @@ func truncatePrefixForLabelValues(prefix string, valsArr []string) []string {
 	var processed []string
 	for _, v := range valsArr {
 		processed = append(processed, strings.TrimPrefix(v, prefix))
+	}
+	return processed
+}
+
+// appendPrefixForLabelValues returns label values with prefix appended.
+func appendPrefixForLabelValues(prefix string, valsArr []string) []string {
+	var processed []string
+	for _, v := range valsArr {
+		processed = append(processed, fmt.Sprintf("%s%s", prefix, v))
 	}
 	return processed
 }

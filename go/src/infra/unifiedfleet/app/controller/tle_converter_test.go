@@ -41,6 +41,7 @@ func mockMachineLSEWithLabConfigs(name string) *ufspb.MachineLSE {
 									Audio: &chromeosLab.Audio{
 										AudioBox: true,
 									},
+									Carrier: "test-carrier",
 								},
 								Licenses: []*chromeosLab.License{
 									{
@@ -137,6 +138,67 @@ func TestConvert(t *testing.T) {
 			"label-working_bluetooth_btpeer:10",
 		}
 		got, err := Convert(ctx, &da, nil, nil, dutState)
+		if err != nil {
+			t.Fatalf("Convert failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Convert returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+}
+
+func TestStandardConverter(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ctx = useTestingCfg(ctx)
+
+	t.Run("truncate label prefix - happy path", func(t *testing.T) {
+		dutMachinelse := mockMachineLSEWithLabConfigs("lse-1")
+		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+		dutState.ServoUsbState = chromeosLab.HardwareState_HARDWARE_NORMAL
+		daText := `{
+			"id": {
+				"value": "peripheral-servo-usb-state"
+			},
+			"aliases": [
+				"label-servo_usb_state"
+			],
+			"tleSource": {}
+		}`
+		da := parseDutAttribute(t, daText)
+		want := []string{
+			"peripheral-servo-usb-state:NORMAL",
+			"label-servo_usb_state:NORMAL",
+		}
+		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
+		if err != nil {
+			t.Fatalf("Convert failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Convert returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("append prefix to label - happy path", func(t *testing.T) {
+		dutMachinelse := mockMachineLSEWithLabConfigs("lse-1")
+		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+
+		daText := `{
+			"id": {
+				"value": "peripheral-carrier"
+			},
+			"aliases": [
+				"label-carrier"
+			],
+			"tleSource": {}
+		}`
+		da := parseDutAttribute(t, daText)
+		want := []string{
+			"peripheral-carrier:CARRIER_test-carrier",
+			"label-carrier:CARRIER_test-carrier",
+		}
+		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
