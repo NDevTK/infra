@@ -33,7 +33,7 @@ customization = 'add_windows_driver'
 def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
-  custs = api.windows_scripts_executor.process_customizations(custs, {})
+  api.windows_scripts_executor.process_customizations(custs, {})
   api.windows_scripts_executor.download_all_packages(custs)
   api.windows_scripts_executor.execute_customizations(custs)
 

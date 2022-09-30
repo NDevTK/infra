@@ -75,19 +75,19 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     return custs
 
   def process_customizations(self, custs, ctx):
-    """ process_customizations pins all the volatile srcs, generates
-    canonnical configs, filters customizations that need to be executed.
+    """ process_customizations pins all the volatile srcs and generates
+    canonnical configs.
 
     Args:
       * custs: List of customizations from customization.py
       * ctx: dict containing the context for the customization
 
-    Returns list of customizations that can be executed.
+    Returns updated context
     """
     with self.m.step.nest('Process the customizations'):
       self.pin_customizations(custs, ctx)
       self.gen_canonical_configs(custs)
-      return custs
+      return self.update_context(custs, ctx)
 
   def pin_customizations(self, customizations, ctx):
     """ pin_customizations pins all the sources in the customizations
@@ -99,6 +99,20 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     for cust in customizations:
       with self.m.step.nest('Pin resources from {}'.format(cust.name())):
         cust.pin_sources(ctx)
+
+  def update_context(self, custs, ctx):
+    """ update_context returns an updated dict with all the contexts
+    updated
+
+    Args:
+    * custs: List of customizations from customization.py
+    * ctx: Current context
+
+    Returns updated context dict
+    """
+    for cust in custs:
+      ctx.update(cust.context)
+    return ctx
 
   def gen_canonical_configs(self, customizations):
     """ gen_canonical_configs strips all the names in the config and returns
