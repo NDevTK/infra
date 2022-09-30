@@ -18,10 +18,12 @@ import (
 const (
 	// Filter used to find reboot request flags files.
 	// Examples: '/var/lib/servod/somebody_reboot'
-	rebootRequestFindCmd          = "find /var/lib/servod/*_reboot"
-	rebootRequestRemoveAllCmd     = "rm /var/lib/servod/*_reboot"
-	rebootRequestCreateSingleGlob = "touch /var/lib/servod/%d_reboot"
-	rebootRequestRemoveSingleGlob = "rm /var/lib/servod/%d_reboot"
+	// For all the commands below, use `--` for defensiveness and use `-f` so that removing
+	// a nonexistent file doesn't fail.
+	rebootRequestFindCmd          = "find -- /var/lib/servod/*_reboot"
+	rebootRequestRemoveAllCmd     = "rm -f -- /var/lib/servod/*_reboot"
+	rebootRequestCreateSingleGlob = "touch -- /var/lib/servod/%d_reboot"
+	rebootRequestRemoveSingleGlob = "rm -f -- /var/lib/servod/%d_reboot"
 )
 
 // createRebootRequestExec creates reboot flag file request.
