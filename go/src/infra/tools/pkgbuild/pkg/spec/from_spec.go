@@ -8,11 +8,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"net/url"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"infra/libs/cipkg"
@@ -30,92 +31,171 @@ var fromSpecSupport embed.FS
 
 // Load 3pp Spec and convert it into a stdenv generator.
 type SpecLoader struct {
-	directory         fs.FS
-	packagePrefix     string
-	sourceCachePrefix string
+	cipdPackagePrefix     string
+	cipdSourceCachePrefix string
 
-	pkgs map[string]*stdenv.Generator
+	embedSupportFilesDerivation cipkg.Generator
+
+	// Mapping packages's full name to definition.
+	specs map[string]*PackageDef
+	pkgs  map[string]*stdenv.Generator
 }
 
 type SpecLoaderConfig struct {
-	PackagePrefix     string
-	SourceCachePrefix string
+	CIPDPackagePrefix     string
+	CIPDSourceCachePrefix string
 }
 
 func DefaultSpecLoaderConfig() *SpecLoaderConfig {
 	return &SpecLoaderConfig{
-		PackagePrefix:     "",
-		SourceCachePrefix: "sources",
+		CIPDPackagePrefix:     "",
+		CIPDSourceCachePrefix: "sources",
 	}
 }
 
-func NewSpecLoader(dir fs.FS, cfg *SpecLoaderConfig) *SpecLoader {
+func NewSpecLoader(dir fs.FS, cfg *SpecLoaderConfig) (*SpecLoader, error) {
 	if cfg == nil {
 		cfg = DefaultSpecLoaderConfig()
 	}
-	return &SpecLoader{
-		directory:         dir,
-		packagePrefix:     cfg.PackagePrefix,
-		sourceCachePrefix: cfg.SourceCachePrefix,
-		pkgs:              make(map[string]*stdenv.Generator),
+
+	// Copy embedded files
+	fromSpecFS, err := fs.Sub(fromSpecSupport, "from_spec")
+	if err != nil {
+		return nil, err
 	}
+	embedSupportFilesDerivation := &builtins.CopyFiles{
+		Name:  "from_spec_support",
+		Files: fromSpecFS,
+	}
+
+	defs, err := FindPackageDefs(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	specs := make(map[string]*PackageDef)
+	for _, def := range defs {
+		specs[def.FullName()] = def
+	}
+
+	return &SpecLoader{
+		cipdPackagePrefix:     cfg.CIPDPackagePrefix,
+		cipdSourceCachePrefix: cfg.CIPDSourceCachePrefix,
+
+		embedSupportFilesDerivation: embedSupportFilesDerivation,
+
+		specs: specs,
+		pkgs:  make(map[string]*stdenv.Generator),
+	}, nil
 }
 
-func (l *SpecLoader) LoadPackageDef(pkg string) (*PackageDef, error) {
-	return LoadPackageDef(l.directory, pkg)
+// List all loaded specs' full names by alphabetical order.
+func (l *SpecLoader) ListAllByFullName() (names []string) {
+	for name := range l.specs {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return
 }
 
-// FromSpec convert the 3pp spec to stdenv generator.
+// FromSpec converts the 3pp spec to stdenv generator by its full name, which
+// builds the package for running on the cipd host platform.
 // Ideally we should use the Host Platform in BuildContext during the
 // generation. But it's much easier to construct the Spec.Create before
 // generate and call SpecLoader.FromSpec recursively for dependencies.
-func (l *SpecLoader) FromSpec(pkg, host string) (*stdenv.Generator, error) {
-	if g, ok := l.pkgs[pkg]; ok {
+func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Generator, error) {
+	pkgCacheKey := fmt.Sprintf("%s@%s", fullName, hostCipdPlatform)
+	if g, ok := l.pkgs[pkgCacheKey]; ok {
 		if g == nil {
-			return nil, fmt.Errorf("circular dependency detected: %s %s", pkg, host)
+			return nil, fmt.Errorf("circular dependency detected: %s", pkgCacheKey)
 		}
 		return g, nil
 	}
 
 	// Mark the package visited to prevent circular dependency.
 	// Remove the mark if we end up with not updating the result.
-	l.pkgs[pkg] = nil
+	l.pkgs[pkgCacheKey] = nil
 	defer func() {
-		if l.pkgs[pkg] == nil {
-			delete(l.pkgs, pkg)
+		if l.pkgs[pkgCacheKey] == nil {
+			delete(l.pkgs, pkgCacheKey)
 		}
 	}()
 
-	def, err := l.LoadPackageDef(pkg)
-	if err != nil {
-		return nil, err
+	def := l.specs[fullName]
+	if def == nil {
+		return nil, fmt.Errorf("package spec not available: %s", fullName)
 	}
 
 	// Copy files for building from spec
-	defDrv := &builtins.CopyFiles{
-		Name:  fmt.Sprintf("%s_from_spec_def", def.Name),
+	defDerivation := &builtins.CopyFiles{
+		Name:  fmt.Sprintf("%s_from_spec_def", def.DerivationName()),
 		Files: def.Dir,
 	}
-	fromSpecFS, err := fs.Sub(fromSpecSupport, "from_spec")
+
+	// Parse create spec for host
+	create, err := newCreateParser(hostCipdPlatform, def.Spec.GetCreate())
 	if err != nil {
 		return nil, err
 	}
-	fromSpecDrv := &builtins.CopyFiles{
-		Name:  "from_spec_support",
-		Files: fromSpecFS,
+	if err := create.ParseSource(fullName, l.cipdPackagePrefix, l.cipdSourceCachePrefix); err != nil {
+		return nil, err
+	}
+	if err := create.FindPatches(defDerivation); err != nil {
+		return nil, err
+	}
+	if err := create.ParseBuilder(defDerivation); err != nil {
+		return nil, err
+	}
+	if err := create.LoadDependencies(l); err != nil {
+		return nil, err
 	}
 
-	// Basic package info
-	upload := def.Spec.GetUpload()
-	name := upload.GetPkgNameOverride()
-	if name == "" {
-		name = def.Name
+	g := &stdenv.Generator{
+		Name:   def.DerivationName(),
+		Source: create.Source,
+		Dependencies: append([]utilities.BaseDependency{
+			{Type: cipkg.DepsBuildHost, Generator: defDerivation},
+			{Type: cipkg.DepsBuildHost, Generator: l.embedSupportFilesDerivation},
+		}, create.Dependencies...),
+		Env: []string{
+			fmt.Sprintf("patches=%s", strings.Join(create.Patches, string(os.PathListSeparator))),
+			fmt.Sprintf("fromSpecInstall=%s", create.Installer),
+			fmt.Sprintf("_3PP_PLATFORM=%s", hostCipdPlatform),
+			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", platform.CurrentPlatform()),
+		},
+		CacheKey: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
+		Version:  create.Version,
 	}
 
-	// Construct Create from Spec
-	create := &Spec_Create{}
+	if strings.HasPrefix(hostCipdPlatform, "mac-") {
+		// TODO(fancl): Set CROSS_TRIPLE and MACOSX_DEPLOYMENT_TARGET for Mac.
+	}
 
-	for _, c := range def.Spec.GetCreate() {
+	l.pkgs[pkgCacheKey] = g
+	return g, nil
+}
+
+// A parser for Spec_Create spec. It converts the merged create section in the
+// spec to information we need for constructing a stdenv generator.
+type createParser struct {
+	Source       stdenv.Source
+	Version      string
+	Patches      []string
+	Installer    string
+	Dependencies []utilities.BaseDependency
+
+	host   string
+	create *Spec_Create
+}
+
+// Merge create specs for the host platform. Return a parser with the merged
+// spec.
+func newCreateParser(host string, creates []*Spec_Create) (*createParser, error) {
+	p := &createParser{
+		host: host,
+	}
+
+	for _, c := range creates {
 		if c.GetPlatformRe() != "" {
 			matched, err := regexp.MatchString(c.GetPlatformRe(), host)
 			if err != nil {
@@ -126,167 +206,166 @@ func (l *SpecLoader) FromSpec(pkg, host string) (*stdenv.Generator, error) {
 			}
 		}
 
-		proto.Merge(create, c)
+		if p.create == nil {
+			p.create = &Spec_Create{}
+		}
+		proto.Merge(p.create, c)
 	}
 
-	// Fetch source
-	source := create.GetSource()
-
-	var src stdenv.Source
-	switch source.GetMethod().(type) {
-	case *Spec_Create_Source_Git:
-		s := source.GetGit()
-		ref, err := resolveGitRef(s)
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve git ref: %w", err)
-		}
-		src = &stdenv.SourceGit{
-			URL: s.GetRepo(),
-			Ref: ref.Commit,
-
-			CacheKey: path.Join("infra/3pp", l.sourceCachePrefix, "git", gitCachePath(s.GetRepo())) + "?subdir=src",
-			Version:  fmt.Sprintf("2@%s", ref.Tag),
-		}
-	case *Spec_Create_Source_Url:
-		s := source.GetUrl()
-		ext := s.GetExtension()
-		if ext == "" {
-			ext = ".tar.gz"
-		}
-		src = &stdenv.SourceURL{
-			URL:           s.GetDownloadUrl(),
-			Filename:      fmt.Sprintf("raw_source_0%s", ext),
-			HashAlgorithm: builtins.HashIgnore,
-
-			CacheKey: path.Join("infra/3pp", l.sourceCachePrefix, "url", upload.GetPkgPrefix(), name, host),
-			Version:  fmt.Sprintf("2@%s", s.GetVersion()),
-		}
-	case *Spec_Create_Source_Cipd:
-		// source.GetCipd()
-	case *Spec_Create_Source_Script:
-		// source.GetScript()
+	if p.create == nil || p.create.GetUnsupported() == true {
+		return nil, fmt.Errorf("package not available on %s", host)
 	}
 
-	// Get patches
-	var patches []string
+	return p, nil
+}
+
+// Fetch the latest version and convert source section in create to source
+// definition in stdenv. Versions are fetched during the parsing so the source
+// definition can be deterministic.
+// Source may be cached based on CacheKey.
+func (p *createParser) ParseSource(name, packagePrefix, sourceCachePrefix string) error {
+	source := p.create.GetSource()
+
+	s, v, err := func() (stdenv.Source, string, error) {
+		switch source.GetMethod().(type) {
+		case *Spec_Create_Source_Git:
+			s := source.GetGit()
+			ref, err := resolveGitRef(s)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to resolve git ref: %w", err)
+			}
+			return &stdenv.SourceGit{
+				URL: s.GetRepo(),
+				Ref: ref.Commit,
+
+				CacheKey: (&url.URL{
+					Path: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.GetRepo())),
+					RawQuery: url.Values{
+						"subdir": {"src"},
+						"tag":    {fmt.Sprintf("2@%s", ref.Tag)},
+					}.Encode(),
+				}).String(),
+			}, ref.Tag, nil
+		case *Spec_Create_Source_Url:
+			s := source.GetUrl()
+			ext := s.GetExtension()
+			if ext == "" {
+				ext = ".tar.gz"
+			}
+			return &stdenv.SourceURL{
+				URL:           s.GetDownloadUrl(),
+				Filename:      fmt.Sprintf("raw_source_0%s", ext),
+				HashAlgorithm: builtins.HashIgnore,
+
+				CacheKey: (&url.URL{
+					Path: path.Join(packagePrefix, sourceCachePrefix, "url", name, p.host),
+					RawQuery: url.Values{
+						"tag": {fmt.Sprintf("2@%s", s.GetVersion())},
+					}.Encode(),
+				}).String(),
+			}, s.GetVersion(), nil
+		case *Spec_Create_Source_Cipd:
+			// source.GetCipd()
+		case *Spec_Create_Source_Script:
+			// source.GetScript()
+		}
+		return nil, "", fmt.Errorf("unknown source type from spec")
+	}()
+	if err != nil {
+		return err
+	}
+
+	if pv := p.create.GetSource().GetPatchVersion(); pv != "" {
+		v = v + "." + pv
+	}
+	p.Version = v
+	p.Source = s
+
+	return nil
+}
+
+func (p *createParser) FindPatches(drv *builtins.CopyFiles) error {
+	source := p.create.GetSource()
+
+	prefix := fmt.Sprintf("{{.%s}}", drv.Name)
 	for _, pdir := range source.GetPatchDir() {
-		dir, err := fs.ReadDir(def.Dir, pdir)
+		dir, err := fs.ReadDir(drv.Files, pdir)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		prefix := fmt.Sprintf("{{.%s}}", defDrv.Name)
 		for _, d := range dir {
-			patches = append(patches, filepath.Join(prefix, pdir, d.Name()))
+			p.Patches = append(p.Patches, filepath.Join(prefix, pdir, d.Name()))
 		}
 	}
 
-	// Get build commands
-	build := create.GetBuild()
+	return nil
+}
+
+func (p *createParser) ParseBuilder(drv *builtins.CopyFiles) error {
+	build := p.create.GetBuild()
+
 	installArgs := build.GetInstall()
 	if len(installArgs) == 0 {
 		installArgs = []string{"install.sh"}
 	}
-	installArgs[0] = filepath.Join(fmt.Sprintf("{{.%s}}", defDrv.Name), installArgs[0])
-	fromSpecInstall, err := json.Marshal(installArgs)
-	if err != nil {
-		return nil, err
-	}
+	installArgs[0] = filepath.Join(fmt.Sprintf("{{.%s}}", drv.Name), installArgs[0])
 
-	// Generate dependencies
-	deps := []utilities.BaseDependency{
-		{Type: cipkg.DepsBuildHost, Generator: defDrv},
-		{Type: cipkg.DepsBuildHost, Generator: fromSpecDrv},
+	installer, err := json.Marshal(installArgs)
+	if err != nil {
+		return err
 	}
-	for _, dep := range build.GetTool() {
-		g, err := l.FromSpec(dep, platform.CurrentPlatform())
+	p.Installer = string(installer)
+
+	return nil
+}
+
+func (p *createParser) LoadDependencies(l *SpecLoader) error {
+	build := p.create.GetBuild()
+
+	fromSpecByURI := func(dep, host string) (cipkg.Generator, error) {
+		// tools/go117@1.17.10
+		var name, ver string
+		ss := strings.SplitN(dep, "@", 2)
+		name = ss[0]
+		if len(ss) == 2 {
+			ver = ss[1]
+		}
+
+		g, err := l.FromSpec(name, host)
 		if err != nil {
 			return nil, err
 		}
-		deps = append(deps, utilities.BaseDependency{
+		if ver != "" && ver != g.Version {
+			return nil, fmt.Errorf("dependency version mismatch: %s, require: %s, have: %s", dep, ver, g.Version)
+		}
+
+		return g, nil
+	}
+
+	buildPlat := platform.CurrentPlatform()
+	for _, dep := range build.GetTool() {
+		g, err := fromSpecByURI(dep, buildPlat)
+		if err != nil {
+			return err
+		}
+		p.Dependencies = append(p.Dependencies, utilities.BaseDependency{
 			Type:      cipkg.DepsBuildHost,
 			Generator: g,
 		})
 	}
 	for _, dep := range build.GetDep() {
-		g, err := l.FromSpec(dep, host)
+		g, err := fromSpecByURI(dep, p.host)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		deps = append(deps, utilities.BaseDependency{
+		p.Dependencies = append(p.Dependencies, utilities.BaseDependency{
 			Type:      cipkg.DepsHostTarget,
 			Generator: g,
 		})
 	}
 
-	g := &stdenv.Generator{
-		Name:         def.Name,
-		Source:       src,
-		Dependencies: deps,
-		Env: []string{
-			fmt.Sprintf("patches=%s", strings.Join(patches, string(os.PathListSeparator))),
-			fmt.Sprintf("fromSpecInstall=%s", fromSpecInstall),
-			fmt.Sprintf("_3PP_PLATFORM=%s", host),
-		},
-	}
-
-	if strings.HasPrefix(host, "mac-") {
-		// TODO(fancl): Set CROSS_TRIPLE and MACOSX_DEPLOYMENT_TARGET for Mac.
-	}
-
-	l.pkgs[pkg] = g
-	return g, nil
-}
-
-//go:embed resolve_git.py
-var resolveGitScript string
-
-type tagInfo struct {
-	// Regulated semantic versioning tag e.g. 1.2.3
-	// This may not be the corresponding git tag.
-	Tag string
-
-	// Git commit for the tag.
-	Commit string
-}
-
-// resolveGitTag require python3 and git in the PATH.
-func resolveGitRef(git *GitSource) (tagInfo, error) {
-	cmd := exec.Command("python3", "-c", resolveGitScript)
-	cmd.Stderr = os.Stderr
-
-	in, err := cmd.StdinPipe()
-	if err != nil {
-		return tagInfo{}, err
-	}
-	out, err := cmd.StdoutPipe()
-	if err := cmd.Start(); err != nil {
-		return tagInfo{}, err
-	}
-
-	if err := json.NewEncoder(in).Encode(git); err != nil {
-		return tagInfo{}, err
-	}
-	in.Close()
-
-	var info tagInfo
-	if err := json.NewDecoder(out).Decode(&info); err != nil {
-		return tagInfo{}, err
-	}
-	out.Close()
-
-	if err := cmd.Wait(); err != nil {
-		return tagInfo{}, err
-	}
-
-	return info, nil
-}
-
-func gitCachePath(url string) string {
-	url = strings.TrimPrefix(url, "https://chromium.googlesource.com/external/")
-	url = strings.TrimPrefix(url, "https://")
-	url = strings.TrimPrefix(url, "http://")
-	return path.Clean(url)
+	return nil
 }
 
 // Convert CIPD platform to cipkg platform.

@@ -146,6 +146,9 @@ type Generator struct {
 	Source       Source
 	Env          []string
 	Dependencies []utilities.BaseDependency
+
+	CacheKey string
+	Version  string
 }
 
 func (g *Generator) fetchSource() (cipkg.Generator, error) {

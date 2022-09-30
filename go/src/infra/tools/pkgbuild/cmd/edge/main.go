@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"infra/libs/cipkg"
 	"infra/tools/pkgbuild/pkg/stdenv"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
@@ -34,6 +35,10 @@ func main() {
 	}
 	ctx = logging.SetLevel(ctx, app.LoggingLevel)
 
+	if app.Help {
+		os.Exit(0)
+	}
+
 	if err := stdenv.Init(); err != nil {
 		logging.WithError(err).Errorf(ctx, "failed to init stdenv")
 		os.Exit(1)
@@ -45,14 +50,29 @@ func main() {
 		os.Exit(1)
 	}
 
-	for _, name := range app.Packages {
-		pkg, err := b.Build(ctx, name)
+	// Build all packages by default
+	names := app.Packages
+	if len(names) == 0 {
+		names = b.SpecLoader.ListAllByFullName()
+	}
+
+	var pkgs []cipkg.Package
+	for _, name := range names {
+		pkg, err := b.Add(ctx, name)
 		if err != nil {
-			logging.WithError(err).Errorf(ctx, "failed to build %s", name)
+			logging.WithError(err).Errorf(ctx, "failed to add %s", name)
 			os.Exit(1)
 		}
+		pkgs = append(pkgs, pkg)
+	}
 
-		fmt.Println(pkg.Directory()) // (TODO): Upload package here
+	if err := b.BuildAll(ctx); err != nil {
+		logging.WithError(err).Errorf(ctx, "failed to build packages")
+		os.Exit(1)
+	}
+
+	for _, pkg := range pkgs {
+		fmt.Println(pkg.Metadata().CacheKey, pkg.Metadata().Version) // (TODO): Upload package here
 	}
 
 	b.Storage.Prune(ctx, time.Hour*24, 256)

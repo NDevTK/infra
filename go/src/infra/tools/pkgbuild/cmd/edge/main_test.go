@@ -12,7 +12,6 @@ import (
 	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
-	"io/fs"
 	"log"
 	"os"
 	"os/exec"
@@ -49,45 +48,81 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+// TODO(fancl): We should generate all the commands without executing them
+// similar to recipe tests.
 func TestBuildPackagesFromSpec(t *testing.T) {
 	storageDir := t.TempDir()
 
 	ctx := gologger.StdConfig.Use(context.Background())
 	ctx = logging.SetLevel(ctx, logging.Error)
 
-	specs, err := fs.Sub(tests, "tests")
-	if err != nil {
-		t.Fatalf("failed to get test data: %v", err)
-	}
-
-	s, err := utilities.NewLocalStorage(storageDir)
+	storage, err := utilities.NewLocalStorage(storageDir)
 	if err != nil {
 		t.Fatalf("failed to init storage: %v", err)
 	}
 
-	b := &PackageBuilder{
-		Storage: s,
-		Platforms: cipkg.Platforms{
-			Build:  utilities.CurrentPlatform(),
-			Host:   utilities.CurrentPlatform(),
-			Target: utilities.CurrentPlatform(),
-		},
-		CIPDTarget:        platform.CurrentPlatform(),
-		SpecLoader:        spec.NewSpecLoader(specs, nil),
-		BuildTempDir:      filepath.Join(storageDir, "temp"),
-		DerivationBuilder: utilities.NewBuilder(s),
+	loader, err := spec.NewSpecLoader(tests, nil)
+	if err != nil {
+		t.Fatalf("failed to init spec loader: %v", err)
 	}
 
-	Convey("Select platform", t, func() {
-		Convey("Build ninja", func() {
-			_, err := b.Build(ctx, "ninja")
+	Convey("Native platform", t, func() {
+		b := &PackageBuilder{
+			Storage: storage,
+			Platforms: cipkg.Platforms{
+				Build:  utilities.CurrentPlatform(),
+				Host:   utilities.CurrentPlatform(),
+				Target: utilities.CurrentPlatform(),
+			},
+			CIPDTarget:        platform.CurrentPlatform(),
+			SpecLoader:        loader,
+			BuildTempDir:      filepath.Join(storageDir, "temp"),
+			DerivationBuilder: utilities.NewBuilder(storage),
+		}
+
+		Convey("Build packages", func() {
+			_, err := b.Add(ctx, "tools/ninja")
+			So(err, ShouldBeNil)
+			err = b.BuildAll(ctx)
 			So(err, ShouldBeNil)
 		})
 
 		// It takes too long (10+ mins) and downloads code from the internet.
 		// Disable the test until we vendored the code.
 		SkipConvey("Build curl", func() {
-			_, err := b.Build(ctx, "curl")
+			_, err := b.Add(ctx, "static_libs/curl")
+			So(err, ShouldBeNil)
+			err = b.BuildAll(ctx)
+			So(err, ShouldBeNil)
+		})
+	})
+
+	Convey("Cross-compile platform", t, func() {
+		build := utilities.CurrentPlatform()
+		if build.OS() != "linux" || build.Arch() != "amd64" {
+			return
+		}
+
+		host := utilities.NewPlatform("linux", "arm64")
+		cipd := "linux-arm64"
+
+		b := &PackageBuilder{
+			Storage: storage,
+			Platforms: cipkg.Platforms{
+				Build:  build,
+				Host:   host,
+				Target: host,
+			},
+			CIPDTarget:        cipd,
+			SpecLoader:        loader,
+			BuildTempDir:      filepath.Join(storageDir, "temp"),
+			DerivationBuilder: utilities.NewBuilder(storage),
+		}
+
+		Convey("Build packages", func() {
+			_, err := b.Add(ctx, "tools/ninja")
+			So(err, ShouldBeNil)
+			err = b.BuildAll(ctx)
 			So(err, ShouldBeNil)
 		})
 	})

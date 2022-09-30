@@ -49,6 +49,8 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 			{Type: cipkg.DepsBuildHost, Generator: common.XCode},
 			{Type: cipkg.DepsBuildHost, Generator: setup},
 		}, g.Dependencies...),
+		CacheKey: g.CacheKey,
+		Version:  g.Version,
 	}
 	return base.Generate(ctx)
 }

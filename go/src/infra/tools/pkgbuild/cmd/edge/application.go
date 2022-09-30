@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -33,9 +34,14 @@ type Application struct {
 	CIPDService string
 	// (TODO): If true, upload packages to CIPD service.
 	Upload bool
+	// The prefix to use for uploading built packages.
+	CIPDPackagePrefix string
 
-	// (TODO): If true, append additional experimental/ to upload path.
+	// If true, prepend additional experimental/ to upload path.
 	Experiment bool
+
+	// Display help message
+	Help bool
 
 	// List of packages to be built. If empty, build all packages in the pool.
 	Packages []string
@@ -43,35 +49,53 @@ type Application struct {
 
 func (a *Application) Parse(args []string) error {
 	fs := flag.NewFlagSet("pkgbuild", flag.ContinueOnError)
+
 	fs.Var(&a.LoggingLevel, "logging-level", "Logging level for pkgbuild.")
+
 	fs.StringVar(&a.TargetPlatform, "target-platform", a.TargetPlatform, "Target CIPD platform.")
+
 	fs.StringVar(&a.StorageDir, "storage-dir", a.StorageDir, "Required; Local storage directory for build and cache packages.")
 	fs.StringVar(&a.SpecPoolDir, "spec-pool", a.SpecPoolDir, "Required; Spec pool directory for finding 3pp specs.")
+
 	fs.StringVar(&a.CIPDService, "cipd-service", a.CIPDService, "CIPD service URL for downloading and uploading packages.")
 	fs.BoolVar(&a.Upload, "upload", a.Upload, "If upload is true, packages will be uploaded to CIPD.")
+	fs.StringVar(&a.CIPDPackagePrefix, "cipd-package-prefix", a.CIPDPackagePrefix, "Required; The prefix to use for uploading built packages.")
+
 	fs.BoolVar(&a.Experiment, "experiment", a.Experiment, "If experiment is true, packages will be uploaded to experimental/.")
+
+	fs.BoolVar(&a.Help, "help", false, "Display help message.")
+
+	fs.Usage = func() {
+		fmt.Fprint(fs.Output(), "Usage: pkgbuild [OPTION]... [PKG_NAME]...\n")
+		fmt.Fprint(fs.Output(), "Build listed packages. If no package name (e.g. tools/ninja) is provided, build all packages in the pool.\n\n")
+		fmt.Fprint(fs.Output(), "Options:\n")
+		fs.PrintDefaults()
+	}
 
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
+	if a.Help {
+		fs.Usage()
+		return nil
+	}
+
 	if a.StorageDir == "" || a.SpecPoolDir == "" {
 		fs.Usage()
 		return fmt.Errorf("storage-dir and spec-pool are required")
 	}
 
-	a.Packages = fs.Args()
-	if len(a.Packages) == 0 {
-		// TODO(fancl): Support 3pp/ and packages defined in subdir.
-		fs, err := os.ReadDir(a.SpecPoolDir)
-		if err != nil {
-			return err
-		}
-		for _, f := range fs {
-			if f.IsDir() {
-				a.Packages = append(a.Packages, f.Name())
-			}
-		}
+	if a.CIPDPackagePrefix == "" {
+		fs.Usage()
+		return fmt.Errorf("cipd-package-prefix is required")
 	}
+
+	if a.Experiment {
+		a.CIPDPackagePrefix = path.Join("experimental", a.CIPDPackagePrefix)
+	}
+
+	a.Packages = fs.Args()
+
 	return nil
 }
 
@@ -87,6 +111,16 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		return nil, errors.Annotate(err, "failed to parse cipd platform").Err()
 	}
 
+	loader, err := spec.NewSpecLoader(
+		os.DirFS(a.SpecPoolDir),
+		&spec.SpecLoaderConfig{
+			CIPDPackagePrefix: a.CIPDPackagePrefix,
+		},
+	)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to load specs").Err()
+	}
+
 	return &PackageBuilder{
 		Storage: s,
 		Platforms: cipkg.Platforms{
@@ -96,7 +130,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		},
 
 		CIPDTarget: a.TargetPlatform,
-		SpecLoader: spec.NewSpecLoader(os.DirFS(a.SpecPoolDir), nil),
+		SpecLoader: loader,
 
 		BuildTempDir:      filepath.Join(a.StorageDir, "temp"),
 		DerivationBuilder: utilities.NewBuilder(s),
@@ -114,7 +148,11 @@ type PackageBuilder struct {
 	DerivationBuilder *utilities.Builder
 }
 
-func (b *PackageBuilder) Build(ctx context.Context, name string) (cipkg.Package, error) {
+// Add(...) loads 3pp spec by name and convert it into a cipkg.Package. If the
+// 3pp spec depends on other specs, they will also be loaded and added.
+// The package is added to the builder so its content will be available after
+// BuildAll(...) executed.
+func (b *PackageBuilder) Add(ctx context.Context, name string) (cipkg.Package, error) {
 	g, err := b.SpecLoader.FromSpec(name, b.CIPDTarget)
 	if err != nil {
 		return nil, err
@@ -133,15 +171,20 @@ func (b *PackageBuilder) Build(ctx context.Context, name string) (cipkg.Package,
 	}
 	pkg := b.Storage.Add(drv, meta)
 
-	// Build derivations
 	if err := b.DerivationBuilder.Add(pkg); err != nil {
 		return nil, errors.Annotate(err, "failed to add package to builder").Err()
 	}
+
+	return pkg, nil
+}
+
+// BuildAll(...) builds all added packages.
+func (b *PackageBuilder) BuildAll(ctx context.Context) error {
 	if err := os.RemoveAll(b.BuildTempDir); err != nil {
-		return nil, err
+		return err
 	}
 	if err := os.Mkdir(b.BuildTempDir, os.ModePerm); err != nil {
-		return nil, err
+		return err
 	}
 	if err := b.DerivationBuilder.BuildAll(func(p cipkg.Package) error {
 		id := p.Derivation().ID()
@@ -161,8 +204,8 @@ func (b *PackageBuilder) Build(ctx context.Context, name string) (cipkg.Package,
 		logging.Debugf(ctx, "%s", out.String())
 		return nil
 	}); err != nil {
-		return nil, errors.Annotate(err, "failed to build package").Err()
+		return errors.Annotate(err, "failed to build package").Err()
 	}
 
-	return pkg, nil
+	return nil
 }

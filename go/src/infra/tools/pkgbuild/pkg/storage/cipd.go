@@ -91,8 +91,13 @@ func cipdExport(serviceURL string, pkg cipkg.Package) error {
 		rootDir = filepath.Join(rootDir, d)
 	}
 
+	tag := pkg.Derivation().ID()
+	if t := key.Query().Get("tag"); t != "" {
+		tag = t
+	}
+
 	cmd := exec.Command(cipd, "export", "-service-url", serviceURL, "-root", rootDir, "-ensure-file", "-")
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%s version:%s", key.Path, m.Version))
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%s version:%s", key.Path, tag))
 	if err := cmd.Run(); err != nil {
 		return err
 	}
