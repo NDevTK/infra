@@ -70,6 +70,7 @@ TEST_IMAGE = wib.Image(
                                 device=['ide-cd,drive=newWin.iso'],
                                 drives=[
                                     drive.Drive(
+                                        name='WinXP.iso',
                                         input_src=sources.Src(
                                             cipd_src=sources.CIPDSrc(
                                                 package='infra/labs/win10',
@@ -78,7 +79,13 @@ TEST_IMAGE = wib.Image(
                                                 filename='WinXP.iso')),
                                         interface='none',
                                         media='cdrom',
-                                        readonly=True)
+                                        readonly=True),
+                                    drive.Drive(
+                                        name='system.img',
+                                        interface='none',
+                                        media='drive',
+                                        size=1234546,
+                                        filesystem='fat')
                                 ])),
                         win_vm_config=windows_vm.WindowsVMConfig(
                             boot_time=300, shutdown_time=300),
@@ -261,19 +268,18 @@ def GenTests(api):
 
 
   # Test builds scheduled case
-  yield (
-      api.test('basic_scheduled', api.platform('win', 64)) +
-      api.properties(input_pb.Inputs(config_path="test_config")) +
-      t.MOCK_CUST_OUTPUT(
+  yield (api.test('basic_scheduled', api.platform('win', 64)) + api.properties(
+      input_pb.Inputs(config_path="test_config")) + t.MOCK_CUST_OUTPUT(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim), False) +
-      t.MOCK_CUST_OUTPUT(
-          api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win), False) +
-      # mock schedule output to test builds scheduled state
-      api.buildbucket.simulated_schedule_output(
-          BATCH_RESPONSE,
-          step_name='Execute customizations.buildbucket.schedule') +
-      api.post_process(post_process.StatusSuccess) +
-      api.post_process(post_process.DropExpectation))
+         t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
+             .format(key_win), False) +
+         # mock schedule output to test builds scheduled state
+         api.buildbucket.simulated_schedule_output(
+             BATCH_RESPONSE,
+             step_name='Execute customizations.buildbucket.schedule') +
+         api.post_process(post_process.StatusSuccess) +
+         api.post_process(post_process.DropExpectation))
 
   # Test builds not scheduled case
   yield (
@@ -282,8 +288,8 @@ def GenTests(api):
       t.MOCK_CUST_OUTPUT(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim), True) +
       t.MOCK_CUST_OUTPUT(
-          api, 'gs://chrome-gce-images/WIB-WIN/{}.iso'.format(key_win), True) +
-      api.post_process(post_process.StatusSuccess) +
+          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
+              key_win), True) + api.post_process(post_process.StatusSuccess) +
       api.post_process(post_process.DropExpectation))
 
   yield (api.test('run_without_config_path', api.platform('win', 64)) +

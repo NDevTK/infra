@@ -106,16 +106,18 @@ class OfflineWinPECustomization(customization.Customization):
     return self._canon_cust
 
   def get_output(self):
-    """ return the output of executing this config. Doesn't guarantee that the
-    output exists"""
+    """ return the output(s) of executing this config. Doesn't guarantee that the
+    output(s) exists"""
     if self.get_key():
       output = src_pb.GCSSrc(
           bucket='chrome-gce-images',
           source='WIB-WIM/{}.zip'.format(self.get_key()))
-      return dest_pb.Dest(
-          gcs_src=output,
-          tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
-      )
+      return [
+          dest_pb.Dest(
+              gcs_src=output,
+              tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
+          )
+      ]
     return None  # pragma: no cover
 
   @property
@@ -225,7 +227,8 @@ class OfflineWinPECustomization(customization.Customization):
           save=save)
       if save:
         with self.m.step.nest('Upload the output of {}'.format(self.name())):
-          def_dest = self.get_output()
+          # There is only one output for offine winpe build
+          def_dest = self.get_output()[0]
           # upload the output to default bucket for offline_winpe_customization
           self._source.upload_package(def_dest, self._workdir)
           # upload to any custom destinations that might be given
