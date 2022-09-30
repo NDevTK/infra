@@ -105,7 +105,8 @@ class OfflineWinPECustomization(customization.Customization):
       self._canon_cust = cust
     return self._canon_cust
 
-  def get_output(self):
+  @property
+  def outputs(self):
     """ return the output(s) of executing this config. Doesn't guarantee that the
     output(s) exists"""
     if self.get_key():
@@ -121,12 +122,30 @@ class OfflineWinPECustomization(customization.Customization):
     return None  # pragma: no cover
 
   @property
+  def inputs(self):  # pragma: no cover
+    """ inputs returns the input(s) required for this customization.
+
+    inputs here refer to any external refs that might be required for this
+    customization
+    """
+    inputs = []
+    wpec = self._customization.offline_winpe_customization
+    if wpec.image_src.WhichOneof('src'):
+      # Add the image src required to the list
+      inputs.append(wpec.image_src)
+      for off_action in wpec.offline_customization:
+        for action in off_action.actions:
+          # Add all the srcs from actions to the list
+          inputs.extend(helper.get_src_from_action(action))
+    return inputs
+
+  @property
   def context(self):
     """ context returns a dict containing the local_src id mapping to output
     src.
     """
     return {
-        self.id: self._source.dest_to_src(self.get_output()[0])
+        self.id: self._source.dest_to_src(self.outputs[0])
     }  # pragma: no cover
 
   def execute_customization(self):
@@ -228,7 +247,7 @@ class OfflineWinPECustomization(customization.Customization):
       if save:
         with self.m.step.nest('Upload the output of {}'.format(self.name())):
           # There is only one output for offine winpe build
-          def_dest = self.get_output()[0]
+          def_dest = self.outputs[0]
           # upload the output to default bucket for offline_winpe_customization
           self._source.upload_package(def_dest, self._workdir)
           # upload to any custom destinations that might be given

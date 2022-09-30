@@ -218,7 +218,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     """
     exec_customizations = []
     for cust in customizations:
-      outputs = cust.get_output()
+      outputs = cust.outputs
       for output in outputs:
         if output and not self._sources.exists(output):
           # add to executable list if any of the outputs, doesn't exist
