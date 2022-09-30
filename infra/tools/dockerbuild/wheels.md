@@ -5655,18 +5655,6 @@ wheel: <
 
 ## **pyobjc**
 
-### 6.2.2
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pyobjc/${vpython_platform}"
-  version: "version:6.2.2"
->
-```
-
-
-* *mac-x64-cp38*
-
 ### 7.3.chromium.1
 
 ```protobuf
