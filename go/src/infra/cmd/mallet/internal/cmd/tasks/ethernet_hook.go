@@ -7,6 +7,7 @@ package tasks
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
@@ -39,6 +40,7 @@ var EthernetHook = &subcommands.Command{
 	},
 }
 
+// ethernetHookRun is the ethernethook command.
 type ethernetHookRun struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
@@ -130,30 +132,21 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(state.Err, "processing gsURL %q", gsURL).Err()
 	}
 
-	d, err := ethernethook.NewRegexDownloader(
-		c.bucket,
-		&storage.Query{
-			Delimiter:                c.delimiter,
-			Prefix:                   c.prefix,
-			IncludeTrailingDelimiter: true,
-		},
-		[]string{
-			`result_summary.html\z`,
-			`recover_duts.log\z`,
-			`sysinfo/lspci\z`,
-			`dmesg.gz\z`,
-		},
-	)
+	d, err := ethernethook.NewSingleTaskDownloader(c.bucket, c.prefix)
 	if err != nil {
 		return errors.Annotate(err, "initializing").Err()
 	}
 
-	if err := d.FindPaths(ctx, storageClient); err != nil {
+	if err := d.ProcessTask(ctx, storageClient); err != nil {
 		return errors.Annotate(err, "finding paths").Err()
 	}
 
-	for _, objectAttrs := range d.Attrs {
-		fmt.Fprintf(a.GetOut(), "%s\n", storageClient.ExpandName(c.bucket, objectAttrs))
+	for _, value := range d.OutputArr {
+		fmt.Fprintf(a.GetOut(), "%s %q\n", value.Name, value.GSURL)
+		lines := strings.Split(value.Content, "\n")
+		for _, line := range lines {
+			fmt.Fprintf(a.GetOut(), "\t%q\n", line)
+		}
 	}
 
 	return nil
