@@ -64,7 +64,7 @@ var (
 	RacklseprototypeTitle      = []string{"Rack Prototype Name", "PeripheralTypes", "Tags", "UpdateTime"}
 	ChromePlatformTitle        = []string{"Platform Name", "Manufacturer", "Description", "UpdateTime"}
 	VlanTitle                  = []string{"Vlan Name", "CIDR Block", "IP Capacity", "DHCP range", "Description", "State", "Zones", "Reserved IPs", "UpdateTime"}
-	VMTitle                    = []string{"VM Name", "OS Version", "OS Image", "MAC Address", "Zone", "Host", "Vlan", "IP", "State", "DeploymentTicket", "Description", "UpdateTime"}
+	VMTitle                    = []string{"VM Name", "OS Version", "OS Image", "MAC Address", "Zone", "Host", "Vlan", "IP", "State", "DeploymentTicket", "Description", "UpdateTime", "CpuCores", "Memory", "Storage"}
 	RackTitle                  = []string{"Rack Name", "Bbnum", "Zone", "Capacity", "State", "Realm", "UpdateTime"}
 	AttachedDeviceLSETitle     = []string{"Host", "OS Version", "OS Image", "Zone", "Rack", "Machine(s)", "State", "Schedulable", "Associated Hostname", "Associated Host Port", "Description", "UpdateTime"}
 	DevboardLSETitle           = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Manufacturer", "DeviceType", "Model", "Build Target", "State", "Realm", "UpdateTime"} // XXXXXXXXXx
@@ -1563,23 +1563,26 @@ func printAttachedDeviceLSE(m *ufspb.MachineLSE, keysOnly bool) {
 }
 
 // PrintVMs prints the all vms in table form.
-func PrintVMs(res []proto.Message, keysOnly bool) {
+func PrintVMs(res []proto.Message, keysOnly bool, byteFormat string) {
 	vms := make([]*ufspb.VM, len(res))
 	for i, r := range res {
 		vms[i] = r.(*ufspb.VM)
 	}
 	defer tw.Flush()
 	for _, vm := range vms {
-		printVM(vm, keysOnly)
+		printVM(vm, keysOnly, byteFormat)
 	}
 }
 
-func vmOutputStrs(pm proto.Message) []string {
+func vmOutputStrs(pm proto.Message, byteFormat string) []string {
 	m := pm.(*ufspb.VM)
 	var ts string
 	if t, err := ptypes.Timestamp(m.GetUpdateTime()); err == nil {
 		ts = t.Local().Format(timeFormat)
 	}
+	multiple, _ := GetMultipleForByteUnit(byteFormat)
+	memory := float64(m.GetMemory()) / float64(multiple)
+	storage := float64(m.GetStorage()) / float64(multiple)
 	return []string{
 		ufsUtil.RemovePrefix(m.GetName()),
 		m.GetOsVersion().GetValue(),
@@ -1593,16 +1596,19 @@ func vmOutputStrs(pm proto.Message) []string {
 		m.GetDeploymentTicket(),
 		m.GetDescription(),
 		ts,
+		fmt.Sprintf("%d", m.GetCpuCores()),
+		fmt.Sprintf("%g%s", memory, byteFormat),
+		fmt.Sprintf("%g%s", storage, byteFormat),
 	}
 }
 
-func printVM(vm *ufspb.VM, keysOnly bool) {
+func printVM(vm *ufspb.VM, keysOnly bool, byteFormat string) {
 	if keysOnly {
 		fmt.Fprintln(tw, ufsUtil.RemovePrefix(vm.Name))
 		return
 	}
 	var out string
-	for _, s := range vmOutputStrs(vm) {
+	for _, s := range vmOutputStrs(vm, byteFormat) {
 		out += fmt.Sprintf("%s\t", s)
 	}
 	fmt.Fprintln(tw, out)

@@ -24,6 +24,14 @@ var units = map[string]int64{
 	"GiB": 1 << (10 * 3),
 }
 
+// VerifyByteUnit checks that a given byte unit string is mapped to a multiple
+func VerifyByteUnit(s string) error {
+	if _, present := units[s]; !present {
+		return errors.New("Invalid byte unit.")
+	}
+	return nil
+}
+
 // TrimByteString removes whitespace and numeric formatting
 func TrimByteString(s string) string {
 	s = strings.TrimSpace(s)
@@ -54,4 +62,24 @@ func ConvertToBytes(s string) (num int64, err error) {
 	} else {
 		return 0, errors.New("unrecognized unit suffix")
 	}
+}
+
+// GetMultipleForByteUnit takes a byte unit string and returns its respective multiple
+func GetMultipleForByteUnit(s string) (int64, error) {
+	if err := VerifyByteUnit(s); err != nil {
+		return 0, err
+	}
+	return units[s], nil
+}
+
+// ConvertFiltersToBytes converts a slice of byte strings and to their integer forms
+func ConvertFiltersToBytes(fs []string) ([]string, error) {
+	for i, f := range fs {
+		num, err := ConvertToBytes(f)
+		if err != nil {
+			return nil, err
+		}
+		fs[i] = strconv.FormatInt(num, 10)
+	}
+	return fs, nil
 }

@@ -123,8 +123,10 @@ func PrintTSVMachineLSEDeployments(msgs []proto.Message, keysOnly bool) {
 }
 
 // PrintTSVVMs prints the tsv format of vms
-func PrintTSVVMs(msgs []proto.Message, keysOnly bool) {
-	printTSVs(msgs, keysOnly, vmOutputStrs)
+func PrintTSVVMs(msgs []proto.Message, keysOnly bool, byteFormat string) {
+	printTSVs(msgs, keysOnly, func(msg proto.Message) []string {
+		return vmOutputStrs(msg, byteFormat)
+	})
 }
 
 // PrintTSVVlans prints the tsv format of vlans

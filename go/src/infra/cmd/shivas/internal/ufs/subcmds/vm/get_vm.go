@@ -50,6 +50,10 @@ Gets the vm and prints the output in the specified format.`,
 		c.Flags.Var(flag.StringSlice(&c.oses), "os", "Name(s) of an os to filter by. Can be specified multiple times.")
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of a tag to filter by. Can be specified multiple times.")
 		c.Flags.Var(flag.StringSlice(&c.states), "state", "Name(s) of a state to filter by. Can be specified multiple times."+cmdhelp.StateFilterHelpText)
+		c.Flags.Var(flag.StringSlice(&c.cpuCores), "cpu-cores", "Number of cpu cores. Can be specified multiple times.")
+		c.Flags.Var(flag.StringSlice(&c.memory), "memory", "Amount of memory in bytes assigned. Can be specified multiple times. Assumed GB if no units specified. "+cmdhelp.ByteUnitsAcceptedText)
+		c.Flags.Var(flag.StringSlice(&c.storage), "storage", "Disk storage capacity in bytes assigned. Can be specified multiple times. Assumed GB if no units specified. "+cmdhelp.ByteUnitsAcceptedText)
+		c.Flags.StringVar(&c.byteFormat, "byte-format", "GB", "Output format of memory and storage fields. Ignored with -json flag. "+cmdhelp.ByteUnitsAcceptedText)
 		return c
 	},
 }
@@ -61,12 +65,17 @@ type getVM struct {
 	outputFlags site.OutputFlags
 
 	// Filters
-	zones  []string
-	vlans  []string
-	hosts  []string
-	oses   []string
-	tags   []string
-	states []string
+	zones    []string
+	vlans    []string
+	hosts    []string
+	oses     []string
+	tags     []string
+	states   []string
+	cpuCores []string
+	memory   []string
+	storage  []string
+
+	byteFormat string
 
 	pageSize int
 	keysOnly bool
@@ -99,28 +108,48 @@ func (c *getVM) innerRun(a subcommands.Application, args []string, env subcomman
 	})
 	emit := !utils.NoEmitMode(c.outputFlags.NoEmit())
 	full := utils.FullMode(c.outputFlags.Full())
+	if !c.outputFlags.JSON() {
+		if err = utils.VerifyByteUnit(c.byteFormat); err != nil {
+			return err
+		}
+	}
 	var res []proto.Message
 	if len(args) > 0 {
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
-		res, err = utils.BatchList(ctx, ic, ListVMs, c.formatFilters(), c.pageSize, c.keysOnly, full)
+		var filters, err = c.formatFilters()
+		if err != nil {
+			return err
+		}
+		res, err = utils.BatchList(ctx, ic, ListVMs, filters, c.pageSize, c.keysOnly, full)
 	}
 	if err != nil {
 		return err
 	}
-	return utils.PrintEntities(ctx, ic, res, utils.PrintVMsJSON, printVMFull, printVMNormal,
+	return utils.PrintEntities(ctx, ic, res, utils.PrintVMsJSON, c.printVMFull, c.printVMNormal,
 		c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
 }
 
-func (c *getVM) formatFilters() []string {
-	filters := make([]string, 0)
+func (c *getVM) formatFilters() (filters []string, err error) {
+	c.memory, err = utils.ConvertFiltersToBytes(c.memory)
+	if err != nil {
+		return nil, err
+	}
+	c.storage, err = utils.ConvertFiltersToBytes(c.storage)
+	if err != nil {
+		return nil, err
+	}
+
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.ZoneFilterName, c.zones)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.StateFilterName, c.states)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.HostFilterName, c.hosts)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.VlanFilterName, c.vlans)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.OSFilterName, c.oses)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.TagFilterName, c.tags)...)
-	return filters
+	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.CpuCoresFilterName, c.cpuCores)...)
+	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.MemoryFilterName, c.memory)...)
+	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.StorageFilterName, c.storage)...)
+	return filters, nil
 }
 
 func (c *getVM) getSingle(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
@@ -147,16 +176,16 @@ func ListVMs(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageTok
 	return protos, res.GetNextPageToken(), nil
 }
 
-func printVMFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message, tsv bool) error {
-	return printVMNormal(msgs, tsv, false)
+func (c *getVM) printVMFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message, tsv bool) error {
+	return c.printVMNormal(msgs, tsv, false)
 }
 
-func printVMNormal(msgs []proto.Message, tsv, keysOnly bool) error {
+func (c *getVM) printVMNormal(msgs []proto.Message, tsv, keysOnly bool) error {
 	if tsv {
-		utils.PrintTSVVMs(msgs, keysOnly)
+		utils.PrintTSVVMs(msgs, keysOnly, c.byteFormat)
 		return nil
 	}
 	utils.PrintTableTitle(utils.VMTitle, tsv, keysOnly)
-	utils.PrintVMs(msgs, keysOnly)
+	utils.PrintVMs(msgs, keysOnly, c.byteFormat)
 	return nil
 }

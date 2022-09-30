@@ -10,6 +10,28 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func TestVerifyByteUnit(t *testing.T) {
+	Convey("Test Valid Byte Unit String", t, func() {
+		byteUnits := []string{
+			"B",
+			"KiB",
+		}
+		for _, bu := range byteUnits {
+			So(VerifyByteUnit(bu), ShouldBeNil)
+		}
+	})
+	Convey("Test Invalid Byte Unit String", t, func() {
+		byteUnits := []string{
+			"",
+			"mb",
+			"chrome",
+		}
+		for _, bu := range byteUnits {
+			So(VerifyByteUnit(bu), ShouldNotBeNil)
+		}
+	})
+}
+
 func TestTrimByteString(t *testing.T) {
 	Convey("Test Trimming", t, func() {
 		byteStrings := map[string]string{
@@ -51,5 +73,32 @@ func TestConvertToBytes(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(bytes, ShouldEqual, 0)
 		})
+	})
+}
+
+func TestGetMultipleForByteUnit(t *testing.T) {
+	Convey("Test Fetching Multiple for Valid Byte Unit", t, func() {
+		byteUnits := map[string]int64{
+			"B":   1,
+			"KiB": 1024,
+			"MiB": 1024 * 1024,
+		}
+		for k, v := range byteUnits {
+			multiple, err := GetMultipleForByteUnit(k)
+			So(err, ShouldBeNil)
+			So(multiple, ShouldEqual, v)
+		}
+	})
+	Convey("Test Fetching Multiple for Invalid Byte Unit", t, func() {
+		byteUnits := []string{
+			"",
+			"mb",
+			"chrome",
+		}
+		for _, byteUnit := range byteUnits {
+			multiple, err := GetMultipleForByteUnit(byteUnit)
+			So(err, ShouldNotBeNil)
+			So(multiple, ShouldEqual, 0)
+		}
 	})
 }
