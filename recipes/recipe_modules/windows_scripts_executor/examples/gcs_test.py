@@ -36,7 +36,7 @@ key = '9e007120d0ca02d6d82cf2bf23544ba222e9260eded07310393eca73a501842e'
 def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
-  custs = api.windows_scripts_executor.process_customizations(custs)
+  custs = api.windows_scripts_executor.process_customizations(custs, {})
   # check if we need to execute these customizations
   custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)

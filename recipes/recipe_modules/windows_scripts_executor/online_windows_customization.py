@@ -34,18 +34,21 @@ class OnlineWindowsCustomization(customization.Customization):
     self._scratchpad = self.m.path['cleanup'].join(self._name, 'sp')
     self._canon_cust = None
 
-  def pin_sources(self):
-    """ pins the given config by replacing the sources in customization """
+  def pin_sources(self, ctx):
+    """ pins the given config by replacing the sources in customization
+    Args:
+      * ctx: dict containing the context for the customization
+    """
     # pin the input images
     owc = self.customization().online_windows_customization
     for boot in owc.online_customizations:
       for drive in boot.vm_config.qemu_vm.drives:
         if drive.input_src.WhichOneof('src'):
-          drive.input_src.CopyFrom(self._source.pin(drive.input_src))
+          drive.input_src.CopyFrom(self._source.pin(drive.input_src, ctx))
       # pin the refs in the actions
       for online_action in boot.online_actions:
         for action in online_action.actions:
-          helper.pin_src_from_action(action, self._source)
+          helper.pin_src_from_action(action, self._source, ctx)
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to disk"""
@@ -227,15 +230,31 @@ class OnlineWindowsCustomization(customization.Customization):
     """ return the output of executing this config. Doesn't guarantee that the
     output exists"""
     if self.get_key():
-      self.m.step('DEBUG', cmd=[self.get_key(), self._name])
       output = src_pb.GCSSrc(
           bucket='chrome-gce-images',
           source='WIB-WIN/{}.iso'.format(self.get_key()))
       return dest_pb.Dest(
           gcs_src=output,
-          tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
-      )
+          tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))})
     return None  # pragma: no cover
+
+  @property
+  def context(self):  # pragma: no cover
+    """ context returns a dict containing the map to image id to output dest
+    """
+    outputs = {}
+    if self.get_key():
+      owc = self.customization().online_windows_customization
+      for boot in owc.online_customizations:
+        for drive in boot.vm_config.qemu_vm.drives:
+          if not drive.readonly:
+            key = customization.NAME_SEP.join([self.id, boot.name, drive.name])
+            outputs[key] = src_pb.Src(
+                gcs_src=src_pb.GCSSrc(
+                    bucket='chrome-gce-images',
+                    source='WIB-ONLINE-CACHE/{}-{}'.format(
+                        self.get_key(), drive.name)))
+    return outputs
 
   def process_disks(self, drive, include=None):
     ''' process_disks processes the disk and prepares them to be used on a VM.

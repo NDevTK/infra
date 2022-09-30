@@ -31,7 +31,7 @@ PROPERTIES = wib.Image
 def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
-  api.windows_scripts_executor.process_customizations(custs)
+  api.windows_scripts_executor.process_customizations(custs, {})
   api.windows_scripts_executor.download_all_packages(custs)
 
 

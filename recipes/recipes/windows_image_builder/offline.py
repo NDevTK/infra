@@ -144,7 +144,7 @@ def RunSteps(api, inputs):
     custs.extend(api.windows_scripts_executor.init_customizations(config))
 
   # process all the customizations (pin artifacts, generate hash)
-  api.windows_scripts_executor.process_customizations(custs)
+  api.windows_scripts_executor.process_customizations(custs, {})
   # Get the list of customizations that need to be executed
   custs = api.windows_scripts_executor.filter_executable_customizations(custs)
 

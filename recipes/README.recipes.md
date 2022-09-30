@@ -1142,7 +1142,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#225)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#227)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
@@ -1150,14 +1150,14 @@ custs.
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#236)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#238)(self, custs):**
 
 Executes the windows image builder user config.
 
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#210)(self, customizations):**
+&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#212)(self, customizations):**
 
 filter_executable_customizations generates a list of customizations
 that need to be executed.
@@ -1165,7 +1165,7 @@ that need to be executed.
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#101)(self, customizations):**
+&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#103)(self, customizations):**
 
 gen_canonical_configs strips all the names in the config and returns
 individual configs containing one customization per image.
@@ -1250,7 +1250,7 @@ Example:
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#246)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#248)(self, custs):**
 
 get_executable_config takes list of customizations and returns a list
 of wib.Image proto objects that can be used to trigger other builders
@@ -1271,20 +1271,22 @@ list of customizations
 Args:
   * config: wib.Image proto config
 
-&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#91)(self, customizations):**
+&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#92)(self, customizations, ctx):**
 
 pin_customizations pins all the sources in the customizations
 
 Args:
   * customizations: List of Customizations object from customizations.py
+  * ctx: dict containing the context for the customization
 
-&mdash; **def [process\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#77)(self, custs):**
+&mdash; **def [process\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#77)(self, custs, ctx):**
 
 process_customizations pins all the volatile srcs, generates
 canonnical configs, filters customizations that need to be executed.
 
 Args:
   * custs: List of customizations from customization.py
+  * ctx: dict containing the context for the customization
 
 Returns list of customizations that can be executed.
 ### *recipe_modules* / [windows\_sdk](/recipes/recipe_modules/windows_sdk)

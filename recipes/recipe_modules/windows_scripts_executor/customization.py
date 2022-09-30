@@ -6,6 +6,8 @@ from . import add_windows_driver
 
 from PB.recipes.infra.windows_image_builder import windows_image_builder as wib
 
+NAME_SEP = '-'
+
 
 class Customization(object):
   """ Base customization class. Provides support for pinning and executing
@@ -54,6 +56,11 @@ class Customization(object):
   def image(self):
     """ image returns wib.Image object representing self"""
     return self._image
+
+  @property
+  def id(self):
+    """ id returns the identifier for this customization"""
+    return NAME_SEP.join([self.image().name, self._name])
 
   def set_key(self, key):
     """ set_key is used to set the identification keys for the customization
