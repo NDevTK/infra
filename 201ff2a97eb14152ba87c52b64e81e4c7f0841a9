@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ebfcaf13_32ebfc8e",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-09-30T17:16:06Z",
+      "side": 1,
+      "message": "It would be nice to create a function that wraps this logic starting from 166 to 222, but feel free to do it as a followup.\n\nAs if this is a function now, we can technically return as soon as we know FW did not change + would remove the extra nested `if` checks.",
+      "parentUuid": "8b553184_eb506eb8",
+      "range": {
+        "startLine": 176,
+        "startChar": 3,
+        "endLine": 176,
+        "endChar": 37
+      },
+      "revId": "201ff2a97eb14152ba87c52b64e81e4c7f0841a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "23e01ab8_7e071196",
         "filename": "go/src/infra/cros/tlslib/provision.go",
         "patchSetId": 1
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "Same as above.",
       "parentUuid": "23e01ab8_7e071196",
+      "range": {
+        "startLine": 202,
+        "startChar": 15,
+        "endLine": 202,
+        "endChar": 16
+      },
+      "revId": "201ff2a97eb14152ba87c52b64e81e4c7f0841a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2714d49e_31ca1793",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2022-09-30T17:16:06Z",
+      "side": 1,
+      "message": "Done, I guess stdout prints don\u0027t need the prefix",
+      "parentUuid": "5ef8a99b_0365e6f3",
       "range": {
         "startLine": 202,
         "startChar": 15,
