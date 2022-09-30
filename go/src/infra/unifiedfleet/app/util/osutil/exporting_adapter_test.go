@@ -265,6 +265,30 @@ var labstationLSE = ufspb.MachineLSE{
 	},
 }
 
+var devboardLSE = ufspb.MachineLSE{
+	Name:     "test_devboard_host",
+	Hostname: "test_devboard_host",
+	Machines: []string{"test_devboard"},
+	Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+		ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+			ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+				DeviceLse: &ufspb.ChromeOSDeviceLSE{
+					Device: &ufspb.ChromeOSDeviceLSE_Devboard{
+						Devboard: &chromeosLab.Devboard{
+							Pools: []string{"devboard_main"},
+							Servo: &chromeosLab.Servo{
+								ServoHostname: "test_servo",
+								ServoPort:     9999,
+								ServoSerial:   "test_servo_serial",
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
 var labstationDevConfig = device.Config{
 	Id: &device.ConfigId{
 		PlatformId: &device.PlatformId{
@@ -787,5 +811,21 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, strLabstation)
 		})
+	})
+
+	Convey("Verify devboard v2 => v1", t, func() {
+		Convey("Pool is set", func() {
+			extDevboard := ufspb.ChromeOSDeviceData{
+				LabConfig:           &devboardLSE,
+				Machine:             &labstationMachine,
+				DeviceConfig:        &labstationDevConfig,
+				ManufacturingConfig: &labstationManufacturingconfig,
+				DutState:            nil,
+			}
+			d, err := AdaptToV1DutSpec(&extDevboard)
+			So(err, ShouldBeNil)
+			So(d.GetCommon().GetLabels().GetSelfServePools(), ShouldResemble, []string{"devboard_main"})
+		})
+
 	})
 }

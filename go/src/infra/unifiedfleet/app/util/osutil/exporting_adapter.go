@@ -549,6 +549,9 @@ func AdaptToV1DutSpec(data *ufspb.ChromeOSDeviceData) (dut *inventory.DeviceUnde
 	if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
 		return adaptV2LabstationToV1DutSpec(data)
 	}
+	if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDevboard() != nil {
+		return adaptV2DevboardToV1DutSpec(data)
+	}
 	panic("We should never reach here!")
 }
 
@@ -695,6 +698,68 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.De
 	setDutState(labels, data.GetDutState())
 	labels.Variant = nil
 	setDutPools(labels, l.GetPools())
+	id := machine.GetName()
+	hostname := lse.GetName()
+	deviceUnderTest := &inventory.DeviceUnderTest{
+		Common: &inventory.CommonDeviceSpecs{
+			Id:           &id,
+			SerialNumber: &sn,
+			Hostname:     &hostname,
+			Attributes:   attrs,
+			Labels:       labels,
+		},
+	}
+	return deviceUnderTest, nil
+}
+
+func adaptV2DevboardToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnderTest, error) {
+	lse := data.GetLabConfig()
+	machine := data.GetMachine()
+	devboard := lse.GetChromeosMachineLse().GetDeviceLse().GetDevboard()
+	servo := devboard.GetServo()
+	sn := machine.GetSerialNumber()
+	var attrs attributes
+	attrs.append("serial_number", sn)
+
+	var devboardType inventory.SchedulableLabels_DevboardType
+	if machine.GetDevboard() != nil {
+		if andreiBoard := machine.GetDevboard().GetAndreiboard(); andreiBoard != nil {
+			attrs.append("devboard_type", "andreiboard")
+			attrs.append("ultradebug_serial", andreiBoard.GetUltradebugSerial())
+			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_ANDREIBOARD
+		}
+		if icetower := machine.GetDevboard().GetIcetower(); icetower != nil {
+			attrs.append("devboard_type", "icetower")
+			attrs.append("fingerprint_id", icetower.GetFingerprintId())
+			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_ICETOWER
+		}
+	}
+
+	labels := &inventory.SchedulableLabels{
+		DevboardType: &devboardType,
+	}
+	setDutPools(labels, devboard.GetPools())
+	setDutState(labels, data.GetDutState())
+
+	if servo != nil && servo.GetServoHostname() != "" {
+		// handle servo attributes
+		attrs.
+			append("servo_host", servo.GetServoHostname()).
+			append("servod_docker", servo.GetDockerContainerName()).
+			append("servo_port", fmt.Sprintf("%v", servo.GetServoPort())).
+			append("servo_serial", servo.GetServoSerial()).
+			append("servo_type", servo.GetServoType()).
+			append("servo_setup", servo.GetServoSetup().String()[len("SERVO_SETUP_"):]).
+			append("servo_fw_channel", servo.GetServoFwChannel().String()[len("SERVO_FW_"):])
+
+		// handle servo labels
+		labels.Peripherals = &inventory.Peripherals{}
+		p := labels.Peripherals
+		servoType := servo.GetServoType()
+		p.ServoType = &servoType
+		p.ServoComponent = servo.GetServoComponent()
+		setServoTopology(p, servo.GetServoTopology())
+	}
 	id := machine.GetName()
 	hostname := lse.GetName()
 	deviceUnderTest := &inventory.DeviceUnderTest{
