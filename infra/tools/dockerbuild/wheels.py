@@ -571,14 +571,16 @@ SPECS.update({
                 local=[
                     _NUMPY_DEPENDENCY,
                 ]),
-            packaged=(),
+            packaged=[
+                'linux-arm64-py3',
+            ],
             skip_plat=[
                 'linux-armv6-py3',
-                'linux-arm64-py3',
             ],
             patch_version='chromium.4',
             pyversions=['py3'],
             src_filter=lambda path: not _OPENCV_SRC_RE.match(path),
+            arch_map={'linux-arm64-py3': ['manylinux2014_aarch64']},
         ),
         SourceOrPrebuilt(
             'pandas',
