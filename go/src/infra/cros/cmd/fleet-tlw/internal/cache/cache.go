@@ -36,10 +36,14 @@ func NewFrontend(env Environment) *Frontend {
 	return &Frontend{env: env}
 }
 
-// AssignBackend assigns a healthy backend to the request from `dutAddr` on
+// AssignBackend assigns a healthy backend to the request from `dutName` on
 // `filename`.
 // This function is concurrency safe.
-func (f *Frontend) AssignBackend(dutAddr, filename string) (string, error) {
+func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
+	dutAddr, err := lookupHost(dutName)
+	if err != nil {
+		return "", fmt.Errorf("assign backend to %q: %s", dutName, err)
+	}
 	// Get cache backends serving the DUT subnet.
 	subnet, ok := f.findSubnet(net.ParseIP(dutAddr))
 	if !ok {

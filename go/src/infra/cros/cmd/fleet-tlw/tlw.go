@@ -107,7 +107,7 @@ func (s *tlwServer) ExposePortToDut(ctx context.Context, req *tls.ExposePortToDu
 	}
 	localService := net.JoinHostPort(callerIP, strconv.Itoa(int(localServicePort)))
 	if req.GetRequireRemoteProxy() {
-		exposedAddr, exposedPort, err := s.exposePortUsingProxy(addr, localService)
+		exposedAddr, exposedPort, err := s.exposePortUsingProxy(dutName, localService)
 		if err != nil {
 			return nil, status.Errorf(codes.Aborted, "Error setting up SSH tunnel to proxy: %s", err)
 		}
@@ -126,7 +126,7 @@ func (s *tlwServer) ExposePortToDut(ctx context.Context, req *tls.ExposePortToDu
 	}, nil
 }
 
-func (s *tlwServer) exposePortUsingProxy(dutAddr, localService string) (string, int32, error) {
+func (s *tlwServer) exposePortUsingProxy(dutName, localService string) (string, int32, error) {
 	// Use cache.Frontend here since we are depending on the Virtual IPs of
 	// the caching backends.
 	// TODO(crbug/1145811) Refactor the code to create a new package
@@ -136,7 +136,7 @@ func (s *tlwServer) exposePortUsingProxy(dutAddr, localService string) (string, 
 	// define their own logic to select one from them.
 
 	// Pass a random string so we can get an random proxy server.
-	cachingURL, err := s.cFrontend.AssignBackend(dutAddr, strconv.Itoa(rand.Int()))
+	cachingURL, err := s.cFrontend.AssignBackend(dutName, strconv.Itoa(rand.Int()))
 	if err != nil {
 		return "", 0, err
 	}
@@ -188,23 +188,18 @@ func (s *tlwServer) CacheForDut(ctx context.Context, req *tls.CacheForDutRequest
 	if dutName == "" {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("CacheForDut: unsupported DutName %s in request", dutName))
 	}
-	addr, err := lookupHost(dutName)
-	if err != nil {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("CacheForDut: lookup IP of %q: %s", dutName, err.Error()))
-	}
-	log.Printf("CacheForDut: the IP of %q is %q", dutName, addr)
 	op := s.lroMgr.NewOperation()
-	go s.cache(context.TODO(), parsedURL, addr, op.Name)
+	go s.cache(context.TODO(), parsedURL, dutName, op.Name)
 	return op, status.Error(codes.OK, "Started: CacheForDut Operation.")
 }
 
 // cache implements the logic for the CacheForDut method and runs as a goroutine.
-func (s *tlwServer) cache(ctx context.Context, parsedURL *url.URL, addr, opName string) {
+func (s *tlwServer) cache(ctx context.Context, parsedURL *url.URL, dutName, opName string) {
 	log.Printf("CacheForDut: Started Operation = %v", opName)
 
 	path := fmt.Sprintf("%s%s", parsedURL.Host, parsedURL.Path)
 	// TODO (guocb): return a url.URL instead of string.
-	cs, err := s.cFrontend.AssignBackend(addr, path)
+	cs, err := s.cFrontend.AssignBackend(dutName, path)
 	if err != nil {
 		log.Printf("CacheForDut: %s", err)
 		if err := s.lroMgr.SetError(opName, status.New(codes.FailedPrecondition, err.Error())); err != nil {
