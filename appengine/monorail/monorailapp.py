@@ -16,7 +16,7 @@ import logging
 import webapp2
 from werkzeug.middleware import dispatcher
 
-from components import endpoints_flask
+from components import endpoints_webapp2
 import gae_ts_mon
 
 import flaskregisterpages
@@ -52,5 +52,5 @@ app = dispatcher.DispatcherMiddleware(
         '/_ah': flask_regist.RegisterAHUrl(services),
     })
 
-endpoints = endpoints_flask.api_server(
+endpoints = endpoints_webapp2.api_server(
     [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])
