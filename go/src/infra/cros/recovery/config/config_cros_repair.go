@@ -229,10 +229,6 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verify that device has python on it.",
 			},
-			Conditions: []string{
-				// TODO(b/232854289): remove when closed the bug.
-				"Is not Flex device",
-			},
 			Dependencies: []string{
 				"Internal storage is responsive",
 			},
