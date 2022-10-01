@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 """Pushes a trivial CL to Gerrit to verify git authentication works on LUCI."""
+import json
+from recipe_engine import post_process
 
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
@@ -41,11 +43,29 @@ def RunSteps(api):
     api.step('push for review',
              ['git', 'push', 'origin', 'HEAD:refs/for/refs/heads/main'])
 
+  #TODO(yuanjunh@): remove it after finish testing
+  # Make sure the build.output.properties is larger than 1MB.
+  with api.step.nest('set output properties') as step:
+    step.properties['int'] = 1
+    step.properties['boo'] = True
+    step.properties['small_str'] = "abc"
+    step.properties['array'] = ["a", "b"]
+
+    large_obj = {}
+    large_val = '''
+    largeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    largeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    '''
+    for i in range(0, 10000):
+      large_obj['prop%d' % i] = {
+          'val': large_val,
+      }
+    step.properties['large_obj'] = json.dumps(large_obj)
+
 
 def GenTests(api):
-  yield (
-      api.test('linux') +
-      api.platform.name('linux') +
-      api.properties.generic(
-          buildername='test_builder',
-          mastername='test_master'))
+  yield (api.test('linux') + api.platform.name('linux') +
+         api.properties.generic(
+             buildername='test_builder', mastername='test_master') +
+         api.post_check(post_process.StatusSuccess) +
+         api.post_process(post_process.DropExpectation))
