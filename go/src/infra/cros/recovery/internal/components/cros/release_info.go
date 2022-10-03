@@ -24,8 +24,8 @@ const (
 	releaseBuilderPath     = "CHROMEOS_RELEASE_BUILDER_PATH"
 )
 
-// ExtractValueFromleaseInfo reads release info and extract value by provided key.
-func ExtractValueFromleaseInfo(ctx context.Context, run components.Runner, log logger.Logger, key string) (string, error) {
+// ExtractValueFromLeaseInfo reads release info and extract value by provided key.
+func ExtractValueFromLeaseInfo(ctx context.Context, run components.Runner, log logger.Logger, key string) (string, error) {
 	extactValueCommand := fmt.Sprintf(releaseExtactValueGlob, key)
 	output, err := run(ctx, time.Minute, extactValueCommand)
 	if err != nil {
@@ -47,7 +47,7 @@ func ExtractValueFromleaseInfo(ctx context.Context, run components.Runner, log l
 
 // ReleaseBoard reads release board info from lsb-release.
 func ReleaseBoard(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
-	board, err := ExtractValueFromleaseInfo(ctx, run, log, releaseBoardKey)
+	board, err := ExtractValueFromLeaseInfo(ctx, run, log, releaseBoardKey)
 	if err != nil {
 		return "", errors.Annotate(err, "release %q", releaseBoardKey).Err()
 	}
@@ -57,7 +57,7 @@ func ReleaseBoard(ctx context.Context, run components.Runner, log logger.Logger)
 
 // ReleaseTrack reads release track info from lsb-release.
 func ReleaseTrack(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
-	track, err := ExtractValueFromleaseInfo(ctx, run, log, releaseTrackKey)
+	track, err := ExtractValueFromLeaseInfo(ctx, run, log, releaseTrackKey)
 	if err != nil {
 		return "", errors.Annotate(err, "release %q", releaseTrackKey).Err()
 	}
@@ -67,7 +67,7 @@ func ReleaseTrack(ctx context.Context, run components.Runner, log logger.Logger)
 
 // ReleaseTrack reads release track info from lsb-release.
 func ReleaseBuildPath(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
-	buildPath, err := ExtractValueFromleaseInfo(ctx, run, log, releaseBuilderPath)
+	buildPath, err := ExtractValueFromLeaseInfo(ctx, run, log, releaseBuilderPath)
 	if err != nil {
 		return "", errors.Annotate(err, "release %q", releaseBuilderPath).Err()
 	}
