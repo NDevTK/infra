@@ -26,18 +26,31 @@ func (ei *ExecInfo) Versioner() components.Versioner {
 }
 
 // Cros return version info for request Chrome OS device.
-func (v *versioner) Cros(ctx context.Context, resource string) (*components.CrosVersionInfo, error) {
-	r, err := v.a.Version(ctx, &tlw.VersionRequest{
-		Resource: resource,
-		Type:     tlw.VersionRequest_CROS,
-	})
+// Deprecated. please use GetVersion.
+func (v *versioner) Cros(ctx context.Context, resource string) (*components.VersionInfo, error) {
+	res, err := v.GetVersion(ctx, components.VersionDeviceCros, resource)
+	return res, errors.Annotate(err, "cros version").Err()
+}
+
+// GetVersion returns version info for the requested device.
+func (v *versioner) GetVersion(ctx context.Context, deviceType components.VersionDeviceType, resource string) (*components.VersionInfo, error) {
+	req := &tlw.VersionRequest{Resource: resource}
+	switch deviceType {
+	case components.VersionDeviceCros:
+		req.Type = tlw.VersionRequest_CROS
+	case components.VersionDeviceWifiRouter:
+		req.Type = tlw.VersionRequest_WIFI_ROUTER
+	default:
+		return nil, errors.Reason("get version: device type is not supported").Err()
+	}
+	r, err := v.a.Version(ctx, req)
 	if err != nil {
-		return nil, errors.Annotate(err, "cros version").Err()
+		return nil, errors.Annotate(err, "get version").Err()
 	}
 	if len(r.GetValue()) < 1 {
-		return nil, errors.Reason("cros version: no version received").Err()
+		return nil, errors.Reason("get version: no version received").Err()
 	}
-	res := &components.CrosVersionInfo{}
+	res := &components.VersionInfo{}
 	if v, ok := r.GetValue()["os_image"]; ok {
 		res.OSImage = v
 	}

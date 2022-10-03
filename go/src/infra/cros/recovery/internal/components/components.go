@@ -34,15 +34,28 @@ type Servod interface {
 	Port() int
 }
 
-// CrosVersionInfo holds information for ChromeOS devices.
-type CrosVersionInfo struct {
+// VersionInfo holds information for the device.
+type VersionInfo struct {
 	OSImage   string
 	FwImage   string
 	FwVersion string
 }
 
+// VersionDeviceType
+type VersionDeviceType string
+
+const (
+	// Version for ChromeOS devices.
+	VersionDeviceCros VersionDeviceType = "cros"
+	// Version for Wifi Router devices.
+	VersionDeviceWifiRouter VersionDeviceType = "wifi_router"
+)
+
 // Versioner defines the interface to receive versions information per request.
 type Versioner interface {
 	// Cros return version info for request Chrome OS device.
-	Cros(ctx context.Context, resource string) (*CrosVersionInfo, error)
+	// Deprecated. please use GetVersion.
+	Cros(ctx context.Context, resource string) (*VersionInfo, error)
+	// GetVersion return version info for the requested device.
+	GetVersion(ctx context.Context, deviceType VersionDeviceType, resource string) (*VersionInfo, error)
 }
