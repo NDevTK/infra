@@ -35,7 +35,6 @@ type Args struct {
 
 	WorkerConfig *config.Config_SkylabWorker
 	ParentTaskID string
-	Deadline     time.Time
 }
 
 // Run runs an execution until success.
@@ -57,7 +56,6 @@ func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.
 				ParentTaskID:        args.ParentTaskID,
 				ParentBuildID:       args.Request.GetBuild().GetId(),
 				RequestUID:          constructRequestUID(args.Request.GetBuild().GetId(), t),
-				Deadline:            args.Deadline,
 				StatusUpdateChannel: r.GetConfig().GetTestRunner().GetBbStatusUpdateChannel(),
 			},
 			r.RequestParams,

@@ -9,9 +9,7 @@ package args
 import (
 	"context"
 	"testing"
-	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/kylelemons/godebug/pretty"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -413,42 +411,6 @@ func TestBuildKeyval(t *testing.T) {
 				So(test.GetAutotest(), ShouldNotBeNil)
 				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
 				So(test.GetAutotest().Keyvals["build"], ShouldEqual, "foo-build")
-			})
-		})
-	})
-}
-
-func TestDeadline(t *testing.T) {
-	Convey("Given a request that specifies a deadline", t, func() {
-		ctx := context.Background()
-		ts, _ := time.Parse(time.RFC3339, "2020-02-27T12:47:42Z")
-		Convey("when generating a test runner request", func() {
-			g := Generator{
-				Invocation: basicInvocation(),
-				Params:     &test_platform.Request_Params{},
-				Deadline:   ts,
-			}
-			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			Convey("the deadline is set correctly.", func() {
-				So(ptypes.TimestampString(got.Deadline), ShouldEqual, "2020-02-27T12:47:42Z")
-			})
-		})
-	})
-}
-
-func TestNoDeadline(t *testing.T) {
-	Convey("Given a request that does not specify a deadline", t, func() {
-		ctx := context.Background()
-		Convey("when generating a test runner request", func() {
-			g := Generator{
-				Invocation: basicInvocation(),
-				Params:     &test_platform.Request_Params{},
-			}
-			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			Convey("the deadline should not be set.", func() {
-				So(got.Deadline, ShouldBeNil)
 			})
 		})
 	})

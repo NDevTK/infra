@@ -7,8 +7,6 @@ package execution
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"infra/cmd/cros_test_platform/internal/execution/args"
 	"infra/cmd/cros_test_platform/internal/execution/build"
 	"infra/cmd/cros_test_platform/internal/execution/response"
@@ -48,7 +46,6 @@ type TaskSetConfig struct {
 	ParentTaskID        string
 	ParentBuildID       int64
 	RequestUID          string
-	Deadline            time.Time
 	StatusUpdateChannel *config.Config_PubSub
 }
 
@@ -78,7 +75,6 @@ func NewRequestTaskSet(
 			ParentTaskID:        tc.ParentTaskID,
 			ParentBuildID:       tc.ParentBuildID,
 			ParentRequestUID:    tc.RequestUID,
-			Deadline:            tc.Deadline,
 			StatusUpdateChannel: tc.StatusUpdateChannel,
 			Experiments:         buildInstance.GetInput().GetExperiments(),
 			GerritChanges:       buildInstance.GetInput().GetGerritChanges(),

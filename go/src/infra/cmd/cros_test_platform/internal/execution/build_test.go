@@ -14,7 +14,6 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-	"time"
 
 	"infra/cmd/cros_test_platform/internal/execution"
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
@@ -360,7 +359,6 @@ func runWithBuildAccumulator(ctx context.Context, skylab trservice.Client, ba *b
 			LogDogHost:  "foo-logdog-host",
 		},
 		ParentTaskID: "foo-parent-task-id",
-		Deadline:     time.Now().Add(time.Hour),
 	}
 	return execution.Run(ctx, skylab, args)
 }

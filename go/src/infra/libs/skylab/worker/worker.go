@@ -27,7 +27,6 @@ const isolatedOutdirMagicVal = "${ISOLATED_OUTDIR}"
 type Command struct {
 	Actions    string
 	ClientTest bool
-	Deadline   time.Time
 	Keyvals    map[string]string
 	// LogDogAnnotationURL can be set automatically with Env.
 	LogDogAnnotationURL string
@@ -55,9 +54,6 @@ func (c *Command) Args() []string {
 	}
 	if c.ClientTest {
 		args = append(args, "-client-test")
-	}
-	if !c.Deadline.IsZero() {
-		args = append(args, "-deadline", stiptime(c.Deadline))
 	}
 	if c.Keyvals != nil {
 		b, err := json.Marshal(c.Keyvals)

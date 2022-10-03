@@ -668,7 +668,6 @@ func runWithParams(ctx context.Context, skylab trservice.Client, params *test_pl
 			LogDogHost:  "foo-logdog-host",
 		},
 		ParentTaskID: "foo-parent-task-id",
-		Deadline:     time.Now().Add(time.Hour),
 	}
 	return execution.Run(ctx, skylab, args)
 }
