@@ -706,25 +706,39 @@ func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.
 	if err != nil {
 		return nil, errors.Annotate(err, "version").Err()
 	}
-	var res *tlw.VersionResponse
 	switch req.GetType() {
 	case tlw.VersionRequest_CROS:
-		if sv, err := c.getCrosStableVersion(ctx, dut); err != nil {
-			log.Infof(ctx, "version: failed to receive stable-version for %q. Error: %s", dut.Name, err)
-		} else {
-			res = sv
+		sv, err := c.getCrosStableVersion(ctx, dut)
+		if err != nil {
+			return nil, errors.Annotate(err, "version").Err()
 		}
+		log.Debugf(ctx, "Received Cros version: %#v", sv)
+		// Cache received version for furture usage.
+		c.versionMap[versionKey] = sv
+		return sv, nil
+
 	case tlw.VersionRequest_WIFI_ROUTER:
-		// TODO(otabek): need implement
-		res = &tlw.VersionResponse{
-			Value: map[string]string{
-				"os_image": "gale-test-ap-tryjob/R92-13982.81.0-b4959409",
-			},
+		// TODO(otabek): Re-point for external source as soon we have data for that.
+		// TODO(otabek): Need apply cache.
+		// On this step we only support gale/gale devices other will fail to receive version.
+		var routerHost *tlw.WifiRouterHost
+		for _, router := range dut.GetChromeos().GetWifiRouters() {
+			if router.GetName() == req.Resource {
+				routerHost = router
+				break
+			}
+		}
+		if routerHost == nil {
+			return nil, errors.Reason("version: target device not  found").Err()
+		} else if routerHost.GetBoard() == "gale" && routerHost.GetModel() == "gale" {
+			return &tlw.VersionResponse{
+				Value: map[string]string{
+					"os_image": "gale-test-ap-tryjob/R92-13982.81.0-b4959409",
+				},
+			}, nil
 		}
 	}
-	log.Debugf(ctx, "Received version %q: %#v", req.GetType(), res)
-	c.versionMap[versionKey] = res
-	return res, nil
+	return nil, errors.Reason("version: version not found").Err()
 }
 
 // getDevice receives device from inventory.
