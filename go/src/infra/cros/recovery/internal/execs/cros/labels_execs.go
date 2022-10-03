@@ -10,6 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
@@ -21,7 +22,7 @@ const (
 
 // matchCrosVersionToInvExec matches the cros-version match version on the DUT.
 func matchCrosVersionToInvExec(ctx context.Context, info *execs.ExecInfo) error {
-	osFromDUT, err := releaseBuildPath(ctx, info.DefaultRunner())
+	osFromDUT, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "match cros version to inventory").Err()
 	}
@@ -53,7 +54,7 @@ func matchJobRepoURLVersionToInvExec(ctx context.Context, info *execs.ExecInfo) 
 		log.Infof(ctx, "job repo url is empty, skipping check")
 		return nil
 	}
-	osFromDUT, err := releaseBuildPath(ctx, info.DefaultRunner())
+	osFromDUT, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "match cros version to inventory").Err()
 	}

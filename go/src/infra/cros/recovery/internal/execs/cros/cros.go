@@ -35,28 +35,7 @@ const (
 const (
 	// Time to wait a rebooting ChromeOS, in seconds.
 	NormalBootingTime = 150 * time.Second
-	// Command to extract release builder path from device.
-	extractReleaseBuilderPathCommand = "cat /etc/lsb-release | grep CHROMEOS_RELEASE_BUILDER_PATH"
 )
-
-// releaseBuildPattern matches only the release build line in /etc/lsb-release.
-var releaseBuildPattern = regexp.MustCompile(`CHROMEOS_RELEASE_BUILDER_PATH=([\w\W]*)`)
-
-// releaseBuildPath reads release build path from lsb-release.
-func releaseBuildPath(ctx context.Context, run execs.Runner) (string, error) {
-	// lsb-release is set of key=value so we need extract right part from it.
-	//  Example: CHROMEOS_RELEASE_BUILDER_PATH=board-release/R99-9999.99.99
-	output, err := run(ctx, time.Minute, extractReleaseBuilderPathCommand)
-	if err != nil {
-		return "", errors.Annotate(err, "release build path").Err()
-	}
-	log.Debugf(ctx, "Read value: %q.", output)
-	parts := releaseBuildPattern.FindStringSubmatch(output)
-	if len(parts) < 2 {
-		return "", errors.Reason("release build path: fail to read value from %s", output).Err()
-	}
-	return strings.TrimSpace(parts[1]), nil
-}
 
 // uptime returns uptime of resource.
 func uptime(ctx context.Context, run execs.Runner) (*time.Duration, error) {
