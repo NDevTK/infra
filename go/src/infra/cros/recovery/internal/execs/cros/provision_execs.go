@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -144,7 +145,7 @@ func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo)
 		return errors.Annotate(err, "camerabox tablet match os version").Err()
 	}
 	log.Debugf(ctx, "Expected version: %s", expectedOS)
-	fromDevice, err := releaseBuildPath(ctx, info.DefaultRunner())
+	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "camerabox tablet match os version").Err()
 	}
