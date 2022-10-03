@@ -44,7 +44,7 @@ def RunSteps(api, image):
   custs = api.windows_scripts_executor.init_customizations(image)
 
   # pinning all the refs and generating unique keys
-  custs = api.windows_scripts_executor.process_customizations(custs, {})
+  api.windows_scripts_executor.process_customizations(custs, {})
 
   # download all the required refs
   api.windows_scripts_executor.download_all_packages(custs)
