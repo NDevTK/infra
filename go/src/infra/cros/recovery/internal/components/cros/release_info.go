@@ -21,6 +21,7 @@ const (
 	releaseValueRegexpGlob = `%s=(\S+)`
 	releaseBoardKey        = "CHROMEOS_RELEASE_BOARD"
 	releaseTrackKey        = "CHROMEOS_RELEASE_TRACK"
+	releaseBuilderPath     = "CHROMEOS_RELEASE_BUILDER_PATH"
 )
 
 // ExtractValueFromleaseInfo reads release info and extract value by provided key.
@@ -62,4 +63,14 @@ func ReleaseTrack(ctx context.Context, run components.Runner, log logger.Logger)
 	}
 	log.Debugf("Release %q: %q.", releaseTrackKey, track)
 	return track, nil
+}
+
+// ReleaseTrack reads release track info from lsb-release.
+func ReleaseBuildPath(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
+	buildPath, err := ExtractValueFromleaseInfo(ctx, run, log, releaseBuilderPath)
+	if err != nil {
+		return "", errors.Annotate(err, "release %q", releaseBuilderPath).Err()
+	}
+	log.Debugf("Release %q: %q.", releaseBuilderPath, buildPath)
+	return buildPath, nil
 }
