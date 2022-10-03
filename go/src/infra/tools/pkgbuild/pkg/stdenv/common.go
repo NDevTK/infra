@@ -57,7 +57,9 @@ const (
 	cipdVersionCPython = "version:2@3.8.10.chromium.24"
 )
 
-func Init() (err error) {
+// Initialize the stdenv. If finder is nil, binaries will be imported from
+// PATH.
+func Init(finder builtins.FindBinaryFunc) (err error) {
 	common.Git = &builtins.CIPDEnsure{
 		Name: "stdenv_git",
 		Ensure: ensure.File{
@@ -84,7 +86,7 @@ func Init() (err error) {
 		Files: stdenv,
 	}
 
-	if common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import",
+	if common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import", finder,
 		"awk",
 		"basename",
 		"bash",
@@ -119,11 +121,11 @@ func Init() (err error) {
 	// OS specified
 	switch runtime.GOOS {
 	case "linux":
-		if common.Docker, err = builtins.FromPath("docker"); err != nil {
+		if common.Docker, err = builtins.FromPathBatch("docker_import", finder, "docker"); err != nil {
 			return
 		}
 	case "darwin":
-		if common.XCode, err = builtins.FromPathBatch("xcode",
+		if common.XCode, err = builtins.FromPathBatch("xcode", finder,
 			"ar",
 			"cc",
 			"c++",
