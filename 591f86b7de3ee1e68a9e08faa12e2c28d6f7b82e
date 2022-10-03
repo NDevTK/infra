@@ -33,6 +33,24 @@
       "message": "1. Should the CL description say that we are renaming to `try`?\n2. Are there existing files that should be deleted, resulting in these files being marked as moved, rather than newly added?",
       "revId": "591f86b7de3ee1e68a9e08faa12e2c28d6f7b82e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b91d41d_03f28674",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2022-10-03T13:59:33Z",
+      "side": 1,
+      "message": "1. Omg, oops, yes, will do.\n2. No, not yet. The `cros` CLI currently hooks into the `myjob` package, and so does the `cipd_uprev` build. So the deletion will come in a follow-on CL.",
+      "parentUuid": "a8c780ab_5e872aae",
+      "revId": "591f86b7de3ee1e68a9e08faa12e2c28d6f7b82e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
