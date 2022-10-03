@@ -56,7 +56,7 @@ func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("match os version: expected version is not specified").Err()
 	}
 	log.Debugf(ctx, "Expected version: %s", expected)
-	fromDevice, err := releaseBuildPath(ctx, info.DefaultRunner())
+	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "match os version").Err()
 	}
@@ -75,7 +75,7 @@ func notOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	expected := sv.OSImage
 	log.Debugf(ctx, "Expected version: %s", expected)
-	fromDevice, err := releaseBuildPath(ctx, info.DefaultRunner())
+	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "match os version").Err()
 	}
@@ -88,7 +88,7 @@ func notOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // readOSVersionExec read devices OS version.
 func readOSVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	fromDevice, err := releaseBuildPath(ctx, info.DefaultRunner())
+	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "read os version").Err()
 	}

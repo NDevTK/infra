@@ -10,6 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -23,7 +24,7 @@ const (
 
 // updateProvisionedCrosVersionExec reads OS version from the DUT for provisioned info.
 func updateProvisionedCrosVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	version, err := releaseBuildPath(ctx, info.NewRunner(info.GetDut().Name))
+	version, err := cros.ReleaseBuildPath(ctx, info.NewRunner(info.GetDut().Name), info.NewLogger())
 	if err != nil {
 		return errors.Annotate(err, "read os version").Err()
 	}
