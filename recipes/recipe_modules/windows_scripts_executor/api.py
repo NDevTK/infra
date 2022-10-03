@@ -75,19 +75,31 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     return custs
 
   def process_customizations(self, custs, ctx):
-    """ process_customizations pins all the volatile srcs, generates
-    canonnical configs, filters customizations that need to be executed.
+    """ process_customizations pins all the volatile srcs and generates
+    canonnical configs.
 
     Args:
       * custs: List of customizations from customization.py
       * ctx: dict containing the context for the customization
 
-    Returns list of customizations that can be executed.
+    Returns list of customizations in order that they were processed
     """
     with self.m.step.nest('Process the customizations'):
-      self.pin_customizations(custs, ctx)
-      self.gen_canonical_configs(custs)
-      return custs
+      resolved_cust = []
+      while len(custs) != len(resolved_cust):
+        pinnable_cust = [
+            cust for cust in custs
+            if cust.pinnable(ctx) and cust not in resolved_cust
+        ]
+        if pinnable_cust:
+          self.pin_customizations(pinnable_cust, ctx)
+          self.gen_canonical_configs(pinnable_cust)
+          ctx = self.update_context(pinnable_cust, ctx)
+          resolved_cust.extend(pinnable_cust)
+        else:
+          raise self.m.step.StepFailure(
+              'Cannot pin all configs. Cyclical dependency?')
+      return resolved_cust
 
   def pin_customizations(self, customizations, ctx):
     """ pin_customizations pins all the sources in the customizations
@@ -99,6 +111,20 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     for cust in customizations:
       with self.m.step.nest('Pin resources from {}'.format(cust.name())):
         cust.pin_sources(ctx)
+
+  def update_context(self, custs, ctx):
+    """ update_context returns an updated dict with all the contexts
+    updated
+
+    Args:
+    * custs: List of customizations from customization.py
+    * ctx: Current context
+
+    Returns updated context dict
+    """
+    for cust in custs:
+      ctx.update(cust.context)
+    return ctx
 
   def gen_canonical_configs(self, customizations):
     """ gen_canonical_configs strips all the names in the config and returns
