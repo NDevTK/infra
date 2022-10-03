@@ -55,6 +55,7 @@ func LabstationRepairConfig() *Configuration {
 						RecoveryActions: []string{
 							"install_stable_os",
 						},
+						AllowFailAfterRecovery: true,
 					},
 					"install_stable_os": {
 						Docs: []string{"Install stable OS on the device."},
