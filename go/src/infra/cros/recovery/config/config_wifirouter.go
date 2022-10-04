@@ -35,15 +35,23 @@ func wifiRouterRepairPlan() *Plan {
 					"check whether wifirouter critial tools present: ",
 					"tcpdump, hostapd, dnsmasq, netperf, iperf, iw",
 				},
-				Conditions:      []string{"is_wifirouter_gale_gale"},
-				Dependencies:    []string{"cros_ssh"},
-				ExecName:        "cros_is_tool_present",
-				ExecExtraArgs:   []string{"tools:tcpdump,hostapd,dnsmasq,netperf,iperf,iw"},
-				RecoveryActions: []string{"install_wifirouter_gale_gale_os"},
+				Conditions: []string{
+					"The device: gale/gale",
+				},
+				Dependencies: []string{
+					"cros_ssh",
+				},
+				ExecName: "cros_is_tool_present",
+				ExecExtraArgs: []string{
+					"tools:tcpdump,hostapd,dnsmasq,netperf,iperf,iw",
+				},
+				RecoveryActions: []string{
+					"Provision WifiRouter to stable version",
+				},
 			},
 			"Device is pingable": {
-				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				ExecName:    "cros_ping",
+				ExecTimeout: &durationpb.Duration{Seconds: 15},
 			},
 			"Device is on stable-version": {
 				Docs: []string{
@@ -51,12 +59,18 @@ func wifiRouterRepairPlan() *Plan {
 					"This is intermittent solution for wifirouter until bug is resolved",
 					"Currently lab only support one type of router device (board=gale,model=gale)",
 				},
-				Dependencies:    []string{"is_wifirouter_gale_gale"},
-				ExecName:        "cros_is_on_stable_version",
-				ExecExtraArgs:   []string{osNameArg},
-				RecoveryActions: []string{"install_wifirouter_gale_gale_os"},
+				Dependencies: []string{
+					"The device: gale/gale",
+				},
+				ExecName: "cros_is_on_stable_version",
+				ExecExtraArgs: []string{
+					osNameArg,
+				},
+				RecoveryActions: []string{
+					"Provision WifiRouter to stable version",
+				},
 			},
-			"is_wifirouter_gale_gale": {
+			"The device: gale/gale": {
 				Docs: []string{
 					"TODO(b:248631855): hardcoded to only accept model=gale, board=gale routers.",
 					"Remove when stable version is ready",
@@ -67,25 +81,36 @@ func wifiRouterRepairPlan() *Plan {
 					"model:gale",
 				},
 			},
-			"install_wifirouter_gale_gale_os": {
-				Docs:          []string{"Install wifirouter stable os. Currently only has one version"},
-				Conditions:    []string{"is_wifirouter_gale_gale"},
-				ExecName:      "cros_provision",
-				ExecExtraArgs: []string{osNameArg},
-				ExecTimeout:   &durationpb.Duration{Seconds: 3600},
+			"Provision WifiRouter to stable version": {
+				Docs: []string{
+					"Install wifirouter stable os.",
+					"Currently only has one version",
+				},
+				Conditions: []string{
+					"The device: gale/gale",
+				},
+				ExecName: "cros_provision",
+				ExecExtraArgs: []string{
+					osNameArg,
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 3600},
 			},
 			"Device has 50 percent tmp diskspace": {
 				Docs: []string{
 					"Check if there are more than 50 percent of diskspace in /tmp",
 				},
-				Dependencies: []string{"Device is on stable-version"},
-				ExecName:     "cros_has_enough_storage_space_percentage",
+				Dependencies: []string{
+					"Device is on stable-version",
+				},
+				ExecName: "cros_has_enough_storage_space_percentage",
 				ExecExtraArgs: []string{
 					"path:/tmp",
-					"expected:50"},
+					"expected:50",
+				},
 				RecoveryActions: []string{
 					"Clean up tmp space",
-					"install_wifirouter_gale_gale_os"},
+					"Provision WifiRouter to stable version",
+				},
 			},
 			"Clean up tmp space": {
 				Docs: []string{
@@ -100,14 +125,18 @@ func wifiRouterRepairPlan() *Plan {
 				Docs: []string{
 					"Check if there are more than 50 percent of diskspace in /mnt/stateful_partition",
 				},
-				Dependencies: []string{"Device is on stable-version"},
-				ExecName:     "cros_has_enough_storage_space_percentage",
+				Dependencies: []string{
+					"Device is on stable-version",
+				},
+				ExecName: "cros_has_enough_storage_space_percentage",
 				ExecExtraArgs: []string{
 					"path:/mnt/stateful_partition",
-					"expected:50"},
+					"expected:50",
+				},
 				RecoveryActions: []string{
 					"Clean up stateful sub space",
-					"install_wifirouter_gale_gale_os"},
+					"Provision WifiRouter to stable version",
+				},
 			},
 			"Clean up stateful sub space": {
 				Docs: []string{
