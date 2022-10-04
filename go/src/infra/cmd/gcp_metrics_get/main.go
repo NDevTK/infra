@@ -15,16 +15,17 @@
 // Binary gcp_metrics_get retrieves metrics data from stackdriver.
 //
 // Usage:
-//  $ gcp_metrics_get --project $PROJECT_ID --filter '...' --end_time YYYY-MM-DDThh:mm:dd.ss
 //
-//  $ gcp_metrics_get --project_id goma-rbe-chromium --filter \
-//   'metric.type="kubernetes.io/container/memory/request_utilization"
-//    resource.labels.container_name="esp"' | \
-//   jq --slurp -r 'sort_by(.points[0].value.Value.DoubleValue) |
-//         reverse | .[] | \
-//         select(.points[0].value.Value.DoubleValue >= 0.5) | \
-//         [.resource.labels.pod_name, .points[0].value.Value.DoubleValue] | \
-//         @tsv'
+//	$ gcp_metrics_get --project $PROJECT_ID --filter '...' --end_time YYYY-MM-DDThh:mm:dd.ss
+//
+//	$ gcp_metrics_get --project_id goma-rbe-chromium --filter \
+//	 'metric.type="kubernetes.io/container/memory/request_utilization"
+//	  resource.labels.container_name="esp"' | \
+//	 jq --slurp -r 'sort_by(.points[0].value.Value.DoubleValue) |
+//	       reverse | .[] | \
+//	       select(.points[0].value.Value.DoubleValue >= 0.5) | \
+//	       [.resource.labels.pod_name, .points[0].value.Value.DoubleValue] | \
+//	       @tsv'
 package main
 
 import (
@@ -34,6 +35,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
+	"strings"
 	"time"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3"
@@ -43,10 +46,20 @@ import (
 )
 
 var (
-	projectID  = flag.String("project_id", "", "Project ID")
-	filter     = flag.String("filter", "", "metrics filter.  see https://cloud.google.com/monitoring/custom-metrics/reading-metrics#time-series_filters")
-	endTimeStr = flag.String("end_time", "now", fmt.Sprintf("end time in RFC3339 e.g. %s, or now", time.RFC3339))
-	duration   = flag.Duration("duration", 10*time.Minute, "duration")
+	projectID          = flag.String("project_id", "", "Project ID")
+	filter             = flag.String("filter", "", "metrics filter.  see https://cloud.google.com/monitoring/custom-metrics/reading-metrics#time-series_filters")
+	endTimeStr         = flag.String("end_time", "now", fmt.Sprintf("end time in RFC3339 e.g. %s, or now", time.RFC3339))
+	duration           = flag.Duration("duration", 10*time.Minute, "duration")
+	headerOnly         = flag.Bool("header_only", false, "Returns the identity of the metric and the time series resource, but not the time series data.")
+	aggregationFields  = flag.String("aggregation_fields", "", "fields used for group by aggregation, use ',' for multiple fields separation")
+	aggregationReducer = flag.String("aggregation_reducer", "REDUCE_NONE", fmt.Sprintf("reducer for aggregation, possible values are %s", func() string {
+		var reducers []string
+		for key := range monitoringpb.Aggregation_Reducer_value {
+			reducers = append(reducers, key)
+		}
+		sort.Strings(reducers)
+		return strings.Join(reducers, ",")
+	}()))
 )
 
 func main() {
@@ -82,6 +95,22 @@ func main() {
 			EndTime:   timestamppb.New(endTime),
 		},
 	}
+
+	if *headerOnly {
+		req.View = monitoringpb.ListTimeSeriesRequest_HEADERS
+	}
+
+	if *aggregationFields != "" {
+		reducer, ok := monitoringpb.Aggregation_Reducer_value[*aggregationReducer]
+		if !ok {
+			log.Fatalf("aggregation_reducer %s is not supported, see -help.", *aggregationReducer)
+		}
+		req.Aggregation = &monitoringpb.Aggregation{
+			GroupByFields:      strings.Split(*aggregationFields, ","),
+			CrossSeriesReducer: monitoringpb.Aggregation_Reducer(reducer),
+		}
+	}
+
 	iter := c.ListTimeSeries(ctx, req)
 
 	for {
