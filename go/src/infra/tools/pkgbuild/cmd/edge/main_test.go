@@ -7,15 +7,14 @@ package main
 import (
 	"context"
 	"embed"
-	"errors"
 	"infra/libs/cipkg"
+	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
+	. "infra/libs/cipkg/utilities/testing"
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"runtime"
 	"testing"
 
@@ -29,71 +28,74 @@ import (
 var tests embed.FS
 
 func TestMain(m *testing.M) {
-	if runtime.GOOS == "linux" {
-		// Docker is required for running pkgbuild on Linux. Skip tests if it's
-		// not available.
-		if _, err := exec.LookPath("docker"); errors.Is(err, exec.ErrNotFound) {
-			log.Println("Skip pkgbuild tests: docker not found in the PATH.")
-			return
-		}
-	}
 	if runtime.GOOS == "windows" {
 		log.Println("Skip pkgbuild tests: not implemented.")
 		return
 	}
 
-	if err := stdenv.Init(); err != nil {
+	if err := stdenv.Init(func(bin string) (string, error) {
+		// We don't need to import binaries from host.
+		return bin, nil
+	}); err != nil {
 		log.Fatalf("failed to init stdenv: %v", err)
 	}
 	os.Exit(m.Run())
 }
 
-// TODO(fancl): We should generate all the commands without executing them
-// similar to recipe tests.
 func TestBuildPackagesFromSpec(t *testing.T) {
-	storageDir := t.TempDir()
+	buildTemp := t.TempDir()
 
 	ctx := gologger.StdConfig.Use(context.Background())
 	ctx = logging.SetLevel(ctx, logging.Error)
 
-	storage, err := utilities.NewLocalStorage(storageDir)
-	if err != nil {
-		t.Fatalf("failed to init storage: %v", err)
-	}
-
-	loader, err := spec.NewSpecLoader(tests, nil)
+	loader, err := spec.NewSpecLoader(tests, MockSpecLoaderConfig())
 	if err != nil {
 		t.Fatalf("failed to init spec loader: %v", err)
 	}
 
 	Convey("Native platform", t, func() {
+		build := utilities.CurrentPlatform()
+		cipd := platform.CurrentPlatform()
+
+		mockBuild := NewMockBuild()
+		mockStorage := NewMockStorage()
 		b := &PackageBuilder{
-			Storage: storage,
+			Storage: mockStorage,
 			Platforms: cipkg.Platforms{
-				Build:  utilities.CurrentPlatform(),
-				Host:   utilities.CurrentPlatform(),
-				Target: utilities.CurrentPlatform(),
+				Build:  build,
+				Host:   build,
+				Target: build,
 			},
-			CIPDTarget:        platform.CurrentPlatform(),
+			CIPDTarget:        cipd,
 			SpecLoader:        loader,
-			BuildTempDir:      filepath.Join(storageDir, "temp"),
-			DerivationBuilder: utilities.NewBuilder(storage),
+			BuildTempDir:      buildTemp,
+			DerivationBuilder: utilities.NewBuilder(mockStorage),
+
+			BuildFunc: mockBuild.Build,
 		}
 
 		Convey("Build packages", func() {
-			_, err := b.Add(ctx, "tools/ninja")
+			pkg, err := b.Add(ctx, "tools/ninja")
 			So(err, ShouldBeNil)
 			err = b.BuildAll(ctx)
 			So(err, ShouldBeNil)
+
+			drv := pkg.Derivation()
+			So(drv.Name, ShouldEqual, "ninja")
+			So(drv.Platform, ShouldEqual, build.String())
+			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipd)
 		})
 
-		// It takes too long (10+ mins) and downloads code from the internet.
-		// Disable the test until we vendored the code.
-		SkipConvey("Build curl", func() {
-			_, err := b.Add(ctx, "static_libs/curl")
+		Convey("Build curl", func() {
+			pkg, err := b.Add(ctx, "static_libs/curl")
 			So(err, ShouldBeNil)
 			err = b.BuildAll(ctx)
 			So(err, ShouldBeNil)
+
+			drv := pkg.Derivation()
+			So(drv.Name, ShouldEqual, "curl")
+			So(drv.Platform, ShouldEqual, build.String())
+			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipd)
 		})
 	})
 
@@ -106,8 +108,10 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		host := utilities.NewPlatform("linux", "arm64")
 		cipd := "linux-arm64"
 
+		mockBuild := NewMockBuild()
+		mockStorage := NewMockStorage()
 		b := &PackageBuilder{
-			Storage: storage,
+			Storage: mockStorage,
 			Platforms: cipkg.Platforms{
 				Build:  build,
 				Host:   host,
@@ -115,15 +119,39 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			},
 			CIPDTarget:        cipd,
 			SpecLoader:        loader,
-			BuildTempDir:      filepath.Join(storageDir, "temp"),
-			DerivationBuilder: utilities.NewBuilder(storage),
+			BuildTempDir:      buildTemp,
+			DerivationBuilder: utilities.NewBuilder(mockStorage),
+
+			BuildFunc: mockBuild.Build,
 		}
 
 		Convey("Build packages", func() {
-			_, err := b.Add(ctx, "tools/ninja")
+			pkg, err := b.Add(ctx, "tools/ninja")
 			So(err, ShouldBeNil)
 			err = b.BuildAll(ctx)
 			So(err, ShouldBeNil)
+
+			drv := pkg.Derivation()
+			So(drv.Name, ShouldEqual, "ninja")
+			So(drv.Platform, ShouldEqual, build.String())
+			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipd)
 		})
 	})
+}
+
+type MockSourceResolver struct{}
+
+func (*MockSourceResolver) ResolveGitSource(*spec.GitSource) (string, string, error) {
+	return "tag", "commit", nil
+}
+func (*MockSourceResolver) ResolveScriptSource(*spec.ScriptSource) (string, error) {
+	panic("not implemented")
+}
+
+func MockSpecLoaderConfig() *spec.SpecLoaderConfig {
+	return &spec.SpecLoaderConfig{
+		CIPDPackagePrefix:     "mock",
+		CIPDSourceCachePrefix: "sources",
+		SourceResolver:        &MockSourceResolver{},
+	}
 }

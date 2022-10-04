@@ -111,12 +111,9 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		return nil, errors.Annotate(err, "failed to parse cipd platform").Err()
 	}
 
-	loader, err := spec.NewSpecLoader(
-		os.DirFS(a.SpecPoolDir),
-		&spec.SpecLoaderConfig{
-			CIPDPackagePrefix: a.CIPDPackagePrefix,
-		},
-	)
+	specLoadercfg := spec.DefaultSpecLoaderConfig()
+	specLoadercfg.CIPDPackagePrefix = a.CIPDPackagePrefix
+	loader, err := spec.NewSpecLoader(os.DirFS(a.SpecPoolDir), specLoadercfg)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to load specs").Err()
 	}
@@ -146,6 +143,9 @@ type PackageBuilder struct {
 
 	BuildTempDir      string
 	DerivationBuilder *utilities.Builder
+
+	// Override the default build func
+	BuildFunc func(p cipkg.Package) error
 }
 
 // Add(...) loads 3pp spec by name and convert it into a cipkg.Package. If the
@@ -186,7 +186,8 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) error {
 	if err := os.Mkdir(b.BuildTempDir, os.ModePerm); err != nil {
 		return err
 	}
-	if err := b.DerivationBuilder.BuildAll(func(p cipkg.Package) error {
+
+	f := func(p cipkg.Package) error {
 		id := p.Derivation().ID()
 		d, err := os.MkdirTemp(b.BuildTempDir, fmt.Sprintf("%s-", id))
 		if err != nil {
@@ -203,7 +204,12 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) error {
 		}
 		logging.Debugf(ctx, "%s", out.String())
 		return nil
-	}); err != nil {
+	}
+	if b.BuildFunc != nil {
+		f = b.BuildFunc
+	}
+
+	if err := b.DerivationBuilder.BuildAll(f); err != nil {
 		return errors.Annotate(err, "failed to build package").Err()
 	}
 
