@@ -26,7 +26,7 @@ type tagInfo struct {
 
 // resolveGitTag require python3 and git in the PATH.
 func resolveGitRef(git *GitSource) (tagInfo, error) {
-	cmd := exec.Command("python3", "-I", "-c", resolveGitScript)
+	cmd := exec.Command("python3", "-c", resolveGitScript)
 	cmd.Env = []string{}
 	cmd.Stderr = os.Stderr
 
