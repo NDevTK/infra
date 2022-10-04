@@ -50,7 +50,7 @@ func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
 		return "", fmt.Errorf("%q is not in any cache subnets (all subnets: %v)", dutAddr, f.env.Subnets())
 	}
 	// Get a cache backend according to the hash value of 'filename'.
-	return subnet.findBackend(filename), nil
+	return findOneBackend(filename, subnet.Backends), nil
 }
 
 func (f *Frontend) findSubnet(ip net.IP) (*Subnet, bool) {
@@ -62,10 +62,10 @@ func (f *Frontend) findSubnet(ip net.IP) (*Subnet, bool) {
 	return nil, false
 }
 
-// findBackend finds one healthy backend from the current subnet according to
+// findOneBackend finds one healthy backend from the current subnet according to
 // the requested `filename` using 'mod N' algorithm.
-func (s *Subnet) findBackend(filename string) string {
-	return s.Backends[hash(filename)%len(s.Backends)]
+func findOneBackend(filename string, backends []string) string {
+	return backends[hash(filename)%len(backends)]
 }
 
 // hash returns integer hash value of the input string.
