@@ -1,0 +1,18 @@
+package: infra/luci/standalone/orchestrator/${platform}
+description: >
+  Orchestrator is a "standalone" binary for creating, managing, and viewing
+  builds. It is similar but not equivalent to buildbucket in functionality and
+  API surface
+
+  See the project design: go/satlab-for-partners
+  See the orchestrator design: go/sfp-dispatcher
+platforms:
+  - linux-amd64
+go_packages:
+  - go.chromium.org/luci/standalone/orchestrator
+go_build_environ:
+  CGO_ENABLED: 0
+root: ../../go/bin
+data:
+  - file: orchestrator${exe_suffix}
+  - version_file: .versions/orchestrator${exe_suffix}.cipd_version
