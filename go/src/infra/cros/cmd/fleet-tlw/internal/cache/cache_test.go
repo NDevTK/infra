@@ -13,8 +13,7 @@ import (
 )
 
 type mockEnv struct {
-	healthChecker func(string) bool
-	subnets       []Subnet
+	subnets []Subnet
 }
 
 func (e mockEnv) Subnets() []Subnet {
@@ -25,7 +24,6 @@ func TestAssignBackend_dutInASubnet(t *testing.T) {
 	t.Parallel()
 	m := net.CIDRMask(24, 32)
 	env := mockEnv{
-		healthChecker: func(string) bool { return true },
 		subnets: []Subnet{
 			{
 				IPNet:    &net.IPNet{IP: net.IPv4(1, 1, 1, 0), Mask: m},
@@ -59,7 +57,6 @@ func TestAssignBackend_balancedLoad(t *testing.T) {
 	// Send 101 different request and ensure they are evenly distributed to
 	// backends in the subnet.
 	env := mockEnv{
-		healthChecker: func(string) bool { return true },
 		subnets: []Subnet{
 			{
 				IPNet:    &net.IPNet{IP: net.IPv4(1, 1, 3, 0), Mask: net.CIDRMask(24, 32)},
@@ -93,7 +90,7 @@ func TestAssignBackend_balancedLoad(t *testing.T) {
 
 func TestAssignBackend_dutNotInAnySubnets(t *testing.T) {
 	t.Parallel()
-	env := mockEnv{func(string) bool { return true }, nil}
+	env := mockEnv{}
 	fe := NewFrontend(env)
 	const dutAddr = "100.1.1.1"
 	r, err := fe.AssignBackend(dutAddr, "path/to/file")
