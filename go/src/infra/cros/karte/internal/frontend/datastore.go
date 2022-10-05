@@ -111,6 +111,7 @@ type ObservationEntity struct {
 	ValueNumber float64 `gae:"value_number"`
 }
 
+// GetType returns whether an observation record is a number or a string.
 func (e *ObservationEntity) GetType() string {
 	if e.ValueString != "" {
 		return "string"
@@ -118,6 +119,7 @@ func (e *ObservationEntity) GetType() string {
 	return "num"
 }
 
+// ConvertToValueSaver converts an observation entity into a record that can be saved to bigquery.
 func (e *ObservationEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 	if e == nil {
 		return nil
