@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "83428bab_1a6e422d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-05T07:13:46Z",
+      "side": 1,
+      "message": "CMake tests failed on windows. I don\u0027t have a clear idea of what happened in the tests since target binary seems generated without issue but failed when executing them. It may take 1-2 weeks for debugging so I\u0027m leaning to skip tests on windows this time. WDYT?",
+      "revId": "776dfcb292c2a7a7b0a012102414f4ab670f45d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
