@@ -44,10 +44,7 @@ type tlwServer struct {
 }
 
 func newTLWServer(ufsService string, proxySSHSigner ssh.Signer, serviceAcctJSON string) (*tlwServer, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	ufsClient, err := ufsapi.NewClient(ctx, ufsapi.ServiceName(ufsService), ufsapi.ServiceAccountJSONPath(serviceAcctJSON), ufsapi.UserAgent("fleet-tlw/6.0.0"))
+	ufsClient, err := ufsapi.NewClient(context.Background(), ufsapi.ServiceName(ufsService), ufsapi.ServiceAccountJSONPath(serviceAcctJSON), ufsapi.UserAgent("fleet-tlw/6.0.0"))
 	if err != nil {
 		return nil, errors.Reason("newTLWServer: %s", err).Err()
 	}
