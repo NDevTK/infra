@@ -429,6 +429,11 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 		return nil, errors.Annotate(err, "parse json").Err()
 	}
 	m := getStableVersionRecords(ctx, stableVersions)
+	// TODO(gregorynisbet): Walk the board;models that exist and bring them up to date one-by-one
+	// inside one transaction per key instead of discarding the result.
+	if _, err := getAllBoardModels(ctx); err != nil {
+		return nil, errors.Annotate(err, "dump stable version to datastore implementation").Err()
+	}
 	merr := errors.NewMultiError()
 	if err := dssv.PutManyCrosStableVersion(ctx, m.cros); err != nil {
 		merr = append(merr, errors.Annotate(err, "put cros stable version").Err())
@@ -520,4 +525,25 @@ func getStableVersionGitClient(ctx context.Context, hc *http.Client) (git.Client
 		return nil, errors.Annotate(err, "get git client").Err()
 	}
 	return client, nil
+}
+
+// getAllBoardModels gets all the keys of the form board;model that currently exist in datastore.
+func getAllBoardModels(ctx context.Context) (map[string]bool, error) {
+	out := make(map[string]bool)
+	if err := datastore.Run(ctx, datastore.NewQuery(dssv.CrosStableVersionKind), func(ent *dssv.CrosStableVersionEntity) {
+		out[ent.ID] = true
+	}); err != nil {
+		return nil, errors.Annotate(err, "get all board models").Err()
+	}
+	if err := datastore.Run(ctx, datastore.NewQuery(dssv.FirmwareStableVersionKind), func(ent *dssv.FirmwareStableVersionEntity) {
+		out[ent.ID] = true
+	}); err != nil {
+		return nil, errors.Annotate(err, "get all board models").Err()
+	}
+	if err := datastore.Run(ctx, datastore.NewQuery(dssv.FaftStableVersionKind), func(ent *dssv.FaftStableVersionEntity) {
+		out[ent.ID] = true
+	}); err != nil {
+		return nil, errors.Annotate(err, "get all board models").Err()
+	}
+	return out, nil
 }

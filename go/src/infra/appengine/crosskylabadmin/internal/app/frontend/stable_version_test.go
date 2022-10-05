@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -630,6 +631,35 @@ func TestStableVersionFileParsing(t *testing.T) {
 		So(len(records.cros), ShouldEqual, 1)
 		So(len(records.firmware), ShouldEqual, 1)
 		So(len(records.faft), ShouldEqual, 1)
+	})
+}
+
+// TestGetAllBoardModels tests getting all board;models out of datastore.
+// This test just checks that we can read everything back; it does not use realistic data.
+func TestGetAllBoardModels(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContext()
+	datastore.GetTestable(ctx).Consistent(true)
+	Convey("test get all board models", t, func() {
+		So(datastore.Put(ctx, &dssv.CrosStableVersionEntity{
+			ID:   "a",
+			Cros: "a",
+		}), ShouldBeNil)
+		So(datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
+			ID:       "b",
+			Firmware: "b",
+		}), ShouldBeNil)
+		So(datastore.Put(ctx, &dssv.FaftStableVersionEntity{
+			ID:   "c",
+			Faft: "c",
+		}), ShouldBeNil)
+		out, err := getAllBoardModels(ctx)
+		So(err, ShouldBeNil)
+		So(out, ShouldResemble, map[string]bool{
+			"a": true,
+			"b": true,
+			"c": true,
+		})
 	})
 }
 
