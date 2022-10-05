@@ -1800,6 +1800,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Pools allowed to stay in DEV mode",
+				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
 			},
 			ExecName:   "sample_pass",
