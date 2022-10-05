@@ -13,8 +13,9 @@ create {
       # a prereleased one.
       tag_filter_re: "v[0-9.]*$"
     }
+    patch_dir: "patches"
     cpe_base_address: "cpe:/a:cmake_project:cmake"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
 
   build {
