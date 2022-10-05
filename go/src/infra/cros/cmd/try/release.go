@@ -9,9 +9,10 @@ import (
 	"os"
 	"strings"
 
+	"infra/cros/internal/cmd"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
-	"infra/cros/internal/cmd"
 )
 
 func getCmdRelease() *subcommands.Command {
@@ -23,6 +24,7 @@ func getCmdRelease() *subcommands.Command {
 			c.tryRunBase.cmdRunner = cmd.RealCommandRunner{}
 			c.addBranchFlag()
 			c.addStagingFlag()
+			c.addPatchesFlag()
 			return c
 		},
 	}
@@ -33,14 +35,27 @@ type releaseRun struct {
 	tryRunBase
 }
 
+// validate validates release-specific args for the command.
+func (r *releaseRun) validate(ctx context.Context) error {
+	if err := r.tryRunBase.validate(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Run provides the logic for a `try release` command run.
 func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
 	if !r.staging {
-		fmt.Println("Non-staging release builds are currently unsupported. Please try again with -staging.")
+		fmt.Println("Non-staging release builds are currently unsupported. Please try again with --staging.")
 		return NotImplementedError
 	}
 
 	ctx := context.Background()
+	if err := r.validate(ctx); err != nil {
+		fmt.Println(err.Error())
+		return CmdError
+	}
+
 	if err := r.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		fmt.Println(err)
 		return AuthError
@@ -51,12 +66,27 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		fmt.Println(err)
 		return CmdError
 	}
+
+	if len(r.patches) > 0 {
+		// If gerrit patches are set, the orchestrator by default will try to do
+		// build planning, which is meaningless for release builds and drops
+		// all children. This property skips pruning.
+		if err := setProperty(propsStruct, "$chromeos/build_plan.disable_build_plan_pruning", true); err != nil {
+			fmt.Println(err)
+			return CmdError
+		}
+		for _, patch := range r.patches {
+			r.bbAddArgs = append(r.bbAddArgs, []string{"-cl", patch}...)
+		}
+	}
+
 	propsFile, err := writeStructToFile(propsStruct)
 	if err != nil {
 		fmt.Println(errors.Annotate(err, "writing input properties to tempfile").Err())
 		return UnspecifiedError
 	}
 	defer os.Remove(propsFile.Name())
+	r.bbAddArgs = append(r.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
 	if err := r.runReleaseOrchestrator(ctx); err != nil {
 		fmt.Println(err.Error())
@@ -87,5 +117,5 @@ func (r *releaseRun) getReleaseOrchestratorName() string {
 // runReleaseOrchestrator creates a release orchestrator build via `bb add`, and reports it to the user.
 func (r *releaseRun) runReleaseOrchestrator(ctx context.Context) error {
 	orchName := r.getReleaseOrchestratorName()
-	return r.BBAdd(ctx, orchName)
+	return r.BBAdd(ctx, append([]string{orchName}, r.bbAddArgs...)...)
 }
