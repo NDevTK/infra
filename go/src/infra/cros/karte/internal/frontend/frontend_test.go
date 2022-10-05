@@ -40,7 +40,7 @@ func TestCreateAction(t *testing.T) {
 		},
 	})
 	expected := &kartepb.Action{
-		Name:       "entity001000000000",
+		Name:       fmt.Sprintf("%sentity001000000000", idstrategy.IDVersion),
 		Kind:       "ssh-attempt",
 		SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(1+12*60*60, 2)),
 		CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
@@ -138,7 +138,7 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 
 	expected := []*kartepb.Action{
 		{
-			Name:           fmt.Sprintf(idstrategy.NaiveIDFmt, idstrategy.NaiveFirstID),
+			Name:           fmt.Sprintf(idstrategy.NaiveIDFmt, idstrategy.IDVersion, idstrategy.NaiveFirstID),
 			Kind:           "ssh-attempt",
 			SwarmingTaskId: "a",
 			BuildbucketId:  "b",
