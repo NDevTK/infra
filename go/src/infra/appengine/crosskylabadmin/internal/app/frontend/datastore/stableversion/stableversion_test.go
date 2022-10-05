@@ -20,7 +20,6 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/gae/impl/memory"
-	"go.chromium.org/luci/gae/service/datastore"
 )
 
 func TestUpdateAndGet(t *testing.T) {
@@ -131,60 +130,5 @@ func TestRemoveEmptyKeyOrValue(t *testing.T) {
 			removeEmptyKeyOrValue(ctx, m)
 			So(len(m), ShouldEqual, 1)
 		})
-	})
-}
-
-// TestDeleteAll tests the DeleteAll function by adding some things to datastore and then deleting them
-func TestDeleteAll(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	Convey("test delete all", t, func() {
-		const board = "01dcd1a3-ec21-4f92-9acf-f9fac3ec51a2"
-		const model = "2da5161a-ab39-4f2f-9eab-0e44fd2f0c77"
-		const cros = "942929ba-bab4-4267-b3a7-776a9aae26fe"
-
-		ctx = memory.Use(ctx)
-		datastore.GetTestable(ctx).Consistent(true)
-		tally, err := datastore.Count(ctx, datastore.NewQuery(CrosStableVersionKind).KeysOnly(true))
-		So(err, ShouldBeNil)
-		So(tally, ShouldEqual, 0) // no records initially.
-		err = PutSingleCrosStableVersion(ctx, board, model, cros)
-		So(err, ShouldBeNil)
-		tally, err = datastore.Count(ctx, datastore.NewQuery(CrosStableVersionKind).KeysOnly(true))
-		So(err, ShouldBeNil)
-		So(tally, ShouldEqual, 1) // one record now.
-		err = DeleteAll(ctx, CrosStableVersionKind)
-		So(err, ShouldBeNil)
-		tally, err = datastore.Count(ctx, datastore.NewQuery(CrosStableVersionKind).KeysOnly(true))
-		So(err, ShouldBeNil)
-		So(tally, ShouldEqual, 0) // We delete the records, back to zero.
-	})
-}
-
-// TestMakeKeyBatches tests reading out keys in batches.
-func TestMakeKeyBatches(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	Convey("test make batches", t, func() {
-		ctx = memory.Use(ctx)
-		datastore.GetTestable(ctx).Consistent(true)
-
-		So(PutSingleCrosStableVersion(ctx, "b", "1", "x"), ShouldBeNil)
-		So(PutSingleCrosStableVersion(ctx, "b", "2", "x"), ShouldBeNil)
-		So(PutSingleCrosStableVersion(ctx, "b", "3", "x"), ShouldBeNil)
-		So(PutSingleCrosStableVersion(ctx, "b", "4", "x"), ShouldBeNil)
-		So(PutSingleCrosStableVersion(ctx, "b", "5", "x"), ShouldBeNil)
-		So(PutSingleCrosStableVersion(ctx, "b", "6", "x"), ShouldBeNil)
-
-		tally, err := datastore.Count(ctx, datastore.NewQuery(CrosStableVersionKind).KeysOnly(true))
-		So(err, ShouldBeNil)
-		So(tally, ShouldEqual, 6)
-
-		batches, err := makeKeyBatches(ctx, CrosStableVersionKind, 2)
-		So(err, ShouldBeNil)
-		So(len(batches), ShouldEqual, 3)
-		for _, batch := range batches {
-			So(len(batch), ShouldEqual, 2)
-		}
 	})
 }
