@@ -7,6 +7,8 @@ package execution
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"infra/cmd/cros_test_platform/internal/execution/args"
 	"infra/cmd/cros_test_platform/internal/execution/build"
 	"infra/cmd/cros_test_platform/internal/execution/response"
@@ -21,7 +23,16 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	luci_retry "go.chromium.org/luci/common/retry"
+	"go.chromium.org/luci/common/retry/transient"
+	"go.chromium.org/luci/grpc/grpcutil"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+// Retry count on transient errors
+const RetryCountOnTransientError = 5
 
 // RequestTaskSet encapsulates the running state of the set of tasks for one
 // cros_test_platform request.
@@ -116,15 +127,48 @@ func (r *RequestTaskSet) LaunchTasks(ctx context.Context, c trservice.Client) er
 			continue
 		}
 
-		task, err := testrunner.NewBuild(ctx, c, ag)
+		task, err := r.createNewBuildWithRetry(ctx, &c, ag, ts.Name)
 		if err != nil {
-			return err
+			return errors.Annotate(err, "Error during new test_runner build creation for %s", ts.Name).Err()
 		}
 		ts.NotifyTask(task)
 		r.getInvocationStep(iid).NotifyNewTask(task)
 		r.activeTasks[iid] = task
 	}
 	return nil
+}
+
+// retryParams defines retry strategy for handling transient errors
+func (r *RequestTaskSet) retryParams() luci_retry.Iterator {
+	return &luci_retry.ExponentialBackoff{
+		Limited: luci_retry.Limited{
+			Delay:    10 * time.Second,
+			Retries:  RetryCountOnTransientError,
+			MaxTotal: 2 * time.Minute,
+		},
+		Multiplier: 2,
+	}
+}
+
+// createNewBuildWithRetry attempts to create new test_runner build. It retries if transient error occurs.
+func (r *RequestTaskSet) createNewBuildWithRetry(ctx context.Context, c *trservice.Client, ag *args.Generator, taskName string) (task *testrunner.Build, err error) {
+	err = luci_retry.Retry(ctx, transient.Only(r.retryParams), func() error {
+		task, err = testrunner.NewBuild(ctx, *c, ag)
+		if r.isTransientError(err) {
+			logging.Infof(ctx, "Transient error occured for %s: %s", taskName, err.Error())
+			return transient.Tag.Apply(err)
+		}
+		return err
+	}, luci_retry.LogCallback(ctx, "create-new-test_runner-build"))
+	return
+}
+
+// isTransientError returns if provided error is transient or not
+func (r *RequestTaskSet) isTransientError(err error) bool {
+	if s, ok := status.FromError(err); ok {
+		return grpcutil.IsTransientCode(s.Code()) || s.Code() == codes.DeadlineExceeded
+	}
+	return false
 }
 
 func (r *RequestTaskSet) getInvocationResponse(iid types.InvocationID) *response.Invocation {
