@@ -1,0 +1,25 @@
+From 2046d32ea0eafc6db270a318004e0013385f135b Mon Sep 17 00:00:00 2001
+From: Chenlin Fan <fancl@chromium.org>
+Date: Wed, 5 Oct 2022 04:32:46 +0000
+Subject: [PATCH] Remove Fortran from the project of FortranC test
+
+Fortran in the project causing CMake overrides the
+CMAKE_Fortran_COMPILER during initialization if fortran presented
+in the environment. Removing it from project as a workaround.
+---
+ Tests/FortranC/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Tests/FortranC/CMakeLists.txt b/Tests/FortranC/CMakeLists.txt
+index 83c27296a2..b911a4048c 100644
+--- a/Tests/FortranC/CMakeLists.txt
++++ b/Tests/FortranC/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ cmake_minimum_required(VERSION 2.8.12)
+-project(FortranC C Fortran)
++project(FortranC C)
+ 
+ # Skip this test for compilers not known to be compatible.
+ if(NOT (CMAKE_C_COMPILER_ID STREQUAL CMAKE_Fortran_COMPILER_ID OR
+-- 
+2.36.1
