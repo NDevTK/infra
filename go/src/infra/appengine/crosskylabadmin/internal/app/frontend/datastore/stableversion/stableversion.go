@@ -34,22 +34,88 @@ const (
 	FirmwareStableVersionKind = "firmwareStableVersion"
 )
 
+// CrosStableVersionEntity is a datastore entity that maps a board;model to a CrOS version.
 type CrosStableVersionEntity struct {
 	_kind string `gae:"$kind,crosStableVersion"`
-	ID    string `gae:"$id"`
-	Cros  string
+	// ID is a board;model e.g. eve, eve.
+	ID string `gae:"$id"`
+	// Cros is a CrOS version e.g. R1-2.3.4.
+	Cros string
 }
 
+// ImposeVersion takes in a CrOS stable version entity and a new cros version.
+// If the version is empty, we delete the record.
+//
+// Silently do nothing if the payload and the ID are the same.
+func (e *CrosStableVersionEntity) ImposeVersion(ctx context.Context, cros string) error {
+	if e == nil {
+		return errors.Reason("impose cros version: e cannot be nil").Err()
+	}
+	switch {
+	case cros == "":
+		return errors.Annotate(datastore.Delete(ctx, e), "impose cros version for %q: delete", e.ID).Err()
+	case cros == e.Cros:
+		return nil
+	default:
+		e.Cros = cros
+		return errors.Annotate(datastore.Put(ctx, e), "impose cros version for %q: put", e.ID).Err()
+	}
+}
+
+// FaftStableVersionEntity is a datastore entity that maps a board;model to a faft version.
 type FaftStableVersionEntity struct {
 	_kind string `gae:"$kind,faftStableVersion"`
-	ID    string `gae:"$id"`
-	Faft  string
+	// ID is a board;model e.g. eve, eve.
+	ID string `gae:"$id"`
+	// Faft is a faft version e.g. octopus-release/R100-10000.100.0.
+	Faft string
 }
 
+// ImposeVersion takes in a Faft stable version entity and a new cros version.
+// If the version is empty, we delete the record.
+//
+// Silently do nothing if the payload and the ID are the same.
+func (e *FaftStableVersionEntity) ImposeVersion(ctx context.Context, faft string) error {
+	if e == nil {
+		return errors.Reason("impose faft version: e cannot be nil").Err()
+	}
+	switch {
+	case faft == "":
+		return errors.Annotate(datastore.Delete(ctx, e), "impose faft version for %q: delete", e.ID).Err()
+	case faft == e.Faft:
+		return nil
+	default:
+		e.Faft = faft
+		return errors.Annotate(datastore.Put(ctx, e), "impose faft version for %q: put", e.ID).Err()
+	}
+}
+
+// FirmwareStableVersionEntity is a datastore entity that maps a board;model to a firmware version.
 type FirmwareStableVersionEntity struct {
-	_kind    string `gae:"$kind,firmwareStableVersion"`
-	ID       string `gae:"$id"`
+	_kind string `gae:"$kind,firmwareStableVersion"`
+	// ID is a board;model e.g. eve, eve.
+	ID string `gae:"$id"`
+	// Firmware is a firmware version e.g. Google_Rammus.10000.100.0
 	Firmware string
+}
+
+// ImposeVersion takes in a CrOS stable version entity and a new cros version.
+// If the version is empty, we delete the record.
+//
+// Silently do nothing if the payload and the ID are the same.
+func (e *FirmwareStableVersionEntity) ImposeVersion(ctx context.Context, firmware string) error {
+	if e == nil {
+		return errors.Reason("impose firmware version: e cannot be nil").Err()
+	}
+	switch {
+	case firmware == "":
+		return errors.Annotate(datastore.Delete(ctx, e), "impose firmware version for %q: delete", e.ID).Err()
+	case firmware == e.Firmware:
+		return nil
+	default:
+		e.Firmware = firmware
+		return errors.Annotate(datastore.Put(ctx, e), "impose firmware version for %q: put", e.ID).Err()
+	}
 }
 
 // GetCrosStableVersion gets a stable version for ChromeOS from datastore

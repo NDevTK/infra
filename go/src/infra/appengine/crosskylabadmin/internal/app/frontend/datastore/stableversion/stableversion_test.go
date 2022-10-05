@@ -19,7 +19,9 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/gae/service/datastore"
 )
 
 func TestUpdateAndGet(t *testing.T) {
@@ -129,6 +131,54 @@ func TestRemoveEmptyKeyOrValue(t *testing.T) {
 			m := map[string]string{"k": "v"}
 			removeEmptyKeyOrValue(ctx, m)
 			So(len(m), ShouldEqual, 1)
+		})
+	})
+}
+
+// TestImposeVersion tests updating and deleting a stable version entry in datastore through the ImposeVersion interface.
+func TestImposeVersion(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContext()
+	datastore.GetTestable(ctx).Consistent(true)
+	Convey("test impose version", t, func() {
+		Convey("cros", func() {
+			e := &CrosStableVersionEntity{
+				ID:   "eve;eve",
+				Cros: "a",
+			}
+			So(datastore.Put(ctx, e), ShouldBeNil)
+			So(e.ImposeVersion(ctx, "b"), ShouldBeNil)
+			var ents []*CrosStableVersionEntity
+			So(datastore.GetAll(ctx, datastore.NewQuery(CrosStableVersionKind), &ents), ShouldBeNil)
+			So(len(ents), ShouldEqual, 1)
+			So(ents[0].Cros, ShouldEqual, "b")
+			So(e.ImposeVersion(ctx, ""), ShouldBeNil)
+		})
+		Convey("faft", func() {
+			e := &FaftStableVersionEntity{
+				ID:   "eve;eve",
+				Faft: "a",
+			}
+			So(datastore.Put(ctx, e), ShouldBeNil)
+			So(e.ImposeVersion(ctx, "b"), ShouldBeNil)
+			var ents []*FaftStableVersionEntity
+			So(datastore.GetAll(ctx, datastore.NewQuery(FaftStableVersionKind), &ents), ShouldBeNil)
+			So(len(ents), ShouldEqual, 1)
+			So(ents[0].Faft, ShouldEqual, "b")
+			So(e.ImposeVersion(ctx, ""), ShouldBeNil)
+		})
+		Convey("firmware", func() {
+			e := &FirmwareStableVersionEntity{
+				ID:       "eve;eve",
+				Firmware: "a",
+			}
+			So(datastore.Put(ctx, e), ShouldBeNil)
+			So(e.ImposeVersion(ctx, "b"), ShouldBeNil)
+			var ents []*FirmwareStableVersionEntity
+			So(datastore.GetAll(ctx, datastore.NewQuery(FirmwareStableVersionKind), &ents), ShouldBeNil)
+			So(len(ents), ShouldEqual, 1)
+			So(ents[0].Firmware, ShouldEqual, "b")
+			So(e.ImposeVersion(ctx, ""), ShouldBeNil)
 		})
 	})
 }
