@@ -50,6 +50,24 @@
       "message": "I see at least one of the failed tests on Windows has exit code 0xc0000135 , this could be the same as https://github.com/google/googletest/issues/2246 (a missing MSVC runtime DLL)?",
       "revId": "776dfcb292c2a7a7b0a012102414f4ab670f45d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36ae8f59_c8669429",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-05T23:12:38Z",
+      "side": 1,
+      "message": "But if this turns out to not be the only problem, or is complicated to fix, I think it\u0027s ok to exclude the test step on Windows.",
+      "parentUuid": "7967d3ce_66061dad",
+      "revId": "776dfcb292c2a7a7b0a012102414f4ab670f45d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
