@@ -431,23 +431,58 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 	m := getStableVersionRecords(ctx, stableVersions)
 	// TODO(gregorynisbet): Walk the board;models that exist and bring them up to date one-by-one
 	// inside one transaction per key instead of discarding the result.
-	if _, err := getAllBoardModels(ctx); err != nil {
+	keys, err := getAllBoardModels(ctx)
+	if err != nil {
 		return nil, errors.Annotate(err, "dump stable version to datastore implementation").Err()
 	}
-	merr := errors.NewMultiError()
-	if err := dssv.PutManyCrosStableVersion(ctx, m.cros); err != nil {
-		merr = append(merr, errors.Annotate(err, "put cros stable version").Err())
+
+	// allKeys are the keys from datastore and the incoming map. The incoming map is more
+	// authoritative than the contents of datastore.
+	allKeys := make(map[string]bool)
+	for k := range keys {
+		allKeys[k] = true
 	}
-	if err := dssv.PutManyFirmwareStableVersion(ctx, m.firmware); err != nil {
-		merr = append(merr, errors.Annotate(err, "put firmware stable version").Err())
+	for _, versionMap := range []map[string]string{m.cros, m.firmware, m.faft} {
+		for k := range versionMap {
+			allKeys[k] = true
+		}
 	}
-	if err := dssv.PutManyFaftStableVersion(ctx, m.faft); err != nil {
-		merr = append(merr, errors.Annotate(err, "put firmware stable version").Err())
+
+	// nil and "No Such Entity" are both acceptable get responses.
+	// The latter unambiguously indicates that we succesfully determined that an item does not exist.
+	isAcceptableGetResponse := func(e error) bool {
+		return err == nil || datastore.IsErrNoSuchEntity(err)
 	}
-	if len(merr) != 0 {
-		logging.Errorf(ctx, "error writing stable versions: %s", merr)
-		return nil, merr
+
+	for boardModel := range allKeys {
+		if err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
+			cros := &dssv.CrosStableVersionEntity{ID: boardModel}
+			if err := datastore.Get(ctx, cros); !isAcceptableGetResponse(err) {
+				return errors.Annotate(err, "dump stable version to datastore implementation: put cros stable version %q", boardModel).Err()
+			}
+			if err := cros.ImposeVersion(ctx, m.cros[boardModel]); err != nil {
+				return errors.Annotate(err, "dump stable version to datastore implementation %q", boardModel).Err()
+			}
+			firmware := &dssv.FirmwareStableVersionEntity{ID: boardModel}
+			if err := datastore.Get(ctx, firmware); !isAcceptableGetResponse(err) {
+				return errors.Annotate(err, "dump stable version to datastore implementation: put firmware stable version %q", boardModel).Err()
+			}
+			if err := firmware.ImposeVersion(ctx, m.firmware[boardModel]); err != nil {
+				return errors.Annotate(err, "dump stable version to datastore implementation %q", boardModel).Err()
+			}
+			faft := &dssv.FaftStableVersionEntity{ID: boardModel}
+			if err := datastore.Get(ctx, faft); !isAcceptableGetResponse(err) {
+				return errors.Annotate(err, "dump stable version to datastore implementation: put faft stable version for %q", boardModel).Err()
+			}
+			if err := faft.ImposeVersion(ctx, m.faft[boardModel]); err != nil {
+				return errors.Annotate(err, "dump stable version to datastore implementation for %q", boardModel).Err()
+			}
+			return nil
+		}, nil); err != nil {
+			return nil, err
+		}
 	}
+
 	logging.Infof(ctx, "successfully wrote stable versions")
 	return &fleet.DumpStableVersionToDatastoreResponse{}, nil
 }

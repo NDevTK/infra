@@ -21,6 +21,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -660,6 +661,93 @@ func TestGetAllBoardModels(t *testing.T) {
 			"b": true,
 			"c": true,
 		})
+	})
+}
+
+// TestCanClearDatastoreWithZeroRecords tests that we can clear datastore by reading in an empty file.
+//
+// The new behavior created in response to b:250665959 should, among other things, cause there to be zero
+// entities of kind *StableVersionKind when the stable version file is `{}`. This behavior is completely
+// different than what the behavior would have been before, which would be to leave the table alone and not
+// change any records if the stable version file happened to be empty.
+func TestCanClearDatastoreWithZeroRecords(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	datastore.GetTestable(ctx).Consistent(true)
+	Convey("test can clear datastore with empty file", t, func() {
+		// 1. Preamble
+		So(datastore.Put(ctx, &dssv.CrosStableVersionEntity{
+			ID:   "a",
+			Cros: "a",
+		}), ShouldBeNil)
+		So(datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
+			ID:       "b",
+			Firmware: "b",
+		}), ShouldBeNil)
+		So(datastore.Put(ctx, &dssv.FaftStableVersionEntity{
+			ID:   "c",
+			Faft: "c",
+		}), ShouldBeNil)
+		out, err := getAllBoardModels(ctx)
+		So(err, ShouldBeNil)
+		So(len(out), ShouldEqual, 3)
+		// 2. Simulate dumping an empty file
+		resp, err := dumpStableVersionToDatastoreImpl(ctx, func(_ context.Context, _ string) (string, error) {
+			return `{}`, nil
+		})
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+	})
+}
+
+// TestReplaceDatastoreContents tests replacing the stable-version-related datastore contents with a new file.
+//
+// The old file has fake data like a,b,c ... The new file has realistic fake data.
+// Check to make sure that the new data is present and that the old data is completely gone.
+func TestReplaceDatastoreContents(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	datastore.GetTestable(ctx).Consistent(true)
+	Convey("test can clear datastore with empty file", t, func() {
+		// (1/3) Preamble
+		So(datastore.Put(ctx, &dssv.CrosStableVersionEntity{
+			ID:   "a;a",
+			Cros: "a",
+		}), ShouldBeNil)
+		So(datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
+			ID:       "b;b",
+			Firmware: "b",
+		}), ShouldBeNil)
+		So(datastore.Put(ctx, &dssv.FaftStableVersionEntity{
+			ID:   "c;c",
+			Faft: "c",
+		}), ShouldBeNil)
+		out, err := getAllBoardModels(ctx)
+		So(err, ShouldBeNil)
+		So(len(out), ShouldEqual, 3)
+		// (2/3) Simulate reading a file.
+		resp, err := dumpStableVersionToDatastoreImpl(ctx, func(_ context.Context, _ string) (string, error) {
+			return stableVersions, nil
+		})
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		// (3/3) Check the contents of datastore post-read.
+		cros, err := dssv.GetCrosStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldBeNil)
+		So(cros, ShouldEqual, "R78-12499.40.0")
+		firmware, err := dssv.GetFirmwareStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldBeNil)
+		So(firmware, ShouldEqual, "Google_Auron_paine.6301.58.98")
+		faft, err := dssv.GetFaftStableVersion(ctx, "auron_paine", "auron_paine")
+		So(err, ShouldBeNil)
+		So(faft, ShouldEqual, "auron_paine-firmware/R39-6301.58.98")
+		// Be extra thorough and check that there are no cros, firmware, or faft versions for any of the fake names
+		// used in the preamble.
+		for _, name := range []string{"a", "b", "c"} {
+			val, err := dssv.GetCrosStableVersion(ctx, name, name)
+			So(err, ShouldErrLike, "Entity not found")
+			So(val, ShouldEqual, "")
+		}
 	})
 }
 
