@@ -9,8 +9,8 @@ MAX_COMMENTS_PER_PAGE = 100
 # Max issues per page in the SearchIssues API.
 MAX_ISSUES_PER_PAGE = 100
 
-# Max issues tp fetch in the BatchGetIssues API.
-MAX_BATCH_ISSUES = 100
+# Max issues to fetch in the BatchGetIssues API.
+MAX_BATCH_ISSUES = 1000
 
 # Max issues to modify at once in the ModifyIssues API.
 MAX_MODIFY_ISSUES = 100
