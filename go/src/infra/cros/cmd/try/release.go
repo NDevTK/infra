@@ -25,6 +25,7 @@ func getCmdRelease() *subcommands.Command {
 			c.addBranchFlag()
 			c.addStagingFlag()
 			c.addPatchesFlag()
+			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
 			return c
 		},
 	}
@@ -33,6 +34,7 @@ func getCmdRelease() *subcommands.Command {
 // releaseRun tracks relevant info for a given `try release` run.
 type releaseRun struct {
 	tryRunBase
+	useProdTests bool
 }
 
 // validate validates release-specific args for the command.
@@ -77,6 +79,13 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		}
 		for _, patch := range r.patches {
 			r.bbAddArgs = append(r.bbAddArgs, []string{"-cl", patch}...)
+		}
+	}
+
+	if r.useProdTests {
+		if err := setProperty(propsStruct, "$chromeos/cros_test_plan.use_prod_config", true); err != nil {
+			fmt.Println(err)
+			return CmdError
 		}
 	}
 
