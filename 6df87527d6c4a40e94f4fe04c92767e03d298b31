@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "edb3502a_3704bb82",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-05T16:28:37Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "6df87527d6c4a40e94f4fe04c92767e03d298b31",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a847a6a8_68e58d2f",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/ethernethook/single_task_downloader.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-05T16:28:37Z",
+      "side": 1,
+      "message": "please add description that it will modify s.OutputArr",
+      "revId": "6df87527d6c4a40e94f4fe04c92767e03d298b31",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3759cdf3_3c37fdcb",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/ethernethook/single_task_downloader.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-05T16:28:37Z",
+      "side": 1,
+      "message": "nit: move to line 128",
+      "revId": "6df87527d6c4a40e94f4fe04c92767e03d298b31",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bcd9ff1_3cbf285f",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/ethernethook/single_task_downloader.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-05T16:28:37Z",
+      "side": 1,
+      "message": "q: in which cases it can be less than 0? maybe just `\u003d\u003d` as expected and it will be faster for compiler",
+      "range": {
+        "startLine": 156,
+        "startChar": 13,
+        "endLine": 156,
+        "endChar": 15
+      },
+      "revId": "6df87527d6c4a40e94f4fe04c92767e03d298b31",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
