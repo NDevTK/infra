@@ -68,17 +68,28 @@ func publish(ctx context.Context, projectID, topicID string, msg proto.Message, 
 		}
 	}()
 	if err != nil {
-		retChan <- fmt.Errorf("failed to create Pub/Sub client for projects/%s/topic/%s", projectID, topicID)
+		retChan <- fmt.Errorf("Failed to create Pub/Sub client for project %s", projectID)
+		return
+	}
+
+	// Associate the Pub/Sub client with the correct topicID.
+	topic := client.Topic(topicID)
+
+	// Check if the topic exists on the project.
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		retChan <- fmt.Errorf("Error when checking if topic %s is on project %s. error: %s", topicID, projectID, err.Error())
 		return
 	}
 
 	// Attempt to create the topic if it doesn't exist.
-	// The alternative to this would be manually creating the Pub/Sub topic
-	// beforehand.
-	_, _ = client.CreateTopic(ctx, topicID)
-
-	// Associate the Pub/Sub client with the correct topicID.
-	topic := client.Topic(topicID)
+	if !exists {
+		topic, err = client.CreateTopic(ctx, topicID)
+		if err != nil {
+			retChan <- fmt.Errorf("Topic %s doesn't exist and failed to be created. error: %s", topicID, err.Error())
+			return
+		}
+	}
 
 	// Convert the proto representation of the row into a JSON.
 	data, err := proto.Marshal(msg)
