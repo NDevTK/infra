@@ -65,8 +65,14 @@ func (m *tryRunBase) addBuildTargetsFlag() {
 	m.Flags.Var(&m.buildTargets, "build_targets", "(comma-separated) Build targets to run. If not set, the standard set of build targets will be used.")
 }
 
+// addBuildspecFlag creates a `-buildspec` command-line flag for a try command.
 func (m *tryRunBase) addBuildspecFlag() {
 	m.Flags.StringVar(&m.buildspec, "buildspec", "", "GS uri to the buildspec that the builder should sync to, e.g. gs://chromeos-manifest-versions/buildspecs/108/15159.0.0.xml.")
+}
+
+// addDryrunFlag creates a `-dryrun` command-line flag for a try command.
+func (m *tryRunBase) addDryrunFlag() {
+	m.Flags.BoolVar(&m.dryrun, "dryrun", false, "Dry run (i.e. don't actually run `bb add`).")
 }
 
 // validate validates base args for the command.

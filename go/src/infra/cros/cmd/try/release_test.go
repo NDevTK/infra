@@ -164,7 +164,13 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	assert.Assert(t, use_prod_tests)
 }
 
-func TestRun_noBuildTargets(t *testing.T) {
+func TestRun_dryrun(t *testing.T) {
+	doTestRun(t, &runTestConfig{
+		dryrun: true,
+	})
+}
+
+func TestRun_staging_noBuildTargets(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		skipPaygen: false,
 	})
