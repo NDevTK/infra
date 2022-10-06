@@ -221,14 +221,14 @@ type ActionQueryAncillaryData struct {
 
 // UpdateWith takes an action entity query and a list of queries to update from and applies them.
 func (a *ActionQueryAncillaryData) updateWith(d *ActionQueryAncillaryData) {
-	a.BiggestID = maxVersion(a.BiggestID, d.BiggestID)
-	a.SmallestID = minVersion(a.SmallestID, d.SmallestID)
-	a.BiggestVersion = maxVersion(a.BiggestVersion, d.BiggestVersion)
-	a.SmallestVersion = minVersion(a.SmallestVersion, d.SmallestVersion)
+	a.BiggestID = maxValue(a.BiggestID, d.BiggestID)
+	a.SmallestID = minValue(a.SmallestID, d.SmallestID)
+	a.BiggestVersion = maxValue(a.BiggestVersion, d.BiggestVersion)
+	a.SmallestVersion = minValue(a.SmallestVersion, d.SmallestVersion)
 }
 
-// minVersion computes the minimum of two Karte version strings lexicographically.
-func minVersion(a string, b string) string {
+// minValue computes the minimum of two Karte version strings lexicographically.
+func minValue(a string, b string) string {
 	if a == "" {
 		return b
 	}
@@ -241,8 +241,8 @@ func minVersion(a string, b string) string {
 	return b
 }
 
-// maxVersion computes the maximum of two Karte version strings lexicographically.
-func maxVersion(a string, b string) string {
+// maxValue computes the maximum of two Karte version strings lexicographically.
+func maxValue(a string, b string) string {
 	if a == "" {
 		return b
 	}
