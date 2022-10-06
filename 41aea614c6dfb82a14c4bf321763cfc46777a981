@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11a64a28_23390d70",
+        "filename": "go/src/infra/cros/cmd/try/release.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1541237
+      },
+      "writtenOn": "2022-10-06T17:46:19Z",
+      "side": 1,
+      "message": "nit: Is it worth initializing `stagingPrefix` with `nil` in this branch? (Not sure of the Go idioms.)",
+      "range": {
+        "startLine": 165,
+        "startChar": 6,
+        "endLine": 165,
+        "endChar": 16
+      },
+      "revId": "41aea614c6dfb82a14c4bf321763cfc46777a981",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "05aa65d8_df7a9171",
+        "filename": "go/src/infra/cros/cmd/try/release_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1541237
+      },
+      "writtenOn": "2022-10-06T17:46:19Z",
+      "side": 1,
+      "message": "nit: it may be clearer to update this to `production` (and invert the values)",
+      "range": {
+        "startLine": 20,
+        "startChar": 2,
+        "endLine": 20,
+        "endChar": 9
+      },
+      "revId": "41aea614c6dfb82a14c4bf321763cfc46777a981",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b70dd4f5_cdd977d2",
+        "filename": "go/src/infra/cros/cmd/try/run_base.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1541237
+      },
+      "writtenOn": "2022-10-06T17:46:19Z",
+      "side": 1,
+      "message": "This seems like it could be made into a generally useful method by passing in the first part of the prompt.",
+      "range": {
+        "startLine": 111,
+        "startChar": 21,
+        "endLine": 111,
+        "endChar": 30
+      },
+      "revId": "41aea614c6dfb82a14c4bf321763cfc46777a981",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
