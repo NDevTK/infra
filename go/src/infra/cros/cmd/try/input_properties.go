@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -24,7 +25,7 @@ func (m tryRunBase) GetBuilderInputProps(ctx context.Context, fullBuilderName st
 
 	stdout, stderr, err := m.RunCmd(ctx, "led", "get-builder", fmt.Sprintf("%s:%s", bucket, builder))
 	if err != nil {
-		fmt.Println(stderr)
+		m.LogErr(stderr)
 		return &structpb.Struct{}, err
 	}
 
@@ -47,20 +48,29 @@ func definitionToInputProperties(definition job.Definition_Buildbucket) *structp
 	return definition.Buildbucket.GetBbagentArgs().GetBuild().GetInput().GetProperties()
 }
 
-// writeStructToFile creates a tempfile, writes the struct as JSON data, and returns the File object.
-func writeStructToFile(s *structpb.Struct) (*os.File, error) {
-	file, err := os.CreateTemp("", "input_props")
-	if err != nil {
-		return nil, err
-	}
+// writeStructToFile creates a tempfile and writes the struct as JSON data.
+func writeStructToFile(s *structpb.Struct, file *os.File) error {
 	jsonBytes, err := s.MarshalJSON()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if _, err := file.Write(jsonBytes); err != nil {
+		return err
+	}
+	return nil
+}
+
+// readStructFromFile reads a struct from the specified file.
+func readStructFromFile(path string) (*structpb.Struct, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
 		return nil, err
 	}
-	return file, nil
+	s := &structpb.Struct{}
+	if err := json.Unmarshal(data, &s); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 func setProperty(s *structpb.Struct, key string, value interface{}) error {

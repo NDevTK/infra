@@ -4,12 +4,18 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"reflect"
 	"testing"
+
+	"infra/cros/internal/assert"
+	"infra/cros/internal/cmd"
 )
 
 // TestGetReleaseOrchestratorName tests getReleaseOrchestratorName.
 func TestGetReleaseOrchestratorName(t *testing.T) {
+	t.Parallel()
 	for i, testCase := range []struct {
 		staging  bool
 		branch   string
@@ -33,6 +39,7 @@ func TestGetReleaseOrchestratorName(t *testing.T) {
 }
 
 func TestGetReleaseBuilderNames(t *testing.T) {
+	t.Parallel()
 	for i, testCase := range []struct {
 		staging      bool
 		branch       string
@@ -55,4 +62,93 @@ func TestGetReleaseBuilderNames(t *testing.T) {
 			t.Errorf("#%d: Incorrect release builder names: got %s; want %s", i, actual, testCase.expected)
 		}
 	}
+}
+
+func TestValidate_releaseRun(t *testing.T) {
+	t.Parallel()
+	r := releaseRun{
+		tryRunBase: tryRunBase{
+			branch:  "release-R106.15054.B",
+			staging: false,
+		},
+	}
+	err := r.validate()
+	assert.ErrorContains(t, err, "currently unsupported")
+}
+
+type runTestConfig struct {
+	// e.g. "eve"
+	buildTargets []string
+	// e.g. "staging-eve-release-R106.15054.B"
+	expectedChildren []string
+}
+
+func doTestRun(t *testing.T, tc *runTestConfig) {
+	t.Helper()
+	propsFile, err := os.CreateTemp("", "input_props")
+	defer os.Remove(propsFile.Name())
+	assert.NilError(t, err)
+	f := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			fakeAuthInfoRunner("bb", 0),
+			fakeAuthInfoRunner("led", 0),
+			{
+				ExpectedCmd: []string{
+					"led",
+					"get-builder",
+					"chromeos/staging:staging-release-R106.15054.B-orchestrator",
+				},
+				Stdout: validJSON,
+			},
+			{
+				ExpectedCmd: []string{"bb", "add",
+					"chromeos/staging/staging-release-R106.15054.B-orchestrator",
+					"-cl", "crrev.com/c/1234567", "-cl", "crrev.com/i/7654321",
+					"-p", fmt.Sprintf("@%s", propsFile.Name())},
+			},
+		},
+	}
+	r := releaseRun{
+		propsFile: propsFile,
+		tryRunBase: tryRunBase{
+			cmdRunner:    f,
+			branch:       "release-R106.15054.B",
+			staging:      true,
+			patches:      []string{"crrev.com/c/1234567", "crrev.com/i/7654321"},
+			buildTargets: tc.buildTargets,
+		},
+		useProdTests: true,
+	}
+	ret := r.Run(nil, nil, nil)
+	assert.IntsEqual(t, ret, Success)
+
+	properties, err := readStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	if len(tc.buildTargets) > 0 {
+		if len(tc.buildTargets) != len(tc.expectedChildren) {
+			t.Fatalf("len(buildTargets) != len(expectedChildren), invalid test")
+		}
+		child_builds := properties.GetFields()["$chromeos/orch_menu"].GetStructValue().GetFields()["child_builds"].GetListValue().AsSlice()
+		assert.StringArrsEqual(t, interfaceSliceToStr(child_builds), tc.expectedChildren)
+	} else {
+		_, exists := properties.GetFields()["$chromeos/orch_menu"].GetStructValue().GetFields()["child_builds"]
+		assert.Assert(t, !exists)
+	}
+
+	disable_build_plan_pruning := properties.GetFields()["$chromeos/build_plan"].GetStructValue().GetFields()["disable_build_plan_pruning"].GetBoolValue()
+	assert.Assert(t, disable_build_plan_pruning)
+
+	use_prod_tests := properties.GetFields()["$chromeos/cros_test_plan"].GetStructValue().GetFields()["use_prod_config"].GetBoolValue()
+	assert.Assert(t, use_prod_tests)
+}
+
+func TestRun_noBuildTargets(t *testing.T) {
+	doTestRun(t, &runTestConfig{})
+}
+func TestRun_buildTargets(t *testing.T) {
+	doTestRun(t, &runTestConfig{
+		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
+	})
 }

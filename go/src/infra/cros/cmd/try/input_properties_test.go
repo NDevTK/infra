@@ -14,85 +14,86 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+const (
+	invalidJSON = "{'is-this-valid-json?': False"
+	// experiment_reasons have enums as integers
+	validJSON = `{
+		"buildbucket": {
+			"bbagent_args": {
+				"build": {
+					"input": {
+						"properties": {
+							"$chromeos/my_module": {
+								"my_prop": 100
+							},
+							"my_other_prop": 101
+						}
+					},
+					"infra": {
+						"buildbucket": {
+							"experiment_reasons": {
+								"chromeos.cros_artifacts.use_gcloud_storage": 1
+							}
+						}
+					}
+				}
+			}
+		}
+	}`
+	// experiment_reasons have enums as strings
+	unmarshalErrorButInputPropsOK = `{
+		"buildbucket": {
+			"bbagent_args": {
+				"build": {
+					"input": {
+						"properties": {
+							"$chromeos/my_module": {
+								"my_prop": 100
+							},
+							"my_other_prop": 101
+						}
+					},
+					"infra": {
+						"buildbucket": {
+							"experiment_reasons": {
+								"chromeos.cros_artifacts.use_gcloud_storage": "EXPERIMENT_REASON_BUILDER_CONFIG"
+							}
+						}
+					}
+				}
+			}
+		}
+	}`
+	// "input" is misspelled
+	unmarshalErrorWithNoInputProperties = `{
+		"buildbucket": {
+			"bbagent_args": {
+				"build": {
+					"inputt": {
+						"properties": {
+							"$chromeos/my_module": {
+								"my_prop": 100
+							},
+							"my_other_prop": 101
+						}
+					},
+					"infra": {
+						"buildbucket": {
+							"experiment_reasons": {
+								"chromeos.cros_artifacts.use_gcloud_storage": "EXPERIMENT_REASON_BUILDER_CONFIG"
+							}
+						}
+					}
+				}
+			}
+		}
+	}`
+)
+
 // TestGetBuilderInputProps tests GetBuilderInputProps.
 // The most interesting logic to test is where it permits certain json.UnmarshalTypeErrors.
 func TestGetBuilderInputProps(t *testing.T) {
 	t.Parallel()
-	const (
-		invalidJSON = "{'is-this-valid-json?': False"
-		// experiment_reasons have enums as integers
-		validJSON = `{
-			"buildbucket": {
-				"bbagent_args": {
-					"build": {
-						"input": {
-							"properties": {
-								"$chromeos/my_module": {
-									"my_prop": 100
-								},
-								"my_other_prop": 101
-							}
-						},
-						"infra": {
-							"buildbucket": {
-								"experiment_reasons": {
-									"chromeos.cros_artifacts.use_gcloud_storage": 1
-								}
-							}
-						}
-					}
-				}
-			}
-		}`
-		// experiment_reasons have enums as strings
-		unmarshalErrorButInputPropsOK = `{
-			"buildbucket": {
-				"bbagent_args": {
-					"build": {
-						"input": {
-							"properties": {
-								"$chromeos/my_module": {
-									"my_prop": 100
-								},
-								"my_other_prop": 101
-							}
-						},
-						"infra": {
-							"buildbucket": {
-								"experiment_reasons": {
-									"chromeos.cros_artifacts.use_gcloud_storage": "EXPERIMENT_REASON_BUILDER_CONFIG"
-								}
-							}
-						}
-					}
-				}
-			}
-		}`
-		// "input" is misspelled
-		unmarshalErrorWithNoInputProperties = `{
-			"buildbucket": {
-				"bbagent_args": {
-					"build": {
-						"inputt": {
-							"properties": {
-								"$chromeos/my_module": {
-									"my_prop": 100
-								},
-								"my_other_prop": 101
-							}
-						},
-						"infra": {
-							"buildbucket": {
-								"experiment_reasons": {
-									"chromeos.cros_artifacts.use_gcloud_storage": "EXPERIMENT_REASON_BUILDER_CONFIG"
-								}
-							}
-						}
-					}
-				}
-			}
-		}`
-	)
 	okInputProperties, err := structpb.NewStruct(map[string]interface{}{
 		"$chromeos/my_module": map[string]interface{}{
 			"my_prop": 100,

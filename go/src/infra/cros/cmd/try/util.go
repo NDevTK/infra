@@ -24,3 +24,12 @@ func separateBucketFromBuilder(fullBuilderName string) (bucket string, builder s
 	builder = parts[2]
 	return bucket, builder, nil
 }
+
+// interfaceSlicetoStr converts a slice of interface{}s to a slice of strings.
+func interfaceSliceToStr(s []interface{}) []string {
+	ret := make([]string, len(s))
+	for i := range s {
+		ret[i] = s[i].(string)
+	}
+	return ret
+}

@@ -64,7 +64,7 @@ func (m *tryRunBase) addBuildTargetsFlag() {
 }
 
 // validate validates base args for the command.
-func (m *tryRunBase) validate(ctx context.Context) error {
+func (m *tryRunBase) validate() error {
 	if len(m.patches) > 0 {
 		patchSpec := regexp.MustCompile(`^crrev\.com\/[ci]\/\d{7,8}$`)
 		for _, patch := range m.patches {

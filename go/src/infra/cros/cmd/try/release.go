@@ -37,11 +37,18 @@ func getCmdRelease() *subcommands.Command {
 type releaseRun struct {
 	tryRunBase
 	useProdTests bool
+	// Used for testing purposes. If set, props will be written to this file
+	// rather than a temporary one.
+	propsFile *os.File
 }
 
 // validate validates release-specific args for the command.
-func (r *releaseRun) validate(ctx context.Context) error {
-	if err := r.tryRunBase.validate(ctx); err != nil {
+func (r *releaseRun) validate() error {
+	if !r.staging {
+		return fmt.Errorf("Non-staging release builds are currently unsupported. Please try again with --staging.")
+	}
+
+	if err := r.tryRunBase.validate(); err != nil {
 		return err
 	}
 	return nil
@@ -52,17 +59,12 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
 	r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
 
-	if !r.staging {
-		r.LogErr("Non-staging release builds are currently unsupported. Please try again with --staging.")
-		return NotImplementedError
-	}
-
-	ctx := context.Background()
-	if err := r.validate(ctx); err != nil {
+	if err := r.validate(); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
 
+	ctx := context.Background()
 	if err := r.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		r.LogErr(err.Error())
 		return AuthError
@@ -101,12 +103,23 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		}
 	}
 
-	propsFile, err := writeStructToFile(propsStruct)
-	if err != nil {
+	var propsFile *os.File
+	if r.propsFile != nil {
+		propsFile = r.propsFile
+	} else {
+		propsFile, err = os.CreateTemp("", "input_props")
+		if err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
+	if err := writeStructToFile(propsStruct, propsFile); err != nil {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
 	}
-	defer os.Remove(propsFile.Name())
+	if r.propsFile == nil {
+		defer os.Remove(propsFile.Name())
+	}
 	r.bbAddArgs = append(r.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
 	if err := r.runReleaseOrchestrator(ctx); err != nil {
