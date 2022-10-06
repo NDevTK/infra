@@ -86,8 +86,10 @@ func TestReadSingleActionEntityFromDatastore(t *testing.T) {
 		t.Errorf("unexpected entities: %v", es)
 	}
 	if diff := cmp.Diff(ActionQueryAncillaryData{
-		BiggestVersion:  "zzzz",
 		SmallestVersion: "zzzz",
+		BiggestVersion:  "zzzz",
+		SmallestID:      "zzzz-hi",
+		BiggestID:       "zzzz-hi",
 	},
 		d,
 	); diff != "" {
@@ -125,6 +127,8 @@ func TestReadTwoActionEntitiesFromDatastore(t *testing.T) {
 	if diff := cmp.Diff(ActionQueryAncillaryData{
 		BiggestVersion:  "zzzz",
 		SmallestVersion: "aaaa",
+		BiggestID:       "zzzz-hi",
+		SmallestID:      "aaaa-hi",
 	},
 		d,
 	); diff != "" {
