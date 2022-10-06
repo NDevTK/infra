@@ -125,6 +125,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 			staging:      true,
 			patches:      []string{"crrev.com/c/1234567", "crrev.com/i/7654321"},
 			buildTargets: tc.buildTargets,
+			buildspec:    "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
 		},
 		useProdTests: true,
 	}
@@ -151,6 +152,10 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	} else {
 		assert.Assert(t, exists && skipPaygen.GetBoolValue())
 	}
+
+	manifestInfo := properties.GetFields()["$chromeos/cros_source"].GetStructValue().GetFields()["syncToManifest"].GetStructValue()
+	syncToManifest := manifestInfo.GetFields()["manifestGsPath"].GetStringValue()
+	assert.StringsEqual(t, r.buildspec, syncToManifest)
 
 	disable_build_plan_pruning := properties.GetFields()["$chromeos/build_plan"].GetStructValue().GetFields()["disable_build_plan_pruning"].GetBoolValue()
 	assert.Assert(t, disable_build_plan_pruning)

@@ -33,13 +33,15 @@ type tryRunBase struct {
 	subcommands.CommandRunBase
 	stdoutLog *log.Logger
 	stderrLog *log.Logger
-	branch    string
-	staging   bool
+	bbAddArgs []string
+	cmdRunner cmd.CommandRunner
+
+	branch  string
+	staging bool
 	// Patches of the form of "crrev.com/c/1234567", "crrev.com/i/1234567".
 	patches      list
 	buildTargets list
-	bbAddArgs    []string
-	cmdRunner    cmd.CommandRunner
+	buildspec    string
 }
 
 // addBranchFlag creates a `-branch` command-line flag to specify the branch.
@@ -63,6 +65,10 @@ func (m *tryRunBase) addBuildTargetsFlag() {
 	m.Flags.Var(&m.buildTargets, "build_targets", "(comma-separated) Build targets to run. If not set, the standard set of build targets will be used.")
 }
 
+func (m *tryRunBase) addBuildspecFlag() {
+	m.Flags.StringVar(&m.buildspec, "buildspec", "", "GS uri to the buildspec that the builder should sync to, e.g. gs://chromeos-manifest-versions/buildspecs/108/15159.0.0.xml.")
+}
+
 // validate validates base args for the command.
 func (m *tryRunBase) validate() error {
 	if len(m.patches) > 0 {
@@ -77,6 +83,16 @@ func (m *tryRunBase) validate() error {
 			return fmt.Errorf("-g/--gerrit-patches is only supported with --staging")
 		}
 	}
+
+	if m.buildspec != "" {
+		if !m.staging {
+			return fmt.Errorf("--buildspec is only supported with --staging")
+		}
+		if !strings.HasPrefix(m.buildspec, "gs://") {
+			return fmt.Errorf("--buildspec must start with gs://")
+		}
+	}
+
 	return nil
 }
 

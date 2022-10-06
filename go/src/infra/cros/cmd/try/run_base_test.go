@@ -25,4 +25,20 @@ func TestValidate_tryRunBase(t *testing.T) {
 	}
 	err = r.validate()
 	assert.ErrorContains(t, err, "invalid patch")
+
+	r = tryRunBase{
+		branch:    "release-R106.15054.B",
+		staging:   true,
+		buildspec: "/not/a/gs/path",
+	}
+	err = r.validate()
+	assert.ErrorContains(t, err, "gs://")
+
+	r = tryRunBase{
+		branch:    "release-R106.15054.B",
+		staging:   false,
+		buildspec: "gs://chromeos-manifest-versions/foo.xml",
+	}
+	err = r.validate()
+	assert.ErrorContains(t, err, "only supported with --staging")
 }
