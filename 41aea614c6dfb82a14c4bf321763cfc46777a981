@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "12f974f6_8821391a",
+        "filename": "go/src/infra/cros/cmd/try/release.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-06T19:02:26Z",
+      "side": 1,
+      "message": "`nil` isn\u0027t a valid value for a string, the equivalent is the empty string (which is what is implicitly assigned when you do `var myvar string`.",
+      "parentUuid": "11a64a28_23390d70",
+      "range": {
+        "startLine": 165,
+        "startChar": 6,
+        "endLine": 165,
+        "endChar": 16
+      },
+      "revId": "41aea614c6dfb82a14c4bf321763cfc46777a981",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "05aa65d8_df7a9171",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "60d8d7aa_af23f0db",
+        "filename": "go/src/infra/cros/cmd/try/release_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-06T19:02:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05aa65d8_df7a9171",
+      "range": {
+        "startLine": 20,
+        "startChar": 2,
+        "endLine": 20,
+        "endChar": 9
+      },
+      "revId": "41aea614c6dfb82a14c4bf321763cfc46777a981",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b70dd4f5_cdd977d2",
@@ -60,6 +108,30 @@
       "writtenOn": "2022-10-06T17:46:19Z",
       "side": 1,
       "message": "This seems like it could be made into a generally useful method by passing in the first part of the prompt.",
+      "range": {
+        "startLine": 111,
+        "startChar": 21,
+        "endLine": 111,
+        "endChar": 30
+      },
+      "revId": "41aea614c6dfb82a14c4bf321763cfc46777a981",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3efb7a43_617f237b",
+        "filename": "go/src/infra/cros/cmd/try/run_base.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-06T19:02:26Z",
+      "side": 1,
+      "message": "Ack, I think I\u0027ll leave it like this for now but it is easily refactorable.",
+      "parentUuid": "b70dd4f5_cdd977d2",
       "range": {
         "startLine": 111,
         "startChar": 21,
