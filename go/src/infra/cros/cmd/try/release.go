@@ -23,6 +23,7 @@ func getCmdRelease() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			c := &releaseRun{}
 			c.tryRunBase.cmdRunner = cmd.RealCommandRunner{}
+			c.addDryrunFlag()
 			c.addBranchFlag()
 			c.addStagingFlag()
 			c.addPatchesFlag()
