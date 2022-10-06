@@ -43,8 +43,8 @@ type tryRunBase struct {
 }
 
 // addBranchFlag creates a `-branch` command-line flag to specify the branch.
-func (m *tryRunBase) addBranchFlag() {
-	m.Flags.StringVar(&m.branch, "branch", "main", "specify the branch on which to run the builder")
+func (m *tryRunBase) addBranchFlag(defaultValue string) {
+	m.Flags.StringVar(&m.branch, "branch", defaultValue, "specify the branch on which to run the builder")
 }
 
 // addStagingFlag creates a `-staging` command-line flag for a try subcommand.

@@ -33,3 +33,13 @@ func interfaceSliceToStr(s []interface{}) []string {
 	}
 	return ret
 }
+
+// sliceContainsStr checks whether a []string contains a string.
+func sliceContainsStr(slice []string, s string) bool {
+	for _, x := range slice {
+		if x == s {
+			return true
+		}
+	}
+	return false
+}
