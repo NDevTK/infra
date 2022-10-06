@@ -11,34 +11,34 @@ import (
 
 func TestValidate_tryRunBase(t *testing.T) {
 	r := tryRunBase{
-		branch:  "main",
-		staging: false,
-		patches: []string{"crrev.com/c/1234567"},
+		branch:     "main",
+		production: true,
+		patches:    []string{"crrev.com/c/1234567"},
 	}
 	err := r.validate()
-	assert.ErrorContains(t, err, "only supported with --staging")
+	assert.ErrorContains(t, err, "only supported for staging")
 
 	r = tryRunBase{
-		branch:  "release-R106.15054.B",
-		staging: true,
-		patches: []string{"crrev.com/foo/1234567"},
+		branch:     "release-R106.15054.B",
+		production: false,
+		patches:    []string{"crrev.com/foo/1234567"},
 	}
 	err = r.validate()
 	assert.ErrorContains(t, err, "invalid patch")
 
 	r = tryRunBase{
-		branch:    "release-R106.15054.B",
-		staging:   true,
-		buildspec: "/not/a/gs/path",
+		branch:     "release-R106.15054.B",
+		production: false,
+		buildspec:  "/not/a/gs/path",
 	}
 	err = r.validate()
 	assert.ErrorContains(t, err, "gs://")
 
 	r = tryRunBase{
-		branch:    "release-R106.15054.B",
-		staging:   false,
-		buildspec: "gs://chromeos-manifest-versions/foo.xml",
+		branch:     "release-R106.15054.B",
+		production: true,
+		buildspec:  "gs://chromeos-manifest-versions/foo.xml",
 	}
 	err = r.validate()
-	assert.ErrorContains(t, err, "only supported with --staging")
+	assert.ErrorContains(t, err, "only supported for staging")
 }
