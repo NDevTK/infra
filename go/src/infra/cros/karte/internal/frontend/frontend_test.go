@@ -248,12 +248,16 @@ func TestListObservations(t *testing.T) {
 }
 
 type fakeClient struct {
-	items [][]cloudBQ.ValueSaver
+	items        [][]cloudBQ.ValueSaver
+	observations [][]cloudBQ.ValueSaver
 }
 
 func (c *fakeClient) getInserter(dataset string, table string) bqInserter {
 	return func(ctx context.Context, item []cloudBQ.ValueSaver) error {
 		c.items = append(c.items, item)
+		if table == "observations" {
+			c.observations = append(c.observations, item)
+		}
 		return nil
 	}
 }
