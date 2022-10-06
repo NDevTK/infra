@@ -27,6 +27,7 @@ func getCmdRelease() *subcommands.Command {
 			c.addStagingFlag()
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
+			c.addBuildspecFlag()
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
 			return c
@@ -111,6 +112,13 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 
 	if len(r.buildTargets) > 0 {
 		if err := setProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
+
+	if r.buildspec != "" {
+		if err := setProperty(propsStruct, "$chromeos/cros_source.syncToManifest.manifestGsPath", r.buildspec); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
