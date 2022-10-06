@@ -43,6 +43,7 @@ func TestPersistObservations(t *testing.T) {
 			},
 		})
 		So(err, ShouldBeNil)
+		So(a.Name, ShouldNotBeEmpty)
 		So(a.Kind, ShouldEqual, kind)
 		So(a.SealTime, ShouldResemble, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)))
 		o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
@@ -55,14 +56,17 @@ func TestPersistObservations(t *testing.T) {
 		So(o.MetricKind, ShouldEqual, metricKind)
 		So(o.ActionName, ShouldEqual, a.Name)
 		_, err = k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
-			StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0)),
-			StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(100, 0)),
+			StartVersion: "zzzz",
+			StopVersion:  "zzzz",
+			StartTime:    scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0)),
+			StopTime:     scalars.ConvertTimeToTimestampPtr(time.Unix(100, 0)),
 		})
 		So(err, ShouldBeNil)
 		So(fake.size(), ShouldEqual, 2)
+		So(fake.observationsSize(), ShouldEqual, 1)
 	})
 
-	Convey("test persisting multiple observations associated with single observation", t, func() {
+	Convey("test persisting multiple observations associated with single action", t, func() {
 		ctx := gaetesting.TestingContext()
 		ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
 		testClock := testclock.New(time.Unix(10, 0))
@@ -99,5 +103,6 @@ func TestPersistObservations(t *testing.T) {
 		})
 		So(err, ShouldBeNil)
 		So(fake.size(), ShouldEqual, 1+times)
+		So(fake.observationsSize(), ShouldEqual, times)
 	})
 }

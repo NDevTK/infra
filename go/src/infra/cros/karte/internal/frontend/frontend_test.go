@@ -271,6 +271,15 @@ func (c *fakeClient) size() int {
 	return out
 }
 
+// observationsSize returns the total number of observations.
+func (c *fakeClient) observationsSize() int {
+	out := 0
+	for _, row := range c.observations {
+		out += len(row)
+	}
+	return out
+}
+
 // TestPersistActionRangeImpl_SmokeTest tests that persisting a range of actions
 // returns a non-error response given an empty dataset
 func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
