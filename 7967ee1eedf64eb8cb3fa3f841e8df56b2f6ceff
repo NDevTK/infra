@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "207d5e2c_3c7f5996",
+        "filename": "go/src/infra/cros/cmd/try/release.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2022-10-06T17:59:14Z",
+      "side": 1,
+      "message": "We\u0027re going to want this for every single build. Could you make a universal \"runBuilder\" function that always includes tagBuilds?",
+      "revId": "7967ee1eedf64eb8cb3fa3f841e8df56b2f6ceff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa4fdb60_19c3e498",
+        "filename": "go/src/infra/cros/cmd/try/run_base.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2022-10-06T17:59:14Z",
+      "side": 1,
+      "message": "Potential problem... if someone `sudo` runs this, they\u0027ll show up as `root`. Could you check for that case, and throw a descriptive error?\n\n    stdout, _, err :\u003d m.RunCmd(ctx, \"whoami\")\n    if err !\u003d nil {\n        ...\n    }\n    username :\u003d strings.TrimSpace(stdout)\n    if username \u003d\u003d \"root\" {\n        return errors.New(\"cannot run as root; please try again without sudo\")\n    }\n    \nAnother uglier, but more robust, option is to check `luci auth-info`:\n\n    reAuthUser :\u003d regexp.MustCompile(`^Logged in as (\\w+)@google\\.com\\.`)\n    stdout, _, err :\u003d m.RunCmd(ctx, \"luci\", \"auth-info\")\n    if err !\u003d nil {\n        ...\n    }\n    submatch :\u003d reAuthUser.FindStringSubmatch(stdout)\n    if len(submatch) \u003d\u003d 0 {\n        logErr(\"Could not find username in `luci auth-info` output:\\n%s\", stdout)\n    }\n    username :\u003d submatch[1]",
+      "revId": "7967ee1eedf64eb8cb3fa3f841e8df56b2f6ceff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
