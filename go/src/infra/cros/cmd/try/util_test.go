@@ -6,10 +6,13 @@ package main
 import (
 	"reflect"
 	"testing"
+
+	"infra/cros/internal/assert"
 )
 
-// testPrependString tests prependString.
-func testPrependString(t *testing.T) {
+// TestPrependString tests prependString.
+func TestPrependString(t *testing.T) {
+	t.Parallel()
 	for i, tc := range []struct {
 		newElem        string
 		arr            []string
@@ -25,8 +28,9 @@ func testPrependString(t *testing.T) {
 	}
 }
 
-// testSeparateBucketFromBuilder tests separateBucketFromBuilder.
-func testSeparateBucketFromBuilder(t *testing.T) {
+// TestSeparateBucketFromBuilder tests separateBucketFromBuilder.
+func TestSeparateBucketFromBuilder(t *testing.T) {
+	t.Parallel()
 	for i, tc := range []struct {
 		fullBuilderName string
 		expectedBucket  string
@@ -51,4 +55,26 @@ func testSeparateBucketFromBuilder(t *testing.T) {
 			t.Errorf("#%d: separateBucketFromBuilder(%s) returned unexpected builder: got %s; want %s", i, tc.fullBuilderName, builder, tc.expectedBuilder)
 		}
 	}
+}
+
+// TestParseEmailFromAuthInfo tests parseEmailFromAuthInfo.
+func TestParseEmailFromAuthInfo(t *testing.T) {
+	t.Parallel()
+
+	email, err := parseEmailFromAuthInfo("Logged in as sundar@google.com.\n\nfoo...")
+	assert.NilError(t, err)
+	assert.StringsEqual(t, email, "sundar@google.com")
+
+	email, err = parseEmailFromAuthInfo("Logged in as sundar@subdomain.google.com.\n\nfoo...")
+	assert.NilError(t, err)
+	assert.StringsEqual(t, email, "sundar@subdomain.google.com")
+
+	_, err = parseEmailFromAuthInfo("\n\nfoo\nLogged in as sundar@google.com.\n\nfoo...")
+	assert.Error(t, err)
+
+	_, err = parseEmailFromAuthInfo("Logged in as sundar!!\n\nfoo...")
+	assert.Error(t, err)
+
+	_, err = parseEmailFromAuthInfo("Logged in as sundar@.\n\nfoo...")
+	assert.Error(t, err)
 }
