@@ -125,6 +125,17 @@ func (m *tryRunBase) promptYes() (bool, error) {
 	}
 }
 
+// tagBuilds adds the invoker's username as a tag to builds.
+func (m *tryRunBase) tagBuilds(ctx context.Context) error {
+	stdout, _, err := m.RunCmd(ctx, "whoami")
+	if err != nil {
+		return errors.Annotate(err, fmt.Sprintf("running `whoami`")).Err()
+	}
+	email := fmt.Sprintf("%s@google.com", strings.TrimSpace(stdout))
+	m.bbAddArgs = append(m.bbAddArgs, "-t", fmt.Sprintf("tryjob-launcher:%s", email))
+	return nil
+}
+
 // LogOut logs to stdout.
 func (m *tryRunBase) LogOut(format string, a ...interface{}) {
 	if m.stdoutLog != nil {

@@ -116,6 +116,12 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 				},
 				Stdout: validJSON,
 			},
+			{
+				ExpectedCmd: []string{
+					"whoami",
+				},
+				Stdout: "sundar\n",
+			},
 		},
 	}
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
@@ -123,6 +129,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
 	}
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	if !tc.dryrun {
 		f.CommandRunners = append(f.CommandRunners,
 			cmd.FakeCommandRunner{
