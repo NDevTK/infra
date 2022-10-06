@@ -28,6 +28,7 @@ func getCmdRelease() *subcommands.Command {
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
+			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
 			return c
 		},
 	}
@@ -37,6 +38,7 @@ func getCmdRelease() *subcommands.Command {
 type releaseRun struct {
 	tryRunBase
 	useProdTests bool
+	skipPaygen   bool
 	// Used for testing purposes. If set, props will be written to this file
 	// rather than a temporary one.
 	propsFile *os.File
@@ -44,6 +46,10 @@ type releaseRun struct {
 
 // validate validates release-specific args for the command.
 func (r *releaseRun) validate() error {
+	if r.skipPaygen && !r.staging {
+		return fmt.Errorf("--skip_paygen is not supported for production builds")
+	}
+
 	if !r.staging {
 		return fmt.Errorf("Non-staging release builds are currently unsupported. Please try again with --staging.")
 	}
@@ -91,6 +97,13 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 
 	if r.useProdTests {
 		if err := setProperty(propsStruct, "$chromeos/cros_test_plan.use_prod_config", true); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
+
+	if r.skipPaygen {
+		if err := setProperty(propsStruct, "$chromeos/orch_menu.skip_paygen", true); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}

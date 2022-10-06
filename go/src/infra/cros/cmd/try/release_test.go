@@ -72,8 +72,16 @@ func TestValidate_releaseRun(t *testing.T) {
 			staging: false,
 		},
 	}
-	err := r.validate()
-	assert.ErrorContains(t, err, "currently unsupported")
+	assert.ErrorContains(t, r.validate(), "currently unsupported")
+
+	r = releaseRun{
+		tryRunBase: tryRunBase{
+			branch:  "release-R106.15054.B",
+			staging: false,
+		},
+		skipPaygen: true,
+	}
+	assert.ErrorContains(t, r.validate(), "not supported for production")
 }
 
 type runTestConfig struct {
@@ -81,6 +89,7 @@ type runTestConfig struct {
 	buildTargets []string
 	// e.g. "staging-eve-release-R106.15054.B"
 	expectedChildren []string
+	skipPaygen       bool
 }
 
 func doTestRun(t *testing.T, tc *runTestConfig) {
@@ -136,6 +145,13 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		assert.Assert(t, !exists)
 	}
 
+	skipPaygen, exists := properties.GetFields()["$chromeos/orch_menu"].GetStructValue().GetFields()["skip_paygen"]
+	if !tc.skipPaygen {
+		assert.Assert(t, !exists)
+	} else {
+		assert.Assert(t, exists && skipPaygen.GetBoolValue())
+	}
+
 	disable_build_plan_pruning := properties.GetFields()["$chromeos/build_plan"].GetStructValue().GetFields()["disable_build_plan_pruning"].GetBoolValue()
 	assert.Assert(t, disable_build_plan_pruning)
 
@@ -144,8 +160,11 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 }
 
 func TestRun_noBuildTargets(t *testing.T) {
-	doTestRun(t, &runTestConfig{})
+	doTestRun(t, &runTestConfig{
+		skipPaygen: false,
+	})
 }
+
 func TestRun_buildTargets(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
