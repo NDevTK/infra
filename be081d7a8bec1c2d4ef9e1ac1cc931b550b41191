@@ -1,0 +1,157 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb4761c6_d171d1d0",
+        "filename": "go/src/infra/libs/cipkg/builtins/import.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "Comment what a function of this type is supposed to do.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d22d463b_1e05bc70",
+        "filename": "go/src/infra/libs/cipkg/utilities/testing/mock.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "Is this intentional that pruning is a no-op? If so, it probably warrants a comment around line 32.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae36745e_c094ee73",
+        "filename": "go/src/infra/libs/cipkg/utilities/testing/mock.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "I guess always returning the current time might make it hard to test pruning using this mock? It\u0027s probably worth a comment about the behavior.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d0bd9dc_cf43ece5",
+        "filename": "go/src/infra/libs/cipkg/utilities/testing/mock.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "Comment around line 32 that no locking is provided.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fbbbf7f_d49ca769",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/application.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "nit: would \"specLoaderCfg\" be more consistent naming?",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e093f198_4fe01bca",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/main_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "Naming suggestion: buildPlatform, cipdPlatform (same in the cross-compile test)",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a4a2356_7cd9cd69",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/main_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "It\u0027s a tangent to this CL, but is this ok that the derivation name is only the final component of the package name? Could we end up with conflicting derivation names when only the prefix is different?",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb23024b_e842944a",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/from_spec.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "I don\u0027t think I noticed this function before. It might be worth a comment about what it\u0027s doing.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0df01fe8_7936cf85",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/source.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-10-06T04:18:06Z",
+      "side": 1,
+      "message": "naming nit: for script source, I think what we\u0027ll return is a version string, not a \u0027tag\u0027",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
