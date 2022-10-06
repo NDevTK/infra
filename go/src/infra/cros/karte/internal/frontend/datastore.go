@@ -213,8 +213,18 @@ type ActionEntitiesQuery struct {
 //
 // Currently, we return the biggest (earliest) and smallest (latest) version seen.
 type ActionQueryAncillaryData struct {
+	BiggestID       string
+	SmallestID      string
 	BiggestVersion  string
 	SmallestVersion string
+}
+
+// UpdateWith takes an action entity query and a list of queries to update from and applies them.
+func (a *ActionQueryAncillaryData) updateWith(d *ActionQueryAncillaryData) {
+	a.BiggestID = maxVersion(a.BiggestID, d.BiggestID)
+	a.SmallestID = minVersion(a.SmallestID, d.SmallestID)
+	a.BiggestVersion = maxVersion(a.BiggestVersion, d.BiggestVersion)
+	a.SmallestVersion = minVersion(a.SmallestVersion, d.SmallestVersion)
 }
 
 // minVersion computes the minimum of two Karte version strings lexicographically.
@@ -281,8 +291,12 @@ func (q *ActionEntitiesQuery) Next(ctx context.Context, batchSize int32) ([]*Act
 	err := datastore.Run(ctx, rootedQuery, func(ent *ActionEntity, cb datastore.CursorCB) error {
 		// Record the ancillary info! What versions did we see?
 		version := idserialize.GetIDVersion(ent.ID)
-		d.SmallestVersion = minVersion(d.SmallestVersion, version)
-		d.BiggestVersion = maxVersion(d.BiggestVersion, version)
+		d.updateWith(&ActionQueryAncillaryData{
+			SmallestVersion: version,
+			BiggestVersion:  version,
+			SmallestID:      ent.ID,
+			BiggestID:       ent.ID,
+		})
 		entities = append(entities, ent)
 		// This inequality is weak because this block must run on the last iteration
 		// when the query is successful.
