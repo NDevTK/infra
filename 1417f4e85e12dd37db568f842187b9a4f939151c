@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "446ebfbe_28f6008c",
+        "filename": "go/src/infra/cros/cmd/try/run_base.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2022-10-06T21:02:42Z",
+      "side": 1,
+      "message": "Hmm. It occurs to me that we a TVC or partner may run this tool. In that case, the `@google.com` may be an incorrect assumption.\n\nLet\u0027s expand the regexp in L141 to capture the whole email. I think this will work, but it probably wants some unit tests (ez if we throw it into util.go).\n\n    regexp.MustCompile(`^Logged in as ([A-Za-z0-9\\-_.+]@[A-Za-z0-9\\-_.+]\\.\\w+)\\.(\\s|$)`)",
+      "range": {
+        "startLine": 150,
+        "startChar": 22,
+        "endLine": 150,
+        "endChar": 37
+      },
+      "revId": "1417f4e85e12dd37db568f842187b9a4f939151c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
