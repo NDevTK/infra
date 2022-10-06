@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -48,25 +49,28 @@ func (r *releaseRun) validate(ctx context.Context) error {
 
 // Run provides the logic for a `try release` command run.
 func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
+	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
+	r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
+
 	if !r.staging {
-		fmt.Println("Non-staging release builds are currently unsupported. Please try again with --staging.")
+		r.LogErr("Non-staging release builds are currently unsupported. Please try again with --staging.")
 		return NotImplementedError
 	}
 
 	ctx := context.Background()
 	if err := r.validate(ctx); err != nil {
-		fmt.Println(err.Error())
+		r.LogErr(err.Error())
 		return CmdError
 	}
 
 	if err := r.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
-		fmt.Println(err)
+		r.LogErr(err.Error())
 		return AuthError
 	}
 
 	propsStruct, err := r.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())
 	if err != nil {
-		fmt.Println(err)
+		r.LogErr(err.Error())
 		return CmdError
 	}
 
@@ -75,7 +79,7 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		// build planning, which is meaningless for release builds and drops
 		// all children. This property skips pruning.
 		if err := setProperty(propsStruct, "$chromeos/build_plan.disable_build_plan_pruning", true); err != nil {
-			fmt.Println(err)
+			r.LogErr(err.Error())
 			return CmdError
 		}
 		for _, patch := range r.patches {
@@ -85,28 +89,28 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 
 	if r.useProdTests {
 		if err := setProperty(propsStruct, "$chromeos/cros_test_plan.use_prod_config", true); err != nil {
-			fmt.Println(err)
+			r.LogErr(err.Error())
 			return CmdError
 		}
 	}
 
 	if len(r.buildTargets) > 0 {
 		if err := setProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
-			fmt.Println(err)
+			r.LogErr(err.Error())
 			return CmdError
 		}
 	}
 
 	propsFile, err := writeStructToFile(propsStruct)
 	if err != nil {
-		fmt.Println(errors.Annotate(err, "writing input properties to tempfile").Err())
+		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
 	}
 	defer os.Remove(propsFile.Name())
 	r.bbAddArgs = append(r.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
 	if err := r.runReleaseOrchestrator(ctx); err != nil {
-		fmt.Println(err.Error())
+		r.LogErr(err.Error())
 		return CmdError
 	}
 

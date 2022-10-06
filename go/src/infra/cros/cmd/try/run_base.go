@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -30,9 +31,10 @@ func (l *list) String() string {
 // tryRunBase contains data for a single `try` command run.
 type tryRunBase struct {
 	subcommands.CommandRunBase
-	gitCookiesPath string
-	branch         string
-	staging        bool
+	stdoutLog *log.Logger
+	stderrLog *log.Logger
+	branch    string
+	staging   bool
 	// Patches of the form of "crrev.com/c/1234567", "crrev.com/i/1234567".
 	patches      list
 	buildTargets list
@@ -76,6 +78,20 @@ func (m *tryRunBase) validate(ctx context.Context) error {
 		}
 	}
 	return nil
+}
+
+// LogOut logs to stdout.
+func (m *tryRunBase) LogOut(format string, a ...interface{}) {
+	if m.stdoutLog != nil {
+		m.stdoutLog.Printf(format, a...)
+	}
+}
+
+// LogErr logs to stderr.
+func (m *tryRunBase) LogErr(format string, a ...interface{}) {
+	if m.stderrLog != nil {
+		m.stderrLog.Printf(format, a...)
+	}
 }
 
 // RunCmd executes a shell command.
