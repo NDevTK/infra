@@ -90,6 +90,7 @@ type runTestConfig struct {
 	// e.g. "staging-eve-release-R106.15054.B"
 	expectedChildren []string
 	skipPaygen       bool
+	dryrun           bool
 }
 
 func doTestRun(t *testing.T, tc *runTestConfig) {
@@ -162,6 +163,12 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 
 	use_prod_tests := properties.GetFields()["$chromeos/cros_test_plan"].GetStructValue().GetFields()["use_prod_config"].GetBoolValue()
 	assert.Assert(t, use_prod_tests)
+}
+
+func TestRun_dryrun(t *testing.T) {
+	doTestRun(t, &runTestConfig{
+		dryrun: true,
+	})
 }
 
 func TestRun_noBuildTargets(t *testing.T) {
