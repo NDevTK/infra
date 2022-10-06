@@ -150,6 +150,11 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	}
 	r.bbAddArgs = append(r.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
+	if err := r.tagBuilds(ctx); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+
 	if err := r.runReleaseOrchestrator(ctx); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
