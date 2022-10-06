@@ -154,9 +154,13 @@ func (r *RequestTaskSet) retryParams() luci_retry.Iterator {
 func (r *RequestTaskSet) createNewBuildWithRetry(ctx context.Context, c *trservice.Client, ag *args.Generator, taskName string) (task *testrunner.Build, err error) {
 	err = luci_retry.Retry(ctx, transient.Only(r.retryParams), func() error {
 		task, err = testrunner.NewBuild(ctx, *c, ag)
-		if r.isTransientError(err) {
-			logging.Infof(ctx, "Transient error occured for %s: %s", taskName, err.Error())
-			return transient.Tag.Apply(err)
+		if err != nil {
+			if r.isTransientError(ctx, err) {
+				logging.Infof(ctx, "Transient error occured for %s: %s", taskName, err.Error())
+				return transient.Tag.Apply(err)
+			} else {
+				logging.Infof(ctx, "Found a non-transient error for %s: %s", taskName, err.Error())
+			}
 		}
 		return err
 	}, luci_retry.LogCallback(ctx, "create-new-test_runner-build"))
@@ -164,9 +168,18 @@ func (r *RequestTaskSet) createNewBuildWithRetry(ctx context.Context, c *trservi
 }
 
 // isTransientError returns if provided error is transient or not
-func (r *RequestTaskSet) isTransientError(err error) bool {
+func (r *RequestTaskSet) isTransientError(ctx context.Context, err error) bool {
 	if s, ok := status.FromError(err); ok {
-		return grpcutil.IsTransientCode(s.Code()) || s.Code() == codes.DeadlineExceeded
+		//return grpcutil.IsTransientCode(s.Code()) || s.Code() == codes.DeadlineExceeded
+		if grpcutil.IsTransientCode(s.Code()) {
+			logging.Infof(ctx, "Found status in grpc transient errors")
+			return true
+		}
+		if s.Code() == codes.DeadlineExceeded {
+			logging.Infof(ctx, "Found DeadlineExceeded")
+		}
+	} else {
+		logging.Infof(ctx, "Failed to find error status")
 	}
 	return false
 }
