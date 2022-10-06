@@ -25,6 +25,7 @@ func getCmdRelease() *subcommands.Command {
 			c.addBranchFlag()
 			c.addStagingFlag()
 			c.addPatchesFlag()
+			c.addBuildTargetsFlag()
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
 			return c
 		},
@@ -89,6 +90,13 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		}
 	}
 
+	if len(r.buildTargets) > 0 {
+		if err := setProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
+			fmt.Println(err)
+			return CmdError
+		}
+	}
+
 	propsFile, err := writeStructToFile(propsStruct)
 	if err != nil {
 		fmt.Println(errors.Annotate(err, "writing input properties to tempfile").Err())
@@ -121,6 +129,25 @@ func (r *releaseRun) getReleaseOrchestratorName() string {
 		builder = fmt.Sprintf("%srelease-%s-orchestrator", stagingPrefix, r.branch)
 	}
 	return fmt.Sprintf("%s/%s/%s", project, bucket, builder)
+}
+
+func (r *releaseRun) getReleaseBuilderNames() []string {
+	const project = "chromeos"
+	var builder, stagingPrefix string
+	if r.staging {
+		stagingPrefix = "staging-"
+	}
+	builderNames := make([]string, len(r.buildTargets))
+	for i, buildTarget := range r.buildTargets {
+		if strings.HasPrefix(r.branch, "release-") {
+			builder = fmt.Sprintf("%s%s-%s", stagingPrefix, buildTarget, r.branch)
+		} else {
+			builder = fmt.Sprintf("%s%s-release-%s", stagingPrefix, buildTarget, r.branch)
+		}
+		builderNames[i] = builder
+	}
+
+	return builderNames
 }
 
 // runReleaseOrchestrator creates a release orchestrator build via `bb add`, and reports it to the user.

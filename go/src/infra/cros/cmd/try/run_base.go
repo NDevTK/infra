@@ -34,9 +34,10 @@ type tryRunBase struct {
 	branch         string
 	staging        bool
 	// Patches of the form of "crrev.com/c/1234567", "crrev.com/i/1234567".
-	patches   list
-	bbAddArgs []string
-	cmdRunner cmd.CommandRunner
+	patches      list
+	buildTargets list
+	bbAddArgs    []string
+	cmdRunner    cmd.CommandRunner
 }
 
 // addBranchFlag creates a `-branch` command-line flag to specify the branch.
@@ -53,6 +54,11 @@ func (m *tryRunBase) addStagingFlag() {
 func (m *tryRunBase) addPatchesFlag() {
 	m.Flags.Var(&m.patches, "gerrit-patches", "(comma-separated) patches to apply to the build, e.g. crrev.com/c/1234567,crrev.com/i/1234567.")
 	m.Flags.Var(&m.patches, "g", "alias for --gerrit-patches")
+}
+
+// addBuildTargetsFlag creates a `-build_targets` command-line flag for a try subcommand.
+func (m *tryRunBase) addBuildTargetsFlag() {
+	m.Flags.Var(&m.buildTargets, "build_targets", "(comma-separated) Build targets to run. If not set, the standard set of build targets will be used.")
 }
 
 // validate validates base args for the command.
