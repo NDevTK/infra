@@ -26,6 +26,14 @@ func NilError(t *testing.T, err error) {
 	}
 }
 
+// NonNilError checks that the given error is not nil.
+func NonNilError(t *testing.T, err error) {
+	t.Helper()
+	if err == nil {
+		t.Fatalf("assert failed: nil error")
+	}
+}
+
 // ErrorContains checks that the given string exists in an error.
 func ErrorContains(t *testing.T, err error, s string) {
 	t.Helper()

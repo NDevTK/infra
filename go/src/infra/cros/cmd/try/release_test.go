@@ -110,6 +110,12 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 			fakeAuthInfoRunner("led", 0),
 			{
 				ExpectedCmd: []string{
+					"led", "auth-info",
+				},
+				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
+			},
+			{
+				ExpectedCmd: []string{
 					"led",
 					"get-builder",
 					fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
@@ -122,6 +128,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	for _, patch := range tc.patches {
 		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
 	}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
 		f.CommandRunners = append(f.CommandRunners,

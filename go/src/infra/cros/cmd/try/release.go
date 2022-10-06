@@ -79,9 +79,9 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	}
 
 	ctx := context.Background()
-	if err := r.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
+	if ret, err := r.run(ctx); err != nil {
 		r.LogErr(err.Error())
-		return AuthError
+		return ret
 	}
 
 	propsStruct, err := r.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())

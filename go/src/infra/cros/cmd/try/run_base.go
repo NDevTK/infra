@@ -107,6 +107,17 @@ func (m *tryRunBase) validate() error {
 	return nil
 }
 
+// run executes common run logic for all tryRunBase commands.
+func (m *tryRunBase) run(ctx context.Context) (int, error) {
+	if err := m.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
+		return AuthError, err
+	}
+	if err := m.tagBuilds(ctx); err != nil {
+		return CmdError, err
+	}
+	return Success, nil
+}
+
 // promptYes prompts the user yes or no and returns the response as a boolean.
 func (m *tryRunBase) promptYes() (bool, error) {
 	m.LogOut("You are launching a production build. Please confirm (y/N):")
@@ -123,6 +134,20 @@ func (m *tryRunBase) promptYes() (bool, error) {
 	default:
 		return false, nil
 	}
+}
+
+// tagBuilds adds the invoker's username as a tag to builds.
+func (m *tryRunBase) tagBuilds(ctx context.Context) error {
+	stdout, _, err := m.RunCmd(ctx, "led", "auth-info")
+	if err != nil {
+		return err
+	}
+	email, err := parseEmailFromAuthInfo(stdout)
+	if err != nil {
+		return err
+	}
+	m.bbAddArgs = append(m.bbAddArgs, "-t", fmt.Sprintf("tryjob-launcher:%s", email))
+	return nil
 }
 
 // LogOut logs to stdout.

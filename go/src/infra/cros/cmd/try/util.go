@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -32,4 +33,14 @@ func interfaceSliceToStr(s []interface{}) []string {
 		ret[i] = s[i].(string)
 	}
 	return ret
+}
+
+// parseEmailFromAuthInfo parses an email from a `led auth-info` invocation.
+func parseEmailFromAuthInfo(stdout string) (string, error) {
+	reAuthUser := regexp.MustCompile(`^Logged in as ([A-Za-z0-9\-_.+]+@[A-Za-z0-9\-_.+]+\.\w+)\.(\s|$)`)
+	submatch := reAuthUser.FindStringSubmatch(stdout)
+	if len(submatch) == 0 {
+		return "", fmt.Errorf("Could not find username in `luci auth-info` output:\n%s", stdout)
+	}
+	return strings.TrimSpace(submatch[1]), nil
 }
