@@ -90,6 +90,7 @@ type runTestConfig struct {
 	// e.g. "staging-eve-release-R106.15054.B"
 	expectedChildren []string
 	skipPaygen       bool
+	dryrun           bool
 }
 
 func doTestRun(t *testing.T, tc *runTestConfig) {
@@ -109,18 +110,24 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 				},
 				Stdout: validJSON,
 			},
-			{
+		},
+	}
+	if !tc.dryrun {
+		f.CommandRunners = append(f.CommandRunners,
+			cmd.FakeCommandRunner{
 				ExpectedCmd: []string{"bb", "add",
 					"chromeos/staging/staging-release-R106.15054.B-orchestrator",
 					"-cl", "crrev.com/c/1234567", "-cl", "crrev.com/i/7654321",
 					"-p", fmt.Sprintf("@%s", propsFile.Name())},
 			},
-		},
+		)
 	}
+
 	r := releaseRun{
 		propsFile: propsFile,
 		tryRunBase: tryRunBase{
 			cmdRunner:    f,
+			dryrun:       tc.dryrun,
 			branch:       "release-R106.15054.B",
 			staging:      true,
 			patches:      []string{"crrev.com/c/1234567", "crrev.com/i/7654321"},
@@ -162,6 +169,12 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 
 	use_prod_tests := properties.GetFields()["$chromeos/cros_test_plan"].GetStructValue().GetFields()["use_prod_config"].GetBoolValue()
 	assert.Assert(t, use_prod_tests)
+}
+
+func TestRun_dryrun(t *testing.T) {
+	doTestRun(t, &runTestConfig{
+		dryrun: true,
+	})
 }
 
 func TestRun_noBuildTargets(t *testing.T) {
