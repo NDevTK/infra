@@ -25,7 +25,7 @@ func getCmdRelease() *subcommands.Command {
 			c.tryRunBase.cmdRunner = cmd.RealCommandRunner{}
 			c.addDryrunFlag()
 			c.addBranchFlag()
-			c.addStagingFlag()
+			c.addProductionFlag()
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
 			c.addBuildspecFlag()
@@ -48,12 +48,8 @@ type releaseRun struct {
 
 // validate validates release-specific args for the command.
 func (r *releaseRun) validate() error {
-	if r.skipPaygen && !r.staging {
+	if r.skipPaygen && r.production {
 		return fmt.Errorf("--skip_paygen is not supported for production builds")
-	}
-
-	if !r.staging {
-		return fmt.Errorf("Non-staging release builds are currently unsupported. Please try again with --staging.")
 	}
 
 	if err := r.tryRunBase.validate(); err != nil {
@@ -70,6 +66,16 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	if err := r.validate(); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
+	}
+
+	if r.production && !r.skipProductionPrompt {
+		if yes, err := r.promptYes(); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		} else if !yes {
+			r.LogOut("Exiting.")
+			return Success
+		}
 	}
 
 	ctx := context.Background()
@@ -156,11 +162,11 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 func (r *releaseRun) getReleaseOrchestratorName() string {
 	const project = "chromeos"
 	var bucket, builder, stagingPrefix string
-	if r.staging {
+	if r.production {
+		bucket = "release"
+	} else {
 		bucket = "staging"
 		stagingPrefix = "staging-"
-	} else {
-		bucket = "release"
 	}
 	if strings.HasPrefix(r.branch, "release-") {
 		builder = fmt.Sprintf("%s%s-orchestrator", stagingPrefix, r.branch)
@@ -173,7 +179,7 @@ func (r *releaseRun) getReleaseOrchestratorName() string {
 func (r *releaseRun) getReleaseBuilderNames() []string {
 	const project = "chromeos"
 	var builder, stagingPrefix string
-	if r.staging {
+	if !r.production {
 		stagingPrefix = "staging-"
 	}
 	builderNames := make([]string, len(r.buildTargets))

@@ -4,10 +4,12 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 
@@ -35,9 +37,12 @@ type tryRunBase struct {
 	stderrLog *log.Logger
 	bbAddArgs []string
 	cmdRunner cmd.CommandRunner
+	// Used for testing.
+	skipProductionPrompt bool
 
-	branch  string
-	staging bool
+	dryrun     bool
+	branch     string
+	production bool
 	// Patches of the form of "crrev.com/c/1234567", "crrev.com/i/1234567".
 	patches      list
 	buildTargets list
@@ -49,12 +54,12 @@ func (m *tryRunBase) addBranchFlag() {
 	m.Flags.StringVar(&m.branch, "branch", "main", "specify the branch on which to run the builder")
 }
 
-// addStagingFlag creates a `-staging` command-line flag for a try subcommand.
-func (m *tryRunBase) addStagingFlag() {
-	m.Flags.BoolVar(&m.staging, "staging", false, "run a staging builder instead of a prod builder")
+// addProductionFlag creates a `-production` command-line flag for a try subcommand.
+func (m *tryRunBase) addProductionFlag() {
+	m.Flags.BoolVar(&m.production, "production", false, "run a production builder instead of a staging builder")
 }
 
-// addStagingFlag creates a `-staging` command-line flag for a try subcommand.
+// addPatchesFlag creates a `-gerrit-patches` command-line flag for a try subcommand.
 func (m *tryRunBase) addPatchesFlag() {
 	m.Flags.Var(&m.patches, "gerrit-patches", "(comma-separated) patches to apply to the build, e.g. crrev.com/c/1234567,crrev.com/i/1234567.")
 	m.Flags.Var(&m.patches, "g", "alias for --gerrit-patches")
@@ -85,14 +90,14 @@ func (m *tryRunBase) validate() error {
 			}
 		}
 
-		if !m.staging {
-			return fmt.Errorf("-g/--gerrit-patches is only supported with --staging")
+		if m.production {
+			return fmt.Errorf("-g/--gerrit-patches is only supported for staging builds")
 		}
 	}
 
 	if m.buildspec != "" {
-		if !m.staging {
-			return fmt.Errorf("--buildspec is only supported with --staging")
+		if m.production {
+			return fmt.Errorf("--buildspec is only supported for staging builds")
 		}
 		if !strings.HasPrefix(m.buildspec, "gs://") {
 			return fmt.Errorf("--buildspec must start with gs://")
@@ -100,6 +105,24 @@ func (m *tryRunBase) validate() error {
 	}
 
 	return nil
+}
+
+// promptYes prompts the user yes or no and returns the response as a boolean.
+func (m *tryRunBase) promptYes() (bool, error) {
+	m.LogOut("You are launching a production build. Please confirm (y/N):")
+	b := bufio.NewReader(os.Stdin)
+	i, err := b.ReadString('\n')
+	if err != nil {
+		return false, fmt.Errorf("error getting prompt response: %s", err)
+	}
+	switch strings.TrimSpace(strings.ToLower(i)) {
+	case "y", "yes":
+		return true, nil
+	case "", "n", "no":
+		return false, nil
+	default:
+		return false, nil
+	}
 }
 
 // LogOut logs to stdout.

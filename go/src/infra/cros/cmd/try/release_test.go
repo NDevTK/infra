@@ -28,8 +28,8 @@ func TestGetReleaseOrchestratorName(t *testing.T) {
 	} {
 		r := releaseRun{
 			tryRunBase: tryRunBase{
-				branch:  testCase.branch,
-				staging: testCase.staging,
+				branch:     testCase.branch,
+				production: !testCase.staging,
 			},
 		}
 		if actual := r.getReleaseOrchestratorName(); actual != testCase.expected {
@@ -54,7 +54,7 @@ func TestGetReleaseBuilderNames(t *testing.T) {
 		r := releaseRun{
 			tryRunBase: tryRunBase{
 				branch:       testCase.branch,
-				staging:      testCase.staging,
+				production:   !testCase.staging,
 				buildTargets: testCase.buildTargets,
 			},
 		}
@@ -68,16 +68,8 @@ func TestValidate_releaseRun(t *testing.T) {
 	t.Parallel()
 	r := releaseRun{
 		tryRunBase: tryRunBase{
-			branch:  "release-R106.15054.B",
-			staging: false,
-		},
-	}
-	assert.ErrorContains(t, r.validate(), "currently unsupported")
-
-	r = releaseRun{
-		tryRunBase: tryRunBase{
-			branch:  "release-R106.15054.B",
-			staging: false,
+			branch:     "release-R106.15054.B",
+			production: true,
 		},
 		skipPaygen: true,
 	}
@@ -85,11 +77,16 @@ func TestValidate_releaseRun(t *testing.T) {
 }
 
 type runTestConfig struct {
+	// e.g. ["crrev.com/c/1234567"]
+	patches []string
 	// e.g. "eve"
 	buildTargets []string
 	// e.g. "staging-eve-release-R106.15054.B"
 	expectedChildren []string
 	skipPaygen       bool
+	production       bool
+	dryrun           bool
+	buildspec        string
 }
 
 func doTestRun(t *testing.T, tc *runTestConfig) {
@@ -97,6 +94,16 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	propsFile, err := os.CreateTemp("", "input_props")
 	defer os.Remove(propsFile.Name())
 	assert.NilError(t, err)
+
+	var expectedBucket, expectedBuilder string
+	if tc.production {
+		expectedBucket = "chromeos/release"
+		expectedBuilder = "release-R106.15054.B-orchestrator"
+	} else {
+		expectedBucket = "chromeos/staging"
+		expectedBuilder = "staging-release-R106.15054.B-orchestrator"
+	}
+
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			fakeAuthInfoRunner("bb", 0),
@@ -105,27 +112,36 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 				ExpectedCmd: []string{
 					"led",
 					"get-builder",
-					"chromeos/staging:staging-release-R106.15054.B-orchestrator",
+					fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
 				},
 				Stdout: validJSON,
 			},
-			{
-				ExpectedCmd: []string{"bb", "add",
-					"chromeos/staging/staging-release-R106.15054.B-orchestrator",
-					"-cl", "crrev.com/c/1234567", "-cl", "crrev.com/i/7654321",
-					"-p", fmt.Sprintf("@%s", propsFile.Name())},
-			},
 		},
 	}
+	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
+	for _, patch := range tc.patches {
+		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
+	}
+	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
+	if !tc.dryrun {
+		f.CommandRunners = append(f.CommandRunners,
+			cmd.FakeCommandRunner{
+				ExpectedCmd: expectedAddCmd,
+			},
+		)
+	}
+
 	r := releaseRun{
 		propsFile: propsFile,
 		tryRunBase: tryRunBase{
-			cmdRunner:    f,
-			branch:       "release-R106.15054.B",
-			staging:      true,
-			patches:      []string{"crrev.com/c/1234567", "crrev.com/i/7654321"},
-			buildTargets: tc.buildTargets,
-			buildspec:    "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
+			cmdRunner:            f,
+			dryrun:               tc.dryrun,
+			branch:               "release-R106.15054.B",
+			production:           tc.production,
+			patches:              tc.patches,
+			buildTargets:         tc.buildTargets,
+			buildspec:            tc.buildspec,
+			skipProductionPrompt: true,
 		},
 		useProdTests: true,
 	}
@@ -153,12 +169,18 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		assert.Assert(t, exists && skipPaygen.GetBoolValue())
 	}
 
-	manifestInfo := properties.GetFields()["$chromeos/cros_source"].GetStructValue().GetFields()["syncToManifest"].GetStructValue()
-	syncToManifest := manifestInfo.GetFields()["manifestGsPath"].GetStringValue()
-	assert.StringsEqual(t, r.buildspec, syncToManifest)
+	if tc.buildspec != "" {
+		manifestInfo := properties.GetFields()["$chromeos/cros_source"].GetStructValue().GetFields()["syncToManifest"].GetStructValue()
+		syncToManifest := manifestInfo.GetFields()["manifestGsPath"].GetStringValue()
+		assert.StringsEqual(t, r.buildspec, syncToManifest)
+	}
 
-	disable_build_plan_pruning := properties.GetFields()["$chromeos/build_plan"].GetStructValue().GetFields()["disable_build_plan_pruning"].GetBoolValue()
-	assert.Assert(t, disable_build_plan_pruning)
+	disable_build_plan_pruning, exists := properties.GetFields()["$chromeos/build_plan"].GetStructValue().GetFields()["disable_build_plan_pruning"]
+	if len(tc.patches) > 0 {
+		assert.Assert(t, disable_build_plan_pruning.GetBoolValue())
+	} else {
+		assert.Assert(t, !exists)
+	}
 
 	use_prod_tests := properties.GetFields()["$chromeos/cros_test_plan"].GetStructValue().GetFields()["use_prod_config"].GetBoolValue()
 	assert.Assert(t, use_prod_tests)
@@ -173,12 +195,22 @@ func TestRun_dryrun(t *testing.T) {
 func TestRun_staging_noBuildTargets(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		skipPaygen: false,
+		buildspec:  "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
 	})
 }
 
-func TestRun_buildTargets(t *testing.T) {
+func TestRun_staging_buildTargets(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
 		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
+		buildspec:        "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
+	})
+}
+
+func TestRun_production(t *testing.T) {
+	doTestRun(t, &runTestConfig{
+		production:       true,
+		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedChildren: []string{"eve-release-R106.15054.B", "kevin-kernelnext-release-R106.15054.B"},
 	})
 }
