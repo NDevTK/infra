@@ -12,7 +12,6 @@
   * [infra_system](#recipe_modules-infra_system) (Python3 ✅)
   * [omahaproxy](#recipe_modules-omahaproxy) (Python3 ✅)
   * [powershell](#recipe_modules-powershell) (Python3 ✅)
-  * [provenance](#recipe_modules-provenance) (Python3 ✅)
   * [qemu](#recipe_modules-qemu) (Python3 ✅)
   * [recipe_autoroller](#recipe_modules-recipe_autoroller) (Python3 ✅)
   * [support_3pp](#recipe_modules-support_3pp) (Python3 ✅) &mdash; Allows uniform cross-compiliation, version tracking and archival for third-party software packages (libs+tools) for distribution via CIPD.
@@ -56,7 +55,6 @@
   * [luci_go](#recipes-luci_go) (Python3 ✅)
   * [luci_py](#recipes-luci_py) (Python3 ✅)
   * [powershell:examples/test](#recipes-powershell_examples_test)
-  * [provenance:examples/usage](#recipes-provenance_examples_usage) (Python3 ✅)
   * [qemu:examples/basic](#recipes-qemu_examples_basic) (Python3 ✅)
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
   * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
@@ -556,33 +554,6 @@ Returns:
   Dict containing 'results' as a key
 Raises:
   StepFailure if the failure is detected. See resources/psinvoke.py
-### *recipe_modules* / [provenance](/recipes/recipe_modules/provenance)
-
-[DEPS](/recipes/recipe_modules/provenance/__init__.py#7): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/step][recipe_engine/recipe_modules/step]
-
-PYTHON_VERSION_COMPATIBILITY: PY2+3
-
-#### **class [ProvenanceApi](/recipes/recipe_modules/provenance/api.py#14)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
-
-API for interacting with Provenance using the provenance tool.
-
-&mdash; **def [generate](/recipes/recipe_modules/provenance/api.py#37)(self, kms_crypto_key, input_file, output_file):**
-
-Generate an attestation file with a built artifact.
-
-Args:
-  * kms_crypto_key (str) - The name of the encryption key, e.g.
-    projects/chops-kms/locations/global/keyRings/[KEYRING]/cryptoKeys/[KEY]
-  * input_file (Path) - The path to the input manifest file.
-  * output_file (Path) - The path to the output attestation file.
-
-&emsp; **@property**<br>&mdash; **def [provenance\_path](/recipes/recipe_modules/provenance/api.py#21)(self):**
-
-Returns the path to provenance binary.
-
-When the property is accessed the first time, the latest, released
-provenance will be installed using cipd and verified using the provenance
-built-in to the OS image (if available).
 ### *recipe_modules* / [qemu](/recipes/recipe_modules/qemu)
 
 [DEPS](/recipes/recipe_modules/qemu/__init__.py#5): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -1683,13 +1654,6 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 PYTHON_VERSION_COMPATIBILITY: PY2
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/powershell/examples/test.py#17)(api):**
-### *recipes* / [provenance:examples/usage](/recipes/recipe_modules/provenance/examples/usage.py)
-
-[DEPS](/recipes/recipe_modules/provenance/examples/usage.py#7): [provenance](#recipe_modules-provenance), [recipe\_engine/path][recipe_engine/recipe_modules/path]
-
-PYTHON_VERSION_COMPATIBILITY: PY2+3
-
-&mdash; **def [RunSteps](/recipes/recipe_modules/provenance/examples/usage.py#13)(api):**
 ### *recipes* / [qemu:examples/basic](/recipes/recipe_modules/qemu/examples/basic.py)
 
 [DEPS](/recipes/recipe_modules/qemu/examples/basic.py#7): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path]
