@@ -455,24 +455,24 @@ func TestConvertServoTypeWorking(t *testing.T) {
 	}
 }
 
-// Test cases for ModemInfo proto convert
-var modemInfoConvertCases = []struct {
-	testState    string
-	expectLabels []string
-}{
-	{"", []string{}},
-	{"type: 1", []string{"modem_type:qualcomm_sc7180", "modem_imei:", "modem_supported_bands:", "modem_sim_count:0"}},
-	{"type: 1 imei:\"imei\"", []string{"modem_type:qualcomm_sc7180", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:0"}},
-	{"type: 1 imei:\"imei\", sim_count:1", []string{"modem_type:qualcomm_sc7180", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:1"}},
-	{"type: 1 imei:\"imei\", supported_bands:\"bands\" sim_count:1", []string{"modem_type:qualcomm_sc7180", "modem_imei:imei", "modem_supported_bands:bands", "modem_sim_count:1"}},
-}
-
 // TestConvertModemInfo validates modeminfo converter
 func TestConvertModemInfo(t *testing.T) {
+	var modemInfoConvertCases = []struct {
+		name         string
+		testState    string
+		expectLabels []string
+	}{
+		{"NO Modem", "", []string{}},
+		{"SC7180", "type: 1", []string{"modem_type:qualcomm_sc7180", "modem_imei:", "modem_supported_bands:", "modem_sim_count:0"}},
+		{"L850GL", "type: 2 imei:\"imei\"", []string{"modem_type:fibocomm_l850gl", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:0"}},
+		{"NL668", "type: 3 imei:\"imei\", sim_count:1", []string{"modem_type:nl668", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:1"}},
+		{"FM350", "type: 4 imei:\"imei\", supported_bands:\"bands\" sim_count:1", []string{"modem_type:fm350", "modem_imei:imei", "modem_supported_bands:bands", "modem_sim_count:1"}},
+	}
+	t.Parallel()
 	for _, testCase := range modemInfoConvertCases {
-		t.Run("Modem Type is "+string(testCase.testState), func(t *testing.T) {
+		t.Run("Modem Type "+string(testCase.name), func(t *testing.T) {
 			var ls inventory.SchedulableLabels
-			var protoText string = ""
+			protoText := ""
 			if testCase.testState != "" {
 				protoText = fmt.Sprintf(`modeminfo: { %s }`, testCase.testState)
 			}
@@ -485,6 +485,46 @@ func TestConvertModemInfo(t *testing.T) {
 				t.Errorf(
 					"Convert ModemInfo %#v got labels differ -want +got, %s",
 					testCase.testState,
+					diff)
+			}
+		})
+	}
+}
+
+// Test cases for ModemInfo proto revert
+
+// TestRevertModemInfoLabels validates modeminfo revert
+func TestRevertModemInfoLabels(t *testing.T) {
+	var modemInfoRevertTestCases = []struct {
+		labelValue           []string
+		expectType           inventory.ModemType
+		expectImei           string
+		expectSupportedBands string
+		expectSIMCount       int
+	}{
+		{[]string{}, 0, "", "", 0},
+		{[]string{"modem_imei:imei"}, 0, "imei", "", 0},
+		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180"}, 1, "imei", "", 0},
+		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180", "modem_supported_bands:bands"}, 1, "imei", "bands", 0},
+		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180", "modem_sim_count:1"}, 1, "imei", "", 1},
+	}
+	t.Parallel()
+	for _, testCase := range modemInfoRevertTestCases {
+		t.Run(testCase.expectImei, func(t *testing.T) {
+			want := inventory.NewSchedulableLabels()
+			if len(testCase.labelValue) > 0 {
+				want.Modeminfo = inventory.NewModeminfo()
+				*want.Modeminfo.Type = testCase.expectType
+				*want.Modeminfo.Imei = testCase.expectImei
+				*want.Modeminfo.SupportedBands = testCase.expectSupportedBands
+				*want.Modeminfo.SimCount = int32(testCase.expectSIMCount)
+			}
+			got := Revert(testCase.labelValue)
+			t.Log(got)
+			if diff := prettyConfig.Compare(&want, got); diff != "" {
+				t.Errorf(
+					"Revert servo_state from %v made labels differ -want +got, %s",
+					testCase.labelValue,
 					diff)
 			}
 		})
