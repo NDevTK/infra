@@ -19,18 +19,17 @@ import (
 //
 // `ctx` and `err` are bound by the surrounding context.
 //
-//   action, closer := someFunction(...)
-//   if closer != nil {
-//     defer closer(ctx, err)
-//   }
+//	action, closer := someFunction(...)
+//	if closer != nil {
+//	  defer closer(ctx, err)
+//	}
 //
-//   action, closer := someFunction(...)
-//   defer func() {
-//     if closer != nil {
-//       defer closer(ctx, err)
-//     }
-//   }()
-//
+//	action, closer := someFunction(...)
+//	defer func() {
+//	  if closer != nil {
+//	    defer closer(ctx, err)
+//	  }
+//	}()
 type CloserFunc = func(context.Context, error)
 
 // NewMetric takes a reference to an action and populates it as a new action of kind `kind`.
@@ -65,18 +64,17 @@ func (a *RunArgs) NewMetric(ctx context.Context, kind string, action *metrics.Ac
 //
 // Intended usage:
 //
-//  err is managed by the containing function.
+//	err is managed by the containing function.
 //
-//  Note that it is necessary to explicitly defer evaluation of err to the
-//  end of the function.
+//	Note that it is necessary to explicitly defer evaluation of err to the
+//	end of the function.
 //
-//  closer := createMetric(ctx, ...)
-//  if closer != nil {
-//    defer func() {
-//      closer(ctx, err)
-//    }()
-//  }
-//
+//	closer := createMetric(ctx, ...)
+//	if closer != nil {
+//	  defer func() {
+//	    closer(ctx, err)
+//	  }()
+//	}
 func createMetric(ctx context.Context, m metrics.Metrics, action *metrics.Action) func(context.Context, error) {
 	if m == nil {
 		return nil
@@ -96,15 +94,15 @@ func createMetric(ctx context.Context, m metrics.Metrics, action *metrics.Action
 		action.Status = metrics.ActionStatusUnspecified
 		// TODO(gregorynisbet): Consider strategies for multiple fail reasons.
 		if e != nil {
-			log.Debugf(ctx, "Updating action %q of kind %q during close failed with reason %q", action.Name, action.ActionKind, e.Error())
+			log.Debugf(ctx, "Updating metric kind %q: marked as 'fail' with reason %q", action.ActionKind, e.Error())
 			action.Status = metrics.ActionStatusFail
 			action.FailReason = e.Error()
 		} else {
 			action.Status = metrics.ActionStatusSuccess
-			log.Debugf(ctx, "Updating action %q of kind %q during close was successful", action.Name, action.ActionKind)
+			log.Debugf(ctx, "Updating metric kind %q: close was successful", action.ActionKind)
 		}
 		if uErr := m.Update(ctx, action); uErr != nil {
-			log.Errorf(ctx, "Updating action %q during close had error during upload: %s", action.Name, uErr.Error())
+			log.Errorf(ctx, "Updating metric kind %q: failed to update with error: %s", action.ActionKind, uErr.Error())
 		}
 	}
 	return closer
