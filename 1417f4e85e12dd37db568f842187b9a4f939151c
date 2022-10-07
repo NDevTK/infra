@@ -22,6 +22,30 @@
       },
       "revId": "1417f4e85e12dd37db568f842187b9a4f939151c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34ca2c76_94bfcf5b",
+        "filename": "go/src/infra/cros/cmd/try/run_base.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-07T17:13:34Z",
+      "side": 1,
+      "message": "That needed a few tweaks (missing `+` on the char sets) but generally works, thanks! Moved to util.go.",
+      "parentUuid": "446ebfbe_28f6008c",
+      "range": {
+        "startLine": 150,
+        "startChar": 22,
+        "endLine": 150,
+        "endChar": 37
+      },
+      "revId": "1417f4e85e12dd37db568f842187b9a4f939151c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
