@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc29825e_a7c8828c",
+        "filename": "go/src/infra/cros/cmd/try/util.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-07T19:19:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ac66bf9_7d2ac90b",
+      "revId": "8b08af70416415750527dd10b4f7de64b256e7dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "72e1cc95_c7ae747c",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-10-07T18:24:52Z",
       "side": 1,
       "message": "Two more common scenarios we should verify: periods and pluses before the @. (sundar.pichai@google.com, sundar+spam@google.com)",
+      "revId": "8b08af70416415750527dd10b4f7de64b256e7dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fa6c40c_c9caa5e4",
+        "filename": "go/src/infra/cros/cmd/try/util_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-07T19:19:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72e1cc95_c7ae747c",
       "revId": "8b08af70416415750527dd10b4f7de64b256e7dc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -58,6 +94,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3fb5586_78e68249",
+        "filename": "go/src/infra/cros/internal/assert/assert.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-07T19:19:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "70502b3c_d5fe03f2",
+      "range": {
+        "startLine": 29,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 11
+      },
+      "revId": "8b08af70416415750527dd10b4f7de64b256e7dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e312190e_0e01a5db",
@@ -71,6 +131,30 @@
       "writtenOn": "2022-10-07T18:24:52Z",
       "side": 1,
       "message": "Could we change the name to something like ErrorExists, NonNilError, or ErrorNotNil?",
+      "range": {
+        "startLine": 30,
+        "startChar": 5,
+        "endLine": 30,
+        "endChar": 10
+      },
+      "revId": "8b08af70416415750527dd10b4f7de64b256e7dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e0b3be1_99782bc0",
+        "filename": "go/src/infra/cros/internal/assert/assert.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-10-07T19:19:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e312190e_0e01a5db",
       "range": {
         "startLine": 30,
         "startChar": 5,
