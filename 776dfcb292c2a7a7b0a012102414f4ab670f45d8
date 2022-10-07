@@ -68,6 +68,24 @@
       "parentUuid": "7967d3ce_66061dad",
       "revId": "776dfcb292c2a7a7b0a012102414f4ab670f45d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d762c7d4_9d2c86e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T00:13:35Z",
+      "side": 1,
+      "message": "Successfully built cmake on my windows machine, but some other tests failed during linking. Disable the tests for now since I can\u0027t easily detect the environment differences between local and builder.",
+      "parentUuid": "36ae8f59_c8669429",
+      "revId": "776dfcb292c2a7a7b0a012102414f4ab670f45d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
