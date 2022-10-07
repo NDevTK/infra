@@ -25,7 +25,7 @@ import (
 )
 
 // defaultBatchSize is the default size of a batch for a datastore query.
-const defaultBatchSize = 1000
+const defaultBatchSize = 50_000
 
 // ActionKind is the kind of an action
 const ActionKind = "ActionKind"
