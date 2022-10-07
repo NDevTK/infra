@@ -5,6 +5,7 @@
 package heuristics
 
 import (
+	"io/fs"
 	"os"
 	"regexp"
 	"strings"
@@ -15,18 +16,16 @@ import (
 // LooksLikeSatlabRemoteAccessContainer determines whether the container we are running on looks like
 // a satlab remote access container.
 func LooksLikeSatlabRemoteAccessContainer() (bool, error) {
-	// TODO(gregorynisbet):
-	// Do not use "errors.Is" inside the body of this function until CrOSSkylabAdmin
-	// and other code that transitively depends on this module are migrated to go113 or
-	// higher.
 	_, err := os.Stat("/usr/local/bin/get_host_identifier")
-	if err != nil {
-		if strings.Contains(err.Error(), "no such file or directory") {
-			return false, nil
-		}
-		return false, errors.Annotate(err, "looks like satlab remote access container").Err()
+	if err == nil {
+		// Happy path, we're in a satlab remote access container.
+		return true, nil
 	}
-	return true, nil
+	if ok := errors.Is(err, fs.ErrNotExist); !ok {
+		// Semi-happy path, we successfully determined that we're not in a satlab remote access container.
+		return false, nil
+	}
+	return false, errors.Annotate(err, "looks like satlab remote access container").Err()
 }
 
 // LooksLikeSatlabDevice returns whether a hostname or botID appears to be a satlab-managed device.
