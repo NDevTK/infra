@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddb5bd03_6310f1fb",
+        "filename": "go/src/infra/libs/cipkg/builtins/import.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb4761c6_d171d1d0",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d22d463b_1e05bc70",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-10-06T04:18:06Z",
       "side": 1,
       "message": "Is this intentional that pruning is a no-op? If so, it probably warrants a comment around line 32.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d5ef1b1_e0771c6d",
+        "filename": "go/src/infra/libs/cipkg/utilities/testing/mock.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Yes. We can only observe the result of Prune from Available, which is also part of the Storage. They can\u0027t be used to test Pruning behaviour since they are mocked. We may add a functional mock in the future but I can\u0027t think a test requiring mock Prune for now. Leave it to future me :)\nComment added.",
+      "parentUuid": "d22d463b_1e05bc70",
       "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "91513853_951e5d69",
+        "filename": "go/src/infra/libs/cipkg/utilities/testing/mock.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "It\u0027s returning an empty timestamp, not the current one. Comment added.",
+      "parentUuid": "ae36745e_c094ee73",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0d0bd9dc_cf43ece5",
@@ -65,6 +119,24 @@
       "writtenOn": "2022-10-06T04:18:06Z",
       "side": 1,
       "message": "Comment around line 32 that no locking is provided.",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53f196d5_6c29d021",
+        "filename": "go/src/infra/libs/cipkg/utilities/testing/mock.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d0bd9dc_cf43ece5",
       "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4e0a7b0_e0af1b30",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/application.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5fbbbf7f_d49ca769",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e093f198_4fe01bca",
@@ -99,6 +189,24 @@
       "writtenOn": "2022-10-06T04:18:06Z",
       "side": 1,
       "message": "Naming suggestion: buildPlatform, cipdPlatform (same in the cross-compile test)",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e08aa0a2_00fff500",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/main_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e093f198_4fe01bca",
       "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -120,6 +228,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "35c686db_70819d49",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/main_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Conflicting derivation names is fine since we use id (which includes the hash) to differentiate packages. We may check the uniqueness of the name when they added to the storage in the future for the sake of our sanity.",
+      "parentUuid": "4a4a2356_7cd9cd69",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb23024b_e842944a",
@@ -137,6 +263,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fcc8237_7df0c1ed",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/from_spec.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb23024b_e842944a",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0df01fe8_7936cf85",
@@ -150,6 +294,24 @@
       "writtenOn": "2022-10-06T04:18:06Z",
       "side": 1,
       "message": "naming nit: for script source, I think what we\u0027ll return is a version string, not a \u0027tag\u0027",
+      "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ccfb583_eac550cf",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/spec/source.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2022-10-07T04:17:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0df01fe8_7936cf85",
       "revId": "be081d7a8bec1c2d4ef9e1ac1cc931b550b41191",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
