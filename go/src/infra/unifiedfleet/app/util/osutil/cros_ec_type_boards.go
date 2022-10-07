@@ -51,6 +51,7 @@ var crosEcTypeBoards = []string{
 	"sarien",
 	"scarlet",
 	"sentry",
+	"skyrim",
 	"snappy",
 	"soraka",
 	"strago",
