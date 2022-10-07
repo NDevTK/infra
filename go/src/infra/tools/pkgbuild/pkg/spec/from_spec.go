@@ -33,6 +33,7 @@ var fromSpecSupport embed.FS
 type SpecLoader struct {
 	cipdPackagePrefix     string
 	cipdSourceCachePrefix string
+	sourceResolver        SourceResolver
 
 	embedSupportFilesDerivation cipkg.Generator
 
@@ -44,12 +45,14 @@ type SpecLoader struct {
 type SpecLoaderConfig struct {
 	CIPDPackagePrefix     string
 	CIPDSourceCachePrefix string
+	SourceResolver        SourceResolver
 }
 
 func DefaultSpecLoaderConfig() *SpecLoaderConfig {
 	return &SpecLoaderConfig{
 		CIPDPackagePrefix:     "",
 		CIPDSourceCachePrefix: "sources",
+		SourceResolver:        &DefaultSourceResolver{},
 	}
 }
 
@@ -81,6 +84,7 @@ func NewSpecLoader(dir fs.FS, cfg *SpecLoaderConfig) (*SpecLoader, error) {
 	return &SpecLoader{
 		cipdPackagePrefix:     cfg.CIPDPackagePrefix,
 		cipdSourceCachePrefix: cfg.CIPDSourceCachePrefix,
+		sourceResolver:        cfg.SourceResolver,
 
 		embedSupportFilesDerivation: embedSupportFilesDerivation,
 
@@ -137,7 +141,7 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 	if err != nil {
 		return nil, err
 	}
-	if err := create.ParseSource(fullName, l.cipdPackagePrefix, l.cipdSourceCachePrefix); err != nil {
+	if err := create.ParseSource(fullName, l.cipdPackagePrefix, l.cipdSourceCachePrefix, l.sourceResolver); err != nil {
 		return nil, err
 	}
 	if err := create.FindPatches(defDerivation); err != nil {
@@ -219,33 +223,41 @@ func newCreateParser(host string, creates []*Spec_Create) (*createParser, error)
 	return p, nil
 }
 
+// Extract the cache path from URL
+func gitCachePath(url string) string {
+	url = strings.TrimPrefix(url, "https://chromium.googlesource.com/external/")
+	url = strings.TrimPrefix(url, "https://")
+	url = strings.TrimPrefix(url, "http://")
+	return path.Clean(url)
+}
+
 // Fetch the latest version and convert source section in create to source
 // definition in stdenv. Versions are fetched during the parsing so the source
 // definition can be deterministic.
 // Source may be cached based on CacheKey.
-func (p *createParser) ParseSource(name, packagePrefix, sourceCachePrefix string) error {
+func (p *createParser) ParseSource(name, packagePrefix, sourceCachePrefix string, resolver SourceResolver) error {
 	source := p.create.GetSource()
 
 	s, v, err := func() (stdenv.Source, string, error) {
 		switch source.GetMethod().(type) {
 		case *Spec_Create_Source_Git:
 			s := source.GetGit()
-			ref, err := resolveGitRef(s)
+			tag, commit, err := resolver.ResolveGitSource(s)
 			if err != nil {
 				return nil, "", fmt.Errorf("failed to resolve git ref: %w", err)
 			}
 			return &stdenv.SourceGit{
 				URL: s.GetRepo(),
-				Ref: ref.Commit,
+				Ref: commit,
 
 				CacheKey: (&url.URL{
 					Path: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.GetRepo())),
 					RawQuery: url.Values{
 						"subdir": {"src"},
-						"tag":    {fmt.Sprintf("2@%s", ref.Tag)},
+						"tag":    {fmt.Sprintf("2@%s", tag)},
 					}.Encode(),
 				}).String(),
-			}, ref.Tag, nil
+			}, tag, nil
 		case *Spec_Create_Source_Url:
 			s := source.GetUrl()
 			ext := s.GetExtension()
