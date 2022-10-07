@@ -39,7 +39,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if err := stdenv.Init(); err != nil {
+	if err := stdenv.Init(nil); err != nil {
 		logging.WithError(err).Errorf(ctx, "failed to init stdenv")
 		os.Exit(1)
 	}

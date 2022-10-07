@@ -103,15 +103,24 @@ var importFromPathMap = make(map[string]struct {
 	err    error
 })
 
-// FromPathBatch(...) is a wrapper for builtins.Import generator. It finds binaries
-// in the PATH environment and caches the result.
-func FromPathBatch(name string, bins ...string) (cipkg.Generator, error) {
+// FindBinaryFunc should return a path for the provided binary name.
+// e.g. exec.LookPath searches the binary in the PATH.
+type FindBinaryFunc func(bin string) (path string, err error)
+
+// FromPathBatch(...) is a wrapper for builtins.Import generator. It finds
+// binaries using finder func and caches the result based on the name. if
+// finder is nil, binaries will be searched from the PATH environment.
+func FromPathBatch(name string, finder FindBinaryFunc, bins ...string) (cipkg.Generator, error) {
+	if finder == nil {
+		finder = exec.LookPath
+	}
+
 	i := &Import{Name: name}
 	for _, bin := range bins {
 		ret, ok := importFromPathMap[bin]
 		if !ok {
 			ret.target, ret.err = func() (*ImportTarget, error) {
-				path, err := exec.LookPath(bin)
+				path, err := finder(bin)
 				if err != nil {
 					return nil, fmt.Errorf("failed to find binary: %s: %w", bin, err)
 				}
@@ -131,8 +140,4 @@ func FromPathBatch(name string, bins ...string) (cipkg.Generator, error) {
 		i.Targets = append(i.Targets, *ret.target)
 	}
 	return i, nil
-}
-
-func FromPath(bin string) (cipkg.Generator, error) {
-	return FromPathBatch(fmt.Sprintf("%s_import", bin), bin)
 }
