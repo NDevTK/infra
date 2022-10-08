@@ -1,0 +1,11 @@
+name: luci/logdog/logs
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/logdog/appengine/cmd/coordinator/logs/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/logdog
+
+build:
+  - go_binary: go.chromium.org/luci/logdog/appengine/cmd/coordinator/logs
