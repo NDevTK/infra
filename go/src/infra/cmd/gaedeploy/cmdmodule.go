@@ -76,6 +76,7 @@ type cmdModuleRun struct {
 	moduleName    string              // -module-name flag, required
 	moduleYAML    string              // -module-yaml flag, require
 	moduleVersion string              // -module-version flag, required
+	flexImageURL  string              // -flex-image-url flag, optional
 	vars          stringmapflag.Value // -var flags
 	force         bool                // -force flag
 }
@@ -93,6 +94,7 @@ func (c *cmdModuleRun) init() {
 		"Path within the tarball to a module YAML to deploy.")
 	c.Flags.StringVar(&c.moduleVersion, "module-version", moduleVersionPlaceholder,
 		"Version name for the deployed code. Does nothing if such version already exists, unless -force is also given.")
+	c.Flags.StringVar(&c.flexImageURL, "flex-image-url", "", "(Flex only) Docker image URL to pass to gcloud app deploy.")
 	c.Flags.Var(&c.vars, "var", "A KEY=VALUE pair that defines a variable used when rendering module's YAML. May be repeated.")
 	c.Flags.BoolVar(&c.force, "force", false,
 		"Deploy the module even if such version already exists")
@@ -110,6 +112,9 @@ func (c *cmdModuleRun) exec(ctx context.Context) error {
 
 	logging.Infof(ctx, "App ID:  %s", c.appID)
 	logging.Infof(ctx, "Tarball: %s", c.tarballSource)
+	if c.flexImageURL != "" {
+		logging.Infof(ctx, "Image:   %s", c.flexImageURL)
+	}
 	logging.Infof(ctx, "Cache:   %s", c.cache.Root)
 	logging.Infof(ctx, "Module:  %s", c.moduleName)
 	logging.Infof(ctx, "YAML:    %s", c.moduleYAML)
@@ -215,8 +220,11 @@ func (c *cmdModuleRun) exec(ctx context.Context) error {
 			"--no-promote",
 			"--no-stop-previous-version",
 			"--version", c.moduleVersion,
-			filepath.Base(yamlTmp.Name()),
 		)
+		if c.flexImageURL != "" {
+			command = append(command, "--image-url", c.flexImageURL)
+		}
+		command = append(command, filepath.Base(yamlTmp.Name()))
 
 		// Perform the actual deployment.
 		return gcloud.Run(ctx, command, filepath.Join(root, modDir), env, c.dryRun)
