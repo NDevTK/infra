@@ -62,6 +62,18 @@ class Customization(object):
     """ id returns the identifier for this customization"""
     return NAME_SEP.join([self.image().name, self._name])
 
+  def pinnable(self, ctx):
+    """ pinnable determines if the customization is pinnable
+    Args:
+      * ctx: dict containing the context for pinning
+
+    Returns True if the customization is pinnable. False otherwise
+    """
+    for ip in self.inputs:
+      if ip.WhichOneof('src') == 'local_src' and ip.local_src not in ctx:
+        return False
+    return True
+
   def set_key(self, key):
     """ set_key is used to set the identification keys for the customization
     Args:
