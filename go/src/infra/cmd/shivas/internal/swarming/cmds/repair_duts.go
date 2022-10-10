@@ -95,7 +95,6 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		var err error
 		if c.paris {
 			// Use PARIS.
-			fmt.Fprintf(a.GetErr(), "Using PARIS for %q\n", host)
 			taskInfo, err = scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, sessionTag)
 		} else {
 			// Legacy Flow, no PARIS.
@@ -130,6 +129,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 	p := &buildbucket.Params{
 		UnitName:       host,
 		TaskName:       string(buildbucket.Recovery),
+		BuilderName:    "repair",
 		EnableRecovery: runRepair,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.

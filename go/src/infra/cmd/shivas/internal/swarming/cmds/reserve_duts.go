@@ -110,6 +110,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 	p := &buildbucket.Params{
 		UnitName:     host,
 		TaskName:     string(buildbucket.Custom),
+		BuilderName:  "reserve",
 		AdminService: e.AdminService,
 		// NOTE: We use the UFS service, not the Inventory service here.
 		InventoryService: e.UnifiedFleetService,
