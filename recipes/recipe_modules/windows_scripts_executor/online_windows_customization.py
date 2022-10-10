@@ -226,7 +226,8 @@ class OnlineWindowsCustomization(customization.Customization):
         size=drive.size,
         filesystem=drive.filesystem)
 
-  def get_output(self):
+  @property
+  def outputs(self):
     """ return the output of executing this config. Doesn't guarantee that the
     output exists"""
     outputs = []
@@ -251,6 +252,21 @@ class OnlineWindowsCustomization(customization.Customization):
                               self._source.get_url(src_pb.Src(gcs_src=output))
                       }))
     return outputs
+
+  @property
+  def inputs(self):  # pragma: no cover
+    """ inputs returns the input(s) required for this customization.
+
+    inputs here refer to any external refs that might be required for this
+    customization
+    """
+    inputs = []
+    owc = self.customization().online_windows_customization
+    for boot in owc.online_customizations:
+      for drive in boot.vm_config.qemu_vm.drives:
+        if drive.input_src.WhichOneof('src'):
+          inputs.append(drive.input_src)
+    return inputs
 
   @property
   def context(self):  # pragma: no cover
