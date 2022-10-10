@@ -8,10 +8,12 @@ package execute
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.chromium.org/luci/luciexe/exe"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
@@ -98,6 +100,27 @@ func extractOneConfig(trs map[string]*steps.ExecuteRequest) *config.Config {
 	return nil
 }
 
+func inferDeadline(r *steps.ExecuteRequests) (time.Time, error) {
+	// Deadline = test_runner CreateTime + MaxDuration
+	c := time.Now().UTC()
+	if c.IsZero() {
+		return c, errors.Reason("infer deadline: build creation time not known").Err()
+	}
+	return c.Add(inferTimeout(r.TaggedRequests)), nil
+}
+
+const defaultTaskTimout = 12 * time.Hour
+
+func inferTimeout(trs map[string]*steps.ExecuteRequest) time.Duration {
+	for _, r := range trs {
+		if maxDuration, err := ptypes.Duration(r.RequestParams.Time.MaximumDuration); err == nil {
+			return maxDuration
+		}
+		return defaultTaskTimout
+	}
+	return defaultTaskTimout
+}
+
 func validateRequests(trs map[string]*steps.ExecuteRequest) error {
 	if len(trs) == 0 {
 		return errors.Reason("zero requests").Err()
@@ -171,5 +194,24 @@ func updateWithEnumerationErrors(ctx context.Context, resps map[string]*steps.Ex
 			resp.State.Verdict = test_platform.TaskState_VERDICT_FAILED
 			logging.Infof(ctx, "Set request %s to VERDICT_FAILED because of enumeration error: %s", t, es)
 		}
+	}
+}
+
+// runWithDeadline runs f() with the given deadline.
+//
+// In case of a highest level timeout, the error is returned as timeoutError.
+// All other errors are returned as fErr.
+func runWithDeadline(ctx context.Context, f func(context.Context) error, deadline time.Time) (timeoutError error, fErr error) {
+	ctx, cancel := context.WithDeadline(ctx, deadline)
+	defer cancel()
+
+	err := f(ctx)
+	switch {
+	case err == nil:
+		return nil, nil
+	case execution.IsGlobalTimeoutError(ctx, err):
+		return errors.Annotate(err, "hit cros_test_platform request deadline (%s)", deadline).Err(), nil
+	default:
+		return nil, err
 	}
 }

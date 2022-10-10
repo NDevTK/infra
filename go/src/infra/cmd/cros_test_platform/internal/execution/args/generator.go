@@ -22,6 +22,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/golang/protobuf/ptypes"
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
@@ -144,6 +145,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 
 	cmd := &worker.Command{
 		ClientTest:      isClient,
+		Deadline:        g.Deadline,
 		Keyvals:         kv,
 		OutputToIsolate: true,
 		TaskName:        g.Invocation.Test.Name,
@@ -553,7 +555,13 @@ func (g *Generator) testRunnerRequest(ctx context.Context) (*skylab_test_runner.
 	kv := g.keyvals(ctx)
 	ta := g.testargs()
 
+	var deadline *timestamppb.Timestamp
+	if !g.Deadline.IsZero() {
+		deadline = timestamppb.New(g.Deadline)
+	}
+
 	return &skylab_test_runner.Request{
+		Deadline: deadline,
 		Prejob: &skylab_test_runner.Request_Prejob{
 			SoftwareDependencies: g.Params.SoftwareDependencies,
 			SoftwareAttributes:   g.Params.SoftwareAttributes,
@@ -585,6 +593,11 @@ func (g *Generator) testRunnerRequest(ctx context.Context) (*skylab_test_runner.
 // cftTestRunnerRequest creates test runner request for cft workflow
 func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runner.CFTTestRequest, error) {
 	kv := g.keyvals(ctx)
+
+	var deadline *timestamppb.Timestamp
+	if !g.Deadline.IsZero() {
+		deadline = timestamppb.New(g.Deadline)
+	}
 
 	builds, err := extractBuilds(g.Params.GetSoftwareDependencies())
 	if err != nil {
@@ -652,6 +665,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	}
 	// TODO(b/220801220): Pass in companion duts info for multi-duts cases.
 	return &skylab_test_runner.CFTTestRequest{
+		Deadline:         deadline,
 		ParentRequestUid: g.ParentRequestUID,
 		ParentBuildId:    g.ParentBuildID,
 		PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
