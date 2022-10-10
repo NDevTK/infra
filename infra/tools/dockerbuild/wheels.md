@@ -188,6 +188,20 @@ wheel: <
 
 * *universal*
 
+## **Mako-py3**
+
+### 1.2.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mako-py3"
+  version: "version:1.2.3"
+>
+```
+
+
+* *universal*
+
 ## **Markdown**
 
 ### 3.0.1

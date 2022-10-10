@@ -970,6 +970,7 @@ SPECS.update({
         UniversalSource(
             'Appium_Python_Client', '0.24', pypi_name='Appium-Python-Client'),
         UniversalSource('Django', '1.5.1'),
+        UniversalSource('Mako', '1.2.3', pyversions=['py3']),
         UniversalSource('PeakUtils', '1.0.3'),
         UniversalSource('Phidgets', '2.1.8'),
         UniversalSource('PyYAML', '5.3.1', pyversions=['py3']),
