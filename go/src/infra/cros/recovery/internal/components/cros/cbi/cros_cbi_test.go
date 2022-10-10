@@ -1,3 +1,7 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // Copyright 2022 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -70,6 +74,51 @@ func TestBuildCBILocation(t *testing.T) {
 					"Expected CBI Location %+v\n but got %+v\n",
 					tt.expectedCBILocation,
 					cbiLocation)
+			}
+		})
+	}
+}
+
+// TestParseBytesFromCBIContents tests that the output of calls to the
+// `ectool i2cxfer` command can be properly broken down into a slice of hex
+// bytes. e.g. "0x43" or "00"
+func TestParseBytesFromCBIContents(t *testing.T) {
+	testCases := []struct {
+		cbiContents      string
+		numBytesToRead   int
+		expectedHexBytes []string
+	}{
+		{
+			"Read bytes: 0x43 0x1 00 0xff",
+			4,
+			[]string{"0x43", "0x1", "00", "0xff"},
+		},
+		{
+			"Read bytes: 0x43 0x1 00 0xff",
+			2,
+			[]string{"0x43", "0x1"},
+		},
+		{
+			"Read bytes: 0x43",
+			2,
+			nil,
+		},
+		{
+			"junk",
+			1,
+			nil,
+		},
+	}
+	t.Parallel()
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(tt.cbiContents, func(t *testing.T) {
+			hexBytes, _ := parseBytesFromCBIContents(tt.cbiContents, tt.numBytesToRead)
+			if !reflect.DeepEqual(hexBytes, tt.expectedHexBytes) {
+				t.Errorf(
+					"Expected Hex Bytes %+v\n but got %+v\n",
+					tt.expectedHexBytes,
+					hexBytes)
 			}
 		})
 	}
