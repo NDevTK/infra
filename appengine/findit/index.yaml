@@ -475,6 +475,11 @@ indexes:
 - kind: PresubmitCoverageData
   properties:
   - name: cl_patchset.server_host
+  - name: update_timestamp
+
+- kind: PresubmitCoverageData
+  properties:
+  - name: cl_patchset.server_host
   - name: cl_patchset.change
   - name: based_on
 

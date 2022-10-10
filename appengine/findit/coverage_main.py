@@ -10,6 +10,7 @@ from gae_libs import appengine_util
 
 from handlers.code_coverage import create_referenced_coverage
 from handlers.code_coverage import export_absolute_coverage
+from handlers.code_coverage import export_incremental_coverage
 from handlers.code_coverage import export_gerrit_filter_coverage
 from handlers.code_coverage import fetch_source_file
 from handlers.code_coverage import process_coverage
@@ -46,6 +47,10 @@ code_coverage_backend_handler_mappings = [
      export_absolute_coverage.ExportFilesAbsoluteCoverageMetricsCron),
     ('.*/coverage/task/files-absolute-coverage',
      export_absolute_coverage.ExportFilesAbsoluteCoverageMetrics),
+    ('.*/coverage/cron/incremental-coverage',
+     export_incremental_coverage.ExportIncrementalCoverageMetricsCron),
+    ('.*/coverage/task/incremental-coverage',
+     export_incremental_coverage.ExportIncrementalCoverageMetrics),
     ('.*/coverage/cron/all-gerrit-filter-coverage',
      export_gerrit_filter_coverage.ExportAllCoverageMetricsCron),
     ('.*/coverage/task/all-gerrit-filter-coverage',

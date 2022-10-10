@@ -44,10 +44,10 @@ def _CreateMockMergedChange(commit, parent_commit, filepath):
   }
 
 
-class FeatureIncrementalCoverageTest(WaterfallTestCase):
+class GerritFilterCoverageTest(WaterfallTestCase):
 
   def setUp(self):
-    super(FeatureIncrementalCoverageTest, self).setUp()
+    super(GerritFilterCoverageTest, self).setUp()
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_gitiles_configs': {
@@ -59,7 +59,7 @@ class FeatureIncrementalCoverageTest(WaterfallTestCase):
 
   def tearDown(self):
     self.UpdateUnitTestConfigSettings('code_coverage_settings', {})
-    super(FeatureIncrementalCoverageTest, self).tearDown()
+    super(GerritFilterCoverageTest, self).tearDown()
 
   # This test tests whether modified coverage entities get created in datastore,
   # with coverage data compressed in the right format. The subsequent tests do
