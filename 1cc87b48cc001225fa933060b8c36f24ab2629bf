@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "26b50bd1_56a4271b",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/examples/process_customizations.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-10-10T22:56:28Z",
+      "side": 1,
+      "message": "\u003e \"referncing\" is a possible misspelling of \"referencing\".\n\nPlease fix.",
+      "parentUuid": "937252a2_e0ecfc57",
+      "range": {
+        "startLine": 30,
+        "startChar": 32,
+        "endLine": 30,
+        "endChar": 42
+      },
+      "revId": "1cc87b48cc001225fa933060b8c36f24ab2629bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61724c81_a350bb23",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/examples/process_customizations.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-10-10T22:56:28Z",
+      "side": 1,
+      "message": "\u003e \"referncing\" is a possible misspelling of \"referencing\".\n\nPlease fix.",
+      "parentUuid": "792940e3_b0945ee6",
+      "range": {
+        "startLine": 56,
+        "startChar": 65,
+        "endLine": 56,
+        "endChar": 75
+      },
+      "revId": "1cc87b48cc001225fa933060b8c36f24ab2629bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
