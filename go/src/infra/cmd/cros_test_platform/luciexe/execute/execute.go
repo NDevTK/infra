@@ -50,10 +50,17 @@ func Run(ctx context.Context, args Args) error {
 
 	cfg := extractOneConfig(request.TaggedRequests)
 
+	deadline, err := inferDeadline(request)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "Execution deadline: %s", deadline.String())
+
 	ea := execution.Args{
 		Request:      request,
 		WorkerConfig: cfg.SkylabWorker,
 		ParentTaskID: args.SwarmingTaskID,
+		Deadline:     deadline,
 	}
 	// crbug.com/1112514 These arguments optional during the transition to
 	// luciexe.
@@ -71,17 +78,25 @@ func Run(ctx context.Context, args Args) error {
 	}
 
 	var resps map[string]*steps.ExecuteResponse
-	resps, err = execution.Run(ctx, skylab, ea)
-
-	// Timeout while waiting for tasks is not considered an Test Platform
-	// infrastructure error because root cause is mostly related to fleet
-	// capacity or long test runtimes.
-	if execution.IsGlobalTimeoutError(ctx, err) {
-		logging.Warningf(ctx, "Exited wait dut to timeout: %s", err)
-		logging.Warningf(ctx, "Execution responses will contain test failures as a consequence of the timeout.")
-	}
+	tErr, err := runWithDeadline(
+		ctx,
+		func(ctx context.Context) error {
+			var err error
+			// Captured: resps
+			resps, err = execution.Run(ctx, skylab, ea)
+			return err
+		},
+		deadline,
+	)
 	if err != nil {
 		return err
+	}
+	if tErr != nil {
+		// Timeout while waiting for tasks is not considered an Test Platform
+		// infrastructure error because root cause is mostly related to fleet
+		// capacity or long test runtimes.
+		logging.Warningf(ctx, "Exited wait dut to timeout: %s", tErr)
+		logging.Warningf(ctx, "Execution responses will contain test failures as a consequence of the timeout.")
 	}
 
 	updateWithEnumerationErrors(ctx, resps, request.TaggedRequests)
