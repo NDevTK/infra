@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01b3cff3_844be600",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "nit: i think when we annotate we need provide the place where we do which and possible other details. Example:\n`get CBI location: unable to determine if present on the DUT`",
+      "range": {
+        "startLine": 50,
+        "startChar": 36,
+        "endLine": 50,
+        "endChar": 84
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6cfc97ce_60b9911c",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "you can simplify by annotate error at the same time\n```\ncbiLocation, err :\u003d buildCBILocation(locateCBIOutput)\nreturn cbiLocation, errors.Annotate(err, \"get CBI location\").Err()\n```",
+      "range": {
+        "startLine": 53,
+        "startChar": 1,
+        "endLine": 56,
+        "endChar": 2
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7634e15a_b67ec5e2",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "nit: that is nil if i am not mistaken",
+      "range": {
+        "startLine": 57,
+        "startChar": 21,
+        "endLine": 57,
+        "endChar": 24
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4592a64e_6de17c31",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "i think as we have dependency to have some data we need to check it by. the nil is 0\n```\nif len(match) \u003c 2 {\n    ...\n}\n```",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 16
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2d1a39b_04f41d84",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 105,
+        "startChar": 28,
+        "endLine": 105,
+        "endChar": 32
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1cc481af_e16e73df",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cros_cbi_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "that is duplicate we already have it in the file.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 0
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "52fed402_caa0c96d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-10T23:56:12Z",
+      "side": 1,
+      "message": "just the question is the expected flow as i though that error will be generated if content did not match.",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 43
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
