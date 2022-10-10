@@ -104,7 +104,7 @@ See: [Monorail Triage Guide](doc/triage.md).
 
 ## Release process
 
-See: [Monorail Deployment](doc/deployment.md)
+See: [Monorail Deployment](http://go/monorail-deploy)
 
 # User guide
 
