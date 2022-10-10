@@ -47,9 +47,11 @@ def GenTests(api):
   SYSTEM = t.VM_DRIVE(
       name='system.img',
       ip=None,
-      op=dest.Dest(
-          gcs_src=sources.GCSSrc(
-              bucket='chrome-windows-images', source='WIN-OUT/system.img')),
+      op=[
+          dest.Dest(
+              gcs_src=sources.GCSSrc(
+                  bucket='chrome-windows-images', source='WIN-OUT/system.img'))
+      ],
       size=10241024,
       media='disk',
       filesystem='fat',

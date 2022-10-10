@@ -634,7 +634,7 @@ def VM_DRIVE(name,
   return drive.Drive(
       name=name,
       input_src=ip,
-      output_dest=op,
+      output_dests=op,
       interface=interface,
       media=media,
       fmt=fmt,
