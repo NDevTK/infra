@@ -23,25 +23,26 @@ def get_src_from_action(action):
   return []
 
 
-def pin_src_from_action(action, sources):
+def pin_src_from_action(action, sources, ctx):
   """ pin_src_from_action replaces all the src objects in the given action with
   volatile/deterministic refs and replaces them with deterministic refs
 
   Args:
     * action: proto Action object containing an executable action
     * sources: sources object from sources.py
+    * ctx: dict containing context for the pinning
   """
   if action.WhichOneof('action') == 'add_file':
-    action.add_file.src.CopyFrom(sources.pin(action.add_file.src))
+    action.add_file.src.CopyFrom(sources.pin(action.add_file.src, ctx))
   if action.WhichOneof('action') == 'add_windows_package':
     action.add_windows_package.src.CopyFrom(
-        sources.pin(action.add_windows_package.src))
+        sources.pin(action.add_windows_package.src, ctx))
   if action.WhichOneof('action') == 'add_windows_driver':
     action.add_windows_driver.src.CopyFrom(
-        sources.pin(action.add_windows_driver.src))
+        sources.pin(action.add_windows_driver.src, ctx))
   if action.WhichOneof('action') == 'powershell_expr':
     for _, src in action.powershell_expr.srcs.items():
-      src.CopyFrom(sources.pin(src))
+      src.CopyFrom(sources.pin(src, ctx))
 
 
 def get_build_offline_customization(offline_customization):

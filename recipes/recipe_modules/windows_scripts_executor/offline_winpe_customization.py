@@ -42,14 +42,18 @@ class OfflineWinPECustomization(customization.Customization):
     self._canon_cust = None
     helper.ensure_dirs(self.m.file, [self._workdir])
 
-  def pin_sources(self):
-    """ pins the given config by replacing the sources in customization """
+  def pin_sources(self, ctx):
+    """ pins the given config by replacing the sources in customization
+
+    Args:
+      * ctx: dict containing the context for the customization
+    """
     wpec = self._customization.offline_winpe_customization
     if wpec.image_src.WhichOneof('src'):
-      wpec.image_src.CopyFrom(self._source.pin(wpec.image_src))
+      wpec.image_src.CopyFrom(self._source.pin(wpec.image_src, ctx))
     for off_action in wpec.offline_customization:
       for action in off_action.actions:
-        helper.pin_src_from_action(action, self._source)
+        helper.pin_src_from_action(action, self._source, ctx)
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to disk"""
@@ -113,6 +117,15 @@ class OfflineWinPECustomization(customization.Customization):
           tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
       )
     return None  # pragma: no cover
+
+  @property
+  def context(self):
+    """ context returns a dict containing the local_src id mapping to output
+    src.
+    """
+    return {
+        self.id: self._source.dest_to_src(self.get_output()[0])
+    }  # pragma: no cover
 
   def execute_customization(self):
     """ execute_customization initializes the winpe image, runs the given
