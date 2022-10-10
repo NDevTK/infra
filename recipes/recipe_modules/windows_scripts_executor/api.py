@@ -217,10 +217,12 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     """
     exec_customizations = []
     for cust in customizations:
-      output = cust.get_output()
-      if output and not self._sources.exists(output):
-        # add to executable list if the output doesn't exist
-        exec_customizations.append(cust)
+      outputs = cust.get_output()
+      for output in outputs:
+        if output and not self._sources.exists(output):
+          # add to executable list if any of the outputs, doesn't exist
+          exec_customizations.append(cust)
+          break
     return exec_customizations
 
   def download_all_packages(self, custs):
