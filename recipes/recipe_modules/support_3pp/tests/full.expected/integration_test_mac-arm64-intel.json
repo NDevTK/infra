@@ -2834,7 +2834,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.do upload.report_cipd",
+    "name": "building deps/bottom_dep_git.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -3756,7 +3756,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git (2).do upload.report_cipd",
+    "name": "building deps/bottom_dep_git (2).do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -4855,7 +4855,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_url.do upload.report_cipd",
+    "name": "building deps/bottom_dep_url.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -6004,7 +6004,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_url (2).do upload.report_cipd",
+    "name": "building deps/bottom_dep_url (2).do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -6762,7 +6762,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/deep_dep.do upload.report_cipd",
+    "name": "building deps/deep_dep.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -7978,7 +7978,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building tools/pkg_override_and_no_latest.do upload.report_cipd",
+    "name": "building tools/pkg_override_and_no_latest.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -9205,7 +9205,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building tools/posix_tool.do upload.report_cipd",
+    "name": "building tools/posix_tool.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -10436,7 +10436,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building tools/windows_experiment.do upload.report_cipd",
+    "name": "building tools/windows_experiment.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -12694,7 +12694,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.do upload.report_cipd",
+    "name": "building build_tools/git_tool.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -14723,7 +14723,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.do upload.report_cipd",
+    "name": "building build_tools/tool.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -16243,7 +16243,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool (2).do upload.report_cipd",
+    "name": "building build_tools/tool (2).do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -17564,7 +17564,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/dep.do upload.report_cipd",
+    "name": "building deps/dep.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -19152,7 +19152,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building tools/pkg.do upload.report_cipd",
+    "name": "building tools/pkg.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -20690,7 +20690,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building tools/pkg_checkout.do upload.report_cipd",
+    "name": "building tools/pkg_checkout.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]

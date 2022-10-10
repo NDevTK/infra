@@ -739,7 +739,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
-    "name": "building tools/self_dependency.do upload.report_cipd",
+    "name": "building tools/self_dependency.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1500,7 +1500,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
-    "name": "building tools/self_dependency (2).do upload.report_cipd",
+    "name": "building tools/self_dependency (2).do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]

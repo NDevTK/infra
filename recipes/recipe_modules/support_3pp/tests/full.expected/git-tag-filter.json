@@ -881,7 +881,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tools/tool.do upload.report_cipd",
+    "name": "building tools/tool.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]

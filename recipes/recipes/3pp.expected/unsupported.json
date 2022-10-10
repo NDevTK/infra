@@ -57,7 +57,7 @@
       "-pid",
       "12345"
     ],
-    "name": "report_stage"
+    "name": "snoop: report_stage"
   },
   {
     "cmd": [
@@ -352,7 +352,7 @@
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
-    "name": "report_stage (2)"
+    "name": "snoop: report_stage (2)"
   },
   {
     "cmd": [],

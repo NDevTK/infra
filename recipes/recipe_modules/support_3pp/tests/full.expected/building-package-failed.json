@@ -1871,7 +1871,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
-    "name": "building build_tools/tool.do upload.report_cipd",
+    "name": "building build_tools/tool.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -2800,7 +2800,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "v1.4.1"
     },
-    "name": "building build_tools/tool (2).do upload.report_cipd",
+    "name": "building build_tools/tool (2).do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
