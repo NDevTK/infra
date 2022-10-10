@@ -74,6 +74,10 @@ func Run(ctx context.Context, args Args) error {
 	// Timeout while waiting for tasks is not considered an Test Platform
 	// infrastructure error because root cause is mostly related to fleet
 	// capacity or long test runtimes.
+	if execution.IsGlobalTimeoutError(ctx, err) {
+		logging.Warningf(ctx, "Exited wait dut to timeout: %s", err)
+		logging.Warningf(ctx, "Execution responses will contain test failures as a consequence of the timeout.")
+	}
 	if err != nil {
 		return err
 	}
