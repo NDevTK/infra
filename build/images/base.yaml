@@ -161,8 +161,12 @@ infra:
           "--versions", "ltsc2019",
         ]
     notify:
-      # Roll the built production images into the repo with k8s configs. This
-      # YAML section is interpreted by images_builder.py recipe.
+      # Roll the built production images into the repos with deployment configs.
+      # This YAML section is interpreted by images_builder.py recipe.
       - kind: git
         repo: https://chrome-internal.googlesource.com/infradata/k8s
+        script: scripts/roll_images.py
+      # For GAE Flex modules that uses "custom" runtime.
+      - kind: git
+        repo: https://chrome-internal.googlesource.com/infradata/gae
         script: scripts/roll_images.py
