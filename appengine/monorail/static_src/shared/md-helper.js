@@ -45,7 +45,7 @@ export const shouldRenderMarkdown = ({
 const SANITIZE_OPTIONS = Object.freeze({
   RETURN_TRUSTED_TYPE: true,
   FORBID_TAGS: ['style'],
-  FORBID_ATTR: ['style', 'autoplay'],
+  FORBID_ATTR: ['style', 'autoplay', 'src'],
 });
 
 /**
@@ -55,31 +55,6 @@ const SANITIZE_OPTIONS = Object.freeze({
  */
 const replaceBoldTag = (raw) => {
   return raw.replace(/<b>|<\/b>/g, '**');
-};
-
-/** @const {Object} Basic HTML character escape mapping */
-const HTML_ESCAPE_MAP = Object.freeze({
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  '\'': '&#39;',
-  '/': '&#x2F;',
-  '`': '&#x60;',
-  '=': '&#x3D;',
-});
-
-/**
- * Escapes HTML characters, used to render HTML blocks in Markdown. This
- * alleviates security flaws but is not the primary security barrier, that is
- * handled by DOMPurify.
- * @param {string} text Content that looks to Marked parser to contain HTML.
- * @return {string} Same text content after escaping HTML characters.
- */
-const escapeHtml = (text) => {
-  return text.replace(/[<>"']/g, (s) => {
-    return HTML_ESCAPE_MAP[s];
-  });
 };
 
 /**
@@ -146,8 +121,7 @@ export const renderMarkdown = (raw) => {
   // autolinking.
   // TODO(crbug.com/monorail/9310): Integrate autolink
   const preprocessed = replaceBoldTag(raw);
-  const escaped = escapeHtml(preprocessed);
-  const converted = marked(escaped);
+  const converted = marked(preprocessed);
   const sanitized = DOMPurify.sanitize(converted, SANITIZE_OPTIONS);
   return sanitized.toString();
 };

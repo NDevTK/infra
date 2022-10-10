@@ -104,22 +104,8 @@ describe('renderMarkdown', () => {
     assert.equal(actual, expected);
   });
 
-  it('escapes HTML content', () => {
-    let actual = renderMarkdown('<input></input>');
-    assert.equal(actual, '<p>&lt;input&gt;&lt;/input&gt;</p>\n');
-
-    actual = renderMarkdown('<a href="https://google.com">clickme</a>');
-    assert.equal(actual,
-      `<p>&lt;a href="<span class="annotated-link"><a title="" ` +
-      `href="https://google.com&quot;>clickme</a"><span ` +
-      `class="material-icons link_off">link_off</span>` +
-      `https://google.com"&gt;clickme&lt;/a</a><span ` +
-      `class="tooltip">Link may be malformed: ` +
-      `https://google.com"&gt;clickme&lt;/a</span></span>&gt;</p>\n`);
-  });
-
-  it('escapes video content', () => {
-    const actual = renderMarkdown('<video src="//youtube" control></video>');
-    assert.equal(actual, '<p>&lt;video src="//youtube" control&gt;&lt;/video&gt;</p>\n');
+  it('forbids src', () => {
+    const actual = renderMarkdown('<video id="foo" src="//youtube" control></video>');
+    assert.equal(actual, '<p><video id="foo"></video></p>\n');
   });
 });

@@ -79,7 +79,7 @@
     "chart.js": "^2.9.4",
     "debounce": "^1.2.1",
     "diff": "^5.0.0",
-    "dompurify": "2.3.6",
+    "dompurify": "2.3.10",
     "lit-element": "^2.5.1",
     "lit-html": "^1.4.1",
     "marked": "^4.0.14",
