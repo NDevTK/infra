@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
+from recipe_engine.post_process import (
+  DoesNotRun, DropExpectation, Filter, StatusFailure)
 
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
+    'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
     'docker',
@@ -18,7 +20,7 @@ def RunSteps(api):
   version = api.docker.get_version()
   if version:
     api.step('log version', cmd=None).presentation.step_text = version
-  api.docker.login()
+  api.docker.login(use_python3=api.properties.get('use_python3', False))
   api.docker.pull('testimage')
   api.docker.run(
       'testimage',
@@ -36,6 +38,11 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test('example')
+
+  yield api.test('use_python3',
+      api.properties(use_python3=True),
+      api.post_process(DropExpectation),
+  )
 
   yield api.test(
       'fail_installed',

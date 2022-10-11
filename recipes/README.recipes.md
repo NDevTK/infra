@@ -360,7 +360,7 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 
 Provides steps to connect and run Docker images.
 
-&mdash; **def [\_\_call\_\_](/recipes/recipe_modules/docker/api.py#158)(self, \*args, \*\*kwargs):**
+&mdash; **def [\_\_call\_\_](/recipes/recipe_modules/docker/api.py#171)(self, \*args, \*\*kwargs):**
 
 Executes specified docker command.
 
@@ -372,17 +372,17 @@ Args:
       e.g. api.docker('push', 'my_image:latest').
   kwargs: arguments passed down to api.step module.
 
-&mdash; **def [ensure\_installed](/recipes/recipe_modules/docker/api.py#19)(self, \*\*kwargs):**
+&mdash; **def [ensure\_installed](/recipes/recipe_modules/docker/api.py#28)(self, \*\*kwargs):**
 
 Checks that the docker binary is in the PATH.
 
 Raises StepFailure if binary is not found.
 
-&mdash; **def [get\_version](/recipes/recipe_modules/docker/api.py#31)(self):**
+&mdash; **def [get\_version](/recipes/recipe_modules/docker/api.py#40)(self):**
 
 Returns Docker version installed or None if failed to detect.
 
-&mdash; **def [login](/recipes/recipe_modules/docker/api.py#48)(self, server='gcr.io', project='chromium-container-registry', service_account=None, step_name=None, \*\*kwargs):**
+&mdash; **def [login](/recipes/recipe_modules/docker/api.py#57)(self, server='gcr.io', project='chromium-container-registry', service_account=None, step_name=None, use_python3=False, \*\*kwargs):**
 
 Connect to a Docker registry.
 
@@ -397,7 +397,7 @@ Args:
       associated service account.
   step_name: Override step name. Default is 'docker login'.
 
-&mdash; **def [pull](/recipes/recipe_modules/docker/api.py#90)(self, image, step_name=None):**
+&mdash; **def [pull](/recipes/recipe_modules/docker/api.py#101)(self, image, step_name=None):**
 
 Pull a docker image from a remote repository.
 
@@ -405,7 +405,9 @@ Args:
   image: Name of the image to pull.
   step_name: Override step name. Default is 'docker pull'.
 
-&mdash; **def [run](/recipes/recipe_modules/docker/api.py#106)(self, image, step_name=None, cmd_args=None, dir_mapping=None, env=None, inherit_luci_context=False, \*\*kwargs):**
+&mdash; **def [python](/recipes/recipe_modules/docker/api.py#22)(self, name, script, args, use_python3, \*\*kwargs):**
+
+&mdash; **def [run](/recipes/recipe_modules/docker/api.py#117)(self, image, step_name=None, cmd_args=None, dir_mapping=None, env=None, inherit_luci_context=False, use_python3=False, \*\*kwargs):**
 
 Run a command in a Docker image as the current user:group.
 
@@ -1496,11 +1498,11 @@ Recipe to build windows depot_tools bootstrap zipfile.
 &mdash; **def [RunSteps](/recipes/recipes/depot_tools_builder.py#27)(api):**
 ### *recipes* / [docker:examples/full](/recipes/recipe_modules/docker/examples/full.py)
 
-[DEPS](/recipes/recipe_modules/docker/examples/full.py#9): [docker](#recipe_modules-docker), [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/docker/examples/full.py#10): [docker](#recipe_modules-docker), [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/docker/examples/full.py#16)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/docker/examples/full.py#18)(api):**
 ### *recipes* / [docker\_image\_builder](/recipes/recipes/docker_image_builder.py)
 
 [DEPS](/recipes/recipes/docker_image_builder.py#10): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [docker](#recipe_modules-docker), [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/service\_account][recipe_engine/recipe_modules/service_account], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]
