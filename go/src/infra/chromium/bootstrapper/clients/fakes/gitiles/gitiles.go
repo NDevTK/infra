@@ -96,7 +96,6 @@ func (c *Client) getProject(projectName string) (*Project, error) {
 }
 
 func (c *Client) Log(ctx context.Context, request *gitilespb.LogRequest, options ...grpc.CallOption) (*gitilespb.LogResponse, error) {
-	util.PanicIf(request.PageSize != 1, "unexpected page_size in LogRequest: %d", request.PageSize)
 	project, err := c.getProject(request.Project)
 	if err != nil {
 		return nil, err
@@ -111,12 +110,24 @@ func (c *Client) Log(ctx context.Context, request *gitilespb.LogRequest, options
 	} else if commitId == "" {
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown ref %#v for project %#v on host %#v", request.Committish, request.Project, c.hostname))
 	}
+
+	log := make([]*git.Commit, 0, request.PageSize)
+	for i := 0; i < int(request.PageSize); i++ {
+		log = append(log, &git.Commit{Id: commitId})
+		revision, ok := project.Revisions[commitId]
+		if !ok || revision.Parent == "" {
+			break
+		}
+		commitId = revision.Parent
+	}
+
+	remaining := int(request.PageSize) - len(log)
+	for i := 1; i <= remaining; i++ {
+		log = append(log, &git.Commit{Id: fmt.Sprintf("%s~%d", commitId, i)})
+	}
+
 	return &gitilespb.LogResponse{
-		Log: []*git.Commit{
-			{
-				Id: commitId,
-			},
-		},
+		Log: log,
 	}, nil
 }
 

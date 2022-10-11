@@ -1017,6 +1017,123 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 			})
 
+			Convey("when operating on inverse-quick-run test change", func() {
+				build := &buildbucketpb.Build{
+					Input: &buildbucketpb.Build_Input{
+						Properties: &structpb.Struct{},
+						GerritChanges: []*buildbucketpb.GerritChange{
+							{
+								Host:     "chromium-review.googlesource.com",
+								Project:  "chromium/src",
+								Change:   3942967,
+								Patchset: 42,
+							},
+						},
+					},
+				}
+
+				srcGerrit := &fakegerrit.Project{
+					Changes: map[int64]*fakegerrit.Change{
+						3942967: {
+							Ref: "refs/heads/main",
+							Patchsets: map[int32]*fakegerrit.Patchset{
+								42: {
+									Revision: "fake-cl-revision",
+								},
+							},
+						},
+					},
+				}
+				ctx = gerrit.UseGerritClientFactory(ctx, fakegerrit.Factory(map[string]*fakegerrit.Host{
+					"chromium-review.googlesource.com": {
+						Projects: map[string]*fakegerrit.Project{
+							"chromium/src": srcGerrit,
+						},
+					},
+				}))
+
+				srcGitiles := &fakegitiles.Project{
+					Refs: map[string]string{
+						"refs/heads/main": "fake-main-head",
+					},
+					Revisions: map[string]*fakegitiles.Revision{
+						"fake-cl-revision": {
+							Parent: "fake-base-revision",
+						},
+					},
+				}
+				ctx = gitiles.UseGitilesClientFactory(ctx, fakegitiles.Factory(map[string]*fakegitiles.Host{
+					"chromium.googlesource.com": {
+						Projects: map[string]*fakegitiles.Project{
+							"chromium/src": srcGitiles,
+						},
+					},
+				}))
+
+				setBootstrapPropertiesProperties(build, `{
+					"top_level_project": {
+						"repo": {
+							"host": "chromium.googlesource.com",
+							"project": "chromium/src"
+						},
+						"ref": "refs/heads/main"
+					},
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+				}`)
+				setBootstrapExeProperties(build, `{
+					"exe": {
+						"cipd_package": "fake-package",
+						"cipd_version": "fake-version",
+						"cmd": ["fake-exe"]
+					}
+				}`)
+
+				gclientClient, err := gclient.NewClientForTesting()
+				util.PanicOnError(err)
+
+				bootstrapper := NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx), func(ctx context.Context) (*gclient.Client, error) {
+					return gclientClient, nil
+				})
+
+				Convey("returns config with properties from CL base revision", func() {
+					srcGitiles.Revisions["fake-main-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "fake-main-head-value"
+							}`),
+						},
+					}
+					srcGitiles.Revisions["fake-base-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "fake-base-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "chromium/src",
+						"ref": "refs/heads/main",
+						"id": "fake-base-revision"
+					}`)
+					So(config.change.GerritChange, ShouldResembleProtoJSON, `{
+						"host": "chromium-review.googlesource.com",
+						"project": "chromium/src",
+						"change": 3942967,
+						"patchset": 42
+					}`)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "fake-base-revision-value"
+					}`)
+				})
+
+			})
+
 		})
 
 	})

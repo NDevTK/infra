@@ -63,11 +63,11 @@ func TestFactory(t *testing.T) {
 	})
 }
 
-func logRequest(project, ref string) *gitilespb.LogRequest {
+func logRequest(project, ref string, pageSize int32) *gitilespb.LogRequest {
 	return &gitilespb.LogRequest{
 		Project:    project,
 		Committish: ref,
-		PageSize:   1,
+		PageSize:   pageSize,
 	}
 }
 
@@ -78,15 +78,18 @@ func TestLog(t *testing.T) {
 
 	Convey("gitilesClient.Log", t, func() {
 
-		Convey("returns a revision by default", func() {
+		Convey("returns requested number of revisions by default", func() {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch"))
+			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 4))
 
 			So(err, ShouldBeNil)
 			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 1)
+			So(response.Log, ShouldHaveLength, 4)
 			So(response.Log[0].Id, ShouldNotBeEmpty)
+			So(response.Log[1].Id, ShouldNotBeEmpty)
+			So(response.Log[2].Id, ShouldNotBeEmpty)
+			So(response.Log[3].Id, ShouldNotBeEmpty)
 		})
 
 		Convey("fails for a nil project", func() {
@@ -98,7 +101,7 @@ func TestLog(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch"))
+			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 1))
 
 			So(err, ShouldErrLike, `unknown project "fake/project" on host "fake-host"`)
 			So(response, ShouldBeNil)
@@ -117,7 +120,7 @@ func TestLog(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch"))
+			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 1))
 
 			So(err, ShouldErrLike, `unknown ref "refs/heads/fake-branch" for project "fake/project" on host "fake-host"`)
 			So(response, ShouldBeNil)
@@ -131,17 +134,24 @@ func TestLog(t *testing.T) {
 							Refs: map[string]string{
 								"refs/heads/fake-branch": "fake-revision",
 							},
+							Revisions: map[string]*Revision{
+								"fake-revision": {
+									Parent: "fake-parent-revision",
+								},
+							},
 						},
 					},
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch"))
+			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 3))
 
 			So(err, ShouldBeNil)
 			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 1)
+			So(response.Log, ShouldHaveLength, 3)
 			So(response.Log[0].Id, ShouldEqual, "fake-revision")
+			So(response.Log[1].Id, ShouldEqual, "fake-parent-revision")
+			So(response.Log[2].Id, ShouldNotBeEmpty)
 		})
 
 		Convey("returns log for known revision", func() {
@@ -150,19 +160,23 @@ func TestLog(t *testing.T) {
 					Projects: map[string]*Project{
 						"fake/project": {
 							Revisions: map[string]*Revision{
-								"fake-revision": {},
+								"fake-revision": {
+									Parent: "fake-parent-revision",
+								},
 							},
 						},
 					},
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "fake-revision"))
+			response, err := client.Log(ctx, logRequest("fake/project", "fake-revision", 3))
 
 			So(err, ShouldBeNil)
 			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 1)
+			So(response.Log, ShouldHaveLength, 3)
 			So(response.Log[0].Id, ShouldEqual, "fake-revision")
+			So(response.Log[1].Id, ShouldEqual, "fake-parent-revision")
+			So(response.Log[2].Id, ShouldNotBeEmpty)
 		})
 
 	})

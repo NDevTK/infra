@@ -106,6 +106,32 @@ func (c *Client) FetchLatestRevision(ctx context.Context, host, project, ref str
 	return response.Log[0].GetId(), nil
 }
 
+// GetParentRevision returns the git commit hash for the parent revision of a given commt of the
+// given project on the given host.
+func (c *Client) GetParentRevision(ctx context.Context, host, project, revision string) (string, error) {
+	gitilesClient, err := c.gitilesClientForHost(ctx, host)
+	if err != nil {
+		return "", err
+	}
+	request := &gitilespb.LogRequest{
+		Project:    project,
+		Committish: revision,
+		PageSize:   2,
+	}
+
+	var response *gitilespb.LogResponse
+	err = gob.Execute(ctx, "Log", func() error {
+		var err error
+		response, err = gitilesClient.Log(ctx, request)
+		return err
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return response.Log[1].GetId(), nil
+}
+
 // DownloadFile returns the contents of the file at the given path at the given
 // revision of the given project on the given host.
 func (c *Client) DownloadFile(ctx context.Context, host, project, revision, path string) (string, error) {

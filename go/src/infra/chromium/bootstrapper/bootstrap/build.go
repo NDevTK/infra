@@ -26,6 +26,22 @@ import (
 	"infra/chromium/bootstrapper/clients/gob"
 )
 
+// iqrTestChanges contains information about CLs used for testing Inverse Quick Run. In order to
+// verify that the inverted quick run executes the necessary tests, we want the inverted quick run
+// to run against the same revision as the quick run so that the analysis doesn't need to account
+// for tests that have been added or removed. If the build's gerrit changes include one of the
+// following changes and no gitiles commit, the bootstrapper will use the CL's base revision instead
+// of the tip of the target ref.
+//
+// TODO(crbug.com/1344885) Remove this and all references once IQR functionlity is verified
+var iqrTestChanges = []*buildbucketpb.GerritChange{
+	{
+		Host:    "chromium-review.googlesource.com",
+		Project: "chromium/src",
+		Change:  3942967,
+	},
+}
+
 type GclientGetter func(ctx context.Context) (*gclient.Client, error)
 
 // BuildBootstrapper provides the functionality for computing the build
@@ -284,6 +300,20 @@ func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input
 			Project: repo.Project,
 			Ref:     ref,
 		}}
+		// If the change is an Inverse Quick run change, get it's base revision to set as
+		// the commit ID rather than getting tip-of-tree
+		if change != nil {
+			for _, c := range iqrTestChanges {
+				if change.Host == c.Host && change.Project == c.Project && change.Change == c.Change {
+					logging.Infof(ctx, "getting base revision for inverted quick run test change %s", change)
+					baseRevision, err := b.gitiles.GetParentRevision(ctx, repo.Host, repo.Project, change.gitilesRevision)
+					if err != nil {
+						return nil, nil, err
+					}
+					commit.Id = baseRevision
+				}
+			}
+		}
 	}
 	commit, err := b.populateCommitId(ctx, commit)
 	if err != nil {

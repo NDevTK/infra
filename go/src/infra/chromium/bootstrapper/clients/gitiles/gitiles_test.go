@@ -19,6 +19,7 @@ import (
 	gitpb "go.chromium.org/luci/common/proto/git"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
+	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestClient(t *testing.T) {
@@ -146,6 +147,77 @@ func TestClient(t *testing.T) {
 
 				So(err, ShouldBeNil)
 				So(revision, ShouldEqual, "fake-revision")
+			})
+
+		})
+
+		Convey("GetParentRevision", func() {
+
+			Convey("fails if getting gitiles client fails", func() {
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return nil, errors.New("test gitiles client factory failure")
+				})
+
+				client := NewClient(ctx)
+				revision, err := client.GetParentRevision(ctx, "fake-host", "fake/project", "fake-revision")
+
+				So(err, ShouldErrLike, "test gitiles client factory failure")
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("fails if API call fails", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), gomock.Any()).
+					Return(nil, errors.New("fake Log failure"))
+
+				client := NewClient(ctx)
+				revision, err := client.GetParentRevision(ctx, "fake-host", "fake/project", "fake-revision")
+
+				So(err, ShouldErrLike, "fake Log failure")
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("returns parent revision for revision", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				matcher := proto.MatcherEqual(&gitilespb.LogRequest{
+					Project:    "fake/project",
+					Committish: "fake-revision",
+					PageSize:   2,
+				})
+				// Check that potentially transient errors are retried
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.NotFound, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.Unavailable, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), matcher).
+					Return(&gitilespb.LogResponse{
+						Log: []*gitpb.Commit{
+							{Id: "fake-revision"},
+							{Id: "fake-parent-revision"},
+						},
+					}, nil)
+
+				client := NewClient(ctx)
+				revision, err := client.GetParentRevision(ctx, "fake-host", "fake/project", "fake-revision")
+
+				So(err, ShouldBeNil)
+				So(revision, ShouldEqual, "fake-parent-revision")
 			})
 
 		})
