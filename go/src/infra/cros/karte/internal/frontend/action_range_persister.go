@@ -6,21 +6,20 @@ package frontend
 
 import (
 	"context"
+	"time"
 
 	cloudBQ "cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-
-	"infra/cros/karte/internal/identifiers"
 )
 
 // actionRangePersistOptions is a structure that can be used to manage an attempt to persist a range of actions.
 type actionRangePersistOptions struct {
 	// startID is a structural representation of earliest Karte ID to persist to BigQuery.
-	startID identifiers.IDInfo
+	startID time.Time
 	// stopID is a structural representation of the latest Karte ID to persist to BigQuery.
-	stopID identifiers.IDInfo
+	stopID time.Time
 	// bq is the client that we use to add ValueSavers to BigQuery tables.
 	bq bqPersister
 }
