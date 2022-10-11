@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idstrategy"
+	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
 )
 
@@ -21,7 +21,7 @@ import (
 func TestGetMostRecentAction(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
-	ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+	ctx = identifiers.Use(ctx, identifiers.NewNaive())
 
 	datastore.GetTestable(ctx).Consistent(true)
 	k := NewKarteFrontend()
@@ -71,7 +71,7 @@ func TestGetMostRecentAction(t *testing.T) {
 func TestGetMostRecentActionInKind(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
-	ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+	ctx = identifiers.Use(ctx, identifiers.NewNaive())
 
 	datastore.GetTestable(ctx).Consistent(true)
 	k := NewKarteFrontend()

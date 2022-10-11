@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/server/module"
 
 	"infra/cros/karte/internal/frontend"
-	"infra/cros/karte/internal/idstrategy"
+	"infra/cros/karte/internal/identifiers"
 )
 
 // Transfer control to the LUCI server
@@ -41,7 +41,7 @@ func main() {
 
 	server.Main(options, modules, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Installing dependencies into context")
-		srv.Context = idstrategy.Use(srv.Context, idstrategy.NewDefault())
+		srv.Context = identifiers.Use(srv.Context, identifiers.NewDefault())
 		logging.Infof(srv.Context, "Starting server.")
 		logging.Infof(srv.Context, "Installing Services.")
 		k := frontend.NewKarteFrontend()

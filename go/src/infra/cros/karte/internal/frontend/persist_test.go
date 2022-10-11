@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idstrategy"
+	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
 )
 
@@ -28,7 +28,7 @@ func TestPersistObservations(t *testing.T) {
 
 	Convey("test persisting observation", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewNaive())
 		testClock := testclock.New(time.Unix(10, 0))
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
@@ -68,7 +68,7 @@ func TestPersistObservations(t *testing.T) {
 
 	Convey("test persisting multiple observations associated with single action", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewNaive())
 		testClock := testclock.New(time.Unix(10, 0))
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)

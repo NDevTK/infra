@@ -19,7 +19,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idstrategy"
+	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
 )
 
@@ -29,7 +29,7 @@ const invalidProjectID = "invalid project ID -- 5509d052-1fec-4ff6-bb2f-bb4e9895
 func TestCreateAction(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
-	ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+	ctx = identifiers.Use(ctx, identifiers.NewNaive())
 	datastore.GetTestable(ctx).Consistent(true)
 	k := NewKarteFrontend()
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
@@ -40,7 +40,7 @@ func TestCreateAction(t *testing.T) {
 		},
 	})
 	expected := &kartepb.Action{
-		Name:       fmt.Sprintf("%sentity001000000000", idstrategy.IDVersion),
+		Name:       fmt.Sprintf("%sentity001000000000", identifiers.IDVersion),
 		Kind:       "ssh-attempt",
 		SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(1+12*60*60, 2)),
 		CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
@@ -101,7 +101,7 @@ func TestCreateActionWithNoTime(t *testing.T) {
 	// Set a test clock to an arbitrary time to make sure that the correct time is supplied.
 	testClock := testclock.New(time.Unix(3, 4))
 	ctx = clock.Set(ctx, testClock)
-	ctx = idstrategy.Use(ctx, idstrategy.NewDefault())
+	ctx = identifiers.Use(ctx, identifiers.NewDefault())
 
 	k := NewKarteFrontend()
 
@@ -132,13 +132,13 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	testClock := testclock.New(time.Unix(3, 4))
 	ctx = clock.Set(ctx, testClock)
-	ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+	ctx = identifiers.Use(ctx, identifiers.NewNaive())
 
 	k := NewKarteFrontend()
 
 	expected := []*kartepb.Action{
 		{
-			Name:           fmt.Sprintf(idstrategy.NaiveIDFmt, idstrategy.IDVersion, idstrategy.NaiveFirstID),
+			Name:           fmt.Sprintf(identifiers.NaiveIDFmt, identifiers.IDVersion, identifiers.NaiveFirstID),
 			Kind:           "ssh-attempt",
 			SwarmingTaskId: "a",
 			BuildbucketId:  "b",

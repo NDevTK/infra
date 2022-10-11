@@ -20,7 +20,7 @@ import (
 	kartepb "infra/cros/karte/api"
 	kbqpb "infra/cros/karte/api/bigquery"
 	"infra/cros/karte/internal/filterexp"
-	"infra/cros/karte/internal/idserialize"
+	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
 )
 
@@ -290,7 +290,7 @@ func (q *ActionEntitiesQuery) Next(ctx context.Context, batchSize int32) ([]*Act
 	var entities []*ActionEntity
 	err := datastore.Run(ctx, rootedQuery, func(ent *ActionEntity, cb datastore.CursorCB) error {
 		// Record the ancillary info! What versions did we see?
-		version := idserialize.GetIDVersion(ent.ID)
+		version := identifiers.GetIDVersion(ent.ID)
 		d.updateWith(&ActionQueryAncillaryData{
 			SmallestVersion: version,
 			BiggestVersion:  version,
@@ -345,7 +345,7 @@ func newActionEntitiesQuery(token string, filter string) (*ActionEntitiesQuery, 
 // newActionNameRangeQuery takes a beginning name and an end name and produces a query.
 //
 // This query will apply to names strictly in the range [begin, end).
-func newActionNameRangeQuery(begin idserialize.IDInfo, end idserialize.IDInfo) (*ActionEntitiesQuery, error) {
+func newActionNameRangeQuery(begin identifiers.IDInfo, end identifiers.IDInfo) (*ActionEntitiesQuery, error) {
 	q := datastore.NewQuery(ActionKind)
 	// TODO(gregorynisbet): We can't have multiple inequality constraints in datastore, therefore we filter
 	//                      based on the receive time alone and ignore the name (which is based on the time).

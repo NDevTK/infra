@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idserialize"
+	"infra/cros/karte/internal/identifiers"
 )
 
 // PersistAction persists a single action.
@@ -86,14 +86,14 @@ type bqPersister interface {
 
 // persistActionRangeImpl is the implementation of persist range action.
 func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersister, req *kartepb.PersistActionRangeRequest) (*kartepb.PersistActionRangeResponse, error) {
-	start := idserialize.IDInfo{
+	start := identifiers.IDInfo{
 		Version:        req.GetStartVersion(),
 		CoarseTime:     uint64(req.GetStartTime().GetSeconds()),
 		FineTime:       uint32(req.GetStartTime().GetNanos()),
 		Disambiguation: 0,
 	}
 
-	stop := idserialize.IDInfo{
+	stop := identifiers.IDInfo{
 		Version:        req.GetStopVersion(),
 		CoarseTime:     uint64(req.GetStopTime().GetSeconds()),
 		FineTime:       uint32(req.GetStopTime().GetNanos()),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package idstrategy
+package identifiers
 
 import (
 	"context"
@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idserialize"
 	"infra/cros/karte/internal/scalars"
 )
 
@@ -135,7 +134,7 @@ func makeRawID(t time.Time, disambiguation uint32) (string, error) {
 	offsetCoarse := uint64(endOfTime - t.Unix())
 	offsetFine := uint32(0)
 
-	str, err := (&idserialize.IDInfo{
+	str, err := (&IDInfo{
 		Version:        IDVersion,
 		CoarseTime:     offsetCoarse,
 		FineTime:       offsetFine,

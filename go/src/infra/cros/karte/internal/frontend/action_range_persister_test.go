@@ -16,8 +16,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idserialize"
-	"infra/cros/karte/internal/idstrategy"
+	"infra/cros/karte/internal/identifiers"
 )
 
 // TestActionRangePersisterInsufficientInput tests that invoking actionRangePersister without
@@ -28,7 +27,7 @@ func TestActionRangePersisterInsufficientInput(t *testing.T) {
 	t.Parallel()
 	Convey("insufficient input", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewNaive())
 		testClock := testclock.New(time.Unix(10, 0))
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
@@ -44,17 +43,17 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 	t.Parallel()
 	Convey("smoke test", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewNaive())
 		testClock := testclock.New(time.Unix(10, 0))
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 		a := &actionRangePersistOptions{
-			startID: idserialize.IDInfo{
+			startID: identifiers.IDInfo{
 				Version:    "zzzz",
 				CoarseTime: 0,
 				FineTime:   0,
 			},
-			stopID: idserialize.IDInfo{
+			stopID: identifiers.IDInfo{
 				Version:    "zzzz",
 				CoarseTime: 20,
 				FineTime:   0,
@@ -79,7 +78,7 @@ func TestActionRangePersister(t *testing.T) {
 	t.Parallel()
 	Convey("test with several actions", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = idstrategy.Use(ctx, idstrategy.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewNaive())
 		testClock := testclock.New(time.Unix(10, 0))
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
@@ -133,12 +132,12 @@ func TestActionRangePersister(t *testing.T) {
 		}()
 		So(observation2, ShouldNotBeEmpty)
 		a := &actionRangePersistOptions{
-			startID: idserialize.IDInfo{
+			startID: identifiers.IDInfo{
 				Version:    "zzzz",
 				CoarseTime: 0,
 				FineTime:   0,
 			},
-			stopID: idserialize.IDInfo{
+			stopID: identifiers.IDInfo{
 				Version:    "zzzz",
 				CoarseTime: 20,
 				FineTime:   0,

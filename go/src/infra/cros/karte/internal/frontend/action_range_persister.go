@@ -12,15 +12,15 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/karte/internal/idserialize"
+	"infra/cros/karte/internal/identifiers"
 )
 
 // actionRangePersistOptions is a structure that can be used to manage an attempt to persist a range of actions.
 type actionRangePersistOptions struct {
 	// startID is a structural representation of earliest Karte ID to persist to BigQuery.
-	startID idserialize.IDInfo
+	startID identifiers.IDInfo
 	// stopID is a structural representation of the latest Karte ID to persist to BigQuery.
-	stopID idserialize.IDInfo
+	stopID identifiers.IDInfo
 	// bq is the client that we use to add ValueSavers to BigQuery tables.
 	bq bqPersister
 }

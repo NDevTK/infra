@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/idstrategy"
+	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
 )
 
@@ -25,7 +25,7 @@ func TestModifyingSealedActionShouldFail(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	ctx = idstrategy.Use(ctx, idstrategy.NewDefault())
+	ctx = identifiers.Use(ctx, identifiers.NewDefault())
 	testClock := testclock.New(time.Unix(3, 4))
 	ctx = clock.Set(ctx, testClock)
 
