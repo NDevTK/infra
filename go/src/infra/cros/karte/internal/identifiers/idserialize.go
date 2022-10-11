@@ -18,7 +18,7 @@ import (
 // Further fields may be added after Disambiguation without breaking backward-compatibility.
 // However, adding a new field before a field that currently exists WILL break backward compatibility.
 // If you are going to do this, please change the version.
-type IDInfo struct {
+type idInfo struct {
 	// Should be "zzzz" initially.
 	Version        string
 	CoarseTime     uint64
@@ -28,7 +28,7 @@ type IDInfo struct {
 
 // VersionlessBytes converts an IDInfo into bytes. Note that we use big-endian order so that lexicographical comparisons of IDInfo
 // correspond to lexicographical byte comparisons.
-func (i *IDInfo) VersionlessBytes() ([]byte, error) {
+func (i *idInfo) VersionlessBytes() ([]byte, error) {
 	buf := new(bytes.Buffer)
 	for _, x := range []interface{}{
 		i.CoarseTime,
@@ -42,8 +42,8 @@ func (i *IDInfo) VersionlessBytes() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// Encoded converts an IDInfo into lex64, which preserves lexicographic order.
-func (i *IDInfo) Encoded() (string, error) {
+// Encoded converts an idInfo into lex64, which preserves lexicographic order.
+func (i *idInfo) Encoded() (string, error) {
 	if i.Version == "" {
 		return "", errors.Reason("encoded: version cannot be empty").Err()
 	}
@@ -59,7 +59,7 @@ func (i *IDInfo) Encoded() (string, error) {
 }
 
 // Time returns the time component associated with IDInfo.
-func (i *IDInfo) Time() time.Time {
+func (i *idInfo) Time() time.Time {
 	return time.Unix(int64(i.CoarseTime), int64(i.FineTime)).UTC()
 }
 
