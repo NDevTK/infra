@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"embed"
+	"errors"
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
@@ -74,7 +75,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			BuildFunc: mockBuild.Build,
 		}
 
-		Convey("Build packages", func() {
+		Convey("Build ninja", func() {
 			pkg, err := b.Add(ctx, "tools/ninja")
 			So(err, ShouldBeNil)
 			err = b.BuildAll(ctx)
@@ -135,6 +136,23 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			So(drv.Name, ShouldEqual, "ninja")
 			So(drv.Platform, ShouldEqual, buildPlatform.String())
 			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipdPlatform)
+		})
+
+		// If a dependency is not available, ErrPackageNotAvailable should be the
+		// inner error.
+		Convey("Unavailable dependency", func() {
+			_, err := b.Add(ctx, "tests/unavailable_depends")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldNotEqual, spec.ErrPackageNotAvailable)
+			So(errors.Is(err, spec.ErrPackageNotAvailable), ShouldBeTrue)
+		})
+
+		// If a package itself is not available, ErrPackageNotAvailable should be
+		// the direct error.
+		Convey("Unavailable", func() {
+			_, err := b.Add(ctx, "tests/unavailable_arm64")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldEqual, spec.ErrPackageNotAvailable)
 		})
 	})
 }

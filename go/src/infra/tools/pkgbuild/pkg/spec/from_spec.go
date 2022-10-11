@@ -6,6 +6,7 @@ package spec
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"net/url"
@@ -192,6 +193,10 @@ type createParser struct {
 	create *Spec_Create
 }
 
+var (
+	ErrPackageNotAvailable = errors.New("package not available on the target platform")
+)
+
 // Merge create specs for the host platform. Return a parser with the merged
 // spec.
 func newCreateParser(host string, creates []*Spec_Create) (*createParser, error) {
@@ -217,7 +222,7 @@ func newCreateParser(host string, creates []*Spec_Create) (*createParser, error)
 	}
 
 	if p.create == nil || p.create.GetUnsupported() == true {
-		return nil, fmt.Errorf("package not available on %s", host)
+		return nil, ErrPackageNotAvailable
 	}
 
 	return p, nil
@@ -346,7 +351,7 @@ func (p *createParser) LoadDependencies(l *SpecLoader) error {
 
 		g, err := l.FromSpec(name, host)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to load dependency %s on %s: %w", name, host, err)
 		}
 		if ver != "" && ver != g.Version {
 			return nil, fmt.Errorf("dependency version mismatch: %s, require: %s, have: %s", dep, ver, g.Version)

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"infra/libs/cipkg"
+	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
@@ -60,6 +61,13 @@ func main() {
 	for _, name := range names {
 		pkg, err := b.Add(ctx, name)
 		if err != nil {
+			// Only skip a package if it's directly unavailable without checking
+			// inner errors. A package marked as available on the target platform has
+			// any dependency unavailable shouldn't be skipped.
+			if err == spec.ErrPackageNotAvailable {
+				logging.Infof(ctx, "skip package %s on %s", name, app.TargetPlatform)
+				continue
+			}
 			logging.WithError(err).Errorf(ctx, "failed to add %s", name)
 			os.Exit(1)
 		}

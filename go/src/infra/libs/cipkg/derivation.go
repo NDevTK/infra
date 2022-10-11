@@ -43,6 +43,7 @@ type Derivation struct {
 	Inputs []string
 }
 
+// Calculate a unique ID from the content of a derivation
 func (d Derivation) ID() string {
 	h := sha256.New()
 	gob.NewEncoder(h).Encode(d)
