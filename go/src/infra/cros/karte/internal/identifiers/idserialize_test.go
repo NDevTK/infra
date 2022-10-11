@@ -16,7 +16,7 @@ import (
 // TestVersionlessBytes tests that lowering the version-free portion of an IDInfo works.
 func TestVersionlessBytes(t *testing.T) {
 	t.Parallel()
-	input := &IDInfo{
+	input := &idInfo{
 		Version:        "zzzz",
 		CoarseTime:     0xF1F2F3F4F5F6F7F8,
 		FineTime:       0xF1F2F3F4,
@@ -36,7 +36,7 @@ func TestVersionlessBytes(t *testing.T) {
 // TestEncodedResultContainsVersion tests that the encoded result begins with a version prefix.
 func TestEncodedResultContainsVersion(t *testing.T) {
 	t.Parallel()
-	input := &IDInfo{
+	input := &idInfo{
 		Version:        "zzzz",
 		CoarseTime:     2,
 		FineTime:       3,
@@ -58,17 +58,17 @@ func TestEncodedReturnsValidUTF8(t *testing.T) {
 	t.Parallel()
 	cases := []struct {
 		name string
-		in   IDInfo
+		in   idInfo
 	}{
 		{
 			name: "empty",
-			in: IDInfo{
+			in: idInfo{
 				Version: "zzzz",
 			},
 		},
 		{
 			name: "ones",
-			in: IDInfo{
+			in: idInfo{
 				Version:        "zzzz",
 				CoarseTime:     1,
 				FineTime:       1,

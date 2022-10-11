@@ -134,7 +134,7 @@ func MakeRawID(t time.Time, disambiguation uint32) (string, error) {
 	offsetCoarse := uint64(endOfTime - t.Unix())
 	offsetFine := uint32(0)
 
-	str, err := (&IDInfo{
+	str, err := (&idInfo{
 		Version:        IDVersion,
 		CoarseTime:     offsetCoarse,
 		FineTime:       offsetFine,
