@@ -98,6 +98,17 @@ func innerMain() error {
 func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+	var bRange *byteRange
+	var err error
+	// Include range in ID if range exists
+	if headerRange := r.Header.Get("Range"); headerRange != "" {
+		bRange, err = parseRange(headerRange)
+		id = fmt.Sprintf("%s, %s", id, headerRange)
+		if err != nil {
+			log.Printf("%s parseRange error: %s", id, err)
+			return
+		}
+	}
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
@@ -108,9 +119,9 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 
 	switch r.Method {
 	case http.MethodHead:
-		handleDownloadHEAD(ctx, w, r, gsClient, id)
+		handleDownloadHEAD(ctx, w, r, gsClient, bRange, id)
 	case http.MethodGet:
-		handleDownloadGET(ctx, w, r, gsClient, id)
+		handleDownloadGET(ctx, w, r, gsClient, bRange, id)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
@@ -121,7 +132,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 // handleDownloadHEAD handles download HEAD request.
 // It writes file stat to ResponseWriter.
 // It returns gsObject which is used by handleDownloadGET to send file content.
-func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, reqID string) (gsObject, error) {
+func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) (gsObject, error) {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
@@ -146,19 +157,24 @@ func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Requ
 		return nil, err
 	}
 
-	writeHeaderAndStatusOK(gsAttrs, w)
+	writeHeaderAndStatusOK(gsAttrs, br, w, reqID)
 	return gsObject, nil
 }
 
 // handleDownloadGET handles download GET request.
 // It writes file stat to ResponseWriter header, and content to body.
-func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, reqID string) {
-	gsObject, err := handleDownloadHEAD(ctx, w, r, gsClient, reqID)
+func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) {
+	gsObject, err := handleDownloadHEAD(ctx, w, r, gsClient, br, reqID)
 	if err != nil {
 		return
 	}
 
-	rc, err := gsObject.NewReader(ctx)
+	var rc io.ReadCloser
+	if br != nil {
+		rc, err = gsObject.NewRangeReader(ctx, br.start, br.length())
+	} else {
+		rc, err = gsObject.NewReader(ctx)
+	}
 	if err != nil {
 		log.Printf("%s NewReader error: %s", reqID, err)
 		return
@@ -171,16 +187,29 @@ func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Reque
 }
 
 // writeHeaderAndStatusOK writes various attributes to response header.
-func writeHeaderAndStatusOK(objAttr *storage.ObjectAttrs, w http.ResponseWriter) {
+func writeHeaderAndStatusOK(objAttr *storage.ObjectAttrs, br *byteRange, w http.ResponseWriter, reqID string) {
 	w.Header().Set("Accept-Ranges", "bytes")
+	w.Header().Set("Content-Type", objAttr.ContentType)
 	w.Header().Set("Content-Hash-CRC32C", convertCRC32CToString(objAttr.CRC32C))
 	// Object may or may not have MD5. https://cloud.google.com/storage/docs/hashes-etags
 	if objAttr.MD5 != nil {
 		w.Header().Set("Content-Hash-MD5", base64.StdEncoding.EncodeToString(objAttr.MD5))
 	}
-	w.Header().Set("Content-Length", strconv.FormatInt(objAttr.Size, 10))
-	w.Header().Set("Content-Type", objAttr.ContentType)
-	w.WriteHeader(http.StatusOK)
+
+	if br != nil {
+		// end cannot be more than size-1.
+		if br.end > objAttr.Size-1 {
+			br.updateEnd(objAttr.Size - 1)
+			log.Printf("%s update range end to %d", reqID, br.end)
+		}
+		// Content-Range is required for partial content status.
+		w.Header().Set("Content-Range", br.formatContentRange(objAttr.Size))
+		w.Header().Set("Content-Length", strconv.FormatInt(br.length(), 10))
+		w.WriteHeader(http.StatusPartialContent)
+	} else {
+		w.Header().Set("Content-Length", strconv.FormatInt(objAttr.Size, 10))
+		w.WriteHeader(http.StatusOK)
+	}
 }
 
 func convertCRC32CToString(i uint32) string {
@@ -209,6 +238,45 @@ func parseURL(url string) (*gsObjectName, error) {
 		return nil, fmt.Errorf("object cannot be empty")
 	}
 	return &gsObjectName{bucket: fields[2], path: path}, nil
+}
+
+// parseRange parse range value and return range start, end bytes.
+// It only support single range bytes=start-end format.
+// Not yet support multiple range bytes=start1-end1,start2-end2
+func parseRange(s string) (*byteRange, error) {
+	//s should be bytes=start-end
+	i := strings.Index(s, "-")
+	if s[:6] != "bytes=" || i == -1 {
+		return nil, fmt.Errorf("%q not in format of 'bytes=<start>-<end>'", s)
+	}
+	start, errStart := strconv.ParseInt(s[6:i], 10, 64)
+	if errStart != nil || start < 0 {
+		return nil, fmt.Errorf("start value %q is not a positive integer", s[6:i])
+	}
+	end, errEnd := strconv.ParseInt(s[i+1:], 10, 64)
+	if errEnd != nil || end < 0 {
+		return nil, fmt.Errorf("end value %q is not a positive integer", s[i+1:])
+	}
+	if start > end {
+		return nil, fmt.Errorf("start value %d cannot be larger than end value %d", start, end)
+	}
+	return &byteRange{start: start, end: end}, nil
+}
+
+type byteRange struct {
+	start, end int64
+}
+
+func (r *byteRange) updateEnd(newEnd int64) {
+	r.end = newEnd
+}
+
+func (r *byteRange) length() int64 {
+	return r.end - r.start + 1
+}
+
+func (r *byteRange) formatContentRange(totalSize int64) string {
+	return fmt.Sprintf("bytes %v-%v/%v", r.start, r.end, totalSize)
 }
 
 // extractHandler handles /extract/bucket/path/to/file?file=target_file requests.

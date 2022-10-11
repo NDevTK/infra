@@ -42,6 +42,7 @@ func TestDownloadHandler(t *testing.T) {
 	tests := []struct {
 		method            string
 		url               string
+		contentRange      string
 		wantStatusCode    int
 		wantContentLength int
 		wantBody          string
@@ -67,12 +68,24 @@ func TestDownloadHandler(t *testing.T) {
 			wantContentLength: -1,
 			wantContentType:   "text/plain; charset=utf-8",
 		},
+		{
+			contentRange:      "bytes=0-3",
+			method:            "GET",
+			url:               "/download/bucket/path/to/file",
+			wantStatusCode:    206,
+			wantContentLength: 4,
+			wantBody:          "this",
+			wantContentType:   "text",
+			wantMD5:           base64.StdEncoding.EncodeToString([]byte("randomHashString")),
+			wantCRC32C:        "AAAHwA==",
+		},
 	}
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.method+" "+tc.url, func(t *testing.T) {
 			t.Parallel()
 			r := httptest.NewRequest(tc.method, tc.url, strings.NewReader(""))
+			r.Header.Set("Range", tc.contentRange)
 			w := httptest.NewRecorder()
 			gsa.downloadHandler(w, r)
 			got := w.Result()
@@ -297,7 +310,7 @@ func TestWriteHeaderAndStatusOK(t *testing.T) {
 		CRC32C:      uint32(123),
 	}
 	w := httptest.NewRecorder()
-	writeHeaderAndStatusOK(objAttrs, w)
+	writeHeaderAndStatusOK(objAttrs, nil, w, "")
 	wantResponseWriterHeaders := []struct {
 		header string
 		want   string
@@ -559,6 +572,13 @@ func (c *fakeGSObject) NewReader(ctx context.Context) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("storage: object doesn't exist")
 	}
 	return io.NopCloser(strings.NewReader(c.content)), nil
+}
+
+func (c *fakeGSObject) NewRangeReader(ctx context.Context, offset, length int64) (io.ReadCloser, error) {
+	if !c.exists {
+		return nil, fmt.Errorf("storage: object doesn't exist")
+	}
+	return io.NopCloser(strings.NewReader(c.content[offset : offset+length])), nil
 }
 
 type fakeGSClient struct {

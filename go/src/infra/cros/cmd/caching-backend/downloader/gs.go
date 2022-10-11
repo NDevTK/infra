@@ -29,6 +29,8 @@ type gsObject interface {
 	Attrs(context.Context) (*storage.ObjectAttrs, error)
 	// https://pkg.go.dev/cloud.google.com/go/storage#ObjectHandle.NewReader
 	NewReader(context.Context) (io.ReadCloser, error)
+	// https://pkg.go.dev/cloud.google.com/go/storage#ObjectHandle.NewRangeReader
+	NewRangeReader(context.Context, int64, int64) (io.ReadCloser, error)
 }
 
 type realGSObject struct {
@@ -42,6 +44,10 @@ func (c *realGSObject) Attrs(ctx context.Context) (*storage.ObjectAttrs, error) 
 func (c *realGSObject) NewReader(ctx context.Context) (io.ReadCloser, error) {
 	r, err := c.gsObject.NewReader(ctx)
 	return r, err
+}
+
+func (c *realGSObject) NewRangeReader(ctx context.Context, offset, length int64) (io.ReadCloser, error) {
+	return c.gsObject.NewRangeReader(ctx, offset, length)
 }
 
 func newRealClient(ctx context.Context, creds string) (gsClient, error) {
