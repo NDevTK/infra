@@ -1769,11 +1769,8 @@ func crosRepairActions() map[string]*Action {
 				"recovery mode with active PD, so we will change it to ",
 				"sink-mode if required.",
 			},
-			Conditions: []string{
-				"dut_servo_host_present",
-				"Pools required to be in Secure mode",
-			},
 			Dependencies: []string{
+				"dut_servo_host_present",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 			},
