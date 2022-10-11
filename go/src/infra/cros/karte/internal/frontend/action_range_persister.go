@@ -113,7 +113,12 @@ func persistObservations(ctx context.Context, a *actionRangePersistOptions, ad *
 	query := datastore.NewQuery(ObservationKind).
 		Gte("action_id", ad.SmallestID).
 		Lte("action_id", ad.BiggestID)
+	tally := 0
 	rErr := datastore.Run(ctx, query, func(o *ObservationEntity) error {
+		if tally <= 20 || tally%1000 == 0 {
+			logging.Infof(ctx, "Persist actions: finished processing %d observations so far", tally)
+		}
+		tally++
 		hopper = append(hopper, o)
 		if len(hopper) >= defaultBatchSize {
 			if err := insertObservationBatch(ctx, a, hopper); err != nil {
@@ -123,6 +128,7 @@ func persistObservations(ctx context.Context, a *actionRangePersistOptions, ad *
 		}
 		return nil
 	})
+	logging.Errorf(ctx, "exactly %d observations processed for range [%q, %q].", tally, ad.SmallestID, ad.BiggestID)
 	if rErr != nil {
 		return errors.Annotate(rErr, "persisting observations").Err()
 	}
