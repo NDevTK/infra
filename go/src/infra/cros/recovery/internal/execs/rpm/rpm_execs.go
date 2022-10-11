@@ -27,6 +27,7 @@ func hasRpmInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // rpmPowerCycleExec performs power cycle the device by RPM.
+// This function use RPM service built-in cycle interface which has an 5 seconds interval between power state change.
 func rpmPowerCycleExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := info.RPMAction(ctx, info.GetDut().Name, info.GetChromeos().GetRpmOutlet(), tlw.RunRPMActionRequest_CYCLE); err != nil {
 		return errors.Annotate(err, "rpm power cycle").Err()

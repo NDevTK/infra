@@ -96,7 +96,7 @@ func crosRepairActions() map[string]*Action {
 				Seconds: 15,
 			},
 			RecoveryActions: []string{
-				"Power cycle DUT by RPM",
+				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
@@ -117,7 +117,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RecoveryActions: []string{
-				"Power cycle DUT by RPM",
+				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
@@ -1681,10 +1681,8 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Perform RPM cycle and wait to device to boot back.",
 			},
-			Conditions: []string{
-				"has_rpm_info",
-			},
 			Dependencies: []string{
+				"has_rpm_info",
 				"Power cycle DUT by RPM",
 				"Wait to be pingable (normal boot)",
 			},
@@ -1704,10 +1702,13 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Power cycle the DUT by RPM outlet.",
 			},
-			Conditions: []string{
+			Dependencies: []string{
 				"has_rpm_info",
+				"Power off DUT by RPM",
+				"Sleep 15s",
+				"Power on DUT by RPM",
 			},
-			ExecName:   "rpm_power_cycle",
+			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Collect dmesg logs from DUT": {
@@ -2416,6 +2417,28 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:   "labstation_create_reboot_request",
 			RunControl: RunControl_RUN_ONCE,
+		},
+		"Power off DUT by RPM": {
+			Docs: []string{
+				"Power off the DUT by RPM outlet.",
+			},
+			ExecName:               "rpm_power_off",
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
+		"Power on DUT by RPM": {
+			Docs: []string{
+				"Power off the DUT by RPM outlet.",
+			},
+			ExecName:   "rpm_power_on",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Sleep 15s": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:15",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 	}
 }
