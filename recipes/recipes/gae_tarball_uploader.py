@@ -364,7 +364,7 @@ def _mutate_pins_repo(api, root, spec, tarballs, meta):
       '',
       'Updated staging deployments:',
   ] + [
-      '  * %s: %s -> %s' % (d['tarball'], d['from'], d['to'])
+      '  * %s: %s -> %s' % (d['artifact'], d['from'], d['to'])
       for d in deployments
   ] + [''] + ([diff, ''] if diff else [])))
 
@@ -385,11 +385,11 @@ def _roll_tarballs_test_data(versions):
       'tarballs': versions,
       'deployments': [
           {
+              'artifact': v['tarball'],
               'cc': ['n1@example.com', 'n2@example.com'],
               'channel': 'staging',
               'from': 'prev-version',
               'spec': 'apps/something/channels.json',
-              'tarball': v['tarball'],
               'to': v['version']['version'],
           }
           for v in versions
