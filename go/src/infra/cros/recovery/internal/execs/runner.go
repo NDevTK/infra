@@ -13,7 +13,6 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -48,12 +47,8 @@ var (
 
 // Runner defines the type for a function that will execute a command
 // on a host, and returns the result as a single line.
+// TODO: Remove as we do not need extra type.
 type Runner = components.Runner
-
-// NewRunner returns runner for requested resource specified per plan.
-func (ei *ExecInfo) NewRunner(resource string) Runner {
-	return ei.runArgs.NewRunner(resource)
-}
 
 // NewBackgroundRunner returns runner for requested resource specified
 // per plan.
@@ -62,12 +57,12 @@ func (ei *ExecInfo) NewRunner(resource string) Runner {
 // placeholder. This will eventually be replaced with an
 // implementation that will submit a command for background execution,
 // and will return without waiting for it to complete.
-func (ei *ExecInfo) NewBackgroundRunner(resource string) Runner {
-	return ei.runArgs.NewRunner(resource)
+func (ei *ExecInfo) NewBackgroundRunner(resource string) components.Runner {
+	return ei.NewRunner(resource)
 }
 
 // DefaultRunner returns runner for current resource name specified per plan.
-func (ei *ExecInfo) DefaultRunner() Runner {
+func (ei *ExecInfo) DefaultRunner() components.Runner {
 	return ei.NewRunner(ei.GetActiveResource())
 }
 
@@ -76,29 +71,30 @@ func (ei *ExecInfo) DefaultRunner() Runner {
 // defines the specific host on which the command will be
 // executed. Examples of such specific hosts can be the DUT, or the
 // servo-host etc.
-func (a *RunArgs) NewRunner(host string) Runner {
+func (a *ExecInfo) NewRunner(host string) components.Runner {
 	runner := func(ctx context.Context, timeout time.Duration, cmd string, args ...string) (string, error) {
 		fullCmd := cmd
 		if len(args) > 0 {
 			fullCmd += " " + strings.Join(args, " ")
 		}
-		log.Debugf(ctx, "Prepare to run command: %q", fullCmd)
-		r := a.Access.Run(ctx, &tlw.RunRequest{
+		log := a.NewLogger()
+		log.Debugf("Prepare to run command: %q", fullCmd)
+		r := a.GetAccess().Run(ctx, &tlw.RunRequest{
 			Resource: host,
 			Timeout:  durationpb.New(timeout),
 			Command:  cmd,
 			Args:     args,
 		})
-		a.Logger.Debugf("Run %q completed with exit code %d", r.Command, r.ExitCode)
+		log.Debugf("Run %q completed with exit code %d", r.Command, r.ExitCode)
 		exitCode := r.ExitCode
 		out := strings.TrimSpace(r.Stdout)
-		log.Debugf(ctx, "Run output:\n%s", out)
+		log.Debugf("Run output:\n%s", out)
 		if exitCode != 0 {
 			errAnnotator := errors.Reason("runner: command %q completed with exit code %d", r.Command, r.ExitCode)
 			errCodeTagValue := errors.TagValue{Key: ErrCodeTag, Value: exitCode}
 			errAnnotator.Tag(errCodeTagValue)
 			errAnnotator.Tag(errors.TagValue{Key: StdErrTag, Value: r.Stderr})
-			log.Debugf(ctx, "Run stderr:\n%s", r.Stderr)
+			log.Debugf("Run stderr:\n%s", r.Stderr)
 			// different kinds of internal errors
 			if exitCode < 0 {
 				errAnnotator.Tag(SSHErrorInternal)
