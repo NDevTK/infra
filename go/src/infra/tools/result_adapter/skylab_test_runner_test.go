@@ -65,7 +65,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 	Convey(`From JSON works`, t, func() {
 		str := `{
 			"autotest_result": {
-			  "test_cases": [
+				"test_cases": [
 				{
 					"verdict": "VERDICT_PASS",
 					"name": "test1",
@@ -82,23 +82,23 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					"name": "test3",
 					"human_readable_summary": "test failure"
 				},
-                {
-                    "verdict": "VERDICT_ERROR",
-                    "name": "test4",
-                    "human_readable_summary": "test error",
+				{
+					"verdict": "VERDICT_ERROR",
+					"name": "test4",
+					"human_readable_summary": "test error",
 					"start_time": "2021-07-26T18:53:33.983328614Z",
 					"end_time": "2021-07-26T18:53:37.983328614Z"
-                },
-                {
-                    "verdict": "VERDICT_ABORT",
-                    "name": "test5",
-                    "human_readable_summary": "test abort",
+				},
+				{
+					"verdict": "VERDICT_ABORT",
+					"name": "test5",
+					"human_readable_summary": "test abort",
 					"start_time": "2021-07-26T18:53:33.983328614Z",
 					"end_time": "2021-07-26T18:53:37.983328614Z"
-                }
-			  ]
+				}
+				]
 			}
-		  }`
+		}`
 
 		results := &TestRunnerResult{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
@@ -122,7 +122,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 				},
 				{
 					TestId:    "test2",
-					Expected:  false,
+					Expected:  true,
 					Status:    pb.TestStatus_SKIP,
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				},
@@ -171,15 +171,15 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			}
 			str := `{
 				"autotest_result": {
-				  "test_cases": [
+					"test_cases": [
 					{
 						"verdict": "VERDICT_FAIL",
 						"name": "test3",
 						"human_readable_summary": "%s"
 					}
-				  ]
+					]
 				}
-			  }`
+			}`
 
 			resultString := fmt.Sprintf(str, failureReason)
 			results := &TestRunnerResult{}
@@ -191,6 +191,55 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			So(testResults, ShouldHaveLength, 1)
 			So(len(testResults[0].SummaryHtml), ShouldBeLessThanOrEqualTo, maxSummaryHtmlBytes)
 			So(len(testResults[0].FailureReason.PrimaryErrorMessage), ShouldBeLessThanOrEqualTo, maxPrimaryErrorBytes)
+		})
+
+		Convey(`check an unexpected skip test`, func() {
+			// Creates an unexpected skip test with specific failure reason.
+			str := `{
+				"autotest_result": {
+					"test_cases": [
+					{
+						"verdict": "VERDICT_NO_VERDICT",
+						"name": "test3",
+						"human_readable_summary": "[UNEXPECTED SKIP] Incomplete result caused by: Failed prejob"
+					}
+					]
+				}
+			}`
+
+			results := &TestRunnerResult{}
+			results.ConvertFromJSON(strings.NewReader(str))
+			testResults, err := results.ToProtos(ctx)
+
+			So(err, ShouldBeNil)
+			So(testResults, ShouldHaveLength, 1)
+			So(testResults[0].Status, ShouldResemble, pb.TestStatus_SKIP)
+			So(testResults[0].Expected, ShouldResemble, false)
+		})
+
+		Convey(`check an expected skip test`, func() {
+			// Creates an expected skip test that is neither an incomplete test
+			// run nor an initial result.
+			str := `{
+				"autotest_result": {
+					"test_cases": [
+					{
+						"verdict": "VERDICT_NO_VERDICT",
+						"name": "test3",
+						"human_readable_summary": "Test failed"
+					}
+					]
+				}
+			}`
+
+			results := &TestRunnerResult{}
+			results.ConvertFromJSON(strings.NewReader(str))
+			testResults, err := results.ToProtos(ctx)
+
+			So(err, ShouldBeNil)
+			So(testResults, ShouldHaveLength, 1)
+			So(testResults[0].Status, ShouldResemble, pb.TestStatus_SKIP)
+			So(testResults[0].Expected, ShouldResemble, true)
 		})
 	})
 }
