@@ -9,6 +9,7 @@ import (
 
 	cloudBQ "cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/cros/karte/internal/idserialize"
@@ -81,7 +82,9 @@ func insertObservationBatch(ctx context.Context, a *actionRangePersistOptions, e
 func persistActions(ctx context.Context, a *actionRangePersistOptions, q *ActionEntitiesQuery) (*ActionQueryAncillaryData, int, error) {
 	out := &ActionQueryAncillaryData{}
 	tally := 0
+	logging.Infof(ctx, "Persist actions: beginning offload attempt")
 	for q.Token != stopToken {
+		logging.Infof(ctx, "Persist actions: offloaded %d records so far; beginning batch of max size %d", tally, defaultBatchSize)
 		batch, ad, err := q.Next(ctx, defaultBatchSize)
 		if err != nil {
 			return nil, 0, errors.Annotate(err, "persist actions").Err()
@@ -100,6 +103,7 @@ func persistActions(ctx context.Context, a *actionRangePersistOptions, q *Action
 			return nil, 0, err
 		}
 	}
+	logging.Infof(ctx, "Persist actions: offloaded %d records in total", tally)
 	return out, tally, nil
 }
 
