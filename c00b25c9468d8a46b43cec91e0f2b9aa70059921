@@ -363,6 +363,30 @@
       },
       "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7aa77d69_517f882e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-11T20:22:56Z",
+      "side": 1,
+      "message": "i think you need just match name of exec with what it does.\n\nfor example cbiIsCorrupted can tell if is it corrupted or not.\n\nThe method which we have here for me sounds like isCBIDoesNotMatched which rerun nil if that is not matched.\n\nlet me know if that is clear.",
+      "parentUuid": "476ceb3a_20563b94",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 43
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
