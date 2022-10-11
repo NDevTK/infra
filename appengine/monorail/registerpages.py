@@ -12,8 +12,6 @@ import logging
 import webapp2
 import settings
 
-from components import prpc
-
 from features import autolink
 from features import dateaction
 from features import banspammer
@@ -147,13 +145,6 @@ class ServletRegistry(object):
     self._RegisterIssueHandlers()
     self._RegisterWebComponentsHanders()
     self._RegisterRedirects()
-
-    # Register pRPC API routes
-    prpc_server = prpc.Server(
-        allowed_origins=client_config_svc.GetAllowedOriginsSet())
-    api_routes_v0.RegisterApiHandlers(prpc_server, services)
-    api_routes_v3.RegisterApiHandlers(prpc_server, services)
-    self.routes.extend(prpc_server.get_routes())
 
     autolink.RegisterAutolink(services)
     # Error pages should be the last to register.
