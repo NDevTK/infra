@@ -361,6 +361,14 @@ def _mutate_repo(api, root, notify, images, meta):
           _roll_images_test_data(tags)))
   deployments = res.stdout.get('deployments') or []
 
+  # Given a Deployment dict, returns the artifact name. Unfortunately the key
+  # that contains it is different for infradata/k8s and infradata/gae
+  # destinations.
+  def artifact(dep):
+    if 'image' in dep:
+      return dep['image']
+    return dep['artifact']  # pragma: no cover
+
   # Generate the commit message.
   message = [
       '[images] Rolling in images.',
@@ -372,7 +380,7 @@ def _mutate_repo(api, root, notify, images, meta):
     message.extend([
         'Updated deployments:',
     ] + [
-        '  * %s: %s -> %s' % (d['image'], d['from'], d['to'])
+        '  * %s: %s -> %s' % (artifact(d), d['from'], d['to'])
         for d in deployments
     ] + [''])
   message = str('\n'.join(message))
