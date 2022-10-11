@@ -387,6 +387,30 @@
       },
       "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "218a1583_bdf2cc1c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-11T21:02:59Z",
+      "side": 1,
+      "message": "So, I\u0027m not sure that changes too much. If we rename the exec to \"cbiDoesNotMatch\", then we would still need to return an errors.Reason(\"CBI Matches\"), which seems about as awkward as throwing an errors.Reason(\"CBI is valid\"). What do you think? I may be totally missing your point, and am happy with either in full honesty.",
+      "parentUuid": "7aa77d69_517f882e",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 43
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
