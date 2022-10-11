@@ -357,24 +357,17 @@ func newActionEntitiesQuery(token string, filter string) (*ActionEntitiesQuery, 
 // newActionNameRangeQuery takes a beginning name and an end name and produces a query.
 //
 // This query will apply to names strictly in the range [begin, end).
-func newActionNameRangeQuery(begin identifiers.IDInfo, end identifiers.IDInfo) (*ActionEntitiesQuery, error) {
+func newActionNameRangeQuery(begin time.Time, end time.Time) (*ActionEntitiesQuery, error) {
 	q := datastore.NewQuery(ActionKind)
-	// TODO(gregorynisbet): We can't have multiple inequality constraints in datastore, therefore we filter
-	//                      based on the receive time alone and ignore the name (which is based on the time).
-	//
-	// In the future, consider changing this strategy to take the start and end versions (say "zzzz" and "zzzx" for concreteness)
-	// And have this produce multiple queries (one for "zzzz", one for "zzzy", and one for "zzzx").
-	bTime := begin.Time()
-	eTime := end.Time()
 	// The datastore query will actually reject invalid arguments on its own, but we can give the user
 	// a better error message if we check the arguments ourselves.
 	switch {
-	case bTime.After(eTime):
-		return nil, errors.Reason("begin time %v is after end time %v", bTime, eTime).Err()
-	case bTime.Equal(eTime):
-		return nil, errors.Reason("rejecting likely erroneous call: begin time %q and end time are equal %q", bTime.String(), eTime.String()).Err()
+	case begin.After(end):
+		return nil, errors.Reason("begin time %v is after end time %v", begin, end).Err()
+	case begin.Equal(end):
+		return nil, errors.Reason("rejecting likely erroneous call: begin time %q and end time are equal %q", begin.String(), end.String()).Err()
 	}
-	q = q.Gte("receive_time", bTime).Lt("receive_time", eTime)
+	q = q.Gte("receive_time", begin).Lt("receive_time", end)
 	return &ActionEntitiesQuery{
 		Query: q,
 		Token: "",

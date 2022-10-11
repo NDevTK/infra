@@ -25,7 +25,7 @@ func TestCreateActionWithClock(t *testing.T) {
 	Convey("test create action with clock", t, func() {
 		ctx := gaetesting.TestingContext()
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0))
+		testClock := testclock.New(time.Unix(10, 0).UTC())
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 		k := NewKarteFrontend()

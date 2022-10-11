@@ -48,16 +48,8 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 		a := &actionRangePersistOptions{
-			startID: identifiers.IDInfo{
-				Version:    "zzzz",
-				CoarseTime: 0,
-				FineTime:   0,
-			},
-			stopID: identifiers.IDInfo{
-				Version:    "zzzz",
-				CoarseTime: 20,
-				FineTime:   0,
-			},
+			startID: time.Unix(0, 0).UTC(),
+			stopID:  time.Unix(20, 0).UTC(),
 		}
 		q, err := makeQuery(a)
 		So(err, ShouldBeNil)
@@ -132,17 +124,9 @@ func TestActionRangePersister(t *testing.T) {
 		}()
 		So(observation2, ShouldNotBeEmpty)
 		a := &actionRangePersistOptions{
-			startID: identifiers.IDInfo{
-				Version:    "zzzz",
-				CoarseTime: 0,
-				FineTime:   0,
-			},
-			stopID: identifiers.IDInfo{
-				Version:    "zzzz",
-				CoarseTime: 20,
-				FineTime:   0,
-			},
-			bq: fake,
+			startID: time.Unix(0, 0).UTC(),
+			stopID:  time.Unix(20, 0).UTC(),
+			bq:      fake,
 		}
 		q, err := makeQuery(a)
 		So(err, ShouldBeNil)
