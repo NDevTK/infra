@@ -71,7 +71,7 @@ export const ReasonSection = (props: ReasonSectionProps) => {
                     <td>{isChromiumTree(props.tree)?<a href={codeSearchLink(t)} target="_blank">Code Search</a>:null}</td>
                     <td><a href={historyLink(t)} target="_blank">History</a></td>
                     <td><a href={similarFailuresLink(t)} target="_blank">Similar Failures</a></td>
-                    <td>{isChromiumTree(props.tree)?<DisableTestButton bugs={props.bugs} testName={t.test_name} failure_bbid={props.failure_bbid} />:null}</td>
+                    <td>{isChromiumTree(props.tree)?<DisableTestButton bugs={props.bugs} testName={t.test_name} testID={t.test_id} failure_bbid={props.failure_bbid} />:null}</td>
                 </tr>)}
             </tbody>
         </table>
