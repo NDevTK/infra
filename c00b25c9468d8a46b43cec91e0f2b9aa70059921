@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "99d25de8_f13e40a1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-11T19:22:58Z",
+      "side": 1,
+      "message": "This was tested in part via the unit tests, and in part by following the build and test instructions in go/working-with-paris, executing a custom plan: https://paste.googleplex.com/6609060378968064, and confirming manually that the contents of a given DUT were read from the DUT.",
+      "parentUuid": "90ee2643_83cabf50",
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "01b3cff3_844be600",
