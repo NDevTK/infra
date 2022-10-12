@@ -26,7 +26,7 @@ func TestModifyingSealedActionShouldFail(t *testing.T) {
 	ctx := gaetesting.TestingContext()
 	datastore.GetTestable(ctx).Consistent(true)
 	ctx = identifiers.Use(ctx, identifiers.NewDefault())
-	testClock := testclock.New(time.Unix(3, 4))
+	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
 
 	k := NewKarteFrontend()
@@ -55,7 +55,7 @@ func TestModifyingSealedActionShouldFail(t *testing.T) {
 		t.Errorf("unexpected diff: %s", diff)
 	}
 
-	testClock = testclock.New(time.Unix(13*60*60, 0))
+	testClock = testclock.New(time.Unix(13*60*60, 0).UTC())
 	ctx = clock.Set(ctx, testClock)
 
 	_, err = k.UpdateAction(ctx, &kartepb.UpdateActionRequest{

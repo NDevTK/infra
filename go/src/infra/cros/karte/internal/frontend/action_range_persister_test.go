@@ -28,7 +28,7 @@ func TestActionRangePersisterInsufficientInput(t *testing.T) {
 	Convey("insufficient input", t, func() {
 		ctx := gaetesting.TestingContext()
 		ctx = identifiers.Use(ctx, identifiers.NewNaive())
-		testClock := testclock.New(time.Unix(10, 0))
+		testClock := testclock.New(time.Unix(10, 0).UTC())
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 
@@ -44,7 +44,7 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 	Convey("smoke test", t, func() {
 		ctx := gaetesting.TestingContext()
 		ctx = identifiers.Use(ctx, identifiers.NewNaive())
-		testClock := testclock.New(time.Unix(10, 0))
+		testClock := testclock.New(time.Unix(10, 0).UTC())
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 		a := &actionRangePersistOptions{
@@ -79,7 +79,7 @@ func TestActionRangePersister(t *testing.T) {
 	Convey("test with several actions", t, func() {
 		ctx := gaetesting.TestingContext()
 		ctx = identifiers.Use(ctx, identifiers.NewNaive())
-		testClock := testclock.New(time.Unix(10, 0))
+		testClock := testclock.New(time.Unix(10, 0).UTC())
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 		fake := &fakeClient{}

@@ -18,7 +18,7 @@ import (
 func ConvertTimestampPtrToTime(timestamp *timestamppb.Timestamp) time.Time {
 	var out time.Time
 	if timestamp != nil {
-		out = timestamp.AsTime()
+		out = timestamp.AsTime().UTC()
 	}
 	return out
 }
