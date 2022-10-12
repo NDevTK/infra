@@ -69,7 +69,7 @@ func (c *persistActionRangeRun) innerRun(ctx context.Context, a subcommands.Appl
 	marshalIndent := jsonpb.Marshaler{
 		Indent: "  ",
 	}
-	now := time.Now()
+	now := time.Now().UTC()
 	req := &kartepb.PersistActionRangeRequest{
 		// Karte identifier version: see internal/idstrategy/interface.go for details.
 		StartVersion: "zzzz",

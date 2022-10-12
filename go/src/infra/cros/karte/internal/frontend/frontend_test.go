@@ -36,14 +36,14 @@ func TestCreateAction(t *testing.T) {
 		Action: &kartepb.Action{
 			Name:       "",
 			Kind:       "ssh-attempt",
-			CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+			CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 		},
 	})
 	expected := &kartepb.Action{
 		Name:       fmt.Sprintf("%sentity001000000000", identifiers.IDVersion),
 		Kind:       "ssh-attempt",
-		SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(1+12*60*60, 2)),
-		CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+		SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(1+12*60*60, 2).UTC()),
+		CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 	}
 	if err != nil {
 		t.Error(err)
@@ -99,7 +99,7 @@ func TestCreateActionWithNoTime(t *testing.T) {
 	ctx := gaetesting.TestingContext()
 	datastore.GetTestable(ctx).Consistent(true)
 	// Set a test clock to an arbitrary time to make sure that the correct time is supplied.
-	testClock := testclock.New(time.Unix(3, 4))
+	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
 	ctx = identifiers.Use(ctx, identifiers.NewDefault())
 
@@ -118,7 +118,7 @@ func TestCreateActionWithNoTime(t *testing.T) {
 	if resp == nil {
 		t.Errorf("resp should not be nil")
 	}
-	expected := time.Unix(3, 4)
+	expected := time.Unix(3, 4).UTC()
 	actual := scalars.ConvertTimestampPtrToTime(resp.GetCreateTime())
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
@@ -130,7 +130,7 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	testClock := testclock.New(time.Unix(3, 4))
+	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
 	ctx = identifiers.Use(ctx, identifiers.NewNaive())
 
@@ -142,8 +142,8 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 			Kind:           "ssh-attempt",
 			SwarmingTaskId: "a",
 			BuildbucketId:  "b",
-			CreateTime:     scalars.ConvertTimeToTimestampPtr(time.Unix(3, 0)),
-			SealTime:       scalars.ConvertTimeToTimestampPtr(time.Unix(3+12*60*60, 0)),
+			CreateTime:     scalars.ConvertTimeToTimestampPtr(time.Unix(3, 0).UTC()),
+			SealTime:       scalars.ConvertTimeToTimestampPtr(time.Unix(3+12*60*60, 0).UTC()),
 		},
 	}
 
@@ -290,8 +290,8 @@ func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
 	fake := &fakeClient{}
 
 	resp, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
-		StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)),
-		StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(2, 0)),
+		StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()),
+		StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(2, 0).UTC()),
 	})
 	if resp == nil {
 		t.Errorf("expected resp not to be nil")
