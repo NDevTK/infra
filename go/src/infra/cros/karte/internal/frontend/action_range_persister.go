@@ -42,7 +42,7 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 }
 
 // makeQuery makes a query that queries a range of actions.
-func makeQuery(_ context.Context, a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
+func makeQuery(ctx context.Context, a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
 	q, err := newActionNameRangeQuery(a.startID, a.stopID)
 	if err != nil {
 		return nil, errors.Annotate(err, "make query").Err()
