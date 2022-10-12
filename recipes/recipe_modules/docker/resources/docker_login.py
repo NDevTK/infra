@@ -14,7 +14,7 @@ def main():
   parser.add_argument(
       '--service-account-token-file',
       required=True,
-      type=file,
+      type=open,
       help='File containing service acccount token used to authenticate with '
       'Docker server')
   parser.add_argument(
