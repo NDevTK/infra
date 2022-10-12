@@ -41,7 +41,7 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 	return tally, nil
 }
 
-// makeQuery makes a query and attaches it to the persister.
+// makeQuery makes a query that queries a range of actions.
 func makeQuery(a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
 	q, err := newActionNameRangeQuery(a.startID, a.stopID)
 	if err != nil {
