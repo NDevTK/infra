@@ -43,6 +43,14 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 
 // makeQuery makes a query and attaches it to the persister.
 func makeQuery(ctx context.Context, a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
+	switch {
+	case a.startID.Before(a.stopID):
+		// Do nothing.
+	case a.startID.Equal(a.stopID):
+		return nil, errors.Reason("rejecting likely erroneous call: smallest and largest karte identifiers are the same %q", a.stopID).Err()
+	default:
+		return nil, errors.Reason("invalid range %q to %q", a.startID, a.stopID).Err()
+	}
 	q, err := newActionNameRangeQuery(a.startID, a.stopID)
 	if err != nil {
 		return nil, errors.Annotate(err, "make query").Err()
