@@ -65,7 +65,7 @@ func CreateActionKey(ctx context.Context, t time.Time, disambiguation uint32) (*
 	if err != nil {
 		return nil, errors.Annotate(err, "create action key").Err()
 	}
-	return datastore.KeyForObjErr(ctx, ActionEntity{ID: id})
+	return datastore.KeyForObjErr(ctx, &ActionEntity{ID: id})
 }
 
 // ConvertToAction converts a datastore action entity to an action proto.
