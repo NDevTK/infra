@@ -32,7 +32,7 @@ func TestActionRangePersisterInsufficientInput(t *testing.T) {
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 
-		_, err := makeQuery(&actionRangePersistOptions{})
+		_, err := makeQuery(ctx, &actionRangePersistOptions{})
 		So(err, ShouldErrLike, "rejecting likely erroneous call")
 	})
 }
@@ -59,7 +59,7 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 				FineTime:   0,
 			},
 		}
-		q, err := makeQuery(a)
+		q, err := makeQuery(ctx, a)
 		So(err, ShouldBeNil)
 		ad, _, err := persistActions(ctx, a, q)
 		So(err, ShouldBeNil)
@@ -144,7 +144,7 @@ func TestActionRangePersister(t *testing.T) {
 			},
 			bq: fake,
 		}
-		q, err := makeQuery(a)
+		q, err := makeQuery(ctx, a)
 		So(err, ShouldBeNil)
 		ad, _, err := persistActions(ctx, a, q)
 		So(err, ShouldBeNil)
