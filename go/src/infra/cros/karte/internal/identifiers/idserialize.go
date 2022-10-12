@@ -43,7 +43,7 @@ func (i *idInfo) VersionlessBytes() ([]byte, error) {
 }
 
 // Encoded converts an idInfo into lex64, which preserves lexicographic order.
-func (i *iDInfo) Encoded() (string, error) {
+func (i *idInfo) Encoded() (string, error) {
 	if i.Version == "" {
 		return "", errors.Reason("encoded: version cannot be empty").Err()
 	}
