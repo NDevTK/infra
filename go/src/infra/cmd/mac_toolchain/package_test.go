@@ -127,6 +127,7 @@ func TestMakePackages(t *testing.T) {
 			})
 			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/ios.cipd_version"},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (4th generation).simdevicetype/Contents/Info.plist")},
 			})
 		})
 
@@ -143,6 +144,7 @@ func TestMakePackages(t *testing.T) {
 			})
 			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/ios.cipd_version"},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (4th generation).simdevicetype/Contents/Info.plist")},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
 			})
 		})

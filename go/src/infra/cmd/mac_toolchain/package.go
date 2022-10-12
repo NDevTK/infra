@@ -143,7 +143,7 @@ func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string, legacyIOSP
 	excludePrefixesForiOSPackage := make([]string, len(defaultExcludePrefixes))
 	copy(excludePrefixesForiOSPackage, defaultExcludePrefixes)
 	if !legacyIOSPackage {
-		excludePrefixesForiOSPackage = append(excludePrefixesForMacPackage, XcodeIOSSimulatorRuntimeRelPath)
+		excludePrefixesForiOSPackage = append(excludePrefixesForiOSPackage, XcodeIOSSimulatorRuntimeRelPath)
 	}
 
 	iosMakePackageArgs := MakePackageArgs{
