@@ -58,10 +58,10 @@ func TestConvertActionEntityToAction(t *testing.T) {
 		{
 			name: "seal time",
 			in: &ActionEntity{
-				SealTime: time.Unix(1, 2),
+				SealTime: time.Unix(1, 2).UTC(),
 			},
 			out: &kartepb.Action{
-				SealTime: timestamppb.New(time.Unix(1, 2)),
+				SealTime: timestamppb.New(time.Unix(1, 2).UTC()),
 			},
 		},
 		{
