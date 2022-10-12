@@ -53,12 +53,12 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 		}
 		q, err := makeQuery(ctx, a)
 		So(err, ShouldBeNil)
-		ad, _, err := persistActions(ctx, a, q.Query)
+		_, _, err = persistActions(ctx, a, q.Query)
 		So(err, ShouldBeNil)
 		var actions []*ActionEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
 		So(len(actions), ShouldEqual, 0)
-		So(persistObservations(ctx, a, ad), ShouldBeNil)
+		So(persistObservations(ctx, a), ShouldBeNil)
 		var observations []*ObservationEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ObservationKind), &observations), ShouldBeNil)
 		So(len(observations), ShouldEqual, 0)
@@ -130,12 +130,12 @@ func TestActionRangePersister(t *testing.T) {
 		}
 		q, err := makeQuery(ctx, a)
 		So(err, ShouldBeNil)
-		ad, _, err := persistActions(ctx, a, q.Query)
+		_, _, err = persistActions(ctx, a, q.Query)
 		So(err, ShouldBeNil)
 		var actions []*ActionEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
 		So(len(actions), ShouldEqual, 2)
-		So(persistObservations(ctx, a, ad), ShouldBeNil)
+		So(persistObservations(ctx, a), ShouldBeNil)
 		var observations []*ObservationEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ObservationKind), &observations), ShouldBeNil)
 		So(len(observations), ShouldEqual, 2)
