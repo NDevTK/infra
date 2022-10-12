@@ -112,6 +112,15 @@ func (e *ActionEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 	}
 }
 
+// CreateObservationKey creates a datastore.Key given all the information necessary to identify an observation entity.
+func CreateObservationKey(ctx context.Context, t time.Time, disambiguation uint32) (*datastore.Key, error) {
+	id, err := identifiers.MakeRawID(t, disambiguation)
+	if err != nil {
+		return nil, errors.Annotate(err, "create action key").Err()
+	}
+	return datastore.KeyForObjErr(ctx, &ObservationEntity{ID: id})
+}
+
 // ObservationEntity is the datastore entity for observations.
 // Only one of value_string or value_number can have a non-default value. If this constraint is not satisfied, then the record is ill-formed.
 type ObservationEntity struct {
