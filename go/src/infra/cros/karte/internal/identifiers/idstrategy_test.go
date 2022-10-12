@@ -45,7 +45,7 @@ func TestMakeRawID(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			id, err := makeRawID(tt.in, tt.suffix)
+			id, err := MakeRawID(tt.in, tt.suffix)
 			if err != nil {
 				t.Errorf("unexpected error: %s", err)
 			}

@@ -66,7 +66,7 @@ func (s *prodStrategy) IDForAction(ctx context.Context, action *kartepb.Action) 
 	// Additionally, Karte queries depend on the end_time of the event *as reported by the event*.
 	// Events also have an a priori maximum duration,  which means that we can perform a semantically correct query based on the
 	// end time using IDs whose lexicographic sort order takes the current timestamp into account.
-	msg, err := makeID(ctx, scalars.ConvertTimestampPtrToTime(action.GetCreateTime()))
+	msg, err := MakeID(ctx, scalars.ConvertTimestampPtrToTime(action.GetCreateTime()))
 	return msg, err
 }
 
@@ -75,7 +75,7 @@ func (s *prodStrategy) IDForAction(ctx context.Context, action *kartepb.Action) 
 // Note: The ID for the current observation in question uses the *current time* and no properties of the observation at all.
 // This allows us to avoid running back to datastore to look up information about the action just to insert an observation.
 func (s *prodStrategy) IDForObservation(ctx context.Context, _ *kartepb.Observation) (string, error) {
-	msg, err := makeID(ctx, clock.Now(ctx))
+	msg, err := MakeID(ctx, clock.Now(ctx))
 	return msg, err
 }
 
@@ -114,18 +114,18 @@ func NewNaive() Strategy {
 	return &naiveStrategy{counter: NaiveFirstID}
 }
 
-// makeID makes an unambiguous ID for a given entity.
-func makeID(ctx context.Context, t time.Time) (string, error) {
+// MakeID makes an unambiguous ID for a given entity.
+func MakeID(ctx context.Context, t time.Time) (string, error) {
 	disambiguation := mathrand.Uint32(ctx)
-	return makeRawID(t, disambiguation)
+	return MakeRawID(t, disambiguation)
 }
 
 // Use 9,223,372,036,854,775,807 as the end of time.
 const endOfTime = 0x7FFFFFFFFFFFFFFF
 
-// makeRawID makes an ID for a given entity by taking a time (the creation or ingestion time, depending on the kind).
+// MakeRawID makes an ID for a given entity by taking a time (the creation or ingestion time, depending on the kind).
 // The uuidSuffix is a uuid that will be used as a disambiguation suffix.
-func makeRawID(t time.Time, disambiguation uint32) (string, error) {
+func MakeRawID(t time.Time, disambiguation uint32) (string, error) {
 	if t.IsZero() {
 		return "", errors.New("make id: timestamp is zero")
 	}
