@@ -32,10 +32,7 @@ func TestActionRangePersisterInsufficientInput(t *testing.T) {
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
 
-		_, err := makeQuery(ctx, &actionRangePersistOptions{
-			startID: time.Unix(10, 0).UTC(),
-			stopID: time.Unix(10, 0).UTC(),
-		})
+		_, err := makeQuery(ctx, &actionRangePersistOptions{})
 		So(err, ShouldErrLike, "rejecting likely erroneous call")
 	})
 }
