@@ -358,6 +358,12 @@ func newActionEntitiesQuery(token string, filter string) (*ActionEntitiesQuery, 
 //
 // This query will apply to names strictly in the range [begin, end).
 func newActionNameRangeQuery(begin time.Time, end time.Time) (*ActionEntitiesQuery, error) {
+	if ok := begin.Location() == time.UTC; !ok {
+		return nil, errors.Reason("new action name range query: begin location must be UTC not %q", begin.Location().String()).Err()
+	}
+	if ok := end.Location() == time.UTC; !ok {
+		return nil, errors.Reason("new action name range query: end location must be UTC not %q", end.Location().String()).Err()
+	}
 	q := datastore.NewQuery(ActionKind)
 	// The datastore query will actually reject invalid arguments on its own, but we can give the user
 	// a better error message if we check the arguments ourselves.
