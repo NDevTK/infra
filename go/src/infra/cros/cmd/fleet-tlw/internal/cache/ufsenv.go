@@ -19,6 +19,7 @@ import (
 
 	ufsmodels "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 const refreshInterval = time.Hour
@@ -28,8 +29,8 @@ const refreshInterval = time.Hour
 // It caches the result to prevent frequent access to UFS. It updates the cache
 // regularly.
 func NewUFSEnv(c ufsapi.FleetClient) (Environment, error) {
-	e := &ufsEnv{client: c}
-	if err := e.refreshSubnets(); err != nil {
+	e := &ufsEnv{client: c, zones: make(map[string]ufsmodels.Zone)}
+	if err := e.refresh(); err != nil {
 		return nil, fmt.Errorf("NewUFSEnv: %s", err)
 	}
 	return e, nil
@@ -40,16 +41,54 @@ type ufsEnv struct {
 	expireMu sync.Mutex
 	expire   time.Time
 	subnets  []Subnet
+	// cacheZones is a map of a UFS zone to its caching services.
+	cacheZones map[ufsmodels.Zone][]CachingService
+	// zones caches the zone for a machine (server or SU) name.
+	zones   map[string]ufsmodels.Zone
+	zonesMu sync.Mutex
 }
 
 func (e *ufsEnv) Subnets() []Subnet {
-	if err := e.refreshSubnets(); err != nil {
-		log.Printf("UFSEnv: fallback to cached data due to refresh failure: %s", err)
+	if err := e.refresh(); err != nil {
+		log.Printf("UFSEnv: fallback to cached subnets due to refresh failure: %s", err)
 	}
 	return e.subnets
 }
 
-func (e *ufsEnv) refreshSubnets() error {
+func (e *ufsEnv) CacheZones() map[ufsmodels.Zone][]CachingService {
+	if err := e.refresh(); err != nil {
+		log.Printf("UFSEnv: fallback to cached due to refresh failure: %s", err)
+	}
+	return e.cacheZones
+}
+
+// ZoneFromMachineName implements the Environment interface.
+func (e *ufsEnv) ZoneFromMachineName(name string) (ufsmodels.Zone, error) {
+	e.zonesMu.Lock()
+	defer e.zonesMu.Unlock()
+
+	if z, ok := e.zones[name]; ok {
+		return z, nil
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	md := metadata.Pairs("namespace", "os")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	lse, err := e.client.GetMachineLSE(ctx, &ufsapi.GetMachineLSERequest{
+		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, name),
+	})
+	if err != nil {
+		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone by name %q: %s", name, err)
+	}
+	e.zones[name] = ufsmodels.Zone(ufsmodels.Zone_value[lse.GetZone()])
+	return e.zones[name], nil
+}
+
+// getCachingSubnets returns the caching subnets from the input caching
+// services.
+func (e *ufsEnv) refresh() error {
 	n := time.Now()
 	e.expireMu.Lock()
 	defer e.expireMu.Unlock()
@@ -58,33 +97,49 @@ func (e *ufsEnv) refreshSubnets() error {
 	}
 	e.expire = n.Add(refreshInterval)
 
-	s, err := e.fetchCachingSubnets()
+	cs, err := fetchCachingServicesFromUFS(e.client)
 	if err != nil {
-		return fmt.Errorf("refresh subnets: %s", err)
+		return fmt.Errorf("refresh caching services: %s", err)
 	}
-	e.subnets = s
-	return nil
-}
 
-// fetchCachingSubnets fetches caching services info from UFS and constructs
-// caching subnets.
-func (e *ufsEnv) fetchCachingSubnets() ([]Subnet, error) {
-	log.Printf("Fetching caching subnets from UFS")
-	cachingServices, err := fetchCachingServicesFromUFS(e.client)
-	if err != nil {
-		return nil, fmt.Errorf("fetch caching subnets: %s", err)
-	}
-	log.Printf("Fetching caching subnets from UFS done")
-
-	var result []Subnet
-	m := make(map[string][]string)
-	for _, s := range cachingServices {
+	// For the caching services selected by UFS zone, we MUST NOT set the
+	// ServingSubnets field.
+	// Once we fully migrate all caching services to use UFS zone for selection,
+	// we don't need the below two slices variable. Instead we can check the
+	// caching services in the loop directly.
+	var subnetBased []*ufsmodels.CachingService
+	var zoneBased []*ufsmodels.CachingService
+	for _, s := range cs {
 		if state := s.GetState(); state != ufsmodels.State_STATE_SERVING {
 			continue
 		}
+		if len(s.GetServingSubnets()) > 0 {
+			subnetBased = append(subnetBased, s)
+		} else {
+			zoneBased = append(zoneBased, s)
+		}
+	}
+	s, err := getCachingSubnets(subnetBased)
+	if err != nil {
+		return fmt.Errorf("refresh caching services: %s", err)
+	}
+	e.subnets = s
+
+	z, err := getCachingZones(e, zoneBased)
+	if err != nil {
+		return fmt.Errorf("refresh caching services: %s", err)
+	}
+	e.cacheZones = z
+	return nil
+}
+
+func getCachingSubnets(cs []*ufsmodels.CachingService) ([]Subnet, error) {
+	var result []Subnet
+	m := make(map[string][]string)
+	for _, s := range cs {
 		svc, err := cachingServiceName(s)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("get caching subnets: %s", err)
 		}
 		subnets := s.GetServingSubnets()
 		for _, s := range subnets {
@@ -99,6 +154,41 @@ func (e *ufsEnv) fetchCachingSubnets() ([]Subnet, error) {
 		sort.Strings(v)
 		result = append(result, Subnet{IPNet: ipNet, Backends: v})
 		log.Printf("Caching subnet: %q: %#v", k, v)
+	}
+	return result, nil
+}
+
+// getCachingZones get the caching zones from the given caching services.
+// When the zone is not specified for a caching service, we deduce it from the
+// backend caching server.
+func getCachingZones(env Environment, ss []*ufsmodels.CachingService) (map[ufsmodels.Zone][]CachingService, error) {
+	result := make(map[ufsmodels.Zone][]CachingService)
+	for _, s := range ss {
+		name, err := cachingServiceName(s)
+		svc := CachingService(name)
+		if err != nil {
+			return nil, fmt.Errorf("get caching zones: %s", err)
+		}
+		if zs := s.GetZones(); len(zs) > 0 {
+			for _, z := range zs {
+				result[z] = append(result[z], svc)
+			}
+			continue
+		}
+		// Deduce zone from the backend caching server.
+		// We always use the secondary node/server to get the zone because the
+		// secondary node is always set even the service only has one active
+		// node.
+		node := s.GetSecondaryNode()
+		z, err := env.ZoneFromMachineName(node)
+		if err != nil {
+			return nil, fmt.Errorf("get caching zones of %q (using node %q): %s", svc, node, err)
+		}
+		result[z] = append(result[z], svc)
+	}
+	for k, v := range result {
+		sort.Slice(v, func(i, j int) bool { return v[i] < v[j] })
+		log.Printf("Caching zone: %q: %#v", k, v)
 	}
 	return result, nil
 }

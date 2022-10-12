@@ -16,17 +16,24 @@ import (
 
 	ufsmodels "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 type fakeUFSClient struct {
 	ufsapi.FleetClient
 	services []*ufsmodels.CachingService
+	machines map[string]*ufsmodels.MachineLSE
 }
 
 func (c fakeUFSClient) ListCachingServices(context.Context, *ufsapi.ListCachingServicesRequest, ...grpc.CallOption) (*ufsapi.ListCachingServicesResponse, error) {
 	return &ufsapi.ListCachingServicesResponse{
 		CachingServices: c.services,
 	}, nil
+}
+
+func (c fakeUFSClient) GetMachineLSE(_ context.Context, req *ufsapi.GetMachineLSERequest, o ...grpc.CallOption) (*ufsmodels.MachineLSE, error) {
+	n := ufsutil.RemovePrefix(req.GetName())
+	return c.machines[n], nil
 }
 
 func TestSubnets_multipleSubnets(t *testing.T) {
@@ -58,8 +65,8 @@ func TestSubnets_multipleSubnets(t *testing.T) {
 	if diff := cmp.Diff(want, got, cmpopts.SortSlices(less)); diff != "" {
 		t.Errorf("Subnets() returned unexpected diff (-want +got):\n%s", diff)
 	}
-
 }
+
 func TestSubnets_refresh(t *testing.T) {
 	t.Parallel()
 	c := &fakeUFSClient{services: []*ufsmodels.CachingService{
@@ -110,4 +117,108 @@ func TestSubnets_refresh(t *testing.T) {
 			}
 		})
 	})
+}
+
+func TestZones_initialization(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		svc  []*ufsmodels.CachingService
+		want map[ufsmodels.Zone][]CachingService
+	}{
+		"one server serves one zone": {
+			[]*ufsmodels.CachingService{
+				{
+					Name:  "cachingservice/1.1.1.1",
+					Port:  8001,
+					Zones: []ufsmodels.Zone{ufsmodels.Zone_ZONE_SFO36_OS},
+					State: ufsmodels.State_STATE_SERVING,
+				},
+			},
+			map[ufsmodels.Zone][]CachingService{
+				ufsmodels.Zone_ZONE_SFO36_OS: {"http://1.1.1.1:8001"},
+			},
+		},
+		"one server serves two zones": {
+			[]*ufsmodels.CachingService{
+				{
+					Name:  "cachingservice/1.1.1.1",
+					Port:  8001,
+					Zones: []ufsmodels.Zone{ufsmodels.Zone_ZONE_CHROMEOS2, ufsmodels.Zone_ZONE_CHROMEOS4},
+					State: ufsmodels.State_STATE_SERVING,
+				},
+			},
+			map[ufsmodels.Zone][]CachingService{
+				ufsmodels.Zone_ZONE_CHROMEOS2: {"http://1.1.1.1:8001"},
+				ufsmodels.Zone_ZONE_CHROMEOS4: {"http://1.1.1.1:8001"},
+			},
+		},
+		"two servers serve one zones": {
+			[]*ufsmodels.CachingService{
+				{
+					Name:  "cachingservice/1.1.1.1",
+					Port:  8001,
+					Zones: []ufsmodels.Zone{ufsmodels.Zone_ZONE_SFO36_OS},
+					State: ufsmodels.State_STATE_SERVING,
+				},
+				{
+					Name:  "cachingservice/1.1.1.2",
+					Port:  8001,
+					Zones: []ufsmodels.Zone{ufsmodels.Zone_ZONE_SFO36_OS},
+					State: ufsmodels.State_STATE_SERVING,
+				},
+			},
+			map[ufsmodels.Zone][]CachingService{
+				ufsmodels.Zone_ZONE_SFO36_OS: {"http://1.1.1.1:8001", "http://1.1.1.2:8001"},
+			},
+		},
+	}
+	for name, test := range tests {
+		test := test
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			c := &fakeUFSClient{services: test.svc}
+			env, err := NewUFSEnv(c)
+			if err != nil {
+				t.Fatalf("NewUFSEnv(fakeClient) failed: %s", err)
+			}
+			got := env.CacheZones()
+			if diff := cmp.Diff(test.want, got); diff != "" {
+				t.Errorf("Zones() returned unexpected diff (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestZones_deduction(t *testing.T) {
+	t.Parallel()
+
+	serverHostname := "server-hostname"
+	c := &fakeUFSClient{
+		services: []*ufsmodels.CachingService{
+			{
+				Name:          "cachingservice/1.1.1.1",
+				Port:          8001,
+				SecondaryNode: serverHostname,
+				State:         ufsmodels.State_STATE_SERVING,
+			},
+		},
+		machines: map[string]*ufsmodels.MachineLSE{
+			serverHostname: {
+				Name: serverHostname,
+				Zone: "ZONE_CHROMEOS2",
+			},
+		},
+	}
+	env, err := NewUFSEnv(c)
+	if err != nil {
+		t.Fatalf("NewUFSEnv(fakeClient) failed: %s", err)
+	}
+	want := map[ufsmodels.Zone][]CachingService{
+		ufsmodels.Zone_ZONE_CHROMEOS2: {"http://1.1.1.1:8001"},
+	}
+	got := env.CacheZones()
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Zones() returned unexpected diff (-want +got):\n%s", diff)
+	}
 }

@@ -19,6 +19,7 @@ import (
 
 	"infra/cros/cmd/fleet-tlw/internal/cache"
 	"infra/cros/fleet/access"
+	ufsmodels "infra/unifiedfleet/api/v1/models"
 )
 
 type fakeTLWServer struct{}
@@ -120,4 +121,10 @@ type fakeEnv struct{}
 
 func (fakeEnv) Subnets() []cache.Subnet {
 	return nil
+}
+
+func (fakeEnv) CacheZones() map[ufsmodels.Zone][]cache.CachingService { return nil }
+
+func (fakeEnv) ZoneFromMachineName(string) (ufsmodels.Zone, error) {
+	return ufsmodels.Zone_ZONE_UNSPECIFIED, nil
 }

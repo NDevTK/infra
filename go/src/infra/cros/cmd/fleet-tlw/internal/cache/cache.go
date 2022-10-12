@@ -7,7 +7,10 @@ package cache
 import (
 	"fmt"
 	"hash/fnv"
+	"log"
 	"net"
+
+	ufsmodels "infra/unifiedfleet/api/v1/models"
 )
 
 // Environment is the runtime dependencies, e.g. networking, etc. of the
@@ -17,7 +20,19 @@ type Environment interface {
 	// The slice returned may be shared, so do not modify it.
 	// This function is concurrency safe.
 	Subnets() []Subnet
+	// CacheZones returns the caching zones.
+	// A caching zone is a series of caching services serving a UFS zone.
+	// The map returned may be shared, so do not modify it.
+	// This function is concurrency safe.
+	CacheZones() map[ufsmodels.Zone][]CachingService
+
+	// ZoneFromMachineName returns UFS zone for the given machine (server or SU)
+	// name.
+	ZoneFromMachineName(string) (ufsmodels.Zone, error)
 }
+
+// CachingService represents a caching service.
+type CachingService string
 
 // Subnet is a network in labs (i.e. test VLAN).
 // DUTs can only access caching backends in the same Subnet.
@@ -40,6 +55,37 @@ func NewFrontend(env Environment) *Frontend {
 // `filename`.
 // This function is concurrency safe.
 func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
+	b, err := f.assignBackendByZone(dutName, filename)
+	if err == nil {
+		return b, nil
+	}
+	log.Printf("Assign caching backend: fall back to subnet based: %s", err)
+	b, err = f.assignBackendBySubnet(dutName, filename)
+	if err != nil {
+		return "", fmt.Errorf("assign backend: %s", err)
+	}
+	return b, nil
+}
+
+func (f *Frontend) assignBackendByZone(dutName, filename string) (string, error) {
+	z, err := f.env.ZoneFromMachineName(dutName)
+	if err != nil {
+		return "", fmt.Errorf("assign backend by zone for %q: %s", dutName, err)
+	}
+	cs, ok := f.env.CacheZones()[z]
+	if !ok {
+		return "", fmt.Errorf("assign backend by zone for %q: zone %q has no caching services", dutName, z)
+	}
+	// TODO(guocb): eliminate the type conversion after we fully deprecate the
+	// subnet based selection.
+	s := make([]string, len(cs))
+	for i, c := range cs {
+		s[i] = string(c)
+	}
+	return findOneBackend(filename, s), nil
+
+}
+func (f *Frontend) assignBackendBySubnet(dutName, filename string) (string, error) {
 	dutAddr, err := lookupHost(dutName)
 	if err != nil {
 		return "", fmt.Errorf("assign backend to %q: %s", dutName, err)

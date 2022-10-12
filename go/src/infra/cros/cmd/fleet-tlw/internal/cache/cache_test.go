@@ -10,14 +10,26 @@ import (
 	"net"
 	"strings"
 	"testing"
+
+	ufsmodels "infra/unifiedfleet/api/v1/models"
 )
 
 type mockEnv struct {
-	subnets []Subnet
+	subnets     []Subnet
+	zones       map[ufsmodels.Zone][]CachingService
+	machineZone map[string]ufsmodels.Zone
 }
 
 func (e mockEnv) Subnets() []Subnet {
 	return e.subnets
+}
+
+func (e mockEnv) CacheZones() map[ufsmodels.Zone][]CachingService {
+	return e.zones
+}
+
+func (e mockEnv) ZoneFromMachineName(n string) (ufsmodels.Zone, error) {
+	return e.machineZone[n], nil
 }
 
 func TestAssignBackend_dutInASubnet(t *testing.T) {
@@ -96,5 +108,76 @@ func TestAssignBackend_dutNotInAnySubnets(t *testing.T) {
 	r, err := fe.AssignBackend(dutAddr, "path/to/file")
 	if err == nil {
 		t.Errorf("AssignBackend(%s) succeeded with DUT out of any subnet, got %s", dutAddr, r)
+	}
+}
+
+func TestAssignBackend_dutInAZone(t *testing.T) {
+	t.Parallel()
+	want := "http://100.168.1.1:8082"
+	env := mockEnv{
+		zones: map[ufsmodels.Zone][]CachingService{
+			ufsmodels.Zone_ZONE_SFO36_OS: {CachingService(want)},
+		},
+		machineZone: map[string]ufsmodels.Zone{
+			"dutname": ufsmodels.Zone_ZONE_SFO36_OS,
+		},
+	}
+	fe := NewFrontend(env)
+	got, err := fe.AssignBackend("dutname", "path/to/file")
+	if err != nil {
+		t.Errorf("AssignBackend() err %v, want %v", err, nil)
+	}
+	if got != want {
+		t.Errorf("AssignBackend() = %q, want %q", got, want)
+	}
+}
+
+func TestAssignBackend_fallBackToSubnet(t *testing.T) {
+	t.Parallel()
+	want := "http://1.1.1.1:8082"
+	env := mockEnv{
+		subnets: []Subnet{
+			{
+				IPNet:    &net.IPNet{IP: net.IPv4(1, 1, 1, 0), Mask: net.CIDRMask(24, 32)},
+				Backends: []string{want},
+			},
+		},
+		zones: map[ufsmodels.Zone][]CachingService{
+			ufsmodels.Zone_ZONE_SFO36_OS: {"100.168.1.1"},
+		},
+		machineZone: map[string]ufsmodels.Zone{
+			"1.1.1.100": ufsmodels.Zone_ZONE_CHROMEOS6,
+		},
+	}
+	fe := NewFrontend(env)
+	got, err := fe.AssignBackend("1.1.1.100", "path/to/file")
+	if err != nil {
+		t.Errorf("AssignBackend() err %v, want %v", err, nil)
+	}
+	if got != want {
+		t.Errorf("AssignBackend() = %q, want %q", got, want)
+	}
+}
+
+func TestAssignBackend_dutNotInZoneOrSubnet(t *testing.T) {
+	t.Parallel()
+	env := mockEnv{
+		subnets: []Subnet{
+			{
+				IPNet:    &net.IPNet{IP: net.IPv4(1, 1, 1, 0), Mask: net.CIDRMask(24, 32)},
+				Backends: []string{"http://1.1.1.1:8082"},
+			},
+		},
+		zones: map[ufsmodels.Zone][]CachingService{
+			ufsmodels.Zone_ZONE_SFO36_OS: {"100.168.1.1"},
+		},
+		machineZone: map[string]ufsmodels.Zone{
+			"2.2.2.2": ufsmodels.Zone_ZONE_CHROMEOS6,
+		},
+	}
+	fe := NewFrontend(env)
+	_, err := fe.AssignBackend("2.2.2.2", "path/to/file")
+	if err == nil {
+		t.Errorf("AssignBackend() err nil, want not nil")
 	}
 }
