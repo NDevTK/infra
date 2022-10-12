@@ -6,7 +6,7 @@ package identifiers
 
 import (
 	"context"
-	"fmt"
+	"math"
 	"time"
 
 	"go.chromium.org/luci/common/clock"
@@ -86,32 +86,32 @@ func NewDefault() Strategy {
 
 // naiveStrategy produces incremental IDs in a naive, non-threadsafe way. It is useful only for tests.
 type naiveStrategy struct {
-	counter int64
+	counter uint32
 }
 
 // IDForAction returns entityn where n is the next lowest number in sequence.
-func (s *naiveStrategy) IDForAction(_ context.Context, _ *kartepb.Action) (string, error) {
-	out := fmt.Sprintf(NaiveIDFmt, IDVersion, s.counter)
+func (s *naiveStrategy) IDForAction(ctx context.Context, _ *kartepb.Action) (string, error) {
+	out, err := MakeRawID(clock.Now(ctx), s.counter)
+	if err != nil {
+		return "", errors.Annotate(err, "id for action").Err()
+	}
 	s.counter -= 1
 	return out, nil
 }
 
 // IDForObservation returns entityn where n is the next lowest number in sequence.
-func (s *naiveStrategy) IDForObservation(_ context.Context, _ *kartepb.Observation) (string, error) {
-	out := fmt.Sprintf(NaiveIDFmt, IDVersion, s.counter)
+func (s *naiveStrategy) IDForObservation(ctx context.Context, _ *kartepb.Observation) (string, error) {
+	out, err := MakeRawID(clock.Now(ctx), s.counter)
+	if err != nil {
+		return "", errors.Annotate(err, "id for observation").Err()
+	}
 	s.counter -= 1
 	return out, nil
 }
 
-// NaiveFirstID is the first ID returned by the naive strategy.
-const NaiveFirstID = 1000 * 1000 * 1000
-
-// NaiveIDFmt is the format of a naive ID.
-const NaiveIDFmt = "%sentity%012d"
-
 // NewNaive creates a new naive strategy.
 func NewNaive() Strategy {
-	return &naiveStrategy{counter: NaiveFirstID}
+	return &naiveStrategy{counter: math.MaxUint32}
 }
 
 // MakeID makes an unambiguous ID for a given entity.

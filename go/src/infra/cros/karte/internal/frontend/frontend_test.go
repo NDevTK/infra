@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -30,6 +29,8 @@ func TestCreateAction(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
 	ctx = identifiers.Use(ctx, identifiers.NewNaive())
+	testClock := testclock.New(time.Unix(3, 4))
+	ctx = clock.Set(ctx, testClock)
 	datastore.GetTestable(ctx).Consistent(true)
 	k := NewKarteFrontend()
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
@@ -40,7 +41,7 @@ func TestCreateAction(t *testing.T) {
 		},
 	})
 	expected := &kartepb.Action{
-		Name:       fmt.Sprintf("%sentity001000000000", identifiers.IDVersion),
+		Name:       "zzzzUzzzzzzzzzk00000zzzzzk",
 		Kind:       "ssh-attempt",
 		SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(1+12*60*60, 2)),
 		CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
@@ -138,7 +139,7 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 
 	expected := []*kartepb.Action{
 		{
-			Name:           fmt.Sprintf(identifiers.NaiveIDFmt, identifiers.IDVersion, identifiers.NaiveFirstID),
+			Name:           "zzzzUzzzzzzzzzk00000zzzzzk",
 			Kind:           "ssh-attempt",
 			SwarmingTaskId: "a",
 			BuildbucketId:  "b",
