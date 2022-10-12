@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"infra/cros/karte/internal/lex64"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // Further fields may be added after Disambiguation without breaking backward-compatibility.
@@ -42,6 +44,9 @@ func (i *IDInfo) VersionlessBytes() ([]byte, error) {
 
 // Encoded converts an IDInfo into lex64, which preserves lexicographic order.
 func (i *IDInfo) Encoded() (string, error) {
+	if i.Version == "" {
+		return "", errors.Reason("encoded: version cannot be empty").Err()
+	}
 	bytes, err := i.VersionlessBytes()
 	if err != nil {
 		return "", err
