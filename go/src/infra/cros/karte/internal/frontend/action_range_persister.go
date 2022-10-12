@@ -27,7 +27,7 @@ type actionRangePersistOptions struct {
 
 // run gathers up all the observations and actions and persists them.
 func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (int, error) {
-	q, err := makeQuery(a)
+	q, err := makeQuery(ctx, a)
 	if err != nil {
 		return 0, errors.Annotate(err, "run").Err()
 	}
@@ -42,7 +42,13 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 }
 
 // makeQuery makes a query and attaches it to the persister.
-func makeQuery(a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
+func makeQuery(ctx context.Context, a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
+	if _, err := CreateActionKey(ctx, a.startID, 0); err != nil {
+		return nil, errors.Annotate(err, "make query").Err()
+	}
+	if _, err := CreateObservationKey(ctx, a.startID, 0); err != nil {
+		return nil, errors.Annotate(err, "make query").Err()
+	}
 	q, err := newActionNameRangeQuery(a.startID, a.stopID)
 	if err != nil {
 		return nil, errors.Annotate(err, "make query").Err()
