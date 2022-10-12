@@ -31,7 +31,7 @@ func TestGetMostRecentAction(t *testing.T) {
 		&kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
 				Kind:       "foo",
-				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 			},
 		},
 	)
@@ -44,7 +44,7 @@ func TestGetMostRecentAction(t *testing.T) {
 		&kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
 				Kind:       "bar",
-				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 			},
 		},
 	)
@@ -82,7 +82,7 @@ func TestGetMostRecentActionInKind(t *testing.T) {
 			Action: &kartepb.Action{
 				Kind:       "ssh-attempt",
 				FailReason: "1",
-				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 			},
 		},
 	)
@@ -96,7 +96,7 @@ func TestGetMostRecentActionInKind(t *testing.T) {
 			Action: &kartepb.Action{
 				Kind:       "ssh-attempt",
 				FailReason: "2",
-				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 			},
 		},
 	)
@@ -110,7 +110,7 @@ func TestGetMostRecentActionInKind(t *testing.T) {
 			Action: &kartepb.Action{
 				Kind:       "flash-firmware",
 				FailReason: "3",
-				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2)),
+				CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
 			},
 		},
 	)
