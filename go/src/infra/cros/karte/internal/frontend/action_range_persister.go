@@ -12,6 +12,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	"infra/cros/karte/internal/identifiers"
 )
 
 // actionRangePersistOptions is a structure that can be used to manage an attempt to persist a range of actions.
@@ -30,7 +32,7 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 	if err != nil {
 		return 0, errors.Annotate(err, "run").Err()
 	}
-	ad, tally, err := persistActions(ctx, a, q)
+	ad, tally, err := persistActions(ctx, a, q.Query)
 	if err != nil {
 		return 0, errors.Annotate(err, "run").Err()
 	}
@@ -78,29 +80,40 @@ func insertObservationBatch(ctx context.Context, a *actionRangePersistOptions, e
 }
 
 // persistActions persists all the actions corresponding to our attached query to bigquery.
-func persistActions(ctx context.Context, a *actionRangePersistOptions, q *ActionEntitiesQuery) (*ActionQueryAncillaryData, int, error) {
+func persistActions(ctx context.Context, a *actionRangePersistOptions, q *datastore.Query) (*ActionQueryAncillaryData, int, error) {
 	out := &ActionQueryAncillaryData{}
 	tally := 0
 	logging.Infof(ctx, "Persist actions: beginning offload attempt")
-	for q.Token != stopToken {
-		logging.Infof(ctx, "Persist actions: offloaded %d records so far; beginning batch of max size %d", tally, defaultBatchSize)
-		batch, ad, err := q.Next(ctx, defaultBatchSize)
-		if err != nil {
-			return nil, 0, errors.Annotate(err, "persist actions").Err()
+	var hopper []*ActionEntity
+	err := datastore.Run(ctx, q, func(actionEntity *ActionEntity) error {
+		if tally <= 20 || tally%1000 == 0 {
+			logging.Infof(ctx, "Persist actions: offloaded %d records so far", tally)
 		}
+		tally++
 
-		out.updateWith(&ad)
-		tally += len(batch)
+		hopper = append(hopper, actionEntity)
 
-		// TODO(b/248629691): A batch length of zero signals the successful end of the offload attempt.
-		//                    Replace this with a better API for next.
-		if len(batch) == 0 {
-			return out, tally, nil
+		out.updateWith(&ActionQueryAncillaryData{
+			BiggestID:       actionEntity.ID,
+			SmallestID:      actionEntity.ID,
+			BiggestVersion:  identifiers.GetIDVersion(actionEntity.ID),
+			SmallestVersion: identifiers.GetIDVersion(actionEntity.ID),
+		})
+
+		if len(hopper) >= defaultBatchSize {
+			insertBatch(ctx, a, hopper)
 		}
-
-		if err := insertBatch(ctx, a, batch); err != nil {
-			return nil, 0, err
+		if err := insertBatch(ctx, a, hopper); err != nil {
+			return errors.Annotate(err, "persist actions").Err()
 		}
+		hopper = nil
+		return nil
+	})
+	if err != nil {
+		return nil, 0, errors.Annotate(err, "persist actions").Err()
+	}
+	if err := insertBatch(ctx, a, hopper); err != nil {
+		return nil, 0, errors.Annotate(err, "persist actions").Err()
 	}
 	logging.Infof(ctx, "Persist actions: offloaded %d records in total", tally)
 	return out, tally, nil
