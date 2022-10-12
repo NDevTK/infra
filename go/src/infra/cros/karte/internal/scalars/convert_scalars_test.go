@@ -17,7 +17,7 @@ import (
 func TestTimestampConversionRoundTrips(t *testing.T) {
 	t.Parallel()
 	roundTrip := func(seconds int64, nanoseconds int64) bool {
-		original := time.Unix(seconds, nanoseconds)
+		original := time.Unix(seconds, nanoseconds).UTC()
 		converted := ConvertTimeToTimestampPtr(original)
 		reverted := ConvertTimestampPtrToTime(converted)
 		return original.Equal(reverted)
