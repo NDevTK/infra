@@ -56,6 +56,18 @@ type ActionEntity struct {
 	ErrorReason string `gae:"error_reason"` // succeeded by "fail_reason'.
 }
 
+// CreateActionKey creates a datastore.Key for an action.
+func CreateActionKey(ctx context.Context, t time.Time, disambiguation uint32) (*datastore.Key, error) {
+	if ok := t.Location() == time.UTC; !ok {
+		return nil, errors.Reason("create action key: location %q must be UTC", t.Location()).Err()
+	}
+	id, err := identifiers.MakeRawID(t, disambiguation)
+	if err != nil {
+		return nil, errors.Annotate(err, "create action key").Err()
+	}
+	return datastore.KeyForObjErr(ctx, ActionEntity{ID: id})
+}
+
 // ConvertToAction converts a datastore action entity to an action proto.
 func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 	if e == nil {
