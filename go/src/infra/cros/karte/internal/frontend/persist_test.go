@@ -68,7 +68,7 @@ func TestPersistObservations(t *testing.T) {
 
 	Convey("test persisting multiple observations associated with single action", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewDefault())
 		testClock := testclock.New(time.Unix(10, 0).UTC())
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)

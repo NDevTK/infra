@@ -32,11 +32,11 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 	if err != nil {
 		return 0, errors.Annotate(err, "run").Err()
 	}
-	ad, tally, err := persistActions(ctx, a, q.Query)
+	_, tally, err := persistActions(ctx, a, q.Query)
 	if err != nil {
 		return 0, errors.Annotate(err, "run").Err()
 	}
-	if err := persistObservations(ctx, a, ad); err != nil {
+	if err := persistObservations(ctx, a); err != nil {
 		return 0, errors.Annotate(err, "run").Err()
 	}
 	return tally, nil
@@ -128,11 +128,19 @@ func persistActions(ctx context.Context, a *actionRangePersistOptions, q *datast
 }
 
 // persistObservations persists all of our observations associated with the actions found in `persistActions` to bigquery.
-func persistObservations(ctx context.Context, a *actionRangePersistOptions, ad *ActionQueryAncillaryData) error {
+func persistObservations(ctx context.Context, a *actionRangePersistOptions) error {
+	biggestID, err := CreateActionKey(ctx, a.startID, 0)
+	if err != nil {
+		return errors.Annotate(err, "persist actions").Err()
+	}
+	smallestID, err := CreateActionKey(ctx, a.stopID, 0)
+	if err != nil {
+		return errors.Annotate(err, "persist actions").Err()
+	}
 	var hopper []*ObservationEntity
 	query := datastore.NewQuery(ObservationKind).
-		Gte("action_id", ad.SmallestID).
-		Lte("action_id", ad.BiggestID)
+		Gte("action_id", smallestID).
+		Lte("action_id", biggestID)
 	tally := 0
 	rErr := datastore.Run(ctx, query, func(o *ObservationEntity) error {
 		if tally <= 20 || tally%1000 == 0 {
@@ -148,7 +156,7 @@ func persistObservations(ctx context.Context, a *actionRangePersistOptions, ad *
 		}
 		return nil
 	})
-	logging.Errorf(ctx, "exactly %d observations processed for range [%q, %q].", tally, ad.SmallestID, ad.BiggestID)
+	logging.Errorf(ctx, "exactly %d observations processed for range [%q, %q].", tally, smallestID, biggestID)
 	if rErr != nil {
 		return errors.Annotate(rErr, "persisting observations").Err()
 	}
