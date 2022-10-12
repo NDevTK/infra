@@ -123,6 +123,9 @@ func MakeRawID(t time.Time, disambiguation uint32) (string, error) {
 	if t.IsZero() {
 		return "", errors.New("make id: timestamp is zero")
 	}
+	if ok := t.Location() == time.UTC; !ok {
+		return "", errors.Reason("make id: location must be UTC not %q", t.Location().String()).Err()
+	}
 
 	// TODO(b/248630633): Add support for sub-seconds.
 	offsetCoarse := uint64(endOfTime - t.Unix())
