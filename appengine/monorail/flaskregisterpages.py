@@ -9,8 +9,6 @@ import settings
 
 import flask
 
-from components import prpc
-
 from features import banspammer
 from features import inboundemail
 from features import hotlistcreate
@@ -85,9 +83,6 @@ from tracker import issueimport
 
 from tracker import webcomponentspage
 
-from api import api_routes as api_routes_v0
-from api.v3 import api_routes as api_routes_v3
-
 
 class ServletRegistry(object):
 
@@ -127,7 +122,7 @@ class ServletRegistry(object):
     """Register all the monorail request handlers."""
     return self.routes
 
-  def _AddFlaskUrlRules(self, flask_instance, rule_tuple, removed_prefix=''):
+  def _AddFlaskUrlRules(self, flask_instance, rule_tuple):
     """Add url rules to a given Flask instance.
 
     Args:
@@ -138,9 +133,7 @@ class ServletRegistry(object):
       The Flask instance.
     """
     for rule in rule_tuple:
-      url = rule[0][len(removed_prefix):] if rule[0].startswith(
-          removed_prefix) else rule[0]
-      flask_instance.add_url_rule(url, view_func=rule[1], methods=rule[2])
+      flask_instance.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
     return flask_instance
 
   # pylint: disable=unused-argument
@@ -833,13 +826,3 @@ class ServletRegistry(object):
     flaskapp_ah = self._AddFlaskUrlRules(flaskapp_ah, _AH_URL)
 
     return flaskapp_ah
-
-  def RegisterPrpcUrl(self, service):
-    flaskapp_prpc = flask.Flask(__name__)
-    prpc_server = prpc.FlaskServer(
-        allowed_origins=client_config_svc.GetAllowedOriginsSet())
-    api_routes_v0.RegisterApiHandlers(prpc_server, service)
-    api_routes_v3.RegisterApiHandlers(prpc_server, service)
-    routes = prpc_server.get_routes()
-    flaskapp_prpc = self._AddFlaskUrlRules(flaskapp_prpc, routes, '/prpc')
-    return flaskapp_prpc

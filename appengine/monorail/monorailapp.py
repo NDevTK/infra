@@ -50,7 +50,6 @@ app = dispatcher.DispatcherMiddleware(
         '/_cron': flask_regist.RegisterCronUrl(services),
         '/_backend': flask_regist.RegisterBackendUrl(services),
         '/_ah': flask_regist.RegisterAHUrl(services),
-        '/prpc/': flask_regist.RegisterPrpcUrl(services),
     })
 
 endpoints = endpoints_webapp2.api_server(
