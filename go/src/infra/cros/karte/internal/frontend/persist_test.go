@@ -28,7 +28,7 @@ func TestPersistObservations(t *testing.T) {
 
 	Convey("test persisting observation", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewDefault())
 		testClock := testclock.New(time.Unix(10, 0))
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
@@ -86,6 +86,9 @@ func TestPersistObservations(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(a.Kind, ShouldEqual, kind)
 		So(a.SealTime, ShouldResemble, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)))
+		count, err := datastore.Count(ctx, datastore.NewQuery(ActionKind))
+		So(err, ShouldBeNil)
+		So(count, ShouldEqual, 1)
 		for i := 0; i < times; i++ {
 			o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
 				Observation: &kartepb.Observation{
@@ -97,11 +100,18 @@ func TestPersistObservations(t *testing.T) {
 			So(o.MetricKind, ShouldEqual, metricKind)
 			So(o.ActionName, ShouldEqual, a.Name)
 		}
-		_, err = k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
+		count, err = datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+		So(err, ShouldBeNil)
+		So(count, ShouldEqual, times)
+
+		resp, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
 			StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0)),
 			StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(100, 0)),
 		})
 		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		So(resp.GetSucceeded(), ShouldBeTrue)
+		So(resp.GetCreatedRecords(), ShouldEqual, 1)
 		So(fake.size(), ShouldEqual, 1+times)
 		So(fake.observationsSize(), ShouldEqual, times)
 	})
