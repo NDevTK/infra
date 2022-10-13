@@ -20,11 +20,29 @@ func repairCBI(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// cbiIsCorrupt checks if the CBI contents on the DUT match what was previously
-// stored in UFS. If not, then the CBI contents have been corrupted.
-// TODO(b/235000813) Implement
-func cbiIsCorrupt(ctx context.Context, info *execs.ExecInfo) error {
-	return nil
+// cbiContentsDoNotMatch checks if the CBI contents on the DUT do not match what
+// was previously stored in UFS. If they do not match, then the CBI contents
+// have been corrupted. Throws an error if no previously stored CBI contents are
+// found.
+func cbiContentsDoNotMatch(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetCbi() == nil {
+		return errors.Reason("CBI contents do not match: no previous CBI contents were found in UFS - unable to determine if CBI is corrupt").Err()
+	}
+
+	cbiLocation, err := cbi.GetCBILocation(ctx, info.NewRunner(info.GetDut().Name))
+	if err != nil {
+		return errors.Annotate(err, "CBI contents do not match").Err()
+	}
+
+	dutCBI, err := cbi.ReadCBIContents(ctx, info.NewRunner(info.GetDut().Name), cbiLocation)
+	if err != nil {
+		return errors.Annotate(err, "CBI contents do not match").Err()
+	}
+
+	if info.GetChromeos().GetCbi().RawContents != dutCBI.RawContents {
+		return nil
+	}
+	return errors.Reason("CBI contents do not match: CBI contents on DUT match the contents stored in UFS").Err()
 }
 
 // cbiIsPresent checks if CBI contents are found on the DUT.
@@ -34,13 +52,13 @@ func cbiIsPresent(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "CBI is present").Err()
 	}
 	if cbiLocation == nil {
-		return errors.Reason("No CBI contents were found on the DUT, but encountered no error. This shouldn't ever happen. Please submit a bug.").Err()
+		return errors.Reason("CBI is present: no CBI contents were found on the DUT, but encountered no error - please submit a bug").Err()
 	}
 	return nil
 }
 
 func init() {
 	execs.Register("cros_repair_cbi", repairCBI)
-	execs.Register("cros_cbi_is_corrupt", cbiIsCorrupt)
+	execs.Register("cros_cbi_contents_do_not_match", cbiContentsDoNotMatch)
 	execs.Register("cros_cbi_is_present", cbiIsPresent)
 }
