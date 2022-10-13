@@ -83,6 +83,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "77ec56f6_b1593f40",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T18:26:59Z",
+      "side": 1,
+      "message": "ack",
+      "parentUuid": "88f0efa5_65777670",
+      "range": {
+        "startLine": 1,
+        "startChar": 42,
+        "endLine": 1,
+        "endChar": 62
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "01b3cff3_844be600",

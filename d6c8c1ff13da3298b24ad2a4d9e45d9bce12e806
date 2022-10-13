@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "944aa4ef_03c731dc",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T18:26:59Z",
+      "side": 1,
+      "message": "sorry not see the change",
+      "parentUuid": "d7c4897e_f4bee7c6",
+      "range": {
+        "startLine": 102,
+        "startChar": 60,
+        "endLine": 102,
+        "endChar": 180
+      },
+      "revId": "d6c8c1ff13da3298b24ad2a4d9e45d9bce12e806",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e80ec513_864a6697",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
         "patchSetId": 8
