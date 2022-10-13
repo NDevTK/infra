@@ -23,10 +23,14 @@ type Options struct {
 type DoFunc func() error
 
 var (
-	// LongerOpts gives a longer timeout than default to for quota issues (~15 minutes).
+	// ExtremeOpts gives an even longer timeout and more retries (~30 min).
+	ExtremeOpts = Options{BaseDelay: 120 * time.Second, BackoffBase: 2.0, Retries: 10}
+	// LongerOpts gives a longer timeout than default (~7.5 minutes).
 	LongerOpts = Options{BaseDelay: 30 * time.Second, BackoffBase: 2.0, Retries: 5}
 	// DefaultOpts is the default timeout (~5 minutes).
 	DefaultOpts = Options{BaseDelay: 10 * time.Second, BackoffBase: 2.0, Retries: 5}
+	// NoRetryOpts is for unretriable requests or testing.
+	NoRetryOpts = Options{BaseDelay: 0 * time.Second, BackoffBase: 1.0, Retries: 0}
 )
 
 // DoWithRetry executes function doFunc. If there is an error, it will retry with a backoff delay

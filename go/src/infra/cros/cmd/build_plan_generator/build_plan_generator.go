@@ -231,7 +231,9 @@ func (c *checkBuild) fetchConfigFromGitiles() (*fetchConfigResult, error) {
 		"chrome-internal.googlesource.com",
 		"chromeos/infra/config",
 		"main",
-		[]string{buildIrrelevanceConfigPath, slimBuildConfigPath, targetTestRequirementsConfigPath, builderConfigsPath})
+		[]string{buildIrrelevanceConfigPath, slimBuildConfigPath, targetTestRequirementsConfigPath, builderConfigsPath},
+		shared.LongerOpts,
+	)
 	if err != nil {
 		return nil, err
 	}

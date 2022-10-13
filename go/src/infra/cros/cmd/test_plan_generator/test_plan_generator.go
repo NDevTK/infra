@@ -18,6 +18,7 @@ import (
 	"infra/cros/internal/generator"
 	igerrit "infra/cros/internal/gerrit"
 	"infra/cros/internal/manifestutil"
+	"infra/cros/internal/shared"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -229,7 +230,9 @@ func (c *getTestPlanRun) fetchConfigFromGitiles() (*testplans.BoardPriorityList,
 		"chrome-internal.googlesource.com",
 		c.sourceGitilesRepo,
 		c.sourceGitilesBranch,
-		[]string{c.boardPriorityConfigPath, c.sourceTreeTestConfigPath, c.targetTestRequirementsPath})
+		[]string{c.boardPriorityConfigPath, c.sourceTreeTestConfigPath, c.targetTestRequirementsPath},
+		shared.LongerOpts,
+	)
 	if err != nil {
 		return nil, nil, nil, err
 	}

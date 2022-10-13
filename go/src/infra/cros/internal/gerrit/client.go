@@ -51,9 +51,9 @@ type commitLog struct {
 }
 
 type Client interface {
-	FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string) (*map[string]string, error)
-	DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string) (string, error)
-	DownloadFileFromGitilesToPath(ctx context.Context, host, project, ref, path, saveToPath string) error
+	FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string, timeoutOpts shared.Options) (*map[string]string, error)
+	DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string, timeoutOpts shared.Options) (string, error)
+	DownloadFileFromGitilesToPath(ctx context.Context, host, project, ref, path, saveToPath string, timeoutOpts shared.Options) error
 	Branches(ctx context.Context, host, project string) (map[string]string, error)
 	Projects(ctx context.Context, host string) ([]string, error)
 	ListFiles(ctx context.Context, host, project, ref, path string) ([]string, error)
@@ -135,12 +135,12 @@ func NewTestClient(gitilesClients map[string]gitilespb.GitilesClient) *ProdClien
 // contents of the file at that path for each requested path.
 //
 // If one of paths is not found, an error is returned.
-func (c *ProdClient) FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string) (*map[string]string, error) {
+func (c *ProdClient) FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string, timeoutOpts shared.Options) (*map[string]string, error) {
 	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return nil, err
 	}
-	contents, err := obtainGitilesBytes(ctx, gc, project, ref)
+	contents, err := obtainGitilesBytes(ctx, gc, project, ref, timeoutOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -148,26 +148,41 @@ func (c *ProdClient) FetchFilesFromGitiles(ctx context.Context, host, project, r
 }
 
 // DownloadFileFromGitiles downloads a file from Gitiles.
-func (c *ProdClient) DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string) (string, error) {
+func (c *ProdClient) DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string, timeoutOpts shared.Options) (string, error) {
 	gc, err := c.getGitilesClientForHost(host)
 	if err != nil {
 		return "", err
 	}
-	req := &gitilespb.DownloadFileRequest{
-		Project:    project,
-		Path:       path,
-		Committish: ref,
-	}
-	contents, err := gc.DownloadFile(ctx, req)
+
+	ch := make(chan string, 1)
+	err = shared.DoWithRetry(ctx, timeoutOpts, func() error {
+		// This sets the deadline for the individual API call, while the outer context sets
+		// an overall timeout for all attempts.
+		innerCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+		defer cancel()
+
+		req := &gitilespb.DownloadFileRequest{
+			Project:    project,
+			Path:       path,
+			Committish: ref,
+		}
+		contents, err := gc.DownloadFile(innerCtx, req)
+		if err != nil {
+			return errors.Annotate(err, "obtain gitiles download").Err()
+		}
+		ch <- contents.Contents
+		return nil
+	})
 	if err != nil {
 		return "", err
 	}
-	return contents.Contents, err
+	a := <-ch
+	return a, nil
 }
 
 // DownloadFileFromGitilesToPath downloads a file from Gitiles to a specified path.
-func (c *ProdClient) DownloadFileFromGitilesToPath(ctx context.Context, host, project, ref, path, saveToPath string) error {
-	contents, err := c.DownloadFileFromGitiles(ctx, host, project, ref, path)
+func (c *ProdClient) DownloadFileFromGitilesToPath(ctx context.Context, host, project, ref, path, saveToPath string, timeoutOpts shared.Options) error {
+	contents, err := c.DownloadFileFromGitiles(ctx, host, project, ref, path, timeoutOpts)
 	if err != nil {
 		return err
 	}
@@ -183,15 +198,12 @@ func (c *ProdClient) DownloadFileFromGitilesToPath(ctx context.Context, host, pr
 	return os.WriteFile(saveToPath, []byte(contents), fileMode)
 }
 
-func obtainGitilesBytes(ctx context.Context, gc gitilespb.GitilesClient, project string, ref string) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(ctx, 8*time.Minute)
-	defer cancel()
+func obtainGitilesBytes(ctx context.Context, gc gitilespb.GitilesClient, project string, ref string, timeoutOpts shared.Options) ([]byte, error) {
 	ch := make(chan *gitilespb.ArchiveResponse, 1)
-
-	err := shared.DoWithRetry(ctx, shared.LongerOpts, func() error {
+	err := shared.DoWithRetry(ctx, timeoutOpts, func() error {
 		// This sets the deadline for the individual API call, while the outer context sets
 		// an overall timeout for all attempts.
-		innerCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		innerCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 		defer cancel()
 		req := &gitilespb.ArchiveRequest{
 			Project: project,

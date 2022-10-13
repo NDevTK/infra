@@ -22,6 +22,7 @@ import (
 	"infra/cros/internal/gs"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/repo"
+	"infra/cros/internal/shared"
 )
 
 type publicBuildspec struct {
@@ -106,7 +107,7 @@ func (b *publicBuildspec) Run(a subcommands.Application, args []string, env subc
 
 func (b *publicBuildspec) copyExternalBuildspec(ctx context.Context, gsClient gs.Client, gerritClient gerrit.Client, externalBuildspec string) (lgs.Path, error) {
 	data, err := gerritClient.DownloadFileFromGitiles(ctx, chromeExternalHost,
-		externalManifestVersionsProject, "HEAD", externalBuildspec)
+		externalManifestVersionsProject, "HEAD", externalBuildspec, shared.LongerOpts)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to download %s from %s", externalBuildspec, externalManifestVersionsProject).Err()
 	}

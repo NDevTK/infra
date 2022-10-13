@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"infra/cros/internal/gerrit"
+	"infra/cros/internal/shared"
 	"infra/tools/dirmd"
 
 	planpb "go.chromium.org/chromiumos/config/go/test/plan"
@@ -71,7 +72,7 @@ func validatePathRegexps(_ context.Context, _ gerrit.Client, dir string, plan *p
 
 func validateStarlarkFileExists(ctx context.Context, client gerrit.Client, _ string, plan *planpb.SourceTestPlan) error {
 	for _, file := range plan.GetTestPlanStarlarkFiles() {
-		_, err := client.DownloadFileFromGitiles(ctx, file.GetHost(), file.GetProject(), "HEAD", file.GetPath())
+		_, err := client.DownloadFileFromGitiles(ctx, file.GetHost(), file.GetProject(), "HEAD", file.GetPath(), shared.LongerOpts)
 		if err != nil {
 			return fmt.Errorf("failed downloading file %q", file)
 		}

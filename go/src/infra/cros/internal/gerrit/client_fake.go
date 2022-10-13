@@ -9,6 +9,7 @@ import (
 	"context"
 	gerrs "errors"
 	"fmt"
+	"infra/cros/internal/shared"
 	"os"
 	"reflect"
 	"testing"
@@ -58,7 +59,7 @@ func contains(arr []string, str string) bool {
 }
 
 // FetchFilesFromGitiles fetches file contents from gitiles.
-func (c *MockClient) FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string) (*map[string]string, error) {
+func (c *MockClient) FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string, timeoutOpts shared.Options) (*map[string]string, error) {
 	expectedFetch := ExpectedFetch{
 		Host:    host,
 		Project: project,
@@ -77,7 +78,7 @@ func (c *MockClient) FetchFilesFromGitiles(ctx context.Context, host, project, r
 	return &contents, nil
 }
 
-func (c *MockClient) downloadFileFromGitiles(ctx context.Context, host, project, ref, path, fnName string) (string, error) {
+func (c *MockClient) downloadFileFromGitiles(ctx context.Context, host, project, ref, path, fnName string, timeoutOpts shared.Options) (string, error) {
 	expectedDownload := ExpectedPathParams{
 		Host:    host,
 		Project: project,
@@ -95,13 +96,13 @@ func (c *MockClient) downloadFileFromGitiles(ctx context.Context, host, project,
 }
 
 // DownloadFileFromGitiles downloads a file from Gitiles.
-func (c *MockClient) DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string) (string, error) {
-	return c.downloadFileFromGitiles(ctx, host, project, ref, path, "DownloadFileFromGitiles")
+func (c *MockClient) DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string, timeoutOpts shared.Options) (string, error) {
+	return c.downloadFileFromGitiles(ctx, host, project, ref, path, "DownloadFileFromGitiles", timeoutOpts)
 }
 
 // DownloadFileFromGitilesToPath downloads a file from Gitiles to a specified path.
-func (c *MockClient) DownloadFileFromGitilesToPath(ctx context.Context, host, project, ref, path, saveToPath string) error {
-	contents, err := c.downloadFileFromGitiles(ctx, host, project, ref, path, "DownloadFileFromGitilesToPath")
+func (c *MockClient) DownloadFileFromGitilesToPath(ctx context.Context, host, project, ref, path, saveToPath string, timeoutOpts shared.Options) error {
+	contents, err := c.downloadFileFromGitiles(ctx, host, project, ref, path, "DownloadFileFromGitilesToPath", timeoutOpts)
 	if err != nil {
 		return nil
 	}

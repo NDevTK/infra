@@ -15,6 +15,7 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
+	"infra/cros/internal/shared"
 
 	"github.com/golang/mock/gomock"
 	gitpb "go.chromium.org/luci/common/proto/git"
@@ -52,7 +53,7 @@ func testDownloadFileFromGitilesSetUp(t *testing.T) Client {
 
 func TestDownloadFileFromGitiles(t *testing.T) {
 	gc := testDownloadFileFromGitilesSetUp(t)
-	contents, err := gc.DownloadFileFromGitiles(context.Background(), "host", "chromeos/foo", "HEAD", "bar.xml")
+	contents, err := gc.DownloadFileFromGitiles(context.Background(), "host", "chromeos/foo", "HEAD", "bar.xml", shared.NoRetryOpts)
 	assert.NilError(t, err)
 	assert.StringsEqual(t, contents, "foobar!")
 }
@@ -64,7 +65,7 @@ func TestDownloadFileFromGitilesToPath(t *testing.T) {
 	outputPath := filepath.Join(tmpDir, "output")
 
 	gc := testDownloadFileFromGitilesSetUp(t)
-	err = gc.DownloadFileFromGitilesToPath(context.Background(), "host", "chromeos/foo", "HEAD", "bar.xml", outputPath)
+	err = gc.DownloadFileFromGitilesToPath(context.Background(), "host", "chromeos/foo", "HEAD", "bar.xml", outputPath, shared.NoRetryOpts)
 	assert.NilError(t, err)
 	got, err := ioutil.ReadFile(outputPath)
 	assert.NilError(t, err)
@@ -108,7 +109,7 @@ hTPnBcGXkjUAEgAA
 		gitilesClient: mockMap,
 	}
 
-	m, err := gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths)
+	m, err := gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths, shared.NoRetryOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -160,7 +161,7 @@ yZyOACgAAA==
 		gitilesClient: mockMap,
 	}
 
-	m, err := gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths)
+	m, err := gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths, shared.NoRetryOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -219,7 +220,7 @@ hTPnBcGXkjUAEgAA
 		gitilesClient: mockMap,
 	}
 
-	_, err = gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths)
+	_, err = gc.FetchFilesFromGitiles(context.Background(), host, project, ref, paths, shared.DefaultOpts)
 	if err == nil {
 		t.Fatal("expected error from FetchFilesFromGitiles")
 	}

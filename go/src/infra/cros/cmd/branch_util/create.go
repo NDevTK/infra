@@ -14,6 +14,7 @@ import (
 	"infra/cros/internal/git"
 	"infra/cros/internal/gs"
 	"infra/cros/internal/manifestutil"
+	"infra/cros/internal/shared"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
@@ -234,7 +235,7 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 
 	// Fetch chromeos_version.sh from the source branch
 	versionFile, err := gc.DownloadFileFromGitiles(ctx,
-		externalGerritURL, versionProject.Name, versionProject.Revision, mv.VersionFileProjectPath)
+		externalGerritURL, versionProject.Name, versionProject.Revision, mv.VersionFileProjectPath, shared.LongerOpts)
 
 	if err != nil {
 		bc.LogErr(errors.Annotate(err, "failed to fetch versionFile").Err().Error())

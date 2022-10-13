@@ -15,6 +15,7 @@ import (
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/gs"
 	"infra/cros/internal/repo"
+	"infra/cros/internal/shared"
 
 	"go.chromium.org/luci/common/errors"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
@@ -131,14 +132,14 @@ func LoadManifestFromFileRaw(file string) ([]byte, error) {
 func loadFromGitilesInnerFunc(ctx context.Context, gerritClient gerrit.Client, host, project, branch, file string) (getFile func(file string) ([]byte, error)) {
 	return func(f string) ([]byte, error) {
 		path := filepath.Join(filepath.Dir(file), filepath.Base(f))
-		data, err := gerritClient.DownloadFileFromGitiles(ctx, host, project, branch, f)
+		data, err := gerritClient.DownloadFileFromGitiles(ctx, host, project, branch, f, shared.LongerOpts)
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to open and read %s", path).Err()
 		}
 		// If the manifest file just contains another file name, it's a symlink
 		// and we need to follow it.
 		for xmlFileRegex.MatchString(data) {
-			data, err = gerritClient.DownloadFileFromGitiles(ctx, host, project, branch, data)
+			data, err = gerritClient.DownloadFileFromGitiles(ctx, host, project, branch, data, shared.LongerOpts)
 			if err != nil {
 				return nil, errors.Annotate(err, "failed to open and read %s", path).Err()
 			}

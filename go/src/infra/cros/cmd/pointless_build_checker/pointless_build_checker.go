@@ -195,16 +195,14 @@ func (c *checkBuild) fetchConfigFromGitiles() (*testplans_pb.BuildIrrelevanceCfg
 	if err != nil {
 		return nil, err
 	}
-	var configData string
-	if err = shared.DoWithRetry(ctx, shared.LongerOpts, func() error {
-		configData, err = gerritClient.DownloadFileFromGitiles(ctx,
-			"chrome-internal.googlesource.com",
-			"chromeos/infra/config",
-			"main",
-			buildIrrelevanceConfigPath,
-		)
-		return err
-	}); err != nil {
+	configData, err := gerritClient.DownloadFileFromGitiles(ctx,
+		"chrome-internal.googlesource.com",
+		"chromeos/infra/config",
+		"main",
+		buildIrrelevanceConfigPath,
+		shared.LongerOpts,
+	)
+	if err != nil {
 		return nil, err
 	}
 	buildIrrelevanceConfig := &testplans_pb.BuildIrrelevanceCfg{}
@@ -279,21 +277,10 @@ func (c *checkBuild) getRepoToSourceRoot(gc *bbproto.GitilesCommit) (*map[string
 		gc.Id = "snapshot"
 	}
 
-	// TODO(b/216131539): Move retries farther downstream once the library
-	// support is there.
-	ch := make(chan map[string]map[string]string, 1)
-	err = shared.DoWithRetry(ctx, shared.LongerOpts, func() error {
-		repoToRemoteBranchToSrcRoot, err := manifestutil.GetRepoToRemoteBranchToSourceRootFromGitiles(ctx, gerritClient, gc)
-		if err != nil {
-			return err
-		}
-		ch <- repoToRemoteBranchToSrcRoot
-		return nil
-	})
+	repoToRemoteBranchToSrcRoot, err := manifestutil.GetRepoToRemoteBranchToSourceRootFromGitiles(ctx, gerritClient, gc)
 	if err != nil {
 		return nil, fmt.Errorf("Error with GetRepoToRemoteBranchToSourceRootFromGitiles\n%v", err)
 	}
-	repoToRemoteBranchToSrcRoot := <-ch
 	return &repoToRemoteBranchToSrcRoot, nil
 }
 
