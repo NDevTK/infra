@@ -136,9 +136,12 @@ func NewRPCServer() *prpc.Server {
 				},
 				// For authenticating calls from Gerrit plugins.
 				&gerritauth.AuthMethod{
-					Header:        gerritAuthHeader,
-					SignerAccount: "gerritcodereview@system.gserviceaccount.com",
-					Audience:      "https://api.cr.dev",
+					Header: gerritAuthHeader,
+					SignerAccounts: []string{
+						"gerritcodereview@system.gserviceaccount.com",
+						"git-gerrit@system.gserviceaccount.com",
+					},
+					Audience: "https://api.cr.dev",
 				},
 			},
 		},
