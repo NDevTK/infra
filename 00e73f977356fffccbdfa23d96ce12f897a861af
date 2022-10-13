@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de118b1e_4f737d12",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T18:40:55Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e63a261_1874bce0",
+        "filename": "go/src/infra/cros/karte/internal/frontend/action_range_persister.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T18:40:55Z",
+      "side": 1,
+      "message": "please specify that the values are correct or expected. as `Do nothing` tell about the code but not if the values are corrects",
+      "range": {
+        "startLine": 48,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 16
+      },
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d66ff43d_f414b87f",
+        "filename": "go/src/infra/cros/karte/internal/frontend/action_range_persister.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T18:40:55Z",
+      "side": 1,
+      "message": "nit: please start message from method description and the short detail of message",
+      "range": {
+        "startLine": 50,
+        "startChar": 29,
+        "endLine": 50,
+        "endChar": 116
+      },
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "744df450_63251830",
+        "filename": "go/src/infra/cros/karte/internal/frontend/action_range_persister.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T18:40:55Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 52,
+        "startChar": 28,
+        "endLine": 52,
+        "endChar": 29
+      },
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
