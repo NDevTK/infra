@@ -66,7 +66,7 @@ func (s *prodStrategy) IDForAction(ctx context.Context, action *kartepb.Action) 
 	// Additionally, Karte queries depend on the end_time of the event *as reported by the event*.
 	// Events also have an a priori maximum duration,  which means that we can perform a semantically correct query based on the
 	// end time using IDs whose lexicographic sort order takes the current timestamp into account.
-	msg, err := MakeID(ctx, scalars.ConvertTimestampPtrToTime(action.GetCreateTime()))
+	msg, err := MakeRawID(scalars.ConvertTimestampPtrToTime(action.GetCreateTime()), mathrand.Uint32(ctx))
 	return msg, err
 }
 
@@ -75,7 +75,7 @@ func (s *prodStrategy) IDForAction(ctx context.Context, action *kartepb.Action) 
 // Note: The ID for the current observation in question uses the *current time* and no properties of the observation at all.
 // This allows us to avoid running back to datastore to look up information about the action just to insert an observation.
 func (s *prodStrategy) IDForObservation(ctx context.Context, _ *kartepb.Observation) (string, error) {
-	msg, err := MakeID(ctx, clock.Now(ctx))
+	msg, err := MakeRawID(clock.Now(ctx), mathrand.Uint32(ctx))
 	return msg, err
 }
 
@@ -112,12 +112,6 @@ func (s *naiveStrategy) IDForObservation(ctx context.Context, _ *kartepb.Observa
 // NewNaive creates a new naive strategy.
 func NewNaive() Strategy {
 	return &naiveStrategy{counter: math.MaxUint32}
-}
-
-// MakeID makes an unambiguous ID for a given entity.
-func MakeID(ctx context.Context, t time.Time) (string, error) {
-	disambiguation := mathrand.Uint32(ctx)
-	return MakeRawID(t, disambiguation)
 }
 
 // Use 9,223,372,036,854,775,807 as the end of time.
