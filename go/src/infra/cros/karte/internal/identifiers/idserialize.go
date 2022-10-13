@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/karte/internal/lex64"
 )
 
@@ -42,13 +44,16 @@ func (i *IDInfo) VersionlessBytes() ([]byte, error) {
 
 // Encoded converts an IDInfo into lex64, which preserves lexicographic order.
 func (i *IDInfo) Encoded() (string, error) {
+	if i.Version == "" {
+		return "", errors.Reason("encoded: version cannot be empty").Err()
+	}
 	bytes, err := i.VersionlessBytes()
 	if err != nil {
-		return "", err
+		return "", errors.Annotate(err, "encoded").Err()
 	}
 	encoded, err := lex64.Encode(bytes, false)
 	if err != nil {
-		return "", err
+		return "", errors.Annotate(err, "encoded").Err()
 	}
 	return fmt.Sprintf("%s%s", i.Version, encoded), nil
 }
