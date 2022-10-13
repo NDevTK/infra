@@ -140,6 +140,7 @@ class ServletRegistry(object):
 
   def Register(self, services):
     """Register all the monorail request handlers."""
+    self._RegisterFrameworkHandlers()
     self._RegisterSitewideHandlers()
     self._RegisterProjectHandlers()
     self._RegisterIssueHandlers()
@@ -277,6 +278,15 @@ class ServletRegistry(object):
         '/': list_redir,
         '/issues': list_redir,
         '/issues/': list_redir,
+        })
+
+
+  def _RegisterFrameworkHandlers(self):
+    """Register page and form handlers for framework functionality."""
+    self._SetupServlets(
+        {
+            urls.CSP_REPORT:
+                csp_report.CSPReportPage,
         })
 
   def _RegisterSitewideHandlers(self):

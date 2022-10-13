@@ -18,7 +18,6 @@ from features import savedqueries
 from features import userhotlists
 from framework import banned
 from framework import clientmon
-from framework import csp_report
 from framework import warmup
 from framework import reap
 from framework import deleteusers
@@ -250,13 +249,6 @@ class ServletRegistry(object):
       return flask.redirect(url)
 
     return flaskapp_project_redirect
-
-  def RegisterCspUrl(self):
-    flaskapp_csp = flask.Flask(__name__)
-    flaskapp_csp.add_url_rule(
-        '/', view_func=csp_report.postCsp, methods=['POST'])
-
-    return flaskapp_csp
 
   def RegisterProjectUrls(self, service):
     flaskapp_project = flask.Flask(__name__)
