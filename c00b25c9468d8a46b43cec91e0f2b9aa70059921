@@ -38,6 +38,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "824817a4_c00748a4",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T17:46:45Z",
+      "side": 1,
+      "message": "did we lost the rights?",
+      "range": {
+        "startLine": 1,
+        "startChar": 42,
+        "endLine": 1,
+        "endChar": 62
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "01b3cff3_844be600",
         "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
         "patchSetId": 6
@@ -226,6 +249,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e9c4cbfe_55529230",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T17:46:45Z",
+      "side": 1,
+      "message": "oh i think i was wrong with 2, as you access index 2 on line 67. i think condition should be ` \u003c 3`?",
+      "parentUuid": "ae97c162_bf0b554d",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 16
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f2d1a39b_04f41d84",
         "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
         "patchSetId": 6
@@ -313,6 +360,52 @@
         "startChar": 0,
         "endLine": 4,
         "endChar": 0
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6171e73e_c841670e",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cros_cbi_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T17:46:45Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 5,
+        "startChar": 43,
+        "endLine": 5,
+        "endChar": 63
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9df7e94e_df802c1c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-13T17:46:45Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 1,
+        "startChar": 41,
+        "endLine": 1,
+        "endChar": 62
       },
       "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
