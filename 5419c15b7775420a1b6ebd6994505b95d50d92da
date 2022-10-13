@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "523ab09b_97ac1194",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T20:48:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f8b2c39_af655b3d",
+      "range": {
+        "startLine": 26,
+        "startChar": 36,
+        "endLine": 26,
+        "endChar": 39
+      },
+      "revId": "5419c15b7775420a1b6ebd6994505b95d50d92da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "148f61aa_21af3d77",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-10-13T20:41:43Z",
       "side": 1,
       "message": "nit please use getters form proto is exist it will be safer",
+      "range": {
+        "startLine": 47,
+        "startChar": 32,
+        "endLine": 47,
+        "endChar": 43
+      },
+      "revId": "5419c15b7775420a1b6ebd6994505b95d50d92da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "665d9dfe_652ed0b4",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T20:48:16Z",
+      "side": 1,
+      "message": "Extremely good catch. Fixed!",
+      "parentUuid": "148f61aa_21af3d77",
       "range": {
         "startLine": 47,
         "startChar": 32,
