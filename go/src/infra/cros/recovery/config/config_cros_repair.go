@@ -384,21 +384,32 @@ func crosRepairActions() map[string]*Action {
 				"Restore backup CBI contents from UFS. go/cbi-auto-recovery-dd",
 			},
 			Conditions: []string{
-				"CBI is corrupt",
+				"CBI contents do not match",
 			},
 			ExecName:               "cros_repair_cbi",
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
-		"CBI is corrupt": {
+		"CBI contents do not match": {
 			Docs: []string{
-				"Check if CBI has been corrupted.",
+				"Check if the contents on the DUT match the contents stored in UFS.",
 			},
-			ExecName:   "cros_cbi_is_corrupt",
+			ExecName:   "cros_cbi_contents_do_not_match",
 			RunControl: RunControl_RUN_ONCE,
+			Conditions: []string{
+				"UFS contains CBI contents",
+			},
+		},
+		"UFS contains CBI contents": {
+			Docs: []string{
+				"Check if UFS contents are stored in UFS.",
+			},
 			Conditions: []string{
 				"CBI is present",
 			},
+			ExecName:               "cros_ufs_contains_cbi_contents",
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
 		},
 		"CBI is present": {
 			Docs: []string{
