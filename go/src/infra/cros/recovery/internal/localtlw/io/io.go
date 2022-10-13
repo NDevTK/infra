@@ -211,8 +211,13 @@ func copyFromHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyReques
 	if err := ensureDirExists(ctx, req.PathDestination, true); err != nil {
 		return errors.Annotate(err, "copy from helper").Err()
 	}
-
-	addr := net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
+	addr := req.Resource
+	// If the host address here contains a ':', it already contains
+	// the port. Hence, we don't need to join the host and the port
+	// for such a case.
+	if ok := strings.Contains(addr, ":"); !ok {
+		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
+	}
 	client, err := pool.Get(addr)
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: failed to get client for %q from pool", addr).Err()
