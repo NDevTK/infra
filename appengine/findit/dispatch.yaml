@@ -27,7 +27,7 @@ dispatch:
     module: frontend
 
   - url: "*/coverage/task/gerrit-filter-coverage*"
-    module: code-coverage-gerrit-filter-coverage-worker
+    module: code-coverage-experimental-coverage-worker
 
   - url: "*/coverage/task/referenced-coverage*"
     module: code-coverage-referenced-coverage-worker

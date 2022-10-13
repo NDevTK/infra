@@ -18,14 +18,14 @@ from handlers.code_coverage import serve_coverage
 from handlers.code_coverage import update_postsubmit_report
 
 # Feaure coverage worker module.
-gerrit_filter_coverage_worker_handler_mappings = [
+experimental_coverage_worker_handler_mappings = [
     ('.*/coverage/task/gerrit-filter-coverage.*',
      export_gerrit_filter_coverage.ExportCoverageMetrics),
 ]
-gerrit_filter_coverage_worker_application = webapp2.WSGIApplication(
-    gerrit_filter_coverage_worker_handler_mappings, debug=False)
+experimental_coverage_worker_application = webapp2.WSGIApplication(
+    experimental_coverage_worker_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(gerrit_filter_coverage_worker_application)
+  gae_ts_mon.initialize_prod(experimental_coverage_worker_application)
 
 # Referenced coverage worker module.
 referenced_coverage_worker_handler_mappings = [

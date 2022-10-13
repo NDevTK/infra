@@ -48,7 +48,7 @@ class ExportAllCoverageMetricsTest(WaterfallTestCase):
     self.assertEqual(200, response.status_int)
 
     tasks = self.taskqueue_stub.get_filtered_tasks(
-        queue_names='gerrit-filter-coverage-queue')
+        queue_names='experimental-coverage-queue')
     self.assertEqual(2, len(tasks))
     self.assertTrue(mocked_is_request_from_appself.called)
 

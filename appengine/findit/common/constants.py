@@ -15,8 +15,8 @@ FLAKE_DETECTION_BACKEND = 'flake-detection-backend'
 DISABLED_TEST_BACKEND = 'disabled-test-backend'
 AUTO_ACTION_BACKEND = 'auto-action-backend'
 CODE_COVERAGE_BACKEND = 'code-coverage-backend'
-CODE_COVERAGE_GERRIT_FILTER_COVERAGE_WORKER = (
-    'code-coverage-gerrit-filter-coverage-worker')
+CODE_COVERAGE_EXPERIMENTAL_COVERAGE_WORKER = (
+    'code-coverage-experimental-coverage-worker')
 CODE_COVERAGE_REFERENCED_COVERAGE_WORKER = (
     'code-coverage-referenced-coverage-worker')
 
@@ -31,7 +31,7 @@ AUTO_ACTION_QUEUE = 'auto-action-queue'
 FLAKE_DETECTION_MULTITASK_QUEUE = 'flake-detection-multitask-queue'
 FILES_ABSOLUTE_COVERAGE_QUEUE = 'files-absolute-coverage-queue'
 INCREMENTAL_COVERAGE_QUEUE = 'incremental-coverage-queue'
-GERRIT_FILTER_COVERAGE_QUEUE = 'gerrit-filter-coverage-queue'
+EXPERIMENTAL_COVERAGE_QUEUE = 'experimental-coverage-queue'
 ALL_GERRIT_FILTER_COVERAGE_QUEUE = 'all-gerrit-filter-coverage-queue'
 REFERENCED_COVERAGE_QUEUE = 'referenced-coverage-queue'
 # Waterfall-related.

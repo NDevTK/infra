@@ -95,7 +95,7 @@ queue:
   retry_parameters:
     task_retry_limit: 0
 
-- name: gerrit-filter-coverage-queue
+- name: experimental-coverage-queue
   rate: 1/m
   max_concurrent_requests: 5
   retry_parameters:

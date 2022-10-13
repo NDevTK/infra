@@ -77,8 +77,8 @@ class ExportAllCoverageMetrics(BaseHandler):
           url=url,
           name='%s-%s-%s' % (modifier.gerrit_hashtag, author,
                              datetime.datetime.now().strftime('%d%m%Y-%H%M%S')),
-          queue_name=constants.GERRIT_FILTER_COVERAGE_QUEUE,
-          target=constants.CODE_COVERAGE_GERRIT_FILTER_COVERAGE_WORKER)
+          queue_name=constants.EXPERIMENTAL_COVERAGE_QUEUE,
+          target=constants.CODE_COVERAGE_EXPERIMENTAL_COVERAGE_WORKER)
     return {'return_code': 200}
 
 
