@@ -448,15 +448,6 @@ func newObservationEntitiesQuery(token string, filter string) (*ObservationEntit
 	}, nil
 }
 
-// getObservationsByActionRangeQuery takes a start and an end actionId.
-func getObservationsByActionRangeQuery(start string, end string) *ObservationEntitiesQuery {
-	q := datastore.NewQuery(ObservationKind).Gte("action_id", start).Lt("action_id", end)
-	return &ObservationEntitiesQuery{
-		Token: "",
-		Query: q,
-	}
-}
-
 // convertActionToActionEntity takes an action and converts it to an action entity.
 func convertActionToActionEntity(action *kartepb.Action) (*ActionEntity, error) {
 	if action == nil {
