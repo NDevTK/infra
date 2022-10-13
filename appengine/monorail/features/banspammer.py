@@ -16,10 +16,11 @@ from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import jsonfeed
+from framework import servlet
 from framework import urls
 
 
-class BanSpammer(flaskservlet.FlaskServlet):
+class BanSpammer(servlet.Servlet):
   """Ban a user and mark their content as spam"""
 
   def AssertBasePermission(self, mr):
@@ -56,8 +57,8 @@ class BanSpammer(flaskservlet.FlaskServlet):
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
 
-  def PostBanSpammerPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostBanSpammerPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class BanSpammerTask(jsonfeed.FlaskInternalTask):

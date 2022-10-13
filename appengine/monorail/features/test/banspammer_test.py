@@ -33,7 +33,7 @@ class BanSpammerTest(unittest.TestCase):
         project=fake.ProjectService(),
         spam=fake.SpamService(),
         user=fake.UserService())
-    self.servlet = banspammer.BanSpammer(services=self.services)
+    self.servlet = banspammer.BanSpammer('req', 'res', services=self.services)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
   def testProcessFormData_noPermission(self, get_client_mock):
