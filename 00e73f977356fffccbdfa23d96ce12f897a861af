@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8b5fd23_a48cb166",
+        "filename": "go/src/infra/cros/karte/internal/frontend/action_range_persister.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-13T23:19:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e63a261_1874bce0",
+      "range": {
+        "startLine": 48,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 16
+      },
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d66ff43d_f414b87f",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "65238c1d_56e3695d",
+        "filename": "go/src/infra/cros/karte/internal/frontend/action_range_persister.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-13T23:19:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d66ff43d_f414b87f",
+      "range": {
+        "startLine": 50,
+        "startChar": 29,
+        "endLine": 50,
+        "endChar": 116
+      },
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "744df450_63251830",
@@ -77,6 +125,30 @@
       "writtenOn": "2022-10-13T18:40:55Z",
       "side": 1,
       "message": "same",
+      "range": {
+        "startLine": 52,
+        "startChar": 28,
+        "endLine": 52,
+        "endChar": 29
+      },
+      "revId": "00e73f977356fffccbdfa23d96ce12f897a861af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42d88f96_ab764010",
+        "filename": "go/src/infra/cros/karte/internal/frontend/action_range_persister.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-13T23:19:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "744df450_63251830",
       "range": {
         "startLine": 52,
         "startChar": 28,
