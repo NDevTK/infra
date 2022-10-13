@@ -389,24 +389,24 @@ func TestSetActionEntityFields(t *testing.T) {
 		{
 			name:     "update time -- nil fields",
 			fields:   nil,
-			src:      &ActionEntity{StopTime: time.Unix(1, 2)},
-			dst:      &ActionEntity{StopTime: time.Unix(3, 4)},
-			expected: &ActionEntity{StopTime: time.Unix(1, 2)},
+			src:      &ActionEntity{StopTime: time.Unix(1, 2).UTC()},
+			dst:      &ActionEntity{StopTime: time.Unix(3, 4).UTC()},
+			expected: &ActionEntity{StopTime: time.Unix(1, 2).UTC()},
 		},
 		{
 			// Empty fields should be treated identically to nil fields.
 			name:     "update time -- empty fields",
 			fields:   []string{},
-			src:      &ActionEntity{StopTime: time.Unix(1, 2)},
-			dst:      &ActionEntity{StopTime: time.Unix(3, 4)},
-			expected: &ActionEntity{StopTime: time.Unix(1, 2)},
+			src:      &ActionEntity{StopTime: time.Unix(1, 2).UTC()},
+			dst:      &ActionEntity{StopTime: time.Unix(3, 4).UTC()},
+			expected: &ActionEntity{StopTime: time.Unix(1, 2).UTC()},
 		},
 		{
 			name:     "blocked update",
 			fields:   []string{"swarming_task_id"},
-			src:      &ActionEntity{CreateTime: time.Unix(1, 2)},
-			dst:      &ActionEntity{CreateTime: time.Unix(3, 4)},
-			expected: &ActionEntity{CreateTime: time.Unix(3, 4)},
+			src:      &ActionEntity{CreateTime: time.Unix(1, 2).UTC()},
+			dst:      &ActionEntity{CreateTime: time.Unix(3, 4).UTC()},
+			expected: &ActionEntity{CreateTime: time.Unix(3, 4).UTC()},
 		},
 		{
 			name:   "fail reason",

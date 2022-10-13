@@ -64,7 +64,7 @@ func (c *exampleCreateUpdateActionRun) innerRun(ctx context.Context, a subcomman
 	action := &kartepb.Action{
 		Kind:       "d1375f6a-9a0a-41d5-91ff-6763dbb774cf",
 		FailReason: "c13d7fe6-ba1d-4d8f-9292-a320b4519587",
-		StartTime:  scalars.ConvertTimeToTimestampPtr(time.Now()),
+		StartTime:  scalars.ConvertTimeToTimestampPtr(time.Now().UTC()),
 	}
 	out, err := kClient.CreateAction(ctx, &kartepb.CreateActionRequest{Action: action})
 	if err != nil {
@@ -74,7 +74,7 @@ func (c *exampleCreateUpdateActionRun) innerRun(ctx context.Context, a subcomman
 
 	action = out
 	action.FailReason = "1f6929e9-74d9-4b68-8e42-06b3862410fa"
-	action.StopTime = scalars.ConvertTimeToTimestampPtr(time.Now())
+	action.StopTime = scalars.ConvertTimeToTimestampPtr(time.Now().UTC())
 	out, err = kClient.UpdateAction(ctx, &kartepb.UpdateActionRequest{
 		Action: action,
 	})
