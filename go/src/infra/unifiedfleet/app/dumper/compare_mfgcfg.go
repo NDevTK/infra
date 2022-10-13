@@ -10,7 +10,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
@@ -87,8 +88,12 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 		}
 
 		// Log information on diff if exists
-		if !proto.Equal(mfgCfgInvV2, mfgCfgUFS) {
-			logMsg := fmt.Sprintf("%s %s\n", machine.GetName(), hwid)
+		opts := []cmp.Option{
+			cmpopts.IgnoreUnexported(ufsmfgcfg.ManufacturingConfig{}),
+			cmpopts.IgnoreUnexported(ufsmfgcfg.ConfigID{}),
+		}
+		if diff := cmp.Diff(mfgCfgInvV2, mfgCfgUFS, opts...); diff != "" {
+			logMsg := fmt.Sprintf("Unexpected diff for %s %s (-want +got):\n %s\n\n", machine.GetName(), hwid, diff)
 			if _, err := fmt.Fprint(writer, logMsg); err != nil {
 				return err
 			}
