@@ -89,6 +89,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fb9c9bb_def00678",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T18:38:38Z",
+      "side": 1,
+      "message": "No idea what happened there. Hopefully you see it now. Had to `git cl upload` a second time (with no changes) before it got updated in the Gerrit UI.",
+      "parentUuid": "944aa4ef_03c731dc",
+      "range": {
+        "startLine": 102,
+        "startChar": 60,
+        "endLine": 102,
+        "endChar": 180
+      },
+      "revId": "d6c8c1ff13da3298b24ad2a4d9e45d9bce12e806",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e80ec513_864a6697",
