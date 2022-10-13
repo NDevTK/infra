@@ -59,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "88f0efa5_65777670",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T18:10:39Z",
+      "side": 1,
+      "message": "See https://b.corp.google.com/issues/230609017. To my understanding, we\u0027re to avoid adding \"All rights reserved.\" to new open source files. I realize now that this probably not applicable to infra repos. Adding it back.",
+      "parentUuid": "824817a4_c00748a4",
+      "range": {
+        "startLine": 1,
+        "startChar": 42,
+        "endLine": 1,
+        "endChar": 62
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "01b3cff3_844be600",
@@ -271,6 +295,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "04146765_740a1767",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T18:10:39Z",
+      "side": 1,
+      "message": "Good catch. Definitely should be \u003c 3. Fixed.",
+      "parentUuid": "e9c4cbfe_55529230",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 16
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f2d1a39b_04f41d84",
@@ -388,6 +436,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7beb640c_edac4923",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cros_cbi_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T18:10:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6171e73e_c841670e",
+      "range": {
+        "startLine": 5,
+        "startChar": 43,
+        "endLine": 5,
+        "endChar": 63
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9df7e94e_df802c1c",
@@ -401,6 +473,30 @@
       "writtenOn": "2022-10-13T17:46:45Z",
       "side": 1,
       "message": "same",
+      "range": {
+        "startLine": 1,
+        "startChar": 41,
+        "endLine": 1,
+        "endChar": 62
+      },
+      "revId": "c00b25c9468d8a46b43cec91e0f2b9aa70059921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21a6c19f_3ea7cc83",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cbi.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2022-10-13T18:10:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9df7e94e_df802c1c",
       "range": {
         "startLine": 1,
         "startChar": 41,
