@@ -39,6 +39,30 @@
       },
       "revId": "cfa09f75d4be259dcea4062dfa59e6976a86ba01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4afec158_2eac444b",
+        "filename": "go/src/infra/cros/karte/internal/identifiers/interface.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-13T19:02:44Z",
+      "side": 1,
+      "message": "Technically, I think, no. I usually create a new strategy in each test and make each test single-threaded.\n\nHowever, there\u0027s no reason not to guard this thing with a mutex, so I added a mutex. Thanks.",
+      "parentUuid": "ba84ea5d_4bd90006",
+      "range": {
+        "startLine": 108,
+        "startChar": 1,
+        "endLine": 108,
+        "endChar": 15
+      },
+      "revId": "cfa09f75d4be259dcea4062dfa59e6976a86ba01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
