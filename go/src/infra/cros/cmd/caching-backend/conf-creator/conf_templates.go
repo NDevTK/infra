@@ -82,11 +82,6 @@ http {
     access_log            /var/log/nginx/gs-cache.access.log main;
     error_log             /var/log/nginx/gs-cache.error.log;
     location / {
-	  # TODO(b/232995369) The two directives below hack the 500 error from the
-	  # upstream to check if it is caused by an non-existing file on GS.
-	  proxy_intercept_errors on;
-	  error_page 500 = @check500;
-
       proxy_cache_lock on;
       proxy_cache_lock_age 900s;
       proxy_cache_lock_timeout 900s;
@@ -104,20 +99,6 @@ http {
       proxy_cache_valid     200 720h;
       proxy_cache_key       $request_method$uri$is_args$args;
     }
-
-	# TODO(b/232995369) The most recent 500 errors were caused by the two URI
-	# pattern listed below. It should be OK to suppose they should be 404.
-	# For others, keep the 500 status code (but we cannot keep the response body
-	# unfortunately).
-	location @check500 {
-	  if ($uri ~ '^/static/guybrush-postsubmit/') {
-	    return 404 "File likely not found: $uri\n";
-	  }
-	  if ($uri ~ '^/extract/chromeos-image-archive/guybrush-postsubmit/') {
-	    return 404 "File likely not found: $uri\n";
-	  }
-	  return 500 "original request: $request_method $uri$is_args$args\n";
-	}
     # CQ build cache configuration.
     # The configuration is exactly same with the "location /" except
     # "proxy_cache_valid" which is much shorter than a release build.
