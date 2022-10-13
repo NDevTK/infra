@@ -5,9 +5,6 @@ dispatch:
   - url: "*/findit/internal/*"
     module: findit-backend
 
-  - url: "*/disabled-tests/*"
-    module: disabled-test-backend
-
   - url: "*/flake/detection/cron/*"
     module: flake-detection-backend
 
@@ -53,8 +50,4 @@ dispatch:
 
   # This is for the service on flakiness.
   - url: "*/p/chromium/flake*"
-    module: frontend
-
-  # Disabled test dashboard service.
-  - url: "*/p/chromium/disabled-tests"
     module: frontend
