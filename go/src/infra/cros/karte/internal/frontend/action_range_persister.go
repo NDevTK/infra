@@ -44,6 +44,14 @@ func persistActionRangeImpl(ctx context.Context, a *actionRangePersistOptions) (
 
 // makeQuery makes a query that queries a range of actions.
 func makeQuery(a *actionRangePersistOptions) (*ActionEntitiesQuery, error) {
+	switch {
+	case a.startID.Before(a.stopID):
+		// Do nothing. makeQuery was called correctly, the stop time is strictly after the start time.
+	case a.startID.Equal(a.stopID):
+		return nil, errors.Reason("make query: rejecting likely erroneous call: start time and stop time are the same %q", a.startID.String()).Err()
+	default:
+		return nil, errors.Reason("make query: invalid range %q to %q", a.startID.String(), a.stopID.String()).Err()
+	}
 	q, err := newActionNameRangeQuery(a.startID, a.stopID)
 	if err != nil {
 		return nil, errors.Annotate(err, "make query").Err()
