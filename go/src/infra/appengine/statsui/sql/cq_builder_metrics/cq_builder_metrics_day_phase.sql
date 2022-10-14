@@ -30,7 +30,8 @@ USING
     FROM
       `cr-buildbucket.chromium.builds` b,
       UNNEST(steps) s LEFT OUTER JOIN
-      UNNEST(steps) st ON st.name LIKE CONCAT('%|[trigger] ', s.name),
+      -- The extra % in trigger is to handle https://crbug.com/1359140
+      UNNEST(steps) st ON st.name LIKE CONCAT('%|[trigger%] ', s.name),
       `chrome-trooper-analytics.metrics.cq_builders` cq
     WHERE
       -- As we bucket the build using start_date, we need to include any builds
