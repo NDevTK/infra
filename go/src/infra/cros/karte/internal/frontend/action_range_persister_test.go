@@ -53,7 +53,7 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 		}
 		q, err := makeQuery(a)
 		So(err, ShouldBeNil)
-		ad, _, err := persistActions(ctx, a, q)
+		ad, _, err := persistActions(ctx, a, q.Query)
 		So(err, ShouldBeNil)
 		var actions []*ActionEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
@@ -130,7 +130,7 @@ func TestActionRangePersister(t *testing.T) {
 		}
 		q, err := makeQuery(a)
 		So(err, ShouldBeNil)
-		ad, _, err := persistActions(ctx, a, q)
+		ad, _, err := persistActions(ctx, a, q.Query)
 		So(err, ShouldBeNil)
 		var actions []*ActionEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
