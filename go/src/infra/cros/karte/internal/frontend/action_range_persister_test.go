@@ -53,12 +53,12 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 		}
 		q, err := makeQuery(a)
 		So(err, ShouldBeNil)
-		ad, _, err := persistActions(ctx, a, q.Query)
+		_, _, err = persistActions(ctx, a, q.Query)
 		So(err, ShouldBeNil)
 		var actions []*ActionEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
 		So(len(actions), ShouldEqual, 0)
-		So(persistObservations(ctx, a, ad), ShouldBeNil)
+		So(persistObservations(ctx, a), ShouldBeNil)
 		var observations []*ObservationEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ObservationKind), &observations), ShouldBeNil)
 		So(len(observations), ShouldEqual, 0)
@@ -70,7 +70,7 @@ func TestActionRangePersister(t *testing.T) {
 	t.Parallel()
 	Convey("test with several actions", t, func() {
 		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewNaive())
+		ctx = identifiers.Use(ctx, identifiers.NewDefault())
 		testClock := testclock.New(time.Unix(10, 0).UTC())
 		ctx = clock.Set(ctx, testClock)
 		datastore.GetTestable(ctx).Consistent(true)
@@ -124,24 +124,24 @@ func TestActionRangePersister(t *testing.T) {
 		}()
 		So(observation2, ShouldNotBeEmpty)
 		a := &actionRangePersistOptions{
-			startID: time.Unix(0, 0).UTC(),
-			stopID:  time.Unix(20, 0).UTC(),
+			startID: time.Unix(1, 0).UTC(),
+			stopID:  time.Unix(100, 0).UTC(),
 			bq:      fake,
 		}
 		q, err := makeQuery(a)
 		So(err, ShouldBeNil)
-		ad, _, err := persistActions(ctx, a, q.Query)
+		_, _, err = persistActions(ctx, a, q.Query)
 		So(err, ShouldBeNil)
 		var actions []*ActionEntity
 		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
 		So(len(actions), ShouldEqual, 2)
-		So(persistObservations(ctx, a, ad), ShouldBeNil)
-		var observations []*ObservationEntity
-		So(datastore.GetAll(ctx, datastore.NewQuery(ObservationKind), &observations), ShouldBeNil)
-		So(len(observations), ShouldEqual, 2)
+		So(persistObservations(ctx, a), ShouldBeNil)
+		count, err := datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+		So(err, ShouldBeNil)
+		So(count, ShouldEqual, 2)
 		// These two checks down here are the highest-value checks. They check the total number of
 		// bigquery records produced and the number of those records that are observations, respectively.
-		So(fake.size(), ShouldEqual, 4)
 		So(fake.observationsSize(), ShouldEqual, 2)
+		So(fake.size(), ShouldEqual, 4)
 	})
 }
