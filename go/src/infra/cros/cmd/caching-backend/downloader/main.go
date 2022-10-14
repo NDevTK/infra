@@ -105,7 +105,9 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 		bRange, err = parseRange(headerRange)
 		id = fmt.Sprintf("%s, %s", id, headerRange)
 		if err != nil {
-			log.Printf("%s parseRange error: %s", id, err)
+			errStr := fmt.Sprintf("%s parseRange error: %s", id, err)
+			log.Printf(errStr)
+			http.Error(w, errStr, http.StatusBadRequest)
 			return
 		}
 	}
