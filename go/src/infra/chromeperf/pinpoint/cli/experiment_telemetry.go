@@ -37,7 +37,7 @@ import (
 const MaxScheduleConcurrency = 1
 
 const defaultJobPriority = 0
-const batchJobPriority = 10
+const batchJobPriority = 20 // higher number is lower priority
 
 type experimentTelemetryRun struct {
 	experimentBaseRun
