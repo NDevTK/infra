@@ -659,10 +659,10 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://codereview.chromium.org/123456789\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://code-review.googlesource.com/123456789\"@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@Issue 123456789@https://codereview.chromium.org/123456789@@@"
+      "@@@STEP_LINK@Issue 123456789@https://code-review.googlesource.com/123456789@@@"
     ]
   },
   {
@@ -674,7 +674,7 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "{\"issue\": \"123456789\", \"issue_url\": \"https://codereview.chromium.org/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
+      "{\"issue\": \"123456789\", \"issue_url\": \"https://code-review.googlesource.com/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
       "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
     "infra_step": true,

@@ -7,11 +7,14 @@ import datetime
 import re
 import traceback
 
+import attr
 from google.protobuf import json_format as jsonpb
 
 from recipe_engine import recipe_api
+from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.recipe_engine.recipes_cfg import (AutorollRecipeOptions, DepRepoSpecs,
                                           RepoSpec)
+from PB.recipe_engine import result as result_pb2
 
 
 class RepoData(object):
@@ -84,6 +87,12 @@ Bugdroid-Send-Email: False
 ROLL_SUCCESS, ROLL_EMPTY, ROLL_FAILURE, ROLL_SKIP = range(4)
 
 
+@attr.s
+class _Status(object):
+  code = attr.ib(type=int)
+  url = attr.ib(type=str, default=None)
+
+
 _ROLL_STALE_THRESHOLD = datetime.timedelta(hours=2)
 
 
@@ -136,6 +145,25 @@ def get_commit_message(roll_result, build_id):
   return message
 
 
+def get_summary_markdown(roll_results):
+  links = []
+  for result in roll_results:
+    if not result.url:
+      continue
+
+    try:
+      host = re.search(r'/([\w-]+)-review\.', result.url).group(1)
+      number = re.search(r'/(\d+)$', result.url).group(1)
+      links.append('[{}:{}]({})'.format(host, number, result.url))
+    except AttributeError:  # pragma: no cover
+      pass
+
+  return result_pb2.RawResult(
+      summary_markdown='\n'.join('* {}'.format(x) for x in links),
+      status=common_pb2.SUCCESS,
+  )
+
+
 class RecipeAutorollerApi(recipe_api.RecipeApi):
   def roll_projects(self, projects, db_gcs_bucket):
     """Attempts to roll each project from the provided list.
@@ -179,6 +207,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
               ', '.join(failed_rolls)))
 
     results = [f.result() for _, f in futures]
+    result_codes = [x.code for x in results]
 
     # Failures to roll are OK as long as at least one of the repos is moving
     # forward. For example, with repos with following dependencies:
@@ -188,11 +217,13 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     #
     # New commit in A repo will need to get rolled into B first. However,
     # it'd also appear as a candidate for C roll, leading to a failure there.
-    if ROLL_FAILURE in results and ROLL_SUCCESS not in results:
+    if ROLL_FAILURE in result_codes and ROLL_SUCCESS not in result_codes:
       self.m.step.empty(
           'roll result',
           status=self.m.step.FAILURE,
           step_text='manual intervention needed: automated roll attempt failed')
+
+    return get_summary_markdown(results)
 
   def _prepare_checkout(self, project_id, project_url):
     # Keep persistent checkout. Speeds up the roller for large repos
@@ -295,13 +326,13 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     if disable_reason:
       rslt = self.m.step.empty('disabled', step_text=disable_reason)
       rslt.presentation.status = self.m.step.WARNING
-      return ROLL_SKIP
+      return _Status(ROLL_SKIP)
 
     status = self._check_previous_roll(project_url, workdir, db_gcs_bucket)
     if status is not None:
       # This means that the previous roll is still going, or similar. In this
       # situation we're done with this repo, for now.
-      return status
+      return _Status(status)
 
     roll_step = self.m.python(
         'roll',
@@ -313,21 +344,21 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     roll_result = roll_step.json.output
 
     if roll_result['success'] and roll_result['picked_roll_details']:
-      self._process_successful_roll(project_url, roll_step, workdir,
-                                    recipes_dir, recipes_cfg_path,
-                                    db_gcs_bucket)
-      return ROLL_SUCCESS
+      issue_result = self._process_successful_roll(
+          project_url, roll_step, workdir, recipes_dir, recipes_cfg_path,
+          db_gcs_bucket)
+      return _Status(ROLL_SUCCESS, issue_result['issue_url'])
 
     num_rejected = roll_result['rejected_candidates_count']
     if not roll_result['roll_details'] and num_rejected == 0:
       roll_step.presentation.step_text += ' (already at latest revisions)'
-      return ROLL_EMPTY
+      return _Status(ROLL_EMPTY)
 
     for i, roll_candidate in enumerate(roll_result['roll_details']):
       roll_step.presentation.logs['candidate #%d' % (i + 1)] = (
           self.m.json.dumps(roll_candidate['spec'], indent=2))
 
-    return ROLL_FAILURE
+    return _Status(ROLL_FAILURE)
 
   def _process_successful_roll(self, project_url, roll_step, workdir,
                                recipes_dir, recipes_cfg_path, db_gcs_bucket):
@@ -424,7 +455,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
           name='git cl issue',
           step_test_data=lambda: self.m.json.test_api.output({
               'issue': 123456789,
-              'issue_url': 'https://codereview.chromium.org/123456789'}))
+              'issue_url': 'https://code-review.googlesource.com/123456789'}))
     issue_result = issue_step.json.output
 
     if not issue_result['issue'] or not issue_result['issue_url']:
@@ -446,6 +477,8 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     self.m.gsutil.upload(
         self.m.json.input(repo_data.to_json()), db_gcs_bucket,
         _gs_path(project_url))
+
+    return issue_result
 
   def _get_pending_cl_status(self, project_url, workdir, db_gcs_bucket):
     """Returns (current_repo_data, git_cl_status_string) of the last known

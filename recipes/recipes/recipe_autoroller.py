@@ -30,7 +30,7 @@ PROPERTIES = {
 
 
 def RunSteps(api, projects, db_gcs_bucket):
-  api.recipe_autoroller.roll_projects(projects, db_gcs_bucket)
+  return api.recipe_autoroller.roll_projects(projects, db_gcs_bucket)
 
 
 def GenTests(api):
