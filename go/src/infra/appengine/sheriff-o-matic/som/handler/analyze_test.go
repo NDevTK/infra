@@ -5,19 +5,17 @@ import (
 	"testing"
 	"time"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
-	"infra/monitoring/messages"
-
-	gfipb "go.chromium.org/luci/bisection/proto"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
+	gfipb "go.chromium.org/luci/bisection/proto"
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/impl/dummy"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
 
-	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/common/logging/gologger"
+	"infra/appengine/sheriff-o-matic/som/analyzer"
+	"infra/monitoring/messages"
 )
 
 func newTestContext() context.Context {
@@ -39,78 +37,12 @@ func (gi giMock) AccessToken(scopes ...string) (token string, expiry time.Time, 
 	return gi.token, gi.expiry, gi.err
 }
 
-type mockFindit struct {
-	res []*messages.FinditResultV2
-	err error
-}
-
-func (mf *mockFindit) FinditBuildbucket(ctx context.Context, id int64, stepNames []string) ([]*messages.FinditResultV2, error) {
-	return mf.res, mf.err
-}
-
 type mockGoFindit struct {
 	res *gfipb.QueryAnalysisResponse
 }
 
 func (mgfi *mockGoFindit) QueryGoFinditResults(c context.Context, bbid int64, stepName string) (*gfipb.QueryAnalysisResponse, error) {
 	return mgfi.res, nil
-}
-
-func TestAttachFinditResults(t *testing.T) {
-	Convey("smoke", t, func() {
-		c := gaetesting.TestingContext()
-		bf := []*messages.BuildFailure{
-			{
-				StepAtFault: &messages.BuildStep{
-					Step: &messages.Step{
-						Name: "some step",
-					},
-				},
-			},
-		}
-		fc := &mockFindit{}
-		attachFindItResults(c, bf, fc)
-		So(len(bf), ShouldEqual, 1)
-	})
-
-	Convey("some results", t, func() {
-		c := newTestContext()
-		bf := []*messages.BuildFailure{
-			{
-				Builders: []*messages.AlertedBuilder{
-					{
-						Name: "some builder",
-					},
-				},
-				StepAtFault: &messages.BuildStep{
-					Step: &messages.Step{
-						Name: "some step",
-					},
-				},
-			},
-		}
-		fc := &mockFindit{
-			res: []*messages.FinditResultV2{{
-				StepName: "some step",
-				Culprits: []*messages.Culprit{
-					{
-						Commit: &messages.GitilesCommit{
-							Host:           "githost",
-							Project:        "proj",
-							ID:             "0xdeadbeef",
-							CommitPosition: 1234,
-						},
-					},
-				},
-				IsFinished:  true,
-				IsSupported: true,
-			}},
-		}
-		attachFindItResults(c, bf, fc)
-		So(len(bf), ShouldEqual, 1)
-		So(len(bf[0].Culprits), ShouldEqual, 1)
-		So(bf[0].HasFindings, ShouldEqual, true)
-	})
 }
 
 func TestAttachGoFinditResults(t *testing.T) {

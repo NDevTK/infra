@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
+	"go.chromium.org/luci/gae/service/info"
+
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/monitoring/messages"
-
-	"go.chromium.org/luci/gae/service/info"
 )
 
 const (
@@ -53,7 +53,6 @@ type Analyzer struct {
 
 	// Mock these out in tests.
 	CrBug    client.CrBug
-	FindIt   client.FindIt
 	GoFindit client.GoFindit
 }
 
@@ -99,14 +98,12 @@ func CreateAnalyzer(c context.Context) *Analyzer {
 
 func setServiceClients(c context.Context, a *Analyzer) {
 	if info.AppID(c) == prodAppID {
-		findIt, crBug, _, goFindit := client.ProdClients(c)
+		crBug, _, goFindit := client.ProdClients(c)
 		a.CrBug = crBug
-		a.FindIt = findIt
 		a.GoFindit = goFindit
 	} else {
-		findIt, crBug, _, goFindit := client.StagingClients(c)
+		crBug, _, goFindit := client.StagingClients(c)
 		a.CrBug = crBug
-		a.FindIt = findIt
 		a.GoFindit = goFindit
 	}
 }

@@ -9,7 +9,14 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/ptypes"
+	gofindit "go.chromium.org/luci/bisection/proto"
+	"go.chromium.org/luci/common/bq"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/info"
+	"go.chromium.org/luci/server/router"
 	"google.golang.org/appengine"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer"
@@ -17,16 +24,6 @@ import (
 	"infra/appengine/sheriff-o-matic/som/model"
 	"infra/appengine/sheriff-o-matic/som/model/gen"
 	"infra/monitoring/messages"
-
-	gofindit "go.chromium.org/luci/bisection/proto"
-
-	"go.chromium.org/luci/common/bq"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/info"
-	"go.chromium.org/luci/server/router"
-
-	"cloud.google.com/go/bigquery"
 )
 
 const (
@@ -135,7 +132,6 @@ func generateBigQueryAlerts(c context.Context, a *analyzer.Analyzer, tree string
 		}
 	}
 	logging.Infof(c, "filtered alerts, before: %d after: %d", len(builderAlerts), len(filteredBuilderAlerts))
-	attachFindItResults(c, filteredBuilderAlerts, a.FindIt)
 	err = attachGoFinditResults(c, filteredBuilderAlerts, a.GoFindit)
 	if err != nil {
 		// It is not critical, so log and continue
@@ -206,29 +202,6 @@ func getKeyForAlert(ctx context.Context, bf *messages.BuildFailure, tree string)
 	firstFailure := bf.Builders[0].FirstFailure
 	strs := []string{tree, project, bucket, builder, step, strconv.FormatInt(firstFailure, 10)}
 	return strings.Join(strs, model.AlertKeySeparator)
-}
-
-func attachFindItResults(ctx context.Context, failures []*messages.BuildFailure, finditClient client.FindIt) {
-	for _, bf := range failures {
-		stepName := bf.StepAtFault.Step.Name
-		for _, someBuilder := range bf.Builders {
-			results, err := finditClient.FinditBuildbucket(ctx, someBuilder.LatestFailure, []string{stepName})
-			if err != nil {
-				logging.Errorf(ctx, "error getting findit results: %v", err)
-			}
-
-			for _, result := range results {
-				if result.StepName != bf.StepAtFault.Step.Name {
-					continue
-				}
-
-				bf.Culprits = append(bf.Culprits, result.Culprits...)
-				bf.HasFindings = bf.HasFindings || len(result.Culprits) > 0
-				bf.IsFinished = bf.IsFinished || result.IsFinished
-				bf.IsSupported = bf.IsSupported || result.IsSupported
-			}
-		}
-	}
 }
 
 func attachGoFinditResults(c context.Context, failures []*messages.BuildFailure, goFinditClient client.GoFindit) error {

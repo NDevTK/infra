@@ -641,28 +641,6 @@ class SomAlertView extends Polymer.mixinBehaviors(
       // TODO(davidriley): Handle groups.
 
       if (aAnn.snoozed == bAnn.snoozed && aHasBugs == bHasBugs) {
-        // We want to show alerts with Findit results above.
-        // Show alerts with revert CL from Findit first;
-        // the alerts with suspected_cls;
-        // then alerts with flaky tests;
-        // then alerts with no Findit results.
-        if (aHasSuspectedCLs && bHasSuspectedCLs) {
-          for (let key in b.extension.suspected_cls) {
-            if (b.extension.suspected_cls[key].reverting_cl_url) {
-              return 1;
-            }
-          }
-          return -1;
-        } else if (aHasSuspectedCLs) {
-          return -1;
-        } else if (bHasSuspectedCLs) {
-          return 1;
-        } else if (aHasFindings) {
-          return -1;
-        } else if (bHasFindings) {
-          return 1;
-        }
-
         if (aBuilders < bBuilders) {
           return 1;
         }

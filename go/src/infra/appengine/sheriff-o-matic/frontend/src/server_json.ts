@@ -37,8 +37,6 @@ export interface AlertJson {
 export interface AlertExtensionJson {
     builders: AlertBuilderJson[];
     culprits: null;
-    findit_status: null;
-    findit_url: null;
     has_findings: boolean;
     is_finished: boolean;
     is_supported: boolean;

@@ -99,9 +99,6 @@ export const HelpPage = () => {
                 <li>
                     <a href="https://g.co/bugatrooper" target="_blank">How to contact a Trooper</a>
                 </li>
-                <li>
-                    <a href="https://goto.google.com/findit-manual" target="_blank">How to understand Findit result</a>
-                </li>
             </ul>
 
             <h2>Contributing</h2>

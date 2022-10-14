@@ -12,7 +12,7 @@ type ArtifactLink struct {
 	Location string `json:"location"`
 }
 
-// TestWithResult stores the information provided by Findit for a specific test,
+// TestWithResult stores the information for a specific test,
 // for example if the test is flaky or is there a culprit for the test failure.
 // Also contains test-specific details like expectations and any artifacts
 // produced by the test run.

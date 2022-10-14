@@ -16,13 +16,13 @@ import (
 	"strings"
 	"time"
 
-	"infra/monitoring/messages"
-	"infra/monorail"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
+
+	"infra/monitoring/messages"
+	"infra/monorail"
 )
 
 const (
@@ -82,11 +82,6 @@ func (cr *CrBugs) CrbugItems(ctx context.Context, label string) ([]messages.Crbu
 	}
 
 	return res.Items, nil
-}
-
-// FinditAPIResponseV2 represents a response from the findit api.
-type FinditAPIResponseV2 struct {
-	Responses []*messages.FinditResultV2 `json:"responses"`
 }
 
 // NewWriter returns a new Client, which will post alerts to alertsBase.
@@ -269,8 +264,7 @@ func NewMonorailV3Client(c context.Context) (*prpc.Client, error) {
 }
 
 // ProdClients returns a set of service clients pointed at production.
-func ProdClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient, GoFindit) {
-	findIt := NewFindit("https://findit-for-me.appspot.com")
+func ProdClients(ctx context.Context) (CrBug, monorail.MonorailClient, GoFindit) {
 	monorailClient := NewMonorail(ctx, "https://monorail-prod.appspot.com")
 	crBugs := &CrBugs{}
 
@@ -284,13 +278,12 @@ func ProdClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient, G
 		goFinditClient = &GoFinditClient{ServiceClient: goFinditServiceClient}
 	}
 
-	return findIt, crBugs, monorailClient, goFinditClient
+	return crBugs, monorailClient, goFinditClient
 }
 
 // StagingClients returns a set of service clients pointed at instances suitable for a
 // staging environment.
-func StagingClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient, GoFindit) {
-	findIt := NewFindit("https://findit-for-me-staging.appspot.com")
+func StagingClients(ctx context.Context) (CrBug, monorail.MonorailClient, GoFindit) {
 	monorailClient := NewMonorail(ctx, "https://monorail-staging.appspot.com")
 	crBugs := &CrBugs{}
 
@@ -304,5 +297,5 @@ func StagingClients(ctx context.Context) (FindIt, CrBug, monorail.MonorailClient
 		goFinditClient = &GoFinditClient{ServiceClient: goFinditServiceClient}
 	}
 
-	return findIt, crBugs, monorailClient, goFinditClient
+	return crBugs, monorailClient, goFinditClient
 }
