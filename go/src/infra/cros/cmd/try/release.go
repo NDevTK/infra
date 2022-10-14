@@ -52,6 +52,10 @@ func (r *releaseRun) validate() error {
 		return fmt.Errorf("--skip_paygen is not supported for production builds")
 	}
 
+	if strings.HasPrefix(r.branch, "stabilize-") && !r.production {
+		return fmt.Errorf("can only run production builds for stabilize branches")
+	}
+
 	if err := r.tryRunBase.validate(); err != nil {
 		return err
 	}
@@ -87,6 +91,11 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	propsStruct, err := r.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())
 	if err != nil {
 		r.LogErr(err.Error())
+		if strings.Contains(err.Error(), "not found") {
+			if strings.HasPrefix(r.branch, "stabilize-") {
+				r.LogErr(fmt.Sprintf("Builder not found, is '%s' defined in stabilize_builders.textpb?", r.branch))
+			}
+		}
 		return CmdError
 	}
 

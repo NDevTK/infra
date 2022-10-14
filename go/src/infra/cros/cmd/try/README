@@ -6,3 +6,6 @@ custom configurations.
 
 This tool is currently under active development. You can find the design doc at:
 go/tryjobs-2
+
+We created a stabilize branch, "stabilize-15185.B" for testing. Feel free to
+run production tryjobs on this branch.

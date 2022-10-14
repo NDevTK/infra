@@ -76,17 +76,39 @@ func TestValidate_releaseRun(t *testing.T) {
 	assert.ErrorContains(t, r.validate(), "not supported for production")
 }
 
+func TestValidate_stabilizeRun(t *testing.T) {
+	t.Parallel()
+	r := releaseRun{
+		tryRunBase: tryRunBase{
+			branch:     "stabilize-15185.B",
+			production: false,
+		},
+	}
+	assert.ErrorContains(t, r.validate(), "only run production builds")
+
+	r = releaseRun{
+		tryRunBase: tryRunBase{
+			branch:     "stabilize-15185.B",
+			production: true,
+		},
+	}
+	assert.NilError(t, r.validate())
+}
+
 type runTestConfig struct {
 	// e.g. ["crrev.com/c/1234567"]
 	patches []string
 	// e.g. "eve"
 	buildTargets []string
+	// e.g. staging-release-R106.15054.B-orchestrator
+	expectedOrch string
 	// e.g. "staging-eve-release-R106.15054.B"
 	expectedChildren []string
 	skipPaygen       bool
 	production       bool
 	dryrun           bool
 	buildspec        string
+	branch           string
 }
 
 func doTestRun(t *testing.T, tc *runTestConfig) {
@@ -95,13 +117,12 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	defer os.Remove(propsFile.Name())
 	assert.NilError(t, err)
 
-	var expectedBucket, expectedBuilder string
+	var expectedBucket string
+	expectedBuilder := tc.expectedOrch
 	if tc.production {
 		expectedBucket = "chromeos/release"
-		expectedBuilder = "release-R106.15054.B-orchestrator"
 	} else {
 		expectedBucket = "chromeos/staging"
-		expectedBuilder = "staging-release-R106.15054.B-orchestrator"
 	}
 
 	f := &cmd.FakeCommandRunnerMulti{
@@ -143,7 +164,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		tryRunBase: tryRunBase{
 			cmdRunner:            f,
 			dryrun:               tc.dryrun,
-			branch:               "release-R106.15054.B",
+			branch:               tc.branch,
 			production:           tc.production,
 			patches:              tc.patches,
 			buildTargets:         tc.buildTargets,
@@ -194,30 +215,52 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 }
 
 func TestRun_dryrun(t *testing.T) {
+	t.Parallel()
 	doTestRun(t, &runTestConfig{
-		dryrun: true,
+		branch:       "release-R106.15054.B",
+		dryrun:       true,
+		expectedOrch: "staging-release-R106.15054.B-orchestrator",
 	})
 }
 
 func TestRun_staging_noBuildTargets(t *testing.T) {
+	t.Parallel()
 	doTestRun(t, &runTestConfig{
-		skipPaygen: false,
-		buildspec:  "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
+		branch:       "release-R106.15054.B",
+		skipPaygen:   false,
+		buildspec:    "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
+		expectedOrch: "staging-release-R106.15054.B-orchestrator",
 	})
 }
 
 func TestRun_staging_buildTargets(t *testing.T) {
 	doTestRun(t, &runTestConfig{
+		branch:           "release-R106.15054.B",
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedOrch:     "staging-release-R106.15054.B-orchestrator",
 		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
 		buildspec:        "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
 	})
 }
 
 func TestRun_production(t *testing.T) {
+	t.Parallel()
 	doTestRun(t, &runTestConfig{
+		branch:           "release-R106.15054.B",
 		production:       true,
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedOrch:     "release-R106.15054.B-orchestrator",
 		expectedChildren: []string{"eve-release-R106.15054.B", "kevin-kernelnext-release-R106.15054.B"},
+	})
+}
+
+func TestRun_stabilize(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &runTestConfig{
+		branch:           "stabilize-15185.B",
+		production:       true,
+		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedOrch:     "release-stabilize-15185.B-orchestrator",
+		expectedChildren: []string{"eve-release-stabilize-15185.B", "kevin-kernelnext-release-stabilize-15185.B"},
 	})
 }
