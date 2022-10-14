@@ -5971,6 +5971,20 @@ wheel: <
 
 * *universal*
 
+## **pytest-mock-py3**
+
+### 3.10.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-mock-py3"
+  version: "version:3.10.0"
+>
+```
+
+
+* *universal*
+
 ## **pytest-reportlog-py3**
 
 ### 0.1.2
