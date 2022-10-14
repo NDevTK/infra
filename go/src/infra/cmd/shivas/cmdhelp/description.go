@@ -1643,7 +1643,7 @@ Operation will be faster as only name/id will be retrieved from the service.`
 		"Valid ModemType strings:[%s]", strings.Join(ufsUtil.ValidModemTypeStr(), ","))
 
 	//SimInfoHelpText help text for siminfo command line options
-	SimInfoHelpText string = fmt.Sprintf("the name of simtype,slot_id,eid,test_esim,iccid,pin,puk,carriername "+
+	SimInfoHelpText string = fmt.Sprintf("the name of simtype,slot_id,eid,test_esim,iccid,pin,puk,carriername,own_number "+
 		"Valid SimType strings:[%s]", strings.Join(ufsUtil.ValidSimTypeStr(), ","))
 
 	// SchedulingUnitTypesHelpText help text for asset type filters

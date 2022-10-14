@@ -453,7 +453,7 @@ func (c updateDUT) validateArgs() error {
 
 		if len(c.simInfo) > 0 {
 			for _, s := range c.simInfo {
-				if len(s)%4 != 0 || len(s)/4 < 2 {
+				if (len(s)-4)%5 != 0 || len(s) < 9 {
 					return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s Invalid number of arguments, please check help info for '-siminfo'.", s)
 				}
 				if s[0] != "" && s[0] != utils.ClearFieldValue && !ufsUtil.IsSIMType(s[0]) {
@@ -837,12 +837,13 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 			boolVal, _ := strconv.ParseBool(s[3])
 			newSiminfo.TestEsim = boolVal
 			newSiminfo.ProfileInfo = make([]*chromeosLab.SIMProfileInfo, 0, ((len(s) / 4) - 1))
-			for i := 4; i < len(s); i += 4 {
+			for i := 4; i < len(s); i += 5 {
 				profileInfo := &chromeosLab.SIMProfileInfo{
 					Iccid:       s[i],
 					SimPin:      s[i+1],
 					SimPuk:      s[i+2],
 					CarrierName: ufsUtil.ToNetworkType(s[i+3]),
+					OwnNumber:   s[i+4],
 				}
 				newSiminfo.ProfileInfo = append(newSiminfo.ProfileInfo, profileInfo)
 			}

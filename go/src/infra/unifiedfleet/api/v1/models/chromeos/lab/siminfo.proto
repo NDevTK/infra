@@ -19,12 +19,13 @@ message SIMInfo {
   repeated SIMProfileInfo profile_info = 5;
 }
 
-// Next Tag: 5
+// Next Tag: 6
 message SIMProfileInfo {
   string iccid = 1;
   string sim_pin = 2;
   string sim_puk = 3;
   NetworkProvider carrier_name = 4;
+  string own_number = 5;
 }
 // Next Tag: 5
 enum NetworkProvider {
