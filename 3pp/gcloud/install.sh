@@ -52,6 +52,9 @@ rm -rf ./google-cloud-sdk/.install/.backup
 ./google-cloud-sdk/bin/gcloud config set --installation \
     survey/disable_prompts true
 
+# Copy CHECKSUM to mitigate crbug/1365718#c14
+cp ./google-cloud-sdk/platform/gsutil/CHECKSUM ./google-cloud-sdk/platform/gsutil/gslib/CHECKSUM
+
 # No need to ~= double number of files in the package.
 find ./google-cloud-sdk -name "*.pyc" -delete
 
