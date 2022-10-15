@@ -470,8 +470,11 @@ func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, exec
 		return nil
 	}
 	for _, resource := range resources {
+		if len(resources) > 1 {
+			log.Infof(ctx, "Prepare plan %q for %q.", planName, resource)
+		}
 		if err := runDUTPlanPerResource(ctx, resource, planName, plan, execArgs); err != nil {
-			log.Infof(ctx, "Run %q plan for %s: finished with error: %s.", planName, resource, err)
+			log.Infof(ctx, "Run %q plan for %q: finished with error: %s.", planName, resource, err)
 			if plan.GetAllowFail() {
 				log.Debugf(ctx, "Run plan %q for %q: ignore error as allowed to fail.", planName, resource)
 			} else {
