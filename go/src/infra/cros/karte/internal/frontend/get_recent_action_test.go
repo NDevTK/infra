@@ -36,7 +36,7 @@ func TestGetMostRecentAction(t *testing.T) {
 		},
 	)
 	if err != nil {
-		t.Errorf("failed to insert")
+		t.Errorf("failed to insert: %s", err)
 	}
 
 	_, err = k.CreateAction(
@@ -49,7 +49,7 @@ func TestGetMostRecentAction(t *testing.T) {
 		},
 	)
 	if err != nil {
-		t.Errorf("failed to insert")
+		t.Errorf("failed to insert: %s", err)
 	}
 
 	resp, err := k.ListActions(ctx, &kartepb.ListActionsRequest{
