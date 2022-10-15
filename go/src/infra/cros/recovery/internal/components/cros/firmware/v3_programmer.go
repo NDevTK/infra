@@ -46,7 +46,7 @@ const (
 	// Tools and commands used for flashing AP.
 	apProgrammerToolName             = "futility"
 	apProgrammerCmdGlob              = "futility update -i %s --servo_port=%d"
-	apProgrammerWithGbbFlag          = "--gbb_flags=%d"
+	apProgrammerWithGbbFlag          = "--gbb_flags=%s"
 	apProgrammerWithForce            = "--force"
 	apProgrammerWithExternalFlashrom = "--quirks external_flashrom"
 )
@@ -99,22 +99,19 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	if err := isToolPresent(ctx, apProgrammerToolName, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
 	}
-	cmd := fmt.Sprintf(apProgrammerCmdGlob, imagePath, p.servod.Port())
-	optionalArgs := []string{}
+	cmd := []string{
+		fmt.Sprintf(apProgrammerCmdGlob, imagePath, p.servod.Port()),
+	}
 	if gbbHex != "" {
-		if v, err := gbbToInt(gbbHex); err != nil {
-			return errors.Annotate(err, "program ap").Err()
-		} else {
-			optionalArgs = append(optionalArgs, fmt.Sprintf(apProgrammerWithGbbFlag, v))
-		}
+		cmd = append(cmd, fmt.Sprintf(apProgrammerWithGbbFlag, gbbHex))
 	}
 	if force {
-		optionalArgs = append(optionalArgs, apProgrammerWithForce)
+		cmd = append(cmd, apProgrammerWithForce)
 	}
 	if externalFlashrom {
-		optionalArgs = append(optionalArgs, apProgrammerWithExternalFlashrom)
+		cmd = append(cmd, apProgrammerWithExternalFlashrom)
 	}
-	out, err := p.run(ctx, firmwareProgramTimeout, cmd, optionalArgs...)
+	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
 	p.log.Debugf("Program AP output:\n%s", out)
 	return errors.Annotate(err, "program ap").Err()
 }

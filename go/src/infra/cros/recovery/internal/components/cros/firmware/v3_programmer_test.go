@@ -84,10 +84,10 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		err := p.programAP(ctx, imagePath, "", false, false)
 		So(err, ShouldBeNil)
 	})
-	Convey("Happy path with GBB 18", t, func() {
+	Convey("Happy path with GBB 0x18", t, func() {
 		runRequest := map[string]string{
 			"which futility": "",
-			"futility update -i image-board.bin --servo_port=91 --gbb_flags=24": "",
+			"futility update -i image-board.bin --servo_port=91 --gbb_flags=0x18": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(91).Times(1)
