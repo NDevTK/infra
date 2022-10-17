@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"time"
 
 	cloudBQ "cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/errors"
@@ -105,4 +106,57 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 		Succeeded:      true,
 		CreatedRecords: int32(tally),
 	}, nil
+}
+
+// timeRangePair consists of a starting point and an ending point.
+type timeRangePair struct {
+	start time.Time
+	stop  time.Time
+}
+
+// splitTimeRange takes a time range and a number of subranges to split it into and splits it.
+func splitTimeRange(start time.Time, stop time.Time, entries int) ([]timeRangePair, error) {
+	var out []timeRangePair
+	duration, err := validateSplitTimeRange(start, stop, entries)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < entries; i++ {
+		curStart := start.Add(scaleNanoseconds(duration.Nanoseconds(), float64(i)/float64(entries)))
+		curStop := start.Add(scaleNanoseconds(duration.Nanoseconds(), float64(i+1)/float64(entries)))
+		if i == entries-1 {
+			curStop = stop
+		}
+		out = append(out, timeRangePair{start: curStart, stop: curStop})
+	}
+
+	return out, nil
+}
+
+func scaleNanoseconds(nanoseconds int64, scale float64) time.Duration {
+	return time.Duration(float64(nanoseconds) * scale)
+}
+
+func validateSplitTimeRange(start time.Time, stop time.Time, entries int) (time.Duration, error) {
+	switch {
+	case start.Location() != time.UTC:
+		return 0, errors.Reason("split time range: start time must be UTC not %q", start.Location().String()).Err()
+	case stop.Location() != time.UTC:
+		return 0, errors.Reason("split time range: stop time must be UTC not %q", start.Location().String()).Err()
+	case start.Equal(stop):
+		return 0, errors.Reason("split time range: start time cannot equal stop time %q", start.String()).Err()
+	case start.After(stop):
+		return 0, errors.Reason("split time range: start time cannot occur after stop %q", stop.String()).Err()
+	case entries <= 0:
+		return 0, errors.Reason("split time range: invalid number of entries %d", entries).Err()
+	}
+	duration := stop.Sub(start)
+	switch {
+	case duration.Microseconds() < 1:
+		return 0, errors.Reason("split time range: start %q and stop %q must differ by at least one microsecond", start.String(), stop.String()).Err()
+	case duration.Hours() > 30*60:
+		return 0, errors.Reason("split time range: start %q and stop %q must differ by at most 30 days", start.String(), stop.String()).Err()
+	}
+	return duration, nil
 }

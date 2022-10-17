@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
@@ -115,4 +116,96 @@ func TestPersistObservations(t *testing.T) {
 		So(fake.size(), ShouldEqual, 1+times)
 		So(fake.observationsSize(), ShouldEqual, times)
 	})
+}
+
+func TestSplitTimeRange(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		name    string
+		start   time.Time
+		stop    time.Time
+		entries int
+		out     []timeRangePair
+		ok      bool
+	}{
+		{
+			name:    "(1,0) to (3,0)",
+			start:   time.Unix(1, 0).UTC(),
+			stop:    time.Unix(3, 0).UTC(),
+			entries: 2,
+			out: []timeRangePair{
+				{
+					start: time.Unix(1, 0).UTC(),
+					stop:  time.Unix(2, 0).UTC(),
+				},
+				{
+					start: time.Unix(2, 0).UTC(),
+					stop:  time.Unix(3, 0).UTC(),
+				},
+			},
+			ok: true,
+		},
+		{
+			name:    "(1,0) to (3,0)",
+			start:   time.Unix(1, 0).UTC(),
+			stop:    time.Unix(3, 0).UTC(),
+			entries: 1,
+			out: []timeRangePair{
+				{
+					start: time.Unix(1, 0).UTC(),
+					stop:  time.Unix(3, 0).UTC(),
+				},
+			},
+			ok: true,
+		},
+		{
+			name:    "(1,0) to (4,0)",
+			start:   time.Unix(1, 0).UTC(),
+			stop:    time.Unix(4, 0).UTC(),
+			entries: 3,
+			out: []timeRangePair{
+				{
+					start: time.Unix(1, 0).UTC(),
+					stop:  time.Unix(2, 0).UTC(),
+				},
+				{
+					start: time.Unix(2, 0).UTC(),
+					stop:  time.Unix(3, 0).UTC(),
+				},
+				{
+					start: time.Unix(3, 0).UTC(),
+					stop:  time.Unix(4, 0).UTC(),
+				},
+			},
+			ok: true,
+		},
+		{
+			name:    "(3,0) to (1,0) should fail",
+			start:   time.Unix(3, 0).UTC(),
+			stop:    time.Unix(1, 0).UTC(),
+			entries: 2,
+			out:     nil,
+			ok:      false,
+		},
+	}
+
+	for i, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			expected := tt.out
+			actual, err := splitTimeRange(tt.start, tt.stop, tt.entries)
+			ok := err == nil
+			if diff := cmp.Diff(expected, actual, cmp.AllowUnexported(timeRangePair{})); diff != "" {
+				t.Errorf("case %d: unexpected diff (-want +got): %s", i, diff)
+			}
+
+			if ok && !tt.ok {
+				t.Errorf("case %d unexpectedly succeeded", i)
+			}
+			if !ok && tt.ok {
+				t.Errorf("case %d unexpectedly failed: %s", i, err)
+			}
+		})
+	}
 }
