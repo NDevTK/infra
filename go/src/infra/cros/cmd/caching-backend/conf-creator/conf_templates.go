@@ -87,6 +87,7 @@ http {
 	  proxy_intercept_errors on;
 	  error_page 500 = @check500;
 
+      slice 10m;
       proxy_cache_lock on;
       proxy_cache_lock_age 900s;
       proxy_cache_lock_timeout 900s;
@@ -101,8 +102,10 @@ http {
       proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_cache           google-storage;
-      proxy_cache_valid     200 720h;
-      proxy_cache_key       $request_method$uri$is_args$args;
+      proxy_cache_valid     200 206 720h;
+      proxy_cache_key       $request_method$uri$is_args$args$slice_range;
+      proxy_set_header      Range $slice_range;
+      proxy_force_ranges on;
     }
 
 	# TODO(b/232995369) The most recent 500 errors were caused by the two URI
