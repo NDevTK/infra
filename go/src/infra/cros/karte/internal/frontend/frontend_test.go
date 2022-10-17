@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"sync"
 	"testing"
 	"time"
 
@@ -248,13 +249,20 @@ func TestListObservations(t *testing.T) {
 	}
 }
 
+// fakeClient mimics the real bigquery client, which is thread safe.
+// See the link below for more details.
+//
+// https://github.com/googleapis/google-cloud-go/issues/4673
 type fakeClient struct {
+	mutex        sync.Mutex
 	items        [][]cloudBQ.ValueSaver
 	observations [][]cloudBQ.ValueSaver
 }
 
 func (c *fakeClient) getInserter(dataset string, table string) bqInserter {
 	return func(ctx context.Context, item []cloudBQ.ValueSaver) error {
+		c.mutex.Lock()
+		defer c.mutex.Unlock()
 		c.items = append(c.items, item)
 		if table == "observations" {
 			c.observations = append(c.observations, item)
@@ -290,13 +298,10 @@ func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	fake := &fakeClient{}
 
-	resp, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
+	_, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
 		StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()),
 		StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(2, 0).UTC()),
 	})
-	if resp == nil {
-		t.Errorf("expected resp not to be nil")
-	}
 	if err != nil {
 		t.Errorf("expected resp to be nil not %s", err)
 	}

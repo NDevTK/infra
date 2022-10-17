@@ -6,6 +6,8 @@ package frontend
 
 import (
 	"context"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	cloudBQ "cloud.google.com/go/bigquery"
@@ -85,6 +87,9 @@ type bqPersister interface {
 	getInserter(dataset string, table string) bqInserter
 }
 
+// timeRanges is the number of splits that we divide a time range into before persisting it to bigquery.
+const timeRanges = 10
+
 // persistActionRangeImpl is the implementation of persist range action.
 func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersister, req *kartepb.PersistActionRangeRequest) (*kartepb.PersistActionRangeResponse, error) {
 	if req.GetStartVersion() != "" && req.GetStartVersion() != "zzzz" {
@@ -94,17 +99,43 @@ func (*karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPersi
 		return nil, errors.Reason("unsupported version %q", req.GetStopVersion()).Err()
 	}
 
-	tally, err := persistActionRangeImpl(ctx, &actionRangePersistOptions{
-		startID: scalars.ConvertTimestampPtrToTime(req.GetStartTime()),
-		stopID:  scalars.ConvertTimestampPtrToTime(req.GetStopTime()),
-		bq:      client,
-	})
+	start := req.GetStartTime()
+	stop := req.GetStopTime()
+	times, err := splitTimeRange(scalars.ConvertTimestampPtrToTime(start), scalars.ConvertTimestampPtrToTime(stop), timeRanges)
 	if err != nil {
 		return nil, errors.Annotate(err, "persist action range impl").Err()
 	}
+
+	var createdRecords = int32(0)
+	var wg sync.WaitGroup
+	var merr errors.MultiError
+	var merrMutex sync.Mutex
+	for _, t := range times {
+		wg.Add(1)
+		go func(t timeRangePair) {
+			defer wg.Done()
+			tally, err := persistActionRangeImpl(ctx, &actionRangePersistOptions{
+				startID: t.start,
+				stopID:  t.stop,
+				bq:      client,
+			})
+			if err != nil {
+				merrMutex.Lock()
+				defer merrMutex.Unlock()
+				merr = append(merr, errors.Annotate(err, "persist action range impl").Err())
+				return
+			}
+			atomic.AddInt32(&createdRecords, int32(tally))
+		}(t)
+	}
+	wg.Wait()
+	if len(merr) != 0 {
+		return nil, merr
+	}
+
 	return &kartepb.PersistActionRangeResponse{
 		Succeeded:      true,
-		CreatedRecords: int32(tally),
+		CreatedRecords: createdRecords,
 	}, nil
 }
 
