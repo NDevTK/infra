@@ -9,6 +9,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/git"
@@ -59,7 +60,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			{
 				ExpectedCmd: []string{
 					"git", "clone",
-					"https://chromium.googlesource.com/chromium/testprojectA", "testdata",
+					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
 					"--depth", "1", "--no-tags",
 				},
 			},
@@ -76,7 +77,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			{
 				ExpectedCmd: []string{
 					"git", "clone",
-					"https://chromium.googlesource.com/chromium/testprojectB", "testdata",
+					"https://chromium.googlesource.com/chromium/testprojectB", "good_dirmd",
 					"--depth", "1", "--no-tags",
 				},
 			},
@@ -94,10 +95,10 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 	}
 
 	// Set workdirFn so the CommandRunners can know where commands are run,
-	// and the DIR_METADATA in testdata is read. Don't cleanup the testdata.
+	// and the DIR_METADATA in testdata/good_dirmd is read. Don't cleanup the testdata.
 	workdirFn := func() (string, func() error, error) {
 		cleanup := func() error { return nil }
-		return "../testdata", cleanup, nil
+		return "../testdata/good_dirmd", cleanup, nil
 	}
 
 	projectMappingInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn)
@@ -109,7 +110,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 	// Mapping.
 	expectedMapping := &dirmd.Mapping{
 		Dirs: map[string]*dirmdpb.Metadata{
-			"go/src/infra/cros/internal/testplan/testdata": {
+			"go/src/infra/cros/internal/testplan/testdata/good_dirmd": {
 				Chromeos: &chromeos.ChromeOS{
 					Cq: &chromeos.ChromeOS_CQ{
 						SourceTestPlans: []*plan.SourceTestPlan{
@@ -159,4 +160,57 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			)
 		}
 	}
+}
+
+func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
+	ctx := context.Background()
+	// One changes from testprojectA.
+	changeRevs := []*gerrit.ChangeRev{
+		{
+			ChangeRevKey: gerrit.ChangeRevKey{
+				Host:      "chromium-review.googlesource.com",
+				ChangeNum: 123,
+			},
+			Project: "chromium/testprojectA",
+			Ref:     "refs/changes/23/123/5",
+			Files:   []string{"a/b/test1.txt", "a/b/test2.txt"},
+		},
+	}
+
+	// The change for testprojectA should be checked out.
+	git.CommandRunnerImpl = &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			{
+				ExpectedCmd: []string{
+					"git", "clone",
+					"https://chromium.googlesource.com/chromium/testprojectA", "bad_dirmd",
+					"--depth", "1", "--no-tags",
+				},
+			},
+			{
+				ExpectedCmd: []string{
+					"git", "fetch",
+					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
+					"--depth", "1", "--no-tags",
+				},
+			},
+			{
+				ExpectedCmd: []string{"git", "checkout", "FETCH_HEAD"},
+			},
+		},
+	}
+
+	// Set workdirFn so the CommandRunners can know where commands are run,
+	// and the DIR_METADATA in testdata/bad_dirmd is read. Don't cleanup the testdata.
+	workdirFn := func() (string, func() error, error) {
+		cleanup := func() error { return nil }
+		return "../testdata/bad_dirmd", cleanup, nil
+	}
+
+	_, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn)
+	if err == nil {
+		t.Fatalf("expected error from computeProjectMappingInfos(%v)", changeRevs)
+	}
+
+	assert.ErrorContains(t, err, "failed to read DIR_METADATA")
 }

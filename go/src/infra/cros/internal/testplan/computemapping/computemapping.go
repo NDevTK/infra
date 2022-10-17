@@ -84,7 +84,9 @@ func computeMappingForChangeRevs(
 	}
 
 	defer func() {
-		err = cleanup()
+		if cleanupErr := cleanup(); cleanupErr != nil {
+			err = cleanupErr
+		}
 	}()
 
 	if err = checkoutChangeRevs(ctx, workdir, changeRevs); err != nil {
@@ -93,7 +95,7 @@ func computeMappingForChangeRevs(
 
 	mapping, err = dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, workdir)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read DIR_METADATA for change revs %q: %w", changeRevs, err)
 	}
 
 	if mapping == nil {

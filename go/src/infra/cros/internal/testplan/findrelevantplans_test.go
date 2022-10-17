@@ -24,7 +24,7 @@ func TestFindRelevantPlans(t *testing.T) {
 			},
 			Project: "chromium/testprojectA",
 			Ref:     "refs/changes/23/123/5",
-			Files:   []string{"go/src/infra/cros/internal/testplan/testdata/DIR_METADATA"},
+			Files:   []string{"go/src/infra/cros/internal/testplan/testdata/good_dirmd/DIR_METADATA"},
 		},
 	}
 
@@ -34,7 +34,7 @@ func TestFindRelevantPlans(t *testing.T) {
 			{
 				ExpectedCmd: []string{
 					"git", "clone",
-					"https://chromium.googlesource.com/chromium/testprojectA", "testdata",
+					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
 					"--depth", "1", "--no-tags",
 				},
 			},
@@ -55,7 +55,7 @@ func TestFindRelevantPlans(t *testing.T) {
 	// and the DIR_METADATA in testdata is read. Don't cleanup the testdata.
 	workdirFn := func() (string, func() error, error) {
 		cleanup := func() error { return nil }
-		return "./testdata", cleanup, nil
+		return "./testdata/good_dirmd", cleanup, nil
 	}
 
 	relevantPlans, err := testplan.FindRelevantPlans(
