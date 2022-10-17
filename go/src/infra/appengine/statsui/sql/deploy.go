@@ -13,6 +13,7 @@ import (
 
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -55,7 +56,7 @@ will need to be deleted manually`)
 	}
 
 	// Creates a client.
-	client, err := datatransfer.NewClient(ctx)
+	client, err := datatransfer.NewClient(ctx, option.WithQuotaProject(*projectID))
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}

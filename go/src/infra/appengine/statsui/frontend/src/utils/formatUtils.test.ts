@@ -20,6 +20,8 @@ test.each([
   [3600, Unit.Duration, '1h'],
   [4200, Unit.Duration, '1h 10m'],
   [4230, Unit.Duration, '1h 10m'],
+  // Don't display days
+  [90000, Unit.Duration, '25h'],
 
   // Number
   [1, Unit.Number, '1'],

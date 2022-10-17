@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  format as dateFormat,
-  formatDuration,
-  intervalToDuration,
-} from 'date-fns';
+import { format as dateFormat, formatDuration } from 'date-fns';
 import { toTzDate } from './dateUtils';
 
 export enum Unit {
@@ -34,24 +30,22 @@ export function format(value: string | number, unit: Unit): string {
       if (typeof value === 'string') {
         return '';
       }
-      const duration = intervalToDuration({
-        start: 0,
-        end: value * 1000,
-      });
+      const duration = {
+        hours: Math.floor(value / 60 / 60),
+        minutes: Math.floor(value / 60) % 60,
+        seconds: value % 60,
+      };
       if (value > 10 * min) {
         duration.seconds = 0;
       }
       if (value > 10 * hour) {
         duration.minutes = 0;
       }
-      // 2 years 9 months 1 week 7 days 5 hours 9 minutes 30 seconds
+      // 5 hours 9 minutes 30 seconds
       let ret = formatDuration(duration);
       ret = ret.replace(/ seconds?/, 's');
       ret = ret.replace(/ minutes?/, 'm');
       ret = ret.replace(/ hours?/, 'h');
-      ret = ret.replace(/ weeks?/, 'w');
-      ret = ret.replace(/ months?/, 'm');
-      ret = ret.replace(/ years?/, 'y');
       return ret;
     }
     case Unit.Number: {

@@ -214,6 +214,18 @@ const initialState: DataSourcesState = populateMaps({
           color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.2),
         },
         {
+          name: 'P50 Total Test Runtime',
+          unit: Unit.Duration,
+          description: `Sum of swarming test task runtimes for each build`,
+          color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.1),
+        },
+        {
+          name: 'P90 Total Test Runtime',
+          unit: Unit.Duration,
+          description: `Sum of swarming test task runtimes for each build`,
+          color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.1),
+        },
+        {
           name: 'Count Tests',
           unit: Unit.Number,
           hasSubsections: true,
