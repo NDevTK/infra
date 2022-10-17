@@ -1664,6 +1664,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 					return err
 				}
 				dut.RoVpdMap = labData.GetRoVpdMap()
+				dut.Cbi = labData.GetCbi()
 			}
 		}
 		if _, err = inventory.BatchUpdateMachineLSEs(ctx, []*ufspb.MachineLSE{lse}); err != nil {
