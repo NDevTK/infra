@@ -81,6 +81,7 @@ func (c *runTestRun) innerRun(ctx context.Context, args []string, env subcommand
 	if d := r.Deadline.AsTime(); !d.IsZero() {
 		var c context.CancelFunc
 		log.Printf("Running with deadline %s (current time: %s)", d, time.Now().UTC())
+		log.Printf("Deadline length(seconds): %.0f", d.Sub(time.Now().UTC()).Seconds())
 		ctx, c = context.WithDeadline(ctx, d)
 		defer c()
 	}
