@@ -62,6 +62,26 @@ func (r *releaseRun) validate() error {
 	return nil
 }
 
+// checkChildrenExist checks that any explicitly requested build targets
+// have a builder for the relevant branch.
+func (r *releaseRun) checkChildrenExist(ctx context.Context) error {
+	if len(r.buildTargets) > 0 {
+		builderNames := r.getReleaseBuilderNames()
+		bucket := "staging"
+		if r.production {
+			bucket = "release"
+		}
+		for i, builderName := range builderNames {
+			fullBuilderName := fmt.Sprintf("chromeos/%s/%s", bucket, builderName)
+			_, err := r.GetBuilderInputProps(ctx, fullBuilderName)
+			if err != nil && strings.Contains(err.Error(), "not found") {
+				return fmt.Errorf("%s is not a valid build target for %s", r.buildTargets[i], r.branch)
+			}
+		}
+	}
+	return nil
+}
+
 // Run provides the logic for a `try release` command run.
 func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
 	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
@@ -86,6 +106,11 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	if ret, err := r.run(ctx); err != nil {
 		r.LogErr(err.Error())
 		return ret
+	}
+
+	if err := r.checkChildrenExist(ctx); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
 	}
 
 	propsStruct, err := r.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())

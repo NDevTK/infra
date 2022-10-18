@@ -25,8 +25,11 @@ func (m tryRunBase) GetBuilderInputProps(ctx context.Context, fullBuilderName st
 
 	stdout, stderr, err := m.RunCmd(ctx, "led", "get-builder", fmt.Sprintf("%s:%s", bucket, builder))
 	if err != nil {
+		if strings.Contains(stderr, "not found") {
+			return &structpb.Struct{}, fmt.Errorf("builder not found")
+		}
 		m.LogErr(stderr)
-		return &structpb.Struct{}, errors.Annotate(err, "builder not found").Err()
+		return &structpb.Struct{}, errors.Annotate(err, "could not fetch builder").Err()
 	}
 
 	var definition job.Definition_Buildbucket

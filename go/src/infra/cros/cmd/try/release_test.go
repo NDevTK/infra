@@ -4,6 +4,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -96,6 +97,8 @@ func TestValidate_stabilizeRun(t *testing.T) {
 }
 
 type runTestConfig struct {
+	// Whether to fail the child build check. Only used if buildTargets is set.
+	failChildCheck bool
 	// e.g. ["crrev.com/c/1234567"]
 	patches []string
 	// e.g. "eve"
@@ -135,16 +138,38 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 				},
 				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
 			},
-			{
-				ExpectedCmd: []string{
-					"led",
-					"get-builder",
-					fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
-				},
-				Stdout: validJSON,
-			},
 		},
 	}
+	for _, childBuilder := range tc.expectedChildren {
+		expectedCmd := []string{
+			"led",
+			"get-builder",
+			fmt.Sprintf("%s:%s", expectedBucket, childBuilder),
+		}
+		if tc.failChildCheck {
+			f.CommandRunners = append(f.CommandRunners,
+				cmd.FakeCommandRunner{
+					ExpectedCmd: expectedCmd,
+					FailCommand: true,
+					FailError:   errors.New("return code 1"),
+					Stderr:      ("... not found ..."),
+				})
+		} else {
+			f.CommandRunners = append(f.CommandRunners,
+				cmd.FakeCommandRunner{
+					ExpectedCmd: expectedCmd,
+				})
+		}
+	}
+	f.CommandRunners = append(f.CommandRunners,
+		cmd.FakeCommandRunner{
+			ExpectedCmd: []string{
+				"led",
+				"get-builder",
+				fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
+			},
+			Stdout: validJSON,
+		})
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	for _, patch := range tc.patches {
 		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
@@ -174,7 +199,12 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		useProdTests: true,
 	}
 	ret := r.Run(nil, nil, nil)
-	assert.IntsEqual(t, ret, Success)
+	if tc.failChildCheck {
+		assert.IntsEqual(t, ret, CmdError)
+		return
+	} else {
+		assert.IntsEqual(t, ret, Success)
+	}
 
 	properties, err := readStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
@@ -240,6 +270,16 @@ func TestRun_staging_buildTargets(t *testing.T) {
 		expectedOrch:     "staging-release-R106.15054.B-orchestrator",
 		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
 		buildspec:        "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
+	})
+}
+
+func TestRun_staging_buildTargets_fail(t *testing.T) {
+	doTestRun(t, &runTestConfig{
+		failChildCheck:   true,
+		branch:           "release-R106.15054.B",
+		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedOrch:     "staging-release-R106.15054.B-orchestrator",
+		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
 	})
 }
 
