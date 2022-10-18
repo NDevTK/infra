@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 // TestObservationIsValueSaver tests that a pointer to an observation implements the ValueSaver interface.
@@ -22,11 +21,11 @@ func TestObservationIsValueSaver(t *testing.T) {
 // to make sure that they are exported correctly.
 func TestObservationSave(t *testing.T) {
 	t.Parallel()
-	Convey("test observation save", t, func() {
-		Convey("action name", func() {
-			m, _, err := (&Observation{Name: "aaaaa", ActionName: "hi"}).Save()
-			So(err, ShouldBeNil)
-			So(m["action_name"], ShouldEqual, "hi")
-		})
-	})
+	m, _, err := (&Observation{Name: "aaaaa", ActionName: "hi"}).Save()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if m["action_name"] != "hi" {
+		t.Errorf("unexpected action name: %q", m["action_name"])
+	}
 }
