@@ -23,6 +23,9 @@ import (
 )
 
 const (
+	// Parent temp dir
+	tempDirPath = "/var/tmp"
+
 	// Cros-dut result temp dir.
 	crosDutResultsTempDir = "cros-dut-results"
 
@@ -61,8 +64,13 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	var networkName string
 	networkName = "host"
 
+	parentTempDir := ""
+	if _, err := os.Stat(tempDirPath); err == nil {
+		parentTempDir = tempDirPath
+	}
+
 	// Create temp results dir for cros-dut
-	crosDutResultsDir, err := ioutil.TempDir("", crosDutResultsTempDir)
+	crosDutResultsDir, err := ioutil.TempDir(parentTempDir, crosDutResultsTempDir)
 	if err != nil {
 		log.Printf("cros-dut results temp directory creation failed with error: %s", err)
 		res.Err = errors.Annotate(err, "create dut service: create temp dir").Err()
@@ -82,7 +90,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	log.Printf("--> Container of cros-dut was started for %q", dutName)
 
 	// Create temp results dir for cros-provision
-	crosProvisionResultsDir, err := ioutil.TempDir("", crosProvisionResultsTempDir)
+	crosProvisionResultsDir, err := ioutil.TempDir(parentTempDir, crosProvisionResultsTempDir)
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision: create temp dir").Err()
 		return res
