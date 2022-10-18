@@ -29,6 +29,8 @@ var (
 	LongerOpts = Options{BaseDelay: 30 * time.Second, BackoffBase: 2.0, Retries: 5}
 	// DefaultOpts is the default timeout (~5 minutes).
 	DefaultOpts = Options{BaseDelay: 10 * time.Second, BackoffBase: 2.0, Retries: 5}
+	// ShortOpts is for operations that need rapid results.
+	ShortOpts = Options{BaseDelay: 500 * time.Millisecond, BackoffBase: 1.0, Retries: 1}
 	// NoRetryOpts is for unretriable requests or testing.
 	NoRetryOpts = Options{BaseDelay: 0 * time.Second, BackoffBase: 1.0, Retries: 0}
 )
