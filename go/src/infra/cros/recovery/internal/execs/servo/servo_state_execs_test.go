@@ -75,6 +75,28 @@ var setServoStateExecTestCases = []struct {
 		nil,
 		errors.Reason("set servo state: servo is not supported").Err(),
 	},
+	{
+		"Good case with CR50_NOT_ENUMERATED",
+		[]string{
+			"state:CR50_NOT_ENUMERATED",
+		},
+		tlw.ServoHost_CR50_NOT_ENUMERATED,
+		&tlw.ServoHost{
+			State: tlw.ServoHost_CR50_NOT_ENUMERATED,
+		},
+		nil,
+	},
+	{
+		"Good set state SERVOD_DUT_CONTROLLER_MISSING",
+		[]string{
+			"state:SERVOD_DUT_CONTROLLER_MISSING",
+		},
+		tlw.ServoHost_SERVOD_DUT_CONTROLLER_MISSING,
+		&tlw.ServoHost{
+			State: tlw.ServoHost_SERVOD_DUT_CONTROLLER_MISSING,
+		},
+		nil,
+	},
 }
 
 func TestSetServoStateExec(t *testing.T) {

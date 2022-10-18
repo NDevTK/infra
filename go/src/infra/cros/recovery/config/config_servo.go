@@ -49,7 +49,7 @@ func servoRepairPlan() *Plan {
 			"Set state:SERVOD_ISSUE",
 			"Check if PD is src state",
 			"Verify Cr50 detected",
-			"Set state:DUT_NOT_CONNECTED",
+			"Set state:SERVOD_DUT_CONTROLLER_MISSING",
 			"Servod detect all children components",
 			"Set state:TOPOLOGY_ISSUE",
 			"Servo topology",
@@ -461,7 +461,7 @@ func servoRepairPlan() *Plan {
 				Dependencies: []string{
 					"Set state:SBU_LOW_VOLTAGE",
 					"Servo SBU voltage is good",
-					"Set state:DUT_NOT_CONNECTED",
+					"Set state:CR50_NOT_ENUMERATED",
 					"Servo Cr50 enumerated",
 				},
 				ExecName: "sample_pass",
@@ -1212,6 +1212,20 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:TOPOLOGY_ISSUE",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Set state:CR50_NOT_ENUMERATED": {
+				ExecName: "servo_set_servo_state",
+				ExecExtraArgs: []string{
+					"state:CR50_NOT_ENUMERATED",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Set state:SERVOD_DUT_CONTROLLER_MISSING": {
+				ExecName: "servo_set_servo_state",
+				ExecExtraArgs: []string{
+					"state:SERVOD_DUT_CONTROLLER_MISSING",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
