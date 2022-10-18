@@ -92,6 +92,15 @@ func (a *ExecInfo) NewRunner(host string) components.Runner {
 		log.Debugf("Run output:\n%s", out)
 		if exitCode != 0 {
 			errAnnotator := errors.Reason("runner: command %q completed with exit code %d", r.Command, r.ExitCode)
+			// Note: here the exitCode is stored in the field named
+			// 'Value' of the TagValue structure. This field is an
+			// empty interface. Since we are storing an exitCode of
+			// type int32 in this field, we need to be mindful of
+			// later comparing this to values of type int32
+			// only. Specifically, literal integers are of type 'int',
+			// and comparison with such literals will fail even if the
+			// value of the literal matches the value of
+			// exitCode. Ref: http://b/253326688.
 			errCodeTagValue := errors.TagValue{Key: ErrCodeTag, Value: exitCode}
 			errAnnotator.Tag(errCodeTagValue)
 			errAnnotator.Tag(errors.TagValue{Key: StdErrTag, Value: r.Stderr})
