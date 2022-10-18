@@ -782,6 +782,7 @@ func crosRepairActions() map[string]*Action {
 				"Download firmware image based on stable_version and install via firmware updater from DUT",
 				"Update FW required the DUT to be run on stable-version OS.",
 				"The reboot is not triggered as part of the action.",
+				"Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.",
 			},
 			Conditions: []string{
 				"Recovery version has OS image path",
@@ -793,7 +794,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable software-controlled write-protect for 'ec'",
 			},
 			ExecName:    "cros_update_firmware_from_firmware_image",
-			ExecTimeout: &durationpb.Duration{Seconds: 6000},
+			ExecTimeout: &durationpb.Duration{Seconds: 7200},
 			ExecExtraArgs: []string{
 				"mode:recovery",
 				"force:true",

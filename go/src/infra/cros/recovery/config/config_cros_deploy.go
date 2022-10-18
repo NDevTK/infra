@@ -147,11 +147,12 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Update firmware from faft stable image with chromeos-firmwareupdate tool",
 				"--mode=facotry will be specified when run chromeos-firmwareupdate",
+				"Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.",
 			},
 			Conditions: []string{
 				"has_stable_version_fw_image",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			ExecTimeout: &durationpb.Duration{Seconds: 7200},
 			ExecExtraArgs: []string{
 				"mode:factory",
 				"force:true",
