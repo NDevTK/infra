@@ -3,17 +3,17 @@ module infra
 go 1.17
 
 require (
-	cloud.google.com/go v0.101.1
+	cloud.google.com/go v0.104.0
 	cloud.google.com/go/appengine v1.2.0
-	cloud.google.com/go/bigquery v1.32.0
-	cloud.google.com/go/cloudtasks v1.3.0
-	cloud.google.com/go/compute v1.6.1
-	cloud.google.com/go/datastore v1.6.0
+	cloud.google.com/go/bigquery v1.42.0
+	cloud.google.com/go/cloudtasks v1.6.0
+	cloud.google.com/go/compute v1.10.0
+	cloud.google.com/go/datastore v1.8.0
 	cloud.google.com/go/firestore v1.6.1
 	cloud.google.com/go/monitoring v1.5.0
-	cloud.google.com/go/pubsub v1.21.1
-	cloud.google.com/go/spanner v1.32.0
-	cloud.google.com/go/storage v1.22.1
+	cloud.google.com/go/pubsub v1.25.1
+	cloud.google.com/go/spanner v1.39.0
+	cloud.google.com/go/storage v1.27.0
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
@@ -36,7 +36,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.3.0
-	github.com/googleapis/gax-go/v2 v2.4.0
+	github.com/googleapis/gax-go/v2 v2.5.1
 	github.com/googleapis/google-cloud-go-testing v0.0.0-20210719221736-1c9a4c676720
 	github.com/jdxcode/netrc v0.0.0-20210204082910-926c7f70242a
 	github.com/julienschmidt/httprouter v1.3.0
@@ -62,20 +62,20 @@ require (
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
-	golang.org/x/net v0.0.0-20220907135653-1e95f45603a7
-	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+	golang.org/x/net v0.0.0-20221012135044-0b7e1fb9d458
+	golang.org/x/oauth2 v0.0.0-20221006150949-b44042a4b9c1
+	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
 	golang.org/x/sys v0.0.0-20220908150016-7ac13a9a928d
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
 	golang.org/x/tools v0.1.12
 	golang.org/x/tools/gopls v0.8.3
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	gonum.org/v1/gonum v0.9.3
-	google.golang.org/api v0.80.0
-	google.golang.org/appengine v1.6.8-0.20220404170424-ca3835e9b4d6
+	google.golang.org/api v0.99.0
+	google.golang.org/appengine v1.6.8-0.20220805212354-d981f2f002d3
 	google.golang.org/appengine/v2 v2.0.1
-	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
-	google.golang.org/grpc v1.50.0
+	google.golang.org/genproto v0.0.0-20221018160656-63c7b68cfc55
+	google.golang.org/grpc v1.50.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/fsnotify.v1 v1.4.7
@@ -91,9 +91,9 @@ require (
 
 require (
 	cloud.google.com/go/errorreporting v0.2.0 // indirect
-	cloud.google.com/go/iam v0.3.0 // indirect
+	cloud.google.com/go/iam v0.5.0 // indirect
 	cloud.google.com/go/profiler v0.3.0 // indirect
-	cloud.google.com/go/secretmanager v1.4.0 // indirect
+	cloud.google.com/go/secretmanager v1.7.0 // indirect
 	cloud.google.com/go/trace v1.2.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.12 // indirect
 	github.com/BurntSushi/toml v1.0.0 // indirect
@@ -130,8 +130,8 @@ require (
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/pprof v0.0.0-20220520215854-d04f2422c8a1 // indirect
 	github.com/google/tink/go v1.7.0 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
 	github.com/googleapis/gnostic v0.5.5 // indirect
-	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
