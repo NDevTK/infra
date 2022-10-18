@@ -20,7 +20,8 @@ var (
 	// ErrCodeTag is the key value pair for storing the error code for the linux command.
 	ErrCodeTag = errors.NewTagKey("error_code")
 
-	// ErrCodeTag is the key value pair for storing the error code for the linux command.
+	// StdErrTag is the key value pair for storing the error code
+	// associated with the standard error
 	StdErrTag = errors.NewTagKey("std_error")
 
 	// 127: linux command line error of command not found.
