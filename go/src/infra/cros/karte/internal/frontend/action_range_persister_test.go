@@ -5,14 +5,13 @@
 package frontend
 
 import (
+	"strings"
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
@@ -25,123 +24,169 @@ import (
 // as a favor.
 func TestActionRangePersisterInsufficientInput(t *testing.T) {
 	t.Parallel()
-	Convey("insufficient input", t, func() {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewNaive())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
+	ctx := gaetesting.TestingContext()
+	ctx = identifiers.Use(ctx, identifiers.NewNaive())
+	testClock := testclock.New(time.Unix(10, 0).UTC())
+	ctx = clock.Set(ctx, testClock)
+	datastore.GetTestable(ctx).Consistent(true)
 
-		_, err := makeQuery(&actionRangePersistOptions{})
-		So(err, ShouldErrLike, "rejecting likely erroneous call")
-	})
+	_, err := makeQuery(&actionRangePersistOptions{})
+	if err == nil {
+		t.Errorf("expected make query to fail, but it didn't")
+	} else if ok := strings.Contains(err.Error(), "rejecting likely erroneous call"); !ok {
+		t.Errorf("unexpected error message %s", err)
+	}
 }
 
 // TestActionRangePersisterSmokeTest tests that attempting to persist data in cases where no data
 // actually exists, successfully does nothing.
 func TestActionRangePersisterSmokeTest(t *testing.T) {
 	t.Parallel()
-	Convey("smoke test", t, func() {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewNaive())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
-		a := &actionRangePersistOptions{
-			startID: time.Unix(0, 0).UTC(),
-			stopID:  time.Unix(20, 0).UTC(),
-		}
-		q, err := makeQuery(a)
-		So(err, ShouldBeNil)
-		_, _, err = persistActions(ctx, a, q.Query)
-		So(err, ShouldBeNil)
-		var actions []*ActionEntity
-		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
-		So(len(actions), ShouldEqual, 0)
-		So(persistObservations(ctx, a), ShouldBeNil)
-		var observations []*ObservationEntity
-		So(datastore.GetAll(ctx, datastore.NewQuery(ObservationKind), &observations), ShouldBeNil)
-		So(len(observations), ShouldEqual, 0)
-	})
+	ctx := gaetesting.TestingContext()
+	ctx = identifiers.Use(ctx, identifiers.NewNaive())
+	testClock := testclock.New(time.Unix(10, 0).UTC())
+	ctx = clock.Set(ctx, testClock)
+	datastore.GetTestable(ctx).Consistent(true)
+
+	a := &actionRangePersistOptions{
+		startID: time.Unix(0, 0).UTC(),
+		stopID:  time.Unix(20, 0).UTC(),
+	}
+	q, err := makeQuery(a)
+	if err != nil {
+		t.Errorf("unexpected error %s", err)
+	}
+	if _, _, err := persistActions(ctx, a, q.Query); err != nil {
+		t.Errorf("unexpected error %s", err)
+	}
+	count, err := datastore.Count(ctx, datastore.NewQuery(ActionKind))
+	if count != 0 {
+		t.Errorf("unexpected count %d", count)
+	}
+	if err != nil {
+		t.Errorf("unexpected error %s", err)
+	}
+	if err := persistObservations(ctx, a); err != nil {
+		t.Errorf("unexpected error %s", err)
+	}
+	count, err = datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+	if count != 0 {
+		t.Errorf("unexpected count %d", count)
+	}
+	if err != nil {
+		t.Errorf("unexpected error %s", err)
+	}
 }
 
 // TestActionRangePersister tests persisting two actions and two observations.
 func TestActionRangePersister(t *testing.T) {
 	t.Parallel()
-	Convey("test with several actions", t, func() {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
-		fake := &fakeClient{}
+	ctx := gaetesting.TestingContext()
+	ctx = identifiers.Use(ctx, identifiers.NewDefault())
+	testClock := testclock.New(time.Unix(10, 0).UTC())
+	ctx = clock.Set(ctx, testClock)
+	datastore.GetTestable(ctx).Consistent(true)
+	fake := &fakeClient{}
 
-		k := NewKarteFrontend()
+	k := NewKarteFrontend()
 
-		action1 := func() string {
-			resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
-				Action: &kartepb.Action{
-					Name: "",
-					Kind: "ssh-attempt",
-				},
-			})
-			So(err, ShouldBeNil)
-			return resp.GetName()
-		}()
-		So(action1, ShouldNotBeEmpty)
-
-		action2 := func() string {
-			resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
-				Action: &kartepb.Action{
-					Name: "",
-					Kind: "ssh-attempt",
-				},
-			})
-			So(err, ShouldBeNil)
-			return resp.GetName()
-		}()
-		So(action2, ShouldNotBeEmpty)
-
-		observation1 := func() string {
-			resp, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
-				Observation: &kartepb.Observation{
-					ActionName: action1,
-				},
-			})
-			So(err, ShouldBeNil)
-			return resp.GetName()
-		}()
-		So(observation1, ShouldNotBeEmpty)
-
-		observation2 := func() string {
-			resp, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
-				Observation: &kartepb.Observation{
-					ActionName: action2,
-				},
-			})
-			So(err, ShouldBeNil)
-			return resp.GetName()
-		}()
-		So(observation2, ShouldNotBeEmpty)
-		a := &actionRangePersistOptions{
-			startID: time.Unix(1, 0).UTC(),
-			stopID:  time.Unix(100, 0).UTC(),
-			bq:      fake,
+	action1 := func() string {
+		resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+			Action: &kartepb.Action{
+				Name: "",
+				Kind: "ssh-attempt",
+			},
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
 		}
-		q, err := makeQuery(a)
-		So(err, ShouldBeNil)
-		_, _, err = persistActions(ctx, a, q.Query)
-		So(err, ShouldBeNil)
-		var actions []*ActionEntity
-		So(datastore.GetAll(ctx, datastore.NewQuery(ActionKind), &actions), ShouldBeNil)
-		So(len(actions), ShouldEqual, 2)
-		So(persistObservations(ctx, a), ShouldBeNil)
-		count, err := datastore.Count(ctx, datastore.NewQuery(ObservationKind))
-		So(err, ShouldBeNil)
-		So(count, ShouldEqual, 2)
-		// These two checks down here are the highest-value checks. They check the total number of
-		// bigquery records produced and the number of those records that are observations, respectively.
-		So(fake.observationsSize(), ShouldEqual, 2)
-		So(fake.size(), ShouldEqual, 4)
-	})
+		return resp.GetName()
+	}()
+	if action1 == "" {
+		t.Error("action1 should not empty")
+	}
+
+	action2 := func() string {
+		resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+			Action: &kartepb.Action{
+				Name: "",
+				Kind: "ssh-attempt",
+			},
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		return resp.GetName()
+	}()
+	if action2 == "" {
+		t.Error("action2 should not be empty")
+	}
+
+	observation1 := func() string {
+		resp, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
+			Observation: &kartepb.Observation{
+				ActionName: action1,
+			},
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		return resp.GetName()
+	}()
+	if observation1 == "" {
+		t.Error("observation1 should not be empty")
+	}
+
+	observation2 := func() string {
+		resp, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
+			Observation: &kartepb.Observation{
+				ActionName: action2,
+			},
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		return resp.GetName()
+	}()
+	if observation2 == "" {
+		t.Error("observation2 should not be empty")
+	}
+	a := &actionRangePersistOptions{
+		startID: time.Unix(1, 0).UTC(),
+		stopID:  time.Unix(100, 0).UTC(),
+		bq:      fake,
+	}
+	q, err := makeQuery(a)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	_, _, err = persistActions(ctx, a, q.Query)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	count, err := datastore.Count(ctx, datastore.NewQuery(ActionKind))
+	if count != 2 {
+		t.Errorf("unexpected count: %d", count)
+	}
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+	}
+	if err := persistObservations(ctx, a); err != nil {
+		t.Errorf("unexpected err: %s", err)
+	}
+	count, err = datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+	if count != 2 {
+		t.Errorf("unexpected count: %d", count)
+	}
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+	}
+	// These two checks down here are the highest-value checks. They check the total number of
+	// bigquery records produced and the number of those records that are observations, respectively.
+	if count := fake.observationsSize(); count != 2 {
+		t.Errorf("unexpected observation size: %d", count)
+	}
+	if count := fake.size(); count != 4 {
+		t.Errorf("unexpected total entity count: %d", count)
+	}
 }
