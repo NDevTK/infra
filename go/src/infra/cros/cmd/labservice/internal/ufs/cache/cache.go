@@ -32,18 +32,12 @@ type Locator struct {
 
 // FindCacheServer returns the ip address of a cache server mapped to a dut.
 func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
-	addr, err := lookupHost(dutName)
-	if err != nil {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("FindCacheServer: lookup IP of %q: %s", dutName, err.Error()))
-	}
-	log.Printf("FindCacheServer: the IP of %q is %q", dutName, addr)
-
 	subnets, err := l.subnets.getSubnets(client)
 	if err != nil {
 		return nil, fmt.Errorf("find cache server: %s", err)
 	}
 
-	sn, err := findSubnet(addr, subnets)
+	sn, err := findSubnet(dutName, subnets)
 	if err != nil {
 		return nil, fmt.Errorf("find cache server: %s", err)
 	}
@@ -55,14 +49,20 @@ func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*l
 	}, nil
 }
 
-func findSubnet(dutAddr string, subnets []Subnet) (Subnet, error) {
-	ip := net.ParseIP(dutAddr)
+func findSubnet(dutName string, subnets []Subnet) (Subnet, error) {
+	addr, err := lookupHost(dutName)
+	if err != nil {
+		return Subnet{}, status.Errorf(codes.NotFound, fmt.Sprintf("FindCacheServer: lookup IP of %q: %s", dutName, err.Error()))
+	}
+	log.Printf("FindCacheServer: the IP of %q is %q", dutName, addr)
+
+	ip := net.ParseIP(addr)
 	for _, s := range subnets {
 		if s.IPNet.Contains(ip) {
 			return s, nil
 		}
 	}
-	return Subnet{}, fmt.Errorf("%q is not in any cache subnets (all subnets: %v)", dutAddr, subnets)
+	return Subnet{}, fmt.Errorf("%q is not in any cache subnets (all subnets: %v)", addr, subnets)
 }
 
 // findBackend finds one healthy backend from the current subnet according to
