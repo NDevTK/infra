@@ -13,6 +13,8 @@ load("//lib/infra.star", "infra")
 
 lucicfg.check_version("1.32.0", "Please update depot_tools")
 
+lucicfg.enable_experiment("crbug.com/1338648")
+
 # Global recipe defaults
 luci.recipe.defaults.cipd_version.set("refs/heads/main")
 luci.recipe.defaults.use_bbagent.set(True)
@@ -90,6 +92,10 @@ luci.logdog(
 )
 
 luci.bucket(name = "ci")
+luci.bucket(
+    name = "ci.shadow",
+    shadows = "ci",
+)
 
 luci.builder.defaults.experiments.set({
     "luci.buildbucket.bbagent_getbuild": 100,
@@ -421,6 +427,7 @@ luci.bucket(
             users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
         ),
     ],
+    shadows = "loadtest",
 )
 
 def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, wait_missing_cache):
