@@ -81,3 +81,8 @@ func fetchHwidData(ctx context.Context, c hwid.ClientInterface, hwid string) (*c
 	}
 	return resp, nil
 }
+
+// ListHwidData lists the HwidData in datastore.
+func ListHwidData(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.HwidData, string, error) {
+	return configuration.ListHwidData(ctx, pageSize, pageToken, nil, keysOnly)
+}

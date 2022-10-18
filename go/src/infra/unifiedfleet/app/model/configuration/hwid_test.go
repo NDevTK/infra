@@ -5,10 +5,13 @@
 package configuration
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,6 +19,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsds "infra/unifiedfleet/app/model/datastore"
 )
 
 func mockHwidData() *ufspb.HwidData {
@@ -497,5 +501,57 @@ func TestParseHwidDataIntoMfgCfg(t *testing.T) {
 		if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 			t.Errorf("ParseHwidDataIntoMfgCfg returned unexpected diff (-want +got):\n%s", diff)
 		}
+	})
+}
+
+// TestListHwidData tests the ListHwidData datastore method.
+func TestListHwidData(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+
+	hds := make([]*ufspb.HwidData, 0, 4)
+	for i := 0; i < 4; i++ {
+		hdId := fmt.Sprintf("test-hwid-%d", i)
+		hd := mockHwidData()
+		resp, err := UpdateHwidData(ctx, hd, hdId)
+		if err != nil {
+			t.Fatalf("UpdateHwidData failed: %s", err)
+		}
+		respProto, err := resp.GetProto()
+		if err != nil {
+			t.Fatalf("GetProto failed: %s", err)
+		}
+		hds = append(hds, respProto.(*ufspb.HwidData))
+	}
+	Convey("ListHwidData", t, func() {
+		Convey("ListHwidData - page_token invalid", func() {
+			resp, nextPageToken, err := ListHwidData(ctx, 5, "abc", nil, false)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsds.InvalidPageToken)
+		})
+
+		Convey("ListHwidData - full listing with no pagination", func() {
+			resp, nextPageToken, err := ListHwidData(ctx, 4, "", nil, false)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, hds)
+		})
+
+		Convey("ListHwidData - listing with pagination", func() {
+			resp, nextPageToken, err := ListHwidData(ctx, 3, "", nil, false)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, hds[:3])
+
+			resp, _, err = ListHwidData(ctx, 2, nextPageToken, nil, false)
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, hds[3:])
+		})
 	})
 }

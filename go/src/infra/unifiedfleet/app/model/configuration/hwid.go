@@ -13,12 +13,14 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
 
@@ -197,4 +199,46 @@ func ParseHwidDataIntoMfgCfg(hwidData *ufspb.HwidData) (*ufsmfg.ManufacturingCon
 		}
 	}
 	return mfgCfg, nil
+}
+
+// ListHwidData lists the HwidData
+//
+// Does a query over HwidData entities. Returns up to pageSize entities, plus
+// non-nil cursor (if there are more results). pageSize must be positive.
+func ListHwidData(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.HwidData, nextPageToken string, err error) {
+	q, err := ufsds.ListQuery(ctx, HwidDataKind, pageSize, pageToken, nil, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	var nextCur datastore.Cursor
+	err = datastore.Run(ctx, q, func(ent *HwidDataEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			hwidData := &ufspb.HwidData{
+				Hwid: ent.ID,
+			}
+			res = append(res, hwidData)
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to Unmarshal: %s", err)
+				return nil
+			}
+			res = append(res, pm.(*ufspb.HwidData))
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to List HwidData %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
 }
