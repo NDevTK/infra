@@ -125,9 +125,11 @@ func crosClosePlan() *Plan {
 					"dut_servo_host_present",
 					"Is not servo_v3",
 				},
-				ExecName: "cros_copy_file_to_log",
+				ExecName: "cros_copy_to_logs",
 				ExecExtraArgs: []string{
-					"filepath:/var/log/messages",
+					"src_host_type:servo_host",
+					"src_path:/var/log/messages",
+					"src_type:file",
 					"use_host_dir:true",
 				},
 				AllowFailAfterRecovery: true,

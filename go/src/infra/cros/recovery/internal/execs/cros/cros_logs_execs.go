@@ -44,43 +44,95 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// copyFileToLogExec grabs the file from the host and copy to the log directory.
+// copyToLogsExec grabs a file or directory from the host and copy to
+// the log directory.
 //
-// For now implementation support only servo-host.
-func copyFileToLogExec(ctx context.Context, info *execs.ExecInfo) error {
-	resource := info.GetChromeos().GetServo().GetName()
+// This exec function accepts the following parameters from the action:
+// src_host_type: specifies the type of source, options are "dut" and "servo_host"
+// src_path: specifies the source for copy operation.
+// src_type: specifies whether the source is a file or a directory, options are "file" and "dir"
+func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
+	argMap := info.GetActionArgs(ctx)
+	fullPath := argMap.AsString(ctx, "src_path", "")
+	if fullPath == "" {
+		return errors.Reason("copy to logs: src_path is empty or not provided").Err()
+	}
+	type srcType string
+	srcTypeArg := srcType(argMap.AsString(ctx, "src_type", "file"))
+	type hostType string
+	srcHostType := hostType(argMap.AsString(ctx, "src_host_type", ""))
+	const (
+		dutHostType   = hostType("dut")
+		servoHostType = hostType("servo_host")
+	)
+	var resource string
+	switch srcHostType {
+	case dutHostType:
+		resource = info.GetDut().Name
+	case servoHostType:
+		resource = info.GetChromeos().GetServo().GetName()
+	default:
+		return errors.Reason("copy to logs: src_host_type %q is either empty or an un-recognized value", srcHostType).Err()
+	}
 	run := info.NewRunner(resource)
 	log := info.NewLogger()
 	logRoot := info.GetLogRoot()
-	argMap := info.GetActionArgs(ctx)
-	fullPath := strings.TrimSpace(argMap.AsString(ctx, "filepath", ""))
-	if fullPath == "" {
-		return errors.Reason("copy file to logs: filepath is empty or not provided").Err()
+	const (
+		fileType = srcType("file")
+		dirType  = srcType("dir")
+	)
+	var testCmdFlag string
+	switch srcTypeArg {
+	case fileType:
+		testCmdFlag = "-f"
+	case dirType:
+		testCmdFlag = "-d"
+	default:
+		return errors.Reason("copy to logs: src_type %q is either empty, or an un-recognized value", srcTypeArg).Err()
 	}
-	if _, err := run(ctx, time.Minute, "test", "-f", fullPath); err != nil {
-		return errors.Annotate(err, "copy file to logs: the file is not exist or it is directory").Err()
+	if _, err := run(ctx, time.Minute, "test", testCmdFlag, fullPath); err != nil {
+		return errors.Annotate(err, "copy to logs: the src_file %s does not exist or it not a %s", fullPath, srcTypeArg).Err()
 	}
 	newName := strings.TrimSpace(argMap.AsString(ctx, "filename", ""))
 	if newName == "" {
 		newName = filepath.Base(fullPath)
 	}
-	if newName == "" {
-		return errors.Reason("copy file to logs: filename is empty and could not extracted from filepath").Err()
-	}
 	// Logs will be saved to the resource folder.
 	if argMap.AsBool(ctx, "use_host_dir", false) {
 		logRoot := filepath.Join(logRoot, resource)
 		if err := exec.CommandContext(ctx, "mkdir", "-p", logRoot).Run(); err != nil {
-			return errors.Annotate(err, "copy file to logs").Err()
+			return errors.Annotate(err, "copy to logs").Err()
 		}
 	}
-	destFile := filepath.Join(logRoot, newName)
-	log.Debugf("Try to collect servod log %q to %q!", fullPath, destFile)
-	err := info.CopyFrom(ctx, resource, fullPath, destFile)
-	return errors.Annotate(err, "copy file to logs").Err()
+	switch srcTypeArg {
+	case fileType:
+		if newName == "" {
+			return errors.Reason("copy to logs: filename is empty and could not extracted from filepath").Err()
+		}
+		destFile := filepath.Join(logRoot, newName)
+		log.Debugf("Copy to Logs: Attempting to collect the logs from %q to %q!", fullPath, destFile)
+		if err := info.CopyFrom(ctx, resource, fullPath, destFile); err != nil {
+			return errors.Annotate(err, "copy to logs").Err()
+		}
+	case dirType:
+		if newName == "" || newName == "." || newName == ".." || newName == "/" {
+			return errors.Reason("copy to logs: filename is empty and could not extracted from filepath").Err()
+		}
+		destFile := filepath.Join(logRoot, newName)
+		log.Debugf("Copy to Logs: Attempting to collect the logs from %q to %q!", fullPath, destFile)
+		if err := info.CopyDirectoryFrom(ctx, resource, fullPath, destFile); err != nil {
+			return errors.Annotate(err, "copy to logs").Err()
+		}
+		// Note: Any values others that the above cases will be an
+		// error (which would normally be caught by 'default' for this
+		// switch-case). Any such cases would have already been
+		// handled above when srcTypeArg is first used. We don't need
+		// to repeat that logic here since it will be never executed.
+	}
+	return nil
 }
 
 func init() {
 	execs.Register("cros_dmesg", dmesgExec)
-	execs.Register("cros_copy_file_to_log", copyFileToLogExec)
+	execs.Register("cros_copy_to_logs", copyToLogsExec)
 }

@@ -29,3 +29,12 @@ func (ei *ExecInfo) CopyFrom(ctx context.Context, resourceName, srcFile, destFil
 		PathDestination: destFile,
 	})
 }
+
+// CopyDirectoryFrom copies a directory from resource to localhost.
+func (ei *ExecInfo) CopyDirectoryFrom(ctx context.Context, resourceName, srcDir, destDir string) error {
+	return ei.runArgs.Access.CopyDirectoryFrom(ctx, &tlw.CopyRequest{
+		Resource:        resourceName,
+		PathSource:      srcDir,
+		PathDestination: destDir,
+	})
+}
