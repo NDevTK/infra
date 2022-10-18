@@ -102,20 +102,19 @@ func (k *karteFrontend) UpdateAction(ctx context.Context, req *kartepb.UpdateAct
 
 // PersistToBigquery persists all Karte-tracked records in a given time range to BigQuery.
 // This is a cron method and part of the cron group of API calls.
-// It is intentionally EXACTLY equivalent to calling the non-cron API persist-action-range with
-// "reasonable" arguments.
+// It is intentionally EXACTLY equivalent to calling the non-cron API persist-action-range.
+//
+// By default, we take the current time, truncate it to the nearest hour, and set that to the END time.
+// We then take one hour before the end time and make that the start time.
 func (k *karteFrontend) PersistToBigquery(ctx context.Context, req *kartepb.PersistToBigqueryRequest) (*kartepb.PersistToBigqueryResponse, error) {
 	now := time.Now().UTC()
+	thisHour := now.Truncate(time.Hour)
+	prevHour := thisHour.Add(-1 * time.Hour)
 	resp, err := k.PersistActionRange(
 		ctx,
 		&kartepb.PersistActionRangeRequest{
-			// Look twelve hours into the past. A karte record is sealed after 12 hours, so there's no way
-			// for us to miss an important update this way.
-			//
-			// Also, there will be duplicate records in the bq table this way but that's okay.
-			StartTime: scalars.ConvertTimeToTimestampPtr(now.Add(-12 * time.Hour)),
-			// Give ourselves some buffer and actually persist stuff that was created up to an hour in the future.
-			StopTime: scalars.ConvertTimeToTimestampPtr(now.Add(+1 * time.Hour)),
+			StartTime: scalars.ConvertTimeToTimestampPtr(prevHour),
+			StopTime:  scalars.ConvertTimeToTimestampPtr(thisHour),
 		},
 	)
 	if err != nil {
