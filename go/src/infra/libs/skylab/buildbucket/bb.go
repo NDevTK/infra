@@ -20,7 +20,8 @@ import (
 	structbuilder "google.golang.org/protobuf/types/known/structpb"
 )
 
-const defaultTaskPriority = 24
+// Set higher priority for admin task to compite with tests.
+const defaultTaskPriority = 4
 
 // ScheduleLabpackTaskParams includes the parameters necessary to schedule a labpack task.
 type ScheduleLabpackTaskParams struct {
