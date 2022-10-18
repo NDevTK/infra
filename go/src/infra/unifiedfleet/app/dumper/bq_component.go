@@ -59,6 +59,7 @@ var configurationDumpToolkit = map[string]getAllFunc{
 	"machine_lse_prototypes": getAllMachineLSEPrototypeMsgs,
 	"dhcps":                  getAllDHCPMsgs,
 	"ips":                    getAllIPMsgs,
+	"hwid_data":              getAllHwidData,
 }
 
 func dumpHelper(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, tableName string) error {
@@ -506,6 +507,28 @@ func getAllSchedulingUnitMsgs(ctx context.Context) ([]proto.Message, error) {
 		for _, r := range res {
 			msgs = append(msgs, &apibq.SchedulingUnitRow{
 				SchedulingUnit: r,
+			})
+		}
+		if nextToken == "" {
+			break
+		}
+		startToken = nextToken
+	}
+	return msgs, nil
+}
+
+// getAllHwidData gets all the HwidData from datastore and creates BQ messages.
+func getAllHwidData(ctx context.Context) ([]proto.Message, error) {
+	msgs := make([]proto.Message, 0)
+	startToken := ""
+	for {
+		res, nextToken, err := configuration.ListHwidData(ctx, pageSize, startToken, nil, false)
+		if err != nil {
+			return nil, errors.Annotate(err, "get all HwidData").Err()
+		}
+		for _, r := range res {
+			msgs = append(msgs, &apibq.HwidDataRow{
+				HwidData: r,
 			})
 		}
 		if nextToken == "" {

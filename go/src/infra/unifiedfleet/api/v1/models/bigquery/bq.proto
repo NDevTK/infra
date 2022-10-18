@@ -12,6 +12,7 @@ import "infra/unifiedfleet/api/v1/models/asset.proto";
 import "infra/unifiedfleet/api/v1/models/change_event.proto";
 import "infra/unifiedfleet/api/v1/models/chrome_platform.proto";
 import "infra/unifiedfleet/api/v1/models/caching_service.proto";
+import "infra/unifiedfleet/api/v1/models/hwid.proto";
 import "infra/unifiedfleet/api/v1/models/lse_prototype.proto";
 import "infra/unifiedfleet/api/v1/models/machine.proto";
 import "infra/unifiedfleet/api/v1/models/machine_lse.proto";
@@ -134,5 +135,11 @@ message MachineLSEDeploymentRow {
 
 message SchedulingUnitRow {
     models.SchedulingUnit scheduling_unit = 1;
+    bool delete = 2;
+}
+
+// A HwidData row in BQ HwidData table.
+message HwidDataRow {
+    models.HwidData hwid_data = 1;
     bool delete = 2;
 }
