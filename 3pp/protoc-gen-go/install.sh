@@ -9,5 +9,4 @@ set -o pipefail
 
 PREFIX="$1"
 
-GO111MODULE=off GOBIN= GOROOT= GOCACHE= GOPATH=`pwd` go build google.golang.org/protobuf/cmd/protoc-gen-go
-cp ./protoc-gen-go $PREFIX
+go build -o "${PREFIX}/protoc-gen-go" google.golang.org/protobuf/cmd/protoc-gen-go

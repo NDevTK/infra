@@ -9,8 +9,7 @@ create {
       repo: "https://chromium.googlesource.com/external/github.com/protocolbuffers/protobuf-go"
       tag_pattern: "v%s"
     }
-
-    subdir: "src/google.golang.org/protobuf"
+    patch_version: "chromium.1"
   }
 
   build { tool: "tools/go" }

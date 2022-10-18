@@ -5,7 +5,7 @@ create {
       tag_pattern: "v%s"
       tag_filter_re: "v([0-9]+\\.?)+$"
     }
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
 
   build { tool: "tools/go" }

@@ -10,5 +10,4 @@ set -o pipefail
 PREFIX="$1"
 
 cd cmd/protoc-gen-go-grpc
-go build google.golang.org/grpc/cmd/protoc-gen-go-grpc
-cp ./protoc-gen-go-grpc $PREFIX
+go build -o "${PREFIX}/protoc-gen-go-grpc" google.golang.org/grpc/cmd/protoc-gen-go-grpc
