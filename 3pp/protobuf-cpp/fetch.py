@@ -7,33 +7,45 @@ import argparse
 import json
 import os
 import re
+import ssl
 import sys
 import urllib.request
 
-# https://developer.github.com/v3/repos/releases/#get-the-latest-release
+import certifi
+from pkg_resources import parse_version
+
+# Make sure up-to-date root certificates are used.
+urllib.request.install_opener(
+    urllib.request.build_opener(
+        urllib.request.HTTPSHandler(
+            context=ssl.create_default_context(cafile=certifi.where()))))
+
+# https://docs.github.com/en/rest/releases/releases#list-releases
 # Returns a JSON-loadable text response like:
-# {
-#   ...,
+# [
+#  {
+#   "url": "https://api.github.com/repos/protocolbuffers/protobuf/releases/78625517",
+#   ...
+#   "tag_name": "v21.7",
+#   ...
 #   "assets": [
 #     {
 #       ...,
 #       "browser_download_url": "...",
 #       ...,
-#       "name": "protobuf-cpp-3.17.3.tar.gz",
+#       "name": "protoc-21.7-win32.zip",
 #       ...,
 #     },
 #     ...
 #   ],
 #   ...
-#   "tag_name": "v3.17.3",
-#   ...
 # }
 #
-# Of interest are tag_name, which contains the version, and assets, which
-# details platform-specific binaries. Under assets, name indicates the platform
-# and browser_download_url indicates where to download a zip file containing the
-# prebuilt binary.
-LATEST = 'https://api.github.com/repos/protocolbuffers/protobuf/releases/latest'
+# The only thing we use here are the tag names. These are sorted and we
+# select the highest version number as 'latest'. We do this rather than
+# depend on the 'latest' API, which only reports the most recently-created
+# release and as such may include backported security fixes.
+RELEASES = 'https://api.github.com/repos/protocolbuffers/protobuf/releases'
 
 # https://developer.github.com/v3/repos/releases/#get-a-release-by-tag-name
 # Returns a JSON loadable text response like LATEST, but for a specific tag.
@@ -42,8 +54,13 @@ TAGGED_RELEASE = (
 
 
 def do_latest():
-  print(json.load(
-      urllib.request.urlopen(LATEST))['tag_name'][1:])  # e.g. v3.8.0 -> 3.8.0
+  releases = json.load(urllib.request.urlopen(RELEASES))
+  latest = parse_version('0')
+  for r in releases:
+    if r['prerelease']:
+      continue
+    latest = max(latest, parse_version(r['tag_name'][1:]))  # Strip leading 'v'
+  print(latest)
 
 
 def get_download_url(version):
