@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
@@ -27,7 +27,7 @@ func TestPersistObservations(t *testing.T) {
 	const kind = "c98f39d2-592b-4700-b6ee-874ce8f6edc2"
 	const metricKind = "abf5fa64-69e5-4983-83be-0366c3d4a4f8"
 
-	Convey("test persisting observation", t, func() {
+	t.Run("test persisting observation", func(t *testing.T) {
 		ctx := gaetesting.TestingContext()
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
 		testClock := testclock.New(time.Unix(10, 0).UTC())
@@ -43,31 +43,51 @@ func TestPersistObservations(t *testing.T) {
 				SealTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()),
 			},
 		})
-		So(err, ShouldBeNil)
-		So(a.Name, ShouldNotBeEmpty)
-		So(a.Kind, ShouldEqual, kind)
-		So(a.SealTime, ShouldResemble, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()))
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if a.Name == "" {
+			t.Error("expected name not to be empty")
+		}
+		if a.Kind != kind {
+			t.Errorf("expected a.Kind %q to equal kind %q", a.Kind, kind)
+		}
+		if diff := cmp.Diff(a.SealTime, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)), protocmp.Transform()); diff != "" {
+			t.Errorf("unexpected diff (-want +got): %s", diff)
+		}
 		o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
 			Observation: &kartepb.Observation{
 				ActionName: a.Name,
 				MetricKind: metricKind,
 			},
 		})
-		So(err, ShouldBeNil)
-		So(o.MetricKind, ShouldEqual, metricKind)
-		So(o.ActionName, ShouldEqual, a.Name)
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if o.MetricKind != metricKind {
+			t.Errorf("expected a.MetricKind %q to equal kind %q", o.MetricKind, metricKind)
+		}
+		if o.ActionName != a.Name {
+			t.Errorf("expected o.ActionName %q to equal a.Name %q", o.ActionName, a.Name)
+		}
 		_, err = k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
 			StartVersion: "zzzz",
 			StopVersion:  "zzzz",
 			StartTime:    scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0).UTC()),
 			StopTime:     scalars.ConvertTimeToTimestampPtr(time.Unix(100, 0).UTC()),
 		})
-		So(err, ShouldBeNil)
-		So(fake.size(), ShouldEqual, 2)
-		So(fake.observationsSize(), ShouldEqual, 1)
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if diff := cmp.Diff(fake.size(), 2); diff != "" {
+			t.Errorf("unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(fake.observationsSize(), 1); diff != "" {
+			t.Errorf("unexpected diff: %s", diff)
+		}
 	})
 
-	Convey("test persisting multiple observations associated with single action", t, func() {
+	t.Run("test persisting multiple observations associated with single action", func(t *testing.T) {
 		ctx := gaetesting.TestingContext()
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
 		testClock := testclock.New(time.Unix(10, 0).UTC())
@@ -84,12 +104,15 @@ func TestPersistObservations(t *testing.T) {
 				SealTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()),
 			},
 		})
-		So(err, ShouldBeNil)
-		So(a.Kind, ShouldEqual, kind)
-		So(a.SealTime, ShouldResemble, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()))
-		count, err := datastore.Count(ctx, datastore.NewQuery(ActionKind))
-		So(err, ShouldBeNil)
-		So(count, ShouldEqual, 1)
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if a.Kind != kind {
+			t.Errorf("expected a.Kind %q to equal kind %q", a.Kind, kind)
+		}
+		if diff := cmp.Diff(a.SealTime, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)), protocmp.Transform()); diff != "" {
+			t.Errorf("unexpected diff (-want +got): %s", diff)
+		}
 		for i := 0; i < times; i++ {
 			o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
 				Observation: &kartepb.Observation{
@@ -97,24 +120,39 @@ func TestPersistObservations(t *testing.T) {
 					MetricKind: metricKind,
 				},
 			})
-			So(err, ShouldBeNil)
-			So(o.MetricKind, ShouldEqual, metricKind)
-			So(o.ActionName, ShouldEqual, a.Name)
+			if err != nil {
+				t.Errorf("unexpected error: %s", err)
+			}
+			if o.MetricKind != metricKind {
+				t.Errorf("expected a.MetricKind %q to equal kind %q", o.MetricKind, metricKind)
+			}
+			if o.ActionName != a.Name {
+				t.Errorf("expected o.ActionName %q to equal a.Name %q", o.ActionName, a.Name)
+			}
 		}
-		count, err = datastore.Count(ctx, datastore.NewQuery(ObservationKind))
-		So(err, ShouldBeNil)
-		So(count, ShouldEqual, times)
-
+		count, err := datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if diff := cmp.Diff(count, int64(times)); diff != "" {
+			t.Errorf("unexpected diff (-want +got): %s", diff)
+		}
 		resp, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
 			StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0).UTC()),
 			StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(100, 0).UTC()),
 		})
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(resp.GetSucceeded(), ShouldBeTrue)
-		So(resp.GetCreatedRecords(), ShouldEqual, 1)
-		So(fake.size(), ShouldEqual, 1+times)
-		So(fake.observationsSize(), ShouldEqual, times)
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if diff := cmp.Diff(resp.GetCreatedRecords(), int32(1)); diff != "" {
+			t.Errorf("unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(fake.size(), 1+times); diff != "" {
+			t.Errorf("unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(fake.observationsSize(), times); diff != "" {
+			t.Errorf("unexpected diff: %s", diff)
+		}
 	})
 }
 
