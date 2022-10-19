@@ -42,6 +42,7 @@ type baseHistoryRun struct {
 	builderRegex string
 	testIDRegex  string
 	clOwner      string
+	ignoreFile   bool
 
 	authOpt       *auth.Options
 	authenticator *auth.Authenticator
@@ -63,6 +64,7 @@ func (r *baseHistoryRun) RegisterBaseFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.builderRegex, "builder", ".*", "A regular expression for builder. Implicitly wrapped with ^ and $.")
 	fs.StringVar(&r.testIDRegex, "test", ".*", "A regular expression for test. Implicitly wrapped with ^ and $.")
 	fs.StringVar(&r.clOwner, "cl-owner", "", "CL owner, e.g. someone@chromium.org")
+	fs.BoolVar(&r.ignoreFile, "ignore-file", false, "ignores the filename and includes results with no filename and all /third_party/ results")
 }
 
 func (r *baseHistoryRun) ValidateBaseFlags() error {
@@ -130,6 +132,7 @@ func (r *baseHistoryRun) runQuery(ctx context.Context, sql string, extraParams .
 		{Name: "minChangedFiles", Value: MinChangedFiles},
 		{Name: "maxChangedFiles", Value: MaxChangedFiles},
 		{Name: "clOwner", Value: r.clOwner},
+		{Name: "ignoreFile", Value: r.ignoreFile},
 	}
 	q.Parameters = append(q.Parameters, extraParams...)
 

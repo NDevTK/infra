@@ -7,13 +7,15 @@ the expected results of removing a specific test suite from a specific builder.
    ```bash
    go run ./cmd/rts-suite-analysis fetch-rejections \
      -from 2022-08-01 -to 2022-09-01 \
-     -out samples.rej
+     -out samples.rej \
+     -ignore-file
    ```
 1. Fetch a sample of test durations, e.g. for for the past week of all builders.
    ```bash
    go run ./cmd/rts-suite-analysis fetch-durations \
      -from 2022-08-25 -to 2022-09-01 \
-     -out samples.dur
+     -out samples.dur \
+     -ignore-file
    ```
    Note: Duration data is expensive to collect/analyze. To reduce this cost only
    a fraction of the applicable durations will be collected. By default this
@@ -22,6 +24,14 @@ the expected results of removing a specific test suite from a specific builder.
    same time period as rejections to function as this is an estimate, as long
    as the average test in the suite hasn't changed dramatically the estimate
    should still be accurate)
+
+    -ignore-file is necessary for any builder/test suite that doesn't include
+    its filename when uploaded to rdb
+
+   The savings provided later by this tool is based on all durations gathered
+   in this step. If you're more curious about savings for a particular builder
+   or set of builders you can provide the -builder arg with a regex to match
+   specific builders
 1. Run the analysis on the rejections and durations which you created from -out
    in the previous steps, note the ChangeRecall/Savings:
    ```bash
@@ -46,6 +56,9 @@ the expected results of removing a specific test suite from a specific builder.
    100% entry can be ignored for this CLI. Note the rejections as this should
    match the number of rejections collected in the fetch-rejections step and
    can help confirm the values are reasonable
+
+   You can also specify -builders here, however the change recall will be
+   innacurate and only show the CL recall had only those builders ran
 
 Rejection and duration data can take a long time to collect (you will likely not
 want to go over a months worth of data as the results tend to stay consistent

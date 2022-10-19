@@ -180,7 +180,8 @@ WITH
 			# which isn't in src.git.
 			# As of January 2021, this excludes ~2% of test results.
 			AND (
-				test_metadata.location.file_name NOT LIKE '%/third_party/%'
+				@ignoreFile
+				OR test_metadata.location.file_name NOT LIKE '%/third_party/%'
 				OR test_metadata.location.file_name LIKE '//third_party/blink/%'
 			)
 	),
@@ -199,7 +200,7 @@ const testDurationsSQL = commonSubqueries + `
 			# test frameworks that don't report file names yet (i.e. things that the
 			# candidate strategy doesn't have control over), thus providing a stronger
 			# signal for the strategy.
-			AND testVariant.fileName != ''
+			AND (@ignoreFile OR testVariant.fileName != '')
 	)
 
 -- Join all tables and produce rows in the TestDurationRecord protojson format.
