@@ -32,7 +32,12 @@ func runGoBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 
 	// See https://github.com/golang/go/issues/33772 for the explanation about
 	// buildid.
-	args := []string{"go", "build", "-trimpath", "-ldflags=-buildid="}
+	args := []string{
+		"go", "build",
+		"-trimpath",
+		"-ldflags=-buildid=",
+		"-buildvcs=false",
+	}
 	if logging.IsLogging(ctx, logging.Debug) {
 		args = append(args, "-v")
 	}

@@ -735,7 +735,10 @@ def run_go_install(go_workspace, go_environ, packages):
   args = [
       'python', '-u',
       os.path.join(go_workspace, get_env_dot_py()), 'go', 'install',
-      '-trimpath', '-ldflags=-buildid=', '-v'
+      '-trimpath',
+      '-ldflags=-buildid=',
+      '-buildvcs=false',
+      '-v'
   ]
   if go_environ.with_race:
     args.append('-race')
@@ -758,8 +761,12 @@ def run_go_build(go_workspace, go_environ, package, output):
   """
   args = [
       'python', '-u',
-      os.path.join(go_workspace, get_env_dot_py()), 'go', 'build', '-trimpath',
-      '-ldflags=-buildid=', '-v', '-o', output
+      os.path.join(go_workspace, get_env_dot_py()), 'go', 'build',
+      '-trimpath',
+      '-ldflags=-buildid=',
+      '-buildvcs=false',
+      '-v',
+      '-o', output
   ]
   if go_environ.with_race:
     args.append('-race')
