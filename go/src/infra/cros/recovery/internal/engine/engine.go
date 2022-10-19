@@ -229,7 +229,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 				defer actionCloser(rErr)
 			}
 		case config.MetricsConfig_SKIP_ALL:
-			log.Debugf(ctx, "Action %q: skipping metrics upload")
+			log.Debugf(ctx, "Action %q: skipping metrics upload", actionName)
 		case config.MetricsConfig_UPLOAD_ON_ERROR:
 			log.Debugf(ctx, "Action %q logging on error only", actionName)
 			defer func(rErr error) {
