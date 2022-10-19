@@ -25,6 +25,8 @@ const (
 	AuditUSB TaskName = "audit_usb"
 	// Task used to run auto recovery/repair flow in the lab.
 	Recovery TaskName = "recovery"
+	// Task used to run deep repair flow in the lab.
+	DeepRecovery TaskName = "deep_recovery"
 	// Task used to prepare device to be used in the lab.
 	Deploy TaskName = "deploy"
 	// Task used to execute custom plans.
@@ -49,6 +51,7 @@ var builderNameMap = map[TaskName]string{
 	AuditStorage: "audit-storage",
 	AuditUSB:     "audit-servo-usb-key",
 	Recovery:     "repair",
+	DeepRecovery: "deep-repair",
 }
 
 // NormalizeTaskName takes a task name from anywhere and normalizes it.
@@ -65,6 +68,8 @@ func NormalizeTaskName(name string) (TaskName, error) {
 		return AuditRPM, nil
 	case "repair", "recovery":
 		return Recovery, nil
+	case "deep-repair", "deep_repair":
+		return DeepRecovery, nil
 	case "deploy":
 		return Deploy, nil
 	case "custom":
@@ -83,6 +88,7 @@ func ValidateTaskName(tn TaskName) error {
 	case AuditStorage:
 	case AuditUSB:
 	case Recovery:
+	case DeepRecovery:
 	case Deploy:
 	case Custom:
 	default:

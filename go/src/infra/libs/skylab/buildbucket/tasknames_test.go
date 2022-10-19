@@ -16,6 +16,7 @@ func TestValidateTaskName(t *testing.T) {
 	Convey("validate", t, func() {
 		So(ValidateTaskName(""), ShouldNotBeNil)
 		So(ValidateTaskName("audit_rpm"), ShouldBeNil)
+		So(ValidateTaskName("deep_recovery"), ShouldBeNil)
 		So(ValidateTaskName("audit____"), ShouldNotBeNil)
 	})
 }
