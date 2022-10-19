@@ -183,9 +183,9 @@ def wheel_tryjob(builder):
     luci.cq_tryjob_verifier(
         builder = builder,
         cq_group = "infra",
-        location_regexp = [
-            ".+/[+]/infra/tools/dockerbuild/.+",
-            ".+/[+]/recipes/recipes/build_wheels.py",
+        location_filters = [
+            cq.location_filter(path_regexp = "infra/tools/dockerbuild/.+"),
+            cq.location_filter(path_regexp = "recipes/recipes/build_wheels.py"),
         ],
     )
 
@@ -202,8 +202,8 @@ def tpp_tryjob(builder):
     luci.cq_tryjob_verifier(
         builder = builder,
         cq_group = "infra",
-        location_regexp = [
-            ".+/[+]/3pp/.+",
+        location_filters = [
+            cq.location_filter(path_regexp = "3pp/.+"),
         ],
     )
 
