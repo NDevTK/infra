@@ -79,27 +79,30 @@ func (p *provisionState) shouldProvisionOS() bool {
 	// If the builder path is missing or fails to be retrieved, continue to provision.
 	builderPath, err := getBuilderPath(p.c)
 	if err != nil {
-		log.Printf("provision: failed to get pre-provision builder path, %s", err)
+		log.Printf("should provision os: failed to get pre-provision builder path, %s", err)
 		return true
 	}
 	// Only provision the OS if any of the following are true:
 	//  - the DUT is not on the requested OS.
+	//  - the DUT has rootfs verification off
 	//  - the force marker exists on the DUT.
 	//  - the force flag was used to provision.
-	shouldProvision := false
 	if builderPath != p.targetBuilderPath {
-		log.Printf("Going to provision DUT from %s to %s", builderPath, p.targetBuilderPath)
-		shouldProvision = true
+		log.Printf("should provision os: Going to provision DUT from %s to %s", builderPath, p.targetBuilderPath)
+		return true
+	}
+	if b, err := isRootfsVerificationOn(p.c); err != nil {
+		log.Printf("should provision os: failed to read rootfs verification.")
+	} else if !b {
+		log.Printf("should provision os: Going to provision DUT as rootfs verification is off from %s to %s.", builderPath, p.targetBuilderPath)
+		return true
 	}
 	if shouldForceProvision(p.c) || p.forceProvisionOs {
-		if !shouldProvision {
-			log.Printf("Going to force provision to %s", p.targetBuilderPath)
-			shouldProvision = true
-		} else {
-			log.Printf("Ignoring force provision as already provisioning")
-		}
+		log.Printf("should provision os: Going to force provision to %s", p.targetBuilderPath)
+		return true
 	}
-	return shouldProvision
+	log.Printf("should proivision os: Skipping.")
+	return false
 }
 
 // provisionOS will provision the OS, but on failure it will set op.Result to longrunning.Operation_Error
