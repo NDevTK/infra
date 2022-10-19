@@ -107,14 +107,15 @@ func (k *karteFrontend) UpdateAction(ctx context.Context, req *kartepb.UpdateAct
 // By default, we take the current time, truncate it to the nearest hour, and set that to the END time.
 // We then take one hour before the end time and make that the start time.
 func (k *karteFrontend) PersistToBigquery(ctx context.Context, req *kartepb.PersistToBigqueryRequest) (*kartepb.PersistToBigqueryResponse, error) {
-	now := time.Now().UTC()
-	thisHour := now.Truncate(time.Hour)
-	prevHour := thisHour.Add(-1 * time.Hour)
+	intervalStart, intervalEnd, err := makeAlignedIntervalStrictlyInPast(time.Now().UTC(), 10*time.Minute)
+	if err != nil {
+		return nil, errors.Annotate(err, "persist to bigquery").Err()
+	}
 	resp, err := k.PersistActionRange(
 		ctx,
 		&kartepb.PersistActionRangeRequest{
-			StartTime: scalars.ConvertTimeToTimestampPtr(prevHour),
-			StopTime:  scalars.ConvertTimeToTimestampPtr(thisHour),
+			StartTime: scalars.ConvertTimeToTimestampPtr(intervalStart),
+			StopTime:  scalars.ConvertTimeToTimestampPtr(intervalEnd),
 		},
 	)
 	if err != nil {
@@ -142,4 +143,16 @@ func InstallServices(k KarteFrontend, srv *prpc.Server) {
 			return err
 		},
 	)
+}
+
+// makeAlignedIntervalStrictlyInPast returns an interval of duration d
+// that is strictly before the instant t.
+func makeAlignedIntervalStrictlyInPast(t time.Time, d time.Duration) (time.Time, time.Time, error) {
+	var zero time.Time
+	if ok := t.Location() == time.UTC; !ok {
+		return zero, zero, errors.Reason("aligned interval strictly in past: unexpected location %q", t.Location().String()).Err()
+	}
+	endTime := t.Truncate(d).UTC()
+	startTime := endTime.Add(-d).UTC()
+	return startTime, endTime, nil
 }

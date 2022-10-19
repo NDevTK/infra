@@ -306,3 +306,88 @@ func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
 		t.Errorf("expected resp to be nil not %s", err)
 	}
 }
+
+// TestAlignedIntervalStrictlyInPast tests that we produce an interval that is aligned with
+// the time.Unix(0, 0) and has the specified width.
+func TestAlignedIntervalStrictlyInPast(t *testing.T) {
+	t.Parallel()
+
+	type input struct {
+		t time.Time
+		d time.Duration
+	}
+
+	type output struct {
+		start time.Time
+		end   time.Time
+	}
+
+	cases := []struct {
+		name string
+		in   input
+		out  output
+		ok   bool
+	}{
+		{
+			name: "sad path -- non-UTC time",
+			in: input{
+				t: time.Unix(0, 0).Local(),
+				d: time.Second,
+			},
+			out: output{},
+			ok:  false,
+		},
+		{
+			name: "(0,0) rounding down",
+			in: input{
+				t: time.Unix(0, 0).UTC(),
+				d: time.Second,
+			},
+			out: output{
+				start: time.Unix(-1, 0).UTC(),
+				end:   time.Unix(0, 0).UTC(),
+			},
+			ok: true,
+		},
+		{
+			// In this example, we should round down from (0,1) to (0,0) BEFORE we
+			// jump one second into the past.
+			name: "(0,1) rounding down",
+			in: input{
+				t: time.Unix(0, 1).UTC(),
+				d: time.Second,
+			},
+			out: output{
+				start: time.Unix(-1, 0).UTC(),
+				end:   time.Unix(0, 0).UTC(),
+			},
+			ok: true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			start, end, err := makeAlignedIntervalStrictlyInPast(tt.in.t, tt.in.d)
+			if tt.ok {
+				if err != nil {
+					t.Errorf("unexpected error: %s", err)
+				}
+			} else {
+				if err == nil {
+					t.Error("expected alignedIntervalStrictlyInPast to return an error but it didn't")
+				}
+			}
+
+			expected := tt.out
+			actual := output{
+				start: start,
+				end:   end,
+			}
+			if diff := cmp.Diff(expected, actual, cmp.AllowUnexported(output{})); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
