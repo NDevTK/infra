@@ -129,7 +129,11 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 		if !ok {
 			return errors.Annotate(err, "reflash cr50 fw: cannot find error code").Err()
 		}
-		if errorCode != 1 {
+		// The errorCode value stored in the empty interface in the
+		// error tag is of type int32. To compare it with an integer
+		// literal, we need to convert the literal into int32 value,
+		// otherwise the comparison will always return 'false'.
+		if errorCode != int32(1) {
 			return errors.Annotate(err, "reflash cr50 fw: fail to flash %q", info.GetChromeos().GetCr50Phase()).Err()
 		}
 	}
