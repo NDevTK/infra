@@ -42,7 +42,7 @@ func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*l
 		return nil, fmt.Errorf("find cache server: %s", err)
 	}
 
-	be := findBackend(sn, dutName)
+	be := chooseBackend(sn.Backends, dutName)
 	return &labapi.IpEndpoint{
 		Address: be.Ip,
 		Port:    be.Port,
@@ -65,10 +65,10 @@ func findSubnet(dutName string, subnets []Subnet) (Subnet, error) {
 	return Subnet{}, fmt.Errorf("%q is not in any cache subnets (all subnets: %v)", addr, subnets)
 }
 
-// findBackend finds one healthy backend from the current subnet according to
+// chooseBackend finds one healthy backend from given backends according to
 // the requested `hostname` using 'mod N' algorithm.
-func findBackend(s Subnet, hostname string) address {
-	return s.Backends[hash(hostname)%len(s.Backends)]
+func chooseBackend(backends []address, hostname string) address {
+	return backends[hash(hostname)%len(backends)]
 }
 
 // hash returns integer hash value of the input string.
