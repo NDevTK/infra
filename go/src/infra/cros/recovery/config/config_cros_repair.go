@@ -108,6 +108,9 @@ func crosRepairActions() map[string]*Action {
 				"Check if request labstation reboot",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
 		},
 		"Device is SSHable": {
 			Docs: []string{

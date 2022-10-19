@@ -98,6 +98,9 @@ func crosClosePlan() *Plan {
 					"invert_result:true",
 				},
 				ExecName: "dut_check_model",
+				MetricsConfig: &MetricsConfig{
+					UploadPolicy: MetricsConfig_SKIP_ALL,
+				},
 			},
 			"Servo-host logs": {
 				Dependencies: []string{
@@ -142,6 +145,9 @@ func crosClosePlan() *Plan {
 					"is_servo_v3",
 				},
 				ExecName: "sample_fail",
+				MetricsConfig: &MetricsConfig{
+					UploadPolicy: MetricsConfig_SKIP_ALL,
+				},
 			},
 			"Update peripheral wifi state": {
 				Docs: []string{
