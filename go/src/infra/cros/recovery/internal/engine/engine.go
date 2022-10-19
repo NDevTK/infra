@@ -217,19 +217,29 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	}
 	if r.args != nil {
 		// Only running action can generate metrics as we have real response from each action.
+		action := &metrics.Action{
+			SwarmingTaskID: r.args.SwarmingTaskID,
+			BuildbucketID:  r.args.BuildbucketID,
+		}
 		policy := act.GetMetricsConfig().GetUploadPolicy()
 		switch policy {
 		case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
 			// Keep this up to date with recovery.go
-			action := &metrics.Action{
-				SwarmingTaskID: r.args.SwarmingTaskID,
-				BuildbucketID:  r.args.BuildbucketID,
-			}
 			if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
 				defer actionCloser(rErr)
 			}
 		case config.MetricsConfig_SKIP_ALL:
 			log.Debugf(ctx, "Action %q: skipping metrics upload")
+		case config.MetricsConfig_UPLOAD_ON_ERROR:
+			log.Debugf(ctx, "Action %q logging on error only", actionName)
+			defer func(rErr error) {
+				if rErr != nil {
+					actionCloser := r.recordAction(ctx, actionName, action)
+					if actionCloser != nil {
+						actionCloser(rErr)
+					}
+				}
+			}(rErr)
 		default:
 			return errors.Reason("bad policy %q %d", policy.String(), policy.Number()).Err()
 		}
