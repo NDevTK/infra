@@ -202,6 +202,12 @@ def _GetAllowedBuilders():
       'allowed_builders', []))
 
 
+def _GetFluctuationCheckOptOutProjects():
+  """Returns a set of projects which want all reports to be marked visible."""
+  return set(waterfall_config.GetCodeCoverageSettings().get(
+      'fluctuation_check_opt_out', []))
+
+
 def _IsReportSuspicious(report):
   """Returns True if the newly generated report is suspicious to be incorrect.
 
@@ -386,7 +392,8 @@ class ProcessCodeCoverageData(BaseHandler):
         component_summaries = []
         logging.info('Summary of all components are saved to datastore.')
 
-    if not _IsReportSuspicious(report):
+    if not _IsReportSuspicious(
+        report) or commit.project in _GetFluctuationCheckOptOutProjects():
       report.visible = True
       report.put()
 
