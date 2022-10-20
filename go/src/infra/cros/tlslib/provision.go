@@ -619,22 +619,11 @@ func shouldForceProvision(c *ssh.Client) bool {
 }
 
 func isRootfsVerificationOn(c *ssh.Client) (bool, error) {
-	mounts, err := runCmdOutput(c, "cat /proc/mounts")
+	cmdline, err := runCmdOutput(c, "cat /proc/cmdline")
 	if err != nil {
-		return false, fmt.Errorf("is rootfs verification on: failed to read mounts")
+		return false, fmt.Errorf("is rootfs verification on: failed to read kernel cmdline")
 	}
-	for _, l := range strings.Split(mounts, "\n") {
-		info := strings.Split(l, " ")
-		if string(info[1]) == "/" {
-			for _, attr := range strings.Split(string(info[3]), ",") {
-				if string(attr) == "ro" {
-					return true, nil
-				}
-			}
-			return false, nil
-		}
-	}
-	return false, fmt.Errorf("is rootfs verification on: failed to find root mount")
+	return strings.Contains(cmdline, "dm_verity.dev_wait=1"), nil
 }
 
 // fileExists finds the file on the DUT, failures are treated as the file missing.
