@@ -42,15 +42,21 @@ func (r *CrosTestResult) ConvertFromJSON(reader io.Reader) error {
 // ToProtos converts ChromeOS test results in r to []*sinkpb.TestResult.
 func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, error) {
 	var ret []*sinkpb.TestResult
+	testInvocation := r.TestResult.TestInvocation
 	for _, testRun := range r.TestResult.TestRuns {
 		testCaseMatadata := testRun.TestCaseInfo.TestCaseMetadata
 		testCaseResult := testRun.TestCaseInfo.TestCaseResult
 		status := genTestResultStatus(testCaseResult)
 		tr := &sinkpb.TestResult{
-			TestId:   testCaseMatadata.TestCase.Name,
-			Status:   status,
-			Expected: status == pb.TestStatus_PASS,
-			Tags:     genTestResultTags(testRun),
+			TestId: testCaseMatadata.TestCase.Name,
+			Status: status,
+			// The status is expected if the test passed or was skipped
+			// expectedly.
+			Expected: status == pb.TestStatus_PASS || testCaseResult.GetSkip() != nil,
+			// TODO(b/251357069): Move the invocation-level info and
+			// result-level info to the new JSON type columns accordingly when
+			// the new JSON type columns are ready in place.
+			Tags: genTestResultTags(testRun, testInvocation),
 		}
 
 		if testCaseResult.GetReason() != "" {
@@ -82,31 +88,35 @@ func genTestResultStatus(result *apipb.TestCaseResult) pb.TestStatus {
 		return pb.TestStatus_CRASH
 	case *apipb.TestCaseResult_Abort_:
 		return pb.TestStatus_ABORT
-	// TODO(b/240893570): Split SKIP and NOT_RUN status once ResultDB can
-	// support rich statuses for ChromeOS test results.
-	case *apipb.TestCaseResult_Skip_:
-	case *apipb.TestCaseResult_NotRun_:
+	// TODO(b/240893570): Split Skip (aka TestNa) and NotRun status once
+	// ResultDB can support rich statuses for ChromeOS test results.
+	case *apipb.TestCaseResult_Skip_, *apipb.TestCaseResult_NotRun_:
 		return pb.TestStatus_SKIP
 	default:
 		return pb.TestStatus_STATUS_UNSPECIFIED
 	}
-	return pb.TestStatus_STATUS_UNSPECIFIED
 }
 
+// TODO(b/240897202): Remove the tags when a JSON type field is supported in
+// ResultDB schema.
 // Generates test result tags based on the structured ChromeOS test run proto.
-func genTestResultTags(testRun *artifactpb.TestRun) []*pb.StringPair {
+func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
 	tags := []*pb.StringPair{}
 
-	primaryExecInfo := testRun.PrimaryExecutionInfo
-	primaryBuildInfo := primaryExecInfo.BuildInfo
-	tags = append(tags, pbutil.StringPair("image", primaryBuildInfo.Name))
-	tags = append(tags, pbutil.StringPair("build", strings.Split(primaryBuildInfo.Name, "/")[1]))
-	tags = append(tags, pbutil.StringPair("board", primaryBuildInfo.Board))
+	if testInvocation != nil {
+		primaryExecInfo := testInvocation.PrimaryExecutionInfo
+		if primaryExecInfo != nil {
+			primaryBuildInfo := primaryExecInfo.BuildInfo
+			tags = append(tags, pbutil.StringPair("image", primaryBuildInfo.Name))
+			tags = append(tags, pbutil.StringPair("build", strings.Split(primaryBuildInfo.Name, "/")[1]))
+			tags = append(tags, pbutil.StringPair("board", primaryBuildInfo.Board))
 
-	primaryDutInfo := primaryExecInfo.DutInfo
-	dut := primaryDutInfo.Dut
-	tags = append(tags, pbutil.StringPair("model", dut.GetChromeos().DutModel.ModelName))
-	tags = append(tags, pbutil.StringPair("hostname", dut.GetChromeos().Name))
+			primaryDutInfo := primaryExecInfo.DutInfo
+			dut := primaryDutInfo.Dut
+			tags = append(tags, pbutil.StringPair("model", dut.GetChromeos().DutModel.ModelName))
+			tags = append(tags, pbutil.StringPair("hostname", dut.GetChromeos().Name))
+		}
+	}
 
 	for _, logInfo := range testRun.LogsInfo {
 		tags = append(tags, pbutil.StringPair("logs_url", logInfo.Path))

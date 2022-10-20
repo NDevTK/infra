@@ -29,6 +29,27 @@ func TestCrosTestResultConversions(t *testing.T) {
 	testResultsJson := `
 	{
 		"version":1,
+		"test_invocation": {
+			"primary_execution_info":{
+				"build_info":{
+					"name":"hatch-cq/R106-15048.0.0",
+					"milestone":106,
+					"chrome_os_version":"15048.0.0",
+					"source":"hatch-cq",
+					"board":"hatch"
+				},
+				"dut_info":{
+					"dut":{
+						"chromeos":{
+							"name":"chromeos15-row4-rack5-host1",
+							"dut_model":{
+								"model_name":"nipperkin"
+							}
+						}
+					}
+				}
+			}
+		},
 		"test_runs":[
 			{
 				"test_case_info":{
@@ -51,26 +72,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						"host_type":"GS",
 						"path":"gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"
 					}
-				],
-				"primary_execution_info":{
-					"build_info":{
-						"name":"hatch-cq/R106-15048.0.0",
-						"milestone":106,
-						"chrome_os_version":"15048.0.0",
-						"source":"hatch-cq",
-						"board":"hatch"
-					},
-					"dut_info":{
-						"dut":{
-							"chromeos":{
-								"name":"chromeos15-row4-rack5-host1",
-								"dut_model":{
-									"model_name":"nipperkin"
-								}
-							}
-						}
-					}
-				}
+				]
 			},
 			{
 				"test_case_info":{
@@ -94,54 +96,15 @@ func TestCrosTestResultConversions(t *testing.T) {
 						"host_type":"GS",
 						"path":"gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"
 					}
-				],
-				"primary_execution_info":{
-					"build_info":{
-						"name":"dedede-cq/R106-15054.52.0",
-						"milestone":106,
-						"chrome_os_version":"15054.52.0",
-						"source":"dedede-cq",
-						"board":"dedede"
-					},
-					"dut_info":{
-						"dut":{
-							"chromeos":{
-								"name":"chromeos8-row13-rack20-host28",
-								"dut_model":{
-									"model_name":"storo"
-								}
-							}
-						}
-					}
-				}
+				]
 			}
 		]
 	}
 	`
 
-	testRuns := []*artifactpb.TestRun{
-		{
-			TestCaseInfo: &artifactpb.TestCaseInfo{
-				TestCaseMetadata: &apipb.TestCaseMetadata{
-					TestCase: &apipb.TestCase{
-						Id: &apipb.TestCase_Id{
-							Value: "invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001",
-						},
-						Name: "rlz_CheckPing",
-					},
-				},
-				TestCaseResult: &apipb.TestCaseResult{
-					Verdict:   &apipb.TestCaseResult_Pass_{},
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 60},
-				},
-			},
-			LogsInfo: []*configpb.StoragePath{
-				{
-					HostType: configpb.StoragePath_GS,
-					Path:     "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03",
-				},
-			},
+	testResult := &artifactpb.TestResult{
+		Version: 1,
+		TestInvocation: &artifactpb.TestInvocation{
 			PrimaryExecutionInfo: &artifactpb.ExecutionInfo{
 				BuildInfo: &artifactpb.BuildInfo{
 					Name:            "hatch-cq/R106-15048.0.0",
@@ -164,47 +127,51 @@ func TestCrosTestResultConversions(t *testing.T) {
 				},
 			},
 		},
-		{
-			TestCaseInfo: &artifactpb.TestCaseInfo{
-				TestCaseMetadata: &apipb.TestCaseMetadata{
-					TestCase: &apipb.TestCase{
-						Id: &apipb.TestCase_Id{
-							Value: "invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002",
+		TestRuns: []*artifactpb.TestRun{
+			{
+				TestCaseInfo: &artifactpb.TestCaseInfo{
+					TestCaseMetadata: &apipb.TestCaseMetadata{
+						TestCase: &apipb.TestCase{
+							Id: &apipb.TestCase_Id{
+								Value: "invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001",
+							},
+							Name: "rlz_CheckPing",
 						},
-						Name: "power_Resume",
+					},
+					TestCaseResult: &apipb.TestCaseResult{
+						Verdict:   &apipb.TestCaseResult_Pass_{},
+						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+						Duration:  &duration.Duration{Seconds: 60},
 					},
 				},
-				TestCaseResult: &apipb.TestCaseResult{
-					Verdict:   &apipb.TestCaseResult_Fail_{},
-					Reason:    "Test failed",
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
+				LogsInfo: []*configpb.StoragePath{
+					{
+						HostType: configpb.StoragePath_GS,
+						Path:     "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03",
+					},
 				},
 			},
-			LogsInfo: []*configpb.StoragePath{
-				{
-					HostType: configpb.StoragePath_GS,
-					Path:     "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04",
-				},
-			},
-			PrimaryExecutionInfo: &artifactpb.ExecutionInfo{
-				BuildInfo: &artifactpb.BuildInfo{
-					Name:            "dedede-cq/R106-15054.52.0",
-					Milestone:       106,
-					ChromeOsVersion: "15054.52.0",
-					Source:          "dedede-cq",
-					Board:           "dedede",
-				},
-				DutInfo: &artifactpb.DutInfo{
-					Dut: &labpb.Dut{
-						DutType: &labpb.Dut_Chromeos{
-							Chromeos: &labpb.Dut_ChromeOS{
-								Name: "chromeos8-row13-rack20-host28",
-								DutModel: &labpb.DutModel{
-									ModelName: "storo",
-								},
+			{
+				TestCaseInfo: &artifactpb.TestCaseInfo{
+					TestCaseMetadata: &apipb.TestCaseMetadata{
+						TestCase: &apipb.TestCase{
+							Id: &apipb.TestCase_Id{
+								Value: "invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002",
 							},
+							Name: "power_Resume",
 						},
+					},
+					TestCaseResult: &apipb.TestCaseResult{
+						Verdict:   &apipb.TestCaseResult_Fail_{},
+						Reason:    "Test failed",
+						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
+						Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
+					},
+				},
+				LogsInfo: []*configpb.StoragePath{
+					{
+						HostType: configpb.StoragePath_GS,
+						Path:     "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04",
 					},
 				},
 			},
@@ -215,7 +182,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		results := &CrosTestResult{}
 		err := results.ConvertFromJSON(strings.NewReader(testResultsJson))
 		So(err, ShouldBeNil)
-		So(results.TestResult.TestRuns, ShouldResembleProto, testRuns)
+		So(results.TestResult, ShouldResembleProto, testResult)
 	})
 
 	Convey(`ToProtos works`, t, func() {
@@ -251,13 +218,87 @@ func TestCrosTestResultConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
 					Tags: []*pb.StringPair{
-						pbutil.StringPair("image", "dedede-cq/R106-15054.52.0"),
-						pbutil.StringPair("build", "R106-15054.52.0"),
-						pbutil.StringPair("board", "dedede"),
-						pbutil.StringPair("model", "storo"),
-						pbutil.StringPair("hostname", "chromeos8-row13-rack20-host28"),
+						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
+						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("board", "hatch"),
+						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"),
 					},
+				},
+			}
+			So(testResults, ShouldHaveLength, 2)
+			So(testResults, ShouldResembleProto, expected)
+		})
+
+		Convey(`check expected skip and unexpected skip tests`, func() {
+			testResultsJson := `
+			{
+				"test_runs":[
+					{
+						"test_case_info":{
+							"test_case_metadata":{
+								"test_case":{
+									"id":{
+										"value":"invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001"
+									},
+									"name":"rlz_CheckPing"
+								}
+							},
+							"test_case_result":{
+								"skip":{},
+								"reason": "Test was skipped expectedly",
+								"start_time":"2022-09-07T18:53:33.983328614Z",
+								"duration": "60s"
+							}
+						}
+					},
+					{
+						"test_case_info":{
+							"test_case_metadata":{
+								"test_case":{
+									"id":{
+										"value":"invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002"
+									},
+									"name":"power_Resume"
+								}
+							},
+							"test_case_result":{
+								"not_run":{},
+								"reason": "Test has not run yet",
+								"start_time":"2022-09-07T18:53:34.983328614Z",
+								"duration": "120.1s"
+							}
+						}
+					}
+				]
+			}
+			`
+			results := &CrosTestResult{}
+			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			testResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:   "rlz_CheckPing",
+					Expected: true,
+					Status:   pb.TestStatus_SKIP,
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "Test was skipped expectedly",
+					},
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 60},
+				},
+				{
+					TestId:   "power_Resume",
+					Expected: false,
+					Status:   pb.TestStatus_SKIP,
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "Test has not run yet",
+					},
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
 				},
 			}
 			So(testResults, ShouldHaveLength, 2)
