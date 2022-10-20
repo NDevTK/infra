@@ -11,7 +11,8 @@
 // were any insert errors it prints the errors to stderr.
 //
 // Usage:
-//    bqupload <project>.<dataset>.<table> [<file>]
+//
+//	bqupload <project>.<dataset>.<table> [<file>]
 package main
 
 import (
@@ -26,9 +27,11 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 
 	"cloud.google.com/go/bigquery"
 	"golang.org/x/oauth2"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/auth"
@@ -40,7 +43,14 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
-const userAgent = "bqupload v1.2"
+const (
+	userAgent = "bqupload v1.3"
+	// The bigquery API imposes a hard limit of 50,000 rows. We use a much lower
+	// default limit to also make it less likely that the total payload size
+	// exceeds the maximum, and to limit the blast radius when a batch fails to
+	// upload.
+	defaultBatchSize = 500
+)
 
 func usage() {
 	fmt.Fprintf(os.Stderr,
@@ -77,6 +87,7 @@ type uploadOpts struct {
 
 	ignoreUnknownValues bool
 	skipInvalidRows     bool
+	batchSize           int
 }
 
 func run(ctx context.Context) error {
@@ -86,6 +97,8 @@ func run(ctx context.Context) error {
 		"Ignore any values in a row that are not present in the schema.")
 	flag.BoolVar(&bqOpts.skipInvalidRows, "skip-invalid-rows", false,
 		"Attempt to insert any valid rows, even if invalid rows are present.")
+	flag.IntVar(&bqOpts.batchSize, "batch-size", defaultBatchSize,
+		"Number of rows per insert batch.")
 
 	// Auth options.
 	defaults := chromeinfra.DefaultAuthOptions()
@@ -190,23 +203,61 @@ func upload(ctx context.Context, opts *uploadOpts) error {
 		"Inserting %d rows into table `%s.%s.%s`",
 		len(rows), opts.project, opts.dataset, opts.table)
 
-	if err := inserter.Put(ctx, rows); err != nil {
-		if merr, ok := err.(bigquery.PutMultiError); ok {
-			fmt.Fprintf(os.Stderr, "Failed to upload some rows:\n")
-			for _, rowErr := range merr {
-				for _, valErr := range rowErr.Errors {
-					fmt.Fprintf(os.Stderr, "row %d: %s\n", rowErr.RowIndex, valErr)
-				}
-			}
-		}
-		return err // this is e.g. "1 row insertion failed"
+	if err := doInsert(ctx, os.Stderr, opts, inserter, rows); err != nil {
+		return err
 	}
 
 	logging.Infof(ctx, "Done")
 	return nil
 }
 
-func readInput(r io.Reader, insertIDBase string) (rows []bigquery.ValueSaver, err error) {
+// For testability.
+type bqInserter interface {
+	Put(ctx context.Context, src interface{}) error
+}
+
+func doInsert(ctx context.Context, stderr io.Writer, opts *uploadOpts, inserter bqInserter, rows []*tableRow) error {
+	var mu sync.Mutex
+	var multiErr bigquery.PutMultiError
+	eg, egCtx := errgroup.WithContext(ctx)
+	for i := 0; i < len(rows); i += opts.batchSize {
+		i := i
+		eg.Go(func() error {
+			end := i + opts.batchSize
+			if end > len(rows) {
+				end = len(rows)
+			}
+			batch := rows[i:end]
+			if err := inserter.Put(egCtx, batch); err != nil {
+				if merr, ok := err.(bigquery.PutMultiError); ok {
+					mu.Lock()
+					multiErr = append(multiErr, merr...)
+					mu.Unlock()
+				} else {
+					// Unrecognized errors should be considered fatal.
+					return err
+				}
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return err
+	}
+
+	if len(multiErr) > 0 {
+		fmt.Fprintf(stderr, "Failed to upload some rows:\n")
+		for _, rowErr := range multiErr {
+			for _, valErr := range rowErr.Errors {
+				fmt.Fprintf(stderr, "row %d: %s\n", rowErr.RowIndex, valErr)
+			}
+		}
+		return multiErr
+	}
+	return nil
+}
+
+func readInput(r io.Reader, insertIDBase string) (rows []*tableRow, err error) {
 	buf := bufio.NewReaderSize(r, 32768)
 
 	lineNo := 0
