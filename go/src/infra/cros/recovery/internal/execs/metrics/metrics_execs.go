@@ -69,7 +69,7 @@ func checkTaskFailuresExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	taskName := argsMap.AsString(ctx, "task_name", "")
 	repairFailedCountTarget := argsMap.AsInt(ctx, "repair_failed_count", 49)
-	repairFailedCount, err := CountFailedRepairFromMetrics(ctx, taskName, info)
+	repairFailedCount, err := metrics.CountFailedRepairFromMetrics(ctx, info.GetDut().Name, taskName, info.GetMetrics())
 	if err != nil {
 		return errors.Annotate(err, "check task failures").Err()
 	}

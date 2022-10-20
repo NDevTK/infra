@@ -181,15 +181,14 @@ func NewLastActionBeforeTimeQuery(assetTag string, kind string, stopTime time.Ti
 //
 // Sample usage:
 //
-//   q := NewListActionsInRangeQuery(..., "token1", 10)
-//   res, err := metrics.Search(ctx, q)
-//   if err != nil {
-//      ...
-//   }
-//   q = NewListActionsInRangeQuery(..., res.PageToken, 10)
-//   res, err = metrics.Search(ctx, q)
-//   ...
-//
+//	q := NewListActionsInRangeQuery(..., "token1", 10)
+//	res, err := metrics.Search(ctx, q)
+//	if err != nil {
+//	   ...
+//	}
+//	q = NewListActionsInRangeQuery(..., res.PageToken, 10)
+//	res, err = metrics.Search(ctx, q)
+//	...
 func NewListActionsInRangeQuery(assetTag string, kind string, startTime time.Time, stopTime time.Time, pageToken string, limit int) *Query {
 	return &Query{
 		AssetTag:   assetTag,
@@ -222,4 +221,37 @@ type Metrics interface {
 	// Search lists all the actions matching a set of constraints, up to
 	// a limit on the number of returned actions.
 	Search(ctx context.Context, q *Query) (*QueryResult, error)
+}
+
+// CountFailedRepairFromMetrics determines the number of failed PARIS repair task
+// since the last successful PARIS repair task.
+func CountFailedRepairFromMetrics(ctx context.Context, dutName, taskName string, metricsService Metrics) (int, error) {
+	if metricsService == nil {
+		return 0, errors.Reason("count failed repair from karte: karte metric has not been initialized").Err()
+	}
+	karteQuery := &Query{
+		//TODO(gregorynisbet): When karte's Search API is capable of taking in asset tag,
+		// change the query to use asset tag instead of using hostname.
+		Hostname:   dutName,
+		ActionKind: fmt.Sprintf(PerResourceTaskKindGlob, taskName),
+	}
+	queryRes, err := metricsService.Search(ctx, karteQuery)
+	if err != nil {
+		return 0, errors.Annotate(err, "count failed repair from karte").Err()
+	}
+	matchedQueryResCount := len(queryRes.Actions)
+	if matchedQueryResCount == 0 {
+		return 0, nil
+	}
+	var failedRepairCount int
+	for i := 0; i < matchedQueryResCount; i++ {
+		if queryRes.Actions[i].Status == ActionStatusSuccess {
+			// since we are counting the number of failed repair tasks after last successful task.
+			// when we are encountering the successful record,that mean we reached latest success task
+			// and we need stop counting it.
+			break
+		}
+		failedRepairCount += 1
+	}
+	return failedRepairCount, nil
 }

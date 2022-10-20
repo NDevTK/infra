@@ -15,8 +15,8 @@ import (
 	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/metrics"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // Boot device from servo USB drive when device is in DEV mode.
@@ -184,7 +184,7 @@ func isTimeToForceDownloadImageToUsbKeyExec(ctx context.Context, info *execs.Exe
 	taskName := argsMap.AsString(ctx, "task_name", "")
 	repairFailedCountTarget := argsMap.AsInt(ctx, "repair_failed_count", -1)
 	repairFailedInterval := argsMap.AsInt(ctx, "repair_failed_interval", 10)
-	repairFailedCount, err := metrics.CountFailedRepairFromMetrics(ctx, taskName, info)
+	repairFailedCount, err := metrics.CountFailedRepairFromMetrics(ctx, info.GetDut().Name, taskName, info.GetMetrics())
 	if err != nil {
 		return errors.Annotate(err, "is time to force download image to usbkey").Err()
 	}
