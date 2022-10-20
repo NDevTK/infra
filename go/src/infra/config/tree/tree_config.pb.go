@@ -5,9 +5,11 @@
 Package tree is a generated protocol buffer package.
 
 It is generated from these files:
+
 	tree_config.proto
 
 It has these top-level messages:
+
 	SomCfg
 	Tree
 	TreeCfg

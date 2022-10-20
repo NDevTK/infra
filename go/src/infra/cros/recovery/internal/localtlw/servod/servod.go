@@ -181,12 +181,13 @@ func Call(ctx context.Context, c *xmlrpc.XMLRpc, timeout time.Duration, method s
 
 // GenerateParams generates command's params based on options.
 // Example output:
-//  "BOARD=${VALUE}" - name of DUT board.
-//  "MODEL=${VALUE}" - name of DUT model.
-//  "PORT=${VALUE}" - port specified to run servod on servo-host.
-//  "SERIAL=${VALUE}" - serial number of root servo.
-//  "CONFIG=cr50.xml" - special config for extra ability of CR50.
-//  "REC_MODE=1" - start servod in recovery-mode, if root device found then servod will start event not all components detected.
+//
+//	"BOARD=${VALUE}" - name of DUT board.
+//	"MODEL=${VALUE}" - name of DUT model.
+//	"PORT=${VALUE}" - port specified to run servod on servo-host.
+//	"SERIAL=${VALUE}" - serial number of root servo.
+//	"CONFIG=cr50.xml" - special config for extra ability of CR50.
+//	"REC_MODE=1" - start servod in recovery-mode, if root device found then servod will start event not all components detected.
 func GenerateParams(o *tlw.ServodOptions) []string {
 	var parts []string
 	if o == nil {

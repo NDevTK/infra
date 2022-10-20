@@ -15,8 +15,9 @@ import (
 // Each device in the lab is representing as resource with name.
 // For now the resource name matche to host-name but later can became different.
 // Examples:
-// 	Hostname: lab1-row1-rack1-device1, lab1-row1-rack1-ap1
-// 	Resource Name: TestDevice256, CustomApV3.0
+//
+//	Hostname: lab1-row1-rack1-device1, lab1-row1-rack1-ap1
+//	Resource Name: TestDevice256, CustomApV3.0
 type Access interface {
 	// Ping performs ping by resource name.
 	Ping(ctx context.Context, resourceName string, count int) error

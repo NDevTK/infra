@@ -1056,11 +1056,11 @@ func (c *updateDUT) updateDeployActions(actions []string) []string {
 // getDeployActions checks the machineLse request and decides actions required for the deploy task.
 //
 // Actions for deploy task are determined based on the following.
-// 1. Updates to servo/rpm will start deploy task with run-pre-deploy-verification.
-// 2. Updates to asset will start deploy task with stage-usb, install-test-image, install-firmware,
-//    update-label, verify-recovery-mode and run-pre-deploy-verification
-// 3. If both are updated then asset takes precedence and actions in (2) are run.
-// 4. If neither of them is found. Return nil, nil.
+//  1. Updates to servo/rpm will start deploy task with run-pre-deploy-verification.
+//  2. Updates to asset will start deploy task with stage-usb, install-test-image, install-firmware,
+//     update-label, verify-recovery-mode and run-pre-deploy-verification
+//  3. If both are updated then asset takes precedence and actions in (2) are run.
+//  4. If neither of them is found. Return nil, nil.
 func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) (a []string, err error) {
 	defer func() {
 		// Cannot trust JSON input to have all the fields. Log error.

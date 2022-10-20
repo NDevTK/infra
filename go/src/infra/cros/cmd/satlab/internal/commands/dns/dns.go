@@ -262,9 +262,10 @@ type hostsfileReaderFunc func() (string, error)
 
 // recordEnsurer makes sure a given content string is appropriately updated with newRecords and deletedRecords.
 // A content string is a series of lines containing "<address> <hostname>" pairs and after this function should include, in order of priority
-//   1. No records with hostname found in `deletedRecords`
-//   2. All records with hostname found in `newRecords`, with the corresponding address from `newRecords`- these records should be upserted
-//   3. The existing set of records
+//  1. No records with hostname found in `deletedRecords`
+//  2. All records with hostname found in `newRecords`, with the corresponding address from `newRecords`- these records should be upserted
+//  3. The existing set of records
+//
 // A recordEnsurer should also ensure the content string is *applied*, generally meaning that it writes the string and then triggers a conf reload.
 // It can optionally backup the original content string.
 type recordEnsurer func(content string, newRecords map[string]string, deletedRecords map[string]bool) error

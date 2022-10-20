@@ -243,10 +243,11 @@ func (c *cmdModuleRun) exec(ctx context.Context) error {
 // deal with it.
 //
 // Returns:
-//   `newModDir`: a path within the tarball to use as new "directory with
-//       module's YAML" (may be same as `modDir` if no changes are needed).
-//   `env`: a environ to pass to "gcloud app deploy".
-//   `err`: if something is not right.
+//
+//	`newModDir`: a path within the tarball to use as new "directory with
+//	    module's YAML" (may be same as `modDir` if no changes are needed).
+//	`env`: a environ to pass to "gcloud app deploy".
+//	`err`: if something is not right.
 func prepareForGoDeploy(ctx context.Context, root, modDir string) (newModDir string, env environ.Env, err error) {
 	// Scrub the existing Go environ. This scrubs a bit more, but gcloud should
 	// not depend on env vars that start with GO or CGO anyway.

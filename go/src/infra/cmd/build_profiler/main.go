@@ -16,8 +16,7 @@
 //
 // Usage:
 //
-//  $ build_profiler autoninja -C out/Release chrome
-//
+//	$ build_profiler autoninja -C out/Release chrome
 package main
 
 import (

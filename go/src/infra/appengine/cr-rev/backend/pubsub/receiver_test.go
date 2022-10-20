@@ -21,7 +21,6 @@ type ackHandler interface {
 	OnNack()
 }
 
-//
 type fakeAckHandler struct {
 	acked  int
 	nacked int

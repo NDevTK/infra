@@ -68,7 +68,8 @@ func (r *Report) Clone() *Report {
 }
 
 // ToCSVRow returns a CSV row:
-//    Checkout, Project, ConfigFile, Tag, Problem, Actionable, Metadata*
+//
+//	Checkout, Project, ConfigFile, Tag, Problem, Actionable, Metadata*
 //
 // Where Metadata* is one key:value entry per value in Metadata.
 func (r *Report) ToCSVRow() []string {

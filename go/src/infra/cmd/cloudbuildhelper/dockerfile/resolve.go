@@ -32,9 +32,9 @@ type Resolver interface {
 // concrete digests.
 //
 // Understands only the following constructs currently:
-//  * FROM <image> [AS <name>] (assumes "latest" tag)
-//  * FROM <image>[:<tag>] [AS <name>] (resolves the given tag)
-//  * FROM <image>[@<digest>] [AS <name>] (passes the definition through)
+//   - FROM <image> [AS <name>] (assumes "latest" tag)
+//   - FROM <image>[:<tag>] [AS <name>] (resolves the given tag)
+//   - FROM <image>[@<digest>] [AS <name>] (passes the definition through)
 //
 // In particular does not understand ARGs, e.g. "FROM base:${CODE_VERSION}" is
 // not supported. Returns an error with unrecognized line in this case.

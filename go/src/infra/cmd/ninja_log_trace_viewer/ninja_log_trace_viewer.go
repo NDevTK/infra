@@ -5,11 +5,11 @@
 // ninja_log_trace_viewer converts .ninja_log into trace-viewer formats.
 //
 // usage:
-//  $ go run ninja_log_trace_viewer.go --filename out/Release/.ninja_log --output trace.json
 //
-//  $ go run ninja_log_trace_viewer.go \
-//    --filename out/Release/.ninja_log --browser
+//	$ go run ninja_log_trace_viewer.go --filename out/Release/.ninja_log --output trace.json
 //
+//	$ go run ninja_log_trace_viewer.go \
+//	  --filename out/Release/.ninja_log --browser
 package main
 
 import (

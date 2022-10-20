@@ -18,7 +18,7 @@ func IsCSVFile(filename string) bool {
 	return strings.Contains(filename, ".csv")
 }
 
-//ParseMCSVFile parse a mcsv file and return the records as 2D string slice
+// ParseMCSVFile parse a mcsv file and return the records as 2D string slice
 func ParseMCSVFile(specsFile string) ([][]string, error) {
 	rawText, err := ioutil.ReadFile(specsFile)
 	if err != nil {

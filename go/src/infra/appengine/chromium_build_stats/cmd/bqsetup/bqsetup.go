@@ -8,7 +8,8 @@
 // Binary bqsetup is a tool that create/update BigQuery table/transfer config for ninja log.
 //
 // Usage:
-//  $ go run bqsetup.go -project chromium-build-stats-staging -table test
+//
+//	$ go run bqsetup.go -project chromium-build-stats-staging -table test
 package main
 
 import (

@@ -1220,7 +1220,7 @@ func GetMachineHistoryClient(m *ufspb.Machine) *HistoryClient {
 	}
 }
 
-//setMachine populates the machine object with nics and drac
+// setMachine populates the machine object with nics and drac
 func setMachine(ctx context.Context, machine *ufspb.Machine) {
 	// get Nics for machine
 	nics, err := registration.QueryNicByPropertyName(ctx, "machine", machine.GetName(), false)

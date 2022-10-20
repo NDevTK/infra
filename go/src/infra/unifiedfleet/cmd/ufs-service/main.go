@@ -146,6 +146,7 @@ func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 var versionRegex = regexp.MustCompile(`[0-9]{1,3}`)
 
 // validateUserAgent returns a tuple
+//
 //	(if user-agent exists, if user-agent is valid)
 func validateUserAgent(ctx context.Context, md metadata.MD) (string, bool, error) {
 	cfg := config.Get(ctx)

@@ -124,10 +124,11 @@ func (c *Client) RebuildAnalysis(ctx context.Context, luciProject string) error 
 // version, or where the latest version of the row has the row not included in a
 // cluster.
 // This is necessary for:
-// - Our QueryClusterSummaries query, which for performance reasons (UI-interactive)
-//   does not do filtering to fetch the latest version of rows and instead uses all
-//   rows.
-// - Keeping the size of the BigQuery table to a minimum.
+//   - Our QueryClusterSummaries query, which for performance reasons (UI-interactive)
+//     does not do filtering to fetch the latest version of rows and instead uses all
+//     rows.
+//   - Keeping the size of the BigQuery table to a minimum.
+//
 // We currently only purge the last 7 days to keep purging costs to a minimum and
 // as this is as far as QueryClusterSummaries looks back.
 func (c *Client) PurgeStaleRows(ctx context.Context, luciProject string) error {

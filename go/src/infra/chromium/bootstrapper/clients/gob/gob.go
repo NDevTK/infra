@@ -56,9 +56,9 @@ func DisableRetries(ctx context.Context) context.Context {
 // identify the operation that is being retried.
 //
 // Retries will not be performed in the following cases:
-// * The provided context is one that has had DisableRetries called on it more recently than
-//   EnableRetries
-// * The error returned from the operation is tagged with DontRetry
+//   - The provided context is one that has had DisableRetries called on it more recently than
+//     EnableRetries
+//   - The error returned from the operation is tagged with DontRetry
 func Execute(ctx context.Context, opName string, fn func() error) error {
 	ctxVal := ctx.Value(&ctxKey)
 	retriesEnabled := true

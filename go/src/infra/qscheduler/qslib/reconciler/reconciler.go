@@ -163,7 +163,7 @@ func (state *State) AddTaskError(requestID scheduler.RequestID, err error) {
 // Cancellation represents a scheduler-initated operation to cancel a task on a worker.
 // The worker should be aborted if and only if it is currently running the given task.
 //
-//TODO: Consider unifying this with Assignment, since it is in fact the same content.
+// TODO: Consider unifying this with Assignment, since it is in fact the same content.
 type Cancellation struct {
 	// WorkerID is the id the worker where we should cancel a task.
 	WorkerID string

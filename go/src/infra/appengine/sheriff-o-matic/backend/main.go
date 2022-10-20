@@ -36,7 +36,7 @@ func withServiceClients(ctx *router.Context, next router.Handler) {
 	next(ctx)
 }
 
-//// Routes.
+// // Routes.
 func init() {
 	r := router.New()
 	basemw := base()

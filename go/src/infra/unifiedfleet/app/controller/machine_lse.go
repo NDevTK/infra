@@ -598,8 +598,8 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 // ImportOSMachineLSEs implements the logic of importing ChromeOS machine lses and related info to backend storage.
 //
 // The function will return:
-//      * all of the results of the operations that already run
-//      * the first error that it meets
+//   - all of the results of the operations that already run
+//   - the first error that it meets
 //
 // The function will stop at the very first error.
 func ImportOSMachineLSEs(ctx context.Context, labConfigs []*invV2Api.ListCrosDevicesLabConfigResponse_LabConfig, pageSize int) (*ufsds.OpResults, error) {

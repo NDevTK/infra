@@ -5,8 +5,8 @@
 // diagnose_goma_log diagnoses goma's compiler_proxy.INFO log file.
 //
 // usage:
-//  ../../goenv.sh goapp run diagnose_goma_log.go --filename /tmp/compiler_proxy.INFO
 //
+//	../../goenv.sh goapp run diagnose_goma_log.go --filename /tmp/compiler_proxy.INFO
 package main
 
 import (

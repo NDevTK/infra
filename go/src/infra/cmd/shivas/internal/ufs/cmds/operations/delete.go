@@ -67,8 +67,9 @@ func (c *delete) Run(a subcommands.Application, args []string, env subcommands.E
 // GetCommands lists all the subcommands under delete
 //
 // Aliases:
-//   attacheddevicemachine.DeleteAttachedDeviceMachineCmd = attacheddevicemachine.DeleteADMCmd
-//   attacheddevicehost.DeleteAttachedDeviceHostCmd = attacheddevicehost.DeleteADHCmd
+//
+//	attacheddevicemachine.DeleteAttachedDeviceMachineCmd = attacheddevicemachine.DeleteADMCmd
+//	attacheddevicehost.DeleteAttachedDeviceHostCmd = attacheddevicehost.DeleteADHCmd
 func (c deleteApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,

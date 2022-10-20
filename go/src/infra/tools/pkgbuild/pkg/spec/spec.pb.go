@@ -132,11 +132,11 @@ func (Spec_Create_Package_InstallMode) EnumDescriptor() ([]byte, []int) {
 }
 
 // The Spec for a third-party package fully describes how to:
-//   * Fetch the package sources
-//   * Build the sources
-//   * Package the built product
-//   * Verify the packaged product
-//   * Upload the packaged product to CIPD
+//   - Fetch the package sources
+//   - Build the sources
+//   - Package the built product
+//   - Verify the packaged product
+//   - Upload the packaged product to CIPD
 type Spec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -204,9 +204,9 @@ func (x *Spec) GetUpload() *Spec_Upload {
 //
 // When SemverRestriction is used to restrict some `$version`, it works like
 // `$version $op $val`. So, if this was `{op: LT val: "1.0"}`, then:
-//   * 1.1   would be excluded
-//   * 0.9   would be included
-//   * 0.9.9 would be included
+//   - 1.1   would be excluded
+//   - 0.9   would be included
+//   - 0.9.9 would be included
 //
 // NOTE: Release candidates sort LOWER than their symver prefix. For example,
 // "1.0rc1" < "1.0". This makes sense if you think about it a bit, but it
@@ -464,12 +464,13 @@ func (x *CipdSource) GetOriginalDownloadUrl() string {
 // If this version needs to be fetched, the script will be invoked as
 // `script get_url` and is expected to print to stdout a json string of
 // the download manifest. For example:
-//   {
-//     "url": ["https://some_url/foo_1.2.3.zip"],
-//     "ext": ".zip", # optional when the extension is ".tar.gz",
-//                    # ignored when "name" is present
-//     "name": ["foo.zip"]
-//   }
+//
+//	{
+//	  "url": ["https://some_url/foo_1.2.3.zip"],
+//	  "ext": ".zip", # optional when the extension is ".tar.gz",
+//	                 # ignored when "name" is present
+//	  "name": ["foo.zip"]
+//	}
 type ScriptSource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -644,17 +645,17 @@ func (x *UrlSource) GetExtension() string {
 // All scripts are invoked with the following environment variables (unless
 // noted otherwise):
 //
-//   * $_3PP_CIPD_PACKAGE_NAME - the CIPD package name, excluding the
+//   - $_3PP_CIPD_PACKAGE_NAME - the CIPD package name, excluding the
 //     package_prefix and platform suffix.
 //     (if any patch version was set).
-//   * $_3PP_PATCH_VERSION - the `patch_version` set for this create block
-//   * $_3PP_PLATFORM - the platform we're targeting
-//   * $_3PP_TOOL_PLATFORM - the platform that we're building on (will be different
+//   - $_3PP_PATCH_VERSION - the `patch_version` set for this create block
+//   - $_3PP_PLATFORM - the platform we're targeting
+//   - $_3PP_TOOL_PLATFORM - the platform that we're building on (will be different
 //     than _3PP_PLATFORM if we're cross-compiling)
-//   * $_3PP_VERSION - the version we're building, e.g. 1.2.3
-//   * $GOOS - The golang OS name we're targeting
-//   * $GOARCH - The golang architecture we're targeting
-//   * $MACOSX_DEPLOYMENT_TARGET - On OS X, set to 10.10, for your
+//   - $_3PP_VERSION - the version we're building, e.g. 1.2.3
+//   - $GOOS - The golang OS name we're targeting
+//   - $GOARCH - The golang architecture we're targeting
+//   - $MACOSX_DEPLOYMENT_TARGET - On OS X, set to 10.10, for your
 //     semi-up-to-date OS X building needs. This needs to be consistently
 //     set for all packages or it will cause linker warnings/errors when
 //     linking in static libs that were targeting a newer version (e.g.

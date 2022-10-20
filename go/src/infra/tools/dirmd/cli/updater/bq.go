@@ -106,10 +106,10 @@ func writeToBQ(ctx context.Context, ins inserter, mapping *dirmd.Mapping, commit
 
 // Find the sub project of the directory.
 // Examples:
-// - If the root repo is "~/chromium/src" and it contains subrepo
-//   "~/chromium/src/v8", then Mapping.repos will have keys "." and "v8".
-//   In this case Mapping.dirs key "foo/bar" will correspond to Repo key ".",
-//   while "v8/baz" will correspond to Repo key "v8".
+//   - If the root repo is "~/chromium/src" and it contains subrepo
+//     "~/chromium/src/v8", then Mapping.repos will have keys "." and "v8".
+//     In this case Mapping.dirs key "foo/bar" will correspond to Repo key ".",
+//     while "v8/baz" will correspond to Repo key "v8".
 func subRepo(dir string, mapping *dirmd.Mapping) string {
 	if dir == "." {
 		return ""

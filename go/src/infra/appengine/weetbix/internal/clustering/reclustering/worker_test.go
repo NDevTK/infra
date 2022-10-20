@@ -781,9 +781,9 @@ func (b *chunkBuilder) buildBQExport() []*bqpb.ClusteredFailureRow {
 
 // scenarioBuilder is used to generate Weetbix system states used for testing.
 // Each scenario represents a consistent state of the Weetbix system, i.e.
-// - where the clustering state matches the configured rules, and
-// - the BigQuery exports match the clustering state, and the test results
-//   in the chunk store.
+//   - where the clustering state matches the configured rules, and
+//   - the BigQuery exports match the clustering state, and the test results
+//     in the chunk store.
 type scenarioBuilder struct {
 	project       string
 	chunkCount    int

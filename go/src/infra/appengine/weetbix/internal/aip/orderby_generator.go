@@ -11,9 +11,9 @@ import (
 
 // MergeWithDefaultOrder merges the specified order with the given
 // defaultOrder. The merge occurs as follows:
-// - Ordering specified in `order` takes precedence.
-// - For columns not specified in the `order` that appear in `defaultOrder`,
-//   ordering is applied in the order they apply in defaultOrder.
+//   - Ordering specified in `order` takes precedence.
+//   - For columns not specified in the `order` that appear in `defaultOrder`,
+//     ordering is applied in the order they apply in defaultOrder.
 func MergeWithDefaultOrder(defaultOrder []OrderBy, order []OrderBy) []OrderBy {
 	result := make([]OrderBy, 0, len(order)+len(defaultOrder))
 	seenColumns := make(map[string]struct{})

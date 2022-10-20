@@ -20,27 +20,28 @@ const magicHeader = 54
 // It is the opposite of (*Graph).Read().
 //
 // Spec:
-//  graph = header version git-commit-hash root total-number-of-edges root-edges
-//  header = 54
-//  version = 0
 //
-//  root = node
-//  node = prob-sum-denominator number-of-children children-sorted-by-base-name
-//  children-sorted-by-base-name = child*
-//  child = base-name node
+//	graph = header version git-commit-hash root total-number-of-edges root-edges
+//	header = 54
+//	version = 0
 //
-//  root-edges = node-edges
-//  node-edges = number-of-edges edge*
-//  edge =
-//    index-of-the-adjacent-node-as-found-in-the-file
-//    prob-sum
-//    edges-of-children-sorted-by-base-name
-//  edges-of-children-sorted-by-base-name = edge*
+//	root = node
+//	node = prob-sum-denominator number-of-children children-sorted-by-base-name
+//	children-sorted-by-base-name = child*
+//	child = base-name node
 //
-//  where
-//   all integer types are encoded as varint
-//   all strings are encoded as length-prefixed utf8
-//   `*` means "0 or more"
+//	root-edges = node-edges
+//	node-edges = number-of-edges edge*
+//	edge =
+//	  index-of-the-adjacent-node-as-found-in-the-file
+//	  prob-sum
+//	  edges-of-children-sorted-by-base-name
+//	edges-of-children-sorted-by-base-name = edge*
+//
+//	where
+//	 all integer types are encoded as varint
+//	 all strings are encoded as length-prefixed utf8
+//	 `*` means "0 or more"
 func (g *Graph) Write(w io.Writer) error {
 	g.ensureInitialized()
 	return (&writer{w: w}).writeGraph(g)

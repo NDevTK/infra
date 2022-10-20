@@ -92,7 +92,6 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModel(t *testing.T) {
 // TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelWithHostnameLookup tests the happy path of extracting a satlab stable version using its board and model.
 //
 // TODO(gregorynisbet): Refactor this test as described in b:222337299.
-//
 func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelWithHostnameLookup(t *testing.T) {
 	// t.Parallel() -- This test overrides getDUT. It can't be parallelized.
 

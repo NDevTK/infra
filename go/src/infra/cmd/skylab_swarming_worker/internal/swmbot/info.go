@@ -36,19 +36,19 @@ type Info struct {
 //
 // Per-bot variables:
 //
-//   ADMIN_SERVICE: Admin service host, e.g. foo.appspot.com.
-//   INVENTORY_SERVICE: Inventory V2 service host, e.g. foo.appspot.com.
-//   AUTOTEST_DIR: Path to the autotest checkout on server.
-//   LUCIFER_TOOLS_DIR: Path to the lucifer installation.
-//   PARSER_PATH: Path to the autotest_status_parser installation.
-//   FLEET_RESOURCE_NAME: The name to locate a fleet resource, for now we
-//                        use swarming dut_id dimension for this purpose.
-//   SWARMING_SERVICE: Swarming service host, e.g. https://foo.appspot.com.
-//   FLEET_MULTIDUTS_FLAG: Indicates if the bot is hosting a Scheduling Unit.
+//	ADMIN_SERVICE: Admin service host, e.g. foo.appspot.com.
+//	INVENTORY_SERVICE: Inventory V2 service host, e.g. foo.appspot.com.
+//	AUTOTEST_DIR: Path to the autotest checkout on server.
+//	LUCIFER_TOOLS_DIR: Path to the lucifer installation.
+//	PARSER_PATH: Path to the autotest_status_parser installation.
+//	FLEET_RESOURCE_NAME: The name to locate a fleet resource, for now we
+//	                     use swarming dut_id dimension for this purpose.
+//	SWARMING_SERVICE: Swarming service host, e.g. https://foo.appspot.com.
+//	FLEET_MULTIDUTS_FLAG: Indicates if the bot is hosting a Scheduling Unit.
 //
 // Per-task variables:
 //
-//   SWARMING_TASK_ID: task id of the swarming task being serviced.
+//	SWARMING_TASK_ID: task id of the swarming task being serviced.
 func GetInfo() *Info {
 	info := &Info{
 		AdminService:     os.Getenv("ADMIN_SERVICE"),

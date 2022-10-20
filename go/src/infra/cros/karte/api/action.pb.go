@@ -79,7 +79,6 @@ func (Action_Status) EnumDescriptor() ([]byte, []int) {
 // An action represents an event that was intentionally performed on a DUT.
 // Examples include running a command on a DUT or resetting the servo
 // attached to a DUT.
-//
 type Action struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

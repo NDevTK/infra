@@ -1141,7 +1141,6 @@ func (x *ScheduleJobRequest) GetJob() *JobSpec {
 // ==== LEGACY RESULTS PROTOS
 // Everything within this section is a translation of the schema used by the
 // legacy API to represent results for a given job.
-//
 type Change struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

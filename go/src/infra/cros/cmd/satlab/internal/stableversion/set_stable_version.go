@@ -79,7 +79,6 @@ func (c *setStableVersionRun) Run(a subcommands.Application, args []string, env 
 
 // ProduceRequest creates a request that can be used as a key to set the stable version.
 // If the command line arguments do not unambiguously indicate how to create such a request, we fail.
-//
 func (c *setStableVersionRun) produceRequest(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) (*fleet.SetSatlabStableVersionRequest, error) {
 	req := &fleet.SetSatlabStableVersionRequest{}
 	useHostnameStrategy := c.hostname != ""

@@ -37,12 +37,15 @@ var (
 // TestFakeOmahaIntegration tests CreateFakeOmaha and DeleteFakeOmaha in a real
 // environment.
 // The requirements are:
-//     1) a workable TLW implementation;
-//     2) locally installed `gsutil` and authorized to
-//        "gs://chromeos-image-archive";
-//     3) a SSH-able DUT.
+//  1. a workable TLW implementation;
+//  2. locally installed `gsutil` and authorized to
+//     "gs://chromeos-image-archive";
+//  3. a SSH-able DUT.
+//
 // Command line to run:
-//     go test -dut <DUT_name> ./...
+//
+//	go test -dut <DUT_name> ./...
+//
 // or you can use "-run TestFakeOmahaIntegration" instead of "./..." to just run
 // this test.
 func TestFakeOmahaIntegration(t *testing.T) {

@@ -337,8 +337,8 @@ func distanceQuantiles(afs []rts.Affectedness, count int) (distances []float32) 
 // the element represents.
 //
 // bucketSlice is used in two phases:
-//   1) For each data point, call inc().
-//   2) Call makeCumulative() and incorporate bucketSlice into thresholds.
+//  1. For each data point, call inc().
+//  2. Call makeCumulative() and incorporate bucketSlice into thresholds.
 //
 // The structure of bucketSlice is similar to []*Threshold used in
 // evaluateSafety and evaluateEfficiency, except bucketSlice element i

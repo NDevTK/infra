@@ -270,15 +270,16 @@ type ResolveRuntimeRefArgs struct {
 
 // Returns the best simulator runtime in CIPD with |runtimeVersion| and
 // |xcodeVersion| as input. Args are passed in within |ResolveRuntimeRefArgs|:
-//   * If only |xcodeVersion| is provided, only finds the default runtime coming
+//   - If only |xcodeVersion| is provided, only finds the default runtime coming
 //     with the Xcode.
-//   * If only |runtimeVersion| is provided, only finds the manually uploaded
+//   - If only |runtimeVersion| is provided, only finds the manually uploaded
 //     runtime of the version.
-//   * If both are provided, find a runtime using the following priority:
+//   - If both are provided, find a runtime using the following priority:
 //     1. Satisfying both Xcode and runtime version,
 //     2. A manually uploaded runtime of the version,
 //     3. The latest uploaded runtime of the version, regardless of whether it's
-//        from another Xcode or manually uploaded.
+//     from another Xcode or manually uploaded.
+//
 // Details: go/ios-runtime-cipd
 func resolveRuntimeRef(ctx context.Context, args ResolveRuntimeRefArgs) (string, error) {
 	if args.xcodeVersion == "" && args.runtimeVersion == "" {

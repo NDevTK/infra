@@ -174,7 +174,7 @@ func getGSClient(ctx context.Context, f *authcli.Flags) (gs.Client, error) {
 
 var currLoc *ufs.Location
 
-//List to collect assets into
+// List to collect assets into
 var assetList []*fleet.ChopsAsset
 
 // parseLoop handles the data from the scanner

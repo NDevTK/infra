@@ -219,10 +219,11 @@ func NewAssetInfo(a *ufs.AssetInfo) (*AssetInfoEntity, error) {
 // repair record of a device.
 //
 // Possible RepairState based on proto enum:
-//  STATE_INVALID = 0;
-// 	STATE_NOT_STARTED = 1;
-// 	STATE_IN_PROGRESS = 2;
-// 	STATE_COMPLETED = 3;
+//
+//	 STATE_INVALID = 0;
+//		STATE_NOT_STARTED = 1;
+//		STATE_IN_PROGRESS = 2;
+//		STATE_COMPLETED = 3;
 type DeviceManualRepairRecordEntity struct {
 	_kind       string    `gae:"$kind,DeviceManualRepairRecord"`
 	ID          string    `gae:"$id"`

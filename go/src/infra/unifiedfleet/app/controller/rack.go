@@ -832,7 +832,7 @@ func getRackClientHistory(m *ufspb.Rack) *HistoryClient {
 	}
 }
 
-//setRack populates the rack object with switches and drac
+// setRack populates the rack object with switches and drac
 func setRack(ctx context.Context, rack *ufspb.Rack) {
 	// get switches for rack
 	switches, err := registration.QuerySwitchByPropertyName(ctx, "rack", rack.GetName(), false)

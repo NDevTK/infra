@@ -74,8 +74,8 @@ func mergeSelectedFunctions(sc *tricium.ServiceConfig, pc *tricium.ProjectConfig
 // While merging, mergeFunctions also validates the functions.
 //
 // Possible errors include:
-//  - change of data dependency in service config is not allowed.
-//  - project and service config functions must have the same type.
+//   - change of data dependency in service config is not allowed.
+//   - project and service config functions must have the same type.
 func mergeFunction(function string, sc *tricium.ServiceConfig, sf, pf *tricium.Function) (*tricium.Function, error) {
 	if sf == nil && pf == nil {
 		return nil, errors.Reason("unknown function %s", function).Err()

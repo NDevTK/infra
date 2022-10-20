@@ -254,9 +254,10 @@ func runBuild(ctx context.Context, p buildParams) (res buildResult, err error) {
 // maybeReuseExistingImage searches for an image with the canonical tag.
 //
 // Returns:
-//   (img, nil) if there's an image we can reuse.
-//   (nil, nil) if we need to build a new image.
-//   (nil, err) if failed to check.
+//
+//	(img, nil) if there's an image we can reuse.
+//	(nil, nil) if we need to build a new image.
+//	(nil, err) if failed to check.
 func maybeReuseExistingImage(ctx context.Context, p buildParams) (*imageRef, error) {
 	fullName := fmt.Sprintf("%s:%s", p.Image, p.CanonicalTag)
 	switch img, err := getImage(ctx, p.Registry, fullName); {
@@ -399,9 +400,10 @@ func remoteBuild(ctx context.Context, p buildParams, out *fileset.Set) (res buil
 // getImage asks the registry to resolve "<image>:<tag>" reference.
 //
 // Returns:
-//   (img, nil) if there's such image.
-//   (nil, nil) if there's no such image.
-//   (nil, err) on errors communicating with the registry.
+//
+//	(img, nil) if there's such image.
+//	(nil, nil) if there's no such image.
+//	(nil, err) on errors communicating with the registry.
 func getImage(ctx context.Context, r registryImpl, imageRef string) (*registry.Image, error) {
 	logging.Infof(ctx, "Checking whether %s already exists...", imageRef)
 	switch img, err := r.GetImage(ctx, imageRef); {
@@ -548,9 +550,10 @@ func waitBuild(ctx context.Context, bldr builderImpl, b *cloudbuild.Build) (*clo
 // built (as imageRef.Timestamp).
 //
 // Returns:
-//   (ref, nil) if there's an existing image built from the tarball.
-//   (nil, nil) if there's no such image.
-//   (nil, err) on errors communicating with the registry.
+//
+//	(ref, nil) if there's an existing image built from the tarball.
+//	(nil, nil) if there's no such image.
+//	(nil, err) on errors communicating with the registry.
 func reuseExistingImage(ctx context.Context, obj *storage.Object, image string, r registryImpl) (*imageRef, error) {
 	for _, ref := range imageRefsFromMetadata(ctx, obj) {
 		if ref.Image != image || ref.Digest == "" || ref.CanonicalTag == "" {

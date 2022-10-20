@@ -15,10 +15,10 @@ import (
 
 // textEditorInput gets text input from user using a text editor.
 //
-// - Initial text is provided to the user in their favourite EDITOR.
-// - The user may edit and save this text. Eventually the user quits the
-//   EDITOR.
-// - The resulting text is returned.
+//   - Initial text is provided to the user in their favourite EDITOR.
+//   - The user may edit and save this text. Eventually the user quits the
+//     EDITOR.
+//   - The resulting text is returned.
 //
 // name is the basename of the temporary file created.
 func textEditorInput(initial []byte, name string) ([]byte, error) {

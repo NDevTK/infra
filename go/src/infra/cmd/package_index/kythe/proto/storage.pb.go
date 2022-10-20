@@ -45,11 +45,11 @@ const _ = proto.ProtoPackageIsVersion4
 // https://kythe.io/docs/kythe-storage.html#_a_id_termvname_a_vector_name_strong_vname_strong
 //
 // Rules:
-//  - All fields must be optional, and must have default values.
-//  - No field may ever be removed.  If a field is deprecated, it may be
-//    renamed or marked with a comment, but must not be deleted.
-//  - New fields are always added to the end of the message.
-//  - All fields must be strings, not messages.
+//   - All fields must be optional, and must have default values.
+//   - No field may ever be removed.  If a field is deprecated, it may be
+//     renamed or marked with a comment, but must not be deleted.
+//   - New fields are always added to the end of the message.
+//   - All fields must be strings, not messages.
 //
 // One of the key principles is that we want as few fields as possible in a
 // vname.  We're not trying to exhaust the possible dimensions along which a

@@ -508,9 +508,10 @@ func collectComments(c context.Context, buildbucketOutput, analyzerName string, 
 // reported as not useful for a given Gerrit CL.
 //
 // This is a potentially expensive operation; it requires
-//   (1) querying runs (AnalyzeRequests) for a given Gerrit change
-//   (2) querying descendant CommentFeedback for each run with not useful reports
-//   (3) getting all relevant comments, including comment category.
+//
+//	(1) querying runs (AnalyzeRequests) for a given Gerrit change
+//	(2) querying descendant CommentFeedback for each run with not useful reports
+//	(3) getting all relevant comments, including comment category.
 //
 // In the case of an error, this function will only log an error and
 // return an empty set.

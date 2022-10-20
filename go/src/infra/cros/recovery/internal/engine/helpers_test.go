@@ -13,9 +13,8 @@ import (
 // FakeMetrics implementation that stores all actions.
 //
 // NOTE: For this type, create and update BOTH APPEND ITEMS.
-//       It does NOT emulate the real semantics of update.
 //
-//
+//	It does NOT emulate the real semantics of update.
 type fakeMetrics struct {
 	actions []*metrics.Action
 }

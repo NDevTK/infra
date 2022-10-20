@@ -39,15 +39,16 @@ type powerSupplyInfo struct {
 // Output of power_supply_info shows two devices, Line Power and Battery, with details of
 // each device listed. This function parses the output into a dictionary,
 // with key being the device name, and value being a dictionary of details of the device info.
-//     Device: Line Power
-//       online:                  no
-//       type:                    Mains
-//       voltage (V):             0
-//       current (A):             0
-//     Device: Battery
-//       state:                   Discharging
-//       percentage:              95.9276
-//       technology:              Li-ion
+//
+//	Device: Line Power
+//	  online:                  no
+//	  type:                    Mains
+//	  voltage (V):             0
+//	  current (A):             0
+//	Device: Battery
+//	  state:                   Discharging
+//	  percentage:              95.9276
+//	  technology:              Li-ion
 func ReadPowerInfo(ctx context.Context, r execs.Runner) (*powerSupplyInfo, error) {
 	output, err := r(ctx, time.Minute, "power_supply_info")
 	if err != nil {

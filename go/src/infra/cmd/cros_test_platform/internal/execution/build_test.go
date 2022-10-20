@@ -322,11 +322,11 @@ const exampleTestRunnerURL = "https://ci.chromium.org/p/chromeos/builders/test_r
 //
 // Typical usage:
 //
-//   ba := newBuildAccumulator()
-//   err := runWithBuildAccumulator(..., ba, ...)
-//   So(err, ShouldBeNil)
-//   So(ba.GetLatestBuild(), ShouldNotBeNil)
-//   ...
+//	ba := newBuildAccumulator()
+//	err := runWithBuildAccumulator(..., ba, ...)
+//	So(err, ShouldBeNil)
+//	So(ba.GetLatestBuild(), ShouldNotBeNil)
+//	...
 type buildAccumulator struct {
 	Input *bbpb.Build
 	Sent  []*bbpb.Build

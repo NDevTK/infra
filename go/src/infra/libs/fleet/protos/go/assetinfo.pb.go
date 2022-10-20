@@ -20,7 +20,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-//TODO(anushruth): Use 0 as Undefined inline with https://google.aip.dev/126
+// TODO(anushruth): Use 0 as Undefined inline with https://google.aip.dev/126
 type RequestStatus int32
 
 const (

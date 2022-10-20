@@ -7,13 +7,13 @@
 // Because there are internal data in our k8s applications, we use a YAML file
 // to pass them to app-roller. The YAML file looks like:
 //
-// - name: my_cool_app
-//   source: https://chrome.googlesource.com/path/to/the/app/yaml/template
-//   # clusters lists the K8s cluster which will run this app. When not
-//   # specified, the app will run on all clusters.
-//   clusters:
+//   - name: my_cool_app
+//     source: https://chrome.googlesource.com/path/to/the/app/yaml/template
+//     # clusters lists the K8s cluster which will run this app. When not
+//     # specified, the app will run on all clusters.
+//     clusters:
 //   - <API_server_IP:API_server_port>
-//   images:
+//     images:
 //   - name: my_cool_image1
 //     repo: gcr.io/project/image1
 //     official_tag_regex: ^official-\d+$

@@ -20,10 +20,10 @@ import (
 )
 
 // BenchmarkE2E measures performance of this package end to end:
-//  - Builds the graph from a git checkout
-//  - Serializes it.
-//  - Deserializes it.
-//  - Runs queries from some files
+//   - Builds the graph from a git checkout
+//   - Serializes it.
+//   - Deserializes it.
+//   - Runs queries from some files
 //
 // Uses the git checkout at path in the FILEGRAPH_BENCH_CHECKOUT environment
 // variable. If it is not defined, then uses current repo (luci-go.git).

@@ -27,6 +27,7 @@ import (
 )
 
 // TODO(fancl): Use all:from_spec/build-support after go 1.18.
+//
 //go:embed from_spec/*
 var fromSpecSupport embed.FS
 

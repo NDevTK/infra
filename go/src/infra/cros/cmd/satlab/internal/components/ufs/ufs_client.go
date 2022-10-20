@@ -25,7 +25,7 @@ type UFSClient interface {
 	GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error)
 }
 
-// implementation of UFS client
+//  implementation of UFS client
 type clientImpl struct {
 	client ufsApi.FleetClient
 }

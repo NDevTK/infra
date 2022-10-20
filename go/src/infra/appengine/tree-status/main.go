@@ -138,7 +138,7 @@ func getXSRFToken(ctx *router.Context) {
 	w.Write(txt)
 }
 
-//// Routes.
+// // Routes.
 func init() {
 	r := router.New()
 	basemw := base(true)

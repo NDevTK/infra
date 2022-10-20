@@ -509,11 +509,12 @@ func BranchType(release, factory, firmware, stabilize bool, custom string) (stri
 // string from which they were created, followed by '.B'.
 //
 // For example:
-//	- A branch created from 1.0.0 must end with -1.B
-//	- A branch created from 1.2.0 must end with -1.2.B
+//   - A branch created from 1.0.0 must end with -1.B
+//   - A branch created from 1.2.0 must end with -1.2.B
 //
 // Release branches have a slightly different naming scheme. They include
-//  the milestone from which they were created. Example: release-R12-1.2.B
+//
+//	the milestone from which they were created. Example: release-R12-1.2.B
 func NewBranchName(vinfo mv.VersionInfo, custom, descriptor string, release, factory, firmware, stabilize bool) string {
 	if custom != "" {
 		return custom

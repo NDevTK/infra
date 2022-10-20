@@ -728,12 +728,13 @@ func (c *cookRun) newButler(ctx context.Context, out output.Output, env environ.
 
 // runWithLogdogButler runs the supplied command through the a LogDog Butler
 // engine instance. This involves:
-//	- Configuring / setting up the Butler.
-//	- Initiating a LogDog Pub/Sub Output, registering with remote server.
-//	- Running the recipe process.
-//	- Hook its output streams up through an Annotee processor.
-//	- Wait for the subprocess to finish.
-//	- Shut down the Butler instance.
+//   - Configuring / setting up the Butler.
+//   - Initiating a LogDog Pub/Sub Output, registering with remote server.
+//   - Running the recipe process.
+//   - Hook its output streams up through an Annotee processor.
+//   - Wait for the subprocess to finish.
+//   - Shut down the Butler instance.
+//
 // Writes res.RecipeExitCode and res.Annotations on success.
 func (c *cookRun) runWithLogdogButler(ctx context.Context, env environ.Env, res *build.BuildRunResult) (err error) {
 	log.Infof(ctx, "Using LogDog URL: %s", &c.AnnotationURL)

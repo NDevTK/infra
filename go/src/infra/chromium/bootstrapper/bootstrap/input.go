@@ -69,13 +69,13 @@ type Input struct {
 // validation.
 //
 // The build input can fail to validate for the following reasons:
-// * The $bootstrap/properties property is not set and
-//   o.PropertiesOptional is false.
-// * The $bootstrap/properties is set, but does not contain a valid
-//   BootstrapPropertiesProperties message.
-// * The $bootstrap/exe property is not set.
-// * The $bootstrap/exe property is set, but does not contain a valid
-//   BootstrapExeProperties message.
+//   - The $bootstrap/properties property is not set and
+//     o.PropertiesOptional is false.
+//   - The $bootstrap/properties is set, but does not contain a valid
+//     BootstrapPropertiesProperties message.
+//   - The $bootstrap/exe property is not set.
+//   - The $bootstrap/exe property is set, but does not contain a valid
+//     BootstrapExeProperties message.
 func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	properties := build.GetInput().GetProperties()
 	if properties == nil {

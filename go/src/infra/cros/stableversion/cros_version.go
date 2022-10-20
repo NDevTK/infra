@@ -16,9 +16,10 @@ var crosVersionPattern *regexp.Regexp = regexp.MustCompile(`\AR(?P<release>[0-9]
 // CompareCrOSVersions compares two cros versions' number.
 //
 // Return:
-//  1 if v1 > v2
-//  0 if v1 == v2
-//  -1 if v1 < v2
+//
+//	1 if v1 > v2
+//	0 if v1 == v2
+//	-1 if v1 < v2
 func CompareCrOSVersions(v1, v2 string) (int, error) {
 	r1, t1, b1, bb1, err := ParseCrOSVersion(v1)
 	if err != nil {

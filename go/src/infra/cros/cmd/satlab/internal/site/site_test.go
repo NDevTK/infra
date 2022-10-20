@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-//  TestGetFullyQualifiedHostname tests that we produce correct FQ hostnames when passed different satlab ids and hosts
+// TestGetFullyQualifiedHostname tests that we produce correct FQ hostnames when passed different satlab ids and hosts
 func TestGetFullyQualifiedHostname(t *testing.T) {
 	t.Parallel()
 

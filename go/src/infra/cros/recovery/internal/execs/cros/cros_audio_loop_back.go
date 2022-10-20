@@ -39,12 +39,15 @@ const (
 // Example of the type "INTERNAL_MIC" Cras Audio Nodes present on the DUT:
 //
 // dict entry(
+//
 //	string "Type"
 //	variant             string "INTERNAL_MIC"
+//
 // )
 //
 // @param nodeType : A string representing Cras Audio Node Type
 // @returns:
+//
 //	if the err == nil, the boolean value returned represents whether the given audio node type is found in the output.
 //	if the err != nil, the execution of this function is not successful, the boolean value returned is set as default.
 func CrasAudioNodeTypeIsPlugged(ctx context.Context, r execs.Runner, nodeType string) (bool, error) {

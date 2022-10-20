@@ -30,7 +30,7 @@ const AtlLabAdminRealm = "@internal:ufs/os-atl"
 // AcsLabAdminRealm is the admin realm for acs lab.
 const AcsLabAdminRealm = "@internal:ufs/os-acs"
 
-//SatLabInternalUserRealm is realm for satlab internal users.
+// SatLabInternalUserRealm is realm for satlab internal users.
 const SatLabInternalUserRealm = "@internal:ufs/satlab-internal-users"
 
 // SkipRealmsCheck flag to skip realms check

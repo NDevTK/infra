@@ -10,7 +10,6 @@
 //
 // The "d=" tag instructs "bqexport" to read the remainder of the tag as a
 // field description.
-//
 package main
 
 import (

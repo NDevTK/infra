@@ -262,8 +262,9 @@ readStream:
 
 // findMissingCrashes compares the crashes found in during this run to those written by the rtd.
 // Returns:
-//   |missing| - list of crashes found in rtdCrashes but not in crashes
-//   |extra| - list of crashes found in crashes but not in rtdCrashes
+//
+//	|missing| - list of crashes found in rtdCrashes but not in crashes
+//	|extra| - list of crashes found in crashes but not in rtdCrashes
 func findMissingCrashes(rtdCrashes map[string]bool, crashes []*phosphorus.CrashSummary) (missing []string, extra []string) {
 	for _, c := range crashes {
 		if c.FilenameBase == "" {

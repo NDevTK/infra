@@ -39,15 +39,16 @@ func startService(ctx context.Context, d *docker.Docker, block bool) (*docker.Do
 // Create docker image path from ContainerImageInfo.
 // Example or result: gcr.io/chromeos-bot/cros-provision:8835841547076258945
 // Example of ContainerImageInfo:
-// "cros-provision" : {
-//   "repository" : { "hostname" : "gcr.io", "project" : "chromeos-bot" },
-//   "name"       : "cros-provision",
-//   "digest"     : "sha256:3e36d3622f5adad01080cc2120bb72c0714ecec6118eb9523586410b7435ae80",
-//   "tags" : [
-//     "8835841547076258945",
-//     "amd64-generic-release.R96-1.2.3"
-//   ]
-// }
+//
+//	"cros-provision" : {
+//	  "repository" : { "hostname" : "gcr.io", "project" : "chromeos-bot" },
+//	  "name"       : "cros-provision",
+//	  "digest"     : "sha256:3e36d3622f5adad01080cc2120bb72c0714ecec6118eb9523586410b7435ae80",
+//	  "tags" : [
+//	    "8835841547076258945",
+//	    "amd64-generic-release.R96-1.2.3"
+//	  ]
+//	}
 func createImagePath(i *build_api.ContainerImageInfo) (string, error) {
 	if i.GetName() == "" {
 		return "", errors.Reason("create image path: name is empty").Err()

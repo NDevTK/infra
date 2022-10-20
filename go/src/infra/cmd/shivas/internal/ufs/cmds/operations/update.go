@@ -65,8 +65,9 @@ func (c *update) Run(a subcommands.Application, args []string, env subcommands.E
 
 // GetCommands lists all the subcommands under update
 // Aliases:
-//   attacheddevicemachine.UpdateAttachedDeviceMachineCmd = attacheddevicemachine.UpdateADMCmd
-//   attacheddevicehost.UpdateAttachedDeviceHostCmd = attacheddevicehost.UpdateADHCmd
+//
+//	attacheddevicemachine.UpdateAttachedDeviceMachineCmd = attacheddevicemachine.UpdateADMCmd
+//	attacheddevicehost.UpdateAttachedDeviceHostCmd = attacheddevicehost.UpdateADHCmd
 func (c updateApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,

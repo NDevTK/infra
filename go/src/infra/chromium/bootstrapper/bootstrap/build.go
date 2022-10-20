@@ -492,13 +492,13 @@ func convertGerritHostToGitilesHost(host string) string {
 //
 // The build's properties will be combined from multiple sources, with earlier source in the list
 // taking priority:
-//   * The properties requested at the time the build is scheduled.
-//   * The $build/chromium_bootstrap property will be set with information about the bootstrapping
+//   - The properties requested at the time the build is scheduled.
+//   - The $build/chromium_bootstrap property will be set with information about the bootstrapping
 //     process that the bootstrapped executable can use to ensure it operates in a manner that is
 //     consistent with the bootstrapping process. See chromium_bootstrap.proto for more information.
-//   * The properties read from the properties file identified by the config_project and
+//   - The properties read from the properties file identified by the config_project and
 //     properties_file fields of the build's $bootstrap/properties property.
-//   * The build's input properties with the $bootstrap/properties and $bootstrap/exe properties
+//   - The build's input properties with the $bootstrap/properties and $bootstrap/exe properties
 //     removed.
 //
 // Additionally, if the build's input gitiles commit matches the project that the config was read

@@ -21,28 +21,29 @@ type cryptoHomeStatus struct {
 // ReadCryptoHomeStatusInfo read and parse TPM status information
 // and return cryptoHomeStatus struct to access this information.
 // The cryptohome command emits status information in JSON format. It looks something like this:
-//  {
-//     "installattrs": {
-//        ...
-//     },
-//     "mounts": [ {
-//        ...
-//     } ],
-//     "tpm": {
-//        "being_owned": false,
-//        "can_connect": true,
-//        "can_decrypt": false,
-//        "can_encrypt": false,
-//        "can_load_srk": true,
-//        "can_load_srk_pubkey": true,
-//        "enabled": true,
-//        "has_context": true,
-//        "has_cryptohome_key": false,
-//        "has_key_handle": false,
-//        "last_error": 0,
-//        "owned": true
-//     }
-//  }
+//
+//	{
+//	   "installattrs": {
+//	      ...
+//	   },
+//	   "mounts": [ {
+//	      ...
+//	   } ],
+//	   "tpm": {
+//	      "being_owned": false,
+//	      "can_connect": true,
+//	      "can_decrypt": false,
+//	      "can_encrypt": false,
+//	      "can_load_srk": true,
+//	      "can_load_srk_pubkey": true,
+//	      "enabled": true,
+//	      "has_context": true,
+//	      "has_cryptohome_key": false,
+//	      "has_key_handle": false,
+//	      "last_error": 0,
+//	      "owned": true
+//	   }
+//	}
 func ReadCryptoHomeStatusInfo(ctx context.Context, rawOutput string) (*cryptoHomeStatus, error) {
 	crypto := &cryptoHomeStatus{}
 	output := strings.TrimSpace(rawOutput)

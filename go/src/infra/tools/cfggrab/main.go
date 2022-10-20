@@ -11,8 +11,9 @@
 // <output-dir>/<project>.cfg.
 //
 // Usage:
-//   luci-auth login
-//   cfggrab cr-buildbucket.cfg | grep "service_account"
+//
+//	luci-auth login
+//	cfggrab cr-buildbucket.cfg | grep "service_account"
 package main
 
 import (

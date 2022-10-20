@@ -528,14 +528,16 @@ func (g *Generator) isCompatibleWithPriority(impact *bugs.ClusterImpact, issuePr
 // a priority no longer applied, and the issue was marked as verified.)
 //
 // priorityIndex(s) are indices into the per-project priority list:
-//   g.monorailCfg.Priorities
+//
+//	g.monorailCfg.Priorities
+//
 // If newPriorityIndex = len(g.monorailCfg.Priorities), it indicates
 // the decrease being justified is to a priority lower than the lowest
 // configured, i.e. a closed/verified issue.
 //
 // Example output:
 // "- Presubmit Runs Failed (1-day) < 15, and
-//  - Test Runs Failed (1-day) < 100"
+//   - Test Runs Failed (1-day) < 100"
 func (g *Generator) priorityDecreaseJustification(oldPriorityIndex, newPriorityIndex int) string {
 	if newPriorityIndex <= oldPriorityIndex {
 		// Priority did not change or increased.
@@ -581,7 +583,9 @@ func explainThresholdNotMet(thresoldNotMet *configpb.ImpactThreshold) string {
 // where a bug was re-opened.)
 //
 // priorityIndex(s) are indices into the per-project priority list:
-//   g.monorailCfg.Priorities
+//
+//	g.monorailCfg.Priorities
+//
 // The special index len(g.monorailCfg.Priorities) indicates an issue
 // with a priority lower than the lowest priority configured to be
 // assigned by Weetbix.

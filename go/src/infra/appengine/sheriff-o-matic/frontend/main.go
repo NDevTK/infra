@@ -267,7 +267,7 @@ func fileBugHandler(ctx *router.Context) {
 	ah.FileBugHandler(ctx)
 }
 
-//// Routes.
+// // Routes.
 func init() {
 	portal.RegisterPage(settingsKey, handler.SettingsPage{})
 

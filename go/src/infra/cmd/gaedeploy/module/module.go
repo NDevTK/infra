@@ -75,11 +75,11 @@ func parseYAML(blob []byte) (*Module, error) {
 // For variables substitution it uses very non-standard luci-py's extension.
 // Variables can be defined in the YAML via `luci_gae_vars` field, like so:
 //
-//  luci_gae_vars:
-//    example-app-id-dev:
-//      AUTH_SERVICE_HOST: auth-service-dev.appspot.com
-//    example-app-id-prod:
-//      AUTH_SERVICE_HOST: auth-service-prod.appspot.com
+//	luci_gae_vars:
+//	  example-app-id-dev:
+//	    AUTH_SERVICE_HOST: auth-service-dev.appspot.com
+//	  example-app-id-prod:
+//	    AUTH_SERVICE_HOST: auth-service-prod.appspot.com
 //
 // And then they can appear in the YAML as e.g. `${AUTH_SERVICE_HOST}`.
 //

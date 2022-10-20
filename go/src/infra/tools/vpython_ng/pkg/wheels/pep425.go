@@ -23,9 +23,9 @@ import (
 // macosx_<maj>_<min>_<cpu-arch>
 //
 // For example:
-//	- macosx_10_6_intel
-//	- macosx_10_0_fat
-//	- macosx_10_2_x86_64
+//   - macosx_10_6_intel
+//   - macosx_10_0_fat
+//   - macosx_10_2_x86_64
 type pep425MacPlatform struct {
 	major int
 	minor int
@@ -75,9 +75,9 @@ func (ma *pep425MacPlatform) less(other *pep425MacPlatform) bool {
 // returns true if "candidate" is a superior PEP425 tag candidate than "cur".
 //
 // This function favors, in order:
-//	- Mac platforms over non-Mac platforms,
-//	- arm64 > intel > others
-//	- Older Mac versions over newer ones
+//   - Mac platforms over non-Mac platforms,
+//   - arm64 > intel > others
+//   - Older Mac versions over newer ones
 func pep425IsBetterMacPlatform(cur, candidate string) bool {
 	// Parse a Mac platform string
 	curPlatform := parsePEP425MacPlatform(cur)
@@ -126,13 +126,13 @@ func isLinuxPlatform(plat string) (is bool, many bool) {
 // returns true if "candidate" is a superior PEP425 tag candidate than "cur".
 //
 // This function favors, in order:
-//	- Linux platforms over non-Linux platforms.
-//	- "manylinux1_" over non-"manylinux1_".
+//   - Linux platforms over non-Linux platforms.
+//   - "manylinux1_" over non-"manylinux1_".
 //
 // Examples of expected Linux platform strings are:
-//	- linux1_x86_64
-//	- linux1_i686
-//	- manylinux1_i686
+//   - linux1_x86_64
+//   - linux1_i686
+//   - manylinux1_i686
 func pep425IsBetterLinuxPlatform(cur, candidate string) bool {
 	// We prefer "manylinux1_" platforms over "linux_" platforms.
 	curIs, curMany := isLinuxPlatform(cur)

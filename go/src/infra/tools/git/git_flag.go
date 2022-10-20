@@ -59,12 +59,13 @@ var GitFlagSplitter = FlagSplitterDef{
 // "clone" subcommand arguments.
 //
 // usage: git clone [--template=<template_directory>]
-//         [-l] [-s] [--no-hardlinks] [-q] [-n] [--bare] [--mirror]
-//         [-o <name>] [-b <name>] [-u <upload-pack>] [--reference <repository>]
-//         [--dissociate] [--separate-git-dir <git dir>]
-//         [--depth <depth>] [--[no-]single-branch]
-//         [--recurse-submodules] [--[no-]shallow-submodules]
-//         [--jobs <n>] [--] <repository> [<directory>]
+//
+//	[-l] [-s] [--no-hardlinks] [-q] [-n] [--bare] [--mirror]
+//	[-o <name>] [-b <name>] [-u <upload-pack>] [--reference <repository>]
+//	[--dissociate] [--separate-git-dir <git dir>]
+//	[--depth <depth>] [--[no-]single-branch]
+//	[--recurse-submodules] [--[no-]shallow-submodules]
+//	[--jobs <n>] [--] <repository> [<directory>]
 //
 // The "usage" string is here for reference, but is not complete. See
 // `man git-clone` for the full list of flags represented here.

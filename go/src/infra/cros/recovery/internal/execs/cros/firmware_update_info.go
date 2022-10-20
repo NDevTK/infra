@@ -17,16 +17,16 @@ import (
 
 // example of output from "chromeos-firmwareupdate --manifest"
 //
-// {
-//  "model_name": {
-//   "host": { "versions": { "ro": "Google_Rammus.xxxx", "rw": "Google_Rammus.xxxx" },
-//      "keys": { "root": "xxxx", "recovery": "xxxx" },
-//      "image": "images/bios-rammus.xxxx" },
-//    "ec": { "versions": { "ro": "rammus_v2.0.xxxxx", "rw": "rammus_v2.0.xxxx" },
-//      "image": "images/ec-rammus.xxxx" },
-//    "signature_id": "model_name"
-//  }
-// }
+//	{
+//	 "model_name": {
+//	  "host": { "versions": { "ro": "Google_Rammus.xxxx", "rw": "Google_Rammus.xxxx" },
+//	     "keys": { "root": "xxxx", "recovery": "xxxx" },
+//	     "image": "images/bios-rammus.xxxx" },
+//	   "ec": { "versions": { "ro": "rammus_v2.0.xxxxx", "rw": "rammus_v2.0.xxxx" },
+//	     "image": "images/ec-rammus.xxxx" },
+//	   "signature_id": "model_name"
+//	 }
+//	}
 type versions struct {
 	Rw string
 	Ro string

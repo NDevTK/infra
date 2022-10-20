@@ -96,9 +96,10 @@ const (
 // based on the charging capacity of the DUT's battery.
 //
 // The logic for determining hardware state based on:
-//   if capacity >= 70% then NORMAL
-//   if capacity >= 40% then ACCEPTABLE
-//   if capacity  < 40% then NEED_REPLACEMENT
+//
+//	if capacity >= 70% then NORMAL
+//	if capacity >= 40% then ACCEPTABLE
+//	if capacity  < 40% then NEED_REPLACEMENT
 func DetermineHardwareStatus(ctx context.Context, fullChargeCapacity float64, fullChargeCapacityDesigned float64) tlw.HardwareState {
 	if fullChargeCapacity == 0 {
 		log.Debugf(ctx, "charge_full is 0. Skip update battery_state!")

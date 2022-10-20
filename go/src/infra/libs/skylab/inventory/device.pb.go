@@ -1891,7 +1891,6 @@ func (x *ChameleonDevice) GetCommon() *CommonDeviceSpecs {
 	return nil
 }
 
-//
 // Keep sorted by field name.
 //
 // NEXT TAG: 12

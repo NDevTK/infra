@@ -14,15 +14,15 @@ const TieStderr = "2>&1"
 
 // Shell is a basic interface for interacting with the Repo.
 //
-// Paths
+// # Paths
 //
 // All `path` arguments to the Shell are either:
-//   * start with '/' and are relative to the corresponding Repo's root.
-//   * OR; are relative to the Shell's current working directory.
+//   - start with '/' and are relative to the corresponding Repo's root.
+//   - OR; are relative to the Shell's current working directory.
 //
 // It is not permitted to access a path outside the Repo's root.
 //
-// Errors
+// # Errors
 //
 // All functions of Shell will panic under error conditions. This is consistent
 // with the API of the ApplyFix plugin method.

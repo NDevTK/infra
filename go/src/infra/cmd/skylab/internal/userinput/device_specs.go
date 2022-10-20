@@ -534,7 +534,9 @@ const example = `{
 
 // splitPoolList takes a list of strings naming pools and returns
 // -- the critical pool, will be set to []string{defaultCriticalPool} if
-//    no explicit critical pool is provided and there are no self-serve pools.
+//
+//	no explicit critical pool is provided and there are no self-serve pools.
+//
 // -- the self-serve pools. Every pool that is not a critical pool is a self-serve pool.
 func splitPoolList(pools ...string) (criticalPools []string, selfServePools []string, err error) {
 	criticalPools = []string{}

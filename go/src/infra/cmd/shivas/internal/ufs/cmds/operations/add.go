@@ -67,8 +67,9 @@ func (c *add) Run(a subcommands.Application, args []string, env subcommands.Env)
 
 // GetCommands lists all the subcommands under add
 // Aliases:
-//   attacheddevicemachine.AddAttachedDeviceMachineCmd = attacheddevicemachine.AddADMCmd
-//   attacheddevicehost.AddAttachedDeviceHostCmd = attacheddevicehost.AddADHCmd
+//
+//	attacheddevicemachine.AddAttachedDeviceMachineCmd = attacheddevicemachine.AddADMCmd
+//	attacheddevicehost.AddAttachedDeviceHostCmd = attacheddevicehost.AddADHCmd
 func (c addApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,

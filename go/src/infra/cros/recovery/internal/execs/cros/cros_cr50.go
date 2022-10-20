@@ -55,17 +55,19 @@ const (
 // @param findComponentRegexp: findFWVersionRegexp or findFWVersionRegexp
 //
 // Ex: Output from the cr50 cmd:
-// 	start
-// 	target running protocol version 6
-// 	keyids: RO 0xaa66150f, RW 0x87b73b67
-// 	offsets: backup RO at 0, backup RW at 0x4000
-// 	Current versions:
-// 	RO 0.0.11
-// 	RW 0.5.40
+//
+//	start
+//	target running protocol version 6
+//	keyids: RO 0xaa66150f, RW 0x87b73b67
+//	offsets: backup RO at 0, backup RW at 0x4000
+//	Current versions:
+//	RO 0.0.11
+//	RW 0.5.40
 //
 // @returns: Either the RO or RW of the FW component value
 // Ex: 0.5.40 for fw version
-//     0x87b73b67 for fw keyid
+//
+//	0x87b73b67 for fw keyid
 func cr50FWComponent(ctx context.Context, r execs.Runner, region CR50Region, findComponentRegexp string) (string, error) {
 	output, err := r(ctx, time.Minute, cr50FWCmd)
 	if err != nil {

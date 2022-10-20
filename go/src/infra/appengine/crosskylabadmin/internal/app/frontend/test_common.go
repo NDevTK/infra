@@ -240,7 +240,8 @@ func (m *createTaskArgsMatcher) String() string {
 // state is the bot's state dimension.
 // dims is a convenient way to specify other bot dimensions.
 // "a:x,y;b:z" will set the dimensions of the bot to ["a": ["x", "y"], "b":
-//   ["z"]]
+//
+//	["z"]]
 func BotForDUT(id string, state string, dims string) *swarming.SwarmingRpcsBotInfo {
 	sdims := make([]*swarming.SwarmingRpcsStringListPair, 0, 2)
 	if dims != "" {

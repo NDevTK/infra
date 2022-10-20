@@ -572,10 +572,10 @@ func (s *RunBuildStep) initStep(bs *BuildStep, dirs map[string]string) (err erro
 //
 // Given a path to a GAE module yaml (that should reside in a directory with
 // some `main` go package), it:
-//   * Copies all files in the modules directory (including all non-go files)
-//       to `_gopath/src/<its import path>`
-//   * Copies all *.go code with transitive dependencies to `_gopath/src/`.
-//   * Makes `Dest` a symlink pointing to `_gopath/src/<import path>`.
+//   - Copies all files in the modules directory (including all non-go files)
+//     to `_gopath/src/<its import path>`
+//   - Copies all *.go code with transitive dependencies to `_gopath/src/`.
+//   - Makes `Dest` a symlink pointing to `_gopath/src/<import path>`.
 //
 // This ensures "gcloud app deploy" eventually can upload all *.go files needed
 // to deploy a module.

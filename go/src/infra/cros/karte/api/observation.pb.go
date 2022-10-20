@@ -28,10 +28,10 @@ const (
 // An Observation describes a measurement during an action.
 //
 // Examples:
-//      battery_level:70 - battery level on device is 70%
-//      rrd:present      - rrd metric is present on device
-//      disk_usage:35    - 35% internal storage used
 //
+//	battery_level:70 - battery level on device is 70%
+//	rrd:present      - rrd metric is present on device
+//	disk_usage:35    - 35% internal storage used
 type Observation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -76,7 +76,8 @@ func readLog(ctx context.Context, repoDir, exclude, rev string, callback func(co
 }
 
 // logReader parses a git log formatted as
-//   --format=format:"%H %P" --raw --z
+//
+//	--format=format:"%H %P" --raw --z
 type logReader struct {
 	r *bufio.Reader
 

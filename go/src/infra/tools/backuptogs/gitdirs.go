@@ -57,8 +57,9 @@ func isGitRepoDir(path string) (bool, error) {
 // typical lines from "git status --porcelain" look like:
 // !! path/to/file/within/git/repo
 // ?? path2/to/file2/within/git/repo
-//  M somepath
-//  D this/file/has/been/deleted
+//
+//	M somepath
+//	D this/file/has/been/deleted
 func listGitChangedFiles(ctx context.Context, gitDir string) ([]string, error) {
 	start := time.Now()
 	defer func() {

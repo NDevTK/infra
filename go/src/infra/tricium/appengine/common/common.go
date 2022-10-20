@@ -111,11 +111,12 @@ const gerritAuthHeader = "X-Gerrit-Auth"
 // NewRPCServer returns preconfigured pRPC server that can host gRPC APIs.
 //
 // Usage:
-//   srv := NewRPCServer()
-//   someapi.RegisterSomeAPIServer(srv, ...)
-//   ...
-//   discovery.Enable(srv)
-//   srv.InstallHandlers(router, MiddlewareForRPC())
+//
+//	srv := NewRPCServer()
+//	someapi.RegisterSomeAPIServer(srv, ...)
+//	...
+//	discovery.Enable(srv)
+//	srv.InstallHandlers(router, MiddlewareForRPC())
 func NewRPCServer() *prpc.Server {
 	// TODO(vadimsh): Enable monitoring interceptor.
 	// UnaryServerInterceptor: grpcmon.NewUnaryServerInterceptor(nil),

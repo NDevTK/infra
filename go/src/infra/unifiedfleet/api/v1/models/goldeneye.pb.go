@@ -185,7 +185,7 @@ func (x *Board) GetModels() []*Model {
 	return nil
 }
 
-//Maps to each Model json object, all fields except name are ignored.
+// Maps to each Model json object, all fields except name are ignored.
 type Model struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

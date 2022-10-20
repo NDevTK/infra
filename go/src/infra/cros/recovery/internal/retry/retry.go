@@ -29,10 +29,10 @@ func LoopBreakTag() errors.BoolTag {
 // WithTimeout retries execute function in giving time duration.
 //
 // Example: Check if device is reachable, try during 1 hour with intervals 2 seconds.
-//	 return retry.WithTimeout(ctx, time.Hour,  2*time.Second, func() error {
-//	 	return  <-- return err if device is not reachable.
-//	 }, "check if a device is reachable")
 //
+//	return retry.WithTimeout(ctx, time.Hour,  2*time.Second, func() error {
+//		return  <-- return err if device is not reachable.
+//	}, "check if a device is reachable")
 func WithTimeout(ctx context.Context, interval, duration time.Duration, f func() error, opName string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, duration)
 	defer func() { cancel() }()
@@ -68,10 +68,10 @@ func WithTimeout(ctx context.Context, interval, duration time.Duration, f func()
 // LimitCount retries execute function with limit by numbers attempts.
 //
 // Example: Check if device is reachable, only try 5 times with interval 2 seconds.
-//	 return retry.LimitCount(ctx, 5, 2*time.Second, func() error {
-//	 	return  <-- return err if device is not reachable.
-//	 }, "check if a device is reachable")
 //
+//	return retry.LimitCount(ctx, 5, 2*time.Second, func() error {
+//		return  <-- return err if device is not reachable.
+//	}, "check if a device is reachable")
 func LimitCount(ctx context.Context, count int, interval time.Duration, f func() error, opName string) (err error) {
 	startTime := time.Now()
 	// Count the number of attempts.

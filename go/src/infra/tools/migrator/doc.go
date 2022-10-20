@@ -10,10 +10,10 @@
 // point of view of the 'luci-config' service.
 //
 // The plugin currently has two main points of extension:
-//   * FindProblems - Analyze the LUCI project and config file contents to see
+//   - FindProblems - Analyze the LUCI project and config file contents to see
 //     if the project has migrated. This can inspect the project name, as well
 //     as the presence and contents of any config files.
-//   * ApplyFix - If FindProblems revealed issues, ApplyFix will be run in the
+//   - ApplyFix - If FindProblems revealed issues, ApplyFix will be run in the
 //     context of a local sparse+shallow checkout containing the configuration
 //     files. This has the ability to run programs in the checkout, as well as
 //     stat/read/modify files.

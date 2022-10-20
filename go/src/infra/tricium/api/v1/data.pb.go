@@ -476,7 +476,8 @@ func (x *Data_File) GetStatus() Data_Status {
 //
 // PATH: tricium/data/results.json
 // BUILDBUCKET PROPERTIES: output.properties.comments
-//                         output.properties.num_comments
+//
+//	output.properties.num_comments
 type Data_Results struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

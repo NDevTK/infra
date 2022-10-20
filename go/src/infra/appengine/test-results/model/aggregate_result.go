@@ -166,7 +166,7 @@ func extractBuilderName(m map[string]json.RawMessage) (string, error) {
 // below. The modifications account for the structure of results.json and
 // results_small.json files in the wild.
 //
-//   https://chromium.googlesource.com/chromium/src/+/c7dd0560d9544a15908239bebc177410899851ca/third_party/WebKit/Tools/Scripts/webkitpy/layout_tests/layout_package/bot_test_expectations.py#45
+//	https://chromium.googlesource.com/chromium/src/+/c7dd0560d9544a15908239bebc177410899851ca/third_party/WebKit/Tools/Scripts/webkitpy/layout_tests/layout_package/bot_test_expectations.py#45
 func (ag *AggregateResult) UnmarshalJSON(data []byte) error {
 	var m map[string]json.RawMessage
 	if err := json.Unmarshal(data, &m); err != nil {

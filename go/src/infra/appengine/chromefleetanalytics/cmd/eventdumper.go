@@ -86,12 +86,11 @@ func looksLikeEventLine(s string) bool {
 	return r.MatchString(s)
 }
 
-//  parseEvent takes a line of output from status.log (tab-delimited) and
-//  converts it into an event.
+// parseEvent takes a line of output from status.log (tab-delimited) and
+// converts it into an event.
 //
-//  sample parseable line (replace multiple consecutive spaces with tabs).
-//  GOOD    ----    verify.PASS     timestamp=1605634967    localtime=Nov 17 17:42:47
-//
+// sample parseable line (replace multiple consecutive spaces with tabs).
+// GOOD    ----    verify.PASS     timestamp=1605634967    localtime=Nov 17 17:42:47
 func parseEvent(line string) (*event, error) {
 	if !looksLikeEventLine(line) {
 		return nil, fmt.Errorf("line %q does not appear to be an event line", line)

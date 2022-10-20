@@ -5,19 +5,19 @@
 // Package git implements derivation of a file graph from git log and optionally
 // from the file structure.
 //
-// Change-log-based distance
+// # Change-log-based distance
 //
 // This distance is derived from the probability that two files appeared in the
 // same commit. The core idea is that relevant files tend to be modified
 // together.
 //
-//  Distance(x, y) = -log(P(x is relevant to y))
-//  P(x is relevant to y) := sum(1/(len(c.files)-1) for c in y.commits if x in c.files) / len(y.commits)
+//	Distance(x, y) = -log(P(x is relevant to y))
+//	P(x is relevant to y) := sum(1/(len(c.files)-1) for c in y.commits if x in c.files) / len(y.commits)
 //
 // or in English,
-//  - the distance from x to y is -log of the probability that x is relevant to y
-//  - x is relevant to y if x is likely to appear in a commit that touches y,
-//    where the commit is chosen randomly and independently.
+//   - the distance from x to y is -log of the probability that x is relevant to y
+//   - x is relevant to y if x is likely to appear in a commit that touches y,
+//     where the commit is chosen randomly and independently.
 //
 // There are more nuances to this formula, e.g. file removals are not counted
 // towards len(commit.files), and commits with len(files) = 1 or
@@ -28,18 +28,18 @@
 //
 // This graph defines distance only between files, and not directories.
 //
-// File-structure-based distance
+// # File-structure-based distance
 //
 // This distance is derived from the file structure. It is the number of edges
 // between two files in the *file tree*, i.e. the number of hops one has to make
 // to navigate from one file to another in the file tree. For example, given the
 // following file stucture:
 //
-//   //
-//   ├── foo/
-//   │   ├── bar.cc
-//   │   └── baz.cc
-//   └── qux.cc
+//	//
+//	├── foo/
+//	│   ├── bar.cc
+//	│   └── baz.cc
+//	└── qux.cc
 //
 // The distance between //foo/bar.cc and //foo/baz.cc is 2 because they have a
 // common parent, and the distance between //foo/bar.cc and and //qux.cc is 3

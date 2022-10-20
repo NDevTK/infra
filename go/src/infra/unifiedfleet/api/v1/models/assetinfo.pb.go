@@ -28,7 +28,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-//TODO(anushruth): Use 0 as Undefined inline with https://google.aip.dev/126
+// TODO(anushruth): Use 0 as Undefined inline with https://google.aip.dev/126
 type RequestStatus int32
 
 const (

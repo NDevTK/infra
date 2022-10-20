@@ -4,6 +4,5 @@
 
 /*
 Package compilerproxylog provides compiler_proxy INFO log parser.
-
 */
 package compilerproxylog

@@ -30,13 +30,14 @@ import (
 // It also knows how to populate and trim it.
 //
 // Directory layout:
-//  <Root>/
-//    <artifact's sha256 hex digest>/
-//      lock           # lock file to manage concurrent access
-//      cache.json     # bookkeeping info about this cache entry
-//      tmp_*.tar.gz   # exists temporarily when fetching the tarball
-//      tmp_data_*/    # exists temporarily when unpacking the tarball
-//      data/          # the unpacked tarball goes here
+//
+//	<Root>/
+//	  <artifact's sha256 hex digest>/
+//	    lock           # lock file to manage concurrent access
+//	    cache.json     # bookkeeping info about this cache entry
+//	    tmp_*.tar.gz   # exists temporarily when fetching the tarball
+//	    tmp_data_*/    # exists temporarily when unpacking the tarball
+//	    data/          # the unpacked tarball goes here
 type Cache struct {
 	Root string // the root cache directory
 }

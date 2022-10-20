@@ -14,7 +14,8 @@ import (
 // associating the named capture groups in the regexp to their values.
 //
 // It is intended to be used primarily with regexps such as the one below.
-//   regexp.MustCompile(`\AR(?P<release>[0-9]+)-(?P<tip>[0-9]+)\.(?P<branch>[0-9]+)\.(?P<branchbranch>[0-9]+)\z`)
+//
+//	regexp.MustCompile(`\AR(?P<release>[0-9]+)-(?P<tip>[0-9]+)\.(?P<branch>[0-9]+)\.(?P<branchbranch>[0-9]+)\z`)
 //
 // The regexp above only has named capture groups and always matches exactly once because of the \A and \z anchors.
 // The intended use case is to use a regexp such as the one above as a blueprint for converting a string into a map

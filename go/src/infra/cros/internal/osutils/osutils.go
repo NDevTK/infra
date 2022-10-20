@@ -37,11 +37,12 @@ func DirExists(path string) bool {
 // Look for a relative path, ascending through parent directories.
 //
 // Args:
-//  pathToFind: The relative path to look for.
-//  startPath: The path to start the search from.  If |startPath| is a
-//    directory, it will be included in the directories that are searched.
-//  endPath: The path to stop searching.
-//  testFunc: The function to use to verify the relative path.
+//
+//	pathToFind: The relative path to look for.
+//	startPath: The path to start the search from.  If |startPath| is a
+//	  directory, it will be included in the directories that are searched.
+//	endPath: The path to stop searching.
+//	testFunc: The function to use to verify the relative path.
 func FindInPathParents(
 	pathToFind string,
 	startPath string,

@@ -111,9 +111,10 @@ func New(ctx context.Context, ts oauth2.TokenSource, location string) (*Storage,
 // Check fetches information about existing Google Storage object.
 //
 // Returns:
-//   (*Object, nil) if such object already exists.
-//   (nil, nil) if such object doesn't exist.
-//   (nil, error) on errors.
+//
+//	(*Object, nil) if such object already exists.
+//	(nil, nil) if such object doesn't exist.
+//	(nil, error) on errors.
 func (s *Storage) Check(ctx context.Context, name string) (*Object, error) {
 	obj := s.object(name)
 	logging.Infof(ctx, "Checking presence of %s...", obj)

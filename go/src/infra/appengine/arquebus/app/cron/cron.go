@@ -106,7 +106,6 @@ func removeNoopLogs(c *router.Context) {
 	http200res(c)
 }
 
-//
 // InstallHandlers installs handlers for cron jobs that are part of this app.
 //
 // All handlers serve paths under /internal/cron/*
