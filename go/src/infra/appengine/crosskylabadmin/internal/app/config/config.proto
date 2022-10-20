@@ -49,6 +49,9 @@ message Config {
 
   // UFS is the configuration settings for UFS.
   UFSConfig UFS = 11;
+
+  // karte is the configuration settings for Karte.
+  KarteConfig karte = 12;
 }
 
 // Swarming contains information about the Swarming instance that hosts the bots
@@ -405,5 +408,15 @@ message UFSConfig {
   // Sample values:
   //  - "ufs.api.cr.dev"
   //  - "staging.ufs.api.cr.dev",
+  string host = 1;
+}
+
+// KarteConfig contains information about Karte, such as its hostname.
+message KarteConfig {
+  // Host is the host of the Karte service.
+  //
+  // Sample values:
+  //  - chrome-fleet-karte.appspot.com
+  //  - chrome-fleet-karte-dev.appspot.com
   string host = 1;
 }
