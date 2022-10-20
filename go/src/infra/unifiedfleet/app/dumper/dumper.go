@@ -45,14 +45,13 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.DAILY,
 		Job:      exportToPubSub,
 	},
-	// TODO(juahurta|b/220373240): Add back once the daily cron job has been verified.
-	// {
-	// 	// Dump configs, registrations, inventory and states to BQ
-	// 	Name:     util.CronJobNames["pubSubCronHourly"],
-	// 	Time:     30 * time.Minute,
-	// 	TrigType: cron.HOURLY,
-	// 	Job:      exportToPubSubHourly,
-	// },
+	{
+		// Dump configs, registrations, inventory and states to BQ
+		Name:     util.CronJobNames["pubSubCronHourly"],
+		Time:     30 * time.Minute,
+		TrigType: cron.HOURLY,
+		Job:      exportToPubSubHourly,
+	},
 	{
 		// Dump change events to BQ
 		Name:     util.CronJobNames["changeEventToBQCron"],
@@ -329,11 +328,11 @@ func dumpInventoryToPubSub(ctx context.Context, hourly bool) error {
 			if hourly {
 				key = fmt.Sprintf("%s_hourly", key)
 			}
-			logging.Infof(ctx, "dumping %s to pubsub", key)
 			msgs, err := function(ctx)
 			if err != nil {
 				return err
 			}
+			logging.Infof(ctx, "dumping %d messages to pubsub topic %s", len(msgs), key)
 			publishToTopic(ctx, msgs, getProject(ctx), key)
 		}
 	}
@@ -346,11 +345,11 @@ func dumpRegistrationToPubSub(ctx context.Context, hourly bool) error {
 			if hourly {
 				key = fmt.Sprintf("%s_hourly", key)
 			}
-			logging.Infof(ctx, "dumping %s to pubsub", key)
 			msgs, err := function(ctx)
 			if err != nil {
 				return err
 			}
+			logging.Infof(ctx, "dumping %d messages to pubsub topic %s", len(msgs), key)
 			publishToTopic(ctx, msgs, getProject(ctx), key)
 		}
 	}

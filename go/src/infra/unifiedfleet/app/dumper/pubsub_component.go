@@ -7,13 +7,40 @@ package dumper
 import (
 	"context"
 	"fmt"
-	"os"
-	"sync"
+	"runtime"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
+	"golang.org/x/sync/semaphore"
 )
+
+func createPubSubTopicClient(ctx context.Context, projectID, topicID string) (*pubsub.Topic, *pubsub.Client, error) {
+	// Create client for Pub/Sub publishing.
+	client, err := pubsub.NewClient(ctx, projectID)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Failed to create Pub/Sub client for project %s", projectID)
+	}
+
+	// Associate the Pub/Sub client with the correct topicID.
+	topic := client.Topic(topicID)
+
+	// Check if the topic exists on the project.
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Error when checking if topic %s on project %s. error: %s", topicID, projectID, err.Error())
+	}
+
+	// Attempt to create the topic if it doesn't exist.
+	if !exists {
+		topic, err = client.CreateTopic(ctx, topicID)
+		if err != nil {
+			return nil, nil, fmt.Errorf("Topic %s doesn't exist and failed to be created. error: %s", topicID, err.Error())
+		}
+	}
+
+	return topic, client, nil
+}
 
 // publishToTopic publishToTopic upload objects to a given pub/sub topic.
 //
@@ -21,19 +48,28 @@ import (
 // them to the given pub/sub topic.
 func publishToTopic(ctx context.Context, msgs []proto.Message, projectID, topicID string) error {
 	// Send the messages to Pub/Sub in parallel.
-	errChan := make(chan error)
-	var wg sync.WaitGroup
+	errChan := make(chan error, len(msgs))
+
 	logging.Infof(ctx, "dumping %d messages to pubsub", len(msgs))
-	for _, msg := range msgs {
-		wg.Add(1)
+
+	var (
+		// Sets to max number of CPUs that can can run simultaneously. https://pkg.go.dev/runtime#GOMAXPROCS
+		maxWorkers = runtime.GOMAXPROCS(0)
+		sem        = semaphore.NewWeighted(int64(maxWorkers))
+	)
+
+	for i := 0; i < len(msgs); i++ {
+		// Acquire a lock to run another goroutine.
+		if err := sem.Acquire(ctx, 1); err != nil {
+			return fmt.Errorf("Failed to acquire semaphore: %v", err)
+		}
+
 		go func(msg proto.Message) {
 			publish(ctx, projectID, topicID, msg, errChan)
-			defer wg.Done()
-		}(msg)
+			defer sem.Release(1)
+		}(msgs[i])
 	}
 
-	// Wait for publishing attempts to finish.
-	wg.Wait()
 	close(errChan)
 
 	// Generate an error for any and all failed publishing attempts.
@@ -58,41 +94,15 @@ func publishToTopic(ctx context.Context, msgs []proto.Message, projectID, topicI
 }
 
 // publish wraps all the steps required to send a message to a Pub/Sub topic.
-func publish(ctx context.Context, projectID, topicID string, msg proto.Message, retChan chan error) {
-	// Create client for Pub/Sub publishing.
-	client, err := pubsub.NewClient(ctx, projectID)
-	defer func() {
-		if err := client.Close(); err != nil {
-			logging.Errorf(ctx, "fatal error when closing client: %s", err)
-			os.Exit(1)
-		}
-	}()
-	if err != nil {
-		retChan <- fmt.Errorf("Failed to create Pub/Sub client for project %s", projectID)
-		return
-	}
-
-	// Associate the Pub/Sub client with the correct topicID.
-	topic := client.Topic(topicID)
-
-	// Check if the topic exists on the project.
-	exists, err := topic.Exists(ctx)
-	if err != nil {
-		retChan <- fmt.Errorf("Error when checking if topic %s is on project %s. error: %s", topicID, projectID, err.Error())
-		return
-	}
-
-	// Attempt to create the topic if it doesn't exist.
-	if !exists {
-		topic, err = client.CreateTopic(ctx, topicID)
-		if err != nil {
-			retChan <- fmt.Errorf("Topic %s doesn't exist and failed to be created. error: %s", topicID, err.Error())
-			return
-		}
-	}
-
+func publish(ctx context.Context, projectID, topicId string, msg proto.Message, retChan chan error) {
 	// Convert the proto representation of the row into a JSON.
 	data, err := proto.Marshal(msg)
+	if err != nil {
+		retChan <- err
+		return
+	}
+	topic, client, err := createPubSubTopicClient(ctx, projectID, topicId)
+	defer client.Close()
 	if err != nil {
 		retChan <- err
 		return
@@ -104,7 +114,7 @@ func publish(ctx context.Context, projectID, topicID string, msg proto.Message, 
 	// Block and wait to check for publishing errors.
 	_, err = result.Get(ctx)
 	if err != nil {
-		retChan <- fmt.Errorf("failed to get publishing ID from server\nget: %s", err.Error())
+		retChan <- err
 		return
 	}
 }
