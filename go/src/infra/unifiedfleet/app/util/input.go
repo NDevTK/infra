@@ -1116,7 +1116,7 @@ var StrToDevicePhase = map[string]string{
 
 // ToUFSDevicePhase converts type string to a UFS attached device type enum.
 func ToUFSDevicePhase(devicePhase string) ufsmfg.ManufacturingConfig_Phase {
-	v, ok := StrToDevicePhase[devicePhase]
+	v, ok := StrToDevicePhase[strings.ToLower(devicePhase)]
 	if !ok {
 		return ufsmfg.ManufacturingConfig_PHASE_INVALID
 	}

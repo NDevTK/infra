@@ -139,4 +139,21 @@ func TestDevicePhaseCoverage(t *testing.T) {
 			So(ok, ShouldBeTrue)
 		}
 	})
+
+	Convey("test ToUFSDevicePhase", t, func() {
+		Convey("Test lowercase conversion", func() {
+			phase := ToUFSDevicePhase("evt")
+			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_EVT)
+		})
+
+		Convey("Test uppercase conversion", func() {
+			phase := ToUFSDevicePhase("PVT")
+			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+		})
+
+		Convey("Test invalid conversion", func() {
+			phase := ToUFSDevicePhase("something-wrong")
+			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_INVALID)
+		})
+	})
 }
