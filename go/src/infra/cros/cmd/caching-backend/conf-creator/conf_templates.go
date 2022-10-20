@@ -81,8 +81,14 @@ http {
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main;
     error_log             /var/log/nginx/gs-cache.error.log;
-    location / {
-      slice 10m;
+
+
+    # CQ build cache configuration.
+    # The configuration is exactly same with the "location /" except
+    # "proxy_cache_valid" which is much shorter than a release build.
+    # A CQ build URL is like "/download/chromeos-image-archive/coral-cq/R92-13913.0.0-46943-8850024658050820208/...".
+    location ~ ^/download/[^/]+/[^/]+\S+-cq/ {
+      slice 30m;
       proxy_cache_lock on;
       proxy_cache_lock_age 900s;
       proxy_cache_lock_timeout 900s;
@@ -97,15 +103,11 @@ http {
       proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_cache           google-storage;
-      proxy_cache_valid     200 206 720h;
+      proxy_cache_valid     200 206 48h;
       proxy_cache_key       $request_method$uri$is_args$args$slice_range;
       proxy_set_header      Range $slice_range;
-      proxy_force_ranges on;
+      proxy_force_ranges    on;
     }
-    # CQ build cache configuration.
-    # The configuration is exactly same with the "location /" except
-    # "proxy_cache_valid" which is much shorter than a release build.
-    # A CQ build URL is like "/download/chromeos-image-archive/coral-cq/R92-13913.0.0-46943-8850024658050820208/...".
     location ~ ^/[^/]+/[^/]+/\S+-cq/ {
       proxy_cache_lock on;
       proxy_cache_lock_age 900s;
@@ -124,6 +126,47 @@ http {
       proxy_cache_valid     200 48h;
       proxy_cache_key       $request_method$uri$is_args$args;
     }
+
+    location / {
+      proxy_cache_lock on;
+      proxy_cache_lock_age 900s;
+      proxy_cache_lock_timeout 900s;
+      proxy_cache_bypass $http_x_no_cache;
+      expires max;
+      proxy_pass            http://gs_archive_servers$uri$is_args$args;
+      proxy_read_timeout    900;
+      proxy_connect_timeout 90;
+      proxy_redirect        off;
+      proxy_http_version    1.1;
+      proxy_set_header      Connection "";
+      proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
+      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_cache           google-storage;
+      proxy_cache_valid     200 720h;
+      proxy_cache_key       $request_method$uri$is_args$args;
+    }
+    location ~ ^/download/ {
+        slice 30m;
+        proxy_cache_lock on;
+        proxy_cache_lock_age 900s;
+        proxy_cache_lock_timeout 900s;
+        proxy_cache_bypass $http_x_no_cache;
+        expires max;
+        proxy_pass            http://gs_archive_servers$uri$is_args$args;
+        proxy_read_timeout    900;
+        proxy_connect_timeout 90;
+        proxy_redirect        off;
+        proxy_http_version    1.1;
+        proxy_set_header      Connection "";
+        proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
+        proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache           google-storage;
+        proxy_cache_valid     200 206 720h;
+        proxy_cache_key       $request_method$uri$is_args$args$slice_range;
+        proxy_set_header      Range $slice_range;
+        proxy_force_ranges    on;
+      }
+
     # Rewrite rules converting devserver client requests to gs_cache.
     location @gs_cache {
       if ($arg_gs_bucket != "") {
