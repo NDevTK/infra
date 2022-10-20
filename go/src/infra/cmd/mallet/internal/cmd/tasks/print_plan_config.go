@@ -21,7 +21,7 @@ import (
 
 // RecoveryConfig subcommand: For now, print the config file content to terminal/file.
 var RecoveryConfig = &subcommands.Command{
-	UsageLine: "config [-deploy] [-cros] [-labstation]",
+	UsageLine: "config [-deploy] [-cros] [-deep-repair] [-labstation]",
 	ShortDesc: "print the JSON plan configuration file",
 	LongDesc:  "print the JSON plan configuration file.",
 	CommandRun: func() subcommands.CommandRun {
@@ -30,6 +30,7 @@ var RecoveryConfig = &subcommands.Command{
 		c.Flags.BoolVar(&c.auditRPM, "audit-rpm", false, "Use auditRPM task.")
 		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Use deploy task.")
 		c.Flags.BoolVar(&c.cros, "cros", false, "Print for ChromeOS devices.")
+		c.Flags.BoolVar(&c.deepRecovery, "deep-repair", false, "Print deep-repair plan")
 		c.Flags.BoolVar(&c.labstation, "labstation", false, "Print for labstations.")
 		return c
 	},
@@ -39,10 +40,11 @@ type printConfigRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
 
-	auditRPM   bool
-	deployTask bool
-	cros       bool
-	labstation bool
+	auditRPM     bool
+	deployTask   bool
+	cros         bool
+	deepRecovery bool
+	labstation   bool
 }
 
 // Run output the content of the recovery config file.
@@ -63,9 +65,11 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 		tn = buildbucket.Deploy
 	case c.auditRPM:
 		tn = buildbucket.AuditRPM
+	case c.deepRecovery:
+		tn = buildbucket.DeepRecovery
 	}
 	var dsl []tlw.DUTSetupType
-	if c.cros {
+	if c.cros || c.deepRecovery {
 		dsl = append(dsl, tlw.DUTSetupTypeCros)
 	}
 	if c.labstation {

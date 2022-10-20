@@ -148,6 +148,18 @@ var dutPlansCases = []struct {
 		buildbucket.AuditRPM,
 		nil,
 	},
+	{
+		"cros deep recovery",
+		tlw.DUTSetupTypeCros,
+		buildbucket.DeepRecovery,
+		[]string{"servo", "cros", "close"},
+	},
+	{
+		"cros deep recovery",
+		tlw.DUTSetupTypeLabstation,
+		buildbucket.DeepRecovery,
+		nil,
+	},
 }
 
 // TestLoadConfiguration tests default configuration used for recovery flow is loading right and parsibale without any issue.
@@ -448,12 +460,6 @@ var customConfigurationTestCases = []struct {
 	name      string
 	getConfig func() *config.Configuration
 }{
-	{
-		"Deep repair config",
-		func() *config.Configuration {
-			return config.DeepRepairConfig()
-		},
-	},
 	{
 		"Reserve DUT",
 		func() *config.Configuration {
