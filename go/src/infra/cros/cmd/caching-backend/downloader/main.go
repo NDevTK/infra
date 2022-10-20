@@ -41,6 +41,11 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/ulikunitz/xz"
+	"go.chromium.org/luci/common/tsmon"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/common/tsmon/target"
+	"go.chromium.org/luci/common/tsmon/types"
 )
 
 var (
@@ -48,6 +53,8 @@ var (
 	archiveServerAddress = flag.String("address", ":8080", "archive server address with listening port.")
 	cacheServerURL       = flag.String("cache-server-url", "http://127.0.0.1:8082", "cache-server url.")
 	shutdownGracePeriod  = flag.Duration("shutdown-grace-period", 30*time.Minute, "The time duration allowed for tasks to complete before completely shutdown archive-server.")
+	tsmonEndpoint        = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to.")
+	tsmonCredentialPath  = flag.String("tsmon-credential", "", "The credentail file for tsmon client")
 )
 
 type archiveServer struct {
@@ -70,6 +77,11 @@ func innerMain() error {
 		return fmt.Errorf("google storage client error: %s", err)
 	}
 	defer gsClient.close()
+
+	if err = metricsInit(ctx, *tsmonEndpoint, *tsmonCredentialPath); err != nil {
+		log.Printf("metrics init: %s", err)
+	}
+	defer metricsShutdown(ctx)
 
 	c := &archiveServer{
 		gsClient:       gsClient,
@@ -98,6 +110,13 @@ func innerMain() error {
 func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
+
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
+	defer cancel()
+
+	md := metricData{}
+	defer updateMetrics(ctx, "download", r.Method, &md, startTime)
 	var bRange *byteRange
 	var err error
 	// Include range in ID if range exists
@@ -108,67 +127,64 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 			errStr := fmt.Sprintf("%s parseRange error: %s", id, err)
 			log.Printf(errStr)
 			http.Error(w, errStr, http.StatusBadRequest)
+			md.status = http.StatusBadRequest
 			return
 		}
 	}
 	log.Printf("%s request started", id)
-	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
-
-	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
-	defer cancel()
-
 	gsClient := c.gsClient
 
 	switch r.Method {
 	case http.MethodHead:
-		handleDownloadHEAD(ctx, w, r, gsClient, bRange, id)
+		_, md, _ = handleDownloadHEAD(ctx, w, r, gsClient, bRange, id)
 	case http.MethodGet:
-		handleDownloadGET(ctx, w, r, gsClient, bRange, id)
+		md = handleDownloadGET(ctx, w, r, gsClient, bRange, id)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
 		log.Printf(errStr)
+		md.status = http.StatusBadRequest
 	}
 }
 
 // handleDownloadHEAD handles download HEAD request.
 // It writes file stat to ResponseWriter.
 // It returns gsObject which is used by handleDownloadGET to send file content.
-func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) (gsObject, error) {
+func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) (gsObject, metricData, error) {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Printf(err.Error())
-		return nil, err
+		return nil, metricData{status: http.StatusBadRequest}, err
 	}
 
 	gsObject := gsClient.getObject(objectName)
 
 	gsAttrs, err := gsObject.Attrs(ctx)
 	if err != nil {
-		var retStatus int
+		var status int
 		if errors.Is(err, storage.ErrObjectNotExist) {
-			retStatus = http.StatusNotFound
+			status = http.StatusNotFound
 		} else {
-			retStatus = http.StatusInternalServerError
+			status = http.StatusInternalServerError
 		}
 		err := fmt.Errorf("%s Attrs error: %w", reqID, err)
-		http.Error(w, err.Error(), retStatus)
+		http.Error(w, err.Error(), status)
 		log.Printf(err.Error())
-		return nil, err
+		return nil, metricData{status: status}, err
 	}
 
 	writeHeaderAndStatusOK(gsAttrs, br, w, reqID)
-	return gsObject, nil
+	return gsObject, metricData{status: http.StatusOK}, nil
 }
 
 // handleDownloadGET handles download GET request.
 // It writes file stat to ResponseWriter header, and content to body.
-func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) {
-	gsObject, err := handleDownloadHEAD(ctx, w, r, gsClient, br, reqID)
+func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) metricData {
+	gsObject, md, err := handleDownloadHEAD(ctx, w, r, gsClient, br, reqID)
 	if err != nil {
-		return
+		return md
 	}
 
 	var rc io.ReadCloser
@@ -179,13 +195,18 @@ func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	}
 	if err != nil {
 		log.Printf("%s NewReader error: %s", reqID, err)
-		return
+		return metricData{status: http.StatusInternalServerError}
 	}
 	defer rc.Close()
 
-	if n, err := io.Copy(w, rc); err != nil {
+	n, err := io.Copy(w, rc)
+	status := http.StatusOK
+	if err != nil {
 		log.Printf("%s copy to body failed at byte %v: %s", reqID, n, err)
+		status = http.StatusInternalServerError
 	}
+	return metricData{status: status, size: n}
+
 }
 
 // writeHeaderAndStatusOK writes various attributes to response header.
@@ -293,14 +314,18 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
 	defer cancel()
 
+	md := metricData{}
+	defer updateMetrics(ctx, "extract", r.Method, &md, startTime)
+
 	switch r.Method {
 	case http.MethodHead:
-		handleExtract(ctx, w, r, c.cacheServerURL, id, false)
+		md = handleExtract(ctx, w, r, c.cacheServerURL, id, false)
 	case http.MethodGet:
-		handleExtract(ctx, w, r, c.cacheServerURL, id, true)
+		md = handleExtract(ctx, w, r, c.cacheServerURL, id, true)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
+		md.status = http.StatusBadRequest
 		log.Printf(errStr)
 	}
 }
@@ -310,13 +335,13 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 // the target file and writes stat to ResponseWriter header.
 // If wantBody is true which essentially is GET, it will copy content to
 // ResponseWriter body.
-func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string, wantBody bool) {
+func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string, wantBody bool) metricData {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
 		http.Error(w, errStr, http.StatusBadRequest)
 		log.Printf(errStr)
-		return
+		return metricData{status: http.StatusBadRequest}
 	}
 
 	queryFile := r.URL.Query().Get("file")
@@ -324,7 +349,7 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 		errStr := fmt.Sprintf("%s extract file query not specified from %s", reqID, objectName.path)
 		http.Error(w, errStr, http.StatusBadRequest)
 		log.Printf(errStr)
-		return
+		return metricData{status: http.StatusBadRequest}
 	}
 
 	action := "download"
@@ -332,64 +357,69 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 		action = "decompress"
 	}
 	reqURL := fmt.Sprintf("%s/%s/%s/%s", cacheServerURL, action, objectName.bucket, objectName.path)
-	res, err := downloadURL(ctx, w, reqURL, reqID)
-	if err != nil {
-		return
+	res := downloadURL(ctx, w, reqURL, reqID)
+	if res == nil {
+		return metricData{status: http.StatusInternalServerError}
+	}
+	if res.StatusCode != http.StatusOK {
+		return metricData{status: res.StatusCode}
 	}
 	defer res.Body.Close()
 
-	tarReader, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
+	tarReader, status, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
 	if err != nil {
 		log.Printf(fmt.Sprintf("%s extractTarAndWriteHeader failed: %s", reqID, err))
-		return
+		return metricData{status: status}
 	}
 
+	md := metricData{status: http.StatusOK}
 	if wantBody {
-		if n, err := io.Copy(w, tarReader); err != nil {
-			log.Printf("%s copy to body failed at byte %v: %s", reqID, n, err)
+		md.size, err = io.Copy(w, tarReader)
+		if err != nil {
+			log.Printf("%s copy to body failed at byte %v: %s", reqID, md.size, err)
+			md.status = http.StatusInternalServerError
 		}
 	}
+	return md
 }
 
 // downloadURL downloads the reqURL and returns the content in response.
 // It writes to client header if error occurs or relays non 200 status code
 // from upstream.
-func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqID string) (*http.Response, error) {
+func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqID string) *http.Response {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
-		err := fmt.Errorf("%s download request %q: %w", reqID, reqURL, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf(err.Error())
-		return nil, err
+		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
+		http.Error(w, errStr, http.StatusInternalServerError)
+		log.Printf(errStr)
+		return nil
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		err := fmt.Errorf("%s download %q: %w", reqID, reqURL, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf(err.Error())
-		return nil, err
+		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
+		http.Error(w, errStr, http.StatusInternalServerError)
+		log.Printf(errStr)
+		return nil
 	}
 
 	if res.StatusCode != http.StatusOK {
 		defer res.Body.Close()
 		upstreamErr, err := io.ReadAll(res.Body)
+		errStr := fmt.Sprintf("%s %s respond %v status: %s", reqID, reqURL, res.StatusCode, upstreamErr)
 		if err != nil {
-			err = fmt.Errorf("%s failed to read upstream %v response of %q: %w", reqID, res.StatusCode, reqURL, err)
-		} else {
-			err = fmt.Errorf("%s %s respond %v status: %s", reqID, reqURL, res.StatusCode, upstreamErr)
+			errStr = fmt.Sprintf("%s failed to read upstream %v response of %q: %s", reqID, res.StatusCode, reqURL, err)
 		}
-		http.Error(w, err.Error(), res.StatusCode)
-		log.Printf(err.Error())
-		return nil, err
+		http.Error(w, errStr, res.StatusCode)
+		log.Printf(errStr)
 	}
-	return res, nil
+	return res
 }
 
 // extractTarAndWriteHeader extracts file from r reader.
 // It writes file stat to the header and returns
 // the tar reader for GET handling.
-func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string, w http.ResponseWriter) (*tar.Reader, error) {
+func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string, w http.ResponseWriter) (*tar.Reader, int, error) {
 	tarReader := tar.NewReader(r)
 	for {
 		select {
@@ -402,12 +432,12 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 		if err == io.EOF {
 			err = fmt.Errorf("tarReader: %q not found in the tar file", fileName)
 			http.Error(w, err.Error(), http.StatusNotFound)
-			return nil, err
+			return nil, http.StatusNotFound, err
 		}
 		if err != nil {
 			err = fmt.Errorf("tarReader error: %w", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
-			return nil, err
+			return nil, http.StatusBadRequest, err
 		}
 
 		if header.Typeflag == tar.TypeReg && header.Name == fileName {
@@ -415,8 +445,7 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 			w.Header().Set("Content-Length", strconv.FormatInt(header.Size, 10))
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.WriteHeader(http.StatusOK)
-
-			return tarReader, nil
+			return tarReader, http.StatusOK, nil
 		}
 	}
 }
@@ -432,12 +461,16 @@ func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
 	defer cancel()
 
+	md := metricData{}
+	defer updateMetrics(ctx, "decompress", r.Method, &md, startTime)
+
 	switch r.Method {
 	case http.MethodGet:
-		handleDecompressGET(ctx, w, r, c.cacheServerURL, id)
+		md = handleDecompressGET(ctx, w, r, c.cacheServerURL, id)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
+		md.status = http.StatusBadRequest
 		log.Printf(errStr)
 	}
 }
@@ -471,13 +504,13 @@ var compressReaderMap = map[string]compressReaderFunc{
 // It supports file types in allowedCompressExt.
 // Due to the content-size requirement, it decompresses the downloaded file
 // into the memory to get the size, then copies content to ResonpseWriter.
-func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) {
+func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) metricData {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
 		http.Error(w, errStr, http.StatusBadRequest)
 		log.Printf(errStr)
-		return
+		return metricData{status: http.StatusBadRequest}
 	}
 
 	fileExt := filepath.Ext(objectName.path)
@@ -486,13 +519,16 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 		errStr := fmt.Sprintf("%s decompress does not support %s extension", reqID, fileExt)
 		http.Error(w, errStr, http.StatusBadRequest)
 		log.Printf(errStr)
-		return
+		return metricData{status: http.StatusBadRequest}
 	}
 
 	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
-	res, err := downloadURL(ctx, w, reqURL, reqID)
-	if err != nil {
-		return
+	res := downloadURL(ctx, w, reqURL, reqID)
+	if res == nil {
+		return metricData{status: http.StatusInternalServerError}
+	}
+	if res.StatusCode != http.StatusOK {
+		return metricData{status: res.StatusCode}
 	}
 	defer res.Body.Close()
 
@@ -501,7 +537,7 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 		errStr := fmt.Sprintf("%s newReader error: %s", reqID, err)
 		http.Error(w, errStr, http.StatusInternalServerError)
 		log.Printf(errStr)
-		return
+		return metricData{status: http.StatusInternalServerError}
 	}
 	defer dReader.Close()
 
@@ -510,16 +546,20 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 		errStr := fmt.Sprintf("%s ReadAll failed after %v bytes: %s", reqID, len(rMem), err)
 		http.Error(w, errStr, http.StatusInternalServerError)
 		log.Printf(errStr)
-		return
+		return metricData{status: http.StatusInternalServerError}
 	}
 
-	if err := decompressWrite(ctx, w, rMem); err != nil {
+	n, err := decompressWrite(ctx, w, rMem)
+	md := metricData{status: http.StatusOK, size: int64(n)}
+	if err != nil {
 		log.Printf("%s decompressWrite failed: %s", reqID, err)
+		md.status = http.StatusInternalServerError
 	}
+	return md
 }
 
 // decompressWrite writes memory buffer to w Response
-func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) error {
+func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) (int, error) {
 	w.Header().Set("Accept-Ranges", "bytes")
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Length", strconv.Itoa(len(mem)))
@@ -527,7 +567,68 @@ func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) err
 
 	n, err := w.Write(mem)
 	if err != nil {
-		return fmt.Errorf("write to client failed at byte %v: %w", n, err)
+		return n, fmt.Errorf("write to client failed at byte %v: %w", n, err)
 	}
+
+	return n, nil
+}
+
+type metricData struct {
+	status int
+	size   int64
+}
+
+var (
+	dataDownloadTime = metric.NewFloatCounter("chromeos/fleet/caching-backend/downloader/time_download",
+		"The total number of download time",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("http_method"),
+		field.String("rpc"),
+		field.Int("status"))
+	dataDownloadBytes = metric.NewCounter("chromeos/fleet/caching-backend/downloader/data_download",
+		"The total number of download bytes",
+		&types.MetricMetadata{Units: types.Bytes},
+		field.String("http_method"),
+		field.String("rpc"),
+		field.Int("status"))
+	dataDownloadRate = metric.NewFloat("chromeos/fleet/caching-backend/downloader/rate_download",
+		"The download rate byte per second",
+		&types.MetricMetadata{},
+		field.String("http_method"),
+		field.String("rpc"),
+		field.Int("status"))
+)
+
+// metricsInit sets up the metrics.
+func metricsInit(ctx context.Context, tsmonEndpoint, tsmonCredentialPath string) error {
+	log.Printf("Setting up cache-downloader tsmon...")
+	fl := tsmon.NewFlags()
+	fl.Endpoint = tsmonEndpoint
+	fl.Credentials = tsmonCredentialPath
+	fl.Flush = tsmon.FlushAuto
+	fl.Target.SetDefaultsFromHostname()
+	fl.Target.TargetType = target.TaskType
+	fl.Target.TaskServiceName = "cache-downloader"
+	fl.Target.TaskJobName = "cache-downloader"
+
+	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
+		return fmt.Errorf("metrics: error setup tsmon: %s", err)
+	}
+
 	return nil
+}
+
+// updateMetrics add data points to the metrics.
+func updateMetrics(ctx context.Context, rpc, method string, m *metricData, startTime time.Time) {
+	dataDownloadBytes.Add(ctx, m.size, method, rpc, m.status)
+	dataDownloadTime.Add(ctx, float64(time.Since(startTime).Seconds()), method, rpc, m.status)
+	dataDownloadRate.Set(ctx, float64(float64(m.size)/time.Since(startTime).Seconds()), method, rpc, m.status)
+}
+
+// metricsShutdown stops the metrics.
+func metricsShutdown(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	log.Printf("Shutting down metrics...")
+	tsmon.Shutdown(ctx)
 }
