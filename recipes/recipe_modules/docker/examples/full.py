@@ -39,8 +39,8 @@ def RunSteps(api):
 def GenTests(api):
   yield api.test('example')
 
-  yield api.test('use_python3',
-      api.properties(use_python3=True),
+  yield api.test('use_python2',
+      api.properties(use_python3=False),
       api.post_process(DropExpectation),
   )
 

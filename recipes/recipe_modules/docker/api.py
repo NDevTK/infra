@@ -59,7 +59,7 @@ class DockerApi(recipe_api.RecipeApi):
             project='chromium-container-registry',
             service_account=None,
             step_name=None,
-            use_python3=False,
+            use_python3=True,
             **kwargs):
     """Connect to a Docker registry.
 
@@ -121,7 +121,7 @@ class DockerApi(recipe_api.RecipeApi):
           dir_mapping=None,
           env=None,
           inherit_luci_context=False,
-          use_python3=False,
+          use_python3=True,
           **kwargs):
     """Run a command in a Docker image as the current user:group.
 

@@ -156,7 +156,8 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
+      "-u",
       "RECIPE_MODULE[infra::docker]/resources/docker_login.py",
       "--server",
       "gcr.io",

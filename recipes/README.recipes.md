@@ -382,7 +382,7 @@ Raises StepFailure if binary is not found.
 
 Returns Docker version installed or None if failed to detect.
 
-&mdash; **def [login](/recipes/recipe_modules/docker/api.py#57)(self, server='gcr.io', project='chromium-container-registry', service_account=None, step_name=None, use_python3=False, \*\*kwargs):**
+&mdash; **def [login](/recipes/recipe_modules/docker/api.py#57)(self, server='gcr.io', project='chromium-container-registry', service_account=None, step_name=None, use_python3=True, \*\*kwargs):**
 
 Connect to a Docker registry.
 
@@ -407,7 +407,7 @@ Args:
 
 &mdash; **def [python](/recipes/recipe_modules/docker/api.py#22)(self, name, script, args, use_python3, \*\*kwargs):**
 
-&mdash; **def [run](/recipes/recipe_modules/docker/api.py#117)(self, image, step_name=None, cmd_args=None, dir_mapping=None, env=None, inherit_luci_context=False, use_python3=False, \*\*kwargs):**
+&mdash; **def [run](/recipes/recipe_modules/docker/api.py#117)(self, image, step_name=None, cmd_args=None, dir_mapping=None, env=None, inherit_luci_context=False, use_python3=True, \*\*kwargs):**
 
 Run a command in a Docker image as the current user:group.
 

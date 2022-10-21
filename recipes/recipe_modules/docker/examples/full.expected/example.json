@@ -60,7 +60,8 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
+      "-u",
       "RECIPE_MODULE[infra::docker]/resources/docker_run.py",
       "--config-file",
       "[CLEANUP]/.docker",
