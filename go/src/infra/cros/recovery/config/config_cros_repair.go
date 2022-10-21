@@ -1351,9 +1351,20 @@ func crosRepairActions() map[string]*Action {
 				"If this action fails, it means the servo usbkey already have required stable_version OS image cached.",
 			},
 			Conditions: []string{
-				"servo_usbkey_has_stable_image",
+				"Servo usbkey has stable image",
 			},
 			ExecName: "sample_fail",
+		},
+		"Servo usbkey has stable image": {
+			Docs: []string{
+				"Check if the usbkey has the stable_version OS image.",
+				"TODO: Collect data on the usual number of retries and tweak the default",
+			},
+			ExecName: "servo_usbkey_has_stable_image",
+			ExecExtraArgs: []string{
+				"retry_count:3",
+				"retry_interval:1",
+			},
 		},
 		"Download stable version OS image to servo usbkey if necessary": {
 			Docs: []string{

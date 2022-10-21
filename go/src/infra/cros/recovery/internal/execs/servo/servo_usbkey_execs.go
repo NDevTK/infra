@@ -16,12 +16,18 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
 
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	// This is the max number of times we'll try reading the ChromeOS image
+	servodReadCROSImageRetryLimit := argsMap.AsInt(ctx, "retry_count", 1)
+	// retryInterval is the timeout between retries for reading the ChromeOS image
+	retryInterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
@@ -39,10 +45,15 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	logger := info.NewLogger()
 	usbPath, err := servo.USBDrivePath(ctx, false, run, servod, logger)
 	if err != nil {
+		log.Debugf(ctx, "Servo USB Has CROS Stable Image: could not read usb key path\n")
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
 	}
-	imageName, err := servo.ChromeOSImageNameFromUSBDrive(ctx, usbPath, run, servod, logger)
-	if err != nil {
+	var imageName string
+	var getImageName = func() (err error) {
+		imageName, err = servo.ChromeOSImageNameFromUSBDrive(ctx, usbPath, run, servod, logger)
+		return err
+	}
+	if err := retry.LimitCount(ctx, servodReadCROSImageRetryLimit, retryInterval, getImageName, "get ChromeOS image name from usb"); err != nil {
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
 	}
 	if strings.Contains(expectedImage, imageName) {
