@@ -24,4 +24,4 @@ exclude_lines =
 
 [expect_tests]
 # TODO(crbug/966643): bump coverage back to 99%.
-expected_coverage_min = 98
+expected_coverage_min = 97

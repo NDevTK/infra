@@ -28,7 +28,7 @@ _PROP_NAME_REGEX = re.compile(
 
 # Builds from such LUCI projects should be intercepted by Findit v2.
 # It doesn't necessarily mean build failures will be analyzed in v2 though.
-_FINDIT_V2_INTERCEPT_PROJECTS = ['chromium']
+_FINDIT_V2_INTERCEPT_PROJECTS = []
 
 
 class CompletedBuildPubsubIngestor(BaseHandler):
