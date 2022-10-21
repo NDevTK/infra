@@ -21,6 +21,8 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/appengine/crosskylabadmin/site"
+	"infra/cros/recovery/karte"
+	"infra/cros/recovery/logger/metrics"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -82,6 +84,22 @@ func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, e
 	return nil, errors.Reason("get rollout config: expected state %q is not recognized", expectedState).Err()
 }
 
+func createKarteClient(ctx context.Context) (metrics.Metrics, error) {
+	cfg := config.Get(ctx)
+	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
+	}
+	return karte.NewMetricsWithHttp(ctx, &http.Client{
+		Transport: transport,
+	}, cfg.GetKarte().GetHost(), site.DefaultPRPCOptions)
+}
+
+func findProperRecoveryTask(ctx context.Context, dutName string, karteC metrics.Metrics) buildbucket.TaskName {
+	// TODO: fill in the strategy to find the right recovery task to trigger.
+	return buildbucket.Recovery
+}
+
 // CreateRepairTask kicks off a repair job.
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
@@ -113,11 +131,19 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		cipdVersion = buildbucket.CIPDLatest
 	}
 
-	url, err := createBuildbucketTask(ctx, createBuildbucketTaskRequest{
+	r := createBuildbucketTaskRequest{
+		taskName:      buildbucket.Recovery,
 		taskType:      cipdVersion,
 		botID:         botID,
 		expectedState: expectedState,
-	})
+	}
+	karteC, err := createKarteClient(ctx)
+	if err != nil {
+		logging.Infof(ctx, "Fail to create karte client, skip stats checking")
+	} else {
+		r.taskName = findProperRecoveryTask(ctx, heuristics.NormalizeBotNameToDeviceName(botID), karteC)
+	}
+	url, err := createBuildbucketTask(ctx, r)
 	if err != nil {
 		logging.Errorf(ctx, "Attempted and failed to create buildbucket task: %s", err)
 		logging.Errorf(ctx, "Falling back to legacy flow for bot %q", botID)

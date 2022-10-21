@@ -6,8 +6,10 @@ package karte
 
 import (
 	"context"
+	"net/http"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	kartepb "infra/cros/karte/api"
 	kclient "infra/cros/karte/client"
@@ -26,6 +28,24 @@ func NewMetrics(ctx context.Context, c *kclient.Config, o ...kclient.Option) (me
 		return nil, errors.Annotate(err, "wrap karte client").Err()
 	}
 	return &client{impl: innerClient}, nil
+}
+
+// NewMetricsWithHttp creates a new Karte client interface.
+//
+// It's used for creating karte interface with a http client,
+// not for local command line tool.
+func NewMetricsWithHttp(ctx context.Context, hc *http.Client, hostname string, opt *prpc.Options) (metrics.Metrics, error) {
+	if hc == nil {
+		return nil, errors.Reason("new karte client: hc cannot be nil").Err()
+	}
+	if hostname == "" {
+		return nil, errors.Reason("new karte client: hostname cannot be empty").Err()
+	}
+	return &client{impl: kartepb.NewKartePRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    hostname,
+		Options: opt,
+	})}, nil
 }
 
 // Create creates a new action in Karte using the following process.
