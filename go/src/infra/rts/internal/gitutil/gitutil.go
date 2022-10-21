@@ -20,7 +20,7 @@ import (
 // ChangedFiles returns the list of files differing in sinceRef and the working
 // directory. Example of sinceRev: "origin/main".
 func ChangedFiles(repo, sinceRev string) ([]string, error) {
-	out, err := Exec(repo)("diff", "--name-only", sinceRev)
+	out, err := Exec(repo)("diff", "--name-only", "--cached", sinceRev)
 	if err != nil {
 		return nil, err
 	}
