@@ -39,7 +39,6 @@ _ROBOT_COMMENT_LINE_CHANGE_THRESHOLD = 10
 _ROBOT_COMMENT_COVERAGE_THRESHOLD = 50
 _MINIMUM_DESIRED_ALL_TEST_COVERAGE = 80
 _COVERAGE_CHECKER_ROBOT_ID = 'Chromium Coverage Checker'
-_EXCLUDED_FILE_REGEX = r'(^|.+\/)test(s|ing)?\/.+|.+(T|t)ests?\..*'
 
 
 def _AddDependencyToManifest(path, url, revision,
@@ -534,7 +533,7 @@ class ProcessCodeCoverageData(BaseHandler):
           if percentage.path.endswith("java"):
             continue
           # Do not add robot comments for test files
-          if re.match(_EXCLUDED_FILE_REGEX, percentage.path):
+          if re.match(utils.TEST_FILE_REGEX, percentage.path):
             continue
           coverage = (percentage.covered_lines * 100.0) / percentage.total_lines
           if (percentage.total_lines > _ROBOT_COMMENT_LINE_CHANGE_THRESHOLD and

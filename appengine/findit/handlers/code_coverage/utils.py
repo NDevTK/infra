@@ -13,6 +13,9 @@ from waterfall import waterfall_config
 # Cloud storage bucket used to store the source files fetched from gitile.
 _SOURCE_FILE_GS_BUCKET = 'source-files-for-coverage'
 
+# Regex to identify all test related files
+TEST_FILE_REGEX = r'(^|.+\/)test(s|ing)?\/.+|.+(T|t)ests?\..*'
+
 
 def GetPostsubmitPlatformInfoMap(luci_project):
   """Returns a map of postsubmit platform information.

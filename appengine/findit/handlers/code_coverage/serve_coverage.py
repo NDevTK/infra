@@ -325,6 +325,9 @@ class ServeCodeCoverageData(BaseHandler):
       formatted_data = {'files': []}
       for p in set(abs_coverage_per_file.keys() +
                    abs_unit_tests_coverage_per_file.keys()):
+        # Do not return results for test files
+        if re.match(utils.TEST_FILE_REGEX, p):
+          continue
         formatted_data['files'].append({
             'path':
                 p[2:],

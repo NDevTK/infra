@@ -101,8 +101,8 @@ def _CreateSampleDirectoryCoverageData(builder='linux-code-coverage',
           'summaries':
               _CreateSampleCoverageSummaryMetric(),
           'files': [{
-              'path': '//dir/test.cc',
-              'name': 'test.cc',
+              'path': '//dir/myfile.cc',
+              'name': 'myfile.cc',
               'summaries': _CreateSampleCoverageSummaryMetric()
           }]
       })
@@ -118,12 +118,12 @@ def _CreateSampleFileCoverageData(builder='linux-code-coverage', modifier_id=0):
       project='chromium/src',
       ref='refs/heads/main',
       revision='aaaaa',
-      path='//dir/test.cc',
+      path='//dir/myfile.cc',
       bucket='coverage',
       builder=builder,
       modifier_id=modifier_id,
       data={
-          'path': '//dir/test.cc',
+          'path': '//dir/myfile.cc',
           'revision': 'bbbbb',
           'lines': [{
               'count': 100,
@@ -215,7 +215,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     change = 138000
     patchset = 4
     data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -233,7 +233,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         'data': {
             'files': [{
                 'path':
-                    'dir/test.cc',
+                    'dir/myfile.cc',
                 'lines': [{
                     'count': 100,
                     'line': 1,
@@ -296,7 +296,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     patchset_mid = 4
     patchset_dest = 5
     data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -338,7 +338,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     patchset_mid = 4
     patchset_dest = 5
     data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -346,7 +346,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         }],
     }]
     data_unit = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -369,7 +369,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     mid_data.put()
 
     rebased_coverage_data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 2,
@@ -378,7 +378,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     }]
 
     rebased_coverage_data_unit = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 2,
@@ -400,7 +400,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         'data': {
             'files': [{
                 'path':
-                    'dir/test.cc',
+                    'dir/myfile.cc',
                 'lines': [{
                     'count': 100,
                     'line': 2,
@@ -432,7 +432,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     change = 138000
     patchset = 4
     data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -443,19 +443,19 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         server_host=host, change=change, patchset=patchset, data=data)
     entity.absolute_percentages = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=2, covered_lines=1)
     ]
     entity.incremental_percentages = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=1, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=1, covered_lines=1)
     ]
     entity.absolute_percentages_unit = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=2, covered_lines=1)
     ]
     entity.incremental_percentages_unit = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=1, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=1, covered_lines=1)
     ]
     entity.put()
 
@@ -467,7 +467,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     expected_response_body = json.dumps({
         'data': {
             'files': [{
-                "path": "dir/test.cc",
+                "path": "dir/myfile.cc",
                 "absolute_coverage": {
                     "covered": 1,
                     "total": 2,
@@ -499,7 +499,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     patchset_dest = 4
     mock_get_equivalent_ps.return_value = [patchset_src]
     data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -510,19 +510,19 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         server_host=host, change=change, patchset=patchset_src, data=data)
     entity.absolute_percentages = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=2, covered_lines=1)
     ]
     entity.incremental_percentages = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=1, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=1, covered_lines=1)
     ]
     entity.absolute_percentages_unit = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=2, covered_lines=1)
     ]
     entity.incremental_percentages_unit = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=1, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=1, covered_lines=1)
     ]
     entity.put()
 
@@ -534,7 +534,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     expected_response_body = json.dumps({
         'data': {
             'files': [{
-                "path": "dir/test.cc",
+                "path": "dir/myfile.cc",
                 "absolute_coverage": {
                     "covered": 1,
                     "total": 2,
@@ -562,7 +562,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     change = 138000
     patchset = 4
     data = [{
-        'path': '//dir/test.cc',
+        'path': '//dir/myfile.cc',
         'lines': [{
             'count': 100,
             'first': 1,
@@ -573,11 +573,11 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         server_host=host, change=change, patchset=patchset, data=data)
     entity.absolute_percentages_unit = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=2, covered_lines=1)
     ]
     entity.incremental_percentages_unit = [
         CoveragePercentage(
-            path='//dir/test.cc', total_lines=1, covered_lines=1)
+            path='//dir/myfile.cc', total_lines=1, covered_lines=1)
     ]
     entity.put()
 
@@ -589,7 +589,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     expected_response_body = json.dumps({
         'data': {
             'files': [{
-                "path": "dir/test.cc",
+                "path": "dir/myfile.cc",
                 "absolute_coverage": None,
                 "incremental_coverage": None,
                 "absolute_unit_tests_coverage": {
@@ -767,7 +767,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     project = 'chromium/src'
     ref = 'refs/heads/main'
     revision = 'aaaaa'
-    path = '//dir/test.cc'
+    path = '//dir/myfile.cc'
     platform = 'linux'
 
     report = _CreateSamplePostsubmitReport()
@@ -783,7 +783,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(200, response.status_int)
     mock_get_file_from_gs.assert_called_with(
         '/source-files-for-coverage/chromium.googlesource.com/chromium/'
-        'src.git/dir/test.cc/bbbbb')
+        'src.git/dir/myfile.cc/bbbbb')
 
   @mock.patch.object(utils, 'GetFileContentFromGs')
   def testServeFullRepoFileView_WithModifierAndRevision(self,
@@ -795,7 +795,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     project = 'chromium/src'
     ref = 'refs/heads/main'
     revision = 'aaaaa'
-    path = '//dir/test.cc'
+    path = '//dir/myfile.cc'
     platform = 'linux'
 
     report = _CreateSamplePostsubmitReport(modifier_id=123)
@@ -811,7 +811,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(200, response.status_int)
     mock_get_file_from_gs.assert_called_with(
         '/source-files-for-coverage/chromium.googlesource.com/chromium/'
-        'src.git/dir/test.cc/bbbbb')
+        'src.git/dir/myfile.cc/bbbbb')
 
   @mock.patch.object(utils, 'GetFileContentFromGs')
   def testServeFullRepoFileView_WithModifier_WithoutRevision(
@@ -822,7 +822,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     host = 'chromium.googlesource.com'
     project = 'chromium/src'
     ref = 'refs/heads/main'
-    path = '//dir/test.cc'
+    path = '//dir/myfile.cc'
     platform = 'linux'
 
     report = _CreateSamplePostsubmitReport(modifier_id=123)
@@ -838,7 +838,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(200, response.status_int)
     mock_get_file_from_gs.assert_called_with(
         '/source-files-for-coverage/chromium.googlesource.com/chromium/'
-        'src.git/dir/test.cc/bbbbb')
+        'src.git/dir/myfile.cc/bbbbb')
 
   def testServeFullRepoReferencedReport_RedirectsWithModifier(self):
     self.mock_current_user(user_email='test@google.com', is_admin=False)
@@ -865,7 +865,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
     request_url = ('/coverage/p/chromium/file?host=%s&project=%s&ref=%s'
                    '&revision=%s&path=%s&platform=%s') % (
                        'chromium.googlesource.com', 'chromium/src',
-                       'refs/heads/main', 'aaaaa', '//dir/test.cc', 'linux')
+                       'refs/heads/main', 'aaaaa', '//dir/myfile.cc', 'linux')
     response = self.test_app.get(request_url)
     self.assertEqual(200, response.status_int)
 
