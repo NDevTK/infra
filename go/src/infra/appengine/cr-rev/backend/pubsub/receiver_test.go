@@ -6,53 +6,35 @@ package pubsub
 
 import (
 	"context"
-	"reflect"
 	"sync"
 	"testing"
-	"unsafe"
 
 	"cloud.google.com/go/pubsub"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// ackHandler interface matches pubsub/message ackHandler
-type ackHandler interface {
-	OnAck()
-	OnNack()
-}
-
-type fakeAckHandler struct {
+type psmObserver struct {
 	acked  int
 	nacked int
 	mu     sync.Mutex
 }
 
-func (ackh *fakeAckHandler) OnAck() {
-	ackh.mu.Lock()
-	defer ackh.mu.Unlock()
-	ackh.acked++
-}
-
-func (ackh *fakeAckHandler) OnNack() {
-	ackh.mu.Lock()
-	defer ackh.mu.Unlock()
-	ackh.nacked++
+func (psmo *psmObserver) observe(ackOrNack bool) {
+	psmo.mu.Lock()
+	defer psmo.mu.Unlock()
+	if ackOrNack {
+		psmo.acked++
+	} else {
+		psmo.nacked++
+	}
 }
 
 type mockPubsubReceiver struct {
-	messages   []*pubsub.Message
-	ackHandler ackHandler
+	messages []*pubsub.Message
 }
 
 func (m *mockPubsubReceiver) Receive(ctx context.Context, f func(ctx context.Context, m *pubsub.Message)) error {
 	for _, message := range m.messages {
-		// Replace ackHandler with fake handler.
-		pointer := reflect.ValueOf(message)
-		val := reflect.Indirect(pointer)
-		mem := val.FieldByName("ackh")
-		ptrToMem := unsafe.Pointer(mem.UnsafeAddr())
-		realPtrToMem := (*ackHandler)(ptrToMem)
-		*realPtrToMem = m.ackHandler
 		f(ctx, message)
 	}
 	return nil
@@ -72,42 +54,40 @@ func TestPubsubSubscribe(t *testing.T) {
 	t.Skip("Unsafe memory hacks in mockPubsubReceiver.Receive broke when PubSub library changed its internal structs")
 
 	Convey("no messages", t, func() {
-		ctx := context.Background()
-		ackh := &fakeAckHandler{}
+		psmo := &psmObserver{}
+		ctx := WithObserver(context.Background(), psmo.observe)
 		mReceiver := &mockPubsubReceiver{
-			messages:   make([]*pubsub.Message, 0),
-			ackHandler: ackh,
+			messages: make([]*pubsub.Message, 0),
 		}
 		mProcess := &mockProcessMessage{}
 
 		err := Subscribe(ctx, mReceiver, mProcess.processPubsubMessage)
 		So(err, ShouldBeNil)
-		So(ackh.acked, ShouldEqual, 0)
-		So(ackh.nacked, ShouldEqual, 0)
+		So(psmo.acked, ShouldEqual, 0)
+		So(psmo.nacked, ShouldEqual, 0)
 	})
 
 	Convey("invalid message", t, func() {
-		ctx := context.Background()
-		ackh := &fakeAckHandler{}
+		psmo := &psmObserver{}
+		ctx := WithObserver(context.Background(), psmo.observe)
 		mReceiver := &mockPubsubReceiver{
 			messages: []*pubsub.Message{
 				{
 					Data: []byte("foo"),
 				},
 			},
-			ackHandler: ackh,
 		}
 		mProcess := &mockProcessMessage{}
 
 		err := Subscribe(ctx, mReceiver, mProcess.processPubsubMessage)
 		So(err, ShouldBeNil)
-		So(ackh.acked, ShouldEqual, 0)
-		So(ackh.nacked, ShouldEqual, 1)
+		So(psmo.acked, ShouldEqual, 0)
+		So(psmo.nacked, ShouldEqual, 1)
 	})
 
 	Convey("valid message", t, func() {
-		ctx := context.Background()
-		ackh := &fakeAckHandler{}
+		psmo := &psmObserver{}
+		ctx := WithObserver(context.Background(), psmo.observe)
 		mReceiver := &mockPubsubReceiver{
 			messages: []*pubsub.Message{
 				{
@@ -129,14 +109,13 @@ func TestPubsubSubscribe(t *testing.T) {
 }`),
 				},
 			},
-			ackHandler: ackh,
 		}
 		mProcess := &mockProcessMessage{}
 
 		err := Subscribe(ctx, mReceiver, mProcess.processPubsubMessage)
 		So(err, ShouldBeNil)
-		So(ackh.acked, ShouldEqual, 1)
-		So(ackh.nacked, ShouldEqual, 0)
+		So(psmo.acked, ShouldEqual, 1)
+		So(psmo.nacked, ShouldEqual, 0)
 		So(mProcess.calls, ShouldEqual, 1)
 	})
 }
