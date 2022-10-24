@@ -15,7 +15,7 @@ create {
     }
     patch_dir: "patches"
     cpe_base_address: "cpe:/a:cmake_project:cmake"
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
   }
 
   build {

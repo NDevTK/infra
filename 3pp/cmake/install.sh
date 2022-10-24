@@ -17,9 +17,9 @@ cd cmake-build
 # See also: https://github.com/scikit-build/cmake-python-distributions/issues/221
 cmake .. \
   -GNinja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-  -DCMAKE_USE_OPENSSL=OFF \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
+  -DCMAKE_INSTALL_PREFIX:STRING="$PREFIX" \
+  -DCMAKE_USE_OPENSSL:BOOL=OFF \
   -DBUILD_TESTING:BOOL=ON \
   -DCMAKE_CXX_STANDARD:STRING=14
 # Our dockcross environment should automatically set the CMAKE toolchain to
@@ -31,13 +31,31 @@ cmake --build . -j "$(nproc)"
 # Run the test suite, if not cross-compiling.
 # TODO(fancl): Fix tests on windows.
 if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-* ]]; then
+  # RunCMake.CPack_STGZ (Self extracting Tar GZip compression) will generate a
+  # shell script use pax instead of tar if possible to unpack itself. This is
+  # fine in most cases since STGZ use restricted-pax format which is supported
+  # by pax, but may break if libarchive considers restricted-pax can't store the
+  # metadata (e.g. UID/GID too big) and uses unrestricted pax format instead.
+  # Unfortunately our UID do exceed the limit, which will result in unpacking
+  # extra PaxHeader in the unittest.
+  #
+  # CTestLimitDashJ doesn't work well with parallel.
+  # FileDownload can be flaky in parallel because it relies on execution order.
+  #
   # Unset CMAKE_TOOLCHAIN_FILE to avoid using host cmake libraries in tests
   env -u CMAKE_TOOLCHAIN_FILE \
     ./bin/ctest --parallel "$(nproc)" \
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
-    --exclude-regex '(CTestLimitDashJ|BootstrapTest)' # CTestLimitDashJ doesn't work well with parallel
+    --exclude-regex '(RunCMake.CPack_STGZ|CTestLimitDashJ|FileDownload|BootstrapTest)'
+
+  env -u CMAKE_TOOLCHAIN_FILE \
+    ./bin/ctest \
+    --force-new-ctest-process \
+    --stop-on-failure \
+    --output-on-failure \
+    --tests-regex '(CTestLimitDashJ|FileDownload)'
 fi
 
 # Use the system cmake to actually do the install. Otherwise it will use the
