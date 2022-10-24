@@ -29,7 +29,7 @@ func TestHasDutBoardExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "some name", nil, 0)
+				}, "some name", nil, 0, nil)
 			So(hasDutBoardExec(ctx, info), ShouldBeNil)
 		})
 		Convey("Missing attached DUT board - returns error", func() {
@@ -42,7 +42,7 @@ func TestHasDutBoardExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutBoardExec(ctx, info), ShouldNotBeNil)
 		})
 		Convey("ChromeOs DUT  with board - returns error", func() {
@@ -55,7 +55,7 @@ func TestHasDutBoardExec(t *testing.T) {
 							SerialNumber: "serialNumber",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutBoardExec(ctx, info), ShouldNotBeNil)
 		})
 	})
@@ -76,8 +76,7 @@ func TestHasDutModelExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "", nil, 0,
-			)
+				}, "", nil, 0, nil)
 			So(hasDutModelExec(ctx, info), ShouldBeNil)
 		})
 		Convey("Missing attached DUT model - returns error", func() {
@@ -90,7 +89,7 @@ func TestHasDutModelExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "name", nil, 0)
+				}, "name", nil, 0, nil)
 			So(hasDutModelExec(ctx, info), ShouldNotBeNil)
 		})
 		Convey("ChromeOs DUT with model - returns error", func() {
@@ -103,8 +102,7 @@ func TestHasDutModelExec(t *testing.T) {
 							SerialNumber: "serialNumber",
 						},
 					},
-				}, "", nil, 0)
-
+				}, "", nil, 0, nil)
 			So(hasDutModelExec(ctx, info), ShouldNotBeNil)
 		})
 	})
@@ -125,7 +123,7 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutSerialNumberExec(ctx, info), ShouldBeNil)
 		})
 		Convey("Missing attached DUT serial number - returns error", func() {
@@ -138,7 +136,7 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutSerialNumberExec(ctx, info), ShouldNotBeNil)
 		})
 		Convey("ChromeOs DUT with serial number - returns error", func() {
@@ -151,7 +149,7 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 							SerialNumber: "serialNumber",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutSerialNumberExec(ctx, info), ShouldNotBeNil)
 		})
 	})
@@ -172,7 +170,7 @@ func TestHasDutAssociatedHostExec(t *testing.T) {
 							AssociatedHostname: "associatedHostname",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutAssociatedHostExec(ctx, info), ShouldBeNil)
 		})
 		Convey("Missing attached DUT associated hostname - returns error", func() {
@@ -185,7 +183,7 @@ func TestHasDutAssociatedHostExec(t *testing.T) {
 							SerialNumber: "serialNumber",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutAssociatedHostExec(ctx, info), ShouldNotBeNil)
 		})
 		Convey("ChromeOs DUT - returns error", func() {
@@ -198,7 +196,7 @@ func TestHasDutAssociatedHostExec(t *testing.T) {
 							SerialNumber: "serialNumber",
 						},
 					},
-				}, "", nil, 0)
+				}, "", nil, 0, nil)
 			So(hasDutAssociatedHostExec(ctx, info), ShouldNotBeNil)
 		})
 	})

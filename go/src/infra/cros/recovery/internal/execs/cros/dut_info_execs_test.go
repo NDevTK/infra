@@ -61,10 +61,7 @@ func TestIsSmartHubExpectedExec(t *testing.T) {
 						Chromeos: tt.chromeos,
 					},
 				},
-				"name",
-				tt.actions,
-				0,
-			)
+				"name", tt.actions, 0, nil)
 			err := isSmartHubExpectedExec(ctx, info)
 			if err == nil && tt.expectedErr {
 				t.Errorf("%q -> error expected but not received", tt.testName)

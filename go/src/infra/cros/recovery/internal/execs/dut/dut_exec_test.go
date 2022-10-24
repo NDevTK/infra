@@ -54,10 +54,7 @@ func TestSetDUTState(t *testing.T) {
 				&execs.RunArgs{
 					DUT: &tlw.Dut{},
 				},
-				"",
-				[]string{cs.actionArg},
-				0,
-			)
+				"", []string{cs.actionArg}, 0, nil)
 			err := setDutStateExec(ctx, info)
 			if cs.errorMessage == "" {
 				if err != nil {

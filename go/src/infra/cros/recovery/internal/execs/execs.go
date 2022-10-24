@@ -81,12 +81,13 @@ type ExecInfo struct {
 }
 
 // NewExecInfo creates new instance of ExecInfo.
-func NewExecInfo(runArgs *RunArgs, name string, actionArgs []string, actionTimeout time.Duration) *ExecInfo {
+func NewExecInfo(runArgs *RunArgs, name string, actionArgs []string, actionTimeout time.Duration, metric *metrics.Action) *ExecInfo {
 	return &ExecInfo{
 		runArgs:       runArgs,
 		name:          name,
 		actionArgs:    actionArgs,
 		actionTimeout: actionTimeout,
+		metric:        metric,
 	}
 }
 
