@@ -18,13 +18,13 @@ import (
 
 func getCmdRelease() *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: "release [comma-separated build-targets|*] [-staging]",
+		UsageLine: "release [flags]",
 		ShortDesc: "Run a release builder.",
 		CommandRun: func() subcommands.CommandRun {
 			c := &releaseRun{}
 			c.tryRunBase.cmdRunner = cmd.RealCommandRunner{}
 			c.addDryrunFlag()
-			c.addBranchFlag()
+			c.addBranchFlag("main")
 			c.addProductionFlag()
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()

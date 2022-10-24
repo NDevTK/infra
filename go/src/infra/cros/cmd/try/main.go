@@ -20,6 +20,7 @@ func newApplication() *cli.Application {
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
 			getCmdRelease(),
+			getCmdFirmware(),
 		},
 	}
 }

@@ -50,56 +50,56 @@ type tryRunBase struct {
 }
 
 // addBranchFlag creates a `-branch` command-line flag to specify the branch.
-func (m *tryRunBase) addBranchFlag() {
-	m.Flags.StringVar(&m.branch, "branch", "main", "specify the branch on which to run the builder")
+func (t *tryRunBase) addBranchFlag(defaultValue string) {
+	t.Flags.StringVar(&t.branch, "branch", defaultValue, "specify the branch on which to run the builder")
 }
 
 // addProductionFlag creates a `-production` command-line flag for a try subcommand.
-func (m *tryRunBase) addProductionFlag() {
-	m.Flags.BoolVar(&m.production, "production", false, "run a production builder instead of a staging builder")
+func (t *tryRunBase) addProductionFlag() {
+	t.Flags.BoolVar(&t.production, "production", false, "run a production builder instead of a staging builder")
 }
 
 // addPatchesFlag creates a `-gerrit-patches` command-line flag for a try subcommand.
-func (m *tryRunBase) addPatchesFlag() {
-	m.Flags.Var(&m.patches, "gerrit-patches", "(comma-separated) patches to apply to the build, e.g. crrev.com/c/1234567,crrev.com/i/1234567.")
-	m.Flags.Var(&m.patches, "g", "alias for --gerrit-patches")
+func (t *tryRunBase) addPatchesFlag() {
+	t.Flags.Var(&t.patches, "gerrit-patches", "(comma-separated) patches to apply to the build, e.g. crrev.com/c/1234567,crrev.com/i/1234567.")
+	t.Flags.Var(&t.patches, "g", "alias for --gerrit-patches")
 }
 
 // addBuildTargetsFlag creates a `-build_targets` command-line flag for a try subcommand.
-func (m *tryRunBase) addBuildTargetsFlag() {
-	m.Flags.Var(&m.buildTargets, "build_targets", "(comma-separated) Build targets to run. If not set, the standard set of build targets will be used.")
+func (t *tryRunBase) addBuildTargetsFlag() {
+	t.Flags.Var(&t.buildTargets, "build_targets", "(comma-separated) Build targets to run. If not set, the standard set of build targets will be used.")
 }
 
 // addBuildspecFlag creates a `-buildspec` command-line flag for a try command.
-func (m *tryRunBase) addBuildspecFlag() {
-	m.Flags.StringVar(&m.buildspec, "buildspec", "", "GS uri to the buildspec that the builder should sync to, e.g. gs://chromeos-manifest-versions/buildspecs/108/15159.0.0.xml.")
+func (t *tryRunBase) addBuildspecFlag() {
+	t.Flags.StringVar(&t.buildspec, "buildspec", "", "GS uri to the buildspec that the builder should sync to, e.g. gs://chromeos-manifest-versions/buildspecs/108/15159.0.0.xml.")
 }
 
 // addDryrunFlag creates a `-dryrun` command-line flag for a try command.
-func (m *tryRunBase) addDryrunFlag() {
-	m.Flags.BoolVar(&m.dryrun, "dryrun", false, "Dry run (i.e. don't actually run `bb add`).")
+func (t *tryRunBase) addDryrunFlag() {
+	t.Flags.BoolVar(&t.dryrun, "dryrun", false, "Dry run (i.e. don't actually run `bb add`).")
 }
 
 // validate validates base args for the command.
-func (m *tryRunBase) validate() error {
-	if len(m.patches) > 0 {
+func (t *tryRunBase) validate() error {
+	if len(t.patches) > 0 {
 		patchSpec := regexp.MustCompile(`^crrev\.com\/[ci]\/\d{7,8}$`)
-		for _, patch := range m.patches {
+		for _, patch := range t.patches {
 			if !patchSpec.MatchString(patch) {
 				return fmt.Errorf(`invalid patch "%s". patches must be of the format crrev.com/[ci]/<number>.`, patch)
 			}
 		}
 
-		if m.production {
+		if t.production {
 			return fmt.Errorf("-g/--gerrit-patches is only supported for staging builds")
 		}
 	}
 
-	if m.buildspec != "" {
-		if m.production {
+	if t.buildspec != "" {
+		if t.production {
 			return fmt.Errorf("--buildspec is only supported for staging builds")
 		}
-		if !strings.HasPrefix(m.buildspec, "gs://") {
+		if !strings.HasPrefix(t.buildspec, "gs://") {
 			return fmt.Errorf("--buildspec must start with gs://")
 		}
 	}
@@ -108,19 +108,19 @@ func (m *tryRunBase) validate() error {
 }
 
 // run executes common run logic for all tryRunBase commands.
-func (m *tryRunBase) run(ctx context.Context) (int, error) {
-	if err := m.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
+func (t *tryRunBase) run(ctx context.Context) (int, error) {
+	if err := t.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		return AuthError, err
 	}
-	if err := m.tagBuilds(ctx); err != nil {
+	if err := t.tagBuilds(ctx); err != nil {
 		return CmdError, err
 	}
 	return Success, nil
 }
 
 // promptYes prompts the user yes or no and returns the response as a boolean.
-func (m *tryRunBase) promptYes() (bool, error) {
-	m.LogOut("You are launching a production build. Please confirm (y/N):")
+func (t *tryRunBase) promptYes() (bool, error) {
+	t.LogOut("You are launching a production build. Please confirm (y/N):")
 	b := bufio.NewReader(os.Stdin)
 	i, err := b.ReadString('\n')
 	if err != nil {
@@ -137,8 +137,8 @@ func (m *tryRunBase) promptYes() (bool, error) {
 }
 
 // tagBuilds adds the invoker's username as a tag to builds.
-func (m *tryRunBase) tagBuilds(ctx context.Context) error {
-	stdout, _, err := m.RunCmd(ctx, "led", "auth-info")
+func (t *tryRunBase) tagBuilds(ctx context.Context) error {
+	stdout, _, err := t.RunCmd(ctx, "led", "auth-info")
 	if err != nil {
 		return err
 	}
@@ -146,28 +146,28 @@ func (m *tryRunBase) tagBuilds(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	m.bbAddArgs = append(m.bbAddArgs, "-t", fmt.Sprintf("tryjob-launcher:%s", email))
+	t.bbAddArgs = append(t.bbAddArgs, "-t", fmt.Sprintf("tryjob-launcher:%s", email))
 	return nil
 }
 
 // LogOut logs to stdout.
-func (m *tryRunBase) LogOut(format string, a ...interface{}) {
-	if m.stdoutLog != nil {
-		m.stdoutLog.Printf(format, a...)
+func (t *tryRunBase) LogOut(format string, a ...interface{}) {
+	if t.stdoutLog != nil {
+		t.stdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func (m *tryRunBase) LogErr(format string, a ...interface{}) {
-	if m.stderrLog != nil {
-		m.stderrLog.Printf(format, a...)
+func (t *tryRunBase) LogErr(format string, a ...interface{}) {
+	if t.stderrLog != nil {
+		t.stderrLog.Printf(format, a...)
 	}
 }
 
 // RunCmd executes a shell command.
-func (m tryRunBase) RunCmd(ctx context.Context, name string, args ...string) (stdout, stderr string, err error) {
+func (t tryRunBase) RunCmd(ctx context.Context, name string, args ...string) (stdout, stderr string, err error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
-	err = m.cmdRunner.RunCommand(ctx, &stdoutBuf, &stderrBuf, "", name, args...)
+	err = t.cmdRunner.RunCommand(ctx, &stdoutBuf, &stderrBuf, "", name, args...)
 	stdout = stdoutBuf.String()
 	stderr = stderrBuf.String()
 	if err != nil {

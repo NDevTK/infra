@@ -44,3 +44,13 @@ func parseEmailFromAuthInfo(stdout string) (string, error) {
 	}
 	return strings.TrimSpace(submatch[1]), nil
 }
+
+// sliceContainsStr checks whether a []string contains a string.
+func sliceContainsStr(slice []string, s string) bool {
+	for _, x := range slice {
+		if x == s {
+			return true
+		}
+	}
+	return false
+}
