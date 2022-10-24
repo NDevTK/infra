@@ -52,6 +52,10 @@ func cmdSelect() *subcommands.Command {
 			`))
 			r.Flags.BoolVar(&r.IgnoreExceptions, "ignore-exceptions", false, "For debugging. Whether we should ignore exceptions.")
 			r.Flags.BoolVar(&r.GenerateInverse, "gen-inverse", false, "Generates the inverse filter files.")
+			r.Flags.StringVar(&r.ChangeRef, "change-ref", "", text.Doc(`
+				Git ref to calculate the changed files (e.g origin/main). By
+				default will use the current staged change.
+			`))
 			return r
 		},
 	}

@@ -32,6 +32,7 @@ type BaseSelectRun struct {
 	Out                string
 	TargetChangeRecall float64
 	IgnoreExceptions   bool
+	ChangeRef          string
 	GenerateInverse    bool
 
 	// Indirect input.
@@ -164,7 +165,7 @@ func (r *BaseSelectRun) LoadTestFileSet(fileName string) error {
 
 // LoadChangedFiles initializes r.changedFiles.
 func (r *BaseSelectRun) LoadChangedFiles() error {
-	changedFiles, err := gitutil.ChangedFiles(r.Checkout, "origin/main")
+	changedFiles, err := gitutil.ChangedFiles(r.Checkout, r.ChangeRef)
 	if err != nil {
 		return err
 	}
