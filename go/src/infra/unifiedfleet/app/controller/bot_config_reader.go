@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -88,15 +89,21 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 
 		// Update the ownership data for the botIds collected so far.
 		for _, botId := range botsIds {
+			errs := make(errors.MultiError, 0)
 			_, err := registration.UpdateMachineOwnership(ctx, botId, ownershipData)
-			if err != nil && status.Code(err) == codes.NotFound {
-				_, err = inventory.UpdateVMOwnership(ctx, botId, ownershipData)
-				if err != nil && status.Code(err) == codes.NotFound {
-					_, err = inventory.UpdateMachineLSEOwnership(ctx, botId, ownershipData)
-				}
+			if status.Code(err) != codes.NotFound {
+				errs = append(errs, err)
 			}
+			_, err = inventory.UpdateVMOwnership(ctx, botId, ownershipData)
+			if status.Code(err) != codes.NotFound {
+				errs = append(errs, err)
+			}
+			_, err = inventory.UpdateMachineLSEOwnership(ctx, botId, ownershipData)
 			if err != nil {
-				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
+				errs = append(errs, err)
+			}
+			if errs.First() != nil {
+				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, errs)
 			}
 		}
 	}
