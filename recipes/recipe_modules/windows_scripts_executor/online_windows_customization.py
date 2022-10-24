@@ -229,14 +229,28 @@ class OnlineWindowsCustomization(customization.Customization):
   def get_output(self):
     """ return the output of executing this config. Doesn't guarantee that the
     output exists"""
+    outputs = []
     if self.get_key():
-      output = src_pb.GCSSrc(
-          bucket='chrome-gce-images',
-          source='WIB-WIN/{}.iso'.format(self.get_key()))
-      return dest_pb.Dest(
-          gcs_src=output,
-          tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))})
-    return None  # pragma: no cover
+      owc = self.customization().online_windows_customization
+      for boot in owc.online_customizations:
+        for drive in boot.vm_config.qemu_vm.drives:
+          if not drive.readonly:
+            file = 'WIB-ONLINE-CACHE/{}-{}'.format(self.get_key(), drive.name)
+            # Check if this drive is already accounted for
+            existing = [
+                output for output in outputs if output.gcs_src.source == file
+            ]
+            if not existing:
+              # add to the list if it wasn't already included
+              output = src_pb.GCSSrc(bucket='chrome-gce-images', source=file)
+              outputs.append(
+                  dest_pb.Dest(
+                      gcs_src=output,
+                      tags={
+                          'orig':
+                              self._source.get_url(src_pb.Src(gcs_src=output))
+                      }))
+    return outputs
 
   @property
   def context(self):  # pragma: no cover

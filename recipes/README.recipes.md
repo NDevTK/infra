@@ -1115,7 +1115,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#226)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#228)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
@@ -1123,7 +1123,7 @@ custs.
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#237)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#239)(self, custs):**
 
 Executes the windows image builder user config.
 
@@ -1223,7 +1223,7 @@ Example:
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#247)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#249)(self, custs):**
 
 get_executable_config takes list of customizations and returns a list
 of wib.Image proto objects that can be used to trigger other builders
@@ -1792,7 +1792,7 @@ PYTHON_VERSION_COMPATIBILITY: PY2
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/offline.py#90)(api, inputs):**
+&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/offline.py#97)(api, inputs):**
 
 This recipe runs image builder for a given user config.
 ### *recipes* / [windows\_image\_builder/online\_windows\_customization](/recipes/recipes/windows_image_builder/online_windows_customization.py)
