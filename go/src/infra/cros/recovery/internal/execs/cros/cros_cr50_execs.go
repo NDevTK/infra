@@ -85,7 +85,7 @@ func updateCr50KeyIdLabelExec(ctx context.Context, info *execs.ExecInfo) error {
 //
 // @params: actionArgs should be in the format of:
 // Ex: ["flash_timeout:x", "wait_timeout:x"]
-func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
+func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	argsMap := info.GetActionArgs(ctx)
 	// Timeout for executing the cr50 fw flash command on the DUT. Default to be 120s.
 	flashTimeout := argsMap.AsDuration(ctx, "flash_timeout", 120, time.Second)
@@ -98,24 +98,14 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 	} else {
 		updateCmd = fmt.Sprintf(updateCmd, "prod")
 	}
-	karteAction := &metrics.Action{
-		// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
-		// change the query to use asset tag instead of using hostname.
-		Hostname:   info.GetDut().Name,
-		ActionKind: metrics.Cr50FwReflashKind,
-		StartTime:  time.Now(),
-		Status:     metrics.ActionStatusFail,
-	}
-	if mErr := info.GetMetrics().Create(ctx, karteAction); mErr != nil {
-		log.Debugf(ctx, "Reflash cr50 firmware: cannot create karte metrics: %s", mErr)
-	}
+	karteAction := info.NewMetric(metrics.Cr50FwReflashKind)
+	// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
+	// change the query to use asset tag instead of using hostname.
 	defer func() {
 		// Recoding cr 50 fw reflash to Karte.
 		log.Debugf(ctx, "Updating cr 50 fw reflash record in Karte.")
 		karteAction.StopTime = time.Now()
-		if mErr := info.GetMetrics().Update(ctx, karteAction); mErr != nil {
-			log.Debugf(ctx, "Reflash cr 50 fw: Metrics error: %s", mErr)
-		}
+		karteAction.UpdateStatus(rErr)
 	}()
 	run := info.NewRunner(info.GetDut().Name)
 	// For "gsctool", we use the traditional runner because the exit code of both 0 and 1
@@ -142,12 +132,10 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 	if out, err := run(ctx, 30*time.Second, "reboot && exit"); err != nil {
 		// Client closed connected as rebooting.
 		log.Debugf(ctx, "Client exit as device rebooted: %s", err)
-		karteAction.FailReason = fmt.Sprintf("%s : reflash cr50 fw", err)
 		return errors.Annotate(err, "reflash cr50 fw").Err()
 	} else {
 		log.Debugf(ctx, "Stdout: %s", out)
 	}
-	karteAction.Status = metrics.ActionStatusSuccess
 	log.Debugf(ctx, "waiting for %d seconds to let cr50 fw reflash be effective.", waitTimeout)
 	time.Sleep(waitTimeout)
 	return nil
