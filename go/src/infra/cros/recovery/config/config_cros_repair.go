@@ -11,6 +11,7 @@ import (
 func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			// Critical actions above this line are linearized. See b:255051938 for details.
 			"Set state: repair_failed",
 			"Device is pingable",
 			"Device is SSHable",
