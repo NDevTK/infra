@@ -30,6 +30,13 @@ import 'shared/typedef.js';
 
 /** @typedef {import('redux').AnyAction} AnyAction */
 
+
+const RESTRICT_VIEW_PREFIX = 'restrict-view-';
+const RESTRICT_EDIT_PREFIX = 'restrict-editissue-';
+const RESTRICT_COMMENT_PREFIX = 'restrict-addissuecomment-';
+const MIGRATED_BUGANIZER_ISSUE_PREFIXES = ['migrated-to-b-', 'copybara-migration-complete-', 'cob-migrated-to-b-'];
+const MIGRATED_LAUNCH_ISSUE_PREFIXES = ['migrated-to-launch-'];
+
 // Actions
 export const VIEW_ISSUE = 'VIEW_ISSUE';
 
@@ -490,12 +497,6 @@ export const reducer = combineReducers({
 });
 
 // Selectors
-const RESTRICT_VIEW_PREFIX = 'restrict-view-';
-const RESTRICT_EDIT_PREFIX = 'restrict-editissue-';
-const RESTRICT_COMMENT_PREFIX = 'restrict-addissuecomment-';
-const MIGRATED_ISSUE_PREFIX = 'migrated-to-';
-const MIGRATED_BUGANIZER_ISSUE_PREFIX = 'migrated-to-b-';
-const MIGRATED_LAUNCH_ISSUE_PREFIX = 'migrated-to-launch-';
 
 /**
  * Selector to retrieve all normalized Issue data in the Redux store,
@@ -706,25 +707,40 @@ export const restrictions = createSelector(
     },
 );
 
+/**
+ * Helper to find the issue ID for a migration label if one exists, otherwise
+ * returns undefined.
+ * @param {Array<LabelRef>} labelRefs
+ * @param {Array<string>} validPrefixes
+ * @return {string?} issue referenced in label or undefined if none found.
+ */
+function extractIdFromLabels(labelRefs, validPrefixes) {
+  // Assume that there's only one migrated-to-* label. Or at least drop any
+  // labels besides the first one.
+  const migrationLabel = labelRefs.find((labelRef) => validPrefixes.find(
+    (prefix) => labelRef.label.toLowerCase().startsWith(prefix)));
+
+  if (!migrationLabel) return undefined;
+
+  const {label} = migrationLabel;
+
+  const matchedPrefix = validPrefixes.find((prefix) => label.startsWith(prefix));
+
+  return migrationLabel.label.substring(matchedPrefix.length);
+}
+
 // Gets the Issue Tracker or Launch ID of a moved issue.
 export const migratedId = createSelector(
   labelRefs,
   (labelRefs) => {
     if (!labelRefs) return '';
 
-    // Assume that there's only one migrated-to-* label. Or at least drop any
-    // labels besides the first one.
-    const migrationLabel = labelRefs.find((labelRef) => {
-      return labelRef.label.toLowerCase().startsWith(MIGRATED_ISSUE_PREFIX);
-    });
-    
-    if (migrationLabel) {
-      if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_BUGANIZER_ISSUE_PREFIX)) {
-        return migrationLabel.label.substring(MIGRATED_BUGANIZER_ISSUE_PREFIX.length);
-      } else if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_LAUNCH_ISSUE_PREFIX)) {
-        return migrationLabel.label.substring(MIGRATED_LAUNCH_ISSUE_PREFIX.length);
-      }
-    }
+    const launchIssue = extractIdFromLabels(labelRefs, MIGRATED_LAUNCH_ISSUE_PREFIXES);
+    if (launchIssue) return launchIssue;
+
+    const bIssue = extractIdFromLabels(labelRefs, MIGRATED_BUGANIZER_ISSUE_PREFIXES);
+    if (bIssue) return bIssue;
+
     return '';
   },
 );
@@ -735,19 +751,12 @@ export const migratedType = createSelector(
   (labelRefs) => {
     if (!labelRefs) return migratedTypes.NONE;
 
-    // Assume that there's only one migrated-to-* label. Or at least drop any
-    // labels besides the first one.
-    const migrationLabel = labelRefs.find((labelRef) => {
-      return labelRef.label.toLowerCase().startsWith(MIGRATED_ISSUE_PREFIX);
-    });
+    const launchIssue = extractIdFromLabels(labelRefs, MIGRATED_LAUNCH_ISSUE_PREFIXES);
+    if (launchIssue) return migratedTypes.LAUNCH_TYPE;
 
-    if (migrationLabel) {
-      if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_BUGANIZER_ISSUE_PREFIX)) {
-        return migratedTypes.BUGANIZER_TYPE;
-      } else if (migrationLabel.label.toLowerCase().startsWith(MIGRATED_LAUNCH_ISSUE_PREFIX)) {
-        return migratedTypes.LAUNCH_TYPE;
-      }
-    }
+    const bIssue = extractIdFromLabels(labelRefs, MIGRATED_BUGANIZER_ISSUE_PREFIXES);
+    if (bIssue) return migratedTypes.BUGANIZER_TYPE;
+
     return migratedTypes.NONE;
   },
 );

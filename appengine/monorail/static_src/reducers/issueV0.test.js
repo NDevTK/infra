@@ -300,72 +300,103 @@ describe('issue', () => {
     });
   });
 
-  it('migratedId', () => {
-    assert.equal(issueV0.migratedId(wrapIssue()), '');
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: []})), '');
+  describe('migratedId', () => {
+    it('no id on empty labels', () => {
+      assert.equal(issueV0.migratedId(wrapIssue()), '');
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: []})), '');
+    });
 
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'IgnoreThis'},
-      {label: 'IgnoreThis2'},
-    ]})), '');
+    it('ignores irrelevant labels', () => {
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'IgnoreThis'},
+        {label: 'IgnoreThis2'},
+      ]})), '');
 
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'IgnoreThis'},
-      {label: 'IgnoreThis2'},
-      {label: 'migrated-to-b-6789'},
-    ]})), '6789');
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'IgnoreThis'},
+        {label: 'IgnoreThis2'},
+        {label: 'migrated-to-b-6789'},
+      ]})), '6789');
+    });
 
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'migrated-to-b-1234'},
-    ]})), '1234');
+    it('finds first relevant label', () => {
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'migrated-to-b-1234'},
+      ]})), '1234');
 
-    // We assume there's only one migrated-to-b-* label.
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'migrated-to-b-1234'},
-      {label: 'migrated-to-b-6789'},
-    ]})), '1234');
+      // We assume there's only one migrated-to-b-* label.
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'migrated-to-b-1234'},
+        {label: 'migrated-to-b-6789'},
+      ]})), '1234');
+    });
 
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'IgnoreThis'},
-      {label: 'IgnoreThis2'},
-      {label: 'migrated-to-launch-6789'},
-    ]})), '6789');
+    it('finds copybara labels', () => {
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'copybara-migration-complete-1234'},
+      ]})), '1234');
 
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'migrated-to-launch-1234'},
-    ]})), '1234');
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'copybara-migration-complete-1234'},
+        {label: 'migrated-to-b-6789'},
+      ]})), '1234');
+    });
 
-    // We assume there's only one migrated-to-* label.
-    assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
-      {label: 'migrated-to-launch-1234'},
-      {label: 'migrated-to-b-6789'},
-    ]})), '1234');
+    it('finds launch labels', () => {
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'IgnoreThis'},
+        {label: 'IgnoreThis2'},
+        {label: 'migrated-to-launch-6789'},
+      ]})), '6789');
+
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'migrated-to-launch-1234'},
+      ]})), '1234');
+
+      assert.equal(issueV0.migratedId(wrapIssue({labelRefs: [
+        {label: 'migrated-to-launch-1234'},
+        {label: 'migrated-to-b-6789'},
+      ]})), '1234');
+    });
   });
 
-  it('migratedType', () => {
-    assert.equal(issueV0.migratedType(wrapIssue()), migratedTypes.NONE);
-    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: []})), migratedTypes.NONE);
+ describe('migratedType', () => {
+    it('none type on empty labels', () => {
+      assert.equal(issueV0.migratedType(wrapIssue()), migratedTypes.NONE);
+      assert.equal(issueV0.migratedType(wrapIssue({labelRefs: []})), migratedTypes.NONE);
+    });
 
-    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
-      {label: 'IgnoreThis'},
-      {label: 'IgnoreThis2'},
-    ]})), migratedTypes.NONE);
+    it('none type on irrelevant labels', () => {
+      assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+        {label: 'IgnoreThis'},
+        {label: 'IgnoreThis2'},
+      ]})), migratedTypes.NONE);
+    });
 
-    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
-      {label: 'IgnoreThis'},
-      {label: 'IgnoreThis2'},
-      {label: 'migrated-to-b-6789'},
-    ]})), migratedTypes.BUGANIZER_TYPE);
+    it('buganizer type for buganizer labels', () => {
+      assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+        {label: 'IgnoreThis'},
+        {label: 'IgnoreThis2'},
+        {label: 'migrated-to-b-6789'},
+      ]})), migratedTypes.BUGANIZER_TYPE);
 
-    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
-      {label: 'migrated-to-launch-1234'},
-    ]})), migratedTypes.LAUNCH_TYPE);
+      assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+        {label: 'IgnoreThis'},
+        {label: 'copybara-migration-complete-1234'},
+      ]})), migratedTypes.BUGANIZER_TYPE);
+    });
 
-    // We assume there's only one migrated-to-b-* label.
-    assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
-      {label: 'migrated-to-launch-1234'},
-      {label: 'migrated-to-b-6789'},
-    ]})), migratedTypes.LAUNCH_TYPE);
+    it('launch type for launch labels', () => {
+      assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+        {label: 'migrated-to-launch-1234'},
+      ]})), migratedTypes.LAUNCH_TYPE);
+
+      // We assume there's only one migrated-to-b-* label.
+      assert.equal(issueV0.migratedType(wrapIssue({labelRefs: [
+        {label: 'migrated-to-launch-1234'},
+        {label: 'migrated-to-b-6789'},
+      ]})), migratedTypes.LAUNCH_TYPE);
+    });
   });
 
 
