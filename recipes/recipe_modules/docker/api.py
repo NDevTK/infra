@@ -16,14 +16,8 @@ class DockerApi(recipe_api.RecipeApi):
     self._project = None
     self._server = None
 
-  # TODO(https://crbug.com/1373519): Once all clients of the docker
-  # recipe module use python3, switch the defaults to python3, remove
-  # the client switches, then remove this condition.
-  def python(self, name, script, args, use_python3, **kwargs):
-    if use_python3:
-      return self.m.step(name, ['python3', '-u', script] + args, **kwargs)
-    else:
-      return self.m.python(name, script, args, **kwargs)
+  def python(self, name, script, args, **kwargs):
+    return self.m.step(name, ['python3', '-u', script] + args, **kwargs)
 
   def ensure_installed(self, **kwargs):
     """Checks that the docker binary is in the PATH.
@@ -59,7 +53,6 @@ class DockerApi(recipe_api.RecipeApi):
             project='chromium-container-registry',
             service_account=None,
             step_name=None,
-            use_python3=True,
             **kwargs):
     """Connect to a Docker registry.
 
@@ -95,7 +88,6 @@ class DockerApi(recipe_api.RecipeApi):
             '--config-file',
             self._config_file,
         ],
-        use_python3=use_python3,
         **kwargs)
 
   def pull(self, image, step_name=None):
@@ -121,7 +113,6 @@ class DockerApi(recipe_api.RecipeApi):
           dir_mapping=None,
           env=None,
           inherit_luci_context=False,
-          use_python3=True,
           **kwargs):
     """Run a command in a Docker image as the current user:group.
 
@@ -165,7 +156,6 @@ class DockerApi(recipe_api.RecipeApi):
         step_name or 'docker run',
         self.resource('docker_run.py'),
         args=args,
-        use_python3=use_python3,
         **kwargs)
 
   def __call__(self, *args, **kwargs):

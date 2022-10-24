@@ -20,7 +20,7 @@ def RunSteps(api):
   version = api.docker.get_version()
   if version:
     api.step('log version', cmd=None).presentation.step_text = version
-  api.docker.login(use_python3=api.properties.get('use_python3', False))
+  api.docker.login()
   api.docker.pull('testimage')
   api.docker.run(
       'testimage',
@@ -38,11 +38,6 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test('example')
-
-  yield api.test('use_python2',
-      api.properties(use_python3=False),
-      api.post_process(DropExpectation),
-  )
 
   yield api.test(
       'fail_installed',
