@@ -10,8 +10,9 @@ def _users(*, groups, task_realm, pool_realm = None):
     Args:
       groups: a list of groups to grant permissions to run tasks.
       task_realm: a realm or a list of realms with to-be-launched tasks.
-      pool_realm: a realm with ACLs for the Swarming pool to run tasks in or
-        None if the pool ACLs are defined in some other project.
+      pool_realm: a realm or a list of realms with ACLs for the Swarming pool
+        to run tasks in or None if the pool ACLs are defined in some other
+        project.
     """
     luci.binding(
         realm = task_realm,

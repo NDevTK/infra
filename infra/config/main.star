@@ -152,7 +152,17 @@ luci.bucket(
     ],
 )
 
+# Config realms for infra pools.
+
 luci.realm(name = "pools/cron")
+
+luci.realm(
+    name = "pools/ci",
+)
+
+luci.realm(
+    name = "pools/try",
+)
 
 luci.notifier_template(
     name = "status",
@@ -168,11 +178,13 @@ load("//lib/led.star", "led")
 led.users(
     groups = "flex-ci-led-users",
     task_realm = "ci",
+    pool_realm = "pools/ci",
 )
 
 led.users(
     groups = "flex-try-led-users",
     task_realm = "try",
+    pool_realm = "pools/try",
 )
 
 led.users(
