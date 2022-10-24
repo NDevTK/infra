@@ -9,6 +9,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 
@@ -16,6 +18,7 @@ import (
 
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
+	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 )
 
@@ -67,8 +70,8 @@ func mockChromeBrowserMachine(id, name string) *ufspb.Machine {
 	}
 }
 
+// Tests the functionality for importing bot configs from the config files
 func TestImportENCBotConfig(t *testing.T) {
-	// Tests the functionality for importing bot configs from the config files
 	t.Parallel()
 	ctx := encTestingContext()
 	Convey("Import ENC Bot Config", t, func() {
@@ -79,8 +82,8 @@ func TestImportENCBotConfig(t *testing.T) {
 	})
 }
 
+// Tests the functionality for parsing and storing bot configs in Datastore
 func TestParseBotConfig(t *testing.T) {
-	// Tests the functionality for parsing and storing bot configs in Datastore
 	t.Parallel()
 	ctx := encTestingContext()
 	Convey("Parse ENC Bot Config", t, func() {
@@ -109,8 +112,8 @@ func TestParseBotConfig(t *testing.T) {
 	})
 }
 
+// Tests the functionality for parsing botId strings
 func TestParseBotIds(t *testing.T) {
-	// Tests the functionality for parsing botId strings
 	t.Parallel()
 	Convey("Parse ENC Bot Config", t, func() {
 		Convey("Parse comma separated and ranges", func() {
@@ -132,6 +135,66 @@ func TestParseBotIds(t *testing.T) {
 		Convey("Parse non digit characters in range - ignores", func() {
 			ids := parseBotIds("mac{9,10,11..a}-483")
 			So(ids, ShouldResemble, []string{"mac9-483", "mac10-483"})
+		})
+	})
+}
+
+// Tests the functionality for getting ownership data for a machine/vm/machineLSE
+func TestGetOwnershipData(t *testing.T) {
+	t.Parallel()
+	ctx := encTestingContext()
+	Convey("GetOwnership Data", t, func() {
+		Convey("happy path - machine", func() {
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			ParseBotConfig(ctx, mockBotConfig("test{1,2}-1", "abc"), "testSwarming")
+			ownership, err := GetOwnershipData(ctx, "test1-1")
+
+			So(ownership, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(ownership.PoolName, ShouldEqual, "abc")
+			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+		})
+		Convey("happy path - vm", func() {
+			resp, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{{
+				Name: "test2-1",
+			}})
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			ParseBotConfig(ctx, mockBotConfig("test{1,2}-1", "abc"), "testSwarming")
+			ownership, err := GetOwnershipData(ctx, "test2-1")
+
+			So(ownership, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(ownership.PoolName, ShouldEqual, "abc")
+			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+		})
+		Convey("happy path - machineLSE", func() {
+			resp, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "test3-1",
+			})
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			ParseBotConfig(ctx, mockBotConfig("test{1,2,3}-1", "abc"), "testSwarming")
+			ownership, err := GetOwnershipData(ctx, "test3-1")
+
+			So(ownership, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(ownership.PoolName, ShouldEqual, "abc")
+			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+		})
+		Convey("missing host in inventory", func() {
+			ParseBotConfig(ctx, mockBotConfig("test{4}-1", "abc"), "testSwarming")
+			ownership, err := GetOwnershipData(ctx, "test4-1")
+			s, _ := status.FromError(err)
+
+			So(ownership, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(s.Code(), ShouldEqual, codes.NotFound)
 		})
 	})
 }

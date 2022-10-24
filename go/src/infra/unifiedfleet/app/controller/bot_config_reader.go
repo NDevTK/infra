@@ -88,16 +88,41 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 
 		// Update the ownership data for the botIds collected so far.
 		for _, botId := range botsIds {
-			// TODO(b/248039146) - Bot can be one of machine, machine_lse or vm. Store ownership accordingly
 			_, err := registration.UpdateMachineOwnership(ctx, botId, ownershipData)
 			if err != nil && status.Code(err) == codes.NotFound {
 				_, err = inventory.UpdateVMOwnership(ctx, botId, ownershipData)
+				if err != nil && status.Code(err) == codes.NotFound {
+					_, err = inventory.UpdateMachineLSEOwnership(ctx, botId, ownershipData)
+				}
 			}
 			if err != nil {
 				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
 			}
 		}
 	}
+}
+
+// GetOwnershipData gets the ownership data in the Data store for the requested bot in the config.
+func GetOwnershipData(ctx context.Context, hostName string) (*ufspb.OwnershipData, error) {
+	// Check if the host is a machine
+	host, err := registration.GetMachine(ctx, hostName)
+	if err == nil {
+		return host.GetOwnership(), nil
+	} else if status.Code(err) != codes.NotFound {
+		return nil, err
+	}
+	vm, err := inventory.GetVM(ctx, hostName)
+	if err == nil {
+		return vm.GetOwnership(), nil
+	} else if status.Code(err) != codes.NotFound {
+		return nil, err
+	}
+
+	machineLse, err := inventory.GetMachineLSE(ctx, hostName)
+	if err == nil {
+		return machineLse.GetOwnership(), nil
+	}
+	return nil, err
 }
 
 // parseBotIds parses a range of bot Ids from the input string and returns an array of bot Ids
