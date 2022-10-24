@@ -38,7 +38,7 @@ const nginxTemplate = `# This file is generated. DO NOT EDIT.
 
 user www-data;
 worker_processes {{ if .WorkerCount }}{{ .WorkerCount }}{{ else }}auto{{ end }};
-worker_rlimit_nofile 1024;
+worker_rlimit_nofile 65535;
 
 pid        /var/run/nginx.pid;
 error_log  /var/log/nginx/error.log error;
