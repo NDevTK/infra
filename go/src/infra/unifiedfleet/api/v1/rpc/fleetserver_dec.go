@@ -2135,3 +2135,20 @@ func (s *DecoratedFleet) CheckFleetTestsPolicy(ctx context.Context, req *CheckFl
 	}
 	return
 }
+
+func (s *DecoratedFleet) GetOwnershipData(ctx context.Context, req *GetOwnershipDataRequest) (rsp *models.OwnershipData, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetOwnershipData", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetOwnershipData(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetOwnershipData", rsp, err)
+	}
+	return
+}

@@ -29,6 +29,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/machine_lse_deployment.proto";
 import "infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
+import "infra/unifiedfleet/api/v1/models/ownership.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
 
 service Fleet {
@@ -405,6 +406,9 @@ service Fleet {
 
   // CheckFleetPolicyForTest checks whether a given test parameters indicate a valid test
   rpc CheckFleetTestsPolicy(CheckFleetTestsPolicyRequest) returns (CheckFleetTestsPolicyResponse);
+
+  // GetOwnershipData retrieves the ownership data for a given machine/vm/machineLse
+  rpc GetOwnershipData(GetOwnershipDataRequest) returns (models.OwnershipData);
 }
 
 message UpdateMachineLSEDeploymentRequest {
@@ -2346,4 +2350,10 @@ message CheckFleetTestsPolicyResponse {
   bool is_test_valid = 1 [deprecated=true];
   // Status of the test with a code and an optional message
   TestStatus testStatus = 2;
+}
+
+// Request containing hostname for retrieving the ownership data for a Machine, VM etc
+message GetOwnershipDataRequest {
+  // Name of the Machine/MachineLSE/VM etc.
+  string hostname = 1 [(google.api.field_behavior) = REQUIRED];
 }
