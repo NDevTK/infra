@@ -8,11 +8,48 @@ import (
 	"context"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
-
-	"go.chromium.org/luci/common/errors"
 )
+
+// AddObservation adds observation to the metric assigned to the current exec.
+func (i *ExecInfo) AddObservation(observation *metrics.Observation) {
+	logger := i.NewLogger()
+	if i.metric == nil {
+		logger.Debugf("Metric is not specified for the action.")
+	}
+	logger.Infof("Add observation: %#v", observation)
+	i.metric.Observations = append(i.metric.Observations, observation)
+}
+
+// NewMetric creates a new custom metric.
+func (i *ExecInfo) NewMetric(kind string) *metrics.Action {
+	// We do not check kind here as if it is empty then it will be rejected before saving.
+	metric := i.runArgs.NewMetricsAction(kind)
+	i.NewLogger().Debugf("Created new metrics for exec %q: %#v", i.name, metric)
+	i.additionalMetrics = append(i.additionalMetrics, metric)
+	return metric
+}
+
+// NewMetric creates a new metric.
+func (a *RunArgs) NewMetricsAction(kind string) *metrics.Action {
+	return &metrics.Action{
+		// TODO(b/248635230): Set asset tag instead of hostname.
+		Hostname:       a.DUT.Name,
+		ActionKind:     kind,
+		StartTime:      time.Now(),
+		SwarmingTaskID: a.SwarmingTaskID,
+		BuildbucketID:  a.BuildbucketID,
+		Status:         metrics.ActionStatusUnspecified,
+	}
+}
+
+// GetAdditionalMetrics returns additional metrics created by execs.
+func (i *ExecInfo) GetAdditionalMetrics() []*metrics.Action {
+	return i.additionalMetrics
+}
 
 // CloserFunc is a function that updates an action and is NOT safe to use in a defer block WITHOUT CHECKING FOR NIL.
 // The following ways of using a CloserFunc are both correct.

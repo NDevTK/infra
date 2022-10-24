@@ -74,6 +74,10 @@ type ExecInfo struct {
 	actionArgs []string
 	// Timeout specified per action.
 	actionTimeout time.Duration
+	// Metric assigned for the exec.
+	metric *metrics.Action
+	// Additional metrics created by the exec.
+	additionalMetrics []*metrics.Action
 }
 
 // NewExecInfo creates new instance of ExecInfo.

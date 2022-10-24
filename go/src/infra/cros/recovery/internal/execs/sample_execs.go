@@ -6,6 +6,7 @@ package execs
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -36,7 +37,7 @@ func sampleSleepExec(ctx context.Context, i *ExecInfo) error {
 	// Timeout to wait for resetting the power state. Default to be 0s.
 	sleepTimeout := argsMap.AsDuration(ctx, "sleep", 0, time.Second)
 	if sleepTimeout <= 0*time.Second {
-		return errors.Reason("sample sleep: provided time duration %v is less than or equal to 0s", sleepTimeout).Err()
+		return errors.Reason("sleep: provided time duration %v is less than or equal to 0s", sleepTimeout).Err()
 	}
 	log.Debugf(ctx, "Sample Sleep: planning to sleep %v.", sleepTimeout)
 	time.Sleep(sleepTimeout)
@@ -58,6 +59,24 @@ func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
 	// reflected in the action and therefore in Karte.
 	time.Sleep(time.Nanosecond)
 	action.StopTime = time.Now()
+	return nil
+}
+
+// sampleDemoMetricsExec creates and sends a metrics data as example.
+// The Action create abservation and custom action as part of execution.
+func sampleDemoMetricsExec(ctx context.Context, info *ExecInfo) error {
+	// First we add additional observation to the metric of current action.
+	info.AddObservation(metrics.NewStringObservation("date", fmt.Sprintf("%s", time.Now())))
+	info.AddObservation(metrics.NewFloat64Observation("float64", 25.25))
+
+	// Second we create a custom metric.
+	action := info.NewMetric("custom-kind")
+	action.Observations = append(action.Observations,
+		metrics.NewStringObservation("custom_date", fmt.Sprintf("%s", time.Now())),
+		metrics.NewFloat64Observation("custom_float64", 25.25),
+	)
+	// Test sleeping for one second.
+	time.Sleep(time.Second)
 	return nil
 }
 
