@@ -16,6 +16,7 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
 
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -50,6 +51,11 @@ Do not build automation around this subcommand.`,
 Mutually exclusive with -id.`)
 		c.Flags.Var(flagx.KeyVals(&c.buildTags), "tags", "Comma-separated build tags in same format as -tag. Mutually exclusive with -id.")
 		c.Flags.BoolVar(&c.allowDupes, "allow-duplicates", false, "For development purposes only: allow duplicate backfills for the given id/tag(s).")
+		// -------------------------------------------------------------------------
+		// NOTE: This is not a public feature. Only un-comment this section for
+		// locally-built crosfleet executions by the Test Scheduling team.
+		//c.Flags.StringVar(&c.qsAccount, "qs-account", "", "For use by the ChromeOS Test Scheduling Team only: override the quota account used for backfills.")
+		// -------------------------------------------------------------------------
 		return c
 	},
 }
@@ -61,6 +67,7 @@ type backfillRun struct {
 	buildID    int64
 	buildTags  map[string]string
 	allowDupes bool
+	qsAccount  string
 }
 
 func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
@@ -110,9 +117,17 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 				continue
 			}
 		}
-		newBackfill, err := ctpBBClient.ScheduleBuild(ctx, map[string]interface{}{
-			"requests": original.Input.Properties.GetFields()["requests"],
-		}, nil, backfillTags, 0)
+		requests := original.Input.Properties.GetFields()["requests"]
+		properties := map[string]interface{}{"requests": requests}
+		// -------------------------------------------------------------------------
+		// NOTE: This is not a public feature. Only un-comment this section for
+		// locally-built crosfleet executions by the Test Scheduling team.
+		//if args.qsAccount != "" {
+		//	newRequests := changeQuotaAccount(requests.GetStructValue().GetFields(), args.qsAccount)
+		//	properties["requests"] = newRequests
+		//}
+		// -------------------------------------------------------------------------
+		newBackfill, err := ctpBBClient.ScheduleBuild(ctx, properties, nil, backfillTags, 0)
 		if err != nil {
 			return err
 		}
@@ -178,4 +193,46 @@ func backfillTags(build *buildbucketpb.Build) map[string]string {
 	tags[common.CrosfleetToolTag] = backfillCmd
 	tags["backfill"] = strconv.FormatInt(build.Id, 10)
 	return tags
+}
+
+// changeQuotaAccount returns a copy of the given map of CTP requests with a
+// new quota account set on each request.
+func changeQuotaAccount(requests map[string]*structpb.Value, quotaAccount string) map[string]interface{} {
+	newRequests := map[string]interface{}{}
+	for key, req := range requests {
+		reqMap := req.GetStructValue().GetFields()
+		newReqMap := map[string]interface{}{}
+		for key, val := range reqMap {
+			newReqMap[key] = val
+		}
+		paramsMap := reqMap["params"].GetStructValue().GetFields()
+		newParamsMap := map[string]interface{}{}
+		for key, val := range paramsMap {
+			newParamsMap[key] = val
+		}
+
+		// Scheduling
+		schedulingMap := paramsMap["scheduling"].GetStructValue().GetFields()
+		newSchedulingMap := map[string]interface{}{}
+		for key, val := range schedulingMap {
+			if key == "priority" {
+				continue
+			}
+			newSchedulingMap[key] = val.GetStringValue()
+		}
+		newSchedulingMap["qsAccount"] = quotaAccount
+		newParamsMap["scheduling"] = newSchedulingMap
+
+		// Software Dependencies
+		rawDependencies := paramsMap["softwareDependencies"].GetListValue().GetValues()[0].GetStructValue().GetFields()
+		santizedDependencies := map[string]interface{}{}
+		for key, val := range rawDependencies {
+			santizedDependencies[key] = val.GetStringValue()
+		}
+		newParamsMap["softwareDependencies"] = []interface{}{santizedDependencies}
+
+		newReqMap["params"] = newParamsMap
+		newRequests[key] = newReqMap
+	}
+	return newRequests
 }
