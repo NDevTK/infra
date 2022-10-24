@@ -678,7 +678,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 				action.Status = metrics.ActionStatusFail
 				action.FailReason = err.Error()
 			}
-			if mErr := info.GetMetrics().Update(ctx, action); mErr != nil {
+			if mErr := info.GetMetrics().Create(ctx, action); mErr != nil {
 				log.Debugf(ctx, "Servo update servo firmware: Metrics error: %s", mErr)
 			}
 		}()
