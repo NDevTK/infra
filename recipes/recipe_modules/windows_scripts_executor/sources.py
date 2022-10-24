@@ -40,11 +40,12 @@ class Source:
     self._git = git_manager.GITManager(module, git_dir)
     self.cache = cache
 
-  def pin(self, src):
+  def pin(self, src, ctx):
     """ pin pins all the recorded packages to static refs
 
     Args:
       * src: sources.Src proto object that contains ref to an artifact
+      * ctx: dict containing the context for local_src
     """
     if src and src.WhichOneof('src') == 'git_src':
       src.git_src.CopyFrom(self._git.pin_package(src.git_src))
@@ -55,6 +56,12 @@ class Source:
     if src and src.WhichOneof('src') == 'cipd_src':
       src.cipd_src.CopyFrom(self._cipd.pin_package(src.cipd_src))
       return src
+    if src and src.WhichOneof('src') == 'local_src':  # pragma: no cover
+      if src.local_src in ctx:
+        src.CopyFrom(ctx[src.local_src])
+        return src
+      else:
+        raise Exception('Cannot resolve {}'.format(src.local_src))
 
   def download(self, src):
     """ download downloads all the pinned packages to cache on disk
@@ -134,3 +141,14 @@ class Source:
         return self._gcs.exists(src.gcs_src)
 
     return False  # pragma: no cover
+
+  def dest_to_src(self, dest):  # pragma: no cover
+    """ dest_to_src returns a src_pb.Src object from dest.Dest object.
+
+    Args:
+      * dest: dest.Dest object representing an upload
+    """
+    if dest.WhichOneof('dest') == 'gcs_src':
+      return src_pb.Src(gcs_src=dest.gcs_src)
+    if dest.WhichOneof('dest') == 'cipd_src':
+      return src_pb.Src(cipd_src=dest.cipd_src)
