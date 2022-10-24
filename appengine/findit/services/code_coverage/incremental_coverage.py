@@ -27,12 +27,21 @@ def ExportIncrementalCoverage(run_id):
   and exports it to a Bigquery table.
 
   """
+  # NDB caches each result in the in-context cache while accessing.
+  # This is problematic as due to the size of the result set,
+  # cache grows beyond the memory quota. Turn this off to prevent oom errors.
+  #
+  # Read more at:
+  # https://cloud.google.com/appengine/docs/standard/python/ndb/cache#incontext
+  # https://github.com/googlecloudplatform/datastore-ndb-python/issues/156#issuecomment-110869490
+  context = ndb.get_context()
+  context.set_cache_policy(False)
   query = PresubmitCoverageData.query(
       PresubmitCoverageData.cl_patchset.server_host == \
         'chromium-review.googlesource.com',
        PresubmitCoverageData.update_timestamp >= datetime.now() -
       timedelta(days=_NUM_REPORT_DAYS))
-  total_rows = 0
+  total_patchsets = 0
   more = True
   cursor = None
   while more:
@@ -43,8 +52,9 @@ def ExportIncrementalCoverage(run_id):
         bigquery_helper.ReportRowsToBigquery(bqrows, 'findit-for-me',
                                              'code_coverage_summaries',
                                              'incremental_coverage')
-        total_rows += 1
-  logging.info('Total patchsets processed = %d', total_rows)
+        total_patchsets += 1
+
+  logging.info('Total patchsets processed = %d', total_patchsets)
 
 
 def _CreateBigqueryRows(presubmit_coverage, run_id):
