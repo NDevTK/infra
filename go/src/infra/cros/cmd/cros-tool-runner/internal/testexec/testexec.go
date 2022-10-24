@@ -28,7 +28,7 @@ import (
 )
 
 // Run runs tests.
-func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContainer, crosDUTContainer *build_api.ContainerImageInfo, token string) (res *api.CrosToolRunnerTestResponse, err error) {
+func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContainer, crosDUTContainer *build_api.ContainerImageInfo, tokenFile string) (res *api.CrosToolRunnerTestResponse, err error) {
 	// Use host network for dev environment which DUT address is in the form localhost:<port>
 	const networkName = "host"
 
@@ -81,7 +81,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 		log.Printf("Run test: created the cros-dut artifact directory %s", crosDUTDirForDut)
 	}
 
-	dutServices, err := services.CreateDutServicesForHostNetwork(ctx, crosDUTContainer, duts, crosDUTDir, token)
+	dutServices, err := services.CreateDutServicesForHostNetwork(ctx, crosDUTContainer, duts, crosDUTDir, tokenFile)
 	if err != nil {
 		return nil, errors.Annotate(err, "run test: failed to start DUT servers").Err()
 	}
@@ -95,7 +95,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	}
 
 	// Create and run LibsServer.
-	libsServer, err := libsserver.New(log.Default(), crosLibsDir, token, req)
+	libsServer, err := libsserver.New(log.Default(), crosLibsDir, tokenFile, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "could not start libsserver").Err()
 	}
@@ -118,7 +118,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	if err := writeTestInput(inputFileName, testReq); err != nil {
 		return nil, errors.Annotate(err, "run test: failed to create input file %s", inputFileName).Err()
 	}
-	if err = services.RunTestCLI(ctx, crosTestContainer, networkName, inputFileName, crosTestDir, resultDir, token); err != nil {
+	if err = services.RunTestCLI(ctx, crosTestContainer, networkName, inputFileName, crosTestDir, resultDir, tokenFile); err != nil {
 		// Do not raise the err, as we want to still check for a results.json
 		log.Printf("Get error while run cros-test: %v", err)
 	}

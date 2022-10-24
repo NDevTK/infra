@@ -26,6 +26,7 @@ require (
 	github.com/danjacques/gofslock v0.0.0-20220131014315-6e321f4509c8
 	github.com/docker/docker v20.10.8+incompatible
 	github.com/dustin/go-humanize v1.0.0
+	github.com/gofrs/flock v0.8.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2

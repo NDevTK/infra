@@ -8,12 +8,18 @@ package docker
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
 
+	"github.com/gofrs/flock"
+	"github.com/mitchellh/go-homedir"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
@@ -22,7 +28,11 @@ import (
 
 const (
 	// Default fallback docket tag.
-	DefaultImageTag = "stable"
+	DefaultImageTag  = "stable"
+	basePodmanConfig = "/run/containers/0/auth.json"
+	baseDockerConfig = "~/.docker/config.json"
+	dockerRegistry   = "us-docker.pkg.dev"
+	lockFile         = "/var/lock/go-lock.lock"
 )
 
 // Docker holds data to perform the docker manipulations.
@@ -32,7 +42,7 @@ type Docker struct {
 	// Registry to auth for docker interactions.
 	Registry string
 	// token to token
-	Token string
+	TokenFile string
 	// Fall back docker image name. Used if RequestedImageName is empty or image not found.
 	FallbackImageName string
 	// ServicePort tells which port need to bing bind from docker to the host.
@@ -109,7 +119,7 @@ func pullImage(ctx context.Context, image string) error {
 
 // Auth with docker registry so that pulling and stuff works.
 func (d *Docker) Auth(ctx context.Context) (err error) {
-	if d.Token == "" {
+	if d.TokenFile == "" {
 		log.Printf("no token was provided so skipping docker auth.")
 		return nil
 	}
@@ -117,8 +127,17 @@ func (d *Docker) Auth(ctx context.Context) (err error) {
 		return errors.Reason("docker auth: failed").Err()
 	}
 
-	if err = auth(ctx, d.Registry, d.Token); err != nil {
-		return errors.Annotate(err, "docker auth").Err()
+	token, err := GCloudToken(ctx, d.TokenFile, false)
+	if err = auth(ctx, d.Registry, token); err != nil {
+		// If the login fails, force a full token regen.
+		token, err := GCloudToken(ctx, d.TokenFile, true)
+		if err != nil {
+			return errors.Annotate(err, "GCloudToken force").Err()
+		}
+		// Then try to auth again, and if THAT fails, err time.
+		if err = auth(ctx, d.Registry, token); err != nil {
+			return errors.Annotate(err, "docker auth").Err()
+		}
 	}
 	return nil
 }
@@ -229,4 +248,135 @@ func CreateImageNameFromInputInfo(di *api.DutInput_DockerImage, defaultRepoPath,
 		panic("Default repository path or tag for docker image was not passed.")
 	}
 	return CreateImageName(repoPath, tag)
+}
+
+func maybeFindToken(forceNewAuth bool) (string, error) {
+	err, authFileDir := authFile(forceNewAuth)
+	if err == nil && authFileDir != "" {
+		log.Println("Previously authenticated authorization token found. Skipping auth.")
+		return readToken(authFileDir)
+	}
+	return "", err
+}
+
+// GCloudToken will try to return the gcloud token for `docker login`.
+func GCloudToken(ctx context.Context, keyfile string, forceNewAuth bool) (string, error) {
+	// This method will first try to get an existing login token from the known token files.
+	// If it does not exist it will gcloud auth, then get the token.
+	// the `gcloud auth` commands will be a system level lock command to avoid DB races (which caused crashes).
+	// Thus other CTR instances will be held in line until the one with the lock finishes.
+	// Only the first execution on the drone (or after a 24hr expiration time) should ever need to `auth`.
+	if token, err := maybeFindToken(forceNewAuth); token != "" {
+		return token, err
+	}
+
+	log.Println("Attempting to gcloud auth.")
+	// Get the lock, which is a blocking call to wait for the lock.
+	fileLock := flock.New(lockFile)
+	err := fileLock.Lock()
+	if err != nil {
+		return "", errors.Annotate(err, "failed to get FLock prior to gcloud calls").Err()
+	}
+	defer fileLock.Unlock()
+	log.Println("FLock obtained")
+
+	// Check the Auth again. Its possible someone else was authing as we waited for the lock.
+	if token, err := maybeFindToken(forceNewAuth); token != "" {
+		return token, err
+	}
+	// Finally, if nothing was there, and we have the lock, auth/return the str.
+	return gcloudAuth(ctx, keyfile)
+}
+
+// gcloudAuth will run the `gcloud auth` cmd and return the access-token.
+func gcloudAuth(ctx context.Context, keyfile string) (string, error) {
+	err := activateAccount(ctx, keyfile)
+	if err != nil {
+		return "", fmt.Errorf("could not activate account: %s", err)
+	}
+
+	cmd := exec.Command("gcloud", "auth", "print-access-token")
+	out, _, err := common.RunWithTimeout(ctx, cmd, 5*time.Minute, true)
+	if err != nil {
+		return "", errors.Annotate(err, "failed getting gcloud access token.").Err()
+	}
+	return out, nil
+}
+
+// authFile returns the gcloud auth file if found, else ""
+func authFile(forceNewAuth bool) (error, string) {
+	if forceNewAuth {
+		return nil, ""
+	}
+	dockerConfigPath, _ := homedir.Expand(baseDockerConfig)
+	podmanConfigPath, _ := homedir.Expand(basePodmanConfig)
+
+	for _, dir := range []string{podmanConfigPath, dockerConfigPath} {
+		log.Printf("Checking for authfile: %s\n", dir)
+		if f, err := os.Stat(dir); err == nil {
+			modifiedTime := f.ModTime()
+			if time.Now().Sub(modifiedTime).Hours() >= 24 {
+				log.Println("Auth Token is more than 24 hours old, forcing a refresh.")
+				return nil, ""
+			}
+			log.Println("Found Auth file.")
+			return nil, dir
+		} else if errors.Is(err, os.ErrNotExist) {
+			continue
+		} else {
+			return err, ""
+		}
+	}
+	return nil, ""
+}
+
+// readToken will read the given json, and return the decoded oath token for docker login.
+func readToken(dir string) (string, error) {
+	log.Println("Reading docker login oath token from the found config file.")
+	jsonFile, err := os.Open(dir)
+	if err != nil {
+		log.Printf("Error reading tokeon json file: %s", err)
+		return "", err
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	// ugly parse the json.
+	f := result["auths"].(map[string]interface{})[dockerRegistry].(map[string]interface{})["auth"]
+	str := fmt.Sprintf("%v", f)
+
+	// convert magic to the usable str for dockerLogin.
+	decode, _ := base64.StdEncoding.DecodeString(str)
+	s := string(decode)
+	s = strings.ReplaceAll(s, "oauth2accesstoken:", "")
+
+	return s, nil
+}
+
+// activateAccount actives the gcloud service account using the given keyfile
+func activateAccount(ctx context.Context, keyfile string) error {
+	log.Println("Obtaining oath token from gcloud auth.")
+	if _, err := os.Stat(keyfile); err == nil {
+		// keyfile exists
+		cmd := exec.Command("gcloud", "auth", "activate-service-account",
+			fmt.Sprintf("--key-file=%v", keyfile))
+		out, stderr, err := common.RunWithTimeout(ctx, cmd, 5*time.Minute, true)
+		if err != nil {
+			log.Printf("Failed running gcloud auth: %s\n%s", err, stderr)
+			return errors.Annotate(err, "gcloud auth").Err()
+		}
+		log.Printf("gcloud auth completed. Result: %s", out)
+	} else if os.IsNotExist(err) {
+		// keyfile doesn't exist.
+		// For this case, we will assume that env has account with proper permissions.
+		log.Printf("Skipping gcloud auth as keyfile does not exist")
+	} else {
+		// keyfile may or may not exist. See err for details.
+		return errors.Annotate(err, "error with keyfile").Err()
+	}
+	return nil
+
 }

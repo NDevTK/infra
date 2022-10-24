@@ -67,17 +67,9 @@ cros-tool-runner provision -images docker-images.json -input provision_request.j
 // Run executes the tool.
 func (c *runCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
-	token := ""
-	var err error
-	if c.dockerKeyFile != "" {
-		if token, err = dockerAuth(ctx, c.dockerKeyFile); err != nil {
-			log.Printf("failed in docker auth: %s", err)
-			return 1
-		}
-	}
 
 	returnCode := 0
-	out, err := c.innerRun(ctx, a, args, env, token)
+	out, err := c.innerRun(ctx, a, args, env)
 	// Unexpected error will counted as incorrect request data.
 	// all expected cases has to generate responses.
 	if err != nil && len(out.GetResponses()) == 0 {
@@ -102,7 +94,7 @@ func (c *runCmd) Run(a subcommands.Application, args []string, env subcommands.E
 	return returnCode
 }
 
-func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, token string) (*api.CrosToolRunnerProvisionResponse, error) {
+func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) (*api.CrosToolRunnerProvisionResponse, error) {
 	out := &api.CrosToolRunnerProvisionResponse{}
 	ctx, err := useSystemAuth(ctx, &c.authFlags)
 	if err != nil {
@@ -131,7 +123,7 @@ func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args [
 				device,
 				findContainer(cm, device.GetContainerMetadataKey(), "cros-dut"),
 				findContainer(cm, device.GetContainerMetadataKey(), "cros-provision"),
-				token)
+				c.dockerKeyFile)
 			provisionResults[i] = result.Out
 			return result.Err
 		})

@@ -67,13 +67,13 @@ func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, 
 }
 
 // startDutService starts cros-dut service.
-func startDutService(ctx context.Context, imagePath, registerName, dutName, networkName string, cacheServer *lab_api.CacheServer, dutSshInfo *lab_api.IpEndpoint, port int, dir string, t string) (*docker.Docker, error) {
+func startDutService(ctx context.Context, imagePath, registerName, dutName, networkName string, cacheServer *lab_api.CacheServer, dutSshInfo *lab_api.IpEndpoint, port int, dir string, tokenFile string) (*docker.Docker, error) {
 	crosDutResultDirName := "/tmp/cros-dut"
 	d := &docker.Docker{
 		Name:               fmt.Sprintf(crosDutContainerNameTemplate, dutName),
 		RequestedImageName: imagePath,
 		Registry:           registerName,
-		Token:              t,
+		TokenFile:          tokenFile,
 		// Fallback version used in case when main image fail to pull.
 		// FallbackImageName: "gcr.io/chromeos-bot/cros-dut:fallback",
 		// TODO: discuss whether we should have fallback.
@@ -163,7 +163,7 @@ func CreateDutServicesForHostNetwork(ctx context.Context, image *build_api.Conta
 }
 
 // RunProvisionCLI pulls and starts cros-provision as CLI.
-func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName string, req *api.CrosProvisionRequest, dir string, t string) (*docker.Docker, error) {
+func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName string, req *api.CrosProvisionRequest, dir string, tokenFile string) (*docker.Docker, error) {
 	// Create directory to provide input files and collect output files.
 	// The directory will also has logs of the provisioning.
 	if err := createProvisionInput(req, dir); err != nil {
@@ -184,7 +184,7 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 		Name:               fmt.Sprintf(crosProvisionContainerNameTemplate, dutName),
 		RequestedImageName: p,
 		Registry:           r,
-		Token:              t,
+		TokenFile:          tokenFile,
 		// Fallback version used in case when main image fail to pull.
 		FallbackImageName: "gcr.io/chromeos-bot/cros-provision:fallback",
 		ExecCommand: []string{
@@ -203,7 +203,7 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 }
 
 // RunTestCLI pulls and runs cros-test as CLI.
-func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName, inputFileName, crosTestDir, resultDir string, t string) error {
+func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName, inputFileName, crosTestDir, resultDir string, tokenFile string) error {
 	p, err := createImagePath(image)
 	if err != nil {
 		return errors.Annotate(err, "failed to create image for cros-test").Err()
@@ -237,7 +237,7 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 		Name:               fmt.Sprintf(crosTestContainerNameTemplate, os.Getpid(), time.Now().Unix()),
 		RequestedImageName: p,
 		Registry:           r,
-		Token:              t,
+		TokenFile:          tokenFile,
 		ExecCommand: []string{
 			"bash",
 			"-c",
@@ -253,7 +253,7 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 }
 
 // RunTestFinderCLI pulls and runs cros-test-finder as CLI.
-func RunTestFinderCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName, crosTestFinderDir string, t string) error {
+func RunTestFinderCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName, crosTestFinderDir string, tokenFile string) error {
 	p, err := createImagePath(image)
 	if err != nil {
 		return errors.Annotate(err, "failed to create image for cros-test").Err()
@@ -274,7 +274,7 @@ func RunTestFinderCLI(ctx context.Context, image *build_api.ContainerImageInfo, 
 		Name:               fmt.Sprintf(crosTestContainerNameTemplate, os.Getpid(), time.Now().Unix()),
 		RequestedImageName: p,
 		Registry:           r,
-		Token:              t,
+		TokenFile:          tokenFile,
 		// Fallback version used in case when main image fail to pull.
 		FallbackImageName: "gcr.io/chromeos-bot/cros-test-finder:fallback",
 		ExecCommand: []string{

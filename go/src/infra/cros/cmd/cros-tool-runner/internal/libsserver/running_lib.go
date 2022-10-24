@@ -74,7 +74,7 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 		RequestedImageName: info.Image,
 		Registry:           info.Registry,
 		Name:               contName,
-		Token:              s.token,
+		TokenFile:          s.token,
 		ExecCommand:        info.ExecCmd,
 		Volumes:            logVolumes,
 		Detach:             true,

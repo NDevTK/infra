@@ -40,7 +40,7 @@ type Result struct {
 }
 
 // Run runs provisioning software dependencies per DUT.
-func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device, crosDutContainer, crosProvisionContainer *build_api.ContainerImageInfo, token string) *Result {
+func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device, crosDutContainer, crosProvisionContainer *build_api.ContainerImageInfo, tokenFile string) *Result {
 	res := &Result{
 		Out: &api.CrosProvisionResponse{
 			Id: device.GetDut().GetId(),
@@ -58,6 +58,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	dutName := res.Out.Id.GetValue()
 	cacheServerInfo := device.GetDut().GetCacheServer()
 	dutSshInfo := device.GetDut().GetChromeos().GetSsh()
+	log.Printf("New Auth Steps.")
 	log.Printf("Preparing for provisioning of %q, with: %s", dutName, device.GetProvisionState())
 
 	// Use the host network.
@@ -78,7 +79,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	}
 
 	log.Printf("--> Starting cros-dut service for %q ...", dutName)
-	dutService, err := services.CreateDutService(ctx, crosDutContainer, dutName, networkName, cacheServerInfo, dutSshInfo, crosDutResultsDir, token)
+	dutService, err := services.CreateDutService(ctx, crosDutContainer, dutName, networkName, cacheServerInfo, dutSshInfo, crosDutResultsDir, tokenFile)
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
 		return res
@@ -106,7 +107,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 		},
 	}
 
-	provisionService, err := services.RunProvisionCLI(ctx, crosProvisionContainer, networkName, provisionReq, crosProvisionResultsDir, token)
+	provisionService, err := services.RunProvisionCLI(ctx, crosProvisionContainer, networkName, provisionReq, crosProvisionResultsDir, tokenFile)
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
 		return res

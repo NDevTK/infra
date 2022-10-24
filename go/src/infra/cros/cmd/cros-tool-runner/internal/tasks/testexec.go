@@ -67,15 +67,8 @@ func Test(authOpts auth.Options) *subcommands.Command {
 // Run executes the tool.
 func (c *runTestCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
-	token := ""
-	var err error
-	if c.dockerKeyFile != "" {
-		if token, err = dockerAuth(ctx, c.dockerKeyFile); err != nil {
-			log.Printf("Failed in docker auth: %s", err)
-			return 1
-		}
-	}
-	out, err := c.innerRun(ctx, a, args, env, token)
+
+	out, err := c.innerRun(ctx, a, args, env)
 	// Unexpected error will counted as incorrect request data.
 	// all expected cases has to generate responses.
 	if err != nil {
@@ -88,7 +81,7 @@ func (c *runTestCmd) Run(a subcommands.Application, args []string, env subcomman
 	return 0
 }
 
-func (c *runTestCmd) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, token string) (*api.CrosToolRunnerTestResponse, error) {
+func (c *runTestCmd) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) (*api.CrosToolRunnerTestResponse, error) {
 	ctx, err := useSystemAuth(ctx, &c.authFlags)
 	if err != nil {
 		return nil, errors.Annotate(err, "inner run: read system auth").Err()
@@ -111,7 +104,7 @@ func (c *runTestCmd) innerRun(ctx context.Context, a subcommands.Application, ar
 
 	crosTestContainer := findContainer(cm, lookupKey, "cros-test")
 	crosDUTContainer := findContainer(cm, lookupKey, "cros-dut")
-	result, err := testexec.Run(ctx, req, crosTestContainer, crosDUTContainer, token)
+	result, err := testexec.Run(ctx, req, crosTestContainer, crosDUTContainer, c.dockerKeyFile)
 	return result, errors.Annotate(err, "inner run: failed to run tests").Err()
 }
 

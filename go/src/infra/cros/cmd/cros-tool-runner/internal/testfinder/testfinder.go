@@ -25,7 +25,7 @@ import (
 const CrosTestFinderName = "cros-test-finder"
 
 // Run find tests by using cros-test-finder.
-func Run(ctx context.Context, req *api.CrosToolRunnerTestFinderRequest, crosTestFinderContainer *build_api.ContainerImageInfo, token string) (res *api.CrosToolRunnerTestFinderResponse, err error) {
+func Run(ctx context.Context, req *api.CrosToolRunnerTestFinderRequest, crosTestFinderContainer *build_api.ContainerImageInfo, tokenFile string) (res *api.CrosToolRunnerTestFinderResponse, err error) {
 	// Use host network for dev environment which DUT address is in the form localhost:<port>
 	const (
 		networkName = "host"
@@ -52,7 +52,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestFinderRequest, crosTest
 	if err := writeTestFinderInput(inputFileName, testReq); err != nil {
 		return nil, errors.Annotate(err, "prepare to run test finder: failed to create input file %s", inputFileName).Err()
 	}
-	if err = services.RunTestFinderCLI(ctx, crosTestFinderContainer, networkName, crosTestFinderDir, token); err != nil {
+	if err = services.RunTestFinderCLI(ctx, crosTestFinderContainer, networkName, crosTestFinderDir, tokenFile); err != nil {
 		return nil, errors.Annotate(err, "run test finder: failed to run %s CLI", CrosTestFinderName).Err()
 	}
 
