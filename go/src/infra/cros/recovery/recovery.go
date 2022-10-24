@@ -60,33 +60,13 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		return errors.Annotate(err, "run recovery %q", args.UnitName).Err()
 	}
 	log.Infof(ctx, "Unit %q contains resources: %v", args.UnitName, resources)
-	if args.Metrics == nil {
-		log.Debugf(ctx, "run: metrics is nil")
-	} else { // Guard against incorrectly setting up Karte client. See b:217746479 for details.
-		log.Debugf(ctx, "run: metrics is non-nil")
-		start := time.Now()
-		// TODO(b/242900597): Create a helper function to make this more compact.
+	args.initMetricSaver(ctx)
+	if args != nil && args.metricSaver != nil {
+		taskMetric := args.newMetric(args.UnitName, metrics.RunLibraryKind)
 		defer (func() {
-			// Keep this call up to date with NewMetric in execs.go.
-			// Keep this up to date with runPlan in engine.go
-			// Keep this up to date with runAction in engine.go
-			action := &metrics.Action{
-				ActionKind:     metrics.RunLibraryKind,
-				StartTime:      start,
-				StopTime:       time.Now(),
-				SwarmingTaskID: args.SwarmingTaskID,
-				BuildbucketID:  args.BuildbucketID,
-				Hostname:       args.UnitName,
-			}
-			if rErr == nil {
-				action.Status = metrics.ActionStatusSuccess
-			} else {
-				action.Status = metrics.ActionStatusFail
-				action.FailReason = rErr.Error()
-			}
-
-			if mErr := args.Metrics.Create(ctx, action); mErr != nil {
-				args.Logger.Errorf("Metrics error during teardown: %s", err)
+			taskMetric.UpdateStatus(rErr)
+			if mErr := args.metricSaver(taskMetric); mErr != nil {
+				args.Logger.Errorf("Fail to save task metric: %s", err)
 			}
 		})()
 	}
@@ -102,44 +82,23 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		if ir != 0 {
 			log.Debugf(ctx, "Continue to the next resource.")
 		}
-		startTime := time.Now()
+		// Create karte metric
+		resourceMetric := args.newMetric(resource, fmt.Sprintf(metrics.PerResourceTaskKindGlob, args.TaskName))
 		err := runResource(ctx, resource, args)
 		if err != nil {
 			errs = append(errs, errors.Annotate(err, "run recovery %q", resource).Err())
 		}
-		// Create karte metric
-		if createMetricErr := createTaskRunMetricsForResource(ctx, args, startTime, resource, err); createMetricErr != nil {
-			args.Logger.Errorf("Create metric for resource: %q with error: %s", resource, createMetricErr)
+		resourceMetric.UpdateStatus(err)
+		if args.metricSaver != nil {
+			if err := args.metricSaver(resourceMetric); err != nil {
+				args.Logger.Errorf("Create metric for resource: %q with error: %s", resource, err)
+			}
 		}
 	}
 	if len(errs) > 0 {
 		return errors.Annotate(errors.MultiError(errs), "run recovery").Err()
 	}
 	return nil
-}
-
-// createTaskRunMetricsForResource creates metric action for resource with reporting what is the tasking is running for it.
-func createTaskRunMetricsForResource(ctx context.Context, args *RunArgs, startTime time.Time, resource string, runResourceErr error) error {
-	if args.Metrics == nil {
-		log.Debugf(ctx, "Create karte action for each resource: For resource %s: metrics is not provided.", resource)
-		return nil
-	}
-	action := &metrics.Action{
-		ActionKind:     fmt.Sprintf(metrics.PerResourceTaskKindGlob, args.TaskName),
-		StartTime:      startTime,
-		StopTime:       time.Now(),
-		SwarmingTaskID: args.SwarmingTaskID,
-		BuildbucketID:  args.BuildbucketID,
-		Hostname:       resource,
-		Status:         metrics.ActionStatusSuccess,
-		FailReason:     "",
-	}
-	if runResourceErr != nil {
-		action.Status = metrics.ActionStatusFail
-		action.FailReason = runResourceErr.Error()
-	}
-	mErr := args.Metrics.Create(ctx, action)
-	return errors.Annotate(mErr, "create task run metrics for resource %s", resource).Err()
 }
 
 // runResource run single resource.
@@ -442,7 +401,7 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 		} else {
 			// Closing plan always allowed to fail.
 			plan.AllowFail = true
-			if err := runSinglePlan(ctx, config.PlanClosing, plan, execArgs); err != nil {
+			if err := runSinglePlan(ctx, config.PlanClosing, plan, execArgs, args.metricSaver); err != nil {
 				log.Debugf(ctx, "Run plans: plan %q for %q finished with error: %s", config.PlanClosing, dut.Name, err)
 			} else {
 				log.Debugf(ctx, "Run plans: plan %q for %q finished successfully", config.PlanClosing, dut.Name)
@@ -458,7 +417,7 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 		if !ok {
 			return errors.Reason("run plans: plan %q: not found in configuration", planName).Err()
 		}
-		if err := runSinglePlan(ctx, planName, plan, execArgs); err != nil {
+		if err := runSinglePlan(ctx, planName, plan, execArgs, args.metricSaver); err != nil {
 			return errors.Annotate(err, "run plans").Err()
 		}
 	}
@@ -467,7 +426,7 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 }
 
 // runSinglePlan run single plan for all resources associated with plan.
-func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, execArgs *execs.RunArgs) error {
+func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, execArgs *execs.RunArgs, metricSaver metrics.MetricSaver) error {
 	log.Infof(ctx, "------====================-----")
 	log.Infof(ctx, "Run plan %q: starting...", planName)
 	log.Infof(ctx, "------====================-----")
@@ -480,7 +439,7 @@ func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, exec
 		if len(resources) > 1 {
 			log.Infof(ctx, "Prepare plan %q for %q.", planName, resource)
 		}
-		if err := runDUTPlanPerResource(ctx, resource, planName, plan, execArgs); err != nil {
+		if err := runDUTPlanPerResource(ctx, resource, planName, plan, execArgs, metricSaver); err != nil {
 			log.Infof(ctx, "Run %q plan for %q: finished with error: %s.", planName, resource, err)
 			if plan.GetAllowFail() {
 				log.Debugf(ctx, "Run plan %q for %q: ignore error as allowed to fail.", planName, resource)
@@ -493,9 +452,9 @@ func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, exec
 }
 
 // runDUTPlanPerResource runs a plan against the single resource of the DUT.
-func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan *config.Plan, execArgs *execs.RunArgs) (rErr error) {
+func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan *config.Plan, execArgs *execs.RunArgs, metricSaver metrics.MetricSaver) (rErr error) {
 	execArgs.ResourceName = resource
-	err := engine.Run(ctx, planName, plan, execArgs)
+	err := engine.Run(ctx, planName, plan, execArgs, metricSaver)
 	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
 }
 
@@ -566,6 +525,8 @@ type RunArgs struct {
 	// JumpHost is the host to use as a SSH proxy between ones dev environment and the lab,
 	// if necessary. An empty JumpHost means do not use a jump host.
 	DevJumpHost string
+	// MetricSaver provides ability to save a metric with original context.
+	metricSaver metrics.MetricSaver
 }
 
 // UseConfigBase64 attaches a base64 encoded string as a config
@@ -591,6 +552,51 @@ func (a *RunArgs) UseConfigFile(path string) error {
 	cr, oErr := os.Open(path)
 	a.configReader = cr
 	return errors.Annotate(oErr, "use config file").Err()
+}
+
+// initMetricSaver creates metricSaver implementation to save metrics with the original context.
+// Note: Caontext cached to use for saving all metrics.
+func (a *RunArgs) initMetricSaver(ctx context.Context) {
+	if a == nil || a.Metrics == nil {
+		return
+	}
+	// Creating metrics saver to save metrics by local context
+	// as place which create the action can have canceled or
+	// deadlined context.
+	a.metricSaver = func(metric *metrics.Action) error {
+		if metric == nil {
+			// Skip attempt for test cases and when mitric is not provided.
+			return nil
+		}
+		// Set times if not set before.
+		if metric.StartTime.IsZero() {
+			metric.StartTime = time.Now()
+		}
+		if metric.StopTime.IsZero() {
+			metric.StopTime = time.Now()
+		}
+		// Set status if not specified.
+		if metric.Status == metrics.ActionStatusUnspecified {
+			metric.Status = metrics.ActionStatusSuccess
+		}
+		// Set the task specific data.
+		metric.SwarmingTaskID = a.SwarmingTaskID
+		metric.BuildbucketID = a.BuildbucketID
+		err := a.Metrics.Create(ctx, metric)
+		return errors.Annotate(err, "metric saver").Err()
+	}
+}
+
+// newMetric creates base a metric's action
+func (a *RunArgs) newMetric(hostname, kind string) *metrics.Action {
+	metric := &metrics.Action{
+		ActionKind:     kind,
+		StartTime:      time.Now(),
+		SwarmingTaskID: a.SwarmingTaskID,
+		BuildbucketID:  a.BuildbucketID,
+		Hostname:       hostname,
+	}
+	return metric
 }
 
 // verify verifies input arguments.

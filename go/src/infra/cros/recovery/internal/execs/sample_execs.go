@@ -118,6 +118,7 @@ func init() {
 	Register("sample_fail", sampleFailActionExec)
 	Register("sample_sleep", sampleSleepExec)
 	Register("sample_metrics_action", sampleMetricsActionExec)
+	Register("sample_metrics", sampleDemoMetricsExec)
 	Register("sample_step_summary_markdown", sampleStepSummaryMarkdownExec)
 	Register("sample_step_logs", sampleStepLogExec)
 }

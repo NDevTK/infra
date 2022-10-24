@@ -295,7 +295,7 @@ func TestRunDUTPlan(t *testing.T) {
 					},
 				},
 			}
-			err := runDUTPlanPerResource(ctx, "test_dut", config.PlanCrOS, plan, execArgs)
+			err := runDUTPlanPerResource(ctx, "test_dut", config.PlanCrOS, plan, execArgs, nil)
 			if err == nil {
 				t.Errorf("Expected fail but passed")
 			} else {
@@ -329,7 +329,7 @@ func TestRunDUTPlan(t *testing.T) {
 					},
 				},
 			}
-			if err := runDUTPlanPerResource(ctx, "DUT3", config.PlanCrOS, plan, execArgs); err != nil {
+			if err := runDUTPlanPerResource(ctx, "DUT3", config.PlanCrOS, plan, execArgs, nil); err != nil {
 				t.Errorf("Expected pass but failed: %s", err)
 			}
 		})

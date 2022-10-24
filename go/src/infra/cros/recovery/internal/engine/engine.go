@@ -25,9 +25,10 @@ import (
 
 // recoveryEngine holds info required for running a recovery plan.
 type recoveryEngine struct {
-	planName string
-	plan     *config.Plan
-	args     *execs.RunArgs
+	planName    string
+	plan        *config.Plan
+	args        *execs.RunArgs
+	metricSaver metrics.MetricSaver
 	// Caches
 	actionResultsCache map[string]error
 	recoveryUsageCache map[recoveryUsageKey]error
@@ -37,11 +38,12 @@ type recoveryEngine struct {
 var startOverTag = errors.BoolTag{Key: errors.NewTagKey("start-over")}
 
 // Run runs the recovery plan.
-func Run(ctx context.Context, planName string, plan *config.Plan, args *execs.RunArgs) error {
+func Run(ctx context.Context, planName string, plan *config.Plan, args *execs.RunArgs, metricSaver metrics.MetricSaver) error {
 	r := &recoveryEngine{
-		planName: planName,
-		plan:     plan,
-		args:     args,
+		planName:    planName,
+		plan:        plan,
+		args:        args,
+		metricSaver: metricSaver,
 	}
 	r.initCache()
 	defer func() { r.close() }()
@@ -85,31 +87,22 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 	}
 	var restartTally int64
 	var forgivenFailureTally int64
-	if r.args != nil && r.args.Metrics != nil {
-		// Keep this up to date with recovery.go
-		action := &metrics.Action{
-			SwarmingTaskID: r.args.SwarmingTaskID,
-			BuildbucketID:  r.args.BuildbucketID,
-		}
-		closer, mErr := r.args.NewMetric(
-			ctx,
-			fmt.Sprintf("plan:%s", r.planName),
-			action,
-		)
-		if mErr == nil && action != nil {
-			defer func() {
-				action.Observations = append(
-					action.Observations,
-					metrics.NewInt64Observation("restarts", restartTally),
-					metrics.NewInt64Observation("forgiven_failures", forgivenFailureTally),
-				)
-				closer(ctx, rErr)
-			}()
-		}
+	if r.args != nil && r.metricSaver != nil {
+		metric := r.args.NewMetricsAction(fmt.Sprintf("plan:%s", r.planName))
+		defer func() {
+			metric.Observations = append(
+				metric.Observations,
+				metrics.NewInt64Observation("restarts", restartTally),
+				metrics.NewInt64Observation("forgiven_failures", forgivenFailureTally),
+			)
+			metric.UpdateStatus(rErr)
+			if err := r.metricSaver(metric); err != nil {
+				log.Debugf(ctx, "Fail to save plan %q metrics with error: %s", r, r.planName, err)
+			}
+		}()
 	}
-
 	for {
-		if err := r.runCriticalActionAttempt(ctx, restartTally); err != nil {
+		if err := r.runCriticalActionsAttempt(ctx, restartTally); err != nil {
 			if startOverTag.In(err) {
 				log.Infof(ctx, "Plan %q for %s: received request to start over.", r.planName, r.args.ResourceName)
 				r.resetCacheAfterSuccessfulRecoveryAction()
@@ -133,8 +126,8 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 	return nil
 }
 
-// runCriticalActionAttempt runs critical action of the plan with wrapper step to show plan restart attempts.
-func (r *recoveryEngine) runCriticalActionAttempt(ctx context.Context, attempt int64) (err error) {
+// runCriticalActionsAttempt runs critical action of the plan with wrapper step to show plan restart attempts.
+func (r *recoveryEngine) runCriticalActionsAttempt(ctx context.Context, attempt int64) (err error) {
 	if r.args.ShowSteps {
 		var step *build.Step
 		stepName := fmt.Sprintf("First run of critical actions for %s", r.planName)
@@ -215,34 +208,30 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 		return errors.Annotate(aErr, "run action %q: (cached)", actionName).Err()
 	}
-	if r.args != nil {
-		// Only running action can generate metrics as we have real response from each action.
-		action := &metrics.Action{
-			SwarmingTaskID: r.args.SwarmingTaskID,
-			BuildbucketID:  r.args.BuildbucketID,
-		}
-		policy := act.GetMetricsConfig().GetUploadPolicy()
-		switch policy {
-		case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
-			// Keep this up to date with recovery.go
-			if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
-				defer actionCloser(rErr)
-			}
-		case config.MetricsConfig_SKIP_ALL:
-			log.Debugf(ctx, "Action %q: skipping metrics upload", actionName)
-		case config.MetricsConfig_UPLOAD_ON_ERROR:
-			log.Debugf(ctx, "Action %q logging on error only", actionName)
-			defer func(rErr error) {
+	var metric *metrics.Action
+	if r.args != nil && r.metricSaver != nil {
+		metric = r.args.NewMetricsAction(fmt.Sprintf("action:%s", actionName))
+		defer func() {
+			metric.UpdateStatus(rErr)
+			policy := act.GetMetricsConfig().GetUploadPolicy()
+			switch policy {
+			case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
+				if err := r.metricSaver(metric); err != nil {
+					log.Debugf(ctx, "Fail to save %q metrics with error: %s", actionName, err)
+				}
+			case config.MetricsConfig_UPLOAD_ON_ERROR:
+				log.Debugf(ctx, "Action %q requires save metrics only when fail.", actionName)
 				if rErr != nil {
-					actionCloser := r.recordAction(ctx, actionName, action)
-					if actionCloser != nil {
-						actionCloser(rErr)
+					if err := r.metricSaver(metric); err != nil {
+						log.Debugf(ctx, "Fail to save %q metrics with error: %s", actionName, err)
 					}
 				}
-			}(rErr)
-		default:
-			return errors.Reason("bad policy %q %d", policy.String(), policy.Number()).Err()
-		}
+			case config.MetricsConfig_SKIP_ALL:
+				log.Debugf(ctx, "Action %q: requires skipp metrics upload.", actionName)
+			default:
+				panic(fmt.Sprintf("Bad metrics upload policy %q %d", policy.String(), policy.Number()))
+			}
+		}()
 	}
 	log.Infof(ctx, "Action %q: started.", actionName)
 	conditionName, err := r.runActionConditions(ctx, actionName)
@@ -270,7 +259,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 		return errors.Annotate(err, "run action %q", actionName).Err()
 	}
-	if err := r.runActionExec(ctx, actionName, enableRecovery); err != nil {
+	if err := r.runActionExec(ctx, actionName, metric, enableRecovery); err != nil {
 		if startOverTag.In(err) {
 			return errors.Annotate(err, "run action %q", actionName).Err()
 		}
@@ -289,8 +278,8 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 
 // runActionExec runs action's exec function and initiates recovery flow if exec fails.
 // The recover flow start only recoveries is enabled.
-func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, enableRecovery bool) error {
-	if err := r.runActionExecWithTimeout(ctx, actionName); err != nil {
+func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, metric *metrics.Action, enableRecovery bool) error {
+	if err := r.runActionExecWithTimeout(ctx, actionName, metric); err != nil {
 		a := r.getAction(actionName)
 		if enableRecovery && len(a.GetRecoveryActions()) > 0 {
 			log.Infof(ctx, "Action %q: starting recovery actions.", actionName)
@@ -320,7 +309,7 @@ func actionExecTimeout(a *config.Action) time.Duration {
 }
 
 // runActionExecWithTimeout runs action's exec function with timeout.
-func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionName string) (rErr error) {
+func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionName string, metric *metrics.Action) (rErr error) {
 	a := r.getAction(actionName)
 	if r.args != nil && r.args.ShowSteps {
 		var step *build.Step
@@ -332,9 +321,20 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 	timeout := actionExecTimeout(a)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer func() { cancel() }()
+	execInfo := execs.NewExecInfo(r.args, a.ExecName, a.GetExecExtraArgs(), timeout, metric)
+	if r.metricSaver != nil {
+		// Try to save additional metrics if an exec could not finished in time.
+		defer func() {
+			for _, additionalMetric := range execInfo.GetAdditionalMetrics() {
+				if err := r.metricSaver(additionalMetric); err != nil {
+					log.Debugf(ctx, "Fail to save %q additional metrics error: %s", r, r.planName, err)
+				}
+			}
+		}()
+	}
 	cw := make(chan error, 1)
 	go func() {
-		err := execs.Run(ctx, execs.NewExecInfo(r.args, a.ExecName, a.GetExecExtraArgs(), timeout, nil))
+		err := execs.Run(ctx, execInfo)
 		cw <- err
 	}()
 	select {

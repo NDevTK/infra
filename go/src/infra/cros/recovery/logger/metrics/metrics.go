@@ -67,6 +67,16 @@ type Action struct {
 	Observations []*Observation
 }
 
+// UpdateStatus updates status of the action and error reason if error was provided.
+func (a *Action) UpdateStatus(err error) {
+	if err != nil {
+		a.Status = ActionStatusFail
+		a.FailReason = err.Error()
+	} else {
+		a.Status = ActionStatusSuccess
+	}
+}
+
 // Observation is the type of a measurement associated with an event performed on a DUT.
 type Observation struct {
 	// MetricKind is the metric kind (e.g. battery percentage).
@@ -206,6 +216,9 @@ type QueryResult struct {
 	// PageToken is the token for resuming the query, if such a token exists.
 	PageToken string
 }
+
+// MetricSaver a function to provide contextless saver of metrics.
+type MetricSaver func(action *Action) error
 
 // Metrics is a simple interface for logging
 // structured events and metrics.

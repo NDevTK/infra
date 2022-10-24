@@ -200,7 +200,7 @@ func TestRun(t *testing.T) {
 			args := &execs.RunArgs{
 				EnableRecovery: true,
 			}
-			err := Run(ctx, c.name, c.got, args)
+			err := Run(ctx, c.name, c.got, args, nil)
 			if c.expSuccess {
 				if err != nil {
 					t.Errorf("Case %q fail but expected to pass. Received error: %s", c.name, err)
@@ -387,7 +387,7 @@ func TestActionExec(t *testing.T) {
 				},
 			}
 			r.initCache()
-			err := r.runActionExec(ctx, "a", c.enableRecovery)
+			err := r.runActionExec(ctx, "a", nil, c.enableRecovery)
 			if c.expError && c.expStartOver {
 				if !startOverTag.In(err) {
 					t.Errorf("Case %q expected to get request to start over. Received error: %s", c.name, err)
@@ -499,7 +499,7 @@ func TestActionExecCache(t *testing.T) {
 				},
 			}
 			r.initCache()
-			r.runActionExec(ctx, "a", true)
+			r.runActionExec(ctx, "a", nil, true)
 			err, ok := r.actionResultFromCache("a")
 			if c.expInCashe {
 				if !ok {
@@ -724,19 +724,12 @@ func TestCallMetricsInSimplePlan(t *testing.T) {
 	m := newFakeMetrics()
 	r := &recoveryEngine{
 		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
-	}
-	// NOTE: This is a bit subtle, but there really should be TWO records here. The fake implementation service always appends new records,
-	// regardless of whether Karte would create a new record or update one in place. This is good for unit tests because it means that every
-	// intermediate state is visible, so we really are testing the entire interaction.
-	expected := []*metrics.Action{
-		{
-			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
-			Status:     "success",
-			Observations: []*metrics.Observation{
-				{MetricKind: "restarts", ValueType: "number", Value: "0"},
-				{MetricKind: "forgiven_failures", ValueType: "number", Value: "0"},
-			},
+		metricSaver: func(metric *metrics.Action) error {
+			return m.Create(ctx, metric)
 		},
+	}
+	// NOTE: Expected only one plan metrics per run.
+	expected := []*metrics.Action{
 		{
 			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
 			Status:     "success",

@@ -35,15 +35,18 @@ func (i *ExecInfo) NewMetric(kind string) *metrics.Action {
 
 // NewMetric creates a new metric.
 func (a *RunArgs) NewMetricsAction(kind string) *metrics.Action {
-	return &metrics.Action{
-		// TODO(b/248635230): Set asset tag instead of hostname.
-		Hostname:       a.DUT.Name,
+	metric := &metrics.Action{
 		ActionKind:     kind,
 		StartTime:      time.Now(),
 		SwarmingTaskID: a.SwarmingTaskID,
 		BuildbucketID:  a.BuildbucketID,
 		Status:         metrics.ActionStatusUnspecified,
 	}
+	if a.DUT != nil {
+		// TODO(b/248635230): Set asset tag instead of hostname.
+		metric.Hostname = a.DUT.Name
+	}
+	return metric
 }
 
 // GetAdditionalMetrics returns additional metrics created by execs.
