@@ -15,10 +15,10 @@ libxml2_version="2.9.12"
 openssl_version="1.1.1j"
 pcre_version="8.41"
 php_version="7.3.31"
-zlib_version="1.2.12"
+zlib_version="1.2.13"
 
 def do_latest():
-  print('httpd{0}.php{1}.chromium.3'.format(httpd_version, php_version))
+  print('httpd{0}.php{1}.chromium.4'.format(httpd_version, php_version))
 
 
 def get_download_url():
@@ -39,7 +39,7 @@ def get_download_url():
       "{0}/pcre-{0}.tar.gz/download".format(pcre_version),
       "https://secure.php.net/distributions/"
       "php-{}.tar.gz".format(php_version),
-      "https://www.zlib.net/zlib-{}.tar.gz".format(zlib_version),
+      "https://github.com/madler/zlib/archive/refs/tags/v{}.tar.gz".format(zlib_version),
   ]
 
   packages = [

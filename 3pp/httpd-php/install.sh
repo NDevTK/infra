@@ -22,7 +22,7 @@ libxml2_version="2.9.12"
 openssl_version="1.1.1j"
 pcre_version="8.41"
 php_version="7.3.31"
-zlib_version="1.2.12"
+zlib_version="1.2.13"
 
 out="$1"
 build="$PWD/build"
