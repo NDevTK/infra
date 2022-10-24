@@ -22,8 +22,8 @@ message Drive {
   // drive of size
   sources.Src input_src = 2;
 
-  // The location to upload the image to once customization is done
-  dest.Dest output_dest = 3;
+  // The location(s) to upload the image to once customization is done
+  repeated dest.Dest output_dests = 3;
 
   // The interface this drive is connected on
   //
