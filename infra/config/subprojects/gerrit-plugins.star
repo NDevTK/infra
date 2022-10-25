@@ -40,7 +40,7 @@ luci.builder(
     dimensions = {
         "os": "Ubuntu-18.04",
         "cpu": "x86-64",
-        "pool": "luci.flex.try",
+        "pool": "luci.infra.try",
     },
     service_account = infra.SERVICE_ACCOUNT_TRY,
 )

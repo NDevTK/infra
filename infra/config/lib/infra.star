@@ -88,8 +88,9 @@ def builder(
 
     It is a builder that needs an infra.git checkout to do stuff.
 
-    Depending on value of `bucket`, will chose a default pool (ci or flex try),
-    the service account and build_numbers settings.
+    Depending on value of `bucket`, will chose a default pool (infra ci or
+    try for linux or win, flex ci or try for mac), the service account and
+    build_numbers settings.
 
     Args:
       name: name of the builder.
@@ -106,11 +107,17 @@ def builder(
       notifies: what luci.notifier(...) to notify when its done.
     """
     if bucket == "ci":
-        pool = pool or "luci.flex.ci"
+        if os.startswith("Mac"):
+            pool = pool or "luci.flex.ci"
+        else:
+            pool = pool or "luci.infra.ci"
         service_account = service_account or infra.SERVICE_ACCOUNT_CI
         build_numbers = True
     elif bucket == "try":
-        pool = pool or "luci.flex.try"
+        if os.startswith("Mac"):
+            pool = pool or "luci.flex.try"
+        else:
+            pool = pool or "luci.infra.try"
         service_account = service_account or infra.SERVICE_ACCOUNT_TRY
         build_numbers = None  # leave it unset in the generated file
     else:

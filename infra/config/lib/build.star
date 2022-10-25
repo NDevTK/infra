@@ -42,7 +42,18 @@ def presubmit(
         timeout_s = 480,
         os = None,
         experiment_percentage = None):
-    """Defines a try builder that runs 'run_presubmit' recipe."""
+    """Defines a try builder that runs 'run_presubmit' recipe.
+
+    Args:
+      name: name of the builder.
+      cq_group: cq group the builder belongs to.
+      repo_name: name of the repo this builder runs presubmit for.
+      run_hooks: flag for whether running hooks.
+      timeout_s: timeout in seconds.
+      os: this builder's os dimension.
+      experiment_percentage: percentage for CV to trigger this builder. When
+        this field is present, the builder is be marked as experimental by CV.
+    """
     props = {
         "repo_name": repo_name,
         "$depot_tools/presubmit": {
@@ -50,6 +61,9 @@ def presubmit(
             "timeout_s": timeout_s,
         },
     }
+    pool = "luci.infra.try"
+    if os and os.startswith("Mac"):
+        pool = "luci.flex.try"
     luci.builder(
         name = name,
         bucket = "try",
@@ -59,7 +73,7 @@ def presubmit(
         dimensions = {
             "os": os or "Ubuntu-18.04",
             "cpu": "x86-64",
-            "pool": "luci.flex.try",
+            "pool": pool,
         },
         task_template_canary_percentage = 30,
     )

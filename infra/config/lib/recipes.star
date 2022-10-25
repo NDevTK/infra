@@ -54,7 +54,7 @@ def simulation_tester(
         dimensions = {
             "os": "Ubuntu-18.04",
             "cpu": "x86-64",
-            "pool": "luci.flex.ci",
+            "pool": "luci.infra.ci",
         },
         service_account = infra.SERVICE_ACCOUNT_CI,
         build_numbers = True,
@@ -79,6 +79,9 @@ def roll_trybots(upstream, downstream, cq_group, os = "Ubuntu"):
     """
     for proj in downstream:
         name = "%s downstream Recipe Roll tester from %s" % (_friendly(proj), _friendly(upstream))
+        pool = "luci.infra.try"
+        if os.startswith("Mac"):
+            pool = "luci.flex.try"
         luci.builder(
             name = name,
             bucket = "try",
@@ -92,7 +95,7 @@ def roll_trybots(upstream, downstream, cq_group, os = "Ubuntu"):
             dimensions = {
                 "os": os,
                 "cpu": "x86-64",
-                "pool": "luci.flex.try",
+                "pool": pool,
             },
             service_account = infra.SERVICE_ACCOUNT_TRY,
         )
@@ -111,7 +114,7 @@ def led_recipes_tester(name, cq_group, repo_name):
         dimensions = {
             "os": "Ubuntu-18.04",
             "cpu": "x86-64",
-            "pool": "luci.flex.try",
+            "pool": "luci.infra.try",
         },
         service_account = "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
         execution_timeout = 3 * time.hour,
