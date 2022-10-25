@@ -1508,6 +1508,14 @@ func (r *UpdateConfigBundleRequest) Validate() error {
 	return nil
 }
 
+// Validate validates input requests of GetOwnershipData.
+func (r *GetOwnershipDataRequest) Validate() error {
+	if r.GetHostname() == "" {
+		return status.Errorf(codes.InvalidArgument, EmptyName)
+	}
+	return nil
+}
+
 func validatePageSize(pageSize int32) error {
 	if pageSize < 0 {
 		return status.Errorf(codes.InvalidArgument, InvalidPageSize)
