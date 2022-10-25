@@ -12,10 +12,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-
 	configpb "go.chromium.org/luci/swarming/proto/config"
 
+	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/inventory"
@@ -76,8 +75,32 @@ func TestImportENCBotConfig(t *testing.T) {
 	ctx := encTestingContext()
 	Convey("Import ENC Bot Config", t, func() {
 		Convey("happy path", func() {
-			err := ImportENCBotConfig(ctx)
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
+
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.GetMachine(ctx, "test1-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+		})
+		Convey("No ENC Config - Ownership not updated", func() {
+			ctx = config.Use(ctx, &config.Config{})
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test2-1", "test2"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "no config found")
+
+			resp, err = registration.GetMachine(ctx, "test2-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldBeNil)
 		})
 	})
 }

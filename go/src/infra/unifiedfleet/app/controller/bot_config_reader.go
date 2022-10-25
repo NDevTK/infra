@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	configpb "go.chromium.org/luci/swarming/proto/config"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -22,8 +23,6 @@ import (
 	"infra/unifiedfleet/app/model/registration"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-
-	configpb "go.chromium.org/luci/swarming/proto/config"
 )
 
 const (
@@ -42,7 +41,12 @@ func ImportENCBotConfig(ctx context.Context) error {
 		logging.Errorf(ctx, "Got Error for git client : %s", err.Error())
 		return fmt.Errorf("failed to initialize connection to Gitiles while importing enc bot configs")
 	}
+	if ownershipConfig == nil {
+		logging.Errorf(ctx, "No config found to read ownership data")
+		return fmt.Errorf("no config found to read ownership data")
+	}
 
+	logging.Infof(ctx, "Parsing Ownership config for %d files", len(ownershipConfig.GetEncConfig()))
 	for _, cfg := range ownershipConfig.GetEncConfig() {
 		logging.Debugf(ctx, "########### Parse %s ###########", cfg.GetName())
 		conf, err := gitClient.GetFile(ctx, cfg.GetRemotePath())
@@ -54,6 +58,7 @@ func ImportENCBotConfig(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		ParseBotConfig(ctx, content, cfg.GetName())
 	}
 	return nil
 }
