@@ -31,6 +31,8 @@ if appengine_util.IsInProductionApp():
 referenced_coverage_worker_handler_mappings = [
     ('.*/coverage/task/referenced-coverage.*',
      create_referenced_coverage.CreateReferencedCoverageMetrics),
+    ('.*/coverage/task/incremental-coverage',
+     export_incremental_coverage.ExportIncrementalCoverageMetrics),
 ]
 referenced_coverage_worker_application = webapp2.WSGIApplication(
     referenced_coverage_worker_handler_mappings, debug=False)
@@ -49,8 +51,6 @@ code_coverage_backend_handler_mappings = [
      export_absolute_coverage.ExportFilesAbsoluteCoverageMetrics),
     ('.*/coverage/cron/incremental-coverage',
      export_incremental_coverage.ExportIncrementalCoverageMetricsCron),
-    ('.*/coverage/task/incremental-coverage',
-     export_incremental_coverage.ExportIncrementalCoverageMetrics),
     ('.*/coverage/cron/all-gerrit-filter-coverage',
      export_gerrit_filter_coverage.ExportAllCoverageMetricsCron),
     ('.*/coverage/task/all-gerrit-filter-coverage',

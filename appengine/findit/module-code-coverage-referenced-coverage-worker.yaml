@@ -12,6 +12,9 @@ handlers:
 - url: .*/coverage/task/referenced-coverage.*
   script: coverage_main.referenced_coverage_worker_application
   secure: always
+- url: .*/coverage/task/incremental-coverage.*
+  script: coverage_main.referenced_coverage_worker_application
+  secure: always
 
 skip_files:
 - ^(.*/)?#.*#$

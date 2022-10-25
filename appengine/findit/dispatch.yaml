@@ -32,6 +32,9 @@ dispatch:
   - url: "*/coverage/task/referenced-coverage*"
     module: code-coverage-referenced-coverage-worker
 
+  - url: "*/coverage/task/incremental-coverage*"
+    module: code-coverage-referenced-coverage-worker
+
   - url: "*/coverage/cron/*"
     module: code-coverage-backend
 

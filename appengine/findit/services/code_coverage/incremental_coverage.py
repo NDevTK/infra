@@ -19,6 +19,8 @@ _PAGE_SIZE = 100
 # Time period for which coverage report is to fetched and processed
 _NUM_REPORT_DAYS = 30
 
+_BQ_ROWS_BATCH_SIZE = 500
+
 
 def ExportIncrementalCoverage(run_id):
   """Exports incremental coverage metrics to Bigquery for last _NUM_REPORT_DAYS.
@@ -44,16 +46,22 @@ def ExportIncrementalCoverage(run_id):
   total_patchsets = 0
   more = True
   cursor = None
+  bqrows = []
   while more:
     results, cursor, more = query.fetch_page(_PAGE_SIZE, start_cursor=cursor)
     for result in results:
-      bqrows = _CreateBigqueryRows(result, run_id)
-      if bqrows:
+      bqrows_new = _CreateBigqueryRows(result, run_id)
+      if bqrows_new:
+        bqrows.extend(bqrows_new)
+      if len(bqrows) > _BQ_ROWS_BATCH_SIZE:
         bigquery_helper.ReportRowsToBigquery(bqrows, 'findit-for-me',
                                              'code_coverage_summaries',
                                              'incremental_coverage')
-        total_patchsets += 1
-
+        bqrows = []
+      total_patchsets += 1
+  bigquery_helper.ReportRowsToBigquery(bqrows, 'findit-for-me',
+                                       'code_coverage_summaries',
+                                       'incremental_coverage')
   logging.info('Total patchsets processed = %d', total_patchsets)
 
 
