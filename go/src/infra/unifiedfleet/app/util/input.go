@@ -1103,22 +1103,37 @@ func ValidModemTypeStr() []string {
 // StrToDevicePhase refers to a map between a string and the ManufacturingConfig
 // Phase type.
 var StrToDevicePhase = map[string]string{
-	"invalid": ufsmfg.ManufacturingConfig_PHASE_INVALID.String(),
-	"evt":     ufsmfg.ManufacturingConfig_PHASE_EVT.String(),
-	"evt2":    ufsmfg.ManufacturingConfig_PHASE_EVT2.String(),
-	"dvt":     ufsmfg.ManufacturingConfig_PHASE_DVT.String(),
-	"dvt2":    ufsmfg.ManufacturingConfig_PHASE_DVT2.String(),
-	"pvt":     ufsmfg.ManufacturingConfig_PHASE_PVT.String(),
-	"pvt2":    ufsmfg.ManufacturingConfig_PHASE_PVT2.String(),
-	"pvt3":    ufsmfg.ManufacturingConfig_PHASE_PVT3.String(),
-	"mp":      ufsmfg.ManufacturingConfig_PHASE_MP.String(),
+	"INVALID": ufsmfg.ManufacturingConfig_PHASE_INVALID.String(),
+	"EVT":     ufsmfg.ManufacturingConfig_PHASE_EVT.String(),
+	"EVT2":    ufsmfg.ManufacturingConfig_PHASE_EVT2.String(),
+	"DVT":     ufsmfg.ManufacturingConfig_PHASE_DVT.String(),
+	"DVT2":    ufsmfg.ManufacturingConfig_PHASE_DVT2.String(),
+	"PVT":     ufsmfg.ManufacturingConfig_PHASE_PVT.String(),
+	"PVT2":    ufsmfg.ManufacturingConfig_PHASE_PVT2.String(),
+	"PVT3":    ufsmfg.ManufacturingConfig_PHASE_PVT3.String(),
+	"MP":      ufsmfg.ManufacturingConfig_PHASE_MP.String(),
+}
+
+// getDevicePhaseRegex returns a device phase regex used to match device phases
+func getDevicePhaseRegex() *regexp.Regexp {
+	keys := make([]string, 0, len(StrToDevicePhase))
+	for k := range StrToDevicePhase {
+		keys = append(keys, k)
+	}
+	p := strings.Join(keys, "|")
+	regexStr := fmt.Sprintf(`(?:\b|_)(%s)(?:\b|_)`, p)
+	return regexp.MustCompile(regexStr)
 }
 
 // ToUFSDevicePhase converts type string to a UFS attached device type enum.
 func ToUFSDevicePhase(devicePhase string) ufsmfg.ManufacturingConfig_Phase {
-	v, ok := StrToDevicePhase[strings.ToLower(devicePhase)]
+	match := getDevicePhaseRegex().FindString(strings.ToUpper(devicePhase))
+	phase := strings.Trim(match, "_")
+
+	v, ok := StrToDevicePhase[phase]
 	if !ok {
 		return ufsmfg.ManufacturingConfig_PHASE_INVALID
 	}
+
 	return ufsmfg.ManufacturingConfig_Phase(ufsmfg.ManufacturingConfig_Phase_value[v])
 }

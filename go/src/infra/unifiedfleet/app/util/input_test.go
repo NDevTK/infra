@@ -151,6 +151,21 @@ func TestDevicePhaseCoverage(t *testing.T) {
 			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
 		})
 
+		Convey("Test phase with extended name", func() {
+			phase := ToUFSDevicePhase("PVT_EXTENDED")
+			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+		})
+
+		Convey("Test phase with actual value in the middle", func() {
+			phase := ToUFSDevicePhase("IN_THE_MID_PVT_PHASE")
+			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+		})
+
+		Convey("Test multiple phases matched - take first matching phase", func() {
+			phase := ToUFSDevicePhase("PVT_DVT2")
+			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+		})
+
 		Convey("Test invalid conversion", func() {
 			phase := ToUFSDevicePhase("something-wrong")
 			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_INVALID)
