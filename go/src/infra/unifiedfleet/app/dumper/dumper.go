@@ -38,6 +38,7 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.HOURLY,
 		Job:      dumpHourly,
 	},
+	/* TODO(b/255604892): Validate the crash is mitigated before enabling this
 	{
 		// Dump configs, registrations, inventory and states to Pub/Sub
 		Name:     util.CronJobNames["pubSubCronDaily"],
@@ -52,6 +53,7 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.HOURLY,
 		Job:      exportToPubSubHourly,
 	},
+	*/
 	{
 		// Dump change events to BQ
 		Name:     util.CronJobNames["changeEventToBQCron"],
