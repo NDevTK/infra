@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\nCgo.chromium.org/luci/buildbucket/proto/build_field_visibility.proto\x12\x0e\x62uildbucket.v2\x1a google/protobuf/descriptor.proto*\x92\x01\n\x14\x42uildFieldVisibility\x12 \n\x1c\x46IELD_VISIBILITY_UNSPECIFIED\x10\x00\x12\x19\n\x15\x42UILDS_GET_PERMISSION\x10\x01\x12!\n\x1d\x42UILDS_GET_LIMITED_PERMISSION\x10\x02\x12\x1a\n\x16\x42UILDS_LIST_PERMISSION\x10\x03:[\n\x0cvisible_with\x12\x1d.google.protobuf.FieldOptions\x18\xd1\x86\x03 \x01(\x0e\x32$.buildbucket.v2.BuildFieldVisibilityB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\nCgo.chromium.org/luci/buildbucket/proto/build_field_visibility.proto\x12\x0e\x62uildbucket.v2\x1a google/protobuf/descriptor.proto*\x92\x01\n\x14\x42uildFieldVisibility\x12 \n\x1c\x46IELD_VISIBILITY_UNSPECIFIED\x10\x00\x12\x19\n\x15\x42UILDS_GET_PERMISSION\x10\x01\x12!\n\x1d\x42UILDS_GET_LIMITED_PERMISSION\x10\x02\x12\x1a\n\x16\x42UILDS_LIST_PERMISSION\x10\x03:[\n\x0cvisible_with\x12\x1d.google.protobuf.FieldOptions\x18\xe7\xc9\x37 \x01(\x0e\x32$.buildbucket.v2.BuildFieldVisibilityB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_descriptor__pb2.DESCRIPTOR,])
 
@@ -66,10 +66,10 @@ BUILDS_GET_PERMISSION = 1
 BUILDS_GET_LIMITED_PERMISSION = 2
 BUILDS_LIST_PERMISSION = 3
 
-VISIBLE_WITH_FIELD_NUMBER = 50001
+VISIBLE_WITH_FIELD_NUMBER = 910567
 visible_with = _descriptor.FieldDescriptor(
   name='visible_with', full_name='buildbucket.v2.visible_with', index=0,
-  number=50001, type=14, cpp_type=8, label=1,
+  number=910567, type=14, cpp_type=8, label=1,
   has_default_value=False, default_value=0,
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
