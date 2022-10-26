@@ -92,8 +92,10 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 	}
 	d, err := startService(ctx, d, false)
 	if err != nil {
+		log.Println("DUT Service Failed to start, exiting.")
 		return d, err
 	}
+	log.Println("DUT Service started, polling for port.")
 
 	// After starting the DUTService, find the port it binded to.
 	var dsPort int
@@ -110,10 +112,12 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 			return errors.Annotate(err, "failed to extract dut server port from %s", filePath).Err()
 		}
 		return nil
-	}, &common.PollOptions{Timeout: time.Minute, Interval: time.Second})
+	}, &common.PollOptions{Timeout: 3 * time.Minute, Interval: time.Second})
 	if err != nil {
+		log.Printf("DUT Service polling for port err: %s", err)
 		return d, err
 	}
+	log.Println("DUT Service polling for port completed.")
 	d.ServicePort = dsPort
 	return d, nil
 }

@@ -70,6 +70,9 @@ func (c *runCmd) Run(a subcommands.Application, args []string, env subcommands.E
 
 	returnCode := 0
 	out, err := c.innerRun(ctx, a, args, env)
+	if err != nil {
+		log.Printf("err in provision innerRun: %s", err)
+	}
 	// Unexpected error will counted as incorrect request data.
 	// all expected cases has to generate responses.
 	if err != nil && len(out.GetResponses()) == 0 {
