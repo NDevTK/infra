@@ -222,9 +222,10 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Env
 		Configuration: "",
 		ExtraTags: []string{
 			adminSession,
-			fmt.Sprintf("shivas-audit-task:%s", taskName),
+			fmt.Sprintf("task:%s", taskName),
 			parisClientTag,
 			fmt.Sprintf("version:%s", v),
+			"qs_account:unmanaged_p0",
 		},
 	}
 	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)

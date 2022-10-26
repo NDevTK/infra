@@ -144,6 +144,7 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			"task:recovery",
 			parisClientTag,
 			fmt.Sprintf("version:%s", v),
+			"qs_account:unmanaged_p0",
 		},
 	}
 	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)

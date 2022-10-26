@@ -119,6 +119,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 					fmt.Sprintf("task:%s", task),
 					site.ClientTag,
 					fmt.Sprintf("version:%s", v),
+					"qs_account:unmanaged_p0",
 				},
 			},
 		)

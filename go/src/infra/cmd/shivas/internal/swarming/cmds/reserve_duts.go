@@ -13,7 +13,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
@@ -124,6 +123,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 			parisClientTag,
 			fmt.Sprintf("version:%s", v),
 			fmt.Sprintf("comment:%s", c.comment),
+			"qs_account:unmanaged_p0",
 		},
 	}
 	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)
