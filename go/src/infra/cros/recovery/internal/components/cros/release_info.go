@@ -65,7 +65,7 @@ func ReleaseTrack(ctx context.Context, run components.Runner, log logger.Logger)
 	return track, nil
 }
 
-// ReleaseTrack reads release track info from lsb-release.
+// ReleaseBuildPath reads release track info from lsb-release.
 func ReleaseBuildPath(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
 	buildPath, err := ExtractValueFromLeaseInfo(ctx, run, log, releaseBuilderPath)
 	if err != nil {

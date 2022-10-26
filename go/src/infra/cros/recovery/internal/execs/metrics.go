@@ -15,25 +15,25 @@ import (
 )
 
 // AddObservation adds observation to the metric assigned to the current exec.
-func (i *ExecInfo) AddObservation(observation *metrics.Observation) {
-	logger := i.NewLogger()
-	if i.metric == nil {
+func (ei *ExecInfo) AddObservation(observation *metrics.Observation) {
+	logger := ei.NewLogger()
+	if ei.metric == nil {
 		logger.Debugf("Metric is not specified for the action.")
 	}
 	logger.Infof("Add observation: %#v", observation)
-	i.metric.Observations = append(i.metric.Observations, observation)
+	ei.metric.Observations = append(ei.metric.Observations, observation)
 }
 
 // NewMetric creates a new custom metric.
-func (i *ExecInfo) NewMetric(kind string) *metrics.Action {
+func (ei *ExecInfo) NewMetric(kind string) *metrics.Action {
 	// We do not check kind here as if it is empty then it will be rejected before saving.
-	metric := i.runArgs.NewMetricsAction(kind)
-	i.NewLogger().Debugf("Created new metrics for exec %q: %#v", i.name, metric)
-	i.additionalMetrics = append(i.additionalMetrics, metric)
+	metric := ei.runArgs.NewMetricsAction(kind)
+	ei.NewLogger().Debugf("Created new metrics for exec %q: %#v", ei.name, metric)
+	ei.additionalMetrics = append(ei.additionalMetrics, metric)
 	return metric
 }
 
-// NewMetric creates a new metric.
+// NewMetricsAction creates a new metric.
 func (a *RunArgs) NewMetricsAction(kind string) *metrics.Action {
 	metric := &metrics.Action{
 		ActionKind:     kind,
@@ -50,8 +50,8 @@ func (a *RunArgs) NewMetricsAction(kind string) *metrics.Action {
 }
 
 // GetAdditionalMetrics returns additional metrics created by execs.
-func (i *ExecInfo) GetAdditionalMetrics() []*metrics.Action {
-	return i.additionalMetrics
+func (ei *ExecInfo) GetAdditionalMetrics() []*metrics.Action {
+	return ei.additionalMetrics
 }
 
 // CloserFunc is a function that updates an action and is NOT safe to use in a defer block WITHOUT CHECKING FOR NIL.
