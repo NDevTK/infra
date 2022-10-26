@@ -16,6 +16,41 @@
       "message": "There are two kinds of tests that we usually do to test PARIS changes.\n\nThe first is to run `./mallet` on a working DUT to make sure that the production path is still working.\n\nThe second is to try it in an environment where the new code would be expressed.",
       "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15df8f80_330569a3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-26T17:00:21Z",
+      "side": 1,
+      "message": "as changes related to containers i advised test it by scheduling test on some satlab devices with a bad DUT where we will trigger this action and see if servod-container still is running after this command.",
+      "parentUuid": "cb297e5e_a23d4d6b",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c0bb118_76ce22ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-26T17:00:21Z",
+      "side": 1,
+      "message": "LGTM % please test before merge. or get approval from satlab team for change to be aware about changes. WE probably does not want to make many stop testing for satlab setups.",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
