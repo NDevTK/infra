@@ -93,27 +93,6 @@ func (c *client) createObservations(ctx context.Context, actionName string, obse
 	return nil
 }
 
-// Update takes an action and updates the entry in the Karte service, the source of truth.
-// Updating Karte will require inspecting those observations and potentially updating or replacing them.
-func (c *client) Update(ctx context.Context, action *metrics.Action) error {
-	a := convertActionToKarteAction(action)
-	karteResp, err := c.impl.UpdateAction(
-		ctx,
-		&kartepb.UpdateActionRequest{
-			Action:     a,
-			UpdateMask: nil,
-		},
-	)
-	if err != nil {
-		return errors.Annotate(err, "karte update").Err()
-	}
-	if action.Name != karteResp.GetName() {
-		return errors.Reason("karte service returned unexpected result: name should be %q but was %q", action.Name, karteResp.GetName()).Err()
-	}
-	err = c.createObservations(ctx, action.Name, action.Observations...)
-	return errors.Annotate(err, "karte update").Err()
-}
-
 // defaultResultSetSize is the number of records to return by default from Karte.
 const defaultResultSetSize = 1000
 
