@@ -728,7 +728,8 @@ func TestCallMetricsInSimplePlan(t *testing.T) {
 			return m.Create(ctx, metric)
 		},
 	}
-	// NOTE: Expected only one plan metrics per run.
+	// NOTE: There should be ONLY ONE record here. Historically, Karte had both Update and Create methods
+	// for actions, but the Update method is being removed.
 	expected := []*metrics.Action{
 		{
 			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
