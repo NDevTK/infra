@@ -6,7 +6,6 @@ package execs
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"time"
 
@@ -66,13 +65,13 @@ func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
 // The Action create abservation and custom action as part of execution.
 func sampleDemoMetricsExec(ctx context.Context, info *ExecInfo) error {
 	// First we add additional observation to the metric of current action.
-	info.AddObservation(metrics.NewStringObservation("date", fmt.Sprintf("%s", time.Now())))
+	info.AddObservation(metrics.NewStringObservation("date", time.Now().String()))
 	info.AddObservation(metrics.NewFloat64Observation("float64", 25.25))
 
 	// Second we create a custom metric.
 	action := info.NewMetric("custom-kind")
 	action.Observations = append(action.Observations,
-		metrics.NewStringObservation("custom_date", fmt.Sprintf("%s", time.Now())),
+		metrics.NewStringObservation("custom_date", time.Now().String()),
 		metrics.NewFloat64Observation("custom_float64", 25.25),
 	)
 	// Test sleeping for one second.

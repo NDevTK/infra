@@ -72,15 +72,15 @@ func (ei *ExecInfo) DefaultRunner() components.Runner {
 // defines the specific host on which the command will be
 // executed. Examples of such specific hosts can be the DUT, or the
 // servo-host etc.
-func (a *ExecInfo) NewRunner(host string) components.Runner {
+func (ei *ExecInfo) NewRunner(host string) components.Runner {
 	runner := func(ctx context.Context, timeout time.Duration, cmd string, args ...string) (string, error) {
 		fullCmd := cmd
 		if len(args) > 0 {
 			fullCmd += " " + strings.Join(args, " ")
 		}
-		log := a.NewLogger()
+		log := ei.NewLogger()
 		log.Debugf("Prepare to run command: %q", fullCmd)
-		r := a.GetAccess().Run(ctx, &tlw.RunRequest{
+		r := ei.GetAccess().Run(ctx, &tlw.RunRequest{
 			Resource: host,
 			Timeout:  durationpb.New(timeout),
 			Command:  cmd,

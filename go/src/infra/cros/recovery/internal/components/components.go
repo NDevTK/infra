@@ -41,7 +41,7 @@ type VersionInfo struct {
 	FwVersion string
 }
 
-// VersionDeviceType
+// VersionDeviceType is the type of device that a version governs.
 type VersionDeviceType string
 
 const (
