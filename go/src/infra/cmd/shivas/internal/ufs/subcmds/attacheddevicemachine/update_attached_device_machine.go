@@ -238,7 +238,8 @@ func (c *updateAttachedDeviceMachine) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f') is setup.")
 		}
 		if c.zoneName == "" && c.manufacturer == "" && c.serialNumber == "" &&
-			c.deviceType == "" && c.buildTarget == "" && c.model == "" && c.rackName == "" {
+			c.deviceType == "" && c.buildTarget == "" && c.model == "" &&
+			c.rackName == "" && c.state == "" && len(c.tags) == 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 
