@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "b652bdb2_e004dad8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-26T17:46:06Z",
+      "side": 1,
+      "message": "Otabek ... can we perform the test on a working DUT now using mallet and do the satlab test after submitting the CL? IIRC using `mallet` to schedule tests on satlabs before the change is merged is not straightforward.",
+      "parentUuid": "15df8f80_330569a3",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "8c0bb118_76ce22ff",
@@ -49,6 +67,23 @@
       "writtenOn": "2022-10-26T17:00:21Z",
       "side": 1,
       "message": "LGTM % please test before merge. or get approval from satlab team for change to be aware about changes. WE probably does not want to make many stop testing for satlab setups.",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c065cb2_fec8ad73",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-26T17:46:06Z",
+      "side": 1,
+      "message": "Tenative LGTM",
       "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
