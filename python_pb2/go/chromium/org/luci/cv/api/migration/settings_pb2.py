@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z1go.chromium.org/luci/cv/api/migration;migrationpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n4go.chromium.org/luci/cv/api/migration/settings.proto\x12\tmigration\"\xca\x04\n\x08Settings\x12.\n\tapi_hosts\x18\x01 \x03(\x0b\x32\x1b.migration.Settings.ApiHost\x12:\n\ruse_cv_status\x18\x04 \x01(\x0b\x32\x1f.migration.Settings.UseCVStatusB\x02\x18\x01\x12G\n\x14use_cv_start_message\x18\x05 \x01(\x0b\x32%.migration.Settings.UseCVStartMessageB\x02\x18\x01\x12G\n\x16use_cv_tryjob_executor\x18\x06 \x01(\x0b\x32\'.migration.Settings.UseCVTryjobExecutor\x1a]\n\x07\x41piHost\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x16\n\x0eproject_regexp\x18\x02 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x04 \x03(\t\x12\x0c\n\x04prod\x18\x03 \x01(\x08\x1a\x45\n\x0bUseCVStatus\x12\x16\n\x0eproject_regexp\x18\x01 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x02 \x03(\t\x1aK\n\x11UseCVStartMessage\x12\x16\n\x0eproject_regexp\x18\x01 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x02 \x03(\t\x1aM\n\x13UseCVTryjobExecutor\x12\x16\n\x0eproject_regexp\x18\x01 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x02 \x03(\tB3Z1go.chromium.org/luci/cv/api/migration;migrationpbb\x06proto3'
+  serialized_pb=b'\n4go.chromium.org/luci/cv/api/migration/settings.proto\x12\tmigration\"\xee\x04\n\x08Settings\x12.\n\tapi_hosts\x18\x01 \x03(\x0b\x32\x1b.migration.Settings.ApiHost\x12:\n\ruse_cv_status\x18\x04 \x01(\x0b\x32\x1f.migration.Settings.UseCVStatusB\x02\x18\x01\x12G\n\x14use_cv_start_message\x18\x05 \x01(\x0b\x32%.migration.Settings.UseCVStartMessageB\x02\x18\x01\x12K\n\x16use_cv_tryjob_executor\x18\x06 \x01(\x0b\x32\'.migration.Settings.UseCVTryjobExecutorB\x02\x18\x01\x12\x1e\n\x16projects_use_cq_tryjob\x18\x07 \x03(\t\x1a]\n\x07\x41piHost\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x16\n\x0eproject_regexp\x18\x02 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x04 \x03(\t\x12\x0c\n\x04prod\x18\x03 \x01(\x08\x1a\x45\n\x0bUseCVStatus\x12\x16\n\x0eproject_regexp\x18\x01 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x02 \x03(\t\x1aK\n\x11UseCVStartMessage\x12\x16\n\x0eproject_regexp\x18\x01 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x02 \x03(\t\x1aM\n\x13UseCVTryjobExecutor\x12\x16\n\x0eproject_regexp\x18\x01 \x03(\t\x12\x1e\n\x16project_regexp_exclude\x18\x02 \x03(\tB3Z1go.chromium.org/luci/cv/api/migration;migrationpbb\x06proto3'
 )
 
 
@@ -73,8 +73,8 @@ _SETTINGS_APIHOST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=334,
-  serialized_end=427,
+  serialized_start=370,
+  serialized_end=463,
 )
 
 _SETTINGS_USECVSTATUS = _descriptor.Descriptor(
@@ -111,8 +111,8 @@ _SETTINGS_USECVSTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=429,
-  serialized_end=498,
+  serialized_start=465,
+  serialized_end=534,
 )
 
 _SETTINGS_USECVSTARTMESSAGE = _descriptor.Descriptor(
@@ -149,8 +149,8 @@ _SETTINGS_USECVSTARTMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=500,
-  serialized_end=575,
+  serialized_start=536,
+  serialized_end=611,
 )
 
 _SETTINGS_USECVTRYJOBEXECUTOR = _descriptor.Descriptor(
@@ -187,8 +187,8 @@ _SETTINGS_USECVTRYJOBEXECUTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=577,
-  serialized_end=654,
+  serialized_start=613,
+  serialized_end=690,
 )
 
 _SETTINGS = _descriptor.Descriptor(
@@ -226,6 +226,13 @@ _SETTINGS = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
+      serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='projects_use_cq_tryjob', full_name='migration.Settings.projects_use_cq_tryjob', index=4,
+      number=7, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
@@ -240,7 +247,7 @@ _SETTINGS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=68,
-  serialized_end=654,
+  serialized_end=690,
 )
 
 _SETTINGS_APIHOST.containing_type = _SETTINGS
@@ -297,4 +304,5 @@ _sym_db.RegisterMessage(Settings.UseCVTryjobExecutor)
 DESCRIPTOR._options = None
 _SETTINGS.fields_by_name['use_cv_status']._options = None
 _SETTINGS.fields_by_name['use_cv_start_message']._options = None
+_SETTINGS.fields_by_name['use_cv_tryjob_executor']._options = None
 # @@protoc_insertion_point(module_scope)
