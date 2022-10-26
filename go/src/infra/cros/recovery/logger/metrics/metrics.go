@@ -235,15 +235,17 @@ type Metrics interface {
 
 // CountFailedRepairFromMetrics determines the number of failed PARIS repair task
 // since the last successful PARIS repair task.
-func CountFailedRepairFromMetrics(ctx context.Context, dutName, taskName string, metricsService Metrics) (int, error) {
+//
+// An empty taskName means do not filter based on the task name.
+func CountFailedRepairFromMetrics(ctx context.Context, dutName string, taskName string, metricsService Metrics) (int, error) {
 	if metricsService == nil {
 		return 0, errors.Reason("count failed repair from karte: karte metric has not been initialized").Err()
 	}
-	karteQuery := &Query{
-		//TODO(gregorynisbet): When karte's Search API is capable of taking in asset tag,
-		// change the query to use asset tag instead of using hostname.
-		Hostname:   dutName,
-		ActionKind: fmt.Sprintf(PerResourceTaskKindGlob, taskName),
+	//TODO(gregorynisbet): When karte's Search API is capable of taking in asset tag,
+	// change the query to use asset tag instead of using hostname.
+	karteQuery := &Query{Hostname: dutName}
+	if taskName != "" {
+		karteQuery.ActionKind = fmt.Sprintf(PerResourceTaskKindGlob, taskName)
 	}
 	queryRes, err := metricsService.Search(ctx, karteQuery)
 	if err != nil {
