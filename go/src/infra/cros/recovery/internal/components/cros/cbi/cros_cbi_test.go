@@ -7,6 +7,8 @@ package cbi
 import (
 	"reflect"
 	"testing"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 // TestBuildCBILocation tests that the BuildCBILocation function can correctly
@@ -115,6 +117,36 @@ func TestParseBytesFromCBIContents(t *testing.T) {
 					"Expected Hex Bytes %+v\n but got %+v\n",
 					tt.expectedHexBytes,
 					hexBytes)
+			}
+		})
+	}
+}
+
+// TestContainsCBIMagic tests whether the RawContents of a CBI proto start with
+// the CBI magic bytes.
+func TestContainsCBIMagic(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		cbi          *labapi.Cbi
+		expectedBool bool
+	}{
+		{
+			&labapi.Cbi{RawContents: cbiMagic}, true,
+		},
+		{
+			&labapi.Cbi{RawContents: "junk"}, false,
+		},
+	}
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(tt.cbi.GetRawContents(), func(t *testing.T) {
+			t.Parallel()
+			actualBool := ContainsCBIMagic(tt.cbi)
+			if actualBool != tt.expectedBool {
+				t.Errorf(
+					"Expected %t\n but got %t\n",
+					tt.expectedBool,
+					actualBool)
 			}
 		})
 	}

@@ -26,6 +26,10 @@ type CBILocation struct {
 }
 
 const (
+	// The first three initial bytes in EEPROM indicating that the chip contains
+	// CBI contents. CBI contents on ALL DUTs should start with these three bytes.
+	cbiMagic = "0x43 0x42 0x49"
+
 	locateCBICommand   = "ectool locatechip"
 	cbiChipType        = "0" // Maps to CBI in the `ectool locatechip` utility
 	cbiIndex           = "0" // Gets the first CBI chip (there is only ever one) on the DUT.
@@ -102,4 +106,10 @@ func parseBytesFromCBIContents(cbiContents string, numBytesToRead int) ([]string
 		return nil, errors.Reason("parse bytes from CBI contents: wrong amount: expected %d bytes but read %d bytes instead. CBI contents found: %s", numBytesToRead, len(hexBytes), cbiContents).Err()
 	}
 	return hexBytes, nil
+}
+
+// ContainsCBIMagic returns true if the rawContents of the CBI proto start with
+// the CBI magic bytes.
+func ContainsCBIMagic(cbi *labapi.Cbi) bool {
+	return strings.HasPrefix(cbi.GetRawContents(), cbiMagic)
 }
