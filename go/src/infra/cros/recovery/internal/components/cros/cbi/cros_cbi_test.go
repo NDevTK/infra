@@ -16,6 +16,7 @@ import (
 // address of CBI on a DUT and return it as a CBILocation. Does not actually
 // invoke the `ectool locatechip` command.
 func TestBuildCBILocation(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		locateCBIOutput     string
 		expectedCBILocation *CBILocation
@@ -62,10 +63,10 @@ func TestBuildCBILocation(t *testing.T) {
 			nil,
 		},
 	}
-	t.Parallel()
 	for _, tt := range testCases {
 		tt := tt
 		t.Run(tt.locateCBIOutput, func(t *testing.T) {
+			t.Parallel()
 			cbiLocation, _ := buildCBILocation(tt.locateCBIOutput)
 			if !reflect.DeepEqual(cbiLocation, tt.expectedCBILocation) {
 				t.Errorf(
@@ -81,6 +82,7 @@ func TestBuildCBILocation(t *testing.T) {
 // `ectool i2cxfer` command can be properly broken down into a slice of hex
 // bytes. e.g. "0x43" or "00"
 func TestParseBytesFromCBIContents(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		cbiContents      string
 		numBytesToRead   int
@@ -107,10 +109,10 @@ func TestParseBytesFromCBIContents(t *testing.T) {
 			nil,
 		},
 	}
-	t.Parallel()
 	for _, tt := range testCases {
 		tt := tt
 		t.Run(tt.cbiContents, func(t *testing.T) {
+			t.Parallel()
 			hexBytes, _ := parseBytesFromCBIContents(tt.cbiContents, tt.numBytesToRead)
 			if !reflect.DeepEqual(hexBytes, tt.expectedHexBytes) {
 				t.Errorf(
