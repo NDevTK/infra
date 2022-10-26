@@ -1816,7 +1816,7 @@ func crosRepairActions() map[string]*Action {
 				"post_install_boot_time:60",
 				"badblocks_mode:auto",
 				"rw_badblocks_timeout:5400",
-				"ro_badblocks_timeout3600",
+				"ro_badblocks_timeout:3600",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 7500},
 		},
