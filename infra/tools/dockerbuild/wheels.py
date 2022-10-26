@@ -1403,6 +1403,7 @@ SPECS.update({
         Universal('tensorflow-probability', '0.12.2'),
         Universal('tensorflow-probability', '0.13.0'),
         Universal('tensorflow-probability', '0.15.0'),
+        Universal('testfixtures', '7.0.0', pyversions=['py3']),
         Universal('tf-agents', '0.7.1', pyversions=['py3']),
         Universal('tf-agents', '0.11.0', pyversions=['py3']),
         Universal('toml', '0.10.1', pyversions=['py3']),

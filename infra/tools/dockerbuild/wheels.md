@@ -6932,6 +6932,20 @@ wheel: <
 
 * *universal*
 
+## **testfixtures-py3**
+
+### 7.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/testfixtures-py3"
+  version: "version:7.0.0"
+>
+```
+
+
+* *universal*
+
 ## **tf-agents-py3**
 
 ### 0.7.1
