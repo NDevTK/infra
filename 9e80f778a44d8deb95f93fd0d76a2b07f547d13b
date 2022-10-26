@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "697a0692_20d3c72d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-10-26T17:45:19Z",
+      "side": 1,
+      "message": "LGTM. But can you file a bug so we can investigate about adding some units tests for the dumper to prevent these things from happening in the future.",
+      "revId": "9e80f778a44d8deb95f93fd0d76a2b07f547d13b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
