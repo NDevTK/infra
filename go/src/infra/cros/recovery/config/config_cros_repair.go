@@ -1598,7 +1598,6 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"dut_servo_host_present",
 				"servod_echo",
-				"servo_host_is_labstation",
 				"servod_has_control_cr50_reboot",
 				"Trigger power_state:cr50_reset",
 				"Re-initialize DUT part of servo",
