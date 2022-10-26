@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -31,6 +32,10 @@ func getCmdRelease() *subcommands.Command {
 			c.addBuildspecFlag()
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
+			if flag.NArg() > 1 && flag.Args()[1] == "help" {
+				fmt.Printf("Run `cros try help` or `cros try help ${subcomand}` for help.")
+				os.Exit(0)
+			}
 			return c
 		},
 	}
