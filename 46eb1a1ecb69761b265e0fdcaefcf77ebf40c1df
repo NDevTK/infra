@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb297e5e_a23d4d6b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-10-26T16:42:58Z",
+      "side": 1,
+      "message": "There are two kinds of tests that we usually do to test PARIS changes.\n\nThe first is to run `./mallet` on a working DUT to make sure that the production path is still working.\n\nThe second is to try it in an environment where the new code would be expressed.",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
