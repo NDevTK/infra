@@ -9,7 +9,7 @@ THIS_DIR=$(shell pwd)
 INFRA=$(THIS_DIR)/..
 LUCI_GO=$(INFRA)/go/src/go.chromium.org/luci
 TOOLS=$(INFRA)/luci/appengine/components/tools
-PROTOC=$(INFRA)/cipd/bin/protoc
+PROTOC=$(INFRA)/cipd/legacy/bin/protoc
 
 all: regenerate
 
@@ -22,7 +22,7 @@ $(TOOLS)/protoc-gen-prpc-python:
 
 regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 	rm -rf ./go
-	$(INFRA)/cipd/bin/protoc \
+	$(INFRA)/cipd/legacy/bin/protoc \
 		--proto_path $(INFRA)/go/src \
 		--proto_path $(LUCI_GO)/common/proto/googleapis \
 		$(LUCI_GO)/buildbucket/proto/*.proto \

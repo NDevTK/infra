@@ -26,3 +26,8 @@ infra/tools/cloudbuildhelper/mac-amd64 git_revision:4693beef9e565b07b62beaaa3a1a
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter
 infra/tools/result_adapter/mac-amd64 git_revision:d1c03082ecda0148d8096f1fd8bf5491eafc7323
+
+# Hosts legacy packages needed by the infra environment
+@Subdir legacy
+# old protoc version is required to support generating python 2 compatible proto
+infra/3pp/tools/protoc/${platform} version:2@3.17.3
