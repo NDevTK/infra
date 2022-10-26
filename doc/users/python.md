@@ -72,8 +72,8 @@ differences between those platforms and the native offerings of those platforms:
 For security- and bug-related reasons, systems and users require a higher
 standard of Python package management than that natively provided by the myriad
 systems that Chrome Operations supports. Chrome Operations is solving this by
-using hermetic deployable Python bundles built on top of CIPD. For more
-information, see the [Python packaging](../packaging/python.md) section.
+using hermetic deployable Python bundles built on top of CIPD, using
+[3pp packages](/3pp/README.md).
 
 Python bundles are installed on and used in various parts of the system:
 
