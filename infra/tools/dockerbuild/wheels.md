@@ -7382,6 +7382,20 @@ wheel: <
 
 * *universal*
 
+## **west-py3**
+
+### 0.14.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/west-py3"
+  version: "version:0.14.0"
+>
+```
+
+
+* *universal*
+
 ## **wheel**
 
 ### 0.33.1

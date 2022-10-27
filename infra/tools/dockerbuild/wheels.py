@@ -1429,6 +1429,7 @@ SPECS.update({
         Universal('wcwidth', '0.1.8'),
         Universal('wcwidth', '0.2.5'),
         Universal('webencodings', '0.5.1'),
+        Universal('west', '0.14.0', pyversions=['py3']),
         Universal('wheel', '0.33.1'),
         Universal('wheel', '0.36.2'),
         Universal('wheel', '0.37.0'),
