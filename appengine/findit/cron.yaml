@@ -3,22 +3,6 @@ cron:
   url: /internal/cron/ts_mon/send
   schedule: every 1 minutes
 
-- description: Sunday morning calculate confidence
-  url: /waterfall/cron/calculate-confidence-scores
-  schedule: every sunday 09:00
-
-- description: Every day check reverted cls
-  url: /waterfall/cron/check-reverted-cls
-  schedule: every day 00:00
-
-- description: Every day collect tree closures
-  url: /waterfall/cron/collect-tree-closures
-  schedule: every day 00:00
-
-- description: Every day obscure emails
-  url: /waterfall/cron/obscure-emails
-  schedule: every day 00:00
-
 # Hidden flakes uses a different schedule because is much more expensive to run.
 - description: Query and store hidden flakes.
   url: /flake/detection/cron/detect-hidden-flakes
@@ -42,10 +26,6 @@ cron:
   url: /flake/detection/cron/generate-flakiness-report
   # Everyday at 12AM PST expressed in UTC.
   schedule: every day 08:00
-
-- description: Update open FlakeIssue entities to reflect on what's in Monorail.
-  url: /auto-action/cron/update-open-flake-issues
-  schedule: every 2 hours
 
 - description: File bugs and trigger analyses on selected flakes.
   url: /flake/detection/cron/process-flakes
