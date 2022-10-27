@@ -96,12 +96,13 @@ func (c *prejobRun) innerRun(ctx context.Context, args []string, env subcommands
 	// Mimic a PrejobRequest for each additional provision targets.
 	for _, provisionTarget := range r.GetAddtionalTargets() {
 		peerRequest := phosphorus.PrejobRequest{
-			Deadline:             r.GetDeadline(),
-			SoftwareDependencies: provisionTarget.GetSoftwareDependencies(),
-			DutHostname:          provisionTarget.GetDutHostname(),
-			UseTls:               r.GetUseTls(),
-			Config:               r.GetConfig(),
-			UpdateFirmware:       provisionTarget.GetUpdateFirmware(),
+			Deadline:               r.GetDeadline(),
+			SoftwareDependencies:   provisionTarget.GetSoftwareDependencies(),
+			DutHostname:            provisionTarget.GetDutHostname(),
+			UseTls:                 r.GetUseTls(),
+			Config:                 r.GetConfig(),
+			UpdateFirmware:         provisionTarget.GetUpdateFirmware(),
+			ProvisionGooglerSshKey: provisionTarget.GetProvisionGooglerSshKey(),
 		}
 		rl = append(rl, &peerRequest)
 	}
@@ -388,7 +389,8 @@ func provisionChromeOSBuildViaTLS(ctx context.Context, bt *tls.BackgroundTLS, r 
 					GsPathPrefix: fmt.Sprintf("%s/%s", desired.ChromeOSBucket, desired.ChromeOSBuild),
 				},
 			},
-			UpdateFirmware: r.UpdateFirmware,
+			UpdateFirmware:     r.UpdateFirmware,
+			OnlyGooglerSshKeys: r.ProvisionGooglerSshKey,
 		},
 	)
 	if err != nil {
