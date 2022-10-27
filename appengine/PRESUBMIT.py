@@ -7,20 +7,15 @@
 
 # LGTM FROM iannucci@ REQUIRED TO EDIT THIS LIST:
 DISABLED_PYLINT_WARNINGS = [
-  'W0231',  # __init__ method from base class is not called
-  'W0232',  # Class has no __init__ method
+    'W0231',  # __init__ method from base class is not called
+    'W0232',  # Class has no __init__ method
 ]
 
-DISABLED_PROJECTS = [
-    # Swarming components hacks sys.path to thus skip tools/
-
-    # Don't bother pylinting (these could also move to .gitignore):
-    '.*/__pycache__',
-    '.+_pb2.py',
-    '\.git',
-    '\.wheelcache',
-    'bootstrap/virtualenv-ext',
-    '.*/six.py',
+DISABLED_PYLINT_FILES = [
+    r'.*[/\\]__pycache__',
+    r'.+_pb2\.py',
+    r'.*[/\\]six\.py',
+    r'.*[/\\]gae\.py',
 ]
 
 
@@ -193,10 +188,9 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
   input_api.python_executable = (
     input_api.os_path.join(infra_root, 'ENV', 'bin', 'python'))
 
-  files_to_check = ['.*\.py$']
+  files_to_check = [r'.*\.py$']
   files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP)
-  files_to_skip += DISABLED_PROJECTS
-  files_to_skip += ['.*\.pyc$']
+  files_to_skip += DISABLED_PYLINT_FILES
   files_to_skip += IgnoredPaths(input_api)
 
   appengine_lib_paths = GetAppEngineLibraryPaths(input_api, appengine_env_path)
@@ -231,7 +225,7 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
     python_files = root_to_paths[root_path]
     if python_files:
       input_api.logging.info('Running appengine pylint on %d files under %s',
-          len(python_files), root_path)
+                             len(python_files), root_path or 'appengine')
       syspaths = extra_syspaths
 
       tests.append(PylintFiles(input_api, output_api, python_files, root_path,
