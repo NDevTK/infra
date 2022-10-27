@@ -10,7 +10,7 @@ STAGING_APPID := "findit-for-me-staging"
 # ...$ gclient sync
 PROTOC := "../../cipd/protoc"
 PROTO_PATH ?= "model/proto/"
-FINDIT_MODULES := default frontend waterfall-backend auto-action-backend findit-backend
+FINDIT_MODULES := default frontend waterfall-backend auto-action-backend
 CODE_COVERAGE_MODULES := code-coverage-frontend code-coverage-backend code-coverage-experimental-coverage-worker code-coverage-referenced-coverage-worker
 FLAKE_PORTAL_MODULES := flake-detection-backend
 LOCAL_VERSION := `$(INFRAPYTHON) $(GAE_PY) version`
@@ -71,8 +71,8 @@ findit-predeploy:
 	@echo "Deployable Changes. (git pull and client sync if not current)"
 	@git log $(REMOTE_FINDIT_HASH)..HEAD --pretty=oneline .
 
-deploy-findit-prod: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -A $(APPID) $(FINDIT_MODULES);
+deploy-findit-prod:
+	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(APPID) $(FINDIT_MODULES);
 	@echo "New version '$(LOCAL_VERSION)' of Findit was" \
 	      "deployed to $(APPID)."
 	@echo
@@ -110,8 +110,8 @@ deploy-findit-prod: test
 deploy-findit-staging: test
 	@$(INFRAPYTHON) $(GAE_PY) upload -A $(STAGING_APPID) $(FINDIT_MODULES);
 
-deploy-coverage-prod: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -A $(APPID) $(CODE_COVERAGE_MODULES);
+deploy-coverage-prod:
+	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(APPID) $(CODE_COVERAGE_MODULES);
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(APPID).appspot.com/p/chromium/coverage"
 
@@ -120,8 +120,8 @@ deploy-coverage-staging: test
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(STAGING_APPID).appspot.com/p/chromium/coverage"
 
-deploy-flake-prod: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -A $(APPID) $(FLAKE_PORTAL_MODULES);
+deploy-flake-prod:
+	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(APPID) $(FLAKE_PORTAL_MODULES);
 
 deploy-flake-staging: test
 	@$(INFRAPYTHON) $(GAE_PY) upload -A $(STAGING_APPID) $(FLAKE_PORTAL_MODULES);

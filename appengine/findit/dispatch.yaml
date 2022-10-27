@@ -2,9 +2,6 @@ dispatch:
   - url: "*/robots.txt"
     module: default
 
-  - url: "*/findit/internal/*"
-    module: findit-backend
-
   - url: "*/flake/detection/cron/*"
     module: flake-detection-backend
 
