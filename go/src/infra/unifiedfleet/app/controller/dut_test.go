@@ -2638,7 +2638,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 		},
 	}
 
-	mfgCfg := &ufsmanufacturing.ManufacturingConfig{
+	mfgCfgBase := &ufsmanufacturing.ManufacturingConfig{
 		ManufacturingId: &ufsmanufacturing.ConfigID{Value: "test"},
 	}
 
@@ -2673,7 +2673,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetMachine(), ShouldResembleProto, machine)
 			So(resp.GetDutState(), ShouldResembleProto, dutState)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
+			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
@@ -2681,6 +2681,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 		})
 
 		Convey("GetChromeOSDevicedata - deprecated inv v2 hwid api", func() {
+			// UseCachedHwidManufacturingConfig is set to false, which directs the RPC
+			// to try to use InvV2 for HwidData. However, since InvV2 HwidData is
+			// deprecated, HwidData should be nil, and thus ManufacturingConfig would
+			// also not be generated.
 			cfgLst := &config.Config{
 				UseCachedHwidManufacturingConfig: false,
 			}
@@ -2693,8 +2697,8 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetMachine(), ShouldResembleProto, machine)
 			So(resp.GetDutState(), ShouldResembleProto, dutState)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
 			So(resp.GetHwidData(), ShouldBeNil)
+			So(resp.GetManufacturingConfig(), ShouldBeNil)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
@@ -2708,7 +2712,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetMachine(), ShouldResembleProto, machine)
 			So(resp.GetDutState(), ShouldResembleProto, dutState)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
+			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
@@ -2842,6 +2846,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			}
 			registration.CreateMachine(ctx, machineExp)
 
+			mfgCfg := &ufsmanufacturing.ManufacturingConfig{
+				ManufacturingId: &ufsmanufacturing.ConfigID{Value: "test-no-server"},
+			}
+
 			dutMachinelseExp := mockDutMachineLSE("lse-using-exp")
 			dutMachinelseExp.Machines = []string{"machine-using-exp"}
 			inventory.CreateMachineLSE(ctx, dutMachinelseExp)
@@ -2926,7 +2934,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetMachine(), ShouldResembleProto, machineHwid)
 			So(resp.GetDutState(), ShouldResembleProto, dutStateHwid)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
+			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
@@ -3009,6 +3017,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			hwidNoCachedMockData := mockHwidData()
 			hwidNoCachedMockData.Hwid = "test-no-cached-hwid-data"
 
+			mfgCfg := &ufsmanufacturing.ManufacturingConfig{
+				ManufacturingId: &ufsmanufacturing.ConfigID{Value: "test-no-cached-hwid-data"},
+			}
+
 			resp, err := GetChromeOSDeviceData(ctx, "machine-no-throttle-hwid", "")
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
@@ -3016,7 +3028,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetMachine(), ShouldResembleProto, machineNoThrottle)
 			So(resp.GetDutState(), ShouldResembleProto, dutStateNoThrottle)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetManufacturingConfig(), ShouldBeNil)
+			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidNoCachedMockData)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
@@ -3062,6 +3074,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 				DutLabel: legacyMockData,
 			}
 
+			mfgCfg := &ufsmanufacturing.ManufacturingConfig{
+				ManufacturingId: &ufsmanufacturing.ConfigID{Value: "test-legacy-hwid-data"},
+			}
+
 			resp, err := GetChromeOSDeviceData(ctx, "machine-legacy-hwid", "")
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
@@ -3069,7 +3085,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetMachine(), ShouldResembleProto, machineLegacyHwid)
 			So(resp.GetDutState(), ShouldResembleProto, dutStateLegacyHwid)
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetManufacturingConfig(), ShouldBeNil)
+			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidCachedLegacyData)
 			So(resp.GetSchedulableLabels(), ShouldBeNil)
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)

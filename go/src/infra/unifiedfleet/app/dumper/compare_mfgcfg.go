@@ -17,6 +17,7 @@ import (
 
 	ufsmfgcfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	"infra/unifiedfleet/app/controller"
+	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 )
@@ -81,7 +82,7 @@ func manufacturingConfigDiffHandler(ctx context.Context) error {
 
 		var mfgCfgUFS *ufsmfgcfg.ManufacturingConfig
 		if !reflect.ValueOf(hwidData).IsNil() {
-			mfgCfgUFS, err = controller.GetManufacturingConfigFromUFS(ctx, hwidData)
+			mfgCfgUFS, err = configuration.ParseHwidDataIntoMfgCfg(hwidData)
 			if err != nil {
 				logging.Warningf(ctx, "UFS ManufacturingConfig for %s not found. Error: %s", hwid, err)
 			}
