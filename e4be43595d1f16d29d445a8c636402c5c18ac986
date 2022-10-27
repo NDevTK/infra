@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc06d28a_77a47478",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 2641,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-10-27T21:01:44Z",
+      "side": 1,
+      "message": "Just for clarity since this is the base test case.",
+      "parentUuid": "966f5b3d_7e89bfd4",
+      "range": {
+        "startLine": 2641,
+        "startChar": 1,
+        "endLine": 2641,
+        "endChar": 11
+      },
+      "revId": "e4be43595d1f16d29d445a8c636402c5c18ac986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e2526178_d1985224",
@@ -71,6 +95,30 @@
       "writtenOn": "2022-10-27T18:11:21Z",
       "side": 1,
       "message": "need to add the reason, like HwidData should be nil due to ...",
+      "range": {
+        "startLine": 2684,
+        "startChar": 3,
+        "endLine": 2684,
+        "endChar": 30
+      },
+      "revId": "e4be43595d1f16d29d445a8c636402c5c18ac986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e0065a1_a2ed3c0e",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 2684,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-10-27T21:01:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2526178_d1985224",
       "range": {
         "startLine": 2684,
         "startChar": 3,
