@@ -100,6 +100,7 @@ try_builder(
     name = "luci-go-try-presubmit",
     os = "Ubuntu",
     properties = {"presubmit": True},
+    mode_allowlist = [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN, cq.MODE_NEW_PATCHSET_RUN],
 )
 
 # Experimental trybot for building docker images out of luci-go.git CLs.
