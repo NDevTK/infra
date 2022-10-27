@@ -78,6 +78,11 @@ luci.project(
             roles = acl.CQ_DRY_RUNNER,
             groups = "project-infra-tryjob-access",
         ),
+        # Ability to trigger new patchset runs on CV.
+        acl.entry(
+            roles = acl.CQ_NEW_PATCHSET_RUN_TRIGGERER,
+            groups = "project-infra-new-patchset-run-access",
+        ),
         # Group with bots that have write access to the Logdog prefix.
         acl.entry(
             roles = acl.LOGDOG_WRITER,
