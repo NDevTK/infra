@@ -16,6 +16,24 @@
       "message": "I would suggest making this a file of test ids since you\u0027re probably going to want to check the effect of removing multiples at once. You\u0027ll also want to keep expanding that file to make the rejection and duration data reusable",
       "revId": "61ad12137904f350c8114aba83d8d1e06c638aca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8086f924_2361ea98",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/analyze.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1515867
+      },
+      "writtenOn": "2022-10-27T21:59:46Z",
+      "side": 1,
+      "message": "Thanks Struan! That makes sense:) Pls check my latest change to read test id file.",
+      "parentUuid": "5dd144f9_11c2e303",
+      "revId": "61ad12137904f350c8114aba83d8d1e06c638aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
