@@ -32,14 +32,22 @@ type Locator struct {
 
 // FindCacheServer returns the ip address of a cache server mapped to a dut.
 func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
+	cs, err := l.findCacheServerBySubnet(dutName, client)
+	if err != nil {
+		return nil, fmt.Errorf("find cache server for %q: %s", dutName, err)
+	}
+	return cs, nil
+}
+
+func (l *Locator) findCacheServerBySubnet(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
 	subnets, err := l.subnets.getSubnets(client)
 	if err != nil {
-		return nil, fmt.Errorf("find cache server: %s", err)
+		return nil, fmt.Errorf("find cache server by subnet: %s", err)
 	}
 
 	sn, err := findSubnet(dutName, subnets)
 	if err != nil {
-		return nil, fmt.Errorf("find cache server: %s", err)
+		return nil, fmt.Errorf("find cache server by subnet: %s", err)
 	}
 
 	be := chooseBackend(sn.Backends, dutName)
