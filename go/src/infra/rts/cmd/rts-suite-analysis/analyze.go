@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"math"
@@ -30,21 +31,23 @@ func stringInSlice(a string, list []string) bool {
 
 type analyzeCommandRun struct {
 	subcommands.CommandRunBase
-	authOpt   *auth.Options
-	ev        eval.Eval
-	builder   string
-	testSuite string
+	authOpt    *auth.Options
+	ev         eval.Eval
+	builder    string
+	testSuite  string
+	testIdFile string
 }
 
 func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: `analyze -rejections <path> -durations <path> -builder <builder name> -testSuite <test suite name>`,
-		ShortDesc: "Prints the expected recall and savings with the provided test suite/builder combination removed",
-		LongDesc:  "Prints the expected recall and savings with the provided test suite/builder combination removed",
+		UsageLine: `analyze -rejections <path> -durations <path> -builder <builder name> -testSuite <test suite name> -testIdFile <test id>`,
+		ShortDesc: "Prints the expected recall and savings with the provided test id file/test suite/builder combination removed",
+		LongDesc:  "Prints the expected recall and savings with the provided test id file/test suite/builder combination removed",
 		CommandRun: func() subcommands.CommandRun {
 			r := &analyzeCommandRun{authOpt: authOpt}
 			r.Flags.StringVar(&r.builder, "builder", "", "Builder running the testSuite to exclude from tests")
 			r.Flags.StringVar(&r.testSuite, "testSuite", "", "Test suite of the builder to exclude from tests")
+			r.Flags.StringVar(&r.testIdFile, "testIdFile", "", "Test id file to exclude from tests")
 			r.ev.LogProgressInterval = 100
 			r.ev.RegisterFlags(&r.Flags)
 			return r
@@ -74,9 +77,17 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 		return 1
 	}
 
+	testIds, loadTestIdsErr := loadTestIds(r.testIdFile)
+	if loadTestIdsErr != nil {
+		logging.Infof(ctx, loadTestIdsErr.Error())
+		return 1
+	}
+
 	res, err := r.ev.Run(ctx, func(ctx context.Context, in eval.Input, out *eval.Output) error {
 		for i, tv := range in.TestVariants {
-			if stringInSlice("builder:"+r.builder, tv.Variant) && stringInSlice("test_suite:"+r.testSuite, tv.Variant) {
+			if stringInSlice("builder:"+r.builder, tv.Variant) &&
+				stringInSlice("test_suite:"+r.testSuite, tv.Variant) &&
+				(r.testIdFile == "" || (r.testIdFile != "" && testIds[tv.Id])) {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: math.Inf(1)}
 			} else {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: 0}
@@ -92,4 +103,26 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 
 	eval.PrintSpecificResults(res, os.Stdout, 0.0, false, false)
 	return 0
+}
+
+func loadTestIds(fileName string) (map[string]bool, error) {
+	if fileName == "" {
+		return nil, nil
+	}
+
+	f, err := os.Open(fileName)
+	if err != nil {
+		return nil, errors.New("failed to load test id file.")
+	}
+	defer f.Close()
+
+	sc := bufio.NewScanner(f)
+	testIds := map[string]bool{}
+
+	// Read through test Id until an EOF is encountered.
+	for sc.Scan() {
+		testIds[sc.Text()] = true
+	}
+
+	return testIds, nil
 }
