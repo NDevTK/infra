@@ -34,17 +34,19 @@ type analyzeCommandRun struct {
 	ev        eval.Eval
 	builder   string
 	testSuite string
+	testId    string
 }
 
 func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: `analyze -rejections <path> -durations <path> -builder <builder name> -testSuite <test suite name>`,
-		ShortDesc: "Prints the expected recall and savings with the provided test suite/builder combination removed",
-		LongDesc:  "Prints the expected recall and savings with the provided test suite/builder combination removed",
+		UsageLine: `analyze -rejections <path> -durations <path> -builder <builder name> -testSuite <test suite name> -testId <test id>`,
+		ShortDesc: "Prints the expected recall and savings with the provided test id/test suite/builder combination removed",
+		LongDesc:  "Prints the expected recall and savings with the provided test_id/test suite/builder combination removed",
 		CommandRun: func() subcommands.CommandRun {
 			r := &analyzeCommandRun{authOpt: authOpt}
 			r.Flags.StringVar(&r.builder, "builder", "", "Builder running the testSuite to exclude from tests")
 			r.Flags.StringVar(&r.testSuite, "testSuite", "", "Test suite of the builder to exclude from tests")
+			r.Flags.StringVar(&r.testId, "testId", "", "Test id to exclude from tests")
 			r.ev.LogProgressInterval = 100
 			r.ev.RegisterFlags(&r.Flags)
 			return r
@@ -76,7 +78,9 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 
 	res, err := r.ev.Run(ctx, func(ctx context.Context, in eval.Input, out *eval.Output) error {
 		for i, tv := range in.TestVariants {
-			if stringInSlice("builder:"+r.builder, tv.Variant) && stringInSlice("test_suite:"+r.testSuite, tv.Variant) {
+			if stringInSlice("builder:"+r.builder, tv.Variant) &&
+				stringInSlice("test_suite:"+r.testSuite, tv.Variant) &&
+				(r.testId == "" || (r.testId != "" && r.testId == tv.Id)) {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: math.Inf(1)}
 			} else {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: 0}
