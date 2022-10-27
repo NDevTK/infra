@@ -52,6 +52,24 @@
       "parentUuid": "df5ebc1e_da009e37",
       "revId": "1360e8ee4e4d23f6403087247a10edb165c1c91a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "64d104ab_69355c83",
+        "filename": "infra/config/main.star",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-10-27T20:39:58Z",
+      "side": 1,
+      "message": "(I\u0027d suggest to start with \"mdb/chrome-ops-foundation\" so we can dogfood this without breaking anyone else).",
+      "parentUuid": "e8790889_c036f27b",
+      "revId": "1360e8ee4e4d23f6403087247a10edb165c1c91a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
