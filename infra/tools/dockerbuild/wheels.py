@@ -1217,6 +1217,7 @@ SPECS.update({
         Universal('h11', '0.13.0', pyversions=['py3']),
         Universal('html5lib', '1.0.1'),
         Universal('httplib2', '0.19.1', pyversions=['py3']),
+        Universal('humiolib', '0.2.4'),
         Universal('hypothesis', '6.9.1', pyversions=['py3']),
         Universal('idna', '2.5'),
         Universal('idna', '2.8'),
