@@ -16,6 +16,52 @@
       "message": "PTAL. Need +1 again as I removed the function. Thanks!",
       "revId": "e4be43595d1f16d29d445a8c636402c5c18ac986",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "966f5b3d_7e89bfd4",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 2641,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-10-27T18:11:21Z",
+      "side": 1,
+      "message": "what\u0027s the point to rename this?",
+      "range": {
+        "startLine": 2641,
+        "startChar": 1,
+        "endLine": 2641,
+        "endChar": 11
+      },
+      "revId": "e4be43595d1f16d29d445a8c636402c5c18ac986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2526178_d1985224",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 2684,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-10-27T18:11:21Z",
+      "side": 1,
+      "message": "need to add the reason, like HwidData should be nil due to ...",
+      "range": {
+        "startLine": 2684,
+        "startChar": 3,
+        "endLine": 2684,
+        "endChar": 30
+      },
+      "revId": "e4be43595d1f16d29d445a8c636402c5c18ac986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
