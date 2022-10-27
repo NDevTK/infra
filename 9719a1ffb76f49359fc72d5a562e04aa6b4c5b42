@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44ab8c57_ff0ecf4c",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 895,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-10-27T01:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b46f287_5faf4063",
+      "range": {
+        "startLine": 895,
+        "startChar": 4,
+        "endLine": 895,
+        "endChar": 38
+      },
+      "revId": "9719a1ffb76f49359fc72d5a562e04aa6b4c5b42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc898d31_d2274d68",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-10-26T23:42:03Z",
       "side": 1,
       "message": "oneline comment for function\n\nplus we don\u0027t need this function at all as it\u0027s same as configuration.ParseHwidDataIntoMfgCfg(). You can change your caller to directly call ParseHwidDataIntoMfgCfg or move ParseHwidDataIntoMfgCfg out of configuration package",
+      "range": {
+        "startLine": 962,
+        "startChar": 0,
+        "endLine": 962,
+        "endChar": 11
+      },
+      "revId": "9719a1ffb76f49359fc72d5a562e04aa6b4c5b42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c4ac973_9790b8f5",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-10-27T01:36:26Z",
+      "side": 1,
+      "message": "Done. Removed function.",
+      "parentUuid": "dc898d31_d2274d68",
       "range": {
         "startLine": 962,
         "startChar": 0,
