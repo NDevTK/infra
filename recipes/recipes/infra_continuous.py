@@ -125,6 +125,8 @@ CIPD_PACKAGE_BUILDERS = {
         'linux-s390x',  # ~40 sec
     ],
     'infra-packager-mac-64': [
+        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
+        # on Mac.
         'native:legacy',  # ~150 sec
         'darwin-arm64',  # ~60 sec
     ],
@@ -136,10 +138,12 @@ CIPD_PACKAGE_BUILDERS = {
         'native',  # ~60 sec
         'linux-arm',  # ~30 sec
         'linux-arm64',  # ~30 sec
-        'darwin-arm64',  # ~30 sec (note: need go 1.16)
     ],
     'infra-internal-packager-mac-64': [
+        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
+        # on Mac.
         'native:legacy',  # ~40 sec
+        'darwin-arm64',  # ~30 sec
     ],
     'infra-internal-packager-win-64': [
         'native',  # ~60 sec
@@ -215,6 +219,17 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
       options = plat.split(':')
       plat = options.pop(0)
 
+      # Mac packages can only be produced by a mac builder.
+      if 'darwin-' in plat and is_packager and not api.platform.is_mac:
+        api.step.empty(
+            "Invalid package configuration",
+            status=api.step.EXCEPTION,
+            step_text=(
+              "Mac packages require codesign and can not run on %s."
+              % (api.platform.name,)
+            ),
+        )
+
       if plat == 'native':
         goos, goarch = None, None
       else:
@@ -263,6 +278,15 @@ def run_python_tests(api, project_name):
 
 
 def GenTests(api):
+  # This allows us to test potential misconfigurations. As long as this runs
+  # before the yield statement for the test that needs it, it will be added to
+  # the module global by the time the test runs.
+  #
+  # We put it here so that ALL tests have a consistent view of
+  # CIPD_PACKAGE_BUILDERS.
+  CIPD_PACKAGE_BUILDERS['infra-packager-TEST-linux-xcMac'] = [
+    'darwin-arm64',
+  ]
 
   def test(name, builder, repo, project, bucket, plat, is_experimental=False,
            arch='intel'):
@@ -300,3 +324,6 @@ def GenTests(api):
              PUBLIC_REPO, 'infra', 'prod', 'linux') +
       api.step_data('[GOOS:linux GOARCH:arm]cipd - build packages', retcode=1)
   )
+
+  yield test('cross-packager-mac-fail', 'infra-packager-TEST-linux-xcMac',
+             PUBLIC_REPO, 'infra', 'prod', 'linux')
