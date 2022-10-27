@@ -23,8 +23,10 @@ func getCmdFirmware() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			c := &firmwareRun{}
 			c.cmdRunner = cmd.RealCommandRunner{}
+			c.addDryrunFlag()
 			c.addBranchFlag("")
 			c.addProductionFlag()
+			c.addPatchesFlag()
 			return c
 		},
 	}
@@ -45,6 +47,9 @@ func (f *firmwareRun) Run(_ subcommands.Application, _ []string, _ subcommands.E
 		f.LogErr(err.Error())
 		return CmdError
 	}
+	if len(f.patches) > 0 {
+		f.bbAddArgs = patchListToBBAddArgs(f.patches)
+	}
 	if err := f.runFirmwareBuilder(ctx); err != nil {
 		f.LogErr(err.Error())
 		return CmdError
@@ -60,7 +65,7 @@ func (f *firmwareRun) validate(ctx context.Context) error {
 	if !strings.HasPrefix(f.branch, "firmware-") || !strings.HasSuffix(f.branch, ".B") {
 		return fmt.Errorf("provided branch does not look like a firmware branch: %s", f.branch)
 	}
-	if builderExists, err := f.doesFWBranchHaveBuilder(ctx, f.branch); err != nil {
+	if builderExists, err := f.doesFWBranchHaveBuilder(ctx, f.branch, !f.production); err != nil {
 		return err
 	} else if !builderExists {
 		return fmt.Errorf("firmware builder does not seem to exist for branch %s", f.branch)
@@ -72,13 +77,16 @@ func (f *firmwareRun) validate(ctx context.Context) error {
 }
 
 // doesFWBranchHaveBuilder checks whether the given branch has a firmware builder configured.
-// Although the tryjob might be for a staging builder, we only check the chromeos/firmware bucket for simplicity.
-func (f *firmwareRun) doesFWBranchHaveBuilder(ctx context.Context, branch string) (bool, error) {
-	allFWBuilders, err := f.BBBuilders(ctx, "firmware")
+func (f *firmwareRun) doesFWBranchHaveBuilder(ctx context.Context, branch string, staging bool) (bool, error) {
+	bucket := "firmware"
+	if staging {
+		bucket = "staging"
+	}
+	allFWBuilders, err := f.BBBuilders(ctx, bucket)
 	if err != nil {
 		return false, errors.Annotate(err, "querying bb for firmware builders").Err()
 	}
-	return sliceContainsStr(allFWBuilders, getFWBuilderFullName(branch, false)), nil
+	return sliceContainsStr(allFWBuilders, getFWBuilderFullName(branch, staging)), nil
 }
 
 // getFWBuilderFullName finds the full name (<project>/<bucket>/<builder>) for the given firmware branch.
@@ -96,5 +104,5 @@ func getFWBuilderFullName(branch string, staging bool) string {
 // runFWBuilder creates a firmware build via `bb add`, and reports it to the user.
 func (f *firmwareRun) runFirmwareBuilder(ctx context.Context) error {
 	builderName := getFWBuilderFullName(f.branch, !f.production)
-	return f.BBAdd(ctx, builderName)
+	return f.BBAdd(ctx, append([]string{builderName}, f.bbAddArgs...)...)
 }

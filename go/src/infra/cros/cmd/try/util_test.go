@@ -86,3 +86,23 @@ func TestParseEmailFromAuthInfo(t *testing.T) {
 	_, err = parseEmailFromAuthInfo("Logged in as sundar@.\n\nfoo...")
 	assert.NonNilError(t, err)
 }
+
+// TestPatchListToBBAddArgs tests patchListToBBAddArgs
+func TestPatchListToBBAddArgs(t *testing.T) {
+	t.Parallel()
+
+	patchSets := []string{"crrev.com/c/1234567"}
+	expectedBBAddArgs := []string{"-cl", "crrev.com/c/1234567"}
+	bbAddArgs := patchListToBBAddArgs(patchSets)
+	assert.StringArrsEqual(t, bbAddArgs, expectedBBAddArgs)
+
+	patchSets = []string{"crrev.com/c/1234567", "crrev.com/c/8675309"}
+	expectedBBAddArgs = []string{"-cl", "crrev.com/c/1234567", "-cl", "crrev.com/c/8675309"}
+	bbAddArgs = patchListToBBAddArgs(patchSets)
+	assert.StringArrsEqual(t, bbAddArgs, expectedBBAddArgs)
+
+	patchSets = []string{}
+	expectedBBAddArgs = []string{}
+	bbAddArgs = patchListToBBAddArgs(patchSets)
+	assert.StringArrsEqual(t, bbAddArgs, expectedBBAddArgs)
+}

@@ -137,9 +137,7 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 			r.LogErr(err.Error())
 			return CmdError
 		}
-		for _, patch := range r.patches {
-			r.bbAddArgs = append(r.bbAddArgs, []string{"-cl", patch}...)
-		}
+		r.bbAddArgs = patchListToBBAddArgs(r.patches)
 	}
 
 	if r.useProdTests {

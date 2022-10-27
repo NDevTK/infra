@@ -54,3 +54,12 @@ func sliceContainsStr(slice []string, s string) bool {
 	}
 	return false
 }
+
+// patchListToBBAddArgs converts a []string of patches to []string formatting expected by bb add (like ["crrev.com/c/1234567"] -> ["-cl", "crrev.com/c/123456"])
+func patchListToBBAddArgs(patches []string) []string {
+	bbAddArgs := make([]string, 0)
+	for _, patch := range patches {
+		bbAddArgs = append(bbAddArgs, []string{"-cl", patch}...)
+	}
+	return bbAddArgs
+}

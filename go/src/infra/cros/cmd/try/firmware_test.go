@@ -33,13 +33,14 @@ func TestDoesFWBranchHaveBuilder(t *testing.T) {
 	}
 	ctx := context.Background()
 	for i, tc := range []struct {
-		branch   string
-		expected bool
+		branch     string
+		production bool
+		expected   bool
 	}{
-		{eveBranch, true},
-		{namiBranch, false},
+		{eveBranch, true, true},
+		{namiBranch, true, false},
 	} {
-		builderExists, err := f.doesFWBranchHaveBuilder(ctx, tc.branch)
+		builderExists, err := f.doesFWBranchHaveBuilder(ctx, tc.branch, !tc.production)
 		if err != nil {
 			t.Errorf("#%d: Unexpected error calling doesFWBranchHaveBuilder: %+v", i, err)
 		}
@@ -74,7 +75,8 @@ func TestValidate_firmwareRun(t *testing.T) {
 	// Test the good workflow
 	f := firmwareRun{
 		tryRunBase: tryRunBase{
-			branch: eveFWBranch,
+			branch:     eveFWBranch,
+			production: true,
 			cmdRunner: cmd.FakeCommandRunner{
 				ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
 				Stdout:      eveFWBuilder,
@@ -94,4 +96,17 @@ func TestValidate_firmwareRun(t *testing.T) {
 	// Firmware branch that doesn't have a builder
 	f.tryRunBase.branch = gruntFWBranch
 	assert.NonNilError(t, f.validate(ctx))
+
+	// Patch set provided for production builder
+	f.tryRunBase.branch = eveFWBranch
+	f.tryRunBase.patches = []string{"crrev.com/c/1234567"}
+	assert.NonNilError(t, f.validate(ctx))
+
+	// Patch set provided for staging builder
+	f.tryRunBase.production = false
+	f.cmdRunner = cmd.FakeCommandRunner{
+		ExpectedCmd: []string{"bb", "builders", "chromeos/staging"},
+		Stdout:      "chromeos/staging/staging-firmware-eve-9584.B-branch",
+	}
+	assert.NilError(t, f.validate(ctx))
 }
