@@ -86,6 +86,23 @@
       "message": "Tenative LGTM",
       "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8653b5f0_175a93bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-10-27T05:46:46Z",
+      "side": 1,
+      "message": "Prasad, can you please suggest the best way to test this fix.",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
