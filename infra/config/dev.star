@@ -95,6 +95,10 @@ luci.bucket(name = "ci")
 luci.bucket(
     name = "ci.shadow",
     shadows = "ci",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.chromium.ci"],
+        service_accounts = ["adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com"],
+    ),
 )
 
 luci.builder.defaults.experiments.set({
