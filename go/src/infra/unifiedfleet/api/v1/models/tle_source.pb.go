@@ -163,6 +163,7 @@ type TleSource struct {
 	// TleConverter contains the metadata needed for the selected converter type.
 	//
 	// Types that are assignable to Converter:
+	//
 	//	*TleSource_StandardConverter
 	//	*TleSource_ExistenceConverter
 	//	*TleSource_DynamicConverter

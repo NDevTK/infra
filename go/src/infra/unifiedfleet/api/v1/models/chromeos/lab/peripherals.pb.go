@@ -1177,6 +1177,7 @@ type BluetoothPeer struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Device:
+	//
 	//	*BluetoothPeer_RaspberryPi
 	Device isBluetoothPeer_Device `protobuf_oneof:"device"`
 }

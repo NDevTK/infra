@@ -44,6 +44,7 @@ type Rack struct {
 	// Indicates the Rack Unit capacity of the rack.
 	CapacityRu int32 `protobuf:"varint,3,opt,name=capacity_ru,json=capacityRu,proto3" json:"capacity_ru,omitempty"`
 	// Types that are assignable to Rack:
+	//
 	//	*Rack_ChromeBrowserRack
 	//	*Rack_ChromeosRack
 	Rack isRack_Rack `protobuf_oneof:"rack"`

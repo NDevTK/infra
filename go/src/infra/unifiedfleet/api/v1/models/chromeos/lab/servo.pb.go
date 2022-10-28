@@ -333,9 +333,11 @@ type ServoTopologyItem struct {
 	Serial string `protobuf:"bytes,3,opt,name=serial,proto3" json:"serial,omitempty"`
 	// usb_hub_port providess the port connection to the device.
 	// e.g. '1-6.2.2' where
-	//   '1-6'  - port on the labstation
-	//   '2'    - port on smart-hub connected to the labstation
-	//   '2'    - port on servo hub (part of servo_v4 or servo_v4.1) connected to the smart-hub
+	//
+	//	'1-6'  - port on the labstation
+	//	'2'    - port on smart-hub connected to the labstation
+	//	'2'    - port on servo hub (part of servo_v4 or servo_v4.1) connected to the smart-hub
+	//
 	// The same path will look '1-6.2' if connected servo_v4 directly to the labstation.
 	UsbHubPort string `protobuf:"bytes,4,opt,name=usb_hub_port,json=usbHubPort,proto3" json:"usb_hub_port,omitempty"`
 }

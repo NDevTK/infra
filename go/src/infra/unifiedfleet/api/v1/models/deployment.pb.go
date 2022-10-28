@@ -90,9 +90,12 @@ type Payload struct {
 	// e.g. PUSH_CONFIG_TYPE_MOBILECONFIG
 	Config PushConfigType `protobuf:"varint,2,opt,name=config,proto3,enum=unifiedfleet.api.v1.models.PushConfigType" json:"config,omitempty"`
 	// It refers to a g3 path for a profile, e.g.
-	//      //depot/google3/ops/macops/mdm/mega/chrome/profiles/energy_saver.mobileconfig
+	//
+	//	//depot/google3/ops/macops/mdm/mega/chrome/profiles/energy_saver.mobileconfig
+	//
 	// or refers to a server link for a package, e.g.
-	//      https://macos-server-1.golo.chromium.org/manifests/clpuppet3.plist
+	//
+	//	https://macos-server-1.golo.chromium.org/manifests/clpuppet3.plist
 	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
 }
 

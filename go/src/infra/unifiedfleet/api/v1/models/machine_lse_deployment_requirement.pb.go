@@ -145,11 +145,13 @@ type HostCriterial struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Users can specify multiple requirements in each host criterial
-	//   * Search the bots based on the swarming instances and dimensions
-	//   * List the hostnames to push
-	//   * All enrolled hosts need to be pushed
+	//   - Search the bots based on the swarming instances and dimensions
+	//   - List the hostnames to push
+	//   - All enrolled hosts need to be pushed
+	//
 	// The priority comparison:
-	//   all > hostnames > swarming_criterials
+	//
+	//	all > hostnames > swarming_criterials
 	All       bool     `protobuf:"varint,1,opt,name=all,proto3" json:"all,omitempty"`
 	Hostnames []string `protobuf:"bytes,2,rep,name=hostnames,proto3" json:"hostnames,omitempty"`
 	// When swarming is replaced by RBE, this criterial will be deprecated and

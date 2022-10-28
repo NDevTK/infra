@@ -53,6 +53,7 @@ type MachineLSE struct {
 	// The hostname is also recorded in DHCP configs
 	Hostname string `protobuf:"bytes,3,opt,name=hostname,proto3" json:"hostname,omitempty"`
 	// Types that are assignable to Lse:
+	//
 	//	*MachineLSE_ChromeBrowserMachineLse
 	//	*MachineLSE_ChromeosMachineLse
 	//	*MachineLSE_AttachedDeviceLse
@@ -632,6 +633,7 @@ type ChromeOSMachineLSE struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ChromeosLse:
+	//
 	//	*ChromeOSMachineLSE_Dut
 	//	*ChromeOSMachineLSE_Server
 	//	*ChromeOSMachineLSE_DeviceLse
@@ -750,6 +752,7 @@ type ChromeOSDeviceLSE struct {
 	RpmInterface           *RPMInterface        `protobuf:"bytes,2,opt,name=rpm_interface,json=rpmInterface,proto3" json:"rpm_interface,omitempty"`
 	NetworkDeviceInterface *SwitchInterface     `protobuf:"bytes,3,opt,name=network_device_interface,json=networkDeviceInterface,proto3" json:"network_device_interface,omitempty"`
 	// Types that are assignable to Device:
+	//
 	//	*ChromeOSDeviceLSE_Dut
 	//	*ChromeOSDeviceLSE_Labstation
 	//	*ChromeOSDeviceLSE_Devboard
@@ -1206,8 +1209,8 @@ type AttachedDeviceLSE struct {
 	OsVersion *OSVersion `protobuf:"bytes,1,opt,name=os_version,json=osVersion,proto3" json:"os_version,omitempty"`
 	// The hostname of the device that the attached device is attached to.
 	// Examples:
-	//   1. A webcam (attached device) attached to a laptop (host).
-	//   2. A phone (attached device) attached to a Dell server (host).
+	//  1. A webcam (attached device) attached to a laptop (host).
+	//  2. A phone (attached device) attached to a Dell server (host).
 	AssociatedHostname string `protobuf:"bytes,2,opt,name=associated_hostname,json=associatedHostname,proto3" json:"associated_hostname,omitempty"`
 	// The port used of the device that the attached device is attached to.
 	AssociatedHostPort string `protobuf:"bytes,3,opt,name=associated_host_port,json=associatedHostPort,proto3" json:"associated_host_port,omitempty"`

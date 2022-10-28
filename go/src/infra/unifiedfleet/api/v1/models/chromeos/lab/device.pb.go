@@ -112,6 +112,7 @@ type ChromeOSDevice struct {
 	// These values will be extracted from DUT and joinable to device config.
 	DeviceConfigId *device.ConfigId `protobuf:"bytes,4,opt,name=device_config_id,json=deviceConfigId,proto3" json:"device_config_id,omitempty"`
 	// Types that are assignable to Device:
+	//
 	//	*ChromeOSDevice_Dut
 	//	*ChromeOSDevice_Labstation
 	Device isChromeOSDevice_Device `protobuf_oneof:"device"`

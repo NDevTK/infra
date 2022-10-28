@@ -41,6 +41,7 @@ type RackLSE struct {
 	// prototype to detect if the LSE is completed or valid.
 	RackLsePrototype string `protobuf:"bytes,2,opt,name=rack_lse_prototype,json=rackLsePrototype,proto3" json:"rack_lse_prototype,omitempty"`
 	// Types that are assignable to Lse:
+	//
 	//	*RackLSE_ChromeBrowserRackLse
 	//	*RackLSE_ChromeosRackLse
 	Lse isRackLSE_Lse `protobuf_oneof:"lse"`

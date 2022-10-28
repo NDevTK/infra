@@ -155,8 +155,9 @@ type Machine struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A unique name for the machine.
-	//   * AssetTag for ChromeOS machine (device)
-	//   * Serial number for Chrome machine for now (server) (Ideally it should be assetTag once it’s ready)
+	//   - AssetTag for ChromeOS machine (device)
+	//   - Serial number for Chrome machine for now (server) (Ideally it should be assetTag once it’s ready)
+	//
 	// The format will be machines/asset:XXX or machines/sn:XXX
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// serial_number of the machine.
@@ -166,6 +167,7 @@ type Machine struct {
 	// Location details of where the machine is placed
 	Location *Location `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	// Types that are assignable to Device:
+	//
 	//	*Machine_ChromeBrowserMachine
 	//	*Machine_ChromeosMachine
 	//	*Machine_AttachedDevice
@@ -685,6 +687,7 @@ type Devboard struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Board:
+	//
 	//	*Devboard_Andreiboard
 	//	*Devboard_Icetower
 	Board isDevboard_Board `protobuf_oneof:"board"`

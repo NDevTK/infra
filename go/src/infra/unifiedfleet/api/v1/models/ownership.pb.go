@@ -35,7 +35,7 @@ type OwnershipData struct {
 	SecurityLevel string `protobuf:"bytes,2,opt,name=security_level,json=securityLevel,proto3" json:"security_level,omitempty"`
 	// security pool to which this bot belongs to
 	PoolName string `protobuf:"bytes,3,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
-	//swarming instance to which this bot will communicate
+	// swarming instance to which this bot will communicate
 	SwarmingInstance string `protobuf:"bytes,4,opt,name=swarming_instance,json=swarmingInstance,proto3" json:"swarming_instance,omitempty"`
 }
 
