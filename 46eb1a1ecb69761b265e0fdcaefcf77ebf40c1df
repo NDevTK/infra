@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "1cffb62c_64049b35",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-10-28T00:22:52Z",
+      "side": 1,
+      "message": "yes i think we can perform tetsing of customized plan to verify it.",
+      "parentUuid": "b652bdb2_e004dad8",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "8c0bb118_76ce22ff",
