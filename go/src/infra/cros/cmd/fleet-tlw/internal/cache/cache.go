@@ -26,9 +26,10 @@ type Environment interface {
 	// This function is concurrency safe.
 	CacheZones() map[ufsmodels.Zone][]CachingService
 
-	// ZoneFromMachineName returns UFS zone for the given machine (server or SU)
-	// name.
-	ZoneFromMachineName(string) (ufsmodels.Zone, error)
+	// GetZoneForServer returns UFS zone for the given server name.
+	GetZoneForServer(name string) (ufsmodels.Zone, error)
+	// GetZoneForDUT returns UFS zone for the given DUT name.
+	GetZoneForDUT(name string) (ufsmodels.Zone, error)
 }
 
 // CachingService represents a caching service.
@@ -68,7 +69,7 @@ func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
 }
 
 func (f *Frontend) assignBackendByZone(dutName, filename string) (string, error) {
-	z, err := f.env.ZoneFromMachineName(dutName)
+	z, err := f.env.GetZoneForDUT(dutName)
 	if err != nil {
 		return "", fmt.Errorf("assign backend by zone for %q: %s", dutName, err)
 	}

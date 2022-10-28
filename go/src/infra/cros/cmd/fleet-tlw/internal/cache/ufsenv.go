@@ -62,8 +62,30 @@ func (e *ufsEnv) CacheZones() map[ufsmodels.Zone][]CachingService {
 	return e.cacheZones
 }
 
-// ZoneFromMachineName implements the Environment interface.
-func (e *ufsEnv) ZoneFromMachineName(name string) (ufsmodels.Zone, error) {
+// GetZoneForServer implements the Environment interface.
+func (e *ufsEnv) GetZoneForServer(name string) (ufsmodels.Zone, error) {
+	e.zonesMu.Lock()
+	defer e.zonesMu.Unlock()
+
+	if z, ok := e.zones[name]; ok {
+		return z, nil
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	md := metadata.Pairs("namespace", "os")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	m, err := e.client.GetMachine(ctx, &ufsapi.GetMachineRequest{Name: ufsutil.AddPrefix(ufsutil.MachineCollection, name)})
+	if err != nil {
+		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from server name %q: %s", name, err)
+	}
+	e.zones[name] = m.GetLocation().GetZone()
+	return e.zones[name], nil
+}
+
+// GetZoneForDUT implements the Environment interface.
+func (e *ufsEnv) GetZoneForDUT(name string) (ufsmodels.Zone, error) {
 	e.zonesMu.Lock()
 	defer e.zonesMu.Unlock()
 
@@ -80,7 +102,7 @@ func (e *ufsEnv) ZoneFromMachineName(name string) (ufsmodels.Zone, error) {
 		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, name),
 	})
 	if err != nil {
-		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone by name %q: %s", name, err)
+		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone for DUT %q: %s", name, err)
 	}
 	e.zones[name] = ufsmodels.Zone(ufsmodels.Zone_value[lse.GetZone()])
 	return e.zones[name], nil
@@ -180,7 +202,7 @@ func getCachingZones(env Environment, ss []*ufsmodels.CachingService) (map[ufsmo
 		// secondary node is always set even the service only has one active
 		// node.
 		node := s.GetSecondaryNode()
-		z, err := env.ZoneFromMachineName(node)
+		z, err := env.GetZoneForServer(node)
 		if err != nil {
 			return nil, fmt.Errorf("get caching zones of %q (using node %q): %s", svc, node, err)
 		}

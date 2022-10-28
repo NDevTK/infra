@@ -125,6 +125,10 @@ func (fakeEnv) Subnets() []cache.Subnet {
 
 func (fakeEnv) CacheZones() map[ufsmodels.Zone][]cache.CachingService { return nil }
 
-func (fakeEnv) ZoneFromMachineName(string) (ufsmodels.Zone, error) {
+func (fakeEnv) GetZoneForServer(string) (ufsmodels.Zone, error) {
+	return ufsmodels.Zone_ZONE_UNSPECIFIED, nil
+}
+
+func (fakeEnv) GetZoneForDUT(string) (ufsmodels.Zone, error) {
 	return ufsmodels.Zone_ZONE_UNSPECIFIED, nil
 }

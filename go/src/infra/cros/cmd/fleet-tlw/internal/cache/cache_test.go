@@ -28,7 +28,11 @@ func (e mockEnv) CacheZones() map[ufsmodels.Zone][]CachingService {
 	return e.zones
 }
 
-func (e mockEnv) ZoneFromMachineName(n string) (ufsmodels.Zone, error) {
+func (e mockEnv) GetZoneForServer(n string) (ufsmodels.Zone, error) {
+	return e.machineZone[n], nil
+}
+
+func (e mockEnv) GetZoneForDUT(n string) (ufsmodels.Zone, error) {
 	return e.machineZone[n], nil
 }
 

@@ -21,8 +21,9 @@ import (
 
 type fakeUFSClient struct {
 	ufsapi.FleetClient
-	services []*ufsmodels.CachingService
-	machines map[string]*ufsmodels.MachineLSE
+	services    []*ufsmodels.CachingService
+	machineLSEs map[string]*ufsmodels.MachineLSE
+	machines    map[string]*ufsmodels.Machine
 }
 
 func (c fakeUFSClient) ListCachingServices(context.Context, *ufsapi.ListCachingServicesRequest, ...grpc.CallOption) (*ufsapi.ListCachingServicesResponse, error) {
@@ -33,9 +34,13 @@ func (c fakeUFSClient) ListCachingServices(context.Context, *ufsapi.ListCachingS
 
 func (c fakeUFSClient) GetMachineLSE(_ context.Context, req *ufsapi.GetMachineLSERequest, o ...grpc.CallOption) (*ufsmodels.MachineLSE, error) {
 	n := ufsutil.RemovePrefix(req.GetName())
-	return c.machines[n], nil
+	return c.machineLSEs[n], nil
 }
 
+func (c fakeUFSClient) GetMachine(_ context.Context, req *ufsapi.GetMachineRequest, o ...grpc.CallOption) (*ufsmodels.Machine, error) {
+	n := ufsutil.RemovePrefix(req.GetName())
+	return c.machines[n], nil
+}
 func TestSubnets_multipleSubnets(t *testing.T) {
 	t.Parallel()
 	c := &fakeUFSClient{services: []*ufsmodels.CachingService{
@@ -203,10 +208,12 @@ func TestZones_deduction(t *testing.T) {
 				State:         ufsmodels.State_STATE_SERVING,
 			},
 		},
-		machines: map[string]*ufsmodels.MachineLSE{
+		machines: map[string]*ufsmodels.Machine{
 			serverHostname: {
 				Name: serverHostname,
-				Zone: "ZONE_CHROMEOS2",
+				Location: &ufsmodels.Location{
+					Zone: ufsmodels.Zone_ZONE_CHROMEOS2,
+				},
 			},
 		},
 	}
