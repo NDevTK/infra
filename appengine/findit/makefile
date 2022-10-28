@@ -10,7 +10,7 @@ STAGING_APPID := "findit-for-me-staging"
 # ...$ gclient sync
 PROTOC := "../../cipd/protoc"
 PROTO_PATH ?= "model/proto/"
-FINDIT_MODULES := default frontend waterfall-backend
+FINDIT_MODULES := default frontend
 CODE_COVERAGE_MODULES := code-coverage-frontend code-coverage-backend code-coverage-experimental-coverage-worker code-coverage-referenced-coverage-worker
 FLAKE_PORTAL_MODULES := flake-detection-backend
 LOCAL_VERSION := `$(INFRAPYTHON) $(GAE_PY) version`
