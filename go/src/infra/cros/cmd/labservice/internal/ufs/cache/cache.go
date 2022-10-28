@@ -21,22 +21,48 @@ import (
 func NewLocator() *Locator {
 	return &Locator{
 		subnets: newSubnetsFinder(),
+		zones:   newZonesFinder(),
 	}
 }
 
 // Locator helps to find a caching server for any given DUT.
-// It caches ip addresses and corresponding subnets of caching servers.
+// It tries to use UFS zone and falls back to subnets to match the given DUT
+// with a caching server.
+// It caches intermediate results, e.g. IP addresses, UFS zones, etc.
 type Locator struct {
 	subnets *subnetsFinder
+	zones   *zonesFinder
 }
 
 // FindCacheServer returns the ip address of a cache server mapped to a dut.
 func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
-	cs, err := l.findCacheServerBySubnet(dutName, client)
+	cs, err := l.findCacheServerByZone(dutName, client)
+	if err == nil {
+		return cs, nil
+	}
+	log.Printf("Find cache server: fall back to subnet based: %s", err)
+	cs, err = l.findCacheServerBySubnet(dutName, client)
 	if err != nil {
 		return nil, fmt.Errorf("find cache server for %q: %s", dutName, err)
 	}
 	return cs, nil
+}
+
+func (l *Locator) findCacheServerByZone(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
+	z, err := l.zones.getZoneForSU(dutName, client)
+	if err != nil {
+		return nil, fmt.Errorf("find cache server by zone for %q: %s", dutName, err)
+	}
+	cs, ok := l.zones.getCacheZones(client)[z]
+	if !ok {
+		return nil, fmt.Errorf("find cache server by zone for %q: no cache server for zone %q", dutName, z)
+	}
+	be := chooseBackend(cs, dutName)
+
+	return &labapi.IpEndpoint{
+		Address: be.Ip,
+		Port:    be.Port,
+	}, nil
 }
 
 func (l *Locator) findCacheServerBySubnet(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
