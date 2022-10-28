@@ -27,9 +27,6 @@ func startService(ctx context.Context, d *docker.Docker, block bool, netbind boo
 	if err := d.Auth(ctx); err != nil {
 		return d, errors.Annotate(err, "start service").Err()
 	}
-	if err := d.PullImage(ctx); err != nil {
-		return d, errors.Annotate(err, "start service").Err()
-	}
 	if err := d.Run(ctx, block, netbind); err != nil {
 		return d, errors.Annotate(err, "start service").Err()
 	}

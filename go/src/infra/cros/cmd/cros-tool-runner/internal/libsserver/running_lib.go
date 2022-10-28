@@ -84,15 +84,8 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 	// Increase cnts so we don't use the same docker name over again later.
 	s.cnts[info.Name]++
 
-	// Pull image.
-	err := d.PullImage(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("could not pull container: %s", err)
-	}
-	s.logger.Printf("Sucessfully pulled %s; will run as %s.", d.RequestedImageName, d.Name)
-
 	// Start container.
-	err = d.Run(ctx, true, false)
+	err := d.Run(ctx, true, false)
 	if err != nil {
 		return nil, fmt.Errorf("could not start container: %s", err)
 	}

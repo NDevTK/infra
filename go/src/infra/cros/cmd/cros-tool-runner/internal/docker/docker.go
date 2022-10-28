@@ -82,41 +82,6 @@ func (d *Docker) MatchingHostPort(ctx context.Context, dockerPort string) (strin
 	return port, nil
 }
 
-// PullImage pulls docker image.
-// The first we try to pull with required tag and if fail then use default tag. Image with default tag always present in repo.
-func (d *Docker) PullImage(ctx context.Context) (err error) {
-	if d.RequestedImageName != "" {
-		d.pulledImage = d.RequestedImageName
-		if err = pullImage(ctx, d.pulledImage); err == nil {
-			return nil
-		}
-	}
-	if d.FallbackImageName != "" {
-		d.pulledImage = d.FallbackImageName
-		if err = pullImage(ctx, d.pulledImage); err == nil {
-			return nil
-		}
-	}
-	if err != nil {
-		return errors.Annotate(err, "pull image").Err()
-	}
-	return errors.Reason("pull image: failed").Err()
-}
-
-// pullImage pulls image by docker-cli.
-// docker-cli has to have permission to download images from required repos.
-func pullImage(ctx context.Context, image string) error {
-	cmd := exec.Command("docker", "pull", image)
-	stdout, stderr, err := common.RunWithTimeout(ctx, cmd, 2*time.Minute, true)
-	common.PrintToLog(fmt.Sprintf("Pull image %q", image), stdout, stderr)
-	if err != nil {
-		log.Printf("pull image %q: failed with error: %s", image, err)
-		return errors.Annotate(err, "Pull image").Err()
-	}
-	log.Printf("pull image %q: successful pulled.", image)
-	return nil
-}
-
 // Auth with docker registry so that pulling and stuff works.
 func (d *Docker) Auth(ctx context.Context) (err error) {
 	if d.TokenFile == "" {
