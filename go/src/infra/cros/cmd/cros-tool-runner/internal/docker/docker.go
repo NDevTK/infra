@@ -175,8 +175,8 @@ func (d *Docker) Remove(ctx context.Context) error {
 
 // Run docker image.
 // The step will create container and start server inside or execution CLI.
-func (d *Docker) Run(ctx context.Context, block bool) error {
-	out, err := d.runDockerImage(ctx, block)
+func (d *Docker) Run(ctx context.Context, block bool, netbind bool) error {
+	out, err := d.runDockerImage(ctx, block, netbind)
 	if err != nil {
 		return errors.Annotate(err, "run docker %q", d.Name).Err()
 	}
@@ -187,7 +187,7 @@ func (d *Docker) Run(ctx context.Context, block bool) error {
 	return nil
 }
 
-func (d *Docker) runDockerImage(ctx context.Context, block bool) (string, error) {
+func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool) (string, error) {
 	args := []string{"run"}
 	if d.Detach {
 		args = append(args, "-d")
@@ -201,6 +201,11 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool) (string, error)
 	args = append(args, "--rm")
 	if d.Network != "" {
 		args = append(args, "--network", d.Network)
+	}
+
+	// give access to net_raw so things like `ping` can work in the container.
+	if netbind == true {
+		args = append(args, "--cap-add=NET_RAW")
 	}
 
 	// Publish in-docker ports; any without an explicit mapping will need to be looked up later.

@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/golang/protobuf/jsonpb"
 
@@ -99,12 +100,16 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	if err != nil {
 		return nil, errors.Annotate(err, "could not start libsserver").Err()
 	}
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
 	go func() {
-		if err = libsServer.Serve(); err != nil {
+		if err = libsServer.Serve(wg); err != nil {
 			log.Printf("libsserver error: %v", err)
 		}
 	}()
 	defer libsServer.Stop(ctx)
+
+	wg.Wait()
 
 	testReq := &api.CrosTestRequest{
 		TestSuites: req.GetTestSuites(),

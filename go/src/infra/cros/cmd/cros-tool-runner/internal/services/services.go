@@ -90,7 +90,7 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		Detach:      true,
 		Network:     networkName,
 	}
-	d, err := startService(ctx, d, false)
+	d, err := startService(ctx, d, false, true)
 	if err != nil {
 		log.Println("DUT Service Failed to start, exiting.")
 		return d, err
@@ -203,7 +203,7 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 		Detach:  false,
 		Network: networkName,
 	}
-	return startService(ctx, d, true)
+	return startService(ctx, d, true, true)
 }
 
 // RunTestCLI pulls and runs cros-test as CLI.
@@ -252,7 +252,7 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 		Detach:  false,
 		Network: networkName,
 	}
-	_, err = startService(ctx, d, true)
+	_, err = startService(ctx, d, true, true)
 	return err
 }
 
@@ -290,7 +290,7 @@ func RunTestFinderCLI(ctx context.Context, image *build_api.ContainerImageInfo, 
 		Detach:  false,
 		Network: networkName,
 	}
-	_, err = startService(ctx, d, true)
+	_, err = startService(ctx, d, true, false)
 	return err
 }
 

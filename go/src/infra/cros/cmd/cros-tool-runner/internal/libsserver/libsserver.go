@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"sync"
 
 	"google.golang.org/grpc"
 
@@ -106,7 +107,7 @@ func (s *TestLibsServer) updateServerFromReq(req *pb.CrosToolRunnerTestRequest) 
 }
 
 // Serve creates and runs a grpc server with predefined parameters.
-func (s *TestLibsServer) Serve() error {
+func (s *TestLibsServer) Serve(wg *sync.WaitGroup) error {
 	l, err := net.Listen("tcp", ":0")
 	if err != nil {
 		fmt.Printf("Fatal err %s", err)
@@ -123,6 +124,7 @@ func (s *TestLibsServer) Serve() error {
 	s.server = server
 
 	s.logger.Println("Running TestLibsServer on port", s.Port)
+	wg.Done()
 	return server.Serve(*s.listener)
 }
 

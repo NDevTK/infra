@@ -20,7 +20,7 @@ import (
 	"infra/cros/cmd/cros-tool-runner/internal/docker"
 )
 
-func startService(ctx context.Context, d *docker.Docker, block bool) (*docker.Docker, error) {
+func startService(ctx context.Context, d *docker.Docker, block bool, netbind bool) (*docker.Docker, error) {
 	if err := d.Remove(ctx); err != nil {
 		log.Printf("failed to clean up container %q. Error: %s", d.Name, err)
 	}
@@ -30,7 +30,7 @@ func startService(ctx context.Context, d *docker.Docker, block bool) (*docker.Do
 	if err := d.PullImage(ctx); err != nil {
 		return d, errors.Annotate(err, "start service").Err()
 	}
-	if err := d.Run(ctx, block); err != nil {
+	if err := d.Run(ctx, block, netbind); err != nil {
 		return d, errors.Annotate(err, "start service").Err()
 	}
 	return d, nil

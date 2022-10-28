@@ -92,7 +92,7 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 	s.logger.Printf("Sucessfully pulled %s; will run as %s.", d.RequestedImageName, d.Name)
 
 	// Start container.
-	err = d.Run(ctx, true)
+	err = d.Run(ctx, true, false)
 	if err != nil {
 		return nil, fmt.Errorf("could not start container: %s", err)
 	}
