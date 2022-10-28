@@ -185,3 +185,18 @@ func TestAssignBackend_dutNotInZoneOrSubnet(t *testing.T) {
 		t.Errorf("AssignBackend() err nil, want not nil")
 	}
 }
+
+func TestAssignBackend_preferred(t *testing.T) {
+	t.Parallel()
+	env := mockEnv{}
+	want := "http://1.1.1.1:8000"
+	fe := NewFrontend(env)
+	fe.PreferredServices = []string{want}
+	got, err := fe.AssignBackend("2.2.2.2", "path/to/file")
+	if err != nil {
+		t.Errorf("AssignBackend() err %v, want %v", err, nil)
+	}
+	if got != want {
+		t.Errorf("AssignBackend() = %q, want %q", got, want)
+	}
+}

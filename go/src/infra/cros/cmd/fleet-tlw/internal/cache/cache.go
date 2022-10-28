@@ -44,6 +44,10 @@ type Subnet struct {
 
 // Frontend manages caching backends and assigns backends for client requests.
 type Frontend struct {
+	// PreferredServices is the services preferred to use. When set, the
+	// services fetched from UFS will be ignored.
+	PreferredServices []string
+
 	env Environment
 }
 
@@ -56,7 +60,14 @@ func NewFrontend(env Environment) *Frontend {
 // `filename`.
 // This function is concurrency safe.
 func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
-	b, err := f.assignBackendByZone(dutName, filename)
+	log.Printf("Assign caching backend: try preferred services")
+	b, err := f.assignPreferredBackend(dutName, filename)
+	if err == nil {
+		return b, nil
+	}
+
+	log.Printf("Assign caching backend: try UFS zone based: %s", err)
+	b, err = f.assignBackendByZone(dutName, filename)
 	if err == nil {
 		return b, nil
 	}
@@ -66,6 +77,13 @@ func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
 		return "", fmt.Errorf("assign backend: %s", err)
 	}
 	return b, nil
+}
+
+func (f *Frontend) assignPreferredBackend(dutName, filename string) (string, error) {
+	if len(f.PreferredServices) == 0 {
+		return "", fmt.Errorf("assign preferred backend for %q: no preferred services", dutName)
+	}
+	return findOneBackend(filename, f.PreferredServices), nil
 }
 
 func (f *Frontend) assignBackendByZone(dutName, filename string) (string, error) {

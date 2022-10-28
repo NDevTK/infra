@@ -11,6 +11,8 @@ import (
 	"math/rand"
 	"net"
 	"net/url"
+	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +33,13 @@ import (
 	"infra/libs/sshpool"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
+)
+
+var (
+	// TLW_CACHING_PREFERRED_SERVICES is a comma separated list of caching
+	// services (each in format of 'http://<server name or IP>:<port>'). When
+	// specified, it bypasses the normal cache server selection.
+	preferredCachingServices = parseCSVAndSort(os.Getenv("TLW_CACHING_PREFERRED_SERVICES"))
 )
 
 type tlwServer struct {
@@ -61,6 +70,7 @@ func newTLWServer(ufsService string, proxySSHSigner ssh.Signer, serviceAcctJSON 
 		cFrontend: cache.NewFrontend(ce),
 		ufsClient: ufsClient,
 	}
+	s.cFrontend.PreferredServices = preferredCachingServices
 	return s, nil
 }
 
@@ -277,4 +287,15 @@ func (s *tlwServer) GetDut(ctx context.Context, req *tls.GetDutRequest) (*tls.Du
 func setupUFSContext(ctx context.Context) context.Context {
 	md := metadata.Pairs(ufsUtil.Namespace, ufsUtil.OSNamespace)
 	return metadata.NewOutgoingContext(ctx, md)
+}
+
+// parseCSVAndSort parse input comma separated string into a string slice and
+// sort it.
+func parseCSVAndSort(value string) []string {
+	if value == "" {
+		return nil
+	}
+	ss := strings.Split(value, ",")
+	sort.Strings(ss)
+	return ss
 }
