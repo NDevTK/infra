@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
@@ -79,6 +80,7 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 	}
 	sessionTag := fmt.Sprintf("admin-session:%s", c.adminSession)
 	for _, unit := range args {
+		unit = trimBotIDToHostname(unit)
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
 		url, _, err := buildbucket.ScheduleTask(
@@ -122,4 +124,10 @@ func (c *fwUpdateRun) createPlan() []byte {
 		log.Fatalf("Failed to create JSON config: %v", err)
 	}
 	return b
+}
+
+func trimBotIDToHostname(botID string) string {
+	hostname := strings.TrimSuffix(botID, ".cros")
+	hostname = strings.TrimPrefix(hostname, "crossk-")
+	return hostname
 }
