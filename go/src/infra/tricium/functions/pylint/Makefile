@@ -14,7 +14,7 @@ test: pylint_parser
 	./pylint_parser -input=test -output=out
 
 python:
-	echo "infra/python/cpython3/linux-amd64 version:3.8.0b1.chromium.1" | \
+	echo "infra/3pp/tools/cpython3/linux-amd64 version:3.8.10.chromium.25" | \
 		cipd ensure -ensure-file - -root python
 
 pylint:

@@ -17,7 +17,7 @@ cpplint.cipd: cpplint_parser python cpplint.py
 	cipd pkg-build -pkg-def cipd.yaml -out cpplint.cipd
 
 python:
-	echo "infra/python/cpython/linux-amd64 version:2.7.17.chromium.21.3pp" | \
+	echo "infra/3pp/tools/cpython/linux-amd64 version:2.7.18.chromium.44" | \
 			cipd ensure -ensure-file - -root python
 
 cpplint.py:
