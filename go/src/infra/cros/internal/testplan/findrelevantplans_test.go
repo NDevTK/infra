@@ -15,7 +15,6 @@ import (
 
 func TestFindRelevantPlans(t *testing.T) {
 	ctx := context.Background()
-	// Two changes from testprojectA, one from testprojectB.
 	changeRevs := []*gerrit.ChangeRev{
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
@@ -28,7 +27,7 @@ func TestFindRelevantPlans(t *testing.T) {
 		},
 	}
 
-	// The newest change for each project should be checked out.
+	// The change for testprojectA should be cherry-picked.
 	git.CommandRunnerImpl = &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			{
@@ -42,11 +41,11 @@ func TestFindRelevantPlans(t *testing.T) {
 				ExpectedCmd: []string{
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
-					"--depth", "1", "--no-tags",
+					"--no-tags",
 				},
 			},
 			{
-				ExpectedCmd: []string{"git", "checkout", "FETCH_HEAD"},
+				ExpectedCmd: []string{"git", "cherry-pick", "FETCH_HEAD"},
 			},
 		},
 	}

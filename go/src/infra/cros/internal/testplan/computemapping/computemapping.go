@@ -26,10 +26,10 @@ type MappingInfo struct {
 // a cleanup function, and an error if one occurred.
 type WorkdirCreation func() (string, func() error, error)
 
-// checkoutChangeRevs checkouts changeRevs to dir.
+// cherryPickChangeRevs cherry picks changeRevs to dir.
 //
 // changeRevs must all have the same project.
-func checkoutChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.ChangeRev) error {
+func cherryPickChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.ChangeRev) error {
 	for i, changeRev := range changeRevs {
 		if i > 0 && changeRev.Project != changeRevs[0].Project {
 			// Change revs are sorted by project in the callers.
@@ -39,20 +39,13 @@ func checkoutChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.Ch
 		}
 	}
 
-	// Checkout the newest change for the project, which should have all other
-	// changes below it.
-	//
-	// TODO(b/182898188): Checking out the newest change might cause problems
-	// in edge cases such as rebases that reorder CLs. Investigate whether
-	// cherry-picking all changes is necessary.
 	sort.Slice(changeRevs, func(i, j int) bool {
 		return changeRevs[i].ChangeNum < changeRevs[j].ChangeNum
 	})
 
-	changeRev := changeRevs[len(changeRevs)-1]
-
-	googlesourceHost := strings.Replace(changeRev.Host, "-review", "", 1)
-	remote := fmt.Sprintf("https://%s/%s", googlesourceHost, changeRev.Project)
+	// All changeRevs must have the same Host and Project, as checked above.
+	googlesourceHost := strings.Replace(changeRevs[0].Host, "-review", "", 1)
+	remote := fmt.Sprintf("https://%s/%s", googlesourceHost, changeRevs[0].Project)
 
 	logging.Debugf(ctx, "cloning repo %q", remote)
 
@@ -60,13 +53,19 @@ func checkoutChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.Ch
 		return err
 	}
 
-	logging.Debugf(ctx, "fetching ref %q from repo %q", changeRev.Ref, remote)
+	for _, changeRev := range changeRevs {
+		logging.Debugf(ctx, "fetching ref %q from repo %q", changeRev.Ref, remote)
 
-	if err := git.Fetch(dir, remote, changeRev.Ref, git.Depth(1), git.NoTags()); err != nil {
-		return err
+		if err := git.Fetch(dir, remote, changeRev.Ref, git.NoTags()); err != nil {
+			return err
+		}
+
+		if err := git.CherryPick(ctx, dir, "FETCH_HEAD"); err != nil {
+			return err
+		}
 	}
 
-	return git.Checkout(dir, "FETCH_HEAD")
+	return nil
 }
 
 // computeMappingForChangeRevs checks out a project with changeRevs applied and
@@ -89,7 +88,7 @@ func computeMappingForChangeRevs(
 		}
 	}()
 
-	if err = checkoutChangeRevs(ctx, workdir, changeRevs); err != nil {
+	if err = cherryPickChangeRevs(ctx, workdir, changeRevs); err != nil {
 		return nil, err
 	}
 

@@ -17,6 +17,7 @@ import (
 	"infra/cros/internal/cmd"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
 var (
@@ -281,6 +282,19 @@ func Checkout(gitRepo, branch string) error {
 		return fmt.Errorf(output.Stderr)
 	}
 	return err
+}
+
+// CherryPick cherry picks a commit.
+func CherryPick(ctx context.Context, gitRepo, commit string) error {
+	output, err := RunGit(gitRepo, []string{"cherry-pick", commit})
+	logging.Debugf(ctx, "cherry pick stdout: %s", output.Stdout)
+	logging.Debugf(ctx, "cherry pick stderr: %s", output.Stderr)
+
+	if err != nil {
+		return fmt.Errorf("failed to cherry pick: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteBranch checks out to master and then deletes the current branch.

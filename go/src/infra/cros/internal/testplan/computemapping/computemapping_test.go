@@ -28,15 +28,6 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
 				Host:      "chromium-review.googlesource.com",
-				ChangeNum: 123,
-			},
-			Project: "chromium/testprojectA",
-			Ref:     "refs/changes/23/123/5",
-			Files:   []string{"a/b/test1.txt", "a/b/test2.txt"},
-		},
-		{
-			ChangeRevKey: gerrit.ChangeRevKey{
-				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 456,
 			},
 			Project: "chromium/testprojectA",
@@ -52,9 +43,18 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			Ref:     "refs/changes/78/789/5",
 			Files:   []string{"test.c", "test.h"},
 		},
+		{
+			ChangeRevKey: gerrit.ChangeRevKey{
+				Host:      "chromium-review.googlesource.com",
+				ChangeNum: 123,
+			},
+			Project: "chromium/testprojectA",
+			Ref:     "refs/changes/23/123/5",
+			Files:   []string{"a/b/test1.txt", "a/b/test2.txt"},
+		},
 	}
 
-	// The newest change for each project should be checked out.
+	// Changes should be cherry-picked, ordered by project number.
 	git.CommandRunnerImpl = &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			{
@@ -67,12 +67,22 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			{
 				ExpectedCmd: []string{
 					"git", "fetch",
-					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/45/456/2",
-					"--depth", "1", "--no-tags",
+					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
+					"--no-tags",
 				},
 			},
 			{
-				ExpectedCmd: []string{"git", "checkout", "FETCH_HEAD"},
+				ExpectedCmd: []string{"git", "cherry-pick", "FETCH_HEAD"},
+			},
+			{
+				ExpectedCmd: []string{
+					"git", "fetch",
+					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/45/456/2",
+					"--no-tags",
+				},
+			},
+			{
+				ExpectedCmd: []string{"git", "cherry-pick", "FETCH_HEAD"},
 			},
 			{
 				ExpectedCmd: []string{
@@ -85,11 +95,11 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 				ExpectedCmd: []string{
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectB", "refs/changes/78/789/5",
-					"--depth", "1", "--no-tags",
+					"--no-tags",
 				},
 			},
 			{
-				ExpectedCmd: []string{"git", "checkout", "FETCH_HEAD"},
+				ExpectedCmd: []string{"git", "cherry-pick", "FETCH_HEAD"},
 			},
 		},
 	}
@@ -177,7 +187,7 @@ func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
 		},
 	}
 
-	// The change for testprojectA should be checked out.
+	// The change for testprojectA should be cherry-picked.
 	git.CommandRunnerImpl = &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			{
@@ -191,11 +201,11 @@ func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
 				ExpectedCmd: []string{
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
-					"--depth", "1", "--no-tags",
+					"--no-tags",
 				},
 			},
 			{
-				ExpectedCmd: []string{"git", "checkout", "FETCH_HEAD"},
+				ExpectedCmd: []string{"git", "cherry-pick", "FETCH_HEAD"},
 			},
 		},
 	}

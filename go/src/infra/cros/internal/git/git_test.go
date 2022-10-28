@@ -4,6 +4,7 @@
 package git
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -371,6 +372,41 @@ func TestCheckout(t *testing.T) {
 	assert.ErrorContains(t, Checkout(tmpDir, "branch3"), "did not match any")
 	// Try checking out the first branch.
 	assert.NilError(t, Checkout(tmpDir, "branch1"))
+}
+
+func TestCherryPick(t *testing.T) {
+	ctx := context.Background()
+	CommandRunnerImpl = cmd.RealCommandRunner{}
+
+	tmpDir := "gittest_tmp_dir"
+	tmpDir, err := ioutil.TempDir("", tmpDir)
+	defer os.RemoveAll(tmpDir)
+	assert.NilError(t, err)
+
+	// Create repo.
+	assert.NilError(t, Init(tmpDir, false))
+
+	// Create first branch.
+	assert.NilError(t, CreateBranch(tmpDir, "branch1"))
+
+	// Create two commits on the first branch.
+	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	sha1, err := CommitAll(tmpDir, "commit1")
+	assert.NilError(t, err)
+
+	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
+	sha2, err := CommitAll(tmpDir, "commit1")
+	assert.NilError(t, err)
+
+	// Create second branch based off the first commit (will switch to this branch).
+	assert.NilError(t, Checkout(tmpDir, sha1))
+	assert.NilError(t, CreateBranch(tmpDir, "branch2"))
+
+	// Cherry pick the second commit to the branch.
+	assert.NilError(t, CherryPick(ctx, tmpDir, sha2))
+
+	// Cherry picking a non-existent commit returns an error.
+	assert.ErrorContains(t, CherryPick(ctx, tmpDir, "badsha"), "failed to cherry pick: fatal: bad revision 'badsha'")
 }
 
 func TestDeleteBranch_success(t *testing.T) {
