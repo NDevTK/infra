@@ -12,8 +12,7 @@ import (
 )
 
 var (
-	//go:embed resources/setup_linux.py
-	//go:embed resources/bin/realpath
+	//go:embed resources/linux
 	setupFiles embed.FS
 	setup      cipkg.Generator
 )
@@ -39,7 +38,7 @@ func containers(plat cipkg.Platform) string {
 }
 
 func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	src, err := g.fetchSource()
+	src, srcsEnv, err := g.fetchSource()
 	if err != nil {
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
@@ -52,11 +51,11 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 	base := &utilities.BaseGenerator{
 		Name:    g.Name,
 		Builder: "{{.stdenv_python3}}/bin/python3",
-		Args:    []string{"-I", "-B", "{{.setup}}/setup_linux.py", "{{.stdenv}}"},
+		Args:    []string{"-I", "-B", "{{.stdenv}}/setup/main.py"},
 		Env: append([]string{
 			"buildFlags=",
 			"installFlags=",
-			fmt.Sprintf("srcs={{.%s_source}}", g.Name),
+			srcsEnv,
 			fmt.Sprintf("dockerImage=%s", containers),
 		}, g.Env...),
 		Dependencies: append([]utilities.BaseDependency{

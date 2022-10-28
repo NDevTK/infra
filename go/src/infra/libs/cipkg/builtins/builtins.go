@@ -27,8 +27,8 @@ func Execute(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	switch cmd.Path {
-	case FetchURLBuilder:
-		return fetchURL(ctx, cmd)
+	case FetchURLsBuilder:
+		return fetchURLs(ctx, cmd)
 	case CopyFilesBuilder:
 		return copyFiles(ctx, cmd)
 	case ImportBuilder:

@@ -18,7 +18,27 @@ import (
 	"infra/libs/cipkg"
 )
 
-const FetchURLBuilder = BuiltinBuilderPrefix + "fetchURL"
+// Fetch url(s) in a single derivation. Usually FetchURLsBuilder shouldn't be
+// used directly. Use FetchURLs for downloading multiple URLs and FetchURL for
+// single.
+const FetchURLsBuilder = BuiltinBuilderPrefix + "fetchURLs"
+
+type FetchURLs struct {
+	Name string
+	URLs []FetchURL
+}
+
+func (f *FetchURLs) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
+	arg, err := json.Marshal(f)
+	if err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("encode json failed: %v: %w", arg, err)
+	}
+	return cipkg.Derivation{
+		Name:    f.Name,
+		Builder: FetchURLsBuilder,
+		Args:    []string{string(arg)},
+	}, cipkg.PackageMetadata{}, nil
+}
 
 type FetchURL struct {
 	Name          string
@@ -30,29 +50,34 @@ type FetchURL struct {
 }
 
 func (f *FetchURL) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	arg, err := json.Marshal(f)
-	if err != nil {
-		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("encode json failed: %v: %w", arg, err)
-	}
-	return cipkg.Derivation{
-		Name:    f.Name,
-		Builder: FetchURLBuilder,
-		Args:    []string{string(arg)},
-	}, cipkg.PackageMetadata{}, nil
+	return (&FetchURLs{
+		Name: f.Name,
+		URLs: []FetchURL{*f},
+	}).Generate(ctx)
 }
 
-func fetchURL(ctx context.Context, cmd *exec.Cmd) error {
-	// cmd.Args = ["builtin:fetchURL", FetchURL{...}]
+func fetchURLs(ctx context.Context, cmd *exec.Cmd) error {
+	// cmd.Args = ["builtin:fetchURLs", FetchURLs{...}]
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("invalid arguments: %v", cmd.Args)
 	}
 	out := GetEnv("out", cmd.Env)
 
-	var arg FetchURL
+	var arg FetchURLs
 	if err := json.Unmarshal([]byte(cmd.Args[1]), &arg); err != nil {
 		return fmt.Errorf("parse argument failed: %s: %w", cmd.Args, err)
 	}
 
+	for _, a := range arg.URLs {
+		if err := fetchURL(ctx, out, a); err != nil {
+			return fmt.Errorf("fetch url failed: %v: %w", arg, err)
+		}
+	}
+
+	return nil
+}
+
+func fetchURL(ctx context.Context, out string, arg FetchURL) error {
 	var h hash.Hash
 	switch {
 	case arg.HashAlgorithm == HashIgnore:

@@ -5,22 +5,19 @@ package stdenv
 
 import (
 	"embed"
-	"fmt"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/utilities"
 )
 
 var (
-	//go:embed resources/setup_default.py
-	//go:embed resources/bin/nproc
-	//go:embed resources/bin/python
+	//go:embed resources/darwin
 	setupFiles embed.FS
 	setup      cipkg.Generator
 )
 
 func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	src, err := g.fetchSource()
+	src, srcsEnv, err := g.fetchSource()
 	if err != nil {
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
@@ -28,11 +25,11 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 	base := &utilities.BaseGenerator{
 		Name:    g.Name,
 		Builder: "{{.stdenv_python3}}/bin/python3",
-		Args:    []string{"-I", "-B", "{{.setup}}/setup_default.py", "{{.stdenv}}"},
+		Args:    []string{"-I", "-B", "{{.stdenv}}/setup/main.py"},
 		Env: append([]string{
 			"buildFlags=",
 			"installFlags=",
-			fmt.Sprintf("srcs={{.%s_source}}", g.Name),
+			srcsEnv,
 
 			// Env GREP and SED added here to skip the configure testing them.
 			// TODO(fancl): Update the specs to include gnu grep/sed in the tools if

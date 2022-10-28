@@ -17,6 +17,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/system/filesystem"
 )
 
 type Application struct {
@@ -111,7 +112,11 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		return nil, errors.Annotate(err, "failed to parse cipd platform").Err()
 	}
 
-	specLoaderCfg := spec.DefaultSpecLoaderConfig()
+	vpythonSpecPath := filepath.Join(a.SpecPoolDir, ".vpython3")
+	if _, err := os.Stat(vpythonSpecPath); err != nil {
+		return nil, errors.Annotate(err, "failed to find vpython3 specs").Err()
+	}
+	specLoaderCfg := spec.DefaultSpecLoaderConfig(vpythonSpecPath)
 	specLoaderCfg.CIPDPackagePrefix = a.CIPDPackagePrefix
 	loader, err := spec.NewSpecLoader(os.DirFS(a.SpecPoolDir), specLoaderCfg)
 	if err != nil {
@@ -180,7 +185,7 @@ func (b *PackageBuilder) Add(ctx context.Context, name string) (cipkg.Package, e
 
 // BuildAll(...) builds all added packages.
 func (b *PackageBuilder) BuildAll(ctx context.Context) error {
-	if err := os.RemoveAll(b.BuildTempDir); err != nil {
+	if err := filesystem.RemoveAll(b.BuildTempDir); err != nil {
 		return err
 	}
 	if err := os.Mkdir(b.BuildTempDir, os.ModePerm); err != nil {
@@ -189,6 +194,8 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) error {
 
 	f := func(p cipkg.Package) error {
 		id := p.Derivation().ID()
+		logging.Infof(ctx, "build package %s", id)
+
 		d, err := os.MkdirTemp(b.BuildTempDir, fmt.Sprintf("%s-", id))
 		if err != nil {
 			return err

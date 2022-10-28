@@ -8,7 +8,9 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"path/filepath"
 	"runtime"
+	"strings"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -24,7 +26,7 @@ var stdenv embed.FS
 
 // Initialize resources defined in each platforms.
 func init() {
-	files, err := fs.Sub(setupFiles, "resources")
+	files, err := fs.Sub(setupFiles, filepath.Join("resources", runtime.GOOS))
 	if err != nil {
 		panic(err)
 	}
@@ -154,7 +156,10 @@ type Generator struct {
 	Version  string
 }
 
-func (g *Generator) fetchSource() (cipkg.Generator, error) {
+func (g *Generator) fetchSource() (cipkg.Generator, string, error) {
+	// The name of the source derivation. It's also used in environment variable
+	// srcs to pointing to the location of source file(s), which will be expanded
+	// to absolute path by utilities.BaseGenerator.
 	name := fmt.Sprintf("%s_source", g.Name)
 	switch s := g.Source.(type) {
 	case *SourceGit:
@@ -169,23 +174,31 @@ func (g *Generator) fetchSource() (cipkg.Generator, error) {
 			}),
 			Version:  s.Version,
 			CacheKey: s.CacheKey,
-		}, nil
-	case *SourceURL:
-		return &utilities.WithMetadata{
-			Generator: &builtins.FetchURL{
+		}, fmt.Sprintf("srcs={{.%s}}", name), nil
+	case *SourceURLs:
+		urls := builtins.FetchURLs{
+			Name: name,
+		}
+		var srcs []string
+		for _, u := range s.URLs {
+			urls.URLs = append(urls.URLs, builtins.FetchURL{
 				Name:          name,
-				URL:           s.URL,
-				Filename:      s.Filename,
-				HashAlgorithm: s.HashAlgorithm,
-				HashString:    s.HashString,
-			},
+				URL:           u.URL,
+				Filename:      u.Filename,
+				HashAlgorithm: u.HashAlgorithm,
+				HashString:    u.HashString,
+			})
+			srcs = append(srcs, fmt.Sprintf("{{.%s}}/%s", name, u.Filename))
+		}
+		return &utilities.WithMetadata{
+			Generator: &urls,
 			Metadata: cipkg.PackageMetadata{
 				Version:  s.Version,
 				CacheKey: s.CacheKey,
 			},
-		}, nil
+		}, fmt.Sprintf("srcs=%s", strings.Join(srcs, string(filepath.ListSeparator))), nil
 	default:
-		return nil, fmt.Errorf("unknown source type %#v:", s)
+		return nil, "", fmt.Errorf("unknown source type %#v:", s)
 	}
 }
 
@@ -215,9 +228,13 @@ type SourceURL struct {
 	Filename      string
 	HashAlgorithm crypto.Hash
 	HashString    string
+}
+
+type SourceURLs struct {
+	URLs []SourceURL
 
 	CacheKey string
 	Version  string
 }
 
-func (s *SourceURL) isSourceMethod() {}
+func (s *SourceURLs) isSourceMethod() {}

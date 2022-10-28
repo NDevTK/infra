@@ -7,15 +7,10 @@
 
 import os
 import subprocess
-import sys
-
-# Insert the path to stdenv for python searching setup module.
-sys.path.insert(0, sys.argv[1])
-
-import setup
 
 
-def main() -> None:
+def setup(exe) -> None:
+  """Build hooks for linux."""
   dependencies = []
   appending_envs = {}
 
@@ -77,7 +72,6 @@ def main() -> None:
     dependencies.append(str(ctx.pkg))
     return True
 
-  exe = setup.Execution()
   exe.add_hook('preUnpack', pre_unpack)
   exe.add_hook('executeCmd', execute_cmd)
   exe.add_hook('activatePkg', activate_pkg)
@@ -85,6 +79,4 @@ def main() -> None:
   # Save the directory before we change to source root
   exe.env['buildTemp'] = os.getcwd()
 
-  setup.main(exe)
-
-main()
+setup(exe)

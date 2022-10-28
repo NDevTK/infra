@@ -10,9 +10,7 @@ import (
 )
 
 var (
-	//go:embed resources/setup_default.py
-	//go:embed resources/bin/git-bash
-	//go:embed resources/bin/python
+	//go:embed resources/windows
 	setupFiles embed.FS
 	setup      cipkg.Generator
 )

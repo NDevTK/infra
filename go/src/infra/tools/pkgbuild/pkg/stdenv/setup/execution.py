@@ -300,9 +300,9 @@ class Execution:
         files = os.listdir(src)
         assert len(files) == 1
         src = os.path.join(src, files[0])
-        if not self.execute_one_hook(
-            'unpackCmd', Execution.HookContext.UnpackCmd(src=src)):
-          raise RuntimeError('unpacker not available')
+      if not self.execute_one_hook(
+          'unpackCmd', Execution.HookContext.UnpackCmd(src=src)):
+        raise RuntimeError('unpacker not available')
 
     if not self.execute_one_hook('setSourceRoot'):
       dirs_after = set(f for f in os.listdir() if os.path.isdir(f))
@@ -397,7 +397,7 @@ def _split(s: str, sep: Optional[str] = None) -> List[str]:
   return s.split(sep)
 
 
-def main(exe=None) -> None:
+def main() -> None:
   """The entrypoint of the setup package.
 
   The main() function is supposed to be executed by stdenv derivation and will
@@ -409,14 +409,10 @@ def main(exe=None) -> None:
   from argument or local variable 'exe'. See _execute_implicit_hook(...) for how
   it's implemented.
 
-  Args:
-    exe: Optional execution instance for extra initialization.
-
   Raises:
     RuntimeError: Failed to execute any phases.
   """
-  if not exe:
-    exe = Execution()
+  exe = Execution()
 
   # Extra default hooks
   exe.add_hook('unpackCmd', extract.copy_cmd)
@@ -431,6 +427,7 @@ def main(exe=None) -> None:
   exe.activate_pkgs()
   exe.env['TZ'] = 'UTC'
   exe.env['prefix'] = exe.env['out']
+  exe.env['HOME'] = os.getcwd()
 
   # Generic Builder
   for phase in (
@@ -440,6 +437,8 @@ def main(exe=None) -> None:
       'buildPhase',
       'installPhase',
   ):
+    if exe.env.get(_phase_hook('dont', phase)):
+      continue
     if not exe.execute_all_hooks(_phase_hook('pre', phase)):
       raise RuntimeError(f'failed to execute pre-hook for {phase}')
     if _phase_hook('skip', phase) not in exe.env:
@@ -447,7 +446,7 @@ def main(exe=None) -> None:
     if not exe.execute_all_hooks(_phase_hook('post', phase)):
       raise RuntimeError(f'failed to execute post-hook for {phase}')
 
-    if Execution.ENV_SOURCE_ROOT in exe.env:
+    if phase == 'unpackPhase' and Execution.ENV_SOURCE_ROOT in exe.env:
       os.chdir(exe.env[Execution.ENV_SOURCE_ROOT])
 
   exe.execute_all_hooks('postHook')

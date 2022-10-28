@@ -50,19 +50,17 @@ type SpecLoaderConfig struct {
 	SourceResolver        SourceResolver
 }
 
-func DefaultSpecLoaderConfig() *SpecLoaderConfig {
+func DefaultSpecLoaderConfig(vpythonSpecPath string) *SpecLoaderConfig {
 	return &SpecLoaderConfig{
 		CIPDPackagePrefix:     "",
 		CIPDSourceCachePrefix: "sources",
-		SourceResolver:        &DefaultSourceResolver{},
+		SourceResolver: &DefaultSourceResolver{
+			VPythonSpecPath: vpythonSpecPath,
+		},
 	}
 }
 
 func NewSpecLoader(dir fs.FS, cfg *SpecLoaderConfig) (*SpecLoader, error) {
-	if cfg == nil {
-		cfg = DefaultSpecLoaderConfig()
-	}
-
 	// Copy embedded files
 	fromSpecFS, err := fs.Sub(fromSpecSupport, "from_spec")
 	if err != nil {
@@ -143,7 +141,7 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 	if err != nil {
 		return nil, err
 	}
-	if err := create.ParseSource(fullName, l.cipdPackagePrefix, l.cipdSourceCachePrefix, l.sourceResolver); err != nil {
+	if err := create.ParseSource(def, l.cipdPackagePrefix, l.cipdSourceCachePrefix, hostCipdPlatform, l.sourceResolver); err != nil {
 		return nil, err
 	}
 	if err := create.FindPatches(defDerivation); err != nil {
@@ -163,12 +161,12 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 			{Type: cipkg.DepsBuildHost, Generator: defDerivation},
 			{Type: cipkg.DepsBuildHost, Generator: l.embedSupportFilesDerivation},
 		}, create.Dependencies...),
-		Env: []string{
+		Env: append([]string{
 			fmt.Sprintf("patches=%s", strings.Join(create.Patches, string(os.PathListSeparator))),
 			fmt.Sprintf("fromSpecInstall=%s", create.Installer),
 			fmt.Sprintf("_3PP_PLATFORM=%s", hostCipdPlatform),
 			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", platform.CurrentPlatform()),
-		},
+		}, create.Enviroments...),
 		CacheKey: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
 		Version:  create.Version,
 	}
@@ -189,6 +187,7 @@ type createParser struct {
 	Patches      []string
 	Installer    string
 	Dependencies []utilities.BaseDependency
+	Enviroments  []string
 
 	host   string
 	create *Spec_Create
@@ -241,42 +240,55 @@ func gitCachePath(url string) string {
 // definition in stdenv. Versions are fetched during the parsing so the source
 // definition can be deterministic.
 // Source may be cached based on CacheKey.
-func (p *createParser) ParseSource(name, packagePrefix, sourceCachePrefix string, resolver SourceResolver) error {
+func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePrefix, hostCipdPlatform string, resolver SourceResolver) error {
 	source := p.create.GetSource()
+
+	// Subdir is only used by go packages before go module and can be easily
+	// replaced by a simple move after unpack stage.
+	if source.GetSubdir() != "" {
+		return fmt.Errorf("source.subdir not supported.")
+	}
+
+	if source.GetUnpackArchive() {
+		p.Enviroments = append(p.Enviroments, "_3PP_UNPACK_ARCHIVE=1")
+	}
+
+	if source.GetNoArchivePrune() {
+		p.Enviroments = append(p.Enviroments, "_3PP_NO_ARCHIVE_PRUNE=1")
+	}
 
 	s, v, err := func() (stdenv.Source, string, error) {
 		switch source.GetMethod().(type) {
 		case *Spec_Create_Source_Git:
 			s := source.GetGit()
-			tag, commit, err := resolver.ResolveGitSource(s)
+			info, err := resolver.ResolveGitSource(s)
 			if err != nil {
 				return nil, "", fmt.Errorf("failed to resolve git ref: %w", err)
 			}
 			return &stdenv.SourceGit{
 				URL: s.GetRepo(),
-				Ref: commit,
+				Ref: info.Commit,
 
 				CacheKey: (&url.URL{
 					Path: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.GetRepo())),
 					RawQuery: url.Values{
 						"subdir": {"src"},
-						"tag":    {fmt.Sprintf("2@%s", tag)},
+						"tag":    {fmt.Sprintf("2@%s", info.Tag)},
 					}.Encode(),
 				}).String(),
-			}, tag, nil
+			}, info.Tag, nil
 		case *Spec_Create_Source_Url:
 			s := source.GetUrl()
 			ext := s.GetExtension()
 			if ext == "" {
 				ext = ".tar.gz"
 			}
-			return &stdenv.SourceURL{
-				URL:           s.GetDownloadUrl(),
-				Filename:      fmt.Sprintf("raw_source_0%s", ext),
-				HashAlgorithm: builtins.HashIgnore,
-
+			return &stdenv.SourceURLs{
+				URLs: []stdenv.SourceURL{
+					{URL: s.GetDownloadUrl(), Filename: fmt.Sprintf("raw_source_0%s", ext), HashAlgorithm: builtins.HashIgnore},
+				},
 				CacheKey: (&url.URL{
-					Path: path.Join(packagePrefix, sourceCachePrefix, "url", name, p.host),
+					Path: path.Join(packagePrefix, sourceCachePrefix, "url", def.FullNameWithOverride(), p.host),
 					RawQuery: url.Values{
 						"tag": {fmt.Sprintf("2@%s", s.GetVersion())},
 					}.Encode(),
@@ -285,7 +297,43 @@ func (p *createParser) ParseSource(name, packagePrefix, sourceCachePrefix string
 		case *Spec_Create_Source_Cipd:
 			// source.GetCipd()
 		case *Spec_Create_Source_Script:
-			// source.GetScript()
+			s := source.GetScript()
+			info, err := resolver.ResolveScriptSource(hostCipdPlatform, def.Dir, s)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to resolve latest: %w", err)
+			}
+
+			// info.Name is optional.
+			names := info.Name
+			if len(names) == 0 {
+				for i := range info.URL {
+					names = append(names, fmt.Sprintf("raw_source_%d%s", i, info.Ext))
+				}
+			}
+
+			// Number of names must equal to urls.
+			if len(names) != len(info.URL) {
+				return nil, "", fmt.Errorf("failed to get download urls: number of urls should be equal to artifacts: %w", err)
+			}
+
+			var urls []stdenv.SourceURL
+			for i, url := range info.URL {
+				urls = append(urls, stdenv.SourceURL{
+					URL:           url,
+					Filename:      names[i],
+					HashAlgorithm: builtins.HashIgnore,
+				})
+			}
+
+			return &stdenv.SourceURLs{
+				URLs: urls,
+				CacheKey: (&url.URL{
+					Path: path.Join(packagePrefix, sourceCachePrefix, "script", def.FullNameWithOverride(), p.host),
+					RawQuery: url.Values{
+						"tag": {fmt.Sprintf("2@%s", info.Version)},
+					}.Encode(),
+				}).String(),
+			}, info.Version, nil
 		}
 		return nil, "", fmt.Errorf("unknown source type from spec")
 	}()
@@ -293,7 +341,9 @@ func (p *createParser) ParseSource(name, packagePrefix, sourceCachePrefix string
 		return err
 	}
 
+	p.Enviroments = append(p.Enviroments, fmt.Sprintf("_3PP_VERSION=%s", v))
 	if pv := p.create.GetSource().GetPatchVersion(); pv != "" {
+		p.Enviroments = append(p.Enviroments, fmt.Sprintf("_3PP_PATCH_VERSION=%s", pv))
 		v = v + "." + pv
 	}
 	p.Version = v
@@ -340,6 +390,10 @@ func (p *createParser) ParseBuilder(drv *builtins.CopyFiles) error {
 
 func (p *createParser) LoadDependencies(l *SpecLoader) error {
 	build := p.create.GetBuild()
+	if build == nil {
+		p.Enviroments = append(p.Enviroments, "_3PP_NO_INSTALL=1")
+		return nil
+	}
 
 	fromSpecByURI := func(dep, host string) (cipkg.Generator, error) {
 		// tools/go117@1.17.10

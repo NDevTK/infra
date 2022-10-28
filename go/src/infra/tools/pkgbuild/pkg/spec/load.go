@@ -9,7 +9,7 @@ import (
 	"io/fs"
 	"path"
 	"path/filepath"
-	"strings"
+	"regexp"
 
 	"google.golang.org/protobuf/encoding/prototext"
 )
@@ -28,13 +28,29 @@ type PackageDef struct {
 	Dir  fs.FS
 }
 
+var validDerivationNameChar = regexp.MustCompile("^([0-9])|[^a-zA-Z0-9_]")
+
 // DerivationName is a valid derivation name for using inside the pkgbuild.
 func (p *PackageDef) DerivationName() string {
-	return strings.ReplaceAll(p.packageName, "-", "_")
+	// 1. Prepend the first character with _ if it's a number.
+	// 2. Replace all characters other than numbers and alphabets with _.
+	return validDerivationNameChar.ReplaceAllString(p.packageName, "_$1")
 }
 
 // FullName is the package's name constructed by <pkg_prefix>/<package_name>.
+// This is used for referring other packages in the specs.
 func (p *PackageDef) FullName() string {
+	upload := p.Spec.GetUpload()
+	if upload == nil {
+		return p.packageName
+	}
+	return path.Join(upload.PkgPrefix, p.packageName)
+}
+
+// FullNameWithOverride is the package's name constructed by
+// <pkg_prefix>/<package_name> with possible override from upload.
+// This is used for uploading or retrieving packages from remote.
+func (p *PackageDef) FullNameWithOverride() string {
 	upload := p.Spec.GetUpload()
 	if upload == nil {
 		return p.packageName
@@ -47,7 +63,7 @@ func (p *PackageDef) FullName() string {
 }
 
 func (p *PackageDef) CIPDPath(prefix, host string) string {
-	u := path.Join(prefix, p.FullName())
+	u := path.Join(prefix, p.FullNameWithOverride())
 	if !p.Spec.GetUpload().GetUniversal() {
 		u = path.Join(u, host)
 	}

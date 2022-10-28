@@ -140,7 +140,7 @@ def unpack_cmd(exe, include_files: str = '*') -> bool:
       '.bz2', '.tbz', '.tbz2', '.tb2',
   }:
     untar(src, out, stats, True, include_filter)
-  elif ext in set('.zip'):
+  elif ext in {'.zip'}:
     unzip(src, out, stats, include_filter)
   else:
     return False
@@ -150,11 +150,12 @@ def unpack_cmd(exe, include_files: str = '*') -> bool:
 
 def copy_cmd(exe) -> bool:
   ctx = exe.current_context
-  dst = os.path.join(os.getcwd(), 'src')
-
   src = os.path.abspath(ctx.src)
-  if not os.path.isdir(src):
-    return False
+  dst = os.path.join(os.getcwd(), os.path.basename(src))
 
-  shutil.copytree(src, dst, symlinks=False)
+  if os.path.isdir(src):
+    shutil.copytree(src, dst, symlinks=True)
+  else:
+    shutil.copyfile(src, dst)
+
   return True
