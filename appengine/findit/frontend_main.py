@@ -21,14 +21,6 @@ from handlers import triage_suspected_cl
 from handlers import trooper
 from handlers import try_job_dashboard
 from handlers import url_redirect
-from handlers.flake import check_flake
-from handlers.flake import flake_culprit
-from handlers.flake import list_flakes
-from handlers.flake import triage_flake_analysis
-from handlers.flake.detection import rank_flakes
-from handlers.flake.detection import show_flake
-from handlers.flake.reporting import component_report
-from handlers.flake.reporting import flake_report
 
 # App Engine pipeline status pages.
 pipeline_status_handler_mappings = [
@@ -65,22 +57,3 @@ waterfall_frontend_web_application = webapp2.WSGIApplication(
 if appengine_util.IsInProductionApp():
   gae_ts_mon.initialize_prod(waterfall_frontend_web_application)
 
-# Flake frontend.
-flake_detection_frontend_web_pages_handler_mappings = [
-    ('/p/chromium/flake-portal', rank_flakes.RankFlakes),
-    ('/p/chromium/flake-portal/flakes', rank_flakes.RankFlakes),
-    ('/p/chromium/flake-portal/flakes/occurrences', show_flake.ShowFlake),
-    ('/p/chromium/flake-portal/analysis', list_flakes.ListFlakes),
-    ('/p/chromium/flake-portal/analysis/analyze', check_flake.CheckFlake),
-    ('/p/chromium/flake-portal/analysis/culprit', flake_culprit.FlakeCulprit),
-    ('/p/chromium/flake-portal/analysis/triage',
-     triage_flake_analysis.TriageFlakeAnalysis),
-    ('/p/chromium/flake-portal/report', flake_report.FlakeReport),
-    ('/p/chromium/flake-portal/report/component',
-     component_report.ComponentReport),
-    (r'/.*', url_redirect.URLRedirect),
-]
-flake_detection_frontend_web_application = webapp2.WSGIApplication(
-    flake_detection_frontend_web_pages_handler_mappings, debug=False)
-if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(flake_detection_frontend_web_application)

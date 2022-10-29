@@ -3,36 +3,6 @@ cron:
   url: /internal/cron/ts_mon/send
   schedule: every 1 minutes
 
-# Hidden flakes uses a different schedule because is much more expensive to run.
-- description: Query and store hidden flakes.
-  url: /flake/detection/cron/detect-hidden-flakes
-  schedule: every 2 hours
-  retry_parameters:
-    job_retry_limit: 0
-
-- description: Query and store non-hidden flakes.
-  url: /flake/detection/cron/detect-non-hidden-flakes
-  schedule: every 5 minutes
-  retry_parameters:
-    job_retry_limit: 0
-
-- description: Count occurrences and impacted CLs for each flake
-  url: /flake/detection/cron/update-flake-counts
-  schedule: every 2 hours
-  retry_parameters:
-    job_retry_limit: 0
-
-- description: Prepare weekly flakiness report by component and test from flake occurrences
-  url: /flake/detection/cron/generate-flakiness-report
-  # Everyday at 12AM PST expressed in UTC.
-  schedule: every day 08:00
-
-- description: File bugs and trigger analyses on selected flakes.
-  url: /flake/detection/cron/process-flakes
-  schedule: every 5 minutes
-  retry_parameters:
-    job_retry_limit: 0
-
 - description: Query and export file coverage metrics to bigquery.
   url: /coverage/cron/files-absolute-coverage
   schedule: every day 01:00

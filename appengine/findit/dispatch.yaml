@@ -2,12 +2,6 @@ dispatch:
   - url: "*/robots.txt"
     module: default
 
-  - url: "*/flake/detection/cron/*"
-    module: flake-detection-backend
-
-  - url: "*/flake/detection/task/*"
-    module: flake-detection-backend
-
   - url: "*/waterfall/*"
     module: frontend
 
@@ -36,6 +30,3 @@ dispatch:
   - url: "*/coverage*"
     module: code-coverage-frontend
 
-  # This is for the service on flakiness.
-  - url: "*/p/chromium/flake*"
-    module: frontend

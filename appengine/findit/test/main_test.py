@@ -4,7 +4,6 @@
 
 from testing_utils import testing
 
-import backend_main
 import frontend_main
 
 
