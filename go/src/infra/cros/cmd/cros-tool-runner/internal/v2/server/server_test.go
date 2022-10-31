@@ -128,7 +128,7 @@ func TestStartContainer_invalidPort_range(t *testing.T) {
 	}
 }
 
-func TestStartContainer_pullError(t *testing.T) {
+func TestStartContainer_pullError_ignored(t *testing.T) {
 	errorMapping := make(map[string]string)
 	errorMapping["*commands.DockerPull"] = "Permission \"artifactregistry.repositories.downloadArtifacts\" denied on resource"
 	executor := mockExecutor{commandsToThrowError: errorMapping}
@@ -138,11 +138,14 @@ func TestStartContainer_pullError(t *testing.T) {
 		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457",
 		StartCommand:   []string{"cros-dut"},
 	})
-	if err == nil {
-		t.Fatalf("Expect permissionDenied error")
+	if err != nil {
+		t.Fatalf("Expect pull error to be ignored")
 	}
-	if len(executor.commandsExecuted) != 0 {
-		t.Fatalf("Expect no commands have been executed")
+	if len(executor.commandsExecuted) != 1 {
+		t.Fatalf("Expect 1 command has been executed")
+	}
+	if executor.commandsExecuted[0] != "*commands.DockerRun" {
+		t.Fatalf("Expect docker run have been executed")
 	}
 }
 

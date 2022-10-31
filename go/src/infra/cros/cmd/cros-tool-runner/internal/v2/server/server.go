@@ -170,7 +170,7 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	}
 	pullErr := s.pullImage(ctx, request.ContainerImage)
 	if pullErr != nil {
-		return nil, pullErr
+		log.Printf("warning: error when pulling image: %s", pullErr)
 	}
 
 	cmd := commands.DockerRun{StartContainerRequest: request}
