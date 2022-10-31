@@ -179,7 +179,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool) (
 		args = append(args, d.PortMappings...)
 	}
 
-	args = append(args, d.pulledImage)
+	args = append(args, d.RequestedImageName)
 	if len(d.ExecCommand) > 0 {
 		args = append(args, d.ExecCommand...)
 	}
