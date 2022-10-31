@@ -9,6 +9,7 @@ package unifiedfleet.api.v1.models.chromeos.lab;
 option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 
@@ -47,23 +48,7 @@ message Peripherals {
   repeated BluetoothPeer bluetooth_peers = 16;
 }
 
-// NOTE: RPM cannot be used as there's a same message in api/v1/models/peripherals.proto
-//
-// Rename this to OSRPM
-//
-// Remote power management info.
-// Next Tag: 3
-// message RPM {
-//   string powerunit_name = 1;
-//   string powerunit_outlet = 2;
-// }
 
-// Remote power management info.
-// Next Tag: 3
-message OSRPM {
-  string powerunit_name = 1;
-  string powerunit_outlet = 2;
-}
 
 // Next Tag: 3
 enum CameraType {
