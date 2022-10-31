@@ -416,29 +416,25 @@ func crosRepairActions() map[string]*Action {
 				"CBI is present",
 				"UFS contains CBI contents",
 			},
-			ExecName:               "cros_cbi_contents_do_not_match",
-			AllowFailAfterRecovery: true,
+			ExecName: "cros_cbi_contents_do_not_match",
 		},
 		"UFS contains CBI contents": {
 			Docs: []string{
 				"Check if UFS contents are stored in UFS.",
 			},
-			ExecName:               "cros_ufs_contains_cbi_contents",
-			AllowFailAfterRecovery: true,
+			ExecName: "cros_ufs_contains_cbi_contents",
 		},
 		"UFS does not contain CBI contents": {
 			Docs: []string{
 				"Check if UFS contents are not stored in UFS.",
 			},
-			ExecName:               "cros_ufs_does_not_contain_cbi_contents",
-			AllowFailAfterRecovery: true,
+			ExecName: "cros_ufs_does_not_contain_cbi_contents",
 		},
 		"CBI is present": {
 			Docs: []string{
 				"Check if CBI is present on the DUT (most devices manufactured after 2020 should have CBI) go/cros-board-info",
 			},
-			ExecName:               "cros_cbi_is_present",
-			AllowFailAfterRecovery: true,
+			ExecName: "cros_cbi_is_present",
 		},
 		"Login UI is up": {
 			Docs: []string{
