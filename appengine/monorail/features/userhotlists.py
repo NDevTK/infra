@@ -13,11 +13,10 @@ import ezt
 from features import features_bizobj
 from features import hotlist_views
 from framework import framework_views
-from framework import servlet
 from framework import flaskservlet
 
 
-class UserHotlists(servlet.Servlet):
+class UserHotlists(flaskservlet.FlaskServlet):
   """Servlet to display all of a user's hotlists."""
 
   _PAGE_TEMPLATE = 'features/user-hotlists.ezt'
@@ -83,8 +82,8 @@ class UserHotlists(servlet.Servlet):
     help_data['cue'] = 'explain_hotlist_starring'
     return help_data
 
-  # def GetUserHotlistsPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetUserHotlistsPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostUserHotlistsPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostUserHotlistsPage(self, **kwargs):
+    return self.handler(**kwargs)

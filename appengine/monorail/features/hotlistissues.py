@@ -8,7 +8,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import ezt
 
 import settings
@@ -21,12 +20,10 @@ from features import features_constants
 from features import hotlist_helpers
 from framework import exceptions
 from framework import flaskservlet
-from framework import servlet
 from framework import sorting
 from framework import permissions
 from framework import framework_helpers
 from framework import paginate
-from framework import framework_constants
 from framework import framework_views
 from framework import grid_view_helpers
 from framework import template_helpers
@@ -43,7 +40,7 @@ _MSG_ISSUES_NOT_FOUND = 'One or more of your issues were not found.'
 _MSG_ISSUES_NOT_VIEWABLE = 'You lack permission to view one or more issues.'
 
 
-class HotlistIssues(servlet.Servlet):
+class HotlistIssues(flaskservlet.FlaskServlet):
   """HotlistIssues is a page that shows the issues of one hotlist."""
 
   _PAGE_TEMPLATE = 'features/hotlist-issues-page.ezt'
@@ -349,8 +346,8 @@ class HotlistIssues(servlet.Servlet):
 
     return grid_view_data
 
-  # def GetHotlistIssuesPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetHotlistIssuesPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostHotlistIssuesPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostHotlistIssuesPage(self, **kwargs):
+    return self.handler(**kwargs)

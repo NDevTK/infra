@@ -33,7 +33,7 @@ class BanSpammerTest(unittest.TestCase):
         project=fake.ProjectService(),
         spam=fake.SpamService(),
         user=fake.UserService())
-    self.servlet = banspammer.BanSpammer('req', 'res', services=self.services)
+    self.servlet = banspammer.BanSpammer(services=self.services)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
   def testProcessFormData_noPermission(self, get_client_mock):
@@ -117,7 +117,7 @@ class BanSpammerTaskTest(unittest.TestCase):
     mr = testing_helpers.MakeMonorailRequest(
         path=urls.BAN_SPAMMER_TASK + '.do', method='POST',
         params={'spammer_id': 111, 'reporter_id': 222})
-
+            
     for i in range(0, 12):
       issue = fake.MakeTestIssue(
           1, i, 'issue_summary', 'New', 111, project_name='project-name')

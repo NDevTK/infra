@@ -35,8 +35,7 @@ class HotlistDetailsTest(unittest.TestCase):
     self.user_2 = self.user_service.TestAddUser('user2@test.com', 222)
     services = service_manager.Services(
         features=fake.FeaturesService(), user=self.user_service)
-    self.servlet = hotlistdetails.HotlistDetails(
-        'req', 'res', services=services)
+    self.servlet = hotlistdetails.HotlistDetails(services=services)
     self.hotlist = self.servlet.services.features.TestAddHotlist(
         'hotlist', summary='hotlist summary', description='hotlist description',
         owner_ids=[111], editor_ids=[222])

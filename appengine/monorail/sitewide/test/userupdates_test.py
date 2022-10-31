@@ -47,7 +47,7 @@ class ProjectUpdatesTest(unittest.TestCase):
     self.mox.ResetAll()
 
   def testUserUpdatesProjects(self):
-    uup = userupdates.UserUpdatesProjects(None, None, self.services)
+    uup = userupdates.UserUpdatesProjects(self.services)
 
     self.mox.StubOutWithMock(sitewide_helpers, 'GetViewableStarredProjects')
     sitewide_helpers.GetViewableStarredProjects(
@@ -73,7 +73,7 @@ class ProjectUpdatesTest(unittest.TestCase):
     self.assertEqual(uup._TAB_MODE, page_data['user_updates_tab_mode'])
 
   def testUserUpdatesDevelopers(self):
-    uud = userupdates.UserUpdatesDevelopers(None, None, self.services)
+    uud = userupdates.UserUpdatesDevelopers(self.services)
 
     self.mox.StubOutWithMock(self.services.user_star, 'LookupStarredItemIDs')
     self.services.user_star.LookupStarredItemIDs(
@@ -97,7 +97,7 @@ class ProjectUpdatesTest(unittest.TestCase):
     self.assertEqual(uud._TAB_MODE, page_data['user_updates_tab_mode'])
 
   def testUserUpdatesIndividual(self):
-    uui = userupdates.UserUpdatesIndividual(None, None, self.services)
+    uui = userupdates.UserUpdatesIndividual(self.services)
 
     self.mox.StubOutWithMock(activities, 'GatherUpdatesData')
     activities.GatherUpdatesData(

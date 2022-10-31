@@ -47,8 +47,7 @@ class HotlistIssuesUnitTest(unittest.TestCase):
         features=fake.FeaturesService(),
         cache_manager=fake.CacheManager(),
         hotlist_star=fake.HotlistStarService())
-    self.servlet = hotlistissues.HotlistIssues(
-        'req', 'res', services=self.services)
+    self.servlet = hotlistissues.HotlistIssues(services=self.services)
     self.user1 = self.services.user.TestAddUser('testuser@gmail.com', 111)
     self.user2 = self.services.user.TestAddUser('testuser2@gmail.com', 222, )
     self.services.project.TestAddProject('project-name', project_id=1)

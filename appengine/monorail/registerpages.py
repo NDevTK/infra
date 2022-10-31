@@ -13,23 +13,8 @@ import webapp2
 import settings
 
 from features import autolink
-from features import dateaction
-from features import banspammer
-from features import hotlistdetails
-from features import hotlistissues
-from features import hotlistissuescsv
-from features import hotlistpeople
-from features import filterrules
-from features import pubsub
-from features import userhotlists
-from features import notify
-from features import rerankhotlist
-from features import savedqueries
 
 from framework import csp_report
-from framework import deleteusers
-from framework import trimvisitedpages
-from framework import reap
 from framework import registerpages_helpers
 from framework import urls
 
@@ -43,13 +28,7 @@ from project import projectsummary
 from project import projectupdates
 from project import redirects
 
-from services import cachemanager_svc
-from services import client_config_svc
-
 from sitewide import custom_404
-from sitewide import userprofile
-from sitewide import userclearbouncing
-from sitewide import userupdates
 
 from tracker import componentcreate
 from tracker import componentdetail
@@ -71,7 +50,6 @@ from tracker import issuereindex
 from tracker import issuetips
 from tracker import templatecreate
 from tracker import templatedetail
-from tracker import fltconversion
 
 from api import api_routes as api_routes_v0
 from api.v3 import api_routes as api_routes_v3
@@ -118,30 +96,9 @@ class ServletRegistry(object):
         spec_dict, base='/p/<project_name:%s>' % self._PROJECT_NAME_REGEX,
         post_does_write=post_does_write)
 
-  def _SetupUserServlets(self, spec_dict, post_does_write=True):
-    """Register each of the given servlets in the user URI space."""
-    self._SetupServlets(
-        spec_dict, base='/u/<viewed_username:%s>' % self._USERNAME_REGEX,
-        post_does_write=post_does_write)
-
-  def _SetupGroupServlets(self, spec_dict, post_does_write=True):
-    """Register each of the given servlets in the user group URI space."""
-    self._SetupServlets(
-        spec_dict, base='/g/<viewed_username:%s>' % self._USERNAME_REGEX,
-        post_does_write=post_does_write)
-
-  def _SetupUserHotlistServlets(self, spec_dict, post_does_write=True):
-    """ Register given user hotlist servlets in the user URI space."""
-    self._SetupServlets(
-        spec_dict,
-        base ='/u/<viewed_username:%s>/hotlists/<hotlist_id:%s>'
-        % (self._USERNAME_REGEX, self._HOTLIST_ID_NAME_REGEX),
-        post_does_write=post_does_write)
-
   def Register(self, services):
     """Register all the monorail request handlers."""
     self._RegisterFrameworkHandlers()
-    self._RegisterSitewideHandlers()
     self._RegisterProjectHandlers()
     self._RegisterIssueHandlers()
     self._RegisterWebComponentsHanders()
@@ -254,17 +211,6 @@ class ServletRegistry(object):
     self._AddRoute(base + urls.ISSUE_DETAIL,
                    webcomponentspage.WebComponentsPage, 'GET')
 
-    self._SetupUserServlets({
-        urls.SAVED_QUERIES: savedqueries.SavedQueries,
-        urls.HOTLISTS: userhotlists.UserHotlists,
-        })
-
-    user_hotlists_redir = registerpages_helpers.MakeRedirectInScope(
-        urls.HOTLISTS, 'u', keep_qs=True)
-    self._SetupUserServlets({
-        '/hotlists/': user_hotlists_redir,
-        })
-
     # These servlets accept POST, but never write to the database, so they can
     # still be used when the site is read-only.
     self._SetupProjectServlets({
@@ -289,32 +235,6 @@ class ServletRegistry(object):
                 csp_report.CSPReportPage,
         })
 
-  def _RegisterSitewideHandlers(self):
-    """Register page and form handlers that aren't associated with projects."""
-
-    self._SetupUserServlets({
-        urls.USER_PROFILE: userprofile.UserProfile,
-        urls.BAN_USER: userprofile.BanUser,
-        urls.BAN_SPAMMER: banspammer.BanSpammer,
-        urls.USER_CLEAR_BOUNCING: userclearbouncing.UserClearBouncing,
-        urls.USER_UPDATES_PROJECTS: userupdates.UserUpdatesProjects,
-        urls.USER_UPDATES_DEVELOPERS: userupdates.UserUpdatesDevelopers,
-        urls.USER_UPDATES_MINE: userupdates.UserUpdatesIndividual,
-        })
-
-    self._SetupUserHotlistServlets(
-        {
-            urls.HOTLIST_ISSUES: hotlistissues.HotlistIssues,
-            urls.HOTLIST_ISSUES_CSV: hotlistissuescsv.HotlistIssuesCsv,
-            urls.HOTLIST_PEOPLE: hotlistpeople.HotlistPeopleList,
-            urls.HOTLIST_DETAIL: hotlistdetails.HotlistDetails,
-            urls.HOTLIST_RERANK_JSON: rerankhotlist.RerankHotlistIssue,
-        })
-
-    profile_redir = registerpages_helpers.MakeRedirectInScope(
-        urls.USER_PROFILE, 'u')
-    self._SetupUserServlets({'': profile_redir})
-
   def _RegisterWebComponentsHanders(self):
     """Register page handlers that are handled by WebComponentsPage."""
     self._AddRoute('/', webcomponentspage.ProjectListPage, 'GET')
@@ -330,8 +250,6 @@ class ServletRegistry(object):
         {
             '/p': redirect,
             '/p/': redirect,
-            '/u': redirect,
-            '/u/': redirect,
             '/': redirect,
         })
 

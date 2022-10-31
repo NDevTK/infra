@@ -61,5 +61,5 @@ class HotlistIssuesCsv(hotlistissues.HotlistIssues):
     return csv_helpers.ReformatRowsForCSV(
         mr, page_data, '%d/csv' % mr.hotlist_id)
 
-  # def GetHotlistIssuesCsvPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetHotlistIssuesCsvPage(self, **kwargs):
+    return self.handler(**kwargs)

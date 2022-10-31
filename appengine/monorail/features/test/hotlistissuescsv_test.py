@@ -12,7 +12,7 @@ import unittest
 
 from google.appengine.ext import testbed
 
-import webapp2
+import flask
 
 from framework import permissions
 from framework import sorting
@@ -38,8 +38,8 @@ class HotlistIssuesCsvTest(unittest.TestCase):
         project=fake.ProjectService(),
         cache_manager=fake.CacheManager(),
         features=fake.FeaturesService())
-    self.servlet = hotlistissuescsv.HotlistIssuesCsv(
-        'req', webapp2.Response(), services=self.services)
+    self.servlet = hotlistissuescsv.HotlistIssuesCsv(services=self.services)
+    self.servlet.response = flask.Response()
     self.user1 = self.services.user.TestAddUser('testuser@gmail.com', 111)
     self.user2 = self.services.user.TestAddUser('testuser2@gmail.com', 222)
     self.services.project.TestAddProject('project-name', project_id=1)

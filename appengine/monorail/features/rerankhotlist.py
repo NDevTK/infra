@@ -19,8 +19,7 @@ from services import features_svc
 from tracker import rerank_helpers
 
 
-# TODO: convert to FLaskJsonFeed while conver to flask
-class RerankHotlistIssue(jsonfeed.JsonFeed):
+class RerankHotlistIssue(jsonfeed.FlaskJsonFeed):
   """Rerank an issue in a hotlist."""
 
   def AssertBasePermission(self, mr):
@@ -136,8 +135,8 @@ class RerankHotlistIssue(jsonfeed.JsonFeed):
         mr.target_id, mr.split_above, untouched_items)
     return rerank_helpers.GetInsertRankings(lower, higher, mr.moved_ids)
 
-  # def GetRerankHotlistIssuePage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetRerankHotlistIssuePage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostRerankHotlistIssuePage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostRerankHotlistIssuePage(self, **kwargs):
+    return self.handler(**kwargs)

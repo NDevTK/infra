@@ -16,7 +16,6 @@ from features import hotlist_helpers
 from framework import framework_bizobj
 from framework import flaskservlet
 from framework import framework_helpers
-from framework import servlet
 from framework import permissions
 from framework import urls
 
@@ -29,7 +28,7 @@ _MSG_HOTLIST_NAME_NOT_AVAIL = 'You already have a hotlist with that name.'
 _MSG_INVALID_HOTLIST_NAME = "Invalid hotlist name. Please make sure your hotlist name begins with a letter followed by any number of letters, numbers, -'s, and .'s"
 
 
-class HotlistDetails(servlet.Servlet):
+class HotlistDetails(flaskservlet.FlaskServlet):
   """A page with hotlist details and editing options."""
 
   _PAGE_TEMPLATE = 'features/hotlist-details-page.ezt'
@@ -123,8 +122,8 @@ class HotlistDetails(servlet.Servlet):
       default_col_spec = post_data['default_col_spec']
     return summary, description, name, default_col_spec
 
-  # def GetHotlistDetailsPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetHotlistDetailsPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostHotlistDetailsPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostHotlistDetailsPage(self, **kwargs):
+    return self.handler(**kwargs)

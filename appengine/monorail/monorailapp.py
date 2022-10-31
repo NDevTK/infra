@@ -44,7 +44,7 @@ app = dispatcher.DispatcherMiddleware(
         '/hosting': flask_regist.RegisterHostingUrl(services),
         '/g': flask_regist.RegisterGroupUrls(services),
         # '/p': flask_regist.RegisterProjectUrls(services),
-        # '/u': flask_regist.RegisterUserUrls(services),
+        '/u': flask_regist.RegisterUserUrls(services),
         '/_task': flask_regist.RegisterTaskUrl(services),
         '/_cron': flask_regist.RegisterCronUrl(services),
         '/_backend': flask_regist.RegisterBackendUrl(services),

@@ -39,8 +39,7 @@ class HotlistPeopleListTest(unittest.TestCase):
         'PrivateHotlist', 'owner only', [111], [222], is_private=True)
     self.public_hotlist = self.services.features.TestAddHotlist(
         'PublicHotlist', 'everyone', [111], [222], is_private=False)
-    self.servlet = hotlistpeople.HotlistPeopleList(
-        'req', 'res', services=self.services)
+    self.servlet = hotlistpeople.HotlistPeopleList(services=self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):

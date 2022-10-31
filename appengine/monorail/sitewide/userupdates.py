@@ -21,13 +21,11 @@ import ezt
 
 from businesslogic import work_env
 from features import activities
-from framework import servlet
 from framework import flaskservlet
 from framework import urls
-from sitewide import sitewide_helpers
 
 
-class AbstractUserUpdatesPage(servlet.Servlet):
+class AbstractUserUpdatesPage(flaskservlet.FlaskServlet):
   """Base class for user updates pages."""
 
   _PAGE_TEMPLATE = 'sitewide/user-updates-page.ezt'
@@ -88,8 +86,8 @@ class UserUpdatesProjects(AbstractUserUpdatesPage):
           viewed_user_id=mr.viewed_user_auth.user_id)
     return [project.project_id for project in starred_projects]
 
-  # def GetUserUpdatesProjectsPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetUserUpdatesProjectsPage(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 class UserUpdatesDevelopers(AbstractUserUpdatesPage):
@@ -108,8 +106,8 @@ class UserUpdatesDevelopers(AbstractUserUpdatesPage):
     logging.debug('StarredUsers: %r', user_ids)
     return user_ids
 
-  # def GetUserUpdatesDevelopersPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetUserUpdatesDevelopersPage(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 class UserUpdatesIndividual(AbstractUserUpdatesPage):
@@ -124,5 +122,5 @@ class UserUpdatesIndividual(AbstractUserUpdatesPage):
     """Returns a list of user IDs whom to retrieve activities from."""
     return [mr.viewed_user_auth.user_id]
 
-  # def GetUserUpdatesPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetUserUpdatesPage(self, **kwargs):
+    return self.handler(**kwargs)

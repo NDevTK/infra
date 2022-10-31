@@ -67,7 +67,7 @@ class UserProfileTest(unittest.TestCase):
         usergroup=fake.UserGroupService(),
         project_star=fake.ProjectStarService(),
         user_star=fake.UserStarService())
-    self.servlet = userprofile.UserProfile('req', 'res', services=services)
+    self.servlet = userprofile.UserProfile(services=services)
 
     for user_id in (
         REGULAR_USER_ID, ADMIN_USER_ID, OTHER_USER_ID):

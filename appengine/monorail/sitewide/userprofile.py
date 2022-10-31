@@ -8,7 +8,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import time
 import json
 
@@ -20,14 +19,12 @@ from framework import framework_helpers
 from framework import flaskservlet
 from framework import framework_views
 from framework import permissions
-from framework import servlet
 from framework import timestr
 from framework import xsrf
 from project import project_views
-from sitewide import sitewide_helpers
 
 
-class UserProfile(servlet.Servlet):
+class UserProfile(flaskservlet.FlaskServlet):
   """Shows a page of information about a user."""
 
   _PAGE_TEMPLATE = 'sitewide/user-profile-page.ezt'
@@ -231,11 +228,11 @@ class UserProfile(servlet.Servlet):
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
 
-  # def GetUserProfilePage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetUserProfilePage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostUserProfilePage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostUserProfilePage(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 def _ComputePossibleParentAccounts(
@@ -252,7 +249,8 @@ def _ComputePossibleParentAccounts(
   found_emails = [user.email for user in found_users]
   return found_emails
 
-class BanUser(servlet.Servlet):
+
+class BanUser(flaskservlet.FlaskServlet):
   """Bans or un-bans a user."""
 
   def ProcessFormData(self, mr, post_data):
@@ -270,5 +268,5 @@ class BanUser(servlet.Servlet):
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
 
-  # def PostBanUserPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostBanUserPage(self, **kwargs):
+    return self.handler(**kwargs)

@@ -20,14 +20,13 @@ from framework import flaskservlet
 from framework import framework_views
 from framework import paginate
 from framework import permissions
-from framework import servlet
 from framework import urls
 from project import project_helpers
 
 MEMBERS_PER_PAGE = 50
 
 
-class HotlistPeopleList(servlet.Servlet):
+class HotlistPeopleList(flaskservlet.FlaskServlet):
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
   # Note: using the project's peoplelist page template. minor edits were
   # to make it compatible with HotlistPeopleList
@@ -219,9 +218,7 @@ class HotlistPeopleList(servlet.Servlet):
 
   def ProcessRemoveMembers(self, mr, post_data, hotlist_url):
     """Process the user's request to remove members."""
-    #TODO: convert for flask
-    #remove_strs = post_data.getlist('remove')
-    remove_strs = post_data.getall('remove')
+    remove_strs = post_data.getlist('remove')
     logging.info('remove_strs = %r', remove_strs)
     remove_ids = set(
         self.services.user.LookupUserIDs(mr.cnxn, remove_strs).values())
@@ -254,8 +251,8 @@ class HotlistPeopleList(servlet.Servlet):
               hotlist_url, urls.HOTLIST_PEOPLE),
           saved=1, ts=int(time.time()), include_project=False)
 
-  # def GetHotlistPeoplePage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetHotlistPeoplePage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostHotlistPeoplePage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostHotlistPeoplePage(self, **kwargs):
+    return self.handler(**kwargs)

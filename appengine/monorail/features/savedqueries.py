@@ -17,11 +17,10 @@ from features import savedqueries_helpers
 from framework import framework_helpers
 from framework import flaskservlet
 from framework import permissions
-from framework import servlet
 from framework import urls
 
 
-class SavedQueries(servlet.Servlet):
+class SavedQueries(flaskservlet.FlaskServlet):
   """A page class that shows the user's saved queries."""
 
   _PAGE_TEMPLATE = 'features/saved-queries-page.ezt'
@@ -76,8 +75,8 @@ class SavedQueries(servlet.Servlet):
         mr, '/u/%s%s' % (mr.viewed_username, urls.SAVED_QUERIES),
         include_project=False, saved=1, ts=int(time.time()))
 
-  # def GetSavedQueriesPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetSavedQueriesPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostSavedQueriesPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostSavedQueriesPage(self, **kwargs):
+    return self.handler(**kwargs)

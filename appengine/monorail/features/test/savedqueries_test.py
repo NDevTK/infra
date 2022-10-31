@@ -22,8 +22,7 @@ class SavedQueriesTest(unittest.TestCase):
   def setUp(self):
     self.services = service_manager.Services(
         user=fake.UserService())
-    self.servlet = savedqueries.SavedQueries(
-        'req', 'res', services=self.services)
+    self.servlet = savedqueries.SavedQueries(services=self.services)
     self.services.user.TestAddUser('a@example.com', 111)
 
   def testAssertBasePermission(self):

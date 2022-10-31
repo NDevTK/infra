@@ -567,94 +567,93 @@ class ServletRegistry(object):
   def RegisterUserUrls(self, service):
     flaskapp_user = flask.Flask(__name__)
     _USER_URLS = [
-        # (
-        #     '/<string:viewed_username>/queries',
-        #     savedqueries.SavedQueries(services=service).GetSavedQueriesPage,
-        #     ['GET']),
-        # (
-        #     '/<string:viewed_username>/queries.do',
-        #     savedqueries.SavedQueries(services=service).PostSavedQueriesPage,
-        #     ['Post']),
-        # (
-        #     '/<string:viewed_username>/hotlists',
-        #     userhotlists.UserHotlists(services=service).GetUserHotlistsPage,
-        #     ['GET']),
-        # (
-        #     '/<string:viewed_username>/hotlists.do',
-        #     userhotlists.UserHotlists(services=service).PostUserHotlistsPage,
-        #     ['Post']),
-        # (
-        #     '/<string:viewed_username>/',
-        #     userprofile.UserProfile(services=service).GetUserProfilePage,
-        #     ['GET']),
-        # (
-        #     '/<string:viewed_username>/edit.do',
-        #     userprofile.UserProfile(services=service).PostUserProfilePage,
-        #     ['POST']),
-        # (
-        #     '/<string:viewed_username>/ban.do',
-        #     userprofile.BanUser(services=service).PostBanUserPage,
-        #     ['POST']),
-        # (
-        #     '/<string:viewed_username>/banSpammer.do',
-        #     banspammer.BanSpammer(services=service).PostBanSpammerPage,
-        #     ['POST']),
-        # (
-        #     '/<string:viewed_username>/clearBouncing',
-        #     userclearbouncing.UserClearBouncing(
-        #         services=service).GetUserClearBouncingPage, ['GET']),
-        # (
-        #     '/<string:viewed_username>/clearBouncing.do',
-        #     userclearbouncing.UserClearBouncing(
-        #         services=service).PostUserClearBouncingPage, ['Post']),
-        # (
-        #     '/<string:viewed_username>/updates/projects',
-        #     userupdates.UserUpdatesProjects(
-        #         services=service).GetUserUpdatesProjectsPage, ['GET']),
-        # (
-        #     '/<string:viewed_username>/updates/developers',
-        #     userupdates.UserUpdatesDevelopers(
-        #         services=service).GetUserUpdatesDevelopersPage, ['GET']),
-        # (
-        #     '/<string:viewed_username>/updates',
-        #     userupdates.UserUpdatesIndividual(
-        #         services=service).GetUserUpdatesPage, ['GET']),
-        # (
-        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>',
-        #    hotlistissues.HotlistIssues(services=service).GetHotlistIssuesPage,
-        #     ['GET']),
-        # (
-        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>.do',
-        #   hotlistissues.HotlistIssues(services=service).PostHotlistIssuesPage,
-        #     ['POST']),
-        # (
-        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/csv',
-        #     hotlistissuescsv.HotlistIssuesCsv(
-        #         services=service).GetHotlistIssuesCsvPage, ['GET']),
-        # (
-        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/people',
-        #     hotlistpeople.HotlistPeopleList(
-        #         services=service).GetHotlistPeoplePage, ['GET']),
-        # (
-        #    '/<string:viewed_username>/hotlists/<string:hotlist_id>/people.do',
-        #     hotlistpeople.HotlistPeopleList(
-        #         services=service).PostHotlistPeoplePage, ['POST']),
-        # (
-        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/details',
-        #     hotlistdetails.HotlistDetails(
-        #         services=service).GetHotlistDetailsPage, ['GET']),
-        # (
-        #   '/<string:viewed_username>/hotlists/<string:hotlist_id>/details.do',
-        #     hotlistdetails.HotlistDetails(
-        #         services=service).PostHotlistDetailsPage, ['POST']),
-        # (
-        #     '/<string:viewed_username>/hotlists/<string:hotlist_id>/rerank',
-        #     rerankhotlist.RerankHotlistIssue(
-        #         services=service).GetRerankHotlistIssuePage, ['GET']),
-        # (
-        #   '/<string:viewed_username>/hotlists/<string:hotlist_id>/rerank.do',
-        #     rerankhotlist.RerankHotlistIssue(
-        #         services=service).PostRerankHotlistIssuePage, ['POST']),
+        (
+            '/<string:viewed_username>/queries',
+            savedqueries.SavedQueries(services=service).GetSavedQueriesPage,
+            ['GET']),
+        (
+            '/<string:viewed_username>/queries.do',
+            savedqueries.SavedQueries(services=service).PostSavedQueriesPage,
+            ['Post']),
+        (
+            '/<string:viewed_username>/hotlists',
+            userhotlists.UserHotlists(services=service).GetUserHotlistsPage,
+            ['GET']),
+        (
+            '/<string:viewed_username>/hotlists.do',
+            userhotlists.UserHotlists(services=service).PostUserHotlistsPage,
+            ['Post']),
+        (
+            '/<string:viewed_username>/',
+            userprofile.UserProfile(services=service).GetUserProfilePage,
+            ['GET']),
+        (
+            '/<string:viewed_username>/edit.do',
+            userprofile.UserProfile(services=service).PostUserProfilePage,
+            ['POST']),
+        (
+            '/<string:viewed_username>/ban.do',
+            userprofile.BanUser(services=service).PostBanUserPage, ['POST']),
+        (
+            '/<string:viewed_username>/banSpammer.do',
+            banspammer.BanSpammer(services=service).PostBanSpammerPage,
+            ['POST']),
+        (
+            '/<string:viewed_username>/clearBouncing',
+            userclearbouncing.UserClearBouncing(
+                services=service).GetUserClearBouncingPage, ['GET']),
+        (
+            '/<string:viewed_username>/clearBouncing.do',
+            userclearbouncing.UserClearBouncing(
+                services=service).PostUserClearBouncingPage, ['Post']),
+        (
+            '/<string:viewed_username>/updates/projects',
+            userupdates.UserUpdatesProjects(
+                services=service).GetUserUpdatesProjectsPage, ['GET']),
+        (
+            '/<string:viewed_username>/updates/developers',
+            userupdates.UserUpdatesDevelopers(
+                services=service).GetUserUpdatesDevelopersPage, ['GET']),
+        (
+            '/<string:viewed_username>/updates',
+            userupdates.UserUpdatesIndividual(
+                services=service).GetUserUpdatesPage, ['GET']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>',
+            hotlistissues.HotlistIssues(services=service).GetHotlistIssuesPage,
+            ['GET']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>.do',
+            hotlistissues.HotlistIssues(services=service).PostHotlistIssuesPage,
+            ['POST']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/csv',
+            hotlistissuescsv.HotlistIssuesCsv(
+                services=service).GetHotlistIssuesCsvPage, ['GET']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/people',
+            hotlistpeople.HotlistPeopleList(
+                services=service).GetHotlistPeoplePage, ['GET']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/people.do',
+            hotlistpeople.HotlistPeopleList(
+                services=service).PostHotlistPeoplePage, ['POST']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/details',
+            hotlistdetails.HotlistDetails(
+                services=service).GetHotlistDetailsPage, ['GET']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/details.do',
+            hotlistdetails.HotlistDetails(
+                services=service).PostHotlistDetailsPage, ['POST']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/rerank',
+            rerankhotlist.RerankHotlistIssue(
+                services=service).GetRerankHotlistIssuePage, ['GET']),
+        (
+            '/<string:viewed_username>/hotlists/<string:hotlist_id>/rerank.do',
+            rerankhotlist.RerankHotlistIssue(
+                services=service).PostRerankHotlistIssuePage, ['POST']),
     ]
 
     flaskapp_user = self._AddFlaskUrlRules(flaskapp_user, _USER_URLS)

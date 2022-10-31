@@ -8,17 +8,15 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import time
 
 from framework import framework_helpers
 from framework import flaskservlet
 from framework import permissions
-from framework import servlet
 from framework import timestr
 
 
-class UserClearBouncing(servlet.Servlet):
+class UserClearBouncing(flaskservlet.FlaskServlet):
   """Shows a page that can clear a user's bouncing email timestamp."""
 
   _PAGE_TEMPLATE = 'sitewide/user-clear-bouncing-page.ezt'
@@ -62,8 +60,8 @@ class UserClearBouncing(servlet.Servlet):
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
 
-  # def GetUserClearBouncingPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetUserClearBouncingPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostUserClearBouncingPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostUserClearBouncingPage(self, **kwargs):
+    return self.handler(**kwargs)
