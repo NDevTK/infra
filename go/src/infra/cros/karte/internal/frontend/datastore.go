@@ -587,7 +587,7 @@ func UpdateActionEntity(ctx context.Context, entity *ActionEntity, fieldMask []s
 
 	sealTime := fullEntity.SealTime
 
-	if !sealTime.IsZero() && clock.Now(ctx).After(sealTime) {
+	if !sealTime.IsZero() && clock.Now(ctx).UTC().After(sealTime) {
 		return nil, errors.Reason("update action entity: entry sealed at %v", sealTime).Err()
 	}
 

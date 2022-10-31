@@ -37,7 +37,7 @@ func (k *karteFrontend) CreateAction(ctx context.Context, req *kartepb.CreateAct
 	// TODO(gregorynisbet): Log the name of the action that created is responsible for this message.
 	if req.GetAction().GetCreateTime() == nil {
 		logging.Infof(ctx, "(msgid: 68361e64-46fb-4881-b4a3-d6b40e8ffd90) Applying default timestamp to request")
-		req.GetAction().CreateTime = scalars.ConvertTimeToTimestampPtr(clock.Now(ctx))
+		req.GetAction().CreateTime = scalars.ConvertTimeToTimestampPtr(clock.Now(ctx).UTC())
 	}
 
 	// Add a seal time. Seal times prohibit modification after the seal time has passed.

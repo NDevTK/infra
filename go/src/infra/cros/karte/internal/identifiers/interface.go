@@ -76,7 +76,7 @@ func (s *prodStrategy) IDForAction(ctx context.Context, action *kartepb.Action) 
 // Note: The ID for the current observation in question uses the *current time* and no properties of the observation at all.
 // This allows us to avoid running back to datastore to look up information about the action just to insert an observation.
 func (s *prodStrategy) IDForObservation(ctx context.Context, _ *kartepb.Observation) (string, error) {
-	msg, err := MakeRawID(clock.Now(ctx), mathrand.Uint32(ctx))
+	msg, err := MakeRawID(clock.Now(ctx).UTC(), mathrand.Uint32(ctx))
 	return msg, err
 }
 
@@ -107,7 +107,7 @@ func (s *naiveStrategy) IDForAction(ctx context.Context, _ *kartepb.Action) (str
 func (s *naiveStrategy) IDForObservation(ctx context.Context, _ *kartepb.Observation) (string, error) {
 	s.Lock()
 	defer s.Unlock()
-	out, err := MakeRawID(clock.Now(ctx), s.counter)
+	out, err := MakeRawID(clock.Now(ctx).UTC(), s.counter)
 	if err != nil {
 		return "", errors.Annotate(err, "id for observation").Err()
 	}
