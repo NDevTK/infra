@@ -9,6 +9,7 @@ package main
 // application starts.
 
 import (
+	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
@@ -16,11 +17,15 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
+	"infra/cros/karte/internal/externalclients"
 	"infra/cros/karte/internal/frontend"
 	"infra/cros/karte/internal/identifiers"
 )
 
 // Transfer control to the LUCI server
+//
+// NOTE: if you are running this code locally, you need to set an explicit project
+// using an environment variable.
 func main() {
 	modules := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
@@ -31,6 +36,11 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Installing dependencies into context")
 		srv.Context = identifiers.Use(srv.Context, identifiers.NewDefault())
+		client, err := bigquery.NewClient(srv.Context, bigquery.DetectProjectID)
+		if err != nil {
+			return err
+		}
+		srv.Context = externalclients.UseBQ(srv.Context, client)
 		logging.Infof(srv.Context, "Starting server.")
 		logging.Infof(srv.Context, "Installing Services.")
 		k := frontend.NewKarteFrontend()

@@ -1,4 +1,5 @@
 cron:
+# TODO(gregorynisbet): delete this task entirely
 - description: "Persist actions and observation from the last hour to BigQuery"
   url: /internal/cron/persist-to-bq
-  schedule: every 10 minutes
+  schedule: every 10000 hours

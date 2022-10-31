@@ -18,19 +18,15 @@ import (
 	"google.golang.org/grpc/status"
 
 	kartepb "infra/cros/karte/api"
+	"infra/cros/karte/internal/externalclients"
 	"infra/cros/karte/internal/scalars"
 )
 
 // PersistAction persists a single action.
 func (*karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistActionRequest) (*kartepb.PersistActionResponse, error) {
-	client, err := cloudBQ.NewClient(ctx, cloudBQ.DetectProjectID)
-	if err != nil {
-		logging.Errorf(ctx, "Cannot create bigquery client: %s", err)
-		return nil, status.Errorf(codes.Aborted, "persist action: cannot create bigquery client: %s", err)
-	}
+	client := externalclients.GetBQ(ctx)
 	id := req.GetActionId()
 	if id == "" {
-		logging.Errorf(ctx, "Cannot get action ID: %s", err)
 		return nil, status.Errorf(codes.InvalidArgument, "persist action: request ID cannot be empty")
 	}
 	ent := ActionEntity{}
