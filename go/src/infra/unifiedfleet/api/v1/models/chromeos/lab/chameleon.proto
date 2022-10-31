@@ -8,14 +8,23 @@ package unifiedfleet.api.v1.models.chromeos.lab;
 
 option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
-// NEXT TAG: 4
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
+
+
+// NEXT TAG: 6
 message Chameleon {
   reserved 1;
   repeated ChameleonType chameleon_peripherals = 3;
   // Indicate if there's audio_board in the chameleon.
   bool audio_board = 2;
+
+  string hostname = 4;
+
+  // Remote Power Management for chameleon device.
+  OSRPM rpm = 5;
 }
 
+// NEXT TAG: 11
 enum ChameleonType {
   reserved 1, 6 to 8;
   CHAMELEON_TYPE_INVALID = 0;
@@ -23,4 +32,6 @@ enum ChameleonType {
   CHAMELEON_TYPE_DP_HDMI = 3;
   CHAMELEON_TYPE_VGA = 4;
   CHAMELEON_TYPE_HDMI = 5;
+  CHAMELEON_TYPE_V2 = 9;
+  CHAMELEON_TYPE_V3 = 10;
 }
