@@ -108,6 +108,8 @@ func (k *karteFrontend) CreateObservation(ctx context.Context, req *kartepb.Crea
 	}
 	req.Observation.Name = name
 
+	client := externalclients.GetBQ(ctx)
+
 	logging.Infof(ctx, "Creating observation associated with action %q", req.GetObservation().GetActionName())
 	observationEntity, err := convertObservationToObservationEntity(req.GetObservation())
 	if err != nil {
@@ -116,5 +118,20 @@ func (k *karteFrontend) CreateObservation(ctx context.Context, req *kartepb.Crea
 	if err := PutObservationEntities(ctx, observationEntity); err != nil {
 		return nil, errors.Annotate(err, "writing action to datastore").Err()
 	}
+
+	switch client {
+	case nil:
+		logging.Infof(ctx, "skipping insert to BigQuery")
+	default:
+		valueSaver := observationEntity.ConvertToValueSaver()
+		logging.Infof(ctx, "beginning to insert record to bigquery")
+		tbl := client.Dataset("entities").Table("observations")
+		inserter := tbl.Inserter()
+		if err := inserter.Put(ctx, valueSaver); err != nil {
+			logging.Errorf(ctx, "cannot insert action: %s", err)
+			return nil, status.Errorf(codes.Aborted, "error persisting single record: %s", err)
+		}
+	}
+
 	return req.GetObservation(), nil
 }
