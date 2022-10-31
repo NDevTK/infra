@@ -21,7 +21,7 @@ func (c *DockerRun) compose() ([]string, error) {
 	if c.ContainerImage == "" {
 		return nil, errors.New("ContainerImage is mandatory")
 	}
-	args := []string{"run", "-d", "--rm", "-P"}
+	args := []string{"run", "-d", "--rm", "-P", "--cap-add=NET_RAW"}
 	if c.Name != "" {
 		args = append(args, "--name", c.Name)
 	}
