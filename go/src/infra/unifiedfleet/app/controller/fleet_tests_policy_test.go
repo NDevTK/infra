@@ -22,7 +22,7 @@ const (
 	LAUNCHED_BOARD                = "launched_board"
 	UNLAUNCHED_BOARD              = "unlaunched_board"
 	LAUNCHED_BOARD_PRIVATE_MODELS = "launched_board_private_models"
-	VALID_IMAGE_EVE               = "eve-public/R105-14988.0.0"
+	VALID_IMAGE_EVE               = "eve-public/R120-xyz" // Any image with a prefix eve-public/R is a valid image
 )
 
 func TestIsValidPublicChromiumTest(t *testing.T) {

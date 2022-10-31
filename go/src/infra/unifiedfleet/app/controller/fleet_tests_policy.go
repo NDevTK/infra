@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/auth/identity"
@@ -102,7 +103,7 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 	if req.Image == "" {
 		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Image cannot be empty for public tests.")
 	}
-	if !contains(getValidPublicImages(), req.Image) {
+	if !(hasValidPrefix(getValidPublicImagePrefixes(), req.Image)) {
 		return &InvalidImageError{Image: req.Image}
 	}
 
@@ -211,12 +212,10 @@ func validatePublicBoardModel(ctx context.Context, board string, model string) e
 	return &InvalidModelError{Model: model}
 }
 
-func getValidPublicImages() []string {
-	// Pointing to Images in chromiumos-image-archive bucket -
-	// gs://chromiumos-image-archive/eve-public/R105-14988.0.0, gs://chromiumos-image-archive/octopus-public/R105-14988.0.0,
-	// gs://chromiumos-image-archive/kevin64-public/R105-14988.0.0, gs://chromiumos-image-archive/jacuzzi-public/R105-14988.0.0,
-	// gs://chromiumos-image-archive/kevin-public/R105-14988.0.0
-	return []string{"eve-public/R105-14988.0.0", "octopus-public/R105-14988.0.0", "kevin64-public/R105-14988.0.0", "jacuzzi-public/R105-14988.0.0", "kevin-public/R105-14988.0.0"}
+func getValidPublicImagePrefixes() []string {
+	// List of Valid Public Image Prefixes in chromiumos-image-archive bucket -
+	// Ex: gs://chromiumos-image-archive/eve-public/R105-14988.0.0, gs://chromiumos-image-archive/octopus-public/R105-14988.0.0 etc
+	return []string{"eve-public/R", "octopus-public/R", "kevin64-public/R", "jacuzzi-public/R", "kevin-public/R"}
 }
 
 func getValidQuotaSchedulerAccounts() []string {
@@ -227,6 +226,16 @@ func getValidQuotaSchedulerAccounts() []string {
 func contains(listItems []string, name string) bool {
 	for _, item := range listItems {
 		if name == item {
+			return true
+		}
+	}
+	return false
+}
+
+// Checks whether any of the items in the list is a valid prefix of the given name string
+func hasValidPrefix(listItems []string, name string) bool {
+	for _, item := range listItems {
+		if strings.HasPrefix(name, item) {
 			return true
 		}
 	}
