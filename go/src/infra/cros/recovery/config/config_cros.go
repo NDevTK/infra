@@ -31,6 +31,32 @@ func CrosRepairConfig() *Configuration {
 		}}
 }
 
+// CrosRepairWithDeepRepairConfig provides config for combination of deep repair + normal repair.
+func CrosRepairWithDeepRepairConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanServoDeepRepair,
+			PlanCrOSDeepRepair,
+			PlanServo,
+			PlanCrOS,
+			PlanChameleon,
+			PlanBluetoothPeer,
+			PlanWifiRouter,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			PlanServoDeepRepair: setAllowFail(deepRepairServoPlan(), true),
+			// We allow CrOSDeepRepair to fail(so the task continue) as some of actions in it may result to a later normal repair success.
+			PlanCrOSDeepRepair: setAllowFail(deepRepairCrosPlan(), true),
+			PlanServo:          setAllowFail(servoRepairPlan(), true),
+			PlanCrOS:           setAllowFail(crosRepairPlan(), false),
+			PlanChameleon:      setAllowFail(chameleonPlan(), true),
+			PlanBluetoothPeer:  setAllowFail(btpeerRepairPlan(), true),
+			PlanWifiRouter:     setAllowFail(wifiRouterRepairPlan(), true),
+			PlanClosing:        setAllowFail(crosClosePlan(), true),
+		}}
+}
+
 // CrosDeployConfig provides config for deploy cros setup in the lab task.
 func CrosDeployConfig() *Configuration {
 	return &Configuration{

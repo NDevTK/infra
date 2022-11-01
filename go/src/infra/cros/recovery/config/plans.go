@@ -9,12 +9,14 @@ package config
 // Note that plans are named by the type of device that they refer to.
 // There is exactly one plan per type of device.
 const (
-	PlanAndroid       = "android"
-	PlanCrOS          = "cros"
-	PlanServo         = "servo"
-	PlanChameleon     = "chameleon"
-	PlanBluetoothPeer = "bluetooth_peer"
-	PlanWifiRouter    = "wifi_router"
+	PlanAndroid         = "android"
+	PlanCrOS            = "cros"
+	PlanCrOSDeepRepair  = "cros_deep_repair"
+	PlanServo           = "servo"
+	PlanServoDeepRepair = "servo_deep_repair"
+	PlanChameleon       = "chameleon"
+	PlanBluetoothPeer   = "bluetooth_peer"
+	PlanWifiRouter      = "wifi_router"
 	// That is final plan which will run always if present in configuration.
 	// The goal is execution final step to clean up stages if something left
 	// over in the devices.

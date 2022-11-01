@@ -83,7 +83,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 			log.Debugf(ctx, "Continue to the next resource.")
 		}
 		// Create karte metric
-		resourceMetric := args.newMetric(resource, fmt.Sprintf(metrics.PerResourceTaskKindGlob, args.TaskName))
+		resourceMetric := args.newMetric(resource, metrics.TasknameToMetricsKind(string(args.TaskName)))
 		err := runResource(ctx, resource, args)
 		if err != nil {
 			errs = append(errs, errors.Annotate(err, "run recovery %q", resource).Err())
@@ -229,7 +229,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 	case buildbucket.DeepRecovery:
 		switch ds {
 		case tlw.DUTSetupTypeCros:
-			return config.DeepRepairConfig(), nil
+			return config.CrosRepairWithDeepRepairConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -463,11 +463,11 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 // resources and then we will run the same plan for each resource.
 func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 	switch planName {
-	case config.PlanCrOS, config.PlanAndroid, config.PlanClosing:
+	case config.PlanCrOS, config.PlanCrOSDeepRepair, config.PlanAndroid, config.PlanClosing:
 		if dut.Name != "" {
 			return []string{dut.Name}
 		}
-	case config.PlanServo:
+	case config.PlanServo, config.PlanServoDeepRepair:
 		if s := dut.GetChromeos().GetServo(); s != nil {
 			return []string{s.GetName()}
 		}

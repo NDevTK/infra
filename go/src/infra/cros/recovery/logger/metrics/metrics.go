@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/skylab/buildbucket"
 )
 
 // ActionStatus is the status of an action.
@@ -245,7 +247,7 @@ func CountFailedRepairFromMetrics(ctx context.Context, dutName string, taskName 
 	// change the query to use asset tag instead of using hostname.
 	karteQuery := &Query{Hostname: dutName}
 	if taskName != "" {
-		karteQuery.ActionKind = fmt.Sprintf(PerResourceTaskKindGlob, taskName)
+		karteQuery.ActionKind = TasknameToMetricsKind(taskName)
 	}
 	queryRes, err := metricsService.Search(ctx, karteQuery)
 	if err != nil {
@@ -266,4 +268,15 @@ func CountFailedRepairFromMetrics(ctx context.Context, dutName string, taskName 
 		failedRepairCount += 1
 	}
 	return failedRepairCount, nil
+}
+
+// TasknameToMetricsKind returns a Karte action kind based on taskname.
+func TasknameToMetricsKind(tn string) string {
+	switch tn {
+	case buildbucket.Recovery.String(), buildbucket.DeepRecovery.String():
+		// Normal repair and deep repair shares a same set of metrics(e.g. failure count).
+		return fmt.Sprintf(PerResourceTaskKindGlob, buildbucket.Recovery)
+	default:
+		return fmt.Sprintf(PerResourceTaskKindGlob, tn)
+	}
 }

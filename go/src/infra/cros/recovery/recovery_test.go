@@ -152,7 +152,7 @@ var dutPlansCases = []struct {
 		"cros deep recovery",
 		tlw.DUTSetupTypeCros,
 		buildbucket.DeepRecovery,
-		[]string{"servo", "cros", "close"},
+		[]string{"servo_deep_repair", "cros_deep_repair", "servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
 	},
 	{
 		"cros deep recovery",
