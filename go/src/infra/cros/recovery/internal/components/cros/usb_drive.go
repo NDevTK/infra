@@ -28,7 +28,7 @@ func DeviceMainStoragePath(ctx context.Context, run components.Runner) (string, 
 }
 
 // IsBootedFromExternalStorage verify that device has been booted from external storage.
-func IsBootedFromExternalStorage(ctx context.Context, run components.Runner, log logger.Logger) error {
+func IsBootedFromExternalStorage(ctx context.Context, run components.Runner) error {
 	bootStorage, err := run(ctx, time.Minute, "rootdev", "-s", "-d")
 	if err != nil {
 		return errors.Annotate(err, "booted from external storage").Err()
@@ -88,7 +88,7 @@ func BootFromServoUSBDriveInDevMode(ctx context.Context, waitBootTimeout, waitBo
 	// 1) Image on USB-drive is bad.
 	// 2) Booting from USB-drive is not allowed.
 	// 3) Device is not in DEV mode.
-	if err := IsBootedFromExternalStorage(ctx, dutRun, log); err != nil {
+	if err := IsBootedFromExternalStorage(ctx, dutRun); err != nil {
 		return errors.Annotate(err, "boot from servo usb drive in dev mode").Err()
 	}
 	return nil

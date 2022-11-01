@@ -504,7 +504,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	// b/242570493. This function currently does not make use of the
 	// logger. Hence we are passing a value of nil. When this bug is
 	// resolve, we will not pass the logger at all.
-	usbBootErr := cros.IsBootedFromExternalStorage(ctx, bbArgs.Run, nil)
+	usbBootErr := cros.IsBootedFromExternalStorage(ctx, bbArgs.Run)
 	if usbBootErr != nil {
 		log.Debugf(ctx, "Check Bad Blocks: not booted from USB device, RW badblocks on main storage cannot be done even if selected (non-critical).")
 	}

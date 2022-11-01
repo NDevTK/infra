@@ -94,7 +94,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	if err := WaitUntilSSHable(ctx, req.BootTimeout, req.BootInterval, dutRun, log); err != nil {
 		return errors.Annotate(err, "boot in recovery mode").Err()
 	}
-	if err := IsBootedFromExternalStorage(ctx, dutRun, log); err != nil {
+	if err := IsBootedFromExternalStorage(ctx, dutRun); err != nil {
 		return errors.Annotate(err, "boot in recovery mode").Err()
 	}
 	log.Debugf("Device successful booted in recovery mode from USB-drive")
