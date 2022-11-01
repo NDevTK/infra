@@ -121,22 +121,10 @@
         <app-toolbar>
 
           <!-- Coverage selection-->
-          <paper-menu-button class="group-menu-button">
-            <paper-button slot="dropdown-trigger">
-              <span class="group-name">Code Coverage</span>
-              <iron-icon
-                  class="icon-dropdown"
-                  icon="arrow-drop-down"></iron-icon>
-            </paper-button>
-            <paper-listbox class="group-listbox" slot="dropdown-content">
-              <paper-item class="group-item">
-                <a class=group-item-link href="/coverage/p/chromium">For code since beginnning of time</a></paper-item>
-              <paper-item class="group-item">
-                <a class=group-item-link href="/coverage/p/chromium/referenced2021">For code since 2021 beginning</a></paper-item>
-              <paper-item class="group-item">
-                <a class=group-item-link href="/coverage/p/chromium/referenced2022">For code since 2022 beginning</a></paper-item>
-            </paper-listbox>
-          </paper-menu-button>
+          <paper-tabs no-bar>
+            <paper-tab><a href="/coverage/p/chromium">Coverage for all merged code</a></paper-tab>
+            <paper-tab><a href="/coverage/p/chromium/referenced2022">Coverage for code merged in 2022</a></paper-tab>
+          </paper-tabs>
 
           <paper-tabs no-bar>
             <template is="dom-if" if="[[userInfo.is_admin]]">

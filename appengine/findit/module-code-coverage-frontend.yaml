@@ -10,14 +10,54 @@ automatic_scaling:
   max_concurrent_requests: 25
 
 handlers:
-- url: .*/coverage.*
-  script: coverage_main.code_coverage_frontend_web_application
+# Static resources.
+- url: /robots.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+  secure: always
+
+- url: /bower_components
+  static_dir: third_party/bower_components
+  secure: always
+
+- url: /ui
+  static_dir: ui
+  secure: always
+
+- url: /common.css
+  static_files: static/common.css
+  upload: static/common.css
+  secure: always
+
+- url: /js/flot/(.*\.js)$
+  static_files: third_party/flot/\1
+  upload: third_party/flot/.*\.js$
+  secure: always
+
+- url: /favicon.ico
+  mime_type: image/x-icon
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
+  secure: always
+
+# images
+- url: /images
+  static_dir: static/images
   secure: always
 
 # Enable the admin console for interactive operations, etc.
 - url: /_ah/admin_console(/.*)?
   script: google.appengine.ext.admin.application
   login: admin
+  secure: always
+
+- url: .*/coverage.*
+  script: coverage_main.code_coverage_frontend_web_application
+  secure: always
+
+# Keep this one as the last match for redirection of old URLs.
+- url: /.*
+  script: frontend_main.waterfall_frontend_web_application
   secure: always
 
 skip_files:
