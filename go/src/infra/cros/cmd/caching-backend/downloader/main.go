@@ -579,7 +579,7 @@ type metricData struct {
 }
 
 var (
-	dataDownloadTime = metric.NewFloatCounter("chromeos/fleet/caching-backend/downloader/time_download",
+	dataDownloadTime = metric.NewFloat("chromeos/fleet/caching-backend/downloader/time_download",
 		"The total number of download time",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("http_method"),
@@ -621,7 +621,7 @@ func metricsInit(ctx context.Context, tsmonEndpoint, tsmonCredentialPath string)
 // updateMetrics add data points to the metrics.
 func updateMetrics(ctx context.Context, rpc, method string, m *metricData, startTime time.Time) {
 	dataDownloadBytes.Add(ctx, m.size, method, rpc, m.status)
-	dataDownloadTime.Add(ctx, float64(time.Since(startTime).Seconds()), method, rpc, m.status)
+	dataDownloadTime.Set(ctx, float64(time.Since(startTime).Seconds()), method, rpc, m.status)
 	dataDownloadRate.Set(ctx, float64(float64(m.size)/time.Since(startTime).Seconds()), method, rpc, m.status)
 }
 
