@@ -12,7 +12,6 @@ PROTOC := "../../cipd/protoc"
 PROTO_PATH ?= "model/proto/"
 FINDIT_MODULES := default frontend
 CODE_COVERAGE_MODULES := code-coverage-frontend code-coverage-backend code-coverage-experimental-coverage-worker code-coverage-referenced-coverage-worker
-FLAKE_PORTAL_MODULES := flake-detection-backend
 LOCAL_VERSION := `$(INFRAPYTHON) $(GAE_PY) version`
 LOCAL_HASH := `git rev-parse --short HEAD`
 # If there are multiple active versions just use the latest one.
@@ -119,12 +118,6 @@ deploy-coverage-staging: test
 	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(STAGING_APPID) $(CODE_COVERAGE_MODULES);
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(STAGING_APPID).appspot.com/p/chromium/coverage"
-
-deploy-flake-prod: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(APPID) $(FLAKE_PORTAL_MODULES);
-
-deploy-flake-staging: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(STAGING_APPID) $(FLAKE_PORTAL_MODULES);
 
 migrate:
 	@echo "Please use the Google Cloud Console to migrate traffic to new versions"
