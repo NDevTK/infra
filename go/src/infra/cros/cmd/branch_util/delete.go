@@ -109,6 +109,10 @@ func (c *deleteBranchRun) innerRun(bc *branch.Client) int {
 			bc.LogErr("Failed to delete branch %s in project %s.\n", br, project.Name)
 			// Try and delete as many of the branches as possible, even if some fail.
 			retCode = 1
+		} else if c.Push {
+			bc.LogOut("Deleted branch %s in project %s.\n", br, project.Name)
+		} else {
+			bc.LogOut("Would have deleted branch %s in project %s\n", br, project.Name)
 		}
 	}
 
