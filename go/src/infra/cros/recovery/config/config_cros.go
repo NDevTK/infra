@@ -168,7 +168,7 @@ func crosClosePlan() *Plan {
 				ExecName: "metrics_check_task_failures",
 				ExecExtraArgs: []string{
 					"task_name:recovery",
-					"repair_failed_count:49",
+					"repair_failed_count:6",
 				},
 			},
 			"Update DUT state for failures more than threshold": {
