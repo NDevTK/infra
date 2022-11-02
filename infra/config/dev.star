@@ -99,6 +99,13 @@ luci.bucket(
         pools = ["luci.chromium.ci"],
         service_accounts = ["adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com"],
     ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+    dynamic = True,
 )
 
 luci.builder.defaults.experiments.set({
@@ -429,6 +436,10 @@ luci.bucket(
             roles = "role/buildbucket.triggerer",
             groups = "mdb/chrome-troopers",
             users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        ),
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
         ),
     ],
     shadows = "loadtest",
