@@ -31,13 +31,13 @@ func TestParseConfigBundle(t *testing.T) {
 		Convey("Happy path", func() {
 			So(payloads.GetValues(), ShouldHaveLength, 1)
 			dcs := parseConfigBundle(payloads.GetValues()[0])
-			// 5 sku-less device configs & 6 real device configs
-			So(dcs, ShouldHaveLength, 11)
+			// 6 sku-less device configs & 7 real device configs
+			So(dcs, ShouldHaveLength, 13)
 			for _, dc := range dcs {
 				So(dc.GetId().GetPlatformId().GetValue(), ShouldEqual, "FAKE_PROGRAM")
 				modelWithSku := fmt.Sprintf("%s:%s", dc.GetId().GetModelId().GetValue(), dc.GetId().GetVariantId().GetValue())
 				switch modelWithSku {
-				case "FAKE-REF-DESIGN:", "PROJECT-A:", "PROJECT-B:", "PROJECT-C:", "PROJECT-WL:":
+				case "FAKE-REF-DESIGN:", "PROJECT-A:", "PROJECT-B:", "PROJECT-C:", "PROJECT-WL:", "PROJECT-U:":
 					// These are sku-less device config, every config entry is nil by default
 					So(dc.GetFormFactor(), ShouldEqual, device.Config_FORM_FACTOR_UNSPECIFIED)
 					So(dc.GetPower(), ShouldEqual, device.Config_POWER_SUPPLY_UNSPECIFIED)
@@ -126,6 +126,19 @@ func TestParseConfigBundle(t *testing.T) {
 						device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
 					})
 					So(dc.GetStorage(), ShouldEqual, device.Config_STORAGE_NVME)
+					So(dc.GetCpu(), ShouldEqual, device.Config_ARCHITECTURE_UNDEFINED)
+				case "PROJECT-U:75":
+					So(dc.GetFormFactor(), ShouldEqual, device.Config_FORM_FACTOR_CONVERTIBLE)
+					So(dc.GetPower(), ShouldEqual, device.Config_POWER_SUPPLY_BATTERY)
+					So(dc.GetHardwareFeatures(), ShouldResemble, []device.Config_HardwareFeature{
+						device.Config_HARDWARE_FEATURE_BLUETOOTH,
+						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
+						device.Config_HARDWARE_FEATURE_STYLUS,
+						device.Config_HARDWARE_FEATURE_TOUCHPAD,
+						device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
+						device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
+					})
+					So(dc.GetStorage(), ShouldEqual, device.Config_STORAGE_UFS)
 					So(dc.GetCpu(), ShouldEqual, device.Config_ARCHITECTURE_UNDEFINED)
 				default:
 					t.Errorf("Invalid model:sku: %s", modelWithSku)

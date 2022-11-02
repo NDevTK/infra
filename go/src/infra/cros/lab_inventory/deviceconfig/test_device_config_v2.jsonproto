@@ -972,6 +972,163 @@
           "programId": {
             "value": "FAKE_PROGRAM"
           }
+        },
+        {
+          "configs": [
+            {
+              "hardwareFeatures": {
+                "bluetooth": {
+                  "component": {
+                    "usb": {
+                      "bcdDevice": "0003",
+                      "productId": "0002",
+                      "vendorId": "0001"
+                    }
+                  }
+                },
+                "camera": {},
+                "fingerprint": {
+                  "location": 5
+                },
+                "formFactor": {
+                  "formFactor": 2
+                },
+                "keyboard": {
+                  "backlight": 1,
+                  "keyboardType": 3,
+                  "powerButton": 2
+                },
+                "screen": {
+                  "panelProperties": {
+                    "diagonalMilliinch": 15000,
+                    "heightPx": 1080,
+                    "pixelsPerIn": 120,
+                    "widthPx": 1920
+                  },
+                  "touchSupport": 1
+                },
+                "storage": {
+                  "storageType": 1
+                },
+                "stylus": {
+                  "stylus": 2
+                }
+              },
+              "hardwareTopology": {
+                "bluetooth": {
+                  "description": {
+                    "EN": "Default bluetooth"
+                  },
+                  "hardwareFeature": {
+                    "bluetooth": {
+                      "component": {
+                        "usb": {
+                          "bcdDevice": "0003",
+                          "productId": "0002",
+                          "vendorId": "0001"
+                        }
+                      }
+                    }
+                  },
+                  "id": "BLUETOOTH",
+                  "type": 18
+                },
+                "fingerprint": {
+                  "description": {
+                    "EN": "No finger print sensor"
+                  },
+                  "hardwareFeature": {
+                    "fingerprint": {
+                      "location": 5
+                    }
+                  },
+                  "id": "NONE",
+                  "type": 9
+                },
+                "formFactor": {
+                  "description": {
+                    "EN": "Device can rotate 360 degrees"
+                  },
+                  "hardwareFeature": {
+                    "formFactor": {
+                      "formFactor": 2
+                    }
+                  },
+                  "id": "CONVERTIBLE",
+                  "type": 2
+                },
+                "keyboard": {
+                  "description": {
+                    "EN": "Detachable keyboard with backlight"
+                  },
+                  "hardwareFeature": {
+                    "keyboard": {
+                      "backlight": 1,
+                      "keyboardType": 3,
+                      "powerButton": 2
+                    }
+                  },
+                  "id": "KB_BL",
+                  "type": 5
+                },
+                "screen": {
+                  "description": {
+                    "EN": "Touchscreen"
+                  },
+                  "hardwareFeature": {
+                    "screen": {
+                      "panelProperties": {
+                        "diagonalMilliinch": 15000,
+                        "heightPx": 1080,
+                        "pixelsPerIn": 120,
+                        "widthPx": 1920
+                      },
+                      "touchSupport": 1
+                    }
+                  },
+                  "id": "TOUCHSCREEN",
+                  "type": 1
+                },
+                "stylus": {
+                  "description": {
+                    "EN": "Default stylus"
+                  },
+                  "hardwareFeature": {
+                    "stylus": {
+                      "stylus": 2
+                    }
+                  },
+                  "id": "STYLUS",
+                  "type": 4
+                },
+                "nonVolatileStorage": {
+                  "description": {
+                    "EN": "UFS"
+                  },
+                  "hardwareFeature": {
+                    "storage": {
+                      "storageType": "UFS"
+                    }
+                  },
+                  "id": "UFS",
+                  "type": "NON_VOLATILE_STORAGE"
+                }
+              },
+              "id": {
+                "value": "PROJECT-U:75"
+              }
+            }
+          ],
+          "id": {
+            "value": "PROJECT-U"
+          },
+          "name": "PROJECT-U",
+          "odmId": {
+            "value": "FAKE-ODM"
+          },
+          "programId": {
+            "value": "FAKE_PROGRAM"
+          }
         }
       ],
       "deviceBrandList": [
@@ -1064,6 +1221,19 @@
           },
           "oemId": {
             "value": "FAKE-LOEMC"
+          }
+        },
+        {
+          "brandCode": "FDUU",
+          "brandName": "ChromeOS Device Brandname U",
+          "designId": {
+            "value": "PROJECT-U"
+          },
+          "id": {
+            "value": "FDUU"
+          },
+          "oemId": {
+            "value": "FAKE-OEMB"
           }
         }
       ],
@@ -1243,6 +1413,21 @@
           "idScanConfig": {
             "firmwareSku": 64,
             "smbiosNameMatch": "PROJECT-WL"
+          },
+          "powerConfig": {
+            "preferences": {
+              "battery-poll-interval-initial-ms": "1000",
+              "disable-dark-resume": "0"
+            }
+          }
+        },
+        {
+          "designConfigId": {
+            "value": "PROJECT-U:75"
+          },
+          "idScanConfig": {
+            "firmwareSku": 75,
+            "smbiosNameMatch": "PROJECT-U"
           },
           "powerConfig": {
             "preferences": {

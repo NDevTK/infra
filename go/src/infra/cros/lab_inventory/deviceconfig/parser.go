@@ -250,6 +250,8 @@ func matchStorageType(st string) device.Config_Storage {
 		return device.Config_STORAGE_MMC
 	case api.Component_Storage_SATA.String():
 		return device.Config_STORAGE_SSD
+	case api.Component_Storage_UFS.String():
+		return device.Config_STORAGE_UFS
 	}
 	return device.Config_STORAGE_UNSPECIFIED
 }
