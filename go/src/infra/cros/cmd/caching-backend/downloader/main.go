@@ -109,28 +109,24 @@ func innerMain() error {
 // It writes file content to body for GET method.
 func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
-	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
-
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
 	defer cancel()
 
 	md := metricData{}
 	defer updateMetrics(ctx, "download", r.Method, &md, startTime)
-	var bRange *byteRange
-	var err error
-	// Include range in ID if range exists
-	if headerRange := r.Header.Get("Range"); headerRange != "" {
-		bRange, err = parseRange(headerRange)
-		id = fmt.Sprintf("%s, %s", id, headerRange)
-		if err != nil {
-			errStr := fmt.Sprintf("%s parseRange error: %s", id, err)
-			log.Printf(errStr)
-			http.Error(w, errStr, http.StatusBadRequest)
-			md.status = http.StatusBadRequest
-			return
-		}
+
+	id := generateTraceID(r)
+	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
+
+	bRange, err := parseRange(r.Header.Get("Range"))
+	if err != nil {
+		errStr := fmt.Sprintf("%s parseRange error: %s", id, err)
+		log.Printf(errStr)
+		http.Error(w, errStr, http.StatusBadRequest)
+		md.status = http.StatusBadRequest
+		return
 	}
+
 	log.Printf("%s request started", id)
 	gsClient := c.gsClient
 
@@ -265,9 +261,13 @@ func parseURL(url string) (*gsObjectName, error) {
 
 // parseRange parse range value and return range start, end bytes.
 // It only support single range bytes=start-end format.
-// Not yet support multiple range bytes=start1-end1,start2-end2
+// Not yet support multiple range bytes=start1-end1,start2-end2.
+// Empty input string returns nil byteRange.
 func parseRange(s string) (*byteRange, error) {
-	//s should be bytes=start-end
+	//s should be bytes=start-end or ""
+	if s == "" {
+		return nil, nil
+	}
 	i := strings.Index(s, "-")
 	if s[:6] != "bytes=" || i == -1 {
 		return nil, fmt.Errorf("%q not in format of 'bytes=<start>-<end>'", s)
@@ -307,7 +307,8 @@ func (r *byteRange) formatContentRange(totalSize int64) string {
 // the content to body.
 func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+
+	id := generateTraceID(r)
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
@@ -441,7 +442,6 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 		}
 
 		if header.Typeflag == tar.TypeReg && header.Name == fileName {
-			w.Header().Set("Accept-Ranges", "bytes")
 			w.Header().Set("Content-Length", strconv.FormatInt(header.Size, 10))
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.WriteHeader(http.StatusOK)
@@ -454,7 +454,8 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 // It decompresses compressed file and returns content to body for GET method.
 func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+
+	id := generateTraceID(r)
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
@@ -560,7 +561,6 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 
 // decompressWrite writes memory buffer to w Response
 func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) (int, error) {
-	w.Header().Set("Accept-Ranges", "bytes")
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Length", strconv.Itoa(len(mem)))
 	w.WriteHeader(http.StatusOK)
@@ -571,6 +571,16 @@ func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) (in
 	}
 
 	return n, nil
+}
+
+// generateTraceID gets the unique id of the request
+func generateTraceID(r *http.Request) string {
+	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
+	// Include range in ID if range exists
+	if headerRange := r.Header.Get("Range"); headerRange != "" {
+		id = fmt.Sprintf("%s, %s", id, headerRange)
+	}
+	return id
 }
 
 type metricData struct {
