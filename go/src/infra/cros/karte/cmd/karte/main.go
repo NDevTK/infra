@@ -36,7 +36,6 @@ func newApplication() *cli.Application {
 			kartecli.ListSwarmingTasks,
 			kartecli.PersistSingleAction,
 			kartecli.PersistActionRange,
-			kartecli.ExampleCreateUpdateAction,
 			subcommands.Section("cron"),
 			kartecli.CronPersistToBigquery,
 		},

@@ -8,9 +8,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/cron"
@@ -76,28 +74,6 @@ func (k *karteFrontend) ListObservations(ctx context.Context, req *kartepb.ListO
 		Observations:  observations,
 		NextPageToken: q.Token,
 	}, nil
-}
-
-// UpdateAction updates an action in datastore and creates it if necessary when allow_missing is set.
-func (k *karteFrontend) UpdateAction(ctx context.Context, req *kartepb.UpdateActionRequest) (*kartepb.Action, error) {
-	// TODO(gregorynisbet): Remove json logging.
-	str, mErr := (&jsonpb.Marshaler{Indent: "  "}).MarshalToString(req)
-	if mErr == nil {
-		logging.Infof(ctx, "Update action request: %s", str)
-	} else {
-		logging.Errorf(ctx, "Failed to marshal action request: %s", mErr)
-	}
-	reqActionEntity, err := convertActionToActionEntity(req.GetAction())
-	if err != nil {
-		return nil, errors.Annotate(err, "update action").Err()
-	}
-	entity, err := UpdateActionEntity(
-		ctx,
-		reqActionEntity,
-		req.GetUpdateMask().GetPaths(),
-		true,
-	)
-	return entity.ConvertToAction(), err
 }
 
 // PersistToBigquery persists all Karte-tracked records in a given time range to BigQuery.
