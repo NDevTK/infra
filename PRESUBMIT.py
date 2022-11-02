@@ -605,6 +605,7 @@ def CommonChecks(input_api, output_api):  # pragma: no cover
   output.extend(
       input_api.canned_checks.CheckPatchFormatted(
           input_api, output_api, check_clang_format=False))
+  output.extend(input_api.canned_checks.PanProjectChecks(input_api, output_api))
 
   return output
 
