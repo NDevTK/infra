@@ -35,6 +35,7 @@ func crosRepairPlan() *Plan {
 			"Verify RO_VPD data on DUT",
 			"Update Servo NIC mac address",
 			"Match provision labels",
+			"Backup CBI",
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
