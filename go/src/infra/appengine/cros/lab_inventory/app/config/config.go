@@ -94,12 +94,12 @@ func appendConfigToContext(ctx context.Context) (context.Context, error) {
 	secret, err := secrets.StoredSecret(ctx, secretInDatastore)
 	if err == nil {
 		// The HWID must be a valid plain text string. No control characters.
-		s := string(secret.Current)
+		s := string(secret.Active)
 		if s != url.QueryEscape(s) {
 			logging.WithError(err).Errorf(ctx, "wrong hwid secret configured: '%v'", url.QueryEscape(s))
 			return nil, err
 		}
-		cfg.HwidSecret = string(secret.Current)
+		cfg.HwidSecret = string(secret.Active)
 	} else {
 		logging.Infof(ctx, "Cannot get HWID server secret from datastore: %s", err.Error())
 	}
