@@ -104,6 +104,10 @@ luci.bucket(
             roles = "role/buildbucket.creator",
             groups = "mdb/chrome-troopers",
         ),
+        luci.binding(
+            roles = "role/swarming.taskServiceAccount",
+            users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        ),
     ],
     dynamic = True,
 )
