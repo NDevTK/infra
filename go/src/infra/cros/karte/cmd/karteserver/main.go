@@ -9,13 +9,17 @@ package main
 // application starts.
 
 import (
+	"net/http"
+
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
+	"google.golang.org/api/option"
 
 	"infra/cros/karte/internal/externalclients"
 	"infra/cros/karte/internal/frontend"
@@ -34,9 +38,13 @@ func main() {
 	}
 
 	server.Main(nil, modules, func(srv *server.Server) error {
+		t, err := auth.GetRPCTransport(srv.Context, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
+		if err != nil {
+			return err
+		}
 		logging.Infof(srv.Context, "Installing dependencies into context")
 		srv.Context = identifiers.Use(srv.Context, identifiers.NewDefault())
-		client, err := bigquery.NewClient(srv.Context, srv.Options.CloudProject)
+		client, err := bigquery.NewClient(srv.Context, srv.Options.CloudProject, option.WithHTTPClient(&http.Client{Transport: t}))
 		if err != nil {
 			return err
 		}
