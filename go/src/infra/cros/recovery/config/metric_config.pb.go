@@ -35,10 +35,10 @@ const (
 	// UPLOAD_ON_ERROR only uploads a metric if the action was unsuccessful in some way.
 	//
 	// TODO(gregorynisbet): Add in another policy to upload ALL errors and 1% of successes to make it possible to
-	//                      recover the true success rate for actions that have been throttled in this way.
+	//
+	//	recover the true success rate for actions that have been throttled in this way.
 	//
 	// TODO(gregorynisbet): Consider making this or some other kind of "throttled" policy the default policy.
-	//
 	MetricsConfig_UPLOAD_ON_ERROR MetricsConfig_UploadPolicy = 2
 )
 

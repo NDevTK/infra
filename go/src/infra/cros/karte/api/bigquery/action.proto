@@ -78,4 +78,7 @@ message Action {
   // The modification count is the number of times that the record has been updated.
   // A complete action should be written to twice: once when it was created and once when it completed.
   int32 modification_count = 18;
+
+  // recovered by is the name of the task that recovered the current action, if one exists.
+  string recovered_by = 19;
 }

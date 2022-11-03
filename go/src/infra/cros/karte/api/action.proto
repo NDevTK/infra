@@ -94,4 +94,7 @@ message Action {
 
   // board is the board of the DUT this event applies to.
   string board = 18;
+
+  // recovered by is the name of the task that recovered the current action, if one exists.
+  string recovered_by = 19;
 }
