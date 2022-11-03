@@ -7232,6 +7232,20 @@ wheel: <
 
 * *universal*
 
+## **vcrpy**
+
+### 4.2.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/vcrpy-py2_py3"
+  version: "version:4.2.1"
+>
+```
+
+
+* *universal*
+
 ## **virtualenv**
 
 ### 20.0.20
