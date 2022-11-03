@@ -36,7 +36,7 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Installing dependencies into context")
 		srv.Context = identifiers.Use(srv.Context, identifiers.NewDefault())
-		client, err := bigquery.NewClient(srv.Context, bigquery.DetectProjectID)
+		client, err := bigquery.NewClient(srv.Context, srv.Options.CloudProject)
 		if err != nil {
 			return err
 		}
