@@ -67,6 +67,8 @@ type Action struct {
 	FailReason string
 	// Observations are the observations associated with the current observation.
 	Observations []*Observation
+	// Recovered by is the name of the action that recovered us.
+	RecoveredBy string
 }
 
 // UpdateStatus updates status of the action and error reason if error was provided.

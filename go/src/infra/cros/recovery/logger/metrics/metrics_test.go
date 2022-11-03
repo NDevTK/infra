@@ -52,7 +52,8 @@ func TestNewMetrics(t *testing.T) {
 			`            "ValueType": "",`,
 			`            "Value": ""`,
 			`        }`,
-			`    ]`,
+			`    ],`,
+			`    "RecoveredBy": ""`,
 			`}`,
 		),
 	}

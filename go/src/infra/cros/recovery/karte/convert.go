@@ -83,6 +83,7 @@ func convertActionToKarteAction(action *metrics.Action) *kartepb.Action {
 		Status:         convertActionStatusToKarteActionStatus(action.Status),
 		FailReason:     action.FailReason,
 		Hostname:       action.Hostname,
+		RecoveredBy:    action.RecoveredBy,
 	}
 }
 
@@ -102,6 +103,7 @@ func convertKarteActionToAction(action *kartepb.Action) *metrics.Action {
 		Status:         convertKarteActionStatusToActionStatus(action.GetStatus()),
 		FailReason:     action.GetFailReason(),
 		Hostname:       action.GetHostname(),
+		RecoveredBy:    action.GetRecoveredBy(),
 	}
 }
 

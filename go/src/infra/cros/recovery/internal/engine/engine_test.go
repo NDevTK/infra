@@ -296,7 +296,7 @@ func TestRunRecovery(t *testing.T) {
 				},
 			}
 			r.initCache()
-			err := r.runRecoveries(ctx, "a")
+			err := r.runRecoveries(ctx, "a", nil)
 			if c.expStartOver {
 				if !startOverTag.In(err) {
 					t.Errorf("Case %q expected to get request to start over. Received: %s", c.name, err)
