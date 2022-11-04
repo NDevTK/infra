@@ -24,19 +24,22 @@ type server struct {
 }
 
 func newServer(c *serverConfig) *server {
+	l := cache.NewLocator()
+	l.SetPreferredServices(c.preferredCachingServices)
 	return &server{
 		ufsClientFactory: ufs.ClientFactory{
 			Service:            c.ufsService,
 			ServiceAccountPath: c.serviceAccountPath,
 		},
-		cacheLocator: cache.NewLocator(),
+		cacheLocator: l,
 	}
 }
 
 // A serverConfig configures newServer.
 type serverConfig struct {
-	ufsService         string
-	serviceAccountPath string
+	ufsService               string
+	serviceAccountPath       string
+	preferredCachingServices []string
 }
 
 func (s *server) GetDutTopology(req *labapi.GetDutTopologyRequest, stream labapi.InventoryService_GetDutTopologyServer) error {

@@ -12,17 +12,11 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-)
-
-var (
-	addr               = flag.String("addr", "0.0.0.0:1485", "Address to listen to")
-	ufsService         = flag.String("ufs-service", "ufs.api.cr.dev", "UFS service host")
-	serviceAccountPath = flag.String("service-account-json", "",
-		"Path to service account JSON file")
 )
 
 func main() {
@@ -37,14 +31,24 @@ func main() {
 }
 
 func innerMain() error {
+	var (
+		addr               = flag.String("addr", "0.0.0.0:1485", "Address to listen to")
+		ufsService         = flag.String("ufs-service", "ufs.api.cr.dev", "UFS service host")
+		serviceAccountPath = flag.String("service-account-json", "",
+			"Path to service account JSON file")
+	)
+	var preferredCachingServices strSlice
+	flag.Var(&preferredCachingServices, "preferred-caching-services", "Comma separated preferred caching services (each in format: [http://]server[:port]) which superseded the ones fetche from UFS")
+
 	flag.Parse()
 	l, err := net.Listen("tcp", *addr)
 	if err != nil {
 		return err
 	}
 	gs := newGRPCServer(&serverConfig{
-		ufsService:         *ufsService,
-		serviceAccountPath: *serviceAccountPath,
+		ufsService:               *ufsService,
+		serviceAccountPath:       *serviceAccountPath,
+		preferredCachingServices: preferredCachingServices,
 	})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, handledSignals...)
@@ -87,4 +91,19 @@ func (ic interceptor) unaryOption() grpc.ServerOption {
 func withUFSContext(ctx context.Context) context.Context {
 	md := metadata.Pairs("namespace", "os")
 	return metadata.NewOutgoingContext(ctx, md)
+}
+
+// strSlice implements flag.Value interface for specify multiple value.
+type strSlice []string
+
+func (s *strSlice) String() string {
+	return strings.Join(*s, ",")
+}
+
+func (s *strSlice) Set(value string) error {
+	if value == "" {
+		return nil
+	}
+	*s = strings.Split(value, ",")
+	return nil
 }

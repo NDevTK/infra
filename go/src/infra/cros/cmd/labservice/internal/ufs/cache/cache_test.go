@@ -88,6 +88,60 @@ func TestFindCacheServer_zone(t *testing.T) {
 	}
 }
 
+func TestParseAddress_happy(t *testing.T) {
+	t.Parallel()
+	cases := map[string]struct {
+		addr string
+		want address
+	}{
+		"scheme and server": {
+			addr: "http://100.100.100.108",
+			want: address{Ip: "100.100.100.108", Port: 80},
+		},
+		"server and port": {
+			addr: "server:8000",
+			want: address{Ip: "server", Port: 8000},
+		},
+		"scheme server and port": {
+			addr: "http://server:8001",
+			want: address{Ip: "server", Port: 8001},
+		},
+	}
+	for n, tc := range cases {
+		tc := tc
+		t.Run(n, func(t *testing.T) {
+			got, err := parseAddress(tc.addr)
+			if err != nil {
+				t.Errorf("parseAddress(%q) err %v, want %v", tc, err, nil)
+			}
+			if *got != tc.want {
+				t.Errorf("parseAddress(%q) got %q, want %q", tc, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestParseAddress_errors(t *testing.T) {
+	t.Parallel()
+	cases := map[string]string{
+		"empty string":            "",
+		"emtty string 2":          "    ",
+		"neither scheme nor port": "server",
+		"port is not a number":    "server:port",
+		"extra part":              "server:port:more",
+	}
+	for n, tc := range cases {
+		tc := tc
+		t.Run(n, func(t *testing.T) {
+			t.Parallel()
+			_, err := parseAddress(tc)
+			if err == nil {
+				t.Errorf("parseAddress(%q) error nil, want not nil", tc)
+			}
+		})
+	}
+}
+
 type fakeClient struct {
 	ufsapi.FleetClient
 	CachingServices *ufsapi.ListCachingServicesResponse
