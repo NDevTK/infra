@@ -1725,7 +1725,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"has_rpm_info",
-				"Power cycle DUT by RPM",
+				"Power off DUT by RPM",
+				"Sleep 15s",
+				"Power on DUT by RPM",
 				"Wait to be pingable (normal boot)",
 			},
 			ExecName:   "sample_pass",
@@ -1739,19 +1741,6 @@ func crosRepairActions() map[string]*Action {
 				"dut_is_in_audio_box",
 			},
 			ExecName: "sample_fail",
-		},
-		"Power cycle DUT by RPM": {
-			Docs: []string{
-				"Power cycle the DUT by RPM outlet.",
-			},
-			Dependencies: []string{
-				"has_rpm_info",
-				"Power off DUT by RPM",
-				"Sleep 15s",
-				"Power on DUT by RPM",
-			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Collect dmesg logs from DUT": {
 			Docs: []string{
