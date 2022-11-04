@@ -3148,6 +3148,20 @@ wheel: <
 * *manylinux-x64-py3*
 * *windows-x64-py3*
 
+## **hjson**
+
+### 3.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/hjson-py2_py3"
+  version: "version:3.1.0"
+>
+```
+
+
+* *universal*
+
 ## **html5lib**
 
 ### 1.0.1

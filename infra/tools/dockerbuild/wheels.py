@@ -1000,6 +1000,7 @@ SPECS.update({
         UniversalSource('grpc-google-iam-v1', '0.12.3', pyversions=['py3']),
         UniversalSource('gym', '0.18.0', pyversions=['py3']),
         UniversalSource('gym', '0.19.0', pyversions=['py3']),
+        UniversalSource('hjson', '3.1.0'),
         UniversalSource('httpagentparser', '1.9.3'),
         UniversalSource('httplib2', '0.10.3'),
         UniversalSource('httplib2', '0.12.1'),
