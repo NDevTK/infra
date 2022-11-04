@@ -38,9 +38,10 @@ type ufsErrorPolicy string
 // Lax      -- if we do not need the UFS response to make a decision, do not fail the request.
 const (
 	// The strict policy causes all UFS error requests to be treated as fatal and causes the request to fail.
-	ufsErrorPolicyStrict   ufsErrorPolicy = "strict"
-	ufsErrorPolicyFallback                = "fallback"
-	ufsErrorPolicyLax                     = "lax"
+	ufsErrorPolicyStrict         ufsErrorPolicy = "strict"
+	ufsErrorPolicyFallback                      = "fallback"
+	ufsErrorPolicyLax                           = "lax"
+	maxConsequentRecFailureCount                = 4
 )
 
 // NormalizeError policy normalizes a string into the canonical name for a policy.
@@ -95,8 +96,19 @@ func createKarteClient(ctx context.Context) (metrics.Metrics, error) {
 	}, cfg.GetKarte().GetHost(), site.DefaultPRPCOptions)
 }
 
-func findProperRecoveryTask(ctx context.Context, dutName string, karteC metrics.Metrics) buildbucket.TaskName {
-	// TODO: fill in the strategy to find the right recovery task to trigger.
+func findProperRecoveryTask(ctx context.Context, expectedState, dutName string, karteC metrics.Metrics) buildbucket.TaskName {
+	// Only consider to schedule deep repair for repair_failed DUTs
+	if expectedState != clients.DutStateRevMap[fleet.DutState_RepairFailed] {
+		return buildbucket.Recovery
+	}
+	recFailCount, err := metrics.CountFailedRepairFromMetrics(ctx, dutName, buildbucket.Recovery.String(), karteC)
+	if err != nil {
+		logging.Infof(ctx, "Fail to get consequent failure count for recovery task: %s", err)
+		return buildbucket.Recovery
+	}
+	if recFailCount >= maxConsequentRecFailureCount {
+		return buildbucket.DeepRecovery
+	}
 	return buildbucket.Recovery
 }
 
@@ -141,7 +153,7 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 	if err != nil {
 		logging.Infof(ctx, "Fail to create karte client, skip stats checking")
 	} else {
-		r.taskName = findProperRecoveryTask(ctx, heuristics.NormalizeBotNameToDeviceName(botID), karteC)
+		r.taskName = findProperRecoveryTask(ctx, expectedState, heuristics.NormalizeBotNameToDeviceName(botID), karteC)
 	}
 	url, err := createBuildbucketTask(ctx, r)
 	if err != nil {
