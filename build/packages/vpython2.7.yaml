@@ -1,0 +1,17 @@
+package: infra/tools/luci/vpython2.7/${platform}
+description: LEGACY vpython 2.7 package. Do not depend on this without talking to LUCI team.
+platforms:
+  - linux-amd64
+go_build_environ:
+  CGO_ENABLED:
+    linux:   0  # to avoid linking to system dynamic libraries
+go_packages:
+  - infra/tools/vpython/legacy/vpython2.7/cmd/vpython
+root: ../../go/bin
+cipd_export: |
+  @Subdir 2.7
+  infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.43
+data:
+  - file: vpython${exe_suffix}
+  - dir: "2.7"
+  - version_file: .versions/vpython${exe_suffix}.cipd_version
