@@ -119,6 +119,42 @@ var storageSMARTFieldValueTests = []struct {
 		tlw.Storage_NVME,
 		StorageStateNormal,
 	},
+	{
+		"UFS Type, StorageStateCritical, no error",
+		`
+		xxxxxx
+		$ ufs-utils desc -a -p /dev/bsg/ufs-bsg0
+		Device Health Descriptor: [Byte offset 0x2]: bPreEOLInfo = 0x3
+		Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
+		xxxxxx
+		`,
+		tlw.Storage_UFS,
+		StorageStateCritical,
+	},
+	{
+		"UFS Type, StorageStateWarning, no error",
+		`
+		xxxxxx
+		$ ufs-utils desc -a -p /dev/bsg/ufs-bsg0
+		Device Health Descriptor: [Byte offset 0x2]: bPreEOLInfo = 0x2
+		Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
+		xxxxxx
+		`,
+		tlw.Storage_UFS,
+		StorageStateWarning,
+	},
+	{
+		"UFS Type, StorageStateNormal, no error",
+		`
+		xxxxxx
+		$ ufs-utils desc -a -p /dev/bsg/ufs-bsg0
+		Device Health Descriptor: [Byte offset 0x2]: bPreEOLInfo = 0x1
+		Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
+		xxxxxx
+		`,
+		tlw.Storage_UFS,
+		StorageStateNormal,
+	},
 }
 
 func TestStorageSMARTFieldValue(t *testing.T) {

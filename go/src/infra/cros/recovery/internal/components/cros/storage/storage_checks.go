@@ -62,6 +62,7 @@ var typeToStateFuncMap map[tlw.Storage_Type]storageStateFunc = map[tlw.Storage_T
 	tlw.Storage_SSD:  detectSSDState,
 	tlw.Storage_MMC:  detectMMCState,
 	tlw.Storage_NVME: detectNVMEState,
+	tlw.Storage_UFS:  detectUFSState,
 }
 
 // storageSMARTFieldValue takes the raw output from the command line and return the field value of the storageSMART struct.
@@ -93,6 +94,8 @@ const (
 	mmcTypeStorageGlob = `\s*Extended CSD rev.*MMC (?P<version>\d+.\d+)`
 	// Example "SMART/Health Information (NVMe Log 0x02, NSID 0xffffffff)"
 	nvmeTypeStorageGlob = `.*NVMe Log .*`
+	// Example "$ ufs-utils desc -a -p /dev/bsg/ufs-bsg0"
+	ufsTypeStorageGlob = `\s*ufs-utils\s*`
 )
 
 // extractStorageType extracts the storage type information from storageInfoSlice.
@@ -111,10 +114,18 @@ func extractStorageType(ctx context.Context, storageInfoSlice []string) (tlw.Sto
 	if err != nil {
 		return tlw.Storage_TYPE_UNSPECIFIED, errors.Annotate(err, "extract storage type").Err()
 	}
+	ufsTypeRegexp, err := regexp.Compile(ufsTypeStorageGlob)
+	if err != nil {
+		return tlw.Storage_TYPE_UNSPECIFIED, errors.Annotate(err, "extract storage type").Err()
+	}
 	for _, line := range storageInfoSlice {
 		// check if storage type is SSD
 		if ssdTypeRegexp.MatchString(line) {
 			return tlw.Storage_SSD, nil
+		}
+		// check if storage type is UFS
+		if ufsTypeRegexp.MatchString(line) {
+			return tlw.Storage_UFS, nil
 		}
 		// check if storage type is MMC
 		mMMC, err := regexpSubmatchToMap(mmcTypeRegexp, line)
@@ -188,22 +199,50 @@ const (
 	mmcFailEolGlob = `.*(?P<param>PRE_EOL_INFO)]?: 0x0(?P<val>\d)`
 )
 
+const (
+	// Ex:
+	// Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
+	// 0x0~9 means 0-90% band
+	// 0xa means 90-100% band
+	// 0xb means over 100% band
+	ufsFailLifeGlob = `.*(?P<param>bDeviceLifeTimeEst.) = 0x(?P<val>\S)`
+	// Ex:
+	// Device Health Descriptor: [Byte offset 0x2]: bPreEOLInfo = 0x3
+	// 0x0 - not defined
+	// 0x1 - Normal
+	// 0x2 - Warning, consumed 80% of the reserved blocks
+	// 0x3 - Urgent, consumed 90% of the reserved blocks
+	ufsFailEolGlob = `.*(?P<param>bPreEOLInfo) = 0x(?P<val>\d)`
+)
+
 // detectMMCState read the info to detect state for MMC storage.
 // return error if the regular expression cannot compile.
 func detectMMCState(ctx context.Context, storageInfoSlice []string) (StorageState, error) {
-	log.Infof(ctx, "Extraction metrics for MMC storage")
-	mmcFailLevRegexp, err := regexp.Compile(mmcFailLifeGlob)
+	return detectJedecState(ctx, "MMC", mmcFailLifeGlob, mmcFailEolGlob, storageInfoSlice)
+}
+
+// detectUFSState read the info to detect state for UFS storage.
+// return error if the regular expression cannot compile.
+func detectUFSState(ctx context.Context, storageInfoSlice []string) (StorageState, error) {
+	return detectJedecState(ctx, "UFS", ufsFailLifeGlob, ufsFailEolGlob, storageInfoSlice)
+}
+
+// detectJedecState read the info to detect state for UFS or MMC storage.
+// return error if the regular expression cannot compile.
+func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFailEolGlob string, storageInfoSlice []string) (StorageState, error) {
+	log.Infof(ctx, "Extraction metrics for "+ifaceName+" storage")
+	jedecFailLiveRegexp, err := regexp.Compile(jedecFailLifeGlob)
 	if err != nil {
-		return StorageStateUndefined, errors.Annotate(err, "detect mmc state").Err()
+		return StorageStateUndefined, errors.Annotate(err, "detect "+ifaceName+" state").Err()
 	}
-	mmcFailEolRegexp, err := regexp.Compile(mmcFailEolGlob)
+	jedecFailEolRegexp, err := regexp.Compile(jedecFailEolGlob)
 	if err != nil {
-		return StorageStateUndefined, errors.Annotate(err, "detect mmc state").Err()
+		return StorageStateUndefined, errors.Annotate(err, "detect "+ifaceName+" state").Err()
 	}
 	eolValue := 0
 	lifeValue := -1
 	for _, line := range storageInfoSlice {
-		mLife, err := regexpSubmatchToMap(mmcFailLevRegexp, line)
+		mLife, err := regexpSubmatchToMap(jedecFailLiveRegexp, line)
 		if err == nil {
 			param := mLife["val"]
 			log.Debugf(ctx, "Found line for lifetime estimate => %q", line)
@@ -224,7 +263,7 @@ func detectMMCState(ctx context.Context, storageInfoSlice []string) (StorageStat
 			}
 			continue
 		}
-		mEol, err := regexpSubmatchToMap(mmcFailEolRegexp, line)
+		mEol, err := regexpSubmatchToMap(jedecFailEolRegexp, line)
 		if err == nil {
 			param := mEol["val"]
 			log.Debugf(ctx, "Found line for end-of-life => %q", line)
