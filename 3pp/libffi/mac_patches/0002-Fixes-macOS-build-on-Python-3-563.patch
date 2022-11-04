@@ -1,0 +1,33 @@
+From b7af8f47d5fff2957521dc269637c00b8a4b6c75 Mon Sep 17 00:00:00 2001
+From: Andre Miras <AndreMiras@users.noreply.github.com>
+Date: Thu, 11 Jun 2020 14:38:59 +0200
+Subject: [PATCH] Fixes macOS build on Python 3 (#563)
+
+The error was:
+```
+Traceback (most recent call last):
+  File "_generate-darwin-source-and-headers.py", line 209, in <module>
+    generate_source_and_headers(generate_osx=not args.only_ios, generate_ios=not args.only_osx)
+  File "_generate-darwin-source-and-headers.py", line 197, in generate_source_and_headers
+    for header_name, tag_tuples in platform_headers.iteritems():
+AttributeError: 'collections.defaultdict' object has no attribute 'iteritems'
+```
+---
+ generate-darwin-source-and-headers.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/generate-darwin-source-and-headers.py b/generate-darwin-source-and-headers.py
+index b8c28e6..516464f 100755
+--- a/generate-darwin-source-and-headers.py
++++ b/generate-darwin-source-and-headers.py
+@@ -186,7 +186,7 @@ def generate_source_and_headers(generate_osx=True, generate_ios=True):
+         build_target(desktop64_platform, platform_headers)
+ 
+     mkdir_p('darwin_common/include')
+-    for header_name, tag_tuples in platform_headers.iteritems():
++    for header_name, tag_tuples in platform_headers.items():
+         basename, suffix = os.path.splitext(header_name)
+         with open(os.path.join('darwin_common/include', header_name), 'w') as header:
+             for tag_tuple in tag_tuples:
+-- 
+2.38.1.273.g43a17bfeac-goog
