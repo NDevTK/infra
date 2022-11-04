@@ -1762,17 +1762,14 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Restore AC detection by EC console": {
 			Docs: []string{
-				"Try to recover AC detection through servod's ec control",
+				"Try to recover AC detection through servod's ec control.",
+				"This action wraps the recovery action and waits for the device to come back online.",
 			},
-			Conditions: []string{
-				"dut_servo_host_present",
-				"cros_is_battery_expected",
+			Dependencies: []string{
+				"Servo recover AC power",
+				"Wait to be pingable (normal boot)",
 			},
-			ExecExtraArgs: []string{
-				"wait_timeout:120",
-			},
-			ExecTimeout: &durationpb.Duration{Seconds: 600},
-			ExecName:    "servo_recover_ac_power",
+			ExecName: "sample_pass",
 		},
 		"Disable software-controlled write-protect for 'host'": {
 			Docs: []string{
@@ -1803,6 +1800,36 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout:            &durationpb.Duration{Seconds: 300},
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
+		},
+		"Servo recover AC power": {
+			Docs: []string{
+				"Try to recover AC detection through servod's ec control.",
+				"The DUT may take time to become pingable again,",
+				"so we use a wrapper action to wait.",
+			},
+			Dependencies: []string{
+				"DUT has CrOS EC",
+				"dut_servo_host_present",
+				"cros_is_battery_expected",
+			},
+			ExecName: "servo_recover_ac_power",
+			ExecExtraArgs: []string{
+				"wait_timeout:120",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
+		},
+		"DUT has CrOS EC": {
+			Docs: []string{
+				"Verify if DUT has ChromeOS firmware for EC",
+			},
+			Dependencies: []string{
+				"Read servo serial by servod harness",
+			},
+			ExecExtraArgs: []string{
+				"command:supports_cros_ec_communication",
+				"expected_string_value:yes",
+			},
+			ExecName: "servo_check_servod_control",
 		},
 		"Install OS in recovery mode by booting from servo USB-drive": {
 			Docs: []string{
