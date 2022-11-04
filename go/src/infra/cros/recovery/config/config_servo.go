@@ -320,8 +320,9 @@ func servoRepairPlan() *Plan {
 					"Toggle CC line and stop",
 					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"Reflash Cr50 fw and stop",
+					"Reset GSC from DUT and stop servod",
 					"Reset EC from DUT and stop",
+					"Reset GSC from DUT and stop servod",
 					"Create request to reboot labstation",
 				},
 			},
@@ -345,6 +346,7 @@ func servoRepairPlan() *Plan {
 					"Cold reset the DUT by servod and stop",
 					"Reflash Cr50 fw and stop",
 					"Reset EC from DUT and stop",
+					"Reset GSC from DUT and stop servod",
 					"Create request to reboot labstation",
 				},
 			},
@@ -485,6 +487,7 @@ func servoRepairPlan() *Plan {
 					"Cold reset the DUT by servod and stop",
 					"Reflash Cr50 fw and stop",
 					"Reset EC from DUT and stop",
+					"Reset GSC from DUT and stop servod",
 				},
 			},
 			"Servod detect voltage issue": {
@@ -506,6 +509,7 @@ func servoRepairPlan() *Plan {
 					"Reset EC from DUT and stop",
 					"Cold reset the DUT by servod and stop",
 					"Reflash Cr50 fw and stop",
+					"Reset GSC from DUT and stop servod",
 				},
 			},
 			"Servo Cr50 enumerated": {
@@ -532,6 +536,7 @@ func servoRepairPlan() *Plan {
 					"Reset EC from DUT and stop",
 					"Cold reset the DUT by servod and stop",
 					"Reflash Cr50 fw and stop",
+					"Reset GSC from DUT and stop servod",
 				},
 			},
 			"Servo main device is GSC chip": {
@@ -569,6 +574,7 @@ func servoRepairPlan() *Plan {
 					"Cold reset the DUT by servod and stop",
 					"Reflash Cr50 fw and stop",
 					"Reset EC from DUT and stop",
+					"Reset GSC from DUT and stop servod",
 				},
 			},
 			"Cr50 testlab is enabled": {
@@ -631,6 +637,7 @@ func servoRepairPlan() *Plan {
 					"Cold reset the DUT by servod and stop",
 					"Reflash Cr50 fw and stop",
 					"Reset EC from DUT and stop",
+					"Reset GSC from DUT and stop servod",
 				},
 			},
 			"pwr_button_supported_models": {
@@ -1429,16 +1436,14 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.",
 				},
-				Conditions: []string{
+				Dependencies: []string{
 					"is_servo_type_ccd",
 					"Is reflash Cr50 was done more 24 hours ago",
-				},
-				Dependencies: []string{
 					"Reflash Cr50 fw on DUT",
 					"Stop servod",
 				},
 				ExecName:   "sample_pass",
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Reflash Cr50 fw on DUT": {
 				Docs: []string{
@@ -1454,6 +1459,36 @@ func servoRepairPlan() *Plan {
 					"wait_timeout:30",
 				},
 				ExecTimeout: &durationpb.Duration{Seconds: 150},
+				RunControl:  RunControl_RUN_ONCE,
+			},
+			"Reset GSC from DUT and stop servod": {
+				Docs: []string{
+					"Try to reset GSC from DUT side to wake it up.",
+				},
+				Conditions: []string{
+					"is_servo_type_ccd",
+					"Is reflash Cr50 was done more 24 hours ago",
+					"Reset GSC on DUT",
+					"Stop servod",
+				},
+				ExecName:   "sample_pass",
+				RunControl: RunControl_RUN_ONCE,
+			},
+			"Reset GSC on DUT": {
+				Docs: []string{
+					"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.",
+					"The command recommended by cr50 team http://b/241161724#comment24.",
+					"Reboot after the fw flash is successful.",
+				},
+				Dependencies: []string{
+					"DUT is SSHable",
+				},
+				ExecName: "cros_run_shell_command",
+				ExecExtraArgs: []string{
+					"trunks_send",
+					"--raw 80010000000c200000000013",
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 30},
 				RunControl:  RunControl_RUN_ONCE,
 			},
 			"DUT is SSHable": {
