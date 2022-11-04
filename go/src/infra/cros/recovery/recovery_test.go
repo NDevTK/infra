@@ -158,7 +158,7 @@ var dutPlansCases = []struct {
 		"cros deep recovery",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.DeepRecovery,
-		nil,
+		[]string{"cros"},
 	},
 }
 
