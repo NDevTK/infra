@@ -789,6 +789,11 @@ SPECS.update({
             ],
             pyversions=['py3']),
         SourceOrPrebuilt(
+            'yarl',
+            '1.8.1',
+            packaged=(),
+        ),
+        SourceOrPrebuilt(
             'zstandard', '0.16.0', packaged=(), pyversions=['py3']),
     )
 })

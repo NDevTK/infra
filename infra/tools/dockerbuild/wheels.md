@@ -7601,6 +7601,27 @@ wheel: <
 
 * *universal*
 
+## **yarl**
+
+### 1.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/yarl/${vpython_platform}"
+  version: "version:1.8.1"
+>
+```
+
+
+* *linux-arm64-py3*
+* *linux-armv6-py3*
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.9*
+* *windows-x64-py3*
+* *windows-x86-py3*
+
 ## **zipp**
 
 ### 1.2.0
