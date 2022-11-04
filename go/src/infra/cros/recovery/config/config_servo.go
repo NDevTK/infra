@@ -19,7 +19,6 @@ func servoRepairPlan() *Plan {
 			"Set state:SERVO_HOST_ISSUE",
 			"Initialize docker container",
 			"Set state:NO_SSH",
-			"Device is pingable",
 			"Device is SSHable",
 			"Servo_v3 uptime is not long",
 			"Power-cycle by smart-hub",
