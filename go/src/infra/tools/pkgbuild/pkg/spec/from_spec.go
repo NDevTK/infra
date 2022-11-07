@@ -23,7 +23,6 @@ import (
 	"infra/tools/pkgbuild/pkg/stdenv"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
-	"google.golang.org/protobuf/proto"
 )
 
 // TODO(fancl): Use all:from_spec/build-support after go 1.18.
@@ -215,15 +214,23 @@ func newCreateParser(host string, creates []*Spec_Create) (*createParser, error)
 			}
 		}
 
+		if c.GetUnsupported() == true {
+			return nil, ErrPackageNotAvailable
+		}
+
 		if p.create == nil {
 			p.create = &Spec_Create{}
 		}
-		proto.Merge(p.create, c)
+		protoMerge(p.create, c)
 	}
 
-	if p.create == nil || p.create.GetUnsupported() == true {
+	if p.create == nil {
 		return nil, ErrPackageNotAvailable
 	}
+
+	// To make this create rule self-consistent instead of just having the last
+	// platform_re to be applied.
+	p.create.PlatformRe = ""
 
 	return p, nil
 }
