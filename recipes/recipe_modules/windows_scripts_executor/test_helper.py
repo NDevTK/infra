@@ -554,7 +554,8 @@ def WPE_IMAGE(image,
               customization,
               sub_customization,
               action_list,
-              up_dests=None):
+              up_dests=None,
+              image_src=None):
   """ generates a winpe customization image """
   return wib.Image(
       name=image,
@@ -563,6 +564,7 @@ def WPE_IMAGE(image,
           wib.Customization(
               offline_winpe_customization=winpe.OfflineWinPECustomization(
                   name=customization,
+                  image_src=image_src,
                   image_dests=up_dests,
                   offline_customization=[
                       actions.OfflineAction(
