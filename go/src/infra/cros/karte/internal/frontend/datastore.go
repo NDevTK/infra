@@ -48,6 +48,8 @@ type ActionEntity struct {
 	FailReason     string    `gae:"fail_reason"`
 	SealTime       time.Time `gae:"seal_time"` // After the seal time has passed, no further modifications may be made.
 	Hostname       string    `gae:"hostname"`
+	Model          string    `gae:"model"`
+	Board          string    `gae:"board"`
 	// Count the number of times that an action entity was modified by a request.
 	ModificationCount int32 `gae:"modification_count"`
 	// Deprecated fields!
@@ -85,6 +87,8 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 		SealTime:          scalars.ConvertTimeToTimestampPtr(e.SealTime),
 		Hostname:          e.Hostname,
 		ModificationCount: e.ModificationCount,
+		Model:             e.Model,
+		Board:             e.Board,
 	}
 }
 
@@ -106,6 +110,8 @@ func (e *ActionEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 		FailReason:     e.FailReason,
 		SealTime:       scalars.ConvertTimeToTimestampPtr(e.SealTime),
 		Hostname:       e.Hostname,
+		Model:          e.Model,
+		Board:          e.Board,
 		// ModificationCount is intentionally absent from BigQuery table.
 	}
 }
