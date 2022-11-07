@@ -488,6 +488,7 @@ func servoRepairPlan() *Plan {
 					"Reflash Cr50 fw and stop",
 					"Reset EC from DUT and stop",
 					"Reset GSC from DUT and stop servod",
+					"Create request to reboot labstation",
 				},
 			},
 			"Servod detect voltage issue": {
