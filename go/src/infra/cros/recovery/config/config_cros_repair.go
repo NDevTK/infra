@@ -1795,32 +1795,17 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Install OS in recovery mode by booting from servo USB-drive": {
 			Docs: []string{
-				"This action installs the test image on DUT utilizing ",
-				"the features of servo. DUT will be booted in recovery ",
-				"mode. In some cases RO FW is not allowed to boot in ",
-				"recovery mode with active PD, so we will change it to ",
-				"sink-mode if required.",
+				"This action installs the test image on DUT utilizing the features of servo.",
+				"DUT will be booted in recovery mode.",
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Boot DUT in recovery and install from USB-drive",
+				"Wait to be SSHable (normal boot)",
 			},
-			ExecName: "cros_install_in_recovery_mode",
-			ExecExtraArgs: []string{
-				"run_tpm_reset:true",
-				"run_os_install:true",
-				"boot_timeout:480",
-				"boot_interval:10",
-				"halt_timeout:120",
-				"install_timeout:1200",
-				"tpm_reset_timeout:60",
-				"post_install_boot_time:60",
-				"badblocks_mode:auto",
-				"rw_badblocks_timeout:5400",
-				"ro_badblocks_timeout:3600",
-			},
-			ExecTimeout: &durationpb.Duration{Seconds: 7500},
+			ExecName: "sample_pass",
 		},
 		"Install OS in DEV mode by USB-drive (for special pools)": {
 			Docs: []string{
@@ -2149,6 +2134,30 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 10800,
 			},
+		},
+		"Boot DUT in recovery and install from USB-drive": {
+			Docs: []string{
+				"This action installs the test image on DUT utilizing ",
+				"the features of servo. DUT will be booted in recovery ",
+				"mode. In some cases RO FW is not allowed to boot in ",
+				"recovery mode with active PD, so we will change it to ",
+				"sink-mode if required.",
+			},
+			ExecName: "cros_install_in_recovery_mode",
+			ExecExtraArgs: []string{
+				"run_tpm_reset:true",
+				"run_os_install:true",
+				"boot_timeout:480",
+				"boot_interval:10",
+				"halt_timeout:120",
+				"install_timeout:1200",
+				"tpm_reset_timeout:60",
+				"post_install_boot_time:15",
+				"badblocks_mode:auto",
+				"rw_badblocks_timeout:5400",
+				"ro_badblocks_timeout:3600",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 7500},
 		},
 		"Boot DUT from USB in DEV mode": {
 			Docs: []string{
