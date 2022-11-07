@@ -22,16 +22,13 @@ import (
 	"go.chromium.org/luci/common/logging"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
-	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	"infra/appengine/cros/lab_inventory/app/config"
 	"infra/appengine/cros/lab_inventory/app/converter"
-	dronequeenapi "infra/appengine/drone-queen/api"
 	bqlib "infra/cros/lab_inventory/bq"
 	"infra/cros/lab_inventory/cfg2datastore"
 	"infra/cros/lab_inventory/changehistory"
@@ -318,46 +315,7 @@ func dumpInventorySnapshot(c *router.Context) (err error) {
 }
 
 func pushToDroneQueenCronHandler(c *router.Context) error {
-	ctx := c.Context
-	// UFS Migration, skip running this job
-	if config.Get(ctx).GetRouting().GetDisableDronequeenPush() {
-		logging.Infof(c.Context, "UFS migration done: Skipping push inventory to drone queen")
-		return nil
-	}
-	logging.Infof(c.Context, "Start to push inventory to drone queen")
-	queenHostname := config.Get(ctx).QueenService
-	if queenHostname == "" {
-		logging.Infof(ctx, "No drone queen service configured.")
-		return nil
-	}
-
-	droneQueenRecord, err := dronecfg.Get(ctx, dronecfg.QueenDroneName(config.Get(ctx).Environment))
-	if err != nil {
-		return err
-	}
-
-	availableDuts := make([]*dronequeenapi.DeclareDutsRequest_Dut, len(droneQueenRecord.DUTs))
-	for i := range availableDuts {
-		availableDuts[i] = &dronequeenapi.DeclareDutsRequest_Dut{
-			Name: droneQueenRecord.DUTs[i].Hostname,
-			Hive: GetHiveForDut(droneQueenRecord.DUTs[i].Hostname),
-		}
-	}
-
-	ts, err := auth.GetTokenSource(ctx, auth.AsSelf)
-	if err != nil {
-		return err
-	}
-	h := oauth2.NewClient(ctx, ts)
-	client := dronequeenapi.NewInventoryProviderPRPCClient(&prpc.Client{
-		C:    h,
-		Host: queenHostname,
-	})
-	logging.Debugf(ctx, "DUTs to declare: %#v", availableDuts)
-	_, err = client.DeclareDuts(ctx, &dronequeenapi.DeclareDutsRequest{AvailableDuts: availableDuts})
-	if err != nil {
-		return err
-	}
+	// UFS migration is done
 	return nil
 }
 
