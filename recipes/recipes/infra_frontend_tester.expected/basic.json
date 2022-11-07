@@ -179,7 +179,7 @@
       "-root",
       "[START_DIR]/packages",
       "-ensure-file",
-      "infra/nodejs/nodejs/${platform} node_version:10.15.3",
+      "infra/3pp/tools/nodejs/${platform} version:2@16.13.0",
       "-max-threads",
       "0",
       "-json-output",
@@ -203,186 +203,14 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-node_version:10.\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/nodejs/nodejs/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@16.13.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/nodejs/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
     ]
-  },
-  {
-    "cmd": [
-      "npm",
-      "ci"
-    ],
-    "cwd": "[START_DIR]/infra/appengine/findit",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "findit npm install"
-  },
-  {
-    "cmd": [
-      "npx",
-      "run-wct",
-      "--base",
-      "ui/",
-      "--dep",
-      "third_party"
-    ],
-    "cwd": "[START_DIR]/infra/appengine/findit",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "findit run-wct"
-  },
-  {
-    "cmd": [
-      "npx",
-      "nyc",
-      "report"
-    ],
-    "cwd": "[START_DIR]/infra/appengine/findit",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "findit generate js coverage report"
-  },
-  {
-    "cmd": [
-      "npm",
-      "ci"
-    ],
-    "cwd": "[START_DIR]/infra/crdx/chopsui",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chopsui npm install"
-  },
-  {
-    "cmd": [
-      "npx",
-      "bower",
-      "install"
-    ],
-    "cwd": "[START_DIR]/infra/crdx/chopsui",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chopsui bower install"
-  },
-  {
-    "cmd": [
-      "npx",
-      "run-wct",
-      "--prefix",
-      "test",
-      "--dep",
-      "bower_components"
-    ],
-    "cwd": "[START_DIR]/infra/crdx/chopsui",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chopsui run-wct"
-  },
-  {
-    "cmd": [
-      "npx",
-      "nyc",
-      "report"
-    ],
-    "cwd": "[START_DIR]/infra/crdx/chopsui",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chopsui generate js coverage report"
   },
   {
     "cmd": [
@@ -477,6 +305,53 @@
       }
     },
     "name": "chopsdash test"
+  },
+  {
+    "cmd": [
+      "npm",
+      "ci"
+    ],
+    "cwd": "[START_DIR]/infra/go/src/go.chromium.org/luci/analysis/frontend/ui",
+    "env": {
+      "PATH": "[START_DIR]/packages/bin:<PATH>"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "analysis npm install"
+  },
+  {
+    "cmd": [
+      "npm",
+      "run",
+      "test"
+    ],
+    "cwd": "[START_DIR]/infra/go/src/go.chromium.org/luci/analysis/frontend/ui",
+    "env": {
+      "PATH": "[START_DIR]/packages/bin:<PATH>"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "analysis test"
   },
   {
     "name": "$result"

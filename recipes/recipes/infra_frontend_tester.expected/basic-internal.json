@@ -179,7 +179,7 @@
       "-root",
       "[START_DIR]/packages",
       "-ensure-file",
-      "infra/nodejs/nodejs/${platform} node_version:10.15.3",
+      "infra/3pp/tools/nodejs/${platform} version:2@16.13.0",
       "-max-threads",
       "0",
       "-json-output",
@@ -203,110 +203,14 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-node_version:10.\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/nodejs/nodejs/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@16.13.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/nodejs/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
     ]
-  },
-  {
-    "cmd": [
-      "npm",
-      "ci"
-    ],
-    "cwd": "[START_DIR]/infra_internal/appengine/chromiumdash",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra_internal:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chromiumdash npm install"
-  },
-  {
-    "cmd": [
-      "npx",
-      "bower",
-      "install"
-    ],
-    "cwd": "[START_DIR]/infra_internal/appengine/chromiumdash",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra_internal:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chromiumdash bower install"
-  },
-  {
-    "cmd": [
-      "npx",
-      "run-wct",
-      "--dep",
-      "third_party"
-    ],
-    "cwd": "[START_DIR]/infra_internal/appengine/chromiumdash",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra_internal:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chromiumdash run-wct"
-  },
-  {
-    "cmd": [
-      "npx",
-      "nyc",
-      "report"
-    ],
-    "cwd": "[START_DIR]/infra_internal/appengine/chromiumdash",
-    "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/infra_internal:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "chromiumdash generate js coverage report"
   },
   {
     "name": "$result"

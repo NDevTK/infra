@@ -1,4 +1,4 @@
-/* Copyright 2019 The Chromium Authors. All Rights Reserved.
+/* Copyright (c) 2019 The Chromium Authors. All Rights Reserved.
  *
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
@@ -9,6 +9,7 @@ process.env.CHROME_BIN = require('puppeteer').executablePath();
 module.exports = function(config) {
   const isDebug = process.argv.some((arg) => arg === '--debug');
   const coverage = process.argv.some((arg) => arg === '--coverage');
+  process.env.TZ = 'America/Los_Angeles';
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)

@@ -31,8 +31,8 @@ def RunSteps(api):
 
   packages_dir = api.path['start_dir'].join('packages')
   ensure_file = api.cipd.EnsureFile()
-  ensure_file.add_package('infra/nodejs/nodejs/${platform}',
-      'node_version:10.15.3')
+  ensure_file.add_package('infra/3pp/tools/nodejs/${platform}',
+                          'version:2@16.13.0')
   api.cipd.ensure(packages_dir, ensure_file)
 
   node_path = api.path['start_dir'].join('packages', 'bin')
@@ -45,31 +45,14 @@ def RunSteps(api):
     RunInfraFrontendTests(api, env)
 
 def RunInfraInternalFrontendTests(api, env):
-  cwd = api.path['checkout'].join('appengine', 'chromiumdash')
-  with api.context(env=env, cwd=cwd):
-    api.step('chromiumdash npm install', ['npm', 'ci'])
-    api.step('chromiumdash bower install', ['npx', 'bower', 'install'])
-    api.step(
-        'chromiumdash run-wct', ['npx', 'run-wct', '--dep', 'third_party'])
-    api.step(
-        'chromiumdash generate js coverage report', ['npx', 'nyc', 'report'])
+  # Add your infra_internal tests here following this example:
+  # cwd = api.path['checkout'].join('path', 'to', 'ui', 'root')
+  # RunFrontendTests(api, env, cwd, 'myapp')
+  # `myapp` is the name that will show up in the step.
+  pass
+
 
 def RunInfraFrontendTests(api, env):
-  cwd = api.path['checkout'].join('appengine', 'findit')
-  with api.context(env=env, cwd=cwd):
-    api.step('findit npm install', ['npm', 'ci'])
-    api.step('findit run-wct', ['npx', 'run-wct', '--base', 'ui/',
-        '--dep', 'third_party'])
-    api.step('findit generate js coverage report', ['npx', 'nyc', 'report'])
-
-  cwd = api.path['checkout'].join('crdx', 'chopsui')
-  with api.context(env=env, cwd=cwd):
-    api.step('chopsui npm install', ['npm', 'ci'])
-    api.step('chopsui bower install', ['npx', 'bower', 'install'])
-    api.step('chopsui run-wct', ['npx', 'run-wct', '--prefix', 'test',
-        '--dep', 'bower_components'])
-    api.step('chopsui generate js coverage report', ['npx', 'nyc', 'report'])
-
   cwd = api.path['checkout'].join('appengine', 'monorail')
   RunFrontendTests(api, env, cwd, 'monorail')
 
@@ -77,16 +60,9 @@ def RunInfraFrontendTests(api, env):
                                   'dashboard', 'frontend')
   RunFrontendTests(api, env, cwd, 'chopsdash')
 
-  # Fixes bug https://buganizer.corp.google.com/issues/232723599
-
-  # cwd = api.path['checkout'].join('go', 'src', 'infra', 'appengine',
-  #    'sheriff-o-matic', 'frontend')
-  # with api.context(env=env, cwd=cwd):
-  #  api.step('sheriff-o-matic npm install', ['npm', 'ci'])
-  #  api.step('sheriff-o-matic bower install', ['npx', 'bower', 'install'])
-  #  api.step('sheriff-o-matic run-wct', ['npx', 'run-wct'])
-  #  api.step('sheriff-o-matic generate js coverage report',
-  #      ['npx', 'nyc', 'report'])
+  cwd = api.path['checkout'].join('go', 'src', 'go.chromium.org', 'luci',
+                                  'analysis', 'frontend', 'ui')
+  RunFrontendTests(api, env, cwd, 'analysis')
 
 
 def RunFrontendTests(api, env, cwd, app_name):
