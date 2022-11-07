@@ -33,6 +33,24 @@
       "message": "We are converting conditions to dependencies here. Is there a context or reason behind this? It possible this was discussed offline and I don\u0027t know about the rationale.",
       "revId": "c17832426ccc569ba109cb7325468e19d9755106",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d53cf1e_99916587",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1810,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2022-11-07T16:55:19Z",
+      "side": 1,
+      "message": "Otabek requested it in a previous CL, before I split the changes: https://chromium-review.googlesource.com/c/infra/infra/+/3997491/comment/8fa12ab6_4e13fe79/",
+      "parentUuid": "4d74f4b0_8415ff56",
+      "revId": "c17832426ccc569ba109cb7325468e19d9755106",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
