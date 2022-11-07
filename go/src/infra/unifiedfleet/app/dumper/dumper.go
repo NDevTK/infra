@@ -110,14 +110,6 @@ var Jobs = []*cron.CronTab{
 		Job:      swarmingLabelsDiffHandler,
 	},
 	{
-		// Compare differences between InvV2 ManufacturingConfig implementation with
-		// UFS implementation
-		Name:     util.CronJobNames["ManufacturingConfigDiffCron"],
-		Time:     5 * time.Minute,
-		TrigType: cron.DAILY,
-		Job:      manufacturingConfigDiffHandler,
-	},
-	{
 		// Sync ENC bot configs
 		Name:     util.CronJobNames["encBotConfigSyncCron"],
 		Time:     24 * time.Hour, //TODO(gowriden) - Reduce time to every 5 minutes once completely implemented
