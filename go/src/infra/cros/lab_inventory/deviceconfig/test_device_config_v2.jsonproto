@@ -1337,8 +1337,7 @@
             "value": "FAKE-REF-DESIGN:2147483647"
           },
           "idScanConfig": {
-            "firmwareSku": 2147483647,
-            "smbiosNameMatch": "FAKE-REF-DESIGN"
+            "firmwareSku": 2147483647
           },
           "powerConfig": {
             "preferences": {
@@ -1350,9 +1349,6 @@
         {
           "designConfigId": {
             "value": "FAKE-REF-DESIGN:0"
-          },
-          "idScanConfig": {
-            "smbiosNameMatch": "FAKE-REF-DESIGN"
           },
           "powerConfig": {
             "preferences": {
@@ -1366,8 +1362,7 @@
             "value": "PROJECT-A:32"
           },
           "idScanConfig": {
-            "firmwareSku": 32,
-            "smbiosNameMatch": "PROJECT-A"
+            "firmwareSku": 32
           },
           "powerConfig": {
             "preferences": {
@@ -1381,8 +1376,7 @@
             "value": "PROJECT-B:33"
           },
           "idScanConfig": {
-            "firmwareSku": 33,
-            "smbiosNameMatch": "PROJECT-B"
+            "firmwareSku": 33
           },
           "powerConfig": {
             "preferences": {
@@ -1396,8 +1390,7 @@
             "value": "PROJECT-C:34"
           },
           "idScanConfig": {
-            "firmwareSku": 34,
-            "smbiosNameMatch": "PROJECT-C"
+            "firmwareSku": 34
           },
           "powerConfig": {
             "preferences": {
@@ -1411,8 +1404,7 @@
             "value": "PROJECT-WL:64"
           },
           "idScanConfig": {
-            "firmwareSku": 64,
-            "smbiosNameMatch": "PROJECT-WL"
+            "firmwareSku": 64
           },
           "powerConfig": {
             "preferences": {
@@ -1426,8 +1418,7 @@
             "value": "PROJECT-U:75"
           },
           "idScanConfig": {
-            "firmwareSku": 75,
-            "smbiosNameMatch": "PROJECT-U"
+            "firmwareSku": 75
           },
           "powerConfig": {
             "preferences": {
