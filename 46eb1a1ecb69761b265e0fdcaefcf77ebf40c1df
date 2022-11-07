@@ -74,6 +74,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "46a56556_63946bb0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-11-07T17:49:27Z",
+      "side": 1,
+      "message": "Tested with mallet.",
+      "parentUuid": "1cffb62c_64049b35",
+      "revId": "46eb1a1ecb69761b265e0fdcaefcf77ebf40c1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "8c0bb118_76ce22ff",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
