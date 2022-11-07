@@ -31,6 +31,8 @@ var CreateAction = &subcommands.Command{
 		r.Flags.StringVar(&r.swarmingTaskID, "task-id", "", "The ID of the swarming task")
 		r.Flags.StringVar(&r.assetTag, "asset-tag", "", "The asset tag")
 		r.Flags.StringVar(&r.failReason, "fail-reason", "", "The fail reason")
+		r.Flags.StringVar(&r.model, "model", "", "The model of the DUT")
+		r.Flags.StringVar(&r.board, "board", "", "The board of the DUT")
 		return r
 	},
 }
@@ -51,6 +53,8 @@ type createActionRun struct {
 	failReason string
 	// TODO(gregorynisbet): Support times.
 	// sealTime string
+	model string
+	board string
 }
 
 // nontrivialActionFields counts the number of fields in the action to be created with a non-default value.
@@ -66,6 +70,12 @@ func (c *createActionRun) nontrivialActionFields() int {
 		tally++
 	}
 	if c.failReason != "" {
+		tally++
+	}
+	if c.model != "" {
+		tally++
+	}
+	if c.board != "" {
 		tally++
 	}
 	return tally
@@ -104,6 +114,8 @@ func (c *createActionRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	action.SwarmingTaskId = c.swarmingTaskID
 	action.AssetTag = c.assetTag
 	action.FailReason = c.failReason
+	action.Model = c.model
+	action.Board = c.board
 	out, err := kClient.CreateAction(ctx, &kartepb.CreateActionRequest{Action: action})
 	if err != nil {
 		return errors.Annotate(err, "create action").Err()
