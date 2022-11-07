@@ -15,6 +15,7 @@ from handlers import home
 from handlers import swarming_pubsub_pipeline_callback
 from handlers import try_job_pubsub_pipeline_callback
 from handlers import url_redirect
+from handlers import not_available
 
 from components import endpoints_webapp2
 
@@ -27,6 +28,7 @@ default_web_pages_handler_mappings = [
     ('/_ah/push-handlers/tryjob',
      try_job_pubsub_pipeline_callback.TryJobPubSubPipelineCallback),
     ('/', home.Home),
+    ('.*/flake.*', not_available.RedirectFlakePortal),
     # Keep this as the last one for URL redirection if there is no matching
     # above and no matching in the dispatch.yaml for old urls.
     (r'/.*', url_redirect.URLRedirect),
