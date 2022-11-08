@@ -34,6 +34,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/pprof"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -92,6 +93,12 @@ func innerMain() error {
 	mux.HandleFunc("/download/", c.downloadHandler)
 	mux.HandleFunc("/extract/", c.extractHandler)
 	mux.HandleFunc("/decompress/", c.decompressHandler)
+
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline/", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile/", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol/", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace/", pprof.Trace)
 
 	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: mux}
