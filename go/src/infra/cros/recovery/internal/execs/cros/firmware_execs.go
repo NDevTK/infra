@@ -207,6 +207,13 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 	return nil
 }
 
+// isHardwareWriteProtectionDisabled checks if hardware write protection is
+// disabled on the DUT. https://chromium.googlesource.com/chromiumos/docs/+/HEAD/write_protection.md
+func isHardwareWriteProtectionDisabled(ctx context.Context, info *execs.ExecInfo) error {
+	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "wpsw_cur", "0")
+	return errors.Annotate(err, "is hardware write protection disabled").Err()
+}
+
 func init() {
 	execs.Register("cros_is_firmware_in_good_state", isFirmwareInGoodState)
 	execs.Register("cros_is_on_rw_firmware_stable_version", isOnRWFirmwareStableVersionExec)
@@ -216,4 +223,5 @@ func init() {
 	execs.Register("cros_run_firmware_update", runFirmwareUpdaterExec)
 	execs.Register("cros_disable_fprom_write_protect", runDisableFPROMWriteProtectExec)
 	execs.Register("cros_update_firmware_from_firmware_image", updateFirmwareFromFirmwareImage)
+	execs.Register("cros_is_hardware_write_protection_disabled", isHardwareWriteProtectionDisabled)
 }
