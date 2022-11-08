@@ -9,20 +9,15 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import time
-
-import ezt
 
 from framework import flaskservlet
 from framework import permissions
 from framework import jsonfeed
-from framework import servlet
 from project import project_helpers
-from tracker import tracker_bizobj
 
 
-class ProjectExport(servlet.Servlet):
+class ProjectExport(flaskservlet.FlaskServlet):
   """Only site admins can export a project"""
 
   _PAGE_TEMPLATE = 'project/project-export-page.ezt'
@@ -43,12 +38,11 @@ class ProjectExport(servlet.Servlet):
         'page_perms': self.MakePagePerms(mr, None, permissions.CREATE_ISSUE),
     }
 
-  # def GetProjectExportPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetProjectExportPage(self, **kwargs):
+    return self.handler(**kwargs)
 
 
-# TODO(https://crbug.com/monorail/10936): Use FlaskJsonFeed
-class ProjectExportJSON(jsonfeed.JsonFeed):
+class ProjectExportJSON(jsonfeed.FlaskJsonFeed):
   """ProjectExportJSON shows all configuration for a Project in JSON form."""
 
   # Pretty-print the JSON output.
@@ -207,8 +201,8 @@ class ProjectExportJSON(jsonfeed.JsonFeed):
     }
     return component_json
 
-  # def GetProjectExportJSONPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetProjectExportJSONPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostProjectExportJSONPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostProjectExportJSONPage(self, **kwargs):
+    return self.handler(**kwargs)

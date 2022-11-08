@@ -13,14 +13,12 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import re
 
 from features import savedqueries_helpers
 from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
-from framework import servlet
 from framework import urls
 
 # Patterns for search values that can be words, labels,
@@ -28,7 +26,7 @@ from framework import urls
 VALUE_RE = re.compile(r'[-a-zA-Z0-9._>@]+')
 
 
-class IssueAdvancedSearch(servlet.Servlet):
+class IssueAdvancedSearch(flaskservlet.FlaskServlet):
   """IssueAdvancedSearch shows a form to enter an advanced search."""
 
   _PAGE_TEMPLATE = 'tracker/issue-advsearch-page.ezt'
@@ -123,8 +121,8 @@ class IssueAdvancedSearch(servlet.Servlet):
       search_term = '%s%s' % (operator, ','.join(values))
       search_query.append(search_term)
 
-  # def GetIssueAdvSearchPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetIssueAdvSearchPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostIssueAdvSearchPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostIssueAdvSearchPage(self, **kwargs):
+    return self.handler(**kwargs)

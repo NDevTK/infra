@@ -14,22 +14,23 @@ import time
 import ezt
 
 from features import filterrules_helpers
-from framework import framework_helpers
+from framework import flaskservlet, framework_helpers
 from framework import framework_views
 from framework import permissions
 from framework import servlet
 from framework import timestr
 from framework import urls
+from gae_ts_mon import flask_handlers
 from tracker import component_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_views
 
 
-class ComponentDetail(servlet.Servlet):
+class ComponentDetail(flaskservlet.FlaskServlet):
   """Servlets allowing project owners to view and edit a component."""
 
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/component-detail-page.ezt'
 
   def _GetComponentDef(self, mr):
@@ -95,7 +96,7 @@ class ComponentDetail(servlet.Servlet):
     allow_delete = allow_edit and not subcomponents and not templates
 
     return {
-        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_COMPONENTS,
+        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_COMPONENTS,
         'component_def': component_def_view,
         'initial_leaf_name': component_def_view.leaf_name,
         'initial_docstring': component_def.docstring,
@@ -111,7 +112,7 @@ class ComponentDetail(servlet.Servlet):
         'created': created,
         'modifier': modifier,
         'modified': modified,
-        }
+    }
 
   def ProcessFormData(self, mr, post_data):
     """Validate and store the contents of the issues tracker admin page.
@@ -244,3 +245,9 @@ class ComponentDetail(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.COMPONENT_DETAIL,
         component=new_path, saved=1, ts=int(time.time()))
+
+  def GetComponentDetailPage(self, **kwargs):
+    return self.handler(**kwargs)
+
+  def PostComponentDetailPage(self, **kwargs):
+    return self.handler(**kwargs)

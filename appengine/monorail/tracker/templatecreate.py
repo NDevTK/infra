@@ -8,29 +8,21 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import collections
-import logging
 import time
 
 import ezt
 
-from framework import authdata
 from framework import flaskservlet
-from framework import framework_bizobj
 from framework import framework_helpers
-from framework import servlet
 from framework import urls
 from framework import permissions
 from tracker import field_helpers
 from tracker import template_helpers
-from tracker import tracker_bizobj
-from tracker import tracker_helpers
 from tracker import tracker_views
-from services import user_svc
 from proto import tracker_pb2
 
 
-class TemplateCreate(servlet.Servlet):
+class TemplateCreate(flaskservlet.FlaskServlet):
   """Servlet allowing project owners to create an issue template."""
 
   _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
@@ -193,8 +185,8 @@ class TemplateCreate(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.ADMIN_TEMPLATES, saved=1, ts=int(time.time()))
 
-  # def GetTemplateCreate(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetTemplateCreate(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostTemplateCreate(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostTemplateCreate(self, **kwargs):
+    return self.handler(**kwargs)

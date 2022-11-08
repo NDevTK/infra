@@ -23,14 +23,13 @@ from framework import exceptions
 from framework import flaskservlet
 from framework import filecontent
 from framework import permissions
-from framework import servlet
 from framework import template_helpers
 from tracker import attachment_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_helpers
 
 
-class AttachmentText(servlet.Servlet):
+class AttachmentText(flaskservlet.FlaskServlet):
   """AttachmentText displays textual attachments much like source browsing."""
 
   _PAGE_TEMPLATE = 'tracker/issue-attachment-text.ezt'
@@ -108,5 +107,5 @@ class AttachmentText(servlet.Servlet):
 
     return page_data
 
-  # def GetAttachmentText(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetAttachmentText(self, **kwargs):
+    return self.handler(**kwargs)

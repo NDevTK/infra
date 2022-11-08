@@ -45,8 +45,7 @@ class IssueBulkEditTest(unittest.TestCase):
         issue_star=fake.IssueStarService(),
         user=fake.UserService(),
         usergroup=fake.UserGroupService())
-    self.servlet = issuebulkedit.IssueBulkEdit(
-        'req', 'res', services=self.services)
+    self.servlet = issuebulkedit.IssueBulkEdit(services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest(
         perms=permissions.OWNER_ACTIVE_PERMISSIONSET)
     self.project = self.services.project.TestAddProject(
@@ -177,8 +176,7 @@ class IssueBulkEditTest(unittest.TestCase):
         project=self.project)
     mr.local_id_list = [local_id_1]
 
-    self.assertRaises(webapp2.HTTPException,
-                      self.servlet.GatherPageData, mr)
+    self.assertRaises(Exception, self.servlet.GatherPageData, mr)
 
   def testGatherPageData_TypeLabels(self):
     """Test that GPD displays a custom field for appropriate issues."""

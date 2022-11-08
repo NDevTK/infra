@@ -17,7 +17,6 @@ except ImportError:
 
 import settings
 from framework import permissions
-from framework import template_helpers
 from services import service_manager
 from services import tracker_fulltext
 from testing import fake
@@ -45,10 +44,9 @@ class IssueReindexTest(unittest.TestCase):
     # Non-members and contributors do not have permission to view this page.
     for permission in (permissions.USER_PERMISSIONSET,
                        permissions.COMMITTER_ACTIVE_PERMISSIONSET):
-      request, mr = testing_helpers.GetRequestObjects(
+      _, mr = testing_helpers.GetRequestObjects(
           project=self.project, perms=permission)
-      servlet = issuereindex.IssueReindex(
-          request, 'res', services=self.services)
+      servlet = issuereindex.IssueReindex(services=self.services)
     with self.assertRaises(permissions.PermissionException) as cm:
       servlet.AssertBasePermission(mr)
     self.assertEqual('You are not allowed to administer this project',
@@ -58,14 +56,13 @@ class IssueReindexTest(unittest.TestCase):
     # Owners and admins have permission to view this page.
     for permission in (permissions.OWNER_ACTIVE_PERMISSIONSET,
                        permissions.ADMIN_PERMISSIONSET):
-      request, mr = testing_helpers.GetRequestObjects(
+      _, mr = testing_helpers.GetRequestObjects(
           project=self.project, perms=permission)
-      servlet = issuereindex.IssueReindex(
-          request, 'res', services=self.services)
+      servlet = issuereindex.IssueReindex(services=self.services)
       servlet.AssertBasePermission(mr)
 
   def testGatherPageData(self):
-    servlet = issuereindex.IssueReindex('req', 'res', services=self.services)
+    servlet = issuereindex.IssueReindex(services=self.services)
 
     mr = testing_helpers.MakeMonorailRequest()
     mr.auto_submit = True
@@ -76,7 +73,7 @@ class IssueReindexTest(unittest.TestCase):
     self.assertTrue(ret['page_perms'].CreateIssue)
 
   def _callProcessFormData(self, post_data, index_issue_1=True):
-    servlet = issuereindex.IssueReindex('req', 'res', services=self.services)
+    servlet = issuereindex.IssueReindex(services=self.services)
 
     mr = testing_helpers.MakeMonorailRequest(project=self.project)
     mr.cnxn = self.cnxn

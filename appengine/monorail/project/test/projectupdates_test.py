@@ -36,8 +36,7 @@ class ProjectUpdatesTest(unittest.TestCase):
     self.mr = testing_helpers.MakeMonorailRequest(
         services=self.services, project=self.project)
     self.mr.project_name = self.project_name
-    self.project_updates = projectupdates.ProjectUpdates(
-        None, None, self.services)
+    self.project_updates = projectupdates.ProjectUpdates(self.services)
     self.mox = mox.Mox()
 
   def tearDown(self):

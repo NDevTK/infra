@@ -35,8 +35,7 @@ class FieldCreateTest(unittest.TestCase):
         user=fake.UserService(),
         config=fake.ConfigService(),
         project=fake.ProjectService())
-    self.servlet = fieldcreate.FieldCreate(
-        'req', 'res', services=self.services)
+    self.servlet = fieldcreate.FieldCreate(services=self.services)
     self.project = self.services.project.TestAddProject('proj')
     self.mr = testing_helpers.MakeMonorailRequest(
         project=self.project, perms=permissions.OWNER_ACTIVE_PERMISSIONSET)
@@ -167,7 +166,7 @@ class FieldCreateTest(unittest.TestCase):
     self.assertRaises(
         AssertionError, self.servlet.ProcessFormData, self.mr, post_data)
 
-  @mock.patch('framework.servlet.Servlet.PleaseCorrect')
+  @mock.patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
   def testProcessFormData_RejectAssertions(self, fake_servlet_pc):
     #This method tests when errors are found using when the
     #field_helpers.ParsedFieldDefAssertions is triggered.

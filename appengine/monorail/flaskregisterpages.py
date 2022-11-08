@@ -5,6 +5,8 @@
 """This file sets up all the urls for monorail pages."""
 
 import logging
+from framework import csp_report
+from framework.csp_report import CSPReportPage
 import settings
 
 import flask
@@ -63,6 +65,7 @@ from features import banspammer
 from search import backendnonviewable
 from search import backendsearch
 from tracker import componentcreate
+from tracker import componentdetail
 from tracker import fltconversion
 from tracker import fieldcreate
 from tracker import fielddetail
@@ -250,279 +253,285 @@ class ServletRegistry(object):
 
     return flaskapp_project_redirect
 
+  def RegisterCSPUrl(self):
+    flaskapp_csp = flask.Flask(__name__)
+    flaskapp_csp.add_url_rule(
+        '/', view_func=csp_report.CSPReportPage().postCSP, methods=['POST'])
+
+    return flaskapp_csp
+
   def RegisterProjectUrls(self, service):
     flaskapp_project = flask.Flask(__name__)
     _PROJECT_URLS = [
-        # (
-        #     '/<string:project_name>/<string:unrecognized>',
-        #     custom_404.ErrorPage(services=service).Get404Page,
-        #     ['GET'],
-        # ),
-        # (
-        #     '/<string:project_name>/adminComponents',
-        #     issueadmin.AdminComponents(
-        #         services=service).GetAdminComponentsPage, ['GET']),
-        # (
-        #     '/<string:project_name>/adminComponents.do',
-        #     issueadmin.AdminComponents(
-        #         services=service).PostAdminComponentsPage, ['POST']),
-        # (
-        #     '/<string:project_name>/adminIntro',
-        #     projectsummary.ProjectSummary(
-        #         services=service).GetProjectSummaryPage, ['GET']),
-        # (
-        #     '/<string:project_name>/adminLabels',
-        #     issueadmin.AdminLabels(services=service).GetAdminLabelsPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/adminLabels.do',
-        #     issueadmin.AdminLabels(services=service).PostAdminLabelsPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/adminRules',
-        #     issueadmin.AdminRules(services=service).GetAdminRulesPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/adminRules.do',
-        #     issueadmin.AdminRules(services=service).PostAdminRulesPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/adminStatuses',
-        #     issueadmin.AdminStatuses(services=service).GetAdminStatusesPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/adminStatuses.do',
-        #     issueadmin.AdminStatuses(services=service).PostAdminStatusesPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/adminTemplates',
-        #     issueadmin.AdminTemplates(services=service).GetAdminTemplatesPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/adminTemplates.do',
-        #     issueadmin.AdminTemplates(
-        #         services=service).PostAdminTemplatesPage, ['POST']),
-        # (
-        #     '/<string:project_name>/adminViews',
-        #     issueadmin.AdminViews(services=service).GetAdminViewsPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/adminViews.do',
-        #     issueadmin.AdminViews(services=service).PostAdminViewsPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/admin',
-        #     projectadmin.ProjectAdmin(services=service).GetProjectAdminPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/admin.do',
-        #     projectadmin.ProjectAdmin(services=service).PostProjectAdminPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/adminAdvanced',
-        #     projectadminadvanced.ProjectAdminAdvanced(
-        #         services=service).GetProjectAdminAdvancedPage, ['GET']),
-        # (
-        #     '/<string:project_name>/adminAdvanced.do',
-        #     projectadminadvanced.ProjectAdminAdvanced(
-        #         services=service).PostProjectAdminAdvancedPage, ['POST']),
-        # (
-        #     '/<string:project_name>/components/create',
-        #     componentcreate.ComponentCreate(
-        #         services=service).GetComponentCreatePage, ['GET']),
-        # (
-        #     '/<string:project_name>/components/create.do',
-        #     componentcreate.ComponentCreate(
-        #         services=service).PostComponentCreatePage, ['POST']),
-        # (
-        #     '/<string:project_name>/fields/create',
-        #     fieldcreate.FieldCreate(
-        #         services=service).GetFieldCreate, ['GET']),
-        # (
-        #     '/<string:project_name>/fields/create.do',
-        #     fieldcreate.FieldCreate(
-        #         services=service).PostFieldCreate, ['POST']),
-        # (
-        #     '/<string:project_name>/fields/detail',
-        #     fielddetail.FieldDetail(
-        #         services=service).GetFieldDetail, ['GET']),
-        # (
-        #     '/<string:project_name>/fields/detail.do',
-        #     fielddetail.FieldDetail(
-        #         services=service).PostFieldDetail, ['POST']),
-        # (
-        #     '/<string:project_name>/issues/advsearch',
-        #     issueadvsearch.IssueAdvancedSearch(
-        #         services=service).GetIssueAdvSearchPage, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/advsearch.do',
-        #     issueadvsearch.IssueAdvancedSearch(
-        #         services=service).PostIssueAdvSearchPage, ['POST']),
-        # (
-        #     '/<string:project_name>/issues/detail',
-        #     webcomponentspage.WebComponentsPage(
-        #         services=service).GetWebComponentsIssueDetail, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/export',
-        #     issueexport.IssueExport(services=service).GetIssueExport,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/issues/export/json',
-        #     issueexport.IssueExportJSON(services=service).GetIssueExportJSON,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/issues/export/json.do',
-        #     issueexport.IssueExportJSON(services=service).PostIssueExportJSON,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/issues/import',
-        #     issueimport.IssueImport(services=service).GetIssueImport,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/issues/import.do',
-        #     issueimport.IssueImport(services=service).PostIssueImport, ['POST'
-        #                                                                ]),
-        # (
-        #     '/<string:project_name>/issues/original',
-        #     issueoriginal.IssueOriginal(services=service).GetIssueOriginal,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/issues/entry',
-        #     issueentry.IssueEntry(
-        #         services=service).GetIssueEntry, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/entry.do',
-        #     issueentry.IssueEntry(
-        #         services=service).PostIssueEntry, ['POST']),
-        # (
-        #     '/<string:project_name>/issues/entry_new',
-        #     webcomponentspage.WebComponentsPage(
-        #         services=service).GetWebComponentsIssueNewEntry, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/list',
-        #     webcomponentspage.WebComponentsPage(
-        #         services=service).GetWebComponentsIssueList, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/reindex',
-        #     issuereindex.IssueReindex(
-        #         services=service).GetIssueReindex, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/reindex.do',
-        #     issuereindex.IssueReindex(
-        #         services=service).PostIssueReindex, ['POST']),
-        # (
-        #     '/<string:project_name>/issues/detail/list',
-        #     issuedetailezt.FlipperList(
-        #         services=service).GetFlipperList, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/detail/flipper',
-        #     issuedetailezt.FlipperIndex(
-        #         services=service).GetFlipperIndex, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/detail/flipper.do',
-        #     issuedetailezt.FlipperIndex(
-        #         services=service).PostFlipperIndex, ['POST']),
-        # (
-        #     '/<string:project_name>/issues/wizard',
-        #     webcomponentspage.WebComponentsPage(
-        #         services=service).GetWebComponentsIssueWizard, ['GET']),
-        # (
-        #     '/<string:project_name>/templates/create',
-        #     templatecreate.TemplateCreate(
-        #         services=service).GetTemplateCreate, ['GET']),
-        # (
-        #     '/<string:project_name>/templates/create.do',
-        #     templatecreate.TemplateCreate(
-        #         services=service).PostTemplateCreate, ['POST']),
-        # (
-        #     '/<string:project_name>/templates/detail',
-        #     templatedetail.TemplateDetail(
-        #         services=service).GetTemplateDetail, ['GET']),
-        # (
-        #     '/<string:project_name>/templates/detail.do',
-        #     templatedetail.TemplateDetail(
-        #         services=service).PostTemplateDetail, ['POST']),
-        # (
-        #     '/<string:project_name>/people/list',
-        #     peoplelist.PeopleList(services=service).GetPeopleListPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/people/list.do',
-        #     peoplelist.PeopleList(services=service).PostPeopleListPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/people/detail',
-        #     peopledetail.PeopleDetail(services=service).GetPeopleDetailPage,
-        #     ['GET']),
-        # (
-        #     '/<string:project_name>/people/detail.do',
-        #     peopledetail.PeopleDetail(services=service).PostPeopleDetailPage,
-        #     ['POST']),
-        # (
-        #     '/<string:project_name>/projectExport',
-        #     projectexport.ProjectExport(
-        #         services=service).GetProjectExportPage, ['GET']),
-        # (
-        #     '/<string:project_name>/projectExport/json',
-        #     projectexport.ProjectExportJSON(
-        #         services=service).GetProjectExportJSONPage, ['GET']),
-        # (
-        #     '/<string:project_name>/projectExport/json.do',
-        #     projectexport.ProjectExportJSON(
-        #         services=service).PostProjectExportJSONPage, ['POST']),
-        # (
-        #     '/<string:project_name>/updates/list',
-        #     projectupdates.ProjectUpdates(
-        #         services=service).GetProjectUpdatesPage, ['GET']),
-        # (
-        #     '/<string:project_name>/w/list',
-        #     redirects.WikiRedirect(
-        #         services=service).GetWikiListRedirect, ['GET']),
-        # (
-        #     '/<string:project_name>/wiki/<string:wiki_page>',
-        #     redirects.WikiRedirect(
-        #         services=service).GetWikiRedirect, ['GET']),
-        # (
-        #     '/<string:project_name>/source/<string:source_page>',
-        #     redirects.SourceRedirect(
-        #         services=service).GetSourceRedirect, ['GET']),
-        #     '/<string:project_name>/issues/entryafterlogin',
-        #     issueentryafterlogin.IssueEntryAfterLogin(
-        #         services=service).GetIssueEntryAfterLogin,
-        #     ['GET'],
-        # ),
-        # (
-        #     '/<string:project_name>/issues/searchtips',
-        #     issuetips.IssueSearchTips(services=service).GetIssueSearchTips,
-        #     ['GET'],
-        # ),
-        # (
-        #    '/<string:project_name>/issues/attachment',
-        #    issueattachment.AttachmentPage(services=service).GetAttachmentPage,
-        #    ['GET'],
-        # ),
-        # (
-        #     '/<string:project_name>/issues/attachmentText',
-        #     issueattachmenttext.AttachmentText(
-        #         services=service).GetAttachmentText,
-        #     ['GET'],
-        # ),
-        # (
-        #     '/<string:project_name>/issues/bulkedit',
-        #     issuebulkedit.IssueBulkEdit(
-        #         services=service).GetIssueBulkEdit, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/bulkedit.do',
-        #     issuebulkedit.IssueBulkEdit(
-        #         services=service).PostIssueBulkEdit, ['POST']),
-        # (
-        #     '/<string:project_name>/issues/detail/next',
-        #     issuedetailezt.FlipperNext(
-        #         services=service).GetFlipperNextRedirectPage, ['GET']),
-        # (
-        #     '/<string:project_name>/issues/detail/previous',
-        #     issuedetailezt.FlipperPrev(
-        #         services=service).GetFlipperPrevRedirectPage, ['GET']),
+        (
+            '/<string:project_name>/<string:unrecognized>',
+            custom_404.ErrorPage(services=service).Get404Page,
+            ['GET'],
+        ),
+        (
+            '/<string:project_name>/adminComponents',
+            issueadmin.AdminComponents(services=service).GetAdminComponentsPage,
+            ['GET']),
+        (
+            '/<string:project_name>/adminComponents.do',
+            issueadmin.AdminComponents(
+                services=service).PostAdminComponentsPage, ['POST']),
+        (
+            '/<string:project_name>/adminIntro',
+            projectsummary.ProjectSummary(
+                services=service).GetProjectSummaryPage, ['GET']),
+        (
+            '/<string:project_name>/adminLabels',
+            issueadmin.AdminLabels(services=service).GetAdminLabelsPage,
+            ['GET']),
+        (
+            '/<string:project_name>/adminLabels.do',
+            issueadmin.AdminLabels(services=service).PostAdminLabelsPage,
+            ['POST']),
+        (
+            '/<string:project_name>/adminRules',
+            issueadmin.AdminRules(services=service).GetAdminRulesPage, ['GET']),
+        (
+            '/<string:project_name>/adminRules.do',
+            issueadmin.AdminRules(services=service).PostAdminRulesPage,
+            ['POST']),
+        (
+            '/<string:project_name>/adminStatuses',
+            issueadmin.AdminStatuses(services=service).GetAdminStatusesPage,
+            ['GET']),
+        (
+            '/<string:project_name>/adminStatuses.do',
+            issueadmin.AdminStatuses(services=service).PostAdminStatusesPage,
+            ['POST']),
+        (
+            '/<string:project_name>/adminTemplates',
+            issueadmin.AdminTemplates(services=service).GetAdminTemplatesPage,
+            ['GET']),
+        (
+            '/<string:project_name>/adminTemplates.do',
+            issueadmin.AdminTemplates(services=service).PostAdminTemplatesPage,
+            ['POST']),
+        (
+            '/<string:project_name>/adminViews',
+            issueadmin.AdminViews(services=service).GetAdminViewsPage, ['GET']),
+        (
+            '/<string:project_name>/adminViews.do',
+            issueadmin.AdminViews(services=service).PostAdminViewsPage,
+            ['POST']),
+        (
+            '/<string:project_name>/admin',
+            projectadmin.ProjectAdmin(services=service).GetProjectAdminPage,
+            ['GET']),
+        (
+            '/<string:project_name>/admin.do',
+            projectadmin.ProjectAdmin(services=service).PostProjectAdminPage,
+            ['POST']),
+        (
+            '/<string:project_name>/adminAdvanced',
+            projectadminadvanced.ProjectAdminAdvanced(
+                services=service).GetProjectAdminAdvancedPage, ['GET']),
+        (
+            '/<string:project_name>/adminAdvanced.do',
+            projectadminadvanced.ProjectAdminAdvanced(
+                services=service).PostProjectAdminAdvancedPage, ['POST']),
+        (
+            '/<string:project_name>/components/create',
+            componentcreate.ComponentCreate(
+                services=service).GetComponentCreatePage, ['GET']),
+        (
+            '/<string:project_name>/components/create.do',
+            componentcreate.ComponentCreate(
+                services=service).PostComponentCreatePage, ['POST']),
+        (
+            '/<string:project_name>/components/detail',
+            componentdetail.ComponentDetail(
+                services=service).GetComponentDetailPage, ['GET']),
+        (
+            '/<string:project_name>/components/detail.do',
+            componentdetail.ComponentDetail(
+                services=service).PostComponentDetailPage, ['POST']),
+        (
+            '/<string:project_name>/fields/create',
+            fieldcreate.FieldCreate(services=service).GetFieldCreate, ['GET']),
+        (
+            '/<string:project_name>/fields/create.do',
+            fieldcreate.FieldCreate(services=service).PostFieldCreate, ['POST'
+                                                                       ]),
+        (
+            '/<string:project_name>/fields/detail',
+            fielddetail.FieldDetail(services=service).GetFieldDetail, ['GET']),
+        (
+            '/<string:project_name>/fields/detail.do',
+            fielddetail.FieldDetail(services=service).PostFieldDetail, ['POST'
+                                                                       ]),
+        (
+            '/<string:project_name>/issues/advsearch',
+            issueadvsearch.IssueAdvancedSearch(
+                services=service).GetIssueAdvSearchPage, ['GET']),
+        (
+            '/<string:project_name>/issues/advsearch.do',
+            issueadvsearch.IssueAdvancedSearch(
+                services=service).PostIssueAdvSearchPage, ['POST']),
+        (
+            '/<string:project_name>/issues/detail',
+            webcomponentspage.FlaskWebComponentsPage(
+                services=service).GetWebComponentsIssueDetail, ['GET']),
+        (
+            '/<string:project_name>/issues/export',
+            issueexport.IssueExport(services=service).GetIssueExport, ['GET']),
+        (
+            '/<string:project_name>/issues/export/json',
+            issueexport.IssueExportJSON(services=service).GetIssueExportJSON,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/export/json.do',
+            issueexport.IssueExportJSON(services=service).PostIssueExportJSON,
+            ['POST']),
+        (
+            '/<string:project_name>/issues/import',
+            issueimport.IssueImport(services=service).GetIssueImport, ['GET']),
+        (
+            '/<string:project_name>/issues/import.do',
+            issueimport.IssueImport(services=service).PostIssueImport, ['POST'
+                                                                       ]),
+        (
+            '/<string:project_name>/issues/original',
+            issueoriginal.IssueOriginal(services=service).GetIssueOriginal,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/entry',
+            issueentry.IssueEntry(services=service).GetIssueEntry, ['GET']),
+        (
+            '/<string:project_name>/issues/entry.do',
+            issueentry.IssueEntry(services=service).PostIssueEntry, ['POST']),
+        (
+            '/<string:project_name>/issues/entry_new',
+            webcomponentspage.FlaskWebComponentsPage(
+                services=service).GetWebComponentsIssueNewEntry, ['GET']),
+        (
+            '/<string:project_name>/issues/list',
+            webcomponentspage.FlaskWebComponentsPage(
+                services=service).GetWebComponentsIssueList, ['GET']),
+        (
+            '/<string:project_name>/issues/reindex',
+            issuereindex.IssueReindex(services=service).GetIssueReindex,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/reindex.do',
+            issuereindex.IssueReindex(services=service).PostIssueReindex,
+            ['POST']),
+        (
+            '/<string:project_name>/issues/detail/list',
+            issuedetailezt.FlipperList(services=service).GetFlipperList,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/detail/flipper',
+            issuedetailezt.FlipperIndex(services=service).GetFlipperIndex,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/detail/flipper.do',
+            issuedetailezt.FlipperIndex(services=service).PostFlipperIndex,
+            ['POST']),
+        (
+            '/<string:project_name>/issues/wizard',
+            webcomponentspage.FlaskWebComponentsPage(
+                services=service).GetWebComponentsIssueWizard, ['GET']),
+        (
+            '/<string:project_name>/templates/create',
+            templatecreate.TemplateCreate(services=service).GetTemplateCreate,
+            ['GET']),
+        (
+            '/<string:project_name>/templates/create.do',
+            templatecreate.TemplateCreate(services=service).PostTemplateCreate,
+            ['POST']),
+        (
+            '/<string:project_name>/templates/detail',
+            templatedetail.TemplateDetail(services=service).GetTemplateDetail,
+            ['GET']),
+        (
+            '/<string:project_name>/templates/detail.do',
+            templatedetail.TemplateDetail(services=service).PostTemplateDetail,
+            ['POST']),
+        (
+            '/<string:project_name>/people/list',
+            peoplelist.PeopleList(services=service).GetPeopleListPage, ['GET']),
+        (
+            '/<string:project_name>/people/list.do',
+            peoplelist.PeopleList(services=service).PostPeopleListPage,
+            ['POST']),
+        (
+            '/<string:project_name>/people/detail',
+            peopledetail.PeopleDetail(services=service).GetPeopleDetailPage,
+            ['GET']),
+        (
+            '/<string:project_name>/people/detail.do',
+            peopledetail.PeopleDetail(services=service).PostPeopleDetailPage,
+            ['POST']),
+        (
+            '/<string:project_name>/projectExport',
+            projectexport.ProjectExport(services=service).GetProjectExportPage,
+            ['GET']),
+        (
+            '/<string:project_name>/projectExport/json',
+            projectexport.ProjectExportJSON(
+                services=service).GetProjectExportJSONPage, ['GET']),
+        (
+            '/<string:project_name>/projectExport/json.do',
+            projectexport.ProjectExportJSON(
+                services=service).PostProjectExportJSONPage, ['POST']),
+        (
+            '/<string:project_name>/updates/list',
+            projectupdates.ProjectUpdates(
+                services=service).GetProjectUpdatesPage, ['GET']),
+        (
+            '/<string:project_name>/w/list',
+            redirects.WikiRedirect(services=service).GetWikiListRedirect,
+            ['GET']),
+        (
+            '/<string:project_name>/wiki/<string:wiki_page>',
+            redirects.WikiRedirect(services=service).GetWikiRedirect, ['GET']),
+        (
+            '/<string:project_name>/source/<string:source_page>',
+            redirects.SourceRedirect(services=service).GetSourceRedirect,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/entryafterlogin',
+            issueentryafterlogin.IssueEntryAfterLogin(
+                services=service).GetIssueEntryAfterLogin,
+            ['GET'],
+        ),
+        (
+            '/<string:project_name>/issues/searchtips',
+            issuetips.IssueSearchTips(services=service).GetIssueSearchTips,
+            ['GET'],
+        ),
+        (
+            '/<string:project_name>/issues/attachment',
+            issueattachment.AttachmentPage(services=service).GetAttachmentPage,
+            ['GET'],
+        ),
+        (
+            '/<string:project_name>/issues/attachmentText',
+            issueattachmenttext.AttachmentText(
+                services=service).GetAttachmentText,
+            ['GET'],
+        ),
+        (
+            '/<string:project_name>/issues/bulkedit',
+            issuebulkedit.IssueBulkEdit(services=service).GetIssueBulkEdit,
+            ['GET']),
+        (
+            '/<string:project_name>/issues/bulkedit.do',
+            issuebulkedit.IssueBulkEdit(services=service).PostIssueBulkEdit,
+            ['POST']),
+        (
+            '/<string:project_name>/issues/detail/next',
+            issuedetailezt.FlipperNext(
+                services=service).GetFlipperNextRedirectPage, ['GET']),
+        (
+            '/<string:project_name>/issues/detail/previous',
+            issuedetailezt.FlipperPrev(
+                services=service).GetFlipperPrevRedirectPage, ['GET']),
     ]
     flaskapp_project = self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
 

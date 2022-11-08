@@ -24,8 +24,7 @@ class IssueTipsTest(unittest.TestCase):
         issue=fake.IssueService(),
         user=fake.UserService(),
         project=fake.ProjectService())
-    self.servlet = issuetips.IssueSearchTips(
-        'req', 'res', services=self.services)
+    self.servlet = issuetips.IssueSearchTips(services=self.services)
 
   def testGatherPageData(self):
     mr = testing_helpers.MakeMonorailRequest(path='/p/proj/issues/tips')

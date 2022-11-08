@@ -14,26 +14,16 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import base64
 import logging
-import os
-import re
-from six.moves import urllib
 
 from google.appengine.api import app_identity
-from google.appengine.api import images
 
 from framework import exceptions
 from framework import flaskservlet
 from framework import framework_constants
-from framework import framework_helpers
 from framework import gcs_helpers
-from framework import permissions
-from framework import servlet
-from framework import urls
 from tracker import attachment_helpers
 from tracker import tracker_helpers
-from tracker import tracker_views
 
 
 # This will likely appear blank or as a broken image icon in the browser.
@@ -41,7 +31,7 @@ NO_PREVIEW_ICON = ''
 NO_PREVIEW_MIME_TYPE = 'image/png'
 
 
-class AttachmentPage(servlet.Servlet):
+class AttachmentPage(flaskservlet.FlaskServlet):
   """AttachmentPage serves issue attachments."""
 
   def GatherPageData(self, mr):
@@ -91,5 +81,5 @@ class AttachmentPage(servlet.Servlet):
     url = gcs_helpers.SignUrl(bucket_name, gcs_object_id)
     self.redirect(url, abort=True)
 
-  # def GetAttachmentPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetAttachmentPage(self, **kwargs):
+    return self.handler(**kwargs)

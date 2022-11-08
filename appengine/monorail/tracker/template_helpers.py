@@ -47,9 +47,7 @@ def ParseTemplateRequest(post_data, config):
   content = framework_helpers.WordWrapSuperLongLines(content, max_cols=75)
   status = post_data.get('status', '')
   owner_str = post_data.get('owner', '')
-  # TODO(crbug.com/monorail/10936): switch when convert /p to flask
-  # labels = post_data.getlist('label')
-  labels = post_data.getall('label')
+  labels = post_data.getlist('label')
   field_val_strs = collections.defaultdict(list)
   for fd in config.field_defs:
     field_value_key = 'custom_%d' % fd.field_id

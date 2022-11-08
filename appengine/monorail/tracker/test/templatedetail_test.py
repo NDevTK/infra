@@ -41,8 +41,7 @@ class TemplateDetailTest(unittest.TestCase):
                                              template=mock_template_service,
                                              usergroup=fake.UserGroupService(),
                                              user=fake.UserService())
-    self.servlet = templatedetail.TemplateDetail('req', 'res',
-                                               services=self.services)
+    self.servlet = templatedetail.TemplateDetail(services=self.services)
 
     self.services.user.TestAddUser('gatsby@example.com', 111)
     self.services.user.TestAddUser('sport@example.com', 222)

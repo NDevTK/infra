@@ -37,8 +37,7 @@ class FieldDetailTest(unittest.TestCase):
         user=fake.UserService(),
         config=fake.ConfigService(),
         project=fake.ProjectService())
-    self.servlet = fielddetail.FieldDetail(
-        'req', 'res', services=self.services)
+    self.servlet = fielddetail.FieldDetail(services=self.services)
     self.project = self.services.project.TestAddProject('proj')
     self.mr = testing_helpers.MakeMonorailRequest(
         project=self.project, perms=permissions.OWNER_ACTIVE_PERMISSIONSET)
@@ -80,9 +79,7 @@ class FieldDetailTest(unittest.TestCase):
 
   def testGetFieldDef_NotFound(self):
     self.mr.field_name = 'NeverHeardOfIt'
-    self.assertRaises(
-        webapp2.HTTPException,
-        self.servlet._GetFieldDef, self.mr)
+    self.assertRaises(Exception, self.servlet._GetFieldDef, self.mr)
 
   def testGetFieldDef_Normal(self):
     actual_config, actual_fd = self.servlet._GetFieldDef(self.mr)

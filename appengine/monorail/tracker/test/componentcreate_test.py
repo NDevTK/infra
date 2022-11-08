@@ -27,8 +27,7 @@ class ComponentCreateTest(unittest.TestCase):
         user=fake.UserService(),
         config=fake.ConfigService(),
         project=fake.ProjectService())
-    self.servlet = componentcreate.ComponentCreate(
-        'req', 'res', services=self.services)
+    self.servlet = componentcreate.ComponentCreate(services=self.services)
     self.project = self.services.project.TestAddProject('proj')
     self.mr = testing_helpers.MakeMonorailRequest(
         project=self.project, perms=permissions.OWNER_ACTIVE_PERMISSIONSET)
@@ -87,8 +86,7 @@ class ComponentCreateTest(unittest.TestCase):
         cc=[''],
         labels=[''])
     self.assertRaises(
-        webapp2.HTTPException,
-        self.servlet.ProcessFormData, self.mr, post_data)
+        Exception, self.servlet.ProcessFormData, self.mr, post_data)
 
   def testProcessFormData_Normal(self):
     post_data = fake.PostData(

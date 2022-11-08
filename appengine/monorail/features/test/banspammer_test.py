@@ -103,8 +103,7 @@ class BanSpammerTaskTest(unittest.TestCase):
   def testProcessFormData_okSomeIssues(self):
     mr = testing_helpers.MakeMonorailRequest(
         path=urls.BAN_SPAMMER_TASK + '.do', method='POST',
-        params={'spammer_id': 111, 'reporter_id': 222})
-
+        params={'spammer_id': 111, 'reporter_id': 222})    
     for i in range(0, 10):
       issue = fake.MakeTestIssue(
           1, i, 'issue_summary', 'New', 111, project_name='project-name')

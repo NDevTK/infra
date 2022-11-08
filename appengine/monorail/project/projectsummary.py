@@ -11,12 +11,11 @@ from __future__ import absolute_import
 from businesslogic import work_env
 from framework import flaskservlet
 from framework import permissions
-from framework import servlet
 from project import project_helpers
 from project import project_views
 
 
-class ProjectSummary(servlet.Servlet):
+class ProjectSummary(flaskservlet.FlaskServlet):
   """Page to show brief project description and process documentation."""
 
   _PAGE_TEMPLATE = 'project/project-summary-page.ezt'
@@ -70,5 +69,5 @@ class ProjectSummary(servlet.Servlet):
 
     return help_data
 
-  # def GetProjectSummaryPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetProjectSummaryPage(self, **kwargs):
+    return self.handler(**kwargs)

@@ -9,21 +9,17 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import time
-
-import ezt
 
 from businesslogic import work_env
 from features import savedqueries_helpers
 from framework import flaskservlet
 from framework import permissions
 from framework import jsonfeed
-from framework import servlet
 from tracker import tracker_bizobj
 
 
-class IssueExport(servlet.Servlet):
+class IssueExport(flaskservlet.FlaskServlet):
   """IssueExportControls let's an admin choose how to export issues."""
 
   _PAGE_TEMPLATE = 'tracker/issue-export-page.ezt'
@@ -70,12 +66,12 @@ class IssueExport(servlet.Servlet):
         'saved_queries': saved_query_views,
     }
 
-  # def GetIssueExport(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetIssueExport(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 # TODO: convert to FLaskJsonFeed while conver to flask
-class IssueExportJSON(jsonfeed.JsonFeed):
+class IssueExportJSON(jsonfeed.FlaskJsonFeed):
   """IssueExport shows a range of issues in JSON format."""
 
   # Pretty-print the JSON output.
@@ -283,8 +279,8 @@ class IssueExportJSON(jsonfeed.JsonFeed):
         issue_json['merged_into'] = merge.local_id
     return issue_json
 
-  # def GetIssueExportJSON(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetIssueExportJSON(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostIssueExportJSON(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostIssueExportJSON(self, **kwargs):
+    return self.handler(**kwargs)

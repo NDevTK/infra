@@ -26,7 +26,6 @@ from framework import framework_helpers
 from framework import framework_views
 from framework import paginate
 from framework import permissions
-from framework import servlet
 from framework import urls
 from project import project_helpers
 from project import project_views
@@ -34,7 +33,7 @@ from project import project_views
 MEMBERS_PER_PAGE = 50
 
 
-class PeopleList(servlet.Servlet):
+class PeopleList(flaskservlet.FlaskServlet):
   """People list page shows a paginatied list of project members."""
 
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
@@ -217,9 +216,7 @@ class PeopleList(servlet.Servlet):
       String URL to redirect the user to after processing.
     """
     # 1. Parse and validate user input.
-    remove_strs = post_data.getall('remove')
-    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
-    # remove_strs = post_data.getlist('remove')
+    remove_strs = post_data.getlist('remove')
     logging.info('remove_strs = %r', remove_strs)
     remove_ids = set(
         self.services.user.LookupUserIDs(mr.cnxn, remove_strs).values())
@@ -236,8 +233,8 @@ class PeopleList(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.PEOPLE_LIST, saved=1, ts=int(time.time()))
 
-  # def GetPeopleListPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetPeopleListPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostPeopleListPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostPeopleListPage(self, **kwargs):
+    return self.handler(**kwargs)
