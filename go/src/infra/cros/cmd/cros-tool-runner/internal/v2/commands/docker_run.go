@@ -46,6 +46,14 @@ func (c *DockerRun) compose() ([]string, error) {
 				args = append(args, "--volume", volume)
 			}
 		}
+		if options.Env != nil {
+			for _, env := range options.Env {
+				if env == "" {
+					continue
+				}
+				args = append(args, "--env", env)
+			}
+		}
 	}
 	args = append(args, c.ContainerImage)
 	args = append(args, c.StartCommand...)

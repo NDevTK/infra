@@ -96,6 +96,19 @@ func TestDockerRun_withVolume(t *testing.T) {
 	check(t, args, expect)
 }
 
+func TestDockerRun_withEnv(t *testing.T) {
+	image := "cros-dut:latest"
+	command := []string{"cros-dut", "-port 80"}
+	options := &api.StartContainerRequest_Options{Env: []string{"VAR1=1", "VAR2=2"}}
+	dockerRun := DockerRun{
+		&api.StartContainerRequest{ContainerImage: image, StartCommand: command,
+			AdditionalOptions: options},
+	}
+	args, _ := dockerRun.compose()
+	expect := "run -d --rm -P --cap-add=NET_RAW --env VAR1=1 --env VAR2=2 cros-dut:latest cros-dut -port 80"
+	check(t, args, expect)
+}
+
 func check(t *testing.T, actual []string, expectStr string) {
 	actualStr := strings.Join(actual, " ")
 	if actualStr != expectStr {
