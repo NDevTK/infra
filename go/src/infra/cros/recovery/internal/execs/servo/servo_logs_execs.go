@@ -56,7 +56,9 @@ func parseServodLogTime(rawTime string, log logger.Logger) (*time.Time, error) {
 // getServodLogDir finds servod logs directory on servo-host.
 func getServodLogDir(ctx context.Context, run components.Runner, servoPort int, log logger.Logger) (string, error) {
 	latestDebugFile := fmt.Sprintf(servodLatestDebugGlob, servoPort)
-	output, err := run(ctx, 30*time.Second, "realpath", latestDebugFile)
+	// Keep it as a single command as container doesn't accepting `realpath` as a command.
+	// For single command we use `sh -c` to execute them.
+	output, err := run(ctx, 30*time.Second, fmt.Sprintf("realpath %s", latestDebugFile))
 	if err != nil {
 		return "", errors.Annotate(err, "get time of latest servod log").Err()
 	}
@@ -67,7 +69,9 @@ func getServodLogDir(ctx context.Context, run components.Runner, servoPort int, 
 // getLatestServodLogTime extract time of latest servod logs.
 func getLatestServodLogTime(ctx context.Context, run components.Runner, servoPort int, log logger.Logger) (*time.Time, error) {
 	latestDebugFile := fmt.Sprintf(servodLatestDebugGlob, servoPort)
-	output, err := run(ctx, 30*time.Second, "realpath", latestDebugFile)
+	// Keep it as a single command as container doesn't accepting `realpath` as a command.
+	// For single command we use `sh -c` to execute them.
+	output, err := run(ctx, 30*time.Second, fmt.Sprintf("realpath %s", latestDebugFile))
 	if err != nil {
 		return nil, errors.Annotate(err, "get time of latest servod log").Err()
 	}
