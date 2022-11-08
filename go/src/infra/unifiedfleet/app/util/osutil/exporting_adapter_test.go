@@ -522,6 +522,7 @@ common {
 			servo_type: "v3"
 			rpm_state: WORKING
 			peripheral_wifi_state: WORKING
+			chameleon_state: WORKING
 			smart_usbhub: true
 			storage_state: HARDWARE_NORMAL,
 			servo_usb_state: HARDWARE_NEED_REPLACEMENT,
@@ -631,6 +632,7 @@ common {
           bluetooth_state: HARDWARE_NORMAL
           rpm_state: WORKING
           peripheral_wifi_state: WORKING
+		  chameleon_state: WORKING
 		}
 		platform:""
         test_coverage_hints {

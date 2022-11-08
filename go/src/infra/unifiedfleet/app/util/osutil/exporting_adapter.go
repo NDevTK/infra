@@ -481,6 +481,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	p := l.Peripherals
 	p.ServoState = setPeripheralState(s.GetServo())
 	p.Servo = setDutStateHelper(s.GetServo())
+	p.ChameleonState = setPeripheralState(s.GetChameleon())
 	p.Chameleon = setDutStateHelper(s.GetChameleon())
 	p.AudioLoopbackDongle = setDutStateHelper(s.GetAudioLoopbackDongle())
 	p.ServoUsbState = setHardwareState(s.GetServoUsbState())
