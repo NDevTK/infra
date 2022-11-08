@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-// repairCbi repairs CBI contents on the DUT by writing the CBI contents stored
+// restoreCBIContentsFromUFS restores CBI contents on the DUT by writing the CBI contents stored
 // in UFS to CBI EEPROM on the DUT.
 // TODO(b/235000813) Implement
-func repairCBI(ctx context.Context, info *execs.ExecInfo) error {
+func restoreCBIContentsFromUFS(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
@@ -38,10 +38,16 @@ func ufsDoesNotContainCBIContents(ctx context.Context, info *execs.ExecInfo) err
 	return nil
 }
 
+// cbiContentsMatch checks if the CBI contents on the DUT match what
+// was previously stored in UFS.
+// TODO(b/235000813) Implement
+func cbiContentsMatch(ctx context.Context, info *execs.ExecInfo) error {
+	return nil
+}
+
 // cbiContentsDoNotMatch checks if the CBI contents on the DUT do not match what
 // was previously stored in UFS. If they do not match, then the CBI contents
-// have been corrupted. Throws an error if no previously stored CBI contents are
-// found.
+// have been corrupted.
 func cbiContentsDoNotMatch(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.GetDut().Name)
 	cbiLocation, err := cbi.GetCBILocation(ctx, runner)
@@ -95,8 +101,9 @@ func backupCBI(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func init() {
-	execs.Register("cros_repair_cbi", repairCBI)
+	execs.Register("cros_restore_cbi_contents_from_ufs", restoreCBIContentsFromUFS)
 	execs.Register("cros_cbi_contents_do_not_match", cbiContentsDoNotMatch)
+	execs.Register("cros_cbi_contents_match", cbiContentsMatch)
 	execs.Register("cros_ufs_contains_cbi_contents", ufsContainsCBIContents)
 	execs.Register("cros_ufs_does_not_contain_cbi_contents", ufsDoesNotContainCBIContents)
 	execs.Register("cros_cbi_is_present", cbiIsPresent)

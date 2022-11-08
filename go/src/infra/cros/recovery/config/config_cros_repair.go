@@ -388,14 +388,34 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Repair CBI": {
 			Docs: []string{
-				"Restore backup CBI contents from UFS. go/cbi-auto-recovery-dd",
+				"Manages the CBI repair workflow. go/cbi-auto-recovery-dd",
 			},
 			Conditions: []string{
+				"Hardware write protection is disabled",
 				"CBI is present",
 				"UFS contains CBI contents",
 				"CBI contents do not match",
 			},
-			ExecName:               "cros_repair_cbi",
+			Dependencies: []string{
+				"Restore CBI contents from UFS",
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
+				"CBI contents match",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+		},
+		"Restore CBI contents from UFS": {
+			Docs: []string{
+				"Restore backup CBI contents from UFS.",
+			},
+			Dependencies: []string{
+				"Hardware write protection is disabled",
+				"CBI is present",
+				"UFS contains CBI contents",
+				"CBI contents do not match",
+			},
+			ExecName:               "cros_restore_cbi_contents_from_ufs",
 			AllowFailAfterRecovery: true,
 		},
 		"Backup CBI": {
@@ -409,9 +429,19 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_backup_cbi",
 			AllowFailAfterRecovery: true,
 		},
-		"CBI contents do not match": {
+		"CBI contents match": {
 			Docs: []string{
 				"Check if the contents on the DUT match the contents stored in UFS.",
+			},
+			Dependencies: []string{
+				"CBI is present",
+				"UFS contains CBI contents",
+			},
+			ExecName: "cros_cbi_contents_match",
+		},
+		"CBI contents do not match": {
+			Docs: []string{
+				"Check if the contents on the DUT do not match the contents stored in UFS.",
 			},
 			Dependencies: []string{
 				"CBI is present",
