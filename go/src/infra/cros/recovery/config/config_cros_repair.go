@@ -437,6 +437,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_cbi_is_present",
 		},
+		"Hardware write protection is disabled": {
+			Docs: []string{
+				"Checks if crossystem wpsw_cur is set to 0 (hardware write protection is disabled). Required before writing to CBI EEPROM or other on board EC chips.",
+			},
+			ExecName: "cros_is_hardware_write_protection_disabled",
+		},
 		"Login UI is up": {
 			Docs: []string{
 				"Check the command 'stop ui' won't crash the DUT.",
