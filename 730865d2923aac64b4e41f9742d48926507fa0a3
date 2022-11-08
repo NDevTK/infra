@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f6afc0f_6832b124",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-11-08T19:22:34Z",
+      "side": 1,
+      "message": "As discussed in person, leaving off the prefix completely for custom actions is okay. Non-custom actions should still have the `action:` prefix. In the future, let\u0027s think about adding a new field to track plan vs action.",
+      "revId": "730865d2923aac64b4e41f9742d48926507fa0a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
