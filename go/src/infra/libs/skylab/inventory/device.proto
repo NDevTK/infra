@@ -385,7 +385,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 33
+// NEXT TAG: 34
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -397,7 +397,7 @@ message Peripherals {
   // Is this device connected to a chameleon (GVC head).
   optional bool chameleon = 5;
 
-  // NEXT TAG: 9
+  // NEXT TAG: 11
   enum ChameleonType {
     reserved 1, 6 to 8;
     CHAMELEON_TYPE_INVALID = 0;
@@ -405,8 +405,11 @@ message Peripherals {
     CHAMELEON_TYPE_DP_HDMI = 3;
     CHAMELEON_TYPE_VGA = 4;
     CHAMELEON_TYPE_HDMI = 5;
+    CHAMELEON_TYPE_V2 = 9;
+    CHAMELEON_TYPE_V3 = 10;
   }
   repeated ChameleonType chameleon_type = 10;
+  optional PeripheralState chameleon_state = 33;
 
   // Whether DUT WiFi antenna is connected conductively or OTA.
   optional bool conductive = 11;
