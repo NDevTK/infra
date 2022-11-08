@@ -9,6 +9,7 @@ import (
 	"context"
 	"infra/cros/recovery/internal/components/cros/cbi"
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -40,9 +41,18 @@ func ufsDoesNotContainCBIContents(ctx context.Context, info *execs.ExecInfo) err
 
 // cbiContentsMatch checks if the CBI contents on the DUT match what
 // was previously stored in UFS.
-// TODO(b/235000813) Implement
 func cbiContentsMatch(ctx context.Context, info *execs.ExecInfo) error {
-	return nil
+	runner := info.NewRunner(info.GetDut().Name)
+	dutCBI, err := cbi.GetCBIContents(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "CBI contents match").Err()
+	}
+
+	if info.GetChromeos().GetCbi().GetRawContents() == dutCBI.GetRawContents() {
+		log.Debugf(ctx, "CBI contents match: CBI contents on the DUT match the CBI contents stored in UFS.\nCBI contents: %s", dutCBI.GetRawContents())
+		return nil
+	}
+	return errors.Reason("CBI contents match: CBI contents on DUT do not match the contents stored in UFS").Err()
 }
 
 // cbiContentsDoNotMatch checks if the CBI contents on the DUT do not match what
@@ -50,17 +60,13 @@ func cbiContentsMatch(ctx context.Context, info *execs.ExecInfo) error {
 // have been corrupted.
 func cbiContentsDoNotMatch(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.GetDut().Name)
-	cbiLocation, err := cbi.GetCBILocation(ctx, runner)
-	if err != nil {
-		return errors.Annotate(err, "CBI contents do not match").Err()
-	}
-
-	dutCBI, err := cbi.ReadCBIContents(ctx, runner, cbiLocation)
+	dutCBI, err := cbi.GetCBIContents(ctx, runner)
 	if err != nil {
 		return errors.Annotate(err, "CBI contents do not match").Err()
 	}
 
 	if info.GetChromeos().GetCbi().GetRawContents() != dutCBI.GetRawContents() {
+		log.Debugf(ctx, "CBI contents do not match: CBI contents on the DUT do not match the CBI contents stored in UFS.\nCBI contents on DUT: %s\nCBI contents in UFS: %s", dutCBI.GetRawContents(), info.GetChromeos().GetCbi().GetRawContents())
 		return nil
 	}
 	return errors.Reason("CBI contents do not match: CBI contents on DUT match the contents stored in UFS").Err()
@@ -82,12 +88,7 @@ func cbiIsPresent(ctx context.Context, info *execs.ExecInfo) error {
 // backupCBI reads the CBI contents on the DUT and stores them in UFS.
 func backupCBI(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.GetDut().Name)
-	cbiLocation, err := cbi.GetCBILocation(ctx, runner)
-	if err != nil {
-		return errors.Annotate(err, "backup CBI").Err()
-	}
-
-	dutCBI, err := cbi.ReadCBIContents(ctx, runner, cbiLocation)
+	dutCBI, err := cbi.GetCBIContents(ctx, runner)
 	if err != nil {
 		return errors.Annotate(err, "backup CBI").Err()
 	}

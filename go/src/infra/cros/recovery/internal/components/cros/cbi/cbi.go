@@ -93,6 +93,21 @@ func ReadCBIContents(ctx context.Context, run components.Runner, cbiLocation *CB
 	return &labapi.Cbi{RawContents: strings.Join(hexContents, " ")}, nil
 }
 
+// GetCBIContents uses GetCBILocation and ReadCBILocation to both locate and
+// and retrieve all CBI contents from the DUT.
+func GetCBIContents(ctx context.Context, run components.Runner) (*labapi.Cbi, error) {
+	cbiLocation, err := GetCBILocation(ctx, run)
+	if err != nil {
+		return nil, errors.Annotate(err, "get CBI contents").Err()
+	}
+
+	dutCBI, err := ReadCBIContents(ctx, run, cbiLocation)
+	if err != nil {
+		return nil, errors.Annotate(err, "get CBI contents").Err()
+	}
+	return dutCBI, nil
+}
+
 // parseBytesFromCBIContents reads <numBytesToRead> number of bytes from the
 // raw output from a call to `ectool i2cxfer` and returns a slice of bytes
 // in hex format (the same format returned from `ectool i2cxfer`).
