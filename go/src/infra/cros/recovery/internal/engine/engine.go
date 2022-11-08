@@ -210,7 +210,13 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	}
 	var metric *metrics.Action
 	if r.args != nil && r.metricSaver != nil {
-		metric = r.args.NewMetricsAction(fmt.Sprintf("action:%s", actionName))
+		var metricKind string
+		if act.GetMetricsConfig().GetCustomKind() != "" {
+			metricKind = act.GetMetricsConfig().GetCustomKind()
+		} else {
+			metricKind = fmt.Sprintf("action:%s", actionName)
+		}
+		metric = r.args.NewMetricsAction(metricKind)
 		defer func() {
 			metric.UpdateStatus(rErr)
 			policy := act.GetMetricsConfig().GetUploadPolicy()
