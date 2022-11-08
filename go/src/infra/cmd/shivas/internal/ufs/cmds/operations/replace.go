@@ -43,6 +43,7 @@ func (c replaceApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		peripherals.ReplaceBluetoothPeersCmd,
 		peripherals.ReplacePeripheralWifiCmd,
+		peripherals.ReplaceChameleonCmd,
 	}
 }
 

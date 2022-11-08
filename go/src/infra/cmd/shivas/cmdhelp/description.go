@@ -2132,6 +2132,22 @@ shivas delete bluetooth-peers -dut {d} -hostname {h2}
 shivas replace bluetooth-peers -dut {d} -hostname {h3} -hostname {h4} -hostname {h5}
 `
 
+	// ManageChameleonLongDesc is a long description for Chameleon management subcommands.
+	ManageChameleonLongDesc string = `Manage Chameleon Connected to a DUT.
+
+This cmd always runs in the OS namespace. The command requires specifying
+an action which is either add, delete, or replace. Only one chameleon
+is allowed per DUT.
+
+Add adds specified chameleon to the DUT.
+Delete deletes the specified chamleon in the DUT.
+Replace replaces the existing with the specified chameleon, which includes update existing chameleon's type or RPM information.
+
+Examples:
+shivas add chameleon -dut {d} -hostname {h1} -type {t1} -type {t2} -rpm {rh1} -rpm-outlet {o1}
+shivas delete chameleon -dut {d} -hostname {h1}
+shivas replace chameleon -dut {d} -hostname {h2} -type {t3}
+`
 	// ManagePeripheralWifiLongDesc is a long description for peripheral wifi management subcommands.
 	ManagePeripheralWifiLongDesc string = `Manage peripheral wifi associated to a DUT.
 

@@ -98,6 +98,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		vlan.DeleteVlanCmd,
 		peripherals.DeleteBluetoothPeersCmd,
 		peripherals.DeletePeripheralWifiCmd,
+		peripherals.DeleteChameleonCmd,
 	}
 }
 

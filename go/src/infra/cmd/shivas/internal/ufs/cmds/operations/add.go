@@ -99,6 +99,7 @@ func (c addApp) GetCommands() []*subcommands.Command {
 		vlan.AddVlanCmd,
 		peripherals.AddBluetoothPeersCmd,
 		peripherals.AddPeripheralWifiCmd,
+		peripherals.AddChameleonCmd,
 	}
 }
 
