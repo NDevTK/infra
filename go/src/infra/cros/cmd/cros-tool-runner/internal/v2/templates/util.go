@@ -23,8 +23,6 @@ import (
 // ContainerLookuper provides interface to lookup information for a container
 type ContainerLookuper interface {
 	LookupContainerPortBindings(name string) ([]*api.Container_PortBinding, error)
-	LookupContainerIpAddress(name string) (string, error)
-	LookupHostIpAddress() (string, error)
 }
 
 // templateUtils implements ContainerLookuper
@@ -89,32 +87,6 @@ func (u *templateUtils) LookupContainerPortBindings(name string) ([]*api.Contain
 		return nil, err
 	}
 	return u.parseMultilinePortBindings(output)
-}
-
-// LookupContainerIpAddress is the API to get the IP address of a container
-func (*templateUtils) LookupContainerIpAddress(name string) (string, error) {
-	cmd := commands.ContainerInspect{
-		Names:  []string{name},
-		Format: "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}",
-	}
-	stdout, _, err := cmd.Execute(context.Background())
-	if err != nil {
-		return "", nil
-	}
-	return strings.TrimSpace(stdout), err
-}
-
-// LookupHostIpAddress is the API to get the IP address of the host
-func (u *templateUtils) LookupHostIpAddress() (string, error) {
-	cmd := commands.HostIpAddresses{}
-	stdout, _, err := cmd.Execute(context.Background())
-	if err != nil {
-		return "", nil
-	}
-	// All host IPs returned by the command are accessible with the container (
-	// including the host gateway created by either docker or podman), we just use
-	// the first one.
-	return strings.Split(strings.TrimSpace(stdout), " ")[0], nil
 }
 
 // endpointToAddress converts an endpoint to an address string

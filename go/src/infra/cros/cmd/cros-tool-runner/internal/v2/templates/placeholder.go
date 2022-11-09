@@ -36,20 +36,6 @@ const (
 	// container can be referenced by name.)
 	// To use this scheme, the port number in the input IpEndpoint must be 0.
 	ContainerPortScheme = "ctr-container-port"
-	// ContainerIpScheme is an experimental schema that indicates the container IP
-	// need to be populated into the template. For example, if the container IP
-	// address is 10.88.0.2. An IpEndpoint address of
-	// `ctr-container-ip://container-name` will be replaced with `10.88.0.2`. If
-	// port number is 0, it will be replaced with the container port similar to
-	// the behavior of ctr-container-port.
-	// Using container IP allows a service to be accessed outside its network.
-	// Note that a container of podman must join a network to have an IP returned.
-	ContainerIpScheme = "ctr-container-ip"
-	// HostIpScheme is an experimental schema that indicates the host IP need to
-	// be populated into the template. If port is 0 the template, it will
-	// replaced with the host port found in the container's port binding.
-	// Using host IP allows a service to be accessed outside its network.
-	HostIpScheme = "ctr-host-ip"
 )
 
 // populatorRouter is the entry point
@@ -85,12 +71,6 @@ func (pr *populatorRouter) populate(input api.IpEndpoint) (api.IpEndpoint, error
 	case ContainerPortScheme:
 		actualPopulator := containerPortPopulator{pr.containerLookuper}
 		return actualPopulator.populate(updatedEndpoint)
-	case ContainerIpScheme:
-		actualPopulator := containerIpPopulator{pr.containerLookuper}
-		return actualPopulator.populate(updatedEndpoint)
-	case HostIpScheme:
-		actualPopulator := hostIpPopulator{pr.containerLookuper}
-		return actualPopulator.populate(updatedEndpoint)
 	default:
 		return input, status.Error(codes.InvalidArgument, "Scheme is unrecognized")
 	}
@@ -114,62 +94,6 @@ func (p *containerPortPopulator) populate(input api.IpEndpoint) (api.IpEndpoint,
 		return input, status.Error(codes.InvalidArgument, "The port number must be 0 to be used with ctr-container-port scheme")
 	}
 	return api.IpEndpoint{Address: input.Address, Port: int32(ports[0].ContainerPort)}, nil
-}
-
-// containerIpPopulator populates container IP (and port if 0) using the updated
-// IpEndpoint template supplied by the router
-type containerIpPopulator struct {
-	containerLookup ContainerLookuper
-}
-
-func (p *containerIpPopulator) populate(input api.IpEndpoint) (api.IpEndpoint, error) {
-	ip, err := p.containerLookup.LookupContainerIpAddress(input.Address)
-	if err != nil {
-		return input, err
-	}
-	if ip == "" {
-		return input, status.Error(codes.FailedPrecondition, "The container does not have a valid IP returned. Make sure to specify network when start container.")
-	}
-	var port = input.Port
-	if port == 0 {
-		ports, err := p.containerLookup.LookupContainerPortBindings(input.Address)
-		if err != nil {
-			return input, err
-		}
-		if len(ports) != 1 {
-			return input, status.Error(codes.FailedPrecondition, getPortBindingErrorMessage(len(ports)))
-		}
-		port = ports[0].ContainerPort
-	}
-	return api.IpEndpoint{Address: ip, Port: port}, nil
-}
-
-// hostIpPopulator populates host IP (and port if 0) using the updated
-// IpEndpoint template supplied by the router
-type hostIpPopulator struct {
-	containerLookup ContainerLookuper
-}
-
-func (p *hostIpPopulator) populate(input api.IpEndpoint) (api.IpEndpoint, error) {
-	ip, err := p.containerLookup.LookupHostIpAddress()
-	if err != nil {
-		return input, err
-	}
-	if ip == "" {
-		return input, status.Error(codes.InvalidArgument, "Unable to retrieve the host IP")
-	}
-	var port = input.Port
-	if port == 0 {
-		ports, err := p.containerLookup.LookupContainerPortBindings(input.Address)
-		if err != nil {
-			return input, err
-		}
-		if len(ports) != 1 {
-			return input, status.Error(codes.FailedPrecondition, getPortBindingErrorMessage(len(ports)))
-		}
-		port = ports[0].HostPort
-	}
-	return api.IpEndpoint{Address: ip, Port: port}, nil
 }
 
 func getPortBindingErrorMessage(numberOfPortBindings int) string {
