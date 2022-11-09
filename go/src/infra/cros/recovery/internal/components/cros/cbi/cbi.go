@@ -40,6 +40,13 @@ const (
 	// THIS VALUE SHOULD BE TREATED AS A HARD LIMIT. Exceeding this limit may
 	// result in undefined behavior.
 	readIncrement = 64
+
+	// How long to wait between each call to `ectool i2cxfer`. Performing too
+	// many reads or writes too shortly after one another can exceed the
+	// maximum i2c transfer rate and result in dropped reads or writes. This delay
+	// is likely unnecessary due to delays in command invocation by the Paris
+	// framework, but it's good to be explicit.
+	transferDelayInMilliseconds = 250 * time.Millisecond
 )
 
 // How much time each CBI read and write (one call to `ectool i2cxfer`) has to complete.
@@ -83,6 +90,8 @@ func buildCBILocation(locateCBIOutput string) (*CBILocation, error) {
 func ReadCBIContents(ctx context.Context, run components.Runner, cbiLocation *CBILocation) (*labapi.Cbi, error) {
 	hexContents := []string{}
 	for offset := 0; offset < cbiSize; offset += readIncrement {
+		// Wait briefly to ensure we don't exceed the maximum transfer rate.
+		time.Sleep(transferDelayInMilliseconds)
 		cbiContents, err := run(ctx, time.Second*10, transferCBICommand, cbiLocation.port, cbiLocation.address, strconv.Itoa(readIncrement), strconv.Itoa(offset))
 		if err != nil {
 			return nil, errors.Annotate(err, "read CBI contents: unable to read CBI contents").Err()
@@ -131,6 +140,8 @@ func WriteCBIContents(ctx context.Context, run components.Runner, cbiLocation *C
 		return errors.Annotate(err, "write CBI contents").Err()
 	}
 	for offset := 0; offset < cbiSize; offset += writeIncrement {
+		// Wait briefly to ensure we don't exceed the maximum transfer rate.
+		time.Sleep(transferDelayInMilliseconds)
 		hexByteChunk := strings.Join(hexBytes[offset:offset+writeIncrement], " ")
 		// Sample command:ectool i2cxfer 0 0x50 0 0 0x43 0x42 0x49 0x98 00 00 0x2f 00
 		writeResponse, err := run(ctx, transferCBIDurationInSeconds, transferCBICommand, cbiLocation.port, cbiLocation.address, numBytesToReadDuringWrite, strconv.Itoa(offset), hexByteChunk)
