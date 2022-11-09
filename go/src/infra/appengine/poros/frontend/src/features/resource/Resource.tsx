@@ -227,6 +227,7 @@ export const Resource = () => {
               >
                 windows_machine
               </MenuItem>
+              <MenuItem value={'linux_machine'}>linux_machine</MenuItem>
             </Select>
             {!recordValidation.operatingSystemValid && (
               <FormHelperText style={{ color: 'red' }}>
