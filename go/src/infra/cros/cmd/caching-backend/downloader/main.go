@@ -54,6 +54,7 @@ var (
 	archiveServerAddress = flag.String("address", ":8080", "archive server address with listening port.")
 	cacheServerURL       = flag.String("cache-server-url", "http://127.0.0.1:8082", "cache-server url.")
 	shutdownGracePeriod  = flag.Duration("shutdown-grace-period", 30*time.Minute, "The time duration allowed for tasks to complete before completely shutdown archive-server.")
+	clientRotationPeriod = flag.Duration("client-rotation-period", 24*time.Hour, "The time duration before rotating to new storage client.")
 	tsmonEndpoint        = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to.")
 	tsmonCredentialPath  = flag.String("tsmon-credential", "", "The credentail file for tsmon client")
 )
@@ -72,6 +73,10 @@ func main() {
 
 func innerMain() error {
 	flag.Parse()
+	if *clientRotationPeriod < *shutdownGracePeriod {
+		return fmt.Errorf("client-rotation-period '%v' cannot be less than shutdown-grace-period '%v'", *clientRotationPeriod, *shutdownGracePeriod)
+	}
+
 	ctx := context.Background()
 	gsClient, err := newRealClient(ctx, *credentialFile)
 	if err != nil {
@@ -103,12 +108,54 @@ func innerMain() error {
 	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: mux}
 	ctx = cancelOnSignals(ctx, idleConnsClosed, &svr, *shutdownGracePeriod)
+	c.rotateClient(ctx, *credentialFile, *clientRotationPeriod, *shutdownGracePeriod)
 	log.Println("starting archive-server...")
 	if err = svr.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("HTTP server ListenAndServe: %v", err)
 	}
 	<-idleConnsClosed
 	return err
+}
+
+// rotateClient updates client every rotationPeriod. It loads credPath file.
+// It will then close the old client after oldClientGracePeriod duration.
+func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotationPeriod, oldClientGracePeriod time.Duration) {
+	go func() {
+		var oldClient gsClient
+		t := time.NewTimer(rotationPeriod)
+		for {
+			select {
+			case <-t.C:
+				gsClient, err := newRealClient(ctx, credPath)
+				if err != nil {
+					log.Printf("Rotating new client failed: %s", err)
+				} else {
+					if oldClient == nil {
+						// Update to new client and reset timer for closing old client.
+						oldClient = c.gsClient
+						c.gsClient = gsClient
+						t.Reset(oldClientGracePeriod)
+						log.Printf("Rotating to new client succeed")
+					} else {
+						// Close old client and reset timer for next rotation.
+						if err := oldClient.close(); err != nil {
+							log.Printf("Error closing old client: %s", err)
+						} else {
+							log.Printf("Old client closed")
+						}
+						oldClient = nil
+						t.Reset(rotationPeriod)
+					}
+				}
+			case <-ctx.Done():
+				// https://pkg.go.dev/time#Timer.Stop
+				if !t.Stop() {
+					<-t.C
+				}
+				return
+			}
+		}
+	}()
 }
 
 // downloadHandler handles the /download/bucket/path/to/file requests.
