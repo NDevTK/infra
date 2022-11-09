@@ -41,7 +41,7 @@ func (v *versioner) GetVersion(ctx context.Context, deviceType components.Versio
 	case components.VersionDeviceWifiRouter:
 		req.Type = tlw.VersionRequest_WIFI_ROUTER
 	default:
-		return nil, errors.Reason("get version: device type is not supported").Err()
+		return nil, errors.Reason("get version: device type %q is not supported", deviceType).Err()
 	}
 	r, err := v.a.Version(ctx, req)
 	if err != nil {
