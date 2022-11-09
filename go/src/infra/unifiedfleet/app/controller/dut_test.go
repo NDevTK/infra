@@ -2680,30 +2680,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 
-		Convey("GetChromeOSDevicedata - deprecated inv v2 hwid api", func() {
-			// UseCachedHwidManufacturingConfig is set to false, which directs the RPC
-			// to try to use InvV2 for HwidData. However, since InvV2 HwidData is
-			// deprecated, HwidData should be nil, and thus ManufacturingConfig would
-			// also not be generated.
-			cfgLst := &config.Config{
-				UseCachedHwidManufacturingConfig: false,
-			}
-			ctx2 := config.Use(ctx, cfgLst)
-
-			resp, err := GetChromeOSDeviceData(ctx2, "machine-1", "")
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetLabConfig(), ShouldResembleProto, dutMachinelse)
-			So(resp.GetMachine(), ShouldResembleProto, machine)
-			So(resp.GetDutState(), ShouldResembleProto, dutState)
-			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
-			So(resp.GetHwidData(), ShouldBeNil)
-			So(resp.GetManufacturingConfig(), ShouldBeNil)
-			So(resp.GetSchedulableLabels(), ShouldBeNil)
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
-			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
-		})
-
 		Convey("GetChromeOSDevicedata - hostname happy path", func() {
 			resp, err := GetChromeOSDeviceData(ctx, "", "lse-1")
 			So(err, ShouldBeNil)
@@ -2951,8 +2927,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			// server. HwidData should be nil. "test-no-cached-hwid-data" returns
 			// valid fake, but HwidClient should not be called due to throttle.
 			cfgLst := &config.Config{
-				HwidServiceTrafficRatio:          0,
-				UseCachedHwidManufacturingConfig: true,
+				HwidServiceTrafficRatio: 0,
 			}
 			trafficCtx := config.Use(ctx, cfgLst)
 
