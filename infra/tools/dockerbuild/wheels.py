@@ -313,6 +313,18 @@ SPECS.update({
             packaged=(),
         ),
         SourceOrPrebuilt(
+            'debugpy',
+            '1.5.1',
+            only_plat=[
+                'mac-x64-cp38',
+                'mac-arm64-cp38',
+                'manylinux-x64-py3',
+                'windows-x86-py3',
+                'windows-x64-py3',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'freetype-py',
             '2.2.0',
             # The bundled freetype build script seems to not work for building
@@ -805,17 +817,6 @@ from .wheel_wheel import Prebuilt
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'Prebuilt',
-        Prebuilt(
-            'debugpy',
-            '1.5.1',
-            [
-                'mac-x64-cp38',
-                'manylinux-x64-py3',
-                'windows-x86-py3',
-                'windows-x64-py3',
-            ],
-            pyversions=['py3'],
-        ),
         # We can't build this ourselves as the build depends on Bazel.
         Prebuilt(
             'dm-tree',
