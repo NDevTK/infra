@@ -19,11 +19,11 @@ TEST_CASES = [
     # its test in the meantime.
     #('https://extended-validation.badssl.com', 200),
 
-    # Bad certs.
-    ('https://expired.badssl.com', requests.exceptions.SSLError),
-    ('https://wrong.host.badssl.com', requests.exceptions.SSLError),
-    ('https://self-signed.badssl.com', requests.exceptions.SSLError),
-    ('https://untrusted-root.badssl.com', requests.exceptions.SSLError),
+    # Bad certs. Unfortunately badssl.com is too flaky to use in tests.
+    # ('https://expired.badssl.com', requests.exceptions.SSLError),
+    # ('https://wrong.host.badssl.com', requests.exceptions.SSLError),
+    # ('https://self-signed.badssl.com', requests.exceptions.SSLError),
+    # ('https://untrusted-root.badssl.com', requests.exceptions.SSLError),
 
     # 'requests' is known to accept revoked certificates.
     # https://github.com/kennethreitz/requests/issues/3770
