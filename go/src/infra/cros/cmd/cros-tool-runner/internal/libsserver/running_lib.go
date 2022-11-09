@@ -85,7 +85,7 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 	s.cnts[info.Name]++
 
 	// Start container.
-	err := d.Run(ctx, true, false)
+	err := d.Run(ctx, true, false, "cros-libs")
 	if err != nil {
 		return nil, fmt.Errorf("could not start container: %s", err)
 	}

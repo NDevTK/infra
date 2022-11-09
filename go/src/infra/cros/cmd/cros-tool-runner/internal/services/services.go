@@ -20,6 +20,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/common/tsmon/types"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 	"infra/cros/cmd/cros-tool-runner/internal/docker"
@@ -90,7 +93,9 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		Detach:      true,
 		Network:     networkName,
 	}
-	d, err := startService(ctx, d, false, true)
+	d, err := startService(ctx, d, false, true, "cros-dut")
+	startTime := time.Now()
+
 	if err != nil {
 		log.Println("DUT Service Failed to start, exiting.")
 		return d, err
@@ -118,6 +123,8 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		return d, err
 	}
 	log.Println("DUT Service polling for port completed.")
+	logRunTime(ctx, startTime, "cros-dut")
+
 	d.ServicePort = dsPort
 	return d, nil
 }
@@ -203,7 +210,7 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 		Detach:  false,
 		Network: networkName,
 	}
-	return startService(ctx, d, true, true)
+	return startService(ctx, d, true, true, "cros-provision")
 }
 
 // RunTestCLI pulls and runs cros-test as CLI.
@@ -252,7 +259,7 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 		Detach:  false,
 		Network: networkName,
 	}
-	_, err = startService(ctx, d, true, true)
+	_, err = startService(ctx, d, true, true, "cros-test")
 	return err
 }
 
@@ -290,7 +297,7 @@ func RunTestFinderCLI(ctx context.Context, image *build_api.ContainerImageInfo, 
 		Detach:  false,
 		Network: networkName,
 	}
-	_, err = startService(ctx, d, true, false)
+	_, err = startService(ctx, d, true, false, "test-finder")
 	return err
 }
 
@@ -358,4 +365,16 @@ func dutServerPort(dutServerLogFileName string) (int, error) {
 	}
 	return 0, errors.Reason("failed to extract port from %s", dutServerLogFileName).Err()
 
+}
+
+// Define metrics. Note: in Go you have to declare metric field types.
+var (
+	pullTime = metric.NewFloat("chrome/infra/CFT/docker_run",
+		"Duration of the docker run.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("service"))
+)
+
+func logRunTime(ctx context.Context, startTime time.Time, service string) {
+	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
 }

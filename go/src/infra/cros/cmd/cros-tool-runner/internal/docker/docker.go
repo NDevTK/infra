@@ -22,6 +22,9 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/common/tsmon/types"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 )
@@ -140,8 +143,8 @@ func (d *Docker) Remove(ctx context.Context) error {
 
 // Run docker image.
 // The step will create container and start server inside or execution CLI.
-func (d *Docker) Run(ctx context.Context, block bool, netbind bool) error {
-	out, err := d.runDockerImage(ctx, block, netbind)
+func (d *Docker) Run(ctx context.Context, block bool, netbind bool, service string) error {
+	out, err := d.runDockerImage(ctx, block, netbind, service)
 	if err != nil {
 		return errors.Annotate(err, "run docker %q", d.Name).Err()
 	}
@@ -152,7 +155,26 @@ func (d *Docker) Run(ctx context.Context, block bool, netbind bool) error {
 	return nil
 }
 
-func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool) (string, error) {
+func pullImage(ctx context.Context, image string, service string) error {
+	startTime := time.Now()
+	cmd := exec.Command("docker", "pull", image)
+	stdout, stderr, err := common.RunWithTimeout(ctx, cmd, 3*time.Minute, true)
+	common.PrintToLog(fmt.Sprintf("Pull image %q", image), stdout, stderr)
+	if err != nil {
+		log.Printf("pull image %q: failed with error: %s", image, err)
+		return errors.Annotate(err, "Pull image").Err()
+	}
+	log.Printf("pull image %q: successful pulled.", image)
+	logPullTime(ctx, startTime, service)
+	return nil
+}
+
+func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, service string) (string, error) {
+	err := pullImage(ctx, d.RequestedImageName, service)
+	if err != nil {
+		log.Printf("Failed to pull image; image might local so will try to run anyways.")
+	}
+
 	args := []string{"run"}
 	if d.Detach {
 		args = append(args, "-d")
@@ -349,4 +371,16 @@ func activateAccount(ctx context.Context, keyfile string) error {
 	}
 	return nil
 
+}
+
+// Define metrics. Note: in Go you have to declare metric field types.
+var (
+	pullTime = metric.NewFloat("chrome/infra/CFT/docker_pull",
+		"Duration of the docker pull.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("service"))
+)
+
+func logPullTime(ctx context.Context, startTime time.Time, service string) {
+	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
 }
