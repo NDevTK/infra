@@ -103,7 +103,7 @@ func innerMain() error {
 			newAppConfig(timestampOnly, latestOfficialPolicy),
 		},
 		{
-			&gcrRepo{"gcr.io/chromeos-cacheserver-images/gsa_server", auth},
+			&gcrRepo{"gcr.io/chromeos-cacheserver-images/downloader", auth},
 			newAppConfig(timestampOnly, latestOfficialPolicy),
 		},
 		// Image used by RPM service.
