@@ -23,6 +23,7 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 	}
 	v := buildbucket.CIPDProd
 	p := &buildbucket.Params{
+		BuilderName:    "deploy",
 		UnitName:       unit,
 		TaskName:       string(buildbucket.Deploy),
 		EnableRecovery: true,
