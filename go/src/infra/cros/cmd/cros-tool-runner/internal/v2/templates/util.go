@@ -7,6 +7,7 @@ package templates
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -34,9 +35,15 @@ var TemplateUtils = templateUtils{}
 
 // parsePortBindingString parses the output from `docker container port` command
 // The input string example: `81/tcp -> 0.0.0.0:42223`
+// Unsupported binding format (e.g. IPv6) is ignored, and both binding and error
+// are returned as nil. Other unexpected errors will return error.
 func (*templateUtils) parsePortBindingString(input string) (*api.Container_PortBinding, error) {
 	r := regexp.MustCompile(`(?P<ContainerPort>\d+)/(?P<Protocol>\w+) -> (?P<HostIp>[\d\\.]+):(?P<HostPort>\d+)`)
 	match := r.FindStringSubmatch(input)
+	if match == nil {
+		log.Printf("warning: ignore unrecognized port binding input %s", input)
+		return nil, nil
+	}
 	containerPort, err := strconv.Atoi(match[1])
 	if err != nil {
 		return nil, err
@@ -56,6 +63,7 @@ func (*templateUtils) parsePortBindingString(input string) (*api.Container_PortB
 // parseMultilinePortBindings parses multiline output from `docker container
 // port` command since Docker allows multiple ports to be published in one
 // container. However, the CTRv2 server only allows one port to be published.
+// Unsupported binding format (e.g. IPv6) is ignored.
 func (u *templateUtils) parseMultilinePortBindings(multiline string) ([]*api.Container_PortBinding, error) {
 	result := make([]*api.Container_PortBinding, 0)
 	for _, line := range strings.Split(multiline, "\n") {
@@ -66,7 +74,9 @@ func (u *templateUtils) parseMultilinePortBindings(multiline string) ([]*api.Con
 		if err != nil {
 			return result, err
 		}
-		result = append(result, binding)
+		if binding != nil {
+			result = append(result, binding)
+		}
 	}
 	return result, nil
 }

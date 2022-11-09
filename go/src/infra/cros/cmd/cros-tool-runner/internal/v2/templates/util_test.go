@@ -43,6 +43,20 @@ func TestParseMultilinePortBindings(t *testing.T) {
 	}
 }
 
+func TestParseMultilinePortBindings_ipv6BindingIgnored(t *testing.T) {
+	original := "80/tcp -> 0.0.0.0:42222\n80/tcp -> :::42222"
+	expect := []*api.Container_PortBinding{
+		{ContainerPort: 80, Protocol: "tcp", HostIp: "0.0.0.0", HostPort: 42222},
+	}
+	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	if len(parsed) != len(expect) || parsed[0].String() != expect[0].String() {
+		t.Fatalf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
+	}
+}
+
 func TestParseMultilinePortBindings_empty(t *testing.T) {
 	original := "\n"
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
