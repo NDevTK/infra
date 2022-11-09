@@ -9,7 +9,6 @@ import gae_ts_mon
 from gae_libs import appengine_util
 from gae_libs.pipelines import pipeline_status_ui
 from handlers import auto_revert_metrics
-from handlers import build_failure
 from handlers import check_duplicate_failures
 from handlers import config
 from handlers import culprit
@@ -42,7 +41,6 @@ waterfall_frontend_web_pages_handler_mappings = [
      check_duplicate_failures.CheckDuplicateFailures),
     ('/waterfall/config', config.Configuration),
     ('/waterfall/culprit', culprit.Culprit),
-    ('/waterfall/failure', build_failure.BuildFailure),
     ('/waterfall/failure-log', failure_log.FailureLog),
     ('/waterfall/list-failures', list_analyses.ListAnalyses),
     ('/waterfall/pipeline-errors-dashboard',

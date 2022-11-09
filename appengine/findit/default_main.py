@@ -6,7 +6,6 @@ import webapp2
 
 import gae_ts_mon
 
-from endpoint_api import FindItApi
 from gae_libs import appengine_util
 from gae_libs.pipelines import pipeline_handlers
 from gae_libs.pipelines import pipeline_status_ui
@@ -38,10 +37,6 @@ default_web_application = webapp2.WSGIApplication(
 if appengine_util.IsInProductionApp():
   gae_ts_mon.initialize_prod(default_web_application)
 
-# Cloud Endpoint apis in the default module.
-api_application = endpoints_webapp2.api_server([FindItApi])
-if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(api_application)
 
 # App Engine pipeline status pages in the default module.
 # TODO(stgao): Move this to frontend module.
