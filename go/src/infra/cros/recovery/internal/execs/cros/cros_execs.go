@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
@@ -46,7 +47,8 @@ func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	expected := argsMap.AsString(ctx, "os_name", "")
 	if expected == "" {
-		sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+		deviceType := argsMap.AsString(ctx, "device_type", components.VersionDeviceCros)
+		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource())
 		if err != nil {
 			return errors.Annotate(err, "match os version").Err()
 		}
