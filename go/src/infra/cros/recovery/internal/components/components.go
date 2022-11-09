@@ -42,7 +42,7 @@ type VersionInfo struct {
 }
 
 // VersionDeviceType is the type of device that a version governs.
-type VersionDeviceType string
+type VersionDeviceType = string
 
 const (
 	// Version for ChromeOS devices.
