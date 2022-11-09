@@ -5,17 +5,8 @@
 package config
 
 import (
-	"fmt"
-
 	"google.golang.org/protobuf/types/known/durationpb"
 )
-
-// galeOsName is used as stable version for gale.
-// It is used until stableversion tool for ap/pcap is ready
-// TODO(b/248631855): need merge it to versioner.
-const galeOsName = "gale-test-ap-tryjob/R92-13982.81.0-b4959409"
-
-var osNameArg = fmt.Sprintf("os_name:%s", galeOsName)
 
 func wifiRouterRepairPlan() *Plan {
 	return &Plan{
@@ -64,7 +55,7 @@ func wifiRouterRepairPlan() *Plan {
 				},
 				ExecName: "cros_is_on_stable_version",
 				ExecExtraArgs: []string{
-					osNameArg,
+					"device_type:wifi_router",
 				},
 				RecoveryActions: []string{
 					"Provision WifiRouter to stable version",
@@ -91,7 +82,7 @@ func wifiRouterRepairPlan() *Plan {
 				},
 				ExecName: "cros_provision",
 				ExecExtraArgs: []string{
-					osNameArg,
+					"device_type:wifi_router",
 				},
 				ExecTimeout: &durationpb.Duration{Seconds: 3600},
 			},
