@@ -16,9 +16,19 @@ import (
 
 // restoreCBIContentsFromUFS restores CBI contents on the DUT by writing the CBI contents stored
 // in UFS to CBI EEPROM on the DUT.
-// TODO(b/235000813) Implement
 func restoreCBIContentsFromUFS(ctx context.Context, info *execs.ExecInfo) error {
-	return nil
+	runner := info.NewRunner(info.GetDut().Name)
+	if info.GetChromeos().GetCbi() == nil {
+		return errors.Reason("restore CBI contents from UFS: no previous CBI contents were found in UFS").Err()
+	}
+
+	cbiLocation, err := cbi.GetCBILocation(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "restore CBI contents from UFS").Err()
+	}
+
+	err = cbi.WriteCBIContents(ctx, runner, cbiLocation, info.GetChromeos().GetCbi())
+	return errors.Annotate(err, "restore CBI contents from UFS").Err()
 }
 
 // ufsContainsCBIContents returns nil if CBI Contents were previously stored for

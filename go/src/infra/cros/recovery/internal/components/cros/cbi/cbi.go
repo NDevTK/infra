@@ -42,6 +42,11 @@ const (
 	readIncrement = 64
 )
 
+// How much time each CBI read and write (one call to `ectool i2cxfer`) has to complete.
+// This is exceedingly generous, as each read or write should take on the order
+// of milliseconds to execute. This is primarily to give some slack to DUTs experiencing connection issues.
+var transferCBIDurationInSeconds = time.Second * 10
+
 var readCBIRegex = regexp.MustCompile(`0x[[:xdigit:]]{1,2}|00`) // Match bytes printed in hex format (e.g. 00, 0x12, 0x3)
 var locateCBIRegex = regexp.MustCompile(`Port:\s(\d+).*Address:\s(0x\w+)`)
 
@@ -106,6 +111,34 @@ func GetCBIContents(ctx context.Context, run components.Runner) (*labapi.Cbi, er
 		return nil, errors.Annotate(err, "get CBI contents").Err()
 	}
 	return dutCBI, nil
+}
+
+// WriteCBIContents writes the provided CBI contents to the DUT in
+// writeIncrement sized chunks. Propagates any errors from `ectool i2cxfer`.
+func WriteCBIContents(ctx context.Context, run components.Runner, cbiLocation *CBILocation, cbi *labapi.Cbi) error {
+	const (
+		// How many bytes to read during our write operation. This is a quirk of the
+		// ectool i2cxfer API, and is always zero when writing.
+		numBytesToReadDuringWrite = "0"
+
+		// How many bytes can be written to CBI in a single operation.
+		// THIS VALUE SHOULD BE TREATED AS A HARD LIMIT. Exceeding this limit may
+		// result in undefined behavior.
+		writeIncrement = 8
+	)
+	hexBytes, err := parseBytesFromCBIContents(cbi.GetRawContents(), cbiSize)
+	if err != nil {
+		return errors.Annotate(err, "write CBI contents").Err()
+	}
+	for offset := 0; offset < cbiSize; offset += writeIncrement {
+		hexByteChunk := strings.Join(hexBytes[offset:offset+writeIncrement], " ")
+		// Sample command:ectool i2cxfer 0 0x50 0 0 0x43 0x42 0x49 0x98 00 00 0x2f 00
+		writeResponse, err := run(ctx, transferCBIDurationInSeconds, transferCBICommand, cbiLocation.port, cbiLocation.address, numBytesToReadDuringWrite, strconv.Itoa(offset), hexByteChunk)
+		if err != nil {
+			return errors.Annotate(err, "write CBI contents: unable to write CBI contents: %s", writeResponse).Err()
+		}
+	}
+	return nil
 }
 
 // parseBytesFromCBIContents reads <numBytesToRead> number of bytes from the
