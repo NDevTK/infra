@@ -6,15 +6,18 @@ package tasks
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/tsmon"
+	"go.chromium.org/luci/common/tsmon/target"
 	"go.chromium.org/luci/lucictx"
-
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
@@ -59,4 +62,31 @@ func useSystemAuth(ctx context.Context, authFlags *authcli.Flags) (context.Conte
 	}
 	log.Printf("System account not found, err %s.\nFalling back to user credentials for auth.\n", err)
 	return ctx, nil
+}
+
+func metricsInit(ctx context.Context) error {
+	// Application level flags.
+	log.Printf("Setting up CTR docker tsmon...")
+
+	tsmonFlags := tsmon.NewFlags()
+	tsmonFlags.Endpoint = "https://prodxmon-pa.googleapis.com/v1:insert"
+	tsmonFlags.Credentials = "/creds/service_accounts/service_account_prodx_mon.json"
+	tsmonFlags.Target.TargetType = target.TaskType
+	tsmonFlags.Target.TaskServiceName = "CTR-DockerOps"
+	tsmonFlags.Target.TaskJobName = "CTR-DockerOps"
+	tsmonFlags.Flush = "auto"
+
+	// Initialize the library once on application start:
+	if err := tsmon.InitializeFromFlags(ctx, &tsmonFlags); err != nil {
+		return fmt.Errorf("metrics: error setup tsmon: %s", err)
+	}
+	return nil
+}
+
+// metricsShutdown stops the metrics.
+func metricsShutdown(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	log.Printf("Shutting down metrics...")
+	tsmon.Shutdown(ctx)
 }

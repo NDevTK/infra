@@ -67,6 +67,10 @@ func Test(authOpts auth.Options) *subcommands.Command {
 // Run executes the tool.
 func (c *runTestCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
+	if err := metricsInit(ctx); err != nil {
+		log.Printf("metrics init: %s", err)
+	}
+	defer metricsShutdown(ctx)
 
 	out, err := c.innerRun(ctx, a, args, env)
 	// Unexpected error will counted as incorrect request data.

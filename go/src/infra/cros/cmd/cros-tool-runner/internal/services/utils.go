@@ -10,25 +10,17 @@ import (
 	"log"
 	"os"
 	"path"
-	"time"
 
 	"github.com/golang/protobuf/jsonpb"
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/tsmon"
-	"go.chromium.org/luci/common/tsmon/target"
 
 	"infra/cros/cmd/cros-tool-runner/internal/docker"
 )
 
 func startService(ctx context.Context, d *docker.Docker, block bool, netbind bool, service string) (*docker.Docker, error) {
-	if err := metricsInit(ctx); err != nil {
-		log.Printf("metrics init: %s", err)
-	}
-	defer metricsShutdown(ctx)
-
 	if err := d.Remove(ctx); err != nil {
 		log.Printf("failed to clean up container %q. Error: %s", d.Name, err)
 	}
@@ -111,31 +103,4 @@ func createProvisionInput(state *api.CrosProvisionRequest, dir string) error {
 
 func getAddr(i *lab_api.IpEndpoint) string {
 	return fmt.Sprintf("%s:%d", i.GetAddress(), i.GetPort())
-}
-
-func metricsInit(ctx context.Context) error {
-	// Application level flags.
-	log.Printf("Setting up CTR docker tsmon...")
-
-	tsmonFlags := tsmon.NewFlags()
-	tsmonFlags.Endpoint = "https://prodxmon-pa.googleapis.com/v1:insert"
-	tsmonFlags.Credentials = "/creds/service_accounts/service_account_prodx_mon.json"
-	tsmonFlags.Target.TargetType = target.TaskType
-	tsmonFlags.Target.TaskServiceName = "CTR-DockerOps"
-	tsmonFlags.Target.TaskJobName = "CTR-DockerOps"
-	tsmonFlags.Flush = "auto"
-
-	// Initialize the library once on application start:
-	if err := tsmon.InitializeFromFlags(ctx, &tsmonFlags); err != nil {
-		return fmt.Errorf("metrics: error setup tsmon: %s", err)
-	}
-	return nil
-}
-
-// metricsShutdown stops the metrics.
-func metricsShutdown(ctx context.Context) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-	log.Printf("Shutting down metrics...")
-	tsmon.Shutdown(ctx)
 }
