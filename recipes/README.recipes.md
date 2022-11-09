@@ -1613,11 +1613,22 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#68)(api, env, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#81)(api, env, cwd, app_name):**
 
-&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#55)(api, env):**
+&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#61)(api, env):**
 
-&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#47)(api, env):**
+This function runs the UI tests in `infra` project.
+  
+
+&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#50)(api, env):**
+
+This function runs UI tests in `infra_internal` project.
+  
+
+&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#73)(api, env):**
+
+This function runs UI tests in the `luci-go` project.
+  
 
 &mdash; **def [RunSteps](/recipes/recipes/infra_frontend_tester.py#20)(api):**
 ### *recipes* / [infra\_repo\_trybot](/recipes/recipes/infra_repo_trybot.py)

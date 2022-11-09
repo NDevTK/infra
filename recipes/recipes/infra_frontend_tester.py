@@ -21,11 +21,11 @@ def RunSteps(api):
   assert api.platform.is_linux, 'Unsupported platform, only Linux is supported.'
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project_name = cl.project
-  assert project_name in ('infra/infra', 'infra/infra_internal'), (
-      'unknown project: "%s"' % project_name)
+  assert project_name in ('infra/infra', 'infra/infra_internal',
+                          'infra/luci/luci-go'), ('unknown project: "%s"' %
+                                                  project_name)
   patch_root = project_name.split('/')[-1]
-  internal = (patch_root == 'infra_internal')
-  api.gclient.set_config(patch_root)
+  api.gclient.set_config(patch_root.replace("-", "_"))
   api.bot_update.ensure_checkout(patch_root=patch_root)
   api.gclient.runhooks()
 
@@ -39,12 +39,18 @@ def RunSteps(api):
   env = {
       'PATH': api.path.pathsep.join([str(node_path), '%(PATH)s'])
   }
-  if internal:
+  if patch_root == 'infra':
+    RunInfraFrontendTests(api, env)
+  elif patch_root == 'infra_internal':
     RunInfraInternalFrontendTests(api, env)
   else:
-    RunInfraFrontendTests(api, env)
+    RunLuciGoTests(api, env)
+
 
 def RunInfraInternalFrontendTests(api, env):
+  """This function runs UI tests in `infra_internal` project.
+  """
+
   # Add your infra_internal tests here following this example:
   # cwd = api.path['checkout'].join('path', 'to', 'ui', 'root')
   # RunFrontendTests(api, env, cwd, 'myapp')
@@ -53,6 +59,9 @@ def RunInfraInternalFrontendTests(api, env):
 
 
 def RunInfraFrontendTests(api, env):
+  """This function runs the UI tests in `infra` project.
+  """
+
   cwd = api.path['checkout'].join('appengine', 'monorail')
   RunFrontendTests(api, env, cwd, 'monorail')
 
@@ -60,8 +69,12 @@ def RunInfraFrontendTests(api, env):
                                   'dashboard', 'frontend')
   RunFrontendTests(api, env, cwd, 'chopsdash')
 
-  cwd = api.path['checkout'].join('go', 'src', 'go.chromium.org', 'luci',
-                                  'analysis', 'frontend', 'ui')
+
+def RunLuciGoTests(api, env):
+  """This function runs UI tests in the `luci-go` project.
+  """
+
+  cwd = api.path['checkout'].join('frontend', 'ui')
   RunFrontendTests(api, env, cwd, 'analysis')
 
 
@@ -78,3 +91,5 @@ def GenTests(api):
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
+  yield (api.test('basic-luci-go') +
+         api.buildbucket.try_build(project='infra/luci/luci-go'))
