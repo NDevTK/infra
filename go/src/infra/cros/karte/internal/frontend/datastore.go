@@ -470,6 +470,8 @@ func convertActionToActionEntity(action *kartepb.Action) (*ActionEntity, error) 
 		FailReason:     action.FailReason,
 		SealTime:       scalars.ConvertTimestampPtrToTime(action.SealTime),
 		Hostname:       action.Hostname,
+		Model:          action.GetModel(),
+		Board:          action.GetBoard(),
 	}, nil
 }
 
