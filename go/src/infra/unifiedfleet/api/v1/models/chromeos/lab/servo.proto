@@ -61,7 +61,7 @@ message ServoTopology  {
 }
 
 // Servo Topology Item describe details of one servo device on DUT set-up.
-// Next Tag : 5
+// Next Tag : 6
 message ServoTopologyItem  {
   // type provides the type of servo device. Keeping as String to avoid issue with introduce new type.
   string type = 1;
@@ -76,4 +76,6 @@ message ServoTopologyItem  {
   //   '2'    - port on servo hub (part of servo_v4 or servo_v4.1) connected to the smart-hub
   // The same path will look '1-6.2' if connected servo_v4 directly to the labstation.
   string usb_hub_port = 4;
+  // This is the firmware version of servo device.
+  string fw_version = 5;
 }
