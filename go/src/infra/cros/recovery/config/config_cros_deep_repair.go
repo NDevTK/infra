@@ -44,7 +44,6 @@ func deepRepairServoPlan() *Plan {
 			"Servo is know in the setup",
 			"Servod port specified",
 			"Servo serial is specified",
-			"Device is pingable",
 			"Device is SSHable",
 			"Power-cycle by smart-hub",
 			"Mark labstation as servod is in-use",
@@ -76,17 +75,6 @@ func deepRepairServoPlan() *Plan {
 					"Is not servo_v3",
 				},
 				ExecName: "dut_servo_has_serial",
-			},
-			"Device is pingable": {
-				Docs: []string{
-					"Verify that device is reachable by ping.",
-					"Limited to 15 seconds.",
-				},
-				ExecName: "cros_ping",
-				ExecTimeout: &durationpb.Duration{
-					Seconds: 15,
-				},
-				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Device is SSHable": {
 				Docs: []string{
