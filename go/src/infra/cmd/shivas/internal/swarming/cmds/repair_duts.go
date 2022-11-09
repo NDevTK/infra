@@ -126,10 +126,14 @@ func (c *repairDuts) taskName() string {
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
 func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair bool, adminSession string) (*swarming.TaskInfo, error) {
 	v := buildbucket.CIPDProd
+	builderName := "repair"
+	if !runRepair {
+		builderName = "verify"
+	}
 	p := &buildbucket.Params{
 		UnitName:       host,
 		TaskName:       string(buildbucket.Recovery),
-		BuilderName:    "repair",
+		BuilderName:    builderName,
 		EnableRecovery: runRepair,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.
