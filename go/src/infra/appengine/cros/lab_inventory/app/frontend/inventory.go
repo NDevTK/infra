@@ -29,7 +29,6 @@ import (
 	"infra/cros/lab_inventory/changehistory"
 	"infra/cros/lab_inventory/datastore"
 	"infra/cros/lab_inventory/deviceconfig"
-	"infra/cros/lab_inventory/dronecfg"
 	"infra/cros/lab_inventory/hwid"
 	"infra/cros/lab_inventory/manufacturingconfig"
 	invlibs "infra/cros/lab_inventory/protos"
@@ -80,29 +79,6 @@ func getFailedResults(ctx context.Context, results []datastore.DeviceOpResult, h
 	}
 
 	return failedDevices
-}
-
-func updateDroneCfg(ctx context.Context, devices []*api.DeviceOpResult, addDuts bool) (err error) {
-	// Merge the new DUTs to drones.
-	var duts []dronecfg.DUT
-	for _, d := range devices {
-		duts = append(duts, dronecfg.DUT{Hostname: d.Hostname, ID: d.Id})
-	}
-	toChange := []dronecfg.Entity{
-		{
-			Hostname: dronecfg.QueenDroneName(config.Get(ctx).Environment),
-			DUTs:     duts,
-		},
-	}
-	if addDuts {
-		err = dronecfg.MergeDutsToDrones(ctx, toChange, nil)
-	} else {
-		err = dronecfg.MergeDutsToDrones(ctx, nil, toChange)
-	}
-	if err != nil {
-		err = errors.Annotate(err, "update drone config").Err()
-	}
-	return err
 }
 
 // AddCrosDevices adds new Chrome OS devices to the inventory.

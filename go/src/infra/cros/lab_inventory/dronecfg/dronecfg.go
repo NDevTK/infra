@@ -60,42 +60,6 @@ func dutsDifference(self, other []DUT) []DUT {
 	return result
 }
 
-// MergeDutsToDrones merge the drone config with the newly added DUTs and/or
-// DUTs to be removed.
-func MergeDutsToDrones(ctx context.Context, dronesToAddDut []Entity, dronesToRemoveDut []Entity) error {
-	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
-		// Make a drone list and a name map.
-		dronesMap := map[string]*Entity{}
-		var drones []*Entity
-		for _, d := range append(dronesToAddDut, dronesToRemoveDut...) {
-			if _, ok := dronesMap[d.Hostname]; !ok {
-				e := &Entity{Hostname: d.Hostname}
-				dronesMap[d.Hostname] = e
-				drones = append(drones, e)
-			}
-		}
-
-		if err := datastore.Get(ctx, drones); err != nil && !datastore.IsErrNoSuchEntity(err) {
-			return err
-		}
-		for _, d := range dronesToAddDut {
-			dronesMap[d.Hostname].DUTs = dutsUnion(dronesMap[d.Hostname].DUTs, d.DUTs)
-		}
-		for _, d := range dronesToRemoveDut {
-			dronesMap[d.Hostname].DUTs = dutsDifference(dronesMap[d.Hostname].DUTs, d.DUTs)
-		}
-		// Keep drones with 0 DUTs in datastore.
-		if err := datastore.Put(ctx, drones); err != nil {
-			return err
-		}
-		return nil
-	}, nil)
-	if err != nil {
-		return errors.Annotate(err, "merge drone configs").Err()
-	}
-	return nil
-}
-
 // Get gets a drone config from datastore by hostname.
 func Get(ctx context.Context, hostname string) (Entity, error) {
 	e := Entity{Hostname: hostname}
