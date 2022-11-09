@@ -139,7 +139,8 @@ message UfsRouting {
   bool update_assets = 11;
 
   // cron job for dronequeen push.
-  bool disable_dronequeen_push = 12;
+  // As UFS migration is over, this is no longer used.
+  bool disable_dronequeen_push = 12 [deprecated=true];
 
   // cron job for BQ Device/Dutstate dump.
   bool dump_devices_bq = 13;
