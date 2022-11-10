@@ -36,6 +36,7 @@ func crosRepairPlan() *Plan {
 			"Update Servo NIC mac address",
 			"Match provision labels",
 			"Backup CBI",
+			"Check CBI",
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
@@ -386,23 +387,15 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and reboot",
 			},
 		},
-		"Repair CBI": {
+		"Check CBI": {
 			Docs: []string{
-				"Manages the CBI repair workflow. go/cbi-auto-recovery-dd",
+				"Checks the CBI contents for corruption. go/cbi-auto-recovery-dd",
 			},
 			Conditions: []string{
-				"Hardware write protection is disabled",
 				"CBI is present",
 				"UFS contains CBI contents",
-				"CBI contents do not match",
 			},
-			Dependencies: []string{
-				"Restore CBI contents from UFS",
-				"Simple reboot",
-				"Wait to be SSHable (normal boot)",
-				"CBI contents match",
-			},
-			ExecName:               "sample_pass",
+			ExecName:               "cros_cbi_contents_match",
 			AllowFailAfterRecovery: true,
 		},
 		"Restore CBI contents from UFS": {
@@ -415,8 +408,7 @@ func crosRepairActions() map[string]*Action {
 				"UFS contains CBI contents",
 				"CBI contents do not match",
 			},
-			ExecName:               "cros_restore_cbi_contents_from_ufs",
-			AllowFailAfterRecovery: true,
+			ExecName: "cros_restore_cbi_contents_from_ufs",
 		},
 		"Backup CBI": {
 			Docs: []string{
