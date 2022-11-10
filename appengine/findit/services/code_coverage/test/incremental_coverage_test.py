@@ -16,7 +16,6 @@ from model.code_coverage import PresubmitCoverageData
 from model.code_coverage import CLPatchset
 from services.code_coverage import incremental_coverage
 from services import bigquery_helper
-from services import test_tag_util
 
 _DEFAULT_LUCI_PROJECT = 'chromium'
 

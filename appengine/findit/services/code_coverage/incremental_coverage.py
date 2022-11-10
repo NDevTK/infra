@@ -10,9 +10,7 @@ from google.appengine.ext import ndb
 
 from libs import time_util
 from model.code_coverage import PresubmitCoverageData
-from model.test_location import TestLocation
 from services import bigquery_helper
-from services import test_tag_util
 
 _PAGE_SIZE = 100
 

@@ -11,13 +11,11 @@ from gae_libs.pipelines import pipeline_status_ui
 from handlers import auto_revert_metrics
 from handlers import check_duplicate_failures
 from handlers import config
-from handlers import culprit
 from handlers import failure_log
 from handlers import home
 from handlers import list_analyses
 from handlers import pipeline_errors_dashboard
 from handlers import trooper
-from handlers import try_job_dashboard
 from handlers import url_redirect
 
 # App Engine pipeline status pages.
@@ -39,13 +37,11 @@ waterfall_frontend_web_pages_handler_mappings = [
     ('/waterfall/check-duplicate-failures',
      check_duplicate_failures.CheckDuplicateFailures),
     ('/waterfall/config', config.Configuration),
-    ('/waterfall/culprit', culprit.Culprit),
     ('/waterfall/failure-log', failure_log.FailureLog),
     ('/waterfall/list-failures', list_analyses.ListAnalyses),
     ('/waterfall/pipeline-errors-dashboard',
      pipeline_errors_dashboard.PipelineErrorsDashboard),
     ('/waterfall/trooper', trooper.Trooper),
-    ('/waterfall/try-job-dashboard', try_job_dashboard.TryJobDashboard),
     (r'/.*', url_redirect.URLRedirect),
 ]
 waterfall_frontend_web_application = webapp2.WSGIApplication(
