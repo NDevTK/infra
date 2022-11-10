@@ -2530,7 +2530,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Power on DUT by RPM": {
 			Docs: []string{
-				"Power off the DUT by RPM outlet.",
+				"Power on the DUT by RPM outlet.",
 			},
 			ExecName:   "rpm_power_on",
 			RunControl: RunControl_ALWAYS_RUN,

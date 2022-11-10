@@ -46,6 +46,7 @@ func servoRepairPlan() *Plan {
 			"Set state:WARM_RESET_PIN_ISSUE",
 			"Warm reset pin is detected",
 			"Set state:SERVOD_ISSUE",
+			"Charger connected",
 			"Check if PD is src state",
 			"Verify Cr50 detected",
 			"Set state:SERVOD_DUT_CONTROLLER_MISSING",
@@ -426,6 +427,32 @@ func servoRepairPlan() *Plan {
 					"command:ppchg5_mv",
 				},
 				ExecName: "servo_check_servod_control",
+			},
+			"Charger connected": {
+				Docs: []string{
+					"Verify that power for servo is provided.",
+					"Applicable when we use type-c servo and RPM.",
+				},
+				Conditions: []string{
+					"Is servo_v4(p1) used with type-c connector",
+					"has_rpm_info",
+					"Read ppchg5_mv value",
+				},
+				ExecName: "servo_control_min_double_value",
+				ExecExtraArgs: []string{
+					"control:ppchg5_mv",
+					"min_value:4000",
+				},
+				RecoveryActions: []string{
+					"Power on DUT by RPM",
+				},
+				AllowFailAfterRecovery: true,
+			},
+			"Power on DUT by RPM": {
+				Docs: []string{
+					"Power ON the RPM outlet.",
+				},
+				ExecName: "rpm_power_on",
 			},
 			"Check if PD is src state": {
 				Docs: []string{

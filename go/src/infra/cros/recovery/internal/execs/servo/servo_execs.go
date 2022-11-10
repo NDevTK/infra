@@ -414,6 +414,31 @@ func servoLowPPDut5Exec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// Verify that the control has min double value by servod control.
+func servoControlMinDoubleValueExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	control := argsMap.AsString(ctx, "control", "")
+	minValue := argsMap.AsFloat64(ctx, "min_value", 0)
+	if control == "" {
+		return errors.Reason("servo control low double value: control is not provided").Err()
+	}
+	s := info.NewServod()
+	if err := s.Has(ctx, control); err != nil {
+		return errors.Annotate(err, "servo control low double value").Err()
+	}
+	receivedValue, err := servodGetDouble(ctx, s, control)
+	if err != nil {
+		return errors.Annotate(err, "servo control low double value").Err()
+	}
+	info.AddObservation(metrics.NewStringObservation("control", control))
+	info.AddObservation(metrics.NewFloat64Observation("receivedValue", receivedValue))
+	if receivedValue < minValue {
+		return errors.Reason("servo control low double value: the value %v is lower than the threshold %v", receivedValue, minValue).Err()
+	}
+	log.Debugf(ctx, "Servo %q: the value %v is >= than the threshold %d", control, receivedValue, minValue)
+	return nil
+}
+
 // servoCheckServodControlExec verifies that servod supports the
 // control mentioned in action args. Additionally, if actionArgs
 // includes the expected value, this function will verify that the
@@ -922,6 +947,7 @@ func init() {
 	execs.Register("servo_fw_need_update", servoFirmwareNeedsUpdateExec)
 	execs.Register("servo_set", servoSetExec)
 	execs.Register("servo_low_ppdut5", servoLowPPDut5Exec)
+	execs.Register("servo_control_min_double_value", servoControlMinDoubleValueExec)
 	execs.Register("servo_check_servod_control", servoCheckServodControlExec)
 	execs.Register("servo_labstation_disk_cleanup", servoLabstationDiskCleanUpExec)
 	execs.Register("servo_servod_old_logs_cleanup", servoServodOldLogsCleanupExec)
