@@ -5,8 +5,6 @@
 """This file sets up all the urls for monorail pages."""
 
 import logging
-from framework import csp_report
-from framework.csp_report import CSPReportPage
 import settings
 
 import flask
@@ -252,13 +250,6 @@ class ServletRegistry(object):
       return flask.redirect(url)
 
     return flaskapp_project_redirect
-
-  def RegisterCSPUrl(self):
-    flaskapp_csp = flask.Flask(__name__)
-    flaskapp_csp.add_url_rule(
-        '/', view_func=csp_report.CSPReportPage().postCSP, methods=['POST'])
-
-    return flaskapp_csp
 
   def RegisterProjectUrls(self, service):
     flaskapp_project = flask.Flask(__name__)
