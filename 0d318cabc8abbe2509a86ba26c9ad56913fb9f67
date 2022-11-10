@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9843b45_97ccfa62",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2022-11-10T18:58:16Z",
+      "side": 1,
+      "message": "We should find out which team cares about this and loop them in as to what is going on and why this is important.",
+      "revId": "0d318cabc8abbe2509a86ba26c9ad56913fb9f67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94098681_5d896191",
+        "filename": "build/packages/cloudtail-mac.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2022-11-10T18:58:16Z",
+      "side": 1,
+      "message": "Remove the cloudtail file under data.",
+      "revId": "0d318cabc8abbe2509a86ba26c9ad56913fb9f67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
