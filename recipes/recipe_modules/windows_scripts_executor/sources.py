@@ -150,5 +150,5 @@ class Source:
     """
     if dest.WhichOneof('dest') == 'gcs_src':
       return src_pb.Src(gcs_src=dest.gcs_src)
-    if dest.WhichOneof('dest') == 'cipd_src':
+    if dest.WhichOneof('dest') == 'cipd_src':  # pragma: no cover
       return src_pb.Src(cipd_src=dest.cipd_src)
