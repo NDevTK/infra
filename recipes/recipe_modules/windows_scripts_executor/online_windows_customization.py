@@ -269,7 +269,7 @@ class OnlineWindowsCustomization(customization.Customization):
     return inputs
 
   @property
-  def context(self):  # pragma: no cover
+  def context(self):
     """ context returns a dict containing the map to image id to output dest
     """
     outputs = {}

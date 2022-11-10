@@ -144,9 +144,7 @@ class OfflineWinPECustomization(customization.Customization):
     """ context returns a dict containing the local_src id mapping to output
     src.
     """
-    return {
-        self.id: self._source.dest_to_src(self.outputs[0])
-    }  # pragma: no cover
+    return {self.id: self._source.dest_to_src(self.outputs[0])}
 
   def execute_customization(self):
     """ execute_customization initializes the winpe image, runs the given
