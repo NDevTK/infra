@@ -25,7 +25,6 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
-	swarming "infra/libs/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -53,9 +52,8 @@ var AddLabstationCmd = &subcommands.Command{
 	LongDesc:  cmdhelp.AddLabstationLongDesc,
 	CommandRun: func() subcommands.CommandRun {
 		c := &addLabstation{
-			pools:         []string{},
-			deployTags:    shivasTags,
-			deployActions: defaultDeployTaskActions,
+			pools:      []string{},
+			deployTags: shivasTags,
 		}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
@@ -68,7 +66,6 @@ var AddLabstationCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma seperated pools assigned to the Labstation. 'labstation_main' assigned on no input.")
 		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the Labstation.")
 		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the Labstation.")
-		c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
@@ -77,7 +74,6 @@ var AddLabstationCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.board, "board", "", "board the device is based on")
 		c.Flags.StringVar(&c.rack, "rack", "", "rack that the labstation is on")
 		c.Flags.StringVar(&c.zone, "zone", "", "zone that the labstation is on. "+cmdhelp.ZoneFilterHelpText)
-		c.Flags.BoolVar(&c.paris, "paris", true, "use paris flow for deployment")
 		return c
 	},
 }
@@ -95,14 +91,11 @@ type addLabstation struct {
 	rpm          string
 	rpmOutlet    string
 
-	deployTaskTimeout int64
-	deployActions     []string
-	deployTags        []string
-	deploymentTicket  string
-	tags              []string
-	state             string
-	description       string
-	paris             bool
+	deployTags       []string
+	deploymentTicket string
+	tags             []string
+	state            string
+	description      string
 
 	// Asset related params
 	model string
@@ -155,12 +148,6 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		fmt.Printf("Using swarming service %s \n", e.SwarmingService)
 	}
 
-	tc, err := swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService)
-	if err != nil {
-		return err
-	}
-	tc.LogdogService = e.LogdogService
-	tc.SwarmingServiceAccount = e.SwarmingServiceAccount
 	deployParams, err := c.parseArgs()
 	if err != nil {
 		return err
@@ -174,16 +161,11 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		Options: site.DefaultPRPCOptions,
 	})
 
-	var bbClient buildbucket.Client
-	var sessionTag string
-	if c.paris {
-		var cErr error
-		bbClient, cErr = createBBClient(ctx, c.authFlags)
-		if cErr != nil {
-			return cErr
-		}
-		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())
+	bbClient, cErr := createBBClient(ctx, c.authFlags)
+	if cErr != nil {
+		return cErr
 	}
+	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 
 	for _, params := range deployParams {
 		if len(params.Labstation.GetMachines()) == 0 {
@@ -193,13 +175,7 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		err := c.addLabstationToUFS(ctx, ic, params)
 		resTable.RecordResult(ufsOp, params.Labstation.GetHostname(), err)
 		if err == nil {
-			var dErr error
-			// Deploy and record result.
-			if c.paris {
-				dErr = utils.ScheduleDeployTask(ctx, bbClient, e, params.Labstation.GetHostname(), sessionTag)
-			} else {
-				dErr = c.createLabstationDeployTask(ctx, tc, params.Labstation, e)
-			}
+			dErr := utils.ScheduleDeployTask(ctx, bbClient, e, params.Labstation.GetHostname(), sessionTag)
 			resTable.RecordResult(swarmingOp, params.Labstation.GetHostname(), dErr)
 		} else {
 			// Record deploy task skip.
@@ -208,13 +184,7 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 	}
 	// Print session URL if atleast one of the tasks was deployed.
 	if resTable.IsSuccessForAny(swarmingOp) {
-		var link string
-		if c.paris {
-			link = utils.TasksBatchLink(e.SwarmingService, sessionTag)
-		} else {
-			link = tc.SessionTasksURL()
-		}
-		fmt.Printf("\nBatch tasks URL: %s\n\n", link)
+		fmt.Printf("\nBatch tasks URL: %s\n\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))
 	}
 
 	fmt.Println("\nSummary of operations:")
@@ -349,16 +319,6 @@ func (c *addLabstation) addLabstationToUFS(ctx context.Context, ic ufsAPI.FleetC
 	}
 	res.Name = ufsUtil.RemovePrefix(res.Name)
 	utils.PrintProtoJSON(res, !utils.NoEmitMode(false))
-	return nil
-}
-
-// CreateLabstationDeployTask creates a task using either the paris or legacy flow to deploy a labstation.
-func (c *addLabstation) createLabstationDeployTask(ctx context.Context, tc *swarming.TaskCreator, lse *ufspb.MachineLSE, e site.Environment) error {
-	task, dErr := tc.DeployDut(ctx, lse.Name, lse.GetMachines()[0], defaultSwarmingPool, c.deployTaskTimeout, c.deployActions, c.deployTags, nil)
-	if dErr != nil {
-		return errors.Annotate(dErr, "deploy labstation").Err()
-	}
-	fmt.Printf("Triggered Deploy task for Labstation %s. Follow the deploy job at %s\n", lse.GetName(), task.TaskURL)
 	return nil
 }
 
