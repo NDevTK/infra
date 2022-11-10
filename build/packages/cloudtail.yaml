@@ -5,8 +5,6 @@ platforms:
   - linux-amd64
   - linux-arm64
   - linux-armv6l
-  - mac-amd64
-  - mac-arm64
   - windows-386
   - windows-amd64
 go_packages:
