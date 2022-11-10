@@ -106,6 +106,23 @@
       "parentUuid": "2088e575_9991a9fa",
       "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f02dbb50_f3c72a30",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-11-10T21:12:20Z",
+      "side": 1,
+      "message": "First, this CL will likely produce a package that will break consumers, since they won\u0027t be able to find `cloudtail` executable (it will be in cloudtail.app/Contents/MacOS/cloudtail instead). The vpython package has a symlink to fix this https://source.chromium.org/chromium/infra/infra/+/main:build/packages/vpython-mac.yaml;l\u003d41?q\u003d%22codesign%22%20lang:yaml\u0026ss\u003dchromium\n\nSecond, I really want to enable code signing by default for all OSX Go binaries, but I\u0027m concerned that we would be replacing single-file packages with app bundles. This will potentially break various places which install these packages (and at this point there are many such places).\n\nDo you happen to know, is it possible to embed the plist and its signature directly into the Mach-O binary avoiding bundles?",
+      "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
