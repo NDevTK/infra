@@ -16,7 +16,6 @@ from handlers import failure_log
 from handlers import home
 from handlers import list_analyses
 from handlers import pipeline_errors_dashboard
-from handlers import triage_suspected_cl
 from handlers import trooper
 from handlers import try_job_dashboard
 from handlers import url_redirect
@@ -45,7 +44,6 @@ waterfall_frontend_web_pages_handler_mappings = [
     ('/waterfall/list-failures', list_analyses.ListAnalyses),
     ('/waterfall/pipeline-errors-dashboard',
      pipeline_errors_dashboard.PipelineErrorsDashboard),
-    ('/waterfall/triage-suspected-cl', triage_suspected_cl.TriageSuspectedCl),
     ('/waterfall/trooper', trooper.Trooper),
     ('/waterfall/try-job-dashboard', try_job_dashboard.TryJobDashboard),
     (r'/.*', url_redirect.URLRedirect),
