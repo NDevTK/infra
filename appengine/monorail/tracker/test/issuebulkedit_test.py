@@ -12,6 +12,7 @@ import mock
 import os
 import unittest
 import webapp2
+import flask
 
 from google.appengine.api import memcache
 from google.appengine.ext import testbed
@@ -231,10 +232,10 @@ class IssueBulkEditTest(unittest.TestCase):
         perms=permissions.OWNER_ACTIVE_PERMISSIONSET,
         user_info={'user_id': 111})
     post_data = fake.PostData()
-    self.servlet.response = Response()
+    self.servlet.response = flask.Response()
     self.servlet.ProcessFormData(mr, post_data)
     # 400 == bad request
-    self.assertEqual(400, self.servlet.response.status)
+    self.assertEqual(400, self.servlet.response.status_code)
 
   def testProcessFormData_NoUser(self):
     """Test PFD when the user is not logged in."""
@@ -242,10 +243,10 @@ class IssueBulkEditTest(unittest.TestCase):
         project=self.project)
     mr.local_id_list = [99999]
     post_data = fake.PostData()
-    self.servlet.response = Response()
+    self.servlet.response = flask.Response()
     self.servlet.ProcessFormData(mr, post_data)
     # 400 == bad request
-    self.assertEqual(400, self.servlet.response.status)
+    self.assertEqual(400, self.servlet.response.status_code)
 
   def testProcessFormData_CantComment(self):
     """Test PFD when the user can't comment on any of the issues."""
@@ -255,10 +256,10 @@ class IssueBulkEditTest(unittest.TestCase):
         user_info={'user_id': 111})
     mr.local_id_list = [99999]
     post_data = fake.PostData()
-    self.servlet.response = Response()
+    self.servlet.response = flask.Response()
     self.servlet.ProcessFormData(mr, post_data)
     # 400 == bad request
-    self.assertEqual(400, self.servlet.response.status)
+    self.assertEqual(400, self.servlet.response.status_code)
 
   def testProcessFormData_CantEdit(self):
     """Test PFD when the user can't edit any issue metadata."""
@@ -268,10 +269,10 @@ class IssueBulkEditTest(unittest.TestCase):
         user_info={'user_id': 111})
     mr.local_id_list = [99999]
     post_data = fake.PostData()
-    self.servlet.response = Response()
+    self.servlet.response = flask.Response()
     self.servlet.ProcessFormData(mr, post_data)
     # 400 == bad request
-    self.assertEqual(400, self.servlet.response.status)
+    self.assertEqual(400, self.servlet.response.status_code)
 
   def testProcessFormData_CantMove(self):
     """Test PFD when the user can't move issues."""
@@ -281,10 +282,10 @@ class IssueBulkEditTest(unittest.TestCase):
         user_info={'user_id': 111})
     mr.local_id_list = [99999]
     post_data = fake.PostData(move_to=['proj'])
-    self.servlet.response = Response()
+    self.servlet.response = flask.Response()
     self.servlet.ProcessFormData(mr, post_data)
     # 400 == bad request
-    self.assertEqual(400, self.servlet.response.status)
+    self.assertEqual(400, self.servlet.response.status_code)
 
     created_issue_1 = fake.MakeTestIssue(
         789, 1, 'issue summary', 'New', 111, reporter_id=111)

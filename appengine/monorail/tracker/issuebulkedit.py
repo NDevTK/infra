@@ -170,41 +170,31 @@ class IssueBulkEdit(flaskservlet.FlaskServlet):
     """
     if not mr.local_id_list:
       logging.info('missing issue local IDs, probably tampered')
-      #TODO: switch when convert /p to flask
-      # self.response.status_code = http_client.BAD_REQUEST
-      self.response.status = http_client.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
       return
 
     # Check that the user is logged in; anon users cannot update issues.
     if not mr.auth.user_id:
       logging.info('user was not logged in, cannot update issue')
-      #TODO: switch when convert /p to flask
-      # self.response.status_code = http_client.BAD_REQUEST
-      self.response.status = http_client.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
       return
 
     # Check that the user has permission to add a comment, and to enter
     # metadata if they are trying to do that.
     if not self.CheckPerm(mr, permissions.ADD_ISSUE_COMMENT):
       logging.info('user has no permission to add issue comment')
-      #TODO: switch when convert /p to flask
-      # self.response.status_code = http_client.BAD_REQUEST
-      self.response.status = http_client.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
       return
 
     if not self.CheckPerm(mr, permissions.EDIT_ISSUE):
       logging.info('user has no permission to edit issue metadata')
-      #TODO: switch when convert /p to flask
-      # self.response.status_code = http_client.BAD_REQUEST
-      self.response.status = http_client.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
       return
 
     move_to = post_data.get('move_to', '').lower()
     if move_to and not self.CheckPerm(mr, permissions.DELETE_ISSUE):
       logging.info('user has no permission to move issue')
-      #TODO: switch when convert /p to flask
-      # self.response.status_code = http_client.BAD_REQUEST
-      self.response.status = http_client.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
       return
 
     config = self.services.config.GetProjectConfig(mr.cnxn, mr.project_id)

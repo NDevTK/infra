@@ -78,8 +78,9 @@ class AttachmentPage(flaskservlet.FlaskServlet):
           bucket_name, gcs_object_id, filename):
         gcs_object_id = gcs_object_id + '-download'
 
-    url = gcs_helpers.SignUrl(bucket_name, gcs_object_id)
-    self.redirect(url, abort=True)
+    self.redirect_url = gcs_helpers.SignUrl(bucket_name, gcs_object_id)
+    
+    return {}
 
   def GetAttachmentPage(self, **kwargs):
     return self.handler(**kwargs)

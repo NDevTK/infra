@@ -257,9 +257,7 @@ def _ParseIssueRequestFields(post_data):
   phase_field_val_strs_remove = collections.defaultdict(dict)
   for key in post_data.keys():
     if key.startswith(_CUSTOM_FIELD_NAME_PREFIX):
-      # TODO: switch when convert /p to flask
-      # val_strs = [v for v in post_data.getlist(key) if v]
-      val_strs = [v for v in post_data.getall(key) if v]
+      val_strs = [v for v in post_data.getlist(key) if v]
       if val_strs:
         try:
           field_id = int(key[len(_CUSTOM_FIELD_NAME_PREFIX):])
