@@ -10,11 +10,11 @@ set -o pipefail
 PREFIX="$1"
 DEPS="$2"
 
-# Include the headers from pixman-1
-EXTRA_CFLAGS="-I${DEPS}/include/pixman-1"
+# Include the headers for dependencies.
+EXTRA_CFLAGS="-I${DEPS}/include -I${DEPS}/include/pixman-1"
 
 # Linker Flags to link pixman statically
-EXTRA_LDFLAGS="-L${DEPS}/lib -Wl,-Bstatic,-lpixman-1,-Bdynamic"
+EXTRA_LDFLAGS="-L${DEPS}/lib -Wl,-Bstatic,-lpixman-1,-Bdynamic -pthread"
 
 # Include the pixman pkg_config path. Configure will complain otherwise
 PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${DEPS}/lib/pkgconfig"
@@ -34,6 +34,9 @@ PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${DEPS}/lib/pkgconfig"
   --enable-kvm \
   --enable-vnc \
   --enable-tools \
+  --enable-cap-ng \
+  --enable-attr \
+  --enable-virtfs \
   --disable-pie \
   --target-list=x86_64-softmmu,arm-softmmu,aarch64-softmmu \
   --extra-ldflags="${EXTRA_LDFLAGS}" \

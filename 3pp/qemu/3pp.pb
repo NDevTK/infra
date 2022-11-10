@@ -7,9 +7,12 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:qemu:qemu"
+    patch_version: "chromium.1"
   }
   build {
     dep: "pixman"
+    dep: "static_libs/attr"
+    dep: "static_libs/libcap-ng"
   }
 }
 
