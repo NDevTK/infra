@@ -8,7 +8,7 @@ load("//lib/build.star", "build")
 load("//lib/infra.star", "infra")
 load("//lib/recipes.star", "recipes")
 
-REPO_URL = "https://chromium.googlesource.com/chromium/tools/depot_tools"
+REPO_URL = "https://chromium.googlesource.com/chromium/tools/depot_toolas1"
 
 luci.gitiles_poller(
     name = "depot_tools-gitiles-trigger",
