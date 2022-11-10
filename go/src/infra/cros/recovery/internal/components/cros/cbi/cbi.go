@@ -36,6 +36,12 @@ const (
 	transferCBICommand = "ectool i2cxfer"
 	cbiSize            = 256 // How many bytes of memory are stored in CBI.
 
+	// Invalidates the cache by querying for the 0th tag in CBI
+	// (any arbitrary tag will work), with an additional flag equal to "1" passed
+	// indicating that the entire cache should be invalidated (run `ectool cbi`
+	// for more information about optional ectool cbi flags)
+	invalidateCBICacheCommand = "ectool cbi get 0 1"
+
 	// How many bytes can be read from CBI in a single operation.
 	// THIS VALUE SHOULD BE TREATED AS A HARD LIMIT. Exceeding this limit may
 	// result in undefined behavior.
@@ -150,6 +156,13 @@ func WriteCBIContents(ctx context.Context, run components.Runner, cbiLocation *C
 		}
 	}
 	return nil
+}
+
+// InvalidateCBICache clears the CBI contents cache and returns an error if
+// anything unexpected occurs.
+func InvalidateCBICache(ctx context.Context, run components.Runner) error {
+	invalidateCacheResponse, err := run(ctx, transferDelayInMilliseconds, invalidateCBICacheCommand)
+	return errors.Annotate(err, "invalidate CBI cache: %s", invalidateCacheResponse).Err()
 }
 
 // parseBytesFromCBIContents reads <numBytesToRead> number of bytes from the

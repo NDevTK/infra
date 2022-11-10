@@ -31,6 +31,15 @@ func restoreCBIContentsFromUFS(ctx context.Context, info *execs.ExecInfo) error 
 	return errors.Annotate(err, "restore CBI contents from UFS").Err()
 }
 
+// invalidateCBICache clears the current CBI cache to ensure that any existing
+// CBI contents are up to date. Will throw an error if something unexpected occurs,
+// but should otherwise always return nil.
+func invalidateCBICache(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.NewRunner(info.GetDut().Name)
+	err := cbi.InvalidateCBICache(ctx, runner)
+	return errors.Annotate(err, "invalidate CBI cache").Err()
+}
+
 // ufsContainsCBIContents returns nil if CBI Contents were previously stored for
 // this DUT in UFS.
 func ufsContainsCBIContents(ctx context.Context, info *execs.ExecInfo) error {
@@ -119,4 +128,5 @@ func init() {
 	execs.Register("cros_ufs_does_not_contain_cbi_contents", ufsDoesNotContainCBIContents)
 	execs.Register("cros_cbi_is_present", cbiIsPresent)
 	execs.Register("cros_backup_cbi", backupCBI)
+	execs.Register("cros_invalidate_cbi_cache", invalidateCBICache)
 }

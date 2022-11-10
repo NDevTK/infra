@@ -410,6 +410,15 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_restore_cbi_contents_from_ufs",
 		},
+		"Invalidate CBI cache": {
+			Docs: []string{
+				"Invalidate the current CBI cache to ensure that any existing contents are up to date.",
+			},
+			Dependencies: []string{
+				"CBI is present",
+			},
+			ExecName: "cros_invalidate_cbi_cache",
+		},
 		"Backup CBI": {
 			Docs: []string{
 				"Store CBI contents in UFS",
