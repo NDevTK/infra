@@ -18,7 +18,6 @@ from infra_api_clients import crrev
 from model.isolated_target import IsolatedTarget
 from model.wf_build import WfBuild
 from services import git
-from services import swarming
 from waterfall import build_util
 from waterfall import buildbot
 from waterfall.build_info import BuildInfo
