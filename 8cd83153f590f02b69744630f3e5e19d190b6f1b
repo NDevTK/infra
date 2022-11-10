@@ -16,6 +16,24 @@
       "message": "Why is this important? There are plenty of other binaries we run on OSX and don\u0027t sign.",
       "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af16b151_1a31fba2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2022-11-10T19:31:20Z",
+      "side": 1,
+      "message": "In our MacPro7,1 machines resides a 4TB PCIe RAID card where the swarming directory lives. This is considered a \"RemovableVolume\" by macOS PPPC permissions. So cloudtail is unable to access logs in the swarming directory. Codesigning this binary will allow us to grant permissions to this binary via an MDM configuration profile.\n\n```\n2022-11-10 11:28:30.350310-0800 0x2b66     Error       0x0                  0      0    kernel: (Sandbox) System Policy: cloudtail(143) deny(1) file-read-data /Volumes/Work/s/logs/swarming_bot.log\n2022-11-10 11:28:30.350350-0800 0x1a71     Error       0x0                  0      0    kernel: (Sandbox) 1 duplicate report for System Policy: cloudtail(143) deny(1) file-read-data /Volumes/Work/s/logs/swarming_bot.log\n2022-11-10 11:28:30.350357-0800 0x1a71     Error       0x0                  0      0    kernel: (Sandbox) System Policy: cloudtail(95) deny(1) file-read-data /Volumes/Work/s/logs/bot_config.log\n2022-11-10 11:28:30.350360-0800 0x2b4e     Error       0x0                  0      0    kernel: (Sandbox) System Policy: cloudtail(139) deny(1) file-read-data /Volumes/Work/s/logs/run_isolated.log\n```",
+      "parentUuid": "d2063119_3493be12",
+      "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
