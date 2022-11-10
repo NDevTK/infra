@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2063119_3493be12",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-11-10T19:25:57Z",
+      "side": 1,
+      "message": "Why is this important? There are plenty of other binaries we run on OSX and don\u0027t sign.",
+      "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
