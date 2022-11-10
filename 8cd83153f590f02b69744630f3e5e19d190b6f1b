@@ -123,6 +123,24 @@
       "message": "First, this CL will likely produce a package that will break consumers, since they won\u0027t be able to find `cloudtail` executable (it will be in cloudtail.app/Contents/MacOS/cloudtail instead). The vpython package has a symlink to fix this https://source.chromium.org/chromium/infra/infra/+/main:build/packages/vpython-mac.yaml;l\u003d41?q\u003d%22codesign%22%20lang:yaml\u0026ss\u003dchromium\n\nSecond, I really want to enable code signing by default for all OSX Go binaries, but I\u0027m concerned that we would be replacing single-file packages with app bundles. This will potentially break various places which install these packages (and at this point there are many such places).\n\nDo you happen to know, is it possible to embed the plist and its signature directly into the Mach-O binary avoiding bundles?",
       "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33558218_ff4182d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2022-11-10T21:24:11Z",
+      "side": 1,
+      "message": "You can absolutely codesign binaries and avoid bundles. However, when creating the configuration profiles to grant permissions, you have to choose how to identify the binary. In addition to the codesign designated requirements, your options are bundleID or file path. But macOS will find the real path when doing evaluations. Symlinks are not good enough. And most cipd packages work off of symlinking into the .cipd directory and the full real path contains an identifier that changes based on revision of the package.\n\nSo...\n\nIf we could guarantee that, /opt/infra-tools/cloudtail was in fact the codesigned binary file, I can work with that. The reality is that this might be a symlink to /opt/infra-tools/.cipd/pkgs/2/Cwm9jNAUDfXH7uxu4_9ccwZvS4DK9OujO4ED_atE2XkC/cloudtail instead. And that path will change with a new revision. MacOS will evaluate the real full path and reject it.\n\nFor this reason app bundles are easier when dealing with the way most cipd packages lay down on disk. The path to an app bundle can be dynamic since you identify it by bundle ID. You cannot identify standalone binaries by bundle ID in the configuration profile.",
+      "parentUuid": "f02dbb50_f3c72a30",
+      "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
