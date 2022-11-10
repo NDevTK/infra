@@ -1,0 +1,33 @@
+package: infra/tools/cloudtail/${platform}
+description: cloudtail sends logs to Cloud Logging.
+platforms:
+  - mac-amd64
+  - mac-arm64
+go_packages:
+  - infra/tools/cloudtail/cmd/cloudtail
+root: ../../go/bin
+mac_bundle:
+  name: cloudtail.app
+  data:
+    - file: cloudtail
+      path: ./
+  info: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+            <key>CFBundleExecutable</key>
+            <string>cloudtail</string>
+            <key>CFBundleIdentifier</key>
+            <string>org.chromium.infra.cloudtail</string>
+            <key>CFBundleInfoDictionaryVersion</key>
+            <string>1.0</string>
+            <key>CFBundleName</key>
+            <string>cloudtail</string>
+    </dict>
+    </plist>
+  codesign:
+    requirements: =designated => identifier "org.chromium.infra.cloudtail" and anchor trusted
+data:
+  - file: cloudtail${exe_suffix}
+  - version_file: .versions/cloudtail${exe_suffix}.cipd_version
