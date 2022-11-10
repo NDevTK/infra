@@ -66,7 +66,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 	if len(args) == 0 {
 		return errors.Reason("create recovery task: unit is not specified").Err()
 	}
-	v := buildbucket.CIPDProd
+	v := buildbucket.CIPDLatest
 	for _, unit := range args {
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
