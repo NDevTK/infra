@@ -88,6 +88,24 @@
       "parentUuid": "9054c6eb_8890f575",
       "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ac4bf95_d56d81a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2022-11-10T19:40:09Z",
+      "side": 1,
+      "message": "We have also written a special puppet_launcher to run puppet for us for the same reasons. Puppet is denied permissions to certain areas of the system even though it runs as root.",
+      "parentUuid": "2088e575_9991a9fa",
+      "revId": "8cd83153f590f02b69744630f3e5e19d190b6f1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
