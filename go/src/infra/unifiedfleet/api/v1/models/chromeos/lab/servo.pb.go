@@ -327,11 +327,11 @@ type ServoTopologyItem struct {
 
 	// type provides the type of servo device. Keeping as String to avoid issue with introduce new type.
 	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	// sysfs_product providess the product name of the device recorded in File System.
+	// sysfs_product provides the product name of the device recorded in File System.
 	SysfsProduct string `protobuf:"bytes,2,opt,name=sysfs_product,json=sysfsProduct,proto3" json:"sysfs_product,omitempty"`
-	// serial providess the serilal number of the device.
+	// serial provides the serial number of the device.
 	Serial string `protobuf:"bytes,3,opt,name=serial,proto3" json:"serial,omitempty"`
-	// usb_hub_port providess the port connection to the device.
+	// usb_hub_port provides the port connection to the device.
 	// e.g. '1-6.2.2' where
 	//
 	//	'1-6'  - port on the labstation

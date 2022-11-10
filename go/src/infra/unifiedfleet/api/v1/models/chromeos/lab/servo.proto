@@ -65,11 +65,11 @@ message ServoTopology  {
 message ServoTopologyItem  {
   // type provides the type of servo device. Keeping as String to avoid issue with introduce new type.
   string type = 1;
-  // sysfs_product providess the product name of the device recorded in File System.
+  // sysfs_product provides the product name of the device recorded in File System.
   string sysfs_product = 2;
-  // serial providess the serilal number of the device.
+  // serial provides the serial number of the device.
   string serial = 3;
-  // usb_hub_port providess the port connection to the device.
+  // usb_hub_port provides the port connection to the device.
   // e.g. '1-6.2.2' where
   //   '1-6'  - port on the labstation
   //   '2'    - port on smart-hub connected to the labstation
