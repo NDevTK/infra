@@ -5,6 +5,8 @@
 
 LUCICFG_ENTRY_SCRIPTS = ['main.star', 'dev.star']
 
+USE_PYTHON3 = True
+
 
 def CheckChangeOnUpload(input_api, output_api):
   tests = []
