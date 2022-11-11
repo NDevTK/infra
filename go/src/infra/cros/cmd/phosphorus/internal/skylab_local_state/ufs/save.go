@@ -18,6 +18,7 @@ import (
 var dutStatesSafeForOverwrite = map[dutstate.State]bool{
 	dutstate.NeedsRepair: true,
 	dutstate.Ready:       true,
+	dutstate.Reserved:    true,
 }
 
 // SafeUpdateUFSDUTState attempts to safely update the DUT state to the
