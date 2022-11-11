@@ -450,6 +450,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 	if len(command) == 0 {
 		return errors.Reason("servo check servod control exec: command not provided").Err()
 	}
+	info.AddObservation(metrics.NewStringObservation("command", command))
 	var compare func(ctx context.Context) error
 	// TODO(vkjoshi@): revisit the logic of implementations of the
 	// function 'compare', e.g., will it make sense to use a helper
@@ -464,6 +465,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		if err != nil {
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
+		info.AddObservation(metrics.NewStringObservation("received", controlValue))
 		compare = func(ctx context.Context) error {
 			log.Infof(ctx, "Compare (String), expected value %q, actual value %q", expectedValue, controlValue)
 			if controlValue != expectedValue {
@@ -477,6 +479,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		if err != nil {
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
+		info.AddObservation(metrics.NewInt64Observation("received", int64(controlValue)))
 		compare = func(ctx context.Context) error {
 			log.Debugf(ctx, "Compare (Int), expected value %s, actual value %d", expectedValue, controlValue)
 			if controlValue != int32(expectedValue) {
@@ -490,6 +493,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		if err != nil {
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
+		info.AddObservation(metrics.NewFloat64Observation("received", controlValue))
 		compare = func(ctx context.Context) error {
 			log.Debugf(ctx, "Compare (Double), expected value %s, actual value %f", expectedValue, controlValue)
 			if controlValue != expectedValue {
@@ -503,6 +507,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		if err != nil {
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
+		info.AddObservation(metrics.NewStringObservation("received", fmt.Sprintf("%v", controlValue)))
 		compare = func(ctx context.Context) error {
 			log.Debugf(ctx, "Compare (Bool), expected value %s, actual value %t", expectedValue, controlValue)
 			if controlValue != expectedValue {
@@ -520,6 +525,7 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		// The value can contain different value types.
 		// Ex.: "double:xxxx.xx"
 		resRawString := strings.TrimSpace(res.String())
+		info.AddObservation(metrics.NewStringObservation("received", resRawString))
 		log.Infof(ctx, "Servo Check Servod Control Exec: for command %q, received %q.", command, resRawString)
 	} else if err := compare(ctx); err != nil {
 		return errors.Annotate(err, "servo check servod control exec").Err()
