@@ -55,10 +55,10 @@ const (
 	transferDelayInMilliseconds = 250 * time.Millisecond
 )
 
-// How much time each CBI read and write (one call to `ectool i2cxfer`) has to complete.
-// This is exceedingly generous, as each read or write should take on the order
-// of milliseconds to execute. This is primarily to give some slack to DUTs experiencing connection issues.
-var transferCBIDurationInSeconds = time.Second * 10
+// How much time each CBI read and write has to complete. This is exceedingly
+// generous, as each read or write should take on the order of milliseconds to
+// execute. This is primarily to give some slack to DUTs experiencing connection issues.
+var cbiCommandTimeoutInSeconds = time.Second * 10
 
 var readCBIRegex = regexp.MustCompile(`0x[[:xdigit:]]{1,2}|00`) // Match bytes printed in hex format (e.g. 00, 0x12, 0x3)
 var locateCBIRegex = regexp.MustCompile(`Port:\s(\d+).*Address:\s(0x\w+)`)
@@ -67,7 +67,7 @@ var locateCBIRegex = regexp.MustCompile(`Port:\s(\d+).*Address:\s(0x\w+)`)
 // from the DUT. Will return an error if the DUT doesn't support CBI or if it
 // wasn't able to reach the DUT.
 func GetCBILocation(ctx context.Context, run components.Runner) (*CBILocation, error) {
-	locateCBIOutput, err := run(ctx, time.Second*30, locateCBICommand, cbiChipType, cbiIndex)
+	locateCBIOutput, err := run(ctx, cbiCommandTimeoutInSeconds, locateCBICommand, cbiChipType, cbiIndex)
 	if err != nil {
 		return nil, errors.Annotate(err, "get CBI location: unable to determine if CBI is present on the DUT").Err()
 	}
@@ -98,7 +98,7 @@ func ReadCBIContents(ctx context.Context, run components.Runner, cbiLocation *CB
 	for offset := 0; offset < cbiSize; offset += readIncrement {
 		// Wait briefly to ensure we don't exceed the maximum transfer rate.
 		time.Sleep(transferDelayInMilliseconds)
-		cbiContents, err := run(ctx, time.Second*10, transferCBICommand, cbiLocation.port, cbiLocation.address, strconv.Itoa(readIncrement), strconv.Itoa(offset))
+		cbiContents, err := run(ctx, cbiCommandTimeoutInSeconds, transferCBICommand, cbiLocation.port, cbiLocation.address, strconv.Itoa(readIncrement), strconv.Itoa(offset))
 		if err != nil {
 			return nil, errors.Annotate(err, "read CBI contents: unable to read CBI contents").Err()
 		}
@@ -150,7 +150,7 @@ func WriteCBIContents(ctx context.Context, run components.Runner, cbiLocation *C
 		time.Sleep(transferDelayInMilliseconds)
 		hexByteChunk := strings.Join(hexBytes[offset:offset+writeIncrement], " ")
 		// Sample command:ectool i2cxfer 0 0x50 0 0 0x43 0x42 0x49 0x98 00 00 0x2f 00
-		writeResponse, err := run(ctx, transferCBIDurationInSeconds, transferCBICommand, cbiLocation.port, cbiLocation.address, numBytesToReadDuringWrite, strconv.Itoa(offset), hexByteChunk)
+		writeResponse, err := run(ctx, cbiCommandTimeoutInSeconds, transferCBICommand, cbiLocation.port, cbiLocation.address, numBytesToReadDuringWrite, strconv.Itoa(offset), hexByteChunk)
 		if err != nil {
 			return errors.Annotate(err, "write CBI contents: unable to write CBI contents: %s", writeResponse).Err()
 		}
