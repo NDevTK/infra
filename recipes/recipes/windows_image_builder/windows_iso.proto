@@ -1,0 +1,56 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.infra.windows_image_builder.windows_iso;
+
+import "recipes/infra/windows_image_builder/sources.proto";
+import "recipes/infra/windows_image_builder/dest.proto";
+
+/* WinISOImage describes generating a bootable windows iso. You can use an
+ * existing iso image and copy new files to it, or you can generate one from
+ * scratch.
+ */
+message WinISOImage {
+  // The volume name for the image.
+  string name = 1;
+
+  // The image to be modified. If not given, image is generated with an empty
+  // base
+  sources.Src base_image = 2;
+
+  // Files to copy to the image
+  repeated CopyArtifact copy_files = 3;
+
+  // The boot image to be used for the iso. This is optional and only required
+  // if not modifying a base_image. If you have a bootable windows image as a
+  // base image, then boot/etfsboot.com is used. This is the el-torito boot
+  // image (See: https://wiki.osdev.org/El-Torito). You will need to provide
+  // one if base_image is not given.
+  sources.Src boot_image = 4;
+
+  // The destination to upload the built image
+  repeated dest.Dest uploads = 5;
+}
+
+// CopyArtifact action allows you to copy a file/directory from given src. The
+// src can be the artifact or a mountable image (anything that mounts with
+// udisks2). If mount is set then the image is mounted and the file/directory at
+// source is copied. The dest is given relative to the staging dir.
+message CopyArtifact {
+  // The file/dir to be copied on to the image.
+  sources.Src artifact = 1;
+
+  // If mount is set then artifact is expected to be a mountable image (or
+  // archive).
+  bool mount = 2;
+
+  // If mount is set then this the source relative to the mount point of the
+  // artifact. Ignored otherwise
+  string source = 3;
+
+  // The path relative to the ISO staging dir to copy the artifact to.
+  string dest = 4;
+}

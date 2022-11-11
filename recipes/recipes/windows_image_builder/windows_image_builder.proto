@@ -10,6 +10,7 @@ import "recipes/infra/windows_image_builder/offline_winpe_customization.proto";
 import "recipes/infra/windows_image_builder/online_windows_customization.proto";
 import "recipes/infra/windows_image_builder/sources.proto";
 import "recipes/infra/windows_image_builder/actions.proto";
+import "recipes/infra/windows_image_builder/windows_iso.proto";
 
 // Image properties recognized by 'infra/windows_image_builder' recipe.
 message Image {
@@ -33,6 +34,9 @@ message Customization{
 
     // Customize an online windows image
     online_windows_customization.OnlineWinCustomization online_windows_customization = 2;
+
+    // Customize a windows iso image
+    windows_iso.WinISOImage windows_iso_customization = 3;
   }
 }
 
