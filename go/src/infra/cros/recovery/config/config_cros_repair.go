@@ -106,7 +106,7 @@ func crosRepairActions() map[string]*Action {
 				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Update FW from fw-image by servo and reboot",
-				"Restore AC detection by EC console",
+				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 				"Reset power using servo if booted from USB",
@@ -130,7 +130,6 @@ func crosRepairActions() map[string]*Action {
 				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Update FW from fw-image by servo and reboot",
-				"Restore AC detection by EC console",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 				"Reset power using servo if booted from USB",
@@ -322,7 +321,6 @@ func crosRepairActions() map[string]*Action {
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
-				"Restore AC detection by EC console",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
@@ -1785,7 +1783,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_dmesg",
 			AllowFailAfterRecovery: true,
 		},
-		"Restore AC detection by EC console": {
+		"Restore AC detection by EC console and wait for ping": {
 			Docs: []string{
 				"Try to recover AC detection through servod's ec control.",
 				"This action wraps the recovery action and waits for the device to come back online.",
