@@ -19,22 +19,14 @@ import (
 // taskID and the right URL. This test does NOT emulate the buildbucket client on a deep level.
 func TestScheduleRepairBuilder(t *testing.T) {
 	t.Parallel()
-
 	ctx := context.Background()
-
 	client := &fakeClient{}
-
-	taskInfo, err := scheduleRepairBuilder(ctx, client, site.Environment{}, "fake-labstation1", true, "admin-session:bla bla")
+	taskURL, err := scheduleRepairBuilder(ctx, client, site.Environment{}, "fake-labstation1", true, "admin-session:bla bla")
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	expected := "buildbucket:1"
-	actual := taskInfo.ID
-	if diff := cmp.Diff(expected, actual); diff != "" {
-		t.Errorf("unexpected diff: %s", diff)
-	}
-	expected = "https://ci.chromium.org/p/chromeos/builders/labpack/labpack/b1"
-	actual = taskInfo.TaskURL
+	expected := "https://ci.chromium.org/p/chromeos/builders/labpack/labpack/b1"
+	actual := taskURL
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
 	}

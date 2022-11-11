@@ -17,17 +17,15 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/worker"
-	"infra/libs/swarming"
+	"infra/libs/skylab/common/heuristics"
 )
 
 type repairDuts struct {
 	subcommands.CommandRunBase
-	authFlags      authcli.Flags
-	envFlags       site.EnvFlags
-	expirationMins int
-	onlyVerify     bool
-	paris          bool
+	authFlags authcli.Flags
+	envFlags  site.EnvFlags
+
+	onlyVerify bool
 }
 
 // RepairDutsCmd contains repair-duts command specification
@@ -42,8 +40,6 @@ var RepairDutsCmd = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.BoolVar(&c.onlyVerify, "verify", false, "Run only verify actions.")
-		c.Flags.IntVar(&c.expirationMins, "expiration-mins", 10, "The expiration minutes of the repair request.")
-		c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow (dogfood).")
 		return c
 	},
 }
@@ -65,66 +61,30 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	}
 	ctx := cli.GetContext(a, c, env)
 	e := c.envFlags.Env()
-	creator, err := swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService)
+	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
 	}
-	creator.LogdogService = e.LogdogService
-	successMap := make(map[string]*swarming.TaskInfo)
-	errorMap := make(map[string]error)
-	var bc buildbucket.Client
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	if err != nil {
+		return err
+	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
-	if c.paris {
-		var err error
-		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
-		if err != nil {
-			return err
-		}
-		bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
-		if err != nil {
-			return err
-		}
-	}
 	for _, host := range args {
-		creator.GenerateLogdogTaskCode()
-
-		cmd := &worker.Command{TaskName: c.taskName()}
-		cmd.LogDogAnnotationURL = creator.LogdogURL()
-		var taskInfo *swarming.TaskInfo
-		var err error
-		if c.paris {
-			// Use PARIS.
-			taskInfo, err = scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, sessionTag)
-		} else {
-			// Legacy Flow, no PARIS.
-			if c.onlyVerify {
-				taskInfo, err = creator.VerifyTask(ctx, e.SwarmingServiceAccount, host, c.expirationMins*60, cmd.Args(), cmd.LogDogAnnotationURL)
-			} else {
-				taskInfo, err = creator.LegacyRepairTask(ctx, e.SwarmingServiceAccount, host, c.expirationMins*60, cmd.Args(), cmd.LogDogAnnotationURL)
-			}
-		}
+		host = heuristics.NormalizeBotNameToDeviceName(host)
+		taskURL, err := scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, sessionTag)
 		if err != nil {
-			errorMap[host] = err
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, err.Error())
 		} else {
-			successMap[host] = taskInfo
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, taskURL)
 		}
-
 	}
-	creator.PrintResults(a.GetOut(), successMap, errorMap, false)
 	utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
 	return nil
 }
 
-func (c *repairDuts) taskName() string {
-	if c.onlyVerify {
-		return "admin_verify"
-	}
-	return "admin_repair"
-}
-
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair bool, adminSession string) (*swarming.TaskInfo, error) {
+func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair bool, adminSession string) (string, error) {
 	v := buildbucket.CIPDProd
 	builderName := "repair"
 	if !runRepair {
@@ -138,8 +98,6 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.
 		InventoryService: e.UnifiedFleetService,
-		NoStepper:        false,
-		NoMetrics:        false,
 		UpdateInventory:  true,
 		// Note: Scheduled tasks are not expected custom configuration.
 		Configuration: "",
@@ -151,15 +109,6 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			"qs_account:unmanaged_p0",
 		},
 	}
-	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)
-	if err != nil {
-		return nil, err
-	}
-	taskInfo := &swarming.TaskInfo{
-		// Use an ID format that makes it extremely obvious that we're dealing with a
-		// buildbucket invocation number rather than a swarming task.
-		ID:      fmt.Sprintf("buildbucket:%d", taskID),
-		TaskURL: url,
-	}
-	return taskInfo, nil
+	url, _, err := buildbucket.ScheduleTask(ctx, bc, v, p)
+	return url, err
 }
