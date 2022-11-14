@@ -7,6 +7,9 @@ package servo
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -66,6 +69,9 @@ const (
 	//  - more than 4000 - DUT is likely connected
 	maxPPDut5MVWhenNotConnected = 500
 	minPPDut5MVWhenConnected    = 4000
+	// File flag created in logs folder to request next servod start
+	// use recovery mode by providing argument REC_MODE=1.
+	servodUseRecoveryModeFlag = "servod_use_recovery_mode"
 )
 
 // servodInitActionExec init servod options and start servod on servo-host.
@@ -83,8 +89,20 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("init servod: servo-host or servo is not specified").Err()
 	}
 	actionArgs := info.GetActionArgs(ctx)
+	useRecoveryMode := actionArgs.AsBool(ctx, "recovery_mode", false)
+	if !useRecoveryMode {
+		// The request to use recovery mode can be specified by present specifl file.
+		logRoot := info.GetLogRoot()
+		flagPath := filepath.Join(logRoot, servodUseRecoveryModeFlag)
+		// If the call fail we think that file is not exist.
+		// The call cannot fail as part of permission issue as file is created under the same user.
+		if _, err := os.Stat(flagPath); err == nil {
+			useRecoveryMode = true
+		}
+	}
+
 	o := &tlw.ServodOptions{
-		RecoveryMode:  actionArgs.AsBool(ctx, "recovery_mode", true),
+		RecoveryMode:  useRecoveryMode,
 		DutBoard:      chromeos.GetBoard(),
 		DutModel:      chromeos.GetModel(),
 		ServodPort:    int32(sh.GetServodPort()),
@@ -126,6 +144,16 @@ func servodStopActionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "stop servod").Err()
 	}
 	return nil
+}
+
+func servodCreateFlagToUseRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
+	logRoot := info.GetLogRoot()
+	if logRoot == "" {
+		return errors.Reason("servod create flag to use recovery-mode: log root is not specified").Err()
+	}
+	flagPath := filepath.Join(logRoot, servodUseRecoveryModeFlag)
+	err := exec.CommandContext(ctx, "touch", flagPath).Run()
+	return errors.Annotate(err, "servod create flag to use recovery-mode").Err()
 }
 
 func servoDetectUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -939,6 +967,7 @@ func servoHostV3RebootExec(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("servo_host_servod_init", servodInitActionExec)
 	execs.Register("servo_host_servod_stop", servodStopActionExec)
+	execs.Register("servo_create_flag_to_use_recovery_mode", servodCreateFlagToUseRecoveryModeExec)
 	execs.Register("servo_detect_usbkey", servoDetectUSBKeyExec)
 	execs.Register("servo_audit_usbkey", servoAuditUSBKeyExec)
 	execs.Register("servo_v4_root_present", isRootServoPresentExec)
