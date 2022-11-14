@@ -51,6 +51,7 @@ type ActionEntity struct {
 	Model          string    `gae:"model"`
 	Board          string    `gae:"board"`
 	RecoveredBy    string    `gae:"recovered_by"`
+	Restarts       int32     `gae:"restarts"`
 	// Count the number of times that an action entity was modified by a request.
 	ModificationCount int32 `gae:"modification_count"`
 	// Deprecated fields!
@@ -90,6 +91,7 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 		ModificationCount: e.ModificationCount,
 		Model:             e.Model,
 		Board:             e.Board,
+		Restarts:          e.Restarts,
 	}
 }
 
