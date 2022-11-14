@@ -1,7 +1,7 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""A script to aggregate files coverage data to directories and components.
+"""A script to aggregate files coverage data to directories.
 
 The code coverage data format is defined at:
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/appengine/findit/model/proto/code_coverage.proto
@@ -47,10 +47,18 @@ def _merge_summary(merge_dest, merge_src):
 
 
 class SummaryCoverageAggregator(object):
+  """Aggregates file coverage summary metrics.
+
+  This object has two main methods - consume_file_coverage() and
+  produce_summary_coverage(). The correct order of calls is
+  a bunch of consume_file_coverage() calls (one for each file coverage
+  entity), followed by a produce_summary_coverage() call at the end.
+  """
 
   def __init__(self, metrics):
     self.per_directory_summaries = defaultdict(lambda: _new_summaries(metrics))
     self.per_directory_files = defaultdict(list)
+    self.produce_summary_coverage_invoked = False
 
   def _update_per_directory_summaries(self, file_coverage):
     parent_dir = posixpath.dirname(file_coverage['path'])
@@ -101,17 +109,23 @@ class SummaryCoverageAggregator(object):
 
   def consume_file_coverage(self, file_coverage):
     """Consumes coverage data for a single file.
-    
+
     Processes the coverage data for a single file and updates internal
-    aggregated metrics.s
+    aggregated metrics.
+
+    Throws an assertion error if called after produce_summary_metrics()
     """
+    assert not self.produce_summary_coverage_invoked, \
+        "consume_file_coverage() was called before produce_summary_coverage()"
+
     self._update_per_directory_summaries(file_coverage)
     self._update_per_directory_files(file_coverage)
 
   def produce_summary_coverage(self):
     """Returns aggregated coverage metrics.
-    
-    Should ideally be called at the end of `consume_file_coverage()` calls."""
+
+    Must be called at the end of `consume_file_coverage()` calls."""
+    self.produce_summary_coverage_invoked = True
     per_directory_subdirs = self._calculate_per_directory_subdirs()
     per_directory_coverage_data = {}
     for dir_path in self.per_directory_summaries:
