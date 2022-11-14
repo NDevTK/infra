@@ -15,6 +15,7 @@ func (ei *ExecInfo) AddObservation(observation *metrics.Observation) {
 	logger := ei.NewLogger()
 	if ei.metric == nil {
 		logger.Debugf("Metric is not specified for the action.")
+		return
 	}
 	logger.Infof("Add observation: %#v", observation)
 	ei.metric.Observations = append(ei.metric.Observations, observation)
