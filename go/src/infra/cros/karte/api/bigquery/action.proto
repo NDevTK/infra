@@ -81,4 +81,7 @@ message Action {
 
   // recovered by is the name of the task that recovered the current action, if one exists.
   string recovered_by = 19;
+
+  // restarts is the number of times that the current plan was restarted.
+  int32 restarts = 20;
 }
