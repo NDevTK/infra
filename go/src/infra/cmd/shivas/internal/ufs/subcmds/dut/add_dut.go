@@ -35,7 +35,6 @@ import (
 
 // Regexp to enforce the input format
 var servoHostPortRegexp = regexp.MustCompile(`^[a-zA-Z0-9\-\.]+:[0-9]+$`)
-var defaultDeployTaskActions = []string{"servo-verification", "update-label", "run-pre-deploy-verification"}
 
 // TODO(anushruth): Find a better place to put these tags.
 var shivasTags = []string{"shivas:" + site.VersionNumber, "triggered_using:shivas"}
@@ -53,19 +52,17 @@ var AddDUTCmd = &subcommands.Command{
 	LongDesc:  cmdhelp.AddDUTLongDesc,
 	CommandRun: func() subcommands.CommandRun {
 		c := &addDUT{
-			pools:         []string{},
-			chameleons:    []string{},
-			cameras:       []string{},
-			cables:        []string{},
-			deployTags:    shivasTags,
-			deployActions: defaultDeployTaskActions,
+			pools:      []string{},
+			chameleons: []string{},
+			cameras:    []string{},
+			cables:     []string{},
+			deployTags: shivasTags,
 		}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 
 		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTRegistrationFileText)
-		c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow.")
 
 		// Asset location fields
 		c.Flags.StringVar(&c.zone, "zone", "", "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
@@ -83,13 +80,8 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
 		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the DUT.")
 		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
-		c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 		c.Flags.BoolVar(&c.ignoreUFS, "ignore-ufs", false, "skip updating UFS create a deploy task.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma separated tags for deployment task.")
-		c.Flags.BoolVar(&c.deploySkipDownloadImage, "deploy-skip-download-image", false, "skips downloading image and staging usb")
-		c.Flags.BoolVar(&c.deploySkipInstallFirmware, "deploy-skip-install-fw", false, "skips installing firmware")
-		c.Flags.BoolVar(&c.deploySkipInstallOS, "deploy-skip-install-os", false, "skips installing os image")
-		c.Flags.BoolVar(&c.deploySkipRecoveryMode, "deploy-skip-recovery-mode", false, "skips recovery mode step for dut deployment")
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
@@ -132,9 +124,6 @@ type addDUT struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	// TODO(b/225378510): Remove and make paris logic as default for scheduling.
-	paris bool
-
 	newSpecsFile             string
 	hostname                 string
 	asset                    string
@@ -148,18 +137,12 @@ type addDUT struct {
 	rpm                      string
 	rpmOutlet                string
 
-	ignoreUFS                 bool
-	deployTaskTimeout         int64
-	deployActions             []string
-	deployTags                []string
-	deploySkipDownloadImage   bool
-	deploySkipInstallOS       bool
-	deploySkipRecoveryMode    bool
-	deploySkipInstallFirmware bool
-	deploymentTicket          string
-	tags                      []string
-	state                     string
-	description               string
+	ignoreUFS        bool
+	deployTags       []string
+	deploymentTicket string
+	tags             []string
+	state            string
+	description      string
 
 	// Asset location fields
 	zone string
@@ -205,13 +188,6 @@ var mcsvFields = []string{
 	"rpm_host",
 	"rpm_outlet",
 	"pools",
-}
-
-var servoRequiredDeployActions = map[string]bool{
-	"stage-usb":            true,
-	"install-test-image":   true,
-	"install-firmware":     true,
-	"verify-recovery-mode": true,
 }
 
 // dutDeployUFSParams contains all the data that are needed for deployment of a single DUT
@@ -261,23 +237,11 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	if err != nil {
 		return err
 	}
-	var bc buildbucket.Client
-	var sessionTag string
-	if c.paris {
-		var err error
-		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
-		if err != nil {
-			return err
-		}
-		bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
-		if err != nil {
-			return err
-		}
-		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())
-	} else {
-		c.updateDeployActions()
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	if err != nil {
+		return err
 	}
+	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 
 	// Created client to update UFS when required.
 	var ic ufsAPI.FleetClient
@@ -301,20 +265,10 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				continue
 			}
 		}
-		if c.paris {
-			utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag)
-		} else {
-			c.deployDutToSwarming(ctx, tc, param.DUT)
-		}
+		utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag)
 	}
 	if len(dutParams) > 1 {
-		var link string
-		if c.paris {
-			link = utils.TasksBatchLink(e.SwarmingService, sessionTag)
-		} else {
-			link = tc.SessionTasksURL()
-		}
-		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", link)
+		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))
 	}
 	return nil
 }
@@ -465,24 +419,6 @@ func (c *addDUT) addDutToUFS(ctx context.Context, ic ufsAPI.FleetClient, param *
 	res.Name = ufsUtil.RemovePrefix(res.Name)
 	utils.PrintProtoJSON(res, !utils.NoEmitMode(false))
 	fmt.Printf("Successfully added DUT to UFS: %s \n", res.GetName())
-	return nil
-}
-
-func (c *addDUT) deployDutToSwarming(ctx context.Context, tc *swarming.TaskCreator, lse *ufspb.MachineLSE) error {
-	deployActions := c.deployActions
-	if !isUsingServo(lse) {
-		deployActions = getServolessFilteredDeployActions(deployActions)
-		if c.commonFlags.Verbose() {
-			fmt.Printf("Host %q use servoless deployment\n", lse.Name)
-			fmt.Printf("New deploy actions %s\n", deployActions)
-		}
-	}
-	task, err := tc.DeployDut(ctx, lse.Name, lse.GetMachines()[0], defaultSwarmingPool, c.deployTaskTimeout, deployActions, c.deployTags, nil)
-	if err != nil {
-		fmt.Printf("Failed to trigger Deploy task for DUT %s. Deploy failed %s\n", lse.GetName(), err)
-		return err
-	}
-	fmt.Printf("Triggered Deploy task for DUT %s. Follow the deploy job at %s\n", lse.GetName(), task.TaskURL)
 	return nil
 }
 
@@ -682,22 +618,6 @@ func parseServoHostnamePort(servo string) (string, int32, error) {
 	return servoHostname, servoPort, nil
 }
 
-// updateDeployActions updates the deploySkipActions based on boolean skip options
-func (c *addDUT) updateDeployActions() {
-	if !c.deploySkipDownloadImage {
-		c.deployActions = append(c.deployActions, "stage-usb")
-	}
-	if !c.deploySkipInstallOS {
-		c.deployActions = append(c.deployActions, "install-test-image")
-	}
-	if !c.deploySkipInstallFirmware {
-		c.deployActions = append(c.deployActions, "install-firmware")
-	}
-	if !c.deploySkipRecoveryMode {
-		c.deployActions = append(c.deployActions, "verify-recovery-mode")
-	}
-}
-
 func appendServoSetupPrefix(servoSetup string) string {
 	return fmt.Sprintf("SERVO_SETUP_%s", servoSetup)
 }
@@ -725,17 +645,4 @@ func isUsingServo(dutLSE *ufspb.MachineLSE) bool {
 		return false
 	}
 	return true
-}
-
-// getServolessFilteredDeployActions: since using servoless option, servo related actions are not needed
-// this func takes deployActions as input and returns the newDeployActions
-// newDeployActions = deployActions - servoRelatedActions
-func getServolessFilteredDeployActions(deployActions []string) []string {
-	newDeployActions := make([]string, 0, len(deployActions))
-	for _, v := range deployActions {
-		if servoRequiredDeployActions[v] == false {
-			newDeployActions = append(newDeployActions, v)
-		}
-	}
-	return newDeployActions
 }
