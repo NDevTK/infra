@@ -410,6 +410,53 @@ class CodeCoverageTest(WaterfallTestCase):
             bucket=bucket,
             builder=builder))
 
+  def testGetModifiedLineCoverage(self):
+    file_coverage_data = FileCoverageData.Create(
+        server_host='chromium.googlesource.com',
+        project='chromium/src',
+        ref='refs/heads/main',
+        revision='latest',
+        path='//a/myfile.cc',
+        bucket='ci',
+        builder='linux-code-coverage',
+        data={
+            'path': '//a/myfile.cc',
+            'lines': [{
+                'first': 1,
+                'last': 10,
+                'count': 10
+            }],
+            'summaries': [{
+                'name': 'line',
+                'total': 10,
+                'covered': 10
+            }],
+            'revision': 'latest'
+        })
+
+    expected = {
+        'path': '//a/myfile.cc',
+        'lines': [{
+            'first': 4,
+            'last': 5,
+            'count': 10
+        }, {
+            'first': 7,
+            'last': 7,
+            'count': 10
+        }],
+        'summaries': [{
+            'name': 'line',
+            'total': 3,
+            'covered': 3
+        }],
+        'revision': 'latest'
+    }
+    actual = FileCoverageData.GetModifiedLineCoverage(file_coverage_data,
+                                                      [4, 5, 7])
+
+    self.assertDictEqual(actual, expected)
+
   def testGetFileCoverageData_LegacyKey(self):
     server_host = 'chromium.googlesource.com'
     project = 'chromium/src'
@@ -646,3 +693,16 @@ class CodeCoverageTest(WaterfallTestCase):
     CoverageReportModifier(gerrit_hashtag='my_feature', id=123).put()
     self.assertEqual(
         CoverageReportModifier.Get(123).gerrit_hashtag, 'my_feature')
+
+  def testInsertModifierForAuthor(self):
+    CoverageReportModifier.InsertModifierForAuthorIfNeeded(
+        server_host='chromium.googlesource.com',
+        project='chromium/src',
+        author='xyz@google.com')
+    CoverageReportModifier.InsertModifierForAuthorIfNeeded(
+        server_host='chromium.googlesource.com',
+        project='chromium/src',
+        author='xyz@google.com')
+    report_modifiers = CoverageReportModifier.query().fetch()
+    self.assertEqual(1, len(report_modifiers))
+    self.assertTrue(report_modifiers[0].is_active)
