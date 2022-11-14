@@ -71,7 +71,8 @@ func cbiContentsMatch(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "CBI contents match: CBI contents on the DUT match the CBI contents stored in UFS.\nCBI contents: %s", dutCBI.GetRawContents())
 		return nil
 	}
-	return errors.Reason("CBI contents match: CBI contents on DUT do not match the contents stored in UFS").Err()
+	log.Debugf(ctx, "CBI contents match: CBI contents on DUT: %s\nCBI contents in UFS: %s", dutCBI.GetRawContents(), info.GetChromeos().GetCbi().GetRawContents())
+	return errors.Reason("CBI contents match: CBI contents on the DUT do not match the CBI contents stored in UFS").Err()
 }
 
 // cbiContentsDoNotMatch checks if the CBI contents on the DUT do not match what
