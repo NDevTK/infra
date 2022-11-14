@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n;go.chromium.org/luci/buildbucket/proto/service_config.proto\x12\x0b\x62uildbucket\x1a;go.chromium.org/luci/buildbucket/proto/project_config.proto\"\x9d\x02\n\x0bSettingsCfg\x12/\n\x08swarming\x18\x01 \x01(\x0b\x32\x1d.buildbucket.SwarmingSettings\x12+\n\x06logdog\x18\x02 \x01(\x0b\x32\x1b.buildbucket.LogDogSettings\x12/\n\x08resultdb\x18\x04 \x01(\x0b\x32\x1d.buildbucket.ResultDBSettings\x12\x33\n\nexperiment\x18\x05 \x01(\x0b\x32\x1f.buildbucket.ExperimentSettings\x12\'\n\x04\x63ipd\x18\x06 \x01(\x0b\x32\x19.buildbucket.CipdSettings\x12!\n\x19known_public_gerrit_hosts\x18\x03 \x03(\t\"\x8c\x05\n\x10SwarmingSettings\x12\x15\n\rmilo_hostname\x18\x02 \x01(\t\x12<\n\rglobal_caches\x18\x04 \x03(\x0b\x32%.buildbucket.BuilderConfig.CacheEntry\x12<\n\ruser_packages\x18\x05 \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0f\x62\x62\x61gent_package\x18\x08 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0fkitchen_package\x18\x07 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12I\n\x1a\x61lternative_agent_packages\x18\t \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12G\n\x18\x62\x62\x61gent_utility_packages\x18\n \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x1a\xc4\x01\n\x07Package\x12\x14\n\x0cpackage_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x16\n\x0eversion_canary\x18\x03 \x01(\t\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x0e\n\x06subdir\x18\x05 \x01(\t\x12\x1a\n\x12omit_on_experiment\x18\x06 \x03(\t\x12\x1d\n\x15include_on_experiment\x18\x07 \x03(\tJ\x04\x08\x01\x10\x02J\x04\x08\x06\x10\x07\"\"\n\x0eLogDogSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\xe3\x01\n\x12\x45xperimentSettings\x12?\n\x0b\x65xperiments\x18\x01 \x03(\x0b\x32*.buildbucket.ExperimentSettings.Experiment\x1a\x8b\x01\n\nExperiment\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x15\n\rdefault_value\x18\x02 \x01(\x05\x12\x15\n\rminimum_value\x18\x03 \x01(\x05\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x10\n\x08inactive\x18\x05 \x01(\x08\"8\n\x10\x42uilderPredicate\x12\r\n\x05regex\x18\x01 \x03(\t\x12\x15\n\rregex_exclude\x18\x02 \x03(\t\"$\n\x10ResultDBSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\x1e\n\x0c\x43ipdSettings\x12\x0e\n\x06server\x18\x01 \x01(\tB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n;go.chromium.org/luci/buildbucket/proto/service_config.proto\x12\x0b\x62uildbucket\x1a;go.chromium.org/luci/buildbucket/proto/project_config.proto\"\xcc\x02\n\x0bSettingsCfg\x12/\n\x08swarming\x18\x01 \x01(\x0b\x32\x1d.buildbucket.SwarmingSettings\x12+\n\x06logdog\x18\x02 \x01(\x0b\x32\x1b.buildbucket.LogDogSettings\x12/\n\x08resultdb\x18\x04 \x01(\x0b\x32\x1d.buildbucket.ResultDBSettings\x12\x33\n\nexperiment\x18\x05 \x01(\x0b\x32\x1f.buildbucket.ExperimentSettings\x12\'\n\x04\x63ipd\x18\x06 \x01(\x0b\x32\x19.buildbucket.CipdSettings\x12!\n\x19known_public_gerrit_hosts\x18\x03 \x03(\t\x12-\n\x07\x62\x61\x63kend\x18\x07 \x03(\x0b\x32\x1c.buildbucket.BackendSettings\"3\n\x0f\x42\x61\x63kendSettings\x12\x0e\n\x06target\x18\x01 \x01(\t\x12\x10\n\x08hostname\x18\x02 \x01(\t\"\x8c\x05\n\x10SwarmingSettings\x12\x15\n\rmilo_hostname\x18\x02 \x01(\t\x12<\n\rglobal_caches\x18\x04 \x03(\x0b\x32%.buildbucket.BuilderConfig.CacheEntry\x12<\n\ruser_packages\x18\x05 \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0f\x62\x62\x61gent_package\x18\x08 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0fkitchen_package\x18\x07 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12I\n\x1a\x61lternative_agent_packages\x18\t \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12G\n\x18\x62\x62\x61gent_utility_packages\x18\n \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x1a\xc4\x01\n\x07Package\x12\x14\n\x0cpackage_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x16\n\x0eversion_canary\x18\x03 \x01(\t\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x0e\n\x06subdir\x18\x05 \x01(\t\x12\x1a\n\x12omit_on_experiment\x18\x06 \x03(\t\x12\x1d\n\x15include_on_experiment\x18\x07 \x03(\tJ\x04\x08\x01\x10\x02J\x04\x08\x06\x10\x07\"\"\n\x0eLogDogSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\xe3\x01\n\x12\x45xperimentSettings\x12?\n\x0b\x65xperiments\x18\x01 \x03(\x0b\x32*.buildbucket.ExperimentSettings.Experiment\x1a\x8b\x01\n\nExperiment\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x15\n\rdefault_value\x18\x02 \x01(\x05\x12\x15\n\rminimum_value\x18\x03 \x01(\x05\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x10\n\x08inactive\x18\x05 \x01(\x08\"8\n\x10\x42uilderPredicate\x12\r\n\x05regex\x18\x01 \x03(\t\x12\x15\n\rregex_exclude\x18\x02 \x03(\t\"$\n\x10ResultDBSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\x1e\n\x0c\x43ipdSettings\x12\x0e\n\x06server\x18\x01 \x01(\tB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
   dependencies=[go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_project__config__pb2.DESCRIPTOR,])
 
@@ -77,6 +77,13 @@ _SETTINGSCFG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='backend', full_name='buildbucket.SettingsCfg.backend', index=6,
+      number=7, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -90,7 +97,46 @@ _SETTINGSCFG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=138,
-  serialized_end=423,
+  serialized_end=470,
+)
+
+
+_BACKENDSETTINGS = _descriptor.Descriptor(
+  name='BackendSettings',
+  full_name='buildbucket.BackendSettings',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='target', full_name='buildbucket.BackendSettings.target', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='hostname', full_name='buildbucket.BackendSettings.hostname', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=472,
+  serialized_end=523,
 )
 
 
@@ -163,8 +209,8 @@ _SWARMINGSETTINGS_PACKAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=870,
-  serialized_end=1066,
+  serialized_start=970,
+  serialized_end=1166,
 )
 
 _SWARMINGSETTINGS = _descriptor.Descriptor(
@@ -236,8 +282,8 @@ _SWARMINGSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=426,
-  serialized_end=1078,
+  serialized_start=526,
+  serialized_end=1178,
 )
 
 
@@ -268,8 +314,8 @@ _LOGDOGSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1080,
-  serialized_end=1114,
+  serialized_start=1180,
+  serialized_end=1214,
 )
 
 
@@ -328,8 +374,8 @@ _EXPERIMENTSETTINGS_EXPERIMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1205,
-  serialized_end=1344,
+  serialized_start=1305,
+  serialized_end=1444,
 )
 
 _EXPERIMENTSETTINGS = _descriptor.Descriptor(
@@ -359,8 +405,8 @@ _EXPERIMENTSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1117,
-  serialized_end=1344,
+  serialized_start=1217,
+  serialized_end=1444,
 )
 
 
@@ -398,8 +444,8 @@ _BUILDERPREDICATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1346,
-  serialized_end=1402,
+  serialized_start=1446,
+  serialized_end=1502,
 )
 
 
@@ -430,8 +476,8 @@ _RESULTDBSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1404,
-  serialized_end=1440,
+  serialized_start=1504,
+  serialized_end=1540,
 )
 
 
@@ -462,8 +508,8 @@ _CIPDSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1442,
-  serialized_end=1472,
+  serialized_start=1542,
+  serialized_end=1572,
 )
 
 _SETTINGSCFG.fields_by_name['swarming'].message_type = _SWARMINGSETTINGS
@@ -471,6 +517,7 @@ _SETTINGSCFG.fields_by_name['logdog'].message_type = _LOGDOGSETTINGS
 _SETTINGSCFG.fields_by_name['resultdb'].message_type = _RESULTDBSETTINGS
 _SETTINGSCFG.fields_by_name['experiment'].message_type = _EXPERIMENTSETTINGS
 _SETTINGSCFG.fields_by_name['cipd'].message_type = _CIPDSETTINGS
+_SETTINGSCFG.fields_by_name['backend'].message_type = _BACKENDSETTINGS
 _SWARMINGSETTINGS_PACKAGE.fields_by_name['builders'].message_type = _BUILDERPREDICATE
 _SWARMINGSETTINGS_PACKAGE.containing_type = _SWARMINGSETTINGS
 _SWARMINGSETTINGS.fields_by_name['global_caches'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_project__config__pb2._BUILDERCONFIG_CACHEENTRY
@@ -483,6 +530,7 @@ _EXPERIMENTSETTINGS_EXPERIMENT.fields_by_name['builders'].message_type = _BUILDE
 _EXPERIMENTSETTINGS_EXPERIMENT.containing_type = _EXPERIMENTSETTINGS
 _EXPERIMENTSETTINGS.fields_by_name['experiments'].message_type = _EXPERIMENTSETTINGS_EXPERIMENT
 DESCRIPTOR.message_types_by_name['SettingsCfg'] = _SETTINGSCFG
+DESCRIPTOR.message_types_by_name['BackendSettings'] = _BACKENDSETTINGS
 DESCRIPTOR.message_types_by_name['SwarmingSettings'] = _SWARMINGSETTINGS
 DESCRIPTOR.message_types_by_name['LogDogSettings'] = _LOGDOGSETTINGS
 DESCRIPTOR.message_types_by_name['ExperimentSettings'] = _EXPERIMENTSETTINGS
@@ -497,6 +545,13 @@ SettingsCfg = _reflection.GeneratedProtocolMessageType('SettingsCfg', (_message.
   # @@protoc_insertion_point(class_scope:buildbucket.SettingsCfg)
   })
 _sym_db.RegisterMessage(SettingsCfg)
+
+BackendSettings = _reflection.GeneratedProtocolMessageType('BackendSettings', (_message.Message,), {
+  'DESCRIPTOR' : _BACKENDSETTINGS,
+  '__module__' : 'go.chromium.org.luci.buildbucket.proto.service_config_pb2'
+  # @@protoc_insertion_point(class_scope:buildbucket.BackendSettings)
+  })
+_sym_db.RegisterMessage(BackendSettings)
 
 SwarmingSettings = _reflection.GeneratedProtocolMessageType('SwarmingSettings', (_message.Message,), {
 

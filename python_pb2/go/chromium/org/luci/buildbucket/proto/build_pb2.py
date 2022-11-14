@@ -21,7 +21,6 @@ from go.chromium.org.luci.buildbucket.proto import common_pb2 as go_dot_chromium
 from go.chromium.org.luci.buildbucket.proto import field_option_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_field__option__pb2
 from go.chromium.org.luci.buildbucket.proto import step_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_step__pb2
 from go.chromium.org.luci.buildbucket.proto import task_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_task__pb2
-from go.chromium.org.luci.swarming.proto.api import swarming_pb2 as go_dot_chromium_dot_org_dot_luci_dot_swarming_dot_proto_dot_api_dot_swarming__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -30,9 +29,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n2go.chromium.org/luci/buildbucket/proto/build.proto\x12\x0e\x62uildbucket.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x43go.chromium.org/luci/buildbucket/proto/build_field_visibility.proto\x1a;go.chromium.org/luci/buildbucket/proto/builder_common.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\x1a\x39go.chromium.org/luci/buildbucket/proto/field_option.proto\x1a\x31go.chromium.org/luci/buildbucket/proto/step.proto\x1a\x31go.chromium.org/luci/buildbucket/proto/task.proto\x1a\x36go.chromium.org/luci/swarming/proto/api/swarming.proto\"\xd1\x0c\n\x05\x42uild\x12\x14\n\x02id\x18\x01 \x01(\x03\x42\x08\xe0\x41\x03\xb8\xce\xbc\x03\x03\x12\x37\n\x07\x62uilder\x18\x02 \x01(\x0b\x32\x19.buildbucket.v2.BuilderIDB\x0b\x8a\xc3\x1a\x02\x08\x02\xb8\xce\xbc\x03\x02\x12\x18\n\x06number\x18\x03 \x01(\x05\x42\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x17\n\ncreated_by\x18\x04 \x01(\tB\x03\xe0\x41\x03\x12\x18\n\x0b\x63\x61nceled_by\x18\x17 \x01(\tB\x03\xe0\x41\x03\x12\x39\n\x0b\x63reate_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x38\n\nstart_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x36\n\x08\x65nd_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x39\n\x0bupdate_time\x18\t \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x39\n\x0b\x63\x61ncel_time\x18  \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x33\n\x06status\x18\x0c \x01(\x0e\x32\x16.buildbucket.v2.StatusB\x0b\x8a\xc3\x1a\x02\x08\x03\xb8\xce\xbc\x03\x03\x12 \n\x10summary_markdown\x18\x14 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x03\x12\x30\n\x08\x63ritical\x18\x15 \x01(\x0e\x32\x17.buildbucket.v2.TrinaryB\x05\xb8\xce\xbc\x03\x02\x12\x42\n\x0estatus_details\x18\x16 \x01(\x0b\x32\x1d.buildbucket.v2.StatusDetailsB\x0b\x8a\xc3\x1a\x02\x08\x03\xb8\xce\xbc\x03\x03\x12\x32\n\x05input\x18\x0f \x01(\x0b\x32\x1b.buildbucket.v2.Build.InputB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x34\n\x06output\x18\x10 \x01(\x0b\x32\x1c.buildbucket.v2.Build.OutputB\x06\x8a\xc3\x1a\x02\x08\x03\x12+\n\x05steps\x18\x11 \x03(\x0b\x32\x14.buildbucket.v2.StepB\x06\x8a\xc3\x1a\x02\x08\x03\x12\x31\n\x05infra\x18\x12 \x01(\x0b\x32\x1a.buildbucket.v2.BuildInfraB\x06\x8a\xc3\x1a\x02\x08\x02\x12(\n\x04tags\x18\x13 \x03(\x0b\x32\x1a.buildbucket.v2.StringPair\x12/\n\x03\x65xe\x18\x18 \x01(\x0b\x32\x1a.buildbucket.v2.ExecutableB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x0e\n\x06\x63\x61nary\x18\x19 \x01(\x08\x12\x35\n\x12scheduling_timeout\x18\x1a \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x34\n\x11\x65xecution_timeout\x18\x1b \x01(\x0b\x32\x19.google.protobuf.Duration\x12/\n\x0cgrace_period\x18\x1d \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x19\n\x11wait_for_capacity\x18\x1c \x01(\x08\x12!\n\x12\x63\x61n_outlive_parent\x18\x1e \x01(\x08\x42\x05\xb8\xce\xbc\x03\x03\x12\x1e\n\x0c\x61ncestor_ids\x18\x1f \x03(\x03\x42\x08\xe0\x41\x03\xb8\xce\xbc\x03\x03\x1a\xda\x01\n\x05Input\x12+\n\nproperties\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12<\n\x0egitiles_commit\x18\x02 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommitB\x05\xb8\xce\xbc\x03\x02\x12;\n\x0egerrit_changes\x18\x03 \x03(\x0b\x32\x1c.buildbucket.v2.GerritChangeB\x05\xb8\xce\xbc\x03\x02\x12\x14\n\x0c\x65xperimental\x18\x05 \x01(\x08\x12\x13\n\x0b\x65xperiments\x18\x06 \x03(\t\x1a\x9b\x01\n\x06Output\x12+\n\nproperties\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x35\n\x0egitiles_commit\x18\x03 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12!\n\x04logs\x18\x05 \x03(\x0b\x32\x13.buildbucket.v2.LogJ\x04\x08\x02\x10\x03J\x04\x08\x04\x10\x05J\x04\x08\x05\x10\x06J\x04\x08\r\x10\x0eJ\x04\x08\x0e\x10\x0f\"\x98\x03\n\x0cInputDataRef\x12/\n\x03\x63\x61s\x18\x01 \x01(\x0b\x32 .buildbucket.v2.InputDataRef.CASH\x00\x12\x31\n\x04\x63ipd\x18\x02 \x01(\x0b\x32!.buildbucket.v2.InputDataRef.CIPDH\x00\x12\x0f\n\x07on_path\x18\x03 \x03(\t\x1a\x80\x01\n\x03\x43\x41S\x12\x14\n\x0c\x63\x61s_instance\x18\x01 \x01(\t\x12\x37\n\x06\x64igest\x18\x02 \x01(\x0b\x32\'.buildbucket.v2.InputDataRef.CAS.Digest\x1a*\n\x06\x44igest\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x12\n\nsize_bytes\x18\x02 \x01(\x03\x1a}\n\x04\x43IPD\x12\x0e\n\x06server\x18\x01 \x01(\t\x12\x38\n\x05specs\x18\x02 \x03(\x0b\x32).buildbucket.v2.InputDataRef.CIPD.PkgSpec\x1a+\n\x07PkgSpec\x12\x0f\n\x07package\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\tB\x0b\n\tdata_typeJ\x04\x08\x04\x10\x05\"\xa3\x04\n\x0fResolvedDataRef\x12\x32\n\x03\x63\x61s\x18\x01 \x01(\x0b\x32#.buildbucket.v2.ResolvedDataRef.CASH\x00\x12\x34\n\x04\x63ipd\x18\x02 \x01(\x0b\x32$.buildbucket.v2.ResolvedDataRef.CIPDH\x00\x1ap\n\x06Timing\x12\x31\n\x0e\x66\x65tch_duration\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x33\n\x10install_duration\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\x1a=\n\x03\x43\x41S\x12\x36\n\x06timing\x18\x01 \x01(\x0b\x32&.buildbucket.v2.ResolvedDataRef.Timing\x1a\xe7\x01\n\x04\x43IPD\x12;\n\x05specs\x18\x02 \x03(\x0b\x32,.buildbucket.v2.ResolvedDataRef.CIPD.PkgSpec\x1a\xa1\x01\n\x07PkgSpec\x12\x0f\n\x07skipped\x18\x01 \x01(\x08\x12\x0f\n\x07package\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12+\n\nwas_cached\x18\x04 \x01(\x0e\x32\x17.buildbucket.v2.Trinary\x12\x36\n\x06timing\x18\x05 \x01(\x0b\x32&.buildbucket.v2.ResolvedDataRef.TimingB\x0b\n\tdata_type\"\xc7\x1d\n\nBuildInfra\x12\x43\n\x0b\x62uildbucket\x18\x01 \x01(\x0b\x32&.buildbucket.v2.BuildInfra.BuildbucketB\x06\x8a\xc3\x1a\x02\x08\x02\x12=\n\x08swarming\x18\x02 \x01(\x0b\x32#.buildbucket.v2.BuildInfra.SwarmingB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x39\n\x06logdog\x18\x03 \x01(\x0b\x32!.buildbucket.v2.BuildInfra.LogDogB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x31\n\x06recipe\x18\x04 \x01(\x0b\x32!.buildbucket.v2.BuildInfra.Recipe\x12<\n\x08resultdb\x18\x05 \x01(\x0b\x32#.buildbucket.v2.BuildInfra.ResultDBB\x05\xb8\xce\xbc\x03\x02\x12\x33\n\x07\x62\x62\x61gent\x18\x06 \x01(\x0b\x32\".buildbucket.v2.BuildInfra.BBAgent\x12\x33\n\x07\x62\x61\x63kend\x18\x07 \x01(\x0b\x32\".buildbucket.v2.BuildInfra.Backend\x1a\x81\x12\n\x0b\x42uildbucket\x12\x1f\n\x17service_config_revision\x18\x02 \x01(\t\x12\x35\n\x14requested_properties\x18\x05 \x01(\x0b\x32\x17.google.protobuf.Struct\x12@\n\x14requested_dimensions\x18\x06 \x03(\x0b\x32\".buildbucket.v2.RequestedDimension\x12\x15\n\x08hostname\x18\x07 \x01(\tB\x03\xe0\x41\x03\x12Y\n\x12\x65xperiment_reasons\x18\x08 \x03(\x0b\x32=.buildbucket.v2.BuildInfra.Buildbucket.ExperimentReasonsEntry\x12Y\n\x10\x61gent_executable\x18\t \x03(\x0b\x32;.buildbucket.v2.BuildInfra.Buildbucket.AgentExecutableEntryB\x02\x18\x01\x12\x43\n\x05\x61gent\x18\n \x01(\x0b\x32,.buildbucket.v2.BuildInfra.Buildbucket.AgentB\x06\x8a\xc3\x1a\x02\x08\x02\x12!\n\x19known_public_gerrit_hosts\x18\x0b \x03(\t\x1a\xe4\n\n\x05\x41gent\x12I\n\x05input\x18\x01 \x01(\x0b\x32\x32.buildbucket.v2.BuildInfra.Buildbucket.Agent.InputB\x06\x8a\xc3\x1a\x02\x08\x02\x12K\n\x06output\x18\x02 \x01(\x0b\x32\x33.buildbucket.v2.BuildInfra.Buildbucket.Agent.OutputB\x06\x8a\xc3\x1a\x02\x08\x03\x12K\n\x06source\x18\x03 \x01(\x0b\x32\x33.buildbucket.v2.BuildInfra.Buildbucket.Agent.SourceB\x06\x8a\xc3\x1a\x02\x08\x02\x12L\n\x08purposes\x18\x04 \x03(\x0b\x32:.buildbucket.v2.BuildInfra.Buildbucket.Agent.PurposesEntry\x1a\xc6\x02\n\x06Source\x12H\n\x04\x63ipd\x18\x01 \x01(\x0b\x32\x38.buildbucket.v2.BuildInfra.Buildbucket.Agent.Source.CIPDH\x00\x1a\xe4\x01\n\x04\x43IPD\x12\x0f\n\x07package\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06server\x18\x03 \x01(\t\x12p\n\x12resolved_instances\x18\x04 \x03(\x0b\x32O.buildbucket.v2.BuildInfra.Buildbucket.Agent.Source.CIPD.ResolvedInstancesEntryB\x03\xe0\x41\x03\x1a\x38\n\x16ResolvedInstancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x0b\n\tdata_type\x1a\x9e\x01\n\x05Input\x12J\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32<.buildbucket.v2.BuildInfra.Buildbucket.Agent.Input.DataEntry\x1aI\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12+\n\x05value\x18\x02 \x01(\x0b\x32\x1c.buildbucket.v2.InputDataRef:\x02\x38\x01\x1a\xfc\x02\n\x06Output\x12\\\n\rresolved_data\x18\x01 \x03(\x0b\x32\x45.buildbucket.v2.BuildInfra.Buildbucket.Agent.Output.ResolvedDataEntry\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.buildbucket.v2.Status\x12\x35\n\x0estatus_details\x18\x03 \x01(\x0b\x32\x1d.buildbucket.v2.StatusDetails\x12\x14\n\x0csummary_html\x18\x04 \x01(\t\x12\x16\n\x0e\x61gent_platform\x18\x05 \x01(\t\x12\x31\n\x0etotal_duration\x18\x06 \x01(\x0b\x32\x19.google.protobuf.Duration\x1aT\n\x11ResolvedDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12.\n\x05value\x18\x02 \x01(\x0b\x32\x1f.buildbucket.v2.ResolvedDataRef:\x02\x38\x01\x1a\x65\n\rPurposesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x43\n\x05value\x18\x02 \x01(\x0e\x32\x34.buildbucket.v2.BuildInfra.Buildbucket.Agent.Purpose:\x02\x38\x01\"X\n\x07Purpose\x12\x17\n\x13PURPOSE_UNSPECIFIED\x10\x00\x12\x17\n\x13PURPOSE_EXE_PAYLOAD\x10\x01\x12\x1b\n\x17PURPOSE_BBAGENT_UTILITY\x10\x02\x1aq\n\x16\x45xperimentReasonsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x46\n\x05value\x18\x02 \x01(\x0e\x32\x37.buildbucket.v2.BuildInfra.Buildbucket.ExperimentReason:\x02\x38\x01\x1aW\n\x14\x41gentExecutableEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12.\n\x05value\x18\x02 \x01(\x0b\x32\x1f.buildbucket.v2.ResolvedDataRef:\x02\x38\x01\"\xe9\x01\n\x10\x45xperimentReason\x12\x1b\n\x17\x45XPERIMENT_REASON_UNSET\x10\x00\x12$\n EXPERIMENT_REASON_GLOBAL_DEFAULT\x10\x01\x12$\n EXPERIMENT_REASON_BUILDER_CONFIG\x10\x02\x12$\n EXPERIMENT_REASON_GLOBAL_MINIMUM\x10\x03\x12\x1f\n\x1b\x45XPERIMENT_REASON_REQUESTED\x10\x04\x12%\n!EXPERIMENT_REASON_GLOBAL_INACTIVE\x10\x05J\x04\x08\x04\x10\x05\x1a\xd4\x03\n\x08Swarming\x12\x18\n\x08hostname\x18\x01 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x14\n\x07task_id\x18\x02 \x01(\tB\x03\xe0\x41\x03\x12\x15\n\rparent_run_id\x18\t \x01(\t\x12\x1c\n\x14task_service_account\x18\x03 \x01(\t\x12\x10\n\x08priority\x18\x04 \x01(\x05\x12;\n\x0ftask_dimensions\x18\x05 \x03(\x0b\x32\".buildbucket.v2.RequestedDimension\x12\x32\n\x0e\x62ot_dimensions\x18\x06 \x03(\x0b\x32\x1a.buildbucket.v2.StringPair\x12>\n\x06\x63\x61\x63hes\x18\x07 \x03(\x0b\x32..buildbucket.v2.BuildInfra.Swarming.CacheEntry\x12-\n\x0b\x63ontainment\x18\x08 \x01(\x0b\x32\x18.swarming.v1.Containment\x1aq\n\nCacheEntry\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04path\x18\x02 \x01(\t\x12\x36\n\x13wait_for_warm_cache\x18\x03 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x0f\n\x07\x65nv_var\x18\x04 \x01(\t\x1a\x43\n\x06LogDog\x12\x18\n\x08hostname\x18\x01 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0e\n\x06prefix\x18\x03 \x01(\t\x1a,\n\x06Recipe\x12\x14\n\x0c\x63ipd_package\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x1a=\n\x08ResultDB\x12\x18\n\x08hostname\x18\x01 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x17\n\ninvocation\x18\x02 \x01(\tB\x03\xe0\x41\x03\x1a\xb9\x02\n\x07\x42\x42\x41gent\x12\x14\n\x0cpayload_path\x18\x01 \x01(\t\x12\x11\n\tcache_dir\x18\x02 \x01(\t\x12%\n\x19known_public_gerrit_hosts\x18\x03 \x03(\tB\x02\x18\x01\x12;\n\x05input\x18\x04 \x01(\x0b\x32(.buildbucket.v2.BuildInfra.BBAgent.InputB\x02\x18\x01\x1a\xa0\x01\n\x05Input\x12K\n\rcipd_packages\x18\x01 \x03(\x0b\x32\x34.buildbucket.v2.BuildInfra.BBAgent.Input.CIPDPackage\x1aJ\n\x0b\x43IPDPackage\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06server\x18\x03 \x01(\t\x12\x0c\n\x04path\x18\x04 \x01(\t\x1aV\n\x07\x42\x61\x63kend\x12\'\n\x06\x63onfig\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\"\n\x04task\x18\x02 \x01(\x0b\x32\x14.buildbucket.v2.TaskB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n2go.chromium.org/luci/buildbucket/proto/build.proto\x12\x0e\x62uildbucket.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x43go.chromium.org/luci/buildbucket/proto/build_field_visibility.proto\x1a;go.chromium.org/luci/buildbucket/proto/builder_common.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\x1a\x39go.chromium.org/luci/buildbucket/proto/field_option.proto\x1a\x31go.chromium.org/luci/buildbucket/proto/step.proto\x1a\x31go.chromium.org/luci/buildbucket/proto/task.proto\"\xd1\x0c\n\x05\x42uild\x12\x14\n\x02id\x18\x01 \x01(\x03\x42\x08\xe0\x41\x03\xb8\xce\xbc\x03\x03\x12\x37\n\x07\x62uilder\x18\x02 \x01(\x0b\x32\x19.buildbucket.v2.BuilderIDB\x0b\x8a\xc3\x1a\x02\x08\x02\xb8\xce\xbc\x03\x02\x12\x18\n\x06number\x18\x03 \x01(\x05\x42\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x17\n\ncreated_by\x18\x04 \x01(\tB\x03\xe0\x41\x03\x12\x18\n\x0b\x63\x61nceled_by\x18\x17 \x01(\tB\x03\xe0\x41\x03\x12\x39\n\x0b\x63reate_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x38\n\nstart_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x36\n\x08\x65nd_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x39\n\x0bupdate_time\x18\t \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x39\n\x0b\x63\x61ncel_time\x18  \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xe0\x41\x03\xb8\xce\xbc\x03\x02\x12\x33\n\x06status\x18\x0c \x01(\x0e\x32\x16.buildbucket.v2.StatusB\x0b\x8a\xc3\x1a\x02\x08\x03\xb8\xce\xbc\x03\x03\x12 \n\x10summary_markdown\x18\x14 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x03\x12\x30\n\x08\x63ritical\x18\x15 \x01(\x0e\x32\x17.buildbucket.v2.TrinaryB\x05\xb8\xce\xbc\x03\x02\x12\x42\n\x0estatus_details\x18\x16 \x01(\x0b\x32\x1d.buildbucket.v2.StatusDetailsB\x0b\x8a\xc3\x1a\x02\x08\x03\xb8\xce\xbc\x03\x03\x12\x32\n\x05input\x18\x0f \x01(\x0b\x32\x1b.buildbucket.v2.Build.InputB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x34\n\x06output\x18\x10 \x01(\x0b\x32\x1c.buildbucket.v2.Build.OutputB\x06\x8a\xc3\x1a\x02\x08\x03\x12+\n\x05steps\x18\x11 \x03(\x0b\x32\x14.buildbucket.v2.StepB\x06\x8a\xc3\x1a\x02\x08\x03\x12\x31\n\x05infra\x18\x12 \x01(\x0b\x32\x1a.buildbucket.v2.BuildInfraB\x06\x8a\xc3\x1a\x02\x08\x02\x12(\n\x04tags\x18\x13 \x03(\x0b\x32\x1a.buildbucket.v2.StringPair\x12/\n\x03\x65xe\x18\x18 \x01(\x0b\x32\x1a.buildbucket.v2.ExecutableB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x0e\n\x06\x63\x61nary\x18\x19 \x01(\x08\x12\x35\n\x12scheduling_timeout\x18\x1a \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x34\n\x11\x65xecution_timeout\x18\x1b \x01(\x0b\x32\x19.google.protobuf.Duration\x12/\n\x0cgrace_period\x18\x1d \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x19\n\x11wait_for_capacity\x18\x1c \x01(\x08\x12!\n\x12\x63\x61n_outlive_parent\x18\x1e \x01(\x08\x42\x05\xb8\xce\xbc\x03\x03\x12\x1e\n\x0c\x61ncestor_ids\x18\x1f \x03(\x03\x42\x08\xe0\x41\x03\xb8\xce\xbc\x03\x03\x1a\xda\x01\n\x05Input\x12+\n\nproperties\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12<\n\x0egitiles_commit\x18\x02 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommitB\x05\xb8\xce\xbc\x03\x02\x12;\n\x0egerrit_changes\x18\x03 \x03(\x0b\x32\x1c.buildbucket.v2.GerritChangeB\x05\xb8\xce\xbc\x03\x02\x12\x14\n\x0c\x65xperimental\x18\x05 \x01(\x08\x12\x13\n\x0b\x65xperiments\x18\x06 \x03(\t\x1a\x9b\x01\n\x06Output\x12+\n\nproperties\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x35\n\x0egitiles_commit\x18\x03 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12!\n\x04logs\x18\x05 \x03(\x0b\x32\x13.buildbucket.v2.LogJ\x04\x08\x02\x10\x03J\x04\x08\x04\x10\x05J\x04\x08\x05\x10\x06J\x04\x08\r\x10\x0eJ\x04\x08\x0e\x10\x0f\"\x98\x03\n\x0cInputDataRef\x12/\n\x03\x63\x61s\x18\x01 \x01(\x0b\x32 .buildbucket.v2.InputDataRef.CASH\x00\x12\x31\n\x04\x63ipd\x18\x02 \x01(\x0b\x32!.buildbucket.v2.InputDataRef.CIPDH\x00\x12\x0f\n\x07on_path\x18\x03 \x03(\t\x1a\x80\x01\n\x03\x43\x41S\x12\x14\n\x0c\x63\x61s_instance\x18\x01 \x01(\t\x12\x37\n\x06\x64igest\x18\x02 \x01(\x0b\x32\'.buildbucket.v2.InputDataRef.CAS.Digest\x1a*\n\x06\x44igest\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x12\n\nsize_bytes\x18\x02 \x01(\x03\x1a}\n\x04\x43IPD\x12\x0e\n\x06server\x18\x01 \x01(\t\x12\x38\n\x05specs\x18\x02 \x03(\x0b\x32).buildbucket.v2.InputDataRef.CIPD.PkgSpec\x1a+\n\x07PkgSpec\x12\x0f\n\x07package\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\tB\x0b\n\tdata_typeJ\x04\x08\x04\x10\x05\"\xa3\x04\n\x0fResolvedDataRef\x12\x32\n\x03\x63\x61s\x18\x01 \x01(\x0b\x32#.buildbucket.v2.ResolvedDataRef.CASH\x00\x12\x34\n\x04\x63ipd\x18\x02 \x01(\x0b\x32$.buildbucket.v2.ResolvedDataRef.CIPDH\x00\x1ap\n\x06Timing\x12\x31\n\x0e\x66\x65tch_duration\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x33\n\x10install_duration\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\x1a=\n\x03\x43\x41S\x12\x36\n\x06timing\x18\x01 \x01(\x0b\x32&.buildbucket.v2.ResolvedDataRef.Timing\x1a\xe7\x01\n\x04\x43IPD\x12;\n\x05specs\x18\x02 \x03(\x0b\x32,.buildbucket.v2.ResolvedDataRef.CIPD.PkgSpec\x1a\xa1\x01\n\x07PkgSpec\x12\x0f\n\x07skipped\x18\x01 \x01(\x08\x12\x0f\n\x07package\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12+\n\nwas_cached\x18\x04 \x01(\x0e\x32\x17.buildbucket.v2.Trinary\x12\x36\n\x06timing\x18\x05 \x01(\x0b\x32&.buildbucket.v2.ResolvedDataRef.TimingB\x0b\n\tdata_type\"\x93\x1d\n\nBuildInfra\x12\x43\n\x0b\x62uildbucket\x18\x01 \x01(\x0b\x32&.buildbucket.v2.BuildInfra.BuildbucketB\x06\x8a\xc3\x1a\x02\x08\x02\x12=\n\x08swarming\x18\x02 \x01(\x0b\x32#.buildbucket.v2.BuildInfra.SwarmingB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x39\n\x06logdog\x18\x03 \x01(\x0b\x32!.buildbucket.v2.BuildInfra.LogDogB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x31\n\x06recipe\x18\x04 \x01(\x0b\x32!.buildbucket.v2.BuildInfra.Recipe\x12<\n\x08resultdb\x18\x05 \x01(\x0b\x32#.buildbucket.v2.BuildInfra.ResultDBB\x05\xb8\xce\xbc\x03\x02\x12\x33\n\x07\x62\x62\x61gent\x18\x06 \x01(\x0b\x32\".buildbucket.v2.BuildInfra.BBAgent\x12\x33\n\x07\x62\x61\x63kend\x18\x07 \x01(\x0b\x32\".buildbucket.v2.BuildInfra.Backend\x1a\xfc\x11\n\x0b\x42uildbucket\x12\x1f\n\x17service_config_revision\x18\x02 \x01(\t\x12\x35\n\x14requested_properties\x18\x05 \x01(\x0b\x32\x17.google.protobuf.Struct\x12@\n\x14requested_dimensions\x18\x06 \x03(\x0b\x32\".buildbucket.v2.RequestedDimension\x12\x10\n\x08hostname\x18\x07 \x01(\t\x12Y\n\x12\x65xperiment_reasons\x18\x08 \x03(\x0b\x32=.buildbucket.v2.BuildInfra.Buildbucket.ExperimentReasonsEntry\x12Y\n\x10\x61gent_executable\x18\t \x03(\x0b\x32;.buildbucket.v2.BuildInfra.Buildbucket.AgentExecutableEntryB\x02\x18\x01\x12\x43\n\x05\x61gent\x18\n \x01(\x0b\x32,.buildbucket.v2.BuildInfra.Buildbucket.AgentB\x06\x8a\xc3\x1a\x02\x08\x02\x12!\n\x19known_public_gerrit_hosts\x18\x0b \x03(\t\x1a\xe4\n\n\x05\x41gent\x12I\n\x05input\x18\x01 \x01(\x0b\x32\x32.buildbucket.v2.BuildInfra.Buildbucket.Agent.InputB\x06\x8a\xc3\x1a\x02\x08\x02\x12K\n\x06output\x18\x02 \x01(\x0b\x32\x33.buildbucket.v2.BuildInfra.Buildbucket.Agent.OutputB\x06\x8a\xc3\x1a\x02\x08\x03\x12K\n\x06source\x18\x03 \x01(\x0b\x32\x33.buildbucket.v2.BuildInfra.Buildbucket.Agent.SourceB\x06\x8a\xc3\x1a\x02\x08\x02\x12L\n\x08purposes\x18\x04 \x03(\x0b\x32:.buildbucket.v2.BuildInfra.Buildbucket.Agent.PurposesEntry\x1a\xc6\x02\n\x06Source\x12H\n\x04\x63ipd\x18\x01 \x01(\x0b\x32\x38.buildbucket.v2.BuildInfra.Buildbucket.Agent.Source.CIPDH\x00\x1a\xe4\x01\n\x04\x43IPD\x12\x0f\n\x07package\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06server\x18\x03 \x01(\t\x12p\n\x12resolved_instances\x18\x04 \x03(\x0b\x32O.buildbucket.v2.BuildInfra.Buildbucket.Agent.Source.CIPD.ResolvedInstancesEntryB\x03\xe0\x41\x03\x1a\x38\n\x16ResolvedInstancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x0b\n\tdata_type\x1a\x9e\x01\n\x05Input\x12J\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32<.buildbucket.v2.BuildInfra.Buildbucket.Agent.Input.DataEntry\x1aI\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12+\n\x05value\x18\x02 \x01(\x0b\x32\x1c.buildbucket.v2.InputDataRef:\x02\x38\x01\x1a\xfc\x02\n\x06Output\x12\\\n\rresolved_data\x18\x01 \x03(\x0b\x32\x45.buildbucket.v2.BuildInfra.Buildbucket.Agent.Output.ResolvedDataEntry\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.buildbucket.v2.Status\x12\x35\n\x0estatus_details\x18\x03 \x01(\x0b\x32\x1d.buildbucket.v2.StatusDetails\x12\x14\n\x0csummary_html\x18\x04 \x01(\t\x12\x16\n\x0e\x61gent_platform\x18\x05 \x01(\t\x12\x31\n\x0etotal_duration\x18\x06 \x01(\x0b\x32\x19.google.protobuf.Duration\x1aT\n\x11ResolvedDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12.\n\x05value\x18\x02 \x01(\x0b\x32\x1f.buildbucket.v2.ResolvedDataRef:\x02\x38\x01\x1a\x65\n\rPurposesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x43\n\x05value\x18\x02 \x01(\x0e\x32\x34.buildbucket.v2.BuildInfra.Buildbucket.Agent.Purpose:\x02\x38\x01\"X\n\x07Purpose\x12\x17\n\x13PURPOSE_UNSPECIFIED\x10\x00\x12\x17\n\x13PURPOSE_EXE_PAYLOAD\x10\x01\x12\x1b\n\x17PURPOSE_BBAGENT_UTILITY\x10\x02\x1aq\n\x16\x45xperimentReasonsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x46\n\x05value\x18\x02 \x01(\x0e\x32\x37.buildbucket.v2.BuildInfra.Buildbucket.ExperimentReason:\x02\x38\x01\x1aW\n\x14\x41gentExecutableEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12.\n\x05value\x18\x02 \x01(\x0b\x32\x1f.buildbucket.v2.ResolvedDataRef:\x02\x38\x01\"\xe9\x01\n\x10\x45xperimentReason\x12\x1b\n\x17\x45XPERIMENT_REASON_UNSET\x10\x00\x12$\n EXPERIMENT_REASON_GLOBAL_DEFAULT\x10\x01\x12$\n EXPERIMENT_REASON_BUILDER_CONFIG\x10\x02\x12$\n EXPERIMENT_REASON_GLOBAL_MINIMUM\x10\x03\x12\x1f\n\x1b\x45XPERIMENT_REASON_REQUESTED\x10\x04\x12%\n!EXPERIMENT_REASON_GLOBAL_INACTIVE\x10\x05J\x04\x08\x04\x10\x05\x1a\xa5\x03\n\x08Swarming\x12\x18\n\x08hostname\x18\x01 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x14\n\x07task_id\x18\x02 \x01(\tB\x03\xe0\x41\x03\x12\x15\n\rparent_run_id\x18\t \x01(\t\x12\x1c\n\x14task_service_account\x18\x03 \x01(\t\x12\x10\n\x08priority\x18\x04 \x01(\x05\x12;\n\x0ftask_dimensions\x18\x05 \x03(\x0b\x32\".buildbucket.v2.RequestedDimension\x12\x32\n\x0e\x62ot_dimensions\x18\x06 \x03(\x0b\x32\x1a.buildbucket.v2.StringPair\x12>\n\x06\x63\x61\x63hes\x18\x07 \x03(\x0b\x32..buildbucket.v2.BuildInfra.Swarming.CacheEntry\x1aq\n\nCacheEntry\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04path\x18\x02 \x01(\t\x12\x36\n\x13wait_for_warm_cache\x18\x03 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x0f\n\x07\x65nv_var\x18\x04 \x01(\t\x1a\x43\n\x06LogDog\x12\x18\n\x08hostname\x18\x01 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0e\n\x06prefix\x18\x03 \x01(\t\x1a,\n\x06Recipe\x12\x14\n\x0c\x63ipd_package\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x1a=\n\x08ResultDB\x12\x18\n\x08hostname\x18\x01 \x01(\tB\x06\x8a\xc3\x1a\x02\x08\x02\x12\x17\n\ninvocation\x18\x02 \x01(\tB\x03\xe0\x41\x03\x1a\xb9\x02\n\x07\x42\x42\x41gent\x12\x14\n\x0cpayload_path\x18\x01 \x01(\t\x12\x11\n\tcache_dir\x18\x02 \x01(\t\x12%\n\x19known_public_gerrit_hosts\x18\x03 \x03(\tB\x02\x18\x01\x12;\n\x05input\x18\x04 \x01(\x0b\x32(.buildbucket.v2.BuildInfra.BBAgent.InputB\x02\x18\x01\x1a\xa0\x01\n\x05Input\x12K\n\rcipd_packages\x18\x01 \x03(\x0b\x32\x34.buildbucket.v2.BuildInfra.BBAgent.Input.CIPDPackage\x1aJ\n\x0b\x43IPDPackage\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06server\x18\x03 \x01(\t\x12\x0c\n\x04path\x18\x04 \x01(\t\x1aV\n\x07\x42\x61\x63kend\x12\'\n\x06\x63onfig\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\"\n\x04task\x18\x02 \x01(\x0b\x32\x14.buildbucket.v2.TaskB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
-  dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__field__visibility__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_field__option__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_step__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_task__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_swarming_dot_proto_dot_api_dot_swarming__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__field__visibility__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_field__option__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_step__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_task__pb2.DESCRIPTOR,])
 
 
 
@@ -61,8 +60,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_PURPOSE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5376,
-  serialized_end=5464,
+  serialized_start=5315,
+  serialized_end=5403,
 )
 _sym_db.RegisterEnumDescriptor(_BUILDINFRA_BUILDBUCKET_AGENT_PURPOSE)
 
@@ -106,8 +105,8 @@ _BUILDINFRA_BUILDBUCKET_EXPERIMENTREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5671,
-  serialized_end=5904,
+  serialized_start=5610,
+  serialized_end=5843,
 )
 _sym_db.RegisterEnumDescriptor(_BUILDINFRA_BUILDBUCKET_EXPERIMENTREASON)
 
@@ -167,8 +166,8 @@ _BUILD_INPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1822,
-  serialized_end=2040,
+  serialized_start=1766,
+  serialized_end=1984,
 )
 
 _BUILD_OUTPUT = _descriptor.Descriptor(
@@ -212,8 +211,8 @@ _BUILD_OUTPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2043,
-  serialized_end=2198,
+  serialized_start=1987,
+  serialized_end=2142,
 )
 
 _BUILD = _descriptor.Descriptor(
@@ -425,8 +424,8 @@ _BUILD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=599,
-  serialized_end=2216,
+  serialized_start=543,
+  serialized_end=2160,
 )
 
 
@@ -464,8 +463,8 @@ _INPUTDATAREF_CAS_DIGEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2439,
-  serialized_end=2481,
+  serialized_start=2383,
+  serialized_end=2425,
 )
 
 _INPUTDATAREF_CAS = _descriptor.Descriptor(
@@ -502,8 +501,8 @@ _INPUTDATAREF_CAS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2353,
-  serialized_end=2481,
+  serialized_start=2297,
+  serialized_end=2425,
 )
 
 _INPUTDATAREF_CIPD_PKGSPEC = _descriptor.Descriptor(
@@ -540,8 +539,8 @@ _INPUTDATAREF_CIPD_PKGSPEC = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2565,
-  serialized_end=2608,
+  serialized_start=2509,
+  serialized_end=2552,
 )
 
 _INPUTDATAREF_CIPD = _descriptor.Descriptor(
@@ -578,8 +577,8 @@ _INPUTDATAREF_CIPD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2483,
-  serialized_end=2608,
+  serialized_start=2427,
+  serialized_end=2552,
 )
 
 _INPUTDATAREF = _descriptor.Descriptor(
@@ -628,8 +627,8 @@ _INPUTDATAREF = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=2219,
-  serialized_end=2627,
+  serialized_start=2163,
+  serialized_end=2571,
 )
 
 
@@ -667,8 +666,8 @@ _RESOLVEDDATAREF_TIMING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2755,
-  serialized_end=2867,
+  serialized_start=2699,
+  serialized_end=2811,
 )
 
 _RESOLVEDDATAREF_CAS = _descriptor.Descriptor(
@@ -698,8 +697,8 @@ _RESOLVEDDATAREF_CAS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2869,
-  serialized_end=2930,
+  serialized_start=2813,
+  serialized_end=2874,
 )
 
 _RESOLVEDDATAREF_CIPD_PKGSPEC = _descriptor.Descriptor(
@@ -757,8 +756,8 @@ _RESOLVEDDATAREF_CIPD_PKGSPEC = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3003,
-  serialized_end=3164,
+  serialized_start=2947,
+  serialized_end=3108,
 )
 
 _RESOLVEDDATAREF_CIPD = _descriptor.Descriptor(
@@ -788,8 +787,8 @@ _RESOLVEDDATAREF_CIPD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2933,
-  serialized_end=3164,
+  serialized_start=2877,
+  serialized_end=3108,
 )
 
 _RESOLVEDDATAREF = _descriptor.Descriptor(
@@ -831,8 +830,8 @@ _RESOLVEDDATAREF = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=2630,
-  serialized_end=3177,
+  serialized_start=2574,
+  serialized_end=3121,
 )
 
 
@@ -870,8 +869,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_SOURCE_CIPD_RESOLVEDINSTANCESENTRY = _descriptor.D
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4658,
-  serialized_end=4714,
+  serialized_start=4597,
+  serialized_end=4653,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_SOURCE_CIPD = _descriptor.Descriptor(
@@ -922,8 +921,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_SOURCE_CIPD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4486,
-  serialized_end=4714,
+  serialized_start=4425,
+  serialized_end=4653,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_SOURCE = _descriptor.Descriptor(
@@ -958,8 +957,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_SOURCE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=4401,
-  serialized_end=4727,
+  serialized_start=4340,
+  serialized_end=4666,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_INPUT_DATAENTRY = _descriptor.Descriptor(
@@ -996,8 +995,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_INPUT_DATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4815,
-  serialized_end=4888,
+  serialized_start=4754,
+  serialized_end=4827,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_INPUT = _descriptor.Descriptor(
@@ -1027,8 +1026,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_INPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4730,
-  serialized_end=4888,
+  serialized_start=4669,
+  serialized_end=4827,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_OUTPUT_RESOLVEDDATAENTRY = _descriptor.Descriptor(
@@ -1065,8 +1064,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_OUTPUT_RESOLVEDDATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5187,
-  serialized_end=5271,
+  serialized_start=5126,
+  serialized_end=5210,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_OUTPUT = _descriptor.Descriptor(
@@ -1131,8 +1130,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_OUTPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4891,
-  serialized_end=5271,
+  serialized_start=4830,
+  serialized_end=5210,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT_PURPOSESENTRY = _descriptor.Descriptor(
@@ -1169,8 +1168,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT_PURPOSESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5273,
-  serialized_end=5374,
+  serialized_start=5212,
+  serialized_end=5313,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENT = _descriptor.Descriptor(
@@ -1222,8 +1221,8 @@ _BUILDINFRA_BUILDBUCKET_AGENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4084,
-  serialized_end=5464,
+  serialized_start=4023,
+  serialized_end=5403,
 )
 
 _BUILDINFRA_BUILDBUCKET_EXPERIMENTREASONSENTRY = _descriptor.Descriptor(
@@ -1260,8 +1259,8 @@ _BUILDINFRA_BUILDBUCKET_EXPERIMENTREASONSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5466,
-  serialized_end=5579,
+  serialized_start=5405,
+  serialized_end=5518,
 )
 
 _BUILDINFRA_BUILDBUCKET_AGENTEXECUTABLEENTRY = _descriptor.Descriptor(
@@ -1298,8 +1297,8 @@ _BUILDINFRA_BUILDBUCKET_AGENTEXECUTABLEENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5581,
-  serialized_end=5668,
+  serialized_start=5520,
+  serialized_end=5607,
 )
 
 _BUILDINFRA_BUILDBUCKET = _descriptor.Descriptor(
@@ -1337,7 +1336,7 @@ _BUILDINFRA_BUILDBUCKET = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=b'\340A\003', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='experiment_reasons', full_name='buildbucket.v2.BuildInfra.Buildbucket.experiment_reasons', index=4,
       number=8, type=11, cpp_type=10, label=3,
@@ -1379,8 +1378,8 @@ _BUILDINFRA_BUILDBUCKET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3605,
-  serialized_end=5910,
+  serialized_start=3549,
+  serialized_end=5849,
 )
 
 _BUILDINFRA_SWARMING_CACHEENTRY = _descriptor.Descriptor(
@@ -1431,8 +1430,8 @@ _BUILDINFRA_SWARMING_CACHEENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6268,
-  serialized_end=6381,
+  serialized_start=6160,
+  serialized_end=6273,
 )
 
 _BUILDINFRA_SWARMING = _descriptor.Descriptor(
@@ -1499,13 +1498,6 @@ _BUILDINFRA_SWARMING = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='containment', full_name='buildbucket.v2.BuildInfra.Swarming.containment', index=8,
-      number=8, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1518,8 +1510,8 @@ _BUILDINFRA_SWARMING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5913,
-  serialized_end=6381,
+  serialized_start=5852,
+  serialized_end=6273,
 )
 
 _BUILDINFRA_LOGDOG = _descriptor.Descriptor(
@@ -1563,8 +1555,8 @@ _BUILDINFRA_LOGDOG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6383,
-  serialized_end=6450,
+  serialized_start=6275,
+  serialized_end=6342,
 )
 
 _BUILDINFRA_RECIPE = _descriptor.Descriptor(
@@ -1601,8 +1593,8 @@ _BUILDINFRA_RECIPE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6452,
-  serialized_end=6496,
+  serialized_start=6344,
+  serialized_end=6388,
 )
 
 _BUILDINFRA_RESULTDB = _descriptor.Descriptor(
@@ -1639,8 +1631,8 @@ _BUILDINFRA_RESULTDB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6498,
-  serialized_end=6559,
+  serialized_start=6390,
+  serialized_end=6451,
 )
 
 _BUILDINFRA_BBAGENT_INPUT_CIPDPACKAGE = _descriptor.Descriptor(
@@ -1691,8 +1683,8 @@ _BUILDINFRA_BBAGENT_INPUT_CIPDPACKAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6801,
-  serialized_end=6875,
+  serialized_start=6693,
+  serialized_end=6767,
 )
 
 _BUILDINFRA_BBAGENT_INPUT = _descriptor.Descriptor(
@@ -1722,8 +1714,8 @@ _BUILDINFRA_BBAGENT_INPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6715,
-  serialized_end=6875,
+  serialized_start=6607,
+  serialized_end=6767,
 )
 
 _BUILDINFRA_BBAGENT = _descriptor.Descriptor(
@@ -1774,8 +1766,8 @@ _BUILDINFRA_BBAGENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6562,
-  serialized_end=6875,
+  serialized_start=6454,
+  serialized_end=6767,
 )
 
 _BUILDINFRA_BACKEND = _descriptor.Descriptor(
@@ -1812,8 +1804,8 @@ _BUILDINFRA_BACKEND = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6877,
-  serialized_end=6963,
+  serialized_start=6769,
+  serialized_end=6855,
 )
 
 _BUILDINFRA = _descriptor.Descriptor(
@@ -1885,8 +1877,8 @@ _BUILDINFRA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3180,
-  serialized_end=6963,
+  serialized_start=3124,
+  serialized_end=6855,
 )
 
 _BUILD_INPUT.fields_by_name['properties'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
@@ -1990,7 +1982,6 @@ _BUILDINFRA_SWARMING_CACHEENTRY.containing_type = _BUILDINFRA_SWARMING
 _BUILDINFRA_SWARMING.fields_by_name['task_dimensions'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._REQUESTEDDIMENSION
 _BUILDINFRA_SWARMING.fields_by_name['bot_dimensions'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._STRINGPAIR
 _BUILDINFRA_SWARMING.fields_by_name['caches'].message_type = _BUILDINFRA_SWARMING_CACHEENTRY
-_BUILDINFRA_SWARMING.fields_by_name['containment'].message_type = go_dot_chromium_dot_org_dot_luci_dot_swarming_dot_proto_dot_api_dot_swarming__pb2._CONTAINMENT
 _BUILDINFRA_SWARMING.containing_type = _BUILDINFRA
 _BUILDINFRA_LOGDOG.containing_type = _BUILDINFRA
 _BUILDINFRA_RECIPE.containing_type = _BUILDINFRA
@@ -2327,7 +2318,6 @@ _BUILDINFRA_BUILDBUCKET_AGENT.fields_by_name['output']._options = None
 _BUILDINFRA_BUILDBUCKET_AGENT.fields_by_name['source']._options = None
 _BUILDINFRA_BUILDBUCKET_EXPERIMENTREASONSENTRY._options = None
 _BUILDINFRA_BUILDBUCKET_AGENTEXECUTABLEENTRY._options = None
-_BUILDINFRA_BUILDBUCKET.fields_by_name['hostname']._options = None
 _BUILDINFRA_BUILDBUCKET.fields_by_name['agent_executable']._options = None
 _BUILDINFRA_BUILDBUCKET.fields_by_name['agent']._options = None
 _BUILDINFRA_SWARMING.fields_by_name['hostname']._options = None
