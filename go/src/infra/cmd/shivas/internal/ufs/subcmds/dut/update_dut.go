@@ -29,7 +29,6 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
-	swarming "infra/libs/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -90,22 +89,6 @@ const (
 // partialUpdateDeployPaths is a collection of paths for which there is a partial update on servo/rpm.
 var partialUpdateDeployPaths = []string{servoHostPath, servoPortPath, servoSerialPath, servoSetupPath, rpmHostPath, rpmOutletPath}
 
-// partialUpdateDeployActions is a collection of actions for the deploy task when updating servo/rpm.
-var partialUpdateDeployActions = []string{
-	"run-pre-deploy-verification",
-}
-
-// partialUpdateDeployActions is a collection of actions for the deploy task when updating machines.
-var assetUpdateDeployActions = []string{
-	"servo-verification",
-	"stage-usb",
-	"install-test-image",
-	"install-firmware",
-	"verify-recovery-mode",
-	"update-label",
-	"run-pre-deploy-verification",
-}
-
 // UpdateDUTCmd update dut by given hostname and start a swarming job to delpoy.
 var UpdateDUTCmd = &subcommands.Command{
 	UsageLine: "dut [options]",
@@ -122,7 +105,6 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.commonFlags.Register(&c.Flags)
 
 		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTUpdateFileText)
-		c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow.")
 
 		c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
 		c.Flags.StringVar(&c.machine, "asset", "", "asset tag of the DUT.")
@@ -140,13 +122,8 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.Var(luciFlag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
 
-		c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
-		c.Flags.BoolVar(&c.forceDownloadImage, "force-download-image", false, "force download image and stage usb if deploy task is run.")
-		c.Flags.BoolVar(&c.forceInstallFirmware, "force-install-fw", false, "force install firmware if deploy task is run.")
-		c.Flags.BoolVar(&c.forceInstallOS, "force-install-os", false, "force install os image if deploy task is run.")
-		c.Flags.BoolVar(&c.forceUpdateLabels, "force-update-labels", false, "force update labels if deploy task is run.")
 
 		// ACS DUT fields
 		c.Flags.Var(utils.CSVString(&c.chameleons), "chameleons", cmdhelp.ChameleonTypeHelpText+". "+cmdhelp.ClearFieldHelpText)
@@ -178,9 +155,6 @@ type updateDUT struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	// TODO(b/225378510): Remove and make paris logic as default for scheduling.
-	paris bool
-
 	// DUT specification inputs.
 	newSpecsFile             string
 	hostname                 string
@@ -200,13 +174,8 @@ type updateDUT struct {
 	description              string
 
 	// Deploy task inputs.
-	forceDeploy          bool
-	deployTaskTimeout    int64
-	deployTags           []string
-	forceDownloadImage   bool
-	forceInstallOS       bool
-	forceInstallFirmware bool
-	forceUpdateLabels    bool
+	forceDeploy bool
+	deployTags  []string
 
 	// ACS DUT fields
 	chameleons        []string
@@ -248,9 +217,6 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 		c.flagInputs[f.Name] = true
 	})
 
-	// Using a map to collect deploy actions. This ensures single deploy task per DUT.
-	var deployTasks map[string][]string
-
 	// Create a summary results table with 3 columns.
 	resTable := utils.NewSummaryResultsTable([]string{"DUT", ufsOp, swarmOp})
 
@@ -277,7 +243,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	}
 
 	// Create a map of DUTs to avoid triggering multiple tasks.
-	deployTasks = make(map[string][]string)
+	deployTasks := make(map[string]bool)
 
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
@@ -288,7 +254,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	for _, req := range requests {
 
 		// Collect the deploy actions required for the request. This is done before DUT is changed on UFS.
-		actions, err := c.getDeployActions(ctx, ic, req)
+		needToDeploy, err := c.needToDeploy(ctx, ic, req)
 		if err != nil {
 			return err
 		}
@@ -307,56 +273,25 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 			}
 			fmt.Printf("[%s] Failed to update UFS. Attempting to trigger deploy task '-force-deploy'. %s\n", req.MachineLSE.GetName(), err.Error())
 		}
-		deployTasks[req.MachineLSE.GetName()] = actions
+		deployTasks[req.MachineLSE.GetName()] = needToDeploy
 
 	}
 
 	var bc buildbucket.Client
-	var tc *swarming.TaskCreator
-	var sessionTag string
-	if c.paris {
-		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
-		if err != nil {
-			return err
-		}
-		if bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack"); err != nil {
-			return err
-		}
-		sessionTag = fmt.Sprintf("admin-session:%s", uuid.New().String())
-	} else {
-		fmt.Fprintf(a.GetErr(), "Using PARIS flow for repair\n")
-		if tc, err = swarming.NewTaskCreator(ctx, &c.authFlags, e.SwarmingService); err != nil {
-			return err
-		}
-		tc.LogdogService = e.LogdogService
-		tc.SwarmingServiceAccount = e.SwarmingServiceAccount
+	if bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack"); err != nil {
+		return err
 	}
+	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, req := range requests {
 		// Check if the deployment is needed.
-		actions, ok := deployTasks[req.MachineLSE.GetName()]
+		needRunDeploy, ok := deployTasks[req.MachineLSE.GetName()]
 		if !ok {
 			// Deploy Task not required.
 			continue
 		}
 		// Swarm a deploy task if required or enforced.
-		if len(actions) > 0 || c.forceDeploy {
-			// If deploy task is enforced and len(actions) = 0 and use partialUpdatedeployActions as default.
-			if len(actions) == 0 && c.forceDeploy {
-				actions = partialUpdateDeployActions
-			}
-
-			if c.paris {
-				utils.ScheduleDeployTask(ctx, bc, e, req.GetMachineLSE().GetHostname(), sessionTag)
-			} else {
-				// Include any enforced actions.
-				actions = c.updateDeployActions(actions)
-				// Start a swarming deploy task for the DUT.
-				if err := c.deployDUTToSwarming(ctx, tc, req.GetMachineLSE(), actions); err != nil {
-					// Print err and continue to trigger next one
-					fmt.Printf("[%s] Failed to deploy task. %s", req.GetMachineLSE().GetName(), err.Error())
-				}
-			}
+		if needRunDeploy || c.forceDeploy {
+			utils.ScheduleDeployTask(ctx, bc, e, req.GetMachineLSE().GetHostname(), sessionTag)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
 
 			// Remove the task entry to avoid triggering multiple tasks.
@@ -366,13 +301,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 
 	if resTable.IsSuccessForAny(swarmOp) {
 		// Display URL for all tasks if there are more than one.
-		var link string
-		if c.paris {
-			link = utils.TasksBatchLink(e.SwarmingService, sessionTag)
-		} else {
-			link = tc.SessionTasksURL()
-		}
-		fmt.Printf("\nTriggered deployment task(s). Follow at: %s\n", link)
+		fmt.Printf("\nTriggered deployment task(s). Follow at: %s\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))
 	}
 
 	fmt.Printf("\nSummary of results:\n\n")
@@ -1030,38 +959,14 @@ func generateRPMWithMask(rpmHost, rpmOutlet string) (*chromeosLab.OSRPM, []strin
 	return rpm, paths
 }
 
-// updateDeployActions updates the deploySkipActions based on boolean force options.
-func (c *updateDUT) updateDeployActions(actions []string) []string {
-	// Append the enforced deploy actions.
-	if c.forceDownloadImage && !ufsUtil.ContainsAnyStrings(actions, "stage-usb") {
-		actions = append(actions, "stage-usb")
-	}
-	if c.forceInstallOS && !ufsUtil.ContainsAnyStrings(actions, "install-test-image") {
-		actions = append(actions, "install-test-image")
-	}
-	if c.forceInstallFirmware {
-		if !ufsUtil.ContainsAnyStrings(actions, "install-firmware") {
-			actions = append(actions, "install-firmware")
-		}
-		if !ufsUtil.ContainsAnyStrings(actions, "verify-recovery-mode") {
-			actions = append(actions, "verify-recovery-mode")
-		}
-	}
-	if (c.forceInstallFirmware || c.forceInstallOS || c.forceUpdateLabels) && !ufsUtil.ContainsAnyStrings(actions, "update-label") {
-		actions = append(actions, "update-label")
-	}
-	return actions
-}
-
-// getDeployActions checks the machineLse request and decides actions required for the deploy task.
+// needToDeploy checks the machineLse request and decides if the deploy task required.
 //
-// Actions for deploy task are determined based on the following.
-//  1. Updates to servo/rpm will start deploy task with run-pre-deploy-verification.
-//  2. Updates to asset will start deploy task with stage-usb, install-test-image, install-firmware,
-//     update-label, verify-recovery-mode and run-pre-deploy-verification
-//  3. If both are updated then asset takes precedence and actions in (2) are run.
-//  4. If neither of them is found. Return nil, nil.
-func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) (a []string, err error) {
+// The deploy task are determined based on the following.
+//  1. Updates to servo/rpm.
+//  2. Updates to asset.
+//
+// If neither of them is found. Return false, nil.
+func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) (a bool, err error) {
 	defer func() {
 		// Cannot trust JSON input to have all the fields. Log error.
 		if r := recover(); r != nil {
@@ -1072,7 +977,7 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 				// InternalError. This should not happen.
 				err = errors.Reason("getDeployActions - InternalError: %v.", r).Err()
 			}
-			a = nil
+			a = false
 			return
 		}
 	}()
@@ -1081,15 +986,15 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 		if ufsUtil.ContainsAnyStrings(req.UpdateMask.Paths, "machines") {
 			// Asset update. Set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return assetUpdateDeployActions, nil
+			return true, nil
 		}
 		if ufsUtil.ContainsAnyStrings(req.UpdateMask.Paths, partialUpdateDeployPaths...) {
 			// RPM/Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			// Append any options that were set to force and return.
-			return partialUpdateDeployActions, nil
+			return true, nil
 		}
-		return nil, nil
+		return false, nil
 	}
 
 	// Check if it's a JSON update and validate full update.
@@ -1104,19 +1009,19 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 
 		// If DUT doesn't exist return error as update will fail.
 		if err != nil {
-			return nil, errors.Annotate(err, "getDeployActions - Please check if DUT exists before updating. Failed to get DUT %s", newDut.GetName()).Err()
+			return false, errors.Annotate(err, "getDeployActions - Please check if DUT exists before updating. Failed to get DUT %s", newDut.GetName()).Err()
 		}
 
 		// Fail if the target is not a DUT.
 		if err := utils.IsDUT(oldDut); err != nil {
-			return nil, errors.Annotate(err, "getDeployActions - %s is not a DUT", oldDut.GetName()).Err()
+			return false, errors.Annotate(err, "getDeployActions - %s is not a DUT", oldDut.GetName()).Err()
 		}
 
 		// Check if asset was updated.
 		if oldDut.GetMachines()[0] != newDut.GetMachines()[0] {
 			// Asset update. Set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return assetUpdateDeployActions, nil
+			return true, nil
 		}
 
 		// Check for any servo changes. Need to run a deploy task for the following cases
@@ -1134,7 +1039,7 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 			req.MachineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Servo = nil
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return partialUpdateDeployActions, nil
+			return true, nil
 		}
 
 		// Check if the user intends to clear servo type and topology
@@ -1145,7 +1050,7 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			// Need to run deploy task.
-			return partialUpdateDeployActions, nil
+			return true, nil
 		}
 
 		// Check if we are adding a new servo.
@@ -1153,7 +1058,7 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 		if oldServo == nil || oldServo.GetServoHostname() == "" {
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return partialUpdateDeployActions, nil
+			return true, nil
 		}
 
 		// Check if servo was updated by the user.
@@ -1166,7 +1071,7 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 		if !ufsUtil.ProtoEqual(oldServoCopy, newServo) {
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return partialUpdateDeployActions, nil
+			return true, nil
 		}
 		// User doesn't intend to update servo. Avoid calling the deploy task and copy servo_type and topology from oldServo.
 		newServo.ServoType = oldServo.GetServoType()
@@ -1185,11 +1090,11 @@ func (c *updateDUT) getDeployActions(ctx context.Context, ic ufsAPI.FleetClient,
 			// RPM update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			// Append any options that were set to force and return.
-			return partialUpdateDeployActions, nil
+			return true, nil
 		}
 	}
 	// Didn't find any reason to run deploy task.
-	return nil, nil
+	return false, nil
 }
 
 // updateDUTToUFS verifies the request and calls UpdateMachineLSE API with the given request.
@@ -1212,24 +1117,6 @@ func (c *updateDUT) updateDUTToUFS(ctx context.Context, ic ufsAPI.FleetClient, r
 	res.Name = ufsUtil.RemovePrefix(res.Name)
 	utils.PrintProtoJSON(res, !utils.NoEmitMode(false))
 	fmt.Printf("Successfully updated DUT to UFS: %s \n", res.GetName())
-	return nil
-}
-
-// deployDUTToSwarming starts a re-deploy task for the given DUT.
-func (c *updateDUT) deployDUTToSwarming(ctx context.Context, tc *swarming.TaskCreator, lse *ufspb.MachineLSE, actions []string) error {
-	var hostname, machine string
-	// Using hostname because name has resource prefix
-	hostname = lse.GetHostname()
-	machines := lse.GetMachines()
-	if len(machines) > 0 {
-		machine = machines[0]
-	}
-	task, err := tc.DeployDut(ctx, hostname, machine, defaultSwarmingPool, c.deployTaskTimeout, actions, c.deployTags, nil)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Triggered Deploy task for DUT %s. Follow the deploy job at %s\n", hostname, task.TaskURL)
-
 	return nil
 }
 
