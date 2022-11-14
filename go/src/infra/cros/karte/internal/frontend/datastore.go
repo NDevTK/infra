@@ -50,6 +50,7 @@ type ActionEntity struct {
 	Hostname       string    `gae:"hostname"`
 	Model          string    `gae:"model"`
 	Board          string    `gae:"board"`
+	RecoveredBy    string    `gae:"recovered_by"`
 	// Count the number of times that an action entity was modified by a request.
 	ModificationCount int32 `gae:"modification_count"`
 	// Deprecated fields!
