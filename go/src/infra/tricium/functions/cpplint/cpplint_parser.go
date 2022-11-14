@@ -20,7 +20,7 @@ import (
 
 // Paths to the required resources relative to the executable directory.
 const (
-	pythonPath  = "python/bin/python"
+	pythonPath  = "python3/bin/python3"
 	cpplintPath = "cpplint.py"
 )
 

@@ -4,26 +4,26 @@
 
 .PHONY: build-for-deployment test clean
 
-build-for-deployment: python cpplint.py
+build-for-deployment: python3 cpplint.py
 	GOOS=linux GOARCH=amd64 go build -o cpplint_parser
 
-cpplint_parser: python cpplint.py
+cpplint_parser: python3 cpplint.py
 	go build -o cpplint_parser
 
 test: cpplint_parser
 	./cpplint_parser -input=test -output=out
 
-cpplint.cipd: cpplint_parser python cpplint.py
+cpplint.cipd: cpplint_parser python3 cpplint.py
 	cipd pkg-build -pkg-def cipd.yaml -out cpplint.cipd
 
-python:
-	echo "infra/3pp/tools/cpython/linux-amd64 version:2.7.18.chromium.44" | \
-			cipd ensure -ensure-file - -root python
+python3:
+	echo "infra/python/cpython3/linux-amd64 version:3.8.0b1.chromium.1" | \
+			cipd ensure -ensure-file - -root python3
 
 cpplint.py:
-	curl https://chromium.googlesource.com/chromium/tools/depot_tools.git/+/master/cpplint.py\?format\=TEXT \
+	curl https://chromium.googlesource.com/chromium/tools/depot_tools.git/+/main/cpplint.py\?format\=TEXT \
 		| base64 --decode > cpplint.py
 	chmod +x cpplint.py
 
 clean:
-	rm -rf cpplint_parser cpplint.py python out cpplint.cipd
+	rm -rf cpplint_parser cpplint.py python3 out cpplint.cipd
