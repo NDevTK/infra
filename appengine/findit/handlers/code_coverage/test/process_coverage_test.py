@@ -1,6 +1,6 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.from datetime import datetime
+# found in the LICENSE file.
 
 from datetime import datetime
 import json
@@ -201,8 +201,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
-                'chromium/try/linux-rel',
-                'chrome/coverage/linux-code-coverage',
+                'chromium/try/linux-rel', 'chrome/coverage/linux-code-coverage',
+                'chrome/coverage/android-code-coverage'
             ]
         })
 
@@ -717,3 +717,36 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         _CreateSampleDirectoryCoverageData(),
         _CreateSampleDirectoryCoverageData(builder='linux-code-coverage_unit')
     ], fetched_summary_coverage_data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(process_coverage.ProcessCodeCoverageData,
+                     '_ProcessFullRepositoryData')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testCreateTasksForExperimentalCoverage(self, mocked_get_build, *_):
+
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chrome'
+    build.builder.bucket = 'coverage'
+    build.builder.builder = 'android-code-coverage'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', False),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'postsubmit/chromium.googlesource.com/chromium/src/'
+            'aaaaa/coverage/android-code-coverage/123456789/metadata',
+        ]), ('mimic_builder_names', ['android-code-coverage'])
+    ]
+    build.input.gitiles_commit = mock.Mock(
+        host='chromium.googlesource.com',
+        project='chromium/src',
+        ref='refs/heads/main',
+        id='aaaaa')
+    mocked_get_build.return_value = build
+
+    self.test_app.post('/coverage/task/process-data/build/123456789')
+
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='experimental-coverage-queue')
+    self.assertEqual(1, len(tasks))

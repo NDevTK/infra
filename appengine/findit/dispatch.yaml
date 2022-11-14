@@ -14,6 +14,9 @@ dispatch:
   - url: "*/coverage/task/incremental-coverage*"
     module: code-coverage-referenced-coverage-worker
 
+  - url: "*/coverage/cron/author-coverage*"
+    module: code-coverage-experimental-coverage-worker
+
   - url: "*/coverage/cron/*"
     module: code-coverage-backend
 

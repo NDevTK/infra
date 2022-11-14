@@ -1,6 +1,6 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.from datetime import datetime
+# found in the LICENSE file.
 
 import datetime
 import logging
@@ -70,6 +70,7 @@ class ExportAllCoverageMetrics(BaseHandler):
                    (modifier_id, modifier.gerrit_hashtag, modifier.author))
       url = '/coverage/task/gerrit-filter-coverage?modifier_id=%d' % (
           modifier_id)
+      #special characters are not allowed in task name
       author = modifier.author.replace('@', '_') if modifier.author else None
       author = author.replace('.', '_') if author else None
       taskqueue.add(

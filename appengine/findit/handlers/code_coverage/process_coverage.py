@@ -1,7 +1,8 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.from datetime import datetime
+# found in the LICENSE file.
 
+import datetime
 import json
 import logging
 import re
@@ -529,7 +530,7 @@ class ProcessCodeCoverageData(BaseHandler):
         for percentage in entity.incremental_percentages:
           if percentage.path in files_with_existing_comments:
             continue
-          #TODO(crbug/1320434): Remove check once the bug is fixed.
+          #TODO(crbug.com/1320434): Remove check once the bug is fixed.
           if percentage.path.endswith("java"):
             continue
           # Do not add robot comments for test files
@@ -679,6 +680,18 @@ class ProcessCodeCoverageData(BaseHandler):
 
       for gs_metadata_dir, mimic_builder_name in zip(gs_metadata_dirs,
                                                      mimic_builder_names):
+        # TODO(crbug.com/1371204): Remove once experiment is over
+        if mimic_builder_name == "android-code-coverage":
+          url = '/coverage/task/create-file-coverage?build_id=%d' % build_id
+          taskqueue.add(
+              method='GET',
+              url=url,
+              name="%s_%d_%s" %
+              (mimic_builder_name, build_id,
+               datetime.datetime.now().strftime('%d%m%Y-%H%M%S')),
+              queue_name=constants.EXPERIMENTAL_COVERAGE_QUEUE,
+              target=constants.CODE_COVERAGE_EXPERIMENTAL_COVERAGE_WORKER)
+
         full_gs_metadata_dir = '/%s/%s' % (gs_bucket, gs_metadata_dir)
         all_json_gs_path = '%s/all.json.gz' % full_gs_metadata_dir
         data = _GetValidatedData(all_json_gs_path)
