@@ -71,7 +71,7 @@ Adds a DUT to UFS using a json description file and triggers a swarming job to d
 
 Note:
 1. UFS assigns a servo port if it's not given.
-2. By default, every deploy task runs update-label, verify-recovery-mode and run-pre-deploy-verification actions on the DUT.
+2. By default, every deploy task on the DUT.
 `
 
 	// AddLabstationLongDesc long description for AddLabstationCmd
