@@ -11,8 +11,8 @@ create {
       repo: "https://chromium.googlesource.com/external/github.com/python/cpython"
       tag_pattern: "v%s",
 
-      # Pin to 3.10.x for now.
-      version_restriction: { op: LT val: "3.11a0"}
+      # Pin to 3.11.x for now.
+      version_restriction: { op: LT val: "3.12a0"}
     }
     patch_dir: "patches"
   }

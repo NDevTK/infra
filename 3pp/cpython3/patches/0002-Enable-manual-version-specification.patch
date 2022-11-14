@@ -1,1 +1,71 @@
-../../cpython_common/patches/0002-Enable-manual-version-specification.patch
+From 6c12c24d163306e44e3d2074808e45f50ae68a27 Mon Sep 17 00:00:00 2001
+From: Brian Ryner <bryner@google.com>
+Date: Mon, 7 Nov 2022 17:33:20 +1100
+Subject: [PATCH 2/2] Enable manual version specification.
+
+Add the "--enable-py-version-override" option, which overrides the
+version that the Python interpreter reports.
+---
+ Include/patchlevel.h | 10 ++++++++++
+ configure.ac         | 12 ++++++++++++
+ pyconfig.h.in        |  3 +++
+ 3 files changed, 25 insertions(+)
+
+diff --git a/Include/patchlevel.h b/Include/patchlevel.h
+index 627401409a..779a9a8680 100644
+--- a/Include/patchlevel.h
++++ b/Include/patchlevel.h
+@@ -33,3 +33,13 @@
+                         (PY_MICRO_VERSION <<  8) | \
+                         (PY_RELEASE_LEVEL <<  4) | \
+                         (PY_RELEASE_SERIAL << 0))
++
++/* Infra-specific extension: if a version override is provided, replace prefer
++   it over our hard-coded PY_VERSION.
++
++   We define this here so diffs aren't upset when PY_VERSION changes. */
++#include "pyconfig.h"
++#if defined(PY_VERSION_OVERRIDE)
++#undef PY_VERSION
++#define PY_VERSION PY_VERSION_OVERRIDE
++#endif /* PY_VERSION_OVERRIDE */
+diff --git a/configure.ac b/configure.ac
+index ab5e1de6fa..b3edaf3289 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3547,6 +3547,18 @@ case $ac_sys_system/$ac_sys_release in
+     ;;
+ esac
+ 
++# py-version-override option
++AC_MSG_CHECKING(for Python version override)
++AC_ARG_ENABLE(py-version-override,
++AS_HELP_STRING([--enable-py-version-override=PY_VERSION],
++               [Manually override Python version.]),
++[
++       AC_MSG_RESULT(overridden: $enable_py_version_override)
++       AC_DEFINE_UNQUOTED(PY_VERSION_OVERRIDE, "$enable_py_version_override",
++                     [Define to override PY_VERSION])
++],
++[AC_MSG_RESULT(no value specified)])
++
+ AC_MSG_CHECKING(for --with-libs)
+ AC_ARG_WITH(libs,
+             AS_HELP_STRING([--with-libs='lib1 ...'], [link against additional libs (default is no)]),
+diff --git a/pyconfig.h.in b/pyconfig.h.in
+index 75f1d90e9b..8e813e464f 100644
+--- a/pyconfig.h.in
++++ b/pyconfig.h.in
+@@ -1592,6 +1592,9 @@
+ /* Define if you want to enable tracing references for debugging purpose */
+ #undef Py_TRACE_REFS
+ 
++/* Define to override the PY_VERSION reported Python version. */
++#undef PY_VERSION_OVERRIDE
++
+ /* assume C89 semantics that RETSIGTYPE is always void */
+ #undef RETSIGTYPE
+ 
+-- 
+2.38.1.431.g37b22c650d-goog
+
