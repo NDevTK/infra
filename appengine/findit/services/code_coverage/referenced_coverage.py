@@ -237,7 +237,7 @@ def _CreateReferencedCoverage(modifier_id, postsubmit_report):
                           file_coverage.path,
                           file_coverage.gitiles_commit.revision)
           continue
-        referenced_file_coverage = _GetReferencedFileCoverage(
+        referenced_file_coverage = FileCoverageData.GetModifiedLineCoverage(
             file_coverage,
             _GetModifiedLinesSinceCommit(
                 contents[file_coverage.gitiles_commit.revision],
