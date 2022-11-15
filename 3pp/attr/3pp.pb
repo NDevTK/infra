@@ -6,6 +6,7 @@ create {
       version: "2.5.1"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:attr_project:attr"
   }
   build {
     tool: "tools/sed"
