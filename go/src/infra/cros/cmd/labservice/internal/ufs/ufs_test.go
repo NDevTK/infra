@@ -17,6 +17,7 @@ import (
 	"infra/cros/cmd/labservice/internal/ufs/cache"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -78,6 +79,12 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						BuildTarget: "build-target",
 						Model:       "model",
 					},
+				},
+			},
+			ManufacturingConfig: &manufacturing.ManufacturingConfig{
+				HwidComponent: []string{
+					"fake-component1",
+					"fake-component2",
 				},
 			},
 		},
@@ -145,6 +152,10 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						DutModel: &labapi.DutModel{
 							BuildTarget: "build-target",
 							ModelName:   "model",
+						},
+						HwidComponent: []string{
+							"fake-component1",
+							"fake-component2",
 						},
 					},
 				},

@@ -16,6 +16,7 @@ import (
 	"infra/cros/cmd/labservice/internal/ufs/cache"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
 
@@ -43,9 +44,10 @@ func NewInventory(c ufsapi.FleetClient, cl *cache.Locator) *Inventory {
 }
 
 type deviceInfo struct {
-	deviceType DeviceType
-	machine    *ufspb.Machine
-	machineLse *ufspb.MachineLSE
+	deviceType          DeviceType
+	machine             *ufspb.Machine
+	machineLse          *ufspb.MachineLSE
+	manufactoringConfig *manufacturing.ManufacturingConfig
 }
 
 // GetDutTopology returns a DutTopology constructed from UFS.
@@ -118,9 +120,10 @@ func appendDeviceInfo(deviceInfos []*deviceInfo, resp *ufsapi.GetDeviceDataRespo
 	switch resp.GetResourceType() {
 	case ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
 		return append(deviceInfos, &deviceInfo{
-			deviceType: ChromeOSDevice,
-			machine:    resp.GetChromeOsDeviceData().GetMachine(),
-			machineLse: resp.GetChromeOsDeviceData().GetLabConfig(),
+			deviceType:          ChromeOSDevice,
+			machine:             resp.GetChromeOsDeviceData().GetMachine(),
+			machineLse:          resp.GetChromeOsDeviceData().GetLabConfig(),
+			manufactoringConfig: resp.GetChromeOsDeviceData().GetManufacturingConfig(),
 		}), nil
 	case ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return append(deviceInfos, &deviceInfo{
@@ -179,14 +182,15 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 					Address: hostname,
 					Port:    22,
 				},
-				DutModel:  getDutModel(di),
-				Servo:     getServo(p),
-				Chameleon: getChameleon(p),
-				Audio:     getAudio(p),
-				Wifi:      getWifi(p),
-				Touch:     getTouch(p),
-				Camerabox: getCamerabox(p),
-				Cables:    getCables(p),
+				DutModel:      getDutModel(di),
+				Servo:         getServo(p),
+				Chameleon:     getChameleon(p),
+				Audio:         getAudio(p),
+				Wifi:          getWifi(p),
+				Touch:         getTouch(p),
+				Camerabox:     getCamerabox(p),
+				Cables:        getCables(p),
+				HwidComponent: getHwidComponent(di.manufactoringConfig),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -394,4 +398,11 @@ func mapCables(ct lab.CableType) labapi.Cable_Type {
 		return labapi.Cable_HDMIAUDIO
 	}
 	return labapi.Cable_TYPE_UNSPECIFIED
+}
+
+func getHwidComponent(mf *manufacturing.ManufacturingConfig) []string {
+	if mf != nil {
+		return mf.GetHwidComponent()
+	}
+	return nil
 }
