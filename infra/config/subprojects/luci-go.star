@@ -144,5 +144,4 @@ try_builder(
     name = "luci-go-try-frontend",
     os = "Ubuntu-18.04",
     recipe = "infra_frontend_tester",
-    in_cq = False,
 )

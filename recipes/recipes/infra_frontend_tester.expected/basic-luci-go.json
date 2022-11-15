@@ -230,7 +230,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[START_DIR]/infra/frontend/ui",
+    "cwd": "[START_DIR]/infra/go/src/go.chromium.org/luci/analysis/frontend/ui",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -254,7 +254,7 @@
       "run",
       "test"
     ],
-    "cwd": "[START_DIR]/infra/frontend/ui",
+    "cwd": "[START_DIR]/infra/go/src/go.chromium.org/luci/analysis/frontend/ui",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },

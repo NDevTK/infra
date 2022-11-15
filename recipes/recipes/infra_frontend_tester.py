@@ -73,10 +73,12 @@ def RunInfraFrontendTests(api, env):
 def RunLuciGoTests(api, env):
   """This function runs UI tests in the `luci-go` project.
   """
+  # This variable defnies the base directory for luci-go project under infra
+  luci_go_directory = 'go/src/go.chromium.org/luci'
 
-  cwd = api.path['checkout'].join('frontend', 'ui')
+  cwd = api.path['checkout'].join(luci_go_directory, 'analysis', 'frontend',
+                                  'ui')
   RunFrontendTests(api, env, cwd, 'analysis')
-
 
 def RunFrontendTests(api, env, cwd, app_name):
   with api.context(env=env, cwd=cwd):
