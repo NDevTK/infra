@@ -30,6 +30,7 @@ var servoInV2 = lab.Servo{
 			SysfsProduct: "Servo V4",
 			Serial:       "C1903145591",
 			UsbHubPort:   "6.4.1",
+			FwVersion:    "test_firmware_v1",
 		},
 		Children: []*lab.ServoTopologyItem{
 			{
@@ -37,12 +38,14 @@ var servoInV2 = lab.Servo{
 				SysfsProduct: "Cr50",
 				Serial:       "0681D03A-92DCCD64",
 				UsbHubPort:   "6.4.2",
+				FwVersion:    "test_firmware_v2",
 			},
 			{
 				Type:         "c2d2",
 				SysfsProduct: "C2D2",
 				Serial:       "0681D03A-YYYYYYYY",
 				UsbHubPort:   "6.4.3",
+				FwVersion:    "test_firmware_v3",
 			},
 		},
 	},
@@ -361,20 +364,23 @@ common {
 					serial: "C1903145591"
 					type: "servo_v4"
 					sysfs_product: "Servo V4"
+					fw_version: "test_firmware_v1"
 				}
 				children: {
 					usb_hub_port: "6.4.2"
 					serial: "0681D03A-92DCCD64"
 					type: "ccd_cr50"
 					sysfs_product: "Cr50"
+					fw_version: "test_firmware_v2"
 				}
 				children: {
 					usb_hub_port: "6.4.3"
 					serial: "0681D03A-YYYYYYYY"
 					type: "c2d2"
 					sysfs_product: "C2D2"
+					fw_version: "test_firmware_v3"
 				}
-			  }
+			}
 			servo_state: BROKEN
 			servo_type: "v3"
 			rpm_state: WORKING
