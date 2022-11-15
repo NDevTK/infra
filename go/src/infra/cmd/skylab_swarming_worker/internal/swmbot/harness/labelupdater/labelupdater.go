@@ -172,6 +172,7 @@ func newServoTopologyItem(i *inventory.ServoTopologyItem) *lab.ServoTopologyItem
 		SysfsProduct: i.GetSysfsProduct(),
 		Serial:       i.GetSerial(),
 		UsbHubPort:   i.GetUsbHubPort(),
+		FwVersion:    i.GetFwVersion(),
 	}
 }
 
