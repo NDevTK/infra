@@ -16,6 +16,24 @@
       "message": "It\u0027s a bit weird to use an external element to cache a variable for an internal state transit within a single process run(E.g. we use this for labstation reboot because the reboot action is controlled by an separate task). Can we introduce a mechanism that have a context can be accessed globally during entire repair task? So that we can use a field from there to decide if recovery mode is needed, and modify the field in a recoveryAction.",
       "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21f5445a_ed7394a9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-15T18:26:14Z",
+      "side": 1,
+      "message": "Yes, created on the drone in logs (only persist during task). That is allowed to try to start without recovery mode later. \n\nThe context per actions are different and we cannot use for saving anything. Having the file will let us know about that as part of logs and easy debugging.",
+      "parentUuid": "5a6ff39c_de71c0d8",
+      "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
