@@ -94,7 +94,6 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		Network:     networkName,
 	}
 	d, err := startService(ctx, d, false, true, "cros-dut")
-	startTime := time.Now()
 
 	if err != nil {
 		log.Println("DUT Service Failed to start, exiting.")
@@ -104,6 +103,8 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 
 	// After starting the DUTService, find the port it binded to.
 	var dsPort int
+	startTime := time.Now()
+
 	err = common.Poll(ctx, func(ctx context.Context) error {
 		var err error
 		var filePath string
@@ -118,12 +119,16 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		}
 		return nil
 	}, &common.PollOptions{Timeout: 3 * time.Minute, Interval: time.Second})
+
+	logRunTime(ctx, startTime, "cros-dut")
 	if err != nil {
 		log.Printf("DUT Service polling for port err: %s", err)
+		logStatus(ctx, "fail")
 		return d, err
 	}
+
 	log.Println("DUT Service polling for port completed.")
-	logRunTime(ctx, startTime, "cros-dut")
+	logStatus(ctx, "pass")
 
 	d.ServicePort = dsPort
 	return d, nil
@@ -369,12 +374,20 @@ func dutServerPort(dutServerLogFileName string) (int, error) {
 
 // Define metrics. Note: in Go you have to declare metric field types.
 var (
-	pullTime = metric.NewFloat("chrome/infra/CFT/docker_run",
+	runTime = metric.NewFloat("chrome/infra/CFT/docker_run",
 		"Duration of the docker run.",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("service"))
+	statusMetrics = metric.NewFloat("chrome/infra/CFT/docker_run_success_fail",
+		"Note of pass or fail.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("status"))
 )
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
-	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
+	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
+}
+
+func logStatus(ctx context.Context, status string) {
+	statusMetrics.Set(ctx, 1, status)
 }
