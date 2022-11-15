@@ -165,7 +165,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Wifi:                createDUTWifi(make, ds),
 			Bluetooth:           createDUTBluetooth(ds, dc),
 			Battery:             battery,
-			Chameleon:           createChameleon(name, ds),
+			Chameleon:           createChameleon(p, ds),
 			WifiRouters:         createWifiRouterHosts(p.GetWifi()),
 			PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
 			BluetoothPeers:      createBluetoothPeerHosts(p),
@@ -279,11 +279,20 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 	}
 }
 
-func createChameleon(dutName string, ds *ufslab.DutState) *tlw.Chameleon {
-	return &tlw.Chameleon{
-		Name:  fmt.Sprintf("%s-chameleon", dutName),
+func createChameleon(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Chameleon {
+	pCham := p.GetChameleon()
+	cham := &tlw.Chameleon{
+		Name:  pCham.GetHostname(),
 		State: convertChameleonState(ds.GetChameleon()),
 	}
+
+	if rpm := pCham.GetRpm(); rpm != nil {
+		cham.RPMOutlet = &tlw.RPMOutlet{
+			Hostname: rpm.GetPowerunitName(),
+			Outlet:   rpm.GetPowerunitOutlet(),
+		}
+	}
+	return cham
 }
 
 func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.Storage {
