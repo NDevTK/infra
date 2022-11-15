@@ -393,6 +393,8 @@ message Chameleon {
   }
   // State of the device.
   State state = 2;
+  // RPMOutlet of the Chameleon.
+  RPMOutlet RPMOutlet = 3;
 }
 
 // BluetoothPeer models a Bluetooth peer device and its state as used by
