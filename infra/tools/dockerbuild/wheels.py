@@ -510,6 +510,11 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+          'multidict',
+          '6.0.2',
+          packaged=(),
+        ),
+        SourceOrPrebuilt(
             'mysqlclient',
             '2.1.1',
             packaged=(),
