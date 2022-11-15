@@ -1577,10 +1577,8 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Install stable OS on the device.",
 			},
-			Conditions: []string{
-				"Recovery version has OS image path",
-			},
 			Dependencies: []string{
+				"Recovery version has OS image path",
 				"Device is SSHable",
 			},
 			ExecName:    "cros_provision",
