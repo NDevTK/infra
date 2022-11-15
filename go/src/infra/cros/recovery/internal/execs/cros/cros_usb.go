@@ -132,7 +132,7 @@ func getUSBDrivePathOnDut(ctx context.Context, run components.Runner, s componen
 // auditUSBFromDUTSideKeyExec initiates an audit of the servo USB key strictly from the DUT side.
 func auditUSBFromDUTSideKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 	actionArgs := info.GetActionArgs(ctx)
-	timeout := actionArgs.AsDuration(ctx, "audit_timeout", 2, time.Hour)
+	timeout := actionArgs.AsDuration(ctx, "audit_timeout_min", 120, time.Minute)
 
 	dut := info.GetDut()
 	servoHost := info.GetChromeos().GetServo()

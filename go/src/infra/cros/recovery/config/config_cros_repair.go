@@ -946,6 +946,26 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Audit USB-drive from DUT": {
+			Docs: []string{
+				"Audit the USB drive.",
+				"Run badblocks to test USB-drive from DUT side.",
+				"Timeout is 2 hours.",
+			},
+			Dependencies: []string{
+				"Is servod started",
+				"servo_state_is_working",
+			},
+			ExecName: "audit_usb_from_dut_side",
+			ExecExtraArgs: []string{
+				// Set 118 minutes.
+				// That is 2 minutes to prepare and clean up before timeout.
+				"audit_timeout_min:118",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 7200,
+			},
+		},
 		"Audit wifi": {
 			Docs: []string{
 				"Check wifi on the DUT is normal and update wifi hardware state accordingly.",

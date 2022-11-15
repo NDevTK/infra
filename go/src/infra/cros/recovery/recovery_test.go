@@ -137,6 +137,12 @@ var dutPlansCases = []struct {
 		[]string{"servo", "cros", "close"},
 	},
 	{
+		"chromeos audit USB-key",
+		tlw.DUTSetupTypeCros,
+		buildbucket.AuditUSB,
+		[]string{"servo", "cros", "close"},
+	},
+	{
 		"labstation does not have audit RPM",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.AuditRPM,
