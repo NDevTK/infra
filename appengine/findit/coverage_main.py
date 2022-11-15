@@ -14,7 +14,8 @@ from handlers.code_coverage import export_incremental_coverage
 from handlers.code_coverage import export_gerrit_filter_coverage
 from handlers.code_coverage import fetch_source_file
 from handlers.code_coverage import process_coverage
-from handlers.code_coverage import serve_coverage
+from handlers.code_coverage import serve_ci_coverage
+from handlers.code_coverage import serve_cq_coverage
 from handlers.code_coverage import update_postsubmit_report
 
 # Feaure coverage worker module.
@@ -68,14 +69,14 @@ if appengine_util.IsInProductionApp():
 # "code-coverage-frontend" module.
 code_coverage_frontend_handler_mappings = [
     # TODO(crbug.com/924573): Migrate to '.*/coverage/api/coverage-data'.
-    ('/coverage/api/coverage-data', serve_coverage.ServeCodeCoverageData),
+    ('/coverage/api/coverage-data', serve_cq_coverage.ServeCodeCoverageData),
     # These mappings are separated so that ts_mon data (e.g. latency) is
     # groupable by view. (instead of a single entry like /coverage/p/.*)
-    ('/coverage/p/.*/referenced', serve_coverage.ServeCodeCoverageData),
-    ('/coverage/p/.*/component', serve_coverage.ServeCodeCoverageData),
-    ('/coverage/p/.*/dir', serve_coverage.ServeCodeCoverageData),
-    ('/coverage/p/.*/file', serve_coverage.ServeCodeCoverageData),
-    ('/coverage/p/.*', serve_coverage.ServeCodeCoverageData)
+    ('/coverage/p/.*/referenced', serve_ci_coverage.ServeCodeCoverageData),
+    ('/coverage/p/.*/component', serve_ci_coverage.ServeCodeCoverageData),
+    ('/coverage/p/.*/dir', serve_ci_coverage.ServeCodeCoverageData),
+    ('/coverage/p/.*/file', serve_ci_coverage.ServeCodeCoverageData),
+    ('/coverage/p/.*', serve_ci_coverage.ServeCodeCoverageData)
 ]
 code_coverage_frontend_web_application = webapp2.WSGIApplication(
     code_coverage_frontend_handler_mappings, debug=False)
