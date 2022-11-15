@@ -6,6 +6,7 @@ create {
       version: "0.8.3"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:libcap-ng_project:libcap-ng"
   }
   build {
     tool: "tools/sed"
