@@ -39,19 +39,9 @@ func (tn TaskName) String() string {
 	return string(tn)
 }
 
+// BuilderName returns builder-name specified per TaskName.
 func (tn TaskName) BuilderName() string {
-	if name, ok := builderNameMap[tn]; ok {
-		return name
-	}
-	return string(tn)
-}
-
-var builderNameMap = map[TaskName]string{
-	AuditRPM:     "audit-rpm",
-	AuditStorage: "audit-storage",
-	AuditUSB:     "audit-servo-usb-key",
-	Recovery:     "repair",
-	DeepRecovery: "deep-repair",
+	return TaskNameToBuilderNamePerVersion(tn, CIPDProd)
 }
 
 // NormalizeTaskName takes a task name from anywhere and normalizes it.
@@ -95,4 +85,41 @@ func ValidateTaskName(tn TaskName) error {
 		return fmt.Errorf("validate task name: %q is not a valid task name", tn)
 	}
 	return nil
+}
+
+// TaskNameToBuilderNamePerVersion returns builder-name specified per TaskName and CIPDVersion.
+// By default any unknown task will be treated as custom tasks.
+func TaskNameToBuilderNamePerVersion(tn TaskName, v CIPDVersion) string {
+	switch tn {
+	case AuditRPM:
+		if v == CIPDLatest {
+			return "audit-rpm-latest"
+		}
+		return "audit-rpm"
+	case AuditStorage:
+		if v == CIPDLatest {
+			return "audit-storage-latest"
+		}
+		return "audit-storage"
+	case AuditUSB:
+		if v == CIPDLatest {
+			return "audit-servo-usb-key-latest"
+		}
+		return "audit-servo-usb-key"
+	case Recovery, DeepRecovery:
+		if v == CIPDLatest {
+			return "repair-latest"
+		}
+		return "repair"
+	case Deploy:
+		if v == CIPDLatest {
+			return "deploy-latest"
+		}
+		return "deploy"
+	default:
+		if v == CIPDLatest {
+			return "custom-latest"
+		}
+		return "custom"
+	}
 }
