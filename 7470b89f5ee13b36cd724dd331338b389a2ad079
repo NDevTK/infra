@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a6ff39c_de71c0d8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-11-15T02:11:25Z",
+      "side": 1,
+      "message": "It\u0027s a bit weird to use an external element to cache a variable for an internal state transit within a single process run(E.g. we use this for labstation reboot because the reboot action is controlled by an separate task). Can we introduce a mechanism that have a context can be accessed globally during entire repair task? So that we can use a field from there to decide if recovery mode is needed, and modify the field in a recoveryAction.",
+      "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
