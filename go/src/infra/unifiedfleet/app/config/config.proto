@@ -23,7 +23,8 @@ message Config {
   // The hostname of drone-queen service to push inventory to.
   string queen_service = 10;
   // cron job for dronequeen push.
-  bool enable_dronequeen_push = 11;
+  // As UFS migration is over, this is no longer used.
+  bool enable_dronequeen_push = 11 [deprecated=true];
   // cron job for Inv2 to UFS sync(MachineLSE/Asset).
   bool disable_inv2_sync = 12;
   // cron job for UFS to IV2(lab and stateconfig) BQ push.
