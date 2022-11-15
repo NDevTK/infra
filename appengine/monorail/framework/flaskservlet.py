@@ -1,7 +1,6 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# Copyright (c) 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """Base classes for Monorail Flask servlets.
 
 This is derived from  servlet.py
@@ -44,6 +43,7 @@ from google.appengine.api import app_identity
 from google.appengine.api import modules
 from google.appengine.api import users
 from tracker import tracker_views
+from werkzeug import datastructures
 
 NONCE_LENGTH = 32
 
@@ -317,8 +317,7 @@ class FlaskServlet(object):
       logging.warning('mr.perms is %s', self.mr.perms)
       if not self.mr.auth.user_id:
         # If not logged in, let them log in
-        url = servlet_helpers.SafeCreateLoginURL(self.mr)
-        self.redirect(url, abort=True)
+        self.redirect_url = servlet_helpers.SafeCreateLoginURL(self.mr)
       else:
         # Display the missing permissions template.
         page_data = {
@@ -400,7 +399,9 @@ class FlaskServlet(object):
         else:
           raise err
 
-    self.redirect_url = self.ProcessFormData(mr, request.values)
+    form_values = datastructures.MultiDict(request.values)
+    form_values.update(request.files)
+    self.redirect_url = self.ProcessFormData(mr, form_values)
 
     # Most forms redirect the user to a new URL on success.  If no
     # redirect_url was returned, the form handler must have already
