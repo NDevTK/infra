@@ -9,8 +9,6 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/main/appengine/findit
 """
 
 from collections import defaultdict
-import logging
-import os
 import posixpath
 
 
