@@ -255,7 +255,7 @@ func (d *dockerClient) execSDK(ctx context.Context, containerName string, req *E
 		AttachStdout: true,
 		AttachStderr: true,
 		Privileged:   true,
-		Cmd:          req.Cmd,
+		Cmd:          escapeSpecialChars(req.Cmd), // Escaping special characters in the command
 	}
 	cresp, err := d.client.ContainerExecCreate(ctx, containerName, execConfig)
 	if err != nil {
@@ -399,4 +399,21 @@ func (d *dockerClient) CopyFrom(ctx context.Context, containerName string, sourc
 // Uses the same underlying logic as Start to ensure we always print an accurate string
 func StartCommandString(containerName string, req *ContainerArgs) string {
 	return fmt.Sprintf("docker %v", strings.Trim(fmt.Sprint(generateCommandArray(containerName, req)), "[]"))
+}
+
+// Escapes the special characters($, \\, `, \"`) for a command input in the form of a string array
+// Returns the command back as a string array after escaping special characters
+func escapeSpecialChars(cmd []string) []string {
+	var escapedCmd []string
+	for _, command := range cmd {
+		escapedCmd = append(escapedCmd, strings.Replace(
+			strings.Replace(
+				strings.Replace(
+					strings.Replace(
+						command, "\\", "\\\\", -1),
+					"$", "\\$", -1),
+				"\"", "\\\"", -1),
+			"`", "\\`", -1))
+	}
+	return escapedCmd
 }
