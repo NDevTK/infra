@@ -34,6 +34,24 @@
       "parentUuid": "5a6ff39c_de71c0d8",
       "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83dcbda2_eb838263",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-11-15T21:30:04Z",
+      "side": 1,
+      "message": "\u003e he context per actions are different and we cannot use for saving anything. Having the file will let us know about that as part of logs and easy debugging.\n\nYea, I understand that current actionArgs is per action, what I was saying is we can introduce a struct that can be accessed globally during entire task run, this will also enable us to do more logic across actions. But for now I think this implementation is also fine to fetch some early signal for us, we can do this as it is right now and refactor later, you call.",
+      "parentUuid": "21f5445a_ed7394a9",
+      "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
