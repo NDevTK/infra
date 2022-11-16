@@ -267,6 +267,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 	p := &buildbucket.Params{
 		UnitName:       heuristics.NormalizeBotNameToDeviceName(params.botID),
 		TaskName:       params.taskName.String(),
+		BuilderName:    buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, params.taskType),
 		EnableRecovery: true,
 		// TODO(gregorynisbet): This is our own name, move it to the config.
 		AdminService: "chromeos-skylab-bot-fleet.appspot.com",
