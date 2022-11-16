@@ -310,11 +310,12 @@ func (c *AssetHandler) GetHostConfiguration(ctx context.Context, in *proto.GetHo
 
 		res.Resources = append(res.Resources,
 			&proto.HostConfigurationResource{
-				ResourceId:           resource.ResourceId,
-				ResourceName:         resource.Name,
-				ResourceType:         resource.Type,
-				ResourceImageProject: resource.ImageProject,
-				ResourceImageFamily:  resource.ImageFamily})
+				ResourceId:              resource.ResourceId,
+				ResourceName:            resource.Name,
+				ResourceType:            resource.Type,
+				ResourceOperatingSystem: resource.OperatingSystem,
+				ResourceImageProject:    resource.ImageProject,
+				ResourceImageFamily:     resource.ImageFamily})
 	}
 	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
 

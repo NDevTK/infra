@@ -164,6 +164,8 @@ message HostConfigurationResource {
   string resource_name = 2;
   // Type of the Resource
   string resource_type = 3;
+  // Operating system of the resource
+  string resource_operating_system = 6;
   // Information about the image gcp project
   string resource_image_project = 4;
   // Information about the image gcp family
