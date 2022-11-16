@@ -26,12 +26,13 @@ import (
 	"net/http"
 	"time"
 
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/queries"
-
 	"go.chromium.org/luci/appengine/gaemiddleware"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
+
+	"infra/appengine/drone-queen/internal/config"
+	"infra/appengine/drone-queen/internal/middleware"
+	"infra/appengine/drone-queen/internal/queries"
 )
 
 // InstallHandlers installs handlers for cron jobs that are part of this app.
@@ -39,7 +40,7 @@ import (
 // All handlers serve paths under /internal/cron/*
 // These handlers can only be called by appengine's cron service.
 func InstallHandlers(r *router.Router, mw router.MiddlewareChain) {
-	mw = mw.Extend(gaemiddleware.RequireCron)
+	mw = mw.Extend(gaemiddleware.RequireCron, middleware.Trace)
 	r.GET("/internal/cron/import-service-config", mw, errHandler(importServiceConfig))
 	r.GET("/internal/cron/free-invalid-duts", mw, errHandler(freeInvalidDUTs))
 	r.GET("/internal/cron/prune-expired-drones", mw, errHandler(pruneExpiredDrones))
