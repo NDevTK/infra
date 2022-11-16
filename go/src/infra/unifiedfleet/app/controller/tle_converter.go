@@ -126,7 +126,9 @@ func standardConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto
 func truncatePrefixForLabelValues(prefix string, valsArr []string) []string {
 	var processed []string
 	for _, v := range valsArr {
-		processed = append(processed, strings.TrimPrefix(v, prefix))
+		if v != "" {
+			processed = append(processed, strings.TrimPrefix(v, prefix))
+		}
 	}
 	return processed
 }
@@ -135,7 +137,9 @@ func truncatePrefixForLabelValues(prefix string, valsArr []string) []string {
 func appendPrefixForLabelValues(prefix string, valsArr []string) []string {
 	var processed []string
 	for _, v := range valsArr {
-		processed = append(processed, fmt.Sprintf("%s%s", prefix, v))
+		if v != "" {
+			processed = append(processed, fmt.Sprintf("%s%s", prefix, v))
+		}
 	}
 	return processed
 }
