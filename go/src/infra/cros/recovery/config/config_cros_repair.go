@@ -20,11 +20,12 @@ func crosRepairPlan() *Plan {
 			"Verify internal storage",
 			"Check if last provision was good",
 			"Check if OS on required version for camerabox tablet",
-			"Verify system info",
 			"Python is present",
 			"Verify that device is not enrolled",
 			"Check power sources",
 			"Check TPM statuses",
+			"Verify tmp_fwver is updated correctly",
+			"Verify tpm_kernver is updated correctly",
 			"Verify present of gsctool",
 			"Audit",
 			"Firmware validations",
@@ -33,6 +34,7 @@ func crosRepairPlan() *Plan {
 			"Verify keys of RW_VPD",
 			"Verify RO_VPD sku_number",
 			"Verify RO_VPD data on DUT",
+			"Verify system info",
 			"Update Servo NIC mac address",
 			"Match provision labels",
 			"Backup CBI",
@@ -108,7 +110,9 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and reboot",
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Update FW with GBB 0x18 by servo and wait for ping",
+				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 				"Reset power using servo if booted from USB",
 				"Check if request labstation reboot",
 			},
@@ -116,6 +120,18 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
+		},
+		"Install OS in recovery mode by booting from servo USB-drive (special pools)": {
+			Docs: []string{
+				"This action installs the test image on DUT utilizing the features of servo.",
+				"DUT will be booted in recovery mode. This action is targeted at devices ",
+				"in special pools only.",
+			},
+			Dependencies: []string{
+				"Pools allowed to stay in DEV mode",
+				"Install OS in recovery mode by booting from servo USB-drive",
+			},
+			ExecName: "sample_pass",
 		},
 		"Device is SSHable": {
 			Docs: []string{
@@ -131,7 +147,7 @@ func crosRepairActions() map[string]*Action {
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Update FW from fw-image by servo and reboot",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 				"Reset power using servo if booted from USB",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
@@ -194,8 +210,6 @@ func crosRepairActions() map[string]*Action {
 				"Missing serial-number",
 				"Match HWID",
 				"Match serial-number",
-				"Verify tmp_fwver is updated correctly",
-				"Verify tpm_kernver is updated correctly",
 			},
 			ExecName: "sample_pass",
 		},
@@ -229,7 +243,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Python is present": {
@@ -244,7 +258,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Check if last provision was good": {
@@ -259,7 +273,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Verify that device is not enrolled": {
@@ -323,7 +337,7 @@ func crosRepairActions() map[string]*Action {
 				"Cr50 reset by servo wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Power is recognized by DUT": {
@@ -337,7 +351,7 @@ func crosRepairActions() map[string]*Action {
 				"Cr50 reset by servo wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Check TPM statuses": {
@@ -355,7 +369,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Firmware validations": {
@@ -503,7 +517,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Start UI": {
@@ -913,7 +927,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -1026,7 +1040,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Verify tpm_kernver is updated correctly": {
@@ -1044,7 +1058,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"ChromeOS TMP recovery (not critical)": {
@@ -1265,7 +1279,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Kernel does not know issues": {
@@ -1282,7 +1296,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Stateful partition has enough free index nodes": {
@@ -1297,7 +1311,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Stateful partition has enough free space": {
@@ -1313,7 +1327,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Stateful partition (encrypted) has enough free space": {
@@ -1329,7 +1343,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
+				"Download and install OS in DEV mode using USB-drive",
 			},
 		},
 		"Update special device labels": {
@@ -1790,6 +1804,17 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout:            &durationpb.Duration{Seconds: 2400},
 			AllowFailAfterRecovery: true,
 		},
+		"Update FW with GBB 0x18 by servo and wait for ping": {
+			Docs: []string{
+				"Update firmware, switch to DEV mode by setting the GBB flags to 0x18, ",
+				"and wait for the system to be reachable through ping.",
+			},
+			Dependencies: []string{
+				"Update FW from fw-image by servo and set GBB to 0x18",
+				"Wait to be pingable (normal boot)",
+			},
+			ExecName: "sample_pass",
+		},
 		"Power cycle DUT by RPM and wait": {
 			Docs: []string{
 				"Perform RPM cycle and wait to device to boot back.",
@@ -1905,13 +1930,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Install OS in DEV mode by USB-drive (for special pools)": {
+		"Download and install OS in DEV mode using USB-drive": {
 			Docs: []string{
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 				"The action is only for deployment as not limited by pools.",
 			},
 			Dependencies: []string{
-				"Pools allowed to stay in DEV mode",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
 			},
