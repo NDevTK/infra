@@ -413,8 +413,13 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 		r.registerRecoveryUsage(actionName, recoveryName, nil)
 		log.Infof(ctx, "Recovery action %q: request to start-over.", recoveryName)
 		// A non-nil request to start over is a success.
-		if metric != nil && recoveryMetric != nil {
-			metric.RecoveredBy = recoveryMetric.Name
+		if metric != nil {
+			metric.RecoveredBy = recoveryName
+			if recoveryMetric != nil {
+				log.Infof(ctx, "Successful recovery: %q (%s) recovered %q", recoveryName, recoveryMetric.Name, actionName)
+			} else {
+				log.Infof(ctx, "Successful recovery: %q recovered %q", recoveryName, actionName)
+			}
 		}
 		return errors.Reason("recovery %q: request to start over", recoveryName).Tag(startOverTag).Err()
 	}
