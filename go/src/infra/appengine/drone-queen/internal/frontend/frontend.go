@@ -30,6 +30,7 @@ import (
 
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"
+	"infra/appengine/drone-queen/internal/middleware"
 )
 
 // InstallHandlers installs the handlers implemented by the frontend package.
@@ -38,6 +39,7 @@ func InstallHandlers(r *router.Router, mw router.MiddlewareChain) {
 		UnaryServerInterceptor: grpcutil.ChainUnaryServerInterceptors(
 			grpcmon.UnaryServerInterceptor,
 			grpcutil.UnaryServerPanicCatcherInterceptor,
+			middleware.UnaryTrace,
 		),
 	}
 	var q DroneQueenImpl
