@@ -738,10 +738,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verify that servo_v3 isn ot used in setup.",
 			},
-			Conditions: []string{
-				"is_servo_v3",
+			ExecName: "is_servo_v3",
+			ExecExtraArgs: []string{
+				"reverse:true",
 			},
-			ExecName: "sample_fail",
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},

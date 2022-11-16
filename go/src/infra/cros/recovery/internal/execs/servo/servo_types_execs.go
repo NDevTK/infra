@@ -19,16 +19,21 @@ import (
 
 // servoVerifyV3Exec verifies whether the servo attached to the servo host is servo_v3.
 func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
-	// The "-servo" suffix will exist only when the setup is for type V3,
-	// (i.e. there is no labstation present).
-	if info.GetChromeos().GetServo().GetName() == "" {
-		return errors.Reason("servo verify v3: name is empty").Err()
-	}
-	const servoSuffix = "-servo"
-	if strings.HasSuffix(info.GetChromeos().GetServo().GetName(), servoSuffix) {
+	// The "-servo" suffix will exist only when the setup is for type V3.
+	args := info.GetActionArgs(ctx)
+	reverse := args.AsBool(ctx, "reverse", false)
+	if strings.HasSuffix(info.GetChromeos().GetServo().GetName(), "-servo") {
+		// That is servo_v3.
+		if reverse {
+			return errors.Reason("servo verify v3: that is servo_v3 based on host name").Err()
+		}
 		return nil
 	}
-	return errors.Reason("servo verify v3: servo hostname does not carry suffix %q, this is not V3.", servoSuffix).Err()
+	// That is not servo_v3.
+	if reverse {
+		return nil
+	}
+	return errors.Reason("servo verify v3: that is not servo_v3 based on host name").Err()
 }
 
 // servoVerifyV4Exec verifies whether the servo attached to the servo

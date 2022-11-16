@@ -199,20 +199,14 @@ func deepRepairServoPlan() *Plan {
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 			},
-			"Is servo_v3 used": {
-				Docs: []string{
-					"Condition to check if the servo is v3.",
-				},
-				ExecName: "is_servo_v3",
-			},
 			"Is not servo_v3": {
 				Docs: []string{
 					"Verify that servo_v3 isn ot used in setup.",
 				},
-				Conditions: []string{
-					"Is servo_v3 used",
+				ExecName: "is_servo_v3",
+				ExecExtraArgs: []string{
+					"reverse:true",
 				},
-				ExecName: "sample_fail",
 			},
 			"Serial number is not servo_v4p1": {
 				Docs: []string{

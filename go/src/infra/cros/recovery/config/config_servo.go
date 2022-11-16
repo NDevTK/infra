@@ -908,10 +908,10 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Verify that servo_v3 isn ot used in setup.",
 				},
-				Conditions: []string{
-					"Is servo_v3 used",
+				ExecName: "is_servo_v3",
+				ExecExtraArgs: []string{
+					"reverse:true",
 				},
-				ExecName: "sample_fail",
 			},
 			"Serial number is not servo_v4p1": {
 				Docs: []string{
@@ -1088,7 +1088,6 @@ func servoRepairPlan() *Plan {
 			},
 			"Cold reset pin is detected": {
 				Conditions: []string{
-					"Is servo_v3 used",
 					"Is servo_v4(p1) with type-a connector",
 				},
 				ExecName: "servo_check_servod_control",
