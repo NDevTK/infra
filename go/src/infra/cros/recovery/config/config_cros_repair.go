@@ -396,6 +396,25 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_cbi_contents_match",
 			AllowFailAfterRecovery: true,
 		},
+		"Recover CBI With Contents From Inventory": {
+			Docs: []string{
+				"Manages the CBI repair workflow.",
+			},
+			Conditions: []string{
+				"Hardware write protection is disabled",
+				"CBI is present",
+				"UFS contains CBI contents",
+				"CBI contents do not match",
+			},
+			Dependencies: []string{
+				"Restore CBI contents from UFS",
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
+				"Invalidate CBI cache",
+				"CBI contents match",
+			},
+			ExecName: "sample_pass",
+		},
 		"Restore CBI contents from UFS": {
 			Docs: []string{
 				"Restore backup CBI contents from UFS.",

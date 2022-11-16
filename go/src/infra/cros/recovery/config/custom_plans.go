@@ -72,3 +72,20 @@ func RestoreHWIDFromInventoryConfig() *Configuration {
 		},
 	}
 }
+
+// RecoveryCBIFromInventoryConfig restores backup CBI contents from UFS
+func RecoverCBIFromInventoryConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOS,
+		},
+		Plans: map[string]*Plan{
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Recover CBI With Contents From Inventory",
+				},
+				Actions: crosRepairActions(),
+			},
+		},
+	}
+}

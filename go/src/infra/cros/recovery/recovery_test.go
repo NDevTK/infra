@@ -473,6 +473,12 @@ var customConfigurationTestCases = []struct {
 		},
 	},
 	{
+		"Recover CBI With Contents From Inventory",
+		func() *config.Configuration {
+			return config.RecoverCBIFromInventoryConfig()
+		},
+	},
+	{
 		"Custom dowload image to USB drive",
 		func() *config.Configuration {
 			return config.DownloadImageToServoUSBDrive("image_path", "image_name")
