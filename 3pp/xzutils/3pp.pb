@@ -7,8 +7,11 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:xz_project:xz"
+    patch_version: "chromium.1"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "static_libs" }

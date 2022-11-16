@@ -7,8 +7,11 @@ create {
       version: "2.33-rc1"
     }
     unpack_archive: true
+    patch_version: "chromium.1"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "static_libs" }

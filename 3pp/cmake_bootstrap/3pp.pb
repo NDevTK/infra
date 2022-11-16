@@ -9,9 +9,12 @@ create {
       # a prereleased one.
       tag_filter_re: "v[0-9.]*$"
     }
+    patch_version: "chromium.2"
   }
 
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 create {

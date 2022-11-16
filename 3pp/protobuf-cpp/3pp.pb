@@ -3,11 +3,13 @@ create {
   source {
     script { name: "fetch.py" }
     unpack_archive: true
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
     cpe_base_address: "cpe:/a:protobuf_project:protobuf"
   }
 
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "tools" }

@@ -6,13 +6,14 @@ create {
       version: "2.6.4"
     }
     unpack_archive: true
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
     cpe_base_address: "cpe:/a:flex_project:flex"
   }
 
   build {
     tool: "tools/gettext"
     tool: "tools/help2man"
+    tool: "tools/sed"
   }
 
   package {

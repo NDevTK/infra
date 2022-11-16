@@ -9,7 +9,7 @@ create {
       repo: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja"
       tag_pattern: "v%s"
     }
-    patch_version: "chromium.4"
+    patch_version: "chromium.5"
   }
 }
 
@@ -17,6 +17,7 @@ create {
   platform_re: "mac-.*|linux-amd64"
   build {
     tool: "tools/re2c"
+    tool: "tools/sed"
   }
 }
 
@@ -25,6 +26,7 @@ create {
   build {
     tool: "tools/ninja"  # Depend on the bootstrapped version when cross-compiling
     tool: "tools/re2c"
+    tool: "tools/sed"
   }
 }
 

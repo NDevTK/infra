@@ -7,7 +7,9 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:pixman:pixman"
+    patch_version: "chromium.1"
   }
   build {
+    tool: "tools/sed"
   }
 }

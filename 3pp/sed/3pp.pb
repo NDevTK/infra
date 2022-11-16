@@ -6,6 +6,7 @@ create {
       version: "4.2.2"
     }
     unpack_archive: true
+    patch_version: "chromium.1"
   }
   build {}
 }

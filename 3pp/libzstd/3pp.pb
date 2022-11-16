@@ -5,8 +5,10 @@ create {
       repo: "https://github.com/facebook/zstd.git"
       tag_pattern: "v%s"
     }
+    patch_version: "chromium.1"
   }
   build {
+    tool: "tools/sed"
   }
 }
 

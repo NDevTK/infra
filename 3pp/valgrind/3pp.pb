@@ -8,8 +8,11 @@ create {
       version_join: "_"
     }
     cpe_base_address: "cpe:/a:valgrind:valgrind"
+    patch_version: "chromium.1"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 create {

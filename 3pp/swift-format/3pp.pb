@@ -7,9 +7,11 @@ create {
       tag_filter_re: "0.50500.0"
     }
     cpe_base_address: "cpe:/a:swiftformat_project:swiftformat"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "tools" }

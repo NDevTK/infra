@@ -6,9 +6,11 @@ create {
       version: "1.4"
     }
     unpack_archive: true
+    patch_version: "chromium.1"
   }
   build {
     tool: "tools/texinfo"
+    tool: "tools/sed"
   }
 
   package {

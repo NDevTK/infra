@@ -9,10 +9,13 @@ create {
     cpe_base_address: "cpe:/a:gnu:automake"
     unpack_archive: true
     patch_dir: "patches"
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
   }
 
-  build { tool: "tools/autoconf" }
+  build {
+    tool: "tools/autoconf"
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "tools" }

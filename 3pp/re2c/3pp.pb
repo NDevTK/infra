@@ -7,8 +7,11 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:re2c:re2c"
+    patch_version: "chromium.1"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "tools" }

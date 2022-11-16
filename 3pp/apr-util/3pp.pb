@@ -7,10 +7,12 @@ create {
     }
     unpack_archive: true
     patch_dir: "patches"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
 
   build {
+    tool: "tools/sed"
+
     dep: "static_libs/apr"
     dep: "static_libs/libexpat"
   }

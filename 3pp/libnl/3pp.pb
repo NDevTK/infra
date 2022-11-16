@@ -7,10 +7,12 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:libnl_project:libnl"
+    patch_version: "chromium.1"
   }
 
   build {
     tool: "tools/flex"
+    tool: "tools/sed"
   }
 }
 

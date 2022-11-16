@@ -10,6 +10,8 @@ create {
     patch_version: "chromium.1"
   }
   build {
+    tool: "tools/sed"
+
     dep: "pixman"
     dep: "static_libs/attr"
     dep: "static_libs/libcap-ng"

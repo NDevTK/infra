@@ -3,10 +3,11 @@ create {
   source {
     script { name: "fetch.py" }
     unpack_archive: false
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
   build {
     tool: "tools/autoconf"
+    tool: "tools/sed"
   }
 }
 

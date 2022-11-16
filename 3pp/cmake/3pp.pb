@@ -15,11 +15,12 @@ create {
     }
     patch_dir: "patches"
     cpe_base_address: "cpe:/a:cmake_project:cmake"
-    patch_version: "chromium.3"
+    patch_version: "chromium.4"
   }
 
   build {
     tool: "build_support/cmake_bootstrap"
+    tool: "tools/sed"
     tool: "tools/ninja"
   }
 
