@@ -23,7 +23,7 @@ type Environment struct {
 
 	// Buildbucket-specific values.
 	BuildbucketService string
-	CTPBuilder         *buildbucket_pb.BuilderID
+	DefaultCTPBuilder  *buildbucket_pb.BuilderID
 	DUTLeaserBuilder   *buildbucket_pb.BuilderID
 }
 
@@ -33,7 +33,7 @@ var Prod = Environment{
 	UFSService:      "ufs.api.cr.dev",
 
 	BuildbucketService: "cr-buildbucket.appspot.com",
-	CTPBuilder: &buildbucket_pb.BuilderID{
+	DefaultCTPBuilder: &buildbucket_pb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "testplatform",
 		Builder: "cros_test_platform",
@@ -51,7 +51,7 @@ var Dev = Environment{
 	UFSService:      "staging.ufs.api.cr.dev",
 
 	BuildbucketService: "cr-buildbucket.appspot.com",
-	CTPBuilder: &buildbucket_pb.BuilderID{
+	DefaultCTPBuilder: &buildbucket_pb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "testplatform",
 		Builder: "cros_test_platform-dev",

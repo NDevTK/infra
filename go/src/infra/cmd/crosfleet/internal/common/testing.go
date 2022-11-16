@@ -35,4 +35,5 @@ var CmpOpts = cmpopts.IgnoreUnexported(
 	test_platform.ServiceVersion{},
 	structpb.ListValue{},
 	structpb.Struct{},
-	structpb.Value{})
+	structpb.Value{},
+	buildbucketpb.BuilderID{})

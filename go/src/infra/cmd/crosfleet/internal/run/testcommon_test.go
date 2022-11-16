@@ -13,10 +13,12 @@ import (
 	"time"
 
 	"infra/cmd/crosfleet/internal/common"
+	"infra/cmd/crosfleet/internal/site"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 
@@ -875,4 +877,47 @@ func (f *fakeUfsClient) CheckFleetTestsPolicy(ctx context.Context, in *ufsapi.Ch
 		Code: ufsapi.TestStatus_OK,
 	}
 	return response, nil
+}
+
+var testGetCustomCTPBuilderData = []struct {
+	site.Environment
+	testCommonFlags
+	wantCtpBuilder *buildbucketpb.BuilderID
+}{
+	{ // With custom bucket and builder
+		common.EnvFlags{}.Env(),
+		testCommonFlags{
+			publicBuilderBucket: "testBucket",
+			publicBuilder:       "testBuilder",
+		},
+		&buildbucketpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "testBucket",
+			Builder: "testBuilder",
+		},
+	},
+	{ // No custom bucket or builder
+		common.EnvFlags{}.Env(),
+		testCommonFlags{},
+		&buildbucketpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "testplatform",
+			Builder: "cros_test_platform",
+		},
+	},
+}
+
+// Tests the functionality for getting a custom CTPBuilder through env and flags
+func TestGetCTPBuilder(t *testing.T) {
+	t.Parallel()
+	for _, tt := range testGetCustomCTPBuilderData {
+		tt := tt
+		t.Run(fmt.Sprintf("(%s)", tt.wantCtpBuilder), func(t *testing.T) {
+			t.Parallel()
+			gotCtpBuilder := tt.testCommonFlags.getCTPBuilder(tt.Environment)
+			if diff := cmp.Diff(tt.wantCtpBuilder, gotCtpBuilder, common.CmpOpts); diff != "" {
+				t.Errorf("unexpected diff (%s); got : %s; want : %s", diff, gotCtpBuilder, tt.wantCtpBuilder)
+			}
+		})
+	}
 }

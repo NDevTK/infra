@@ -65,7 +65,9 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, env subcom
 	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, suiteCmdName, bbService, c.authFlags, c.printer); err != nil {
 		return err
 	}
-	ctpBBClient, err := buildbucket.NewClient(ctx, c.envFlags.Env().CTPBuilder, c.envFlags.Env().BuildbucketService, c.authFlags)
+
+	ctpBuilder := c.getCTPBuilder(c.envFlags.Env())
+	ctpBBClient, err := buildbucket.NewClient(ctx, ctpBuilder, bbService, c.authFlags)
 	if err != nil {
 		return err
 	}

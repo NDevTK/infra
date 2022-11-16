@@ -17,6 +17,7 @@ import (
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	crosfleetpb "infra/cmd/crosfleet/internal/proto"
+	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
 
@@ -83,6 +84,8 @@ type testCommonFlags struct {
 	secondaryLacrosPaths []string
 	cft                  bool
 	testHarness          string
+	publicBuilderBucket  string
+	publicBuilder        string
 }
 
 type fleetValidationResults struct {
@@ -127,6 +130,8 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.lacrosPath, "lacros-path", "", "Optional GCS path pointing to a lacros artifact.")
 	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
 	f.BoolVar(&c.cft, "cft", false, "Run via CFT.")
+	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
+	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
 
 	if mainArgType == testCmdName {
 		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
@@ -200,6 +205,11 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	// each secondary DUT.
 	if len(c.secondaryLacrosPaths) > 0 && len(c.secondaryLacrosPaths) != len(c.secondaryBoards) {
 		errors = append(errors, fmt.Sprintf("number of requested secondary-boards: %d does not match with number of requested secondary-lacros-paths: %d", len(c.secondaryBoards), len(c.secondaryLacrosPaths)))
+	}
+
+	// Public Bucket and Public Builder should both provided
+	if (c.publicBuilder == "" && c.publicBuilderBucket != "") || (c.publicBuilder != "" && c.publicBuilderBucket == "") {
+		errors = append(errors, "both PublicBuilderBucket and PublicBuilder should be specified")
 	}
 
 	if len(errors) > 0 {
@@ -285,6 +295,18 @@ func (c *testCommonFlags) buildTagsForModel(crosfleetTool string, model string, 
 	}
 
 	return tags
+}
+
+// Gets the CTPBuilder based on the env and the specified custom public ctp builder parameters.
+func (c *testCommonFlags) getCTPBuilder(env site.Environment) *buildbucketpb.BuilderID {
+	builder := *env.DefaultCTPBuilder
+	if c.publicBuilderBucket != "" {
+		builder.Bucket = c.publicBuilderBucket
+	}
+	if c.publicBuilder != "" {
+		builder.Builder = c.publicBuilder
+	}
+	return &builder
 }
 
 // testRunLauncher contains the necessary information to launch and validate a

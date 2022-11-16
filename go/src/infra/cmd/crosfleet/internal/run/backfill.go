@@ -81,7 +81,7 @@ func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcomma
 func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env) error {
 	ctx := cli.GetContext(a, args, env)
 	bbService := args.envFlags.Env().BuildbucketService
-	ctpBBClient, err := buildbucket.NewClient(ctx, args.envFlags.Env().CTPBuilder, bbService, args.authFlags)
+	ctpBBClient, err := buildbucket.NewClient(ctx, args.envFlags.Env().DefaultCTPBuilder, bbService, args.authFlags)
 	if err != nil {
 		return err
 	}
