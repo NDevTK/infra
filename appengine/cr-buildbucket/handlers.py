@@ -61,14 +61,6 @@ class MainHandler(webapp2.RequestHandler):  # pragma: no cover
     )
 
 
-class CronUpdateBuckets(webapp2.RequestHandler):  # pragma: no cover
-  """Updates buckets from configs."""
-
-  @decorators.require_cronjob
-  def get(self):
-    config.cron_update_buckets()
-
-
 class BuildRPCHandler(webapp2.RequestHandler):  # pragma: no cover
   """Redirects to API explorer to see the build."""
 
@@ -174,8 +166,6 @@ def get_backend_routes():  # pragma: no cover
   prpc_server.add_interceptor(auth.prpc_interceptor)
 
   return [  # pragma: no branch
-      webapp2.Route(r'/internal/cron/buildbucket/update_buckets',
-                    CronUpdateBuckets),
       webapp2.Route(r'/internal/cron/buildbucket/bq-export',
                     bq.CronExportBuilds),
       webapp2.Route(r'/internal/cron/buildbucket/unregister-builders',
