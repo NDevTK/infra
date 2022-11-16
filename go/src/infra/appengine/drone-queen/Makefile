@@ -19,16 +19,6 @@ generate:
 
 APP_DIR = appengine
 
-# Development server
-
-.PHONY: dev
-dev: $(APP_DIR)/devcfg/services/dev/config.cfg
-	gae.py devserver -A dev --app-dir $(APP_DIR) -- --host 0.0.0.0 --port 8082 --admin_port 7999 --log_level debug
-
-$(APP_DIR)/devcfg/services/dev/config.cfg:
-	@printf ">>> Creating dev config at %s.  You may want to edit this for your needs.\n" $@
-	cp $(APP_DIR)/devcfg/services/dev/config-template.cfg $@
-
 # Uploading
 
 GCP_PROJECT_DEV = drone-queen-dev
