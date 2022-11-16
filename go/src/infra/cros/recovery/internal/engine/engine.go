@@ -156,7 +156,7 @@ func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enabl
 // 2) Check if the action is applicable based on conditions. Skip if any fail.
 // 3) Run dependencies of the action. Fail if any fails.
 // 4) Run action exec function. Fail if any fail.
-func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool, stepNamePrefix string) (_ *metrics.Action, rErr error) {
+func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool, stepNamePrefix string) (metric *metrics.Action, rErr error) {
 	// The step and metrics need to know about error but if we need to stop from return then it is here.
 	forgiveError := false
 	defer func() {
@@ -208,7 +208,6 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 		return nil, errors.Annotate(aErr, "run action %q: (cached)", actionName).Err()
 	}
-	var metric *metrics.Action
 	if r.args != nil && r.metricSaver != nil {
 		var metricKind string
 		if act.GetMetricsConfig().GetCustomKind() != "" {
@@ -236,6 +235,9 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 				log.Debugf(ctx, "Action %q: requires skipp metrics upload.", actionName)
 			default:
 				panic(fmt.Sprintf("Bad metrics upload policy %q %d", policy.String(), policy.Number()))
+			}
+			if metric != nil && metric.Name == "" {
+				metric.Name = fmt.Sprintf("unsaved:%s", actionName)
 			}
 		}()
 	}
