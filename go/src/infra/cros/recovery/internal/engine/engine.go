@@ -252,6 +252,9 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			}
 		}
 		log.Debugf(ctx, "Action %q: conditions fail with %s", actionName, err)
+		if metric != nil {
+			metric.Status = metrics.ActionStatusSkip
+		}
 		// Return nil error so we can continue execution of next actions...
 		return metric, nil
 	}
