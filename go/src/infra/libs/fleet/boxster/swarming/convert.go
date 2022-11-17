@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
+// LabelMarshaler contains the json marshaling params.
 var LabelMarshaler = jsonpb.Marshaler{
 	EnumsAsInts:  false,
 	EmitDefaults: true,
@@ -89,10 +90,10 @@ func GetLabelNames(dutAttr *api.DutAttribute) ([]string, error) {
 	return append([]string{name}, dutAttr.GetAliases()...), nil
 }
 
-// GetLabelValues takes a path and returns the proto value.
+// GetLabelValues takes a path and returns the proto values.
 //
 // It uses a jsonpath string to try to find corresponding values in a proto. It
-// returns a comma-separated string of the values found.
+// returns a string array of the values found.
 func GetLabelValues(jsonGetPath string, pm proto.Message) ([]string, error) {
 	if jsonGetPath == "" {
 		return nil, errors.New("jsonpath cannot be empty")

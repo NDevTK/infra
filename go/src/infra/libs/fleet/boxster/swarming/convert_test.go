@@ -208,23 +208,34 @@ func TestGetLabelValues(t *testing.T) {
 
 		Convey("get label values from a null proto message", func() {
 			var nilConfig *payload.FlatConfig
-			got, err := GetLabelValues("test-path", nilConfig)
+			got, err := GetLabelValues("$.test-path", nilConfig)
 			So(err, ShouldNotBeNil)
 			So(got, ShouldBeNil)
 			So(err.Error(), ShouldContainSubstring, "proto message cannot be empty")
 		})
 
 		Convey("get label values with a field path - single value", func() {
-			got, err := GetLabelValues("hw_design.id.value", &fc)
+			got, err := GetLabelValues("$.hw_design.id.value", &fc)
 			So(err, ShouldBeNil)
 			So(got, ShouldNotBeNil)
 			So(got, ShouldResemble, []string{"Test"})
 		})
 
+		Convey("get label values with a field path - multiple values", func() {
+			got, err := GetLabelValues("$.hw_design.configs[:].hardware_features.camera.devices[:].ids[:]", &fc)
+			So(err, ShouldBeNil)
+			So(got, ShouldNotBeNil)
+			So(got, ShouldResemble, []string{
+				"test-camera-id-1",
+				"test-camera-id-2",
+				"test-camera-id-3",
+			})
+		})
+
 		Convey("get label values with a field path - no matching value", func() {
-			got, err := GetLabelValues("hw_design_config.hardware_features.embedded_controller.ec_type", &fc)
+			got, err := GetLabelValues("$.hw_design_config.hardware_features.embedded_controller.ec_type", &fc)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "unknown parameter")
+			So(err.Error(), ShouldContainSubstring, "unsupported value type")
 			So(got, ShouldBeNil)
 		})
 	})
