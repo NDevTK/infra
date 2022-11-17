@@ -14,6 +14,7 @@ require (
 	cloud.google.com/go/pubsub v1.25.1
 	cloud.google.com/go/spanner v1.39.0
 	cloud.google.com/go/storage v1.27.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.10.1
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
@@ -59,7 +60,9 @@ require (
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20220907173800-9129d25df9a6
 	go.opencensus.io v0.23.0
+	go.opentelemetry.io/contrib/detectors/gcp v1.11.1
 	go.opentelemetry.io/otel v1.11.1
+	go.opentelemetry.io/otel/sdk v1.11.1
 	go.opentelemetry.io/otel/trace v1.11.1
 	go.skia.org/infra v0.0.0-20220916162150-5898edbc8e08
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
@@ -68,7 +71,7 @@ require (
 	golang.org/x/net v0.0.0-20221012135044-0b7e1fb9d458
 	golang.org/x/oauth2 v0.0.0-20221006150949-b44042a4b9c1
 	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
-	golang.org/x/sys v0.0.0-20220908150016-7ac13a9a928d
+	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
 	golang.org/x/tools v0.1.12
 	golang.org/x/tools/gopls v0.8.3
@@ -100,6 +103,8 @@ require (
 	cloud.google.com/go/trace v1.2.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.12 // indirect
 	github.com/BurntSushi/toml v1.0.0 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v0.34.1 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.34.1 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210907221601-4f80a5e09cd0 // indirect
@@ -177,6 +182,8 @@ require (
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/zeebo/bencode v1.0.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220218215828-6cf2b201936e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
