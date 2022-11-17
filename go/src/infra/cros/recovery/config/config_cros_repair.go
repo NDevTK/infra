@@ -408,6 +408,9 @@ func crosRepairActions() map[string]*Action {
 				"CBI is present",
 				"UFS contains CBI contents",
 			},
+			Dependencies: []string{
+				"CBI contents contain valid magic",
+			},
 			ExecName:               "cros_cbi_contents_match",
 			AllowFailAfterRecovery: true,
 		},
@@ -442,6 +445,15 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_restore_cbi_contents_from_ufs",
 		},
+		"CBI contents contain valid magic": {
+			Docs: []string{
+				"Check if CBI contents on the DUT contain valid CBI magic",
+			},
+			Dependencies: []string{
+				"CBI is present",
+			},
+			ExecName: "cros_cbi_contents_contain_valid_magic",
+		},
 		"Invalidate CBI cache": {
 			Docs: []string{
 				"Invalidate the current CBI cache to ensure that any existing contents are up to date.",
@@ -458,6 +470,9 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"CBI is present",
 				"UFS does not contain CBI contents",
+			},
+			Dependencies: []string{
+				"CBI contents contain valid magic",
 			},
 			ExecName:               "cros_backup_cbi",
 			AllowFailAfterRecovery: true,
