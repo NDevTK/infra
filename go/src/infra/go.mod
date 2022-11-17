@@ -14,6 +14,7 @@ require (
 	cloud.google.com/go/pubsub v1.25.1
 	cloud.google.com/go/spanner v1.39.0
 	cloud.google.com/go/storage v1.27.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.9.0
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
@@ -60,7 +61,9 @@ require (
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20220907173800-9129d25df9a6
 	go.opencensus.io v0.23.0
+	go.opentelemetry.io/contrib/detectors/gcp v1.10.0
 	go.opentelemetry.io/otel v1.10.0
+	go.opentelemetry.io/otel/sdk v1.10.0
 	go.opentelemetry.io/otel/trace v1.10.0
 	go.skia.org/infra v0.0.0-20220916162150-5898edbc8e08
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
@@ -101,6 +104,8 @@ require (
 	cloud.google.com/go/trace v1.2.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.12 // indirect
 	github.com/BurntSushi/toml v1.0.0 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v0.33.0 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.33.0 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210907221601-4f80a5e09cd0 // indirect
@@ -177,6 +182,8 @@ require (
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/zeebo/bencode v1.0.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220218215828-6cf2b201936e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
