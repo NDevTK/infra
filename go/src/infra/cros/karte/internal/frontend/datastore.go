@@ -92,6 +92,7 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 		Model:             e.Model,
 		Board:             e.Board,
 		Restarts:          e.Restarts,
+		RecoveredBy:       e.RecoveredBy,
 	}
 }
 
@@ -475,6 +476,8 @@ func convertActionToActionEntity(action *kartepb.Action) (*ActionEntity, error) 
 		Hostname:       action.Hostname,
 		Model:          action.GetModel(),
 		Board:          action.GetBoard(),
+		Restarts:       action.GetRestarts(),
+		RecoveredBy:    action.GetRecoveredBy(),
 	}, nil
 }
 
