@@ -15,37 +15,27 @@
 package main
 
 import (
-	crand "crypto/rand"
-	"encoding/binary"
-	"math/rand"
-	"net/http"
+	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/cron"
+	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/module"
 
-	"go.chromium.org/luci/appengine/gaemiddleware/standard"
-	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
-
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/cron"
+	icron "infra/appengine/drone-queen/internal/cron"
 	"infra/appengine/drone-queen/internal/frontend"
+	"infra/appengine/drone-queen/internal/middleware"
 )
 
 func main() {
-	seedRand()
-
-	r := router.New()
-	standard.InstallHandlers(r)
-	mw := standard.Base().Extend(config.Middleware)
-	cron.InstallHandlers(r, mw)
-	frontend.InstallHandlers(r, mw)
-	http.DefaultServeMux.Handle("/", r)
-
-	appengine.Main()
-}
-
-func seedRand() {
-	var b [8]byte
-	if _, err := crand.Read(b[:]); err != nil {
-		panic(err)
+	modules := []module.Module{
+		gaeemulation.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
+		cfgmodule.NewModuleFromFlags(),
 	}
-	rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
+	server.Main(nil, modules, func(srv *server.Server) error {
+		icron.InstallHandlers()
+		srv.RegisterUnaryServerInterceptor(middleware.UnaryTrace)
+		frontend.RegisterServers(srv)
+		return nil
+	})
 }
