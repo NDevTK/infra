@@ -14,12 +14,12 @@ func setAllowFail(p *Plan, allowFail bool) *Plan {
 func CrosRepairConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
-			PlanServo,
-			PlanCrOS,
+			// PlanServo,
+			// PlanCrOS,
 			PlanChameleon,
-			PlanBluetoothPeer,
-			PlanWifiRouter,
-			PlanClosing,
+			// PlanBluetoothPeer,
+			// PlanWifiRouter,
+			// PlanClosing,
 		},
 		Plans: map[string]*Plan{
 			PlanServo:         setAllowFail(servoRepairPlan(), true),
