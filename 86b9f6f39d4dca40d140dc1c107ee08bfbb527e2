@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e4dafa2_f8a8830a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-11-17T23:57:15Z",
+      "side": 1,
+      "message": "Can we merge this and run the test through customized recovery plan?",
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6eb4cbdc_28734320",
@@ -14,6 +31,30 @@
       "writtenOn": "2022-11-17T19:29:37Z",
       "side": 1,
       "message": "set default as \"cros\" it will make back compatibility. or we can change plan before land this changes. \n\nboth options will work.",
+      "range": {
+        "startLine": 76,
+        "startChar": 52,
+        "endLine": 76,
+        "endChar": 54
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4156b7fd_15660a80",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-11-17T23:57:15Z",
+      "side": 1,
+      "message": "I feel it should be more verbose to run rpm. if you want it on cros, set the device type to cros.",
+      "parentUuid": "6eb4cbdc_28734320",
       "range": {
         "startLine": 76,
         "startChar": 52,

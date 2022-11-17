@@ -117,6 +117,30 @@
       },
       "revId": "ca33ead00724f7ae11651bc231e1db2b6bbde5ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f992abd_a3f5e8f8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-11-17T23:57:15Z",
+      "side": 1,
+      "message": "I feel the risk is just too high to test it that way. Let\u0027s make sure it works for Chameleon first then we can verify for duts.",
+      "parentUuid": "ba7f30ca_e3c5164f",
+      "range": {
+        "startLine": 181,
+        "startChar": 1,
+        "endLine": 184,
+        "endChar": 60
+      },
+      "revId": "ca33ead00724f7ae11651bc231e1db2b6bbde5ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
