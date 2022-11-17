@@ -23,61 +23,62 @@
 package cron
 
 import (
-	"net/http"
+	"context"
 	"time"
 
-	"go.chromium.org/luci/appengine/gaemiddleware"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/server/router"
+	"go.chromium.org/luci/server/cron"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 
 	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/middleware"
 	"infra/appengine/drone-queen/internal/queries"
 )
 
-// InstallHandlers installs handlers for cron jobs that are part of this app.
-//
-// All handlers serve paths under /internal/cron/*
-// These handlers can only be called by appengine's cron service.
-func InstallHandlers(r *router.Router, mw router.MiddlewareChain) {
-	mw = mw.Extend(gaemiddleware.RequireCron, middleware.Trace)
-	r.GET("/internal/cron/import-service-config", mw, errHandler(importServiceConfig))
-	r.GET("/internal/cron/free-invalid-duts", mw, errHandler(freeInvalidDUTs))
-	r.GET("/internal/cron/prune-expired-drones", mw, errHandler(pruneExpiredDrones))
-	r.GET("/internal/cron/prune-drained-duts", mw, errHandler(pruneDrainedDUTs))
+var tracer trace.Tracer
+
+func init() {
+	tracer = otel.Tracer("infra/appengine/drone-queen/internal/cron")
 }
 
-// errHandler wraps a handler function that returns errors.
-func errHandler(f func(*router.Context) error) router.Handler {
-	return func(c *router.Context) {
-		if err := f(c); err != nil {
-			logging.Errorf(c.Context, "handler returned error: %s", err)
-			http.Error(c.Writer, "Internal server error", http.StatusInternalServerError)
-		}
+// InstallHandlers installs global handlers for cron jobs that are part of this app.
+func InstallHandlers() {
+	cron.RegisterHandler("import-service-config", wrap(importServiceConfig, "import-service-config"))
+	cron.RegisterHandler("free-invalid-duts", wrap(freeInvalidDUTs, "free-invalid-duts"))
+	cron.RegisterHandler("prune-expired-drones", wrap(pruneExpiredDrones, "prune-expired-drones"))
+	cron.RegisterHandler("prune-drained-duts", wrap(pruneDrainedDUTs, "prune-drained-duts"))
+}
+
+// wrap wraps cron handlers (basically providing "middleware").
+func wrap(f cron.Handler, name string) cron.Handler {
+	return func(ctx context.Context) error {
+		var span trace.Span
+		ctx, span = tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindServer))
+		defer span.End()
+		return f(ctx)
 	}
 }
 
-func importServiceConfig(c *router.Context) error {
-	return config.Import(c.Context)
+func importServiceConfig(ctx context.Context) error {
+	return config.Import(ctx)
 }
 
-func freeInvalidDUTs(c *router.Context) (err error) {
+func freeInvalidDUTs(ctx context.Context) (err error) {
 	defer func() {
-		freeInvalidDUTsTick.Add(c.Context, 1, config.Instance(c.Context), err == nil)
+		freeInvalidDUTsTick.Add(ctx, 1, config.Instance(ctx), err == nil)
 	}()
-	return queries.FreeInvalidDUTs(c.Context, time.Now())
+	return queries.FreeInvalidDUTs(ctx, time.Now())
 }
 
-func pruneExpiredDrones(c *router.Context) (err error) {
+func pruneExpiredDrones(ctx context.Context) (err error) {
 	defer func() {
-		pruneExpiredDronesTick.Add(c.Context, 1, config.Instance(c.Context), err == nil)
+		pruneExpiredDronesTick.Add(ctx, 1, config.Instance(ctx), err == nil)
 	}()
-	return queries.PruneExpiredDrones(c.Context, time.Now())
+	return queries.PruneExpiredDrones(ctx, time.Now())
 }
 
-func pruneDrainedDUTs(c *router.Context) (err error) {
+func pruneDrainedDUTs(ctx context.Context) (err error) {
 	defer func() {
-		pruneDrainedDUTsTick.Add(c.Context, 1, config.Instance(c.Context), err == nil)
+		pruneDrainedDUTsTick.Add(ctx, 1, config.Instance(ctx), err == nil)
 	}()
-	return queries.PruneDrainedDUTs(c.Context)
+	return queries.PruneDrainedDUTs(ctx)
 }
