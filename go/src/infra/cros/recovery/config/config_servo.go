@@ -120,9 +120,22 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_host_servod_init",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
 				RecoveryActions: []string{
+					"Stop servod and request to use recovery-mode for servod",
 					"Stop servod",
 					"Create request to reboot labstation",
 				},
+			},
+			"Stop servod and request to use recovery-mode for servod": {
+				Docs: []string{
+					"This recovery action to made adjust how we start servod.",
+					"Created file to tell that we neeed start servod with RC_MODE=1.",
+				},
+				Dependencies: []string{
+					// First create a file as stop can fail.
+					"servo_create_flag_to_use_recovery_mode",
+					"Stop servod",
+				},
+				ExecName: "sample_pass",
 			},
 			"Stop servod": {
 				Docs: []string{
