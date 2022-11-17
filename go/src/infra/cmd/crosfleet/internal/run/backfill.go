@@ -50,6 +50,7 @@ Do not build automation around this subcommand.`,
 		c.Flags.Var(flagx.KeyVals(&c.buildTags), "tag", `Tag to identify build(s) to backfill, in format key=val or key:val; may be specified multiple times.
 Mutually exclusive with -id.`)
 		c.Flags.Var(flagx.KeyVals(&c.buildTags), "tags", "Comma-separated build tags in same format as -tag. Mutually exclusive with -id.")
+		c.Flags.BoolVar(&c.skipConfirmation, "skip-confirmation", false, "Skip confirmation when backfilling multiple runs.")
 		c.Flags.BoolVar(&c.allowDupes, "allow-duplicates", false, "For development purposes only: allow duplicate backfills for the given id/tag(s).")
 		// -------------------------------------------------------------------------
 		// NOTE: This is not a public feature. Only un-comment this section for
@@ -62,12 +63,13 @@ Mutually exclusive with -id.`)
 
 type backfillRun struct {
 	subcommands.CommandRunBase
-	authFlags  authcli.Flags
-	envFlags   common.EnvFlags
-	buildID    int64
-	buildTags  map[string]string
-	allowDupes bool
-	qsAccount  string
+	authFlags        authcli.Flags
+	envFlags         common.EnvFlags
+	buildID          int64
+	buildTags        map[string]string
+	skipConfirmation bool
+	allowDupes       bool
+	qsAccount        string
 }
 
 func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
@@ -93,7 +95,7 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 	if backfillCount == 0 {
 		return fmt.Errorf("no matching, finished build(s) found")
 	}
-	if backfillCount > 1 {
+	if backfillCount > 1 && !args.skipConfirmation {
 		userPromptReason := fmt.Sprintf("Found %d builds to backfill", backfillCount)
 		confirmMultipleBackfills, err := common.CLIPrompt(userPromptReason, false)
 		if err != nil {
