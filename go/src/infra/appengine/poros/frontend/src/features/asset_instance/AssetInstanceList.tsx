@@ -7,6 +7,7 @@ import {
   DataGrid,
   GridRowsProp,
   GridColDef,
+  gridDateComparator,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarDensitySelector,
@@ -74,6 +75,7 @@ export function AssetInstanceList() {
       headerName: 'Created At',
       flex: 1,
       valueGetter: getLocalTime,
+      sortComparator: gridDateComparator,
     },
     {
       field: 'createdBy',
