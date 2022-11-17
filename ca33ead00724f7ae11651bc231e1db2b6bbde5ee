@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "773f7c44_82cce2ee",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-11-17T19:25:44Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "477dfc39_46de5537",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 1
+      },
+      "revId": "ca33ead00724f7ae11651bc231e1db2b6bbde5ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f6af14fb_970a9197",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-11-17T05:58:04Z",
       "side": 1,
       "message": "why do we creating new execs instead of extending existing one?",
+      "range": {
+        "startLine": 181,
+        "startChar": 1,
+        "endLine": 184,
+        "endChar": 60
+      },
+      "revId": "ca33ead00724f7ae11651bc231e1db2b6bbde5ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c4896f4_a6613519",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-11-17T19:25:44Z",
+      "side": 1,
+      "message": "We are extending the existing one creating the new one and retiring the existing one. The current one does not have device_type argument. We will need to update the plan actions of existing one if we directly modify the existing execs. It\u0027s a lot easier to handle the testing/update this way. Added a TODO to capture it.",
+      "parentUuid": "f6af14fb_970a9197",
       "range": {
         "startLine": 181,
         "startChar": 1,
