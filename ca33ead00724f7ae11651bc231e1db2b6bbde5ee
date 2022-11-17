@@ -93,6 +93,30 @@
       },
       "revId": "ca33ead00724f7ae11651bc231e1db2b6bbde5ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba7f30ca_e3c5164f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-17T19:29:37Z",
+      "side": 1,
+      "message": "that is just set default of cros and it will safe as from the change plan in first place.",
+      "parentUuid": "4c4896f4_a6613519",
+      "range": {
+        "startLine": 181,
+        "startChar": 1,
+        "endLine": 184,
+        "endChar": 60
+      },
+      "revId": "ca33ead00724f7ae11651bc231e1db2b6bbde5ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

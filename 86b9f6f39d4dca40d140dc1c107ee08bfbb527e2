@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6eb4cbdc_28734320",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-17T19:29:37Z",
+      "side": 1,
+      "message": "set default as \"cros\" it will make back compatibility. or we can change plan before land this changes. \n\nboth options will work.",
+      "range": {
+        "startLine": 76,
+        "startChar": 52,
+        "endLine": 76,
+        "endChar": 54
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
