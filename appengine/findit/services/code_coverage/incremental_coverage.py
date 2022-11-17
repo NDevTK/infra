@@ -77,10 +77,16 @@ def _CreateBigqueryRows(presubmit_coverage, run_id):
     return None
   coverage = []
   for inc_coverage in presubmit_coverage.incremental_percentages:
+    absolute_coverage = [
+        x for x in presubmit_coverage.absolute_percentages
+        if x.path == inc_coverage.path
+    ][0]
     coverage.append({
         'run_id': run_id,
         'total_lines': inc_coverage.total_lines,
         'covered_lines': inc_coverage.covered_lines,
+        'total_lines_abs': absolute_coverage.total_lines,
+        'covered_lines_abs': absolute_coverage.covered_lines,
         # ignore the leading double slash(//)
         'path': inc_coverage.path[2:],
         'cl_number': presubmit_coverage.cl_patchset.change,

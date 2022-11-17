@@ -44,6 +44,18 @@ class IncrementalCoverageTest(WaterfallTestCase):
                 "total_lines": 100
             },
         ],
+        absolute_percentages=[
+            {
+                "path": "//chrome/browser/abc",
+                "covered_lines": 1000,
+                "total_lines": 1000
+            },
+            {
+                "path": "//chrome/browser/xyz",
+                "covered_lines": 500,
+                "total_lines": 1000
+            },
+        ],
         data={})
     datastore_entity.put()
     run_id = 123
@@ -55,6 +67,8 @@ class IncrementalCoverageTest(WaterfallTestCase):
         'server_host': "chromium-review.googlesource.com",
         'total_lines': 100,
         'covered_lines': 100,
+        'total_lines_abs': 1000,
+        'covered_lines_abs': 1000,
         'path': 'chrome/browser/abc',
         'insert_timestamp': '2020-09-21T00:00:00',
         'run_id': run_id
@@ -64,6 +78,8 @@ class IncrementalCoverageTest(WaterfallTestCase):
         'server_host': "chromium-review.googlesource.com",
         'total_lines': 100,
         'covered_lines': 50,
+        'total_lines_abs': 1000,
+        'covered_lines_abs': 500,
         'path': 'chrome/browser/xyz',
         'insert_timestamp': '2020-09-21T00:00:00',
         'run_id': run_id
