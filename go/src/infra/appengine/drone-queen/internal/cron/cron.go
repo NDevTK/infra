@@ -28,6 +28,7 @@ import (
 
 	"go.chromium.org/luci/appengine/gaemiddleware"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/router"
 
 	"infra/appengine/drone-queen/internal/config"
@@ -39,12 +40,12 @@ import (
 //
 // All handlers serve paths under /internal/cron/*
 // These handlers can only be called by appengine's cron service.
-func InstallHandlers(r *router.Router, mw router.MiddlewareChain) {
-	mw = mw.Extend(gaemiddleware.RequireCron, middleware.Trace)
-	r.GET("/internal/cron/import-service-config", mw, errHandler(importServiceConfig))
-	r.GET("/internal/cron/free-invalid-duts", mw, errHandler(freeInvalidDUTs))
-	r.GET("/internal/cron/prune-expired-drones", mw, errHandler(pruneExpiredDrones))
-	r.GET("/internal/cron/prune-drained-duts", mw, errHandler(pruneDrainedDUTs))
+func InstallHandlers(srv *server.Server) {
+	mw := router.NewMiddlewareChain(gaemiddleware.RequireCron, middleware.Trace)
+	srv.Routes.GET("/internal/cron/import-service-config", mw, errHandler(importServiceConfig))
+	srv.Routes.GET("/internal/cron/free-invalid-duts", mw, errHandler(freeInvalidDUTs))
+	srv.Routes.GET("/internal/cron/prune-expired-drones", mw, errHandler(pruneExpiredDrones))
+	srv.Routes.GET("/internal/cron/prune-drained-duts", mw, errHandler(pruneDrainedDUTs))
 }
 
 // errHandler wraps a handler function that returns errors.

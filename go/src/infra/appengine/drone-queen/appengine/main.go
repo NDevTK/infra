@@ -18,28 +18,37 @@ import (
 	crand "crypto/rand"
 	"encoding/binary"
 	"math/rand"
-	"net/http"
 
-	"go.chromium.org/luci/appengine/gaemiddleware/standard"
-	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
+	"go.chromium.org/luci/grpc/grpcmon"
+	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/cron"
+	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/module"
+	"go.chromium.org/luci/server/redisconn"
 
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/cron"
+	icron "infra/appengine/drone-queen/internal/cron"
 	"infra/appengine/drone-queen/internal/frontend"
+	"infra/appengine/drone-queen/internal/middleware"
 )
 
 func main() {
-	seedRand()
-
-	r := router.New()
-	standard.InstallHandlers(r)
-	mw := standard.Base().Extend(config.Middleware)
-	cron.InstallHandlers(r, mw)
-	frontend.InstallHandlers(r, mw)
-	http.DefaultServeMux.Handle("/", r)
-
-	appengine.Main()
+	modules := []module.Module{
+		gaeemulation.NewModuleFromFlags(),
+		redisconn.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
+	}
+	server.Main(nil, modules, func(srv *server.Server) error {
+		seedRand()
+		srv.RegisterUnaryServerInterceptor(grpcutil.ChainUnaryServerInterceptors(
+			grpcmon.UnaryServerInterceptor,
+			grpcutil.UnaryServerPanicCatcherInterceptor,
+			middleware.UnaryTrace,
+		))
+		icron.InstallHandlers(srv)
+		frontend.InstallHandlers(srv)
+		return nil
+	})
 }
 
 func seedRand() {
