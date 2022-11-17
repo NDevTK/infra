@@ -18,7 +18,6 @@ package middleware
 import (
 	"context"
 
-	"go.chromium.org/luci/server/router"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
@@ -40,14 +39,4 @@ func UnaryTrace(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo
 	ctx, span = tracer.Start(ctx, info.FullMethod, trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 	return handler(ctx, req)
-}
-
-var _ router.Middleware = Trace
-
-// Trace is LUCI middleware for adding trace instrumentation.
-func Trace(c *router.Context, next router.Handler) {
-	var span trace.Span
-	c.Context, span = tracer.Start(c.Context, c.HandlerPath, trace.WithSpanKind(trace.SpanKindServer))
-	defer span.End()
-	next(c)
 }
