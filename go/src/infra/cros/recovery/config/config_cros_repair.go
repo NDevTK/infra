@@ -118,7 +118,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
+				// Always upload so we can track recovery.
+				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
 		},
 		"Install OS in recovery mode by booting from servo USB-drive (special pools)": {
@@ -776,7 +777,8 @@ func crosRepairActions() map[string]*Action {
 				"reverse:true",
 			},
 			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
+				// Use default upload policy out of an abundance of caution.
+				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
 		},
 		"servod_control_exist_for_mac_address": {
