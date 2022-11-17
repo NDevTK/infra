@@ -70,6 +70,24 @@
       "parentUuid": "83dcbda2_eb838263",
       "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2044c0d6_4781545d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-11-17T00:59:29Z",
+      "side": 1,
+      "message": "SGTM, thanks for create a tracking bug for this.",
+      "parentUuid": "da542cf4_c54c3ce8",
+      "revId": "7470b89f5ee13b36cd724dd331338b389a2ad079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
