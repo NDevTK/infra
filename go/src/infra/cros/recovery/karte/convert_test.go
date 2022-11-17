@@ -54,6 +54,8 @@ func TestConvertActionToKarteAction(t *testing.T) {
 						Value:      "cc",
 					},
 				},
+				RecoveredBy: "a",
+				Restarts:    10,
 			},
 			output: &kartepb.Action{
 				Name:           "name",
@@ -66,6 +68,8 @@ func TestConvertActionToKarteAction(t *testing.T) {
 				FailReason:     "w",
 				Hostname:       "fake-hostname",
 				Status:         kartepb.Action_FAIL,
+				RecoveredBy:    "a",
+				Restarts:       10,
 			},
 		},
 		{

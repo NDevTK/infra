@@ -69,6 +69,8 @@ type Action struct {
 	Observations []*Observation
 	// Recovered by is the name of the action that recovered us.
 	RecoveredBy string
+	// Restarts is how many times we have re-traversed the plan.
+	Restarts int32
 }
 
 // UpdateStatus updates status of the action and error reason if error was provided.
