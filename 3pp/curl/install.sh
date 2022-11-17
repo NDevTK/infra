@@ -30,6 +30,6 @@ fi
   --with-libidn2="$DEPS" \
   --prefix="$PREFIX" \
   --host="$CROSS_TRIPLE" \
-  "${EXTRA_CONFIG_ARGS[@]}"
+  "${EXTRA_CONFIG_ARGS[@]}" || cat config.log
 
 make install -j "$(nproc)"
