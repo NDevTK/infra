@@ -1625,7 +1625,7 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#83)(api, env, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#87)(api, env, cwd, app_name):**
 
 &mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#61)(api, env):**
 

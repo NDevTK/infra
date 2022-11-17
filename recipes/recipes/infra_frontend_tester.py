@@ -80,6 +80,10 @@ def RunLuciGoTests(api, env):
                                   'ui')
   RunFrontendTests(api, env, cwd, 'analysis')
 
+  cwd = api.path['checkout'].join(luci_go_directory, 'milo', 'ui')
+  RunFrontendTests(api, env, cwd, 'milo')
+
+
 def RunFrontendTests(api, env, cwd, app_name):
   with api.context(env=env, cwd=cwd):
     api.step(('%s npm install' % app_name), ['npm', 'ci'])
