@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"context"
-	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
@@ -17,6 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	api "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/acl"
 )
 
 // InstallServices installs ...
@@ -49,45 +49,7 @@ func checkAccess(ctx context.Context, rpcName string, _ proto.Message) (context.
 	if rpcName == "CheckFleetTestsPolicy" {
 		return ctx, nil
 	}
-	group := []string{"mdb/chrome-fleet-software-team", "mdb/chrome-labs", "mdb/hwops-nsi", "mdb/chromeos-labs", "mdb/chromeos-labs-tvcs", "mdb/acs-labs"}
-	if strings.HasPrefix(rpcName, "Import") {
-		group = []string{"mdb/chrome-fleet-software-team"}
-	}
-	if strings.HasPrefix(rpcName, "List") || strings.HasPrefix(rpcName, "Get") || strings.HasPrefix(rpcName, "BatchGet") {
-		group = []string{"mdb/chrome-labs", "mdb/chrome-fleet-software-team", "machine-db-readers", "mdb/chromeos-labs", "mdb/chromeos-labs-tvcs", "mdb/acs-labs", "chromeos-inventory-readonly-access"}
-	}
-	switch rpcName {
-	case "CreateMachineLSE", "UpdateMachineLSE", "CreateVM", "UpdateVM",
-		"UpdateMachineLSEDeployment", "BatchUpdateMachineLSEDeployment",
-		"CreateAsset", "UpdateAsset", "RackRegistration", "UpdateRack",
-		"CreateSchedulingUnit", "UpdateSchedulingUnit", "UpdateConfigBundle",
-		"MachineRegistration", "UpdateMachine":
-		group = []string{
-			"mdb/chrome-labs",
-			"mdb/chrome-fleet-software-team",
-			"chromeos-inventory-setup-label-write-access",
-			"chromeos-inventory-status-label-write-access",
-			"machine-db-writers",
-		}
-	case "DeleteMachineLSE", "CreateVlan", "UpdateVlan", "DeleteVlan",
-		"DeleteVM", "DeleteSchedulingUnit":
-		group = []string{
-			"mdb/chrome-labs",
-			"mdb/chrome-fleet-software-team",
-			"chromeos-inventory-privileged-access",
-			"satlab-users",
-		}
-	case "DeleteMachine":
-		group = append(group, "mdb/hwops-nsi", "chromeos-inventory-privileged-access")
-	case "GetMachine", "GetState", "GetCachingService", "GetChromeOSDeviceData",
-		"GetMachineLSE", "GetSchedulingUnit", "GetDeviceData":
-		group = append(group, "chromeos-inventory-readonly-access", "machine-db-readers")
-	case "UpdateState", "UpdateDutState", "UpdateDeviceRecoveryData":
-		group = append(group, "chromeos-inventory-status-label-write-access")
-	case "/pubsub/hart":
-		//TODO(anushruth): Rename group to UFS-pubsub-push-access after removing functionality from IV2
-		group = append(group, "chromeos-inventory-pubsub-push-access")
-	}
+	group := acl.Resolve(rpcName)
 	allow, err := auth.IsMember(ctx, group...)
 	if err != nil {
 		logging.Errorf(ctx, "Check group '%s' membership failed: %s", group, err.Error())

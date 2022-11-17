@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 21
+// Next Tag: 23
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1;
@@ -48,6 +48,8 @@ message Config {
   bool allow_unrecognized_clients = 20;
   // Ownership config files
   OwnershipConfig ownership_config = 21;
+  // RPC acls
+  repeated ACL acls = 22;
 }
 
 message OSNetworkConfig {
@@ -98,4 +100,11 @@ message UserAgent {
   string name = 1;
   // Minimum version supported by UFS
   string version = 2;
+}
+
+message ACL {
+  // match is a regular expression to match for this ACL
+  string match = 1;
+  // groups is a list of groups that are allowed for this ACL
+  repeated string groups = 2;
 }

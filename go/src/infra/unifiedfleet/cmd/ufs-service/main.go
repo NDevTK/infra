@@ -24,6 +24,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	version_compare "infra/libs/version"
+	"infra/unifiedfleet/app/acl"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/frontend"
@@ -49,6 +50,7 @@ func main() {
 		}
 		srv.RunInBackground("ufs.config", cfgLoader.ReloadLoop)
 
+		acl.Register(cfgLoader.Config())
 		srv.Context = config.Use(srv.Context, cfgLoader.Config())
 		srv.Context = external.WithServerInterface(srv.Context)
 
