@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -468,26 +469,37 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 // Mostly we have one resource per plan but in some cases we can have more
 // resources and then we will run the same plan for each resource.
 func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
-	switch planName {
-	case config.PlanCrOS, config.PlanCrOSDeepRepair, config.PlanAndroid, config.PlanClosing:
+	matchPlanName := func(current string, expected ...string) bool {
+		for _, e := range expected {
+			if planName == e {
+				return true
+			}
+			if strings.HasPrefix(planName, fmt.Sprintf("%s_", e)) {
+				return true
+			}
+		}
+		return false
+	}
+	switch {
+	case matchPlanName(planName, config.PlanCrOS, config.PlanAndroid):
 		if dut.Name != "" {
 			return []string{dut.Name}
 		}
-	case config.PlanServo, config.PlanServoDeepRepair:
+	case matchPlanName(planName, config.PlanServo):
 		if s := dut.GetChromeos().GetServo(); s != nil {
 			return []string{s.GetName()}
 		}
-	case config.PlanBluetoothPeer:
+	case matchPlanName(planName, config.PlanBluetoothPeer):
 		var resources []string
 		for _, bp := range dut.GetChromeos().GetBluetoothPeers() {
 			resources = append(resources, bp.GetName())
 		}
 		return resources
-	case config.PlanChameleon:
+	case matchPlanName(planName, config.PlanChameleon):
 		if c := dut.GetChromeos().GetChameleon(); c.GetName() != "" {
 			return []string{c.GetName()}
 		}
-	case config.PlanWifiRouter:
+	case matchPlanName(planName, config.PlanWifiRouter):
 		var resources []string
 		for _, router := range dut.GetChromeos().GetWifiRouters() {
 			resources = append(resources, router.GetName())
