@@ -8,6 +8,7 @@ import gae_ts_mon
 
 from gae_libs import appengine_util
 
+from handlers.code_coverage import create_author_coverage
 from handlers.code_coverage import create_referenced_coverage
 from handlers.code_coverage import export_absolute_coverage
 from handlers.code_coverage import export_incremental_coverage
@@ -22,6 +23,8 @@ from handlers.code_coverage import update_postsubmit_report
 experimental_coverage_worker_handler_mappings = [
     ('.*/coverage/task/gerrit-filter-coverage.*',
      export_gerrit_filter_coverage.ExportCoverageMetrics),
+    ('.*/coverage/task/author-coverage.*',
+     create_author_coverage.CreateAuthorCoverageMetrics),
 ]
 experimental_coverage_worker_application = webapp2.WSGIApplication(
     experimental_coverage_worker_handler_mappings, debug=False)
@@ -58,6 +61,8 @@ code_coverage_backend_handler_mappings = [
      export_gerrit_filter_coverage.ExportAllCoverageMetrics),
     ('.*/coverage/cron/referenced-coverage',
      create_referenced_coverage.CreateReferencedCoverageMetricsCron),
+    ('.*/coverage/cron/author-coverage',
+     create_author_coverage.CreateAuthorCoverageMetricsCron),
     ('.*/coverage/task/postsubmit-report/update',
      update_postsubmit_report.UpdatePostsubmitReport),
 ]
