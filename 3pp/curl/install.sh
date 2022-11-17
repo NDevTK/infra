@@ -21,6 +21,13 @@ else
     "--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt"
     "--with-ca-path=/usr/share/ca-certificates"
   )
+
+  # In our dockcross images, we sometimes see the configure script fail to
+  # detect that it is cross-compiling. Pass --build to force this check to
+  # be accurate.
+  EXTRA_CONFIG_ARGS+=(
+    "--build=x86_64-linux-gnu"
+  )
 fi
 
 ./configure --enable-static --disable-shared \
