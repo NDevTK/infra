@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "db515a85_455ddd0f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-18T01:46:20Z",
+      "side": 1,
+      "message": "let make pass this part in the existing plans to be explicitly.",
+      "parentUuid": "4156b7fd_15660a80",
+      "range": {
+        "startLine": 76,
+        "startChar": 52,
+        "endLine": 76,
+        "endChar": 54
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f8c73685_033fa76f",
         "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
         "patchSetId": 2
