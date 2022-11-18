@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	structbuilder "google.golang.org/protobuf/types/known/structpb"
 
@@ -127,7 +128,9 @@ func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Par
 		log.Println("Request to use prod CIPD version")
 	case CIPDLatest:
 		log.Println("Request to use latest CIPD version")
-		p.BuilderName = fmt.Sprintf("%s-latest", params.BuilderName)
+		if !strings.HasSuffix(params.BuilderName, "-latest") {
+			p.BuilderName = fmt.Sprintf("%s-latest", params.BuilderName)
+		}
 	default:
 		return "", 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
 	}
