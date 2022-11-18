@@ -2619,5 +2619,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Verify rootfs is on fs-verity": {
+			Docs: []string{
+				"Run rootdev to check rootfs",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName:               "cros_verify_rootfs_verity",
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
 	}
 }
