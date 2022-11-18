@@ -61,6 +61,7 @@ class ServletRegistry(object):
   def Register(self, services):
     """Register all the monorail request handlers."""
     self._RegisterWebComponentsHanders()
+    self._RegisterRedirects()
 
     autolink.RegisterAutolink(services)
     return self.routes
