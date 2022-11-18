@@ -53,6 +53,7 @@ func (a *Action) Save() (row map[string]bigquery.Value, insertID string, err err
 	row["restarts"] = a.GetRestarts()
 	row["modification_count"] = a.GetModificationCount()
 	row["recovered_by"] = a.GetRecoveredBy()
+	row["plan_name"] = a.GetPlanName()
 
 	return
 }

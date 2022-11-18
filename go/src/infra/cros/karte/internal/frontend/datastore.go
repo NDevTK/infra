@@ -52,6 +52,7 @@ type ActionEntity struct {
 	Board          string    `gae:"board"`
 	RecoveredBy    string    `gae:"recovered_by"`
 	Restarts       int32     `gae:"restarts"`
+	PlanName       string    `gae:"plan_name"`
 	// Count the number of times that an action entity was modified by a request.
 	ModificationCount int32 `gae:"modification_count"`
 	// Deprecated fields!
@@ -93,6 +94,7 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 		Board:             e.Board,
 		Restarts:          e.Restarts,
 		RecoveredBy:       e.RecoveredBy,
+		PlanName:          e.PlanName,
 	}
 }
 
@@ -119,6 +121,7 @@ func (e *ActionEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 		// ModificationCount is intentionally absent from BigQuery table.
 		RecoveredBy: e.RecoveredBy,
 		Restarts:    e.Restarts,
+		PlanName:    e.PlanName,
 	}
 }
 
@@ -480,6 +483,7 @@ func convertActionToActionEntity(action *kartepb.Action) (*ActionEntity, error) 
 		Board:          action.GetBoard(),
 		Restarts:       action.GetRestarts(),
 		RecoveredBy:    action.GetRecoveredBy(),
+		PlanName:       action.GetPlanName(),
 	}, nil
 }
 

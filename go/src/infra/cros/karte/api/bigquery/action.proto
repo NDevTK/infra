@@ -84,4 +84,7 @@ message Action {
 
   // restarts is the number of times that the current plan was restarted.
   int32 restarts = 20;
+
+  // plan_name is the name of the plan that we're currently executing.
+  string plan_name = 21;
 }
