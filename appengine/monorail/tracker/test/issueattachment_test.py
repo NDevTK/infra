@@ -124,16 +124,18 @@ class IssueattachmentTest(unittest.TestCase):
         'app_default_bucket',
         '/pid/attachments/object_id-download'
         ).AndReturn('googleusercontent.com/...-download...')
+    self.mox.StubOutWithMock(self.servlet, 'redirect')
     path = '/p/proj/issues/attachment?aid=%s&signed_aid=signed_%d' % (
         aid, aid)
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project, path=path,
         perms=permissions.READ_ONLY_PERMISSIONSET)  # includes VIEW
+    self.servlet.redirect(
+      mox.And(mox.StrContains('googleusercontent.com'),
+              mox.StrContains('-download')), abort=True)
     self.mox.ReplayAll()
     self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
-    self.assertIn('googleusercontent.com', self.servlet.redirect_url)
-    self.assertIn('-download', self.servlet.redirect_url)
 
   def testGatherPageData_Download_WithoutDisposition(self):
     aid = self.attachment.attachment_id
@@ -149,14 +151,16 @@ class IssueattachmentTest(unittest.TestCase):
         'app_default_bucket',
         '/pid/attachments/object_id'
         ).AndReturn('googleusercontent.com/...')
+    self.mox.StubOutWithMock(self.servlet, 'redirect')
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project, path=path,
         perms=permissions.READ_ONLY_PERMISSIONSET)  # includes VIEW
+    self.servlet.redirect(
+      mox.And(mox.StrContains('googleusercontent.com'),
+              mox.Not(mox.StrContains('-download'))), abort=True)
     self.mox.ReplayAll()
     self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
-    self.assertIn('googleusercontent.com', self.servlet.redirect_url)
-    self.assertNotIn('-download', self.servlet.redirect_url)
 
   def testGatherPageData_DownloadBadFilename(self):
     aid = self.attachment.attachment_id
@@ -174,11 +178,14 @@ class IssueattachmentTest(unittest.TestCase):
         'app_default_bucket',
         '/pid/attachments/object_id-download'
         ).AndReturn('googleusercontent.com/...-download...')
+    self.mox.StubOutWithMock(self.servlet, 'redirect')
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project,
         path=path,
         perms=permissions.READ_ONLY_PERMISSIONSET)  # includes VIEW
+    self.servlet.redirect(mox.And(
+        mox.Not(mox.StrContains(self.attachment.filename)),
+        mox.StrContains('googleusercontent.com')), abort=True)
     self.mox.ReplayAll()
     self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
-    self.assertIn('googleusercontent.com', self.servlet.redirect_url)

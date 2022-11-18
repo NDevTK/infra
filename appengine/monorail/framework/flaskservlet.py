@@ -168,10 +168,10 @@ class FlaskServlet(object):
 
       if self.request.method == 'POST':
         self.post()
+        if self.redirect_url:
+          return self.redirect(self.redirect_url)
       elif self.request.method == 'GET':
         self.get()
-      if self.redirect_url:
-        return self.redirect(self.redirect_url)
     except exceptions.NoSuchUserException as e:
       logging.info('Trapped NoSuchUserException %s', e)
       flask.abort(404, 'user not found')
@@ -292,11 +292,8 @@ class FlaskServlet(object):
 
       self._AddHelpDebugPageData(page_data)
 
-      if self.redirect_url:
-        return self.redirect(self.redirect_url, abort=True)
-      else:
-        with self.mr.profiler.Phase('rendering template'):
-          self._RenderResponse(page_data)
+      with self.mr.profiler.Phase('rendering template'):
+        self._RenderResponse(page_data)
 
     except (servlet_helpers.MethodNotSupportedError, NotImplementedError) as e:
       # Instead of these pages throwing 500s display the 404 message and log.
