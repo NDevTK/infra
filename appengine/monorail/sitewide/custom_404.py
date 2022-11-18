@@ -18,9 +18,10 @@ from __future__ import absolute_import
 from six.moves import http_client
 from framework import exceptions
 from framework import flaskservlet
+from framework import servlet
 
 
-class ErrorPage(flaskservlet.FlaskServlet):
+class ErrorPage(servlet.Servlet):
   """Page class for generating somewhat informative project-page 404s.
 
   This page class produces a mostly-empty project subpage, which helps
@@ -40,5 +41,5 @@ class ErrorPage(flaskservlet.FlaskServlet):
         'http_response_code': http_client.NOT_FOUND,
     }
 
-  def Get404Page(self, **kwargs):
-    return self.handler(**kwargs)
+  # def Get404Page(self, **kwargs):
+  #   return self.handler(**kwargs)

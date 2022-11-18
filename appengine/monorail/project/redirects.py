@@ -17,45 +17,54 @@ from six.moves import http_client
 
 from framework import flaskservlet
 from framework import framework_helpers
+from framework import servlet
 from framework import urls
 
 
-class WikiRedirect(flaskservlet.FlaskServlet):
+class WikiRedirect(servlet.Servlet):
   """Redirect to the wiki documentation, if provided."""
 
-  def get(self):
+  def get(self, **kwargs):
     """Construct a 302 pointing at project.docs_url, or at adminIntro."""
     if not self.mr.project:
-      self.response.status_code = http_client.NOT_FOUND
+      # TODO(crbug.com/monorail/10936): status in Flask is status_code
+      # self.response.status_code = http_client.NOT_FOUND
+      self.response.status = http_client.NOT_FOUND
       return
     docs_url = self.mr.project.docs_url
     if not docs_url:
       docs_url = framework_helpers.FormatAbsoluteURL(
           self.mr, urls.ADMIN_INTRO, include_project=True)
     self.response.location = docs_url
-    self.response.status_code = http_client.MOVED_PERMANENTLY
+    # TODO(crbug.com/monorail/10936): status in Flask is status_code
+    # self.response.status_code = http_client.MOVED_PERMANENTLY
+    self.response.status = http_client.MOVED_PERMANENTLY
 
-  def GetWikiListRedirect(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetWikiListRedirect(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def GetWikiRedirect(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetWikiRedirect(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class SourceRedirect(flaskservlet.FlaskServlet):
+class SourceRedirect(servlet.Servlet):
   """Redirect to the source browser, if provided."""
 
-  def get(self):
+  def get(self, **kwargs):
     """Construct a 302 pointing at project.source_url, or at adminIntro."""
     if not self.mr.project:
-      self.response.status_code = http_client.NOT_FOUND
+      # TODO(crbug.com/monorail/10936): status in Flask is status_code
+      # self.response.status_code = http_client.NOT_FOUND
+      self.response.status = http_client.NOT_FOUND
       return
     source_url = self.mr.project.source_url
     if not source_url:
       source_url = framework_helpers.FormatAbsoluteURL(
           self.mr, urls.ADMIN_INTRO, include_project=True)
     self.response.location = source_url
-    self.response.status_code = http_client.MOVED_PERMANENTLY
+    # TODO(crbug.com/monorail/10936): status in Flask is status_code
+    # self.response.status_code = http_client.MOVED_PERMANENTLY
+    self.response.status = http_client.MOVED_PERMANENTLY
 
-  def GetSourceRedirect(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetSourceRedirect(self, **kwargs):
+  #   return self.handler(**kwargs)

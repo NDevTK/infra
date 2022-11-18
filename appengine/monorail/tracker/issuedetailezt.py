@@ -14,20 +14,45 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import json
+import logging
+import time
+import ezt
+
 import settings
+from api import converters
 from businesslogic import work_env
 from features import features_bizobj
+from features import send_notifications
 from features import hotlist_helpers
+from features import hotlist_views
 from framework import exceptions
 from framework import flaskservlet
+from framework import framework_bizobj
+from framework import framework_constants
 from framework import framework_helpers
+from framework import framework_views
 from framework import jsonfeed
+from framework import paginate
 from framework import permissions
+from framework import servlet
 from framework import servlet_helpers
+from framework import sorting
+from framework import sql
+from framework import template_helpers
 from framework import urls
+from framework import xsrf
+from proto import user_pb2
+from proto import tracker_pb2
 from services import features_svc
+from services import tracker_fulltext
+from tracker import field_helpers
+from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
+from tracker import tracker_views
+
+from google.protobuf import json_format
 
 
 def CheckMoveIssueRequest(
@@ -99,9 +124,11 @@ def _ComputeBackToListURL(mr, issue, config, hotlist, services):
   return back_to_list_url
 
 
-class FlipperRedirectBase(flaskservlet.FlaskServlet):
+class FlipperRedirectBase(servlet.Servlet):
 
-  def get(self):
+  # pylint: disable=arguments-differ
+  # pylint: disable=unused-argument
+  def get(self, project_name=None, viewed_username=None, hotlist_id=None):
     with work_env.WorkEnv(self.mr, self.services) as we:
       hotlist_id = self.mr.GetIntParam('hotlist_id')
       current_issue = we.GetIssueByLocalID(self.mr.project_id, self.mr.local_id,
@@ -132,22 +159,24 @@ class FlipperRedirectBase(flaskservlet.FlaskServlet):
 class FlipperNext(FlipperRedirectBase):
   next_handler = True
 
-  def GetFlipperNextRedirectPage(self, **kwargs):
-    self.next_handler = True
-    return self.handler(**kwargs)
+  # def GetFlipperNextRedirectPage(self, **kwargs):
+  #   self.next_handler = True
+  #   return self.handler(**kwargs)
 
 
 class FlipperPrev(FlipperRedirectBase):
   next_handler = False
 
-  def GetFlipperPrevRedirectPage(self, **kwargs):
-    self.next_handler = False
-    return self.handler(**kwargs)
+  # def GetFlipperPrevRedirectPage(self, **kwargs):
+  #   self.next_handler = False
+  #   return self.handler(**kwargs)
 
 
-class FlipperList(flaskservlet.FlaskServlet):
-
-  def get(self):
+class FlipperList(servlet.Servlet):
+  # pylint: disable=arguments-differ
+  # pylint: disable=unused-argument
+  # TODO: (monorail:6511)change to get(self) when convert to flask
+  def get(self, project_name=None, viewed_username=None, hotlist_id=None):
     with work_env.WorkEnv(self.mr, self.services) as we:
       hotlist_id = self.mr.GetIntParam('hotlist_id')
       current_issue = we.GetIssueByLocalID(self.mr.project_id, self.mr.local_id,
@@ -170,11 +199,12 @@ class FlipperList(flaskservlet.FlaskServlet):
                                                hotlist, self.services)
     self.redirect(url)
 
-  def GetFlipperList(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetFlipperList(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
-class FlipperIndex(jsonfeed.FlaskJsonFeed):
+# TODO: (monorail:6511) change to flaskJsonFeed when convert to flask
+class FlipperIndex(jsonfeed.JsonFeed):
   """Return a JSON object of an issue's index in search.
 
   This is a distinct JSON endpoint because it can be expensive to compute.
@@ -244,11 +274,11 @@ class FlipperIndex(jsonfeed.FlaskJsonFeed):
       'total_count': total_count,
     }
 
-  def GetFlipperIndex(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetFlipperIndex(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostFlipperIndex(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostFlipperIndex(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def _ShouldShowFlipper(mr, services):

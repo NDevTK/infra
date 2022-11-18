@@ -8,14 +8,18 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import logging
 import re
 import time
 
 import ezt
 
+from framework import exceptions
 from framework import flaskservlet
 from framework import framework_helpers
+from framework import jsonfeed
 from framework import permissions
+from framework import servlet
 from framework import urls
 from proto import tracker_pb2
 from tracker import field_helpers
@@ -24,7 +28,7 @@ from tracker import tracker_constants
 from tracker import tracker_helpers
 
 
-class FieldCreate(flaskservlet.FlaskServlet):
+class FieldCreate(servlet.Servlet):
   """Servlet allowing project owners to create a custom field."""
 
   _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
@@ -57,7 +61,7 @@ class FieldCreate(flaskservlet.FlaskServlet):
                       not fd.is_deleted]
 
     return {
-        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_LABELS,
+        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_LABELS,
         'initial_field_name': '',
         'initial_field_docstring': '',
         'initial_importance': 'normal',
@@ -195,11 +199,11 @@ class FieldCreate(flaskservlet.FlaskServlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.ADMIN_LABELS, saved=1, ts=int(time.time()))
 
-  def GetFieldCreate(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetFieldCreate(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostFieldCreate(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostFieldCreate(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def FieldNameErrorMessage(field_name, config):

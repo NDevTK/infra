@@ -11,12 +11,18 @@ from __future__ import absolute_import
 
 import collections
 import json
+import logging
+import time
+
+import ezt
 
 from features import filterrules_helpers
 from framework import flaskservlet
 from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
+from framework import servlet
+from framework import urls
 from proto import tracker_pb2
 
 
@@ -26,7 +32,7 @@ ParserState = collections.namedtuple(
     'relations_dict')
 
 
-class IssueImport(flaskservlet.FlaskServlet):
+class IssueImport(servlet.Servlet):
   """IssueImport loads a file of issues in JSON format."""
 
   _PAGE_TEMPLATE = 'tracker/issue-import-page.ezt'
@@ -299,11 +305,11 @@ class IssueImport(flaskservlet.FlaskServlet):
     self.services.issue.SetUsedLocalID(cnxn, project_id)
     event_log.append('Finished import')
 
-  def GetIssueImport(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetIssueImport(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostIssueImport(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostIssueImport(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class JSONImportError(Exception):

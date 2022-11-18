@@ -45,7 +45,8 @@ class IssueattachmentTest(unittest.TestCase):
         issue=fake.IssueService(),
         user=fake.UserService())
     self.project = services.project.TestAddProject('proj')
-    self.servlet = issueattachment.AttachmentPage(services=services)
+    self.servlet = issueattachment.AttachmentPage(
+        'req', webapp2.Response(), services=services)
     services.user.TestAddUser('commenter@example.com', 111)
     self.issue = fake.MakeTestIssue(
         self.project.project_id, 1, 'summary', 'New', 111)
@@ -78,7 +79,7 @@ class IssueattachmentTest(unittest.TestCase):
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project, path=path,
         perms=permissions.EMPTY_PERMISSIONSET)
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(404, cm.exception.code)
 

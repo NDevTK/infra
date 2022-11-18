@@ -14,27 +14,34 @@ from __future__ import division
 from __future__ import absolute_import
 
 import collections
+import itertools
 import logging
 import time
+
+import ezt
 
 from features import filterrules_helpers
 from features import filterrules_views
 from features import savedqueries_helpers
-from framework import flaskservlet, servlet
+from framework import authdata
+from framework import flaskservlet
+from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import monorailrequest
 from framework import permissions
+from framework import servlet
 from framework import urls
 from proto import tracker_pb2
+from tracker import field_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
 from tracker import tracker_views
 
 
-class IssueAdminBase(flaskservlet.FlaskServlet):
+class IssueAdminBase(servlet.Servlet):
   """Base class for servlets allowing project owners to configure tracker."""
 
   _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
@@ -135,11 +142,11 @@ class AdminStatuses(IssueAdminBase):
 
     return urls.ADMIN_STATUSES
 
-  def GetAdminStatusesPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetAdminStatusesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostAdminStatusesPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostAdminStatusesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class AdminLabels(IssueAdminBase):
@@ -224,11 +231,11 @@ class AdminLabels(IssueAdminBase):
 
     return urls.ADMIN_LABELS
 
-  def GetAdminLabelsPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetAdminLabelsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostAdminLabelsPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostAdminLabelsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class AdminTemplates(IssueAdminBase):
@@ -294,11 +301,11 @@ class AdminTemplates(IssueAdminBase):
     return (GetSelectedTemplateID('default_template_for_developers'),
             GetSelectedTemplateID('default_template_for_users'))
 
-  def GetAdminTemplatesPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetAdminTemplatesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostAdminTemplatesPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostAdminTemplatesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class AdminComponents(IssueAdminBase):
@@ -410,11 +417,11 @@ class AdminComponents(IssueAdminBase):
         failed_templ=','.join(templates_errors),
         deleted=','.join(deleted_components))
 
-  def GetAdminComponentsPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetAdminComponentsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostAdminComponentsPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostAdminComponentsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 class AdminViews(IssueAdminBase):
@@ -481,11 +488,11 @@ class AdminViews(IssueAdminBase):
 
     return urls.ADMIN_VIEWS
 
-  def GetAdminViewsPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetAdminViewsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostAdminViewsPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostAdminViewsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 def _ParseListPreferences(post_data):
@@ -610,8 +617,8 @@ class AdminRules(IssueAdminBase):
 
     return urls.ADMIN_RULES
 
-  def GetAdminRulesPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetAdminRulesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostAdminRulesPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostAdminRulesPage(self, **kwargs):
+  #   return self.handler(**kwargs)

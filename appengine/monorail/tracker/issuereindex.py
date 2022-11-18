@@ -14,11 +14,12 @@ from six.moves import urllib
 import settings
 from framework import flaskservlet
 from framework import permissions
+from framework import servlet
 from framework import urls
 from services import tracker_fulltext
 
 
-class IssueReindex(flaskservlet.FlaskServlet):
+class IssueReindex(servlet.Servlet):
   """IssueReindex shows a form to request that issues be indexed."""
 
   _PAGE_TEMPLATE = 'tracker/issue-reindex-page.ezt'
@@ -86,8 +87,8 @@ class IssueReindex(flaskservlet.FlaskServlet):
     return '/p/%s%s?%s' % (
         mr.project_name, urls.ISSUE_REINDEX, urllib.parse.urlencode(query_map))
 
-  def GetIssueReindex(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetIssueReindex(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostIssueReindex(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostIssueReindex(self, **kwargs):
+  #   return self.handler(**kwargs)

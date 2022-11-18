@@ -30,7 +30,8 @@ class ProjectSummaryTest(unittest.TestCase):
     self.project = services.project.TestAddProject(
         'proj', project_id=123, summary='sum',
         description='desc')
-    self.servlet = projectsummary.ProjectSummary(services=services)
+    self.servlet = projectsummary.ProjectSummary(
+        'req', 'res', services=services)
 
   def testGatherPageData(self):
     mr = testing_helpers.MakeMonorailRequest(project=self.project)

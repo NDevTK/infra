@@ -35,7 +35,7 @@ class PeopleListTest(unittest.TestCase):
     self.project.owner_ids.extend([111])
     self.project.committer_ids.extend([222])
     self.project.contributor_ids.extend([333])
-    self.servlet = peoplelist.PeopleList(services=services)
+    self.servlet = peoplelist.PeopleList('req', 'res', services=services)
 
   def VerifyAccess(self, exception_expected):
     mr = testing_helpers.MakeMonorailRequest(

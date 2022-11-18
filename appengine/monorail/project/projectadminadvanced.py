@@ -26,13 +26,14 @@ from framework import flaskservlet
 from framework import framework_constants
 from framework import framework_helpers
 from framework import permissions
+from framework import servlet
 from framework import template_helpers
 from framework import urls
 from proto import project_pb2
 from tracker import tracker_constants
 
 
-class ProjectAdminAdvanced(flaskservlet.FlaskServlet):
+class ProjectAdminAdvanced(servlet.Servlet):
   """A page with project state options for the Project Owner(s)."""
 
   _PAGE_TEMPLATE = 'project/project-admin-advanced-page.ezt'
@@ -211,8 +212,8 @@ class ProjectAdminAdvanced(flaskservlet.FlaskServlet):
         moved_to = post_data.get('moved_to', '')
         we.UpdateProject(mr.project.project_id, moved_to=moved_to)
 
-  def GetProjectAdminAdvancedPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetProjectAdminAdvancedPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostProjectAdminAdvancedPage(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostProjectAdminAdvancedPage(self, **kwargs):
+  #   return self.handler(**kwargs)

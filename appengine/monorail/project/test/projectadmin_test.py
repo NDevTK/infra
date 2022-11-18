@@ -25,7 +25,7 @@ class ProjectAdminTest(unittest.TestCase):
     services = service_manager.Services(
         project=fake.ProjectService(),
         user=fake.UserService())
-    self.servlet = projectadmin.ProjectAdmin(services=services)
+    self.servlet = projectadmin.ProjectAdmin('req', 'res', services=services)
     self.project = services.project.TestAddProject(
         'proj', summary='a summary', description='a description')
     self.request, self.mr = testing_helpers.GetRequestObjects(

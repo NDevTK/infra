@@ -153,7 +153,9 @@ def ParseIssueRequest(cnxn, post_data, services, errors, default_project_name):
   status = post_data.get('status', '')
   template_name = urllib.parse.unquote_plus(post_data.get('template_name', ''))
   component_str = post_data.get('components', '')
-  label_strs = post_data.getlist('label')
+  # TODO: switch when convert /p to flask
+  # label_strs = post_data.getlist('label')
+  label_strs = post_data.getall('label')
 
   if is_description:
     tmpl_txt = post_data.get('tmpl_txt', '')
@@ -329,7 +331,9 @@ def _ParseIssueRequestKeptAttachments(post_data):
   Returns:
     a list of attachment ids for kept attachments
   """
-  kept_attachments = post_data.getlist('keep-attachment')
+  # TODO: switch when convert /p to flask
+  # kept_attachments = post_data.getlist('keep-attachment')
+  kept_attachments = post_data.getall('keep-attachment')
   return [int(aid) for aid in kept_attachments]
 
 

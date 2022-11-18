@@ -25,7 +25,8 @@ class ProjectExportTest(unittest.TestCase):
 
   def setUp(self):
     self.services = service_manager.Services()
-    self.servlet = projectexport.ProjectExport(services=self.services)
+    self.servlet = projectexport.ProjectExport(
+        'req', 'res', services=self.services)
 
   def testAssertBasePermission(self):
     mr = testing_helpers.MakeMonorailRequest(
@@ -45,7 +46,8 @@ class ProjectExportJSONTest(unittest.TestCase):
         user=fake.UserService(),
         template=Mock(spec=TemplateService))
     self.services.user.TestAddUser('user1@example.com', 111)
-    self.servlet = projectexport.ProjectExportJSON(services=self.services)
+    self.servlet = projectexport.ProjectExportJSON(
+        'req', 'res', services=self.services)
     self.project = fake.Project(project_id=789)
     self.mr = testing_helpers.MakeMonorailRequest(
         perms=permissions.OWNER_ACTIVE_PERMISSIONSET)

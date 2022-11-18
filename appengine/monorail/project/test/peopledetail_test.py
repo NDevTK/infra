@@ -12,6 +12,8 @@ import logging
 
 import unittest
 
+import webapp2
+
 from framework import authdata
 from framework import exceptions
 from framework import permissions
@@ -37,7 +39,7 @@ class PeopleDetailTest(unittest.TestCase):
     self.project.owner_ids.extend([111, 222])
     self.project.committer_ids.extend([333, 444])
     self.project.contributor_ids.extend([555])
-    self.servlet = peopledetail.PeopleDetail(services=services)
+    self.servlet = peopledetail.PeopleDetail('req', 'res', services=services)
 
   def VerifyAccess(self, exception_expected):
     mr = testing_helpers.MakeMonorailRequest(
@@ -125,12 +127,12 @@ class PeopleDetailTest(unittest.TestCase):
         333, self.servlet.ValidateMemberID('fake cnxn', 333, self.project))
 
     # 404 for user that does not exist
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet.ValidateMemberID('fake cnxn', 8933, self.project)
     self.assertEqual(404, cm.exception.code)
 
     # 404 for valid user that is not in this project
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet.ValidateMemberID('fake cnxn', 999, self.project)
     self.assertEqual(404, cm.exception.code)
 

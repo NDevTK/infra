@@ -45,7 +45,8 @@ class IssueOriginalTest(unittest.TestCase):
         config=fake.ConfigService(),
         issue=fake.IssueService(),
         user=fake.UserService())
-    self.servlet = issueoriginal.IssueOriginal(services=self.services)
+    self.servlet = issueoriginal.IssueOriginal(
+        'req', 'res', services=self.services)
 
     self.proj = self.services.project.TestAddProject('proj', project_id=789)
     summary = 'System wont boot'
@@ -170,14 +171,14 @@ class IssueOriginalTest(unittest.TestCase):
     _request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/original',
         project=self.proj)
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(404, cm.exception.code)
 
     _request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/original?id=1&seq=999',
         project=self.proj)
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(404, cm.exception.code)
 
@@ -199,7 +200,7 @@ class IssueOriginalTest(unittest.TestCase):
     _request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/original?id=1&seq=99',
         project=self.proj)
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet._GetIssueAndComment(mr)
     self.assertEqual(404, cm.exception.code)
 
@@ -207,14 +208,14 @@ class IssueOriginalTest(unittest.TestCase):
     _request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/original',
         project=self.proj)
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet._GetIssueAndComment(mr)
     self.assertEqual(404, cm.exception.code)
 
     _request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/original?id=1',
         project=self.proj)
-    with self.assertRaises(Exception) as cm:
+    with self.assertRaises(webapp2.HTTPException) as cm:
       self.servlet._GetIssueAndComment(mr)
     self.assertEqual(404, cm.exception.code)
 

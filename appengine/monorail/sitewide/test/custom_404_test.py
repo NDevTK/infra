@@ -23,7 +23,7 @@ class Custom404Test(unittest.TestCase):
   def setUp(self):
     self.services = service_manager.Services(
         project=fake.ProjectService())
-    self.servlet = custom_404.ErrorPage(services=self.services)
+    self.servlet = custom_404.ErrorPage('req', 'res', services=self.services)
 
   def testGatherPageData_NoProjectSpecified(self):
     """Project was not included in URL, so raise exception, will cause 400."""

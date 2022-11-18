@@ -8,15 +8,18 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import logging
 import time
 import re
 
 import ezt
 
+from framework import exceptions
 from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import urls
 from proto import tracker_pb2
 from tracker import field_helpers
@@ -25,7 +28,7 @@ from tracker import tracker_helpers
 from tracker import tracker_views
 
 
-class FieldDetail(flaskservlet.FlaskServlet):
+class FieldDetail(servlet.Servlet):
   """Servlet allowing project owners to view and edit a custom field."""
 
   _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
@@ -106,7 +109,7 @@ class FieldDetail(flaskservlet.FlaskServlet):
         sorted([uv.email for uv in field_def_view.editors]))
 
     return {
-        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_LABELS,
+        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_LABELS,
         'field_def': field_def_view,
         'allow_edit': ezt.boolean(allow_edit),
         # TODO(jojwang): update when name changes are actually saved
@@ -246,8 +249,8 @@ class FieldDetail(flaskservlet.FlaskServlet):
           mr, urls.FIELD_DETAIL, field=field_def.field_name,
           saved=1, ts=int(time.time()))
 
-  def GetFieldDetail(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetFieldDetail(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostFieldDetail(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostFieldDetail(self, **kwargs):
+  #   return self.handler(**kwargs)

@@ -32,8 +32,10 @@ class IssueExportTest(unittest.TestCase):
     )
     self.cnxn = 'fake connection'
     self.project = self.services.project.TestAddProject('proj', project_id=789)
-    self.servlet = issueexport.IssueExport(services=self.services)
-    self.jsonfeed = issueexport.IssueExportJSON(services=self.services)
+    self.servlet = issueexport.IssueExport(
+        'req', 'res', services=self.services)
+    self.jsonfeed = issueexport.IssueExportJSON(
+        'req', 'res', services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest(
         project=self.project, perms=permissions.OWNER_ACTIVE_PERMISSIONSET)
     self.mr.can = 1

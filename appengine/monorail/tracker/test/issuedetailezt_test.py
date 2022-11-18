@@ -144,9 +144,12 @@ class FlipperRedirectTest(unittest.TestCase):
         project=fake.ProjectService())
     self.project = self.services.project.TestAddProject(
       'proj', project_id=987, committer_ids=[111])
-    self.next_servlet = issuedetailezt.FlipperNext(services=self.services)
-    self.prev_servlet = issuedetailezt.FlipperPrev(services=self.services)
-    self.list_servlet = issuedetailezt.FlipperList(services=self.services)
+    self.next_servlet = issuedetailezt.FlipperNext(
+        'req', 'res', services=self.services)
+    self.prev_servlet = issuedetailezt.FlipperPrev(
+        'req', 'res', services=self.services)
+    self.list_servlet = issuedetailezt.FlipperList(
+        'req', 'res', services=self.services)
     mr = testing_helpers.MakeMonorailRequest(project=self.project)
     mr.local_id = 123
     mr.me_user_id = 111
@@ -174,7 +177,7 @@ class FlipperRedirectTest(unittest.TestCase):
     patchGetAdjacentIssue.return_value = self.fake_issue_2
     self.next_servlet.mr.GetIntParam = mock.Mock(return_value=None)
 
-    self.next_servlet.get()
+    self.next_servlet.get(project_name='proj', viewed_username=None)
     self.next_servlet.mr.GetIntParam.assert_called_once_with('hotlist_id')
     patchGetAdjacentIssue.assert_called_once()
     self.next_servlet.redirect.assert_called_once_with(
@@ -186,7 +189,7 @@ class FlipperRedirectTest(unittest.TestCase):
     self.next_servlet.mr.GetIntParam = mock.Mock(return_value=123)
     # TODO(jeffcarp): Mock hotlist_id param on path here.
 
-    self.next_servlet.get()
+    self.next_servlet.get(project_name='proj', viewed_username=None)
     self.next_servlet.mr.GetIntParam.assert_called_with('hotlist_id')
     self.next_servlet.redirect.assert_called_once_with(
       '/p/potato/issues/detail?id=789')
@@ -196,7 +199,7 @@ class FlipperRedirectTest(unittest.TestCase):
     patchGetAdjacentIssue.return_value = self.fake_issue_2
     self.next_servlet.mr.GetIntParam = mock.Mock(return_value=None)
 
-    self.prev_servlet.get()
+    self.prev_servlet.get(project_name='proj', viewed_username=None)
     self.prev_servlet.mr.GetIntParam.assert_called_with('hotlist_id')
     patchGetAdjacentIssue.assert_called_once()
     self.prev_servlet.redirect.assert_called_once_with(
@@ -208,7 +211,7 @@ class FlipperRedirectTest(unittest.TestCase):
     self.prev_servlet.mr.GetIntParam = mock.Mock(return_value=123)
     # TODO(jeffcarp): Mock hotlist_id param on path here.
 
-    self.prev_servlet.get()
+    self.prev_servlet.get(project_name='proj', viewed_username=None)
     self.prev_servlet.mr.GetIntParam.assert_called_with('hotlist_id')
     self.prev_servlet.redirect.assert_called_once_with(
       '/p/potato/issues/detail?id=789')

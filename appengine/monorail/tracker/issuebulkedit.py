@@ -28,6 +28,7 @@ from framework import flaskservlet
 from framework import framework_constants
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import template_helpers
 from services import tracker_fulltext
 from tracker import field_helpers
@@ -37,7 +38,7 @@ from tracker import tracker_helpers
 from tracker import tracker_views
 
 
-class IssueBulkEdit(flaskservlet.FlaskServlet):
+class IssueBulkEdit(servlet.Servlet):
   """IssueBulkEdit lists multiple issues and allows an edit to all of them."""
 
   _PAGE_TEMPLATE = 'tracker/issue-bulk-edit-page.ezt'
@@ -482,8 +483,8 @@ class IssueBulkEdit(flaskservlet.FlaskServlet):
     return tracker_helpers.FormatIssueListURL(
         mr, config, saved=len(mr.local_id_list), ts=int(time.time()))
 
-  def GetIssueBulkEdit(self, **kwargs):
-    return self.handler(**kwargs)
+  # def GetIssueBulkEdit(self, **kwargs):
+  #   return self.handler(**kwargs)
 
-  def PostIssueBulkEdit(self, **kwargs):
-    return self.handler(**kwargs)
+  # def PostIssueBulkEdit(self, **kwargs):
+  #   return self.handler(**kwargs)

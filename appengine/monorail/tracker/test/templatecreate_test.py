@@ -40,7 +40,8 @@ class TemplateCreateTest(unittest.TestCase):
         config=fake.ConfigService(),
         template=Mock(spec=template_svc.TemplateService),
         user=fake.UserService())
-    self.servlet = templatecreate.TemplateCreate(services=self.services)
+    self.servlet = templatecreate.TemplateCreate('req', 'res',
+        services=self.services)
     self.project = self.services.project.TestAddProject('proj')
 
     self.fd_1 = tracker_bizobj.MakeFieldDef(
