@@ -33,6 +33,8 @@ var CreateAction = &subcommands.Command{
 		r.Flags.StringVar(&r.failReason, "fail-reason", "", "The fail reason")
 		r.Flags.StringVar(&r.model, "model", "", "The model of the DUT")
 		r.Flags.StringVar(&r.board, "board", "", "The board of the DUT")
+		r.Flags.StringVar(&r.recoveredBy, "recovered-by", "", "The action that recovered this action")
+		r.Flags.IntVar(&r.restarts, "restarts", 0, "The number of times we restarted the plan")
 		return r
 	},
 }
@@ -53,8 +55,10 @@ type createActionRun struct {
 	failReason string
 	// TODO(gregorynisbet): Support times.
 	// sealTime string
-	model string
-	board string
+	model       string
+	board       string
+	recoveredBy string
+	restarts    int
 }
 
 // nontrivialActionFields counts the number of fields in the action to be created with a non-default value.
@@ -76,6 +80,12 @@ func (c *createActionRun) nontrivialActionFields() int {
 		tally++
 	}
 	if c.board != "" {
+		tally++
+	}
+	if c.recoveredBy != "" {
+		tally++
+	}
+	if c.restarts != 0 {
 		tally++
 	}
 	return tally
@@ -116,6 +126,8 @@ func (c *createActionRun) innerRun(ctx context.Context, a subcommands.Applicatio
 	action.FailReason = c.failReason
 	action.Model = c.model
 	action.Board = c.board
+	action.RecoveredBy = c.recoveredBy
+	action.Restarts = int32(c.restarts)
 	out, err := kClient.CreateAction(ctx, &kartepb.CreateActionRequest{Action: action})
 	if err != nil {
 		return errors.Annotate(err, "create action").Err()
