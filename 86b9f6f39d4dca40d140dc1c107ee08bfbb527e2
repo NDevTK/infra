@@ -63,6 +63,98 @@
       },
       "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8c73685_033fa76f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-18T01:28:04Z",
+      "side": 1,
+      "message": "i think we do not success in this case. probably we need move it to line 85?",
+      "range": {
+        "startLine": 82,
+        "startChar": 38,
+        "endLine": 82,
+        "endChar": 59
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21a17e81_5232b412",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-18T01:28:04Z",
+      "side": 1,
+      "message": "`get active chameleon: %q not found`?",
+      "range": {
+        "startLine": 126,
+        "startChar": 28,
+        "endLine": 126,
+        "endChar": 37
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a0f4bf6_bc1fecf0",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-18T01:28:04Z",
+      "side": 1,
+      "message": "please use `device hostname and rpm-outlet for %q`",
+      "range": {
+        "startLine": 137,
+        "startChar": 41,
+        "endLine": 137,
+        "endChar": 66
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97b33027_6ed0cf10",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-18T01:28:04Z",
+      "side": 1,
+      "message": "please provide the value passed to the function.",
+      "range": {
+        "startLine": 141,
+        "startChar": 64,
+        "endLine": 141,
+        "endChar": 102
+      },
+      "revId": "86b9f6f39d4dca40d140dc1c107ee08bfbb527e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
