@@ -11,6 +11,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"sync"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -240,6 +241,7 @@ func (r *createModelRun) evalStrategy() eval.Strategy {
 		},
 		OnTestNotFound: onTestNotFound,
 	}
+	var mu sync.Mutex
 
 	return func(ctx context.Context, in eval.Input, out *eval.Output) error {
 		for _, f := range in.ChangedFiles {
@@ -276,7 +278,9 @@ func (r *createModelRun) evalStrategy() eval.Strategy {
 			example, ok := r.stabilityMap[stabilityMapKey{testID: in.TestVariants[i].Id, date: in.Timestamp}]
 			if !ok {
 				example = &mlExample{}
-				logging.Warningf(ctx, "Stability info not found: %s for %s", in.TestVariants[i].Id, in.Timestamp)
+				mu.Lock()
+				r.missingStabilities[in.TestVariants[i].Id] = struct{}{}
+				mu.Unlock()
 			}
 			example.GitDistance = gitDistances[i]
 			example.UseGitDistance = gitDistances[i] != 0.0 && !math.IsInf(gitDistances[i], 0)

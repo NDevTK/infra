@@ -140,9 +140,6 @@ func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) (
 		return nil, err
 	}
 
-	logging.Infof(ctx, "Writing features file: %f", featureFileName)
-	logging.Infof(ctx, "Writing predicions file: %f", featureFileName)
-
 	csvWriter := csv.NewWriter(featuresFile)
 
 	csvData := [][]string{{
@@ -195,9 +192,8 @@ func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) (
 	cmd.Stderr = &errBuf
 	err = cmd.Run()
 
-	logging.Infof(ctx, "stdout from cli:\n", outBuf.String())
-
 	if err != nil {
+		logging.Infof(ctx, "stdout from cli:\n", outBuf.String())
 		logging.Infof(ctx, "stderr from cli:\n", errBuf.String())
 		return nil, err
 	}

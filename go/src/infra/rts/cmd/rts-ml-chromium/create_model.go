@@ -89,8 +89,9 @@ type createModelRun struct {
 	trainingData string
 
 	// Stability for tests on each day of the evaluation
-	stabilityMap map[stabilityMapKey]*mlExample
-	ev           eval.Eval
+	stabilityMap       map[stabilityMapKey]*mlExample
+	missingStabilities map[string]struct{}
+	ev                 eval.Eval
 
 	authOpt  *auth.Options
 	bqClient *bigquery.Client
@@ -124,6 +125,8 @@ func (r *createModelRun) Run(a subcommands.Application, args []string, env subco
 	if err := r.validateFlags(); err != nil {
 		return r.done(err)
 	}
+
+	r.missingStabilities = make(map[string]struct{})
 
 	var err error
 	if r.bqClient, err = chromium.NewBQClient(ctx, auth.NewAuthenticator(ctx, auth.InteractiveLogin, *r.authOpt)); err != nil {
@@ -216,6 +219,11 @@ func (r *createModelRun) writeStrategyConfig(ctx context.Context, dir string) er
 	res, err := r.ev.Run(ctx, r.evalStrategy())
 	if err != nil {
 		return err
+	}
+
+	// Print any test IDs that were missing as info
+	for testId := range r.missingStabilities {
+		logging.Warningf(ctx, "Stability info not found: %s", testId)
 	}
 
 	eval.PrintResults(res, os.Stdout, 0)
