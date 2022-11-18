@@ -117,6 +117,8 @@ func (e *ActionEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 		Model:          e.Model,
 		Board:          e.Board,
 		// ModificationCount is intentionally absent from BigQuery table.
+		RecoveredBy: e.RecoveredBy,
+		Restarts:    e.Restarts,
 	}
 }
 
