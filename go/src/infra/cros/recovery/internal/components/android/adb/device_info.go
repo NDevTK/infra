@@ -67,3 +67,34 @@ func IsDeviceRooted(ctx context.Context, run components.Runner, log logger.Logge
 	log.Debugf("Attached device %q is rooted", serialNumber)
 	return nil
 }
+
+// IsDebuggableBuildOnDevice checks whether device has application debugging enabled or not.
+func IsDebuggableBuildOnDevice(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	const adbIsDebuggableBuildCmd = "adb -s %s shell getprop ro.debuggable"
+	cmd := fmt.Sprintf(adbIsDebuggableBuildCmd, serialNumber)
+	output, err := run(ctx, time.Minute, cmd)
+	if err != nil {
+		return errors.Annotate(err, "is debuggable build").Err()
+	}
+	if strings.TrimSpace(output) != "1" {
+		return errors.Reason("build on device %q is not debuggable", serialNumber).Err()
+	}
+	log.Debugf("Attached device %q has debugging enabled", serialNumber)
+	return nil
+}
+
+// IsSecureBuildOnDevice checks whether device has userdebug or user build.
+// More details on https://source.android.com/source/add-device.html#build-variants
+func IsSecureBuildOnDevice(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	const adbIsSecureBuildCmd = "adb -s %s shell getprop ro.secure"
+	cmd := fmt.Sprintf(adbIsSecureBuildCmd, serialNumber)
+	output, err := run(ctx, time.Minute, cmd)
+	if err != nil {
+		return errors.Annotate(err, "is secure build").Err()
+	}
+	if strings.TrimSpace(output) != "1" {
+		return errors.Reason("build on device %q is not secure", serialNumber).Err()
+	}
+	log.Debugf("Attached device %q has a secure build", serialNumber)
+	return nil
+}

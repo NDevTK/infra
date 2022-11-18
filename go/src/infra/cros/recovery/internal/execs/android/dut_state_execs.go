@@ -33,7 +33,23 @@ func isDutRootedExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// isUserDebugBuildOnDutExec verifies that DUT has userdebug Android build.
+// More details on https://source.android.com/source/add-device.html#build-variants
+func isUserDebugBuildOnDutExec(ctx context.Context, info *execs.ExecInfo) error {
+	run := newRunner(info)
+	log := info.NewLogger()
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	if err := adb.IsDebuggableBuildOnDevice(ctx, run, log, serialNumber); err != nil {
+		return errors.Annotate(err, "is user debug build on dut").Err()
+	}
+	if err := adb.IsSecureBuildOnDevice(ctx, run, log, serialNumber); err != nil {
+		return errors.Annotate(err, "is user debug build on dut").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("android_dut_is_accessible", isDutAccessibleExec)
 	execs.Register("android_dut_is_rooted", isDutRootedExec)
+	execs.Register("android_dut_has_userdebug_build", isUserDebugBuildOnDutExec)
 }

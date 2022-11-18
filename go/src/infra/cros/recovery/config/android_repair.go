@@ -255,9 +255,6 @@ func androidRepairDeployActions() map[string]*Action {
 		},
 		"Reset DUT": {
 			Docs: []string{"Resets DUT to factory settings."},
-			Conditions: []string{
-				"DUT is rooted",
-			},
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
@@ -269,14 +266,14 @@ func androidRepairDeployActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"DUT is rooted": {
-			Docs: []string{"This verifier checks whether the DUT is rooted."},
+		"DUT has userdebug build": {
+			Docs: []string{"This verifier checks whether the DUT has userdebug build."},
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
 				"DUT is accessible over adb",
 			},
-			ExecName: "android_dut_is_rooted",
+			ExecName: "android_dut_has_userdebug_build",
 		},
 		"Wait for DUT": {
 			Docs: []string{"Waits for DUT to become available."},
@@ -295,9 +292,6 @@ func androidRepairDeployActions() map[string]*Action {
 		},
 		"Connect to WiFi network": {
 			Docs: []string{"Connects DUT to WiFi network."},
-			Conditions: []string{
-				"DUT is rooted",
-			},
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
@@ -313,12 +307,18 @@ func androidRepairDeployActions() map[string]*Action {
 			},
 		},
 		"Ensure adbd runs as root": {
-			Docs:       []string{"Restart adbd with root permission."},
+			Docs: []string{"Restart adbd with root permission."},
+			Conditions: []string{
+				"DUT has userdebug build",
+			},
 			ExecName:   "android_restart_adbd_as_root",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Reset public key": {
 			Docs: []string{"Validates and restores ADB public vendor key."},
+			Conditions: []string{
+				"DUT has userdebug build",
+			},
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
