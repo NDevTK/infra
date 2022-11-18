@@ -1,0 +1,26 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+message SecurityInfo {
+   // name of the security pool
+   string pool_name = 1;
+   // customer group with access to this pool
+   string customer = 2;
+   // security level of the bot ex:trusted, untrusted etc
+   string security_level = 3;
+   // custom MIBA realm for this pool
+   // default is "<customer>_<security_level>"
+   string miba_realm = 4;
+}
+
+message SecurityInfos {
+    // list of pools with security info
+    repeated SecurityInfo pools = 1;
+}
