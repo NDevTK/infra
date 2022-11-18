@@ -461,7 +461,18 @@ func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, exec
 // runDUTPlanPerResource runs a plan against the single resource of the DUT.
 func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan *config.Plan, execArgs *execs.RunArgs, metricSaver metrics.MetricSaver) (rErr error) {
 	execArgs.ResourceName = resource
-	err := engine.Run(ctx, planName, plan, execArgs, metricSaver)
+	planResourceMetricSaver := func(metric *metrics.Action) error {
+		if metric != nil && metricSaver != nil {
+			metric.Observations = append(
+				metric.Observations,
+				metrics.NewStringObservation("plan", planName),
+				metrics.NewStringObservation("plan_resource", execArgs.ResourceName),
+			)
+			return metricSaver(metric)
+		}
+		return nil
+	}
+	err := engine.Run(ctx, planName, plan, execArgs, planResourceMetricSaver)
 	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
 }
 
