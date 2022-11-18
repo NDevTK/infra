@@ -1,6 +1,7 @@
-# Copyright (c) 2022 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
 
 """Unittest for the tracker helpers module."""
 from __future__ import print_function
@@ -10,7 +11,6 @@ from __future__ import absolute_import
 import copy
 import mock
 import unittest
-import io
 
 import settings
 
@@ -30,7 +30,6 @@ from testing import testing_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
-from werkzeug.datastructures import FileStorage
 
 TEST_ID_MAP = {
     'a@example.com': 1,
@@ -228,25 +227,22 @@ class HelpersTest(unittest.TestCase):
             }}))
 
   def testParseIssueRequestAttachments(self):
-    file1 = FileStorage(
-        stream=io.BytesIO(b'hello world'),
+    file1 = testing_helpers.Blank(
         filename='hello.c',
-    )
-    file2 = FileStorage(
-        stream=io.BytesIO(b'Welcome to our project'),
-        filename='README',
-    )
+        value='hello world')
 
-    file3 = FileStorage(
-        stream=io.BytesIO(b'Abort, Retry, or Fail?'),
+    file2 = testing_helpers.Blank(
+        filename='README',
+        value='Welcome to our project')
+
+    file3 = testing_helpers.Blank(
         filename='c:\\dir\\subdir\\FILENAME.EXT',
-    )
+        value='Abort, Retry, or Fail?')
 
     # Browsers send this if FILE field was not filled in.
-    file4 = FileStorage(
-        stream=io.BytesIO(b''),
+    file4 = testing_helpers.Blank(
         filename='',
-    )
+        value='')
 
     attachments = tracker_helpers._ParseIssueRequestAttachments({})
     self.assertEqual([], attachments)
@@ -257,7 +253,6 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual(
         [('hello.c', 'hello world', 'text/plain')],
         attachments)
-    file1.seek(0)
 
     attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
         'file1': [file1],
@@ -267,8 +262,6 @@ class HelpersTest(unittest.TestCase):
         [('hello.c', 'hello world', 'text/plain'),
          ('README', 'Welcome to our project', 'text/plain')],
         attachments)
-    file1.seek(0)
-    file2.seek(0)
 
     attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
         'file3': [file3],
@@ -277,7 +270,6 @@ class HelpersTest(unittest.TestCase):
         [('FILENAME.EXT', 'Abort, Retry, or Fail?',
           'application/octet-stream')],
         attachments)
-    file3.seek(0)
 
     attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
         'file1': [file4],  # Does not appear in result
@@ -288,7 +280,6 @@ class HelpersTest(unittest.TestCase):
         [('FILENAME.EXT', 'Abort, Retry, or Fail?',
           'application/octet-stream')],
         attachments)
-    file3.seek(0)
 
   def testParseIssueRequestKeptAttachments(self):
     pass  # TODO(jrobbins): Write this test.

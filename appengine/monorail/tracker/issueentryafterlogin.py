@@ -1,6 +1,7 @@
-# Copyright (c) 2022 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
 
 """Redirect to /issues/entry or an external URL (like the wizard).
 """
@@ -26,9 +27,7 @@ class IssueEntryAfterLogin(flaskservlet.FlaskServlet):
 
     entry_page_url = servlet_helpers.ComputeIssueEntryURL(mr)
     logging.info('Redirecting to %r', entry_page_url)
-
-    self.redirect_url = entry_page_url
-    return {}
+    self.redirect(entry_page_url, abort=True)
 
   def GetIssueEntryAfterLogin(self, **kwargs):
     return self.handler(**kwargs)
