@@ -18,6 +18,7 @@ import (
 // EnableDeviceTestHarnessMode resets device (https://developer.android.com/studio/command-line/adb#test_harness).
 func EnableDeviceTestHarnessMode(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
 	const adbEnableHarnessModeCmd = "adb -s %s shell cmd testharness enable"
+	// TODO(b/259746452): use shell.QuoteUnix for quoting
 	cmd := fmt.Sprintf(adbEnableHarnessModeCmd, serialNumber)
 	if _, err := run(ctx, time.Minute, cmd); err != nil {
 		return errors.Annotate(err, "enable device harness mode").Err()
@@ -27,10 +28,11 @@ func EnableDeviceTestHarnessMode(ctx context.Context, run components.Runner, log
 }
 
 // WaitForDevice waits until the device is online.
-func WaitForDevice(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+func WaitForDevice(ctx context.Context, timeout time.Duration, run components.Runner, log logger.Logger, serialNumber string) error {
 	const adbWaitForDeviceCmd = "adb -s %s wait-for-device"
+	// TODO(b/259746452): use shell.QuoteUnix for quoting
 	cmd := fmt.Sprintf(adbWaitForDeviceCmd, serialNumber)
-	if _, err := run(ctx, time.Minute, cmd); err != nil {
+	if _, err := run(ctx, timeout, cmd); err != nil {
 		return errors.Annotate(err, "wait for device").Err()
 	}
 	// DUT may still be flaky after a reset even success in wait-for-device, so we need an additional check here

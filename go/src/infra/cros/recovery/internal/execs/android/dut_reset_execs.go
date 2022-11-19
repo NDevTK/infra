@@ -43,8 +43,8 @@ func resetDutExec(ctx context.Context, info *execs.ExecInfo) error {
 func waitTillDutOfflineExec(ctx context.Context, info *execs.ExecInfo) error {
 	serialNumber := info.GetAndroid().GetSerialNumber()
 	argsMap := info.GetActionArgs(ctx)
-	retryCount := argsMap.AsInt(ctx, "retry_count", 10)
-	waitInRetry := argsMap.AsDuration(ctx, "wait_in_retry", 3, time.Second)
+	retryCount := argsMap.AsInt(ctx, "retry_count", 15)
+	waitInRetry := argsMap.AsDuration(ctx, "wait_in_retry", 6, time.Second)
 	run := newRunner(info)
 	logger := info.NewLogger()
 	log.Debugf(ctx, "Waiting till attached device %q offline: retry_count=%d, wait_in_retry=%s", serialNumber, retryCount, waitInRetry)
@@ -58,8 +58,10 @@ func waitTillDutOfflineExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // waitTillDutOnlineExec waits till DUT online.
 func waitTillDutOnlineExec(ctx context.Context, info *execs.ExecInfo) error {
+	actionArgs := info.GetActionArgs(ctx)
+	timeout := actionArgs.AsDuration(ctx, "timeout", 600, time.Second)
 	serialNumber := info.GetAndroid().GetSerialNumber()
-	err := adb.WaitForDevice(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	err := adb.WaitForDevice(ctx, timeout, newRunner(info), info.NewLogger(), serialNumber)
 	if err != nil {
 		return errors.Annotate(err, "wait for online dut").Err()
 	}
@@ -68,8 +70,11 @@ func waitTillDutOnlineExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // enableWiFi enables WiFi on DUT.
 func enableWiFi(ctx context.Context, info *execs.ExecInfo) error {
+	actionArgs := info.GetActionArgs(ctx)
+	retryInterval := actionArgs.AsDuration(ctx, "retry_interval", 5, time.Second)
+	timeout := actionArgs.AsDuration(ctx, "timeout", 60, time.Second)
 	serialNumber := info.GetAndroid().GetSerialNumber()
-	err := adb.EnableWiFi(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	err := adb.EnableWiFi(ctx, retryInterval, timeout, newRunner(info), info.NewLogger(), serialNumber)
 	if err != nil {
 		return errors.Annotate(err, "enable wifi").Err()
 	}
@@ -89,7 +94,9 @@ func connectToWiFiNetwork(ctx context.Context, info *execs.ExecInfo) error {
 	ssid := actionArgs.AsString(ctx, "wifi_ssid", "")
 	securityType := actionArgs.AsString(ctx, "wifi_security", "")
 	password := actionArgs.AsString(ctx, "wifi_password", "")
-	err := adb.ConnectToWiFiNetwork(ctx, newRunner(info), info.NewLogger(), serialNumber, ssid, securityType, password)
+	retryInterval := actionArgs.AsDuration(ctx, "retry_interval", 5, time.Second)
+	timeout := actionArgs.AsDuration(ctx, "timeout", 60, time.Second)
+	err := adb.ConnectToWiFiNetwork(ctx, retryInterval, timeout, newRunner(info), info.NewLogger(), serialNumber, ssid, securityType, password)
 	if err != nil {
 		return errors.Annotate(err, "connect wifi network").Err()
 	}

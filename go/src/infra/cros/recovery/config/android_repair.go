@@ -279,10 +279,12 @@ func androidRepairDeployActions() map[string]*Action {
 			Docs: []string{"Waits for DUT to become available."},
 			Dependencies: []string{
 				"android_wait_for_offline_dut",
-				"Sleep 60s",
 			},
-			ExecName:    "android_wait_for_online_dut",
-			ExecTimeout: &durationpb.Duration{Seconds: 300},
+			ExecName: "android_wait_for_online_dut",
+			ExecExtraArgs: []string{
+				"timeout:600",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
 		"Sleep 60s": {
 			ExecName:      "sample_sleep",
@@ -296,15 +298,32 @@ func androidRepairDeployActions() map[string]*Action {
 				"Validate associated host",
 				"Validate adb",
 				"DUT is accessible over adb",
-				"Ensure adbd runs as root",
-				"android_enable_wifi",
+				"Enable WiFi",
 			},
 			ExecName: "android_connect_wifi_network",
 			ExecExtraArgs: []string{
 				"wifi_ssid:" + wifiSSID,
 				"wifi_security:" + wifiSecurity,
 				"wifi_password:" + wifiPassword,
+				"retry_interval:5",
+				"timeout:180",
 			},
+			ExecTimeout: &durationpb.Duration{Seconds: 180},
+		},
+		"Enable WiFi": {
+			Docs: []string{"Enables WiFi on DUT."},
+			Dependencies: []string{
+				"Validate associated host",
+				"Validate adb",
+				"DUT is accessible over adb",
+				"Ensure adbd runs as root",
+			},
+			ExecName: "android_enable_wifi",
+			ExecExtraArgs: []string{
+				"retry_interval:5",
+				"timeout:180",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 180},
 		},
 		"Ensure adbd runs as root": {
 			Docs: []string{"Restart adbd with root permission."},
