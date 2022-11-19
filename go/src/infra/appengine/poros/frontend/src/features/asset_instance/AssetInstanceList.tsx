@@ -14,6 +14,7 @@ import {
   MuiEvent,
   GridValueGetterParams,
   GridRenderCellParams,
+  gridDateComparator,
 } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -74,6 +75,7 @@ export function AssetInstanceList() {
       headerName: 'Created At',
       flex: 1,
       valueGetter: getLocalTime,
+      sortComparator: gridDateComparator,
     },
     {
       field: 'createdBy',
