@@ -51,6 +51,7 @@ func getApplication() *cli.Application {
 			tasks.TestShivas,
 			tasks.EthernetHook,
 			tasks.RecoveryHWID,
+			tasks.RepairCBI,
 		},
 	}
 }
