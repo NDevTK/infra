@@ -32,6 +32,7 @@ func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 			OperatingSystem: model.OperatingSystem,
 			ImageProject:    model.ImageProject,
 			ImageFamily:     model.ImageFamily,
+			ImageSource:     model.ImageSource,
 			CreatedAt:       model.CreatedAt.AsTime(),
 			CreatedBy:       model.CreatedBy,
 			ModifiedAt:      model.ModifiedAt.AsTime(),
@@ -51,6 +52,7 @@ func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 			OperatingSystem: entity.OperatingSystem,
 			ImageProject:    entity.ImageProject,
 			ImageFamily:     entity.ImageFamily,
+			ImageSource:     entity.ImageSource,
 			CreatedAt:       timestamppb.New(entity.CreatedAt),
 			CreatedBy:       entity.CreatedBy,
 			ModifiedAt:      timestamppb.New(entity.ModifiedAt),
@@ -62,7 +64,7 @@ func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 }
 
 func validateResourceEntity(entity *ResourceEntity) error {
-	// validate name, description, type, ImageProject, ImageFamily
+	// validate name, description, type, ImageProject, ImageFamily, ImageSource
 	if entity.Name == "" {
 		return errors.New("name cannot be empty")
 	}
@@ -81,6 +83,9 @@ func validateResourceEntity(entity *ResourceEntity) error {
 	if (entity.Type == "ad_joined_machine" || entity.Type == "machine") && entity.ImageFamily == "" {
 		return errors.New("VM Image Family needs to be specified")
 	}
+	if entity.Type == "custom_image_machine" && entity.ImageSource == "" {
+		return errors.New("Source Image path needs to be specified")
+	}
 	return nil
 }
 
@@ -95,6 +100,7 @@ func (e *ResourceHandler) Create(ctx context.Context, req *proto.CreateResourceR
 		OperatingSystem: req.GetOperatingSystem(),
 		ImageProject:    req.GetImageProject(),
 		ImageFamily:     req.GetImageFamily(),
+		ImageSource:     req.GetImageSource(),
 		CreatedBy:       auth.CurrentUser(ctx).Email,
 		CreatedAt:       time.Now().UTC(),
 		Deleted:         false,
