@@ -448,11 +448,11 @@ func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, chromeos *tlw.
 func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) *tlw.CallServodResponse {
 	dut, err := c.getDevice(ctx, req.Resource)
 	if err != nil {
-		return generateFailCallServodResponse(req.GetResource(), err)
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	}
 	chromeos := dut.GetChromeos()
 	if chromeos.GetServo().GetName() == "" {
-		return generateFailCallServodResponse(req.GetResource(), errors.Reason("call servod %q: servo not found", req.GetResource()).Err())
+		return generateFailCallServodResponse(ctx, req.GetResource(), errors.Reason("call servod %q: servo not found", req.GetResource()).Err())
 	}
 	// For container connect to the container as it running on the same host.
 	if isServodContainer(dut) {
@@ -462,7 +462,8 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 }
 
 // generateFailCallServodResponse creates response for fail cases when call servod.
-func generateFailCallServodResponse(resource string, err error) *tlw.CallServodResponse {
+func generateFailCallServodResponse(ctx context.Context, resource string, err error) *tlw.CallServodResponse {
+	log.Debugf(ctx, "Call servod fail with %s", err)
 	return &tlw.CallServodResponse{
 		Value: &xmlrpc.Value{
 			ScalarOneof: &xmlrpc.Value_String_{
@@ -477,16 +478,16 @@ func generateFailCallServodResponse(resource string, err error) *tlw.CallServodR
 func (c *tlwClient) callServodOnContainer(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
 	d, err := c.dockerClient(ctx)
 	if err != nil {
-		return generateFailCallServodResponse(req.GetResource(), err)
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	}
 	addr, err := d.IPAddress(ctx, servoContainerName(dut))
 	if err != nil {
-		return generateFailCallServodResponse(req.GetResource(), err)
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	}
 	timeout := req.GetTimeout().AsDuration()
 	rpc := tlw_xmlrpc.New(addr, int(dut.GetChromeos().GetServo().GetServodPort()))
 	if val, err := servod.Call(ctx, rpc, timeout, req.Method, req.Args); err != nil {
-		return generateFailCallServodResponse(req.GetResource(), err)
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	} else {
 		return &tlw.CallServodResponse{
 			Value: val,
@@ -502,11 +503,11 @@ func (c *tlwClient) callServodOnHost(ctx context.Context, req *tlw.CallServodReq
 		localproxy.BuildAddr(dut.GetChromeos().GetServo().GetName()),
 		dut.GetChromeos().GetServo().GetServodPort(), nil)
 	if err != nil {
-		return generateFailCallServodResponse(req.GetResource(), err)
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	}
 	timeout := req.GetTimeout().AsDuration()
 	if val, err := s.Call(ctx, c.sshPool, timeout, req.Method, req.Args); err != nil {
-		return generateFailCallServodResponse(req.GetResource(), err)
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	} else {
 		return &tlw.CallServodResponse{
 			Value: val,
