@@ -7,6 +7,7 @@
 package docker
 
 import (
+	"bufio"
 	"context"
 	"encoding/base64"
 	"encoding/json"
@@ -68,6 +69,9 @@ type Docker struct {
 	containerID string
 	// Network used for running container.
 	Network string
+
+	// LogFileDir used for the logfile for the service in the container.
+	LogFileDir string
 }
 
 // HostPort returns the port which the given docker port maps to.
@@ -207,9 +211,37 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	}
 
 	cmd := exec.Command("docker", args...)
+	if d.LogFileDir != "" {
+		log.Printf("Attempting to gather metrics")
+		go d.logRunTime(ctx, service)
+	} else {
+		log.Printf("Skipping metrics gathering")
+	}
+
 	so, se, err := common.RunWithTimeout(ctx, cmd, time.Hour, block)
 	common.PrintToLog(fmt.Sprintf("Run docker image %q", d.Name), so, se)
 	return so, errors.Annotate(err, "run docker image %q: %s", d.Name, se).Err()
+}
+
+func (d *Docker) logRunTime(ctx context.Context, service string) {
+	startTime := time.Now()
+	err := common.Poll(ctx, func(ctx context.Context) error {
+		var err error
+		var filePath string
+		filePath, err = common.FindFile("log.txt", d.LogFileDir)
+
+		if err != nil {
+			return errors.Annotate(err, "failed to find file %s log file", d.LogFileDir).Err()
+		}
+		err = logServiceFound(ctx, filePath, startTime, service)
+		if err != nil {
+			return errors.Annotate(err, "logServiceFound failed %s", d.LogFileDir).Err()
+		}
+		return nil
+	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
+	if err != nil {
+		log.Printf("metrics failed to log runtime: %s", err)
+	}
 }
 
 // CreateImageName creates docker image name from repo-path and tag.
@@ -379,8 +411,58 @@ var (
 		"Duration of the docker pull.",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("service"))
+	runTime = metric.NewFloat("chrome/infra/CFT/docker_runNew",
+		"Duration of the docker run.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("service"))
+	statusMetrics = metric.NewFloat("chrome/infra/CFT/docker_run_success_fail",
+		"Note of pass or fail.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("status"))
 )
 
 func logPullTime(ctx context.Context, startTime time.Time, service string) {
 	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
+}
+
+func logRunTime(ctx context.Context, startTime time.Time, service string) {
+	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
+}
+
+func logStatus(ctx context.Context, status string) {
+	statusMetrics.Set(ctx, 1, status)
+}
+
+// logServiceFound logs the when the service has started.
+func logServiceFound(ctx context.Context, LogFileName string, startTime time.Time, service string) error {
+	file, err := os.Open(LogFileName)
+	if err != nil {
+		return errors.Annotate(err, "failed to open cros-dut log file %s", LogFileName).Err()
+	}
+	defer file.Close()
+
+	// Example of the line with dutservice port number.
+	// "Starting dutservice on port 12300"
+	var searchStr string
+	switch {
+	case service == "cros-dut":
+		searchStr = "Starting dutservice version"
+	case service == "cros-test":
+		searchStr = "Starting executionservice"
+	case service == "cros-provision":
+		searchStr = "Running"
+	}
+	s := bufio.NewScanner(file)
+	for s.Scan() {
+		line := s.Text()
+
+		index := strings.Index(line, searchStr)
+		if index < 0 {
+			continue
+		}
+		logRunTime(ctx, startTime, service)
+		return nil
+	}
+	return errors.Reason("failed to extract port from %s", LogFileName).Err()
+
 }

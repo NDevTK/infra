@@ -92,6 +92,7 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		ServicePort: port,
 		Detach:      true,
 		Network:     networkName,
+		LogFileDir:  dir,
 	}
 	d, err := startService(ctx, d, false, true, "cros-dut")
 
@@ -103,7 +104,6 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 
 	// After starting the DUTService, find the port it binded to.
 	var dsPort int
-	startTime := time.Now()
 
 	err = common.Poll(ctx, func(ctx context.Context) error {
 		var err error
@@ -118,9 +118,8 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 			return errors.Annotate(err, "failed to extract dut server port from %s", filePath).Err()
 		}
 		return nil
-	}, &common.PollOptions{Timeout: 3 * time.Minute, Interval: time.Second})
+	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
 
-	logRunTime(ctx, startTime, "cros-dut")
 	if err != nil {
 		log.Printf("DUT Service polling for port err: %s", err)
 		logStatus(ctx, "fail")
@@ -212,8 +211,9 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 		Volumes: []string{
 			fmt.Sprintf("%s:%s", dir, dockerResultDirName),
 		},
-		Detach:  false,
-		Network: networkName,
+		Detach:     false,
+		Network:    networkName,
+		LogFileDir: dir,
 	}
 	return startService(ctx, d, true, true, "cros-provision")
 }
@@ -260,9 +260,10 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 
 			cmd,
 		},
-		Volumes: volumes,
-		Detach:  false,
-		Network: networkName,
+		Volumes:    volumes,
+		Detach:     false,
+		Network:    networkName,
+		LogFileDir: crosTestDir,
 	}
 	_, err = startService(ctx, d, true, true, "cros-test")
 	return err
@@ -374,19 +375,11 @@ func dutServerPort(dutServerLogFileName string) (int, error) {
 
 // Define metrics. Note: in Go you have to declare metric field types.
 var (
-	runTime = metric.NewFloat("chrome/infra/CFT/docker_run",
-		"Duration of the docker run.",
-		&types.MetricMetadata{Units: types.Seconds},
-		field.String("service"))
 	statusMetrics = metric.NewFloat("chrome/infra/CFT/docker_run_success_fail",
 		"Note of pass or fail.",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("status"))
 )
-
-func logRunTime(ctx context.Context, startTime time.Time, service string) {
-	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
-}
 
 func logStatus(ctx context.Context, status string) {
 	statusMetrics.Set(ctx, 1, status)
