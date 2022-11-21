@@ -22,6 +22,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/machine"
 	"infra/cmd/shivas/internal/ufs/subcmds/machineprototype"
 	"infra/cmd/shivas/internal/ufs/subcmds/nic"
+	"infra/cmd/shivas/internal/ufs/subcmds/ownership"
 	"infra/cmd/shivas/internal/ufs/subcmds/rack"
 	"infra/cmd/shivas/internal/ufs/subcmds/rackprototype"
 	"infra/cmd/shivas/internal/ufs/subcmds/rpm"
@@ -100,6 +101,7 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		static.GetStatesCmd,
 		static.GetZonesCmd,
 		lsedeployment.GetMachineLSEDeploymentCmd,
+		ownership.GetOwnershipDataCmd,
 	}
 }
 

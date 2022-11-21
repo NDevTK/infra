@@ -78,6 +78,7 @@ var (
 	AssetTitle                 = []string{"Asset Name", "Zone", "Rack", "Barcode", "Serial Number", "Hardware ID", "Model", "AssetType", "MacAddress", "SKU", "Phase", "Build Target", "Realm", "UpdateTime"}
 	CachingServiceTitle        = []string{"CachingService Name", "Port", "Zones", "Subnets", "Primary", "Secondary", "State", "Description", "UpdateTime"}
 	SchedulingUnitTitle        = []string{"SchedulingUnit Name", "DUTs", "Pools", "Type", "Description", "UpdateTime"}
+	OwnershipDataTitle         = []string{"Pool", "Security Level", "Swarming Instance"}
 )
 
 // TimeFormat for all timestamps handled by shivas
@@ -1025,6 +1026,52 @@ func PrintMachinesJSON(res []proto.Message, emit bool) {
 		m.Name = ufsUtil.RemovePrefix(m.Name)
 		PrintProtoJSON(m, emit)
 		if i < len(machines)-1 {
+			fmt.Print(",")
+			fmt.Println()
+		}
+	}
+	fmt.Println("]")
+}
+
+func ownershipOutputStrs(pm proto.Message) []string {
+	o := pm.(*ufspb.OwnershipData)
+	return []string{
+		o.GetPoolName(),
+		o.SecurityLevel,
+		o.SwarmingInstance,
+	}
+}
+
+// PrintOwnerships prints the all bot ownerships in table form.
+func PrintOwnerships(res []proto.Message, keysOnly bool) {
+	ownerships := make([]*ufspb.OwnershipData, len(res))
+	for i, r := range res {
+		ownerships[i] = r.(*ufspb.OwnershipData)
+	}
+	defer tw.Flush()
+	for _, od := range ownerships {
+		printOwnership(od, keysOnly)
+	}
+}
+
+func printOwnership(o *ufspb.OwnershipData, keysOnly bool) {
+	var out string
+	for _, s := range ownershipOutputStrs(o) {
+		out += fmt.Sprintf("%s\t", s)
+	}
+	fmt.Fprintln(tw, out)
+}
+
+// PrintOwnershipsJSON prints the ownership details in json format.
+func PrintOwnershipsJSON(res []proto.Message, emit bool) {
+	ownerships := make([]*ufspb.OwnershipData, len(res))
+	for i, r := range res {
+		ownerships[i] = r.(*ufspb.OwnershipData)
+	}
+	fmt.Print("[")
+	for i, m := range ownerships {
+		PrintProtoJSON(m, emit)
+		if i < len(ownerships)-1 {
 			fmt.Print(",")
 			fmt.Println()
 		}
