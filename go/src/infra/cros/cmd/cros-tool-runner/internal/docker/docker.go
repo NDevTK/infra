@@ -415,10 +415,6 @@ var (
 		"Duration of the docker run.",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("service"))
-	statusMetrics = metric.NewFloat("chrome/infra/CFT/docker_run_success_fail",
-		"Note of pass or fail.",
-		&types.MetricMetadata{Units: types.Seconds},
-		field.String("status"))
 )
 
 func logPullTime(ctx context.Context, startTime time.Time, service string) {
@@ -427,10 +423,6 @@ func logPullTime(ctx context.Context, startTime time.Time, service string) {
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
 	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
-}
-
-func logStatus(ctx context.Context, status string) {
-	statusMetrics.Set(ctx, 1, status)
 }
 
 // logServiceFound logs the when the service has started.
