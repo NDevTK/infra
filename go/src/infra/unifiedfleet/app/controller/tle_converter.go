@@ -34,7 +34,7 @@ var fs embed.FS
 // For all TleSource labels needed to be converted for UFS, the implementation
 // is handled in this file. All other labels uses the Boxster Swarming lib for
 // conversion.
-func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) ([]string, error) {
+func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) (swarming.Dimensions, error) {
 	if dutAttr.GetTleSource() != nil {
 		return convertTleSource(ctx, dutAttr, lse, dutState)
 	}
@@ -42,7 +42,7 @@ func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload
 }
 
 // convertTleSource handles the label conversion of MachineLSE and DutState.
-func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) ([]string, error) {
+func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) (swarming.Dimensions, error) {
 	labelAliases, err := swarming.GetLabelNames(dutAttr)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func getTleLabelMapping(labelName string) (*ufspb.TleSource, error) {
 // constructTleLabels retrieves label values from a proto message based on a
 // given path. For each given label name, a full label in the form of
 // `${name}:val1,val2` is constructed and returned as part of an array.
-func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
+func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) (swarming.Dimensions, error) {
 	switch tleSource.GetConverterType() {
 	case ufspb.TleConverterType_TLE_CONVERTER_TYPE_STANDARD:
 		return standardConvert(tleSource, labelAliases, pm)
@@ -109,7 +109,7 @@ func constructTleLabels(tleSource *ufspb.TleSource, labelAliases []string, pm pr
 //  1. Return the value retrieved directly
 //  2. Truncate the value based on a prefix
 //  3. Append the value with a predetermined prefix
-func standardConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
+func standardConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) (swarming.Dimensions, error) {
 	valsArr, err := swarming.GetLabelValues(fmt.Sprintf("$.%s", tleSource.GetFieldPath()), pm)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func standardConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto
 	} else {
 		valsArr = truncatePrefixForLabelValues(tleSource.GetStandardConverter().GetPrefix(), valsArr)
 	}
-	return swarming.FormLabels(labelAliases, strings.Join(valsArr, ","))
+	return swarming.FormLabels(labelAliases, valsArr)
 }
 
 // truncatePrefixForLabelValues returns label values with prefix truncated.
@@ -151,7 +151,7 @@ func appendPrefixForLabelValues(prefix string, valsArr []string) []string {
 // the state of the entity is in an invalid state, then the entity is deemed to
 // not exist for the sake of scheduling labels. The other checks if the
 // destination of a field path exists or not.
-func existenceConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) ([]string, error) {
+func existenceConvert(tleSource *ufspb.TleSource, labelAliases []string, pm proto.Message) (swarming.Dimensions, error) {
 	var exists bool
 	var err error
 	if !reflect.ValueOf(tleSource.GetExistenceConverter().GetStateExistence()).IsNil() {
@@ -178,5 +178,5 @@ func existenceConvert(tleSource *ufspb.TleSource, labelAliases []string, pm prot
 			return nil, err
 		}
 	}
-	return swarming.FormLabels(labelAliases, strconv.FormatBool(exists))
+	return swarming.FormLabels(labelAliases, []string{strconv.FormatBool(exists)})
 }

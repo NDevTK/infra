@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/PaesslerAG/jsonpath"
 	"github.com/golang/protobuf/jsonpb"
@@ -27,12 +26,15 @@ var LabelMarshaler = jsonpb.Marshaler{
 	OrigName:     true,
 }
 
+// Dimensions is the type for Swarming dimensions.
+type Dimensions map[string][]string
+
 // ConvertAll converts one DutAttribute label to multiple Swarming labels.
 //
-// The converted labels are returned in the form of `${label_name}:val1,val2`
-// in an array. Each label value is comma-separated. Label labelNames are the
+// The converted labels are returned in a map where keys are label names and
+// values are string arrays of the label values. Label labelNames are the
 // DutAttribute ID and the aliases listed.
-func ConvertAll(dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) ([]string, error) {
+func ConvertAll(dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) (Dimensions, error) {
 	labelNames, err := GetLabelNames(dutAttr)
 	if err != nil {
 		return nil, err
@@ -50,30 +52,33 @@ func ConvertAll(dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) ([]st
 		if err != nil {
 			return nil, err
 		}
-		valuesStr := strings.Join(valsArr, ",")
-		if err == nil && valuesStr != "" {
-			return FormLabels(labelNames, valuesStr)
+		if len(valsArr) != 0 {
+			return FormLabels(labelNames, valsArr)
 		}
 	}
 	return nil, errors.New("no supported config source found")
 }
 
-// FormLabels pairs label names with the label values `${label_name}:val1,val2`.
-func FormLabels(labelNames []string, valuesStr string) ([]string, error) {
+// FormLabels pairs label names with the label values.
+//
+// FormLabels takes each label name from labelNames as a key. The values of the
+// label are stored as an array of string. FormLabels returns a key-value map.
+func FormLabels(labelNames []string, values []string) (Dimensions, error) {
 	// Exhausted all possible paths defined in DutAttribute. If valuesStr is empty,
 	// then no values found.
-	if valuesStr == "" {
+	if len(values) == 0 {
 		return nil, errors.New("no label values found in config source found")
 	}
 
-	var labels []string
-	for _, n := range labelNames {
-		labels = append(labels, fmt.Sprintf("%s:%s", n, valuesStr))
-	}
-	if len(labels) == 0 {
+	if len(labelNames) == 0 {
 		return nil, errors.New("no labels can be generated")
 	}
-	return labels, nil
+
+	dims := make(Dimensions)
+	for _, label := range labelNames {
+		dims[label] = values
+	}
+	return dims, nil
 }
 
 // GetLabelNames extracts all possible label names from a DutAttribute.

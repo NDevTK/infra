@@ -13,6 +13,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	"infra/libs/fleet/boxster/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/external"
@@ -81,9 +82,9 @@ func TestConvert(t *testing.T) {
 			"tleSource": {}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"peripheral-audio-box:true",
-			"label-audio_box:true",
+		want := swarming.Dimensions{
+			"label-audio_box":      {"true"},
+			"peripheral-audio-box": {"true"},
 		}
 		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
 		if err != nil {
@@ -107,9 +108,9 @@ func TestConvert(t *testing.T) {
 			"tleSource": {}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"misc-license:LICENSE_TYPE_WINDOWS_10_PRO,LICENSE_TYPE_MS_OFFICE_STANDARD",
-			"label-license:LICENSE_TYPE_WINDOWS_10_PRO,LICENSE_TYPE_MS_OFFICE_STANDARD",
+		want := swarming.Dimensions{
+			"label-license": {"LICENSE_TYPE_WINDOWS_10_PRO", "LICENSE_TYPE_MS_OFFICE_STANDARD"},
+			"misc-license":  {"LICENSE_TYPE_WINDOWS_10_PRO", "LICENSE_TYPE_MS_OFFICE_STANDARD"},
 		}
 		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
 		if err != nil {
@@ -133,9 +134,9 @@ func TestConvert(t *testing.T) {
 			"tleSource": {}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"peripheral-num-btpeer:10",
-			"label-working_bluetooth_btpeer:10",
+		want := swarming.Dimensions{
+			"label-working_bluetooth_btpeer": {"10"},
+			"peripheral-num-btpeer":          {"10"},
 		}
 		got, err := Convert(ctx, &da, nil, nil, dutState)
 		if err != nil {
@@ -167,9 +168,9 @@ func TestStandardConverter(t *testing.T) {
 			"tleSource": {}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"peripheral-servo-usb-state:NORMAL",
-			"label-servo_usb_state:NORMAL",
+		want := swarming.Dimensions{
+			"label-servo_usb_state":      {"NORMAL"},
+			"peripheral-servo-usb-state": {"NORMAL"},
 		}
 		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
 		if err != nil {
@@ -194,9 +195,9 @@ func TestStandardConverter(t *testing.T) {
 			"tleSource": {}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"peripheral-carrier:CARRIER_test-carrier",
-			"label-carrier:CARRIER_test-carrier",
+		want := swarming.Dimensions{
+			"label-carrier":      {"CARRIER_test-carrier"},
+			"peripheral-carrier": {"CARRIER_test-carrier"},
 		}
 		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
 		if err != nil {
@@ -228,9 +229,9 @@ func TestExistenceConverter(t *testing.T) {
       "tleSource": {}
     }`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"peripheral-servo:false",
-			"label-servo:false",
+		want := swarming.Dimensions{
+			"label-servo":      {"false"},
+			"peripheral-servo": {"false"},
 		}
 		got, err := Convert(ctx, &da, nil, dutLse, dutState)
 		if err != nil {
@@ -255,9 +256,9 @@ func TestExistenceConverter(t *testing.T) {
       "tleSource": {}
     }`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"peripheral-servo:true",
-			"label-servo:true",
+		want := swarming.Dimensions{
+			"label-servo":      {"true"},
+			"peripheral-servo": {"true"},
 		}
 		got, err := Convert(ctx, &da, nil, dutLse, dutState)
 		if err != nil {

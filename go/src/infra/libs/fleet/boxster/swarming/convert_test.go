@@ -62,7 +62,11 @@ func TestConvertAll(t *testing.T) {
 			}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{"attr-design:Test", "attr-model:Test", "label-model:Test"}
+		want := Dimensions{
+			"attr-design": {"Test"},
+			"attr-model":  {"Test"},
+			"label-model": {"Test"},
+		}
 		got, err := ConvertAll(&da, &fc)
 		if err != nil {
 			t.Fatalf("ConvertAll failed: %s", err)
@@ -93,7 +97,7 @@ func TestConvertAll(t *testing.T) {
 		if err == nil {
 			t.Fatalf("ConvertAll passed without failures")
 		}
-		if diff := cmp.Diff([]string(nil), got); diff != "" {
+		if diff := cmp.Diff(Dimensions(nil), got); diff != "" {
 			t.Errorf("ConvertAll returned unexpected diff (-want +got):\n%s", diff)
 		}
 	})
@@ -116,7 +120,10 @@ func TestConvertAll(t *testing.T) {
 			}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{"hw-wireless:wireless_test1", "label-wifi_chip:wireless_test1"}
+		want := Dimensions{
+			"hw-wireless":     {"wireless_test1"},
+			"label-wifi_chip": {"wireless_test1"},
+		}
 		got, err := ConvertAll(&da, &fc)
 		if err != nil {
 			t.Fatalf("ConvertAll failed: %s", err)
@@ -144,9 +151,9 @@ func TestConvertAll(t *testing.T) {
 			}
 		}`
 		da := parseDutAttribute(t, daText)
-		want := []string{
-			"hw-storage:storage_test1,storage_test2,storage_test3",
-			"label-storage:storage_test1,storage_test2,storage_test3",
+		want := Dimensions{
+			"hw-storage":    {"storage_test1", "storage_test2", "storage_test3"},
+			"label-storage": {"storage_test1", "storage_test2", "storage_test3"},
 		}
 		got, err := ConvertAll(&da, &fc)
 		if err != nil {

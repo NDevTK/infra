@@ -19,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"infra/cros/dutstate"
+	"infra/libs/fleet/boxster/swarming"
 	skylabInv "infra/libs/skylab/inventory"
 	skylabSwarming "infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -97,7 +98,8 @@ func swarmingLabelsDiffHandler(ctx context.Context) error {
 			var ids string
 
 			// Boxster implementation
-			var ufsLabels []string
+			var ufsLabels swarming.Dimensions
+			var newLabels []string
 			fcId, err := configuration.GenerateFCIdFromCrosMachine(m)
 			if err != nil {
 				logging.Errorf(ctx, err.Error())
@@ -112,6 +114,9 @@ func swarmingLabelsDiffHandler(ctx context.Context) error {
 				if err != nil {
 					logging.Warningf(ctx, err.Error())
 					continue
+				}
+				for k, v := range ufsLabels {
+					newLabels = append(newLabels, fmt.Sprintf("%s:%s", k, strings.Join(v, ",")))
 				}
 				programMap[fcId] = true
 			}
@@ -128,11 +133,11 @@ func swarmingLabelsDiffHandler(ctx context.Context) error {
 				oldLabels = append(oldLabels, fmt.Sprintf("%s:%s", k, strings.Join(v, ",")))
 			}
 
-			sort.Strings(ufsLabels)
+			sort.Strings(newLabels)
 			sort.Strings(oldLabels)
 
 			// Diff of UFS labels and old labels
-			if err := logSwarmingDiff(ids, oldLabels, ufsLabels, writer); err != nil {
+			if err := logSwarmingDiff(ids, oldLabels, newLabels, writer); err != nil {
 				return err
 			}
 		}
@@ -147,20 +152,22 @@ func setupSwarmingDiffContext(ctx context.Context) context.Context {
 	return ctx
 }
 
-func getUfsLabels(ctx context.Context, fcId string, attrs []*api.DutAttribute, lse *ufspb.MachineLSE, state *chromeosLab.DutState) ([]string, error) {
+func getUfsLabels(ctx context.Context, fcId string, attrs []*api.DutAttribute, lse *ufspb.MachineLSE, state *chromeosLab.DutState) (swarming.Dimensions, error) {
 	fc, err := configuration.GetFlatConfig(ctx, fcId)
 	if err != nil {
 		return nil, err
 	}
 
-	var ufsLabels []string
+	ufsLabels := make(swarming.Dimensions)
 	for _, dutAttr := range attrs {
-		labels, err := controller.Convert(ctx, dutAttr, fc, lse, state)
+		labelsMap, err := controller.Convert(ctx, dutAttr, fc, lse, state)
 		if err != nil {
 			logging.Errorf(ctx, "Could not get label string for %s %s: %s", fcId, dutAttr.GetId().GetValue(), err)
 			continue
 		}
-		ufsLabels = append(ufsLabels, labels...)
+		for k, v := range labelsMap {
+			ufsLabels[k] = v
+		}
 	}
 
 	return ufsLabels, nil
