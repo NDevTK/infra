@@ -77,7 +77,7 @@ luci.project(
         # LED users.
         luci.binding(
             roles = "role/swarming.taskTriggerer",
-            groups = "mdb/chrome-troopers",
+            groups = ["mdb/chrome-troopers", "chromium-swarming-dev-led-access"],
         ),
     ],
     enforce_realms_in = [
