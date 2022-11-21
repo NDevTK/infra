@@ -131,6 +131,42 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// runnerByHost return runner per specified host.
+func runnerByHost(ctx context.Context, info *execs.ExecInfo) (components.Runner, error) {
+	argsMap := info.GetActionArgs(ctx)
+	host := argsMap.AsString(ctx, "host", "")
+	switch host {
+	case "dut":
+		dut := info.GetDut()
+		if dut == nil || dut.Name == "" {
+			return nil, errors.Reason("runner by device_type: DUT does not exist or not specified").Err()
+		}
+		return info.NewRunner(dut.Name), nil
+	default:
+		return info.DefaultRunner(), nil
+	}
+}
+
+// runCommandExec runs a given action exec arguments in shell.
+func runCommandExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	command := argsMap.AsString(ctx, "command", "")
+	if command == "" {
+		return errors.Reason("run command: command not specified").Err()
+	}
+	run, err := runnerByHost(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "run shell command").Err()
+	}
+	log.Debugf(ctx, "Run command: %q.", command)
+	if out, err := run(ctx, info.GetExecTimeout(), command); err != nil {
+		return errors.Annotate(err, "run command").Err()
+	} else {
+		log.Debugf(ctx, "Run command: output: %s", out)
+	}
+	return nil
+}
+
 // runShellCommandExec runs a given action exec arguments in shell.
 func runShellCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	// TODO(gregorynisbet): Convert to single line command and always use linux shell.
@@ -324,6 +360,7 @@ func init() {
 	execs.Register("cros_is_not_in_dev_mode", isNotInDevModeExec)
 	execs.Register("cros_is_booted_in_secure_mode", isBootedInSecureModeExec)
 	execs.Register("cros_run_shell_command", runShellCommandExec)
+	execs.Register("cros_run_command", runCommandExec)
 	execs.Register("cros_is_file_system_writable", isFileSystemWritableExec)
 	execs.Register("cros_has_python_interpreter_working", hasPythonInterpreterExec)
 	execs.Register("cros_has_critical_kernel_error", hasCriticalKernelErrorExec)

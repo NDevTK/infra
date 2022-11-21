@@ -1492,9 +1492,8 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Try to reset GSC from DUT side to wake it up.",
 				},
-				Conditions: []string{
-					"is_servo_type_ccd",
-					"Is reflash Cr50 was done more 24 hours ago",
+				Dependencies: []string{
+					"Is servo_v4(p1) used with type-c connector",
 					"Reset GSC on DUT",
 					"Stop servod",
 				},
@@ -1510,13 +1509,14 @@ func servoRepairPlan() *Plan {
 				Dependencies: []string{
 					"DUT is SSHable",
 				},
-				ExecName: "cros_run_shell_command",
+				ExecName: "cros_run_command",
 				ExecExtraArgs: []string{
-					"trunks_send",
-					"--raw 80010000000c200000000013",
+					"host:dut",
+					"command:trunks_send --raw 80010000000c200000000013",
 				},
-				ExecTimeout: &durationpb.Duration{Seconds: 30},
-				RunControl:  RunControl_RUN_ONCE,
+				RunControl: RunControl_RUN_ONCE,
+				// Command triggers reboot and action hangs on rebooted connection.
+				AllowFailAfterRecovery: true,
 			},
 			"DUT is SSHable": {
 				Docs: []string{
