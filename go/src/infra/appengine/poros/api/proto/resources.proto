@@ -47,6 +47,8 @@ message ResourceModel {
   string image_project = 6;
   // Family accociated with the gcp project where image resides
   string image_family = 7;
+  // Source image path accociated with the custom image
+  string image_source = 13;
   // User who created the resource.
   string created_by = 8;
   // Timestamp for the creation of the record.

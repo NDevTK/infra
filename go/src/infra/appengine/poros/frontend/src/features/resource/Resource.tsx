@@ -30,12 +30,14 @@ import {
   updateResourceAsync,
   setImageProject,
   setImageFamily,
+  setImageSource,
   ResourceRecordValidation,
   setOperatingSystemValidFalse,
   setDescriptionValidFalse,
   setNameValidFalse,
   setImageProjectValidFalse,
   setImageFamilyValidFalse,
+  setImageSourceValidFalse,
   setTypeValidFalse,
   deleteResourceAsync,
 } from './resourceSlice';
@@ -63,6 +65,9 @@ export const Resource = () => {
   const imageFamily: string = useAppSelector(
     (state) => state.resource.record.imageFamily
   );
+  const imageSource: string = useAppSelector(
+    (state) => state.resource.record.imageSource
+  );
   const resourceId: string = useAppSelector(
     (state) => state.resource.record.resourceId
   );
@@ -83,6 +88,7 @@ export const Resource = () => {
     description: string,
     imageProject: string,
     imageFamily: string,
+    imageSource: string,
     resourceId: string
   ) => {
     if (!validateInput()) {
@@ -97,6 +103,7 @@ export const Resource = () => {
           description,
           imageProject,
           imageFamily,
+          imageSource,
         })
       );
     } else {
@@ -136,6 +143,10 @@ export const Resource = () => {
     }
     if ((type === 'ad_joined_machine' || type === 'machine') && imageFamily === '') {
       dispatch(setImageFamilyValidFalse());
+      valid = false;
+    }
+    if (type == 'custom_image_machine' && imageSource === '') {
+      dispatch(setImageSourceValidFalse());
       valid = false;
     }
     if (type === '') {
@@ -187,6 +198,7 @@ export const Resource = () => {
             >
               <MenuItem value={'ad_joined_machine'}>AD Joined Machine</MenuItem>
               <MenuItem value={'machine'}>Machine</MenuItem>
+              <MenuItem value={'custom_image_machine'}>Custom Image Machine</MenuItem>
               {/* <MenuItem value={'domain'}>Domain</MenuItem> */}
             </Select>
             {!recordValidation.typeValid && (
@@ -303,6 +315,30 @@ export const Resource = () => {
             helperText={
               !recordValidation.imageFamilyValid
                 ? 'Image family is required'
+                : ''
+            }
+            FormHelperTextProps={{ style: { color: 'red' } }}
+          />
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderImageSourceInput = () => {
+    return (
+      <Grid container spacing={2} padding={1}>
+        <Grid item xs={12}>
+          <TextField
+            label="Image Source"
+            id="image-source"
+            value={imageSource}
+            onChange={(e) => dispatch(setImageSource(e.target.value))}
+            fullWidth
+            inputProps={{ 'data-testid': 'image-source' }}
+            variant="standard"
+            helperText={
+              !recordValidation.imageSourceValid
+                ? 'Source Image path is required'
                 : ''
             }
             FormHelperTextProps={{ style: { color: 'red' } }}
@@ -434,13 +470,15 @@ export const Resource = () => {
 
         {renderTypeDropdown()}
 
-        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine')
+        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine' || activeResourceType == 'custom_image_machine')
           ? renderOperatingSystemDropdown()
           : null}
 
         {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine') ? renderImageProjectInput() : null}
 
         {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine') ? renderImageFamilyInput() : null}
+
+        {(activeResourceType == 'custom_image_machine') ? renderImageSourceInput() : null}
 
         <Grid container spacing={2} padding={1} paddingTop={6}>
           <Grid item xs={12}>
@@ -487,6 +525,7 @@ export const Resource = () => {
                     description,
                     imageProject,
                     imageFamily,
+                    imageSource,
                     resourceId
                   )
                 }
