@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbec6db0_4e1b136d",
+        "filename": "go/src/infra/appengine/drone-queen/appengine/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-21T21:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "56a00223_905b9de6",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 11
+      },
+      "revId": "1694df5ae711803d666a2a69a2186f21b77a3e27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "90b1e031_74ccd0d1",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-11-17T01:44:59Z",
       "side": 1,
       "message": "This will require setting up Cloud Redis and Serverless VPC Connector and adding configuration to use them to app.yaml. Without passing \"-redis-addr\" flag this module does nothing (and attempting to use Redis functionality would fail).\n\nSee https://source.chromium.org/search?q\u003d%22-redis-addr%22%20lang:yaml\u0026sq\u003d\u0026ss\u003dchromium and",
+      "range": {
+        "startLine": 39,
+        "startChar": 2,
+        "endLine": 39,
+        "endChar": 11
+      },
+      "revId": "1694df5ae711803d666a2a69a2186f21b77a3e27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5340592d_534f3b08",
+        "filename": "go/src/infra/appengine/drone-queen/appengine/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-21T21:46:06Z",
+      "side": 1,
+      "message": "done thanks, I assumed it was some boilerplate for LUCI server internals.",
+      "parentUuid": "90b1e031_74ccd0d1",
       "range": {
         "startLine": 39,
         "startChar": 2,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0a3de41_6126b908",
+        "filename": "go/src/infra/appengine/drone-queen/appengine/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-21T21:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c18edf75_f705a0af",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 2
+      },
+      "revId": "1694df5ae711803d666a2a69a2186f21b77a3e27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bbbfe093_a5d1086b",
@@ -110,6 +182,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "74f80e5c_8e123a29",
+        "filename": "go/src/infra/appengine/drone-queen/appengine/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-21T21:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbbfe093_a5d1086b",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 47
+      },
+      "revId": "1694df5ae711803d666a2a69a2186f21b77a3e27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2bb00955_b84612d6",
@@ -123,6 +219,30 @@
       "writtenOn": "2022-11-17T01:44:59Z",
       "side": 1,
       "message": "This would conflict with go.chromium.org/luci/server/cron since it registers \"/internal/cron/*\" route by default.\n\nEither remove go.chromium.org/luci/server/cron or switch these handlers to use `cron` module:\n\n```\ncron.RegisterHandler(\"import-service-config\", importServiceConfig)\n...\n```\n\ngaemiddleware.RequireCron is not needed (the base library takes care of authentication and would work outside GAE where gaemiddleware.RequireCron is useless). \n\nmiddleware.Trace can be replaced with a custom wrapper similar to errHandler (but there\u0027s a tracer in the base library already and it open spans for all incoming HTTP requests, though on GAE the decision to trace a request is on GAE runtime https://chromium.googlesource.com/infra/luci/luci-go/+/c9e399b1300d/server/server.go#1987... For non-GAE there\u0027s -trace-sampling flag https://chromium.googlesource.com/infra/luci/luci-go/+/c9e399b1300d/server/server.go#489).\n\nThe advantage of using cron.RegisterHandler is that you\u0027ll get some monitoring metrics https://chromium.googlesource.com/infra/luci/luci-go/+/c9e399b1300d/server/cron/dispatcher.go#36\n\nOh, it also exposes \"Run \u003ccron-job-id\u003e\" buttons in the admin UI when running locally.",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 86
+      },
+      "revId": "1694df5ae711803d666a2a69a2186f21b77a3e27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78288d72_62c3d798",
+        "filename": "go/src/infra/appengine/drone-queen/internal/cron/cron.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-21T21:46:06Z",
+      "side": 1,
+      "message": "defer \"what trace we already get for free\" from this CL\n\ndone",
+      "parentUuid": "2bb00955_b84612d6",
       "range": {
         "startLine": 44,
         "startChar": 0,
