@@ -76,6 +76,8 @@ export interface ResourceModel {
   imageProject: string;
   /** gcp family of image associated with resource */
   imageFamily: string;
+  /** gcp custom image source path associated with resource */
+  imageSource: string;
   /** User who created the record */
   createdBy: string;
   /** Timestamp for the creation of the record */
@@ -98,6 +100,7 @@ export const ResourceModel = {
       description: '',
       imageProject: '',
       imageFamily: '',
+      imageSource: '',
       createdBy: '',
       createdAt: new Date('2022-07-01T00:00:00-07:00'),
       modifiedBy: '',
@@ -118,6 +121,7 @@ export const ResourceModel = {
         ? String(object.imageProject)
         : '',
       imageFamily: isSet(object.imageFamily) ? String(object.imageFamily) : '',
+      imageSource: isSet(object.imageSource) ? String(object.imageSource) : '',
       createdBy: isSet(object.createdBy) ? String(object.createdBy) : '',
       createdAt: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
@@ -143,6 +147,8 @@ export const ResourceModel = {
       (obj.imageProject = message.imageProject);
     message.imageFamily !== undefined &&
       (obj.imageFamily = message.imageFamily);
+    message.imageSource !== undefined &&
+      (obj.imageSource = message.imageSource);
     message.createdBy !== undefined && (obj.createdBy = message.createdBy);
     message.createdAt !== undefined &&
       (obj.createdAt = message.createdAt.toISOString());
@@ -168,6 +174,8 @@ export interface CreateResourceRequest {
   imageProject: string;
   /** gcp family of image associated with resource */
   imageFamily: string;
+  /** gcp custom image source path associated with resource */
+  imageSource: string;
 }
 
 export const CreateResourceRequest = {
@@ -183,6 +191,8 @@ export const CreateResourceRequest = {
       (obj.imageProject = message.imageProject);
     message.imageFamily !== undefined &&
       (obj.imageFamily = message.imageFamily);
+    message.imageSource !== undefined &&
+      (obj.imageSource = message.imageSource);
     return obj;
   },
 };

@@ -38,6 +38,7 @@ message CreateResourceRequest {
   string operating_system = 4;
   string image_project = 5;
   string image_family = 6;
+  string image_source = 7;
 }
 
 // Gets a Resource resource.

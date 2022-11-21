@@ -60,6 +60,7 @@ const testResource: ResourceModel = {
   type: 'test type',
   imageFamily: 'test image family',
   imageProject: 'test image project',
+  imageSource: 'test image source',
   description: 'test description',
   operatingSystem: 'test os',
   createdAt: undefined,

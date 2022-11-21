@@ -34,6 +34,7 @@ export interface ResourceRecordValidation {
   operatingSystemValid: boolean;
   imageProjectValid: boolean;
   imageFamilyValid: boolean;
+  imageSourceValid: boolean;
   typeValid: boolean;
 }
 
@@ -46,6 +47,7 @@ export const ResourceRecordValidation = {
       operatingSystemValid: true,
       imageProjectValid: true,
       imageFamilyValid: true,
+      imageSourceValid: true,
       typeValid: true,
     };
   },
@@ -90,6 +92,7 @@ export const createResourceAsync = createAsyncThunk(
     description,
     imageProject,
     imageFamily,
+    imageSource,
   }: {
     name: string;
     type: string;
@@ -97,6 +100,7 @@ export const createResourceAsync = createAsyncThunk(
     description: string;
     imageProject: string;
     imageFamily: string;
+    imageSource: string;
   }) => {
     const request: CreateResourceRequest = {
       name,
@@ -105,6 +109,7 @@ export const createResourceAsync = createAsyncThunk(
       description,
       imageProject,
       imageFamily,
+      imageSource,
     };
     const service: IResourceService = new ResourceService();
     const response = await service.create(request);
@@ -217,6 +222,14 @@ export const resourceSlice = createSlice({
         state.recordValidation.imageFamilyValid = true;
       }
     },
+    setImageSource: (state, action) => {
+      state.record.imageSource = action.payload;
+      if (state.record.type === 'custom_image_machine' && state.record.imageSource === '') {
+        state.recordValidation.imageSourceValid = false;
+      } else {
+        state.recordValidation.imageSourceValid = true;
+      }
+    },
     onSelectRecord: (state, action) => {
       state.record = state.resources.filter(
         (s) => s.resourceId == action.payload.resourceId
@@ -246,6 +259,9 @@ export const resourceSlice = createSlice({
     },
     setImageFamilyValidFalse: (state) => {
       state.recordValidation.imageFamilyValid = false;
+    },
+    setImageSourceValidFalse: (state) => {
+      state.recordValidation.imageSourceValid = false;
     },
     setTypeValidFalse: (state) => {
       state.recordValidation.typeValid = false;
@@ -330,6 +346,7 @@ export const {
   setDescription,
   setImageFamily,
   setImageProject,
+  setImageSource,
   setDefaultState,
   setState,
   setNameValidFalse,
@@ -337,6 +354,7 @@ export const {
   setOperatingSystemValidFalse,
   setImageFamilyValidFalse,
   setImageProjectValidFalse,
+  setImageSourceValidFalse,
   setTypeValidFalse,
 } = resourceSlice.actions;
 

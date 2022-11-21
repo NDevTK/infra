@@ -20,12 +20,12 @@ type ResourceEntity struct {
 	//  Operating system of the machine (If Type is machine or ad_joined_machine)
 	OperatingSystem string
 	// TODO: crbug/1328854 move the image info as part of property later phases
-	// image associated to the machine or ad_joined_machine
-	Image string
 	// Gcp project where image resides
 	ImageProject string
 	// Family accociated with the gcp project where image resides
 	ImageFamily string
+	// Source Image path for GCE custom image
+	ImageSource string
 	// User who created the record.
 	CreatedBy string
 	// Timestamp for the creation of the record.
