@@ -375,9 +375,9 @@ func dutServerPort(dutServerLogFileName string) (int, error) {
 
 // Define metrics. Note: in Go you have to declare metric field types.
 var (
-	statusMetrics = metric.NewFloat("chrome/infra/CFT/docker_run_success_fail",
+	statusMetrics = metric.NewCounter("chrome/infra/CFT/docker_run_passrate",
 		"Note of pass or fail.",
-		&types.MetricMetadata{Units: types.Seconds},
+		&types.MetricMetadata{},
 		field.String("status"))
 )
 
