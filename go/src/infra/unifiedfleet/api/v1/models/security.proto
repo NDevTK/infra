@@ -18,6 +18,10 @@ message SecurityInfo {
    // custom MIBA realm for this pool
    // default is "<customer>_<security_level>"
    string miba_realm = 4;
+   // id of the swarming server that owns this pool
+   string swarming_server_id = 5;
+   // hosts that belong to this pool
+   repeated string hosts = 6;
 }
 
 message SecurityInfos {
