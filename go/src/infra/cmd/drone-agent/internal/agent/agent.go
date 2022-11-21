@@ -53,6 +53,8 @@ type Agent struct {
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
 	Hive string
+	// botPrefix is used to prefix hostnames for bots.
+	BotPrefix string
 }
 
 // logger defines the logging interface used by Agent.
@@ -336,8 +338,7 @@ func (h hook) StartBot(dutID string) (bot.Bot, error) {
 
 // botConfig returns a bot config for starting a Swarming bot.
 func (h hook) botConfig(dutID string, workDir string) bot.Config {
-	const botIDPrefix = "crossk-"
-	botID := botIDPrefix + dutID
+	botID := h.a.BotPrefix + dutID
 	return bot.Config{
 		SwarmingURL:   h.a.SwarmingURL,
 		BotID:         botID,
