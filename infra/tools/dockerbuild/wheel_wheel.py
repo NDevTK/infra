@@ -52,10 +52,10 @@ class ConditionalWheel(Builder):
         only_plat=only_plat,
         skip_plat=skip_plat)
 
-  def build_fn(self, system, wheel):
+  def build_fn(self, system, wheel, output_dir):
     b = self._select_fn(system, wheel)
     w = b.wheel(system, wheel.plat)
-    return b.build_wheel(w, system, rebuild=True)
+    return b.build_wheel(w, system, output_dir, rebuild=True)
 
 
 class SourceOrPrebuilt(Builder):
@@ -131,11 +131,11 @@ class SourceOrPrebuilt(Builder):
             default=default,
             version_suffix=version_suffix), **kwargs)
 
-  def build_fn(self, system, wheel):
+  def build_fn(self, system, wheel, output_dir):
     if wheel.plat.name in self._packaged:
-      return BuildPackageFromPyPiWheel(system, wheel)
+      return BuildPackageFromPyPiWheel(system, wheel, output_dir)
     wheel_env = self._env_cb(wheel) if self._env_cb else None
-    return BuildPackageFromSource(system, wheel, self._pypi_src,
+    return BuildPackageFromSource(system, wheel, self._pypi_src, output_dir,
                                   self._src_filter, self._build_deps,
                                   self._tpp_libs, wheel_env,
                                   self._skip_auditwheel)
@@ -180,7 +180,7 @@ class MultiWheel(Builder):
         only_plat=only_plat,
         skip_plat=skip_plat)
 
-  def build_fn(self, system, wheel):
+  def build_fn(self, system, wheel, output_dir):
     sub_wheels = []
     for w in self._wheels:
       subwheel_plat = (
@@ -189,7 +189,7 @@ class MultiWheel(Builder):
       sub_wheel = w.wheel(system, subwheel_plat)
       util.LOGGER.info('Building sub-wheel: %s', sub_wheel)
       # Any time the MultiWheel is built, rebuild all the subwheels.
-      sub_wheels += w.build_wheel(sub_wheel, system, rebuild=True)
+      sub_wheels += w.build_wheel(sub_wheel, system, output_dir, rebuild=True)
     return sub_wheels
 
 
@@ -224,8 +224,8 @@ class Prebuilt(Builder):
             default=default,
             version_suffix=None), **kwargs)
 
-  def build_fn(self, system, wheel):
-    return BuildPackageFromPyPiWheel(system, wheel)
+  def build_fn(self, system, wheel, output_dir):
+    return BuildPackageFromPyPiWheel(system, wheel, output_dir)
 
 
 class Universal(Builder):
@@ -251,8 +251,8 @@ class Universal(Builder):
             version_suffix=None,
         ), **kwargs)
 
-  def build_fn(self, system, wheel):
-    return BuildPackageFromPyPiWheel(system, wheel)
+  def build_fn(self, system, wheel, output_dir):
+    return BuildPackageFromPyPiWheel(system, wheel, output_dir)
 
 
 class UniversalSource(Builder):
@@ -313,8 +313,8 @@ class UniversalSource(Builder):
             version_suffix=version_suffix,
         ), **kwargs)
 
-  def build_fn(self, system, wheel):
-    return BuildPackageFromSource(system, wheel, self._pypi_src)
+  def build_fn(self, system, wheel, output_dir):
+    return BuildPackageFromSource(system, wheel, self._pypi_src, output_dir)
 
   def md_data_fn(self):
     if not self._pypi_src.patches:
