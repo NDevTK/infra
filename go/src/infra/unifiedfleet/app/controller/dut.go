@@ -891,8 +891,8 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		}
 	}
 
-	enableBoxsterFlag := config.Get(ctx).GetEnableBoxsterLabels()
-	schedulableLabels, err := getSchedulableLabels(ctx, machine, enableBoxsterFlag)
+	enableUFSSchedulableLabels := config.Get(ctx).GetEnableBoxsterLabels()
+	schedulableLabels, err := getSchedulableLabels(ctx, machine, enableUFSSchedulableLabels)
 	if err != nil {
 		logging.Warningf(ctx, "SchedulableLabels not found. Error: %s", err)
 	}
@@ -904,7 +904,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		HwidData:                          hwidData,
 		DutState:                          dutState,
 		SchedulableLabels:                 schedulableLabels,
-		RespectAutomatedSchedulableLabels: enableBoxsterFlag,
+		RespectAutomatedSchedulableLabels: enableUFSSchedulableLabels,
 	}
 	dutV1, err := osutil.AdaptToV1DutSpec(data)
 	if err != nil {
@@ -947,8 +947,8 @@ func getStability(ctx context.Context, model string) (bool, error) {
 // getSchedulableLabels gets Swarming schedulable labels based on DutAttributes
 // from UFS datastore. The feature will be turned off by default based on
 // the enable_boxster_label flag.
-func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, enableBoxsterFlag bool) ([]string, error) {
-	if !enableBoxsterFlag {
+func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, enableUFSSchedulableLabels bool) (map[string]*ufspb.SchedulableLabelValues, error) {
+	if !enableUFSSchedulableLabels {
 		return nil, nil
 	}
 	return nil, status.Errorf(codes.Unimplemented, "getSchedulableLabels not yet implemented")
