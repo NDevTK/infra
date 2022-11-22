@@ -98,22 +98,13 @@ def _main_wheel_build(args, system):
   # concurrency is determined via '-j'.
   work_queue = concurrency.Pool(args.processes)
 
-  all_wheels = []
   for spec_name in specs:
     build = wheels.SPECS[spec_name]
 
     for plat in platforms:
-      try:
-        w = build.wheel(system, plat)
-      except PlatformNotSupported as e:
-        util.LOGGER.warning('Not supported on: %s: %s', plat.name, str(e))
-        continue
-      all_wheels.append(w)
-
-  _check_no_dup_filenames(all_wheels)
-  for w in all_wheels:
-    work_queue.apply(_build_one_wheel,
-                     [system, args, git_revision, w, build, updated_packages])
+      work_queue.apply(_build_one_wheel, [
+          system, args, git_revision, updated_packages, spec_name, plat, build
+      ])
 
   # This will block until all tasks have finished, or raise an exception if any
   # fail.
@@ -192,12 +183,17 @@ def _main_wheel_build(args, system):
           package_name, version_tag, refs, dryrun=not args.upload)
 
 
-def _build_one_wheel(system, args, git_revision, wheel, build,
-                     updated_packages):
-  package = wheel.cipd_package(git_revision)
+def _build_one_wheel(system, args, git_revision, updated_packages, spec_name,
+                     plat, build):
+  try:
+    w = build.wheel(system, plat)
+  except PlatformNotSupported as e:
+    util.LOGGER.warning('Not supported on: %s: %s', plat.name, str(e))
+    return
+  package = w.cipd_package(git_revision)
 
   # Figure out the unique version id for this wheel build.
-  buildid = wheel.build_id
+  buildid = w.build_id
   version_tag = 'version:%s' % (buildid,)
   if not args.rebuild and system.cipd.exists(package.name, version_tag):
     util.LOGGER.info('Package [%s] with buildid [%s] already exists.', package,
@@ -205,14 +201,14 @@ def _build_one_wheel(system, args, git_revision, wheel, build,
     return
 
   util.LOGGER.info('Running wheel build [%s] with buildid [%s] for [%s]',
-                   wheel.spec.name, buildid, wheel.plat.name)
+                   spec_name, buildid, plat.name)
 
   try:
-    pkg_path = build.build(wheel, system, rebuild=args.rebuild)
+    pkg_path = build.build(w, system, rebuild=args.rebuild)
     if not pkg_path:
       return
   except PlatformNotSupported as e:
-    util.LOGGER.warning('Not supported on: %s: %s', wheel.plat.name, str(e))
+    util.LOGGER.warning('Not supported on: %s: %s', plat.name, str(e))
     return
   util.LOGGER.info('Finished wheel for package: %s', package.name)
 
@@ -232,23 +228,6 @@ def _build_one_wheel(system, args, git_revision, wheel, build,
   # Concurrently updating this set is fine is each operation is independent and
   # set updates acquire the GIL.
   updated_packages.add(package.name)
-
-
-# Verify that none of the wheels have the same output filename.
-# Wheels with the same output filename have the potential to cause
-# races in the output directory.
-def _check_no_dup_filenames(all_wheels):
-  seen_filenames = set()
-  seen_universal_filenames = set()
-  for w in all_wheels:
-    if w.filename in seen_filenames:
-      raise ValueError('Wheel %r has previously-seen filename %s' %
-                       (w, w.filename))
-    seen_filenames.add(w.filename)
-    if w.universal_filename in seen_universal_filenames:
-      raise ValueError('Wheel %r has previously-seen universal filename %s' %
-                       (w, w.universal_filename))
-    seen_universal_filenames.add(w.universal_filename)
 
 
 class WheelDumpCheckFailed(Exception):
@@ -277,18 +256,16 @@ class _WheelDumpCompare(object):
 def _main_wheel_dump(args, system):
   try:
     md = markdown.Generator()
-    all_wheels = []
     for build in wheels.SPECS.values():
       for plat in build_platform.ALL.values():
         if not build.supported(plat):
           continue
         w = build.wheel(system, plat)
-        all_wheels.append(w)
         if w.spec.universal:
           plat = None
         md.add_package(w, plat)
+
     if args.check:
-      _check_no_dup_filenames(all_wheels)
       md_cmp = _WheelDumpCompare(args.output)
       md.write(md_cmp)
       md_cmp.done()

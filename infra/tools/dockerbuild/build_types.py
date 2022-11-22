@@ -139,8 +139,8 @@ class Wheel(_Wheel):
     wheel = self._replace(spec=self.spec.to_universal())
     return wheel.default_filename()
 
-  def path(self, wheel_dir):
-    return os.path.join(wheel_dir, self.filename)
+  def path(self, system):
+    return os.path.join(system.wheel_dir, self.filename)
 
   def cipd_package(self, git_revision=None, templated=False):
     base_path = ['infra', 'python', 'wheels']

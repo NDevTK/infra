@@ -9,7 +9,6 @@ import multiprocessing
 import os
 import sys
 import subprocess
-import threading
 import tempfile
 
 from . import concurrency
@@ -127,15 +126,6 @@ class System(object):
   @property
   def pkg_dir(self):
     return self._dirs.pkg
-
-  @property
-  def pip_cache_dir(self):
-    # Make sure the pip cache directory exists within our root, so that
-    # it is not reused across builds. Also, tie it to the thread ident,
-    # which ensures that two threads are not sharing the cache (this has
-    # been observed to cause failures).
-    return util.ensure_directory(
-        self.root, 'temp', 'pip_cache_%d' % concurrency.Pool.local.thread_index)
 
   @property
   def repo(self):

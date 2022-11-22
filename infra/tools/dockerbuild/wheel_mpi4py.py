@@ -28,9 +28,9 @@ class Mpi4py(SourceOrPrebuilt):
     self._mpich_version = mpich_version
     super(Mpi4py, self).__init__(name, version, **kwargs)
 
-  def build_fn(self, system, wheel, output_dir):
+  def build_fn(self, system, wheel):
     if wheel.plat.name in self._packaged:
-      return BuildPackageFromPyPiWheel(system, wheel, output_dir)
+      return BuildPackageFromPyPiWheel(system, wheel)
 
     dx = system.dockcross_image(wheel.plat)
 
@@ -97,4 +97,4 @@ class Mpi4py(SourceOrPrebuilt):
 
       util.check_run(system, dx, tdir, cmd, cwd=build_dir, env=extra_env)
 
-      StageWheelForPackage(system, tdir, wheel, output_dir)
+      StageWheelForPackage(system, tdir, wheel)

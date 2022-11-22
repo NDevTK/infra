@@ -51,9 +51,9 @@ class Cryptography(Builder):
             default=default,
             version_suffix=version_suffix), **kwargs)
 
-  def build_fn(self, system, wheel, output_dir):
+  def build_fn(self, system, wheel):
     if wheel.plat.name in self._packaged:
-      return BuildPackageFromPyPiWheel(system, wheel, output_dir)
+      return BuildPackageFromPyPiWheel(system, wheel)
 
     dx = system.dockcross_image(wheel.plat)
     assert dx, 'Docker image required for compilation.'
@@ -165,8 +165,8 @@ class Cryptography(Builder):
           env=env,
       )
 
-      StageWheelForPackage(system, os.path.join(crypt_dir, 'dist'), wheel,
-                           output_dir)
+      StageWheelForPackage(
+        system, os.path.join(crypt_dir, 'dist'), wheel)
       return None
 
 
