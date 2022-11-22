@@ -6,11 +6,14 @@ package state
 
 // serverState tracks state of a CTRv2 server instance.
 type serverState struct {
+	Containers      OwnershipRecorder
+	Networks        OwnershipRecorder
 	TemplateRequest TemplateRequestRecorder
 }
 
 // ServerState is the singleton server state of the current CTRv2 instance.
-// TODO(mingkong) move ownership state here
 var ServerState = serverState{
+	Containers:      newOwnershipState(),
+	Networks:        newOwnershipState(),
 	TemplateRequest: newTemplateRequestState(),
 }

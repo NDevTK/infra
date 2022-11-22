@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )
 
@@ -22,8 +23,6 @@ import (
 // mapping errors to proper gRPC status codes.
 type ContainerServerImpl struct {
 	api.UnimplementedCrosToolRunnerContainerServiceServer
-	networks          ownershipRecorder
-	containers        ownershipRecorder
 	executor          CommandExecutor
 	templateProcessor templates.TemplateProcessor
 	containerLookuper templates.ContainerLookuper
@@ -49,7 +48,7 @@ func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.Cr
 	}
 
 	log.Println("success: created network", id)
-	s.networks.recordOwnership(request.Name, id)
+	state.ServerState.Networks.RecordOwnership(request.Name, id)
 	return &api.CreateNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: true}}, nil
 }
 
@@ -60,7 +59,7 @@ func (s *ContainerServerImpl) GetNetwork(ctx context.Context, request *api.GetNe
 		return nil, err
 	}
 	log.Println("success: found network", id)
-	return &api.GetNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: s.networks.hasOwnership(request.Name, id)}}, nil
+	return &api.GetNetworkResponse{Network: &api.Network{Name: request.Name, Id: id, Owned: state.ServerState.Networks.HasOwnership(request.Name, id)}}, nil
 }
 
 func (s *ContainerServerImpl) getNetworkId(ctx context.Context, name string) (string, error) {
@@ -193,7 +192,7 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 		return nil, err
 	}
 	log.Println("success: started container", id)
-	s.containers.recordOwnership(request.Name, id)
+	state.ServerState.Containers.RecordOwnership(request.Name, id)
 	return &api.StartContainerResponse{Container: &api.Container{Name: request.Name, Id: id, Owned: true}}, nil
 }
 
@@ -292,7 +291,7 @@ func (s *ContainerServerImpl) GetContainer(ctx context.Context, request *api.Get
 		return nil, err
 	}
 	log.Println("success: found container", id)
-	return &api.GetContainerResponse{Container: &api.Container{Name: request.Name, Id: id, Owned: s.containers.hasOwnership(request.Name, id), PortBindings: portBindings}}, nil
+	return &api.GetContainerResponse{Container: &api.Container{Name: request.Name, Id: id, Owned: state.ServerState.Containers.HasOwnership(request.Name, id), PortBindings: portBindings}}, nil
 }
 
 func (s *ContainerServerImpl) getContainerId(ctx context.Context, name string) (string, error) {
@@ -316,12 +315,12 @@ func (s *ContainerServerImpl) getPortBindings(ctx context.Context, name string) 
 
 // stopContainers removes containers that are owned by current CTRv2 service in the reverse order of how they are started.
 func (s *ContainerServerImpl) stopContainers() {
-	containerIds := s.containers.getIdsToClearOwnership()
+	containerIds := state.ServerState.Containers.GetIdsToClearOwnership()
 	if len(containerIds) == 0 {
 		log.Println("no containers to clean up")
 		return
 	}
-	log.Printf("stopping containers: %v", s.containers.getMapping())
+	log.Printf("stopping containers: %v", state.ServerState.Containers.GetMapping())
 
 	// Need to stop container one by one because podman doesn't process a bulk if one of them is dead.
 	for _, id := range containerIds {
@@ -335,17 +334,17 @@ func (s *ContainerServerImpl) stopContainers() {
 			log.Printf("received stderr: %s", stderr)
 		}
 	}
-	s.containers.clear()
+	state.ServerState.Containers.Clear()
 }
 
 // removeNetworks removes networks that were created by current CTRv2 service.
 func (s *ContainerServerImpl) removeNetworks() {
-	networkIds := s.networks.getIdsToClearOwnership()
+	networkIds := state.ServerState.Networks.GetIdsToClearOwnership()
 	if len(networkIds) == 0 {
 		log.Println("no networks to clean up")
 		return
 	}
-	log.Printf("removing networks: %v", s.networks.getMapping())
+	log.Printf("removing networks: %v", state.ServerState.Networks.GetMapping())
 	cmd := commands.NetworkRemove{Names: networkIds}
 	stdout, stderr, _ := cmd.Execute(context.Background())
 	if stdout != "" {
@@ -354,7 +353,7 @@ func (s *ContainerServerImpl) removeNetworks() {
 	if stderr != "" {
 		log.Printf("received stderr: %s", stderr)
 	}
-	s.networks.clear()
+	state.ServerState.Networks.Clear()
 }
 
 // cleanup removes containers and networks in order to allow graceful shutdown of the CTRv2 service.
