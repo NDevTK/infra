@@ -1,0 +1,301 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package localtlw provides local implementation of TLW Access.
+package localtlw
+
+import (
+	"context"
+	"fmt"
+	"strings"
+	"time"
+
+	"go.chromium.org/luci/common/errors"
+	"google.golang.org/grpc"
+
+	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cros/recovery/docker"
+	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/localtlw/servod"
+	"infra/cros/recovery/internal/localtlw/ssh"
+	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/rpm"
+	"infra/cros/recovery/tlw"
+	"infra/libs/sshpool"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+)
+
+const (
+	// tlwPort is default port used to run TLW on the drones.
+	tlwPort = 7151
+	// tlsPort is default port used to run TLS on the drones.
+	tlsPort = 7152
+)
+
+// UFSClient is a client that knows how to work with UFS RPC methods.
+type UFSClient interface {
+	// GetDeviceData retrieves requested device data from the UFS and inventoryV2.
+	GetDeviceData(ctx context.Context, req *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (rsp *ufsAPI.GetDeviceDataResponse, err error)
+	// UpdateDeviceRecoveryData updates the labdata, dutdata, resource state, dut states for a DUT
+	UpdateDeviceRecoveryData(ctx context.Context, in *ufsAPI.UpdateDeviceRecoveryDataRequest, opts ...grpc.CallOption) (*ufsAPI.UpdateDeviceRecoveryDataResponse, error)
+}
+
+// CSAClient is a client that knows how to respond to the GetStableVersion RPC call.
+type CSAClient interface {
+	GetStableVersion(ctx context.Context, in *fleet.GetStableVersionRequest, opts ...grpc.CallOption) (*fleet.GetStableVersionResponse, error)
+}
+
+type hostType int64
+
+const (
+	hostTypeChromeOs hostType = iota
+	hostTypeAndroid
+	hostTypeServo
+	hostTypeBtPeer
+	hostTypeRouter
+	hostTypeChameleon
+)
+
+// tlwClient holds data and represents the local implementation of TLW Access interface.
+type tlwClient struct {
+	csaClient  CSAClient
+	ufsClient  UFSClient
+	sshPool    *sshpool.Pool
+	servodPool *servod.Pool
+	// Cache received devices from inventory
+	devices   map[string]*tlw.Dut
+	hostTypes map[string]hostType
+	// Map to provide name if the DUT host as value and other hosts as key.
+	hostToParents map[string]string
+	// Map of version requested and received.
+	versionMap map[string]*tlw.VersionResponse
+}
+
+// New build new local TLW Access instance.
+func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
+	c := &tlwClient{
+		ufsClient:     ufs,
+		csaClient:     csac,
+		sshPool:       sshpool.New(ssh.SSHConfig()),
+		servodPool:    servod.NewPool(),
+		devices:       make(map[string]*tlw.Dut),
+		hostTypes:     make(map[string]hostType),
+		hostToParents: make(map[string]string),
+		versionMap:    make(map[string]*tlw.VersionResponse),
+	}
+	return c, nil
+}
+
+// Close closes all used resources.
+func (c *tlwClient) Close(ctx context.Context) error {
+	if err := c.sshPool.Close(); err != nil {
+		return errors.Annotate(err, "tlw client").Err()
+	}
+	return c.servodPool.Close()
+}
+
+// Ping performs ping by resource name.
+//
+// For containers it checks if it is up.
+func (c *tlwClient) Ping(ctx context.Context, resourceName string, count int) error {
+	dut, err := c.getDevice(ctx, resourceName)
+	if err != nil {
+		return errors.Annotate(err, "ping").Err()
+	}
+	if c.isServoHost(resourceName) && isServodContainer(dut) {
+		log.Infof(ctx, "Ping: servod container %s starting...", resourceName)
+		d, err := c.dockerClient(ctx)
+		if err != nil {
+			return errors.Annotate(err, "ping").Err()
+		}
+		containerName := servoContainerName(dut)
+		if up, err := d.IsUp(ctx, containerName); err != nil {
+			return errors.Annotate(err, "ping").Err()
+		} else if up {
+			log.Infof(ctx, "Ping: servod container %s is up!", containerName)
+			return nil
+		}
+		return errors.Reason("ping: container %q is down", containerName).Err()
+	} else {
+		err = ping(resourceName, count)
+		return errors.Annotate(err, "ping").Err()
+	}
+}
+
+// Run executes command on device by SSH related to resource name.
+//
+// Foc containers: For backwards compatibility if command provided without arguments
+// we assume the whole command in one string and run it in linux shell (/bin/sh -c).
+func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult {
+	fullCmd := strings.Join(append([]string{req.GetCommand()}, req.GetArgs()...), " ")
+	dut, err := c.getDevice(ctx, req.GetResource())
+	if err != nil {
+		return &tlw.RunResult{
+			Command:  fullCmd,
+			ExitCode: -1,
+			Stderr:   fmt.Sprintf("run: %s", err),
+		}
+	}
+	// For backward compatibility we set max limit 1 hour for any request.
+	// 1 hours as some provisioning or download can take longer.
+	timeout := time.Hour
+	if req.GetTimeout().IsValid() {
+		timeout = req.GetTimeout().AsDuration()
+	}
+	// Servod-container does not have ssh access so to execute any commands
+	// we need to use the docker client.
+	if c.isServoHost(req.GetResource()) && isServodContainer(dut) {
+		d, err := c.dockerClient(ctx)
+		if err != nil {
+			return &tlw.RunResult{
+				Command:  fullCmd,
+				ExitCode: -1,
+				Stderr:   fmt.Sprintf("run: %s", err),
+			}
+		}
+		eReq := &docker.ExecRequest{
+			Timeout: timeout,
+			Cmd:     append([]string{req.GetCommand()}, req.GetArgs()...),
+		}
+		containerName := servoContainerName(dut)
+		// For backwards compatibility if only command provide we assume
+		// that that is whole command in one line. We will run it in linux shell.
+		if strings.Contains(req.GetCommand(), " ") && len(req.GetArgs()) == 0 {
+			eReq.Cmd = []string{"/bin/sh", "-c", req.GetCommand()}
+			// Quoting is only works because the string created for user
+			// representation and logs, not for use for execution.
+			fullCmd = fmt.Sprintf("/bin/sh -c %q", req.GetCommand())
+		}
+		containerIsUp, err := d.IsUp(ctx, containerName)
+		if err != nil {
+			return &tlw.RunResult{
+				Command:  fullCmd,
+				ExitCode: -1,
+				Stderr:   fmt.Sprintf("run: %s", err),
+			}
+		} else if containerIsUp {
+			// As container is created and running we can execute the commands.
+			if res, err := d.Exec(ctx, containerName, eReq); err != nil {
+				return &tlw.RunResult{
+					Command:  fullCmd,
+					ExitCode: -1,
+					Stderr:   fmt.Sprintf("run: %s", err),
+				}
+			} else {
+				return &tlw.RunResult{
+					Command:  fullCmd,
+					ExitCode: int32(res.ExitCode),
+					Stdout:   res.Stdout,
+					Stderr:   res.Stderr,
+				}
+			}
+		} else {
+			// If container is down we will run all command directly by container.
+			// TODO(otabek): Simplify running a container when move outside.
+			containerArgs := createServodContainerArgs(false, nil, eReq.Cmd)
+			res, err := d.Start(ctx, containerName, containerArgs, eReq.Timeout)
+			if err != nil {
+				return &tlw.RunResult{
+					Command:  fullCmd,
+					ExitCode: -1,
+					Stderr:   fmt.Sprintf("run: %s", err),
+				}
+			}
+			return &tlw.RunResult{
+				Command:  fullCmd,
+				ExitCode: int32(res.ExitCode),
+				Stdout:   res.Stdout,
+				Stderr:   res.Stderr,
+			}
+		}
+	} else {
+		ctx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+		cr := make(chan *tlw.RunResult, 1)
+		go func() {
+			cr <- ssh.Run(ctx, c.sshPool, localproxy.BuildAddr(req.GetResource()), fullCmd)
+		}()
+		select {
+		case r := <-cr:
+			return r
+		case <-ctx.Done():
+			// If we reached timeout first.
+			return &tlw.RunResult{
+				Command:  fullCmd,
+				ExitCode: 124,
+				Stderr:   fmt.Sprintf("run: exited due to timeout %s", timeout),
+			}
+		}
+	}
+}
+
+// RunRPMAction performs power action on RPM outlet per request.
+func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionRequest) error {
+	if req.GetHostname() == "" {
+		return errors.Reason("run rpm action: hostname of DUT is not provided").Err()
+	}
+	if req.GetRpmHostname() == "" {
+		return errors.Reason("run rpm action: power unit hostname is not provided").Err()
+	}
+	if req.GetRpmOutlet() == "" {
+		return errors.Reason("run rpm action: power unit outlet is not provided").Err()
+	}
+	var s rpm.PowerState
+	switch req.GetAction() {
+	case tlw.RunRPMActionRequest_ON:
+		s = rpm.PowerStateOn
+	case tlw.RunRPMActionRequest_OFF:
+		s = rpm.PowerStateOff
+	case tlw.RunRPMActionRequest_CYCLE:
+		s = rpm.PowerStateCycle
+	default:
+		return errors.Reason("run rpm action: unknown action: %s", req.GetAction().String()).Err()
+	}
+	log.Debugf(ctx, "Changing state RPM outlet %s:%s to state %q.", req.GetRpmHostname(), req.GetRpmOutlet(), s)
+	rpmReq := &rpm.RPMPowerRequest{
+		Hostname:          req.GetHostname(),
+		PowerUnitHostname: req.GetRpmHostname(),
+		PowerunitOutlet:   req.GetRpmOutlet(),
+		State:             s,
+	}
+	if err := rpm.SetPowerState(ctx, rpmReq); err != nil {
+		return errors.Annotate(err, "run rpm action").Err()
+	}
+	return nil
+}
+
+// GetCacheUrl provides URL to download requested path to file.
+// URL will use to download image to USB-drive and provisioning.
+func (c *tlwClient) GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error) {
+	// TODO(otabek@): Add logic to understand local file and just return it back.
+	addr := fmt.Sprintf("0.0.0.0:%d", tlwPort)
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		return "", errors.Annotate(err, "connect to background TLW").Err()
+	}
+	defer func() { conn.Close() }()
+	return CacheForDut(ctx, conn, filePath, resourceName)
+}
+
+// Provision triggers provisioning of the device.
+func (c *tlwClient) Provision(ctx context.Context, req *tlw.ProvisionRequest) error {
+	if req == nil {
+		return errors.Reason("provision: request is empty").Err()
+	}
+	if req.GetResource() == "" {
+		return errors.Reason("provision: resource is not specified").Err()
+	}
+	if req.GetSystemImagePath() == "" {
+		return errors.Reason("provision: system image path is not specified").Err()
+	}
+	log.Debugf(ctx, "Started provisioning by TLS: %s", req)
+	addr := fmt.Sprintf("0.0.0.0:%d", tlsPort)
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		return errors.Annotate(err, "provision: connect to TLS").Err()
+	}
+	defer func() { conn.Close() }()
+	err = TLSProvision(ctx, conn, req)
+	return errors.Annotate(err, "provision").Err()
+}

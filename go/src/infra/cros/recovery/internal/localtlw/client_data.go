@@ -1,0 +1,254 @@
+// Copyright 2022 The Chromium OS Authors.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package localtlw provides local implementation of TLW Access.
+package localtlw
+
+import (
+	"context"
+	"fmt"
+
+	"go.chromium.org/luci/common/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cros/recovery/internal/localtlw/dutinfo"
+	"infra/cros/recovery/internal/localtlw/localinfo"
+	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/tlw"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+)
+
+// ListResourcesForUnit provides list of resources names related to target unit.
+func (c *tlwClient) ListResourcesForUnit(ctx context.Context, name string) ([]string, error) {
+	if name == "" {
+		return nil, errors.Reason("list resources: unit name is expected").Err()
+	}
+	resourceNames, err := c.readInventory(ctx, name)
+	return resourceNames, errors.Annotate(err, "list resources %q", name).Err()
+}
+
+// GetDut provides DUT info per requested resource name from inventory.
+func (c *tlwClient) GetDut(ctx context.Context, name string) (*tlw.Dut, error) {
+	dut, err := c.getDevice(ctx, name)
+	if err != nil {
+		return nil, errors.Annotate(err, "get DUT %q", name).Err()
+	}
+	dut.ProvisionedInfo, err = localinfo.ReadProvisionInfo(ctx, dut.Name)
+	return dut, errors.Annotate(err, "get dut").Err()
+}
+
+// Version provides versions for requested device and type of versions.
+func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.VersionResponse, error) {
+	if req == nil || req.Resource == "" {
+		return nil, errors.Reason("version: request is not provided").Err()
+	}
+	// Creating cache key for versions based on hostname which is targeted.
+	versionKey := fmt.Sprintf("%s|%s", req.GetType(), req.Resource)
+	if v, ok := c.versionMap[versionKey]; ok {
+		log.Debugf(ctx, "Received version %q (cache): %#v", req.GetType(), v)
+		return v, nil
+	}
+	dut, err := c.getDevice(ctx, req.Resource)
+	if err != nil {
+		return nil, errors.Annotate(err, "version").Err()
+	}
+	switch req.GetType() {
+	case tlw.VersionRequest_CROS:
+		sv, err := c.getCrosStableVersion(ctx, dut)
+		if err != nil {
+			return nil, errors.Annotate(err, "version").Err()
+		}
+		log.Debugf(ctx, "Received Cros version: %#v", sv)
+		// Cache received version for future usage.
+		c.versionMap[versionKey] = sv
+		return sv, nil
+
+	case tlw.VersionRequest_WIFI_ROUTER:
+		// TODO(otabek): Re-point for external source as soon we have data for that.
+		// TODO(otabek): Need apply cache.
+		// On this step we only support gale/gale devices other will fail to receive version.
+		var routerHost *tlw.WifiRouterHost
+		for _, router := range dut.GetChromeos().GetWifiRouters() {
+			if router.GetName() == req.Resource {
+				routerHost = router
+				break
+			}
+		}
+		if routerHost == nil {
+			return nil, errors.Reason("version: target device not  found").Err()
+		} else if routerHost.GetBoard() == "gale" && routerHost.GetModel() == "gale" {
+			return &tlw.VersionResponse{
+				Value: map[string]string{
+					"os_image": "gale-test-ap-tryjob/R92-13982.81.0-b4959409",
+				},
+			}, nil
+		}
+	}
+	return nil, errors.Reason("version: version not found").Err()
+}
+
+// getDevice receives device from inventory.
+func (c *tlwClient) getDevice(ctx context.Context, name string) (*tlw.Dut, error) {
+	if dutName, ok := c.hostToParents[name]; ok {
+		// the device was previously
+		name = dutName
+	}
+	// First check if device is already in the cache.
+	if d, ok := c.devices[name]; ok {
+		log.Debugf(ctx, "Get device %q: received from cache.", name)
+		return d, nil
+	}
+	// Ask to read inventory and then get device from the cache.
+	// If it is still not in the cache then device is unit, not a DUT
+	if _, err := c.readInventory(ctx, name); err != nil {
+		return nil, errors.Annotate(err, "get device").Err()
+	}
+	if d, ok := c.devices[name]; ok {
+		log.Debugf(ctx, "Get device %q: received from cache.", name)
+		return d, nil
+	}
+	return nil, errors.Reason("get device: unexpected error").Err()
+}
+
+// Read inventory and return resource names.
+// As additional received devices will be cached.
+// Please try to check cache before call the method.
+func (c *tlwClient) readInventory(ctx context.Context, name string) (resourceNames []string, rErr error) {
+	ddrsp, err := c.ufsClient.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: name})
+	if err != nil {
+		return resourceNames, errors.Annotate(err, "read inventory %q", name).Err()
+	}
+	var dut *tlw.Dut
+	switch ddrsp.GetResourceType() {
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
+		attachedDevice := ddrsp.GetAttachedDeviceData()
+		dut, err = dutinfo.ConvertAttachedDeviceToTlw(attachedDevice)
+		if err != nil {
+			return resourceNames, errors.Annotate(err, "read inventory %q: attached device", name).Err()
+		}
+		c.cacheDevice(dut)
+		resourceNames = []string{dut.Name}
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		dd := ddrsp.GetChromeOsDeviceData()
+		dut, err = dutinfo.ConvertDut(dd)
+		if err != nil {
+			return resourceNames, errors.Annotate(err, "get device %q: chromeos device", name).Err()
+		}
+		c.cacheDevice(dut)
+		resourceNames = []string{dut.Name}
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
+		su := ddrsp.GetSchedulingUnit()
+		resourceNames = su.GetMachineLSEs()
+	default:
+		return resourceNames, errors.Reason("get device %q: unsupported type %q", name, ddrsp.GetResourceType()).Err()
+	}
+	return resourceNames, nil
+}
+
+// cacheDevice puts device to local cache and set list host name knows for DUT.
+func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
+	if dut == nil {
+		// Skip as DUT not found.
+		return
+	}
+	c.devices[dut.Name] = dut
+	c.hostToParents[dut.Name] = dut.Name
+	if dut.GetAndroid() != nil {
+		c.hostTypes[dut.Name] = hostTypeAndroid
+		return
+	}
+	c.hostTypes[dut.Name] = hostTypeChromeOs
+	chromeos := dut.GetChromeos()
+	if s := chromeos.GetServo(); s.GetName() != "" {
+		c.hostTypes[s.GetName()] = hostTypeServo
+		c.hostToParents[s.GetName()] = dut.Name
+	}
+	for _, bt := range chromeos.GetBluetoothPeers() {
+		c.hostTypes[bt.GetName()] = hostTypeBtPeer
+		c.hostToParents[bt.GetName()] = dut.Name
+	}
+	for _, router := range chromeos.GetWifiRouters() {
+		c.hostTypes[router.GetName()] = hostTypeRouter
+		c.hostToParents[router.GetName()] = dut.Name
+	}
+	if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
+		c.hostTypes[chameleon.GetName()] = hostTypeChameleon
+		c.hostToParents[chameleon.GetName()] = dut.Name
+	}
+}
+
+// unCacheDevice removes device from the local cache.
+func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
+	if dut == nil {
+		// Skip as DUT not provided.
+		return
+	}
+	name := dut.Name
+	delete(c.hostToParents, name)
+	delete(c.hostTypes, name)
+	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if sh := chromeos.GetServo(); sh.GetName() != "" {
+			delete(c.hostTypes, sh.GetName())
+			delete(c.hostToParents, sh.GetName())
+		}
+		for _, bt := range chromeos.GetBluetoothPeers() {
+			delete(c.hostTypes, bt.GetName())
+			delete(c.hostToParents, bt.GetName())
+		}
+		if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
+			delete(c.hostTypes, chameleon.GetName())
+			delete(c.hostToParents, chameleon.GetName())
+		}
+	}
+	delete(c.devices, name)
+}
+
+// getCrosStableVersion receives stable versions for ChromeOS device.
+func (c *tlwClient) getCrosStableVersion(ctx context.Context, dut *tlw.Dut) (*tlw.VersionResponse, error) {
+	req := &fleet.GetStableVersionRequest{Hostname: dut.Name}
+	res, err := c.csaClient.GetStableVersion(ctx, req)
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return nil, errors.Reason("get stable-version %q: record not found", dut.Name).Err()
+		}
+		return nil, errors.Annotate(err, "get stable-version %q", dut.Name).Err()
+	}
+	if res.GetCrosVersion() == "" {
+		return nil, errors.Reason("get stable-version %q: version is empty", dut.Name).Err()
+	}
+	return &tlw.VersionResponse{
+		Value: map[string]string{
+			"os_image":   fmt.Sprintf("%s-release/%s", dut.GetChromeos().GetBoard(), res.GetCrosVersion()),
+			"fw_image":   res.GetFaftVersion(),
+			"fw_version": res.GetFirmwareVersion(),
+		},
+	}, nil
+}
+
+// UpdateDut updates DUT info into inventory.
+func (c *tlwClient) UpdateDut(ctx context.Context, dut *tlw.Dut) error {
+	if dut == nil {
+		return errors.Reason("update DUT: DUT is not provided").Err()
+	}
+	dut, err := c.getDevice(ctx, dut.Name)
+	if err != nil {
+		return errors.Annotate(err, "update DUT %q", dut.Name).Err()
+	}
+	req, err := dutinfo.CreateUpdateDutRequest(dut.Id, dut)
+	if err != nil {
+		return errors.Annotate(err, "update DUT %q", dut.Name).Err()
+	}
+	log.Debugf(ctx, "Update DUT: update request: %s", req)
+	rsp, err := c.ufsClient.UpdateDeviceRecoveryData(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "update DUT %q", dut.Name).Err()
+	}
+	log.Debugf(ctx, "Update DUT: update response: %s", rsp)
+	c.unCacheDevice(dut)
+	// Update provisioning data on the execution env.
+	err = localinfo.UpdateProvisionInfo(ctx, dut)
+	return errors.Annotate(err, "udpate dut").Err()
+}
