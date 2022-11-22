@@ -221,6 +221,10 @@ func (r *createModelRun) writeStrategyConfig(ctx context.Context, dir string) er
 		return err
 	}
 
+	// Print the furthest CLs after processing to keep the polled prints from
+	// obscuring the log
+	r.ev.LogAndClearFurthest(ctx)
+
 	// Print any test IDs that were missing as info
 	for testId := range r.missingStabilities {
 		logging.Warningf(ctx, "Stability info not found: %s", testId)

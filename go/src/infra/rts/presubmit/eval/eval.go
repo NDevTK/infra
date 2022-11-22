@@ -47,9 +47,10 @@ type Eval struct {
 	// LogFurthest is the number of rejections to print, ordered by descending
 	// distance.
 	// This can help diagnosing the selection strategy.
-	//
-	// TODO(nodir): implement this.
 	LogFurthest int
+
+	// Furthest rejections up to LogFurthest count. Saved for printing
+	furthest furthestRejections
 
 	// LogProgressInterval indicates how often to log the number of processed
 	// historical records. The field value is the number of records between
@@ -113,7 +114,7 @@ func (e *Eval) EvaluateSafety(ctx context.Context, strategy Strategy) (*evalpb.R
 
 	var changeAffectedness []rts.Affectedness
 	var testAffectedness []rts.Affectedness
-	furthest := make(furthestRejections, 0, e.LogFurthest)
+	e.furthest = make(furthestRejections, 0, e.LogFurthest)
 	maxNonInf := 0.0
 	var mu sync.Mutex
 
@@ -152,7 +153,7 @@ func (e *Eval) EvaluateSafety(ctx context.Context, strategy Strategy) (*evalpb.R
 			mu.Lock()
 			changeAffectedness = append(changeAffectedness, mostAffected)
 			testAffectedness = append(testAffectedness, out.TestVariantAffectedness...)
-			furthest.Consider(affectedRejection{Rejection: rej, MostAffected: mostAffected})
+			e.furthest.Consider(affectedRejection{Rejection: rej, MostAffected: mostAffected})
 			if !math.IsInf(mostAffected.Distance, 1) && maxNonInf < mostAffected.Distance {
 				maxNonInf = mostAffected.Distance
 			}
@@ -170,10 +171,6 @@ func (e *Eval) EvaluateSafety(ctx context.Context, strategy Strategy) (*evalpb.R
 
 	if len(changeAffectedness) == 0 {
 		return nil, errors.New("no change rejections")
-	}
-
-	if len(furthest) > 0 {
-		furthest.LogAndClear(ctx)
 	}
 
 	// Compute distance thresholds by taking their percentiles in
@@ -314,6 +311,13 @@ func (e *Eval) goMany(eg *errgroup.Group, f func() error) {
 	}
 }
 
+// Logs the furthest CL distances
+func (e *Eval) LogAndClearFurthest(ctx context.Context) {
+	if len(e.furthest) > 0 {
+		e.furthest.LogAndClear(ctx)
+	}
+}
+
 // distanceQuantiles returns distance quantiles. Panics if afs is empty.
 func distanceQuantiles(afs []rts.Affectedness, count int) (distances []float32) {
 	if len(afs) == 0 {
@@ -395,9 +399,12 @@ type affectedRejection struct {
 
 // Consider pushes the item if there is unused capacity, or replaces the closest
 // item in the heap if the former is further than the latter.
-// Does nothing if cap(*f) == 0.
+// Does nothing if cap(*f) == 0 or the distance is 0.
 func (f *furthestRejections) Consider(item affectedRejection) {
 	switch {
+	case item.MostAffected.Distance == 0:
+		return
+
 	case cap(*f) == 0:
 		return
 

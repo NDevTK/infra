@@ -48,7 +48,7 @@ func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 			r.Flags.StringVar(&r.builder, "builder", "", "Builder running the testSuite to exclude from tests")
 			r.Flags.StringVar(&r.testSuite, "testSuite", "", "Test suite of the builder to exclude from tests")
 			r.Flags.StringVar(&r.testIdFile, "testIdFile", "", "Test id file to exclude from tests")
-			r.ev.LogProgressInterval = 100
+			r.ev.LogProgressInterval = 1000
 			r.ev.RegisterFlags(&r.Flags)
 			return r
 		},
@@ -93,6 +93,7 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: 0}
 			}
 		}
+
 		return nil
 	})
 
@@ -101,6 +102,12 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 		return 1
 	}
 
+	// We don't care about the 100% recall and 0% savings threshold
+	if len(res.Thresholds) > 1 {
+		res.Thresholds = res.Thresholds[:1]
+	}
+
+	r.ev.LogAndClearFurthest(ctx)
 	eval.PrintSpecificResults(res, os.Stdout, 0.0, false, false)
 	return 0
 }

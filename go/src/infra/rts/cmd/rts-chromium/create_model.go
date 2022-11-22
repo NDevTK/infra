@@ -195,6 +195,10 @@ func (r *createModelRun) writeStrategyConfig(ctx context.Context, fileName strin
 		return err
 	}
 
+	// Print the furthest CLs after processing to keep the polled prints from
+	// obscuring the log
+	r.ev.LogAndClearFurthest(ctx)
+
 	eval.PrintResults(res, os.Stdout, 0.97)
 	cfgBytes, err := protojson.Marshal(&chromium.GitBasedStrategyConfig{
 		ChangeLogDistanceFactor:     float32(er.ChangeLogDistanceFactor),
