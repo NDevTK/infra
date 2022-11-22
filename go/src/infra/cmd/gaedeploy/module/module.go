@@ -185,6 +185,7 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 	const Undef varType = 0
 	const Int varType = 1
 	const Str varType = 2
+	const Bool varType = 3
 
 	// Grab a union of all possible vars in `decl` along with their types. We
 	// support only strings and integers.
@@ -196,6 +197,8 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 				typ = Int
 			} else if _, ok := v.(string); ok {
 				typ = Str
+			} else if _, ok := v.(bool); ok {
+				typ = Bool
 			} else {
 				return nil, nil, errors.Reason("variable %q has unsupported type %T", k, v).Err()
 			}
@@ -208,12 +211,18 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 	}
 
 	// Verify types in `vals` match (so basically check int-typed vars can be
-	// parsed as integers). Note that we allow to pass variables that are not
-	// mentioned in `decl`. They have string type.
+	// parsed as integers, bool-typed vars can be parsed as bools).
+	// Note that we allow to pass variables that are not mentioned in `decl`.
+	// They have string type.
 	for k, v := range vals {
 		if types[k] == Int {
 			if _, err := strconv.ParseInt(v, 10, 32); err != nil {
 				return nil, nil, errors.Reason("the value of variable %q is expected to be an integer, got %q", k, v).Err()
+			}
+		}
+		if types[k] == Bool {
+			if _, err := strconv.ParseBool(v); err != nil {
+				return nil, nil, errors.Reason("the value of variable %q is expected to be a boolean, got %q", k, v).Err()
 			}
 		}
 	}
@@ -243,6 +252,12 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 					panic("impossible") // already checked this
 				}
 				return int(i), nil
+			case Bool:
+				b, err := strconv.ParseBool(val)
+				if err != nil {
+					panic("impossible") // already checked this
+				}
+				return b, nil
 			case Str:
 				return val, nil
 			default:
@@ -330,7 +345,7 @@ func renderString(s string, p varsProvider) (out interface{}, err error) {
 		}
 		var repl interface{}
 		repl, err = p(strings.TrimSuffix(strings.TrimPrefix(match, "${"), "}"))
-		return fmt.Sprintf("%v", repl) // to convert potential int to string
+		return fmt.Sprintf("%v", repl) // to convert potential int or bool to string
 	})
 	return
 }

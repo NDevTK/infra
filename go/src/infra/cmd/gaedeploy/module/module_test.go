@@ -92,27 +92,40 @@ func TestModule(t *testing.T) {
 			So(err, ShouldErrLike, `the value of variable "VAR" is expected to be an integer, got "haha"`)
 		})
 
+		Convey("Bad bool var", func() {
+			decl := varsDecl{
+				"app-id": {"VAR": false},
+			}
+			_, _, err := renderVars(nil, "app-id", decl, map[string]string{"VAR": "haha"})
+			So(err, ShouldErrLike, `the value of variable "VAR" is expected to be a boolean, got "haha"`)
+		})
+
 		Convey("Substitutes", func() {
 			decl := varsDecl{
 				"app-id": {
-					"STR_VAR": "blah-1",
-					"INT_VAR": 123,
-					"UNUSED":  "!!!",
+					"STR_VAR":  "blah-1",
+					"INT_VAR":  123,
+					"BOOL_VAR": false,
+					"UNUSED":   "!!!",
 				},
 				"another-app-id": {
-					"STR_VAR": "blah-2",
-					"INT_VAR": 456,
+					"STR_VAR":  "blah-2",
+					"INT_VAR":  456,
+					"BOOL_VAR": true,
 				},
 			}
 			v := map[string]interface{}{
 				"str_key1": "blah ${STR_VAR}",
 				"str_key2": "blah ${INT_VAR}",
+				"str_key3": "blah ${BOOL_VAR}",
 				"int_var":  "${INT_VAR}",
 				"str_var":  "${STR_VAR}",
+				"bool_var": "${BOOL_VAR}",
 				"a bunch":  "${ANOTHER_VAR} ${STR_VAR}",
 			}
 			out, consumed, err := renderVars(v, "app-id", decl, map[string]string{
-				"INT_VAR":     "42", // will be converted to int
+				"INT_VAR":     "42",   // will be converted to int
+				"BOOL_VAR":    "TRUE", // will be converted to bool
 				"ANOTHER_VAR": "zzz",
 				"UNUSED_TOO":  "!!!",
 			})
@@ -120,12 +133,15 @@ func TestModule(t *testing.T) {
 			So(out, ShouldResemble, map[string]interface{}{
 				"str_key1": "blah blah-1",
 				"str_key2": "blah 42",
+				"str_key3": "blah true",
 				"int_var":  42, // yay, int
 				"str_var":  "blah-1",
+				"bool_var": true,
 				"a bunch":  "zzz blah-1",
 			})
 			So(consumed.ToSortedSlice(), ShouldResemble, []string{
 				"ANOTHER_VAR",
+				"BOOL_VAR",
 				"INT_VAR",
 				"STR_VAR",
 			})
