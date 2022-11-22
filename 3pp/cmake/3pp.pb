@@ -15,17 +15,25 @@ create {
     }
     patch_dir: "patches"
     cpe_base_address: "cpe:/a:cmake_project:cmake"
-    patch_version: "chromium.4"
+    patch_version: "chromium.5"
   }
 
   build {
     tool: "build_support/cmake_bootstrap"
-    tool: "tools/sed"
     tool: "tools/ninja"
   }
 
   package {
     version_file: ".versions/cmake.cipd_version"
+  }
+}
+
+create {
+  platform_re: "linux-.*|mac-.*"
+  build {
+    tool: "build_support/cmake_bootstrap"
+    tool: "tools/sed"
+    tool: "tools/ninja"
   }
 }
 
