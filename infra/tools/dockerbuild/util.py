@@ -205,8 +205,6 @@ def check_run(system, dx, work_root, cmd, cwd=None, env=None, **kwargs):
         env with dict.update)
     """
   if dx is None:
-    if cmd[0] == 'python':
-      cmd[0] = system.native_python
     return system.check_run(cmd, cwd=cwd or work_root, env=env, **kwargs)
   return dx.check_run(work_root, cmd, cwd=cwd, env=env, **kwargs)
 

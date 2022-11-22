@@ -372,12 +372,7 @@ class Image(collections.namedtuple('_Image', (
 
       args.append('/start.sh')
 
-    else:
-      # Build arguments to run natively.
-      if cmd[0] == 'python':
-        # Use system-native Python interpreter if requested.
-        cmd[0] = self.system.native_python
-      # env_prefix/env_suffix are left in **kwargs for System.run.
+    # else env_prefix/env_suffix are left in **kwargs for System.run.
 
     args += cmd
     return self.system.run(args, cwd=cwd, env=env, **kwargs)
