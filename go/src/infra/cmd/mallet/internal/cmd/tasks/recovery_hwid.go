@@ -19,6 +19,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/config"
 	"infra/libs/skylab/buildbucket"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // Recovery HWID: Recovering HWID from inventory to host.
@@ -62,6 +63,7 @@ func (c *recoveryHWIDRun) innerRun(a subcommands.Application, args []string, env
 	}
 	v := buildbucket.CIPDLatest
 	for _, unit := range args {
+		unit = heuristics.NormalizeBotNameToDeviceName(unit)
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
 		url, _, err := buildbucket.ScheduleTask(

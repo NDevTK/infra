@@ -16,6 +16,7 @@ import (
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/buildbucket"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // Recovery subcommand: Recovering the devices.
@@ -64,6 +65,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 		return errors.Reason("create recovery task: unit is not specified").Err()
 	}
 	unit := args[0]
+	unit = heuristics.NormalizeBotNameToDeviceName(unit)
 	e := c.envFlags.Env()
 	v := buildbucket.CIPDProd
 	configuration := b64.StdEncoding.EncodeToString([]byte(c.createPlan()))

@@ -19,6 +19,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/config"
 	"infra/libs/skylab/buildbucket"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // Recovery subcommand: Recovering the devices.
@@ -68,6 +69,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 	}
 	v := buildbucket.CIPDLatest
 	for _, unit := range args {
+		unit = heuristics.NormalizeBotNameToDeviceName(unit)
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
 		url, _, err := buildbucket.ScheduleTask(

@@ -18,6 +18,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/config"
 	"infra/libs/skylab/buildbucket"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // Repair CBI: Restore backup CBI contents from UFS
@@ -66,6 +67,7 @@ func (command *cbiRepairCommandRun) innerRun(app subcommands.Application, args [
 	}
 	configuration := b64.StdEncoding.EncodeToString(plan)
 	for _, hostName := range args {
+		hostName = heuristics.NormalizeBotNameToDeviceName(hostName)
 		commandEnv := command.envFlags.Env()
 		url, _, err := buildbucket.ScheduleTask(
 			ctx,

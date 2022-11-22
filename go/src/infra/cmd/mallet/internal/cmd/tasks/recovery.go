@@ -18,6 +18,7 @@ import (
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/buildbucket"
+	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/swarming"
 )
 
@@ -83,6 +84,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 	sessionTag := fmt.Sprintf("admin-session:%s", c.adminSession)
 	e := c.envFlags.Env()
 	for _, unit := range args {
+		unit = heuristics.NormalizeBotNameToDeviceName(unit)
 		var configuration string
 		if c.configFile != "" {
 			b, err := os.ReadFile(c.configFile)
