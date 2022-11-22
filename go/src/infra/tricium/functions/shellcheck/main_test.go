@@ -37,8 +37,8 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Skip("no valid shellcheck bin found; skipping test")
 	}
-	if !strings.HasPrefix(version, "0.7.") {
-		t.Skipf("got shellcheck version %q want 0.7.x; skipping test", version)
+	if !strings.HasPrefix(version, "0.8.") {
+		t.Skipf("got shellcheck version %q want 0.8.x; skipping test", version)
 	}
 
 	outputDir, err := ioutil.TempDir("", "tricium-shellcheck-test")

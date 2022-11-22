@@ -92,7 +92,7 @@ func (r *Runner) Warnings(paths ...string) ([]Warning, error) {
 	dec := json.NewDecoder(stdout)
 	nestedJSON := false
 	if v, err := r.Version(); err == nil {
-		nestedJSON = strings.HasPrefix(v, "0.7")
+		nestedJSON = strings.HasPrefix(v, "0.8")
 	} else {
 		return nil, fmt.Errorf("Parsing version failed: %v", err)
 	}
