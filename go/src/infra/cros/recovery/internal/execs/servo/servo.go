@@ -17,7 +17,6 @@ import (
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/servo/topology"
-	"infra/cros/recovery/internal/localtlw/servod"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
@@ -31,7 +30,7 @@ const (
 // GetUSBDrivePathOnDut finds and returns the path of USB drive on a DUT.
 func GetUSBDrivePathOnDut(ctx context.Context, run components.Runner, s components.Servod) (string, error) {
 	// switch USB on servo multiplexer to the DUT-side
-	if err := s.Set(ctx, servod.ImageUsbkeyDirection, servod.ImageUsbkeyTowardsDUT); err != nil {
+	if err := s.Set(ctx, "image_usbkey_direction", "dut_sees_usbkey"); err != nil {
 		return "", errors.Annotate(err, "get usb drive path on dut: could not switch USB to DUT").Err()
 	}
 	// A detection delay is required when attaching this USB drive to DUT

@@ -20,7 +20,6 @@ import (
 	"infra/cros/recovery/internal/execs/cros"
 	"infra/cros/recovery/internal/execs/cros/battery"
 	"infra/cros/recovery/internal/execs/servo/topology"
-	"infra/cros/recovery/internal/localtlw/servod"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
@@ -211,7 +210,7 @@ func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 		// This statement obtains the path of usb drive on
 		// servo-host. It also switches the USB drive on servo
 		// multiplexer to servo-host.
-		servoUsbPath, err := servodGetString(ctx, info.NewServod(), servod.ImageUsbkeyDev)
+		servoUsbPath, err := servodGetString(ctx, info.NewServod(), "image_usbkey_dev")
 		if err != nil {
 			// A dependency has already checked that the Servo USB is
 			// available. But here we again check that no errors
