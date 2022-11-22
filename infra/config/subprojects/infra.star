@@ -185,7 +185,6 @@ def wheel_tryjob(builder):
         cq_group = "infra",
         location_filters = [
             cq.location_filter(path_regexp = "infra/tools/dockerbuild/.+"),
-            cq.location_filter(path_regexp = "recipes/recipes/build_wheels.py"),
         ],
     )
 
