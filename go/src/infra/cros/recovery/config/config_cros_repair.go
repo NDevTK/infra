@@ -620,8 +620,8 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Verify servo keyboard firmware": {
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 				"is_servo_keyboard_image_tool_present",
 			},
 			Dependencies: []string{
@@ -639,7 +639,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Flash keyboard map": {
 			Dependencies: []string{
-				"servod_echo",
+				"Verify servod is responsive",
 				"set_at_hwb_on",
 				"set_atmega_rst_on",
 				"Sleep for atmega reset",
@@ -663,7 +663,7 @@ func crosRepairActions() map[string]*Action {
 				"set servo's 'at_hwb' command to 'on' value.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -676,7 +676,7 @@ func crosRepairActions() map[string]*Action {
 				"set servo's 'atmega_rst' command to 'on' value.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -701,7 +701,7 @@ func crosRepairActions() map[string]*Action {
 				"set servo's 'atmega_rst' command to 'off' value.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -714,7 +714,7 @@ func crosRepairActions() map[string]*Action {
 				"set servo's 'at_hwb' command to 'off' value.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -776,7 +776,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Update Servo NIC mac address": {
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"Is not servo_v3",
 				"servod_control_exist_for_mac_address",
 			},
@@ -798,7 +798,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"servod_control_exist_for_mac_address": {
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_check_servod_control",
 			ExecExtraArgs: []string{
@@ -810,7 +810,7 @@ func crosRepairActions() map[string]*Action {
 				"set servo's 'init_usb_keyboard' command to 'on' value.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -823,7 +823,7 @@ func crosRepairActions() map[string]*Action {
 				"check if the servo keyboard image specified by the name of dfu-programmer can be found in DUT cli.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "cros_is_tool_present",
 			ExecExtraArgs: []string{
@@ -844,7 +844,7 @@ func crosRepairActions() map[string]*Action {
 				"check the servo's state is WORKING.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_match_state",
 			ExecExtraArgs: []string{
@@ -1493,7 +1493,7 @@ func crosRepairActions() map[string]*Action {
 				"The action will be skipped if the required image is already loaded.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"Stable version image is missing from servo usbkey",
 			},
 			Dependencies: []string{
@@ -1508,7 +1508,7 @@ func crosRepairActions() map[string]*Action {
 				"The action will be skipped if the required image is already loaded.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"Stable version image is missing from servo usbkey",
 			},
 			Dependencies: []string{
@@ -1527,7 +1527,7 @@ func crosRepairActions() map[string]*Action {
 				" be present on the USB-drive.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				// If servo is responsive then probably we can download image to USB drive.
 				// Present of DUT connection is not critical.
 				"servo_servod_echo_host",
@@ -1680,10 +1680,10 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
-				"servod_echo",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"Trigger kernel panic by servod",
 				"Wait to be SSHable (normal boot)",
 			},
@@ -1694,10 +1694,10 @@ func crosRepairActions() map[string]*Action {
 				"This repair action repairs a Chrome device by sending a system request to the kernel.",
 			},
 			Conditions: []string{
-				"servod_echo",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecExtraArgs: []string{
 				"count:3",
@@ -1712,8 +1712,7 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Verify servod is responsive",
 				"servod_has_control_cr50_reboot",
 				"Trigger power_state:cr50_reset",
 				"Re-initialize DUT part of servo",
@@ -1730,7 +1729,7 @@ func crosRepairActions() map[string]*Action {
 				"Servo main device is GSC chip",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"Sleep 1s",
 			},
 			ExecName: "init_dut_for_servo",
@@ -1740,7 +1739,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that main device is c2d2/cr50/GSC",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"servo_host_is_labstation",
 			},
 			ExecName: "servo_main_device_is_gcs",
@@ -1750,7 +1749,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks whether the servod has the command control: cr50_reboot.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecExtraArgs: []string{
 				"command:cr50_reboot",
@@ -1762,7 +1761,7 @@ func crosRepairActions() map[string]*Action {
 				"Repair a ChromeOS Device by resetting cr50 by servo.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecExtraArgs: []string{
 				"command:power_state",
@@ -1784,8 +1783,8 @@ func crosRepairActions() map[string]*Action {
 				"Set 40 minutes as some FW BIOS is too big and take time to flash it.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			ExecName: "cros_read_gbb_by_servo",
 			ExecExtraArgs: []string{
@@ -1868,6 +1867,7 @@ func crosRepairActions() map[string]*Action {
 				"This action wraps the recovery action and waits for the device to come back online.",
 			},
 			Dependencies: []string{
+				"Verify servod is responsive",
 				"Servo recover AC power",
 				"Wait to be pingable (normal boot)",
 			},
@@ -1911,7 +1911,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"DUT has CrOS EC",
-				"dut_servo_host_present",
+				"Verify servod is responsive",
 				"cros_is_battery_expected",
 			},
 			ExecName: "servo_recover_ac_power",
@@ -1925,7 +1925,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if DUT has ChromeOS firmware for EC",
 			},
 			Dependencies: []string{
-				"servod_echo",
+				"Verify servod is responsive",
 			},
 			ExecExtraArgs: []string{
 				"command:supports_cros_ec_communication",
@@ -1939,7 +1939,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT will be booted in recovery mode.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Boot DUT in recovery and install from USB-drive",
@@ -1953,6 +1953,7 @@ func crosRepairActions() map[string]*Action {
 				"The action is only for deployment as not limited by pools.",
 			},
 			Dependencies: []string{
+				"Verify servod is responsive",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
 			},
@@ -1978,8 +1979,8 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset device by servo and wait for DUT to become ping-able.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 				"Cold reset DUT by servo",
 				"Wait to be pingable (normal boot)",
 			},
@@ -1993,6 +1994,7 @@ func crosRepairActions() map[string]*Action {
 				"re-imaging the device from USB device.",
 			},
 			Dependencies: []string{
+				"Verify servod is responsive",
 				"Cold reset by servo and wait for SSH",
 			},
 			ExecName: "sample_pass",
@@ -2003,8 +2005,7 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Verify servod is responsive",
 				"Cold reset DUT by servo",
 				"Wait to be SSHable (normal boot)",
 			},
@@ -2016,8 +2017,8 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset device by servo and do not wait.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -2165,8 +2166,8 @@ func crosRepairActions() map[string]*Action {
 				"We will retry up to 3 times since there may be flakiness on flash AP via servo.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2188,8 +2189,8 @@ func crosRepairActions() map[string]*Action {
 				"We will retry up to 5 times since there is flakiness on flash EC.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2213,8 +2214,8 @@ func crosRepairActions() map[string]*Action {
 				"The AP update on the DUT can take up to 30 minutes",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2237,10 +2238,8 @@ func crosRepairActions() map[string]*Action {
 				"available. This action exists to wrap these component ",
 				"actions into a single repair action.",
 			},
-			Conditions: []string{
-				"dut_servo_host_present",
-			},
 			Dependencies: []string{
+				"Verify servod is responsive",
 				"Flash EC (FW) by servo",
 				"Flash AP (FW) by servo",
 				"Cold reset by servo and wait for SSH",
@@ -2257,8 +2256,8 @@ func crosRepairActions() map[string]*Action {
 				"The GBB will set to 0x18 which equal to switch to DEV mode and enable boot from USB drive in DEV mode.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2304,7 +2303,7 @@ func crosRepairActions() map[string]*Action {
 				"First boot in dev mode can take time so set boot time to 10 minutes.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "cros_dev_mode_boot_from_servo_usb_drive",
 			ExecExtraArgs: []string{
@@ -2332,9 +2331,9 @@ func crosRepairActions() map[string]*Action {
 				"Setup with PD control temprarely excluded from testing.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 				"has_rpm_info",
-				"servod_echo",
+				"Verify servod is responsive",
 				// The servo setup has PD control if and only if
 				// it supports GSC (Google Security Chip) firmware (e.g. cr50, ti50).
 				"Setup does't have Servo PD control",
@@ -2369,7 +2368,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that servo has build in PD control.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			ExecName: "servo_build_in_pd_present",
 		},
@@ -2470,10 +2469,24 @@ func crosRepairActions() map[string]*Action {
 				"Verify that servo host specified in setup and servod is running.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			ExecName: "sample_pass",
+		},
+		"Setup has servo info": {
+			ExecName:   "dut_servo_host_present",
+			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Verify servod is responsive": {
+			ExecName:   "servod_echo",
+			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR,
+			},
 		},
 		"Record type C status": {
 			Docs: []string{
