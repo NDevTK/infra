@@ -85,9 +85,13 @@ func TestGTestConversions(t *testing.T) {
 							"links": {
 								"logcat": "https://luci-logdog.appspot.com/v/?s=logcat"
 							},
-							"properties": {
-								"property_name_1": "property_value_1",
-								"property_name_2": "property_value_2"
+							"tags": {
+								"tag_name_1": {
+                  "value": "tag_value_1"
+                },
+								"tag_name_2": {
+                  "value": "tag_value_2"
+                }
 							},
 							"result_parts":[{}]
 						}
@@ -156,9 +160,13 @@ func TestGTestConversions(t *testing.T) {
 							"logcat": json.RawMessage(
 								`"https://luci-logdog.appspot.com/v/?s=logcat"`),
 						},
-						Properties: map[string]json.RawMessage{
-							"property_name_1": json.RawMessage(`"property_value_1"`),
-							"property_name_2": json.RawMessage(`"property_value_2"`),
+						Tags: map[string]*Tag{
+							"tag_name_1": {
+								Value: "tag_value_1",
+							},
+							"tag_name_2": {
+								Value: "tag_value_2",
+							},
 						},
 						ResultParts: []*GTestRunResultPart{{}},
 					},
@@ -312,37 +320,22 @@ func TestGTestConversions(t *testing.T) {
 			So(tr.SummaryHtml, ShouldEqual, `<ul><li><a href="https://luci-logdog.appspot.com/v/?s=logcat">logcat</a></li></ul>`)
 		})
 
-		Convey("properties", func() {
+		Convey("tags", func() {
 			tr := convert(&GTestRunResult{
 				Status:              "SUCCESS",
 				LosslessSnippet:     true,
 				OutputSnippetBase64: "invalid base64",
-				Properties: map[string]json.RawMessage{
-					"property_name_1": json.RawMessage(
-						`{"value": "tag_name1=tag_value1"}`),
-					"property_name_2": json.RawMessage(
-						`{"value": "tag_name2=tag_value2"}`),
-					"gtest_tag": json.RawMessage(
-						`{"value": "tag_name3=tag_value3"}`),
+				Tags: map[string]*Tag{
+					"tag_name_1": {
+						Value: "tag_value_1",
+					},
+					"tag_name_2": {
+						Value: "tag_value_2",
+					},
 				},
 			})
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name1", "tag_value1")), ShouldBeFalse)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name2", "tag_value2")), ShouldBeFalse)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name3", "tag_value3")), ShouldBeTrue)
-		})
-
-		Convey("properties with multiple tags", func() {
-			tr := convert(&GTestRunResult{
-				Status:              "SUCCESS",
-				LosslessSnippet:     true,
-				OutputSnippetBase64: "invalid base64",
-				Properties: map[string]json.RawMessage{
-					"gtest_tag": json.RawMessage(
-						`{"value": "tag_name1=tag_value1;tag_name2=tag_value2"}`),
-				},
-			})
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name1", "tag_value1")), ShouldBeTrue)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name2", "tag_value2")), ShouldBeTrue)
+			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_1", "tag_value_1")), ShouldBeTrue)
+			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_2")), ShouldBeTrue)
 		})
 
 		Convey("failure reason", func() {
