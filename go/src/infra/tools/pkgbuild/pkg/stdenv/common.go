@@ -4,10 +4,12 @@
 package stdenv
 
 import (
+	"bytes"
 	"crypto"
 	"embed"
 	"fmt"
 	"io/fs"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -50,7 +52,7 @@ var common struct {
 	// Import from host environment
 	PosixUtils cipkg.Generator
 	Docker     cipkg.Generator
-	XCode      cipkg.Generator
+	Darwin     cipkg.Generator
 }
 
 var cipdPackages = []ensure.PackageDef{}
@@ -96,25 +98,46 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 		"cat",
 		"cut",
 		"chmod",
+		"cmp",
 		"cp",
+		"cpio",
+		"date",
+		"dirname",
+		"echo",
+		"egrep",
+		"env",
 		"expr",
+		"false",
+		"fgrep",
 		"file",
 		"find",
 		"grep",
+		"gzip",
+		"head",
+		"hostname",
 		"id",
+		"install",
 		"ls",
 		"mkdir",
 		"mktemp",
 		"mv",
+		"ln",
 		"od",
+		"patch",
 		"perl",
+		"ps",
 		"rm",
-		"sed",
+		"rmdir",
 		"sh",
 		"sleep",
 		"sort",
+		"tail",
+		"tar",
 		"touch",
 		"tr",
+		"true",
+		"uniq",
+		"wc",
 		"which",
 		"uname",
 	); err != nil {
@@ -128,22 +151,51 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 			return
 		}
 	case "darwin":
-		if common.XCode, err = builtins.FromPathBatch("xcode", finder,
-			"ar",
-			"cc",
-			"c++",
-			"clang",
-			"clang++",
-			"gcc",
-			"g++",
-			"make",
-			"xcrun",
-		); err != nil {
+		if common.Darwin, err = importDarwin(); err != nil {
 			return
 		}
 	}
 
 	return
+}
+
+func importDarwin() (cipkg.Generator, error) {
+	cmd := exec.Command("xcode-select", "--print-path")
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	path := string(bytes.TrimSpace(out))
+
+	cmd = exec.Command(filepath.Join(path, "usr", "bin", "xcodebuild"), "-version")
+	out, err = cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	ver := string(bytes.TrimSpace(out))
+
+	return &builtins.Import{
+		Name: "darwin_import",
+		Targets: []builtins.ImportTarget{
+			{Source: path, Destination: "Developer", Version: ver, Type: builtins.ImportDirectory},
+			{Source: "/usr/bin/codesign", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/sw_vers", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/xcode-select", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/xcrun", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/hdiutil", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/pkgbuild", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/productbuild", Destination: "bin", Type: builtins.ImportExecutable},
+
+			// Using compilers without wrappers require configuring Apple Framework properly, which isn't trivial.
+			// See also: https://github.com/NixOS/nixpkgs/tree/master/pkgs/os-specific/darwin/apple-sdk
+			{Source: "/usr/bin/cc", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/c++", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/clang", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/clang++", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/gcc", Destination: "bin", Type: builtins.ImportExecutable},
+			{Source: "/usr/bin/g++", Destination: "bin", Type: builtins.ImportExecutable},
+		},
+	}, nil
 }
 
 type Generator struct {

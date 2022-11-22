@@ -27,15 +27,15 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 		Builder: "{{.stdenv_python3}}/bin/python3",
 		Args:    []string{"-I", "-B", "{{.stdenv}}/setup/main.py"},
 		Env: append([]string{
+			"osx_developer_root={{.darwin_import}}/Developer",
 			"buildFlags=",
 			"installFlags=",
 			srcsEnv,
 
-			// Env GREP and SED added here to skip the configure testing them.
-			// TODO(fancl): Update the specs to include gnu grep/sed in the tools if
+			// Env GREP added here to skip the configure testing them.
+			// TODO(fancl): Update the specs to include gnu grep in the tools if
 			// configure.ac expects gnu tools.
 			"GREP={{.posixUtils_import}}/bin/grep",
-			"SED={{.posixUtils_import}}/bin/sed",
 		}, g.Env...),
 		Dependencies: append([]utilities.BaseDependency{
 			{Type: cipkg.DepsBuildHost, Generator: src},
@@ -43,7 +43,7 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 			{Type: cipkg.DepsBuildHost, Generator: common.Git},
 			{Type: cipkg.DepsBuildHost, Generator: common.Python3},
 			{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
-			{Type: cipkg.DepsBuildHost, Generator: common.XCode},
+			{Type: cipkg.DepsBuildHost, Generator: common.Darwin},
 			{Type: cipkg.DepsBuildHost, Generator: setup},
 		}, g.Dependencies...),
 		CacheKey: g.CacheKey,

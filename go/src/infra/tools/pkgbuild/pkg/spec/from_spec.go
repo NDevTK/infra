@@ -170,8 +170,12 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 		Version:  create.Version,
 	}
 
-	if strings.HasPrefix(hostCipdPlatform, "mac-") {
-		// TODO(fancl): Set CROSS_TRIPLE and MACOSX_DEPLOYMENT_TARGET for Mac.
+	switch hostCipdPlatform {
+	case "mac-amd64":
+		g.Env = append(g.Env, "MACOSX_DEPLOYMENT_TARGET=10.10")
+	case "mac-arm64":
+		g.Env = append(g.Env, "MACOSX_DEPLOYMENT_TARGET=11.0")
+		// TODO(fancl): set CROSS_TRIPLE for Mac?
 	}
 
 	l.pkgs[pkgCacheKey] = g
