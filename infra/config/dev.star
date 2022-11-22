@@ -77,7 +77,7 @@ luci.project(
         # LED users.
         luci.binding(
             roles = "role/swarming.taskTriggerer",
-            groups = ["mdb/chrome-troopers", "chromium-swarming-dev-led-access"],
+            groups = ["mdb/chrome-troopers"],
         ),
     ],
     enforce_realms_in = [
@@ -91,7 +91,16 @@ luci.logdog(
     cloud_logging_project = "luci-logdog-dev",
 )
 
-luci.bucket(name = "ci")
+luci.bucket(
+    name = "ci",
+    bindings = [
+        # LED users.
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
+            groups = "chromium-swarming-dev-led-access",
+        ),
+    ],
+)
 luci.bucket(
     name = "ci.shadow",
     shadows = "ci",
