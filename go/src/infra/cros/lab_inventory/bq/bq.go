@@ -17,7 +17,6 @@ import (
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	"infra/cros/lab_inventory/datastore"
 	"infra/cros/lab_inventory/deviceconfig"
-	"infra/cros/lab_inventory/manufacturingconfig"
 )
 
 // GetPSTTimeStamp returns the PST timestamp for bq table.
@@ -75,26 +74,6 @@ func GetDeviceConfigProtos(ctx context.Context) []proto.Message {
 			Id:          deviceconfig.GetDeviceConfigIDStr(dc.GetId()),
 			Config:      dc,
 			UpdatedTime: ut,
-		}
-		i++
-	}
-	return msgs
-}
-
-// GetManufacturingConfigProtos prepares the proto messages for all device configs to upload to bq.
-func GetManufacturingConfigProtos(ctx context.Context) []proto.Message {
-	manuConfigs, err := manufacturingconfig.GetAllCachedConfig(ctx)
-	if err != nil {
-		return nil
-	}
-	msgs := make([]proto.Message, len(manuConfigs))
-	i := 0
-	for dc, t := range manuConfigs {
-		ut, _ := ptypes.TimestampProto(t)
-		msgs[i] = &apibq.ManufacturingInventory{
-			ManufacturingId: dc.GetManufacturingId().GetValue(),
-			Config:          dc,
-			UpdatedTime:     ut,
 		}
 		i++
 	}

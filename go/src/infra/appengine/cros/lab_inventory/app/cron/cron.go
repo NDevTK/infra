@@ -36,7 +36,6 @@ import (
 	"infra/cros/lab_inventory/deviceconfig"
 	"infra/cros/lab_inventory/dronecfg"
 	"infra/cros/lab_inventory/hart"
-	"infra/cros/lab_inventory/manufacturingconfig"
 	invprotos "infra/cros/lab_inventory/protos"
 	"infra/libs/git"
 )
@@ -61,8 +60,6 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	r.GET("/internal/cron/dump-asset-info-to-bq", mwCron, logAndSetHTTPErr(dumpAssetInfoToBQHandler))
 
 	r.GET("/internal/cron/sync-dev-config", mwCron, logAndSetHTTPErr(syncDevConfigHandler))
-
-	r.GET("/internal/cron/sync-manufacturing-config", mwCron, logAndSetHTTPErr(syncManufacturingConfigHandler))
 
 	r.GET("/internal/cron/changehistory-to-bq", mwCron, logAndSetHTTPErr(dumpChangeHistoryToBQCronHandler))
 
@@ -114,19 +111,6 @@ func syncDevConfigHandler(c *router.Context) error {
 		return deviceconfig.UpdateDatastoreFromBoxster(c.Context, gitClient, bsCfg.GetJoinedConfigPath(), cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
 	}
 	return deviceconfig.UpdateDatastore(c.Context, cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
-}
-
-func syncManufacturingConfigHandler(c *router.Context) error {
-	logging.Infof(c.Context, "Start syncing manufacturing_config repo")
-	cfg := config.Get(c.Context).GetManufacturingConfigSource()
-	cli, err := cfg2datastore.NewGitilesClient(c.Context, cfg.GetHost())
-	if err != nil {
-		return err
-	}
-	project := cfg.GetProject()
-	committish := cfg.GetCommittish()
-	path := cfg.GetPath()
-	return manufacturingconfig.UpdateDatastore(c.Context, cli, project, committish, path)
 }
 
 func dumpRegisteredAssetsCronHandler(c *router.Context) error {
@@ -194,13 +178,6 @@ func dumpOtherConfigsCronHandler(c *router.Context) error {
 	uploader := bqlib.InitBQUploaderWithClient(ctx, client, "inventory", fmt.Sprintf("deviceconfig$%s", curTimeStr))
 	msgs := bqlib.GetDeviceConfigProtos(ctx)
 	logging.Debugf(ctx, "Dumping %d records of device configs to bigquery", len(msgs))
-	if err := uploader.Put(ctx, msgs...); err != nil {
-		return err
-	}
-
-	uploader = bqlib.InitBQUploaderWithClient(ctx, client, "inventory", fmt.Sprintf("manufacturing$%s", curTimeStr))
-	msgs = bqlib.GetManufacturingConfigProtos(ctx)
-	logging.Debugf(ctx, "Dumping %d records of manufacturing configs to bigquery", len(msgs))
 	if err := uploader.Put(ctx, msgs...); err != nil {
 		return err
 	}
