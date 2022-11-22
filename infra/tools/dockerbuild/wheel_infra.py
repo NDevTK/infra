@@ -42,9 +42,9 @@ class InfraPackage(Builder):
       )
     return self._resolved_version
 
-  def build_fn(self, system, wheel):
+  def build_fn(self, system, wheel, output_dir):
     path = os.path.join(
         os.path.dirname(__file__), '..', '..', '..', 'packages',
         self._spec.name)
     src = source.local_directory(self._spec.name, wheel.spec.version, path)
-    return builder.BuildPackageFromSource(system, wheel, src)
+    return builder.BuildPackageFromSource(system, wheel, src, output_dir)

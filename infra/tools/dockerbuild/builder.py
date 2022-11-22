@@ -54,12 +54,13 @@ class Builder(object):
     self._only_plat = frozenset(only_plat or ())
     self._skip_plat = frozenset(skip_plat or ())
 
-  def build_fn(self, system, wheel):
+  def build_fn(self, system, wheel, output_dir):
     """Must be overridden by the subclass.
 
     Args:
       system (runtime.System)
       wheel (types.Wheel) - The wheel we're attempting to build.
+      output_dir (str) The output directory for the wheel.
 
     Returns:
       None - The `wheel` argument will be uploaded in the CIPD package; the
@@ -156,8 +157,9 @@ class Builder(object):
       return pkg_path
 
     # Rebuild the wheel, if necessary. Get their ".whl" file paths.
-    built_wheels = self.build_wheel(wheel, system, rebuild=rebuild)
-    wheel_paths = [w.path(system) for w in built_wheels]
+    built_wheels = self.build_wheel(
+        wheel, system, system.wheel_dir, rebuild=rebuild)
+    wheel_paths = [w.path(system.wheel_dir) for w in built_wheels]
 
     # Create a CIPD package for the wheel. Give the wheel a universal filename
     # within the CIPD package.
@@ -168,19 +170,19 @@ class Builder(object):
       for w in built_wheels:
         universal_wheel_path = os.path.join(tdir, w.universal_filename())
         with concurrency.PROCESS_SPAWN_LOCK.shared():
-          shutil.copy(w.path(system), universal_wheel_path)
+          shutil.copy(w.path(system.wheel_dir), universal_wheel_path)
       _, git_revision = system.check_run(['git', 'rev-parse', 'HEAD'])
       system.cipd.create_package(wheel.cipd_package(git_revision),
                                  tdir, pkg_path)
 
     return pkg_path
 
-  def build_wheel(self, wheel, system, rebuild=False):
+  def build_wheel(self, wheel, system, output_dir, rebuild=False):
     built_wheels = [wheel]
-    wheel_path = wheel.path(system)
+    wheel_path = wheel.path(output_dir)
     if rebuild or not os.path.isfile(wheel_path):
       # The build_fn may return an alternate list of wheels.
-      built_wheels = self.build_fn(system, wheel) or built_wheels
+      built_wheels = self.build_fn(system, wheel, output_dir) or built_wheels
     else:
       util.LOGGER.info('Wheel is already built: %s', wheel_path)
     return built_wheels
@@ -194,11 +196,11 @@ def _FindWheelInDirectory(wheel_dir):
   return wheels[0]
 
 
-def StageWheelForPackage(system, wheel_dir, wheel):
+def StageWheelForPackage(system, wheel_dir, wheel, output_dir):
   """Finds the single wheel in wheel_dir and copies it to the filename indicated
   by wheel.filename. Returns the name of the wheel we found.
   """
-  dst = os.path.join(system.wheel_dir, wheel.filename)
+  dst = wheel.path(output_dir)
 
   source_path = _FindWheelInDirectory(wheel_dir)
   util.LOGGER.debug('Identified source wheel: %s', source_path)
@@ -208,7 +210,7 @@ def StageWheelForPackage(system, wheel_dir, wheel):
   return os.path.basename(source_path)
 
 
-def BuildPackageFromPyPiWheel(system, wheel):
+def BuildPackageFromPyPiWheel(system, wheel, output_dir):
   """Builds a wheel by obtaining a matching wheel from PyPi."""
   with system.temp_subdir('%s_%s' % wheel.spec.tuple) as tdir:
     # TODO: This can copy the Python package unnecessarily: even if the platform
@@ -239,7 +241,7 @@ def BuildPackageFromPyPiWheel(system, wheel):
         ],
         cwd=tdir)
 
-    wheel_name = StageWheelForPackage(system, tdir, wheel)
+    wheel_name = StageWheelForPackage(system, tdir, wheel, output_dir)
 
     # Make sure the prebuilt wheel supports the declared pyversions.
     if wheel.spec.universal:
@@ -452,6 +454,7 @@ class BuildDependencies(
 def BuildPackageFromSource(system,
                            wheel,
                            src,
+                           output_dir,
                            src_filter=None,
                            deps=None,
                            tpp_libs=None,
@@ -463,6 +466,7 @@ def BuildPackageFromSource(system,
     system (dockerbuild.runtime.System): Represents the local system.
     wheel (dockerbuild.wheel.Wheel): The wheel to build.
     src (dockerbuild.source.Source): The source to build the wheel from.
+    output_dir (str): The wheel output directory.
     deps (dockerbuild.builder.BuildDependencies|None): Dependencies required
       to build the wheel.
     tpp_libs (List[(str, str)]|None): 3pp static libraries to install in the
@@ -519,6 +523,9 @@ def BuildPackageFromSource(system,
       # dependencies (https://github.com/pypa/pip/issues/8439).
       extra_env['PIP_CONSTRAINT'] = 'constraints.txt'
 
+      # Use the per-thread pip cache, see comments in runtime.py
+      extra_env['PIP_CACHE_DIR'] = system.pip_cache_dir
+
       # TODO: Perhaps we should pass --build-option --universal for universal
       # py2.py3 wheels, to ensure the filename is right even if the wheel
       # setup.cfg isn't configured correctly.
@@ -543,9 +550,9 @@ def BuildPackageFromSource(system,
           env=extra_env,
           env_prefix=env_prefix)
 
-    output_dir = tdir
+    wheel_dir = tdir
     if not skip_auditwheel and wheel.plat.wheel_plat[0].startswith('manylinux'):
-      output_dir = os.path.join(tdir, 'auditwheel-out')
+      wheel_dir = os.path.join(tdir, 'auditwheel-out')
       util.check_run(
           system,
           dx,
@@ -556,13 +563,13 @@ def BuildPackageFromSource(system,
               '--plat',
               wheel.plat.wheel_plat[0],
               '-w',
-              output_dir,
+              wheel_dir,
               _FindWheelInDirectory(tdir),
           ],
           cwd=tdir,
           env=env)
 
-    StageWheelForPackage(system, output_dir, wheel)
+    StageWheelForPackage(system, wheel_dir, wheel, output_dir)
 
 
 def PrepareBuildDependenciesCmd(system, wheel, build_dir, deps_dir, deps):
@@ -580,10 +587,9 @@ def PrepareBuildDependenciesCmd(system, wheel, build_dir, deps_dir, deps):
     dep_wheel = dep.wheel(system, host_plat)
     # build_wheel may return sub wheels different from the original wheel.
     # e.g. the result of a MultiWheel's build is a list of all included wheels.
-    subs = dep.build_wheel(dep_wheel, system, rebuild=True)
+    subs = dep.build_wheel(dep_wheel, system, deps_dir, rebuild=True)
     for sub in subs:
-      sub_path = sub.path(system)
-      sub_path = util.copy_to(sub_path, deps_dir)
+      sub_path = sub.path(deps_dir)
       sub_rel = os.path.relpath(sub_path, build_dir)
       local_wheels.append('{}@{}'.format(sub.spec.name, sub_rel))
 

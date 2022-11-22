@@ -1,5 +1,5 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style liense that can be
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Some utilities for concurrency."""
 
@@ -26,6 +26,9 @@ class Pool():
   it works fine for our application of O(100) large IO-bound tasks.
   """
 
+  # A dictionary of thread-local attributes.
+  local = threading.local()
+
   class Thread(threading.Thread):
     """Pool-specific Thread subclass that communicates status to the pool."""
 
@@ -37,8 +40,13 @@ class Pool():
       self.event = event
       self.errors = errors
       self.active = True
+      self.thread_index = None
 
     def run(self):
+      if self.thread_index is None:
+        raise Exception(
+            'ThreadPool must set thread_index before starting a Thread.')
+      Pool.local.thread_index = self.thread_index
       try:
         self.target(*self.args)
       except:  # pylint: disable=bare-except
@@ -99,7 +107,21 @@ class Pool():
       # in-between us clearing it and executing the below code, but it's benign
       # as this loop body simply does nothing if all threads are still active.
 
-      self.active_threads = [t for t in self.active_threads if t.active]
+      self.active_threads = []
+      active_thread_indexes = set()
+      for t in self.active_threads:
+        if t.active:
+          self.active_threads.append(t)
+          active_thread_indexes.add(t.thread_index)
+
+      # Each Thread is assigned an index between
+      # [0..target_active_thread_count), available as Pool.local.thread_index.
+      # This can be used to manage any resources resources which can persist
+      # across tasks, but should not be shared between threads.
+      available_thread_indexes = [
+          i for i in reversed(range(self.target_active_thread_count))
+          if i not in active_thread_indexes
+      ]
 
       # Start as many threads as necessary to bring the active thread count back
       # up to `target_active_thread_count'.
@@ -110,6 +132,7 @@ class Pool():
         for _ in range(new_threads_to_start):
           t = self.queued_threads.pop()
           self.active_threads.append(t)
+          t.thread_index = available_thread_indexes.pop()
           t.start()
 
       if not self.active_threads:
