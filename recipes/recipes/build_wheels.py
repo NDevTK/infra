@@ -100,8 +100,7 @@ def RunSteps(api, platforms, dry_run, rebuild):
       if all(api.path.basename(p) in {'wheels.py', 'wheels.md'} for p in files):
         run_wheel_json = lambda step_name: \
           api.step(step_name,
-                   ['vpython', '-vpython-spec', '.vpython3',
-                    '-m', 'infra.tools.dockerbuild', 'wheel-json'],
+                   ['vpython3', '-m', 'infra.tools.dockerbuild', 'wheel-json'],
                    stdout=api.json.output()).stdout
 
         new_wheels = run_wheel_json('compute new wheels.json')
@@ -155,9 +154,8 @@ def RunSteps(api, platforms, dry_run, rebuild):
       for wheel in wheels:
         args.extend(['--wheel', wheel])
 
-    api.step('dockerbuild', [
-        'vpython', '-vpython-spec', '.vpython3', '-m', 'infra.tools.dockerbuild'
-    ] + args)
+    api.step('dockerbuild',
+             ['vpython3', '-m', 'infra.tools.dockerbuild'] + args)
 
 
 @contextmanager

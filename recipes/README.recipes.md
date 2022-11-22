@@ -1428,7 +1428,7 @@ PYTHON_VERSION_COMPATIBILITY: PY2
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&emsp; **@contextmanager**<br>&mdash; **def [PlatformSdk](/recipes/recipes/build_wheels.py#163)(api, platforms):**
+&emsp; **@contextmanager**<br>&mdash; **def [PlatformSdk](/recipes/recipes/build_wheels.py#161)(api, platforms):**
 
 &mdash; **def [RunSteps](/recipes/recipes/build_wheels.py#59)(api, platforms, dry_run, rebuild):**
 ### *recipes* / [chromium\_bootstrap/test](/recipes/recipes/chromium_bootstrap/test.py)
