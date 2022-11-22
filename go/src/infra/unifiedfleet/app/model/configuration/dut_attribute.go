@@ -31,7 +31,7 @@ type DutAttributeEntity struct {
 	Updated       time.Time
 }
 
-var DutAttributeRegex = regexp.MustCompile(`^[a-z0-9]+(?:_[a-z0-9]+)*$`)
+var DutAttributeRegex = regexp.MustCompile(`^[a-z0-9]+(?:[\-_][a-z0-9]+)*$`)
 
 // GetProto returns the unmarshaled DutAttribute.
 func (e *DutAttributeEntity) GetProto() (proto.Message, error) {
@@ -121,10 +121,10 @@ func ListDutAttributes(ctx context.Context, keysOnly bool) (rsp []*api.DutAttrib
 	return rsp, err
 }
 
-// validateDutAttributeId checks whether DutAttribute is a snake case string.
+// validateDutAttributeId checks whether DutAttribute is snake/kebab case.
 func validateDutAttributeId(id string) error {
 	if !DutAttributeRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, "Invalid input - ID must be snake case.")
+		return status.Errorf(codes.InvalidArgument, "Invalid input - ID must be snake/kebab case.")
 	}
 	return nil
 }

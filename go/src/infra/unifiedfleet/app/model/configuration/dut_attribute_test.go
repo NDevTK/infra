@@ -86,7 +86,7 @@ func TestUpdateDutAttribute(t *testing.T) {
 	})
 
 	t.Run("update DutAttribute with invalid IDs", func(t *testing.T) {
-		attr4 := mockDutAttribute("attr-4", "test.path.4")
+		attr4 := mockDutAttribute("attr-4-", "test.path.4")
 		got, err := UpdateDutAttribute(ctx, attr4)
 		if err == nil {
 			t.Errorf("UpdateDutAttribute succeeded with invalid ID")
@@ -143,7 +143,7 @@ func TestListDutAttributes(t *testing.T) {
 	wantFull := make([]*api.DutAttribute, 0, 4)
 	wantKeys := make([]*api.DutAttribute, 0, 4)
 	for i := 0; i < 4; i++ {
-		id := fmt.Sprintf("attr%d", i)
+		id := fmt.Sprintf("attr-%d", i)
 		da := mockDutAttribute(id, fmt.Sprintf("test.path.%d", i))
 		rsp, err := UpdateDutAttribute(ctx, da)
 		if err != nil {
