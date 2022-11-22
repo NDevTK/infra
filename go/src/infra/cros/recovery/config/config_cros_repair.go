@@ -1840,10 +1840,24 @@ func crosRepairActions() map[string]*Action {
 				"Power off DUT by RPM",
 				"Sleep 15s",
 				"Power on DUT by RPM",
+				"Set servo PD to src",
 				"Wait to be pingable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Set servo PD to src": {
+			Docs: []string{
+				"Set servo PD to src to power the DUT.",
+				"If servo is type-c it can switch PD to snk.",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:servo_pd_role",
+				"expected_string_value:src",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"Is not in audio box": {
 			Docs: []string{
