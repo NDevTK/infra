@@ -1,0 +1,102 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+import "google/protobuf/timestamp.proto";
+
+// AssetAndHosts represent the list of AssetAndHostInfo returned from a OData
+// query to Nlyte REST APIs.
+message AssetAndHosts {
+  // Metadata of retrieved information
+  string context = 1 [json_name = "@odata.context"];
+
+  // Number of entries retrieved from current query
+  int32 count = 2 [json_name = "@odata.count"];
+
+  // A list of record entries
+  repeated AssetAndHostInfo records = 3 [json_name = "value"];
+
+  // Link for the next page of data. The number of RecordEntry shown in each
+  // page is determine by page-size in the query
+  string next_link = 4 [json_name = "@odata.nextLink"];
+}
+
+// AssetAndHostInfo represents the information of an asset and its host that we
+// care about.
+message AssetAndHostInfo {
+  // Unique identifier generated and used by Nlyte for assets
+  int32 asset_id = 1 [json_name = "AssetID"];
+
+  // Unique identifier used by internal Google asset tracking systems.
+  // Equivalent to tag or asset_tag.
+  string asset_name = 2 [json_name = "AssetName"];
+
+  // Native asset type that Nlyte keeps track of. e.g. Cabinet, Server, e.t.c.
+  string material_type = 3 [json_name = "MaterialType"];
+
+  // Information regarding the Lab/Room, Floor, Building, City this asset is in.
+  LocationGroup location_group = 4 [json_name = "LocationGroup"];
+
+  // If this asset is a mountable asset (e.g. Server, DUT, e.t.c.),
+  // cabinet_asset_id is the rack/cabinet, or shelf this asset is mounted on.
+  int32 cabinet_asset_id = 5 [json_name = "CabinetAssetID"];
+
+  // If this asset is a mountable asset (e.g. Server, DUT, e.t.c.),
+  // cabinet_u_number is the position of the asset on which the rack/cabinet, or
+  // shelf it is mounted.
+  int32 cabinet_u_number = 6 [json_name = "CabinetUNumber"];
+
+  // The lab floor plan in Nlyte is a grid. physical_row represents the row this
+  // asset is located on in the floor plan grid.
+  string physical_row = 7 [json_name = "GridReferenceRow"];
+
+  // The lab floor plan in Nlyte is a grid. physical_column represents the
+  // column this asset is located on in the floor plan grid.
+  string physical_column = 8 [json_name = "GridReferenceColumn"];
+
+  NlyteAssetInfo asset_info = 9 [json_name = "Asset"];
+}
+
+// LocationGroup Hierarchy:
+// Area,Room,Floor,Building,City,County,Country,Region,World.
+// Usually, the base location group of an asset is Room.
+message LocationGroup {
+  // id of the location group the asset is currently placed at. Usually Room.
+  int32 location_group_id = 1 [json_name = "LocationGroupID"];
+
+  // Will show four levels of location group name starting from the current
+  // location group the asset is in. Format of full_location_name for asset in a
+  // lab/room: "Room_Name (City,Building,Floor)"
+  string full_location_name = 2 [json_name = "DuplicateLocationGroupName"];
+}
+
+// NlyteAssetInfo represents the information of an asset that is not directly
+// available through the AssetAndHost Entity, but through the Asset Entity in
+// Nlyte.
+message NlyteAssetInfo {
+  // Native asset type that Nlyte keeps track of. e.g. Cabinet, Server, e.t.c.
+  string nlyte_material_type = 1 [json_name = "@odata.type"];
+  google.protobuf.Timestamp creation_date = 2 [json_name = "CreationDate"];
+  google.protobuf.Timestamp decommission_date = 3
+      [json_name = "DecommissionDate"];
+  repeated CustomField custom_fields = 4 [json_name = "CustomFields"];
+}
+
+message CustomField {
+  string field_name = 1 [json_name = "DataLabel"];
+
+  // DataValue can have a lot of different types, for example: string, data,
+  // e.t.c. Any type can be retrieved as string type. The reason string type is
+  // specified here is because if, for example, we want to add the DataValueDate
+  // field to this proto, we want to differentiate the date and string type and
+  // name the DataValueDate field as field_date_value.
+  // See more in this screenshot:
+  // https://screenshot.googleplex.com/B7r5oz4NdpHzbCs.png
+  string field_string_value = 2 [json_name = "DataValueString"];
+}
