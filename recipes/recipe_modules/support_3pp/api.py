@@ -23,7 +23,7 @@ For example, you might have a folder in your repo like this:
 
     my_repo.git/
       3pp/  # "root folder"
-        .vpython             # common vpython file for all package scripts
+        .vpython3            # common vpython file for all package scripts
         zlib/                # zlib "package folder"
           3pp.pb             # REQUIRED: the Spec.proto definition for zlib
           install.sh         # a script to build zlib from source
@@ -129,8 +129,8 @@ and will be applied with `git apply`).
   * `script` - Used for "weird" packages which are distributed via e.g.
     an HTML download page or an API. The script must be able to return the
     'latest' version of its source, as well as to actually fetch a specified
-    version. Python fetch scripts will be executed with `vpython`, and so
-    may have a .vpython file (or similar) in the usual manner to pull in
+    version. Python fetch scripts will be executed with `vpython3`, and so
+    may have a .vpython3 file (or similar) in the usual manner to pull in
     dependencies like `requests`.
 
 Additionally the Source message contains a `patch_version` field to allow symver
@@ -179,7 +179,7 @@ During the execution of the build phase, the package itself and its dependent
 packages (e.g. "dep" and "tool" in PB file) will be copied into the source
 checkout in the .3pp directory, and the script will be invoked as
 `/path/to/checkout/.3pp/<cipd_pkg_name>/$script_name`. If the package has
-shared resources (like `.vpython` files or helper scripts) which are outside of
+shared resources (like `.vpython3` files or helper scripts) which are outside of
 the package directory, you would need to create a symbolic link for it. See
 chromium.googlesource.com/infra/infra/+/main/3pp/cpython_common/ssl_suffix.py as
 an example.
@@ -209,7 +209,7 @@ pkg-deploy` command to deploy it (or whatever cipd commands you like, though
 I wouldn't recommend uploading it to CIPD, as the 3pp recipe will do that after
 the test exits 0).
 
-Additionally, vpython for the tool platform will be guaranteed to be in $PATH.
+Additionally, vpython3 for the tool platform will be guaranteed to be in $PATH.
 
 ##### Upload
 

@@ -34,7 +34,7 @@ class Workdir(object):
 
      some/repo/third_party_packages/
 
-  This allows packages to have common scripts, .vpython definitions, etc. which
+  This allows packages to have common scripts, .vpython3 definitions, etc. which
   are shared across all package definitions in a given repo. The cost of the
   copy is relatively small.
   """

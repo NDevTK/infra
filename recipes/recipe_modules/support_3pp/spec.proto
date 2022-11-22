@@ -121,7 +121,8 @@ message Spec {
       // the base of the package, and some are set up with them in a /bin
       // folder).
       //
-      // Scripts ending with .py will be invoked with python (on all platforms)
+      // Scripts ending with .py will be invoked with vpython3 (on all
+      // platforms).
       // Scripts ending with .sh will be invoked with bash (on all platforms).
       //   For Windows this uses the git-for-windows copy of bash, which is
       //   mingw bash (in case you run into path issues, but since everything is
@@ -271,7 +272,7 @@ message Spec {
       // do:
       //
       //   $ cd /path/to/verify
-      //   $ python /path/to/repo/subdir/package_name/test.py extra_arg \
+      //   $ vpython3 /path/to/repo/subdir/package_name/test.py extra_arg \
       //      /path/to/built/cipd/package
       repeated string test = 1;
     }
@@ -470,9 +471,9 @@ message ScriptSource {
   // do:
   //
   //   $ cd /nowhere/in/particular
-  //   $ python /path/to/repo/subdir/package_name/fetch.py foo latest
+  //   $ vpython3 /path/to/repo/subdir/package_name/fetch.py foo latest
   //   1.2.3
-  //   $ _3PP_VERSION=1.2.3 python \
+  //   $ _3PP_VERSION=1.2.3 vpython3 \
   //     /path/to/repo/subdir/package_name/fetch.py foo get_url \
   //     /path/to/checkout
   //   {"url": ["https://some_url/foo_1.2.3.zip"], "ext": ".zip"}'
@@ -485,9 +486,9 @@ message ScriptSource {
   //
   // By reusing the same example above, the recipe will do:
   //   $ cd /nowhere/in/particular
-  //   $ python /path/to/repo/subdir/package_name/fetch.py foo latest
+  //   $ vpython3 /path/to/repo/subdir/package_name/fetch.py foo latest
   //   1.2.3
-  //   $ _3PP_VERSION=1.2.3 python \
+  //   $ _3PP_VERSION=1.2.3 vpython3 \
   //     /path/to/repo/subdir/package_name/fetch.py foo checkout \
   //     /path/to/checkout
   bool use_fetch_checkout_workflow = 1002;
