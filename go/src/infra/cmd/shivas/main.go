@@ -66,6 +66,7 @@ Full documentation http://go/shivas-cli`,
 			bot_cmds.PrintBotInfo,
 			operations.AdminCmd,
 			experimental_cmds.VerifyBotStatusCmd,
+			experimental_cmds.DumpNlyteCmd,
 		},
 	}
 }

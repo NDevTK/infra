@@ -11,8 +11,14 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"infra/cmd/shivas/site"
+	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -59,7 +65,107 @@ func (c *dumpNlyte) Run(a subcommands.Application, args []string, env subcommand
 }
 
 func (c *dumpNlyte) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return nil
+	ctx := cli.GetContext(a, c, env)
+	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
+	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+	e := c.envFlags.Env()
+	if c.commonFlags.Verbose() {
+		fmt.Printf("Using UFS service %s\n", e.UnifiedFleetService)
+	}
+	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UnifiedFleetService,
+		Options: site.DefaultPRPCOptions,
+	})
+
+	if c.updatedEntryFile == "" {
+		return errors.New("Failed to dump asset from Nlyte: empty json filename")
+	}
+
+	var assetAndHosts ufspb.AssetAndHosts
+	if err := utils.ParseJSONFile(c.updatedEntryFile, &assetAndHosts); err != nil {
+		return fmt.Errorf("Failed to dump asset from Nlyte: %s", err)
+	}
+
+	failedAssets := []string{}
+
+	for _, assetAndHostInfo := range assetAndHosts.GetRecords() {
+		if assetAndHostInfo.GetAssetName() == "" {
+			fmt.Printf("Failed to dump asset %s from Nlyte: empty AssetName\n", assetAndHostInfo.String())
+			continue
+		}
+
+		currentAsset, err := ic.GetAsset(ctx, &ufsAPI.GetAssetRequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, assetAndHostInfo.GetAssetName()),
+		})
+		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				newAsset := &ufspb.Asset{
+					Name: assetAndHostInfo.GetAssetName(),
+					Info: &ufspb.AssetInfo{
+						AssetTag: assetAndHostInfo.GetAssetName(),
+					},
+					Location: &ufspb.Location{},
+				}
+
+				if err := c.parseRecord(ctx, assetAndHostInfo, newAsset); err != nil {
+					failedAssets = append(failedAssets, assetAndHostInfo.GetAssetName())
+					fmt.Printf("Failed to dump asset %s from Nlyte: %s\n", assetAndHostInfo.GetAssetName(), err)
+					continue
+				}
+				req := &ufsAPI.CreateAssetRequest{
+					Asset: newAsset,
+				}
+				req.Asset.Name = ufsUtil.AddPrefix(ufsUtil.AssetCollection, req.Asset.Name)
+
+				res, err := c.addAssetToUFS(ctx, ic, req)
+				if err != nil {
+					failedAssets = append(failedAssets, newAsset.GetName())
+					fmt.Printf("Failed to dump asset %s from Nlyte: %s\n", newAsset.String(), err)
+					continue
+				}
+				utils.PrintProtoJSON(res, !utils.NoEmitMode(false))
+				fmt.Println("Successfully added the asset: ", res.GetName())
+			} else {
+				failedAssets = append(failedAssets, assetAndHostInfo.GetAssetName())
+				fmt.Printf("Failed to dump asset %s from Nlyte: %s\n", assetAndHostInfo.GetAssetName(), err)
+			}
+			continue
+		}
+
+		if _, err := utils.PrintExistingAsset(ctx, ic, assetAndHostInfo.GetAssetName()); err != nil {
+			failedAssets = append(failedAssets, assetAndHostInfo.GetAssetName())
+			fmt.Printf("Failed to dump asset %s from Nlyte: %s\n", assetAndHostInfo.GetAssetName(), err)
+			continue
+		}
+
+		if err := c.parseRecord(ctx, assetAndHostInfo, currentAsset); err != nil {
+			failedAssets = append(failedAssets, assetAndHostInfo.GetAssetName())
+			fmt.Printf("Failed to dump asset %s from Nlyte: %s\n", assetAndHostInfo.GetAssetName(), err)
+			continue
+		}
+
+		res, err := ic.UpdateAsset(ctx, &ufsAPI.UpdateAssetRequest{
+			Asset: currentAsset,
+		})
+		if err != nil {
+			failedAssets = append(failedAssets, currentAsset.GetName())
+			fmt.Printf("Failed to dump asset %s from Nlyte: %s\n", currentAsset.String(), err)
+			continue
+		}
+		res.Name = ufsUtil.RemovePrefix(res.GetName())
+		fmt.Println("The asset after update:")
+		utils.PrintProtoJSON(res, !utils.NoEmitMode(false))
+		fmt.Printf("Successfully updated the asset %s\n", res.GetName())
+	}
+
+	if len(failedAssets) == 0 {
+		return nil
+	}
+	return fmt.Errorf("Failed to dump the following assets from Nlyte: %v", failedAssets)
 }
 
 // parseRecord parses the input record and update the input Asset with parsed info.
