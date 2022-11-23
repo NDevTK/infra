@@ -83,6 +83,7 @@ type testCommonFlags struct {
 	lacrosPath           string
 	secondaryLacrosPaths []string
 	cft                  bool
+	scheduke             bool
 	testHarness          string
 	publicBuilderBucket  string
 	publicBuilder        string
@@ -130,6 +131,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.lacrosPath, "lacros-path", "", "Optional GCS path pointing to a lacros artifact.")
 	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
 	f.BoolVar(&c.cft, "cft", false, "Run via CFT.")
+	f.BoolVar(&c.scheduke, "scheduke", false, "Schedule via Scheduke.")
 	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
 
@@ -510,7 +512,8 @@ func (l *ctpRunLauncher) testPlatformRequest(model string, buildTags map[string]
 				MaximumDuration: durationpb.New(
 					time.Duration(l.cliFlags.timeoutMins) * time.Minute),
 			},
-			RunViaCft: l.cliFlags.cft,
+			RunViaCft:           l.cliFlags.cft,
+			ScheduleViaScheduke: l.cliFlags.scheduke,
 		},
 	}
 	// Handling multi-DUTs use case if secondaryBoards provided.
