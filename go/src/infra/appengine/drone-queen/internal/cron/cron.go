@@ -17,8 +17,9 @@
 // All actual logic related to fleet management should be implemented in the
 // main fleet API. These handlers should only encapsulate the following bits of
 // logic:
-// - Calling other API as the appengine service account user.
-// - Translating luci-config driven admin task parameters.
+//
+//   - Calling other API as the appengine service account user.
+//   - Translating luci-config driven admin task parameters.
 package cron
 
 import (
