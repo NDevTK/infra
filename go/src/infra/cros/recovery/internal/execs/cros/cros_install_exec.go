@@ -126,6 +126,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	}
 	req := &cros.BootInRecoveryRequest{
 		DUT:          dut,
+		BootRetry:    am.AsInt(ctx, "boot_retry", 1),
 		BootTimeout:  am.AsDuration(ctx, "boot_timeout", 480, time.Second),
 		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
 		// Register that device booted and sshable.
@@ -159,6 +160,7 @@ func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) err
 	}
 	req := &cros.BootInRecoveryRequest{
 		DUT:          dut,
+		BootRetry:    am.AsInt(ctx, "boot_retry", 1),
 		BootTimeout:  am.AsDuration(ctx, "boot_timeout", 480, time.Second),
 		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
 		// Register that device booted and sshable.
