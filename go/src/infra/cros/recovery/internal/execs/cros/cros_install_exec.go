@@ -16,19 +16,39 @@ import (
 	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
 )
 
 // Boot device from servo USB drive when device is in DEV mode.
 func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
+	bootRetry := am.AsInt(ctx, "boot_retry", 1)
 	waitBootTimeout := am.AsDuration(ctx, "boot_timeout", 1, time.Second)
 	waitBootInterval := am.AsDuration(ctx, "retry_interval", 1, time.Second)
+	verifyUSBDriveBoot := am.AsBool(ctx, "verify_usbkey_boot", false)
+	if !verifyUSBDriveBoot && bootRetry > 1 {
+		// if we retry then we will verify boot as that is reason to tell that device booted as expected.
+		verifyUSBDriveBoot = true
+	}
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetDut().Name)
 	ping := info.NewPinger(info.GetDut().Name)
-	err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod, info.NewLogger())
-	return errors.Annotate(err, "dev-mode boot from servo usb-drive").Err()
+	retryBootFunc := func() error {
+		if err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod, info.NewLogger()); err != nil {
+			return errors.Annotate(err, "retry boot in dev-mode").Err()
+		}
+		if verifyUSBDriveBoot {
+			if err := cros.IsBootedFromExternalStorage(ctx, run); err != nil {
+				return errors.Annotate(err, "retry boot in dev-mode").Err()
+			}
+		}
+		return nil
+	}
+	if retryErr := retry.LimitCount(ctx, bootRetry, waitBootInterval, retryBootFunc, "boot in dev mode"); retryErr != nil {
+		return errors.Annotate(retryErr, "dev-mode boot from usb-drive").Err()
+	}
+	return nil
 }
 
 // Install ChromeOS from servo USB drive when booted from it.
