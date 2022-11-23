@@ -103,9 +103,10 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			return errors.Annotate(err, "retry boot").Err()
 		}
 		if err := IsBootedFromExternalStorage(ctx, dutRun); err != nil {
+			log.Infof("Device booted from internal storage.")
 			return errors.Annotate(err, "retry boot").Err()
 		}
-		log.Infof("Device successful booted in recovery mode from USB-drive")
+		log.Infof("Device successfully booted in recovery mode from USB-drive.")
 		return nil
 	}
 	if retryErr := retry.LimitCount(ctx, req.BootRetry, req.BootInterval, retryBootFunc, "boot in recovery mode"); retryErr != nil {

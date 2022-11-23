@@ -34,14 +34,20 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetDut().Name)
 	ping := info.NewPinger(info.GetDut().Name)
+	logger := info.NewLogger()
 	retryBootFunc := func() error {
-		if err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod, info.NewLogger()); err != nil {
+		logger.Infof("Boot in DEV-mode: staring...")
+		if err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod, logger); err != nil {
 			return errors.Annotate(err, "retry boot in dev-mode").Err()
 		}
 		if verifyUSBDriveBoot {
 			if err := cros.IsBootedFromExternalStorage(ctx, run); err != nil {
+				logger.Infof("Boot in DEV-mode: booted from internal storage.")
 				return errors.Annotate(err, "retry boot in dev-mode").Err()
 			}
+			logger.Infof("Boot in DEV-mode: device successfully booted from USB-drive.")
+		} else {
+			logger.Infof("Boot in DEV-mode: device successfully booted.")
 		}
 		return nil
 	}

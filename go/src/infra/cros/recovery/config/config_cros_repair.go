@@ -1959,7 +1959,8 @@ func crosRepairActions() map[string]*Action {
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
 			},
-			ExecName: "sample_pass",
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Download and install OS in DEV mode using USB-drive": {
 			Docs: []string{
@@ -1979,8 +1980,7 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 			},
 			Dependencies: []string{
-				"Boot DUT from USB in DEV mode",
-				"Device booted from USB-drive",
+				"Boot DUT from USB in DEV mode retry twice",
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
 				"Wait to be SSHable (normal boot)",
@@ -2301,6 +2301,7 @@ func crosRepairActions() map[string]*Action {
 				"run_os_install:true",
 				"boot_timeout:480",
 				"boot_interval:10",
+				"boot_retry:2",
 				"halt_timeout:120",
 				"install_timeout:1200",
 				"tpm_reset_timeout:60",
@@ -2309,9 +2310,10 @@ func crosRepairActions() map[string]*Action {
 				"rw_badblocks_timeout:5400",
 				"ro_badblocks_timeout:3600",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 7500},
+			ExecTimeout: &durationpb.Duration{Seconds: 8000},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"Boot DUT from USB in DEV mode": {
+		"Boot DUT from USB in DEV mode retry twice": {
 			Docs: []string{
 				"Restart and try to boot from USB-drive",
 				"First boot in dev mode can take time so set boot time to 10 minutes.",
@@ -2321,14 +2323,18 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_dev_mode_boot_from_servo_usb_drive",
 			ExecExtraArgs: []string{
+				"boot_retry:2",
 				"boot_timeout:600",
 				"retry_interval:2",
+				"verify_usbkey_boot:true",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 900},
+			ExecTimeout: &durationpb.Duration{Seconds: 1600},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Run install after boot from USB-drive": {
-			Docs:        []string{"Perform install process"},
+			Docs: []string{
+				"Perform install process when device booted from USB-drive.",
+			},
 			ExecName:    "cros_run_chromeos_install_command_after_boot_usbdrive",
 			ExecTimeout: &durationpb.Duration{Seconds: 1200},
 			RunControl:  RunControl_ALWAYS_RUN,
