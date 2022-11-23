@@ -5,11 +5,11 @@ create {
     unpack_archive: true
     no_archive_prune: true
     patch_dir: "patches"
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
   }
   build {
     no_toolchain: true
-    tool: "tools/cpython"
+    tool: "tools/cpython38"
   }
 }
 
