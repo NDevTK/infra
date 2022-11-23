@@ -46,6 +46,30 @@
       },
       "revId": "49f9936f05282597142777e73bd1e227809f513c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f9cc070_725a366d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-23T21:53:38Z",
+      "side": 1,
+      "message": "there is no documentation with requirements of that, and that is the reason why i try to find the right one over this cl. But we have both cases used in paris as args. I think host makes more sence in that case as that is not related the type of the device, where that is about host(type of host) with RPM data. \n\nExample: Cros is ChromeOS device and it can be a DUT and servo-host, and also WIfiRouter. where all of them are different hosts dut, servo-host, wifi_router, chameleon",
+      "parentUuid": "34e2a60e_d3e61d59",
+      "range": {
+        "startLine": 60,
+        "startChar": 38,
+        "endLine": 60,
+        "endChar": 49
+      },
+      "revId": "49f9936f05282597142777e73bd1e227809f513c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
