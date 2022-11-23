@@ -30,14 +30,15 @@ func matchesAnyPattern(patterns []string, s string) (bool, error) {
 
 // metadataForFile finds the Metadata mapped closest to file.
 //
-// The directory in mapping that has the longest string match with file is
+// The directory in mapping that has the longest prefix match with file is
 // chosen. Usually, this would be called with a mapping with form COMPUTED,
 // so the returned Metadata has inherited metadata.
-func metadataForFile(mapping *dirmd.Mapping, file string) *dirmdpb.Metadata {
+func metadataForFile(ctx context.Context, mapping *dirmd.Mapping, file string) *dirmdpb.Metadata {
 	longestMatchingDir := ""
 	for dir := range mapping.Dirs {
-		if strings.Contains(file, dir) && len(dir) > len(longestMatchingDir) {
+		if strings.HasPrefix(file, dir) && len(dir) > len(longestMatchingDir) {
 			longestMatchingDir = dir
+			logging.Debugf(ctx, "file %q has dir %q as a prefix, setting dir to new longest match", file, dir)
 		}
 	}
 
@@ -63,7 +64,7 @@ func SourceTestPlans(
 	addedPlans := make(map[*plan.SourceTestPlan]bool)
 
 	for _, file := range affectedFiles {
-		sourceTestPlans := metadataForFile(mapping, file).GetChromeos().GetCq().GetSourceTestPlans()
+		sourceTestPlans := metadataForFile(ctx, mapping, file).GetChromeos().GetCq().GetSourceTestPlans()
 		logging.Debugf(ctx, "SourceTestPlans for affected file %q: %q", file, sourceTestPlans)
 
 		for _, plan := range sourceTestPlans {

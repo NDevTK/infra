@@ -170,6 +170,17 @@ func TestSourceTestPlans(t *testing.T) {
 			},
 			expected: []*plan.SourceTestPlan{hwKernelPlan()},
 		},
+		{
+			name: "long non-prefix match",
+			mapping: buildMapping(map[string][]*plan.SourceTestPlan{
+				"shortmatch":  {vmSocPlan()},
+				"longermatch": {},
+			}),
+			affectedFiles: []string{
+				"shortmatch/a/longermatch",
+			},
+			expected: []*plan.SourceTestPlan{vmSocPlan()},
+		},
 	}
 
 	for _, test := range tests {
