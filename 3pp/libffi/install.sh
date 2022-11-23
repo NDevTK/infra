@@ -13,10 +13,6 @@ DEPS_PREFIX=$2
 # generate configure, using libtool from DEPS_PREFIX
 PATH=$DEPS_PREFIX/bin:$PATH ./autogen.sh
 
-if [[ $_3PP_PLATFORM == mac* ]]; then
-  python generate-darwin-source-and-headers.py --only-osx
-fi
-
 ./configure --enable-static --disable-shared \
   --disable-docs \
   --host "$CROSS_TRIPLE" \

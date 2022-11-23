@@ -1,11 +1,11 @@
 create {
-  platform_re: "linux-.*|mac-.*"
+  platform_re: "linux-.*"
   source {
     url {
       download_url: "https://github.com/libffi/libffi/archive/v3.2.1.tar.gz"
       version: "3.2.1"
     }
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
     unpack_archive: true
     cpe_base_address: "cpe:/a:libffi_project:libffi"
   }
@@ -15,13 +15,6 @@ create {
     tool: "tools/libtool"
     tool: "tools/texinfo"
     tool: "tools/sed"
-  }
-}
-
-create {
-  platform_re: "mac-.*"
-  source {
-    patch_dir: "mac_patches"
   }
 }
 
