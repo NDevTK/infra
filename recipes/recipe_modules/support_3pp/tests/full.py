@@ -894,6 +894,47 @@ def GenTests(api):
           test_data_tags=['version:1.5.0-rc1']))
   yield test
 
+  # An edge case which at first appears to be a circular dependency, but
+  # actually is not due to the use of platform_re.
+  pkgs = sorted(
+      dict(
+          a='''
+    create {
+      source { script { name: "fetch.py" } }
+    }
+    create {
+      platform_re: "linux-.*"
+      build { dep: "prefix/deps/b" }
+    }
+    upload { pkg_prefix: "prefix/deps" }
+    ''',
+          b='''
+    create {
+      source { script { name: "fetch.py" } }
+    }
+    create {
+      platform_re: "mac-.*"
+      build { dep: "prefix/deps/a" }
+    }
+    upload { pkg_prefix: "prefix/deps" }
+    ''',
+      ).items())
+  test = (
+      api.test('tryjob-circular') + api.platform('linux', 64) + api.properties(
+          GOOS='linux',
+          GOARCH='amd64',
+          use_new_checkout=True,
+          tryserver_affected_files=['b/3pp.pb']) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.step_data('find package specs',
+                    api.file.glob_paths([n + '/3pp.pb' for n, _ in pkgs])))
+  for pkg, spec in pkgs:
+    test += api.step_data(
+        mk_name('load package specs', 'read \'%s/3pp.pb\'' % pkg),
+        api.file.read_text(spec))
+  yield test
+
   pkgs = sorted(
       dict(
           a='''

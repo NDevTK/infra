@@ -736,9 +736,9 @@ class Support3ppApi(recipe_api.RecipeApi):
       if pkg_name in affected_packages:
         # All reverse deps are already added.
         return
+      affected_packages.add(pkg_name)
       for dep in reverse_deps.get(pkg_name, []):
         _AddDependenciesRecurse(dep)
-      affected_packages.add(pkg_name)
 
     for f in tryserver_affected_files:
       # Map each affected file to a package. If there are files under the
