@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	iv2api "infra/appengine/cros/lab_inventory/api/v1"
+	"infra/libs/fleet/boxster/swarming"
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
@@ -892,7 +893,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	}
 
 	enableUFSSchedulableLabels := config.Get(ctx).GetEnableBoxsterLabels()
-	schedulableLabels, err := getSchedulableLabels(ctx, machine, enableUFSSchedulableLabels)
+	schedulableLabels, err := getSchedulableLabels(ctx, machine, lse, dutState)
 	if err != nil {
 		logging.Warningf(ctx, "SchedulableLabels not found. Error: %s", err)
 	}
@@ -944,14 +945,50 @@ func getStability(ctx context.Context, model string) (bool, error) {
 	return true, err
 }
 
-// getSchedulableLabels gets Swarming schedulable labels based on DutAttributes
-// from UFS datastore. The feature will be turned off by default based on
-// the enable_boxster_label flag.
-func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, enableUFSSchedulableLabels bool) (map[string]*ufspb.SchedulableLabelValues, error) {
-	if !enableUFSSchedulableLabels {
-		return nil, nil
+// getSchedulableLabels gets Swarming schedulable labels based on DutAttributes.
+func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufspb.MachineLSE, state *chromeosLab.DutState) (map[string]*ufspb.SchedulableLabelValues, error) {
+	if crosMachine := machine.GetChromeosMachine(); crosMachine == nil {
+		return nil, status.Errorf(codes.FailedPrecondition, "machine cannot be empty.")
 	}
-	return nil, status.Errorf(codes.Unimplemented, "getSchedulableLabels not yet implemented")
+
+	attrs, err := configuration.ListDutAttributes(ctx, false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get FlatConfig id ${board}-${model}-${model:sku}
+	fcId, err := configuration.GenerateFCIdFromCrosMachine(machine)
+	if err != nil {
+		return nil, err
+	}
+
+	fc, err := configuration.GetFlatConfig(ctx, fcId)
+	if err != nil {
+		return nil, err
+	}
+
+	ufsLabels := make(swarming.Dimensions)
+	for _, dutAttr := range attrs {
+		labelsMap, err := Convert(ctx, dutAttr, fc, lse, state)
+		if err != nil {
+			logging.Errorf(ctx, "could not get label values for %s %s: %s", fcId, dutAttr.GetId().GetValue(), err)
+			continue
+		}
+		for k, v := range labelsMap {
+			ufsLabels[k] = v
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	schedulableLabels := make(map[string]*ufspb.SchedulableLabelValues)
+	for k, v := range ufsLabels {
+		schedulableLabels[k] = &ufspb.SchedulableLabelValues{
+			LabelValues: v,
+		}
+	}
+	return schedulableLabels, nil
 }
 
 func getRPMNamePortForOSMachineLSE(lse *ufspb.MachineLSE) (string, string) {
