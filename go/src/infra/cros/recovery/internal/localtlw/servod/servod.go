@@ -54,6 +54,7 @@ func getServodStatus(ctx context.Context, servodHost string, servoPort int32, po
 
 // startServod starts servod daemon on servo-host.
 func startServod(ctx context.Context, servodHost string, servoPort int32, params []string, pool *sshpool.Pool) error {
+	log.Infof(ctx, "Start servod with %v", params)
 	cmd := strings.Join(append([]string{"start", "servod"}, params...), " ")
 	if r := ssh.Run(ctx, pool, servodHost, cmd); r.ExitCode != 0 {
 		return errors.Reason("start servod: %s", r.Stderr).Err()

@@ -120,9 +120,29 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_host_servod_init",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
 				RecoveryActions: []string{
+					"Stop servod and request to use recovery-mode for servod",
 					"Stop servod",
 					"Create request to reboot labstation",
 				},
+			},
+			"Stop servod and request to use recovery-mode for servod": {
+				Docs: []string{
+					"This recovery action to made adjust how we start servod.",
+					"Specify to start servod with REC_MODE=1.",
+				},
+				Dependencies: []string{
+					"Specify to use REC_MODE=1 for servo",
+					"Stop servod",
+				},
+				ExecName:   "sample_pass",
+				RunControl: RunControl_RUN_ONCE,
+			},
+			"Specify to use REC_MODE=1 for servo": {
+				Docs: []string{
+					"Create a file to specify use REC_MODE=1 when start servod.",
+				},
+				ExecName:   "servo_create_flag_to_use_recovery_mode",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Stop servod": {
 				Docs: []string{
@@ -1108,6 +1128,7 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_servod_echo_host",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 				RecoveryActions: []string{
+					"Stop servod and request to use recovery-mode for servod",
 					"Stop servod",
 					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
