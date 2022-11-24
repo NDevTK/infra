@@ -17,7 +17,6 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/localtlw/servod"
 	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/rpm"
@@ -59,10 +58,9 @@ const (
 
 // tlwClient holds data and represents the local implementation of TLW Access interface.
 type tlwClient struct {
-	csaClient  CSAClient
-	ufsClient  UFSClient
-	sshPool    *sshpool.Pool
-	servodPool *servod.Pool
+	csaClient CSAClient
+	ufsClient UFSClient
+	sshPool   *sshpool.Pool
 	// Cache received devices from inventory
 	devices   map[string]*tlw.Dut
 	hostTypes map[string]hostType
@@ -78,7 +76,6 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 		ufsClient:     ufs,
 		csaClient:     csac,
 		sshPool:       sshpool.New(ssh.SSHConfig()),
-		servodPool:    servod.NewPool(),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),
@@ -92,7 +89,7 @@ func (c *tlwClient) Close(ctx context.Context) error {
 	if err := c.sshPool.Close(); err != nil {
 		return errors.Annotate(err, "tlw client").Err()
 	}
-	return c.servodPool.Close()
+	return nil
 }
 
 // Ping performs ping by resource name.

@@ -5,6 +5,7 @@
 package servod
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -35,10 +36,10 @@ const (
 // newProxy creates a new proxy with forward from remote to local host.
 // Function is using a goroutine to listen and handle each incoming connection.
 // Initialization of proxy is going asynchronous after return proxy instance.
-func newProxy(pool *sshpool.Pool, host string, remotePort int32, errFuncs ...func(error)) (*proxy, error) {
+func newProxy(ctx context.Context, pool *sshpool.Pool, host string, remotePort int32, errFuncs ...func(error)) (*proxy, error) {
 	remoteAddr := fmt.Sprintf(remoteAddrFmt, remotePort)
 	connFunc := func() (net.Conn, error) {
-		conn, err := pool.Get(host)
+		conn, err := pool.GetContext(ctx, host)
 		if err != nil {
 			return nil, errors.Annotate(err, "get proxy %q: fail to get client from pool", host).Err()
 		}

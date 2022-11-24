@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 
 	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/localtlw/servod"
 	"infra/cros/recovery/tlw"
 )
 
@@ -38,15 +39,17 @@ func (c *tlwClient) CallBluetoothPeer(ctx context.Context, req *tlw.CallBluetoot
 	if err != nil {
 		return fail(err)
 	}
-	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(req.GetResource()),
-		int32(defaultBluetoothPeerServerPort),
-		func() ([]string, error) { return nil, nil })
-	if err != nil {
-		return fail(err)
-	}
-	// TODO(otabek): Change bluetooth peer's CallBluetoothPeerRequest to include timeout.
-	val, err := s.Call(ctx, c.sshPool, 30*time.Second, req.GetMethod(), req.GetArgs())
+	val, err := servod.CallServod(ctx, &servod.StartServodCallRequest{
+		Host:    localproxy.BuildAddr(req.GetResource()),
+		SSHPool: c.sshPool,
+		Options: &tlw.ServodOptions{
+			ServodPort: int32(defaultBluetoothPeerServerPort),
+		},
+		CallMethod:    req.GetMethod(),
+		CallArguments: req.GetArgs(),
+		// TODO(otabek): Change bluetooth peer's CallBluetoothPeerRequest to include timeout.
+		CallTimeout: 30 * time.Second,
+	})
 	if err != nil {
 		return fail(err)
 	}

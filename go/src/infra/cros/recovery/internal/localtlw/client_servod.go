@@ -37,16 +37,14 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 		return errors.Annotate(err, "init servod %q", req.Resource).Err()
 	}
 	if !req.GetNoServod() {
-		s, err := c.servodPool.Get(
-			localproxy.BuildAddr(chromeos.GetServo().GetName()),
-			chromeos.GetServo().GetServodPort(),
-			func() ([]string, error) {
-				return servod.GenerateParams(req.Options), nil
-			})
-		if err != nil {
-			return errors.Annotate(err, "init servod %q", req.Resource).Err()
-		}
-		if err := s.Prepare(ctx, c.sshPool); err != nil {
+		options := req.GetOptions()
+		// Always override port by port specified in data.
+		options.ServodPort = chromeos.GetServo().GetServodPort()
+		if err := servod.StartServod(ctx, &servod.StartServodRequest{
+			Host:    localproxy.BuildAddr(chromeos.GetServo().GetName()),
+			SSHPool: c.sshPool,
+			Options: options,
+		}); err != nil {
 			return errors.Annotate(err, "init servod %q", req.Resource).Err()
 		}
 	} else {
@@ -207,22 +205,14 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 
 // stopServodOnHardwareHost stops servod on labstation and servo_v3.
 func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, chromeos *tlw.ChromeOS) error {
-	o := &tlw.ServodOptions{
-		ServodPort: chromeos.GetServo().GetServodPort(),
-	}
-	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(chromeos.GetServo().GetName()),
-		o.ServodPort,
-		func() ([]string, error) {
-			return servod.GenerateParams(o), nil
-		})
-	if err != nil {
-		return errors.Annotate(err, "stop servod on hardware host").Err()
-	}
-	if err := s.Stop(ctx, c.sshPool); err != nil {
-		return errors.Annotate(err, "stop servod on hardware host").Err()
-	}
-	return nil
+	err := servod.StopServod(ctx, &servod.StopServodRequest{
+		Host:    localproxy.BuildAddr(chromeos.GetServo().GetName()),
+		SSHPool: c.sshPool,
+		Options: &tlw.ServodOptions{
+			ServodPort: chromeos.GetServo().GetServodPort(),
+		},
+	})
+	return errors.Annotate(err, "stop servod on hardware host").Err()
 }
 
 // CallServod executes a command on servod related to resource name.
@@ -280,21 +270,27 @@ func (c *tlwClient) callServodOnContainer(ctx context.Context, req *tlw.CallServ
 
 // callServodOnHost calls servod running on physical host.
 func (c *tlwClient) callServodOnHost(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
+	servoHost := dut.GetChromeos().GetServo()
+	if servoHost == nil {
+		return generateFailCallServodResponse(ctx, req.GetResource(), errors.Reason("call servod").Err())
+	}
 	// For labstation using port forward by ssh.
-	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(dut.GetChromeos().GetServo().GetName()),
-		dut.GetChromeos().GetServo().GetServodPort(), nil)
+	val, err := servod.CallServod(ctx, &servod.StartServodCallRequest{
+		Host:    localproxy.BuildAddr(servoHost.GetName()),
+		SSHPool: c.sshPool,
+		Options: &tlw.ServodOptions{
+			ServodPort: servoHost.GetServodPort(),
+		},
+		CallMethod:    req.GetMethod(),
+		CallArguments: req.GetArgs(),
+		CallTimeout:   req.GetTimeout().AsDuration(),
+	})
 	if err != nil {
 		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	}
-	timeout := req.GetTimeout().AsDuration()
-	if val, err := s.Call(ctx, c.sshPool, timeout, req.Method, req.Args); err != nil {
-		return generateFailCallServodResponse(ctx, req.GetResource(), err)
-	} else {
-		return &tlw.CallServodResponse{
-			Value: val,
-			Fault: false,
-		}
+	return &tlw.CallServodResponse{
+		Value: val,
+		Fault: false,
 	}
 }
 
