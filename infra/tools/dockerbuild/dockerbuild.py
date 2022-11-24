@@ -78,6 +78,20 @@ def _main_docker_generate(args, system):
         name, timer.delta)
 
 
+def _build_wheel_list(specs, platforms, system):
+  all_wheels = []  # List[(Wheel, Builder)]
+  for spec_name in specs:
+    build = wheels.SPECS[spec_name]
+    for plat in platforms:
+      try:
+        w = build.wheel(system, plat)
+      except PlatformNotSupported as e:
+        util.LOGGER.warning('Not supported on: %s: %s', plat.name, str(e))
+        continue
+      all_wheels.append((w, build))
+  return all_wheels
+
+
 def _main_wheel_build(args, system):
   to_build = set(args.wheel or ())
   if args.wheel_re:
@@ -98,22 +112,11 @@ def _main_wheel_build(args, system):
   # concurrency is determined via '-j'.
   work_queue = concurrency.Pool(args.processes)
 
-  all_wheels = []
-  for spec_name in specs:
-    build = wheels.SPECS[spec_name]
-
-    for plat in platforms:
-      try:
-        w = build.wheel(system, plat)
-      except PlatformNotSupported as e:
-        util.LOGGER.warning('Not supported on: %s: %s', plat.name, str(e))
-        continue
-      all_wheels.append(w)
-
-  _check_no_dup_filenames(all_wheels)
-  for w in all_wheels:
+  all_wheels = _build_wheel_list(specs, platforms, system)
+  _check_no_dup_filenames(w[0] for w in all_wheels)
+  for w, b in all_wheels:
     work_queue.apply(_build_one_wheel,
-                     [system, args, git_revision, w, build, updated_packages])
+                     [system, args, git_revision, w, b, updated_packages])
 
   # This will block until all tasks have finished, or raise an exception if any
   # fail.
