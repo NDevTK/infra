@@ -45,4 +45,6 @@ cd "$PREFIX"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cp "$SCRIPT_DIR/profile.d.python.sh" etc/profile.d/python.sh
+cp "$SCRIPT_DIR/profile.d.python3.sh" etc/profile.d/python3.sh
 cp "$SCRIPT_DIR/profile.d.vpython.sh" etc/profile.d/vpython.sh
+cp "$SCRIPT_DIR/profile.d.vpython3.sh" etc/profile.d/vpython3.sh

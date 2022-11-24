@@ -1,7 +1,7 @@
 create {
   verify { test: "git_test.py" }
   source {
-    patch_version: "chromium.9"
+    patch_version: "chromium.10"
     cpe_base_address: "cpe:/a:git_project:git"
   }
 }
