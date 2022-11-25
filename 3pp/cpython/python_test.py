@@ -21,8 +21,7 @@ wheel: <
 >
 """
 
-VPYTHON = 'vpython.bat' if sys.platform.startswith('win') else 'vpython'
-
+VPYTHON_CIPD_PACKAGE = b'infra/tools/luci/vpython/${platform} git_revision:788e09418ced22000a9774e4549b9ad42084b814'
 
 class TestPython(unittest.TestCase):
 
@@ -36,11 +35,18 @@ class TestPython(unittest.TestCase):
 
     cls.tdir = tempfile.mkdtemp(dir=os.getcwd(), suffix='test_python')
 
-    cls.pkg_dir = os.path.join(cls.tdir, 'install')
+    cpython_dir = os.path.join(cls.tdir, '_cpython')
     subprocess.check_call([
-      'cipd', 'pkg-deploy', PYTHON_TEST_CIPD_PACKAGE, '-root', cls.pkg_dir],
+      'cipd', 'pkg-deploy', PYTHON_TEST_CIPD_PACKAGE, '-root', cpython_dir],
       shell=cls._is_windows)
-    cls.python = os.path.join(cls.pkg_dir, 'bin', 'python' + cls._exe_suffix)
+
+    vpython_dir = os.path.join(cls.tdir, '_vpython')
+    subprocess.check_output([
+      'cipd', 'ensure', '--ensure-file', '-', '-root', vpython_dir],
+      input=VPYTHON_CIPD_PACKAGE, shell=cls._is_windows)
+
+    cls.python = os.path.join(cpython_dir, 'bin', 'python' + cls._exe_suffix)
+    cls.vpython = os.path.join(vpython_dir, 'vpython' + cls._exe_suffix)
 
   @classmethod
   def tearDownClass(cls):
@@ -122,7 +128,7 @@ class TestPython(unittest.TestCase):
 
     script = 'import psutil; print psutil'
     cmd = [
-        VPYTHON,
+        self.vpython,
         '-vpython-interpreter',
         self.python,
         '-vpython-spec',
@@ -148,7 +154,7 @@ class TestPython(unittest.TestCase):
       'import OpenSSL; '
       'import cryptography.hazmat.bindings.openssl.binding')
     cmd = [
-        VPYTHON,
+        self.vpython,
         '-vpython-interpreter',
         self.python,
         '-vpython-spec',
