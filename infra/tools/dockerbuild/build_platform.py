@@ -19,10 +19,6 @@ class Platform(
             # The name of the platform.
             'name',
 
-            # If the platform is "manylinux', the "manylinux" Docker image build
-            # name (e.g., "cp38-cp38").
-            'manylinux_name',
-
             # The value to pass to e.g. `./configure --host ...`
             'cross_triple',
 
@@ -77,7 +73,6 @@ ALL = {
     p.name: p for p in (
         Platform(
             name='linux-armv6-py3',
-            manylinux_name=None,
             cross_triple='arm-linux-gnueabihf',
             wheel_abi='cp38',
             wheel_plat=('linux_armv6l', 'linux_armv7l', 'linux_armv8l',
@@ -91,7 +86,6 @@ ALL = {
         ),
         Platform(
             name='linux-arm64-py3',
-            manylinux_name=None,
             cross_triple='aarch64-unknown-linux-gnueabi',
             wheel_abi='cp38',
             wheel_plat=('linux_arm64', 'linux_aarch64'),
@@ -104,7 +98,6 @@ ALL = {
         ),
         Platform(
             name='manylinux-x64-py3',
-            manylinux_name=None,  # Don't use any built-in Python
             cross_triple='x86_64-linux-gnu',
             wheel_abi='cp38',
             wheel_plat=('manylinux2014_x86_64',),
@@ -117,7 +110,6 @@ ALL = {
         ),
         Platform(
             name='manylinux-x64-py3.11',
-            manylinux_name=None,  # Don't use any built-in Python
             cross_triple='x86_64-linux-gnu',
             wheel_abi='cp311',
             wheel_plat=('manylinux2014_x86_64',),
@@ -131,7 +123,6 @@ ALL = {
         Platform(
             # TODO: Rename to -py3 to conform to other Python 3 platform names.
             name='mac-x64-cp38',
-            manylinux_name=None,
             cross_triple='',
             wheel_abi='cp38',
             wheel_plat=('macosx_10_11_x86_64',),
@@ -149,7 +140,6 @@ ALL = {
         ),
         Platform(
             name='mac-arm64-cp38',
-            manylinux_name=None,
             cross_triple='',
             wheel_abi='cp38',
             wheel_plat=('macosx_11_0_arm64',),
@@ -169,7 +159,6 @@ ALL = {
         ),
         Platform(
             name='windows-x86-py3',
-            manylinux_name=None,
             cross_triple='',
             wheel_abi='cp38',
             wheel_plat=('win32',),
@@ -182,7 +171,6 @@ ALL = {
         ),
         Platform(
             name='windows-x64-py3',
-            manylinux_name=None,
             cross_triple='',
             wheel_abi='cp38',
             wheel_plat=('win_amd64',),
@@ -195,7 +183,6 @@ ALL = {
         ),
         Platform(
             name='universal',
-            manylinux_name=None,
             cross_triple='',
             wheel_abi='none',
             wheel_plat=('any',),
