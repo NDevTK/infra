@@ -111,8 +111,8 @@ class Builder(object):
     if spec.universal:
       pyversion = '38'
     else:
-      # e.g. cp38 -> 38
-      pyversion = plat.wheel_abi[2:4]
+      # e.g. cp311 -> 311
+      pyversion = plat.wheel_abi[2:]
 
     wheel = Wheel(
         spec=spec,
@@ -332,7 +332,7 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir,
                               work_root):
   PY_CIPD_VERSION_MAP = {
       '38': 'version:2@3.8.10.chromium.25',
-      '39': 'version:2@3.9.8.chromium.20',
+      '311': 'version:2@3.11.0.chromium.23',
   }
 
   package_ident = 'py_%s_%s' % (wheel.pyversion, cipd_platform)
@@ -579,8 +579,8 @@ def PrepareBuildDependenciesCmd(system, wheel, build_dir, deps_dir, deps):
   if sys.platform.startswith('linux'):
     host_plat = build_platform.ALL.get({
         'cp38': 'manylinux-x64-py3',
-        'cp39': 'manylinux-x64-py3.9',
-    }[wheel.plat.wheel_abi[:4]])
+        'cp311': 'manylinux-x64-py3.11',
+    }[wheel.plat.wheel_abi])
   else:
     host_plat = wheel.plat
   for dep in deps.local:

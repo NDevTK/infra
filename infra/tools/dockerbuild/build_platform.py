@@ -116,15 +116,15 @@ ALL = {
             env=_MANYLINUX_ENV,
         ),
         Platform(
-            name='manylinux-x64-py3.9',
+            name='manylinux-x64-py3.11',
             manylinux_name=None,  # Don't use any built-in Python
             cross_triple='x86_64-linux-gnu',
-            wheel_abi='cp39',
+            wheel_abi='cp311',
             wheel_plat=('manylinux2014_x86_64',),
             dockcross_base='manylinux2014-x64',
             dockcross_tag='latest',
             openssl_target='linux-x86_64',
-            packaged=True,
+            packaged=False,  # Most wheels not available on pypi.org
             cipd_platform='linux-amd64',
             env=_MANYLINUX_ENV,
         ),
