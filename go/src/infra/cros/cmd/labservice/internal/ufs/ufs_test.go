@@ -64,6 +64,32 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 													Type: lab.CableType_CABLE_AUDIOJACK,
 												},
 											},
+											BluetoothPeers: []*lab.BluetoothPeer{
+												{
+													Device: &lab.BluetoothPeer_RaspberryPi{
+														RaspberryPi: &lab.RaspberryPi{
+															Hostname: "test-btp1",
+															State:    lab.PeripheralState_WORKING,
+														},
+													},
+												},
+												{
+													Device: &lab.BluetoothPeer_RaspberryPi{
+														RaspberryPi: &lab.RaspberryPi{
+															Hostname: "test-btp2",
+															State:    lab.PeripheralState_BROKEN,
+														},
+													},
+												},
+												{
+													Device: &lab.BluetoothPeer_RaspberryPi{
+														RaspberryPi: &lab.RaspberryPi{
+															Hostname: "test-btp3",
+															State:    lab.PeripheralState_UNKNOWN,
+														},
+													},
+												},
+											},
 										},
 									},
 								},
@@ -156,6 +182,20 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						HwidComponent: []string{
 							"fake-component1",
 							"fake-component2",
+						},
+						BluetoothPeers: []*labapi.BluetoothPeer{
+							{
+								Hostname: "test-btp1",
+								State:    labapi.PeripheralState_WORKING,
+							},
+							{
+								Hostname: "test-btp2",
+								State:    labapi.PeripheralState_BROKEN,
+							},
+							{
+								Hostname: "test-btp3",
+								State:    labapi.PeripheralState_PERIPHERAL_STATE_UNSPECIFIED,
+							},
 						},
 					},
 				},

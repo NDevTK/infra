@@ -182,15 +182,16 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 					Address: hostname,
 					Port:    22,
 				},
-				DutModel:      getDutModel(di),
-				Servo:         getServo(p),
-				Chameleon:     getChameleon(p),
-				Audio:         getAudio(p),
-				Wifi:          getWifi(p),
-				Touch:         getTouch(p),
-				Camerabox:     getCamerabox(p),
-				Cables:        getCables(p),
-				HwidComponent: getHwidComponent(di.manufactoringConfig),
+				DutModel:       getDutModel(di),
+				Servo:          getServo(p),
+				Chameleon:      getChameleon(p),
+				Audio:          getAudio(p),
+				Wifi:           getWifi(p),
+				Touch:          getTouch(p),
+				Camerabox:      getCamerabox(p),
+				Cables:         getCables(p),
+				HwidComponent:  getHwidComponent(di.manufactoringConfig),
+				BluetoothPeers: getBluetoothPeers(p),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -405,4 +406,25 @@ func getHwidComponent(mf *manufacturing.ManufacturingConfig) []string {
 		return mf.GetHwidComponent()
 	}
 	return nil
+}
+
+func getBluetoothPeers(p *lab.Peripherals) []*labapi.BluetoothPeer {
+	ret := []*labapi.BluetoothPeer{}
+	for _, btp := range p.GetBluetoothPeers() {
+		r := btp.GetRaspberryPi()
+		if r == nil || r.GetHostname() == "" {
+			continue
+		}
+		bp := &labapi.BluetoothPeer{
+			Hostname: r.GetHostname(),
+		}
+		switch r.GetState() {
+		case lab.PeripheralState_WORKING:
+			bp.State = labapi.PeripheralState_WORKING
+		case lab.PeripheralState_BROKEN:
+			bp.State = labapi.PeripheralState_BROKEN
+		}
+		ret = append(ret, bp)
+	}
+	return ret
 }
