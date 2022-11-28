@@ -59,6 +59,8 @@ require (
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20220907173800-9129d25df9a6
 	go.opencensus.io v0.23.0
+	go.opentelemetry.io/otel v1.10.0
+	go.opentelemetry.io/otel/trace v1.10.0
 	go.skia.org/infra v0.0.0-20220916162150-5898edbc8e08
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
@@ -120,7 +122,8 @@ require (
 	github.com/envoyproxy/go-control-plane v0.10.2-0.20220325020618-49ff273808a1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.6.13 // indirect
 	github.com/fiorix/go-web v1.0.1-0.20150221144011-5b593f1e8966 // indirect
-	github.com/go-logr/logr v1.1.0 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/golang/glog v1.0.0 // indirect
