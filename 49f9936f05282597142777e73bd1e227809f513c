@@ -70,6 +70,30 @@
       },
       "revId": "49f9936f05282597142777e73bd1e227809f513c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58f2929e_cbf0c44a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:04:49Z",
+      "side": 1,
+      "message": "let go with that. later we will see if we need change the name.",
+      "parentUuid": "3f9cc070_725a366d",
+      "range": {
+        "startLine": 60,
+        "startChar": 38,
+        "endLine": 60,
+        "endChar": 49
+      },
+      "revId": "49f9936f05282597142777e73bd1e227809f513c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
