@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ffca5c46_1e11948d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-28T18:22:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5ebe693_6a0144ff",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 0
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b4efc58f_643061be",
@@ -48,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f65bc2fa_cd7a3685",
+        "filename": "appengine/monorail/proto/tracker_pb2.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-28T18:22:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b4efc58f_643061be",
+      "range": {
+        "startLine": 260,
+        "startChar": 19,
+        "endLine": 260,
+        "endChar": 24
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "47b50d41_779c3ee5",
@@ -62,6 +110,30 @@
       "side": 1,
       "message": "\u003e \"vaule\" is a possible misspelling of \"value\".\n\nPlease fix.",
       "parentUuid": "96ec4acc_c6398bca",
+      "range": {
+        "startLine": 262,
+        "startChar": 19,
+        "endLine": 262,
+        "endChar": 24
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7261ec57_2679427f",
+        "filename": "appengine/monorail/proto/tracker_pb2.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-28T18:22:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47b50d41_779c3ee5",
       "range": {
         "startLine": 262,
         "startChar": 19,
@@ -132,6 +204,30 @@
       "side": 1,
       "message": "I have a typo in there, let me try clarifying that again.\n\nI\u0027m not sure if we need to have a `FOREIGN KEY` on the added or removed component IDs. ComponentDef entries can be removed at any time and if they are, I think it might cause an error on the IssueUpdate Table if it can\u0027t find the ComponentDef ID for a row? https://learn.microsoft.com/en-us/sql/relational-databases/tables/create-foreign-key-relationships?view\u003dsql-server-2016",
       "parentUuid": "6943d6c8_29d085fa",
+      "range": {
+        "startLine": 444,
+        "startChar": 2,
+        "endLine": 445,
+        "endChar": 64
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3f8fa55_e833ed34",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-28T18:22:53Z",
+      "side": 1,
+      "message": "thanks for the explaination",
+      "parentUuid": "c26e3db8_3281db9f",
       "range": {
         "startLine": 444,
         "startChar": 2,
