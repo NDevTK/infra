@@ -6,6 +6,7 @@ package cros
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -47,7 +48,24 @@ func matchSerialNumberToInvExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
+// restoreSerialNumberFromInvExec restores serial nuber of device in device VPD.
+func restoreSerialNumberFromInvExec(ctx context.Context, info *execs.ExecInfo) error {
+	invSerialNumber := info.GetChromeos().GetSerialNumber()
+	if invSerialNumber == "" {
+		return errors.Reason("restore serial number from inventory: inventory is empty").Err()
+	}
+	run := info.DefaultRunner()
+	if _, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf("vpd -s serial_number=%s", invSerialNumber)); err != nil {
+		return errors.Annotate(err, "restore serial number from inventory").Err()
+	}
+	if _, err := run(ctx, info.GetExecTimeout(), "dump_vpd_log --force"); err != nil {
+		log.Debugf(ctx, "Restore serial-number %q: fail to dump vpd of the host", invSerialNumber)
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_update_serial_number_inventory", updateSerialNumberToInvExec)
 	execs.Register("cros_match_serial_number_inventory", matchSerialNumberToInvExec)
+	execs.Register("cros_restore_serial_number", restoreSerialNumberFromInvExec)
 }

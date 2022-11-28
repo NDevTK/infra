@@ -1196,8 +1196,17 @@ func crosRepairActions() map[string]*Action {
 				"Read OS version",
 				"Is serial-number known",
 			},
-			ExecName:               "cros_match_serial_number_inventory",
+			ExecName: "cros_match_serial_number_inventory",
+			RecoveryActions: []string{
+				"Restore serial-number",
+			},
 			AllowFailAfterRecovery: true,
+		},
+		"Restore serial-number": {
+			Docs: []string{
+				"Restore serial number from inventory to the host",
+			},
+			ExecName: "cros_restore_serial_number",
 		},
 		"Is HWID known": {
 			Docs: []string{
