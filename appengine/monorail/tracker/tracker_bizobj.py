@@ -1270,7 +1270,7 @@ def ApplyIssueBlockRelationChanges(
 
 def MakeAmendment(
     field, new_value, added_ids, removed_ids, custom_field_name=None,
-    old_value=None):
+    old_value=None, added_component_ids=None, removed_component_ids=None):
   """Utility function to populate an Amendment PB.
 
   Args:
@@ -1295,6 +1295,12 @@ def MakeAmendment(
 
   if custom_field_name is not None:
     amendment.custom_field_name = custom_field_name
+  
+  if added_component_ids is not None:
+    amendment.added_component_ids.extend(added_component_ids)
+
+  if removed_component_ids is not None:
+    amendment.removed_component_ids.extend(removed_component_ids)
 
   return amendment
 
@@ -1515,10 +1521,9 @@ def MakeComponentsAmendment(added_comp_ids, removed_comp_ids, config):
     cd = FindComponentDefByID(comp_id, config)
     if cd:
       removed_comp_paths.append(cd.path)
-
-  return _PlusMinusAmendment(
-      tracker_pb2.FieldID.COMPONENTS,
-      added_comp_paths, removed_comp_paths)
+  values = _PlusMinusString(added_comp_paths, removed_comp_paths)
+  return MakeAmendment(
+      tracker_pb2.FieldID.COMPONENTS,values,[],[],added_component_ids=added_comp_ids, removed_component_ids=removed_comp_ids)
 
 
 def MakeBlockedOnAmendment(

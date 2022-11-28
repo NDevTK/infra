@@ -432,6 +432,8 @@ CREATE TABLE IssueUpdate (
   new_value MEDIUMTEXT COLLATE utf8mb4_unicode_ci,
   added_user_id INT UNSIGNED,
   removed_user_id INT UNSIGNED,
+  added_component_id INT,
+  removed_component_id INT,
   custom_field_name VARCHAR(255),
   is_spam BOOLEAN DEFAULT FALSE,
 
@@ -439,6 +441,8 @@ CREATE TABLE IssueUpdate (
   INDEX (issue_id),
   INDEX (comment_id),
   FOREIGN KEY (issue_id) REFERENCES Issue(id)
+  FOREIGN KEY (added_component_id) REFERENCES ComponentDef(id)
+  FOREIGN KEY (removed_component_id) REFERENCES ComponentDef(id)
   -- FOREIGN KEY (added_user_id) REFERENCES User(user_id),
   -- FOREIGN KEY (removed_user_id) REFERENCES User(user_id)
 ) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

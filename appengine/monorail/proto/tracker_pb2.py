@@ -257,6 +257,10 @@ class Amendment(messages.Message):
   # When having newvalue be a +/- string doesn't make sense (e.g. status),
   # store the old value here so that it can still be displayed.
   oldvalue = messages.StringField(32)
+  # New Components vaule add to the issue
+  added_component_ids = messages.IntegerField(33, repeated=True)
+  # Old Components vaule removed from the issue
+  removed_component_ids = messages.IntegerField(34, repeated=True)
 
 
 class Attachment(messages.Message):
