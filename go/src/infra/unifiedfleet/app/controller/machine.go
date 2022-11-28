@@ -6,6 +6,7 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -104,12 +105,22 @@ func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Ma
 		return nil, errors.Annotate(err, "MachineRegistration").Err()
 	}
 
-	// Publish the Machine Registration via Pub/Sub.
+	// Generate the message for Pub/Sub
 	row := apibq.MachineRow{
 		Machine: machine,
 		Delete:  false,
 	}
-	marshalAndPublish(ctx, row, machinePubsubTopicID)
+
+	data, err_ps := json.Marshal(row)
+	if err_ps != nil {
+		logging.Warningf(ctx, err_ps.Error())
+		return machine, nil
+	}
+	// Publish the message via Pub/Sub.
+	err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
+	if err_ps != nil {
+		logging.Warningf(ctx, err_ps.Error())
+	}
 
 	return machine, nil
 }
@@ -123,6 +134,7 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 	machine.Realm = util.GetValidRealmName(machine.GetRealm())
 
 	var oldMachine *ufspb.Machine
+	var updatedMachine *ufspb.Machine
 	var err error
 	f := func(ctx context.Context) error {
 		hc := GetMachineHistoryClient(machine)
@@ -234,6 +246,8 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "unable to batch update machine %s", machine.Name).Err()
 		}
+
+		updatedMachine = machine
 		hc.LogMachineChanges(oldMachineCopy, machine)
 		return hc.SaveChangeEvents(ctx)
 	}
@@ -245,6 +259,24 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		// We fill the machine object with its nics/drac from nic/drac table
 		setMachine(ctx, machine)
 	}
+
+	// Generate the message for Pub/Sub
+	row := apibq.MachineRow{
+		Machine: updatedMachine,
+		Delete:  false,
+	}
+	data, err_ps := json.Marshal(row)
+	if err_ps != nil {
+		logging.Warningf(ctx, err_ps.Error())
+		return machine, nil
+	}
+
+	// Publish the message via Pub/Sub.
+	err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
+	if err_ps != nil {
+		logging.Warningf(ctx, err_ps.Error())
+	}
+
 	return machine, nil
 }
 
@@ -645,6 +677,30 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string,
 			}
 		}
 	}
+
+	// Publish the list to Pub/Sub.
+	if len(machines) > 0 {
+		// Generate the message for Pub/Sub
+		msgs := [][]byte{}
+		for _, machine := range machines {
+			row := apibq.MachineRow{
+				Machine: machine,
+				Delete:  false,
+			}
+			data, err_ps := json.Marshal(row)
+			if err_ps != nil {
+				logging.Warningf(ctx, err_ps.Error())
+				return machines, nextPageToken, err
+			}
+			msgs = append(msgs, data)
+		}
+
+		// Publish the message via Pub/Sub.
+		err_ps := publish(ctx, machinePubsubTopicID, msgs)
+		if err_ps != nil {
+			logging.Warningf(ctx, err_ps.Error())
+		}
+	}
 	return machines, nextPageToken, err
 }
 
@@ -714,12 +770,22 @@ func DeleteMachine(ctx context.Context, id string) error {
 		return errors.Annotate(err, "DeleteMachine").Err()
 	}
 
-	// Publish the Machine Deletion via Pub/Sub.
+	// Generate the message for Pub/Sub
 	row := apibq.MachineRow{
 		Machine: existingMachine,
 		Delete:  true,
 	}
-	marshalAndPublish(ctx, row, machinePubsubTopicID)
+	data, err_ps := json.Marshal(row)
+	if err_ps != nil {
+		logging.Warningf(ctx, err_ps.Error())
+		return nil
+	}
+
+	// Publish the message via Pub/Sub.
+	err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
+	if err_ps != nil {
+		logging.Warningf(ctx, err_ps.Error())
+	}
 
 	return nil
 }
