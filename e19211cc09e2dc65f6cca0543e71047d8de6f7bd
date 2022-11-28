@@ -1,0 +1,190 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5ebe693_6a0144ff",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "Could you add: `bug: monorail:11590`",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 0
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4efc58f_643061be",
+        "filename": "appengine/monorail/proto/tracker_pb2.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "\u003e \"vaule\" is a possible misspelling of \"value\".\n\nPlease fix.",
+      "parentUuid": "40719bfd_5ce72033",
+      "range": {
+        "startLine": 260,
+        "startChar": 19,
+        "endLine": 260,
+        "endChar": 24
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "47b50d41_779c3ee5",
+        "filename": "appengine/monorail/proto/tracker_pb2.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "\u003e \"vaule\" is a possible misspelling of \"value\".\n\nPlease fix.",
+      "parentUuid": "96ec4acc_c6398bca",
+      "range": {
+        "startLine": 262,
+        "startChar": 19,
+        "endLine": 262,
+        "endChar": 24
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26cc0681_f766e190",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "Should these `INT` be `INT UNSIGNED`?",
+      "range": {
+        "startLine": 435,
+        "startChar": 2,
+        "endLine": 436,
+        "endChar": 27
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6943d6c8_29d085fa",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "I\u0027m not sure if we need this? Sometimes ComponentDef values are removed and this might add unnecessary restrictions to our table when we aren\u0027t using this explicitly for validation that the ComponentDef still exists",
+      "range": {
+        "startLine": 444,
+        "startChar": 2,
+        "endLine": 445,
+        "endChar": 64
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a42b5f6c_37b38045",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "Can we add a test to appengine/monorail/services/test/issue_svc_test.py for the new behavior?",
+      "range": {
+        "startLine": 114,
+        "startChar": 4,
+        "endLine": 114,
+        "endChar": 106
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55df2c87_52c8b0bd",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1972,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "Maybe we need to run `git cl format`?\n\nExtra blank space here and in appengine/monorail/tracker/tracker_bizobj.py",
+      "range": {
+        "startLine": 1972,
+        "startChar": 85,
+        "endLine": 1972,
+        "endChar": 95
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fd9eb36_82fb1a40",
+        "filename": "appengine/monorail/tracker/tracker_bizobj.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1524,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-28T17:21:52Z",
+      "side": 1,
+      "message": "Can we add a test to appengine/monorail/tracker/test/tracker_bizobj_test.py to cover this?",
+      "range": {
+        "startLine": 1524,
+        "startChar": 0,
+        "endLine": 1524,
+        "endChar": 65
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
