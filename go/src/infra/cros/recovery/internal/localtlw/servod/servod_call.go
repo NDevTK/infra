@@ -14,20 +14,21 @@ import (
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/docker"
+	"infra/cros/recovery/internal/localtlw/localproxy"
 	"infra/cros/recovery/internal/localtlw/xmlrpc"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 	"infra/libs/sshpool"
 )
 
-// StartServodRequest holds data to start servod container.
-type StartServodCallRequest struct {
+// ServodCallRequest holds data to call servod daemon.
+type ServodCallRequest struct {
 	Host    string
 	Options *tlw.ServodOptions
 	SSHPool *sshpool.Pool
 	// Containers info.
-	ContainerName    string
-	ContainerNetwork string
+	ContainerName string
 	// Call info.
 	// Example: power_state:rec is methods `set` with arguments ["power_state"|"rec"]
 	CallMethod    string
@@ -37,7 +38,7 @@ type StartServodCallRequest struct {
 
 // CallServod executes a command on the servod daemon running on servo-host and returns the output.
 // Method detect and working with all type of hosts.
-func CallServod(ctx context.Context, req *StartServodCallRequest) (*xmlrpc_value.Value, error) {
+func CallServod(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
 	switch {
 	case req.Host == "":
 		return nil, errors.Reason("call servod: host is ot specified").Err()
@@ -58,16 +59,29 @@ func CallServod(ctx context.Context, req *StartServodCallRequest) (*xmlrpc_value
 		return nil, errors.Reason("call servod: unsupported case").Err()
 	}
 }
-func callServodOnLocalContainer(ctx context.Context, req *StartServodCallRequest) (*xmlrpc_value.Value, error) {
-	return nil, errors.Reason("call servod on local container: not implemented").Err()
+func callServodOnLocalContainer(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
+	log.Debugf(ctx, "Start call with %#v", req)
+	d, err := newDockerClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "call servod on local container").Err()
+	}
+	addr, err := d.IPAddress(ctx, req.ContainerName)
+	if err != nil {
+		return nil, errors.Annotate(err, "call servod on local container").Err()
+	}
+	log.Debugf(ctx, "Call container by IP address: %v", addr)
+	c := xmlrpc.New(addr, int(req.Options.ServodPort))
+	return Call(ctx, c, req.CallTimeout, req.CallMethod, req.CallArguments)
 }
 
-func callServodOnRemoteContainer(ctx context.Context, req *StartServodCallRequest) (*xmlrpc_value.Value, error) {
+func callServodOnRemoteContainer(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
 	return nil, errors.Reason("call servod on remote container: not implemented").Err()
 }
 
-func callServodLabstation(ctx context.Context, req *StartServodCallRequest) (*xmlrpc_value.Value, error) {
-	p, err := newProxy(ctx, req.SSHPool, req.Host, req.Options.GetServodPort(), func(err error) {
+func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
+	// Convert hostname to the proxy name used for local when called.
+	host := localproxy.BuildAddr(req.Host)
+	p, err := newProxy(ctx, req.SSHPool, host, req.Options.GetServodPort(), func(err error) {
 		log.Debugf(ctx, "Fail on proxy: %s", err)
 	})
 	if err != nil {
@@ -85,4 +99,9 @@ func callServodLabstation(ctx context.Context, req *StartServodCallRequest) (*xm
 	}
 	c := xmlrpc.New(host, port)
 	return Call(ctx, c, req.CallTimeout, req.CallMethod, req.CallArguments)
+}
+
+func newDockerClient(ctx context.Context) (docker.Client, error) {
+	d, err := docker.NewClient(ctx)
+	return d, errors.Annotate(err, "new docker client").Err()
 }

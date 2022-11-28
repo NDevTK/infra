@@ -17,7 +17,6 @@ import (
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
 	"infra/cros/recovery/internal/localtlw/servod"
-	tlw_xmlrpc "infra/cros/recovery/internal/localtlw/xmlrpc"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
@@ -222,15 +221,31 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 	if err != nil {
 		return generateFailCallServodResponse(ctx, req.GetResource(), err)
 	}
-	chromeos := dut.GetChromeos()
-	if chromeos.GetServo().GetName() == "" {
+	servoHost := dut.GetChromeos().GetServo()
+	if servoHost.GetName() == "" {
 		return generateFailCallServodResponse(ctx, req.GetResource(), errors.Reason("call servod %q: servo not found", req.GetResource()).Err())
 	}
-	// For container connect to the container as it running on the same host.
-	if isServodContainer(dut) {
-		return c.callServodOnContainer(ctx, req, dut)
+	callReq := &servod.ServodCallRequest{
+		Host:    servoHost.GetName(),
+		SSHPool: c.sshPool,
+		Options: &tlw.ServodOptions{
+			ServodPort: servoHost.GetServodPort(),
+		},
+		// Container info.
+		ContainerName: servoHost.GetContainerName(),
+		// Call details
+		CallMethod:    req.GetMethod(),
+		CallArguments: req.GetArgs(),
+		CallTimeout:   req.GetTimeout().AsDuration(),
 	}
-	return c.callServodOnHost(ctx, req, dut)
+	if val, err := servod.CallServod(ctx, callReq); err != nil {
+		return generateFailCallServodResponse(ctx, req.GetResource(), err)
+	} else {
+		return &tlw.CallServodResponse{
+			Value: val,
+			Fault: false,
+		}
+	}
 }
 
 // generateFailCallServodResponse creates response for fail cases when call servod.
@@ -243,54 +258,6 @@ func generateFailCallServodResponse(ctx context.Context, resource string, err er
 			},
 		},
 		Fault: true,
-	}
-}
-
-// callServodOnContainer calls servod running on servod-container.
-func (c *tlwClient) callServodOnContainer(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
-	d, err := c.dockerClient(ctx)
-	if err != nil {
-		return generateFailCallServodResponse(ctx, req.GetResource(), err)
-	}
-	addr, err := d.IPAddress(ctx, servoContainerName(dut))
-	if err != nil {
-		return generateFailCallServodResponse(ctx, req.GetResource(), err)
-	}
-	timeout := req.GetTimeout().AsDuration()
-	rpc := tlw_xmlrpc.New(addr, int(dut.GetChromeos().GetServo().GetServodPort()))
-	if val, err := servod.Call(ctx, rpc, timeout, req.Method, req.Args); err != nil {
-		return generateFailCallServodResponse(ctx, req.GetResource(), err)
-	} else {
-		return &tlw.CallServodResponse{
-			Value: val,
-			Fault: false,
-		}
-	}
-}
-
-// callServodOnHost calls servod running on physical host.
-func (c *tlwClient) callServodOnHost(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
-	servoHost := dut.GetChromeos().GetServo()
-	if servoHost == nil {
-		return generateFailCallServodResponse(ctx, req.GetResource(), errors.Reason("call servod").Err())
-	}
-	// For labstation using port forward by ssh.
-	val, err := servod.CallServod(ctx, &servod.StartServodCallRequest{
-		Host:    localproxy.BuildAddr(servoHost.GetName()),
-		SSHPool: c.sshPool,
-		Options: &tlw.ServodOptions{
-			ServodPort: servoHost.GetServodPort(),
-		},
-		CallMethod:    req.GetMethod(),
-		CallArguments: req.GetArgs(),
-		CallTimeout:   req.GetTimeout().AsDuration(),
-	})
-	if err != nil {
-		return generateFailCallServodResponse(ctx, req.GetResource(), err)
-	}
-	return &tlw.CallServodResponse{
-		Value: val,
-		Fault: false,
 	}
 }
 
