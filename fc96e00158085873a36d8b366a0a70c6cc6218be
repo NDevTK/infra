@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c724a293_9e89118f",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:10:02Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 29,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 6
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "441dd983_9c56ac80",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:10:02Z",
+      "side": 1,
+      "message": "how long router is rebooting? in this case you have only 15 seconds. I think you do not need ping in this cases. I think we can drop `\"Device is pingable\"` from plan and just use ssh with this recovery.",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 24
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b676316_c1fcfd35",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:10:02Z",
+      "side": 1,
+      "message": "please add docs",
+      "range": {
+        "startLine": 38,
+        "startChar": 3,
+        "endLine": 38,
+        "endChar": 9
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c2dc5b4_bebf65b5",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:10:02Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 44,
+        "startChar": 3,
+        "endLine": 44,
+        "endChar": 5
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ccc9f222_6bab92e5",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:10:02Z",
+      "side": 1,
+      "message": "please include that this is ssh after reboot.",
+      "range": {
+        "startLine": 50,
+        "startChar": 3,
+        "endLine": 50,
+        "endChar": 22
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
