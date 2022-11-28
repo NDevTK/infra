@@ -98,7 +98,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     if include:
       # copy files to the disk
       with self.m.step.nest(name='Copy files to {}'.format(disk_name)):
-        loop_file, mount_loc = self.mount_disk_image(disk_name)
+        loop_file, mount_loc = self.mount_disk_image(self.disks.join(disk_name))
         try:
           for src, dest in include.items():
             dest = '{}/{}'.format(mount_loc, dest)
@@ -163,49 +163,76 @@ class QEMUAPI(recipe_api.RecipeApi):
             self.disks.join(disk_name)
         ])
 
-  def mount_disk_image(self, disk_name):
+  def mount_disk_image(self, disk, partitions=[1]):
     """ mount_disk_image mounts the given image and returns the mount location
     and loop file used for mounting
 
     Args:
-      * disk_name: name of the disk image file
+      * disk: name of the disk image file
+      * partitions: list of partitions to mount, If None attempt to mount the
+      whole image
 
-    Returns: loop file used for the disk and mount location
+    Returns: loop file used for the disk and list of mount locations
     """
-
+    # setup a loop device for the given disk image
+    cmd = ['udisksctl', 'loop-setup', '-f', disk]
+    if str(disk).endswith('iso') or str(disk).endswith('ISO'):
+      # Cannot mount isos as rw
+      cmd.append('-r')  # mount readonly
     res = self.m.step(
         name='Setup loop',
-        cmd=['udisksctl', 'loop-setup', '-f',
-             self.disks.join(disk_name)],
+        cmd=cmd,
         stdout=self.m.raw_io.output(),
         step_test_data=lambda: self.m.raw_io.test_api.stream_output(
-            'Mapped file {} to /dev/loop6'.format(self.disks.join(disk_name))))
+            'Mapped file {} to /dev/loop6'.format(disk)))
     loop_file = res.stdout.split()[-1].decode('UTF-8').strip('.')
+    mounted_partitions = []
+    mount_loc = []
     try:
-      res = self.m.step(
-          name='Mount loop',
-          cmd=['udisksctl', 'mount', '-b', loop_file + 'p1'],
-          stdout=self.m.raw_io.output())
+      if partitions:
+        for partition in partitions:
+          res = self.m.step(
+              name='Mount loop',
+              cmd=[
+                  'udisksctl', 'mount', '-b',
+                  loop_file + 'p{}'.format(partition)
+              ],
+              stdout=self.m.raw_io.output())
+          mount_loc.append(res.stdout.split()[-1].decode('UTF-8').strip('.'))
+          mounted_partitions.append(partition)
+      else:
+        # Might be a iso image. Mount the loop itself
+        res = self.m.step(
+            name='Mount loop',
+            cmd=['udisksctl', 'mount', '-b', loop_file],
+            stdout=self.m.raw_io.output())
+        mount_loc.append(res.stdout.split()[-1].decode('UTF-8').strip('.'))
+
     except Exception as e:
-      # If we fail to mount the loop device, delete it
-      self.m.step(
-          name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])
-      # throw back the exception
+      self.unmount_disk_image(loop_file, mounted_partitions)
       raise e
 
-    mount_loc = res.stdout.split()[-1].decode('UTF-8').strip('.')
     return loop_file, mount_loc
 
-  def unmount_disk_image(self, loop_file):
+  def unmount_disk_image(self, loop_file, partitions=[1]):
     """ unmount_disk_image unmounts the disk mounted using the given loop_file
 
     Args:
       * loop_file: Loop device used to mount the image
     """
-    # unmount the loop device
-    self.m.step(
-        name='Unmount loop',
-        cmd=['udisksctl', 'unmount', '-b', loop_file + 'p1'])
+    if partitions:
+      for partition in partitions:
+        # unmount the loop device
+        self.m.step(
+            name='Unmount loop',
+            cmd=[
+                'udisksctl', 'unmount', '-b',
+                loop_file + 'p{}'.format(partition)
+            ])
+    else:
+      # unmount the loop device
+      self.m.step(
+          name='Unmount loop', cmd=['udisksctl', 'unmount', '-b', loop_file])
     # delete the loop device
     self.m.step(
         name='Delete loop', cmd=['udisksctl', 'loop-delete', '-b', loop_file])

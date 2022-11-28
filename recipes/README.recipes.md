@@ -58,6 +58,7 @@
   * [qemu:examples/basic](#recipes-qemu_examples_basic) (Python3 ✅)
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk) (Python3 ✅)
   * [qemu:examples/create_disk_fail](#recipes-qemu_examples_create_disk_fail) (Python3 ✅)
+  * [qemu:examples/mount_disk_image](#recipes-qemu_examples_mount_disk_image) (Python3 ✅)
   * [qemu:examples/powerdown_vm](#recipes-qemu_examples_powerdown_vm) (Python3 ✅)
   * [qemu:examples/quit_vm](#recipes-qemu_examples_quit_vm) (Python3 ✅)
   * [qemu:examples/start_vm](#recipes-qemu_examples_start_vm) (Python3 ✅)
@@ -604,19 +605,21 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#166)(self, disk_name):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#166)(self, disk, partitions=[1]):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
 
 Args:
-  * disk_name: name of the disk image file
+  * disk: name of the disk image file
+  * partitions: list of partitions to mount, If None attempt to mount the
+  whole image
 
-Returns: loop file used for the disk and mount location
+Returns: loop file used for the disk and list of mount locations
 
 &emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#31)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#285)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#312)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
@@ -626,7 +629,7 @@ Args:
 
 Returns: True if powerdown signal was sent to VM. False otherwise
 
-&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#326)(self, name):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#353)(self, name):**
 
 quit_vm sends a quit signal to the qemu process. Use this if your VM
 doesn't respond to powerdown signal.
@@ -636,7 +639,7 @@ Args:
 
 Returns: True if quit signal was sent to VM. False otherwise
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#213)(self, arch, qemu_vm, kvm=False):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#240)(self, arch, qemu_vm, kvm=False):**
 
 start_vm starts a qemu vm
 
@@ -649,14 +652,14 @@ Args:
             the vm
  * kvm: If true then VM is run on hardware. It's emulated otherwise
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#199)(self, loop_file):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#217)(self, loop_file, partitions=[1]):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#367)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#394)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`
@@ -1701,6 +1704,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/create_disk_fail.py#13)(api):**
+### *recipes* / [qemu:examples/mount\_disk\_image](/recipes/recipe_modules/qemu/examples/mount_disk_image.py)
+
+[DEPS](/recipes/recipe_modules/qemu/examples/mount_disk_image.py#8): [qemu](#recipe_modules-qemu), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/qemu/examples/mount_disk_image.py#19)(api, inputs):**
 ### *recipes* / [qemu:examples/powerdown\_vm](/recipes/recipe_modules/qemu/examples/powerdown_vm.py)
 
 [DEPS](/recipes/recipe_modules/qemu/examples/powerdown_vm.py#8): [qemu](#recipe_modules-qemu), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
