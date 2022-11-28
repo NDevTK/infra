@@ -36,8 +36,17 @@ func servoHostIsLabstationExec(ctx context.Context, info *execs.ExecInfo) error 
 
 // servoUsesServodContainerExec checks if the servo uses a servod-container.
 func servoUsesServodContainerExec(ctx context.Context, info *execs.ExecInfo) error {
-	if !IsContainerizedServoHost(ctx, info.GetChromeos().GetServo()) {
-		return errors.Reason("servo not using servod container").Err()
+	argsMap := info.GetActionArgs(ctx)
+	isContainer := IsContainerizedServoHost(ctx, info.GetChromeos().GetServo())
+	reverse := argsMap.AsBool(ctx, "reverse", false)
+	if reverse {
+		if isContainer {
+			return errors.Reason("servo uses servod container: container is specified").Err()
+		}
+	} else {
+		if !isContainer {
+			return errors.Reason("servo uses servod container: container is not specified").Err()
+		}
 	}
 	return nil
 }

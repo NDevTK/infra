@@ -87,6 +87,9 @@ func servoRepairPlan() *Plan {
 					"Verify that device is reachable by ping.",
 					"Limited to 15 seconds.",
 				},
+				Conditions: []string{
+					"Servod container is not used",
+				},
 				ExecName: "cros_ping",
 				ExecTimeout: &durationpb.Duration{
 					Seconds: 15,
@@ -160,7 +163,7 @@ func servoRepairPlan() *Plan {
 					"If start container with servod and root servo device is not connected it will fail.",
 				},
 				Conditions: []string{
-					"is_container",
+					"Uses servod container",
 				},
 				ExecName: "servo_host_servod_init",
 				ExecExtraArgs: []string{
@@ -245,7 +248,7 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_host_is_labstation",
 			},
-			"is_container": {
+			"Uses servod container": {
 				Docs: []string{
 					"Condition to check if servo uses servod container.",
 				},
@@ -275,7 +278,7 @@ func servoRepairPlan() *Plan {
 					"Check if stateful partition have enough disk space that is at least 0.5GB.",
 				},
 				Conditions: []string{
-					"is_not_container",
+					"Servod container is not used",
 				},
 				ExecName: "cros_has_enough_storage_space",
 				ExecExtraArgs: []string{
@@ -306,9 +309,11 @@ func servoRepairPlan() *Plan {
 					"max_days:5",
 				},
 			},
-			"is_not_container": {
-				Conditions: []string{"is_container"},
-				ExecName:   "sample_fail",
+			"Servod container is not used": {
+				ExecName: "servo_uses_servod_container",
+				ExecExtraArgs: []string{
+					"reverse:true",
+				},
 			},
 			"Servo topology": {
 				Docs: []string{
