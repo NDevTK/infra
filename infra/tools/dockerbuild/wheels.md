@@ -1374,6 +1374,20 @@ wheel: <
 
 * *universal*
 
+## **clusterfuzz**
+
+### 2.5.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/clusterfuzz-py2_py3"
+  version: "version:2.5.6"
+>
+```
+
+
+* *universal*
+
 ## **colorama**
 
 ### 0.4.1
