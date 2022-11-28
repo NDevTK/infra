@@ -133,6 +133,23 @@ func findValue(re *regexp.Regexp, line string) string {
 	return string(match[2])
 }
 
+// GetComponent gets the specified component of the version.
+func (v *VersionInfo) GetComponent(component VersionComponent) (int, error) {
+	if component == ChromeBranch {
+		return v.ChromeBranch, nil
+	}
+	if component == Build {
+		return v.BuildNumber, nil
+	}
+	if component == Branch {
+		return v.BranchBuildNumber, nil
+	}
+	if component == Patch {
+		return v.PatchNumber, nil
+	}
+	return 0, fmt.Errorf("unsupported component type %v", component)
+}
+
 // IncrementVersion increments the specified component of the version.
 func (v *VersionInfo) IncrementVersion(incrType VersionComponent) string {
 	// Milestone exists somewhat separately from the other three components

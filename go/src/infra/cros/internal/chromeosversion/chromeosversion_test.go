@@ -218,3 +218,28 @@ func TestComponentToBumpFromBranch(t *testing.T) {
 		}
 	}
 }
+
+func TestGetComponent(t *testing.T) {
+	t.Parallel()
+
+	a := VersionInfo{
+		ChromeBranch:      1,
+		BuildNumber:       2,
+		BranchBuildNumber: 3,
+		PatchNumber:       4,
+	}
+	v, err := a.GetComponent(ChromeBranch)
+	assert.NilError(t, err)
+	assert.IntsEqual(t, v, 1)
+	v, err = a.GetComponent(Build)
+	assert.NilError(t, err)
+	assert.IntsEqual(t, v, 2)
+	v, err = a.GetComponent(Branch)
+	assert.NilError(t, err)
+	assert.IntsEqual(t, v, 3)
+	v, err = a.GetComponent(Patch)
+	assert.NilError(t, err)
+	assert.IntsEqual(t, v, 4)
+	_, err = a.GetComponent(Unspecified)
+	assert.NonNilError(t, err)
+}

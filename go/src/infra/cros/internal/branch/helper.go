@@ -558,6 +558,18 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 		return err
 	}
 
+	// Don't allow multiple release branches for the same milestone.
+	if branchType == "release" {
+		releasePrefix := fmt.Sprintf("release-R%d-", vinfo.ChromeBranch)
+		for _, branch := range remoteBranches {
+			if strings.HasPrefix(branch, releasePrefix) {
+				return fmt.Errorf("already have release branch for milestone %d (%v). "+
+					"Please rerun with --force if you would like to proceed (this is not advised).",
+					vinfo.ChromeBranch, branch)
+			}
+		}
+	}
+
 	if branchForVersionExists {
 		if !force {
 			return fmt.Errorf("already branched %s. Please rerun with --force if you "+

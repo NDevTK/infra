@@ -14,8 +14,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-func (c *Client) bumpVersion(
+func (c *Client) bumpVersionIfNeeded(
 	component mv.VersionComponent,
+	sourceVersion *mv.VersionInfo,
 	br, commitMsg string,
 	dryRun bool) error {
 	// Branch won't exist if running tool with --dry-run.
@@ -42,11 +43,22 @@ func (c *Client) bumpVersion(
 		return errors.Annotate(err, "failed to read version file").Err()
 	}
 
-	version.IncrementVersion(component)
-	// If the version is 95, skip ahead to 96. b/184153693 for context.
-	if component == mv.ChromeBranch && version.ChromeBranch == 95 {
-		version.IncrementVersion(component)
+	if sourceVersion != nil {
+		bumpFrom, err := sourceVersion.GetComponent(component)
+		if err != nil {
+			return errors.Annotate(err, "failed to get %v for source version", component).Err()
+		}
+		toBump, err := version.GetComponent(component)
+		if err != nil {
+			return errors.Annotate(err, "failed to get %v for dest version", component).Err()
+		}
+		if toBump > bumpFrom+1 {
+			c.LogOut("branch %s has %v greater than %d + 1, no need to bump",
+				br, component, bumpFrom)
+			return nil
+		}
 	}
+	version.IncrementVersion(component)
 
 	// We are cloning from a remote, so the remote name will be origin.
 	remoteRef := git.RemoteRef{
@@ -74,10 +86,10 @@ func (c *Client) bumpVersion(
 
 // BumpForCreate bumps the version in mv.sh, as needed, in the
 // source branch for a branch creation command.
-func (c *Client) BumpForCreate(componentToBump mv.VersionComponent, release, push bool, branchName, sourceUpstream string) error {
+func (c *Client) BumpForCreate(componentToBump mv.VersionComponent, sourceVersion *mv.VersionInfo, release, push bool, branchName, sourceUpstream string) error {
 	commitMsg := fmt.Sprintf("Bump %s number after creating branch %s", componentToBump, branchName)
 	c.LogOut(commitMsg)
-	if err := c.bumpVersion(componentToBump, branchName, commitMsg, !push); err != nil {
+	if err := c.bumpVersionIfNeeded(componentToBump, nil, branchName, commitMsg, !push); err != nil {
 		return err
 	}
 
@@ -85,14 +97,14 @@ func (c *Client) BumpForCreate(componentToBump mv.VersionComponent, release, pus
 		// Bump milestone after creating release branch.
 		commitMsg = fmt.Sprintf("Bump milestone after creating release branch %s", branchName)
 		c.LogOut(commitMsg)
-		if err := c.bumpVersion(mv.ChromeBranch, sourceUpstream, commitMsg, !push); err != nil {
+		if err := c.bumpVersionIfNeeded(mv.ChromeBranch, sourceVersion, sourceUpstream, commitMsg, !push); err != nil {
 			return err
 		}
 		// Also need to bump the build number, otherwise two release will have conflicting versions.
 		// See crbug.com/213075.
 		commitMsg = fmt.Sprintf("Bump build number after creating release branch %s", branchName)
 		c.LogOut(commitMsg)
-		if err := c.bumpVersion(mv.Build, sourceUpstream, commitMsg, !push); err != nil {
+		if err := c.bumpVersionIfNeeded(mv.Build, sourceVersion, sourceUpstream, commitMsg, !push); err != nil {
 			return err
 		}
 	} else {
@@ -114,7 +126,7 @@ func (c *Client) BumpForCreate(componentToBump mv.VersionComponent, release, pus
 		commitMsg = fmt.Sprintf("Bump %s number for source branch %s after creating branch %s",
 			sourceComponentToBump, sourceUpstream, branchName)
 		c.LogOut(commitMsg)
-		if err := c.bumpVersion(sourceComponentToBump, sourceUpstream, commitMsg, !push); err != nil {
+		if err := c.bumpVersionIfNeeded(sourceComponentToBump, sourceVersion, sourceUpstream, commitMsg, !push); err != nil {
 			return err
 		}
 	}

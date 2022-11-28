@@ -751,6 +751,52 @@ func TestCreateOverwriteMissingForce(t *testing.T) {
 	}
 }
 
+// Test create dies when it tries to overwrite without --force.
+func TestCreateOverwriteMissingForceReleaseBranch(t *testing.T) {
+	t.Parallel()
+	r, bc, gc, gsc, err := setUpCreate(t, false, false, false)
+	defer r.Teardown()
+	assert.NilError(t, err)
+
+	manifest := r.Harness.Manifest()
+
+	// Commit any file to manifest-internal so that existingReleaseBranchName
+	// "exists".
+	existingReleaseBranchName := "release-R12-3.B"
+	assert.NilError(t, r.Harness.CreateRemoteRef(manifestInternalProject, existingReleaseBranchName, ""))
+	files := map[string]string{
+		"foo": "bar",
+	}
+	addManifestFiles(t, r, manifestInternalProject, existingReleaseBranchName, files)
+	// Snapshot of manifestInternalProject is stale -- need to update.
+	assert.NilError(t, r.Harness.SnapshotRemotes())
+
+	var stderrBuf bytes.Buffer
+	bc.StderrLog = log.New(&stderrBuf, "", log.LstdFlags|log.Lmicroseconds)
+	c := createBranch{
+		CommonFlags: CommonFlags{
+			Push: true,
+			// We don't really care about this check as ACLs are still enforced
+			// (just a less elegant failure), and it's one less thing to mock.
+			SkipGroupCheck: true,
+		},
+		release:           true,
+		buildSpecManifest: "12/3.0.0.xml",
+	}
+	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
+	assert.Assert(t, ret != 0)
+	assert.Assert(t, strings.Contains(stderrBuf.String(), "already have release branch"))
+	assert.Assert(t, strings.Contains(stderrBuf.String(), "rerun with --force"))
+
+	// Check that no remotes change.
+	for _, remote := range manifest.Remotes {
+		remotePath := filepath.Join(r.Harness.HarnessRoot(), remote.Name)
+		remoteSnapshot, err := r.Harness.GetRecentRemoteSnapshot(remote.Name)
+		assert.NilError(t, err)
+		assert.NilError(t, testutil.AssertContentsEqual(remoteSnapshot, remotePath))
+	}
+}
+
 // Test create dies when given a version that was already branched.
 func TestCreatExistingVersion(t *testing.T) {
 	t.Parallel()
@@ -787,103 +833,6 @@ func TestCreatExistingVersion(t *testing.T) {
 	assertNoRemoteDiff(t, r)
 }
 
-// Test that when 94 is cut, ToT goes to 96 instead of 95 (b/184153693).
-func TestCreate9496(t *testing.T) {
-	t.Parallel()
-	r := setUp(t, &mv.VersionInfo{
-		ChromeBranch:      94,
-		BuildNumber:       3,
-		BranchBuildNumber: 0,
-		PatchNumber:       0,
-	})
-
-	// Get manifest contents for return
-	manifestPath := fullManifestPath(r)
-	buildspecName := "94/3.0.0.xml"
-	manifestFile, err := ioutil.ReadFile(manifestPath)
-	assert.NilError(t, err)
-
-	// Get version file contents for return
-	versionProject := rh.GetRemoteProject(test.DefaultVersionProject)
-	crosVersionFile, err := r.Harness.ReadFile(versionProject, "main", mv.VersionFileProjectPath)
-	assert.NilError(t, err)
-
-	// Mock Gitiles controller
-	ctl := gomock.NewController(t)
-	t.Cleanup(ctl.Finish)
-
-	// Mock manifest request
-	expectedReads := map[string][]byte{
-		"gs://chromeos-manifest-versions/buildspecs/" + buildspecName: manifestFile,
-	}
-	fgs := &gs.FakeClient{
-		T:             t,
-		ExpectedReads: expectedReads,
-	}
-
-	// Mock version file request
-	contents := string(crosVersionFile)
-	gc := &gerrit.MockClient{
-		T: t,
-		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
-			{
-				Host:    "chromium.googlesource.com",
-				Project: "chromiumos/overlays/chromiumos-overlay",
-				Path:    "chromeos/config/chromeos_version.sh",
-				Ref:     "refs/heads/main",
-			}: &contents,
-		},
-	}
-
-	// Mock out call to CreateRemoteBranchesAPI.
-	f := &fakeCreateRemoteBranchesAPI{t: t, r: r, dryRun: false, force: false}
-	bc := &branch.Client{
-		FakeCreateRemoteBranchesAPI: f.CreateRemoteBranchesAPI,
-	}
-
-	defer r.Teardown()
-
-	branch := "release-R94-3.B"
-	c := createBranch{
-		CommonFlags: CommonFlags{
-			Push: true,
-			// We don't really care about this check as ACLs are still enforced
-			// (just a less elegant failure), and it's one less thing to mock.
-			SkipGroupCheck: true,
-		},
-		release:           true,
-		buildSpecManifest: buildspecName,
-	}
-	ret := c.innerRun(context.Background(), bc, nil, gc, fgs)
-	assert.Assert(t, ret == 0)
-
-	manifest := r.Harness.Manifest()
-	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
-	assert.NilError(t, r.AssertCrosBranchFromManifest(manifest, branch, ""))
-	assertManifestsRepaired(t, r, branch)
-	newBranchVersion := mv.VersionInfo{
-		ChromeBranch:      94,
-		BuildNumber:       3,
-		BranchBuildNumber: 1,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
-	mainVersion := mv.VersionInfo{
-		ChromeBranch:      96,
-		BuildNumber:       4,
-		BranchBuildNumber: 0,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion("main", mainVersion))
-
-	assertCommentsPersist(t, r, getManifestFiles, branch)
-	// Check that manifests were minmally changed (e.g. element ordering preserved).
-	// This check is meaningful because the manifests are created using the branch_util
-	// tool which reads in, unmarshals, and modifies the manifests from getManifestFiles.
-	// The expected manifests (which the branched manifests are being compared to)
-	// are simply strings produced by getBranchedManifestFiles.
-	assertMinimalManifestChanges(t, r, branch)
-}
 func TestRename(t *testing.T) {
 	t.Parallel()
 	r := setUp(t, nil)

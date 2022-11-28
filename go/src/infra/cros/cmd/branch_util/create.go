@@ -309,7 +309,7 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 	}
 
 	// Bump version.
-	if err = bc.BumpForCreate(componentToBump, c.release, c.Push, branchName, sourceUpstream); err != nil {
+	if err = bc.BumpForCreate(componentToBump, &vinfo, c.release, c.Push, branchName, sourceUpstream); err != nil {
 		bc.LogErr(err.Error())
 		return 1
 	}
