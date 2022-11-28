@@ -49,6 +49,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4f3a770c_b108bae9",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-28T05:13:35Z",
+      "side": 1,
+      "message": "oh my mistake for timing, I miss read the action name.\n\nOption for dropping ping is active. feel free to resolve if idea is not accepted.",
+      "parentUuid": "441dd983_9c56ac80",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 24
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3b676316_c1fcfd35",
         "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
         "patchSetId": 2
