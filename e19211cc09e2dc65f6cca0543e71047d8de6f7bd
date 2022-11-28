@@ -167,6 +167,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0621fa1c_9c53360a",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-28T18:58:25Z",
+      "side": 1,
+      "message": "the id in ComponentDef is define as INT",
+      "parentUuid": "26cc0681_f766e190",
+      "range": {
+        "startLine": 435,
+        "startChar": 2,
+        "endLine": 436,
+        "endChar": 27
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6943d6c8_29d085fa",
@@ -274,6 +298,30 @@
       "writtenOn": "2022-11-28T17:21:52Z",
       "side": 1,
       "message": "Maybe we need to run `git cl format`?\n\nExtra blank space here and in appengine/monorail/tracker/tracker_bizobj.py",
+      "range": {
+        "startLine": 1972,
+        "startChar": 85,
+        "endLine": 1972,
+        "endChar": 95
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9199aab5_99755924",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1972,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-28T18:58:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55df2c87_52c8b0bd",
       "range": {
         "startLine": 1972,
         "startChar": 85,
