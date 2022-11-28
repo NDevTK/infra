@@ -7,10 +7,12 @@ from recipe_engine.recipe_api import Property
 # Windows command helpers
 from . import offline_winpe_customization as offwinpecust
 from . import online_windows_customization as onwincust
+from . import windows_iso_customization as winiso
 from . import sources
 from . import helper
 from PB.recipes.infra.windows_image_builder import windows_image_builder as wib
 from PB.recipes.infra.windows_image_builder import sources as src_pb
+from PB.recipes.infra.windows_image_builder import dest as dest_pb
 
 
 class WindowsPSExecutorAPI(recipe_api.RecipeApi):
@@ -63,6 +65,16 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
       if cust.WhichOneof('customization') == 'online_windows_customization':
         custs.append(
             onwincust.OnlineWindowsCustomization(
+                image=config,
+                cust=cust,
+                arch=arch,
+                scripts=self._scripts,
+                configs=self._configs_dir,
+                module=self.m,
+                source=self._sources))
+      if cust.WhichOneof('customization') == 'windows_iso_customization':
+        custs.append(
+            winiso.WinISOCustomization(
                 image=config,
                 cust=cust,
                 arch=arch,

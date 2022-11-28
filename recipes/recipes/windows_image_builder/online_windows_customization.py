@@ -36,7 +36,9 @@ def RunSteps(api, image):
 
   # this recipe will only execute the online_windows_customization
   for cust in image.customizations:
-    assert (cust.WhichOneof('customization') == 'online_windows_customization')
+    assert (
+        cust.WhichOneof('customization') == 'online_windows_customization') or (
+            cust.WhichOneof('customization') == 'windows_iso_customization')
 
   # initialize the image to scripts executor
   api.windows_scripts_executor.init()

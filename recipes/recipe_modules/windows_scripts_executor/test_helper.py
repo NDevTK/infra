@@ -7,6 +7,7 @@ from PB.recipes.infra.windows_image_builder import (offline_winpe_customization
 from PB.recipes.infra.windows_image_builder import actions
 from PB.recipes.infra.windows_image_builder import windows_image_builder as wib
 from PB.recipes.infra.windows_image_builder import sources
+from PB.recipes.infra.windows_image_builder import windows_iso as winiso
 from PB.recipes.infra.windows_image_builder import vm
 from PB.recipes.infra.windows_image_builder import drive
 from PB.recipes.infra.windows_image_builder import (online_windows_customization
@@ -45,6 +46,11 @@ def NEST(*args):
 def NEST_CONFIG_STEP(image):
   """ generate config step name for nesting """
   return 'execute config {}'.format(image)
+
+
+def NEST_WINDOWS_ISO_CUSTOMIZATION_STEP(customization):
+  """ NEST_WINDOWS_ISO_CUSTOMIZATION_STEP returns step name for the same"""
+  return 'Windows iso customization {}'.format(customization)
 
 
 def NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization):
@@ -439,6 +445,16 @@ def MOUNT_DISK(api, image, customization, vm_name, disk, success=True):
       retcode=0 if success else 1)
 
 
+def MOUNT_DISK_ISO(api, image, customization, success=True, suffix=''):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_WINDOWS_ISO_CUSTOMIZATION_STEP(customization),
+          'Mount loop' + suffix),
+      api.raw_io.stream_output('Mounted /dev/loop6 at /media/chrome-bot/test'),
+      retcode=0 if success else 1)
+
+
 #    Assert methods to validate that a certain step was run
 
 
@@ -643,3 +659,57 @@ def VM_DRIVE(name,
       readonly=readonly,
       size=size,
       filesystem=filesystem)
+
+
+def WIN_ISO(
+    image,
+    arch,
+    name,
+    base_image=sources.Src(
+        gcs_src=sources.GCSSrc(
+            bucket='chrome-gce-images', source='WIN-ISO/win10_vanilla.iso')),
+    boot_image=sources.Src(
+        gcs_src=sources.GCSSrc(
+            bucket='chrome-gce-images', source='WIN-WIM/win10_gce.wim')),
+    copy_files=(winiso.CopyArtifact(
+        artifact=sources.Src(
+            gcs_src=sources.GCSSrc(
+                bucket='chrome-gce-images', source='WIN-ISO/win10_gce.iso')),
+        mount=True,
+        source='sources/install.wim'),
+                winiso.CopyArtifact(
+                    artifact=sources.Src(
+                        gcs_src=sources.GCSSrc(
+                            bucket='chrome-gce-images',
+                            source='WIN-WIM/win10_bootstrap_wim.zip')),
+                    mount=True,
+                    source='sources/boot.wim',
+                    dest='sources'),
+                winiso.CopyArtifact(
+                    artifact=sources.Src(
+                        gcs_src=sources.GCSSrc(
+                            bucket='chrome-win-soft',
+                            source='openssh/ssh.msi')),
+                    mount=False,
+                    dest='sources'),
+                winiso.CopyArtifact(
+                    artifact=sources.Src(
+                        cipd_src=sources.CIPDSrc(
+                            package='infra/chrome/windows/wallpapers',
+                            refs='latest',
+                            platform='windows-amd64')),
+                    mount=False,
+                    dest='sources')),
+    uploads=()):
+  return wib.Image(
+      name=image,
+      arch=arch,
+      customizations=[
+          wib.Customization(
+              windows_iso_customization=winiso.WinISOImage(
+                  name=name,
+                  base_image=base_image,
+                  boot_image=boot_image,
+                  copy_files=copy_files,
+                  uploads=uploads))
+      ])
