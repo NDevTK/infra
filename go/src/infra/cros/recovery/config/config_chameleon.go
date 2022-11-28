@@ -22,6 +22,49 @@ func chameleonPlan() *Plan {
 			"Device is pingable": {
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				ExecName:    "cros_ping",
+				RecoveryActions: []string{
+					"Chameleon RPM power cycle",
+				},
+			},
+			"Chameleon RPM power cycle": {
+				Docs: []string{
+					"Power cycle chameleon if rpm exists",
+					"Ensure chameleon is SSHable on after power cycle",
+				},
+				Dependencies: []string{
+					"Has chameleon rpm info",
+					"Power cycle chameleon by RPM",
+					"Wait for SSHable",
+				},
+				ExecName: "sample_pass",
+			},
+			"Has chameleon rpm info": {
+				Docs: []string{
+					"Check if chameleon rpm exists",
+				},
+				ExecName: "device_has_rpm_info",
+				ExecExtraArgs: []string{
+					"device_type:chameleon",
+				},
+			},
+			"Power cycle chameleon by RPM": {
+				Docs: []string{
+					"Run rpm power cycle on chameleon",
+				},
+				ExecName: "device_rpm_power_cycle",
+				ExecExtraArgs: []string{
+					"device_type:chameleon",
+				},
+			},
+			"Wait for SSHable": {
+				// No recovery actions as that is help action.
+				Docs: []string{
+					"Try to wait device to be sshable after the device being rebooted.",
+					"Waiting time 150 seconds.",
+				},
+				ExecName:    "cros_ssh",
+				ExecTimeout: &durationpb.Duration{Seconds: 150},
+				RunControl:  RunControl_ALWAYS_RUN,
 			},
 		},
 	}
