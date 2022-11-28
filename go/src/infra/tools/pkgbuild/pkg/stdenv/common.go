@@ -208,6 +208,14 @@ type Generator struct {
 	Version  string
 }
 
+const gitCommand = `
+cd "${out}" && \
+"$0" clone "$1" src && \
+cd src && \
+"$0" checkout "$2" && \
+"$0" submodule update --init --recursive && \
+rm -rf .git`
+
 func (g *Generator) fetchSource() (cipkg.Generator, string, error) {
 	// The name of the source derivation. It's also used in environment variable
 	// srcs to pointing to the location of source file(s), which will be expanded
@@ -215,7 +223,6 @@ func (g *Generator) fetchSource() (cipkg.Generator, string, error) {
 	name := fmt.Sprintf("%s_source", g.Name)
 	switch s := g.Source.(type) {
 	case *SourceGit:
-		const gitCommand = `cd "${out}" && "$0" clone "$1" src && cd src && "$0" checkout "$2" && rm -rf .git`
 		return &utilities.BaseGenerator{
 			Name:    name,
 			Builder: "{{.posixUtils_import}}/bin/bash",
