@@ -16,6 +16,24 @@
       "message": "I am surprised that there is no built in function for this 😊",
       "revId": "4174270f5cbbb59e77621b4283fd987afba87faf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c84834b6_4799214c",
+        "filename": "go/src/infra/libs/fleet/boxster/swarming/convert.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-11-29T23:51:03Z",
+      "side": 1,
+      "message": "Golang seems to not have a lot of built-in generic methods 😂",
+      "parentUuid": "57f92c44_0b5b2b66",
+      "revId": "4174270f5cbbb59e77621b4283fd987afba87faf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
