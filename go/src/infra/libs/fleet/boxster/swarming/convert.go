@@ -239,3 +239,14 @@ func isNil(i interface{}) bool {
 	}
 	return false
 }
+
+// CombineDims takes two maps of dimensions and combines them.
+//
+// CombineDims will overwrite the first map with the second map when a key
+// collides. A Dimensions map is returned.
+func CombineDims(d1 Dimensions, d2 Dimensions) Dimensions {
+	for k, v := range d2 {
+		d1[k] = v
+	}
+	return d1
+}

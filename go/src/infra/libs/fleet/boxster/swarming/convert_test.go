@@ -431,3 +431,57 @@ func TestGetProtoExistence(t *testing.T) {
 		})
 	})
 }
+
+func TestCombineDims(t *testing.T) {
+	t.Parallel()
+
+	Convey("TestCombineDims", t, func() {
+		Convey("happy path - combine dimensions", func() {
+			d1 := Dimensions{
+				"attr-design": {"Test"},
+				"attr-model":  {"Test"},
+			}
+
+			d2 := Dimensions{
+				"label-model": {"Test"},
+			}
+
+			got := CombineDims(d1, d2)
+			So(got, ShouldResemble, Dimensions{
+				"attr-design": {"Test"},
+				"attr-model":  {"Test"},
+				"label-model": {"Test"},
+			})
+		})
+
+		Convey("one is empty", func() {
+			d1 := Dimensions{}
+
+			d2 := Dimensions{
+				"label-model": {"Test"},
+			}
+
+			got := CombineDims(d1, d2)
+			So(got, ShouldResemble, Dimensions{
+				"label-model": {"Test"},
+			})
+		})
+
+		Convey("overwrite with second list of dimensions", func() {
+			d1 := Dimensions{
+				"attr-model":  {"Test"},
+				"label-model": {"Test"},
+			}
+
+			d2 := Dimensions{
+				"label-model": {"Test2"},
+			}
+
+			got := CombineDims(d1, d2)
+			So(got, ShouldResemble, Dimensions{
+				"attr-model":  {"Test"},
+				"label-model": {"Test2"},
+			})
+		})
+	})
+}
