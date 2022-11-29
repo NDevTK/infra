@@ -38,7 +38,11 @@ func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload
 	if dutAttr.GetTleSource() != nil {
 		return convertTleSource(ctx, dutAttr, lse, dutState)
 	}
-	return swarming.ConvertAll(dutAttr, flatConfig)
+	dims, err := swarming.ConvertAll(dutAttr, flatConfig)
+	if err != nil {
+		return nil, err
+	}
+	return dims, nil
 }
 
 // convertTleSource handles the label conversion of MachineLSE and DutState.
@@ -179,4 +183,21 @@ func existenceConvert(tleSource *ufspb.TleSource, labelAliases []string, pm prot
 		}
 	}
 	return swarming.FormLabels(labelAliases, []string{strconv.FormatBool(exists)})
+}
+
+// ConvertHwidDataLabels converts HwidData hwid_components into test labels.
+func ConvertHwidDataLabels(ctx context.Context, hwidData *ufspb.HwidData) (swarming.Dimensions, error) {
+	dims := make(swarming.Dimensions)
+	for _, label := range hwidData.GetDutLabel().GetLabels() {
+		if label.GetName() == "hwid_component" {
+			val := strings.Split(label.GetValue(), "/")
+			if len(val) != 2 {
+				logging.Warningf(ctx, "hwid label value is invalid: %s", label.GetValue())
+				continue
+			}
+			labelName := fmt.Sprintf("hw-%s", strings.Join(strings.Split(val[0], "_"), "-"))
+			dims[labelName] = append(dims[labelName], val[1])
+		}
+	}
+	return dims, nil
 }
