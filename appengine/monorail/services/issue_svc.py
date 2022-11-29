@@ -111,7 +111,9 @@ DANGLINGRELATION_COLS = [
     'ext_issue_identifier', 'kind']
 ISSUEUPDATE_COLS = [
     'id', 'issue_id', 'comment_id', 'field', 'old_value', 'new_value',
-    'added_user_id', 'removed_user_id', 'custom_field_name']
+    'added_user_id', 'removed_user_id', 'custom_field_name',
+    'added_component_id', 'removed_component_id'
+]
 ISSUEFORMERLOCATIONS_COLS = ['issue_id', 'project_id', 'local_id']
 REINDEXQUEUE_COLS = ['issue_id', 'created']
 ISSUESNAPSHOT_COLS = ['id', 'issue_id', 'shard', 'project_id', 'local_id',
@@ -1910,9 +1912,10 @@ class IssueService(object):
 
   def _UnpackAmendment(self, amendment_row):
     """Construct an Amendment PB from a DB row."""
-    (_id, _issue_id, comment_id, field_name,
-     old_value, new_value, added_user_id, removed_user_id,
-     custom_field_name) = amendment_row
+    (
+        _id, _issue_id, comment_id, field_name, old_value, new_value,
+        added_user_id, removed_user_id, custom_field_name, added_component_id,
+        removed_component_id) = amendment_row
     amendment = tracker_pb2.Amendment()
     field_enum = tracker_pb2.FieldID(field_name.upper())
     amendment.field = field_enum
@@ -1928,6 +1931,10 @@ class IssueService(object):
       amendment.removed_user_ids.append(removed_user_id)
     if custom_field_name:
       amendment.custom_field_name = custom_field_name
+    if added_component_id:
+      amendment.added_component_ids.append(added_component_id)
+    if removed_component_id:
+      amendment.removed_component_ids.append(removed_component_id)
     return amendment, comment_id
 
   def _ConsolidateAmendments(self, amendments):
@@ -1962,6 +1969,12 @@ class IssueService(object):
           new_amendment.removed_user_ids.extend(amendment.removed_user_ids)
         if amendment.custom_field_name:
           new_amendment.custom_field_name = amendment.custom_field_name
+        if amendment.added_component_ids:
+          new_amendment.added_component_ids.extend(
+              amendment.added_component_ids)
+        if amendment.removed_component_ids:
+          new_amendment.removed_component_ids.extend(
+              amendment.removed_component_ids)
       result.append(new_amendment)
     return result
 
@@ -2164,18 +2177,31 @@ class IssueService(object):
       field_enum = str(amendment.field).lower()
       if (amendment.get_assigned_value('newvalue') is not None and
           not amendment.added_user_ids and not amendment.removed_user_ids):
-        amendment_rows.append((
-            comment.issue_id, comment_id, field_enum,
-            amendment.oldvalue, amendment.newvalue,
-            None, None, amendment.custom_field_name))
+        amendment_rows.append(
+            (
+                comment.issue_id, comment_id, field_enum, amendment.oldvalue,
+                amendment.newvalue, None, None, amendment.custom_field_name,
+                None, None))
       for added_user_id in amendment.added_user_ids:
-        amendment_rows.append((
-            comment.issue_id, comment_id, field_enum, None, None,
-            added_user_id, None, amendment.custom_field_name))
+        amendment_rows.append(
+            (
+                comment.issue_id, comment_id, field_enum, None, None,
+                added_user_id, None, amendment.custom_field_name, None, None))
       for removed_user_id in amendment.removed_user_ids:
-        amendment_rows.append((
-            comment.issue_id, comment_id, field_enum, None, None,
-            None, removed_user_id, amendment.custom_field_name))
+        amendment_rows.append(
+            (
+                comment.issue_id, comment_id, field_enum, None, None, None,
+                removed_user_id, amendment.custom_field_name, None, None))
+      for added_component_id in amendment.added_component_ids:
+        amendment_rows.append(
+            (
+                comment.issue_id, comment_id, field_enum, None, None, None,
+                None, amendment.custom_field_name, added_component_id, None))
+      for removed_component_id in amendment.removed_component_ids:
+        amendment_rows.append(
+            (
+                comment.issue_id, comment_id, field_enum, None, None, None,
+                None, amendment.custom_field_name, None, removed_component_id))
     # ISSUEUPDATE_COLS[1:] to skip id column.
     self.issueupdate_tbl.InsertRows(
         cnxn, ISSUEUPDATE_COLS[1:], amendment_rows, commit=False)
