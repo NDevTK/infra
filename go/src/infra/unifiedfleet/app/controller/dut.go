@@ -893,7 +893,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	}
 
 	enableUFSSchedulableLabels := config.Get(ctx).GetEnableBoxsterLabels()
-	schedulableLabels, err := getSchedulableLabels(ctx, machine, lse, dutState)
+	schedulableLabels, err := getSchedulableLabels(ctx, machine, lse, dutState, hwidData)
 	if err != nil {
 		logging.Warningf(ctx, "SchedulableLabels not found. Error: %s", err)
 	}
@@ -946,7 +946,7 @@ func getStability(ctx context.Context, model string) (bool, error) {
 }
 
 // getSchedulableLabels gets Swarming schedulable labels based on DutAttributes.
-func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufspb.MachineLSE, state *chromeosLab.DutState) (map[string]*ufspb.SchedulableLabelValues, error) {
+func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufspb.MachineLSE, state *chromeosLab.DutState, hwidData *ufspb.HwidData) (map[string]*ufspb.SchedulableLabelValues, error) {
 	if crosMachine := machine.GetChromeosMachine(); crosMachine == nil {
 		return nil, status.Errorf(codes.FailedPrecondition, "machine cannot be empty.")
 	}
@@ -980,6 +980,14 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufsp
 	}
 	if err != nil {
 		return nil, err
+	}
+
+	hwidlabelsMap, err := ConvertHwidDataLabels(ctx, hwidData)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range hwidlabelsMap {
+		ufsLabels[k] = v
 	}
 
 	schedulableLabels := make(map[string]*ufspb.SchedulableLabelValues)
