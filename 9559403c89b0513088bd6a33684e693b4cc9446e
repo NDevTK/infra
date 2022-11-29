@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80064066_4056d981",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-29T22:37:21Z",
+      "side": 1,
+      "message": "vadimsh for go.mod review, and possible consideration for integrating opentelemetry into LUCI libs.",
+      "revId": "9559403c89b0513088bd6a33684e693b4cc9446e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
