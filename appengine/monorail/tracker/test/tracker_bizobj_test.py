@@ -2053,7 +2053,10 @@ class BizobjTest(unittest.TestCase):
         tracker_pb2.ComponentDef(component_id=2, path='DB')]
     self.assertEqual(
         tracker_bizobj.MakeAmendment(
-            tracker_pb2.FieldID.COMPONENTS, '-UI DB', [], []),
+            tracker_pb2.FieldID.COMPONENTS,
+            '-UI DB', [], [],
+            added_component_ids=[2],
+            removed_component_ids=[1]),
         tracker_bizobj.MakeComponentsAmendment([2], [1], config))
 
   def testMakeBlockedOnAmendment(self):
