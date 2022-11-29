@@ -285,6 +285,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "02634f5d_97964d11",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-29T06:42:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a42b5f6c_37b38045",
+      "range": {
+        "startLine": 114,
+        "startChar": 4,
+        "endLine": 114,
+        "endChar": 106
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "55df2c87_52c8b0bd",
@@ -345,6 +369,30 @@
       "writtenOn": "2022-11-28T17:21:52Z",
       "side": 1,
       "message": "Can we add a test to appengine/monorail/tracker/test/tracker_bizobj_test.py to cover this?",
+      "range": {
+        "startLine": 1524,
+        "startChar": 0,
+        "endLine": 1524,
+        "endChar": 65
+      },
+      "revId": "e19211cc09e2dc65f6cca0543e71047d8de6f7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2afdcf7_104a7d3d",
+        "filename": "appengine/monorail/tracker/tracker_bizobj.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1524,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-11-29T06:42:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fd9eb36_82fb1a40",
       "range": {
         "startLine": 1524,
         "startChar": 0,
