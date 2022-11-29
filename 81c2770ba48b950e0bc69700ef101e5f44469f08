@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "eaf37f78_889d28b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-29T17:59:31Z",
+      "side": 1,
+      "message": "And because there\u0027s a SQL change, the deployment will be a little more complicated. See http://go/monorail-deploy#updating-schema",
+      "parentUuid": "3f73153b_7696d305",
+      "revId": "81c2770ba48b950e0bc69700ef101e5f44469f08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "effd02ab_a4e68515",
