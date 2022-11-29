@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f73153b_7696d305",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-29T17:57:51Z",
+      "side": 1,
+      "message": "In regards to deployment, I think we would want to separate this from the flask deployment. What do you think of having multiple Monorail deployments this week? We should also coordinate with zhangtiff@ to verify their timing needs",
+      "revId": "81c2770ba48b950e0bc69700ef101e5f44469f08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "effd02ab_a4e68515",
+        "filename": "appengine/monorail/tracker/test/tracker_bizobj_test.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 2059,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-11-29T17:57:51Z",
+      "side": 1,
+      "message": "Excellent!",
+      "range": {
+        "startLine": 2058,
+        "startChar": 12,
+        "endLine": 2059,
+        "endChar": 38
+      },
+      "revId": "81c2770ba48b950e0bc69700ef101e5f44469f08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
