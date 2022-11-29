@@ -16,6 +16,24 @@
       "message": "@xianuowang@chromium.org I think we can look to the question if we still need it as main servo plan already runs without recovery mode. thoughts?",
       "revId": "c6eec8359465c4bbd02a835e02ad6f5d8d8cc120",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec561edb_1d6f2808",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_deep_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-11-29T21:50:38Z",
+      "side": 1,
+      "message": "Don\u0027t have strong preference on this, but I think keep it as is until we have more data/metrics of the change on main servo plan?",
+      "parentUuid": "c46d10f7_e545024d",
+      "revId": "c6eec8359465c4bbd02a835e02ad6f5d8d8cc120",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
