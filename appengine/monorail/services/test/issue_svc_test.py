@@ -1270,7 +1270,7 @@ class IssueServiceTest(unittest.TestCase):
         7890101, is_description=True, approval_id=7,
         content=config.approval_defs[2].survey, commit=False)
     amendment_row = (
-        78901, 7890101, 'custom', None, '-Llama Roo', None, None, 'Approvals')
+        78901, 7890101, 'custom', None, '-Llama Roo', None, None, 'Approvals', None, None)
     self.SetUpInsertComment(
         7890101, content=comment_content, amendment_rows=[amendment_row],
         commit=False)
@@ -1842,7 +1842,7 @@ class IssueServiceTest(unittest.TestCase):
     commentcontent_rows = [(7890101, 'content', 'msg'),
                            (7890102, 'content2', 'msg')]
     amendment_rows = [
-        (1, 78901, 7890101, 'cc', 'old', 'new val', 222, None, None)]
+        (1, 78901, 7890101, 'cc', 'old', 'new val', 222, None, None, None, None)]
     attachment_rows = []
     approval_rows = [(23, 7890102)]
     importer_rows = []
@@ -1994,6 +1994,9 @@ class IssueServiceTest(unittest.TestCase):
     self.assertEqual('content', comments[1].content)
     self.assertEqual(23, comments[0].approval_id)
     self.assertEqual(23, comments[1].approval_id)
+    self.services.issue.issueupdate_tbl.Select.assert_called_once_with(
+        self.cnxn,cols=issue_svc.ISSUEUPDATE_COLS, comment_id=[101001, 101002], shard_id=mox.IsA(int)
+    )
 
   def SetUpGetComment_Found(self, comment_id):
     # Assumes one comment per issue.
@@ -2116,6 +2119,26 @@ class IssueServiceTest(unittest.TestCase):
     self.services.issue.InsertComment(self.cnxn, comment, commit=True)
     self.mox.VerifyAll()
     self.assertEqual(7890101, comment.id)
+
+  def testInsertComment_WithIssueUpdate(self):
+    comment_id = 7890101
+    commentcontent_id = comment_id * 10
+    amendment = tracker_bizobj.MakeAmendment(tracker_pb2.FieldID.COMPONENTS, 'aaa', [],[],added_component_ids=[1])    
+    comment = tracker_pb2.IssueComment(
+        issue_id=78901, timestamp=self.now, project_id=789, user_id=111,
+        content='content', amendments=[amendment])
+
+    self.services.issue.issueupdate_tbl.InsertRows = Mock()
+    self.services.issue.commentcontent_tbl.InsertRow = Mock(return_value=commentcontent_id)
+    self.services.issue.comment_tbl.InsertRow = Mock(return_value=comment_id)
+    self.mox.ReplayAll()
+    self.services.issue.InsertComment(self.cnxn, comment, commit=True)
+    self.mox.VerifyAll()
+    self.assertEqual(comment_id, comment.id)
+    self.services.issue.issueupdate_tbl.InsertRow.assert_called_once_with(
+        self.cnxn, issue_svc.ISSUEUPDATE_COLS[1:],
+        [amendment], commit=False        
+    )
 
   def SetUpUpdateComment(self, comment_id, delta=None):
     delta = delta or {
