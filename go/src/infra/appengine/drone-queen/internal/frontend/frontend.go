@@ -19,44 +19,30 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/grpc/discovery"
-	"go.chromium.org/luci/grpc/grpcmon"
-	"go.chromium.org/luci/grpc/grpcutil"
-	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/middleware"
 )
 
-// InstallHandlers installs the handlers implemented by the frontend package.
-func InstallHandlers(r *router.Router, mw router.MiddlewareChain) {
-	s := prpc.Server{
-		UnaryServerInterceptor: grpcutil.ChainUnaryServerInterceptors(
-			grpcmon.UnaryServerInterceptor,
-			grpcutil.UnaryServerPanicCatcherInterceptor,
-			middleware.UnaryTrace,
-		),
-	}
+// RegisterServers registers RPC servers.
+func RegisterServers(srv *server.Server) {
 	var q DroneQueenImpl
-	api.RegisterDroneServer(&s, &api.DecoratedDrone{
+	api.RegisterDroneServer(srv.PRPC, &api.DecoratedDrone{
 		Service: &q,
 		Prelude: checkDroneAccess,
 	})
-	api.RegisterInventoryProviderServer(&s, &api.DecoratedInventoryProvider{
+	api.RegisterInventoryProviderServer(srv.PRPC, &api.DecoratedInventoryProvider{
 		Service: &q,
 		Prelude: checkInventoryProviderAccess,
 	})
-	api.RegisterInspectServer(&s, &api.DecoratedInspect{
+	api.RegisterInspectServer(srv.PRPC, &api.DecoratedInspect{
 		Service: &q,
 		Prelude: checkInspectAccess,
 	})
-	discovery.Enable(&s)
-	s.InstallHandlers(r, mw)
 }
 
 func checkDroneAccess(ctx context.Context, _ string, _ proto.Message) (context.Context, error) {
