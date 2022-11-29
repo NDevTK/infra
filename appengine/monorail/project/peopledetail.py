@@ -19,7 +19,6 @@ from framework import framework_bizobj
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
-from framework import servlet
 from framework import template_helpers
 from framework import urls
 from project import project_helpers
@@ -42,7 +41,7 @@ CHECKBOX_PERMS = [
     ]
 
 
-class PeopleDetail(servlet.Servlet):
+class PeopleDetail(flaskservlet.FlaskServlet):
   """People detail page documents one partipant's involvement in a project."""
 
   _PAGE_TEMPLATE = 'project/people-detail-page.ezt'
@@ -233,9 +232,7 @@ class PeopleDetail(servlet.Servlet):
 
     role = post_data.get('role', '').lower()
     extra_perms = []
-    # TODO(crbug.com/monorail/10936): getall in Flask is getlist
-    # for ep in post_data.getlist('extra_perms'):
-    for ep in post_data.getall('extra_perms'):
+    for ep in post_data.getlist('extra_perms'):
       perm = framework_bizobj.CanonicalizeLabel(ep)
       # Perms with leading underscores are reserved.
       perm = perm.strip('_')
@@ -271,8 +268,8 @@ class PeopleDetail(servlet.Servlet):
     self.services.project.UpdateProjectRoles(
         cnxn, project.project_id, owner_ids, committer_ids, contributor_ids)
 
-  # def GetPeopleDetailPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetPeopleDetailPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostPeopleDetailPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostPeopleDetailPage(self, **kwargs):
+    return self.handler(**kwargs)

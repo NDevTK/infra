@@ -182,3 +182,8 @@ class FilterRuleException(Error):
 class OverAttachmentQuota(Error):
   """Project will exceed quota if the current operation is allowed."""
   pass
+
+
+class RedirectException(Error):
+  """Page need to Redirect to new url."""
+  pass

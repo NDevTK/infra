@@ -8,14 +8,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
-
 from framework import flaskservlet
-from framework import servlet
 from framework import permissions
 
 
-class IssueSearchTips(servlet.Servlet):
+class IssueSearchTips(flaskservlet.FlaskServlet):
   """IssueSearchTips on-line help on how to use issue search."""
 
   _PAGE_TEMPLATE = 'tracker/issue-search-tips.ezt'
@@ -29,5 +26,5 @@ class IssueSearchTips(servlet.Servlet):
         'page_perms': self.MakePagePerms(mr, None, permissions.CREATE_ISSUE),
     }
 
-  # def GetIssueSearchTips(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetIssueSearchTips(self, **kwargs):
+    return self.handler(**kwargs)

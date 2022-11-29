@@ -38,8 +38,7 @@ class IssueAttachmentTextTest(unittest.TestCase):
         issue=fake.IssueService(),
         user=fake.UserService())
     self.project = services.project.TestAddProject('proj')
-    self.servlet = issueattachmenttext.AttachmentText(
-        'req', 'res', services=services)
+    self.servlet = issueattachmenttext.AttachmentText(services=services)
 
     services.user.TestAddUser('commenter@example.com', 111)
 
@@ -142,7 +141,7 @@ class IssueAttachmentTextTest(unittest.TestCase):
         project=self.project,
         path='/p/proj/issues/attachmentText?aid=9999',
         perms=permissions.READ_ONLY_PERMISSIONSET)
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(404, cm.exception.code)
 
@@ -153,9 +152,9 @@ class IssueAttachmentTextTest(unittest.TestCase):
         path='/p/proj/issues/attachmentText?aid=1234',
         perms=permissions.READ_ONLY_PERMISSIONSET)
     self.attach1.deleted = True
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       self.servlet.GatherPageData(mr)
-    self.assertEqual(404, cm.exception.code)
+      self.assertEqual(404, cm.exception.code)
 
   def testGatherPageData_Normal(self):
     self.blob.download_as_bytes = mock.MagicMock(

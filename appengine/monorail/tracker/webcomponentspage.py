@@ -18,9 +18,7 @@ import logging
 import settings
 from framework import flaskservlet
 from framework import servlet
-from framework import framework_helpers
 from framework import permissions
-from framework import urls
 
 
 class WebComponentsPage(servlet.Servlet):
@@ -60,18 +58,6 @@ class WebComponentsPage(servlet.Servlet):
        'local_id': mr.local_id,
        'old_ui_url': old_ui_url,
       }
-
-  # def GetWebComponentsIssueDetail(self, **kwargs):
-  #   return self.handler(**kwargs)
-
-  # def GetWebComponentsIssueList(self, **kwargs):
-  #   return self.handler(**kwargs)
-
-  # def GetWebComponentsIssueWizard(self, **kwargs):
-  #   return self.handler(**kwargs)
-
-  # def GetWebComponentsIssueNewEntry(self, **kwargs):
-  #   return self.handler(**kwargs)
 
 
 class ProjectListPage(WebComponentsPage):
@@ -128,3 +114,54 @@ class ProjectListPage(WebComponentsPage):
     project_url = '/p/%s' % project_name
     self.redirect(project_url, abort=True)
     return 'Redirected to %r' % project_url
+
+
+class FlaskWebComponentsPage(flaskservlet.FlaskServlet):
+
+  _PAGE_TEMPLATE = 'tracker/web-components-page.ezt'
+
+  def AssertBasePermission(self, mr):
+    # type: (MonorailRequest) -> None
+    """Check that the user has permission to visit this page."""
+    super(FlaskWebComponentsPage, self).AssertBasePermission(mr)
+
+  def GatherPageData(self, mr):
+    # type: (MonorailRequest) -> Mapping[str, Any]
+    """Build up a dictionary of data values to use when rendering the page.
+
+    Args:
+      mr: commonly used info parsed from the request.
+
+    Returns:
+      Dict of values used by EZT for rendering the page.
+    """
+    # Create link to view in old UI for the list view pages.
+    old_ui_url = None
+    url = mr.request.url
+    if '/hotlists/' in url:
+      hotlist = self.services.features.GetHotlist(mr.cnxn, mr.hotlist_id)
+      if '/people' in url:
+        old_ui_url = '/u/%s/hotlists/%s/people' % (
+            hotlist.owner_ids[0], hotlist.name)
+      elif '/settings' in url:
+        old_ui_url = '/u/%s/hotlists/%s/details' % (
+            hotlist.owner_ids[0], hotlist.name)
+      else:
+        old_ui_url = '/u/%s/hotlists/%s' % (hotlist.owner_ids[0], hotlist.name)
+
+    return {
+        'local_id': mr.local_id,
+        'old_ui_url': old_ui_url,
+    }
+
+  def GetWebComponentsIssueDetail(self, **kwargs):
+    return self.handler(**kwargs)
+
+  def GetWebComponentsIssueList(self, **kwargs):
+    return self.handler(**kwargs)
+
+  def GetWebComponentsIssueWizard(self, **kwargs):
+    return self.handler(**kwargs)
+
+  def GetWebComponentsIssueNewEntry(self, **kwargs):
+    return self.handler(**kwargs)

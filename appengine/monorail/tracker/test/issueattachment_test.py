@@ -18,7 +18,7 @@ except ImportError:
   import mox
 import webapp2
 
-from framework import gcs_helpers
+from framework import exceptions, gcs_helpers
 from framework import permissions
 from proto import tracker_pb2
 from services import service_manager
@@ -45,8 +45,7 @@ class IssueattachmentTest(unittest.TestCase):
         issue=fake.IssueService(),
         user=fake.UserService())
     self.project = services.project.TestAddProject('proj')
-    self.servlet = issueattachment.AttachmentPage(
-        'req', webapp2.Response(), services=services)
+    self.servlet = issueattachment.AttachmentPage(services=services)
     services.user.TestAddUser('commenter@example.com', 111)
     self.issue = fake.MakeTestIssue(
         self.project.project_id, 1, 'summary', 'New', 111)
@@ -79,7 +78,7 @@ class IssueattachmentTest(unittest.TestCase):
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project, path=path,
         perms=permissions.EMPTY_PERMISSIONSET)
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(Exception) as cm:
       self.servlet.GatherPageData(mr)
     self.assertEqual(404, cm.exception.code)
 
@@ -125,18 +124,17 @@ class IssueattachmentTest(unittest.TestCase):
         'app_default_bucket',
         '/pid/attachments/object_id-download'
         ).AndReturn('googleusercontent.com/...-download...')
-    self.mox.StubOutWithMock(self.servlet, 'redirect')
     path = '/p/proj/issues/attachment?aid=%s&signed_aid=signed_%d' % (
         aid, aid)
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project, path=path,
         perms=permissions.READ_ONLY_PERMISSIONSET)  # includes VIEW
-    self.servlet.redirect(
-      mox.And(mox.StrContains('googleusercontent.com'),
-              mox.StrContains('-download')), abort=True)
     self.mox.ReplayAll()
-    self.servlet.GatherPageData(mr)
+    with self.assertRaises(exceptions.RedirectException) as e:
+      self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
+    self.assertIn('googleusercontent.com', e.exception.message)
+    self.assertIn('-download', e.exception.message)
 
   def testGatherPageData_Download_WithoutDisposition(self):
     aid = self.attachment.attachment_id
@@ -152,16 +150,15 @@ class IssueattachmentTest(unittest.TestCase):
         'app_default_bucket',
         '/pid/attachments/object_id'
         ).AndReturn('googleusercontent.com/...')
-    self.mox.StubOutWithMock(self.servlet, 'redirect')
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project, path=path,
         perms=permissions.READ_ONLY_PERMISSIONSET)  # includes VIEW
-    self.servlet.redirect(
-      mox.And(mox.StrContains('googleusercontent.com'),
-              mox.Not(mox.StrContains('-download'))), abort=True)
     self.mox.ReplayAll()
-    self.servlet.GatherPageData(mr)
+    with self.assertRaises(exceptions.RedirectException) as e:
+      self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
+    self.assertIn('googleusercontent.com', e.exception.message)
+    self.assertNotIn('-download', e.exception.message)
 
   def testGatherPageData_DownloadBadFilename(self):
     aid = self.attachment.attachment_id
@@ -179,14 +176,12 @@ class IssueattachmentTest(unittest.TestCase):
         'app_default_bucket',
         '/pid/attachments/object_id-download'
         ).AndReturn('googleusercontent.com/...-download...')
-    self.mox.StubOutWithMock(self.servlet, 'redirect')
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project,
         path=path,
         perms=permissions.READ_ONLY_PERMISSIONSET)  # includes VIEW
-    self.servlet.redirect(mox.And(
-        mox.Not(mox.StrContains(self.attachment.filename)),
-        mox.StrContains('googleusercontent.com')), abort=True)
     self.mox.ReplayAll()
-    self.servlet.GatherPageData(mr)
+    with self.assertRaises(exceptions.RedirectException) as e:
+      self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
+    self.assertIn('googleusercontent.com', e.exception.message)

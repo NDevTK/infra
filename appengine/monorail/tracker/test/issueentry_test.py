@@ -51,10 +51,7 @@ class IssueEntryTest(unittest.TestCase):
         template=Mock(spec=template_svc.TemplateService),
         features=fake.FeaturesService())
     self.project = self.services.project.TestAddProject('proj', project_id=987)
-    request = webapp2.Request.blank('/p/proj/issues/entry')
-    response = webapp2.Response()
-    self.servlet = issueentry.IssueEntry(
-        request, response, services=self.services)
+    self.servlet = issueentry.IssueEntry(services=self.services)
     self.user = self.services.user.TestAddUser('to_pass_tests', 0)
     self.services.features.TestAddHotlist(
         name='dontcare', summary='', owner_ids=[0])

@@ -11,7 +11,7 @@ from __future__ import absolute_import
 from six.moves import http_client
 import unittest
 
-import webapp2
+import flask
 
 from framework import urls
 from project import redirects
@@ -24,9 +24,8 @@ class WikiRedirectTest(unittest.TestCase):
 
   def setUp(self):
     self.services = service_manager.Services()
-    self.servlet = redirects.WikiRedirect(
-        webapp2.Request.blank('url'), webapp2.Response(),
-        services=self.services)
+    self.servlet = redirects.WikiRedirect(services=self.services)
+    self.servlet.response = flask.Response()
     self.project = fake.Project()
     self.servlet.mr = testing_helpers.MakeMonorailRequest(
         project=self.project)
@@ -58,9 +57,8 @@ class SourceRedirectTest(unittest.TestCase):
 
   def setUp(self):
     self.services = service_manager.Services()
-    self.servlet = redirects.SourceRedirect(
-        webapp2.Request.blank('url'), webapp2.Response(),
-        services=self.services)
+    self.servlet = redirects.SourceRedirect(services=self.services)
+    self.servlet.response = flask.Response()
     self.project = fake.Project()
     self.servlet.mr = testing_helpers.MakeMonorailRequest(
         project=self.project)

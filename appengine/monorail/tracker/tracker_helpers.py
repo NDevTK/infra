@@ -1,7 +1,6 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# Copyright (c) 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 """Helper functions and classes used by the Monorail Issue Tracker pages.
 
@@ -153,9 +152,7 @@ def ParseIssueRequest(cnxn, post_data, services, errors, default_project_name):
   status = post_data.get('status', '')
   template_name = urllib.parse.unquote_plus(post_data.get('template_name', ''))
   component_str = post_data.get('components', '')
-  # TODO: switch when convert /p to flask
-  # label_strs = post_data.getlist('label')
-  label_strs = post_data.getall('label')
+  label_strs = post_data.getlist('label')
 
   if is_description:
     tmpl_txt = post_data.get('tmpl_txt', '')
@@ -259,9 +256,7 @@ def _ParseIssueRequestFields(post_data):
   phase_field_val_strs_remove = collections.defaultdict(dict)
   for key in post_data.keys():
     if key.startswith(_CUSTOM_FIELD_NAME_PREFIX):
-      # TODO: switch when convert /p to flask
-      # val_strs = [v for v in post_data.getlist(key) if v]
-      val_strs = [v for v in post_data.getall(key) if v]
+      val_strs = [v for v in post_data.getlist(key) if v]
       if val_strs:
         try:
           field_id = int(key[len(_CUSTOM_FIELD_NAME_PREFIX):])
@@ -315,9 +310,10 @@ def _ParseIssueRequestAttachments(post_data):
         item.filename = item.filename[item.filename.rindex('\\') + 1:]
       if not item.filename:
         continue  # Skip any FILE fields that were not filled in.
-      attachments.append((
-          item.filename, item.value,
-          filecontent.GuessContentTypeFromFilename(item.filename)))
+      attachments.append(
+          (
+              item.filename, item.read(),
+              filecontent.GuessContentTypeFromFilename(item.filename)))
 
   return attachments
 
@@ -331,9 +327,7 @@ def _ParseIssueRequestKeptAttachments(post_data):
   Returns:
     a list of attachment ids for kept attachments
   """
-  # TODO: switch when convert /p to flask
-  # kept_attachments = post_data.getlist('keep-attachment')
-  kept_attachments = post_data.getall('keep-attachment')
+  kept_attachments = post_data.getlist('keep-attachment')
   return [int(aid) for aid in kept_attachments]
 
 

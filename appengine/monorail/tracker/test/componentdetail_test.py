@@ -39,8 +39,7 @@ class ComponentDetailTest(unittest.TestCase):
         config=fake.ConfigService(),
         template=Mock(spec=template_svc.TemplateService),
         project=fake.ProjectService())
-    self.servlet = componentdetail.ComponentDetail(
-        'req', 'res', services=self.services)
+    self.servlet = componentdetail.ComponentDetail(services=self.services)
     self.project = self.services.project.TestAddProject('proj')
     self.mr = testing_helpers.MakeMonorailRequest(
         project=self.project, perms=permissions.OWNER_ACTIVE_PERMISSIONSET)
@@ -65,9 +64,7 @@ class ComponentDetailTest(unittest.TestCase):
 
   def testGetComponentDef_NotFound(self):
     self.mr.component_path = 'NeverHeardOfIt'
-    self.assertRaises(
-        webapp2.HTTPException,
-        self.servlet._GetComponentDef, self.mr)
+    self.assertRaises(Exception, self.servlet._GetComponentDef, self.mr)
 
   def testGetComponentDef_Normal(self):
     actual_config, actual_cd = self.servlet._GetComponentDef(self.mr)

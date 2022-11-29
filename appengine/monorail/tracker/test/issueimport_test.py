@@ -21,8 +21,7 @@ class IssueExportTest(unittest.TestCase):
 
   def setUp(self):
     self.services = service_manager.Services()
-    self.servlet = issueimport.IssueImport(
-        'req', 'res', services=self.services)
+    self.servlet = issueimport.IssueImport(services=self.services)
     self.event_log = None
 
   def testAssertBasePermission(self):

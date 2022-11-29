@@ -55,6 +55,7 @@ export class MrDescription extends LitElement {
   /** @override */
   render() {
     const selectedDescription = this.selectedDescription;
+    const author = selectedDescription.commenter ?  selectedDescription.commenter.displayName: '';
 
     return html`
       <div class="select-container">
@@ -67,7 +68,7 @@ export class MrDescription extends LitElement {
       </div>
       <mr-comment-content
         .content=${selectedDescription.content}
-        .author=${selectedDescription.commenter.displayName}
+        .author=${author}
       ></mr-comment-content>
       <div>
         ${(selectedDescription.attachments || []).map((attachment) => html`

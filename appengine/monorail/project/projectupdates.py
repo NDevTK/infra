@@ -10,15 +10,12 @@ from __future__ import absolute_import
 
 import logging
 
-import ezt
-
 from features import activities
 from framework import flaskservlet
-from framework import servlet
 from framework import urls
 
 
-class ProjectUpdates(servlet.Servlet):
+class ProjectUpdates(flaskservlet.FlaskServlet):
   """ProjectUpdates page shows a list of past activities."""
 
   _PAGE_TEMPLATE = 'project/project-updates-page.ezt'
@@ -42,5 +39,5 @@ class ProjectUpdates(servlet.Servlet):
         ending='by_user', updates_page_url=url,
         autolink=self.services.autolink)
 
-  # def GetProjectUpdatesPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetProjectUpdatesPage(self, **kwargs):
+    return self.handler(**kwargs)

@@ -8,30 +8,23 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import collections
-import logging
 import time
 
 import ezt
 
-from framework import authdata
 from framework import flaskservlet
-from framework import framework_bizobj
 from framework import framework_helpers
 from framework import framework_views
-from framework import servlet
 from framework import urls
 from framework import permissions
 from tracker import field_helpers
 from tracker import template_helpers
 from tracker import tracker_bizobj
-from tracker import tracker_helpers
 from tracker import tracker_views
 from proto import tracker_pb2
-from services import user_svc
 
 
-class TemplateDetail(servlet.Servlet):
+class TemplateDetail(flaskservlet.FlaskServlet):
   """Servlet allowing project owners to edit/delete an issue template"""
 
   _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
@@ -245,8 +238,8 @@ class TemplateDetail(servlet.Servlet):
         mr, urls.TEMPLATE_DETAIL, template=template.name,
         saved=1, ts=int(time.time()))
 
-  # def GetTemplateDetail(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetTemplateDetail(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostTemplateDetail(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostTemplateDetail(self, **kwargs):
+    return self.handler(**kwargs)

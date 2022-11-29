@@ -20,7 +20,6 @@ from framework import flaskservlet
 from framework import framework_helpers
 from framework import gcs_helpers
 from framework import permissions
-from framework import servlet
 from framework import urls
 from framework import validate
 from project import project_helpers
@@ -33,7 +32,7 @@ _MSG_DESCRIPTION_MISSING = 'Description is missing'
 _MSG_SUMMARY_MISSING = 'Summary is missing'
 
 
-class ProjectAdmin(servlet.Servlet):
+class ProjectAdmin(flaskservlet.FlaskServlet):
   """A page with project configuration options for the Project Owner(s)."""
 
   _PAGE_TEMPLATE = 'project/project-admin-page.ezt'
@@ -189,8 +188,8 @@ class ProjectAdmin(servlet.Servlet):
 
     return summary, description
 
-  # def GetProjectAdminPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetProjectAdminPage(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostProjectAdminPage(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostProjectAdminPage(self, **kwargs):
+    return self.handler(**kwargs)

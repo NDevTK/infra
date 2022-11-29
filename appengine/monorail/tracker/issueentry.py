@@ -8,7 +8,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import collections
 import difflib
 import logging
 import string
@@ -16,7 +15,6 @@ import time
 
 from businesslogic import work_env
 from features import hotlist_helpers
-from features import send_notifications
 from framework import exceptions
 from framework import flaskservlet
 from framework import framework_bizobj
@@ -24,7 +22,6 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
-from framework import servlet
 from framework import template_helpers
 from framework import urls
 import ezt
@@ -42,7 +39,7 @@ CORP_RESTRICTION_LABEL = 'Restrict-View-Google'
 RESTRICTED_FLT_FIELDS = ['notice', 'whitepaper', 'm-approved']
 
 
-class IssueEntry(servlet.Servlet):
+class IssueEntry(flaskservlet.FlaskServlet):
   """IssueEntry shows a page with a simple form to enter a new issue."""
 
   _PAGE_TEMPLATE = 'tracker/issue-entry-page.ezt'
@@ -512,11 +509,11 @@ class IssueEntry(servlet.Servlet):
 
     return template
 
-  # def GetIssueEntry(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def GetIssueEntry(self, **kwargs):
+    return self.handler(**kwargs)
 
-  # def PostIssueEntry(self, **kwargs):
-  #   return self.handler(**kwargs)
+  def PostIssueEntry(self, **kwargs):
+    return self.handler(**kwargs)
 
 
 def _AttachDefaultApprovers(config, approval_values):

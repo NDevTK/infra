@@ -28,8 +28,7 @@ class ProjectAdminAdvancedTest(unittest.TestCase):
   def setUp(self):
     services = service_manager.Services(
         project=fake.ProjectService())
-    self.servlet = projectadminadvanced.ProjectAdminAdvanced(
-        'req', 'res', services=services)
+    self.servlet = projectadminadvanced.ProjectAdminAdvanced(services=services)
     self.project = services.project.TestAddProject('proj', owner_ids=[111])
     self.mr = testing_helpers.MakeMonorailRequest(
         project=self.project,

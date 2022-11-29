@@ -25,8 +25,7 @@ class IssueAdvSearchTest(unittest.TestCase):
         user=fake.UserService(),
         project=fake.ProjectService())
     self.project = self.services.project.TestAddProject('proj', project_id=987)
-    self.servlet = issueadvsearch.IssueAdvancedSearch(
-        'req', 'res', services=self.services)
+    self.servlet = issueadvsearch.IssueAdvancedSearch(services=self.services)
 
   def testGatherData(self):
     mr = testing_helpers.MakeMonorailRequest(
