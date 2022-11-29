@@ -16,11 +16,17 @@ import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 
-interface GoFinditResultProps {
-  result: GoFinditAnalyis[];
+interface LuciBisectionResultSectionProps {
+  result: LuciBisectionResult | null;
 }
 
-interface GoFinditAnalyis {
+interface LuciBisectionResult {
+  analysis: LuciBisectionAnalysis;
+  is_supported: boolean;
+  failed_bbid: string;
+}
+
+interface LuciBisectionAnalysis {
   analysis_id: string;
   heuristic_result: HeuristicAnalysis;
   culprits: Culprit[];
@@ -31,6 +37,7 @@ interface HeuristicAnalysis {
 }
 
 interface HeuristicSuspect {
+  // TODO (nqmtuan): Also display if a verification is in progress.
   reviewUrl: string;
   justification: string;
   score: number;
@@ -44,11 +51,12 @@ interface Culprit {
 
 interface LuciBisectionCulpritSectionProps {
   culprits: Culprit[];
+  failed_bbid: string;
 }
 
-export const LuciBisectionCulpritSection = ({ culprits }: LuciBisectionCulpritSectionProps) => {
+export const LuciBisectionCulpritSection = ({ culprits, failed_bbid }: LuciBisectionCulpritSectionProps) => {
   return <>
-    <Link href="https://luci-bisection.appspot.com" target='_blank' rel='noopener'>
+    <Link href={generateAnalysisUrl(failed_bbid)} target='_blank' rel='noopener'>
       LUCI Bisection
     </Link>
     &nbsp; has identified the following CL(s) as culprit(s) of the failure:
@@ -79,20 +87,28 @@ export const LuciBisectionCulpritSection = ({ culprits }: LuciBisectionCulpritSe
   </>
 }
 
-export const GoFinditResult = (props: GoFinditResultProps) => {
+export const LuciBisectionResultSection = (props: LuciBisectionResultSectionProps) => {
   if (props.result == null) {
     return <></>
   }
 
-  // If there is a culprit, display it
-  const culprits = props.result.flatMap(r => (r.culprits ?? []))
-  if (culprits.length > 0) {
-    return <LuciBisectionCulpritSection culprits={culprits}></LuciBisectionCulpritSection>
+  if (!props.result.is_supported) {
+    return <>LUCI Bisection does not support the failure in this builder.</>
   }
 
-  const suspects = props.result.flatMap(r => (r.heuristic_result?.suspects ?? []))
+  if (!props.result.analysis) {
+    return <>LUCI Bisection couldn't find an analysis for this failure.</>
+  }
+
+  // If there is a culprit, display it
+  const culprits = props.result.analysis.culprits ?? []
+  if (culprits.length > 0) {
+    return <LuciBisectionCulpritSection culprits={culprits} failed_bbid={props.result.failed_bbid}></LuciBisectionCulpritSection>
+  }
+
+  const suspects = props.result.analysis.heuristic_result?.suspects ?? []
   if (suspects.length == 0) {
-    return <></>;
+    return <>LUCI Bisection couldn't find any suspect for this failure.</>;
   }
 
   const goFinditTooltipTitle = "LUCI Bisection (http://luci-bisection.appspot.com) has identified the following CLs as suspects.\nThis was based on best-guess effort, so it may not be 100% accurate."
@@ -102,7 +118,10 @@ export const GoFinditResult = (props: GoFinditResultProps) => {
         <TableHead>
           <TableRow>
             <TableCell align="left" sx={{ width: "350px"}}>
-              LUCI Bisection Suspected CL
+              <Link href={generateAnalysisUrl(props.result.failed_bbid)} target='_blank' rel='noopener'>
+                LUCI Bisection
+              </Link>
+              &nbsp; Suspected CL
               {/* We dont use Tooltip from MUI here as the MUI tooltip is attached in <body> tag
                   so style cannot be applied. */}
               <span title={goFinditTooltipTitle}>
@@ -182,11 +201,15 @@ function getCulpritDisplayUrl(c: Culprit) {
   return c.review_title
 }
 
-export class SomGoFinditResult extends HTMLElement {
+function generateAnalysisUrl(bbid: string) {
+  return "https://luci-bisection.appspot.com/analysis/b/" + bbid;
+}
+
+export class SomLuciBisectionResult extends HTMLElement {
   cache: EmotionCache;
   child: HTMLDivElement;
-  props: GoFinditResultProps = {
-    result: [],
+  props: LuciBisectionResultSectionProps = {
+    result: null,
   };
 
   constructor() {
@@ -196,7 +219,7 @@ export class SomGoFinditResult extends HTMLElement {
     this.child = document.createElement('div');
     root.appendChild(parent).appendChild(this.child);
     this.cache = createCache({
-      key: 'gofindit-result',
+      key: 'luci-bisection-result',
       container: parent,
     });
   }
@@ -205,7 +228,7 @@ export class SomGoFinditResult extends HTMLElement {
     this.render();
   }
 
-  set result(result: GoFinditAnalyis[]) {
+  set result(result: LuciBisectionResult) {
     this.props.result = result;
     this.render();
   }
@@ -216,11 +239,11 @@ export class SomGoFinditResult extends HTMLElement {
     }
     render(
       <CacheProvider value={this.cache}>
-        <GoFinditResult {...this.props} />
+        <LuciBisectionResultSection {...this.props} />
       </CacheProvider>,
       this.child
     );
   }
 }
 
-customElements.define('som-gofindit-result', SomGoFinditResult);
+customElements.define('som-luci-bisection-result', SomLuciBisectionResult);

@@ -161,8 +161,23 @@ type BuildFailure struct {
 	// that it can support different LUCI projects easily.
 	// When presents, SuspectedCLs should be empty.
 	Culprits []*Culprit `json:"culprits"`
-	// Analysis result from GoFindit
+	// Analysis result from GoFindit. Leave it here for backward compatibility
+	// TODO (nqmtuan): remove it
 	GoFinditResult []*gfipb.Analysis `json:"gofindit_result"`
+	// Result from LUCI Bisection
+	LuciBisectionResult *LuciBisectionResult `json:"luci_bisection_result"`
+}
+
+type LuciBisectionResult struct {
+	// Analysis result from LUCI Bisection
+	Analysis *gfipb.Analysis `json:"analysis"`
+	// Whether this failure is supported by LUCI Bisection
+	IsSupported bool `json:"is_supported"`
+	// The failed build bucket ID.
+	// Although this information is in analysis, but it is int64 type
+	// which will lose precision when passed to the the frontend.
+	// Making it a string will prevent it from happening
+	FailedBBID string `json:"failed_bbid"`
 }
 
 // BuildStep is a step which was run in a particular build. Useful for analyzing

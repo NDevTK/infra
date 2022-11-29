@@ -1,3 +1,7 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 'use strict';
 
 const codeSearchURL = 'https://cs.chromium.org/';
@@ -18,16 +22,8 @@ class SomExtensionBuildFailure extends Polymer.Element {
         observer: '_extensionChanged',
       },
       type: {type: String, value: ''},
-      _suspectedCls: {
-        type: Array,
-        computed: '_computeSuspectedCls(extension)',
-      },
       tree: String,
       bugs: Array,
-      _culprits: {
-        type: Array,
-        computed: '_computeCulprits(extension)',
-      },
     };
   }
 
@@ -59,6 +55,10 @@ class SomExtensionBuildFailure extends Polymer.Element {
 
   _haveBuilders(extension) {
     return extension && extension.builders && extension.builders.length > 0;
+  }
+
+  _haveLuciBisectionResult(extension) {
+    return extension && extension.luci_bisection_result;
   }
 
   _failure_bbid(extension) {

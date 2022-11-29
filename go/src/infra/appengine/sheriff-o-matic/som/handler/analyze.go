@@ -132,7 +132,7 @@ func generateBigQueryAlerts(c context.Context, a *analyzer.Analyzer, tree string
 		}
 	}
 	logging.Infof(c, "filtered alerts, before: %d after: %d", len(builderAlerts), len(filteredBuilderAlerts))
-	err = attachGoFinditResults(c, filteredBuilderAlerts, a.GoFindit)
+	err = attachLuciBisectionResults(c, filteredBuilderAlerts, a.GoFindit)
 	if err != nil {
 		// It is not critical, so log and continue
 		logging.Errorf(c, "Failure getting GoFindit results %v", err)
@@ -204,7 +204,7 @@ func getKeyForAlert(ctx context.Context, bf *messages.BuildFailure, tree string)
 	return strings.Join(strs, model.AlertKeySeparator)
 }
 
-func attachGoFinditResults(c context.Context, failures []*messages.BuildFailure, goFinditClient client.GoFindit) error {
+func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFailure, goFinditClient client.GoFindit) error {
 	// TODO (nqmtuan): supports queries for a list of bbids.
 	if goFinditClient == nil {
 		return fmt.Errorf("goFinditClient is nil")
@@ -216,27 +216,43 @@ func attachGoFinditResults(c context.Context, failures []*messages.BuildFailure,
 		if stepName != "compile" {
 			continue
 		}
-		for _, builder := range bf.Builders {
-			// Currently GoFind only supports "chromium"/"ci" failures
-			// Check here as we don't want to waste an RPC call.
-			if !(builder.Project == "chromium" && builder.Bucket == "ci") {
-				continue
-			}
+		// bf.Builders exists for historical reasons, since SoM used to do autogrouping of failures
+		// of the same step name in the past.
+		// Now, in can only contain 1 builder.
+		if len(bf.Builders) == 0 {
+			continue
+		}
 
-			bbid := builder.LatestFailure
-			res, err := goFinditClient.QueryGoFinditResults(c, bbid, stepName)
-			if err != nil {
-				errs = append(errs, errors.Annotate(err, "failed getting GoFindit result for build %d", bbid).Err())
-				continue
+		builder := bf.Builders[0]
+
+		// Currently LuciBisection only supports "chromium"/"ci" failures
+		// Check here as we don't want to waste an RPC call.
+		if !(builder.Project == "chromium" && builder.Bucket == "ci") {
+			bf.LuciBisectionResult = &messages.LuciBisectionResult{
+				IsSupported: false,
 			}
-			bf.GoFinditResult = append(bf.GoFinditResult, res.Analyses...)
-			if len(res.Analyses) > 0 {
-				if len(res.Analyses[0].Culprits) > 0 {
-					logging.Infof(c, "Found LUCI Bisection culprit for build %d", bbid)
-				}
-				if res.Analyses[0].HeuristicResult != nil && res.Analyses[0].HeuristicResult.Status == gofindit.AnalysisStatus_FOUND {
-					logging.Infof(c, "Found LUCI Bisection heuristic result for build %d", bbid)
-				}
+			continue
+		}
+
+		bbid := builder.LatestFailure
+		res, err := goFinditClient.QueryGoFinditResults(c, bbid, stepName)
+		if err != nil {
+			errs = append(errs, errors.Annotate(err, "failed getting GoFindit result for build %d", bbid).Err())
+			continue
+		}
+
+		bf.LuciBisectionResult = &messages.LuciBisectionResult{
+			IsSupported: true,
+		}
+
+		if len(res.Analyses) > 0 {
+			bf.LuciBisectionResult.Analysis = res.Analyses[0]
+			bf.LuciBisectionResult.FailedBBID = strconv.FormatInt(res.Analyses[0].FirstFailedBbid, 10)
+			if len(res.Analyses[0].Culprits) > 0 {
+				logging.Infof(c, "Found LUCI Bisection culprit for build %d", bbid)
+			}
+			if res.Analyses[0].HeuristicResult != nil && res.Analyses[0].HeuristicResult.Status == gofindit.AnalysisStatus_FOUND {
+				logging.Infof(c, "Found LUCI Bisection heuristic result for build %d", bbid)
 			}
 		}
 	}

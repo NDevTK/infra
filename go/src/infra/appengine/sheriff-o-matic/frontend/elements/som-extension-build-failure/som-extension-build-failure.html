@@ -84,7 +84,7 @@
         </template>
       </template>
     </div>
-    <som-gofindit-result result="[[extension.gofindit_result]]"></som-gofindit-result>
+    <som-luci-bisection-result if="[[_haveLuciBisectionResult(extension)]]" result="[[extension.luci_bisection_result]]"></som-luci-bisection-result>
   </template>
   <script src="som-extension-build-failure.js"></script>
 </dom-module>

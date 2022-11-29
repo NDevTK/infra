@@ -45,7 +45,7 @@ func (mgfi *mockGoFindit) QueryGoFinditResults(c context.Context, bbid int64, st
 	return mgfi.res, nil
 }
 
-func TestAttachGoFinditResults(t *testing.T) {
+func TestAttachLuciBisectionResults(t *testing.T) {
 	c := gaetesting.TestingContext()
 	Convey("not a compile failure", t, func() {
 		bf := []*messages.BuildFailure{
@@ -72,18 +72,44 @@ func TestAttachGoFinditResults(t *testing.T) {
 				},
 			},
 		}
-		attachGoFinditResults(c, bf, mockGfi)
-		So(len(bf[0].GoFinditResult), ShouldEqual, 0)
+		attachLuciBisectionResults(c, bf, mockGfi)
+		So(bf[0].LuciBisectionResult, ShouldBeNil)
+	})
+
+	Convey("compile failure, not chromium ci", t, func() {
+		bf := []*messages.BuildFailure{
+			{
+				Builders: []*messages.AlertedBuilder{
+					{
+						Project: "chromium",
+						Bucket:  "bucket",
+					},
+				},
+				StepAtFault: &messages.BuildStep{
+					Step: &messages.Step{
+						Name: "compile",
+					},
+				},
+			},
+		}
+		mockGfi := &mockGoFindit{
+			res: &gfipb.QueryAnalysisResponse{
+				Analyses: []*gfipb.Analysis{
+					{
+						AnalysisId: 12345,
+					},
+				},
+			},
+		}
+		attachLuciBisectionResults(c, bf, mockGfi)
+		So(bf[0].LuciBisectionResult.IsSupported, ShouldEqual, false)
+		So(bf[0].LuciBisectionResult.Analysis, ShouldBeNil)
 	})
 
 	Convey("compile failure", t, func() {
 		bf := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
-					{
-						Project: "chromium",
-						Bucket:  "ci",
-					},
 					{
 						Project: "chromium",
 						Bucket:  "ci",
@@ -105,8 +131,9 @@ func TestAttachGoFinditResults(t *testing.T) {
 				},
 			},
 		}
-		attachGoFinditResults(c, bf, mockGfi)
-		So(len(bf[0].GoFinditResult), ShouldEqual, 2)
+		attachLuciBisectionResults(c, bf, mockGfi)
+		So(bf[0].LuciBisectionResult.IsSupported, ShouldEqual, true)
+		So(bf[0].LuciBisectionResult.Analysis.AnalysisId, ShouldEqual, 12345)
 	})
 }
 
