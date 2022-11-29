@@ -217,6 +217,12 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			metricKind = fmt.Sprintf("action:%s", actionName)
 		}
 		metric = r.args.NewMetricsAction(metricKind)
+		switch act.GetAllowFailAfterRecovery() {
+		case true:
+			metric.AllowFail = metrics.YesAllowFail
+		case false:
+			metric.AllowFail = metrics.NoAllowFail
+		}
 		defer func() {
 			metric.UpdateStatus(rErr)
 			policy := act.GetMetricsConfig().GetUploadPolicy()

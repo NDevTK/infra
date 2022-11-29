@@ -18,6 +18,9 @@ import (
 // ActionStatus is the status of an action.
 type ActionStatus string
 
+// AllowFail is whether failure is allowed.
+type AllowFail string
+
 const (
 	// ActionStatusUnspecified is an unknown status.
 	ActionStatusUnspecified ActionStatus = ""
@@ -28,6 +31,10 @@ const (
 	// ActionStatusSkip represents a skipped action.
 	// TODO(gregorynisbet): Add support for skipped actions to Karte OR record the number of skipped actions as a plan-level observation.
 	ActionStatusSkip ActionStatus = "skip"
+
+	AllowFailUnspecified AllowFail = ""
+	YesAllowFail         AllowFail = "allow-fail"
+	NoAllowFail          AllowFail = "no-allow-fail"
 )
 
 // A ValueType is the type of an observation, such as a number or a string.
@@ -71,6 +78,8 @@ type Action struct {
 	RecoveredBy string
 	// Restarts is how many times we have re-traversed the plan.
 	Restarts int32
+	// Set whether failures are allowed or not
+	AllowFail AllowFail
 }
 
 // UpdateStatus updates status of the action and error reason if error was provided.

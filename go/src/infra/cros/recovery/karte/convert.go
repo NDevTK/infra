@@ -41,6 +41,30 @@ func convertKarteActionStatusToActionStatus(status kartepb.Action_Status) metric
 	}
 }
 
+// convertAllowFailToKarteAllowFail converts an allow fail value to a Karte allow fail value.
+func convertAllowFailToKarteAllowFail(allowFail metrics.AllowFail) kartepb.Action_AllowFail {
+	switch allowFail {
+	case metrics.YesAllowFail:
+		return kartepb.Action_ALLOW_FAIL
+	case metrics.NoAllowFail:
+		return kartepb.Action_NO_ALLOW_FAIL
+	default:
+		return kartepb.Action_ALLOW_FAIL_UNSPECIFIED
+	}
+}
+
+// convertKarteAllowFailToAllowFail converts a Karte allow fail value to a Boolean.
+func convertKarteAllowFailToAllowFail(allowFail kartepb.Action_AllowFail) metrics.AllowFail {
+	switch allowFail {
+	case kartepb.Action_ALLOW_FAIL:
+		return metrics.YesAllowFail
+	case kartepb.Action_NO_ALLOW_FAIL:
+		return metrics.NoAllowFail
+	default:
+		return metrics.AllowFailUnspecified
+	}
+}
+
 // ConvertTimeToProtobufTimestamp takes a time and converts it to a pointer to a protobuf timestamp.
 // This method sends the zero time to a nil pointer.
 func convertTimeToProtobufTimestamp(t time.Time) *timestamppb.Timestamp {
@@ -85,6 +109,7 @@ func convertActionToKarteAction(action *metrics.Action) *kartepb.Action {
 		Hostname:       action.Hostname,
 		RecoveredBy:    action.RecoveredBy,
 		Restarts:       action.Restarts,
+		AllowFail:      convertAllowFailToKarteAllowFail(action.AllowFail),
 	}
 }
 
@@ -106,6 +131,7 @@ func convertKarteActionToAction(action *kartepb.Action) *metrics.Action {
 		Hostname:       action.GetHostname(),
 		RecoveredBy:    action.GetRecoveredBy(),
 		Restarts:       action.GetRestarts(),
+		AllowFail:      convertKarteAllowFailToAllowFail(action.GetAllowFail()),
 	}
 }
 

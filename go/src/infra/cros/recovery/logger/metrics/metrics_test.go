@@ -54,7 +54,8 @@ func TestNewMetrics(t *testing.T) {
 			`        }`,
 			`    ],`,
 			`    "RecoveredBy": "",`,
-			`    "Restarts": 0`,
+			`    "Restarts": 0,`,
+			`    "AllowFail": ""`,
 			`}`,
 		),
 	}
