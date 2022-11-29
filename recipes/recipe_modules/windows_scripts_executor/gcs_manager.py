@@ -27,6 +27,8 @@ class GCSManager:
     self._pinned_srcs = {}
     # dict mapping downloaded package paths to package
     self._downloaded_srcs = {}
+    # set containing all the existing packages
+    self._existence = set()
 
   def pin_package(self, gcs_src):
     """ pin_package takes a gcs_src and returns a pinned gcs_src
@@ -45,6 +47,9 @@ class GCSManager:
         gcs_src.bucket = b
         gcs_src.source = s
       self._pinned_srcs[pkg_url] = gcs_src
+      # Add pkg_url as that's the only one we know that exists. Not the resolved
+      # pin
+      self._existence.add(pkg_url)
       return gcs_src
 
   def get_orig(self, url):
@@ -70,13 +75,20 @@ class GCSManager:
       return orig_url
     return ''
 
-  def exists(self, src):
+  # TODO(anushruth): Cover this test path
+  def exists(self, src):  #pragma: no cover
     """ exists returns True if the given ref exists on GCS
 
     Args:
       * src: sources.Src proto object to check for existence
     """
-    return not self.get_orig(self.get_gs_url(src)) == ''
+    url = self.get_gs_url(src)
+    if url in self._existence:
+      return True
+    src_exists = self.get_orig(url) != ''
+    if src_exists:
+      self._existence.add(url)
+    return src_exists
 
   def download_package(self, gcs_src):
     """ download_package downloads the given package if required and returns

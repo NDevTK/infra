@@ -101,18 +101,28 @@ class Source:
     local_src = self.get_local_src(src)
     return self.m.path.relpath(local_src, self.cache)
 
-  def get_url(self, src):
+  # TODO(anushruth): Cover this test path
+  def get_url(self, artifact):  #pragma: no cover
     """ get_url returns string containing an url referencing the given src
 
     Args:
-      * src: sources.Src proto object that contains ref to an artifact
+      * artifact: sources.Src|dest.Dest proto object that contains ref to an
+      artifact
     """
-    if src and src.WhichOneof('src') == 'gcs_src':
-      return self._gcs.get_gs_url(src.gcs_src)
-    if src and src.WhichOneof('src') == 'cipd_src':
-      return self._cipd.get_cipd_url(src.cipd_src)
-    if src and src.WhichOneof('src') == 'git_src':  # pragma: no cover
-      return self._git.get_gitiles_url(src.git_src)
+    if isinstance(artifact, dest_pb.Dest):
+      if artifact and artifact.WhichOneof('dest') == 'gcs_src':
+        return self._gcs.get_gs_url(artifact.gcs_src)
+      if artifact and artifact.WhichOneof('dest') == 'cipd_src':
+        return self._cipd.get_cipd_url(artifact.cipd_src)
+    if isinstance(artifact, src_pb.Src):
+      if artifact and artifact.WhichOneof('src') == 'gcs_src':
+        return self._gcs.get_gs_url(artifact.gcs_src)
+      if artifact and artifact.WhichOneof('src') == 'cipd_src':
+        return self._cipd.get_cipd_url(artifact.cipd_src)
+      if artifact and artifact.WhichOneof('src') == 'git_src':
+        return self._git.get_gitiles_url(artifact.git_src)
+
+    raise Exception('Cannot get url for {}'.format(artifact))
 
   def upload_package(self, dest, source):
     """ upload_package uploads a given package to the given destination
@@ -126,21 +136,27 @@ class Source:
     if dest and dest.WhichOneof('dest') == 'cipd_src':
       self._cipd.upload_package(dest, source)
 
-  def exists(self, src):
+  # TODO(anushruth): Cover this test path
+  def exists(self, src):  # pragma: no cover
     """ exists Returns True if the given src exists
 
     Args:
       * src: {sources.Src | dest.Dest} proto object representing an artifact
     """
-    # TODO(anushruth): add support for git and cipd
-    if isinstance(src, src_pb.Src):  #pragma: no cover
+    if isinstance(src, src_pb.Src):
       if src.WhichOneof('src') == 'gcs_src':
         return self._gcs.exists(src.gcs_src)
+      if src.WhichOneof('src') == 'cipd_src':
+        return self._cipd.exists(src.cipd_src)
+      if src.WhichOneof('src') == 'git_src':
+        return self._git.exists(src.git_src)
     if isinstance(src, dest_pb.Dest):
       if src.WhichOneof('dest') == 'gcs_src':
         return self._gcs.exists(src.gcs_src)
+      if src.WhichOneof('dest') == 'cipd_src':
+        return self._cipd.exists(src.cipd_src)
 
-    return False  # pragma: no cover
+    raise Exception('Cannot determine if {} exists'.format(self.get_url(src)))
 
   def dest_to_src(self, dest):  # pragma: no cover
     """ dest_to_src returns a src_pb.Src object from dest.Dest object.

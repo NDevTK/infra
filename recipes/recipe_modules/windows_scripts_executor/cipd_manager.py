@@ -31,6 +31,7 @@ class CIPDManager:
     self._pinning_cache = {}
     # dict mapping local path to downloaded srcs
     self._downloads_cache = {}
+    self._existence = set()
 
   def pin_package(self, cipd_src):
     """ pin_package pins the given package to instance identifier
@@ -45,6 +46,7 @@ class CIPDManager:
       # update the refs with the corresponding instance id
       cipd_src.refs = desc.pin.instance_id
       self._pinning_cache[unpinned_url] = cipd_src
+      self._existence.add(self.get_cipd_url(cipd_src))
     return self._pinning_cache[unpinned_url]
 
   def download_package(self, cipd_src):
@@ -130,3 +132,22 @@ class CIPDManager:
           tags=dest.tags,
           compression_level=0,
           verification_timeout='30m')
+
+  # TODO(anushruth): Cover this test path
+  def exists(self, cipd_src):  #pragma: no cover
+    """ exists returns true if the package exists on cipd backend
+
+    Args:
+      * cipd_src: sources.CIPDSrc object representing a cipd package
+    """
+    url = self.get_cipd_url(cipd_src)
+    if url in self._existence:
+      return True
+    try:
+      self.m.cipd.describe(
+          package_name='{}/{}'.format(cipd_src.package, cipd_src.platform),
+          version=cipd_src.refs)
+      self._existence.add(url)
+      return True
+    except Exception:
+      return False

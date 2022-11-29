@@ -32,6 +32,12 @@ class GITManager:
     self._pinning_cache = {}
     # cache stored as dict with url as key and downloaded src as value
     self._downloads_cache = {}
+    # set of existing git urls.
+    # Note: There is a remote possibility that file might be removed/deleted in
+    # git after we record it's existence. This should still be okay as we are
+    # checking for existence after pinning. If the file is deleted, it should
+    # be part of a new commit.
+    self._existence = set()
 
   def pin_package(self, git_src):
     """ pin_package replaces a volatile ref to deterministic ref in given
@@ -49,6 +55,8 @@ class GITManager:
       # pin the file to the latest available commit
       git_src.ref = commits[0]['commit']
       self._pinning_cache[url] = git_src
+      # as we know this file exists
+      self._existence.add(url)
       return git_src
 
   def download_package(self, git_src):
@@ -92,3 +100,25 @@ class GITManager:
     # Add all the path names together
     ref.extend(src)
     return self._cache.join(*ref)
+
+  # TODO(anushruth): Cover this test path
+  def exists(self, git_src):  #pragma: no cover
+    """ exists returns true if the package exists on gitiles.
+
+    Args:
+      *git_src: sources.GITSrc object representing a file in git
+
+    Reurns True if the file exists False otherwise.
+    """
+    url = self.get_gitiles_url(git_src)
+    if url in self._existence:
+      return True
+    try:
+      commits, _ = self.m.gitiles.log(git_src.repo,
+                                      git_src.ref + '/' + git_src.src)
+      if commits:
+        self._existence.add(url)
+        return True
+    except Exception:
+      return False
+    return False
