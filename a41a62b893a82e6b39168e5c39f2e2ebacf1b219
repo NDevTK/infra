@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9477fe6_b3f46cfd",
+        "filename": "go/src/infra/appengine/drone-queen/internal/cron/cron.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-29T21:38:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5cb1eeda_edd786a9",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 1
+      },
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e0d7906b_037aaa77",
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d00ba583_67c43028",
+        "filename": "go/src/infra/appengine/drone-queen/internal/cron/cron.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-29T21:38:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0d7906b_037aaa77",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 1
+      },
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e34d9e37_408db4c9",
@@ -94,6 +142,30 @@
       "writtenOn": "2022-11-29T00:10:59Z",
       "side": 1,
       "message": "nit: RegisterServers, since all it does is registering gRPC servers.",
+      "range": {
+        "startLine": 32,
+        "startChar": 5,
+        "endLine": 32,
+        "endChar": 20
+      },
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bde4cfa6_ac3d7f8c",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/frontend.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-29T21:38:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e34d9e37_408db4c9",
       "range": {
         "startLine": 32,
         "startChar": 5,
