@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -48,6 +49,7 @@ type deviceInfo struct {
 	machine             *ufspb.Machine
 	machineLse          *ufspb.MachineLSE
 	manufactoringConfig *manufacturing.ManufacturingConfig
+	hwidData            *ufspb.HwidData
 }
 
 // GetDutTopology returns a DutTopology constructed from UFS.
@@ -124,6 +126,7 @@ func appendDeviceInfo(deviceInfos []*deviceInfo, resp *ufsapi.GetDeviceDataRespo
 			machine:             resp.GetChromeOsDeviceData().GetMachine(),
 			machineLse:          resp.GetChromeOsDeviceData().GetLabConfig(),
 			manufactoringConfig: resp.GetChromeOsDeviceData().GetManufacturingConfig(),
+			hwidData:            resp.GetChromeOsDeviceData().GetHwidData(),
 		}), nil
 	case ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return append(deviceInfos, &deviceInfo{
@@ -192,6 +195,9 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				Cables:         getCables(p),
 				HwidComponent:  getHwidComponent(di.manufactoringConfig),
 				BluetoothPeers: getBluetoothPeers(p),
+				Sku:            di.hwidData.GetSku(),
+				Hwid:           di.hwidData.GetHwid(),
+				Phase:          getPhase(di.hwidData),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -427,4 +433,22 @@ func getBluetoothPeers(p *lab.Peripherals) []*labapi.BluetoothPeer {
 		ret = append(ret, bp)
 	}
 	return ret
+}
+
+func getPhase(hd *ufspb.HwidData) labapi.Phase {
+	for _, label := range hd.GetDutLabel().GetLabels() {
+		if label.GetName() == "phase" {
+			p := strings.ReplaceAll(strings.ToUpper(label.GetValue()), "-", "_")
+			switch p {
+			case "PVT2":
+				return labapi.Phase_PVT_2
+			case "DVT2":
+				return labapi.Phase_DVT_2
+			}
+			if val, ok := labapi.Phase_value[p]; ok {
+				return labapi.Phase(val)
+			}
+		}
+	}
+	return labapi.Phase_PHASE_UNSPECIFIED
 }

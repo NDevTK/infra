@@ -113,6 +113,18 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 					"fake-component2",
 				},
 			},
+			HwidData: &ufspb.HwidData{
+				Sku:  "fake-sku",
+				Hwid: "fake-hwid",
+				DutLabel: &ufspb.DutLabel{
+					Labels: []*ufspb.DutLabel_Label{
+						{
+							Name:  "phase",
+							Value: "EVT-Maple",
+						},
+					},
+				},
+			},
 		},
 		CachingServices: &ufsapi.ListCachingServicesResponse{
 			CachingServices: []*ufspb.CachingService{
@@ -197,6 +209,9 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 								State:    labapi.PeripheralState_PERIPHERAL_STATE_UNSPECIFIED,
 							},
 						},
+						Sku:   "fake-sku",
+						Hwid:  "fake-hwid",
+						Phase: labapi.Phase_EVT_MAPLE,
 					},
 				},
 				CacheServer: &labapi.CacheServer{
