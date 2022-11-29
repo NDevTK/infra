@@ -82,6 +82,24 @@ func TestConvertActionEntityToAction(t *testing.T) {
 				Hostname: "foo",
 			},
 		},
+		{
+			name: "allow fail true",
+			in: &ActionEntity{
+				AllowFail: int32(kartepb.Action_ALLOW_FAIL),
+			},
+			out: &kartepb.Action{
+				AllowFail: kartepb.Action_ALLOW_FAIL,
+			},
+		},
+		{
+			name: "allow fail false",
+			in: &ActionEntity{
+				AllowFail: int32(kartepb.Action_NO_ALLOW_FAIL),
+			},
+			out: &kartepb.Action{
+				AllowFail: kartepb.Action_NO_ALLOW_FAIL,
+			},
+		},
 	}
 
 	for _, tt := range cases {

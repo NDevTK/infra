@@ -39,4 +39,13 @@ func TestActionSave(t *testing.T) {
 			t.Errorf("unexpected board: %q", m["board"])
 		}
 	})
+	t.Run("allow_fail", func(t *testing.T) {
+		m, _, err := (&Action{Name: "aaaaa", AllowFail: "hi"}).Save()
+		if err != nil {
+			t.Errorf("unexpected err: %s", err)
+		}
+		if m["allow_fail"] != "hi" {
+			t.Errorf("unexpected board: %q", m["board"])
+		}
+	})
 }

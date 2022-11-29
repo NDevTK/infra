@@ -53,6 +53,7 @@ type ActionEntity struct {
 	RecoveredBy    string    `gae:"recovered_by"`
 	Restarts       int32     `gae:"restarts"`
 	PlanName       string    `gae:"plan_name"`
+	AllowFail      int32     `gae:"allow_fail"`
 	// Count the number of times that an action entity was modified by a request.
 	ModificationCount int32 `gae:"modification_count"`
 	// Deprecated fields!
@@ -95,6 +96,7 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 		Restarts:          e.Restarts,
 		RecoveredBy:       e.RecoveredBy,
 		PlanName:          e.PlanName,
+		AllowFail:         kartepb.Action_AllowFail(e.AllowFail),
 	}
 }
 
@@ -122,6 +124,7 @@ func (e *ActionEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 		RecoveredBy: e.RecoveredBy,
 		Restarts:    e.Restarts,
 		PlanName:    e.PlanName,
+		AllowFail:   kartepb.Action_AllowFail_name[e.AllowFail],
 	}
 }
 
@@ -484,6 +487,7 @@ func convertActionToActionEntity(action *kartepb.Action) (*ActionEntity, error) 
 		Restarts:       action.GetRestarts(),
 		RecoveredBy:    action.GetRecoveredBy(),
 		PlanName:       action.GetPlanName(),
+		AllowFail:      int32(action.GetAllowFail()),
 	}, nil
 }
 

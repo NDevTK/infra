@@ -87,4 +87,7 @@ message Action {
 
   // plan_name is the name of the plan that we're currently executing.
   string plan_name = 21;
+
+  // allow_fail captures whether the action is allowed to fail or not.
+  string allow_fail = 22;
 }

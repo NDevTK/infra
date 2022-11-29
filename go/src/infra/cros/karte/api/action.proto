@@ -103,4 +103,17 @@ message Action {
 
   // plan_name is the name of the plan that we're currently executing.
   string plan_name = 21;
+
+  // AllowFail records whether failure is allowed or not for the action in question.
+  // There are two features of actions commonly referred to as "criticality".
+  // The first is whether the action is a "critical action" or not. A critical action is
+  // one that is considered an entrypoint from the perspective of the Paris engine.
+  // The second is one where failures are NOT forgiven.
+  // This captures the second notion.
+  enum AllowFail {
+    ALLOW_FAIL_UNSPECIFIED = 0;
+    ALLOW_FAIL = 1;
+    NO_ALLOW_FAIL = 2;
+  };
+  AllowFail allow_fail = 22;
 }
