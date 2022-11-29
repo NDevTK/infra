@@ -258,6 +258,30 @@
       },
       "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d114512d_1dd1a85a",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-11-29T16:44:08Z",
+      "side": 1,
+      "message": "Yes, in the title. To be clearly describe for user. Something like in cros plan https://screenshot.googleplex.com/3FxsnZXPVQ6Rndv.",
+      "parentUuid": "4083574f_93ba23d0",
+      "range": {
+        "startLine": 50,
+        "startChar": 3,
+        "endLine": 50,
+        "endChar": 22
+      },
+      "revId": "fc96e00158085873a36d8b366a0a70c6cc6218be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
