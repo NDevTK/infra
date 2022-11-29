@@ -16,6 +16,92 @@
       "message": "PTAL",
       "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30d60e83_97f7ec6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-11-29T00:10:59Z",
+      "side": 1,
+      "message": "lgtm with optional nits, assuming you tried deploying it and it works",
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5cb1eeda_edd786a9",
+        "filename": "go/src/infra/appengine/drone-queen/internal/cron/cron.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-11-29T00:10:59Z",
+      "side": 1,
+      "message": "nit:\n\n```\nvar tracer \u003d otel.Tracer(\"infra/appengine/drone-queen/internal/cron\")\n```\n\n(the same thing, just slightly more readable)\n\nSame below. Ignore if you like init() for some reason.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 1
+      },
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0d7906b_037aaa77",
+        "filename": "go/src/infra/appengine/drone-queen/internal/cron/cron.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-11-29T00:10:59Z",
+      "side": 1,
+      "message": "nit to avoid copy-pasta in IDs:\n\n```\nfunc InstallHandlers() {\n  install :\u003d func(id string, handler cron.Handler) {\n    cron.RegisterHandler(id, wrap(handler, id))\n  }\n  install(\"import-service-config\", importServiceConfig)\n  ...\n}\n```\n\n(or replace `wrap` with `install` that wraps and installs at the same time).",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 1
+      },
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e34d9e37_408db4c9",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/frontend.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-11-29T00:10:59Z",
+      "side": 1,
+      "message": "nit: RegisterServers, since all it does is registering gRPC servers.",
+      "range": {
+        "startLine": 32,
+        "startChar": 5,
+        "endLine": 32,
+        "endChar": 20
+      },
+      "revId": "a41a62b893a82e6b39168e5c39f2e2ebacf1b219",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
