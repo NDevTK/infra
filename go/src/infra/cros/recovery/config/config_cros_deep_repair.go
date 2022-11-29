@@ -95,6 +95,8 @@ func deepRepairServoPlan() *Plan {
 					// The built-in reboot and ethernet power control in v4p1 also
 					// makes power-cycle the entire device unnecessary.
 					"Serial number is not servo_v4p1",
+					// We try restart only if we lost network to the dut.
+					"DUT is not SSHable",
 				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
@@ -198,6 +200,24 @@ func deepRepairServoPlan() *Plan {
 				ExecName:               "servo_host_servod_stop",
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
+			},
+			"DUT is SSHable": {
+				Docs: []string{
+					"verify if DUT is SSH-able",
+				},
+				ExecName:    "cros_ssh_dut",
+				ExecTimeout: &durationpb.Duration{Seconds: 15},
+				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"DUT is not SSHable": {
+				Docs: []string{
+					"verify if DUT is SSH-able",
+				},
+				Conditions: []string{
+					"DUT is SSHable",
+				},
+				ExecName:   "sample_fail",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Is not servo_v3": {
 				Docs: []string{

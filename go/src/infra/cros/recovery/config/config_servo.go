@@ -1548,7 +1548,19 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"verify if DUT is SSH-able",
 				},
-				ExecName: "cros_ssh_dut",
+				ExecName:    "cros_ssh_dut",
+				ExecTimeout: &durationpb.Duration{Seconds: 15},
+				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"DUT is not SSHable": {
+				Docs: []string{
+					"verify if DUT is SSH-able",
+				},
+				Conditions: []string{
+					"DUT is SSHable",
+				},
+				ExecName:   "sample_fail",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Is reflash Cr50 was done more 24 hours ago": {
 				Docs: []string{
@@ -1607,6 +1619,8 @@ func servoRepairPlan() *Plan {
 					// The built-in reboot and ethernet power control in v4p1 also
 					// makes power-cycle the entire device unnecessary.
 					"Serial number is not servo_v4p1",
+					// We try restart only if we lost network to the dut.
+					"DUT is not SSHable",
 				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
