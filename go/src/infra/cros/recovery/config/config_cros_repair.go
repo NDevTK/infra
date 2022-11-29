@@ -18,6 +18,7 @@ func crosRepairPlan() *Plan {
 			// Critical actions above this line are linearized. See b:255051938 for details.
 			"Device is SSHable",
 			"Verify internal storage",
+			"Set dev_boot_usb is enabled",
 			"Check if last provision was good",
 			"Check if OS on required version for camerabox tablet",
 			"Python is present",
@@ -2134,12 +2135,12 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Set default boot from disk by crossystem.",
 			},
+			ExecName: "cros_update_crossystem",
 			ExecExtraArgs: []string{
 				"command:dev_default_boot",
 				"value:disk",
 				"check_after_update:true",
 			},
-			ExecName: "cros_update_crossystem",
 		},
 		"Device NOT booted from USB-drive": {
 			Docs: []string{
@@ -2670,6 +2671,22 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "cros_verify_rootfs_verity",
 			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Set dev_boot_usb is enabled": {
+			Docs: []string{
+				"Set dev_boot_usb=1 to enable booting from USB drive in DEV mode.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_update_crossystem",
+			ExecExtraArgs: []string{
+				"command:dev_boot_usb",
+				"value:1",
+				"check_after_update:true",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 	}
