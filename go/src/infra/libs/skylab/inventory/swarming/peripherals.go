@@ -94,6 +94,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		}
 	}
 
+	if chamState := p.GetChameleonState(); chamState != inventory.PeripheralState_UNKNOWN {
+		if labSState, ok := lab.PeripheralState_name[int32(chamState)]; ok {
+			dims["label-chameleon_state"] = []string{labSState}
+		}
+	}
+
 	n := p.GetWorkingBluetoothBtpeer()
 	btpeers := make([]string, n)
 	for i := range btpeers {
@@ -155,6 +161,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		}
 	}
 	delete(d, "label-chameleon_type")
+
+	if chamStateName, ok := getLastStringValue(d, "label-chameleon_state"); ok {
+		chamState := inventory.PeripheralState_UNKNOWN
+		if ssIndex, ok := lab.PeripheralState_value[strings.ToUpper(chamStateName)]; ok {
+			chamState = inventory.PeripheralState(ssIndex)
+		}
+		p.ChameleonState = &chamState
+		delete(d, "label-chameleon_state")
+	}
 
 	if labSStateName, ok := getLastStringValue(d, "label-servo_state"); ok {
 		servoState := inventory.PeripheralState_UNKNOWN

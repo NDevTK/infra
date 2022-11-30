@@ -60,6 +60,7 @@ peripherals: {
   chameleon_type: 3
   chameleon_type: 5
   chameleon: true
+  chameleon_state: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -208,6 +209,7 @@ peripherals: {
   chameleon_type: 3
   chameleon_type: 5
   chameleon: true
+  chameleon_state: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -331,6 +333,7 @@ var fullDimensions = Dimensions{
 		"CHAMELEON_TYPE_DP_HDMI",
 		"CHAMELEON_TYPE_HDMI",
 	},
+	"label-chameleon_state":         {"WORKING"},
 	"label-chaos_dut":               {"True"},
 	"label-chaos_nightly":           {"True"},
 	"label-chromesign":              {"True"},
