@@ -7,6 +7,7 @@ go_build_environ:
     linux:   0  # to avoid linking to system dynamic libraries
 go_packages:
   - infra/tools/vpython/legacy/vpython2.7/cmd/vpython
+install_mode: copy
 root: ../../go/bin
 cipd_export: |
   @Subdir 2.7
