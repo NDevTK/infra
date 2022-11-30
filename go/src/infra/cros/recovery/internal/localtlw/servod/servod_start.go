@@ -7,9 +7,15 @@ package servod
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/docker"
+	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 	"infra/libs/sshpool"
 )
@@ -34,7 +40,7 @@ func StartServod(ctx context.Context, req *StartServodRequest) error {
 		return errors.Reason("start servod: ssh pool is not specified").Err()
 	case req.Options == nil:
 		return errors.Reason("start servod: options is not specified").Err()
-	case req.Options.GetServodPort() <= 0:
+	case req.Options.GetServodPort() <= 0 && req.ContainerName == "":
 		return errors.Reason("start servod: servod port is not specified").Err()
 	case req.ContainerName == "":
 		// regular labstation
@@ -49,7 +55,53 @@ func StartServod(ctx context.Context, req *StartServodRequest) error {
 }
 
 func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) error {
-	return errors.Reason("start servod on local container: not implemented").Err()
+	log.Debugf(ctx, "Start servod on local container with %#v", req.Options)
+	d, err := newDockerClient(ctx)
+	if err != nil {
+		return errors.Annotate(err, "start servod container").Err()
+	}
+	// Print all containers to know if something wrong.
+	d.PrintAll(ctx)
+	if up, err := d.IsUp(ctx, req.ContainerName); err != nil {
+		return errors.Annotate(err, "start servod container").Err()
+	} else if up {
+		log.Debugf(ctx, "Servod container %q is up, stopping it!", req.ContainerName)
+		if err := d.Remove(ctx, req.ContainerName, true); err != nil {
+			log.Debugf(ctx, "Start servod: fail to stop: %s", err)
+		}
+	}
+	// If a port is not specified then the request for a container without servod.
+	startServod := req.Options.GetServodPort() > 0
+	envVar := GenerateParams(req.Options)
+	containerStartArgs := []string{"tail", "-f", "/dev/null"}
+	if startServod {
+		containerStartArgs = []string{"bash", "/start_servod.sh"}
+	}
+	containerArgs := createServodContainerArgs(true, envVar, containerStartArgs)
+	// We always need to call pull before start as it will verify that image we used is latest.
+	// If pull is missed the image will be used from local docker cache.
+	// Image is small is expected to be download in less 1 minute but for safety we set 5.
+	if err := d.Pull(ctx, containerArgs.ImageName, 5*time.Minute); err != nil {
+		return errors.Annotate(err, "start servod container").Err()
+	}
+	// Servod expected to start in less 1 minutes and we set 2 in case there is any issue is exist.
+	res, err := d.Start(ctx, req.ContainerName, containerArgs, 2*time.Minute)
+	if err != nil {
+		return errors.Annotate(err, "start servod container").Err()
+	}
+	log.Debugf(ctx, "Container started with id:%s\n with errout: %#v", res)
+	if startServod {
+		// Waiting to finish servod initialization.
+		// Wait 3 seconds as sometimes container is not fully initialized and fail
+		// when start ing working with servod or tooling.
+		time.Sleep(3 * time.Second)
+		if err := dockerVerifyServodDaemonIsUp(ctx, d, req.ContainerName, req.Options.GetServodPort(), 60); err != nil {
+			return errors.Annotate(err, "start servod container").Err()
+		}
+	}
+	log.Debugf(ctx, "Servod container %s started and up!", req.ContainerName)
+	return nil
+
 }
 
 func startServodOnRemoteContainer(ctx context.Context, req *StartServodRequest) error {
@@ -57,14 +109,84 @@ func startServodOnRemoteContainer(ctx context.Context, req *StartServodRequest) 
 }
 
 func startServodLabstation(ctx context.Context, req *StartServodRequest) error {
-	if stat, err := getServodStatus(ctx, req.Host, req.Options.GetServodPort(), req.SSHPool); err != nil {
+	// Convert hostname to the proxy name used for local when called.
+	host := localproxy.BuildAddr(req.Host)
+	if stat, err := getServodStatus(ctx, host, req.Options.GetServodPort(), req.SSHPool); err != nil {
 		return errors.Annotate(err, "start servod on labstation").Err()
 	} else if stat == servodRunning {
 		// Servod is running already.
 		return nil
 	}
-	if err := startServod(ctx, req.Host, req.Options.GetServodPort(), GenerateParams(req.Options), req.SSHPool); err != nil {
+	if err := startServod(ctx, host, req.Options.GetServodPort(), GenerateParams(req.Options), req.SSHPool); err != nil {
 		return errors.Annotate(err, "start servod on labstation").Err()
 	}
+	return nil
+}
+
+// dockerServodImageName provides image for servod when use container.
+func dockerServodImageName() string {
+	label := getEnv("SERVOD_CONTAINER_LABEL", "release")
+	registry := getEnv("REGISTRY_URI", "us-docker.pkg.dev/chromeos-partner-moblab/common-core")
+	return fmt.Sprintf("%s/servod:%s", registry, label)
+}
+
+// getEnv retrieves the value of the environment variable named by the key.
+// If retrieved value is empty return default value.
+func getEnv(key, defaultvalue string) string {
+	if key != "" {
+		if v := os.Getenv(key); v != "" {
+			return v
+		}
+	}
+	return defaultvalue
+}
+
+// defaultDockerNetwork provides network in which docker need to run.
+func defaultDockerNetwork() string {
+	network := os.Getenv("DOCKER_DEFAULT_NETWORK")
+	// If not provided then use host network.
+	if network == "" {
+		network = "host"
+	}
+	return network
+}
+
+// createServodContainerArgs creates default args for servodContainer.
+func createServodContainerArgs(detached bool, envVar, cmd []string) *docker.ContainerArgs {
+	return &docker.ContainerArgs{
+		Detached:   detached,
+		EnvVar:     envVar,
+		ImageName:  dockerServodImageName(),
+		Network:    defaultDockerNetwork(),
+		Volumes:    []string{"/dev:/dev"},
+		Privileged: true,
+		Exec:       cmd,
+	}
+}
+
+// dockerVerifyServodDaemonIsUp verifies servod is running on servod daemon is up in container.
+func dockerVerifyServodDaemonIsUp(ctx context.Context, dc docker.Client, containerName string, servodPort int32, waitTime int) error {
+	eReq := &docker.ExecRequest{
+		Timeout: 2 * time.Minute,
+		Cmd: []string{
+			"servodtool",
+			"instance",
+			"wait-for-active",
+			"-p",
+			fmt.Sprintf("%d", servodPort),
+			"--timeout",
+			fmt.Sprintf("%d", waitTime),
+		},
+	}
+	res, err := dc.Exec(ctx, containerName, eReq)
+	if err != nil {
+		return errors.Annotate(err, "docker verify servod daemon is up").Err()
+	} else if res != nil && res.ExitCode != 0 {
+		// When the wait time is less request timeout, the cmd can finish with nil error
+		// exitcode can be 1 if the wait time is exceeded.
+		log.Debugf(ctx, "servodtool did not response before %s", waitTime)
+		return errors.Reason("docker verify servod daemon is up: %s", res.Stderr).Err()
+	}
+	// Servod process is up.
 	return nil
 }

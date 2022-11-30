@@ -10,6 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 	"infra/libs/sshpool"
 )
@@ -34,7 +36,7 @@ func StopServod(ctx context.Context, req *StopServodRequest) error {
 		return errors.Reason("stop servod: ssh pool is not specified").Err()
 	case req.Options == nil:
 		return errors.Reason("stop servod: options is not specified").Err()
-	case req.Options.GetServodPort() <= 0:
+	case req.Options.GetServodPort() <= 0 && req.ContainerName == "":
 		return errors.Reason("stop servod: servod port is not specified").Err()
 	case req.ContainerName == "":
 		// regular labstation
@@ -49,7 +51,15 @@ func StopServod(ctx context.Context, req *StopServodRequest) error {
 }
 
 func stopServodOnLocalContainer(ctx context.Context, req *StopServodRequest) error {
-	return errors.Reason("stop servod on local container: not implemented").Err()
+	log.Debugf(ctx, "Stop servod on local container with %#v", req.Options)
+	d, err := newDockerClient(ctx)
+	if err != nil {
+		return errors.Annotate(err, "stop servod %q", req.Host).Err()
+	}
+	if err := d.Remove(ctx, req.ContainerName, true); err != nil {
+		return errors.Annotate(err, "stop servod %q", req.Host).Err()
+	}
+	return nil
 }
 
 func stopServodOnRemoteContainer(ctx context.Context, req *StopServodRequest) error {
@@ -57,13 +67,15 @@ func stopServodOnRemoteContainer(ctx context.Context, req *StopServodRequest) er
 }
 
 func stopServodLabstation(ctx context.Context, req *StopServodRequest) error {
-	if stat, err := getServodStatus(ctx, req.Host, req.Options.GetServodPort(), req.SSHPool); err != nil {
+	// Convert hostname to the proxy name used for local when called.
+	host := localproxy.BuildAddr(req.Host)
+	if stat, err := getServodStatus(ctx, host, req.Options.GetServodPort(), req.SSHPool); err != nil {
 		return errors.Annotate(err, "stop servod on labstation").Err()
 	} else if stat == servodNotRunning {
 		// Servod is not running.
 		return nil
 	}
-	if err := stopServod(ctx, req.Host, req.Options.GetServodPort(), req.SSHPool); err != nil {
+	if err := stopServod(ctx, host, req.Options.GetServodPort(), req.SSHPool); err != nil {
 		return errors.Annotate(err, "stop servod on labstation").Err()
 	}
 	return nil
