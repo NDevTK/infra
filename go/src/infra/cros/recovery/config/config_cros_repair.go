@@ -1847,9 +1847,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"has_rpm_info",
-				"Power off DUT by RPM",
-				"Sleep 15s",
-				"Power on DUT by RPM",
+				"rpm_power_cycle",
 				"Set servo PD to src",
 				"Wait to be pingable (normal boot)",
 			},
@@ -2639,28 +2637,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:   "labstation_create_reboot_request",
 			RunControl: RunControl_RUN_ONCE,
-		},
-		"Power off DUT by RPM": {
-			Docs: []string{
-				"Power off the DUT by RPM outlet.",
-			},
-			ExecName:               "rpm_power_off",
-			RunControl:             RunControl_ALWAYS_RUN,
-			AllowFailAfterRecovery: true,
-		},
-		"Power on DUT by RPM": {
-			Docs: []string{
-				"Power on the DUT by RPM outlet.",
-			},
-			ExecName:   "rpm_power_on",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
-		"Sleep 15s": {
-			ExecName: "sample_sleep",
-			ExecExtraArgs: []string{
-				"sleep:15",
-			},
-			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Verify rootfs is on fs-verity": {
 			Docs: []string{
