@@ -290,3 +290,161 @@ func TestTleSourcesJsonproto(t *testing.T) {
 		}
 	})
 }
+
+// TestConvertHwidDataLabels tests the conversion of HwidData hwid_components.
+func TestConvertHwidDataLabels(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ctx = useTestingCfg(ctx)
+
+	t.Run("convert HwidData - happy path; single value", func(t *testing.T) {
+		hwidData := &ufspb.HwidData{
+			Sku:     "test-sku",
+			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "hwid_component",
+						Value: "storage/storage_12345",
+					},
+				},
+			},
+		}
+		want := swarming.Dimensions{
+			"hw-storage": {"storage_12345"},
+		}
+		got, err := ConvertHwidDataLabels(ctx, hwidData)
+		if err != nil {
+			t.Fatalf("ConvertHwidDataLabels failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("ConvertHwidDataLabels returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("convert HwidData - happy path; multiple values", func(t *testing.T) {
+		hwidData := &ufspb.HwidData{
+			Sku:     "test-sku",
+			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "hwid_component",
+						Value: "touchpad/touchpad_test",
+					},
+					{
+						Name:  "hwid_component",
+						Value: "touchpad/touchpad_other_test",
+					},
+					{
+						Name:  "hwid_component",
+						Value: "storage/storage_12345",
+					},
+				},
+			},
+		}
+		want := swarming.Dimensions{
+			"hw-touchpad": {"touchpad_test", "touchpad_other_test"},
+			"hw-storage":  {"storage_12345"},
+		}
+		got, err := ConvertHwidDataLabels(ctx, hwidData)
+		if err != nil {
+			t.Fatalf("ConvertHwidDataLabels failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("ConvertHwidDataLabels returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("convert HwidData - mixed case hwid_component", func(t *testing.T) {
+		hwidData := &ufspb.HwidData{
+			Sku:     "test-sku",
+			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "hwid_component",
+						Value: "display_panel/display_panel_12345",
+					},
+				},
+			},
+		}
+		want := swarming.Dimensions{
+			"hw-display-panel": {"display_panel_12345"},
+		}
+		got, err := ConvertHwidDataLabels(ctx, hwidData)
+		if err != nil {
+			t.Fatalf("ConvertHwidDataLabels failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("ConvertHwidDataLabels returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("convert HwidData - no hwid components", func(t *testing.T) {
+		hwidData := &ufspb.HwidData{
+			Sku:     "test-sku",
+			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{},
+			},
+		}
+		want := swarming.Dimensions{}
+		got, err := ConvertHwidDataLabels(ctx, hwidData)
+		if err != nil {
+			t.Fatalf("ConvertHwidDataLabels failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("ConvertHwidDataLabels returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("convert HwidData - badly formed hwid component", func(t *testing.T) {
+		hwidData := &ufspb.HwidData{
+			Sku:     "test-sku",
+			Variant: "test-variant",
+			Hwid:    "test",
+			DutLabel: &ufspb.DutLabel{
+				PossibleLabels: []string{
+					"test-possible-1",
+					"test-possible-2",
+				},
+				Labels: []*ufspb.DutLabel_Label{
+					{
+						Name:  "hwid_component",
+						Value: "display_panel/display_panel_12345/something_else",
+					},
+				},
+			},
+		}
+		want := swarming.Dimensions{}
+		got, err := ConvertHwidDataLabels(ctx, hwidData)
+		if err != nil {
+			t.Fatalf("ConvertHwidDataLabels failed: %s", err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("ConvertHwidDataLabels returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+}
