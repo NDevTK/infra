@@ -368,6 +368,10 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 // If return err then not applicable, if nil then applicable.
 func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName string) (conditionName string, err error) {
 	a := r.getAction(actionName)
+	if len(a.GetConditions()) == 0 {
+		log.Debugf(ctx, "Action %q: no conditions.", actionName)
+		return "", nil
+	}
 	log.Debugf(ctx, "Action %q: starting running conditions...", actionName)
 	enableRecovery := false
 	for _, condition := range a.GetConditions() {
@@ -383,6 +387,10 @@ func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName str
 // runDependencies runs action's dependencies.
 func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string, enableRecovery bool) error {
 	a := r.getAction(actionName)
+	if len(a.GetDependencies()) == 0 {
+		log.Debugf(ctx, "Action %q: no dependencies.", actionName)
+		return nil
+	}
 	log.Debugf(ctx, "Action %q: starting running dependencies...", actionName)
 	for _, dependencyName := range a.GetDependencies() {
 		if _, err := r.runAction(ctx, dependencyName, enableRecovery, "Dependency"); err != nil {
