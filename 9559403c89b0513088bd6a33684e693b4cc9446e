@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dda3f0ea_42b16cd2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-30T19:54:05Z",
+      "side": 1,
+      "message": "thanks",
+      "revId": "9559403c89b0513088bd6a33684e693b4cc9446e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2944ee37_7ecfafeb",
@@ -41,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "09a21f99_8e66f4ea",
+        "filename": "go/src/infra/appengine/drone-queen/appengine/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-30T19:54:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2944ee37_7ecfafeb",
+      "range": {
+        "startLine": 47,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 16
+      },
+      "revId": "9559403c89b0513088bd6a33684e693b4cc9446e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ff88d618_95b9ebe4",
@@ -54,6 +95,30 @@
       "writtenOn": "2022-11-29T22:51:52Z",
       "side": 1,
       "message": "this is context.Background(), this logging will do absolutely nothing\n\nIt is better to do initialization inside server.Main callback. The context there is srv.Context and it is already sufficiently initialized to support logging, authentication, etc etc.\n\nIt would also allow to simplify code a little bit:\n\n```\nserver.Main(.... func(...) ... {\n  exp, err :\u003d ...\n  if err !\u003d nil {\n    return err\n  }\n  tp :\u003d ...\n  srv.RegisterCleanup(func(ctx context.Context) {\n    if err :\u003d tp.Shutdown(ctx); err !\u003d nil {\n      logging.Error(ctx, ...)\n    }\n  })\n  \n  ...\n})\n```\n\n(i.e. no need to do type casts etc, just shutdown whatever was initialized)",
+      "range": {
+        "startLine": 53,
+        "startChar": 16,
+        "endLine": 53,
+        "endChar": 19
+      },
+      "revId": "9559403c89b0513088bd6a33684e693b4cc9446e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8285b6bf_778222b4",
+        "filename": "go/src/infra/appengine/drone-queen/appengine/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-11-30T19:54:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff88d618_95b9ebe4",
       "range": {
         "startLine": 53,
         "startChar": 16,
