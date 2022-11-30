@@ -28,55 +28,90 @@ NOTE: Because buildbucket has a painless canary support, it's preferred to deplo
 - [Chromium Swarm Development]
 - [Chrome Swarm Production]
 
+They are generated from definitions in [cipd.star] file.
+
 To deploy a new version of `vpython`:
 
-1. Deploy to [Chromium Swarm Development]. Check [task status](https://chromium-swarm-dev.appspot.com/tasklist) in development environment.
-3. (Optional) Deploy canary task template to [Chromium Swarm Production] and **CC [primary trooper](https://oncall.corp.google.com/chrome-ops-client-infra)**. Check [task status](https://chromium-swarm.appspot.com/tasklist) in production environment with [`swarming.pool.template-tag:canary`](https://chromium-swarm.appspot.com/tasklist?f=swarming.pool.template-tag%3Acanary).
-1. Deploy to [Chromium Swarm Production] and **CC [primary trooper](https://oncall.corp.google.com/chrome-ops-client-infra)**. Check [task status](https://chromium-swarm.appspot.com/tasklist) in development environment.
-4. Deploy to [Chrome Swarm Production] and **CC [primary trooper](https://oncall.corp.google.com/chrome-ops-client-infra)**. Check [task status](https://chrome-swarming.appspot.com/tasklist) in production environment.
+1. Deploy to [Chromium Swarm Development] by updating or adding `staging`
+version to all relevant vpython `package(...)` definitions in [cipd.star]:
 
-Swarming task template supports canary but the canary task template is disruptive for some users due to the deduping behavior. It should be only used for risky release. An example configuration:
 ```
-task_template_deployment {
-  name: "chrome_packages"
-
-  prod {
-    include: "chrome_packages_prod"
-    cipd_package {
-      path: ".task_template_packages"
-      pkg: "infra/tools/luci/vpython-native/${platform}"
-      version: "git_revision:0d045343d70a8309ec92c2cc46c21ee90c68344f"
-    }
-    cipd_package {
-      path: ".task_template_packages"
-      pkg: "infra/tools/luci/vpython/${platform}"
-      version: "git_revision:0d045343d70a8309ec92c2cc46c21ee90c68344f"
-    }
-  }
-  canary {
-    # TODO(crbug/1235841): Move this back to the prod template once it is
-    # rolled out.
-    include: "chrome_packages_prod"
-    cipd_package {
-      path: ".task_template_packages"
-      pkg: "infra/tools/luci/vpython-native/${platform}"
-      version: "git_revision:0915c6a38fe8862a3790dd5bcf2b99c92399199f"
-    }
-    cipd_package {
-      path: ".task_template_packages"
-      pkg: "infra/tools/luci/vpython/${platform}"
-      version: "git_revision:0915c6a38fe8862a3790dd5bcf2b99c92399199f"
-    }
-  }
-
-  canary_chance: 5000 # 50% chance of picking canary
-}
+def vpython3():
+    return [
+        package(
+            name = "infra/tools/luci/vpython3/${platform}",
+            path = ".task_template_packages",
+            prod = "git_revision:788e09418ced22000a9774e4549b9ad42084b814",
+            staging = "git_revision:<the-revision-you-want-to-deploy>",
+        ),
+        ...
+    ]
 ```
 
+Run `./main.star` to regenerate `pools.cfg` and land the change. Check
+[task status](https://chromium-swarm-dev.appspot.com/tasklist) in development
+environment.
+
+2. (Optional) Deploy canary task template and **CC [primary trooper](https://oncall.corp.google.com/chrome-ops-client-infra)**.
+Do it by updating or adding `canary` version to all relevant vpython
+`package(...)` definitions (it should be matching `staging` now):
+
+```
+def vpython3():
+    return [
+        package(
+            name = "infra/tools/luci/vpython3/${platform}",
+            path = ".task_template_packages",
+            prod = "git_revision:788e09418ced22000a9774e4549b9ad42084b814",
+            canary = "git_revision:<the-revision-you-want-to-deploy>",
+            staging = "git_revision:<the-revision-you-want-to-deploy>",
+        ),
+        ...
+    ]
+```
+
+If there is no other packages being canaried, this change will result in
+appearance of a new large canary section in the generated `pools.cfg` files.
+This section is present only if there are packages being canaried.
+
+After landing the change check tasks that picked up the canary template
+(i.e. tasks with `swarming.pool.template` tag set to `canary`) in
+[Chromium Swarm Canary List] and [Chrome Swarm Canary List]. By default 20%
+of tasks will be using the canary template.
+
+Note that the canary task template is disruptive for some users due to the
+deduping behavior. It should be only used for risky release.
+
+3. Deploy to all production tasks and **CC [primary trooper](https://oncall.corp.google.com/chrome-ops-client-infra)**.
+Do it by updating `prod` version in all relevant vpython `package(...)`
+definitions. If `canary` and `staging` match `prod` now, they can be omitted:
+
+```
+def vpython3():
+    return [
+        package(
+            name = "infra/tools/luci/vpython3/${platform}",
+            path = ".task_template_packages",
+            prod = "git_revision:<the-revision-you-want-to-deploy>",
+        ),
+        ...
+    ]
+```
+
+If this change removes the last canaried package, the canary section in the
+generated `pools.cfg` file will disappear entirely. This is normal.
+
+After landing the change check tasks that picked up the template in
+[Chromium Swarm Prod List] and [Chrome Swarm Prod List].
 
 [Chromium Swarm Production]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/pools.cfg
 [Chromium Swarm Development]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm-dev/pools.cfg
 [Chrome Swarm Production]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chrome-swarming/pools.cfg
+[cipd.star]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/starlark/common/lib/cipd.star
+[Chromium Swarm Canary List]: https://chromium-swarm.appspot.com/tasklist?f=swarming.pool.template-tag%3Acanary
+[Chrome Swarm Canary List]: https://chrome-swarming.appspot.com/tasklist?f=swarming.pool.template-tag%3Acanary
+[Chromium Swarm Prod List]: https://chromium-swarm.appspot.com/tasklist?f=swarming.pool.template-tag%3Aprod
+[Chrome Swarm Prod List]: https://chrome-swarming.appspot.com/tasklist?f=swarming.pool.template-tag%3Aprod
 
 ### Buildbucket
 
