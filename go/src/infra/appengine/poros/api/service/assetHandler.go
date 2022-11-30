@@ -315,7 +315,9 @@ func (c *AssetHandler) GetHostConfiguration(ctx context.Context, in *proto.GetHo
 				ResourceType:            resource.Type,
 				ResourceOperatingSystem: resource.OperatingSystem,
 				ResourceImageProject:    resource.ImageProject,
-				ResourceImageFamily:     resource.ImageFamily})
+				ResourceImageFamily:     resource.ImageFamily,
+				ResourceImageSource:     resource.ImageSource,
+			})
 	}
 	jsonBytes, _ := json.MarshalIndent(res, "", "    ")
 
@@ -337,6 +339,10 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 		}
 		break
 	case "virtual_machine":
+		resourceData = [][]string{
+			{"network", "primary"},
+		}
+	case "custom_image_machine":
 		resourceData = [][]string{
 			{"network", "primary"},
 		}

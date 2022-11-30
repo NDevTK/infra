@@ -170,6 +170,8 @@ message HostConfigurationResource {
   string resource_image_project = 4;
   // Information about the image gcp family
   string resource_image_family = 5;
+  // Information about custom image source path
+  string resource_image_source = 7;
 }
 
 message HostConfiguration {
