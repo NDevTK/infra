@@ -169,13 +169,13 @@ func TestChooseImplementation(t *testing.T) {
 		Convey("nil permille data", func() {
 			var pd *PermilleData
 			impl, err := pd.ChooseImplementation(ctx, 0.0)
-			So(impl, ShouldEqual, heuristics.LegacyTaskType)
+			So(impl, ShouldEqual, heuristics.ProdTaskType)
 			So(err, ShouldBeNil)
 		})
 		Convey("zeroes", func() {
 			pd := &PermilleData{Prod: 0.0, Latest: 0.0}
 			impl, err := pd.ChooseImplementation(ctx, 0.0)
-			So(impl, ShouldEqual, heuristics.LegacyTaskType)
+			So(impl, ShouldEqual, heuristics.ProdTaskType)
 			So(err, ShouldErrLike, "not yet implemented")
 		})
 	})

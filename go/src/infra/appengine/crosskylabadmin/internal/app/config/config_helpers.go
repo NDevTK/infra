@@ -26,12 +26,12 @@ type PermilleData struct {
 // ChooseImplementation picks an implementation for the task. It fails if and only if randFloat is out of range.
 func (d *PermilleData) ChooseImplementation(ctx context.Context, randFloat float64) (heuristics.TaskType, error) {
 	if d == nil {
-		return heuristics.LegacyTaskType, nil
+		return heuristics.ProdTaskType, nil
 	}
 	if randFloat < 0.0 || randFloat > 1.0 {
-		return heuristics.LegacyTaskType, fmt.Errorf("rand float out of range %f", randFloat)
+		return heuristics.ProdTaskType, fmt.Errorf("rand float out of range %f", randFloat)
 	}
-	return heuristics.LegacyTaskType, errors.New("not yet implemented")
+	return heuristics.ProdTaskType, errors.New("not yet implemented")
 }
 
 func validatePattern(pattern string) error {

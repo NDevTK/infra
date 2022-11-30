@@ -80,8 +80,6 @@ var LooksLikeFieldMask = regexp.MustCompile(`\A[a-z][A-Za-z0-9\.]*\z`).MatchStri
 type TaskType int
 
 const (
-	// LegacyTaskType is the type for the legacy (autotest) based repair flow.
-	LegacyTaskType TaskType = 0
 	// ProdTaskType refers to the paris task on the prod cipd label.
 	ProdTaskType TaskType = 100
 	// LatestTaskType refers to the paris task on the latest cipd label.

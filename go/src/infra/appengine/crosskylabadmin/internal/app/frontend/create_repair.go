@@ -19,7 +19,6 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
@@ -130,12 +129,7 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		randFloat,
 	)
 	if err != nil {
-		logging.Infof(ctx, "Create repair task: falling back to legacy repair by default: %s", err)
-		return createLegacyRepairTask(ctx, botID, expectedState)
-	}
-
-	if taskType == heuristics.LegacyTaskType {
-		return createLegacyRepairTask(ctx, botID, expectedState)
+		logging.Errorf(ctx, "error when getting task type: %s", err)
 	}
 
 	cipdVersion := buildbucket.CIPDProd
@@ -157,10 +151,7 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 	}
 	url, err := createBuildbucketTask(ctx, r)
 	if err != nil {
-		logging.Errorf(ctx, "Attempted and failed to create buildbucket task: %s", err)
-		logging.Errorf(ctx, "Falling back to legacy flow for bot %q", botID)
-		url, err = createLegacyRepairTask(ctx, botID, expectedState)
-		return url, errors.Annotate(err, "fallback legacy repair task somehow failed").Err()
+		return "", errors.Annotate(err, "create repair task").Err()
 	}
 	return url, err
 }
@@ -180,15 +171,11 @@ type dutRoutingInfo struct {
 func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dutRoutingInfo, randFloat float64) (heuristics.TaskType, routing.Reason) {
 	if info == nil {
 		logging.Errorf(ctx, "info cannot be nil, falling back to legacy")
-		return routing.Legacy, routing.NilArgument
-	}
-	// Check that the feature is enabled at all.
-	if !r.GetEnable() {
-		return routing.Legacy, routing.ParisNotEnabled
+		return routing.Paris, routing.NilArgument
 	}
 	// Check for malformed input data that would cause us to be unable to make a decision.
 	if len(info.pools) == 0 {
-		return routing.Legacy, routing.NoPools
+		return routing.Paris, routing.NoPools
 	}
 
 	d := r.ComputePermilleData(ctx, info.hostname)
@@ -209,14 +196,14 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 		case valueBelowThreshold:
 			return routing.Paris, routing.ScoreBelowThreshold
 		default:
-			return routing.Legacy, routing.ScoreTooHigh
+			return routing.Paris, routing.ScoreTooHigh
 		}
 	}
 	if threshold == 0 {
-		return routing.Legacy, routing.ThresholdZero
+		return routing.Paris, routing.ThresholdZero
 	}
 	if !r.GetOptinAllDuts() && len(r.GetOptinDutPool()) > 0 && isDisjoint(info.pools, r.GetOptinDutPool()) {
-		return routing.Legacy, routing.WrongPool
+		return routing.Paris, routing.WrongPool
 	}
 	switch {
 	case valueBelowLatestThreshold:
@@ -224,7 +211,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 	case valueBelowThreshold:
 		return routing.Paris, routing.ScoreBelowThreshold
 	default:
-		return routing.Legacy, routing.ScoreTooHigh
+		return routing.Paris, routing.ScoreTooHigh
 	}
 }
 
@@ -286,22 +273,6 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
 	return url, nil
-}
-
-// CreateLegacyRepairTask creates a legacy repair task for a labstation.
-func createLegacyRepairTask(ctx context.Context, botID string, expectedState string) (string, error) {
-	logging.Infof(ctx, "Using legacy repair flow for bot %q", botID)
-	at := util.AdminTaskForType(ctx, fleet.TaskType_Repair)
-	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
-	if err != nil {
-		return "", errors.Annotate(err, "failed to obtain swarming client").Err()
-	}
-	cfg := config.Get(ctx)
-	taskURL, err := runTaskByBotID(ctx, at, sc, botID, expectedState, cfg.Tasker.BackgroundTaskExpirationSecs, cfg.Tasker.BackgroundTaskExecutionTimeoutSecs)
-	if err != nil {
-		return "", errors.Annotate(err, "fail to create repair task for %s", botID).Err()
-	}
-	return taskURL, nil
 }
 
 // IsDisjoint returns true if and only if two sequences have no elements in common.

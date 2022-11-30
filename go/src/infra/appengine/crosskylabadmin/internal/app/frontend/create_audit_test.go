@@ -12,7 +12,6 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/libs/skylab/common/heuristics"
 )
 
 // TestRouteAuditTaskImpl tests routing audit tasks.
@@ -21,12 +20,12 @@ func TestRouteAuditTaskImpl(t *testing.T) {
 	ctx := context.Background()
 	Convey("no config", t, func() {
 		tt, r := routeAuditTaskImpl(ctx, nil, "", 0.0)
-		So(tt, ShouldEqual, routing.Legacy)
+		So(tt, ShouldEqual, routing.Paris)
 		So(r, ShouldEqual, routing.ParisNotEnabled)
 	})
 	Convey("invalid random float", t, func() {
 		tt, r := routeAuditTaskImpl(ctx, &config.RolloutConfig{}, "", 12.0)
-		So(tt, ShouldEqual, routing.Legacy)
+		So(tt, ShouldEqual, routing.Paris)
 		So(r, ShouldEqual, routing.InvalidRangeArgument)
 	})
 	Convey("bad permille info", t, func() {
@@ -37,12 +36,6 @@ func TestRouteAuditTaskImpl(t *testing.T) {
 		}
 		res := pat.ComputePermilleData(ctx, "hostname")
 		So(res, ShouldBeNil)
-	})
-	Convey("routing not enabled", t, func() {
-		ctx := context.Background()
-		tt, r := routeAuditTaskImpl(ctx, &config.RolloutConfig{Enable: false}, "", 0.0)
-		So(tt, ShouldEqual, heuristics.LegacyTaskType)
-		So(r, ShouldEqual, routing.ParisNotEnabled)
 	})
 	Convey("25-25 split", t, func() {
 		pd := &config.RolloutConfig{Enable: true, ProdPermille: 250, LatestPermille: 250}
@@ -60,7 +53,7 @@ func TestRouteAuditTaskImpl(t *testing.T) {
 	Convey("Repair-only field", t, func() {
 		pd := &config.RolloutConfig{Enable: true, OptinAllDuts: true}
 		tt, r := routeAuditTaskImpl(ctx, pd, "", 0.24)
-		So(tt, ShouldEqual, routing.Legacy)
+		So(tt, ShouldEqual, routing.Paris)
 		So(r, ShouldEqual, routing.RepairOnlyField)
 	})
 }

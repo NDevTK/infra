@@ -63,21 +63,18 @@ func createLegacyAuditTask(ctx context.Context, botID string, taskname string, a
 func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname string, randFloat float64) (heuristics.TaskType, routing.Reason) {
 	logging.Infof(ctx, "control transferred to routeAuditTaskImpl for hostname %q", hostname)
 	if r == nil {
-		return routing.Legacy, routing.ParisNotEnabled
+		return routing.Paris, routing.ParisNotEnabled
 	}
 	if !(0.0 <= randFloat && randFloat <= 1.0) {
-		return routing.Legacy, routing.InvalidRangeArgument
-	}
-	if !r.GetEnable() {
-		return routing.Legacy, routing.ParisNotEnabled
+		return routing.Paris, routing.InvalidRangeArgument
 	}
 	if err := r.ValidateNoRepairOnlyFields(); err != nil {
 		logging.Errorf(ctx, "repair-only field detected for audit task: %s", err.Error())
-		return routing.Legacy, routing.RepairOnlyField
+		return routing.Paris, routing.RepairOnlyField
 	}
 	d := r.ComputePermilleData(ctx, hostname)
 	if d == nil {
-		return routing.Legacy, routing.MalformedPolicy
+		return routing.Paris, routing.MalformedPolicy
 	}
 	// threshold is the chance of using Paris at all, which is equal to prod + latest.
 	threshold := d.Prod + d.Latest
@@ -96,7 +93,7 @@ func routeAuditTaskImpl(ctx context.Context, r *config.RolloutConfig, hostname s
 		return routing.Paris, routing.ScoreBelowThreshold
 	}
 	if threshold == 0 {
-		return routing.Legacy, routing.ThresholdZero
+		return routing.Paris, routing.ThresholdZero
 	}
-	return routing.Legacy, routing.ScoreTooHigh
+	return routing.Paris, routing.ScoreTooHigh
 }

@@ -36,7 +36,7 @@ type RouteTaskParams struct {
 // -  "latest" (indicates the latest version of paris)
 func RouteTask(ctx context.Context, p RouteTaskParams, randFloat float64) (heuristics.TaskType, error) {
 	if p.taskType == "" {
-		return heuristics.LegacyTaskType, errors.New("route task: task type cannot be empty")
+		return heuristics.ProdTaskType, errors.New("route task: task type cannot be empty")
 	}
 	switch p.taskType {
 	case "repair":
@@ -44,7 +44,7 @@ func RouteTask(ctx context.Context, p RouteTaskParams, randFloat float64) (heuri
 	case "audit_rpm":
 		return routeAuditRPMTask(ctx, p.botID, randFloat)
 	}
-	return heuristics.LegacyTaskType, fmt.Errorf("route task: unrecognized task name %q", p.taskType)
+	return heuristics.ProdTaskType, fmt.Errorf("route task: unrecognized task name %q", p.taskType)
 }
 
 // routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.
@@ -52,7 +52,7 @@ func routeAuditRPMTask(ctx context.Context, botID string, randFloat float64) (he
 	provider, reason := routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm(), heuristics.NormalizeBotNameToDeviceName(botID), randFloat)
 	logging.Infof(ctx, "Routing audit RPM task for bot %q with random input %f using provider %q for reason %d", botID, randFloat, provider, reason)
 	if reason == routing.NotImplemented {
-		return heuristics.LegacyTaskType, errors.New("route audit rpm task: not yet implemented")
+		return heuristics.ProdTaskType, errors.New("route audit rpm task: not yet implemented")
 	}
 	return provider, nil
 }
@@ -71,12 +71,12 @@ func routeAuditRPMTask(ctx context.Context, botID string, randFloat float64) (he
 // value.
 func routeRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (heuristics.TaskType, error) {
 	if !(0.0 <= randFloat && randFloat <= 1.0) {
-		return heuristics.LegacyTaskType, fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
+		return heuristics.ProdTaskType, fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
 	}
 	isLabstation := heuristics.LooksLikeLabstation(botID)
 	rolloutConfig, err := getRolloutConfig(ctx, "repair", isLabstation, expectedState)
 	if err != nil {
-		return heuristics.LegacyTaskType, errors.Annotate(err, "route repair task").Err()
+		return heuristics.ProdTaskType, errors.Annotate(err, "route repair task").Err()
 	}
 	out, r := routeRepairTaskImpl(
 		ctx,

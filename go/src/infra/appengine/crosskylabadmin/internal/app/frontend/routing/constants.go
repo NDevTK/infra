@@ -12,9 +12,6 @@ const (
 
 	// LatestTaskType represents a decision to use the paris stack on the latest channel for this request.
 	ParisLatest = heuristics.LatestTaskType
-
-	// legacy represents a decision to use the legacy stack for this request.
-	Legacy = heuristics.LegacyTaskType
 )
 
 // Reason is a rationale for why we made the decision that we made.

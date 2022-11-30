@@ -6,8 +6,6 @@ package frontend
 
 import (
 	"context"
-	"math"
-	"math/rand"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -166,14 +164,6 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		reason    routing.Reason
 	}{
 		{
-			name:      "default config",
-			in:        nil,
-			randFloat: 0.5,
-			pools:     nil,
-			out:       routing.Legacy,
-			reason:    routing.ParisNotEnabled,
-		},
-		{
 			name: "do not use labstation",
 			in: &config.RolloutConfig{
 				Enable:       true,
@@ -181,7 +171,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			randFloat: 0.5,
 			pools:     []string{"some pool"},
-			out:       routing.Legacy,
+			out:       routing.Paris,
 			reason:    routing.ScoreTooHigh,
 		},
 		{
@@ -204,7 +194,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     nil,
 			randFloat: 1,
-			out:       routing.Legacy,
+			out:       routing.Paris,
 			reason:    routing.NoPools,
 		},
 		{
@@ -215,7 +205,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0,
-			out:       routing.Legacy,
+			out:       routing.Paris,
 			reason:    routing.ThresholdZero,
 		},
 		{
@@ -239,7 +229,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
-			out:       routing.Legacy,
+			out:       routing.Paris,
 			reason:    routing.ScoreTooHigh,
 		},
 		{
@@ -262,7 +252,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
-			out:       routing.Legacy,
+			out:       routing.Paris,
 			reason:    routing.ScoreTooHigh,
 		},
 		{
@@ -288,7 +278,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"NOT PARIS"},
 			randFloat: 0.5,
-			out:       routing.Legacy,
+			out:       routing.Paris,
 			reason:    routing.WrongPool,
 		},
 	}
@@ -344,7 +334,7 @@ func TestRouteRepairTask(t *testing.T) {
 			botID:         "foo-labstation1",
 			expectedState: "ready",
 			randFloat:     0.5,
-			out:           routing.Legacy,
+			out:           routing.Paris,
 			hasErr:        false,
 		},
 		{
@@ -390,7 +380,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "ready",
 			pools:         nil,
 			randFloat:     1,
-			out:           routing.Legacy,
+			out:           routing.Paris,
 			hasErr:        false,
 		},
 		{
@@ -420,7 +410,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "repair_failed",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           routing.Legacy,
+			out:           routing.Paris,
 			hasErr:        false,
 		},
 		{
@@ -434,7 +424,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "needs_repair",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           routing.Legacy,
+			out:           routing.Paris,
 			hasErr:        false,
 		},
 		{
@@ -448,7 +438,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "ready",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           routing.Legacy,
+			out:           routing.Paris,
 			hasErr:        true,
 		},
 		{
@@ -525,77 +515,6 @@ func TestGetRolloutConfigSmokeTest(t *testing.T) {
 	}
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
-	}
-}
-
-// TestRouteRepairTaskProbability tests that the probability that a labstation is sent to one path vs
-// another is reasonsable. See b:216499840 for details.
-func TestRouteRepairTaskProbability(t *testing.T) {
-	// t.Parallel -- This test is sensitive to the state of the random number generator.
-	//               Do not run it in parallel with anything else.
-
-	const samples = 1000 * 1000
-
-	// Make this test deterministic by configuring the RNG with a specific seed.
-	// Save a random number from before we set the seed so that we can re-seed the RNG
-	// when the test exits.
-	seedForLater := int64(rand.Uint64())
-	rand.Seed(1)
-	defer rand.Seed(seedForLater)
-
-	ctx := context.Background()
-
-	rolloutCfg := &config.RolloutConfig{
-		Enable:         true,
-		OptinAllDuts:   true,
-		ProdPermille:   1,
-		LatestPermille: 1,
-	}
-
-	prodTally := 0
-	latestTally := 0
-
-	for i := 0; i < samples; i++ {
-		dest, reason := routeRepairTaskImpl(
-			ctx,
-			rolloutCfg,
-			&dutRoutingInfo{
-				labstation: true,
-				pools:      []string{"pool1"},
-			},
-			rand.Float64(),
-		)
-		switch reason {
-		case routing.ScoreBelowThreshold:
-			// do nothing
-		case routing.ScoreTooHigh:
-			// do nothing
-		default:
-			t.Errorf("unexpected reason: %q", routing.ReasonMessageMap[reason])
-		}
-		switch dest {
-		case routing.Paris:
-			prodTally++
-		case routing.ParisLatest:
-			latestTally++
-		}
-	}
-
-	// The tolerance here is extremely wide compared to the standard deviation, which is sqrt{p(1-p)/n}, with n being
-	// the number of samples we are averaging together.
-	//
-	// However, this test is mostly interested in the case where the interpretation of rolloutPermille is backwards,
-	// so a wide tolerance is acceptable.
-	prodExpected := 0.001 * samples
-	prodTol := 3 * prodExpected
-	if dist := math.Abs(float64(prodTally) - prodExpected); dist > prodTol {
-		t.Errorf("prod difference %f is too high", dist)
-	}
-
-	latestExpected := 0.001 * samples
-	latestTol := 3 * latestExpected
-	if dist := math.Abs(float64(latestTally) - latestExpected); dist > latestTol {
-		t.Errorf("latest difference %f is too high", dist)
 	}
 }
 
