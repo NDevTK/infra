@@ -231,11 +231,19 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 		filePath, err = common.FindFile("log.txt", d.LogFileDir)
 
 		if err != nil {
-			return errors.Annotate(err, "failed to find file %s log file", d.LogFileDir).Err()
+			// If we don't find it within timeout, log time as the timeout
+			// Better than nothing.
+			Logerr := logServiceFound(ctx, filePath, startTime, service)
+			if Logerr != nil {
+				return errors.Annotate(err, "logServiceFound Metric upload (No File Found) failed: %s", Logerr).Err()
+			}
+			return errors.Annotate(err, "failed to find file %s log file; logged timeout as metric", d.LogFileDir).Err()
 		}
+
+		// If found, alsl log it
 		err = logServiceFound(ctx, filePath, startTime, service)
 		if err != nil {
-			return errors.Annotate(err, "logServiceFound failed %s", d.LogFileDir).Err()
+			return errors.Annotate(err, "logServiceFound Metric upload failed %s", d.LogFileDir).Err()
 		}
 		return nil
 	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
