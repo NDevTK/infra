@@ -1326,6 +1326,7 @@ SPECS.update({
         Universal('protobuf', '3.20.0', pyversions=['py3']),
         Universal('protobuf', '3.20.1', pyversions=['py3']),
         Universal('protobuf', '4.21.1', pyversions=['py3']),
+        Universal('protobuf', '4.21.9', pyversions=['py3']),
         Universal('py', '1.5.3'),
         Universal('py', '1.10.0'),
         Universal('pyasn1', '0.2.3'),
