@@ -35,6 +35,10 @@ func mockDutLabel() *ufspb.DutLabel {
 				Name:  "variant",
 				Value: "test-variant",
 			},
+			{
+				Name:  "hwid_component",
+				Value: "test_component/test_component_value",
+			},
 		},
 	}
 }
