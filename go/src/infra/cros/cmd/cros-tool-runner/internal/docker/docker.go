@@ -410,19 +410,29 @@ var (
 	pullTime = metric.NewFloat("chrome/infra/CFT/docker_pull",
 		"Duration of the docker pull.",
 		&types.MetricMetadata{Units: types.Seconds},
-		field.String("service"))
+		field.String("service"),
+		field.String("drone"))
 	runTime = metric.NewFloat("chrome/infra/CFT/docker_runNew",
 		"Duration of the docker run.",
 		&types.MetricMetadata{Units: types.Seconds},
-		field.String("service"))
+		field.String("service"),
+		field.String("drone"))
 )
 
+func droneName() string {
+	droneName := os.Getenv("DOCKER_DRONE_SERVER_NAME")
+	if droneName == "" {
+		droneName = "NOT_FOUND"
+	}
+	return droneName
+}
+
 func logPullTime(ctx context.Context, startTime time.Time, service string) {
-	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
+	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName())
 }
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
-	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service)
+	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName())
 }
 
 // logServiceFound logs the when the service has started.
