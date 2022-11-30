@@ -60,7 +60,7 @@ func CallServod(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Valu
 	}
 }
 func callServodOnLocalContainer(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
-	log.Debugf(ctx, "Start call with %#v", req)
+	log.Debugf(ctx, "Start call with %#v", req.Options)
 	d, err := newDockerClient(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod on local container").Err()
