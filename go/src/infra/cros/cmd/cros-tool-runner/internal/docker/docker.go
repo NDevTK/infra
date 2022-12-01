@@ -428,10 +428,12 @@ var (
 )
 
 func droneName() string {
-	droneName := os.Getenv("DOCKER_DRONE_SERVER_NAME")
-	if droneName == "" {
+	out, err := exec.Command("echo $DOCKER_DRONE_SERVER_NAME").Output()
+	droneName := string(out)
+	if err != nil {
 		droneName = "NOT_FOUND"
 	}
+	log.Printf("Drone name used for metrics: %s", droneName)
 	return droneName
 }
 
