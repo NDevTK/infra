@@ -62,30 +62,24 @@ func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) e
 	}
 	// Print all containers to know if something wrong.
 	d.PrintAll(ctx)
-	if up, err := d.IsUp(ctx, req.ContainerName); err != nil {
-		return errors.Annotate(err, "start servod container").Err()
-	} else if up {
-		log.Debugf(ctx, "Servod container %q is up, stopping it!", req.ContainerName)
-		if err := d.Remove(ctx, req.ContainerName, true); err != nil {
-			log.Debugf(ctx, "Start servod: fail to stop: %s", err)
-		}
+	log.Debugf(ctx, "Removing old container %q before start new one!", req.ContainerName)
+	if err := d.Remove(ctx, req.ContainerName, true); err != nil {
+		log.Debugf(ctx, "Fail to remove container (not-critical): %s", err)
 	}
 	// If a port is not specified then the request for a container without servod.
 	startServod := req.Options.GetServodPort() > 0
 	envVar := GenerateParams(req.Options)
+	var exposePorts []string
 	containerStartArgs := []string{"tail", "-f", "/dev/null"}
 	if startServod {
 		containerStartArgs = []string{"bash", "/start_servod.sh"}
+		exposePorts = append(exposePorts, fmt.Sprintf("%d:%d/tcp", req.Options.GetServodPort(), req.Options.GetServodPort()))
 	}
-	containerArgs := createServodContainerArgs(true, envVar, containerStartArgs)
-	// We always need to call pull before start as it will verify that image we used is latest.
-	// If pull is missed the image will be used from local docker cache.
-	// Image is small is expected to be download in less 1 minute but for safety we set 5.
-	if err := d.Pull(ctx, containerArgs.ImageName, 5*time.Minute); err != nil {
-		return errors.Annotate(err, "start servod container").Err()
-	}
-	// Servod expected to start in less 1 minutes and we set 2 in case there is any issue is exist.
-	res, err := d.Start(ctx, req.ContainerName, containerArgs, 2*time.Minute)
+	containerArgs := createServodContainerArgs(true, exposePorts, envVar, containerStartArgs)
+	// Servod expected to start in less 1 minutes.
+	// Image is small is expected to be download in less 1 minute.
+	// To be safe we set 4 minutes to be sure everything will work.
+	res, err := d.Start(ctx, req.ContainerName, containerArgs, 5*time.Minute)
 	if err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	}
@@ -133,34 +127,28 @@ func dockerServodImageName() string {
 // getEnv retrieves the value of the environment variable named by the key.
 // If retrieved value is empty return default value.
 func getEnv(key, defaultvalue string) string {
-	if key != "" {
-		if v := os.Getenv(key); v != "" {
-			return v
-		}
+	if v := os.Getenv(key); v != "" {
+		return v
 	}
 	return defaultvalue
 }
 
 // defaultDockerNetwork provides network in which docker need to run.
 func defaultDockerNetwork() string {
-	network := os.Getenv("DOCKER_DEFAULT_NETWORK")
-	// If not provided then use host network.
-	if network == "" {
-		network = "host"
-	}
-	return network
+	return os.Getenv("DOCKER_DEFAULT_NETWORK")
 }
 
 // createServodContainerArgs creates default args for servodContainer.
-func createServodContainerArgs(detached bool, envVar, cmd []string) *docker.ContainerArgs {
+func createServodContainerArgs(detached bool, exposePorts, envVar, cmd []string) *docker.ContainerArgs {
 	return &docker.ContainerArgs{
-		Detached:   detached,
-		EnvVar:     envVar,
-		ImageName:  dockerServodImageName(),
-		Network:    defaultDockerNetwork(),
-		Volumes:    []string{"/dev:/dev"},
-		Privileged: true,
-		Exec:       cmd,
+		Detached:    detached,
+		EnvVar:      envVar,
+		ImageName:   dockerServodImageName(),
+		Network:     defaultDockerNetwork(),
+		Volumes:     []string{"/dev:/dev"},
+		ExposePorts: exposePorts,
+		Privileged:  true,
+		Exec:        cmd,
 	}
 }
 

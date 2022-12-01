@@ -190,7 +190,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 		} else {
 			// If container is down we will run all command directly by container.
 			// TODO(otabek): Simplify running a container when move outside.
-			containerArgs := createServodContainerArgs(false, nil, eReq.Cmd)
+			containerArgs := createServodContainerArgs(false, nil, nil, eReq.Cmd)
 			res, err := d.Start(ctx, containerName, containerArgs, eReq.Timeout)
 			if err != nil {
 				return &tlw.RunResult{

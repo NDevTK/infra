@@ -24,6 +24,7 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/docker/go-connections/nat"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/log"
@@ -134,18 +135,29 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 	}
 	err := d.Pull(ctx, req.ImageName, timeout)
 	if err != nil {
-		return nil, errors.Reason("Fail to pull Docker image: %q", req.ImageName).Err()
+		return nil, errors.Reason("start: fail to pull docker image %q", req.ImageName).Err()
+	}
+	var portsMapping []string
+	for _, exposePort := range req.ExposePorts {
+		portsMapping = append(portsMapping, fmt.Sprintf("[::]:%s", exposePort))
+	}
+	exposedPorts, portBindings, err := nat.ParsePortSpecs(portsMapping)
+	if err != nil {
+		return nil, errors.Annotate(err, "start: fail parse ports %v", portsMapping).Err()
 	}
 	config := &container.Config{
-		Image: req.ImageName,
-		Env:   req.EnvVar,
-		Cmd:   req.Exec,
+		Image:        req.ImageName,
+		Env:          req.EnvVar,
+		Cmd:          req.Exec,
+		ExposedPorts: exposedPorts,
 	}
 	hostConfig := &container.HostConfig{
-		Privileged:  true,
-		Binds:       req.Volumes,
-		NetworkMode: container.NetworkMode(req.Network),
-		AutoRemove:  true,
+		Privileged:      true,
+		Binds:           req.Volumes,
+		NetworkMode:     container.NetworkMode(req.Network),
+		AutoRemove:      true,
+		PublishAllPorts: true,
+		PortBindings:    portBindings,
 	}
 	c, err := d.client.ContainerCreate(ctx, config, hostConfig, nil, nil, containerName)
 	if err != nil {
@@ -345,27 +357,23 @@ func (d *dockerClient) IPAddress(ctx context.Context, containerName string) (str
 	// Get the list of containers based on the filter above.
 	containers, err := d.client.ContainerList(ctx, types.ContainerListOptions{Filters: f})
 	if err != nil {
-		return "", errors.Annotate(err, "container is up: fail to get a list of containers").Err()
+		return "", errors.Annotate(err, "ip-address of %q: fail to get a list of containers", containerName).Err()
 	}
 	// Return error if the container is not found or is not in running state.
 	if len(containers) != 1 {
-		return "", errors.Reason("%s is not found or not running.", containerName).Err()
+		return "", errors.Reason("ip-address of %q: is not found or not running", containerName).Err()
 	}
-	// Get the Docker network set to the container, this is set in the drone env variables.
-	// If not found then fall back to default network name.
-	cnet := os.Getenv("DOCKER_DEFAULT_NETWORK")
-	if cnet == "" {
-		cnet = "default_satlab"
+	if containers[0].NetworkSettings == nil {
+		return "", errors.Reason("ip-address of %q: network settings not found", containerName).Err()
 	}
-	if containers[0].NetworkSettings != nil {
-		sat_net := containers[0].NetworkSettings.Networks[cnet]
+	// We expect the container has only one network, so we take the first one.
+	for _, sat_net := range containers[0].NetworkSettings.Networks {
 		if sat_net != nil {
 			return sat_net.IPAddress, nil
 		}
-		return "", errors.Reason("Could not find the %s network for the container %s. Found networks: %v.", cnet, containerName, containers[0].NetworkSettings.Networks).Err()
 	}
-	return "", errors.Reason("Could not find IP address for the container '%s'.", containerName).Err()
-
+	log.Debugf(ctx, "Ip address: %#v", containers[0].NetworkSettings.Networks)
+	return "", errors.Reason("ip-address of %q: address not found", containerName).Err()
 }
 
 // CopyTo copies a file from the host to the container.

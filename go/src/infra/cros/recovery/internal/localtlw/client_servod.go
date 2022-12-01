@@ -90,27 +90,23 @@ func getEnv(key, defaultvalue string) string {
 
 // createServodContainerArgs creates default args for servodContainer.
 // TODO: move to servod package.
-func createServodContainerArgs(detached bool, envVar, cmd []string) *docker.ContainerArgs {
+func createServodContainerArgs(detached bool, exposePorts, envVar, cmd []string) *docker.ContainerArgs {
 	return &docker.ContainerArgs{
-		Detached:   detached,
-		EnvVar:     envVar,
-		ImageName:  dockerServodImageName(),
-		Network:    defaultDockerNetwork(),
-		Volumes:    []string{"/dev:/dev"},
-		Privileged: true,
-		Exec:       cmd,
+		Detached:    detached,
+		EnvVar:      envVar,
+		ImageName:   dockerServodImageName(),
+		Network:     defaultDockerNetwork(),
+		Volumes:     []string{"/dev:/dev"},
+		ExposePorts: exposePorts,
+		Privileged:  true,
+		Exec:        cmd,
 	}
 }
 
 // defaultDockerNetwork provides network in which docker need to run.
 // TODO: move to servod package.
 func defaultDockerNetwork() string {
-	network := os.Getenv("DOCKER_DEFAULT_NETWORK")
-	// If not provided then use host network.
-	if network == "" {
-		network = "host"
-	}
-	return network
+	return os.Getenv("DOCKER_DEFAULT_NETWORK")
 }
 
 // StopServod stops servod daemon on servo-host.
