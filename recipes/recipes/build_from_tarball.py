@@ -7,8 +7,8 @@ from recipe_engine import post_process
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
-    'depot_tools/depot_tools',
     'depot_tools/gsutil',
+    'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -31,11 +31,16 @@ def RunSteps(api):
              ['tar', '-xJf', str(tar_file), '-C',
               str(build_dir)])
     src_dir = build_dir.join('chromium-' + version)
-    # TODO(tandrii,thomasanderson): use ninja from CIPD package
-    # https://chrome-infra-packages.appspot.com/p/infra/ninja
+
+    # Install ninja CIPD package.
+    cipd_root = api.path['cache'].join('cipd')
+    ensure_file = api.cipd.EnsureFile().add_package(
+        'infra/3pp/tools/ninja/${platform}', 'version:2@1.8.2.chromium.3')
+    api.cipd.ensure(cipd_root, ensure_file)
+
     with api.context(
         cwd=src_dir,
-        env_suffixes={'PATH': [api.path.dirname(api.depot_tools.ninja_path)]}):
+        env_suffixes={'PATH': [cipd_root]}):
       llvm_bin_dir = src_dir.join('third_party', 'llvm-build',
                                   'Release+Asserts', 'bin')
       gn_bootstrap_env = {
