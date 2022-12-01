@@ -1376,17 +1376,18 @@ wheel: <
 
 ## **clusterfuzz**
 
-### 2.5.6
+### 2.5.6-5c85ed3d46137b17da04c59bcd805ee5
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/clusterfuzz-py2_py3"
-  version: "version:2.5.6"
+  version: "version:2.5.6-5c85ed3d46137b17da04c59bcd805ee5"
 >
 ```
 
 
 * *universal*
+* custom patches: no-deps-install
 
 ## **colorama**
 

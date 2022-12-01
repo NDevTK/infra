@@ -999,7 +999,11 @@ SPECS.update({
         UniversalSource('backports.ssl_match_hostname', '3.5.0.1'),
         UniversalSource('black', '19.10b0', pyversions=['py3']),
         UniversalSource('clang', '5.0'),
-        UniversalSource('clusterfuzz', '2.5.6'),
+        UniversalSource(
+            'clusterfuzz',
+            '2.5.6',
+            patches=('no-deps-install',),
+        ),
         UniversalSource('configparser', '3.5.0'),
         UniversalSource('crontab', '0.22.0'),
         UniversalSource('distlib', '0.3.0', pyversions=['py3']),

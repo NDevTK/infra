@@ -1,0 +1,31 @@
+diff --git a/setup.py b/setup.py
+index c93612f..acb0cce 100644
+--- a/setup.py
++++ b/setup.py
+@@ -33,26 +33,6 @@ setuptools.setup(
+         'Operating System :: OS Independent',
+     ],
+     install_requires=[
+-        # TODO(ochang): Minimize dependencies.
+-        'google-api-python-client',
+-        'google-auth>=1.22.1',
+-        'google-auth-oauthlib',
+-        'google-cloud-core',
+-        'google-cloud-datastore==1.12.0',
+-        'google-cloud-logging',
+-        'google-cloud-monitoring',
+-        'google-cloud-ndb',
+-        'google-cloud-storage',
+-        'grpcio',
+-        'httplib2',
+-        'mozprocess',
+-        'oauth2client',
+-        'protobuf',
+-        'psutil',
+-        'pytz',
+-        'PyYAML',
+-        'requests',
+-        'six',
+     ],
+     package_data={
+         'clusterfuzz': ['lib-config/*', 'lib-config/**/*'],
