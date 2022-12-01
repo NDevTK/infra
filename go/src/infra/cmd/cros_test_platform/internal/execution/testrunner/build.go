@@ -75,11 +75,16 @@ type Build struct {
 }
 
 // NewBuild creates a new test_runner build.
-func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerator) (*Build, error) {
+func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerator, retryNumber int32) (*Build, error) {
 	t := &Build{argsGenerator: argsGenerator}
 	args, err := t.argsGenerator.GenerateArgs(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
+	}
+	if args.CFTIsEnabled && args.CFTTestRunnerRequest != nil {
+		args.CFTTestRunnerRequest.RetryNumber = retryNumber
+	} else if args.TestRunnerRequest != nil {
+		args.TestRunnerRequest.RetryNumber = retryNumber
 	}
 	ref, err := c.LaunchTask(ctx, &args)
 	if err != nil {
@@ -240,8 +245,8 @@ func (b *Build) Result() *steps.ExecuteResponse_TaskResult {
 // Retry creates a new build to retry the current build.
 //
 // Retry does not check whether the current build is complete.
-func (b *Build) Retry(ctx context.Context, c trservice.Client) (*Build, error) {
-	return NewBuild(ctx, c, b.argsGenerator)
+func (b *Build) Retry(ctx context.Context, c trservice.Client, retryNumber int32) (*Build, error) {
+	return NewBuild(ctx, c, b.argsGenerator, retryNumber)
 }
 
 // TaskURL returns the URL to the buildbucket build for this task.

@@ -83,6 +83,13 @@ func (c *Counter) CanRetry(ctx context.Context, iid types.InvocationID) bool {
 	return true
 }
 
+// RetryCount gives the retry attempt number identifier for a test.
+//
+// RetryCount panics for an unknown types.InvocationID.
+func (c *Counter) RetryCount(iid types.InvocationID) int {
+	return c.getTestRetryCounter(iid).Count
+}
+
 func (c *Counter) getTestRetryCounter(iid types.InvocationID) *invocationCounter {
 	tc, ok := c.testRetryCounter[iid]
 	if !ok {

@@ -46,6 +46,7 @@ func TestResultBeforeRefresh(t *testing.T) {
 					},
 				},
 			},
+			0,
 		)
 		So(err, ShouldBeNil)
 		Convey("Result() returns known values and reasonable defaults", func() {
