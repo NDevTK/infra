@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from collections import OrderedDict
 from recipe_engine import post_process
+from PB.recipe_engine.result import RawResult
 from google.protobuf.struct_pb2 import Struct
 
 from PB.recipes.infra.windows_image_builder import input as input_pb
@@ -11,6 +13,7 @@ from PB.recipes.infra.windows_image_builder import vm
 from PB.recipes.infra.windows_image_builder import drive
 from PB.recipes.infra.windows_image_builder import sources
 from PB.recipes.infra.windows_image_builder import windows_vm
+from PB.recipes.infra.windows_image_builder import windows_iso
 from PB.recipes.infra.windows_image_builder \
     import windows_image_builder as wib
 from PB.recipes.infra.windows_image_builder \
@@ -21,6 +24,8 @@ from PB.go.chromium.org.luci.buildbucket.proto \
   import builds_service as bs_pb2
 from PB.go.chromium.org.luci.buildbucket.proto \
   import build as b_pb2
+from PB.go.chromium.org.luci.buildbucket.proto \
+  import common as common_pb2
 
 from RECIPE_MODULES.infra.windows_scripts_executor \
     import test_helper as t
@@ -28,6 +33,7 @@ from RECIPE_MODULES.infra.windows_scripts_executor \
 DEPS = [
     'depot_tools/bot_update',
     'depot_tools/gclient',
+    'depot_tools/gitiles',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -47,6 +53,8 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 PROPERTIES = input_pb.Inputs
 
+################################ TEST DATA ####################################
+
 TEST_IMAGE = wib.Image(
     name='test',
     arch=wib.ARCH_X86,
@@ -54,7 +62,46 @@ TEST_IMAGE = wib.Image(
         wib.Customization(
             offline_winpe_customization=owc.OfflineWinPECustomization(
                 name='test_cust',
-                offline_customization=[actions.OfflineAction(name='tests')])),
+                offline_customization=[
+                    actions.OfflineAction(
+                        name='tests',
+                        actions=[
+                            actions.Action(
+                                add_file=actions.AddFile(
+                                    name='add_psovercom',
+                                    src=sources.Src(
+                                        git_src=sources.GITSrc(
+                                            repo='https://winimage.gsrc.com/r',
+                                            src='images/PSOverCom.ps1',
+                                            ref='HEAD')))),
+                            actions.Action(
+                                add_file=actions.AddFile(
+                                    name='add_startnet',
+                                    src=sources.Src(
+                                        git_src=sources.GITSrc(
+                                            repo='https://winimage.gsrc.com/r',
+                                            src='images/startnet.cmd',
+                                            ref='HEAD')))),
+                        ])
+                ])),
+        wib.Customization(
+            windows_iso_customization=windows_iso.WinISOImage(
+                name='bimage',
+                base_image=sources.Src(
+                    cipd_src=sources.CIPDSrc(
+                        package='infra_internal/labs/images/windows/10/22h2',
+                        refs='latest',
+                        platform='windows-amd64',
+                        filename='Win10.iso')),
+                copy_files=[
+                    windows_iso.CopyArtifact(
+                        artifact=sources.Src(
+                            local_src='image(test)-cust(test_cust)-output'),
+                        mount=True,
+                        source='sources/boot/boot.wim',
+                    )
+                ],
+            )),
         wib.Customization(
             online_windows_customization=onwc.OnlineWinCustomization(
                 name='test_win',
@@ -72,11 +119,8 @@ TEST_IMAGE = wib.Image(
                                     drive.Drive(
                                         name='WinXP.iso',
                                         input_src=sources.Src(
-                                            cipd_src=sources.CIPDSrc(
-                                                package='infra/labs/win10',
-                                                refs='latest',
-                                                platform='windows-amd64',
-                                                filename='WinXP.iso')),
+                                            local_src='image(test)-'
+                                            'cust(bimage)-output'),
                                         interface='none',
                                         media='cdrom',
                                         readonly=True),
@@ -92,6 +136,60 @@ TEST_IMAGE = wib.Image(
                     )
                 ]))
     ])
+
+TEST_ISO_IMAGE = wib.Image(
+    name='test',
+    arch=wib.ARCH_X86,
+    customizations=[
+        wib.Customization(
+            windows_iso_customization=windows_iso.WinISOImage(
+                name='bimage',
+                base_image=sources.Src(
+                    cipd_src=sources.CIPDSrc(
+                        package='infra_internal/labs/images/windows/10/22h2',
+                        refs='latest',
+                        platform='windows-amd64',
+                        filename='Win10.iso')),
+                copy_files=[
+                    windows_iso.CopyArtifact(
+                        artifact=sources.Src(
+                            local_src='image(test)-cust(test_cust)-output'),
+                        mount=True,
+                        source='sources/boot/boot.wim',
+                    )
+                ],
+            )),
+    ])
+
+TESTS = {'test1.cfg': TEST_IMAGE, 'test2.cfg': TEST_ISO_IMAGE}
+DIR_DATA = {
+    'tests/basic': ['test1.cfg'],
+    'tests/collision': ['test1.cfg', 'test2.cfg']
+}
+
+
+def mock_tests(config):
+  if config in TESTS.keys():
+    return TESTS[config]
+  return None  #pragma: no cover
+
+
+def mock_lsdir(path):
+  if path in DIR_DATA.keys():
+    return DIR_DATA[path]
+  return None  #pragma: no cover
+
+
+############################## TEST DATA END ##################################
+
+
+def url_title(build):
+  """ url_title is a helper function to display the customization
+      name over the build link in schedule process.
+      Returns string formatted with builder name and customization
+  """
+  props = build.input.properties
+  return props['name']
 
 
 def RunSteps(api, inputs):
@@ -120,7 +218,7 @@ def RunSteps(api, inputs):
       cfgs = api.file.listdir(
           "Read all the configs",
           cfg_path,
-          test_data=['first.cfg', 'second.cfg'])
+          test_data=mock_lsdir(inputs.config_path))
       reqs = []
       for cfg in cfgs:
         if str(cfg).endswith('.cfg'):
@@ -131,7 +229,7 @@ def RunSteps(api, inputs):
                     source=cfg,
                     msg_class=wib.Image,
                     codec='TEXTPB',
-                    test_proto=TEST_IMAGE))
+                    test_proto=mock_tests(api.path.basename(cfg))))
           except ValueError as e:  #pragma: no cover
             _, name = api.path.split(cfg)
             summary = c.step_summary_text
@@ -152,64 +250,98 @@ def RunSteps(api, inputs):
 
   # process all the customizations (pin artifacts, generate hash)
   api.windows_scripts_executor.process_customizations(custs, {})
-  # Get the list of customizations that need to be executed
-  custs = api.windows_scripts_executor.filter_executable_customizations(custs)
 
+  # Dict mapping the customization object key to list of customizations
+  # corresponding to a customization. This ensures that we don't miss
+  # executing a customization if its an exact copy of another. We only
+  # execute one. But show links to both
+  key_cust_map = OrderedDict()
+  for cust in custs:
+    if cust.get_key() in key_cust_map:
+      raise Exception('{} and {} are duplicate customizations'.format(
+          cust.id, key_cust_map[cust.get_key()].id))
+    # Update the key map
+    key_cust_map[cust.get_key()] = cust
+
+  # triggered_custs contains the list of cust keys that have been triggered
+  triggered_custs = set()
+  # list of custs that were not built
+  unbuilt_custs = set()
   with api.step.nest('Execute customizations') as e:
-    # check for any customizations that need execution
-    exec_customizations = []
-    if custs:
-      exec_custs = api.windows_scripts_executor.get_executable_configs(custs)
-      if exec_custs:
-        for a in exec_custs:
-          exec_customizations.append(a)
+    # Get all the images that can be executed at this time
+    executions = api.windows_scripts_executor.get_executable_configs(custs)
+    while executions:
+      # list of builds to wait for
+      blds = []
+      # execute the customizations that need to be executed
+      for builder, images in executions.items():
+        for img, key_list in images:
+          # collect tags to add to the build request
+          tags = {}
+          for key in key_list:
+            cust = key_cust_map[key]
+            tags[cust.id] = key
+          # convert image to json config
+          props = api.json.loads(api.proto.encode(img, 'JSONPB'))
+          req = api.buildbucket.schedule_request(
+              builder=builder,
+              properties=props,
+              tags=api.buildbucket.tags(**tags),
+          )
+          triggered_custs = triggered_custs.union(key_list)
 
-    # execute the customizations that need to be executed
-    reqs = []
-    for cust in exec_customizations:
-      img = api.json.loads(api.proto.encode(cust, 'JSONPB'))
-      if cust.customizations[0].WhichOneof(
-          'customization') == 'offline_winpe_customization':
-        reqs.append(
-            api.buildbucket.schedule_request(
-                builder='Wim Customization Builder',
-                properties=img,
-            ))
-      if cust.customizations[0].WhichOneof(
-          'customization') == 'online_windows_customization':
-        reqs.append(
-            api.buildbucket.schedule_request(
-                builder='Windows Customization Builder',
-                properties=img,
-            ))
+          # schedule all the builds
+          builds = api.buildbucket.schedule([req], url_title_fn=url_title)
+          blds.append(builds[0].id)
+          for key in key_list:
+            cust = key_cust_map[key]
+            # Add a link to the cust build
+            e.links['{}/{}'.format(
+                cust.id,
+                key)] = api.buildbucket.build_url(build_id=builds[0].id)
+      # wait for all the triggered builds to complete
+      build_map = api.buildbucket.collect_builds(
+          [i for i in blds],
+          step_name='waiting for builds to complete',
+          timeout=7200)
+      for build_id, build in build_map.items():
+        if build.status == common_pb2.Status.FAILURE:
+          e.step_summary_text += 'Failure: {}'.format(build_id)
+        if build.status == common_pb2.Status.INFRA_FAILURE:
+          e.step_summary_text += 'Infra Failure: {}'.format(build_id)
+      # Avoid triggering the builds again. (In case they failed)
+      rcusts = [cust for cust in custs if cust.get_key() not in triggered_custs]
+      # generate the new set of images that can be built
+      executions = api.windows_scripts_executor.get_executable_configs(rcusts)
 
-    # TODO(anushruth): Avoid executing duplicate customizations based on key
-    if reqs:
-      def url_title(build):
-        """ url_title is a helper function to display the customization
-            name over the build link in schedule process.
-            Returns string formatted with builder name and customization
-        """
-        props = build.input.properties
-        if 'offline_winpe_customization' in props['customizations'][0]:
-          return '[{}] {}:{}'.format(
-              build.builder.builder, props['name'],
-              props['customizations'][0]['offline_winpe_customization']['name'])
-        if 'online_windows_customization' in props['customizations'][0]:
-          return '[{}] {}:{}'.format(
-              build.builder.builder, props['name'], props['customizations'][0]
-              ['online_windows_customization']['name'])
+    e.step_summary_text += 'Failed to build: '
+    for cust in custs:
+      if cust.needs_build:
+        unbuilt_custs.add(cust.get_key())
+        e.step_summary_text += '{}/{}'.format(cust.id, cust.get_key())
 
-      # schedule all the builds
-      api.buildbucket.schedule(reqs, url_title_fn=url_title)
-    else:
-      e.step_summary_text = 'No customizations were executed'
+  summary = 'Summary:\n'
+  summary += 'Built:\n'
+  for cust in custs:
+    if cust.get_key() not in unbuilt_custs:
+      summary += '{}/{}\n'.format(cust.id, cust.get_key())
+  summary += 'Failed:\n'
+  for cust in custs:
+    if cust.get_key() in unbuilt_custs:
+      summary += '{}/{}\n'.format(cust.id, cust.get_key())
+  if not unbuilt_custs:
+    # looks like everything executed properly, return result
+    return RawResult(status=common_pb2.SUCCESS, summary_markdown=summary)
+  else:
+    # looks like we failed a few builds
+    return RawResult(status=common_pb2.FAILURE, summary_markdown=summary)
 
 
 def GenTests(api):
 
   key_wim = '0ba325f4cf5356b9864719365a807f2c9d48bf882d333149cebd9d1ec0b64e7b'
   key_win = '0f796362b84871b7a0d65e9c3f3d00685614441a3490f64fb4b2a391b4fb9fc4'
+  key_iso = '2cb3344a7ae9c8e2772563ad8244a1bd99062f629d7c50ecc48e3d0e32974d7d'
   image = 'test'
   cust = 'test_cust'
 
@@ -219,7 +351,7 @@ def GenTests(api):
   prop_wim.properties['name'] = image
   prop_wim.properties['customizations'] = [{
       'offline_winpe_customization': {
-          'name': cust
+          'name': 'test_cust'
       },
   }]
 
@@ -229,69 +361,220 @@ def GenTests(api):
   prop_win.properties['customizations'] = [{
       'online_windows_customization': {
           'name': 'test_win',
-          'online_customizations': {
-              'vm_config': {
-                  'qemu_vm': {
-                      'smp': 'cores=8',
-                      'memory': '8192',
-                      'device': 'ide-cd,drive=newWin.iso',
-                      'drives': {
-                          'input_src': {
-                              'cipd_src': {
-                                  'package':
-                                      'experimental/anushruth_at_google.com/win10',
-                                  'refs':
-                                      'latest',
-                                  'platform':
-                                      'windows-amd64'
-                              }
-                          },
-                          'interface': 'none',
-                          'media': 'cdrom',
-                          'readonly': 'true'
-                      }
-                  }
-              },
-          }
+      },
+      'windows_iso_customization': {
+          'name': 'bimage',
       }
   }]
-  BATCH_RESPONSE = bs_pb2.BatchResponse(responses=[
+  BATCH_RESPONSE_WIM = bs_pb2.BatchResponse(responses=[
       dict(
           schedule_build=dict(
               builder=dict(
                   builder='Wim Customization Builder'), input=prop_wim)),
+  ])
+
+  BATCH_RESPONSE_WIN = bs_pb2.BatchResponse(responses=[
       dict(
           schedule_build=dict(
               builder=dict(builder='Windows Customization Builder'),
               input=prop_win)),
   ])
 
+  def MOCK_CUST_OUTPUT(api, file, success=True):
+    retcode = 1
+    if success:
+      retcode = 0
+    url = 'gs://chrome-gce-images/{}'.format(file)
+    return api.step_data(
+        'Execute customizations.gsutil stat {}'.format(url),
+        api.raw_io.stream_output(t._gcs_stat.format(url, url)),
+        retcode=retcode,
+    )
 
-  # Test builds scheduled case
-  yield (api.test('basic_scheduled', api.platform('win', 64)) + api.properties(
-      input_pb.Inputs(config_path="test_config")) + t.MOCK_CUST_OUTPUT(
-          api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim), False) +
-         t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) +
-         # mock schedule output to test builds scheduled state
-         api.buildbucket.simulated_schedule_output(
-             BATCH_RESPONSE,
-             step_name='Execute customizations.buildbucket.schedule') +
-         api.post_process(post_process.StatusSuccess) +
-         api.post_process(post_process.DropExpectation))
-
-  # Test builds not scheduled case
+  # Test the happy path for the scheduler. We give scheduler the TEST_IMAGE
+  # as input. As there are 3 customizations in that image with one dependent on
+  # the other. It is expected that the scheduler will schedule the WinPE builder
+  # first (Wim Customization Builder) followed by the Windows customization
+  # builder (for the remaining 2 customizations).
   yield (
-      api.test('basic_no_scheduled', api.platform('win', 64)) +
-      api.properties(input_pb.Inputs(config_path="test_config")) +
-      t.MOCK_CUST_OUTPUT(
-          api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim), True) +
-      t.MOCK_CUST_OUTPUT(
-          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
-              key_win), True) + api.post_process(post_process.StatusSuccess) +
+      api.test('basic_scheduled', api.platform('win', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      # Mock the check for output existence. Twice for wim (as output of
+      # test_cust and input for bimage), twice for iso and once for system.img
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+                       False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      # mock schedule output to test builds scheduled
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIM,
+          step_name='Execute customizations.buildbucket.schedule') +
+      # mock collecting the build status
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=1234567890123456789, status='SUCCESS'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete') +
+      # mock wim output check to show it exists. (wim build was successful)
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), True) +
+      # mock check for iso and img. Show it doesn't exist.
+      MOCK_CUST_OUTPUT(
+          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
+      # mock the windows customization schedule
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIN,
+          step_name='Execute customizations.buildbucket.schedule (2)') +
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=9016911228971028736, status='SUCCESS'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete (2)')
+      + api.post_process(post_process.StatusSuccess) +
       api.post_process(post_process.DropExpectation))
 
+  # Test failure on one of the cust. This should fail the recipe
+  yield (
+      api.test('basic_partial_failure', api.platform('win', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      # Mock the check for output existence. Twice for wim (as output of
+      # test_cust and input for bimage), twice for iso and once for system.img
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+                       False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      # mock schedule output to test builds scheduled
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIM,
+          step_name='Execute customizations.buildbucket.schedule') +
+      # mock collecting the build status
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=1234567890123456789, status='SUCCESS'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete') +
+      # mock wim output check to show it exists. (wim build was successful)
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), True) +
+      # mock check for iso and img. Show it doesn't exist.
+      MOCK_CUST_OUTPUT(
+          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
+      # mock the windows customization schedule
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIN,
+          step_name='Execute customizations.buildbucket.schedule (2)') +
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=9016911228971028736, status='FAILURE'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete (2)')
+      # img file doesn't exist as it failed to build
+      + MOCK_CUST_OUTPUT(
+          api, 'WIB-ONLINE-CACHE/{}-system.img (3)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), True) +
+      api.post_process(post_process.StatusFailure) +
+      api.post_process(post_process.DropExpectation))
+
+  # Test builds not scheduled. If all the outputs exist, we don't need to
+  # schedule a build.
+  yield (
+      api.test('basic_no_scheduled', api.platform('win', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      # mock all three outputs as exists
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), True) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+                       True) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), True) +
+      api.post_process(post_process.StatusSuccess) +
+      api.post_process(post_process.DropExpectation))
+
+  # Test failure due to duplicate customizations. TEST_ISO_IMAGE with TEST_IMAGE
+  # repeats a customization.
+  yield (
+      api.test('basic_failure', api.platform('linux', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/collision")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      # expect exception as a customization was redefined
+      api.expect_exception('Exception') +
+      api.post_process(post_process.StatusException) +
+      api.post_process(post_process.DropExpectation))
+
+  # Test failure of a build that was scheduled.
+  yield (
+      api.test('basic_scheduled_failure', api.platform('win', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+                       False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      # mock schedule output to test builds scheduled state
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIM,
+          step_name='Execute customizations.buildbucket.schedule') +
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=1234567890123456789, status='FAILURE'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete') +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(
+          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
+      api.post_process(post_process.StatusSuccess) +
+      api.post_process(post_process.DropExpectation))
+
+  # Test failure of a build that was scheduled.
+  yield (
+      api.test('basic_scheduled_infra_failure', api.platform('win', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+                       False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      # mock schedule output to test builds scheduled state
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIM,
+          step_name='Execute customizations.buildbucket.schedule') +
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=1234567890123456789, status='INFRA_FAILURE'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete') +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(
+          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
+      api.post_process(post_process.StatusSuccess) +
+      api.post_process(post_process.DropExpectation))
+
+  # test failure when run without a config file path.
   yield (api.test('run_without_config_path', api.platform('win', 64)) +
          api.properties(input_pb.Inputs(config_path="",),) +
          api.post_process(post_process.StatusFailure) +

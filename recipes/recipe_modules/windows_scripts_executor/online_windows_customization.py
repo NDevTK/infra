@@ -278,7 +278,7 @@ class OnlineWindowsCustomization(customization.Customization):
       for boot in owc.online_customizations:
         for drive in boot.vm_config.qemu_vm.drives:
           if not drive.readonly:
-            key = customization.NAME_SEP.join([self.id, boot.name, drive.name])
+            key = '{}-drive({})-output'.format(self.id, drive.name)
             outputs[key] = src_pb.Src(
                 gcs_src=src_pb.GCSSrc(
                     bucket='chrome-gce-images',

@@ -41,7 +41,8 @@ def GenTests(api):
       cust2,
       sub_c2,
       action_list=[],
-      image_src=sources.Src(local_src='process_customizations_test-cust_1'))
+      image_src=sources.Src(
+          local_src='image(process_customizations_test)-cust(cust_1)-output'))
   # Add the second customization to the first image. Now there are two
   # customizations in the REF_IMAGE with second referencing the first one.
   REF_IMAGE.customizations.extend(IMAGE_REFRENCING_PREV_IMAGE.customizations)

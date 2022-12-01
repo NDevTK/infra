@@ -58,9 +58,55 @@ class Customization(object):
     return self._image
 
   @property
-  def id(self):  # pragma: no cover
+  def id(self):
     """ id returns the identifier for this customization"""
-    return NAME_SEP.join([self.image().name, self._name])
+    return NAME_SEP.join(
+        ['image({})'.format(self.image().name), 'cust({})'.format(self._name)])
+
+  @property
+  def type(self):
+    """ type returns the customization type for self (customization) """
+    return self.customization().WhichOneof('customization')
+
+  @property
+  def arch(self):
+    """ arch returns the targeted arch for the self (customization) """
+    return self.image().arch
+
+  @property
+  def needs_build(self):
+    """ needs_build returns True if this customization needs to be built.
+    False otherwise """
+    for output in self.outputs:
+      # If all the outputs exist. We need not build the image
+      if output and not self._source.exists(output):
+        return True
+    return False
+
+  def executable(self, inputs=()):
+    """ executable returns true if the customization is executable false
+    otherwise.
+
+    executable ensures that at least one of the outputs that is expected from
+    this customization doesn't exist (No need to execute the customization if
+    all the outputs already exist) and all the inputs required to execute the
+    customization are available.
+
+    Args:
+      * inputs: list of urls for inputs that will be available at time of
+      execution
+    """
+    if self.needs_build:
+      # check if we can build the image
+      for ip in self.inputs:
+        if self._source.get_url(
+            ip) not in inputs and not self._source.exists(ip):
+          # still waiting on some input. Cannot build now
+          return False
+      # we have all the inputs for the image. We can build
+      return True
+    # image doesn't need building
+    return False
 
   def pinnable(self, ctx):
     """ pinnable determines if the customization is pinnable
