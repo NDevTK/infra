@@ -22,3 +22,4 @@ Search API and are updating it ourselves for Python 3.
    google/net/proto/ProtocolBuffer.py
    LICENSE
 3. Strip trailing whitespace from all files.
+4. Rename `google.appengine._internal.antlr3` imports to just `antlr3`.
