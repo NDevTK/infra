@@ -15,7 +15,7 @@ Search API and are updating it ourselves for Python 3.
 1. Install the Google Cloud SDK (https://cloud.google.com/sdk)
    The App Engine Python SDK is located in gcloud/platform/google_appengine/
 2. Retain only:
-   google/appengine/api/search/*
+   google/appengine/api/search/* except simple_search_stub.py and search/stub/
    google/appengine/datastore/__init__.py
    google/appengine/datastore/document_pb.py
    google/net/proto/__init__.py
