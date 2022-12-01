@@ -50,8 +50,11 @@ type dockerClient struct {
 }
 
 // NewClient creates client to work with docker client.
-func NewClient(ctx context.Context) (Client, error) {
-	if client, err := createDockerClient(ctx); err != nil {
+func NewClient(ctx context.Context, tcpAddr string) (Client, error) {
+	if tcpAddr == "" {
+		tcpAddr = dockerTcpPath
+	}
+	if client, err := createDockerClient(ctx, tcpAddr); err != nil {
 		log.Debugf(ctx, "New docker client: failed to create docker client: %s", err)
 		if client != nil {
 			client.Close()
@@ -69,7 +72,7 @@ func NewClient(ctx context.Context) (Client, error) {
 }
 
 // Create Docker Client.
-func createDockerClient(ctx context.Context) (*client.Client, error) {
+func createDockerClient(ctx context.Context, tcpAddr string) (*client.Client, error) {
 	// If the dockerd socket exists, use the default option.
 	// Otherwise, try to use the tcp connection local host IP 192.168.231.1:2375
 	if _, err := os.Lstat(dockerSocketFilePath); err != nil {
@@ -90,7 +93,7 @@ func createDockerClient(ctx context.Context) (*client.Client, error) {
 		}
 		c := http.Client{Transport: transport}
 
-		return client.NewClientWithOpts(client.WithHost(dockerTcpPath), client.WithHTTPClient(&c), client.WithAPIVersionNegotiation())
+		return client.NewClientWithOpts(client.WithHost(tcpAddr), client.WithHTTPClient(&c), client.WithAPIVersionNegotiation())
 	}
 	log.Debugf(ctx, "Docker client connecting over docker.sock")
 	return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())

@@ -61,7 +61,7 @@ func CallServod(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Valu
 }
 func callServodOnLocalContainer(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
 	log.Debugf(ctx, "Start call with %#v", req.Options)
-	d, err := newDockerClient(ctx)
+	d, err := newDockerClient(ctx, "")
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod on local container").Err()
 	}
@@ -101,7 +101,7 @@ func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_
 	return Call(ctx, c, req.CallTimeout, req.CallMethod, req.CallArguments)
 }
 
-func newDockerClient(ctx context.Context) (docker.Client, error) {
-	d, err := docker.NewClient(ctx)
+func newDockerClient(ctx context.Context, dockerTcpAddr string) (docker.Client, error) {
+	d, err := docker.NewClient(ctx, dockerTcpAddr)
 	return d, errors.Annotate(err, "new docker client").Err()
 }

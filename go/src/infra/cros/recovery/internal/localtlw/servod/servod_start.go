@@ -56,7 +56,7 @@ func StartServod(ctx context.Context, req *StartServodRequest) error {
 
 func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) error {
 	log.Debugf(ctx, "Start servod on local container with %#v", req.Options)
-	d, err := newDockerClient(ctx)
+	d, err := newDockerClient(ctx, "")
 	if err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	}

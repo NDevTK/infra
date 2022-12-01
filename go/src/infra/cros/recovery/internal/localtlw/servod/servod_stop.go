@@ -52,7 +52,7 @@ func StopServod(ctx context.Context, req *StopServodRequest) error {
 
 func stopServodOnLocalContainer(ctx context.Context, req *StopServodRequest) error {
 	log.Debugf(ctx, "Stop servod on local container with %#v", req.Options)
-	d, err := newDockerClient(ctx)
+	d, err := newDockerClient(ctx, "")
 	if err != nil {
 		return errors.Annotate(err, "stop servod %q", req.Host).Err()
 	}

@@ -191,7 +191,7 @@ func (c *tlwClient) isServoHost(host string) bool {
 
 // dockerClient provides docker client for target container by expected name of container.
 func (c *tlwClient) dockerClient(ctx context.Context) (docker.Client, error) {
-	d, err := docker.NewClient(ctx)
+	d, err := docker.NewClient(ctx, "")
 	return d, errors.Annotate(err, "docker client").Err()
 }
 
