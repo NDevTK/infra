@@ -18,7 +18,7 @@ import sys
 import tempfile
 import time
 
-from six import text_type
+from six import text_type, PY2
 
 
 # UTC datetime corresponding to zero Unix timestamp.
@@ -89,6 +89,8 @@ def read_json_as_utf8(filename=None, text=None):
   This function is different from json.load and json.loads in that it
   returns utf8-encoded string for keys and values instead of unicode.
 
+  On python3 this doesn't do any special re-encoding.
+
   Args:
     filename (str): path of a file to parse
     text (str): json string to parse
@@ -119,7 +121,7 @@ def read_json_as_utf8(filename=None, text=None):
   else:
     obj = json.loads(text)
 
-  return to_utf8(obj)
+  return to_utf8(obj) if PY2 else obj
 
 
 # TODO(hinoka): Add tests crbug.com/500781

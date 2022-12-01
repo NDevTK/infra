@@ -12,6 +12,8 @@ import os
 import sys
 import threading
 
+import six
+
 from infra_libs import utils
 
 
@@ -19,7 +21,6 @@ from infra_libs import utils
 _UNSET = object()
 _LUCI_CONTEXT = _UNSET
 _LOCK = threading.Lock()
-
 
 class Error(Exception):
   """Raised if LUCI_CONTEXT cannot be loaded due to unexpected error."""
@@ -61,7 +62,17 @@ def _load(environ=None):
   path = environ.get('LUCI_CONTEXT')
   if not path:
     return {}
-  path = path.decode(sys.getfilesystemencoding())
+  if six.PY2 or isinstance(path, six.binary_type):  # pragma: no cover
+    # On py2, `str` is used for bytes, but in py3, os.environ is explicitly
+    # decoded with getfilesystemencoding already, and thus will be a `str`
+    # without an encoding. On the off-chance that some other code passes us an
+    # environ dict with bytes values, still attempt the decode.
+    #
+    # We exclude this coverage to disable branch coverage, because these files
+    # are still only tested with python2 (meaning that 'skip the if statement
+    # entirely' is uncovered). If, someday, this code only runs in python3,
+    # then you can delete this entire if statement.
+    path = path.decode(sys.getfilesystemencoding())
   try:
     loaded = utils.read_json_as_utf8(filename=path)
   except (OSError, IOError, ValueError) as e:
