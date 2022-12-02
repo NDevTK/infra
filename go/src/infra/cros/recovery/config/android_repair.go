@@ -263,6 +263,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"android_dut_reset",
 				"Wait for DUT",
 				"Connect to WiFi network",
+				"Unroot DUT",
 			},
 			ExecName: "sample_pass",
 		},
@@ -332,6 +333,18 @@ func androidRepairDeployActions() map[string]*Action {
 			},
 			ExecName:   "android_restart_adbd_as_root",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Unroot DUT": {
+			Docs: []string{
+				"Ensures that adbd on DUT runs without root permissions after successful repair. If repair fails, this action is not required.",
+			},
+			Conditions: []string{
+				"DUT has userdebug build",
+			},
+			ExecName:   "android_unroot_adbd",
+			RunControl: RunControl_ALWAYS_RUN,
+			// The action is not critical. It should not fail the repair process.
+			AllowFailAfterRecovery: true,
 		},
 		"Reset public key": {
 			Docs: []string{"Validates and restores ADB public vendor key."},

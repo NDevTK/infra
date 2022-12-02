@@ -109,6 +109,17 @@ func RestartADBDAsRoot(ctx context.Context, run components.Runner, log logger.Lo
 	return nil
 }
 
+// UnrootADBD restarts adbd on device without root permissions.
+func UnrootADBD(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	const adbUnrootCmd = "adb -s %s unroot"
+	cmd := fmt.Sprintf(adbUnrootCmd, serialNumber)
+	if _, err := run(ctx, time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "unroot adb").Err()
+	}
+	log.Debugf("adb runs without root permissions on the device: %q", serialNumber)
+	return nil
+}
+
 // ResetADBDPublicKey restores adb public key if it is missing or not matching the given key.
 func ResetADBDPublicKey(ctx context.Context, run components.Runner, log logger.Logger, serialNumber, publicKeyFile, publicKey string) error {
 	const adbCheckPublicKeyCmd = "adb -s %s shell cat %s | grep %q"

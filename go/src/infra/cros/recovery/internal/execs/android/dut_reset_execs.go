@@ -29,6 +29,16 @@ func restartADBDAsRoot(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// unrootADBDExec restarts adbd on the device without root permissions.
+func unrootADBDExec(ctx context.Context, info *execs.ExecInfo) error {
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	err := adb.UnrootADBD(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "unroot adbd").Err()
+	}
+	return nil
+}
+
 // resetDutExec resets DUT.
 func resetDutExec(ctx context.Context, info *execs.ExecInfo) error {
 	serialNumber := info.GetAndroid().GetSerialNumber()
@@ -123,6 +133,7 @@ func resetPublicKey(ctx context.Context, info *execs.ExecInfo) error {
 
 func init() {
 	execs.Register("android_restart_adbd_as_root", restartADBDAsRoot)
+	execs.Register("android_unroot_adbd", unrootADBDExec)
 	execs.Register("android_dut_reset", resetDutExec)
 	execs.Register("android_wait_for_offline_dut", waitTillDutOfflineExec)
 	execs.Register("android_wait_for_online_dut", waitTillDutOnlineExec)
