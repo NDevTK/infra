@@ -60,6 +60,10 @@ var (
 	// configuration file, i.e. /etc/chrome-infra/ts-mon.json.
 	tsmonEndpoint       = os.Getenv("DRONE_AGENT_TSMON_ENDPOINT")
 	tsmonCredentialPath = os.Getenv("DRONE_AGENT_TSMON_CREDENTIAL_PATH")
+
+	// botPrefix is used as the prefix for the bot ID.
+	// If DRONE_AGENT_BOT_PREFIX env is not set, then 'crossk-' will be used as default
+	botPrefix = getEnv("DRONE_AGENT_BOT_PREFIX", "crossk-")
 )
 
 func main() {
@@ -114,6 +118,7 @@ func innerMain() error {
 		DUTCapacity:       dutCapacity,
 		StartBotFunc:      bot.NewStarter(h).Start,
 		Hive:              hive,
+		BotPrefix:         botPrefix,
 	}
 	a.Run(ctx)
 	return nil
@@ -156,6 +161,18 @@ func getIntEnv(key string, defaultValue int) int {
 		return defaultValue
 	}
 	return n
+}
+
+// getEnv gets a string value from an environment variable.  If the
+// environment variable not set, use the default value.
+// If the environment variable is set with enplty value, the function
+// will return empty.
+func getEnv(key string, defaultValue string) string {
+	v, ok := os.LookupEnv(key)
+	if !ok {
+		return defaultValue
+	}
+	return v
 }
 
 // dcLabRegex is the regular expression to identify the Drone server is in a
