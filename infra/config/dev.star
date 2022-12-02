@@ -91,16 +91,8 @@ luci.logdog(
     cloud_logging_project = "luci-logdog-dev",
 )
 
-luci.bucket(
-    name = "ci",
-    bindings = [
-        # LED users.
-        luci.binding(
-            roles = "role/swarming.taskTriggerer",
-            groups = "chromium-swarming-dev-led-access",
-        ),
-    ],
-)
+luci.bucket(name = "ci")
+
 luci.bucket(
     name = "ci.shadow",
     shadows = "ci",
@@ -115,6 +107,18 @@ luci.bucket(
         ),
     ],
     dynamic = True,
+)
+
+#TODO(b/258041976): Create a new bucket for experimentation
+luci.bucket(
+    name = "vm",
+    bindings = [
+        # LED users.
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
+            groups = "chromium-swarming-dev-led-access",
+        ),
+    ],
 )
 
 luci.builder.defaults.experiments.set({
@@ -153,6 +157,19 @@ luci.notifier_template(
 ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True)
 ci_builder(name = "infra-continuous-win10-64", os = "Windows-10")
 ci_builder(name = "infra-continuous-win11-64", os = "Windows-11")
+
+#TODO(b/258041976): Created for experimenting with mac os VMs
+luci.builder(
+    name = "mac-arm-vm-launcher",
+    bucket = "vm",
+    executable = infra.recipe("vm_launcher", use_python3 = True),
+    service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+    dimensions = {
+        "os": "Mac-11|Mac-12",
+        "pool": "chromium.tests",
+        "cpu": "arm64",
+    },
+)
 
 def adhoc_builder(
         name,
