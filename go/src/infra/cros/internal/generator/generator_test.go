@@ -10,7 +10,6 @@ import (
 	"infra/cros/internal/gerrit"
 
 	_struct "github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
@@ -145,9 +144,6 @@ func TestCreateCombinedTestPlan_oneUnitSuccess(t *testing.T) {
 }
 
 func TestCreateCombinedTestPlan_manyUnitSuccess(t *testing.T) {
-	kevinDebugVMTestCfg := &testplans.VmTestCfg{VmTest: []*testplans.VmTestCfg_VmTest{
-		{TestSuite: "VM kevin debug kernel", Common: &testplans.TestSuiteCommon{Critical: &wrappers.BoolValue{Value: true}}},
-	}}
 	kevinHWTestCfg := &testplans.HwTestCfg{HwTest: []*testplans.HwTestCfg_HwTest{
 		{
 			Common:      &testplans.TestSuiteCommon{},
@@ -160,11 +156,6 @@ func TestCreateCombinedTestPlan_manyUnitSuccess(t *testing.T) {
 			Common:    &testplans.TestSuiteCommon{},
 			SuiteName: "Tast kevin"},
 	}}
-	kevinVMTestCfg := &testplans.VmTestCfg{VmTest: []*testplans.VmTestCfg_VmTest{
-		{
-			Common:    &testplans.TestSuiteCommon{},
-			TestSuite: "VM kevin"},
-	}}
 	kevinTastGceTestCfg := &testplans.TastGceTestCfg{TastGceTest: []*testplans.TastGceTestCfg_TastGceTest{
 		{
 			Common:    &testplans.TestSuiteCommon{},
@@ -174,16 +165,10 @@ func TestCreateCombinedTestPlan_manyUnitSuccess(t *testing.T) {
 		PerTargetTestRequirements: []*testplans.PerTargetTestRequirements{
 			{
 				TargetCriteria: &testplans.TargetCriteria{
-					BuilderName: "kevin-debug-kernel-cq",
-					TargetType:  &testplans.TargetCriteria_BuildTarget{BuildTarget: "kevin"}},
-				VmTestCfg: kevinDebugVMTestCfg},
-			{
-				TargetCriteria: &testplans.TargetCriteria{
 					BuilderName: "kevin-cq",
 					TargetType:  &testplans.TargetCriteria_BuildTarget{BuildTarget: "kevin"}},
 				HwTestCfg:           kevinHWTestCfg,
 				DirectTastVmTestCfg: kevinTastVMTestCfg,
-				VmTestCfg:           kevinVMTestCfg,
 				TastGceTestCfg:      kevinTastGceTestCfg},
 		},
 	}
@@ -243,28 +228,6 @@ func TestCreateCombinedTestPlan_manyUnitSuccess(t *testing.T) {
 					BuildTarget: &chromiumos.BuildTarget{Name: "kevin"}},
 				TastVmTestCfg: kevinTastVMTestCfg},
 		},
-		VmTestUnits: []*testplans.VmTestUnit{
-			{
-				Common: &testplans.TestUnitCommon{
-					BuildPayload: &testplans.BuildPayload{
-						ArtifactsGsBucket: gsBucket,
-						ArtifactsGsPath:   gsPathPrefix + "kevin",
-						FilesByArtifact:   simpleFilesByArtifact(),
-					},
-					BuilderName: "kevin-debug-kernel-cq",
-					BuildTarget: &chromiumos.BuildTarget{Name: "kevin"}},
-				VmTestCfg: kevinDebugVMTestCfg},
-			{
-				Common: &testplans.TestUnitCommon{
-					BuildPayload: &testplans.BuildPayload{
-						ArtifactsGsBucket: gsBucket,
-						ArtifactsGsPath:   gsPathPrefix + "kevin",
-						FilesByArtifact:   simpleFilesByArtifact(),
-					},
-					BuilderName: "kevin-cq",
-					BuildTarget: &chromiumos.BuildTarget{Name: "kevin"}},
-				VmTestCfg: kevinVMTestCfg},
-		},
 		TastGceTestUnits: []*testplans.TastGceTestUnit{
 			{
 				Common: &testplans.TestUnitCommon{
@@ -292,11 +255,6 @@ func TestCreateCombinedTestPlan_successDespiteOneFailedBuilder(t *testing.T) {
 			SkylabBoard:     "some reef",
 			HwTestSuiteType: testplans.HwTestCfg_AUTOTEST},
 	}}
-	kevinVMTestCfg := &testplans.VmTestCfg{VmTest: []*testplans.VmTestCfg_VmTest{
-		{
-			Common:    &testplans.TestSuiteCommon{},
-			TestSuite: "VM kevin"},
-	}}
 	testReqs := &testplans.TargetTestRequirementsCfg{
 		PerTargetTestRequirements: []*testplans.PerTargetTestRequirements{
 			{
@@ -304,11 +262,6 @@ func TestCreateCombinedTestPlan_successDespiteOneFailedBuilder(t *testing.T) {
 					BuilderName: "reef-cq",
 					TargetType:  &testplans.TargetCriteria_BuildTarget{BuildTarget: "reef"}},
 				HwTestCfg: reefHwTestCfg},
-			{
-				TargetCriteria: &testplans.TargetCriteria{
-					BuilderName: "kevin-cq",
-					TargetType:  &testplans.TargetCriteria_BuildTarget{BuildTarget: "kevin"}},
-				VmTestCfg: kevinVMTestCfg},
 		},
 	}
 	sourceTreeTestCfg := &testplans.SourceTreeTestCfg{

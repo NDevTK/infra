@@ -279,12 +279,6 @@ func createResponse(targetBuildResults []buildResult, pruneResult *testPruneResu
 				resp.DirectTastVmTestUnits = append(resp.DirectTastVmTestUnits, directTastVMTestUnit)
 			}
 		}
-		if pttr.VmTestCfg != nil {
-			vmTestUnit := getVMTestUnit(tuc, pttr.VmTestCfg.VmTest, pruneResult, sfg, criticalBuild)
-			if vmTestUnit != nil {
-				resp.VmTestUnits = append(resp.VmTestUnits, vmTestUnit)
-			}
-		}
 		if pttr.TastGceTestCfg != nil {
 			tastGceTestUnit := getTastGceTestUnit(tuc, pttr.TastGceTestCfg.TastGceTest, pruneResult, sfg, criticalBuild)
 			if tastGceTestUnit != nil {
@@ -384,53 +378,6 @@ testLoop:
 		tu.TastVmTestCfg.TastVmTest = append(tu.TastVmTestCfg.TastVmTest, t)
 	}
 	if len(tu.TastVmTestCfg.TastVmTest) > 0 {
-		return tu
-	}
-	return nil
-}
-
-func getVMTestUnit(tuc *testplans.TestUnitCommon, tests []*testplans.VmTestCfg_VmTest, pruneResult *testPruneResult, sfg suitesForGroups, criticalBuild bool) *testplans.VmTestUnit {
-	if tests == nil {
-		return nil
-	}
-	tu := &testplans.VmTestUnit{
-		Common:    tuc,
-		VmTestCfg: &testplans.VmTestCfg{},
-	}
-testLoop:
-	for _, t := range tests {
-		if pruneResult.disableVMTests {
-			log.Printf("no VM testing needed for %v", t.Common.DisplayName)
-			continue testLoop
-		}
-		// Always test if there's an alsoTest rule.
-		mustAlsoTest := sfg.additionalSuites[t.GetCommon().GetDisplayName()]
-		if mustAlsoTest {
-			log.Printf("Including %v due to additive test rule", t.GetCommon().GetDisplayName())
-		} else {
-			inOnlyTestMode := len(sfg.onlyKeepSuites) > 0
-			if inOnlyTestMode {
-				// If there are only/oneof rules in effect, we keep the suite if that
-				// suite is in the `only` map, but not otherwise.
-				testNotNeeded := !sfg.onlyKeepSuites[t.Common.GetDisplayName()]
-				if testNotNeeded {
-					log.Printf("using OnlyTest rule to skip HW testing for %v", t.Common.DisplayName)
-					continue testLoop
-				}
-			} else {
-				// If we have no only/oneof rules in effect, we keep the suite unless
-				// there's a disableByDefault rule in effect.
-				if t.Common.DisableByDefault {
-					log.Printf("%v is disabled by default, and it was not triggered to be enabled", t.Common.DisplayName)
-					continue testLoop
-				}
-			}
-		}
-		log.Printf("adding testing for %v", t.Common.DisplayName)
-		t.Common = withCritical(t.Common, criticalBuild)
-		tu.VmTestCfg.VmTest = append(tu.VmTestCfg.VmTest, t)
-	}
-	if len(tu.VmTestCfg.VmTest) > 0 {
 		return tu
 	}
 	return nil
