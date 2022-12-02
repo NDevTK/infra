@@ -1,0 +1,60 @@
+[
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]",
+      "-ensure-file",
+      "experimental/jairogarciga_at_google.com/purple_panda latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"experimental/jairogarciga_at_google.com/purple_panda\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ls",
+      "[CACHE]"
+    ],
+    "name": "Check what we have"
+  },
+  {
+    "cmd": [
+      "echo",
+      "[CACHE]/purple_panda"
+    ],
+    "name": "Print Hello World"
+  },
+  {
+    "cmd": [
+      "python3",
+      "~/cr/infra_internal/infra_internal/tools/purple_panda/Python/mac_vm_script.py",
+      " --binary_path",
+      "binary_loc",
+      "--cpu_count",
+      "4",
+      "--bundle",
+      "vm_bundle_loc"
+    ],
+    "name": "Access the VM launching script"
+  },
+  {
+    "name": "$result"
+  }
+]
