@@ -17,9 +17,6 @@ def cron(name, recipe, execution_timeout = None, schedule = None):
             "cpu": "x86-64",
             "pool": "luci.infra.cron",
         },
-        properties = {
-            "mastername": "chromium.infra.cron",
-        },
         service_account = "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com",
         execution_timeout = execution_timeout or time.hour,
         schedule = schedule or "with 60s interval",
