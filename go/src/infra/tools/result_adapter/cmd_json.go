@@ -6,10 +6,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/maruel/subcommands"
 	"os"
 
-	"github.com/maruel/subcommands"
-
+	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
@@ -33,6 +34,10 @@ func cmdJSON() *subcommands.Command {
 
 				It only makes sense to set the flag for blink_web_tests and webgl_conformance_tests.
 			`))
+			r.Flags.BoolVar(&r.nativeFile, "nativeFile", false, text.Doc(`
+			The result jsonl file is a list of json strings converted from native ResultSink format.
+			If set, we can transform its lines to ResultSink proto directly.
+		    `))
 			return r
 		},
 	}
@@ -42,6 +47,7 @@ type jsonRun struct {
 	baseRun
 
 	testLocations bool
+	nativeFile    bool
 }
 
 func (r *jsonRun) Run(a subcommands.Application, args []string, env subcommands.Env) (ret int) {
@@ -74,6 +80,20 @@ func (r *jsonRun) generateTestResults(ctx context.Context, _ []byte) ([]*sinkpb.
 		return nil, errors.Annotate(err, "open result file").Err()
 	}
 	defer f.Close()
+
+	if r.nativeFile {
+		trs := make([]*sinkpb.TestResult, 0)
+		decoder := json.NewDecoder(f)
+		unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+		for decoder.More() {
+			var m sinkpb.TestResult
+			if err := unmarshaler.UnmarshalNext(decoder, &m); err != nil {
+				return nil, errors.Annotate(err, "failed to transform jsonl to pb").Err()
+			}
+			trs = append(trs, &m)
+		}
+		return trs, nil
+	}
 
 	jsonFormat := &JSONTestResults{}
 	if err = jsonFormat.ConvertFromJSON(f); err != nil {
