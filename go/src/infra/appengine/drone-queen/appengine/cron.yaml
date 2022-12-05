@@ -1,8 +1,4 @@
 cron:
-- description: tsmon house keeping
-  url: /internal/cron/ts_mon/housekeeping
-  schedule: every 1 minutes
-
 - description: Import config.cfg from LUCI Config
   url: /internal/cron/import-service-config
   schedule: every 10 minutes
