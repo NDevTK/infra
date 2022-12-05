@@ -25,6 +25,7 @@ var (
 	wiringPort    = flag.Int("wiring-port", 0, "Port for the TLS wiring service")
 	sshKey        = flag.String("ssh-key", "", "[Deprecated. Will use the well known RSA key.] Path to SSH key for DUTs (no auth if unset)")
 	serverTimeout = flag.Duration("server-timeout", 0, "Maximum duration for which to allow the server to run (<=0 to run indefinitely)")
+	partnerSSHKey = flag.String("partner-ssh-key", "", "Path to partner SSH key (internal) for SSH DUTs")
 )
 
 func main() {
@@ -59,7 +60,7 @@ func innerMain() error {
 		return err
 	}
 	log.Printf("CommonServer listening at address %v", l.Addr())
-	s, err := tlslib.NewServer(context.Background(), conn)
+	s, err := tlslib.NewServer(context.Background(), conn, *partnerSSHKey)
 	if err != nil {
 		return err
 	}
