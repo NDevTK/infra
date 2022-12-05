@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import sys
 
 from . import source
 from . import builder
@@ -37,7 +38,8 @@ class InfraPackage(Builder):
           system,
           None,
           '.',
-          ['python3', 'setup.py', '--version'],
+          # Use the current python interpreter, which should be from a vpython virtual environment.
+          [sys.executable, 'setup.py', '--version'],
           cwd=pkg_path,
       )
     return self._resolved_version
