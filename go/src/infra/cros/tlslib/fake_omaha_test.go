@@ -61,7 +61,7 @@ func TestFakeOmahaIntegration(t *testing.T) {
 		t.Fatalf("Connect to %q failed (forgot to start the TLW?)", *wiringAddr)
 	}
 	t.Cleanup(func() { connTlw.Close() })
-	s, err := NewServer(timeoutCtx(t, 2*time.Second), connTlw)
+	s, err := NewServer(timeoutCtx(t, 2*time.Second), connTlw, nil)
 	if err != nil {
 		t.Fatalf("NewServer: %s", err)
 	}
@@ -196,7 +196,7 @@ func TestCreateFakeOmahaErrors(t *testing.T) {
 			},
 		},
 	}
-	s, err := NewServer(timeoutCtx(t, time.Second), nil)
+	s, err := NewServer(timeoutCtx(t, time.Second), nil, nil)
 	if err != nil {
 		t.Fatalf("New TLS server: %s", err)
 	}

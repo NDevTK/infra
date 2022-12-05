@@ -52,7 +52,11 @@ type Server struct {
 type Option func(*Server) error
 
 // NewServer creates a new instance of common TLS server.
-func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Server, error) {
+func NewServer(ctx context.Context, c *grpc.ClientConn, partnerSSHSigner ssh.Signer, options ...Option) (*Server, error) {
+	dutSSHSigners := []ssh.Signer{sshSigner}
+	if partnerSSHSigner != nil {
+		dutSSHSigners = append(dutSSHSigners, partnerSSHSigner)
+	}
 	s := Server{
 		ctx:        ctx,
 		grpcServ:   grpc.NewServer(),
@@ -66,7 +70,7 @@ func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Ser
 			Timeout:         5 * time.Second,
 			// Use the well known testing RSA key as the default SSH auth
 			// method.
-			Auth: []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+			Auth: []ssh.AuthMethod{ssh.PublicKeys(dutSSHSigners...)},
 		},
 	}
 	for _, option := range options {

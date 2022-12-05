@@ -10,11 +10,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"time"
 
+	"golang.org/x/crypto/ssh"
 	"google.golang.org/grpc"
 
 	"infra/cros/tlslib"
@@ -25,6 +27,7 @@ var (
 	wiringPort    = flag.Int("wiring-port", 0, "Port for the TLS wiring service")
 	sshKey        = flag.String("ssh-key", "", "[Deprecated. Will use the well known RSA key.] Path to SSH key for DUTs (no auth if unset)")
 	serverTimeout = flag.Duration("server-timeout", 0, "Maximum duration for which to allow the server to run (<=0 to run indefinitely)")
+	partnerSSHKey = flag.String("partner-ssh-key", "", "Path to partner SSH key (internal) for SSH DUTs")
 )
 
 func main() {
@@ -48,6 +51,11 @@ func innerMain() error {
 		os.Exit(1)
 	}()
 
+	partnerSSHSigner, err := authMethodFromKey(*partnerSSHKey)
+	if err != nil {
+		log.Printf("[ignorable failure] common-tls: fail to parse partner ssh key: %s", err)
+	}
+
 	// TODO(ayatane): Handle if the wiring service connection drops.
 	conn, err := grpc.Dial(fmt.Sprintf("0.0.0.0:%d", *wiringPort), grpc.WithInsecure())
 	if err != nil {
@@ -59,7 +67,7 @@ func innerMain() error {
 		return err
 	}
 	log.Printf("CommonServer listening at address %v", l.Addr())
-	s, err := tlslib.NewServer(context.Background(), conn)
+	s, err := tlslib.NewServer(context.Background(), conn, partnerSSHSigner)
 	if err != nil {
 		return err
 	}
@@ -76,4 +84,16 @@ func innerMain() error {
 		return err
 	}
 	return nil
+}
+
+func authMethodFromKey(keyfile string) (ssh.Signer, error) {
+	key, err := ioutil.ReadFile(keyfile)
+	if err != nil {
+		return nil, fmt.Errorf("auth ssh from key: %s", err)
+	}
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, fmt.Errorf("auth ssh from key: %s", err)
+	}
+	return signer, nil
 }
