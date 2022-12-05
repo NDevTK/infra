@@ -12,6 +12,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"strconv"
@@ -52,7 +53,15 @@ type Server struct {
 type Option func(*Server) error
 
 // NewServer creates a new instance of common TLS server.
-func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Server, error) {
+func NewServer(ctx context.Context, c *grpc.ClientConn, partnerSSHKeyPath string, options ...Option) (*Server, error) {
+	partnerSSHSigner, err := authMethodFromKey(partnerSSHKeyPath)
+	if err != nil {
+		log.Printf("[ignorable failure] tls-server: fail to parse partner ssh key: %s", err)
+	}
+	dutSSHSigners := []ssh.Signer{sshSigner}
+	if partnerSSHSigner != nil {
+		dutSSHSigners = append(dutSSHSigners, partnerSSHSigner)
+	}
 	s := Server{
 		ctx:        ctx,
 		grpcServ:   grpc.NewServer(),
@@ -66,7 +75,7 @@ func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Ser
 			Timeout:         5 * time.Second,
 			// Use the well known testing RSA key as the default SSH auth
 			// method.
-			Auth: []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+			Auth: []ssh.AuthMethod{ssh.PublicKeys(dutSSHSigners...)},
 		},
 	}
 	for _, option := range options {
@@ -407,4 +416,16 @@ func (s *Server) FetchCrashes(req *tls.FetchCrashesRequest, stream tls.Common_Fe
 // wiringClient helps to create a TLW client with configurations/settings.
 func (s *Server) wiringClient() tls.WiringClient {
 	return tls.NewWiringClient(s.wiringConn)
+}
+
+func authMethodFromKey(keyfile string) (ssh.Signer, error) {
+	key, err := ioutil.ReadFile(keyfile)
+	if err != nil {
+		return nil, fmt.Errorf("auth ssh from key: %s", err)
+	}
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, fmt.Errorf("auth ssh from key: %s", err)
+	}
+	return signer, nil
 }

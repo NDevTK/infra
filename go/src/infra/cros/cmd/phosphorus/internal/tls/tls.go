@@ -10,6 +10,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"os"
 	"sync"
 
 	"infra/cros/tlslib"
@@ -62,7 +63,7 @@ func (s *Server) start(tlwAddress string) error {
 
 	s.addr = el.Addr()
 
-	ts, err := tlslib.NewServer(context.TODO(), s.tlwConn)
+	ts, err := tlslib.NewServer(context.TODO(), s.tlwConn, os.Getenv("DUT_PRIVATE_SSH_KEYS_PATH"))
 	if err != nil {
 		return errors.Annotate(err, "start background tls").Err()
 	}
