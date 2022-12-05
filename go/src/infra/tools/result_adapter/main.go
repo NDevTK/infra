@@ -35,6 +35,7 @@ func main() {
 			cmdGtest(),
 			cmdGtestJson(),
 			cmdJSON(),
+			cmdNative(),
 			cmdSingle(),
 			cmdTast(),
 			cmdSkylabTestRunner(),
