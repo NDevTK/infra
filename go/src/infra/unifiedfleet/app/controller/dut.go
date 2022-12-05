@@ -971,7 +971,7 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufsp
 	for _, dutAttr := range attrs {
 		labelsMap, err := Convert(ctx, dutAttr, fc, lse, state)
 		if err != nil {
-			logging.Errorf(ctx, "could not get label values for %s %s: %s", fcId, dutAttr.GetId().GetValue(), err)
+			logging.Warningf(ctx, "could not get label values for %s %s: %s", fcId, dutAttr.GetId().GetValue(), err)
 			continue
 		}
 		for k, v := range labelsMap {
