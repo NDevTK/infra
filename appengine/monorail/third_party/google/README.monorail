@@ -18,6 +18,7 @@ Search API and are updating it ourselves for Python 3.
    google/appengine/api/search/* except simple_search_stub.py and search/stub/
    google/appengine/datastore/__init__.py
    google/appengine/datastore/document_pb.py
+   google/net/__init__.py
    google/net/proto/__init__.py
    google/net/proto/ProtocolBuffer.py
    LICENSE
