@@ -1820,6 +1820,20 @@ wheel: <
 
 * *universal*
 
+## **flask-talisman**
+
+### 0.7.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/flask-talisman-py2_py3"
+  version: "version:0.7.0"
+>
+```
+
+
+* *universal*
+
 ## **flatbuffers**
 
 ### 1.12
@@ -3376,12 +3390,12 @@ wheel: <
 
 ## **infra_libs**
 
-### 2.3.0
+### 2.4.0
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/infra_libs-py2_py3"
-  version: "version:2.3.0"
+  version: "version:2.4.0"
 >
 ```
 

@@ -1010,6 +1010,7 @@ SPECS.update({
         UniversalSource('docopt', '0.6.2'),
         UniversalSource('ezt', '1.1'),
         UniversalSource('fixtures', '4.0.1'),
+        UniversalSource('flask-talisman', '0.7.0'),
         UniversalSource('future', '0.16.0'),
         UniversalSource('future', '0.18.2'),
         UniversalSource('gin', '0.1.006', pyversions=['py3']),
