@@ -21,7 +21,6 @@ import (
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	apibq "infra/unifiedfleet/api/v1/models/bigquery"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/configuration"
@@ -31,8 +30,6 @@ import (
 	"infra/unifiedfleet/app/model/state"
 	"infra/unifiedfleet/app/util"
 )
-
-const machinelsePubsubTopicID = "machine_lse"
 
 // CreateMachineLSE creates a new machinelse in datastore.
 func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption) (*ufspb.MachineLSE, error) {
@@ -50,21 +47,7 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
 		// ChromeOSMachineLSE for a DUT
 		machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = machinelse.GetHostname()
-
-		// Capture results for Pub/Sub publishing attempt. Err is not handled here
-		// as it will be handled by the caller.
-		machineLSE, err := CreateDUT(ctx, machinelse)
-
-		// Publish the MachineLSE creation via Pub/Sub.
-		if err == nil {
-			row := apibq.MachineLSERow{
-				MachineLse: machineLSE,
-				Delete:     false,
-			}
-			marshalAndPublish(ctx, row, machinelsePubsubTopicID)
-		}
-
-		return machineLSE, err
+		return CreateDUT(ctx, machinelse)
 	}
 
 	// Browser lab servers
@@ -497,8 +480,6 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 // Delete if this MachineLSE is not referenced by other resources in the datastore.
 // If there are any references, delete will be rejected and an error will be returned.
 func DeleteMachineLSE(ctx context.Context, id string) error {
-	// Used for logging the deletion of a MachineLSE
-	existingMachinelse, _ := inventory.GetMachineLSE(ctx, id)
 	f := func(ctx context.Context) error {
 		hc := getHostHistoryClient(&ufspb.MachineLSE{
 			Name: id,
@@ -611,14 +592,6 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		logging.Errorf(ctx, "DeleteMachineLSE: %s", err)
 		return err
 	}
-
-	// Publish the MachineLSE Deletion via Pub/Sub
-	row := apibq.MachineLSERow{
-		MachineLse: existingMachinelse,
-		Delete:     true,
-	}
-	marshalAndPublish(ctx, row, machinelsePubsubTopicID)
-
 	return nil
 }
 

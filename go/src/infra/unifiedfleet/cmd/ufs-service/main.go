@@ -53,15 +53,6 @@ func main() {
 		acl.Register(cfgLoader.Config())
 		srv.Context = config.Use(srv.Context, cfgLoader.Config())
 		srv.Context = external.WithServerInterface(srv.Context)
-
-		// Unsure why but the next line doesn't recognize err as being define above
-		// but also says no new vars on left hand side when using `:=`.
-		var err error
-		srv.Context, err = external.UsePubSub(srv.Context, srv.Options.CloudProject)
-		if err != nil {
-			return err
-		}
-
 		srv.RegisterUnaryServerInterceptor(versionInterceptor)
 		srv.RegisterUnaryServerInterceptor(namespaceInterceptor)
 		frontend.InstallServices(srv.PRPC)

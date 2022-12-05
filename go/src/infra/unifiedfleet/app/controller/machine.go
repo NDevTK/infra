@@ -18,15 +18,12 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-	apibq "infra/unifiedfleet/api/v1/models/bigquery"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 )
-
-const machinePubsubTopicID = "machine"
 
 // MachineRegistration creates a new machine, new nic and a new drac in datastore.
 func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Machine, error) {
@@ -103,14 +100,6 @@ func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Ma
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return nil, errors.Annotate(err, "MachineRegistration").Err()
 	}
-
-	// Publish the Machine Registration via Pub/Sub.
-	row := apibq.MachineRow{
-		Machine: machine,
-		Delete:  false,
-	}
-	marshalAndPublish(ctx, row, machinePubsubTopicID)
-
 	return machine, nil
 }
 
@@ -659,9 +648,6 @@ func GetAllMachines(ctx context.Context) (*ufsds.OpResults, error) {
 // Delete if this Machine is not referenced by other resources in the datastore.
 // If there are any references, delete will be rejected and an error will be returned.
 func DeleteMachine(ctx context.Context, id string) error {
-	// Used for logging the deletion of a MachineLSE.
-	existingMachine, _ := registration.GetMachine(ctx, id)
-
 	f := func(ctx context.Context) error {
 		// 1. Get the machine
 		machine, err := registration.GetMachine(ctx, id)
@@ -713,14 +699,6 @@ func DeleteMachine(ctx context.Context, id string) error {
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return errors.Annotate(err, "DeleteMachine").Err()
 	}
-
-	// Publish the Machine Deletion via Pub/Sub.
-	row := apibq.MachineRow{
-		Machine: existingMachine,
-		Delete:  true,
-	}
-	marshalAndPublish(ctx, row, machinePubsubTopicID)
-
 	return nil
 }
 
