@@ -6,7 +6,6 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -58,22 +57,11 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 
 		// Publish the MachineLSE creation via Pub/Sub.
 		if err == nil {
-			// Generate the message for Pub/Sub
 			row := apibq.MachineLSERow{
 				MachineLse: machineLSE,
 				Delete:     false,
 			}
-			data, err_ps := json.Marshal(row)
-			if err_ps != nil {
-				logging.Warningf(ctx, err_ps.Error())
-				return machineLSE, nil
-			}
-
-			// Publish the message via Pub/Sub.
-			err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-			if err_ps != nil {
-				logging.Warningf(ctx, err_ps.Error())
-			}
+			marshalAndPublish(ctx, row, machinelsePubsubTopicID)
 		}
 
 		return machineLSE, err
@@ -204,7 +192,6 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 	}
 
 	var oldMachinelse *ufspb.MachineLSE
-	var updatedMachinelse *ufspb.MachineLSE
 	// If its a Chrome browser host, ChromeOS server or a ChormeOS labstation
 	// ChromeBrowserMachineLSE, ChromeOSMachineLSE for a Server and Labstation
 	f := func(ctx context.Context) error {
@@ -291,7 +278,6 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		}
 		hc.LogMachineLSEChanges(oldMachinelseCopy, machinelse)
 
-		updatedMachinelse = machinelse
 		/* Comment this part for now
 		// TODO(eshwarn): Add support for labstation state in the future, have a separate updatelabstation func.
 		// Update states
@@ -313,24 +299,6 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		// We fill the machinelse object with its vm objects from vm table
 		setMachineLSE(ctx, machinelse)
 	}
-
-	// Generate the message for Pub/Sub
-	row := apibq.MachineLSERow{
-		MachineLse: updatedMachinelse,
-		Delete:     false,
-	}
-	data, err_ps := json.Marshal(row)
-	if err_ps != nil {
-		logging.Warningf(ctx, err_ps.Error())
-		return machinelse, nil
-	}
-
-	// Publish the message via Pub/Sub.
-	err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-	if err_ps != nil {
-		logging.Warningf(ctx, err_ps.Error())
-	}
-
 	return machinelse, nil
 }
 
@@ -520,30 +488,6 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 			}
 		}
 	}
-
-	// Publish the list to Pub/Sub.
-	if len(lses) > 0 {
-		// Generate the message for Pub/Sub
-		msgs := [][]byte{}
-		for _, machinelse := range lses {
-			row := apibq.MachineLSERow{
-				MachineLse: machinelse,
-				Delete:     false,
-			}
-			data, err_ps := json.Marshal(row)
-			if err_ps != nil {
-				logging.Warningf(ctx, err_ps.Error())
-				return lses, nextPageToken, err
-			}
-			msgs = append(msgs, data)
-		}
-
-		// Publish the message via Pub/Sub.
-		err_ps := publish(ctx, machinelsePubsubTopicID, msgs)
-		if err_ps != nil {
-			logging.Warningf(ctx, err_ps.Error())
-		}
-	}
 	return lses, nextPageToken, err
 }
 
@@ -668,22 +612,12 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		return err
 	}
 
-	// Generate the message for Pub/Sub
+	// Publish the MachineLSE Deletion via Pub/Sub
 	row := apibq.MachineLSERow{
 		MachineLse: existingMachinelse,
 		Delete:     true,
 	}
-	data, err_ps := json.Marshal(row)
-	if err_ps != nil {
-		logging.Warningf(ctx, err_ps.Error())
-		return nil
-	}
-
-	// Publish the message via Pub/Sub.
-	err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-	if err_ps != nil {
-		logging.Warningf(ctx, err_ps.Error())
-	}
+	marshalAndPublish(ctx, row, machinelsePubsubTopicID)
 
 	return nil
 }
