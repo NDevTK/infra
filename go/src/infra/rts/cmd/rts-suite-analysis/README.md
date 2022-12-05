@@ -3,6 +3,9 @@
 This CLI makes use of the evaluation built into the RTS framework to analyze
 the expected results of removing a specific test suite from a specific builder.
 
+Before attempting to build env.py should be run as descirbed in
+infra/go/README.md
+
 1. Fetch a sample of rejections, e.g. for the previous month of all builders:
    ```bash
    go run ./cmd/rts-suite-analysis fetch-rejections \
@@ -38,30 +41,52 @@ the expected results of removing a specific test suite from a specific builder.
    go run ./cmd/rts-suite-analysis analyze \
      -rejections samples.rej \
      -durations samples.dur \
-     -builder browser_tests \
-     -testSuite linux_chromium_asan_rel_ng
+     -builder linux_chromium_asan_rel_ng \
+     -testSuite browser_tests
    ```
    Output will look somthing like:
    ```ChangeRecall | Savings
    ----------------------
     99.78%      |  14.45% 
-   100.00%      |   0.00% 
    
    based on 6878 rejections, 8066798 test failures, 913690h51m52.584049s testing time
    ```
    The ChangeRecall being the expected number of failed CLs in the given time
    period that would still have failed if the test suite was not run on the
    builder (successful CLs do not factor into this number). The savings is how
-   much estimated time would have been saved for that tradeoff in recall. The
-   100% entry can be ignored for this CLI. Note the rejections as this should
-   match the number of rejections collected in the fetch-rejections step and
-   can help confirm the values are reasonable
+   much estimated time would have been saved for that tradeoff in recall. Note
+   the rejections as this should match the number of rejections collected in the
+   fetch-rejections step and can help confirm the values are reasonable. For the
+   period of time the rejections were collected the ChangeRecall percentage is
+   the number that would still have been caught. The rate can then be estimated
+   as (1 - ChangeRecall) * rejections per period of reject collection.
 
-   You can also specify -builders here, however the change recall will be
-   innacurate and only show the CL recall had only those builders ran
+   Example rejects will be printed after the run. This will include a link to
+   the CL. If the recall is very high this can be as few as 1 CL. It is a good
+   idea to investigate these since the analysis cannot know which rejects were
+   a false reject and these failures can be builder flakes where it should not
+   have been rejected in the first place.
 
 Rejection and duration data can take a long time to collect (you will likely not
 want to go over a months worth of data as the results tend to stay consistent
 while the collection time can be very long) but are reuseable for testing
 different builder/test suite combinations and only the last step needs to be
 repeated for different tests.
+
+After a builder has a specific test suite removed it invalidates the rejection
+and duration data since there could have been overlapping coverage of tests. To
+perform a new analysis on the same rejection/duration data or time period all
+removed builder/suite combinations should be included in a file in the format:
+
+builder:test_suite
+
+and added to a file as a new line. That file's name can then be included like:
+
+   ```bash
+   go run ./cmd/rts-suite-analysis analyze \
+     -rejections samples.rej \
+     -durations samples.dur \
+     -builder linux_chromium_asan_rel_ng \
+     -testSuite browser_tests \
+     -testSuiteFile removed_suites.txt
+   ```
