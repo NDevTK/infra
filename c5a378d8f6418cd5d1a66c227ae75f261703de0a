@@ -34,6 +34,24 @@
       "parentUuid": "4fb679a2_4ec2bc76",
       "revId": "c5a378d8f6418cd5d1a66c227ae75f261703de0a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1f3d8d7_c241a671",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2022-12-05T19:52:21Z",
+      "side": 1,
+      "message": "any recommendation for the naming? jsonl? native?\n\n\u003e What\u0027s reason to change the json adapter?\nWe were thinking to use json adapter but then realized it is not. We don\u0027t need to transform a json result to resultSink.",
+      "parentUuid": "ef2f9f03_1027412d",
+      "revId": "c5a378d8f6418cd5d1a66c227ae75f261703de0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
