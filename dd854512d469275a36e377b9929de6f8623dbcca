@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b43a6c23_3930ef56",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-12-05T23:32:22Z",
+      "side": 1,
+      "message": "lgtm. All nits.",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63d15827_79c6271b",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-12-05T23:32:22Z",
+      "side": 1,
+      "message": "nit: comma after \"build\"",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89d69433_1279bcad",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/analyze.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-12-05T23:32:22Z",
+      "side": 1,
+      "message": "nit: I\u0027d say \"colon\" or \":\" but not both.\n\nI\u0027d hint here that this could be suites already removed from the builder, or if we want to try removing multiple suites at once.",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03c1da3a_9d50c7ed",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/analyze.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-12-05T23:32:22Z",
+      "side": 1,
+      "message": "This could be simplified if we set `removedBuildSuites[removedBuilderSuite] \u003d true` before this loop.",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
