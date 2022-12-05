@@ -98,7 +98,7 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 			metric.Restarts = int32(restartTally)
 			metric.UpdateStatus(rErr)
 			if err := r.metricSaver(metric); err != nil {
-				log.Debugf(ctx, "Fail to save plan %q metrics with error: %s", r, r.planName, err)
+				log.Debugf(ctx, "Fail to save plan %q metrics with error: %s", r.planName, err)
 			}
 		}()
 	}
