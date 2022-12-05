@@ -10,6 +10,7 @@ import (
 	"errors"
 	"math"
 	"os"
+	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
@@ -20,22 +21,14 @@ import (
 	"infra/rts/presubmit/eval"
 )
 
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 type analyzeCommandRun struct {
 	subcommands.CommandRunBase
-	authOpt    *auth.Options
-	ev         eval.Eval
-	builder    string
-	testSuite  string
-	testIdFile string
+	authOpt       *auth.Options
+	ev            eval.Eval
+	builder       string
+	testSuite     string
+	testSuiteFile string
+	testIdFile    string
 }
 
 func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
@@ -47,6 +40,7 @@ func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 			r := &analyzeCommandRun{authOpt: authOpt}
 			r.Flags.StringVar(&r.builder, "builder", "", "Builder running the testSuite to exclude from tests")
 			r.Flags.StringVar(&r.testSuite, "testSuite", "", "Test suite of the builder to exclude from tests")
+			r.Flags.StringVar(&r.testSuiteFile, "testSuiteFile", "", "A file containing builder and suites separated by a colon : that should also be excluded")
 			r.Flags.StringVar(&r.testIdFile, "testIdFile", "", "Test id file to exclude from tests")
 			r.ev.LogProgressInterval = 1000
 			r.ev.RegisterFlags(&r.Flags)
@@ -77,17 +71,26 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 		return 1
 	}
 
-	testIds, loadTestIdsErr := loadTestIds(r.testIdFile)
-	if loadTestIdsErr != nil {
-		logging.Infof(ctx, loadTestIdsErr.Error())
+	removedBuildSuites, err := loadTestSuiteFile(r.testIdFile)
+	if err != nil {
+		logging.Infof(ctx, err.Error())
+		return 1
+	}
+
+	removedBuilderSuite := r.builder + ":" + r.testSuite
+
+	testIds, err := loadTestIds(r.testIdFile)
+	if err != nil {
+		logging.Infof(ctx, err.Error())
 		return 1
 	}
 
 	res, err := r.ev.Run(ctx, func(ctx context.Context, in eval.Input, out *eval.Output) error {
 		for i, tv := range in.TestVariants {
-			if stringInSlice("builder:"+r.builder, tv.Variant) &&
-				stringInSlice("test_suite:"+r.testSuite, tv.Variant) &&
-				(r.testIdFile == "" || testIds[tv.Id]) {
+			variantBuilderSuite := getBuilderSuiteString(tv.Variant)
+
+			if (r.testSuiteFile != "" && removedBuildSuites[variantBuilderSuite]) ||
+				(removedBuilderSuite == variantBuilderSuite && (r.testIdFile == "" || testIds[tv.Id])) {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: math.Inf(1)}
 			} else {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: 0}
@@ -132,4 +135,43 @@ func loadTestIds(fileName string) (map[string]bool, error) {
 	}
 
 	return testIds, nil
+}
+
+func loadTestSuiteFile(fileName string) (map[string]bool, error) {
+	if fileName == "" {
+		return nil, nil
+	}
+
+	f, err := os.Open(fileName)
+	if err != nil {
+		return nil, errors.New("failed to load test id file.")
+	}
+	defer f.Close()
+
+	sc := bufio.NewScanner(f)
+	builderTestSuites := map[string]bool{}
+
+	// Read through test Id until an EOF is encountered.
+	for sc.Scan() {
+		builderTestSuites[sc.Text()] = true
+	}
+
+	return builderTestSuites, nil
+}
+
+func getBuilderSuiteString(list []string) string {
+	builder := ""
+	testSuite := ""
+	for _, b := range list {
+		if strings.HasPrefix(b, "builder:") {
+			builder = b[len("builder:"):]
+		}
+		if strings.HasPrefix(b, "test_suite:") {
+			testSuite = b[len("test_suite:"):]
+		}
+	}
+	if builder == "" || testSuite == "" {
+		return ""
+	}
+	return builder + ":" + testSuite
 }
