@@ -16,6 +16,24 @@
       "message": "Hi Chan, \n\nI am not sure if this is a good idea, but the json adapter does not work our case, because we already had a native file by the telemetry code.\nWhat we need is just to connect rdb and send them. Is that possible in result adapter now? Or a better place I can add this block of code to transform a file to ResultSink proto?\n\nMany thanks in advance!",
       "revId": "c5a378d8f6418cd5d1a66c227ae75f261703de0a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef2f9f03_1027412d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-12-05T19:45:37Z",
+      "side": 1,
+      "message": "Why not create a new result_adapter? What\u0027s reason to change the json adapter?",
+      "parentUuid": "4fb679a2_4ec2bc76",
+      "revId": "c5a378d8f6418cd5d1a66c227ae75f261703de0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
