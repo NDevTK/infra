@@ -87,7 +87,8 @@ func (a *Action) UpdateStatus(err error) {
 	if err != nil {
 		a.Status = ActionStatusFail
 		a.FailReason = err.Error()
-	} else {
+	} else if a.Status != ActionStatusSkip {
+		// Don't override skip status.
 		a.Status = ActionStatusSuccess
 	}
 }
