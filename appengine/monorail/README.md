@@ -12,6 +12,7 @@ We also discuss development of Monorail at `infra-dev@chromium.org`.
 *For Googlers:* Monorail's codebase is open source and can be installed locally on your workstation of choice.
 
 For local development on Linux, see [Linux development instructions](doc/development-linux.md)
+For local development on MacOS and Debian, see [MacOs development instructions](doc/development-macos.md)
 
 Instructions for deploying Monorail to an existing instance or setting up a new instance are [here](doc/deployment.md).
 
