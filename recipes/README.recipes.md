@@ -72,6 +72,7 @@
   * [support_3pp:tests/full](#recipes-support_3pp_tests_full) (Python3 ✅)
   * [tricium_infra](#recipes-tricium_infra) (Python3 ✅)
   * [update_submodules_mirror](#recipes-update_submodules_mirror) (Python3 ✅)
+  * [vm_launcher/vm_launcher](#recipes-vm_launcher_vm_launcher)
   * [windows_adk:examples/ensure](#recipes-windows_adk_examples_ensure)
   * [windows_image_builder/offline](#recipes-windows_image_builder_offline) (Python3 ✅)
   * [windows_image_builder/online_windows_customization](#recipes-windows_image_builder_online_windows_customization) (Python3 ✅)
@@ -1836,6 +1837,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#221)(ref):**
 
 &mdash; **def [RunSteps](/recipes/recipes/update_submodules_mirror.py#70)(api, source_repo, target_repo, extra_submodules, overlays, internal, with_tags, ref_patterns, refs_to_skip):**
+### *recipes* / [vm\_launcher/vm\_launcher](/recipes/recipes/vm_launcher/vm_launcher.py)
+
+[DEPS](/recipes/recipes/vm_launcher/vm_launcher.py#8): [depot\_tools/git][depot_tools/recipe_modules/git], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+
+PYTHON_VERSION_COMPATIBILITY: PY2
+
+&mdash; **def [RunSteps](/recipes/recipes/vm_launcher/vm_launcher.py#24)(api, vm_count, vm1_bundle, vm2_bundle):**
 ### *recipes* / [windows\_adk:examples/ensure](/recipes/recipe_modules/windows_adk/examples/ensure.py)
 
 [DEPS](/recipes/recipe_modules/windows_adk/examples/ensure.py#7): [windows\_adk](#recipe_modules-windows_adk), [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
