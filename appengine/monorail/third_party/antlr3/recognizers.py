@@ -30,6 +30,7 @@
 #
 # end[licence]
 
+import six
 import sys
 import inspect
 
@@ -1124,11 +1125,11 @@ class Lexer(BaseRecognizer, TokenSource):
 
                 return self._state.token
 
-            except NoViableAltException, re:
+            except NoViableAltException as re:
                 self.reportError(re)
                 self.recover(re) # throw out current char and try again
 
-            except RecognitionException, re:
+            except RecognitionException as re:
                 self.reportError(re)
                 # match() routine has already called recover()
 
@@ -1193,7 +1194,7 @@ class Lexer(BaseRecognizer, TokenSource):
 
 
     def match(self, s):
-        if isinstance(s, basestring):
+        if isinstance(s, six.string_types):
             for c in s:
                 if self.input.LA(1) != ord(c):
                     if self._state.backtracking > 0:
@@ -1210,7 +1211,7 @@ class Lexer(BaseRecognizer, TokenSource):
                 if self._state.backtracking > 0:
                     raise BacktrackingFailed
 
-                mte = MismatchedTokenException(unichr(s), self.input)
+                mte = MismatchedTokenException(six.unichr(s), self.input)
                 self.recover(mte) # don't really recover; just consume in lexer
                 raise mte
 
@@ -1226,7 +1227,7 @@ class Lexer(BaseRecognizer, TokenSource):
             if self._state.backtracking > 0:
                 raise BacktrackingFailed
 
-            mre = MismatchedRangeException(unichr(a), unichr(b), self.input)
+            mre = MismatchedRangeException(six.unichr(a), six.unichr(b), self.input)
             self.recover(mre)
             raise mre
 

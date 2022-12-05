@@ -31,7 +31,7 @@
 # end[licence]
 
 import codecs
-from StringIO import StringIO
+import six
 
 from antlr3.constants import DEFAULT_CHANNEL, EOF
 from antlr3.tokens import Token, EOF_TOKEN
@@ -333,7 +333,7 @@ class ANTLRStringStream(CharStream):
         CharStream.__init__(self)
 
   	# The data being scanned
-        self.strdata = unicode(data)
+        self.strdata = six.text_type(data)
         self.data = [ord(c) for c in self.strdata]
 
 	# How many characters are actually in the buffer
@@ -776,7 +776,7 @@ class CommonTokenStream(TokenStream):
         if start > stop:
             return None
 
-        if isinstance(types, (int, long)):
+        if isinstance(types, six.integer_types):
             # called with a single type, wrap into set
             types = set([types])
 
@@ -1208,7 +1208,7 @@ class TokenRewriteStream(CommonTokenStream):
         if end is None:
             end = self.size() - 1
 
-        buf = StringIO()
+        buf = six.StringIO()
         i = start
         while i >= self.MIN_TOKEN_INDEX and i <= end and i < len(self.tokens):
             buf.write(self.get(i).text)
@@ -1255,7 +1255,7 @@ class TokenRewriteStream(CommonTokenStream):
             # no instructions to execute
             return self.toOriginalString(start, end)
 
-        buf = StringIO()
+        buf = six.StringIO()
 
         # First, optimize instruction stream
         indexToOp = self.reduceToSingleOperationPerIndex(rewrites)
@@ -1443,7 +1443,7 @@ class TokenRewriteStream(CommonTokenStream):
         if end is None:
             end = self.size() - 1
 
-        buf = StringIO()
+        buf = six.StringIO()
         i = start
         while i >= self.MIN_TOKEN_INDEX and i <= end and i < len(self.tokens):
             buf.write(self.get(i))

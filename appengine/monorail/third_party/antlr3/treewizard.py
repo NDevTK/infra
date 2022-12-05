@@ -36,6 +36,8 @@ See <http://www.antlr.org/wiki/display/~admin/2007/07/02/Exploring+Concept+of+Tr
 #
 # end[licence]
 
+import six
+
 from antlr3.constants import INVALID_TOKEN_TYPE
 from antlr3.tokens import CommonToken
 from antlr3.tree import CommonTree, CommonTreeAdaptor
@@ -399,10 +401,10 @@ class TreeWizard(object):
 
         """
 
-        if isinstance(what, (int, long)):
+        if isinstance(what, six.integer_types):
             return self._findTokenType(tree, what)
 
-        elif isinstance(what, basestring):
+        elif isinstance(what, six.string_types):
             return self._findPattern(tree, what)
 
         else:
@@ -464,10 +466,10 @@ class TreeWizard(object):
         label.
         """
 
-        if isinstance(what, (int, long)):
+        if isinstance(what, six.integer_types):
             self._visitType(tree, None, 0, what, visitor)
 
-        elif isinstance(what, basestring):
+        elif isinstance(what, six.string_types):
             self._visitPattern(tree, what, visitor)
 
         else:

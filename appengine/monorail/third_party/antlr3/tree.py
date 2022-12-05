@@ -39,6 +39,7 @@ This module contains all support classes for AST construction and tree parsers.
 # pylint: disable-msg=C0111
 
 import re
+import six
 
 from antlr3.constants import UP, DOWN, EOF, INVALID_TOKEN_TYPE
 from antlr3.recognizers import BaseRecognizer, RuleReturnScope
@@ -613,7 +614,7 @@ class TreeAdaptor(object):
             return self.createWithPayload(args[0])
 
         if (len(args) == 2
-            and isinstance(args[0], (int, long))
+            and isinstance(args[0], six.integer_types)
             and isinstance(args[1], Token)
             ):
             # Object create(int tokenType, Token fromToken);
@@ -625,9 +626,9 @@ class TreeAdaptor(object):
             return self.createFromToken(args[0], args[1])
 
         if (len(args) == 3
-            and isinstance(args[0], (int, long))
+            and isinstance(args[0], six.integer_types)
             and isinstance(args[1], Token)
-            and isinstance(args[2], basestring)
+            and isinstance(args[2], six.string_types)
             ):
             # Object create(int tokenType, Token fromToken, String text);
 ##             warnings.warn(
@@ -638,8 +639,8 @@ class TreeAdaptor(object):
             return self.createFromToken(args[0], args[1], args[2])
 
         if (len(args) == 2
-            and isinstance(args[0], (int, long))
-            and isinstance(args[1], basestring)
+            and isinstance(args[0], six.integer_types)
+            and isinstance(args[1], six.string_types)
             ):
             # Object create(int tokenType, String text);
 ##             warnings.warn(
@@ -1106,9 +1107,9 @@ class BaseTreeAdaptor(TreeAdaptor):
 
 
     def createFromToken(self, tokenType, fromToken, text=None):
-        assert isinstance(tokenType, (int, long)), type(tokenType).__name__
+        assert isinstance(tokenType, six.integer_types), type(tokenType).__name__
         assert isinstance(fromToken, Token), type(fromToken).__name__
-        assert text is None or isinstance(text, basestring), type(text).__name__
+        assert text is None or isinstance(text, six.string_types), type(text).__name__
 
         fromToken = self.createToken(fromToken)
         fromToken.type = tokenType
@@ -1119,8 +1120,8 @@ class BaseTreeAdaptor(TreeAdaptor):
 
 
     def createFromType(self, tokenType, text):
-        assert isinstance(tokenType, (int, long)), type(tokenType).__name__
-        assert isinstance(text, basestring) or text is None, type(text).__name__
+        assert isinstance(tokenType, six.integer_types), type(tokenType).__name__
+        assert isinstance(text, six.string_types) or text is None, type(text).__name__
 
         fromToken = self.createToken(tokenType=tokenType, text=text)
         t = self.createWithPayload(fromToken)
@@ -2405,7 +2406,7 @@ class TreeVisitor(object):
             # if rewritten, walk children of new t
             t = pre_action(t)
 
-        for idx in xrange(self.adaptor.getChildCount(t)):
+        for idx in range(self.adaptor.getChildCount(t)):
             child = self.adaptor.getChild(t, idx)
             self.visit(child, pre_action, post_action)
 

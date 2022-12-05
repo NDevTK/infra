@@ -140,12 +140,16 @@ bug in your grammar, it can only be detected at runtime.
 
 __version__ = '3.1.3'
 
+
+import six
+
+
 def version_str_to_tuple(version_str):
     import re
     import sys
 
     if version_str == 'HEAD':
-        return (sys.maxint, sys.maxint, sys.maxint, sys.maxint)
+        return (six.MAXSIZE, six.MAXSIZE, six.MAXSIZE, six.MAXSIZE)
 
     m = re.match(r'(\d+)\.(\d+)(\.(\d+))?(b(\d+))?', version_str)
     if m is None:
@@ -154,7 +158,7 @@ def version_str_to_tuple(version_str):
     major = int(m.group(1))
     minor = int(m.group(2))
     patch = int(m.group(4) or 0)
-    beta = int(m.group(6) or sys.maxint)
+    beta = int(m.group(6) or six.MAXSIZE)
 
     return (major, minor, patch, beta)
 
@@ -163,9 +167,9 @@ runtime_version_str = __version__
 runtime_version = version_str_to_tuple(runtime_version_str)
 
 
-from constants import *
-from dfa import *
-from exceptions import *
-from recognizers import *
-from streams import *
-from tokens import *
+from antlr3.constants import *
+from antlr3.dfa import *
+from antlr3.exceptions import *
+from antlr3.recognizers import *
+from antlr3.streams import *
+from antlr3.tokens import *
