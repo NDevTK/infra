@@ -34,6 +34,18 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
+// defaultDUTSSHKeyPathLocal returns the recommended local DUT ssh keyfile path.
+//
+// It's the default DUT ssh key path that mallet will use.
+// It's in ChromiumOS internal manifest, running `repo sync` will automatically get this partner key downloaded.
+func defaultDUTSSHKeyPathLocal() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "~/chromiumos/sshkeys/partner_testing_rsa"
+	}
+	return filepath.Join(home, "chromiumos/sshkeys/partner_testing_rsa")
+}
+
 // LocalRecovery subcommand: Running verify/recovery against the DUT from local environment.
 var LocalRecovery = &subcommands.Command{
 	UsageLine: "local-recovery UNIT_NAME",
@@ -58,6 +70,8 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
+
+		c.Flags.StringVar(&c.dutSSHKeyPath, "dut-ssh-key-path", defaultDUTSSHKeyPathLocal(), "the partner ssh key that used internally to ssh a DUT which in ChromeOS image")
 		return c
 	},
 }
@@ -77,6 +91,7 @@ type localRecoveryRun struct {
 	showSteps        bool
 	generateLogFiles bool
 	taskName         string
+	dutSSHKeyPath    string
 }
 
 // Run initiates execution of local recovery.
@@ -149,7 +164,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 			Options: site.DefaultPRPCOptions,
 		},
 	)
-	access, err := recovery.NewLocalTLWAccess(ic, csac)
+	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{c.dutSSHKeyPath})
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create tlw access").Err()
 	}

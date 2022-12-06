@@ -23,11 +23,12 @@ const (
 )
 
 // SSHConfig provides default config for SSH.
-func SSHConfig() *ssh.ClientConfig {
+func SSHConfig(sshKeyPaths []string) *ssh.ClientConfig {
+	keySigners := getKeySigners(sshKeyPaths)
 	return &ssh.ClientConfig{
 		User:            defaultSSHUser,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(SSHSigner)},
+		Auth:            []ssh.AuthMethod{ssh.PublicKeys(keySigners...)},
 		// The timeout specified to established connection only.
 		// That is not an execution timeout.
 		Timeout: 2 * time.Second,

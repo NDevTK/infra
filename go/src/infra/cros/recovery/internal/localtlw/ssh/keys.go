@@ -6,7 +6,9 @@ package ssh
 
 import (
 	"fmt"
+	"io/ioutil"
 
+	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -53,4 +55,29 @@ func init() {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to prepare key for SSH access! %s", err.Error()))
 	}
+}
+
+func readPrivateKeyFromFile(path string) (ssh.Signer, error) {
+	if path == "" {
+		return nil, errors.Reason("key file path is empty").Err()
+	}
+	c, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return ssh.ParsePrivateKey(c)
+}
+
+func getKeySigners(sshKeyPaths []string) []ssh.Signer {
+	keySigners := []ssh.Signer{SSHSigner}
+	for _, p := range sshKeyPaths {
+		sshSigner, err := readPrivateKeyFromFile(p)
+		if err != nil {
+			fmt.Printf("fail to read private key file %s: %s\n", p, err)
+		}
+		if sshSigner != nil {
+			keySigners = append(keySigners, sshSigner)
+		}
+	}
+	return keySigners
 }

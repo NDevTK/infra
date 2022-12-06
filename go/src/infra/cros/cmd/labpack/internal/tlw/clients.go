@@ -20,6 +20,9 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
+// It's the default path in lab drone & satlab drone to store the partner ssh key.
+const defaultPartnerKeyPathInDrone = "/creds/ssh_keys/partner_testing_rsa"
+
 // NewAccess creates TLW Access for recovery engine.
 func NewAccess(ctx context.Context, in *steps.LabpackInput) (tlw.Access, error) {
 	hc, err := httpClient(ctx)
@@ -39,7 +42,7 @@ func NewAccess(ctx context.Context, in *steps.LabpackInput) (tlw.Access, error) 
 		},
 	)
 	// TODO(otabek@): Replace with access to F20 services.
-	access, err := recovery.NewLocalTLWAccess(ic, csac)
+	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{defaultPartnerKeyPathInDrone})
 	return access, errors.Annotate(err, "create tlw access").Err()
 }
 
