@@ -170,6 +170,9 @@ require (
 	github.com/src-d/gcfg v1.4.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
+	github.com/tklauser/go-sysconf v0.3.10 // indirect
+	github.com/tklauser/numcpus v0.4.0 // indirect
+	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	github.com/zeebo/bencode v1.0.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220218215828-6cf2b201936e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
@@ -192,7 +195,7 @@ require (
 exclude github.com/antlr/antlr4 v0.0.0-20200503195918-621b933c7a7f
 
 // More recent versions break sysmon tests, crbug.com/1142700.
-replace github.com/shirou/gopsutil => github.com/shirou/gopsutil v2.20.10-0.20201018091616-3202231bcdbd+incompatible
+replace github.com/shirou/gopsutil => github.com/shirou/gopsutil v2.21.11+incompatible
 
 // Apparently checking out NDKs at head isn't really safe.
 replace golang.org/x/mobile => golang.org/x/mobile v0.0.0-20170111200746-6f0c9f6df9bb
