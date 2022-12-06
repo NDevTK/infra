@@ -33,6 +33,29 @@
       "message": "Thanks!",
       "revId": "585ec237224f95b25a3e38853bd768381af2fe5a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa67db00_47f12c00",
+        "filename": "go/src/infra/tools/result_adapter/cmd_native.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2022-12-06T12:10:27Z",
+      "side": 1,
+      "message": "Perhaps replace `jsonpb` with `protojson`? As the golang doc shown, `jsonbp` was deprecated and `protojson` is recommended.\n\nhttps://pkg.go.dev/github.com/golang/protobuf/jsonpb\n\nhttps://pkg.go.dev/google.golang.org/protobuf/encoding/protojson\n\nI have an example in the `cros_test_result` adapter: https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/result_adapter/cros_test_result.go;l\u003d28-40?q\u003dgo%2Fsrc%2Finfra%2Ftools%2Fresult_adapter%2Fcros_test_result.go",
+      "range": {
+        "startLine": 61,
+        "startChar": 16,
+        "endLine": 61,
+        "endChar": 22
+      },
+      "revId": "585ec237224f95b25a3e38853bd768381af2fe5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
