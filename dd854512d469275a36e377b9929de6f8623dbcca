@@ -55,6 +55,58 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "794d958c_23c0f875",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2022-12-06T00:18:14Z",
+      "side": 1,
+      "message": "Also typo for described",
+      "parentUuid": "63d15827_79c6271b",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5374b09_559fd8ce",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2022-12-06T00:18:14Z",
+      "side": 1,
+      "message": "I would suggest starting a new paragraph after \"that tradeoff in recall\" and put in something like:\n\nFor example, the output above shows that there were 6878 rejections in August 2022. Of these, 99.78% of those rejections would have been preserved. This also means that removing browser_tests from linux_chromium_asan_rel_ng would have allowed .22% of rejections through, or about 15 CLs over the course of a month. (6878 rejections * .22% rejections in August).\n\nThe paragraph about example rejects looks good, although it would be even better if we could paste in how the output should look.",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f4ed12b_fc585afe",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2022-12-06T00:18:14Z",
+      "side": 1,
+      "message": "Add newline.",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "89d69433_1279bcad",
         "filename": "go/src/infra/rts/cmd/rts-suite-analysis/analyze.go",
         "patchSetId": 3
