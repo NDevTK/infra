@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "50e1afde_d7ae13a7",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-06T05:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb2fa6b4_7022838f",
+      "range": {
+        "startLine": 28,
+        "startChar": 30,
+        "endLine": 28,
+        "endChar": 37
+      },
+      "revId": "a311b3159959c36b8ab92b84f19ea80636891216",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "60fe6cdd_b47950d0",
@@ -54,6 +78,24 @@
       "writtenOn": "2022-12-05T22:56:57Z",
       "side": 1,
       "message": "dbeckett to review phosphorus change? not sure if we want envvar used here.  Better to lookup the envvar in main and pass it as an argument inside the program, otherwise it can be hard to debug later.",
+      "revId": "a311b3159959c36b8ab92b84f19ea80636891216",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd05d7f8_36841501",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/tls/tls.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-06T05:52:46Z",
+      "side": 1,
+      "message": "Find there\u0027re several phosphorus subcmds using NewBackgroundTLS(), for now I just use os.Getenv() in the tls lib inside phosphorus. Will wait for Derek\u0027s review feedback to see if this env should be passed in every phosphorus subcmd.",
+      "parentUuid": "60fe6cdd_b47950d0",
       "revId": "a311b3159959c36b8ab92b84f19ea80636891216",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -75,6 +117,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e7ae5f7_23d4e9d9",
+        "filename": "go/src/infra/cros/tlslib/server.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-06T05:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1bacd8_13ad21c6",
+      "revId": "a311b3159959c36b8ab92b84f19ea80636891216",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "471e0040_2692cab7",
@@ -88,6 +148,30 @@
       "writtenOn": "2022-12-05T22:56:57Z",
       "side": 1,
       "message": "nit: the error message is slightly different from method which is unnecessary?\n\nnit: rename ...FromFile because reading from file is important detail about this function.",
+      "range": {
+        "startLine": 424,
+        "startChar": 26,
+        "endLine": 424,
+        "endChar": 43
+      },
+      "revId": "a311b3159959c36b8ab92b84f19ea80636891216",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8d5708a_3b687b80",
+        "filename": "go/src/infra/cros/tlslib/server.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-06T05:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "471e0040_2692cab7",
       "range": {
         "startLine": 424,
         "startChar": 26,
