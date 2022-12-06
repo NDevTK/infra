@@ -44,11 +44,11 @@ HfN/2MoO07vQrjgsFylvrw9A79xItABaqKndlmqlwMZWc9Ne
 -----END RSA PRIVATE KEY-----
 `
 
-var sshSigner ssh.Signer
+var defaultSSHSigner ssh.Signer
 
 func init() {
 	var err error
-	sshSigner, err = ssh.ParsePrivateKey([]byte(sshKeyContent))
+	defaultSSHSigner, err = ssh.ParsePrivateKey([]byte(sshKeyContent))
 	if err != nil {
 		panic(fmt.Sprintf("The well known RSA key: %v", err.Error()))
 	}

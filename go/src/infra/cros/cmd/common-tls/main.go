@@ -25,6 +25,11 @@ var (
 	wiringPort    = flag.Int("wiring-port", 0, "Port for the TLS wiring service")
 	sshKey        = flag.String("ssh-key", "", "[Deprecated. Will use the well known RSA key.] Path to SSH key for DUTs (no auth if unset)")
 	serverTimeout = flag.Duration("server-timeout", 0, "Maximum duration for which to allow the server to run (<=0 to run indefinitely)")
+	// This key will be used together to access DUTs with the default SSH key stored in wellknown_ssh_key.go:
+	// 	 https://chromium.git.corp.google.com/infra/infra//+/refs/heads/main/go/src/infra/cros/tlslib/wellknown_ssh_key.go
+	// The key in wellknown_ssh_key will be tried first.
+	// This key will be tried as a fallback if the wellknown_ssh_key fails.
+	dutSSHKey = flag.String("dut-ssh-key", "", "Path to alternate SSH key to use to access DUTs")
 )
 
 func main() {
@@ -59,7 +64,7 @@ func innerMain() error {
 		return err
 	}
 	log.Printf("CommonServer listening at address %v", l.Addr())
-	s, err := tlslib.NewServer(context.Background(), conn)
+	s, err := tlslib.NewServer(context.Background(), conn, *dutSSHKey)
 	if err != nil {
 		return err
 	}
