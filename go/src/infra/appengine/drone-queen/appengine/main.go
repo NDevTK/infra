@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
+	"infra/appengine/drone-queen/internal/config"
 	icron "infra/appengine/drone-queen/internal/cron"
 	"infra/appengine/drone-queen/internal/frontend"
 	"infra/appengine/drone-queen/internal/middleware"
@@ -35,6 +36,7 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		icron.InstallHandlers()
 		srv.RegisterUnaryServerInterceptor(middleware.UnaryTrace)
+		srv.RegisterUnaryServerInterceptor(config.UnaryConfig)
 		frontend.RegisterServers(srv)
 		return nil
 	})
