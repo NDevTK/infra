@@ -320,6 +320,57 @@ func TestListMachines(t *testing.T) {
 	})
 }
 
+// TestListMachinesByIdPrefixSearch tests the functionality for listing
+// machines by seraching for name/id prefix
+func TestListMachinesByIdPrefixSearch(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+	machines := make([]*ufspb.Machine, 0, 4)
+	for i := 0; i < 4; i++ {
+		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus")
+		resp, _ := CreateMachine(ctx, chromeOSMachine1)
+		machines = append(machines, resp)
+	}
+	Convey("ListMachinesByIdPrefixSearch", t, func() {
+		Convey("List machines - page_token invalid", func() {
+			resp, nextPageToken, err := ListMachinesByIdPrefixSearch(ctx, 5, "abc", "chromeos-", false)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+		})
+
+		Convey("List machines - Full listing with valid prefix and no pagination", func() {
+			resp, nextPageToken, err := ListMachinesByIdPrefixSearch(ctx, 4, "", "chromeos-", false)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines)
+		})
+
+		Convey("List machines - Full listing with invalid prefix", func() {
+			resp, nextPageToken, err := ListMachinesByIdPrefixSearch(ctx, 4, "", "chromeos1-", false)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("List machines - listing with valid prefix and pagination", func() {
+			resp, nextPageToken, err := ListMachinesByIdPrefixSearch(ctx, 3, "", "chromeos-", false)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[:3])
+
+			resp, _, err = ListMachines(ctx, 2, nextPageToken, nil, false)
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[3:])
+		})
+	})
+}
+
 func TestDeleteMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")

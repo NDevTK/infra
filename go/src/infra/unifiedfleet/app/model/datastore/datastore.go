@@ -7,6 +7,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	"github.com/golang/protobuf/proto"
@@ -162,6 +163,27 @@ func ListQuery(ctx context.Context, entityKind string, pageSize int32, pageToken
 			q = q.Eq(field, id)
 		}
 	}
+	if cursor != nil {
+		q = q.Start(cursor)
+	}
+	return q, nil
+}
+
+// ListQueryIdPrefixSearch constructs a query by searching for the name/id prefix to list entities with pagination
+func ListQueryIdPrefixSearch(ctx context.Context, entityKind string, pageSize int32, pageToken string, prefix string, keysOnly bool) (q *datastore.Query, err error) {
+	var cursor datastore.Cursor
+	if pageToken != "" {
+		cursor, err = datastore.DecodeCursor(ctx, pageToken)
+		if err != nil {
+			logging.Errorf(ctx, "Failed to DecodeCursor from pageToken: %s", err)
+			return nil, status.Errorf(codes.InvalidArgument, "%s: %s", InvalidPageToken, err.Error())
+		}
+	}
+	q = datastore.NewQuery(entityKind).Limit(pageSize).KeysOnly(keysOnly).FirestoreMode(true)
+	startKey := datastore.NewKey(ctx, entityKind, prefix, 0, nil)
+	endKey := datastore.NewKey(ctx, entityKind, fmt.Sprintf("%s\uFFFD", prefix), 0, nil)
+	q = q.Gte("__key__", startKey)
+	q = q.Lt("__key__", endKey)
 	if cursor != nil {
 		q = q.Start(cursor)
 	}
