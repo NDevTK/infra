@@ -55,7 +55,7 @@ export function ResourceList() {
     { field: 'type', headerName: 'Type', flex: 0.5 },
     { field: 'operatingSystem', headerName: 'Operating System', flex: 0.4 },
     { field: 'description', headerName: 'Description', flex: 0.7 },
-    { field: 'image', headerName: 'Image', flex: 0.3 },
+    { field: 'imageSource', headerName: 'Image Source', flex: 0.3 },
     { field: 'createdBy', headerName: 'Created By', flex: 0.4 },
     {
       field: 'createdAt',
