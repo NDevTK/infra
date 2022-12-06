@@ -119,6 +119,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 			LibsServer: &lab_api.IpEndpoint{Address: "localhost", Port: libsServer.Port},
 		},
 		Companions: companions,
+		Metadata:   req.GetMetadata(),
 	}
 	if err := writeTestInput(inputFileName, testReq); err != nil {
 		return nil, errors.Annotate(err, "run test: failed to create input file %s", inputFileName).Err()
