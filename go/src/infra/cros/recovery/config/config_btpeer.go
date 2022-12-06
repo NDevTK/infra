@@ -14,7 +14,7 @@ func btpeerRepairPlan() *Plan {
 			"Set state: BROKEN",
 			"Device is pingable",
 			"Device is SSHable",
-			"Chameleond is responsive",
+			// TODO(b:261631000) Chameleond is responsive",
 			"Set state: WORKING",
 		},
 		Actions: map[string]*Action{
