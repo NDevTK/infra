@@ -133,7 +133,6 @@ func runGSUploadStep(ctx context.Context, authFlags authcli.Flags, r *phosphorus
 	}
 	if err = w.WriteDir(wCtx, localPath, path); err != nil {
 		logging.Infof(ctx, "Writing local dir %q to GS path %q failed", localPath, path)
-		logging.Infof(ctx, "Dir list in local path: %s", dirList(localPath))
 		return "", err
 	}
 	logging.Infof(ctx, "All files uploaded.")
