@@ -76,9 +76,3 @@ func ValidateFaftKind(v string) error {
 	}
 	return fmt.Errorf("validate faft kind: bad kind %q", v)
 }
-
-// SerializeFaftVersion takes arguments describing a faft version
-// and produces a string in the canonical format.
-func SerializeFaftVersion(platform string, kind string, release int, tip int, branch int, branchBranch int) string {
-	return fmt.Sprintf("%s-%s/R%d-%d.%d.%d", platform, kind, release, tip, branch, branchBranch)
-}

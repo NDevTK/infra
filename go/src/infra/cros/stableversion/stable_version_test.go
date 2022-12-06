@@ -118,14 +118,6 @@ func TestValidateFaftVersion(t *testing.T) {
 }
 
 // TODO(gregorynisbet): replace with table-driven test
-func TestSerializeFaftVersion(t *testing.T) {
-	out := SerializeFaftVersion("a", "firmware", 1, 2, 3, 4)
-	if out != "a-firmware/R1-2.3.4" {
-		t.Errorf("expected: R1-2.3.4 got:%s", out)
-	}
-}
-
-// TODO(gregorynisbet): replace with table-driven test
 func TestParseFaftVersion(t *testing.T) {
 	Convey("Test Parsing Firwmare Version", t, func() {
 		platform, kind, release, tip, branch, branchBranch, err := ParseFaftVersion("a-firmware/R1-2.3.4")
