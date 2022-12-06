@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6a1a93c_0fbd27c1",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-12-06T00:16:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63d15827_79c6271b",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "89d69433_1279bcad",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "35fb8bd7_9c5f32b8",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/analyze.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-12-06T00:16:44Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "89d69433_1279bcad",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "03c1da3a_9d50c7ed",
@@ -65,6 +101,24 @@
       "writtenOn": "2022-12-05T23:32:22Z",
       "side": 1,
       "message": "This could be simplified if we set `removedBuildSuites[removedBuilderSuite] \u003d true` before this loop.",
+      "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1796627_6cad25f9",
+        "filename": "go/src/infra/rts/cmd/rts-suite-analysis/analyze.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-12-06T00:16:44Z",
+      "side": 1,
+      "message": "It can\u0027t. The test IDs only applies to the suite under analysis",
+      "parentUuid": "03c1da3a_9d50c7ed",
       "revId": "dd854512d469275a36e377b9929de6f8623dbcca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
