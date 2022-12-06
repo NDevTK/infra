@@ -73,7 +73,8 @@ func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) e
 	containerStartArgs := []string{"tail", "-f", "/dev/null"}
 	if startServod {
 		containerStartArgs = []string{"bash", "/start_servod.sh"}
-		exposePorts = append(exposePorts, fmt.Sprintf("%d:%d/tcp", req.Options.GetServodPort(), req.Options.GetServodPort()))
+		//TODO(b:260804597) Need restore it.
+		// exposePorts = append(exposePorts, fmt.Sprintf("%d:%d/tcp", req.Options.GetServodPort(), req.Options.GetServodPort()))
 	}
 	containerArgs := createServodContainerArgs(true, exposePorts, envVar, containerStartArgs)
 	// Servod expected to start in less 1 minutes.
