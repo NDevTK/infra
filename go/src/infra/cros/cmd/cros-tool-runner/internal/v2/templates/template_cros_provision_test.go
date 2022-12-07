@@ -74,8 +74,61 @@ func TestProcessPlaceholders_errorIgnored(t *testing.T) {
 	}
 }
 
-func check(t *testing.T, a interface{}, b interface{}) {
-	if a != b {
-		t.Fatalf("%v should match %v", a, b)
+func TestCrosProvisionDiscoverPort_errorPropagated(t *testing.T) {
+	processor := &crosProvisionProcessor{
+		defaultPortDiscoverer: getMockPortDiscovererWithError("error when discover port"),
 	}
+	request := getCrosProvisionTemplateRequest("mynet")
+	_, err := processor.discoverPort(request)
+
+	if err == nil {
+		t.Fatalf("Expected error")
+	}
+}
+
+func TestCrosProvisionDiscoverPort_bridgeNetwork_populateProtocolOnly(t *testing.T) {
+	expected := &api.Container_PortBinding{
+		ContainerPort: int32(42),
+		Protocol:      protocolTcp,
+	}
+	processor := &crosProvisionProcessor{
+		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
+	}
+	request := getCrosProvisionTemplateRequest("mynet")
+	binding, err := processor.discoverPort(request)
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	check(t, binding.String(), expected.String())
+}
+
+func TestCrosProvisionDiscoverPort_hostNetwork_populateAllFields(t *testing.T) {
+	expected := &api.Container_PortBinding{
+		ContainerPort: int32(42),
+		Protocol:      protocolTcp,
+		HostIp:        localhostIp,
+		HostPort:      int32(42),
+	}
+	processor := &crosProvisionProcessor{
+		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
+	}
+	request := getCrosProvisionTemplateRequest("host")
+	binding, err := processor.discoverPort(request)
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	check(t, binding.String(), expected.String())
+}
+
+func getCrosProvisionTemplateRequest(network string) *api.StartTemplatedContainerRequest {
+	return &api.StartTemplatedContainerRequest{
+		Name:           "my-container",
+		ContainerImage: "gcr.io/image:123",
+		Template: &api.Template{
+			Container: &api.Template_CrosProvision{
+				CrosProvision: &api.CrosProvisionTemplate{
+					Network: network,
+				}}}}
 }

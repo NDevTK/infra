@@ -17,6 +17,7 @@ import (
 type crosProvisionProcessor struct {
 	TemplateProcessor
 	placeholderPopulator  placeholderPopulator
+	defaultPortDiscoverer portDiscoverer
 	serverPort            string // Default port used in cros-provision
 	dockerArtifactDirName string // Path on the drone where service put the logs by default
 	inputFileName         string // File in artifact dir to be passed to cros-provision
@@ -25,6 +26,7 @@ type crosProvisionProcessor struct {
 func newCrosProvisionProcessor() *crosProvisionProcessor {
 	return &crosProvisionProcessor{
 		placeholderPopulator:  newPopulatorRouter(),
+		defaultPortDiscoverer: &defaultPortDiscoverer{},
 		serverPort:            "80",
 		dockerArtifactDirName: "/tmp/provisionservice",
 		inputFileName:         "in.json",
@@ -32,12 +34,11 @@ func newCrosProvisionProcessor() *crosProvisionProcessor {
 }
 
 func (p *crosProvisionProcessor) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
-	t := request.Template.GetCrosProvision()
+	t := request.GetTemplate().GetCrosProvision()
 	if t == nil {
 		return nil, status.Error(codes.Internal, "unable to process")
 	}
 
-	// constants TODO(mingkong): define constants with namespacing to avoid typos
 	volume := fmt.Sprintf("%s:%s", t.ArtifactDir, p.dockerArtifactDirName)
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: t.Network,
@@ -57,8 +58,25 @@ func (p *crosProvisionProcessor) Process(request *api.StartTemplatedContainerReq
 	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage, AdditionalOptions: additionalOptions, StartCommand: startCommand}, nil
 }
 
+func (p *crosProvisionProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
+	t := request.GetTemplate().GetCrosProvision()
+	if t == nil {
+		return nil, status.Error(codes.Internal, "unable to process")
+	}
+	portBinding, err := p.defaultPortDiscoverer.discoverPort(request)
+	if err != nil {
+		return portBinding, err
+	}
+	if t.Network == hostNetworkName {
+		portBinding.HostPort = portBinding.ContainerPort
+		portBinding.HostIp = localhostIp
+	}
+	portBinding.Protocol = protocolTcp
+	return portBinding, nil
+}
+
 func (p *crosProvisionProcessor) processPlaceholders(request *api.StartTemplatedContainerRequest) {
-	t := request.Template.GetCrosProvision()
+	t := request.GetTemplate().GetCrosProvision()
 	if t.InputRequest.DutServer == nil {
 		return
 	}
@@ -73,7 +91,7 @@ func (p *crosProvisionProcessor) processPlaceholders(request *api.StartTemplated
 }
 
 func (p *crosProvisionProcessor) writeInputFile(request *api.StartTemplatedContainerRequest) error {
-	t := request.Template.GetCrosProvision()
+	t := request.GetTemplate().GetCrosProvision()
 	filePath := path.Join(t.ArtifactDir, p.inputFileName)
 	return TemplateUtils.writeToFile(filePath, t.InputRequest)
 }

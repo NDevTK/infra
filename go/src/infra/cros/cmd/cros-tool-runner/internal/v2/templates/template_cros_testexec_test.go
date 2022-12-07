@@ -13,15 +13,7 @@ import (
 
 func TestCrosTestPopulate(t *testing.T) {
 	processor := newCrosTestProcessor()
-	request := &api.StartTemplatedContainerRequest{
-		Name:           "my-container",
-		ContainerImage: "gcr.io/image:123",
-		Template: &api.Template{
-			Container: &api.Template_CrosTest{
-				CrosTest: &api.CrosTestTemplate{
-					Network:     "mynet",
-					ArtifactDir: "/tmp/unit-tests",
-				}}}}
+	request := getCrosTestTemplateRequest("mynet")
 
 	convertedRequest, err := processor.Process(request)
 
@@ -36,4 +28,64 @@ func TestCrosTestPopulate(t *testing.T) {
 	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "cros-test") {
 		t.Fatalf("cros-test is not part of start command")
 	}
+}
+
+func TestCrosTestDiscoverPort_errorPropagated(t *testing.T) {
+	processor := &crosTestProcessor{
+		defaultPortDiscoverer: getMockPortDiscovererWithError("error when discover port"),
+	}
+	request := getCrosTestTemplateRequest("mynet")
+	_, err := processor.discoverPort(request)
+
+	if err == nil {
+		t.Fatalf("Expected error")
+	}
+}
+
+func TestCrosTestDiscoverPort_bridgeNetwork_populateProtocolOnly(t *testing.T) {
+	expected := &api.Container_PortBinding{
+		ContainerPort: int32(42),
+		Protocol:      protocolTcp,
+	}
+	processor := &crosTestProcessor{
+		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
+	}
+	request := getCrosTestTemplateRequest("mynet")
+	binding, err := processor.discoverPort(request)
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	check(t, binding.String(), expected.String())
+}
+
+func TestCrosTestDiscoverPort_hostNetwork_populateAllFields(t *testing.T) {
+	expected := &api.Container_PortBinding{
+		ContainerPort: int32(42),
+		Protocol:      protocolTcp,
+		HostIp:        localhostIp,
+		HostPort:      int32(42),
+	}
+	processor := &crosTestProcessor{
+		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
+	}
+	request := getCrosTestTemplateRequest("host")
+	binding, err := processor.discoverPort(request)
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	check(t, binding.String(), expected.String())
+}
+
+func getCrosTestTemplateRequest(network string) *api.StartTemplatedContainerRequest {
+	return &api.StartTemplatedContainerRequest{
+		Name:           "my-container",
+		ContainerImage: "gcr.io/image:123",
+		Template: &api.Template{
+			Container: &api.Template_CrosTest{
+				CrosTest: &api.CrosTestTemplate{
+					Network:     network,
+					ArtifactDir: "/tmp/unit-tests",
+				}}}}
 }

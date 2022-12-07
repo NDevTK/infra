@@ -15,14 +15,19 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type crosTestProcessor struct{ TemplateProcessor }
+type crosTestProcessor struct {
+	TemplateProcessor
+	defaultPortDiscoverer portDiscoverer
+}
 
 func newCrosTestProcessor() TemplateProcessor {
-	return &crosTestProcessor{}
+	return &crosTestProcessor{
+		defaultPortDiscoverer: &defaultPortDiscoverer{},
+	}
 }
 
 func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
-	t := request.Template.GetCrosTest()
+	t := request.GetTemplate().GetCrosTest()
 	if t == nil {
 		return nil, status.Error(codes.Internal, "unable to process")
 	}
@@ -62,6 +67,23 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	cmd := fmt.Sprintf("sudo --non-interactive chown -R chromeos-test:chromeos-test %s && cros-test server", "/tmp/test")
 	startCommand := []string{"bash", "-c", cmd}
 	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage, AdditionalOptions: additionalOptions, StartCommand: startCommand}, nil
+}
+
+func (p *crosTestProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
+	t := request.GetTemplate().GetCrosTest()
+	if t == nil {
+		return nil, status.Error(codes.Internal, "unable to process3")
+	}
+	portBinding, err := p.defaultPortDiscoverer.discoverPort(request)
+	if err != nil {
+		return portBinding, err
+	}
+	if t.Network == hostNetworkName {
+		portBinding.HostPort = portBinding.ContainerPort
+		portBinding.HostIp = localhostIp
+	}
+	portBinding.Protocol = protocolTcp
+	return portBinding, nil
 }
 
 // createDir creates artifact subdirectories for the given path.
