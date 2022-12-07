@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd2bea4e_955ad3b0",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-12-07T16:58:20Z",
+      "side": 1,
+      "message": "Do we have to tell users this detailed information? That increases the maintenance burden. Is the wording below ok?\n\n    The default well known ssh key will be tried first.",
+      "range": {
+        "startLine": 30,
+        "startChar": 94,
+        "endLine": 30,
+        "endChar": 144
+      },
+      "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "804ce1ed_62853303",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-12-07T16:58:20Z",
+      "side": 1,
+      "message": "Should have a better name to show it\u0027s an alternative key, e.g. alter-dut-ssh-key, or backup-dut-ssh-key?",
+      "range": {
+        "startLine": 30,
+        "startChar": 26,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
