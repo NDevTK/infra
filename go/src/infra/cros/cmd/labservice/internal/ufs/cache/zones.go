@@ -78,6 +78,10 @@ func (f *zonesFinder) fetchCacheZones(client ufsapi.FleetClient) (map[ufspb.Zone
 		if err != nil {
 			return nil, fmt.Errorf("fetch cache zones: %s", err)
 		}
+		if len(s.GetServingSubnets()) > 0 {
+			// Skip as the server still use the subnet based selection.
+			continue
+		}
 		if zs := s.GetZones(); len(zs) > 0 {
 			for _, z := range zs {
 				result[z] = append(result[z], *svc)
