@@ -28,9 +28,9 @@ import (
 
 	"go.chromium.org/luci/server/cron"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 
 	"infra/appengine/drone-queen/internal/config"
+	"infra/appengine/drone-queen/internal/middleware"
 	"infra/appengine/drone-queen/internal/queries"
 )
 
@@ -38,8 +38,11 @@ var tracer = otel.Tracer("infra/appengine/drone-queen/internal/cron")
 
 // InstallHandlers installs global handlers for cron jobs that are part of this app.
 func InstallHandlers() {
-	install := func(id string, handler cron.Handler) {
-		cron.RegisterHandler(id, wrap(handler, id))
+	install := func(id string, h cron.Handler) {
+		cron.RegisterHandler(id, chain(
+			h,
+			middleware.CronTrace(id),
+		))
 	}
 	install("import-service-config", importServiceConfig)
 	install("free-invalid-duts", freeInvalidDUTs)
@@ -47,14 +50,13 @@ func InstallHandlers() {
 	install("prune-drained-duts", pruneDrainedDUTs)
 }
 
-// wrap wraps cron handlers (basically providing "middleware").
-func wrap(f cron.Handler, name string) cron.Handler {
-	return func(ctx context.Context) error {
-		var span trace.Span
-		ctx, span = tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindServer))
-		defer span.End()
-		return f(ctx)
+// chain is a helper for chaining cron handler wrappers.
+// First wrapper is outermost.
+func chain(h cron.Handler, w ...middleware.CronWrapper) cron.Handler {
+	for i := len(w) - 1; i >= 0; i-- {
+		h = w[i](h)
 	}
+	return h
 }
 
 func importServiceConfig(ctx context.Context) error {
