@@ -23,11 +23,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-var tracer trace.Tracer
+var tracer trace.Tracer = otel.Tracer("infra/appengine/drone-queen/internal/middleware")
 
-func init() {
-	tracer = otel.Tracer("infra/appengine/drone-queen/internal/middleware")
-}
 
 var _ grpc.UnaryServerInterceptor = UnaryTrace
 
