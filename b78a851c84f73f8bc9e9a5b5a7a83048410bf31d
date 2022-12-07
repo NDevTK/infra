@@ -69,6 +69,54 @@
       },
       "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a2de33b_ee0f0d8f",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-12-07T23:42:18Z",
+      "side": 1,
+      "message": "yeah, we can shorten/reword a bit.\n\nPath to alternate DUT SSH key.  This key will be used if the default well-known key doesn\u0027t work.\n\nYou should propagate this to all of the other strings/comments",
+      "parentUuid": "fd2bea4e_955ad3b0",
+      "range": {
+        "startLine": 30,
+        "startChar": 94,
+        "endLine": 30,
+        "endChar": 144
+      },
+      "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be298295_9ed51087",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-12-07T23:42:18Z",
+      "side": 1,
+      "message": "The flag help is sufficient in this case I think.",
+      "parentUuid": "f0c0ed02_7a7a82b8",
+      "range": {
+        "startLine": 30,
+        "startChar": 26,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
