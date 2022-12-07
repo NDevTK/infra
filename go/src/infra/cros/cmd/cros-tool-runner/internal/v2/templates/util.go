@@ -19,6 +19,7 @@ import (
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
 )
 
 // ContainerLookuper provides interface to lookup information for a container
@@ -29,9 +30,12 @@ type ContainerLookuper interface {
 // templateUtils implements ContainerLookuper
 type templateUtils struct {
 	ContainerLookuper
+	templateRouter TemplateProcessor
 }
 
-var TemplateUtils = templateUtils{}
+var TemplateUtils = templateUtils{
+	templateRouter: &RequestRouter{},
+}
 
 // parsePortBindingString parses the output from `docker container port` command
 // The input string example: `81/tcp -> 0.0.0.0:42223`
@@ -96,7 +100,12 @@ func (u *templateUtils) LookupContainerPortBindings(name string) ([]*api.Contain
 	if err != nil {
 		return nil, err
 	}
-	return u.parseMultilinePortBindings(output)
+	bindings, err := u.parseMultilinePortBindings(output)
+	if err != nil || len(bindings) > 0 {
+		return bindings, err
+	}
+	// If bindings are empty, check port discovery.
+	return u.getPortDiscoveryBindings(u.getTemplateRequest(name)), nil
 }
 
 // endpointToAddress converts an endpoint to an address string
@@ -115,4 +124,39 @@ func (*templateUtils) writeToFile(file string, content proto.Message) error {
 		return errors.Annotate(err, "fail to marshal request to file %v", file).Err()
 	}
 	return nil
+}
+
+// getTemplateRequest retrieves the StartTemplatedContainerRequest from the
+// global state.
+func (*templateUtils) getTemplateRequest(name string) *api.StartTemplatedContainerRequest {
+	cmd := commands.ContainerInspect{Names: []string{name}, Format: "{{.Id}}"}
+	stdout, _, err := cmd.Execute(context.Background())
+	if err != nil {
+		log.Printf("warning: unable to retrieve container id with name %s: %s", name, err)
+		return nil
+	}
+	id := strings.TrimSpace(stdout)
+	return state.ServerState.TemplateRequest.Get(id)
+}
+
+// getPortDiscoveryBindings retrieves port bindings from templates' port
+// discovery. Note that depending on whether `host` or bridge network is used
+// to start the container, the host port isn't always populated by port
+// discovery.
+// As currently port discovery is used as a fallback for all use cases, this
+// method will swallow any errors and return empty bindings. Clients that rely
+// on port discovery should handle empty port bindings as an error case.
+func (u *templateUtils) getPortDiscoveryBindings(request *api.StartTemplatedContainerRequest) []*api.Container_PortBinding {
+	bindings := make([]*api.Container_PortBinding, 0)
+	if request == nil {
+		return bindings
+	}
+	portBinding, err := u.templateRouter.discoverPort(request)
+	if err != nil {
+		log.Printf("warning: unable to discover port: %s", err)
+		return bindings
+	}
+
+	bindings = append(bindings, portBinding)
+	return bindings
 }
