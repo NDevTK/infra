@@ -26,7 +26,9 @@ type placeholderPopulator interface {
 
 // Scheme definitions
 const (
-	// ContainerPortScheme indicates the port number used in the container (and
+	// ContainerPortScheme is designed for docker bridge networks where the
+	// communication within a network may use container name as the address.
+	// The scheme indicates the port number used in the container (and
 	// exposed and published when docker run) need to be populated into the
 	// template. For example, if the service running in the container listens to
 	// port 80 and the port has been exposed and published during docker run.
@@ -36,6 +38,13 @@ const (
 	// container can be referenced by name.)
 	// To use this scheme, the port number in the input IpEndpoint must be 0.
 	ContainerPortScheme = "ctr-container-port"
+	// LocalhostPortScheme is designed for the docker `host` network (where
+	// networking is shared with the host) for containers that have
+	// go/cft-port-discovery implemented.
+	// The schema indicates the host address and port number need to be populated
+	// into the template. As the host address will always be `localhost`. The
+	// current templated container must be in the `host` network.
+	LocalhostPortScheme = "ctr-localhost-port"
 )
 
 // populatorRouter is the entry point
@@ -71,6 +80,9 @@ func (pr *populatorRouter) populate(input api.IpEndpoint) (api.IpEndpoint, error
 	case ContainerPortScheme:
 		actualPopulator := containerPortPopulator{pr.containerLookuper}
 		return actualPopulator.populate(updatedEndpoint)
+	case LocalhostPortScheme:
+		actualPopulator := localhostPortPopulator{pr.containerLookuper}
+		return actualPopulator.populate(updatedEndpoint)
 	default:
 		return input, status.Error(codes.InvalidArgument, "Scheme is unrecognized")
 	}
@@ -104,4 +116,33 @@ func getPortBindingErrorMessage(numberOfPortBindings int) string {
 		return "The container has more than one port bindings. Make sure to expose only one service port when start container."
 	}
 	return ""
+}
+
+// localhostPortPopulator populates host address and port using the updated
+// IpEndpoint template supplied by the router
+type localhostPortPopulator struct {
+	containerLookup ContainerLookuper
+}
+
+func (p *localhostPortPopulator) populate(input api.IpEndpoint) (api.IpEndpoint, error) {
+	ports, err := p.containerLookup.LookupContainerPortBindings(input.Address)
+	if err != nil {
+		return input, err
+	}
+	if len(ports) == 0 {
+		return input, status.Error(codes.FailedPrecondition,
+			"ctr-localhost-port scheme cannot find any port bindings. Make sure port discovery has been implemented in your containerized service")
+	}
+	if len(ports) > 1 {
+		return input, status.Error(codes.FailedPrecondition,
+			"ctr-localhost-port scheme only supports one service port. Make sure you are using host network and port discovery")
+	}
+	if ports[0].ContainerPort != ports[0].HostPort {
+		return input, status.Error(codes.FailedPrecondition,
+			"ctr-localhost-port scheme only supports host network where container port and host port are the same")
+	}
+	if input.Port != 0 {
+		return input, status.Error(codes.InvalidArgument, "The port number must be 0 to be used with ctr-localhost-port scheme")
+	}
+	return api.IpEndpoint{Address: localhostIp, Port: ports[0].HostPort}, nil
 }
