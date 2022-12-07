@@ -11,7 +11,13 @@
 # run "go get", then most likely you have inconsistent gclient checkout and need
 # to run "gclient sync" or equivalent to update it.
 per-file go.*=set noparent
-per-file go.*=vadimsh@chromium.org
+
+# MTV
 per-file go.*=iannucci@chromium.org
-per-file go.*=tikuta@chromium.org
+per-file go.*=vadimsh@chromium.org
 per-file go.*=yiwzhang@google.com
+
+# APAC
+per-file go.*=bryner@google.com
+per-file go.*=jwata@google.com
+per-file go.*=tikuta@chromium.org
