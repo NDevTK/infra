@@ -18,11 +18,13 @@ import (
 type crosTestProcessor struct {
 	TemplateProcessor
 	defaultPortDiscoverer portDiscoverer
+	defaultServerPort     string // Default port used in cros-test
 }
 
 func newCrosTestProcessor() TemplateProcessor {
 	return &crosTestProcessor{
 		defaultPortDiscoverer: &defaultPortDiscoverer{},
+		defaultServerPort:     "8001",
 	}
 }
 
@@ -32,7 +34,12 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 		return nil, status.Error(codes.Internal, "unable to process")
 	}
 
-	serverPort := "8001"
+	port := portZero
+	expose := make([]string, 0)
+	if t.Network != hostNetworkName {
+		port = p.defaultServerPort
+		expose = append(expose, port)
+	}
 	// All non-test harness artifacts will be in <artifact_dir>/cros-test/cros-test.
 	crosTestDir := path.Join(t.ArtifactDir, "cros-test", "cros-test")
 	// All test result artifacts will be in <artifact_dir>/cros-test/results.
@@ -54,17 +61,16 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	if _, err := os.Stat(autotestResultsFolder); err == nil {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", autotestResultsFolder, autotestResultsFolder))
 	}
-
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: t.Network,
-		Expose:  []string{serverPort},
+		Expose:  expose,
 		Volume:  volumes,
 	}
 	// It is necessary to do sudo here because /tmp/test is owned by root inside docker
 	// when docker mount /tmp/test. However, the user that is running cros-test is
 	// chromeos-test inside docker. Hence, the user chromeos-test does not have write
 	// permission in /tmp/test. Therefore, we need to change the owner of the directory.
-	cmd := fmt.Sprintf("sudo --non-interactive chown -R chromeos-test:chromeos-test %s && cros-test server", "/tmp/test")
+	cmd := fmt.Sprintf("sudo --non-interactive chown -R chromeos-test:chromeos-test %s && cros-test server -port %s", "/tmp/test", port)
 	startCommand := []string{"bash", "-c", cmd}
 	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage, AdditionalOptions: additionalOptions, StartCommand: startCommand}, nil
 }

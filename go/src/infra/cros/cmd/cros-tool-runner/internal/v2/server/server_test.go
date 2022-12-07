@@ -126,6 +126,32 @@ func TestStartContainer_invalidPort_range(t *testing.T) {
 	}
 }
 
+func TestStartContainer_emptyExpose_passValidation(t *testing.T) {
+	service := getService(&mockExecutor{})
+	_, err := service.StartContainer(context.Background(), &api.StartContainerRequest{
+		Name:              "my-container",
+		ContainerImage:    "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457",
+		StartCommand:      []string{"cros-dut"},
+		AdditionalOptions: &api.StartContainerRequest_Options{Expose: []string{}},
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error")
+	}
+}
+
+func TestStartContainer_nilExpose_passValidation(t *testing.T) {
+	service := getService(&mockExecutor{})
+	_, err := service.StartContainer(context.Background(), &api.StartContainerRequest{
+		Name:              "my-container",
+		ContainerImage:    "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457",
+		StartCommand:      []string{"cros-dut"},
+		AdditionalOptions: &api.StartContainerRequest_Options{Expose: nil},
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error")
+	}
+}
+
 func TestStartContainer_pullError_ignored(t *testing.T) {
 	errorMapping := make(map[string]string)
 	errorMapping["*commands.DockerPull"] = "Permission \"artifactregistry.repositories.downloadArtifacts\" denied on resource"

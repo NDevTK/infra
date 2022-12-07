@@ -1,0 +1,74 @@
+# This is the textproto example that can be used by grpc_cli to call the
+# StackCommands endpoint. For more information please refer to v2/README.md
+# The only difference between this example and v2_template_example are:
+# - `host` network is used
+# - accordingly `ctr-localhost-port` scheme is used as placeholder
+# `grpc_cli call localhost:8082 chromiumos.test.api.CrosToolRunnerContainerService.StackCommands --infile=data/v2_template_host_network_example.textproto --channel_creds_type insecure`
+requests: {
+  login_registry: {
+    username: "oauth2accesstoken"
+    password: "$(gcloud auth print-access-token)"
+    registry: "us-docker.pkg.dev"
+  }
+}
+requests: {
+  start_templated_container: {
+    name: "my-cros-dut"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8808284912578165185" # you will need to update the tag to a newer version if there is docker pull not_found error
+    template: {
+      cros_dut: {
+        network: "host"
+        artifact_dir: "/tmp"
+        cache_server: {
+          address: "localhost"
+          port: 7443
+        }
+        dut_address: {
+          address: "96.121.241.84" # use a real IP or dut name here
+          port: 2222
+        }
+      }
+    }
+  }
+}
+requests: {
+  start_templated_container: {
+    name: "my-cros-provision"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-provision:8808284912578165185"
+    template: {
+      cros_provision: {
+        network: "host"
+        artifact_dir: "/tmp"
+        input_request: {
+          dut: {
+            id: { value: "chromeos6-row4-rack5-host14" } # more information is required in dut, but validation only requires id
+          }
+          provision_state: {
+            system_image: {
+              system_image_path: {
+                host_type: 1
+                path: "gs://chromeos-image-archive/kevin-cq/R104-14895.0.0-66173-8812350496939596961"
+              }
+            }
+          }
+          dut_server: {
+            address: "ctr-localhost-port://my-cros-dut" # placeholder provides instructions to template processors
+            port: 0 # port number 0 will be replaced by template processor
+          }
+        }
+      }
+    }
+  }
+}
+requests: {
+  start_templated_container: {
+    name: "my-cros-test"
+    container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-test:8808545304957887457"
+    template: {
+      cros_test: {
+        network: "host"
+        artifact_dir: "/tmp/local-test"
+      }
+    }
+  }
+}

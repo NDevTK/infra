@@ -28,6 +28,9 @@ func TestCrosTestPopulate(t *testing.T) {
 	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "cros-test") {
 		t.Fatalf("cros-test is not part of start command")
 	}
+	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "-port 8001") {
+		t.Fatalf("-port 8001 is not part of start command")
+	}
 }
 
 func TestCrosTestDiscoverPort_errorPropagated(t *testing.T) {
@@ -39,6 +42,25 @@ func TestCrosTestDiscoverPort_errorPropagated(t *testing.T) {
 
 	if err == nil {
 		t.Fatalf("Expected error")
+	}
+}
+
+func TestCrosTestPopulate_hostNetwork(t *testing.T) {
+	processor := newCrosTestProcessor()
+	request := getCrosTestTemplateRequest("host")
+
+	convertedRequest, err := processor.Process(request)
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	check(t, convertedRequest.Name, request.Name)
+	check(t, convertedRequest.ContainerImage, request.ContainerImage)
+	check(t, convertedRequest.AdditionalOptions.Network, "host")
+	check(t, len(convertedRequest.AdditionalOptions.Expose), 0)
+	check(t, len(convertedRequest.AdditionalOptions.Volume), 2)
+	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "-port 0") {
+		t.Fatalf("-port 0 is not part of start command")
 	}
 }
 

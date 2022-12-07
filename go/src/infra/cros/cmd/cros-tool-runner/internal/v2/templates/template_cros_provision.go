@@ -18,7 +18,7 @@ type crosProvisionProcessor struct {
 	TemplateProcessor
 	placeholderPopulator  placeholderPopulator
 	defaultPortDiscoverer portDiscoverer
-	serverPort            string // Default port used in cros-provision
+	defaultServerPort     string // Default port used in cros-provision
 	dockerArtifactDirName string // Path on the drone where service put the logs by default
 	inputFileName         string // File in artifact dir to be passed to cros-provision
 }
@@ -27,7 +27,7 @@ func newCrosProvisionProcessor() *crosProvisionProcessor {
 	return &crosProvisionProcessor{
 		placeholderPopulator:  newPopulatorRouter(),
 		defaultPortDiscoverer: &defaultPortDiscoverer{},
-		serverPort:            "80",
+		defaultServerPort:     "80",
 		dockerArtifactDirName: "/tmp/provisionservice",
 		inputFileName:         "in.json",
 	}
@@ -40,15 +40,22 @@ func (p *crosProvisionProcessor) Process(request *api.StartTemplatedContainerReq
 	}
 
 	volume := fmt.Sprintf("%s:%s", t.ArtifactDir, p.dockerArtifactDirName)
+	port := portZero
+	expose := make([]string, 0)
+	if t.Network != hostNetworkName {
+		port = p.defaultServerPort
+		expose = append(expose, port)
+	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: t.Network,
-		Expose:  []string{p.serverPort},
+		Expose:  expose,
 		Volume:  []string{volume},
 	}
 	startCommand := []string{
 		"cros-provision",
 		"server",
 		"-metadata", path.Join(p.dockerArtifactDirName, p.inputFileName), // input file flag for cros-provision v2 is metadata
+		"-port", port,
 	}
 	p.processPlaceholders(request)
 	err := p.writeInputFile(request)

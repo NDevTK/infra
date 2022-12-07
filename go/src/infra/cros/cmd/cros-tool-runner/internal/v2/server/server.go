@@ -163,8 +163,11 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	}
 	if request.AdditionalOptions != nil {
 		options := request.AdditionalOptions
-		if options.Expose != nil && (len(options.Expose) > 1 || strings.Contains(options.Expose[0], "-")) {
+		if len(options.Expose) > 1 {
 			return nil, utils.unimplemented("Exposing multiple ports are not supported")
+		}
+		if len(options.Expose) == 1 && strings.Contains(options.Expose[0], "-") {
+			return nil, utils.unimplemented("Exposing a range of ports are not supported")
 		}
 	}
 	pullErr := s.pullImage(ctx, request.ContainerImage)
@@ -229,7 +232,11 @@ func (s *ContainerServerImpl) StartTemplatedContainer(ctx context.Context, reque
 	if err != nil {
 		return nil, err
 	}
-	return s.StartContainer(ctx, processedRequest)
+	response, err := s.StartContainer(ctx, processedRequest)
+	if response != nil {
+		state.ServerState.TemplateRequest.Add(response.GetContainer().GetId(), request)
+	}
+	return response, err
 }
 
 // StackCommands provides a scripting mechanism to execute a series of commands in order.

@@ -21,6 +21,9 @@ const (
 	hostNetworkName = "host"      // docker `host` network
 	localhostIp     = "localhost" // localhost or 127.0.0.1
 	protocolTcp     = "tcp"       // tcp protocol value in docker port binding
+	// 0 is a special port. When `-port=0` is used to start a service , a random
+	// available port will be allocated. go/cft-port-discovery
+	portZero = "0"
 )
 
 var aCrosDutProcessor = newCrosDutProcessor()

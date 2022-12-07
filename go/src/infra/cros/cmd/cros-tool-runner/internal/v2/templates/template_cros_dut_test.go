@@ -26,6 +26,8 @@ func TestCrosDutPopulate(t *testing.T) {
 	check(t, convertedRequest.AdditionalOptions.Expose[0], "80")
 	check(t, convertedRequest.AdditionalOptions.Volume[0], "/tmp:/tmp/cros-dut")
 	check(t, convertedRequest.StartCommand[0], "cros-dut")
+	check(t, convertedRequest.StartCommand[len(convertedRequest.StartCommand)-1],
+		"80")
 }
 
 func TestCrosDutDiscoverPort_errorPropagated(t *testing.T) {
@@ -36,6 +38,25 @@ func TestCrosDutDiscoverPort_errorPropagated(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected error")
 	}
+}
+
+func TestCrosDutPopulate_hostNetwork(t *testing.T) {
+	processor := newCrosDutProcessor()
+	request := getCrosDutTemplateRequest("host")
+
+	convertedRequest, err := processor.Process(request)
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	check(t, convertedRequest.Name, request.Name)
+	check(t, convertedRequest.ContainerImage, request.ContainerImage)
+	check(t, convertedRequest.AdditionalOptions.Network, "host")
+	check(t, len(convertedRequest.AdditionalOptions.Expose), 0)
+	check(t, convertedRequest.AdditionalOptions.Volume[0], "/tmp:/tmp/cros-dut")
+	check(t, convertedRequest.StartCommand[0], "cros-dut")
+	check(t, convertedRequest.StartCommand[len(convertedRequest.StartCommand)-1],
+		"0")
 }
 
 func TestCrosDutDiscoverPort_bridgeNetwork_populateProtocol(t *testing.T) {
