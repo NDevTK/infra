@@ -24,3 +24,36 @@ Search API and are updating it ourselves for Python 3.
    LICENSE
 3. Strip trailing whitespace from all files.
 4. Rename `google.appengine._internal.antlr3` imports to just `antlr3`.
+5. Update files for Python 3.
+   Syntax changes:
+   * In __init__.py, relative imports --> absolute imports
+   * except Exception, e: --> except Exception as e:
+   * raise Exception, s --> raise Exception(s)
+
+   Import moves:
+   * import cPickle --> from six.moves import cPickle
+   * import httplib --> from six.moves import http_client
+
+   String changes:
+   * a.fromstring(s) --> a.fromstring(s) if hasattr(a, 'fromstring')
+                         else a.frombytes(six.ensure_binary(s))
+   * a.tostring() --> a.tostring() if hasattr(a, 'tostring') else a.tobytes()
+   * basestring --> six.string_types
+   * s.decode() --> six.ensure_text(s)
+   * s.encode() --> six.ensure_binary(s)
+   * unichr() --> six.unichr()
+   * unicode() --> six.ensure_text()
+
+   Integer changes:
+   * 1234L --> 1234
+   * (int, long) --> six.integer_types
+   * long() --> int()
+   * sys.maxint --> six.MAXSIZE
+
+   Iterator changes:
+   * iteritems() --> items()
+   * itervalues() --> values()
+   * xrange() --> range()
+
+   Other:
+   * In search.py:495, add `if value is not None`

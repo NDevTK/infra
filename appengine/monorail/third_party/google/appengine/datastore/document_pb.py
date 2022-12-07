@@ -20,6 +20,7 @@
 from google.net.proto import ProtocolBuffer
 import abc
 import array
+import six
 try:
   from thread import allocate_lock as _Lock
 except ImportError:
@@ -215,7 +216,7 @@ class FieldValue(ProtocolBuffer.ProtocolMessage):
 
   def has_language(self): return self.has_language_
 
-  def string_value(self): return self.string_value_
+  def string_value(self): return six.ensure_str(self.string_value_)
 
   def set_string_value(self, x):
     self.has_string_value_ = 1
@@ -440,7 +441,7 @@ class Field(ProtocolBuffer.ProtocolMessage):
     self.value_ = FieldValue()
     if contents is not None: self.MergeFromString(contents)
 
-  def name(self): return self.name_
+  def name(self): return six.ensure_str(self.name_)
 
   def set_name(self, x):
     self.has_name_ = 1

@@ -32,6 +32,7 @@ import datetime
 import logging
 import os
 import re
+import six
 import string
 import sys
 import warnings
@@ -242,9 +243,7 @@ def _ConvertToUnicode(some_string):
   """Convert UTF-8 encoded string to unicode."""
   if some_string is None:
     return None
-  if isinstance(some_string, unicode):
-    return some_string
-  return unicode(some_string, 'utf-8')
+  return six.ensure_text(some_string)
 
 
 def _ConcatenateErrorMessages(prefix, status):
@@ -328,9 +327,9 @@ def _ConvertToUTF8(value):
     value = {'inf': 'Infinity',
              '-inf': '-Infinity',
              'nan': 'NaN'}.get(value, value)
-  elif isinstance(value, (int, long)):
+  elif isinstance(value, six.integer_types):
     value = str(value)
-  return _ConvertToUnicode(value).encode('utf-8')
+  return six.ensure_binary(_ConvertToUnicode(value))
 
 
 class OperationResult(object):
@@ -493,7 +492,7 @@ def _CheckInteger(value, name, zero_ok=True, upper_bound=None):
   """
   datastore_types.ValidateInteger(value, name, ValueError, empty_ok=True,
                                   zero_ok=zero_ok)
-  if upper_bound is not None and value > upper_bound:
+  if value is not None and upper_bound is not None and value > upper_bound:
     raise ValueError('%s, %d must be <= %d' % (name, value, upper_bound))
   return value
 
@@ -529,7 +528,7 @@ def _IsFinite(value):
 
   if isinstance(value, float) and -1e30000 < value < 1e30000:
     return True
-  elif isinstance(value, (int, long)):
+  elif isinstance(value, six.integer_types):
     return True
   else:
     return False
@@ -550,7 +549,7 @@ def _CheckNumber(value, name, should_be_finite=False):
     TypeError: If the value is not a number.
     ValueError: If should_be_finite is set and the value is not finite.
   """
-  if not isinstance(value, (int, long, float)):
+  if not isinstance(value, six.integer_types + (float,)):
     raise TypeError('%s must be a int, long or float, got %s' %
                     (name, value.__class__.__name__))
   if should_be_finite and not _IsFinite(value):
@@ -628,13 +627,13 @@ def _ValidateString(value,
   """
   if value is None and empty_ok:
     return
-  if value is not None and not isinstance(value, basestring):
+  if value is not None and not isinstance(value, six.string_types):
     raise type_exception('%s must be a basestring; got %s:' %
                          (name, value.__class__.__name__))
   if not value and not empty_ok:
     raise value_exception('%s must not be empty.' % name)
 
-  if len(value.encode('utf-8')) > max_len:
+  if len(six.ensure_binary(value)) > max_len:
     raise value_exception('%s must be under %d bytes.' % (name, max_len))
   return value
 
@@ -727,7 +726,7 @@ def _GetList(a_list):
 
 def _ConvertToList(arg):
   """Converts arg to a list, empty if None, single element if not a list."""
-  if isinstance(arg, basestring):
+  if isinstance(arg, six.string_types):
     return [arg]
   if arg is not None:
     try:
@@ -812,7 +811,7 @@ def _CheckLanguage(language):
   """Checks language is None or a string that matches _LANGUAGE_RE."""
   if language is None:
     return None
-  if not isinstance(language, basestring):
+  if not isinstance(language, six.string_types):
     raise TypeError('language must be a basestring, got %s' %
                     language.__class__.__name__)
   if not re.match(_LANGUAGE_RE, language):
@@ -1051,7 +1050,7 @@ class Field(object):
 
   def _CopyStringValueToProtocolBuffer(self, field_value_pb):
     """Copies value to a string value in proto buf."""
-    field_value_pb.set_string_value(self.value.encode('utf-8'))
+    field_value_pb.set_string_value(six.ensure_binary(self.value))
 
 
 class Facet(object):
@@ -1100,7 +1099,7 @@ class Facet(object):
 
   def _CopyStringValueToProtocolBuffer(self, facet_value_pb):
     """Copies value to a string value in proto buf."""
-    facet_value_pb.set_string_value(self.value.encode('utf-8'))
+    facet_value_pb.set_string_value(six.ensure_binary(self.value))
 
   def _CopyToProtocolBuffer(self, pb):
     """Copies facet's contents to a document_pb.Facet proto buffer."""
@@ -1229,7 +1228,7 @@ class FacetRange(object):
     if start is None and end is None:
       raise ValueError(
           'Either start or end need to be provided for a facet range.')
-    none_or_numeric_type = (type(None), int, float, long)
+    none_or_numeric_type = (type(None), float) + six.integer_types
     self._start = _CheckType(start, none_or_numeric_type, 'start')
     self._end = _CheckType(end, none_or_numeric_type, 'end')
     if self._start is not None:
@@ -1298,9 +1297,9 @@ class FacetRequest(object):
     self._ranges = _ConvertToListAndCheckType(
         ranges, FacetRange, 'ranges')
     self._values = _ConvertToListAndCheckType(
-        values, (basestring, int, float, long), 'values')
+        values, six.integer_types + six.string_types + (float,), 'values')
     for value in self._values:
-      if isinstance(value, (int, float, long)):
+      if isinstance(value, six.integer_types + (float,)):
         NumberFacet._CheckValue(value)
 
   @property
@@ -1452,10 +1451,10 @@ class FacetRefinement(object):
 
 def _CopyFieldToProtocolBuffer(field, pb):
   """Copies field's contents to a document_pb.Field protocol buffer."""
-  pb.set_name(field.name.encode('utf-8'))
+  pb.set_name(six.ensure_binary(field.name))
   field_value_pb = pb.mutable_value()
   if field.language:
-    field_value_pb.set_language(field.language.encode('utf-8'))
+    field_value_pb.set_language(six.ensure_binary(field.language))
   if field.value is not None:
     field._CopyValueToProtocolBuffer(field_value_pb)
   return pb
@@ -1841,7 +1840,7 @@ _STRING_TYPES = set([document_pb.FieldValue.TEXT,
 def _DecodeUTF8(pb_value):
   """Decodes a UTF-8 encoded string into unicode."""
   if pb_value is not None:
-    return pb_value.decode('utf-8')
+    return pb_value
   return None
 
 
@@ -2045,7 +2044,7 @@ class Document(object):
 
   def _CheckRank(self, rank):
     """Checks if rank is valid, then returns it."""
-    return _CheckInteger(rank, 'rank', upper_bound=sys.maxint)
+    return _CheckInteger(rank, 'rank', upper_bound=six.MAXSIZE)
 
   def _GetDefaultRank(self):
     """Returns a default rank as total seconds since 1st Jan 2011."""
@@ -2080,9 +2079,9 @@ def _CopyDocumentToProtocolBuffer(document, pb):
   """Copies Document to a document_pb.Document protocol buffer."""
   pb.set_storage(document_pb.Document.DISK)
   if document.doc_id:
-    pb.set_id(document.doc_id.encode('utf-8'))
+    pb.set_id(six.ensure_binary(document.doc_id))
   if document.language:
-    pb.set_language(document.language.encode('utf-8'))
+    pb.set_language(six.ensure_binary(document.language))
   for field in document.fields:
     field_pb = pb.add_field()
     _CopyFieldToProtocolBuffer(field, field_pb)
@@ -2155,7 +2154,7 @@ class FieldExpression(object):
     self._name = _CheckFieldName(_ConvertToUnicode(name))
     if expression is None:
       raise ValueError('expression must be a FieldExpression, got None')
-    if not isinstance(expression, basestring):
+    if not isinstance(expression, six.string_types):
       raise TypeError('expression must be a FieldExpression, got %s' %
                       expression.__class__.__name__)
     self._expression = _CheckExpression(_ConvertToUnicode(expression))
@@ -2177,8 +2176,8 @@ class FieldExpression(object):
 
 def _CopyFieldExpressionToProtocolBuffer(field_expression, pb):
   """Copies FieldExpression to a search_service_pb.FieldSpec_Expression."""
-  pb.set_name(field_expression.name.encode('utf-8'))
-  pb.set_expression(field_expression.expression.encode('utf-8'))
+  pb.set_name(six.ensure_binary(field_expression.name))
+  pb.set_expression(six.ensure_binary(field_expression.expression))
 
 
 class SortOptions(object):
@@ -2305,12 +2304,12 @@ class RescoringMatchScorer(MatchScorer):
 
 def _CopySortExpressionToProtocolBuffer(sort_expression, pb):
   """Copies a SortExpression to a search_service_pb.SortSpec protocol buffer."""
-  pb.set_sort_expression(sort_expression.expression.encode('utf-8'))
+  pb.set_sort_expression(six.ensure_binary(sort_expression.expression))
   if sort_expression.direction == SortExpression.ASCENDING:
     pb.set_sort_descending(False)
   if sort_expression.default_value is not None:
-    if isinstance(sort_expression.default_value, basestring):
-      pb.set_default_value_text(sort_expression.default_value.encode('utf-8'))
+    if isinstance(sort_expression.default_value, six.string_types):
+      pb.set_default_value_text(six.ensure_binary(sort_expression.default_value))
     elif (isinstance(sort_expression.default_value, datetime.datetime) or
           isinstance(sort_expression.default_value, datetime.date)):
       pb.set_default_value_text(str(
@@ -2352,12 +2351,12 @@ class SortExpression(object):
   """Sort by a user specified scoring expression.
 
   For example, the following will sort documents on a numeric field named
-  'length' in ascending order, assigning a default value of sys.maxint for
+  'length' in ascending order, assigning a default value of six.MAXSIZE for
   documents which do not specify a 'length' field.
 
     SortExpression(expression='length',
                    direction=sort.SortExpression.ASCENDING,
-                   default_value=sys.maxint)
+                   default_value=six.MAXSIZE)
 
   The following example will sort documents on a date field named
   'published_date' in descending order, assigning a default value of
@@ -2375,10 +2374,10 @@ class SortExpression(object):
 
 
   try:
-    MAX_FIELD_VALUE = unichr(0x10ffff) * 80
+    MAX_FIELD_VALUE = six.unichr(0x10ffff) * 80
   except ValueError:
 
-    MAX_FIELD_VALUE = unichr(0xffff) * 80
+    MAX_FIELD_VALUE = six.unichr(0xffff) * 80
 
   MIN_FIELD_VALUE = u''
 
@@ -2420,11 +2419,11 @@ class SortExpression(object):
     _CheckExpression(self._expression)
     self._default_value = default_value
     if self._default_value is not None:
-      if isinstance(self.default_value, basestring):
+      if isinstance(self.default_value, six.string_types):
         self._default_value = _ConvertToUnicode(default_value)
         _CheckText(self._default_value, 'default_value')
       elif not isinstance(self._default_value,
-                          (int, long, float, datetime.date, datetime.datetime)):
+                          six.integer_types + (float, datetime.date, datetime.datetime)):
         raise TypeError('default_value must be text, numeric or datetime, got '
                         '%s' % self._default_value.__class__.__name__)
 
@@ -2554,7 +2553,7 @@ class ScoredDocument(Document):
         expressions requested.
       cursor: A cursor associated with the document.
       rank: The rank of this document. A rank must be a non-negative integer
-        less than sys.maxint. If not specified, the number of seconds since
+        less than six.MAXSIZE. If not specified, the number of seconds since
         1st Jan 2011 is used. Documents are returned in descending order of
         their rank.
       facets: An iterable of Facet instances representing the facets for this
@@ -3188,7 +3187,7 @@ def _CopyQueryOptionsToProtocolBuffer(
   if number_found_accuracy is not None:
     params.set_matched_count_accuracy(number_found_accuracy)
   if cursor:
-    params.set_cursor(cursor.encode('utf-8'))
+    params.set_cursor(six.ensure_binary(cursor))
   if cursor_type is not None:
     params.set_cursor_type(cursor_type)
   if ids_only:
@@ -3196,7 +3195,7 @@ def _CopyQueryOptionsToProtocolBuffer(
   if returned_fields or snippeted_fields or returned_expressions:
     field_spec_pb = params.mutable_field_spec()
     for field in returned_fields:
-      field_spec_pb.add_name(field.encode('utf-8'))
+      field_spec_pb.add_name(six.ensure_binary(field))
     for snippeted_field in snippeted_fields:
       expression = u'snippet(%s, %s)' % (_QuoteString(query), snippeted_field)
       _CopyFieldExpressionToProtocolBuffer(
@@ -3309,14 +3308,14 @@ class Query(object):
     self._facet_options = facet_options
     self._enable_facet_discovery = enable_facet_discovery
     self._return_facets = _ConvertToListAndCheckType(
-        return_facets, (basestring, FacetRequest), 'return_facet')
+        return_facets, six.string_types + (FacetRequest,), 'return_facet')
     for index, facet in enumerate(self._return_facets):
-      if isinstance(facet, basestring):
+      if isinstance(facet, six.string_types):
         self._return_facets[index] = FacetRequest(self._return_facets[index])
     self._facet_refinements = _ConvertToListAndCheckType(
-        facet_refinements, (basestring, FacetRefinement), 'facet_refinements')
+        facet_refinements, six.string_types + (FacetRefinement,), 'facet_refinements')
     for index, refinement in enumerate(self._facet_refinements):
-      if isinstance(refinement, basestring):
+      if isinstance(refinement, six.string_types):
         self._facet_refinements[index] = FacetRefinement.FromTokenString(
             refinement)
 
@@ -3360,7 +3359,7 @@ class Query(object):
 
 def _CopyQueryToProtocolBuffer(query, params):
   """Copies Query object to params protobuf."""
-  params.set_query(query.encode('utf-8'))
+  params.set_query(six.ensure_binary(query))
 
 
 def _CopyQueryObjectToProtocolBuffer(query, params):
@@ -3575,7 +3574,7 @@ class Index(object):
     Identical to put() except that it returns a future. Call
     get_result() on the return value to block on the call and get its result.
     """
-    if isinstance(documents, basestring):
+    if isinstance(documents, six.string_types):
       raise TypeError('documents must be a Document or sequence of '
                       'Documents, got %s' % documents.__class__.__name__)
     try:
@@ -3902,7 +3901,7 @@ class Index(object):
     Identical to search() except that it returns a future. Call
     get_result() on the return value to block on the call and get its result.
     """
-    if isinstance(query, basestring):
+    if isinstance(query, six.string_types):
       query = Query(query_string=query)
     request = self._NewSearchRequest(query, deadline, **kwargs)
     response = search_service_pb.SearchResponse()
@@ -3925,7 +3924,7 @@ class Index(object):
       request.set_app_id(app_id)
 
     params = request.mutable_params()
-    if isinstance(query, basestring):
+    if isinstance(query, six.string_types):
       query = Query(query_string=query)
     _CopyMetadataToProtocolBuffer(self, params.mutable_index_spec())
     _CopyQueryObjectToProtocolBuffer(query, params)
@@ -4029,8 +4028,8 @@ _SOURCE_PB_TO_SOURCES_MAP = {
 
 def _CopyMetadataToProtocolBuffer(index, spec_pb):
   """Copies Index specification to a search_service_pb.IndexSpec."""
-  spec_pb.set_name(index.name.encode('utf-8'))
-  spec_pb.set_namespace(index.namespace.encode('utf-8'))
+  spec_pb.set_name(six.ensure_binary(index.name))
+  spec_pb.set_namespace(six.ensure_binary(index.namespace))
 
 
   if index._source != Index.SEARCH:
@@ -4123,7 +4122,7 @@ def _MakeSyncSearchServiceCall(call, request, response, deadline):
 def _ValidateDeadline(deadline):
   if deadline is None:
     return
-  if (not isinstance(deadline, (int, long, float))
+  if (not isinstance(deadline, six.integer_types + (float,))
       or isinstance(deadline, (bool,))):
     raise TypeError('deadline argument should be int/long/float (%r)'
                     % (deadline,))

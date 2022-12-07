@@ -16,6 +16,8 @@
 #
 """Wrapper for QueryParser."""
 
+import six
+
 import antlr3
 from antlr3 import tree
 from google.appengine.api.search import QueryLexer
@@ -230,7 +232,7 @@ def CreateQueryNode(text, type):
 
 def GetQueryNodeText(node):
   """Returns the text from the node, handling that it could be unicode."""
-  return GetQueryNodeTextUnicode(node).encode('utf-8')
+  return six.ensure_text(GetQueryNodeTextUnicode(node))
 
 
 def GetQueryNodeTextUnicode(node):

@@ -22,6 +22,7 @@
 
 import datetime
 import re
+import six
 import unicodedata
 
 from google.appengine.datastore import document_pb
@@ -135,7 +136,7 @@ def EpochTime(date):
     td = date - BASE_DATE
   else:
     td = date - BASE_DATE.date()
-  milliseconds_since_epoch = long(
+  milliseconds_since_epoch = int(
       (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**3)
   return milliseconds_since_epoch
 
@@ -151,7 +152,7 @@ def DeserializeDate(date_str):
   if re.match(r'^\d+\-\d+\-\d+$', date_str):
     return datetime.datetime.strptime(date_str, '%Y-%m-%d')
   else:
-    dt = BASE_DATE + datetime.timedelta(milliseconds=long(date_str))
+    dt = BASE_DATE + datetime.timedelta(milliseconds=int(date_str))
     return dt
 
 
@@ -179,25 +180,22 @@ def TreeRepr(tree, depth=0):
 
 
 def RemoveAccents(text):
-  if not isinstance(text, basestring):
+  if not isinstance(text, (six.text_type, six.binary_type)):
     return text
-  if isinstance(text, str):
-    text = text.decode('utf-8')
+  text = six.ensure_text(text)
   return u''.join([c for c in text if not unicodedata.combining(c)])
 
 
 def ConvertToNfkd(text):
-  if not isinstance(text, basestring):
+  if not isinstance(text, (six.text_type, six.binary_type)):
     return text
-  if isinstance(text, str):
-    text = text.decode('utf-8')
+  text = six.ensure_text(text)
   return unicodedata.normalize('NFKD', text)
 
 
 def RemoveAccentsNfkd(text):
-  if not isinstance(text, basestring):
+  if not isinstance(text, (six.text_type, six.binary_type)):
     return text
-  if isinstance(text, str):
-    text = text.decode('utf-8')
+  text = six.ensure_text(text)
   return u''.join([c for c in unicodedata.normalize('NFKD', text)
                    if not unicodedata.combining(c)])
