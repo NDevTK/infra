@@ -40,10 +40,6 @@ func mergeChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.Chang
 		}
 	}
 
-	sort.Slice(changeRevs, func(i, j int) bool {
-		return changeRevs[i].ChangeNum < changeRevs[j].ChangeNum
-	})
-
 	// All changeRevs must have the same Host, Project, and Branch, as checked above.
 	googlesourceHost := strings.Replace(changeRevs[0].Host, "-review", "", 1)
 	remote := fmt.Sprintf("https://%s/%s", googlesourceHost, changeRevs[0].Project)

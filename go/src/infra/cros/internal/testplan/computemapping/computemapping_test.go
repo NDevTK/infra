@@ -69,7 +69,9 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 		},
 	}
 
-	// Changes should be merged, ordered by project number.
+	// Changes should be merged, sorted by project and branch. Changes on the
+	// same branch will be merged in the same order they are passed to
+	// computemapping.ProjectInfos.
 	git.CommandRunnerImpl = &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			{
@@ -82,7 +84,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			{
 				ExpectedCmd: []string{
 					"git", "fetch",
-					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
+					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/45/456/2",
 					"--no-tags",
 				},
 			},
@@ -92,7 +94,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			{
 				ExpectedCmd: []string{
 					"git", "fetch",
-					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/45/456/2",
+					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
 					"--no-tags",
 				},
 			},

@@ -77,6 +77,7 @@ func cmdRelevantPlans(authOpts auth.Options) *subcommands.Command {
 			r.authFlags.Register(r.GetFlags(), authOpts)
 			r.Flags.Var(luciflag.StringSlice(&r.cls), "cl", text.Doc(`
 			CL URL for the patchsets being tested. Must be specified at least once.
+			Changes will be merged in the order they are passed on the command line.
 
 			Example: https://chromium-review.googlesource.com/c/chromiumos/platform2/+/123456
 		`))
