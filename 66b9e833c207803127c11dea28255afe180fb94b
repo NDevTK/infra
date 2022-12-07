@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "40acf785_92c26b00",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-07T06:31:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "825d58bf_0b49549b",
+      "revId": "66b9e833c207803127c11dea28255afe180fb94b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc20d285_7c00dc14",
@@ -31,6 +49,30 @@
       "writtenOn": "2022-12-07T02:14:29Z",
       "side": 1,
       "message": "s/env/the environment variable/",
+      "range": {
+        "startLine": 45,
+        "startChar": 43,
+        "endLine": 45,
+        "endChar": 46
+      },
+      "revId": "66b9e833c207803127c11dea28255afe180fb94b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14395851_8e9443ce",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/tls/background.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-07T06:31:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc20d285_7c00dc14",
       "range": {
         "startLine": 45,
         "startChar": 43,
