@@ -17,14 +17,16 @@ package config
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgcache"
-	"go.chromium.org/luci/server/router"
+	"go.chromium.org/luci/server/cron"
 )
 
 //go:generate cproto
@@ -66,15 +68,33 @@ func Use(ctx context.Context, c *Config) context.Context {
 	return context.WithValue(ctx, key{}, c)
 }
 
-// Middleware loads the service config and installs it into the context.
-func Middleware(ctx *router.Context, next router.Handler) {
-	msg, err := cachedCfg.Get(ctx.Context, nil)
+// UnaryConfig is a gRPC interceptor for adding LUCI config to the
+// request context.
+func UnaryConfig(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	// TODO(ayatane): Move this to the middleware package, if that package still exists.
+	msg, err := cachedCfg.Get(ctx, nil)
 	if err != nil {
-		logging.WithError(err).Errorf(ctx.Context, "could not load application config")
-		http.Error(ctx.Writer, "Internal server error", http.StatusInternalServerError)
+		logging.WithError(err).Errorf(ctx, "could not load application config")
+		return nil, status.Errorf(codes.Unavailable, "load config: %s", err)
 	} else {
-		ctx.Context = Use(ctx.Context, msg.(*Config))
-		next(ctx)
+		ctx = Use(ctx, msg.(*Config))
+		return handler(ctx, req)
+	}
+}
+
+// CronConfig is a wrapper to add LUCI config to the request context
+// for cron handlers
+func CronConfig(h cron.Handler) cron.Handler {
+	// TODO(ayatane): Move this to the middleware package, if that package still exists.
+	return func(ctx context.Context) error {
+		msg, err := cachedCfg.Get(ctx, nil)
+		if err != nil {
+			logging.WithError(err).Errorf(ctx, "could not load application config")
+			return status.Errorf(codes.Unavailable, "load config: %s", err)
+		} else {
+			ctx = Use(ctx, msg.(*Config))
+			return h(ctx)
+		}
 	}
 }
 

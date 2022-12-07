@@ -39,6 +39,7 @@ func InstallHandlers() {
 		cron.RegisterHandler(id, chain(
 			h,
 			middleware.CronTrace(id),
+			config.CronConfig,
 		))
 	}
 	install("import-service-config", importServiceConfig)
