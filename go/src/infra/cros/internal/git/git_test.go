@@ -395,7 +395,7 @@ func TestCherryPick(t *testing.T) {
 	assert.NilError(t, err)
 
 	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
-	sha2, err := CommitAll(tmpDir, "commit1")
+	sha2, err := CommitAll(tmpDir, "commit2")
 	assert.NilError(t, err)
 
 	// Create second branch based off the first commit (will switch to this branch).
@@ -407,6 +407,54 @@ func TestCherryPick(t *testing.T) {
 
 	// Cherry picking a non-existent commit returns an error.
 	assert.ErrorContains(t, CherryPick(ctx, tmpDir, "badsha"), "failed to cherry pick: fatal: bad revision 'badsha'")
+}
+
+func TestMerge(t *testing.T) {
+	ctx := context.Background()
+	CommandRunnerImpl = cmd.RealCommandRunner{}
+
+	tmpDir := "gittest_tmp_dir"
+	tmpDir, err := ioutil.TempDir("", tmpDir)
+	defer os.RemoveAll(tmpDir)
+	assert.NilError(t, err)
+
+	// Create repo.
+	assert.NilError(t, Init(tmpDir, false))
+
+	// Create first branch.
+	assert.NilError(t, CreateBranch(tmpDir, "branch1"))
+
+	// Create three commits on the first branch.
+	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	sha1, err := CommitAll(tmpDir, "commit1")
+	assert.NilError(t, err)
+
+	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
+	sha2, err := CommitAll(tmpDir, "commit2")
+	assert.NilError(t, err)
+
+	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "baz"), []byte("baz"), 0644))
+	sha3, err := CommitAll(tmpDir, "commit3")
+	assert.NilError(t, err)
+
+	// Create second branch based off the first commit (will switch to this branch).
+	assert.NilError(t, Checkout(tmpDir, sha1))
+	assert.NilError(t, CreateBranch(tmpDir, "branch2"))
+
+	// Merge the second commit to the branch.
+	assert.NilError(t, Merge(ctx, tmpDir, sha2))
+
+	// Create a new commit on the second branch that conflicts with the third
+	// commit on the first branch.
+	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "baz"), []byte("other"), 0644))
+	_, err = CommitAll(tmpDir, "commit3 conflict")
+	assert.NilError(t, err)
+
+	// Merging commit3 returns an error.
+	assert.ErrorContains(t, Merge(ctx, tmpDir, sha3), "failed to merge: exit status 1")
+
+	// Abort the merge.
+	assert.NilError(t, MergeAbort(ctx, tmpDir))
 }
 
 func TestDeleteBranch_success(t *testing.T) {

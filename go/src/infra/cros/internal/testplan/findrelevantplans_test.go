@@ -22,6 +22,7 @@ func TestFindRelevantPlans(t *testing.T) {
 				ChangeNum: 123,
 			},
 			Project: "chromium/testprojectA",
+			Branch:  "main",
 			Ref:     "refs/changes/23/123/5",
 			Files:   []string{"go/src/infra/cros/internal/testplan/testdata/good_dirmd/DIR_METADATA"},
 		},
@@ -34,7 +35,7 @@ func TestFindRelevantPlans(t *testing.T) {
 				ExpectedCmd: []string{
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
-					"--depth", "1", "--no-tags",
+					"--no-tags", "--branch", "main",
 				},
 			},
 			{
@@ -45,7 +46,7 @@ func TestFindRelevantPlans(t *testing.T) {
 				},
 			},
 			{
-				ExpectedCmd: []string{"git", "cherry-pick", "FETCH_HEAD"},
+				ExpectedCmd: []string{"git", "merge", "FETCH_HEAD"},
 			},
 		},
 	}

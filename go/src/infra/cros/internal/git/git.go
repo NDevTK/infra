@@ -297,6 +297,32 @@ func CherryPick(ctx context.Context, gitRepo, commit string) error {
 	return nil
 }
 
+// Merge merges a commit.
+func Merge(ctx context.Context, gitRepo, commit string) error {
+	output, err := RunGit(gitRepo, []string{"merge", commit})
+	logging.Debugf(ctx, "merge stdout: %s", output.Stdout)
+	logging.Debugf(ctx, "merge stderr: %s", output.Stderr)
+
+	if err != nil {
+		return fmt.Errorf("failed to merge: %w", err)
+	}
+
+	return nil
+}
+
+// MergeAbort aborts a merge that has resulted in conflicts.
+func MergeAbort(ctx context.Context, gitRepo string) error {
+	output, err := RunGit(gitRepo, []string{"merge", "--abort"})
+	logging.Debugf(ctx, "merge --abort stdout: %s", output.Stdout)
+	logging.Debugf(ctx, "merge --abort stderr: %s", output.Stderr)
+
+	if err != nil {
+		return fmt.Errorf("failed to abort merge: %w", err)
+	}
+
+	return nil
+}
+
 // DeleteBranch checks out to master and then deletes the current branch.
 func DeleteBranch(gitRepo, branch string, force bool) error {
 	cmd := []string{"branch"}
