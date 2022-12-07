@@ -12,15 +12,12 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
-import webapp2
-from werkzeug.middleware import dispatcher
+import flask
 
 from components import endpoints_flask
 import gae_ts_mon
 
 import flaskregisterpages
-import registerpages
 from framework import sorting
 from services import api_svc_v1
 from services import service_manager
@@ -28,28 +25,14 @@ from services import service_manager
 
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)
-registry = registerpages.ServletRegistry()
-app_routes = registry.Register(services)
-app = webapp2.WSGIApplication(
-    app_routes, config={'services': services})
-gae_ts_mon.initialize_prod(app)
 
 flask_regist = flaskregisterpages.ServletRegistry()
-app = dispatcher.DispatcherMiddleware(
-    app, {
-        '/hosting_old': flask_regist.RegisterOldHostUrl(services),
-        '/projects': flask_regist.RegisterRedirectProjectUrl(),
-        '/_': flask_regist.RegisterMONSetUrl(services),
-        '/hosting': flask_regist.RegisterHostingUrl(services),
-        '/g': flask_regist.RegisterGroupUrls(services),
-        '/p': flask_regist.RegisterProjectUrls(services),
-        '/u': flask_regist.RegisterUserUrls(services),
-        '/_task': flask_regist.RegisterTaskUrl(services),
-        '/_cron': flask_regist.RegisterCronUrl(services),
-        '/_backend': flask_regist.RegisterBackendUrl(services),
-        '/_ah': flask_regist.RegisterAHUrl(services),
-        '/prpc': flask_regist.RegisterPrpcUrl(services),
-    })
+
+app = flask.Flask(__name__)
+
+flask_regist.Register(services, app)
+
+gae_ts_mon.initialize_prod(app)
 
 endpoints = endpoints_flask.api_server(
     [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])

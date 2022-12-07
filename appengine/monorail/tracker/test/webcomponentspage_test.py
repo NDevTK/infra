@@ -76,8 +76,7 @@ class ProjectListPageTest(unittest.TestCase):
     self.project_a = self.services.project.TestAddProject('a', project_id=1)
     self.project_b = self.services.project.TestAddProject('b', project_id=2)
 
-    self.servlet = webcomponentspage.ProjectListPage(
-        'req', 'res', services=self.services)
+    self.servlet = webcomponentspage.ProjectListPage(services=self.services)
 
   @mock.patch('settings.domain_to_default_project', {})
   def testMaybeRedirectToDomainDefaultProject_NoMatch(self):

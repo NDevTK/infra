@@ -18,6 +18,7 @@ from features import savedqueries
 from features import userhotlists
 from framework import banned
 from framework import clientmon
+from framework import csp_report
 from framework import warmup
 from framework import reap
 from framework import deleteusers
@@ -98,36 +99,31 @@ class ServletRegistry(object):
   def __init__(self):
     self.routes = []
 
-  def _AddRoute(
-      self, path_regex, servlet_handler, method='GET', does_write=False):
-    """Add a GET or POST handler to our flask route list.
-
-    Args:
-      path_regex: string with flask URL template regex.
-      servlet_handler: a servlet handler function.
-      method: string 'GET' or 'POST'.
-      does_write: True if the servlet could write to the database, we skip
-          registering such servlets when the site is in read_only mode. GET
-          handlers never write. Most, but not all, POST handlers do write.
-    """
-    if settings.read_only and does_write:
-      logging.info('Not registring %r because site is read-only', path_regex)
-    else:
-      self.routes.append([path_regex, servlet_handler, [method]])
-
-  def _SetupServlets(self, spec_dict, base='', post_does_write=True):
+  def _AppendUrlToRoutes(self, rule_tuple, base=''):
     """Register each of the given servlets."""
-    for get_uri, servlet_handler in spec_dict.items():
-      self._AddRoute(base + get_uri, servlet_handler, 'GET')
-      post_uri = get_uri + ('edit.do' if get_uri.endswith('/') else '.do')
-      self._AddRoute(
-          base + post_uri, servlet_handler, 'POST', does_write=post_does_write)
+    for rule in rule_tuple:
+      self.routes.append([base + rule[0], rule[1], rule[2]])
 
-  def Register(self):
+  def Register(self, services, flask_instance):
     """Register all the monorail request handlers."""
-    return self.routes
+    self._RegisterGroupUrls(services)
+    self._RegisterHostingUrl(services)
+    self._RegisterOldHostUrl(services)
+    self._RegisterRedirectProjectUrl()
+    self._RegisterCSPUrl()
+    self._RegisterProjectUrls(services, flask_instance)
+    self._RegisterUserUrls(services)
+    self._RegisterTaskUrl(services)
+    self._RegisterCronUrl(services)
+    self._RegisterBackendUrl(services)
+    self._RegisterMONSetUrl(services)
+    self._RegisterAHUrl(services)
+    self._RegisterPrpcUrl(services)
+    self._RegisterWebComponentsUrl(services)
+    self._RegisteFlaskUrlRules(flask_instance, self.routes)
 
-  def _AddFlaskUrlRules(self, flask_instance, rule_tuple, removed_prefix=''):
+  def _RegisteFlaskUrlRules(
+      self, flask_instance, rule_tuple, removed_prefix=''):
     """Add url rules to a given Flask instance.
 
     Args:
@@ -144,8 +140,7 @@ class ServletRegistry(object):
     return flask_instance
 
   # pylint: disable=unused-argument
-  def RegisterGroupUrls(self, services):
-    flaskapp_group = flask.Flask(__name__)
+  def _RegisterGroupUrls(self, services):
     _GROUP_URL = [
         (
             '/', grouplist.FlaskGroupList(services=services).GetGroupList,
@@ -164,13 +159,21 @@ class ServletRegistry(object):
             '/<string:viewed_username>/groupadmin.do',
             groupadmin.GroupAdmin(services=services).PostGroupAdmin, ['POST']),
     ]
-
-    return self._AddFlaskUrlRules(flaskapp_group, _GROUP_URL)
+    self._AppendUrlToRoutes(_GROUP_URL, '/g')
 
   # pylint: disable=unused-argument
-  def RegisterHostingUrl(self, service):
-    flaskapp_hosting = flask.Flask(__name__)
+  def _RegisterHostingUrl(self, service):
+
+    def DefaultToMainPage():
+      url = flask.request.host_url
+      return flask.redirect(url)
+
     _HOSTING_URL = [
+        (
+            '/',
+            DefaultToMainPage,
+            ['GET'],
+        ),
         (
             '/excessiveActivity',
             excessiveactivity.ExcessiveActivity(
@@ -219,47 +222,32 @@ class ServletRegistry(object):
             ['POST']),
     ]
 
-    flaskapp_hosting = self._AddFlaskUrlRules(flaskapp_hosting, _HOSTING_URL)
+    self._AppendUrlToRoutes(_HOSTING_URL, '/hosting')
 
-    # pylint: disable=unused-variable
-    # for url /hosting/
-    @flaskapp_hosting.route('/')
-    def DefaultToMainPage():
-      url = flask.request.host_url
-      return flask.redirect(url)
+  def _RegisterOldHostUrl(self, service):
+    _OLD_HOSTING_URL = [
+        (
+            '/hosting_old/',
+            hostinghome.HostingHome(services=service).GetOldHostingHome,
+            ['GET']),
+    ]
+    self._AppendUrlToRoutes(_OLD_HOSTING_URL, '')
 
-    return flaskapp_hosting
+  def _RegisterRedirectProjectUrl(self):
 
-  def RegisterOldHostUrl(self, service):
-    flaskapp_hosting_old = flask.Flask(__name__)
-
-    # pylint: disable=unused-variable
-    @flaskapp_hosting_old.route('/')
-    def GetHostingOld():
-      return hostinghome.HostingHome(services=service).GetOldHostingHome()
-
-    return flaskapp_hosting_old
-
-  def RegisterRedirectProjectUrl(self):
-    flaskapp_project_redirect = flask.Flask(__name__)
-
-    # pylint: disable=unused-variable
-    @flaskapp_project_redirect.route('/')
     def GetRedirectProject():
       url = flask.request.host_url
       return flask.redirect(url)
 
-    return flaskapp_project_redirect
+    _PROJECT_REDIRECT_URL = [
+        ('/projects/', GetRedirectProject, ['GET']),
+    ]
+    self._AppendUrlToRoutes(_PROJECT_REDIRECT_URL, '')
 
-  def RegisterCSPUrl(self):
-    flaskapp_csp = flask.Flask(__name__)
-    flaskapp_csp.add_url_rule(
-        '/', view_func=csp_report.CSPReportPage().postCSP, methods=['POST'])
+  def _RegisterCSPUrl(self):
+    self._AppendUrlToRoutes([('/csp.do/', csp_report.postCsp, ['POST'])], '')
 
-    return flaskapp_csp
-
-  def RegisterProjectUrls(self, service):
-    flaskapp_project = flask.Flask(__name__)
+  def _RegisterProjectUrls(self, service, flaskapp_project):
     _PROJECT_URLS = [
         (
             '/<string:project_name>/<string:unrecognized>',
@@ -531,11 +519,11 @@ class ServletRegistry(object):
             issuedetailezt.FlipperPrev(
                 services=service).GetFlipperPrevRedirectPage, ['GET']),
     ]
-    flaskapp_project = self._AddFlaskUrlRules(flaskapp_project, _PROJECT_URLS)
+    self._AppendUrlToRoutes(_PROJECT_URLS, '/p')
 
     # pylint: disable=unused-variable
-    @flaskapp_project.route('/<string:project_name>/issues/approval')
-    @flaskapp_project.route('/<string:project_name>/issues/detail_ezt')
+    @flaskapp_project.route('/p/<string:project_name>/issues/approval')
+    @flaskapp_project.route('/p/<string:project_name>/issues/detail_ezt')
     def ProjectRedirectToIssueDetail(project_name):
       host_url = flask.request.host_url
       url = host_url + 'p/' + project_name + '/issues/detail'
@@ -545,9 +533,9 @@ class ServletRegistry(object):
       return flask.redirect(url)
 
     # pylint: disable=unused-variable
-    @flaskapp_project.route('/<string:project_name>/issues/list_new')
-    @flaskapp_project.route('/<string:project_name>/')
-    @flaskapp_project.route('/<string:project_name>/issues/')
+    @flaskapp_project.route('/p/<string:project_name>/issues/list_new')
+    @flaskapp_project.route('/p/<string:project_name>/')
+    @flaskapp_project.route('/p/<string:project_name>/issues/')
     def ProjectRedirectToIssueList(project_name):
       host_url = flask.request.host_url
       url = host_url + 'p/' + project_name + '/issues/list'
@@ -557,23 +545,30 @@ class ServletRegistry(object):
       return flask.redirect(url)
 
     # pylint: disable=unused-variable
-    @flaskapp_project.route('/')
+    @flaskapp_project.route('/p/')
     def ProjectRedirectToMainPage():
       url = flask.request.host_url
       return flask.redirect(url)
 
     # pylint: disable=unused-variable
-    @flaskapp_project.route('/<string:project_name>/people/')
+    @flaskapp_project.route('/p/<string:project_name>/people/')
     def ProjectRedirectToPeopleList(project_name):
       host_url = flask.request.host_url
       url = host_url + 'p/' + project_name + '/people/list'
       return flask.redirect(url)
 
-    return flaskapp_project
+  def _RegisterUserUrls(self, service):
 
-  def RegisterUserUrls(self, service):
-    flaskapp_user = flask.Flask(__name__)
+    def UserRedirectToMainPage():
+      url = flask.request.host_url
+      return flask.redirect(url)
+
     _USER_URLS = [
+        (
+            '/',
+            UserRedirectToMainPage,
+            ['GET'],
+        ),
         (
             '/<string:viewed_username>/queries',
             savedqueries.SavedQueries(services=service).GetSavedQueriesPage,
@@ -663,20 +658,10 @@ class ServletRegistry(object):
                 services=service).PostRerankHotlistIssuePage, ['POST']),
     ]
 
-    flaskapp_user = self._AddFlaskUrlRules(flaskapp_user, _USER_URLS)
-
-    # pylint: disable=unused-variable
-    # for url /u/
-    @flaskapp_user.route('/')
-    def UserRedirectToMainPage():
-      url = flask.request.host_url
-      return flask.redirect(url)
-
-    return flaskapp_user
+    self._AppendUrlToRoutes(_USER_URLS, '/u')
 
   # pylint: disable=unused-argument
-  def RegisterTaskUrl(self, service):
-    flaskapp_task = flask.Flask(__name__)
+  def _RegisterTaskUrl(self, service):
     _TASK_URL = [
         (
             '/banSpammer.do',
@@ -734,15 +719,10 @@ class ServletRegistry(object):
             filterrules.RecomputeDerivedFieldsTask(
                 services=service).PostRecomputeDerivedFieldsTask, ['POST']),
     ]
-
-    for rule in _TASK_URL:
-      flaskapp_task.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
-
-    return flaskapp_task
+    self._AppendUrlToRoutes(_TASK_URL, '/_task')
 
   # pylint: disable=unused-argument
-  def RegisterCronUrl(self, service):
-    flaskapp_cron = flask.Flask(__name__)
+  def _RegisterCronUrl(self, service):
     _CRON_URL = [
         (
             '/wipeoutSync',
@@ -769,15 +749,10 @@ class ServletRegistry(object):
             trimvisitedpages.TrimVisitedPages(
                 services=service).GetTrimVisitedPages, ['GET']),
     ]
-
-    for rule in _CRON_URL:
-      flaskapp_cron.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
-
-    return flaskapp_cron
+    self._AppendUrlToRoutes(_CRON_URL, '/_cron')
 
   # pylint: disable=unused-argument
-  def RegisterBackendUrl(self, service):
-    flaskapp_backend = flask.Flask(__name__)
+  def _RegisterBackendUrl(self, service):
     _BACKEND_URL = [
         (
             '/search',
@@ -788,15 +763,10 @@ class ServletRegistry(object):
             backendnonviewable.BackendNonviewable(
                 services=service).GetBackendNonviewable, ['GET']),
     ]
-
-    for rule in _BACKEND_URL:
-      flaskapp_backend.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
-
-    return flaskapp_backend
+    self._AppendUrlToRoutes(_BACKEND_URL, '/_backend')
 
   # pylint: disable=unused-argument
-  def RegisterMONSetUrl(self, service):
-    flaskapp_mon = flask.Flask(__name__)
+  def _RegisterMONSetUrl(self, service):
     _MON_URL = [
         (
             '/clientmon.do',
@@ -809,12 +779,9 @@ class ServletRegistry(object):
             ['POST'],
         )
     ]
+    self._AppendUrlToRoutes(_MON_URL, '/_')
 
-    flaskapp_mon = self._AddFlaskUrlRules(flaskapp_mon, _MON_URL)
-    return flaskapp_mon
-
-  def RegisterAHUrl(self, service):
-    flaskapp_ah = flask.Flask(__name__)
+  def _RegisterAHUrl(self, service):
     _AH_URL = [
         ('/warmup', warmup.Warmup, ['GET']), ('/start', warmup.Start, ['GET']),
         ('/stop', warmup.Stop, ['GET']),
@@ -827,17 +794,32 @@ class ServletRegistry(object):
             inboundemail.InboundEmail(services=service).HandleInboundEmail,
             ['GET', 'POST'])
     ]
+    self._AppendUrlToRoutes(_AH_URL, '/_ah')
 
-    flaskapp_ah = self._AddFlaskUrlRules(flaskapp_ah, _AH_URL)
-
-    return flaskapp_ah
-
-  def RegisterPrpcUrl(self, service):
-    flaskapp_prpc = flask.Flask(__name__)
+  def _RegisterPrpcUrl(self, service):
     prpc_server = prpc.FlaskServer(
         allowed_origins=client_config_svc.GetAllowedOriginsSet())
     api_routes_v0.RegisterApiHandlers(prpc_server, service)
     api_routes_v3.RegisterApiHandlers(prpc_server, service)
     routes = prpc_server.get_routes()
-    flaskapp_prpc = self._AddFlaskUrlRules(flaskapp_prpc, routes, '/prpc')
-    return flaskapp_prpc
+    self._AppendUrlToRoutes(routes, '')
+
+  def _RegisterWebComponentsUrl(self, service):
+    self.routes.append(
+        [
+            '/',
+            webcomponentspage.ProjectListPage(
+                services=service).GetProjectListPage, ['GET']
+        ])
+    self.routes.append(
+        [
+            '/hotlists<string:unused>',
+            webcomponentspage.FlaskWebComponentsPage(
+                services=service).GetWebComponentsHotlist, ['GET']
+        ])
+    self.routes.append(
+        [
+            '/users<string:unused>',
+            webcomponentspage.FlaskWebComponentsPage(
+                services=service).GetWebComponentsUser, ['GET']
+        ])
