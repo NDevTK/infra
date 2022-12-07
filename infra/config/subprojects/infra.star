@@ -117,6 +117,14 @@ try_builder(name = "infra-try-bionic-64", os = "Ubuntu-18.04", properties = {
 try_builder(name = "infra-try-mac", os = "Mac-10.15", properties = {
     "go_version_variant": "legacy",
 })
+
+# It is occasionally useful to test code on OSX 10.14, but we don't have enough
+# capacity to have this trybot in CQ by default. It can be triggered manually
+# though.
+try_builder(name = "infra-try-mac-10.14", os = "Mac-10.14", properties = {
+    "go_version_variant": "legacy",
+}, in_cq = False)
+
 try_builder(name = "infra-try-win", os = "Windows-10")
 
 try_builder(name = "infra-try-frontend", os = "Ubuntu-18.04", recipe = "infra_frontend_tester")
