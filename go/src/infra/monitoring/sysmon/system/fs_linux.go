@@ -15,16 +15,16 @@ const (
 )
 
 var (
-	fstypeBlacklist map[string]struct{}
+	ignoredFstypes map[string]struct{}
 )
 
-func isBlacklistedFstype(fstype string) bool {
+func shouldIgnoreFstype(fstype string) bool {
 	if strings.HasPrefix(fstype, "fuse.") || fstype == "none" {
 		return true
 	}
 
-	if fstypeBlacklist == nil {
-		fstypeBlacklist = map[string]struct{}{}
+	if ignoredFstypes == nil {
+		ignoredFstypes = map[string]struct{}{}
 		contents, err := ioutil.ReadFile("/proc/filesystems")
 		if err != nil {
 			return false
@@ -33,22 +33,26 @@ func isBlacklistedFstype(fstype string) bool {
 		lines := strings.Split(string(contents), "\n")
 		for _, line := range lines {
 			if strings.HasPrefix(line, nodevPrefix) {
-				fstypeBlacklist[line[len(nodevPrefix):]] = struct{}{}
+				ignoredFstypes[line[len(nodevPrefix):]] = struct{}{}
 			}
 		}
 	}
 
-	_, ok := fstypeBlacklist[fstype]
+	_, ok := ignoredFstypes[fstype]
 	return ok
 }
 
-func isBlacklistedMountpoint(mountpoint string) bool {
+func shouldIgnoreMountpoint(mountpoint string) bool {
 	// This is standard location for Docker containers on Linux (and we only
 	// support them on Linux atm), which are mounted to a separate partition when
 	// the container is running. The disk stats reported for them are the same as
 	// for the parent partition on which they are located, which causes disk space
 	// alert to be fired twice for the same physical paritition.
 	return strings.HasPrefix(mountpoint, "/var/lib/docker")
+}
+
+func shouldIgnoreDevice(device string) bool {
+	return false
 }
 
 func removeDiskDevices(names []string) []string {

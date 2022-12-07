@@ -28,10 +28,10 @@ func TestRemoveDiskDevices(t *testing.T) {
 	}
 }
 
-func TestMountpointsAreBlacklisted(t *testing.T) {
+func TestMountpointsAreIgnored(t *testing.T) {
 	t.Parallel()
 
-	Convey("Docker mountpoints are blacklisted", t, func() {
-		So(isBlacklistedMountpoint("/var/lib/docker/aufs"), ShouldBeTrue)
+	Convey("Docker mountpoints are ignored", t, func() {
+		So(shouldIgnoreMountpoint("/var/lib/docker/aufs"), ShouldBeTrue)
 	})
 }

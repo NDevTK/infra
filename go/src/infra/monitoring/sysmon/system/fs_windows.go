@@ -4,11 +4,15 @@
 
 package system
 
-func isBlacklistedFstype(fstype string) bool {
+func shouldIgnoreFstype(fstype string) bool {
 	return false
 }
 
-func isBlacklistedMountpoint(mountpoint string) bool {
+func shouldIgnoreMountpoint(mountpoint string) bool {
+	return false
+}
+
+func shouldIgnoreDevice(device string) bool {
 	return false
 }
 
