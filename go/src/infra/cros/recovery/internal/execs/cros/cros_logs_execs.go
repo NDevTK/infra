@@ -50,7 +50,9 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 // This exec function accepts the following parameters from the action:
 // src_host_type: specifies the type of source, options are "dut" and "servo_host"
 // src_path: specifies the source for copy operation.
-// src_type: specifies whether the source is a file or a directory, options are "file" and "dir"
+// src_type: specifies whether the source is a file or a directory, options are "file" and "dir".
+// use_host_dir: specifies whether the a subdirectory with the resource-name needs to be created.
+// dest_suffix: specifies any subdirectory that needs to be created within the source path.
 // filename: target name for the copied file. Default value is the complete file name of the source.
 func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	argMap := info.GetActionArgs(ctx)
@@ -100,10 +102,15 @@ func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	// Logs will be saved to the resource folder.
 	if argMap.AsBool(ctx, "use_host_dir", false) {
-		logRoot := filepath.Join(logRoot, resource)
-		if err := exec.CommandContext(ctx, "mkdir", "-p", logRoot).Run(); err != nil {
-			return errors.Annotate(err, "copy to logs").Err()
-		}
+		logRoot = filepath.Join(logRoot, resource)
+	}
+	// If a suffix for destination path has been specified, include it
+	// in the path for storing files on destination side.
+	if destSuffix := argMap.AsString(ctx, "dest_suffix", ""); destSuffix != "" {
+		logRoot = filepath.Join(logRoot, destSuffix)
+	}
+	if err := exec.CommandContext(ctx, "mkdir", "-p", logRoot).Run(); err != nil {
+		return errors.Annotate(err, "copy to logs").Err()
 	}
 	switch srcTypeArg {
 	case fileType:
