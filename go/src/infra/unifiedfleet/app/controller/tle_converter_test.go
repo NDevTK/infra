@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/libs/fleet/boxster/swarming"
@@ -20,6 +21,14 @@ import (
 )
 
 func parseDutAttribute(t *testing.T, protoText string) api.DutAttribute {
+	var da api.DutAttribute
+	if err := jsonpb.UnmarshalString(protoText, &da); err != nil {
+		t.Fatalf("Error unmarshalling example text: %s", err)
+	}
+	return da
+}
+
+func parseFlatConfig(t *testing.T, protoText string) api.DutAttribute {
 	var da api.DutAttribute
 	if err := jsonpb.UnmarshalString(protoText, &da); err != nil {
 		t.Fatalf("Error unmarshalling example text: %s", err)
@@ -144,6 +153,41 @@ func TestConvert(t *testing.T) {
 		}
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("Convert returned unexpected diff (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("convert error - nil FlatConfigSource", func(t *testing.T) {
+		var fc payload.FlatConfig
+		daText := `{
+			"id": {
+				"value": "attr-design"
+			},
+			"aliases": [
+				"attr-model",
+				"label-model"
+			],
+			"flatConfigSource": {
+				"fields": [
+					{
+						"path": "hw_design.id.value"
+					}
+				]
+			}
+		}`
+		da := parseDutAttribute(t, daText)
+		_, err := Convert(ctx, &da, &fc, nil, nil)
+		if err == nil {
+			t.Fatalf("Convert passed unexpectedly")
+		}
+	})
+
+	t.Run("convert error - nil DutAttribute", func(t *testing.T) {
+		var da api.DutAttribute
+		dutMachinelse := mockMachineLSEWithLabConfigs("lse-1")
+		dutState := mockDutState("dutstate-id-1", "dutstate-hostname-1")
+		_, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
+		if err == nil {
+			t.Fatalf("Convert passed unexpectedly")
 		}
 	})
 }

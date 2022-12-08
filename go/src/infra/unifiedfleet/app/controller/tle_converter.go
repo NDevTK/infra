@@ -17,6 +17,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/libs/fleet/boxster/swarming"
@@ -35,8 +36,19 @@ var fs embed.FS
 // is handled in this file. All other labels uses the Boxster Swarming lib for
 // conversion.
 func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) (swarming.Dimensions, error) {
+	if dutAttr == nil {
+		return nil, errors.New("DutAttribute cannot be nil")
+	}
 	if dutAttr.GetTleSource() != nil {
 		return convertTleSource(ctx, dutAttr, lse, dutState)
+	}
+	return convertFlatConfigSource(ctx, dutAttr, flatConfig)
+}
+
+// convertFlatConfigSource handles the label conversion of FlatConfig.
+func convertFlatConfigSource(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) (swarming.Dimensions, error) {
+	if flatConfig == nil {
+		return nil, errors.New("FlatConfig cannot be nil")
 	}
 	dims, err := swarming.ConvertAll(dutAttr, flatConfig)
 	if err != nil {
