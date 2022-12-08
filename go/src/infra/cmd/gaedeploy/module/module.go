@@ -7,7 +7,7 @@ package module
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -28,7 +28,7 @@ type Module struct {
 
 // ReadYAML loads the module's YAML in memory.
 func ReadYAML(path string) (*Module, error) {
-	blob, err := ioutil.ReadFile(path)
+	blob, err := os.ReadFile(path)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read the file").Err()
 	}

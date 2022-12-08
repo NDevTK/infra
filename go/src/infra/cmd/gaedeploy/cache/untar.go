@@ -12,7 +12,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,7 +62,7 @@ func fetchAndUntar(ctx context.Context, src source.Source, tmpName, destDir stri
 
 	// Read the rest of the file to update the hash. Theoretically it may have
 	// some trailer that the gzip reader didn't read.
-	if _, err := io.Copy(ioutil.Discard, r); err != nil {
+	if _, err := io.Copy(io.Discard, r); err != nil {
 		return errors.Annotate(err, "failed to read the file trailer").Err()
 	}
 

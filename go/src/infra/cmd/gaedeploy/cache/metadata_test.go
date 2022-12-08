@@ -6,7 +6,6 @@ package cache
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -21,7 +20,7 @@ func TestMetadata(t *testing.T) {
 	ts := time.Now().Round(time.Millisecond) // convert to wall clock
 
 	Convey("modifyMetadata Works", t, func() {
-		tmp, err := ioutil.TempDir("", "gaedeploy_test")
+		tmp, err := os.MkdirTemp("", "gaedeploy_test")
 		So(err, ShouldBeNil)
 		defer os.RemoveAll(tmp)
 

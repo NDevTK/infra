@@ -6,7 +6,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -178,7 +177,7 @@ func (c *cmdModuleRun) exec(ctx context.Context) error {
 		// file with randomized name so that multiple concurrent deploys from the
 		// same unpacked tarball directory don't accidentally overwrite each others
 		// files.
-		yamlTmp, err := ioutil.TempFile(filepath.Join(root, modDir), ".gaedeploy_"+yamlBaseName+".*.yaml")
+		yamlTmp, err := os.CreateTemp(filepath.Join(root, modDir), ".gaedeploy_"+yamlBaseName+".*.yaml")
 		if err != nil {
 			return errors.Annotate(err, "failed to create a temp file").Err()
 		}

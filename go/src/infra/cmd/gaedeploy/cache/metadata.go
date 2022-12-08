@@ -7,7 +7,6 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -36,7 +35,7 @@ func metadataPath(dir string) string {
 // Returns (cacheMetadata{}, nil) if the file doesn't exist or it's not a valid
 // JSON file.
 func readMetadata(ctx context.Context, dir string) (m cacheMetadata, err error) {
-	blob, err := ioutil.ReadFile(metadataPath(dir))
+	blob, err := os.ReadFile(metadataPath(dir))
 	if err != nil {
 		if !os.IsNotExist(err) {
 			err = errors.Annotate(err, "failed to read the existing metadata file").Err()
@@ -67,7 +66,7 @@ func modifyMetadata(ctx context.Context, dir string, cb func(m *cacheMetadata)) 
 	if err != nil {
 		return errors.Annotate(err, "failed to marshal metadata").Err()
 	}
-	if err := ioutil.WriteFile(metadataPath(dir), blob, 0600); err != nil {
+	if err := os.WriteFile(metadataPath(dir), blob, 0600); err != nil {
 		return errors.Annotate(err, "failed to write the metadata file").Err()
 	}
 	return nil

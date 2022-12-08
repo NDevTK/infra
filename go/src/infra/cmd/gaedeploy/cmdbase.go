@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -197,5 +196,5 @@ func writeOutput(path string, msg proto.Message) error {
 		_, err := os.Stdout.Write(blob)
 		return err
 	}
-	return ioutil.WriteFile(path, blob, 0666)
+	return os.WriteFile(path, blob, 0666)
 }

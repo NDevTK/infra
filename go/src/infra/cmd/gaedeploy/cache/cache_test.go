@@ -13,7 +13,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -30,7 +29,7 @@ func TestCache(t *testing.T) {
 	t.Parallel()
 
 	Convey("With temp dir", t, func() {
-		tmp, err := ioutil.TempDir("", "gaedeploy_test")
+		tmp, err := os.MkdirTemp("", "gaedeploy_test")
 		So(err, ShouldBeNil)
 		Reset(func() { os.RemoveAll(tmp) })
 
@@ -40,7 +39,7 @@ func TestCache(t *testing.T) {
 		cache := Cache{Root: filepath.Join(tmp, "cache")}
 
 		scan := func() []string {
-			files, err := ioutil.ReadDir(cache.Root)
+			files, err := os.ReadDir(cache.Root)
 			So(err, ShouldBeNil)
 			names := make([]string, len(files))
 			for i, f := range files {
@@ -58,7 +57,7 @@ func TestCache(t *testing.T) {
 			}
 
 			callback := func(path string) error {
-				blob, err := ioutil.ReadFile(filepath.Join(path, "dir", "file"))
+				blob, err := os.ReadFile(filepath.Join(path, "dir", "file"))
 				So(err, ShouldBeNil)
 				So(string(blob), ShouldResemble, "hi")
 				return nil
@@ -189,5 +188,5 @@ func (src *testSrc) SHA256() []byte {
 
 func (src *testSrc) Open(ctx context.Context, tmp string) (io.ReadCloser, error) {
 	src.calls++
-	return ioutil.NopCloser(bytes.NewReader(src.asTarGz())), nil
+	return io.NopCloser(bytes.NewReader(src.asTarGz())), nil
 }

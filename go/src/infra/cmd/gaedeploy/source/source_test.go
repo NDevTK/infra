@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -49,7 +49,7 @@ func TestSource(t *testing.T) {
 		})
 
 		Convey("Present", func() {
-			f, err := ioutil.TempFile("", "gaedeploy_test")
+			f, err := os.CreateTemp("", "gaedeploy_test")
 			So(err, ShouldBeNil)
 			defer os.Remove(f.Name())
 
@@ -70,7 +70,7 @@ func TestSource(t *testing.T) {
 
 			rc, err := fs.Open(context.Background(), "unused")
 			So(err, ShouldBeNil)
-			blob, err := ioutil.ReadAll(rc)
+			blob, err := io.ReadAll(rc)
 			So(err, ShouldBeNil)
 			So(blob, ShouldResemble, []byte("boo"))
 			So(rc.Close(), ShouldBeNil)

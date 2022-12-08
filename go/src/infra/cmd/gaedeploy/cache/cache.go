@@ -9,7 +9,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -97,7 +96,7 @@ func (c *Cache) WithTarball(ctx context.Context, src source.Source, cb func(path
 		}
 
 		// Prepare a temp file to download the tarball into.
-		tmp, err := ioutil.TempFile(entryDir, "tmp_*.tar.gz")
+		tmp, err := os.CreateTemp(entryDir, "tmp_*.tar.gz")
 		if err != nil {
 			return errors.Annotate(err, "failed to create a temp file to fetch the tarball into").Err()
 		}
@@ -114,7 +113,7 @@ func (c *Cache) WithTarball(ctx context.Context, src source.Source, cb func(path
 
 		// Prepare a staging directory to unzip the tarball into. We'll rename it
 		// into `tarballDir` on success.
-		stagingDir, err := ioutil.TempDir(entryDir, "tmp_data_*")
+		stagingDir, err := os.MkdirTemp(entryDir, "tmp_data_*")
 		if err != nil {
 			return errors.Annotate(err, "failed to create a temp directory to unpack the tarball into").Err()
 		}
@@ -152,7 +151,7 @@ func (c *Cache) WithTarball(ctx context.Context, src source.Source, cb func(path
 func (c *Cache) Trim(ctx context.Context, keep int) error {
 	logging.Infof(ctx, "Trimming the cache to keep only %d most recently touched entries...", keep)
 
-	files, err := ioutil.ReadDir(c.Root)
+	files, err := os.ReadDir(c.Root)
 	if err != nil && !os.IsNotExist(err) {
 		return errors.Annotate(err, "failed to scan the cache directory").Err()
 	}
