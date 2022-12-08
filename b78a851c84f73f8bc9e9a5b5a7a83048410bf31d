@@ -117,6 +117,54 @@
       },
       "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65653475_c560996b",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-08T19:16:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "be298295_9ed51087",
+      "range": {
+        "startLine": 30,
+        "startChar": 26,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "76b35a08_2535c5ef",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-08T19:16:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a2de33b_ee0f0d8f",
+      "range": {
+        "startLine": 30,
+        "startChar": 94,
+        "endLine": 30,
+        "endChar": 144
+      },
+      "revId": "b78a851c84f73f8bc9e9a5b5a7a83048410bf31d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

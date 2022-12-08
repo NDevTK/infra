@@ -100,6 +100,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6eae18a_86146ce5",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/tls/tls.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-12-08T19:16:50Z",
+      "side": 1,
+      "message": "Synced with Derek offline, there\u0027s a little bit concern that if phos can get the os env or not. Will verify it in production as it won\u0027t cause any failure.",
+      "parentUuid": "dd05d7f8_36841501",
+      "revId": "a311b3159959c36b8ab92b84f19ea80636891216",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ba1bacd8_13ad21c6",
