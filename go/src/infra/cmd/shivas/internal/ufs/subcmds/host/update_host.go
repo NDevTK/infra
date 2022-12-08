@@ -47,6 +47,7 @@ var UpdateHostCmd = &subcommands.Command{
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the vm. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this host. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.vdc, "vdc", "", "the virtual datacenter a browser host belongs to. "+cmdhelp.ClearFieldHelpText)
 
 		c.Flags.StringVar(&c.vlanName, "vlan", "", "name of the vlan to assign this host to")
 		c.Flags.StringVar(&c.nicName, "nic", "", "name of the nic to associate the ip to")
@@ -81,6 +82,7 @@ type updateHost struct {
 	tags             []string
 	description      string
 	deploymentTicket string
+	vdc              string
 }
 
 func (c *updateHost) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -164,6 +166,7 @@ func (c *updateHost) innerRun(a subcommands.Application, args []string, env subc
 			"state":       "resourceState",
 			"desc":        "description",
 			"ticket":      "deploymentTicket",
+			"vdc":         "virtualDatacenter",
 		}),
 	})
 	if err != nil {
@@ -208,7 +211,7 @@ func (c *updateHost) parseArgs(lse *ufspb.MachineLSE) {
 	} else {
 		lse.DeploymentTicket = c.deploymentTicket
 	}
-	if c.osVersion != "" || c.osImage != "" || c.vmCapacity != 0 {
+	if c.osVersion != "" || c.osImage != "" || c.vmCapacity != 0 || c.vdc != "" {
 		lse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
 			ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
 				OsVersion: &ufspb.OSVersion{},
@@ -228,6 +231,11 @@ func (c *updateHost) parseArgs(lse *ufspb.MachineLSE) {
 			lse.GetChromeBrowserMachineLse().GetOsVersion().Image = ""
 		} else {
 			lse.GetChromeBrowserMachineLse().GetOsVersion().Image = c.osImage
+		}
+		if c.vdc == utils.ClearFieldValue {
+			lse.GetChromeBrowserMachineLse().VirtualDatacenter = ""
+		} else {
+			lse.GetChromeBrowserMachineLse().VirtualDatacenter = c.vdc
 		}
 	}
 	if c.description == utils.ClearFieldValue {
@@ -288,13 +296,16 @@ func (c *updateHost) validateArgs() error {
 		if c.deploymentTicket != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-ticket' cannot be specified at the same time.")
 		}
+		if c.vdc != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-vdc' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {
 		if c.hostName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f' or '-i') is specified.")
 		}
 		if c.nicName == "" && c.vlanName == "" && !c.deleteVlan && c.ip == "" && c.state == "" && c.deploymentTicket == "" &&
-			c.osVersion == "" && c.prototype == "" && c.tags == nil && c.vmCapacity == 0 && c.description == "" && c.machineName == "" && c.osImage == "" {
+			c.osVersion == "" && c.prototype == "" && c.tags == nil && c.vmCapacity == 0 && c.description == "" && c.machineName == "" && c.osImage == "" && c.vdc == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {

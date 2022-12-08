@@ -1368,6 +1368,44 @@ func TestUpdateMachineLSE(t *testing.T) {
 			So(resp.GetTags(), ShouldResemble, []string{"tag-1", "tag-2"})
 			So(resp.GetMachines(), ShouldResemble, []string{"machine-7"})
 		})
+		Convey("Partially update machinelse virtual datacenter", func() {
+			machine := &ufspb.Machine{
+				Name: "machine-vdc",
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
+
+			lse := &ufspb.MachineLSE{
+				Name:     "lse-vdc",
+				Machines: []string{"machine-vdc"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
+						VirtualDatacenter: "oldvdc",
+					},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, lse)
+			So(err, ShouldBeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name: "lse-vdc",
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
+						VirtualDatacenter: "newvdc",
+					},
+				},
+			}
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"virtualDatacenter"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetChromeBrowserMachineLse().GetVirtualDatacenter(), ShouldEqual, "newvdc")
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/lse-vdc")
+			So(err, ShouldBeNil)
+			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse.chrome_browser_machine_lse.virtual_datacenter")
+			So(changes[0].GetOldValue(), ShouldEqual, "oldvdc")
+			So(changes[0].GetNewValue(), ShouldEqual, "newvdc")
+		})
 
 		Convey("Partial Update attached device host", func() {
 			machine := &ufspb.Machine{

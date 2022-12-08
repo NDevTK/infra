@@ -350,6 +350,13 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 					oldMachinelse.GetAttachedDeviceLse().GetOsVersion().Value = machinelse.GetAttachedDeviceLse().GetOsVersion().GetValue()
 				}
 			}
+		case "virtualDatacenter":
+			if oldMachinelse.GetChromeBrowserMachineLse() == nil {
+				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				}
+			}
+			oldMachinelse.GetChromeBrowserMachineLse().VirtualDatacenter = machinelse.GetChromeBrowserMachineLse().GetVirtualDatacenter()
 		case "osImage":
 			if oldMachinelse.GetChromeBrowserMachineLse() == nil {
 				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
@@ -1335,6 +1342,10 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, mask *field_mask
 				if (machinelse.GetChromeBrowserMachineLse() != nil && machinelse.GetChromeBrowserMachineLse().GetOsVersion() == nil) ||
 					(machinelse.GetAttachedDeviceLse() != nil && machinelse.GetAttachedDeviceLse().GetOsVersion() == nil) {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - OsVersion cannot be empty/nil.")
+				}
+			case "virtualDatacenter":
+				if machinelse.GetChromeBrowserMachineLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - it has to be a browser host to update vdc.")
 				}
 			case "vmCapacity":
 				if machinelse.GetChromeBrowserMachineLse() == nil {
