@@ -1414,8 +1414,18 @@ func setNicIfNeeded(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.M
 				return errors.Annotate(err, "unable to get machine of host %s", lse.GetName()).Err()
 			}
 		}
+		// Note(b/261614071): Nic in machinelse is output only field. But, when you do a json update. It might be useful
+		// to parse this as shivas doesn't accept NetworkOptions for JSON update.
+		lseNic := lse.GetNic()
 		nics := machine.GetChromeBrowserMachine().GetNicObjects()
 		if len(nics) > 1 {
+			for _, nic := range nics {
+				if nic.GetName() == lseNic {
+					// Just return the nic that was in the json. Provided machine has a record.
+					nwOpt.Nic = lseNic
+					return nil
+				}
+			}
 			return status.Errorf(codes.InvalidArgument,
 				"The attached machine %s has more than 1 nic (%s), please specify the nic for ip assignment",
 				machine.GetName(),
