@@ -99,26 +99,28 @@ func GetDutAttribute(ctx context.Context, id string) (rsp *api.DutAttribute, err
 
 // ListDutAttributes lists the DutAttributes from datastore.
 func ListDutAttributes(ctx context.Context, keysOnly bool) (rsp []*api.DutAttribute, err error) {
+	var entities []*DutAttributeEntity
 	q := datastore.NewQuery(DutAttributeKind).KeysOnly(keysOnly).FirestoreMode(true)
-	err = datastore.Run(ctx, q, func(ent *DutAttributeEntity) error {
+	if err = datastore.GetAll(ctx, q, &entities); err != nil {
+		return nil, errors.Annotate(err, "ListDutAttributes error: failed to get DutAttributes").Err()
+	}
+	for _, ent := range entities {
 		if keysOnly {
-			da := &api.DutAttribute{
+			rsp = append(rsp, &api.DutAttribute{
 				Id: &api.DutAttribute_Id{
 					Value: ent.ID,
 				},
-			}
-			rsp = append(rsp, da)
+			})
 		} else {
 			pm, err := ent.GetProto()
 			if err != nil {
-				logging.Errorf(ctx, "Failed to unmarshal: %s", err)
-				return nil
+				logging.Warningf(ctx, "ListDutAttributes: failed to unmarshal: %s", err)
+				continue
 			}
 			rsp = append(rsp, pm.(*api.DutAttribute))
 		}
-		return nil
-	})
-	return rsp, err
+	}
+	return rsp, nil
 }
 
 // validateDutAttributeId checks whether DutAttribute is snake/kebab case.
