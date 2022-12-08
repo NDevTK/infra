@@ -51,6 +51,7 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 // src_host_type: specifies the type of source, options are "dut" and "servo_host"
 // src_path: specifies the source for copy operation.
 // src_type: specifies whether the source is a file or a directory, options are "file" and "dir"
+// filename: target name for the copied file. Default value is the complete file name of the source.
 func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	argMap := info.GetActionArgs(ctx)
 	fullPath := argMap.AsString(ctx, "src_path", "")
