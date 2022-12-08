@@ -16,16 +16,54 @@ import (
 	"infra/cros/recovery/logger"
 )
 
+type State int
+
+const (
+	Unknown State = iota
+	Offline
+	Bootloader
+	Device
+	Unauthorized
+)
+
+func (e State) String() string {
+	switch e {
+	case Device:
+		return "device"
+	case Unauthorized:
+		return "unauthorized"
+	case Offline:
+		return "offline"
+	case Bootloader:
+		return "bootloader"
+	case Unknown:
+		return "not found"
+	default:
+		return fmt.Sprintf("%d", int(e))
+	}
+}
+
 // GetDeviceState reads device state (offline | bootloader | device).
-func GetDeviceState(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) (string, error) {
-	const adbGetStateCmd = "adb -s %s get-state"
+func GetDeviceState(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) (State, error) {
+	const adbGetStateCmd = "adb devices | grep -sw '%s' | awk '{print $2}'"
 	cmd := fmt.Sprintf(adbGetStateCmd, serialNumber)
 	state, err := run(ctx, time.Minute, cmd)
 	if err != nil {
-		return "", errors.Annotate(err, "get attached device state").Err()
+		return Unknown, errors.Annotate(err, "get attached device state").Err()
 	}
 	log.Debugf("Attached device state: %q", state)
-	return state, nil
+	switch state {
+	case "device":
+		return Device, nil
+	case "offline":
+		return Offline, nil
+	case "bootloader":
+		return Bootloader, nil
+	case "unauthorized":
+		return Unauthorized, nil
+	default:
+		return Unknown, nil
+	}
 }
 
 // GetDevicePath reads device path.
@@ -47,8 +85,8 @@ func IsDeviceAccessible(ctx context.Context, run components.Runner, log logger.L
 		return errors.Annotate(err, "dut is accessible").Err()
 	}
 	log.Debugf("Attached DUT %q: state %q", serialNumber, state)
-	if state != "device" {
-		return errors.Reason("invalid attached dut %q state %q", serialNumber, state).Err()
+	if state != Device {
+		return errors.Reason("invalid attached dut %q state: %q", serialNumber, state).Err()
 	}
 	return nil
 }

@@ -27,34 +27,49 @@ func EnableDeviceTestHarnessMode(ctx context.Context, run components.Runner, log
 	return nil
 }
 
-// WaitForDevice waits until the device is online.
-func WaitForDevice(ctx context.Context, timeout time.Duration, run components.Runner, log logger.Logger, serialNumber string) error {
-	const adbWaitForDeviceCmd = "adb -s %s wait-for-device"
-	// TODO(b/259746452): use shell.QuoteUnix for quoting
-	cmd := fmt.Sprintf(adbWaitForDeviceCmd, serialNumber)
-	if _, err := run(ctx, timeout, cmd); err != nil {
-		return errors.Annotate(err, "wait for device").Err()
+// WaitForDeviceState waits until the device gets into the expected state.
+func WaitForDeviceState(ctx context.Context, expectedState State, stateCount int, waitTimeout time.Duration, run components.Runner, log logger.Logger, serialNumber string) error {
+	waitInRetry := 5 * time.Second
+	retryCount := int(waitTimeout / waitInRetry)
+	log.Debugf("Waiting for DUT %s state '%s'. Retry count: %d", serialNumber, expectedState, retryCount)
+	if stateCount == 0 {
+		stateCount = 1
 	}
-	// DUT may still be flaky after a reset even success in wait-for-device, so we need an additional check here
-	// to ensure we can get correct DUT state at least 3 times in a row.
-	waitForStableCount := 30
-	successCount := 0
-	for waitForStableCount > 0 {
-		waitForStableCount -= 1
-		if err := IsDeviceAccessible(ctx, run, log, serialNumber); err != nil {
+	// Ensure the consistent device state at least <stateCount> times in a row.
+	successCount, failureCount := 0, 0
+	for {
+		if ds, err := GetDeviceState(ctx, run, log, serialNumber); err != nil {
 			successCount = 0
+			failureCount += 1
 		} else {
-			successCount += 1
-			log.Debugf("Device is accessible, current success count %d", successCount)
+			if ds == expectedState {
+				successCount += 1
+				failureCount = 0
+				log.Debugf("DUT %s is in '%s' state. Current success count: %d", serialNumber, ds, successCount)
+				if successCount >= stateCount {
+					break
+				}
+			} else {
+				successCount = 0
+				if ds == Unauthorized {
+					failureCount += 1
+					// If device is in unauthorized state for more than 90 seconds, return error.
+					// The device either broken or public key is missing.
+					if failureCount >= 16 {
+						return errors.Reason("dut state is '%s': %s", ds, serialNumber).Err()
+					}
+				}
+			}
 		}
-		if successCount > 2 {
+		retryCount -= 1
+		if retryCount <= 0 {
 			break
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(waitInRetry)
 	}
-	if successCount < 3 {
-		return errors.Reason("failed to wait DUT become stable").Err()
+	if successCount < stateCount {
+		return errors.Reason("failed to wait for dut '%s' state: %q", expectedState, serialNumber).Err()
 	}
-	log.Debugf("Attached device is available: %q", serialNumber)
+	log.Debugf("Attached device in '%s' state: %q", expectedState, serialNumber)
 	return nil
 }

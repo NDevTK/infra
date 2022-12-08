@@ -124,9 +124,11 @@ func androidRepairDeployActions() map[string]*Action {
 				"Associated host is pingable",
 				"Associated host is accessible over SSH",
 				"Associated host is labstation",
-				"Associated host FS is writeable",
 			},
-			ExecName: "sample_pass",
+			ExecName: "android_associated_host_fs_is_writable",
+			RecoveryActions: []string{
+				"Schedule associated host reboot and fail",
+			},
 		},
 		"Associated host is pingable": {
 			Docs: []string{
@@ -149,15 +151,6 @@ func androidRepairDeployActions() map[string]*Action {
 			},
 			ExecName: "android_associated_host_is_labstation",
 		},
-		"Associated host FS is writeable": {
-			Docs: []string{
-				"This verifier checks whether associated host FS is writeable.",
-			},
-			ExecName: "android_associated_host_fs_is_writable",
-			RecoveryActions: []string{
-				"Schedule associated host reboot and fail",
-			},
-		},
 		"Lock associated host": {
 			Docs: []string{
 				"Creates a file to indicate that the associated host is in use.",
@@ -170,15 +163,19 @@ func androidRepairDeployActions() map[string]*Action {
 		},
 		"Validate adb": {
 			Docs: []string{
-				"This verifier checks whether adb and vendor key are properly provisioned on associated host of the DUT.",
+				"This verifier checks whether adb and vendor key are properly provisioned on associated host of the DUT and adb server is running.",
 			},
 			Dependencies: []string{
 				"Validate associated host",
 				"Associated host has vendor key",
 				"Associated host has adb",
-				"Adb server is running",
+				"Adb server is stopped",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "android_associated_host_start_adb",
+			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbPrivateVendorKeyFile)},
+			RecoveryActions: []string{
+				"Schedule associated host reboot and fail",
+			},
 		},
 		"Associated host has vendor key": {
 			Docs: []string{
@@ -206,19 +203,6 @@ func androidRepairDeployActions() map[string]*Action {
 			},
 			ExecName: "android_associated_host_has_adb",
 		},
-		"Adb server is running": {
-			Docs: []string{
-				"This verifier ensures that Adb server is running on associated host of the DUT.",
-			},
-			Dependencies: []string{
-				"Adb server is stopped",
-			},
-			ExecName:      "android_associated_host_start_adb",
-			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbPrivateVendorKeyFile)},
-			RecoveryActions: []string{
-				"Schedule associated host reboot and fail",
-			},
-		},
 		"Adb server is stopped": {
 			Docs: []string{
 				"Stops Adb server if it is running on associated host of the DUT.",
@@ -236,7 +220,8 @@ func androidRepairDeployActions() map[string]*Action {
 				"Validate associated host",
 				"Validate adb",
 			},
-			ExecName: "android_dut_is_accessible",
+			ExecName:   "android_dut_is_accessible",
+			RunControl: RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
 				"Reboot device if in fastboot mode",
 				"Schedule associated host reboot and fail",
@@ -246,8 +231,14 @@ func androidRepairDeployActions() map[string]*Action {
 			Docs: []string{
 				"Schedules reboot of the DUT associated host and fails repair till the next run.",
 			},
+			Conditions: []string{
+				"android_dut_has_serial_number",
+				"android_dut_has_associated_host",
+				"Associated host is pingable",
+				"Associated host is accessible over SSH",
+				"Associated host is labstation",
+			},
 			Dependencies: []string{
-				"Validate associated host",
 				"android_associated_host_schedule_reboot",
 			},
 			ExecName:   "sample_fail",
@@ -261,7 +252,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"DUT is accessible over adb",
 				"Reset public key",
 				"android_dut_reset",
-				"Wait for DUT",
+				"Wait for DUT to reboot",
 				"Connect to WiFi network",
 				"Unroot DUT",
 			},
@@ -272,26 +263,35 @@ func androidRepairDeployActions() map[string]*Action {
 			Dependencies: []string{
 				"Validate associated host",
 				"Validate adb",
-				"DUT is accessible over adb",
 			},
 			ExecName: "android_dut_has_userdebug_build",
 		},
-		"Wait for DUT": {
-			Docs: []string{"Waits for DUT to become available."},
-			Dependencies: []string{
-				"android_wait_for_offline_dut",
+		"Wait for Offline DUT": {
+			Docs:       []string{"Waits for DUT to become offline."},
+			ExecName:   "android_wait_for_offline_dut",
+			RunControl: RunControl_ALWAYS_RUN,
+			ExecExtraArgs: []string{
+				"timeout:90",
 			},
-			ExecName: "android_wait_for_online_dut",
+			ExecTimeout: &durationpb.Duration{Seconds: 90},
+		},
+		"Wait for Online DUT": {
+			Docs:       []string{"Waits for DUT to become available."},
+			ExecName:   "android_wait_for_online_dut",
+			RunControl: RunControl_ALWAYS_RUN,
 			ExecExtraArgs: []string{
 				"timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
-		"Sleep 60s": {
-			ExecName:      "sample_sleep",
-			ExecExtraArgs: []string{"sleep:60"},
-			ExecTimeout:   &durationpb.Duration{Seconds: 90},
-			RunControl:    RunControl_ALWAYS_RUN,
+		"Wait for DUT to reboot": {
+			Docs: []string{"Waits for DUT till it reboots."},
+			Dependencies: []string{
+				"Wait for Offline DUT",
+				"Wait for Online DUT",
+			},
+			ExecName:    "sample_pass",
+			ExecTimeout: &durationpb.Duration{Seconds: 690},
 		},
 		"Connect to WiFi network": {
 			Docs: []string{"Connects DUT to WiFi network."},
@@ -365,28 +365,14 @@ func androidRepairDeployActions() map[string]*Action {
 		"Reboot device if in fastboot mode": {
 			Docs: []string{
 				"Reboot the device via fastboot if the device is in fastboot mode.",
-				"This action will also restart adb server as we may need to re-auth.",
 			},
 			Dependencies: []string{
 				"android_device_in_fastboot_mode",
 				"android_reboot_device_via_fastboot",
-				"Sleep 60s",
-				"Stop ADB server",
-				"Start ADB server",
-				"android_wait_for_online_dut",
+				"Wait for Online DUT",
 			},
-			ExecName: "sample_pass",
-		},
-		"Start ADB server": {
-			Docs:          []string{"Start adb server, this action will always run."},
-			ExecExtraArgs: []string{"adb_vendor_key:" + filepath.Dir(adbPrivateVendorKeyFile)},
-			ExecName:      "android_associated_host_start_adb",
-			RunControl:    RunControl_ALWAYS_RUN,
-		},
-		"Stop ADB server": {
-			Docs:       []string{"Stop adb server, this action will always run."},
-			ExecName:   "android_associated_host_stop_adb",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:    "sample_pass",
+			ExecTimeout: &durationpb.Duration{Seconds: 690},
 		},
 	}
 }
