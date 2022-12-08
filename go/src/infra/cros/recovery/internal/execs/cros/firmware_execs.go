@@ -194,6 +194,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		UpdateApAttemptCount: actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
 		UpdaterMode:          actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
+		UseCacheToExtractor:  actionArgs.AsBool(ctx, "use_cache_extractor", false),
 	}
 	logger := info.NewLogger()
 	if err := firmware.InstallFirmwareImage(ctx, req, logger); err != nil {

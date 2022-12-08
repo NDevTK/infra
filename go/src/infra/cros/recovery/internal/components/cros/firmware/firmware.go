@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/logger"
 )
@@ -234,6 +235,9 @@ type InstallFirmwareImageRequest struct {
 	// Flash firmware via servo if true, otherwise flash firmware on DUT itself use chromeos-firmwareupdate.
 	FlashThroughServo bool
 
+	// Use cache extractor to download firmware files.
+	UseCacheToExtractor bool
+
 	// Runner to execute command on the DUT side.
 	DutRunner components.Runner
 	// Runner to execute command on the servohost.
@@ -319,9 +323,11 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 	defer clearDirectory()
 	// construct filename for file to download.
 	tarballPath := filepath.Join(req.DownloadDir, downloadFilename)
-	if out, err := run(ctx, req.DownloadImageTimeout, "curl", req.DownloadImagePath, "--output", tarballPath); err != nil {
-		log.Debugf("Output to download fw-image: %s", out)
-		return errors.Annotate(err, "install firmware image").Err()
+	if !req.UseCacheToExtractor {
+		// No need to download the file if we use cache extractor.
+		if err := cache.CurlFile(ctx, run, req.DownloadImagePath, tarballPath, req.DownloadImageTimeout); err != nil {
+			return errors.Annotate(err, "install firmware image").Err()
+		}
 	}
 	log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
 	if ecExemptedModels[req.Model] {
@@ -430,6 +436,10 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 //	(5) Use board name of the DUT.
 func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "EC")
+	run := req.targetHostRunner()
+	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDir); err != nil {
+		return "", errors.Annotate(err, "extract ec files: fail to create a destination directory %s", destDir).Err()
+	}
 	candidatesFiles := []string{}
 	// Handle special case where some model use non-regular firmware mapping.
 	if m, ok := targetOverrideModels[req.Model]; ok {
@@ -447,7 +457,6 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwBoard))
 		}
 	}
-	run := req.targetHostRunner()
 	if !req.FlashThroughServo {
 		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
 		if err != nil {
@@ -462,9 +471,18 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		fmt.Sprintf("%s/ec.bin", req.Board),
 		"ec.bin",
 	)
-	imagePath, err := extractFromTarball(ctx, tarballPath, destDir, candidatesFiles, run, log)
-	if err != nil {
-		return "", errors.Annotate(err, "extract ec files").Err()
+	var imagePath string
+	if req.UseCacheToExtractor {
+		imagePath = "ec.bin"
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, candidatesFiles, run, log); err != nil {
+			return "", errors.Annotate(err, "extract ec files").Err()
+		}
+	} else {
+		var err error
+		imagePath, err = extractFromTarball(ctx, tarballPath, destDir, candidatesFiles, run, log)
+		if err != nil {
+			return "", errors.Annotate(err, "extract ec files").Err()
+		}
 	}
 	// Extract subsidiary binaries for EC
 	// Find a monitor binary for NPCX_UUT chip type, if any.
@@ -472,8 +490,14 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	for _, f := range candidatesFiles {
 		monitorFiles = append(monitorFiles, strings.Replace(f, "ec.bin", ecMonitorFileName, 1))
 	}
-	if _, err := extractFromTarball(ctx, tarballPath, destDir, monitorFiles, run, log); err != nil {
-		log.Debugf("Extract EC files: fail to extract %q file. Error: %s", ecMonitorFileName, err)
+	if req.UseCacheToExtractor {
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, ecMonitorFileName, candidatesFiles, run, log); err != nil {
+			log.Debugf("Extract EC files: fail to extract %q file. Error: %s", ecMonitorFileName, err)
+		}
+	} else {
+		if _, err := extractFromTarball(ctx, tarballPath, destDir, monitorFiles, run, log); err != nil {
+			log.Debugf("Extract EC files: fail to extract %q file. Error: %s", ecMonitorFileName, err)
+		}
 	}
 	return filepath.Join(destDir, imagePath), nil
 }
@@ -489,6 +513,10 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 //	(5) Use board name of the DUT.
 func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "AP")
+	run := req.targetHostRunner()
+	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDir); err != nil {
+		return "", errors.Annotate(err, "extract ap files: fail to create a destination directory %s", destDir).Err()
+	}
 	candidatesFiles := []string{}
 	// Handle special case where some model use non-regular firmware mapping.
 	if m, ok := targetOverrideModels[req.Model]; ok {
@@ -506,7 +534,6 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwBoard))
 		}
 	}
-	run := req.targetHostRunner()
 	if !req.FlashThroughServo {
 		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
 		if err != nil {
@@ -521,9 +548,17 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		fmt.Sprintf("image-%s.bin", req.Board),
 		"image.bin",
 	)
-	imagePath, err := extractFromTarball(ctx, tarballPath, destDir, candidatesFiles, run, log)
-	if err != nil {
-		return "", errors.Annotate(err, "extract ec files").Err()
+	var imagePath string
+	if req.UseCacheToExtractor {
+		imagePath = "image.bin"
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, candidatesFiles, run, log); err != nil {
+			return "", errors.Annotate(err, "extract ap files").Err()
+		}
+	} else {
+		var err error
+		if imagePath, err = extractFromTarball(ctx, tarballPath, destDir, candidatesFiles, run, log); err != nil {
+			return "", errors.Annotate(err, "extract ap files").Err()
+		}
 	}
 	return filepath.Join(destDir, imagePath), nil
 }
@@ -537,10 +572,6 @@ func extractFromTarball(ctx context.Context, tarballPath, destDirPath string, ca
 		// Extract file from the archive.
 		tarballExtractTheFileGlob = "tar xf %s -C %s %s"
 	)
-	// Create the firmware_name subdirectory if it doesn't exist
-	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDirPath); err != nil {
-		return "", errors.Annotate(err, "extract from tarball: fail to create a destination directory %s", destDirPath).Err()
-	}
 	// Generate a list of all tarball files
 	tarballFiles := make(map[string]bool, 50)
 	cmd := fmt.Sprintf(tarballListTheFileGlob, tarballPath, strings.Join(candidates, " "))
@@ -567,6 +598,26 @@ func extractFromTarball(ctx context.Context, tarballPath, destDirPath string, ca
 		}
 	}
 	return "", errors.Reason("extract from tarball: no candidate file found").Err()
+}
+
+// Try extracting the image_candidates from Cache Service.
+func extractFromCache(ctx context.Context, sourceCachePath, destDirPath, destFileName string, candidates []string, run components.Runner, log logger.Logger) error {
+	// Try to download candidates till first success.
+	for _, cf := range candidates {
+		req := &cache.ExtractRequest{
+			CacheFileURL:       sourceCachePath,
+			ExtractFileName:    cf,
+			DestintionFilePath: filepath.Join(destDirPath, destFileName),
+			Timeout:            extractFileTimeout,
+		}
+		if err := cache.Extract(ctx, req, run); err != nil {
+			log.Debugf("Fail to download candidate %q: %s", cf, err)
+			continue
+		}
+		log.Infof("Candidate file %q extracted.", cf)
+		return nil
+	}
+	return errors.Reason("extract from cache: no candidate file found").Err()
 }
 
 // getFirmwareTargetFromDUT determine firmware target based on output of crossystem from the DUT.

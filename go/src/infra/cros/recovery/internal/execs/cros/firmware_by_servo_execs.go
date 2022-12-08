@@ -149,6 +149,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		FlashThroughServo:    true,
 		Servod:               servod,
 		ServoHostRunner:      info.NewRunner(info.GetChromeos().GetServo().GetName()),
+		UseCacheToExtractor:  am.AsBool(ctx, "use_cache_extractor", false),
 	}
 	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
 	return errors.Annotate(err, mn).Err()
