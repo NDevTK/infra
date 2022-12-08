@@ -19,9 +19,12 @@ import gae_ts_mon
 
 import flaskregisterpages
 from framework import sorting
+from search import search_helpers
 from services import api_svc_v1
 from services import service_manager
 
+
+search_helpers.InitializeAppEngineSearchAPI()
 
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)
