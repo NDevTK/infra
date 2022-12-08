@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 """Classes to hold information parsed from a request.
 
@@ -300,7 +299,7 @@ class MonorailRequest(MonorailRequestBase):
       self.request_path = request.base_url[len(request.host_url) - 1:]
       self.current_page_url = request.url
       self.current_page_url_encoded = urllib.parse.quote_plus(
-          self.current_page_url)
+          six.ensure_str(self.current_page_url))
 
       # Only accept a hostport from the request that looks valid.
       if not _HOSTPORT_RE.match(request.host):
