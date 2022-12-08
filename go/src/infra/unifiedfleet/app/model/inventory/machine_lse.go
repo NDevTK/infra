@@ -285,8 +285,23 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken string, filt
 	if err != nil {
 		return nil, "", err
 	}
+	return runListQuery(ctx, q, pageSize, pageToken, keysOnly)
+}
+
+// ListMachineLSEsByIdPrefixSearch lists the machineLSEs
+// Does a query over MachineLSE entities using Name/ID prefix. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). PageSize must be positive.
+func ListMachineLSEsByIdPrefixSearch(ctx context.Context, pageSize int32, pageToken string, prefix string, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
+	q, err := ufsds.ListQueryIdPrefixSearch(ctx, MachineLSEKind, pageSize, pageToken, prefix, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	return runListQuery(ctx, q, pageSize, pageToken, keysOnly)
+}
+
+func runListQuery(ctx context.Context, query *datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
 	var nextCur datastore.Cursor
-	err = datastore.Run(ctx, q, func(ent *MachineLSEEntity, cb datastore.CursorCB) error {
+	err = datastore.Run(ctx, query, func(ent *MachineLSEEntity, cb datastore.CursorCB) error {
 		if keysOnly {
 			res = append(res, &ufspb.MachineLSE{
 				Name: ent.ID,

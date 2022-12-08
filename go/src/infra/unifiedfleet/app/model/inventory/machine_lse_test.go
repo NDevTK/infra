@@ -221,6 +221,57 @@ func TestListMachineLSEs(t *testing.T) {
 	})
 }
 
+// TestListMachineLSEsByIdPrefixSearch tests the functionality for listing
+// machineLSEs by searching for name/id prefix
+func TestListMachineLSEsByIdPrefixSearch(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
+	for i := 0; i < 4; i++ {
+		machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
+		resp, _ := CreateMachineLSE(ctx, machineLSE1)
+		machineLSEs = append(machineLSEs, resp)
+	}
+	Convey("ListMachinesByIdPrefixSearch", t, func() {
+		Convey("List machines - page_token invalid", func() {
+			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 5, "abc", "machineLSE-", false)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+		})
+
+		Convey("List machines - Full listing with valid prefix and no pagination", func() {
+			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 4, "", "machineLSE-", false)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSEs)
+		})
+
+		Convey("List machines - Full listing with invalid prefix", func() {
+			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 4, "", "machineLSE1-", false)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("List machines - listing with valid prefix and pagination", func() {
+			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 3, "", "machineLSE-", false)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSEs[:3])
+
+			resp, _, err = ListMachineLSEsByIdPrefixSearch(ctx, 2, nextPageToken, "machineLSE-", false)
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSEs[3:])
+		})
+	})
+}
+
 func TestDeleteMachineLSE(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")

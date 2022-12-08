@@ -363,7 +363,7 @@ func TestListMachinesByIdPrefixSearch(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machines[:3])
 
-			resp, _, err = ListMachines(ctx, 2, nextPageToken, nil, false)
+			resp, _, err = ListMachinesByIdPrefixSearch(ctx, 2, nextPageToken, "chromeos-", false)
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machines[3:])
