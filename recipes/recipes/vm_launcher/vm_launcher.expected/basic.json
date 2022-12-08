@@ -1,0 +1,61 @@
+[
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]",
+      "-ensure-file",
+      "experimental/jairogarciga_at_google.com/purple_panda latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"experimental/jairogarciga_at_google.com/purple_panda\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ls",
+      "[CACHE]"
+    ],
+    "name": "Check what we have"
+  },
+  {
+    "cmd": [
+      "ls",
+      "[CACHE]"
+    ],
+    "name": "Check Again"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE[infra::vm_launcher/vm_launcher].resources/mac_vm_script.py",
+      "--binary_path",
+      "[CACHE]/Purple_Panda-Swift.app/Contents/MacOS/Purple_Panda-Swift",
+      "--cpu_count",
+      "4",
+      "--bundle",
+      "dummy_loc"
+    ],
+    "name": "VM Launching Script 1"
+  },
+  {
+    "name": "$result"
+  }
+]
