@@ -422,6 +422,8 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 				np = inventory.NetworkProvider_NETWORK_OTHER
 			}
 			s.ProfileInfo[j].CarrierName = &np
+			ownNumber := p.GetOwnNumber()
+			s.ProfileInfo[j].OwnNumber = &ownNumber
 		}
 		l.Siminfo[i] = s
 	}

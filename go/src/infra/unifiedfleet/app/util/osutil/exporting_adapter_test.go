@@ -181,12 +181,14 @@ var lse = ufspb.MachineLSE{
 											SimPin:      "pin1",
 											SimPuk:      "puk1",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+											OwnNumber:   "123456789",
 										},
 										{
 											Iccid:       "iccid2",
 											SimPin:      "pin2",
 											SimPuk:      "puk2",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_TEST,
+											OwnNumber:   "234567890",
 										},
 									},
 								},
@@ -199,6 +201,7 @@ var lse = ufspb.MachineLSE{
 											SimPin:      "pin1",
 											SimPuk:      "puk1",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+											OwnNumber:   "123456789",
 										},
 									},
 								},
@@ -457,14 +460,14 @@ common {
 				sim_pin: "pin1"
 				sim_puk: "puk1"
 				carrier_name: NETWORK_ATT
-				own_number: ""
+				own_number: "123456789"
 			}
 			profile_info {
 				iccid: "iccid2"
 				sim_pin: "pin2"
 				sim_puk: "puk2"
 				carrier_name: NETWORK_TEST
-				own_number: ""
+				own_number: "234567890"
 			}
 		}
 		siminfo {
@@ -477,7 +480,7 @@ common {
 				sim_pin: "pin1"
 				sim_puk: "puk1"
 				carrier_name: NETWORK_ATT
-				own_number: ""
+				own_number: "123456789"
 			}
 		}
 		model: "test_model"
