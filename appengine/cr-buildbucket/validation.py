@@ -23,6 +23,7 @@ import config
 import errors
 import experiments
 import model
+import re
 
 
 class Error(Exception):
@@ -34,7 +35,6 @@ PUBSUB_USER_DATA_MAX_LENGTH = 4096
 # Maximum size of Build.summary_markdown field. Defined in build.proto.
 MAX_BUILD_SUMMARY_MARKDOWN_SIZE = 4000  # 4 KB
 
-
 ################################################################################
 # Validation of common.proto messages.
 # The order of functions must match the order of messages in common.proto.
@@ -44,6 +44,9 @@ def validate_gerrit_change(change):
   """Validates common_pb2.GerritChange."""
   # project is not required.
   _check_truth(change, 'host', 'change', 'patchset')
+  if change.host:  # pragma: no cover
+    with _enter('host'):
+      _validate_gerrit_host(change.host)
 
 
 def validate_gitiles_commit(commit):
@@ -189,6 +192,16 @@ def validate_notification_config(notify):
 
 ################################################################################
 # Internals.
+
+
+def _validate_gerrit_host(host):
+  # Allow hostnames permitted by
+  # https://www.rfc-editor.org/rfc/rfc1123#page-13.
+  pattern = r'^[a-z0-9][a-z0-9-]+(\.[a-z0-9-]+)*$'
+  if not re.match(pattern, host):
+    _err('does not match r"%s"', pattern)
+  if len(host) > 255:
+    _err('must be no more than 255 characters')
 
 
 def _validate_cipd_version(version):

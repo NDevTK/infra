@@ -63,6 +63,16 @@ class GerritChangeTests(BaseTestCase):
     msg = common_pb2.GerritChange(host='', change=1, patchset=1)
     self.assert_invalid(msg, r'host: required')
 
+  def test_invalid_host(self):
+    msg = common_pb2.GerritChange(
+        host='https://gerrit.example.com', change=1, patchset=1
+    )
+    self.assert_invalid(msg, r'host: does not match .*')
+
+  def test_invalid_host_length(self):
+    msg = common_pb2.GerritChange(host='h' * 256, change=1, patchset=1)
+    self.assert_invalid(msg, r'host: must be no more than 255 characters')
+
 
 class GitilesCommitTests(BaseTestCase):
   func_name = 'validate_gitiles_commit'
