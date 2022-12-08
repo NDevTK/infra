@@ -22,85 +22,25 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const (
+	// Test result JSON file with a subset of common information.
+	simpleTestResultFile = "test_data/cros_test_result/simple_test_result.json"
+
+	// Test result JSON file with full information.
+	fullTestResultFile = "test_data/cros_test_result/full_test_result.json"
+
+	// Test result JSON file with multi-DUT testing information.
+	multiDUTTestResultFile = "test_data/cros_test_result/multi_dut_result.json"
+
+	// Test result JSON file with skipped test results.
+	skippedTestResultFile = "test_data/cros_test_result/skpped_test_result.json"
+)
+
 func TestCrosTestResultConversions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	testResultsJson := `
-	{
-		"version":1,
-		"test_invocation": {
-			"primary_execution_info":{
-				"build_info":{
-					"name":"hatch-cq/R106-15048.0.0",
-					"milestone":106,
-					"chrome_os_version":"15048.0.0",
-					"source":"hatch-cq",
-					"board":"hatch"
-				},
-				"dut_info":{
-					"dut":{
-						"chromeos":{
-							"name":"chromeos15-row4-rack5-host1",
-							"dut_model":{
-								"model_name":"nipperkin"
-							}
-						}
-					}
-				}
-			}
-		},
-		"test_runs":[
-			{
-				"test_case_info":{
-					"test_case_metadata":{
-						"test_case":{
-							"id":{
-								"value":"invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001"
-							},
-							"name":"rlz_CheckPing"
-						}
-					},
-					"test_case_result":{
-						"pass":{},
-						"start_time":"2022-09-07T18:53:33.983328614Z",
-						"duration": "60s"
-					}
-				},
-				"logs_info":[
-					{
-						"host_type":"GS",
-						"path":"gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"
-					}
-				]
-			},
-			{
-				"test_case_info":{
-					"test_case_metadata":{
-						"test_case":{
-							"id":{
-								"value":"invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002"
-							},
-							"name":"power_Resume"
-						}
-					},
-					"test_case_result":{
-						"fail":{},
-						"reason": "Test failed",
-						"start_time":"2022-09-07T18:53:34.983328614Z",
-						"duration": "120.1s"
-					}
-				},
-				"logs_info":[
-					{
-						"host_type":"GS",
-						"path":"gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"
-					}
-				]
-			}
-		]
-	}
-	`
+	testResultsJson := ReadJSONFileToString(simpleTestResultFile)
 
 	testResult := &artifactpb.TestResult{
 		Version: 1,
@@ -199,14 +139,15 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Status:    pb.TestStatus_PASS,
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
-					Tags: []*pb.StringPair{
-						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
-						pbutil.StringPair("build", "R106-15048.0.0"),
+					Tags: SortTags([]*pb.StringPair{
 						pbutil.StringPair("board", "hatch"),
-						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
+						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
-					},
+						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("multiduts", "False"),
+					}),
 				},
 				{
 					TestId:   "power_Resume",
@@ -217,63 +158,23 @@ func TestCrosTestResultConversions(t *testing.T) {
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
-					Tags: []*pb.StringPair{
-						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
-						pbutil.StringPair("build", "R106-15048.0.0"),
+					Tags: SortTags([]*pb.StringPair{
 						pbutil.StringPair("board", "hatch"),
-						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
+						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"),
-					},
+						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("multiduts", "False"),
+					}),
 				},
 			}
 			So(testResults, ShouldHaveLength, 2)
 			So(testResults, ShouldResembleProto, expected)
 		})
 
-		Convey(`check expected skip and unexpected skip tests`, func() {
-			testResultsJson := `
-			{
-				"test_runs":[
-					{
-						"test_case_info":{
-							"test_case_metadata":{
-								"test_case":{
-									"id":{
-										"value":"invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001"
-									},
-									"name":"rlz_CheckPing"
-								}
-							},
-							"test_case_result":{
-								"skip":{},
-								"reason": "Test was skipped expectedly",
-								"start_time":"2022-09-07T18:53:33.983328614Z",
-								"duration": "60s"
-							}
-						}
-					},
-					{
-						"test_case_info":{
-							"test_case_metadata":{
-								"test_case":{
-									"id":{
-										"value":"invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002"
-									},
-									"name":"power_Resume"
-								}
-							},
-							"test_case_result":{
-								"not_run":{},
-								"reason": "Test has not run yet",
-								"start_time":"2022-09-07T18:53:34.983328614Z",
-								"duration": "120.1s"
-							}
-						}
-					}
-				]
-			}
-			`
+		Convey(`Check expected skip and unexpected skip tests`, func() {
+			testResultsJson := ReadJSONFileToString(skippedTestResultFile)
 			results := &CrosTestResult{}
 			results.ConvertFromJSON(strings.NewReader(testResultsJson))
 			testResults, err := results.ToProtos(ctx)
@@ -302,6 +203,89 @@ func TestCrosTestResultConversions(t *testing.T) {
 				},
 			}
 			So(testResults, ShouldHaveLength, 2)
+			So(testResults, ShouldResembleProto, expected)
+		})
+
+		Convey(`Check the full list of tags`, func() {
+			testResultsJson := ReadJSONFileToString(fullTestResultFile)
+			results := &CrosTestResult{}
+			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			testResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:    "rlz_CheckPing",
+					Expected:  true,
+					Status:    pb.TestStatus_PASS,
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 60},
+					Tags: SortTags([]*pb.StringPair{
+						pbutil.StringPair("ancestor_buildbucket_ids", "8814950840874708945,8814951792758733697"),
+						pbutil.StringPair("board", "hatch"),
+						pbutil.StringPair("branch", "main"),
+						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("contacts", "user@google.com"),
+						pbutil.StringPair("declared_name", "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"),
+						pbutil.StringPair("drone", "skylab-drone-deployment-prod-6dc79d4f9-czjlj"),
+						pbutil.StringPair("drone_server", "chromeos4-row4-rack1-drone8"),
+						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
+						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
+						pbutil.StringPair("job_name", "bb-8818737803155059937-chromeos/general/Full"),
+						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
+						pbutil.StringPair("main_builder_name", "main-release"),
+						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("multiduts", "False"),
+						pbutil.StringPair("pool", "ChromeOSSkylab"),
+						pbutil.StringPair("queued_time", "2022-06-03 18:53:33.983328614 +0000 UTC"),
+						pbutil.StringPair("ro_fwid", "Google_Voema.13672.224.0"),
+						pbutil.StringPair("rw_fwid", "Google_Voema.13672.224.0"),
+						pbutil.StringPair("suite_task_id", "59ef5e9532bbd611"),
+						pbutil.StringPair("task_id", "59f0e13fe7af0710"),
+						pbutil.StringPair("label_pool", "DUT_POOL_QUOTA"),
+						pbutil.StringPair("wifi_chip", "marvell"),
+						pbutil.StringPair("kernel_version", "5.4.151-16902-g93699f4e73de"),
+						pbutil.StringPair("hwid_sku", "katsu_MT8183_0B"),
+						pbutil.StringPair("carrier", "CARRIER_ESIM"),
+						pbutil.StringPair("ash_version", "109.0.5391.0"),
+						pbutil.StringPair("lacros_version", "109.0.5391.0"),
+					}),
+				},
+			}
+			So(testResults, ShouldHaveLength, 1)
+			So(testResults, ShouldResembleProto, expected)
+		})
+
+		Convey(`Check multi DUT testing`, func() {
+			testResultsJson := ReadJSONFileToString(multiDUTTestResultFile)
+			results := &CrosTestResult{}
+			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			testResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:    "rlz_CheckPing",
+					Expected:  true,
+					Status:    pb.TestStatus_PASS,
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 60},
+					Tags: SortTags([]*pb.StringPair{
+						pbutil.StringPair("board", "hatch"),
+						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
+						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
+						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
+						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("multiduts", "True"),
+						pbutil.StringPair("primary_board", "hatch"),
+						pbutil.StringPair("primary_model", "nipperkin"),
+						pbutil.StringPair("secondary_boards", "brya"),
+						pbutil.StringPair("secondary_models", "gimble"),
+					}),
+				},
+			}
+			So(testResults, ShouldHaveLength, 1)
 			So(testResults, ShouldResembleProto, expected)
 		})
 	})

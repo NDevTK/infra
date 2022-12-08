@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 
@@ -42,13 +43,14 @@ func (r *CrosTestResult) ConvertFromJSON(reader io.Reader) error {
 // ToProtos converts ChromeOS test results in r to []*sinkpb.TestResult.
 func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, error) {
 	var ret []*sinkpb.TestResult
-	testInvocation := r.TestResult.TestInvocation
-	for _, testRun := range r.TestResult.TestRuns {
-		testCaseMatadata := testRun.TestCaseInfo.TestCaseMetadata
-		testCaseResult := testRun.TestCaseInfo.TestCaseResult
+	for _, testRun := range r.TestResult.GetTestRuns() {
+		testCaseInfo := testRun.GetTestCaseInfo()
+		testCaseMatadata := testCaseInfo.GetTestCaseMetadata()
+		testCaseResult := testCaseInfo.GetTestCaseResult()
 		status := genTestResultStatus(testCaseResult)
+
 		tr := &sinkpb.TestResult{
-			TestId: testCaseMatadata.TestCase.Name,
+			TestId: testCaseMatadata.GetTestCase().GetName(),
 			Status: status,
 			// The status is expected if the test passed or was skipped
 			// expectedly.
@@ -56,7 +58,7 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			// TODO(b/251357069): Move the invocation-level info and
 			// result-level info to the new JSON type columns accordingly when
 			// the new JSON type columns are ready in place.
-			Tags: genTestResultTags(testRun, testInvocation),
+			Tags: genTestResultTags(testRun, r.TestResult.GetTestInvocation()),
 		}
 
 		if testCaseResult.GetReason() != "" {
@@ -65,10 +67,10 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			}
 		}
 
-		if testCaseResult.StartTime.CheckValid() == nil {
-			tr.StartTime = testCaseResult.StartTime
-			if testCaseResult.Duration.CheckValid() == nil {
-				tr.Duration = testCaseResult.Duration
+		if testCaseResult.GetStartTime().CheckValid() == nil {
+			tr.StartTime = testCaseResult.GetStartTime()
+			if testCaseResult.GetDuration().CheckValid() == nil {
+				tr.Duration = testCaseResult.GetDuration()
 			}
 		}
 
@@ -79,7 +81,7 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 
 // Converts a TestCase Verdict into a ResultSink Status.
 func genTestResultStatus(result *apipb.TestCaseResult) pb.TestStatus {
-	switch result.Verdict.(type) {
+	switch result.GetVerdict().(type) {
 	case *apipb.TestCaseResult_Pass_:
 		return pb.TestStatus_PASS
 	case *apipb.TestCaseResult_Fail_:
@@ -99,28 +101,207 @@ func genTestResultStatus(result *apipb.TestCaseResult) pb.TestStatus {
 
 // TODO(b/240897202): Remove the tags when a JSON type field is supported in
 // ResultDB schema.
-// Generates test result tags based on the structured ChromeOS test run proto.
+// genTestResultTags generates test result tags based on the ChromeOS test
+// result contract proto and returns the sorted tags.
 func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
 	tags := []*pb.StringPair{}
 
 	if testInvocation != nil {
-		primaryExecInfo := testInvocation.PrimaryExecutionInfo
+		// For Testhaus MVP parity.
+		// Refer to `_generate_resultdb_base_tags` in test_runner recipe:
+		// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:infra/recipes/recipes/test_platform/test_runner.py;l=472?q=test_platform%2Ftest_runner.py
+		primaryExecInfo := testInvocation.GetPrimaryExecutionInfo()
 		if primaryExecInfo != nil {
-			primaryBuildInfo := primaryExecInfo.BuildInfo
-			tags = append(tags, pbutil.StringPair("image", primaryBuildInfo.Name))
-			tags = append(tags, pbutil.StringPair("build", strings.Split(primaryBuildInfo.Name, "/")[1]))
-			tags = append(tags, pbutil.StringPair("board", primaryBuildInfo.Board))
+			buildInfo := primaryExecInfo.GetBuildInfo()
+			if buildInfo != nil {
+				buildName := buildInfo.GetName()
+				tags = AppendTags(tags, "image", buildName)
+				tags = AppendTags(tags, "build", strings.Split(buildName, "/")[1])
+				tags = AppendTags(tags, "board", buildInfo.GetBoard())
 
-			primaryDutInfo := primaryExecInfo.DutInfo
-			dut := primaryDutInfo.Dut
-			tags = append(tags, pbutil.StringPair("model", dut.GetChromeos().DutModel.ModelName))
-			tags = append(tags, pbutil.StringPair("hostname", dut.GetChromeos().Name))
+				tags = configBuildMetaDataTags(tags, buildInfo.GetBuildMetadata())
+			}
+
+			dutInfo := primaryExecInfo.GetDutInfo()
+			if dutInfo != nil {
+				chromeOSDUT := dutInfo.GetDut().GetChromeos()
+				if chromeOSDUT != nil {
+					tags = AppendTags(tags, "model", chromeOSDUT.GetDutModel().GetModelName())
+					tags = AppendTags(tags, "hostname", chromeOSDUT.GetName())
+				}
+			}
+
+			tags = configEnvInfoTags(tags, primaryExecInfo)
+
+			// For Multi-DUT testing info.
+			tags = configMultiDUTTags(tags, primaryExecInfo, testInvocation.GetSecondaryExecutionsInfo())
 		}
 	}
 
-	for _, logInfo := range testRun.LogsInfo {
-		tags = append(tags, pbutil.StringPair("logs_url", logInfo.Path))
+	if testRun != nil {
+		// For Testhaus MVP parity.
+		// Refer to `_generate_resultdb_base_tags` in test_runner recipe:
+		// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:infra/recipes/recipes/test_platform/test_runner.py;l=472?q=test_platform%2Ftest_runner.py
+		for _, logInfo := range testRun.LogsInfo {
+			tags = AppendTags(tags, "logs_url", logInfo.Path)
+		}
+
+		testCaseInfo := testRun.GetTestCaseInfo()
+		if testCaseInfo != nil {
+			tags = AppendTags(tags, "declared_name", testCaseInfo.GetDisplayName())
+			tags = AppendTags(tags, "branch", testCaseInfo.GetBranch())
+			tags = AppendTags(tags, "main_builder_name", testCaseInfo.GetMainBuilderName())
+			tags = AppendTags(tags, "contacts", strings.Join(testCaseInfo.GetContacts(), ","))
+		}
+
+		timeInfo := testRun.GetTimeInfo()
+		if timeInfo != nil {
+			if timeInfo.GetQueuedTime().CheckValid() == nil {
+				tags = AppendTags(tags, "queued_time", timeInfo.GetQueuedTime().AsTime().UTC().String())
+			}
+		}
 	}
+
+	pbutil.SortStringPairs(tags)
+	return tags
+}
+
+// configBuildMetaDataTags configs test result tags based on the build metadata.
+func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.BuildMetadata) []*pb.StringPair {
+	if buildMetadata == nil {
+		return tags
+	}
+
+	firmware := buildMetadata.GetFirmware()
+	if firmware != nil {
+		tags = AppendTags(tags, "ro_fwid", firmware.GetRoVersion())
+		tags = AppendTags(tags, "rw_fwid", firmware.GetRwVersion())
+	}
+
+	chipset := buildMetadata.GetChipset()
+	if chipset != nil {
+		tags = AppendTags(tags, "wifi_chip", chipset.GetWifiChip())
+	}
+
+	kernel := buildMetadata.GetKernel()
+	if kernel != nil {
+		tags = AppendTags(tags, "kernel_version", kernel.GetVersion())
+	}
+
+	sku := buildMetadata.GetSku()
+	if sku != nil {
+		tags = AppendTags(tags, "hwid_sku", sku.GetHwidSku())
+	}
+
+	cellular := buildMetadata.GetCellular()
+	if cellular != nil {
+		tags = AppendTags(tags, "carrier", cellular.GetCarrier())
+	}
+
+	lacros := buildMetadata.GetLacros()
+	if lacros != nil {
+		tags = AppendTags(tags, "ash_version", lacros.GetAshVersion())
+		tags = AppendTags(tags, "lacros_version", lacros.GetLacrosVersion())
+	}
+
+	return tags
+}
+
+// configEnvInfoTags configs test result tags based on the test environment
+// information.
+func configEnvInfoTags(tags []*pb.StringPair, execInfo *artifactpb.ExecutionInfo) []*pb.StringPair {
+	envInfo := execInfo.GetEnvInfo()
+	if envInfo == nil {
+		return tags
+	}
+
+	switch envInfo.(type) {
+	case *artifactpb.ExecutionInfo_SkylabInfo:
+		skylabInfo := execInfo.GetSkylabInfo()
+		if skylabInfo != nil {
+			tags = configDroneTags(tags, skylabInfo.GetDroneInfo())
+			tags = configSwarmingTags(tags, skylabInfo.GetSwarmingInfo())
+			tags = configBuildbucketTags(tags, skylabInfo.GetBuildbucketInfo())
+		}
+	case *artifactpb.ExecutionInfo_SatlabInfo:
+		satlabInfo := execInfo.GetSatlabInfo()
+		if satlabInfo != nil {
+			tags = configSwarmingTags(tags, satlabInfo.GetSwarmingInfo())
+			tags = configBuildbucketTags(tags, satlabInfo.GetBuildbucketInfo())
+		}
+	}
+	return tags
+}
+
+// configDroneTags configs test result tags based on the Drone information.
+func configDroneTags(tags []*pb.StringPair, droneInfo *artifactpb.DroneInfo) []*pb.StringPair {
+	if droneInfo == nil {
+		return tags
+	}
+
+	tags = AppendTags(tags, "drone", droneInfo.GetDrone())
+	tags = AppendTags(tags, "drone_server", droneInfo.GetDroneServer())
+	return tags
+}
+
+// configSwarmingTags configs test result tags based on the swarming
+// information.
+func configSwarmingTags(tags []*pb.StringPair, swarmingInfo *artifactpb.SwarmingInfo) []*pb.StringPair {
+	if swarmingInfo == nil {
+		return tags
+	}
+
+	tags = AppendTags(tags, "task_id", swarmingInfo.GetTaskId())
+	tags = AppendTags(tags, "suite_task_id", swarmingInfo.GetSuiteTaskId())
+	tags = AppendTags(tags, "job_name", swarmingInfo.GetTaskName())
+	tags = AppendTags(tags, "pool", swarmingInfo.GetPool())
+	tags = AppendTags(tags, "label_pool", swarmingInfo.GetLabelPool())
+	return tags
+}
+
+// configBuildbucketTags configs test result tags based on the buildbucket
+// information.
+func configBuildbucketTags(tags []*pb.StringPair, buildbucketInfo *artifactpb.BuildbucketInfo) []*pb.StringPair {
+	if buildbucketInfo == nil {
+		return tags
+	}
+
+	return AppendTags(
+		tags,
+		"ancestor_buildbucket_ids",
+		strings.Trim(strings.Join(strings.Fields(fmt.Sprint(buildbucketInfo.GetAncestorIds())), ","), "[]"))
+}
+
+// configMultiDUTTags configs test result tags based on the multi-DUT testing.
+func configMultiDUTTags(tags []*pb.StringPair, primaryExecInfo *artifactpb.ExecutionInfo, secondaryExecInfos []*artifactpb.ExecutionInfo) []*pb.StringPair {
+	// PrimaryExecInfo must be set for Multi-DUT testing.
+	if primaryExecInfo == nil {
+		return tags
+	}
+
+	if len(secondaryExecInfos) == 0 {
+		return AppendTags(tags, "multiduts", "False")
+	}
+
+	tags = AppendTags(tags, "multiduts", "True")
+	tags = AppendTags(tags, "primary_board", primaryExecInfo.GetBuildInfo().GetBoard())
+	tags = AppendTags(tags, "primary_model", primaryExecInfo.GetDutInfo().GetDut().GetChromeos().GetDutModel().GetModelName())
+
+	secordaryDUTSize := len(secondaryExecInfos)
+	secondaryBoards := make([]string, 0, secordaryDUTSize)
+	secondaryModels := make([]string, 0, secordaryDUTSize)
+	for _, execInfo := range secondaryExecInfos {
+		buildInfo := execInfo.GetBuildInfo()
+		dutInfo := execInfo.GetDutInfo()
+		if buildInfo != nil && dutInfo != nil {
+			secondaryBoards = append(secondaryBoards, buildInfo.GetBoard())
+			secondaryModels = append(secondaryModels, dutInfo.GetDut().GetChromeos().GetDutModel().GetModelName())
+		}
+	}
+
+	// Concatenates board names and model names separately.
+	tags = AppendTags(tags, "secondary_boards", strings.Join(secondaryBoards, " | "))
+	tags = AppendTags(tags, "secondary_models", strings.Join(secondaryModels, " | "))
 
 	return tags
 }

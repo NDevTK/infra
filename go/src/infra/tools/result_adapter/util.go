@@ -14,6 +14,8 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
+	"go.chromium.org/luci/resultdb/pbutil"
+	pb "go.chromium.org/luci/resultdb/proto/v1"
 )
 
 const (
@@ -104,4 +106,34 @@ func processArtifacts(artifactDir string) (normPathToFullPath map[string]string,
 		return nil, err
 	}
 	return normPathToFullPath, err
+}
+
+// AppendTags appends a new tag to the tag slice if both key and value exist.
+func AppendTags(tags []*pb.StringPair, key string, value string) []*pb.StringPair {
+	if key == "" || value == "" {
+		return tags
+	}
+
+	return append(tags, pbutil.StringPair(key, value))
+}
+
+// SortTags sorts the tags slice lexicographically by key, then value.
+func SortTags(tags []*pb.StringPair) []*pb.StringPair {
+	if len(tags) == 0 {
+		return tags
+	}
+
+	pbutil.SortStringPairs(tags)
+	return tags
+}
+
+// ReadJSONFileToString reads the JSON file content into a string. Return an
+// empty string if the file read fails.
+func ReadJSONFileToString(file string) string {
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return ""
+	}
+
+	return string(data)
 }
