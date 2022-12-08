@@ -1,0 +1,30 @@
+From f6b3f5fd436d9705333835f4a14ee82bec79141f Mon Sep 17 00:00:00 2001
+From: Oliver Newman <olivernewman@google.com>
+Date: Wed, 7 Dec 2022 11:58:11 -0500
+Subject: [PATCH] Define CGROUP2_SUPER_MAGIC fallback
+
+nsjail depends on CGROUP2_SUPER_MAGIC variable from linux/magic.h, but
+it is only available in Linux 4.5 and later, so the Docker image used by
+3pp doesn't support it.
+---
+ cgroup2.cc | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/cgroup2.cc b/cgroup2.cc
+index 4d11c41..a99d5bc 100644
+--- a/cgroup2.cc
++++ b/cgroup2.cc
+@@ -39,6 +39,10 @@
+ #include "logs.h"
+ #include "util.h"
+
++#ifndef CGROUP2_SUPER_MAGIC /* in linux/magic.h since Linux 4.5 */
++#define CGROUP2_SUPER_MAGIC 0x63677270
++#endif /* CGROUP2_SUPER_MAGIC */
++
+ namespace cgroup2 {
+
+ static bool addPidToProcList(const std::string &cgroup_path, pid_t pid);
+--
+2.39.0.rc0.267.gcb52ba06e7-goog
+
