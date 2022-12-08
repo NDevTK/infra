@@ -27,6 +27,7 @@ import (
 	"infra/cros/cmd/labpack/logger"
 	kclient "infra/cros/karte/client"
 	"infra/cros/recovery"
+	"infra/cros/recovery/dev"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
 	"infra/libs/skylab/buildbucket"
@@ -164,6 +165,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 			Options: site.DefaultPRPCOptions,
 		},
 	)
+	ctx = setDevOptions(ctx)
 	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{c.dutSSHKeyPath})
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create tlw access").Err()
@@ -301,4 +303,16 @@ func (l *recoveryLogger) indentString(v string) string {
 	}
 	indent := strings.Repeat("  ", int(i))
 	return indent + v
+}
+
+// Local implementation of devOptions.
+type devOptions struct{}
+
+func (_ *devOptions) IsActive() bool {
+	return true
+}
+
+// setDevOptions sets local development options.
+func setDevOptions(ctx context.Context) context.Context {
+	return dev.WithDevOptions(ctx, &devOptions{})
 }

@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/dev"
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
 	"infra/cros/recovery/internal/log"
@@ -73,8 +74,9 @@ func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) e
 	containerStartArgs := []string{"tail", "-f", "/dev/null"}
 	if startServod {
 		containerStartArgs = []string{"bash", "/start_servod.sh"}
-		//TODO(b:260804597) Need restore it.
-		// exposePorts = append(exposePorts, fmt.Sprintf("%d:%d/tcp", req.Options.GetServodPort(), req.Options.GetServodPort()))
+		if dev.IsActive(ctx) {
+			exposePorts = append(exposePorts, fmt.Sprintf("%d:%d/tcp", req.Options.GetServodPort(), req.Options.GetServodPort()))
+		}
 	}
 	containerArgs := createServodContainerArgs(true, exposePorts, envVar, containerStartArgs)
 	// Servod expected to start in less 1 minutes.
