@@ -73,3 +73,30 @@ func WaitForDeviceState(ctx context.Context, expectedState State, stateCount int
 	log.Debugf("Attached device in '%s' state: %q", expectedState, serialNumber)
 	return nil
 }
+
+// RemoveScreenLock disables screen lock on device and removes locksettings db.
+func RemoveScreenLock(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	const adbDisableLockScreenCmd = "adb -s %s shell settings put secure lockscreen.disabled 1"
+	cmd := fmt.Sprintf(adbDisableLockScreenCmd, serialNumber)
+	if _, err := run(ctx, time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "disable screen lock").Err()
+	}
+	const adbRemoveLocksettingsDbCmd = "adb -s %s shell rm /data/system/locksettings.db*"
+	cmd = fmt.Sprintf(adbRemoveLocksettingsDbCmd, serialNumber)
+	if _, err := run(ctx, time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "disable screen lock").Err()
+	}
+	log.Debugf("Screen lock is disabled on attached device: %q", serialNumber)
+	return nil
+}
+
+// RebootDevice reboots device.
+func RebootDevice(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	const adbRebootCmd = "adb -s %s reboot"
+	cmd := fmt.Sprintf(adbRebootCmd, serialNumber)
+	if _, err := run(ctx, time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "reboot device").Err()
+	}
+	log.Debugf("Device is rebooted: %q", serialNumber)
+	return nil
+}
