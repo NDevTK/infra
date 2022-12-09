@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "671fc500_abf8f408",
+        "filename": "3pp/yajl/install.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-12-09T04:22:52Z",
+      "side": 1,
+      "message": "This comment is probably actually misleading since the configure script is different at the tagged release than at the tip of tree. I\u0027d just remove it.",
+      "range": {
+        "startLine": 12,
+        "startChar": 42,
+        "endLine": 12,
+        "endChar": 48
+      },
+      "revId": "3e8bda67050c28e92283f8bd4eb9210992671a59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
