@@ -228,6 +228,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			metricKind = fmt.Sprintf("action:%s", actionName)
 		}
 		metric = r.args.NewMetricsAction(metricKind)
+		metric.PlanName = r.planName
 		switch act.GetAllowFailAfterRecovery() {
 		case true:
 			metric.AllowFail = metrics.YesAllowFail
