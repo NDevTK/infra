@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -80,7 +79,7 @@ func unmarshalPackages(jsonData []byte) ([]Package, error) {
 // Run a cipd command that supports -json-output and return the raw JSON.
 func jsonCmdOutput(applicationName string) jsonCmdOutputFunc {
 	return func(cmd *exec.Cmd) ([]byte, error) {
-		f, err := ioutil.TempFile("", fmt.Sprintf("%s-cipd-output", applicationName))
+		f, err := os.CreateTemp("", fmt.Sprintf("%s-cipd-output", applicationName))
 		if err != nil {
 			return nil, errors.Annotate(err, "JSON command output").Err()
 		}
@@ -89,7 +88,7 @@ func jsonCmdOutput(applicationName string) jsonCmdOutputFunc {
 		if _, err = cmd.Output(); err != nil {
 			return nil, errors.Annotate(err, "JSON command output").Err()
 		}
-		out, err := ioutil.ReadAll(f)
+		out, err := io.ReadAll(f)
 		if err != nil {
 			return nil, errors.Annotate(err, "JSON command output").Err()
 		}
