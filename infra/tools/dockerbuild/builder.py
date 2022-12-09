@@ -507,6 +507,9 @@ def BuildPackageFromSource(system,
           ldflags += ' -L' + os.path.join(pkg_dir, 'lib')
           # Prepend the bin/ directory of each package to PATH.
           env_prefix.append(('PATH', os.path.join(pkg_dir, 'bin')))
+          # Make sure the lib/ directory is also in LD_LIBRARY PATH in case of
+          # shared libraries. This can be needed below when running auditwheel.
+          env_prefix.append(('LD_LIBRARY_PATH', os.path.join(pkg_dir, 'lib')))
 
         extra_env['CFLAGS'] = cflags.lstrip()
         extra_env['LDFLAGS'] = ldflags.lstrip()
@@ -567,7 +570,8 @@ def BuildPackageFromSource(system,
               _FindWheelInDirectory(tdir),
           ],
           cwd=tdir,
-          env=env)
+          env=extra_env,
+          env_prefix=env_prefix)
 
     StageWheelForPackage(system, wheel_dir, wheel, output_dir)
 
