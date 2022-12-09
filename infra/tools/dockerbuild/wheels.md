@@ -4189,6 +4189,24 @@ wheel: <
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
 
+### 1.10.2.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ninja/${vpython_platform}"
+  version: "version:1.10.2.4"
+>
+```
+
+
+* *linux-arm64-py3*
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.11*
+* *windows-x64-py3*
+* *windows-x86-py3*
+
 ## **nose-py3**
 
 ### 1.3.7

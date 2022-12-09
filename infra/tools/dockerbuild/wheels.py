@@ -539,6 +539,26 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'ninja',
+            '1.10.2.4',
+            packaged=(
+                'mac-x64-cp38',
+                'mac-arm64-cp38',
+                'windows-x86-py3',
+                'windows-x64-py3',
+                'linux-arm64-py3',
+            ),
+            arch_map={
+                'mac-x64-cp38': ['macosx_10_9_x86_64'],
+                'mac-arm64-cp38': ['macosx_11_0_arm64'],
+                'linux-arm64-py3': ['manylinux2014_aarch64'],
+            },
+            skip_plat=[
+                'linux-armv6-py3',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'numpy',
             '1.20.3',
             build_deps=_NUMPY_BUILD_DEPS,
