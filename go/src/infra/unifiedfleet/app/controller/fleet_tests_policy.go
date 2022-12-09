@@ -100,11 +100,8 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 	}
 
 	// Validate Image
-	if req.Image == "" {
-		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Image cannot be empty for public tests.")
-	}
-	if !(hasValidPrefix(getValidPublicImagePrefixes(), req.Image)) {
-		return &InvalidImageError{Image: req.Image}
+	if err := validatePublicImage(ctx, req.Board, req.Image); err != nil {
+		return err
 	}
 
 	if req.QsAccount != "" && !contains(getValidQuotaSchedulerAccounts(), req.QsAccount) {
@@ -210,6 +207,18 @@ func validatePublicBoardModel(ctx context.Context, board string, model string) e
 		}
 	}
 	return &InvalidModelError{Model: model}
+}
+
+func validatePublicImage(ctx context.Context, board string, image string) error {
+	if image == "" {
+		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Image cannot be empty for public tests.")
+	}
+	// Public images for a given board are in the format : <board>-public/R
+	validPrefixForBoard := fmt.Sprintf("%s-public/R", board)
+	if !hasValidPrefix(getValidPublicImagePrefixes(), image) && !strings.HasPrefix(image, validPrefixForBoard) {
+		return &InvalidImageError{Image: image}
+	}
+	return nil
 }
 
 func getValidPublicImagePrefixes() []string {

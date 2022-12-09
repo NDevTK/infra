@@ -235,6 +235,34 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(ok, ShouldBeTrue)
 		})
+		Convey("Valid Image for Public Board", func() {
+			configuration.AddPublicBoardModelData(ctx, "hana", []string{"hana"}, false)
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName:  "tast.lacros",
+				Board:     "hana",
+				Model:     "hana",
+				Image:     "hana-public/R123",
+				QsAccount: "chromium",
+			}
+
+			err := IsValidTest(ctx, req)
+
+			So(err, ShouldBeNil)
+		})
+		Convey("Invalid Image for Public Board", func() {
+			configuration.AddPublicBoardModelData(ctx, "hana", []string{"hana"}, false)
+			req := &api.CheckFleetTestsPolicyRequest{
+				TestName:  "tast.lacros",
+				Board:     "hana",
+				Model:     "hana",
+				Image:     "eve-public/R123",
+				QsAccount: "chromium",
+			}
+
+			err := IsValidTest(ctx, req)
+
+			So(err, ShouldBeNil)
+		})
 	})
 }
 
