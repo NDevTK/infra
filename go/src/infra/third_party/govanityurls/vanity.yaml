@@ -25,6 +25,14 @@ paths:
       https://chromium.googlesource.com/chromiumos/infra/proto/+/main{/dir}
       https://chromium.googlesource.com/chromiumos/infra/proto/+/main{/dir}/{file}#{line}
 
+  /chromiumos/platform/dev-util:
+    repo: https://chromium.googlesource.com/chromiumos/platform/dev-util
+    vcs: git
+    display: >
+      https://chromium.googlesource.com/chromiumos/platform/dev-util
+      https://chromium.googlesource.com/chromiumos/platform/dev-util/+/main{/dir}
+      https://chromium.googlesource.com/chromiumos/platform/dev-util/+/main{/dir}/{file}#{line}
+
   /gae:
     repo: https://chromium.googlesource.com/infra/luci/gae
     vcs: git
