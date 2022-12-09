@@ -117,8 +117,62 @@ func TestValidateFaftVersion(t *testing.T) {
 	bad("Google_Rammus.11275.41.0")
 }
 
-// TODO(gregorynisbet): replace with table-driven test
+// TestParseFaftVersion tests parsing specific FAFT versions.
 func TestParseFaftVersion(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		input         string
+		platform      string
+		kind          string
+		release       int
+		releaseSuffix string
+		tip           int
+		branch        int
+		branchBranch  int
+		ok            bool
+	}{
+		{
+			input:        "a-firmware/R1-2.3.4",
+			platform:     "a",
+			kind:         "firmware",
+			release:      1,
+			tip:          2,
+			branch:       3,
+			branchBranch: 4,
+			ok:           true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+			platform, kind, release, tip, branch, branchBranch, err := ParseFaftVersion(tt.input)
+			if diff := cmp.Diff(tt.platform, platform); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+			if diff := cmp.Diff(tt.kind, kind); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+			if diff := cmp.Diff(tt.release, release); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+			if diff := cmp.Diff(tt.tip, tip); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+			if diff := cmp.Diff(tt.branch, branch); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+			if diff := cmp.Diff(tt.branchBranch, branchBranch); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+			if diff := cmp.Diff(tt.ok, (err == nil)); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+		})
+	}
+
 	Convey("Test Parsing Firwmare Version", t, func() {
 		platform, kind, release, tip, branch, branchBranch, err := ParseFaftVersion("a-firmware/R1-2.3.4")
 		if err != nil {
