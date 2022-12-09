@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4bcb27e_29c726bb",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 2689,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-12-09T18:52:36Z",
+      "side": 1,
+      "message": "we do not need pin, only ssh and please use `\"Device is SSHable\"` as it will be faster.",
+      "range": {
+        "startLine": 2689,
+        "startChar": 4,
+        "endLine": 2689,
+        "endChar": 40
+      },
+      "revId": "ccce02ebf3e6aff5e7a3de62019c89a8974ecb6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c151fb49_abda1127",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 2692,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-12-09T18:52:36Z",
+      "side": 1,
+      "message": "we do not need these two conditions as if we can read that is already anough and we do not touch servo so we less worry about servo type.",
+      "range": {
+        "startLine": 2691,
+        "startChar": 4,
+        "endLine": 2692,
+        "endChar": 22
+      },
+      "revId": "ccce02ebf3e6aff5e7a3de62019c89a8974ecb6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
