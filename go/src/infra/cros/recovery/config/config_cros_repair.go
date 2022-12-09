@@ -11,6 +11,7 @@ import (
 func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			"Collect logs before repair",
 			"Set state: repair_failed",
 			"dut_has_board_name",
 			"dut_has_model_name",
@@ -2663,6 +2664,40 @@ func crosRepairActions() map[string]*Action {
 				"check_after_update:true",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
+		"Internal storage is writable (only verify)": {
+			Docs: []string{
+				"Verify that internal storage is responsive. We will not run ",
+				"any recoveries here since this is only a check.",
+			},
+			Dependencies: []string{
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName: "cros_is_file_system_writable",
+		},
+		"Collect logs before repair": {
+			Docs: []string{
+				"We collect any pre-existing logs before executing repairs on ",
+				"the DUT. Any failures with this initial log collection are ",
+				"not critical, and we will proceed with the actual DUT repair ",
+				"immediately after this.",
+			},
+			Conditions: []string{
+				"Wait to be pingable (normal boot)",
+				"Wait to be SSHable (normal boot)",
+				"Internal storage is writable (only verify)",
+				"Is not servo_v3",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/var/log",
+				"src_type:dir",
+				"use_host_dir:true",
+				"dest_suffix:before_repair",
+			},
+			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
 	}
