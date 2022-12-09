@@ -80,6 +80,8 @@ type Action struct {
 	Restarts int32
 	// Set whether failures are allowed or not
 	AllowFail AllowFail
+	// Plan name is the name of the currently-executing plan.
+	PlanName string
 }
 
 // UpdateStatus updates status of the action and error reason if error was provided.

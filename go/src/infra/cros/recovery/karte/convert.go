@@ -110,6 +110,7 @@ func convertActionToKarteAction(action *metrics.Action) *kartepb.Action {
 		RecoveredBy:    action.RecoveredBy,
 		Restarts:       action.Restarts,
 		AllowFail:      convertAllowFailToKarteAllowFail(action.AllowFail),
+		PlanName:       action.PlanName,
 	}
 }
 
@@ -132,6 +133,7 @@ func convertKarteActionToAction(action *kartepb.Action) *metrics.Action {
 		RecoveredBy:    action.GetRecoveredBy(),
 		Restarts:       action.GetRestarts(),
 		AllowFail:      convertKarteAllowFailToAllowFail(action.GetAllowFail()),
+		PlanName:       action.GetPlanName(),
 	}
 }
 

@@ -468,6 +468,7 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 				metrics.NewStringObservation("plan", planName),
 				metrics.NewStringObservation("plan_resource", execArgs.ResourceName),
 			)
+			metric.PlanName = planName
 			return metricSaver(metric)
 		}
 		return nil
