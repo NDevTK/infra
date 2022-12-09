@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57b1769e_4887d5c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-12-09T21:52:13Z",
+      "side": 1,
+      "message": "Otabek, I have addressed the review comments. Can you please have another look?",
+      "revId": "27ee6398869e2d307bf4218916061daea6d2ddf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "48dc39a1_98394192",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 2689,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-12-09T21:52:13Z",
+      "side": 1,
+      "message": "Done. \n\nLooks like in legacy we also look at ping (is_up_fast), but yes, I agree that checking for ssh-only should be sufficient. \n\nAlso, changed the ssh check as suggested. Earlier I did not want to use it since it has recovery actions attached, but then I discovered that we do not allow recovery actions to be started for conditions. So my concern was not valid. Thanks for pointing this out.",
+      "parentUuid": "e4bcb27e_29c726bb",
+      "range": {
+        "startLine": 2689,
+        "startChar": 4,
+        "endLine": 2689,
+        "endChar": 40
+      },
+      "revId": "ccce02ebf3e6aff5e7a3de62019c89a8974ecb6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c151fb49_abda1127",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-12-09T18:52:36Z",
       "side": 1,
       "message": "we do not need these two conditions as if we can read that is already anough and we do not touch servo so we less worry about servo type.",
+      "range": {
+        "startLine": 2691,
+        "startChar": 4,
+        "endLine": 2692,
+        "endChar": 22
+      },
+      "revId": "ccce02ebf3e6aff5e7a3de62019c89a8974ecb6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "040629d9_c3a5e93b",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 2692,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-12-09T21:52:13Z",
+      "side": 1,
+      "message": "Sure, I have removed this. I was trying to add all the conditions to match legacy implementation.",
+      "parentUuid": "c151fb49_abda1127",
       "range": {
         "startLine": 2691,
         "startChar": 4,
