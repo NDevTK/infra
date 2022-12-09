@@ -6,7 +6,9 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,12 +20,16 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	apibq "infra/unifiedfleet/api/v1/models/bigquery"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 )
+
+const machinePubsubTopicID = "machine"
 
 // MachineRegistration creates a new machine, new nic and a new drac in datastore.
 func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Machine, error) {
@@ -100,6 +106,28 @@ func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Ma
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return nil, errors.Annotate(err, "MachineRegistration").Err()
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Create a new object so we are not accidentally mutating the original struct.
+		var pubsubMachine ufspb.Machine = *machine
+		// Generate the message for Pub/Sub
+		row := apibq.MachineRow{
+			Machine: &pubsubMachine,
+			Delete:  false,
+		}
+
+		data, err_ps := json.Marshal(row)
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			return machine, nil
+		}
+		// Publish the message via Pub/Sub.
+		err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+		}
+	}
+
 	return machine, nil
 }
 
@@ -112,6 +140,7 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 	machine.Realm = util.GetValidRealmName(machine.GetRealm())
 
 	var oldMachine *ufspb.Machine
+	var updatedMachine *ufspb.Machine
 	var err error
 	f := func(ctx context.Context) error {
 		hc := GetMachineHistoryClient(machine)
@@ -223,6 +252,8 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "unable to batch update machine %s", machine.Name).Err()
 		}
+
+		updatedMachine = machine
 		hc.LogMachineChanges(oldMachineCopy, machine)
 		return hc.SaveChangeEvents(ctx)
 	}
@@ -234,6 +265,28 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		// We fill the machine object with its nics/drac from nic/drac table
 		setMachine(ctx, machine)
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Create a new object so we are not accidentally mutating the original struct.
+		var pubsubMachine ufspb.Machine = *updatedMachine
+		// Generate the message for Pub/Sub
+		row := apibq.MachineRow{
+			Machine: &pubsubMachine,
+			Delete:  false,
+		}
+		data, err_ps := json.Marshal(row)
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			return machine, nil
+		}
+
+		// Publish the message via Pub/Sub.
+		err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+		}
+	}
+
 	return machine, nil
 }
 
@@ -634,6 +687,35 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string,
 			}
 		}
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Publish the list to Pub/Sub.
+		if len(machines) > 0 {
+			// Generate the message for Pub/Sub
+			msgs := [][]byte{}
+			for _, machine := range machines {
+				// Create a new object so we are not accidentally mutating the original struct.
+				var pubsubMachine ufspb.Machine = *machine
+				row := apibq.MachineRow{
+					Machine: &pubsubMachine,
+					Delete:  false,
+				}
+				data, err_ps := json.Marshal(row)
+				if err_ps != nil {
+					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+					return machines, nextPageToken, err
+				}
+				msgs = append(msgs, data)
+			}
+
+			// Publish the message via Pub/Sub.
+			err_ps := publish(ctx, machinePubsubTopicID, msgs)
+			if err_ps != nil {
+				logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			}
+		}
+	}
+
 	return machines, nextPageToken, err
 }
 
@@ -648,6 +730,9 @@ func GetAllMachines(ctx context.Context) (*ufsds.OpResults, error) {
 // Delete if this Machine is not referenced by other resources in the datastore.
 // If there are any references, delete will be rejected and an error will be returned.
 func DeleteMachine(ctx context.Context, id string) error {
+	// Used for logging the deletion of a MachineLSE.
+	existingMachine, _ := registration.GetMachine(ctx, id)
+
 	f := func(ctx context.Context) error {
 		// 1. Get the machine
 		machine, err := registration.GetMachine(ctx, id)
@@ -699,6 +784,28 @@ func DeleteMachine(ctx context.Context, id string) error {
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return errors.Annotate(err, "DeleteMachine").Err()
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Create a new object so we are not accidentally mutating the original struct.
+		var pubsubMachine ufspb.Machine = *existingMachine
+		// Generate the message for Pub/Sub
+		row := apibq.MachineRow{
+			Machine: &pubsubMachine,
+			Delete:  true,
+		}
+		data, err_ps := json.Marshal(row)
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			return nil
+		}
+
+		// Publish the message via Pub/Sub.
+		err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+		}
+	}
+
 	return nil
 }
 

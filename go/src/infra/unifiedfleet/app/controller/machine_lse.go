@@ -6,7 +6,9 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math/rand"
 	"regexp"
 	"strings"
 
@@ -21,8 +23,10 @@ import (
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	ufspb "infra/unifiedfleet/api/v1/models"
+	apibq "infra/unifiedfleet/api/v1/models/bigquery"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/model/configuration"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/inventory"
@@ -30,6 +34,8 @@ import (
 	"infra/unifiedfleet/app/model/state"
 	"infra/unifiedfleet/app/util"
 )
+
+const machinelsePubsubTopicID = "machine_lse"
 
 // CreateMachineLSE creates a new machinelse in datastore.
 func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption) (*ufspb.MachineLSE, error) {
@@ -47,7 +53,36 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
 		// ChromeOSMachineLSE for a DUT
 		machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = machinelse.GetHostname()
-		return CreateDUT(ctx, machinelse)
+
+		// Capture results for Pub/Sub publishing attempt. Err is not handled here
+		// as it will be handled by the caller.
+		machineLSE, err := CreateDUT(ctx, machinelse)
+
+		// Publish the MachineLSE creation via Pub/Sub.
+		if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+			// Create a new object so we are not accidentally mutating the original struct.
+			if err == nil {
+				var pubsubMachineLSE ufspb.MachineLSE = *machineLSE
+				// Generate the message for Pub/Sub
+				row := apibq.MachineLSERow{
+					MachineLse: &pubsubMachineLSE,
+					Delete:     false,
+				}
+				data, err_ps := json.Marshal(row)
+				if err_ps != nil {
+					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+					return machineLSE, nil
+				}
+
+				// Publish the message via Pub/Sub.
+				err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
+				if err_ps != nil {
+					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+				}
+			}
+		}
+
+		return machineLSE, err
 	}
 
 	// Browser lab servers
@@ -175,6 +210,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 	}
 
 	var oldMachinelse *ufspb.MachineLSE
+	var updatedMachinelse *ufspb.MachineLSE
 	// If its a Chrome browser host, ChromeOS server or a ChormeOS labstation
 	// ChromeBrowserMachineLSE, ChromeOSMachineLSE for a Server and Labstation
 	f := func(ctx context.Context) error {
@@ -261,6 +297,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		}
 		hc.LogMachineLSEChanges(oldMachinelseCopy, machinelse)
 
+		updatedMachinelse = machinelse
 		/* Comment this part for now
 		// TODO(eshwarn): Add support for labstation state in the future, have a separate updatelabstation func.
 		// Update states
@@ -282,6 +319,28 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		// We fill the machinelse object with its vm objects from vm table
 		setMachineLSE(ctx, machinelse)
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Create a new object so we are not accidentally mutating the original struct.
+		var pubsubMachineLSE ufspb.MachineLSE = *updatedMachinelse
+		// Generate the message for Pub/Sub
+		row := apibq.MachineLSERow{
+			MachineLse: &pubsubMachineLSE,
+			Delete:     false,
+		}
+		data, err_ps := json.Marshal(row)
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			return machinelse, nil
+		}
+
+		// Publish the message via Pub/Sub.
+		err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+		}
+	}
+
 	return machinelse, nil
 }
 
@@ -478,6 +537,36 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 			}
 		}
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Publish the list to Pub/Sub.
+		if len(lses) > 0 {
+			// Generate the message for Pub/Sub
+			msgs := [][]byte{}
+			for _, machinelse := range lses {
+				// Create a new object so we are not accidentally mutating the original struct.
+				var pubsubMachineLSE ufspb.MachineLSE = *machinelse
+
+				row := apibq.MachineLSERow{
+					MachineLse: &pubsubMachineLSE,
+					Delete:     false,
+				}
+				data, err_ps := json.Marshal(row)
+				if err_ps != nil {
+					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+					return lses, nextPageToken, err
+				}
+				msgs = append(msgs, data)
+			}
+
+			// Publish the message via Pub/Sub.
+			err_ps := publish(ctx, machinelsePubsubTopicID, msgs)
+			if err_ps != nil {
+				logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			}
+		}
+	}
+
 	return lses, nextPageToken, err
 }
 
@@ -487,6 +576,8 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 // Delete if this MachineLSE is not referenced by other resources in the datastore.
 // If there are any references, delete will be rejected and an error will be returned.
 func DeleteMachineLSE(ctx context.Context, id string) error {
+	// Used for logging the deletion of a MachineLSE
+	existingMachinelse, _ := inventory.GetMachineLSE(ctx, id)
 	f := func(ctx context.Context) error {
 		hc := getHostHistoryClient(&ufspb.MachineLSE{
 			Name: id,
@@ -599,6 +690,29 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		logging.Errorf(ctx, "DeleteMachineLSE: %s", err)
 		return err
 	}
+
+	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		// Create a new object so we are not accidentally mutating the original struct.
+		var pubsubMachineLSE ufspb.MachineLSE = *existingMachinelse
+
+		// Generate the message for Pub/Sub
+		row := apibq.MachineLSERow{
+			MachineLse: &pubsubMachineLSE,
+			Delete:     true,
+		}
+		data, err_ps := json.Marshal(row)
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			return nil
+		}
+
+		// Publish the message via Pub/Sub.
+		err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
+		if err_ps != nil {
+			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+		}
+	}
+
 	return nil
 }
 

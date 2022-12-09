@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 23
+// Next Tag: 24
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1;
@@ -50,6 +50,8 @@ message Config {
   OwnershipConfig ownership_config = 21;
   // RPC acls
   repeated ACL acls = 22;
+  // Float to limit pubsub calls to a specific amount of traffic.
+  float send_messages_to_pubsub_ratio = 23;
 }
 
 message OSNetworkConfig {
