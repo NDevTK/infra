@@ -16,6 +16,24 @@
       "message": "one question, does this work if the screen is currently locked?",
       "revId": "f82a22beb51c84d24b2870332c3d09d6aa921032",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78f4db9b_dba7402f",
+        "filename": "go/src/infra/cros/recovery/internal/components/android/adb/harness.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1529627
+      },
+      "writtenOn": "2022-12-09T20:29:57Z",
+      "side": 1,
+      "message": "Yes, it works. It also works on non-rooted devices. However, the next command works only on rooted phones.",
+      "parentUuid": "a41a242d_c29367ea",
+      "revId": "f82a22beb51c84d24b2870332c3d09d6aa921032",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
