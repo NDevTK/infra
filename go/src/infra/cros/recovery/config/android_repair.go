@@ -72,6 +72,7 @@ func androidRepairPlan() *Plan {
 			"Validate adb",
 			"DUT is accessible over adb",
 			"Reset DUT",
+			"Configure DUT",
 			"Set state: ready",
 		},
 		Actions: androidRepairDeployActions(),
@@ -244,6 +245,24 @@ func androidRepairDeployActions() map[string]*Action {
 			ExecName:   "sample_fail",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Unlock DUT screen": {
+			Docs: []string{
+				"Unlocks DUT screen.",
+			},
+			Conditions: []string{
+				"DUT has userdebug build",
+			},
+			Dependencies: []string{
+				"Validate associated host",
+				"Validate adb",
+				"Ensure adbd runs as root",
+				"android_remove_screen_lock",
+				"android_dut_reboot",
+				"Wait for Online DUT",
+			},
+			ExecName:    "sample_pass",
+			ExecTimeout: &durationpb.Duration{Seconds: 690},
+		},
 		"Reset DUT": {
 			Docs: []string{"Resets DUT to factory settings."},
 			Dependencies: []string{
@@ -251,12 +270,22 @@ func androidRepairDeployActions() map[string]*Action {
 				"Validate adb",
 				"DUT is accessible over adb",
 				"Reset public key",
-				"android_dut_reset",
+			},
+			ExecName: "android_enable_test_harness",
+			RecoveryActions: []string{
+				"Unlock DUT screen",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 690},
+		},
+		"Configure DUT": {
+			Docs: []string{"Configures DUT after reset."},
+			Dependencies: []string{
 				"Wait for DUT to reboot",
 				"Connect to WiFi network",
 				"Unroot DUT",
 			},
-			ExecName: "sample_pass",
+			ExecName:    "sample_pass",
+			ExecTimeout: &durationpb.Duration{Seconds: 690},
 		},
 		"DUT has userdebug build": {
 			Docs: []string{"This verifier checks whether the DUT has userdebug build."},

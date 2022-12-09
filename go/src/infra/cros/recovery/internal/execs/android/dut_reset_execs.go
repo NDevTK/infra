@@ -37,8 +37,28 @@ func unrootADBDExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// resetDutExec resets DUT.
-func resetDutExec(ctx context.Context, info *execs.ExecInfo) error {
+// removeScreenLockExec removes lock from DUT screen.
+func removeScreenLockExec(ctx context.Context, info *execs.ExecInfo) error {
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	err := adb.RemoveScreenLock(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "remove screen lock").Err()
+	}
+	return nil
+}
+
+// rebootDutExec reboots DUT.
+func rebootDutExec(ctx context.Context, info *execs.ExecInfo) error {
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	err := adb.RebootDevice(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "dut reboot").Err()
+	}
+	return nil
+}
+
+// enableTestHarnessExec enables test harness mode on DUT.
+func enableTestHarnessExec(ctx context.Context, info *execs.ExecInfo) error {
 	serialNumber := info.GetAndroid().GetSerialNumber()
 	err := adb.EnableDeviceTestHarnessMode(ctx, newRunner(info), info.NewLogger(), serialNumber)
 	if err != nil {
@@ -127,7 +147,9 @@ func resetPublicKey(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("android_restart_adbd_as_root", restartADBDAsRoot)
 	execs.Register("android_unroot_adbd", unrootADBDExec)
-	execs.Register("android_dut_reset", resetDutExec)
+	execs.Register("android_remove_screen_lock", removeScreenLockExec)
+	execs.Register("android_dut_reboot", rebootDutExec)
+	execs.Register("android_enable_test_harness", enableTestHarnessExec)
 	execs.Register("android_wait_for_offline_dut", waitTillDutOfflineExec)
 	execs.Register("android_wait_for_online_dut", waitTillDutOnlineExec)
 	execs.Register("android_enable_wifi", enableWiFi)
