@@ -48,7 +48,7 @@ def ParseComponentRequest(mr, post_data, services):
       continue
     admin_id = all_user_ids[admin_name]
     if admin_id not in admin_ids:
-     admin_ids.append(admin_id)
+      admin_ids.append(admin_id)
 
   cc_ids = []
   for cc_name in cc_usernames:

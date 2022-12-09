@@ -252,7 +252,7 @@ class ChartService(object):
           shard_values_dict[name] += count
       else:
         if shard_values[0][0] >= settings.chart_query_max_rows:
-            search_limit_reached = True
+          search_limit_reached = True
 
         shard_values_dict.setdefault('total', 0)
         shard_values_dict['total'] += shard_values[0][0]
