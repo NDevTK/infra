@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b3963cd_05abab76",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-12-09T00:33:08Z",
+      "side": 1,
+      "message": "Otabek, this CL adds the action that will execute the log collection at the beginning of repair. \n\nCan you please review this?",
+      "revId": "581b556459d8f7fae4e35f0441054f9ad4901df6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
