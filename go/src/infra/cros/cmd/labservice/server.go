@@ -19,7 +19,7 @@ type server struct {
 	// The client needs a context which is request specific, so the client
 	// needs to be created per incoming request.
 	ufsClientFactory ufs.ClientFactory
-	// Locator is used to cache available caching servers across requests.
+	// cacheLocator is used to cache available caching servers across requests.
 	cacheLocator *cache.Locator
 }
 
