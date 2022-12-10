@@ -22,11 +22,11 @@ func (ei *ExecInfo) GetLogRoot() string {
 }
 
 // CopyFrom copies files from resource to localhost.
-func (ei *ExecInfo) CopyFrom(ctx context.Context, resourceName, srcFile, destFile string) error {
+func (ei *ExecInfo) CopyFrom(ctx context.Context, resourceName, srcFile, destDir string) error {
 	return ei.runArgs.Access.CopyFileFrom(ctx, &tlw.CopyRequest{
 		Resource:        resourceName,
 		PathSource:      srcFile,
-		PathDestination: destFile,
+		PathDestination: destDir,
 	})
 }
 

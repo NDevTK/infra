@@ -164,9 +164,8 @@ func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 			}
 		}
 		srcFile := filepath.Join(servoLogsDir, lf)
-		destFile := filepath.Join(servoLogDir, lf)
 		log.Infof("Try to collect servod log %q!", srcFile)
-		if err := info.CopyFrom(ctx, resource, srcFile, destFile); err != nil {
+		if err := info.CopyFrom(ctx, resource, srcFile, servoLogDir); err != nil {
 			log.Debugf("Collect servod logs: fail to copy file %q to logs! Error: %v", srcFile, err)
 		}
 	}

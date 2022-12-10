@@ -117,9 +117,9 @@ func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 		if newName == "" {
 			return errors.Reason("copy to logs: filename is empty and could not extracted from filepath").Err()
 		}
-		destFile := filepath.Join(logRoot, newName)
-		log.Debugf("Copy to Logs: Attempting to collect the logs from %q to %q!", fullPath, destFile)
-		if err := info.CopyFrom(ctx, resource, fullPath, destFile); err != nil {
+		destDir := logRoot
+		log.Debugf("Copy to Logs: Attempting to collect the logs from %q to %q!", fullPath, destDir)
+		if err := info.CopyFrom(ctx, resource, fullPath, destDir); err != nil {
 			return errors.Annotate(err, "copy to logs").Err()
 		}
 	case dirType:
