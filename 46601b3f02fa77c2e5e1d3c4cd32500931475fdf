@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d66d85b1_97bddfe1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-12-10T03:30:02Z",
+      "side": 1,
+      "message": "Need merge next week after merge the fix. Before that we can use it to manually trigger on some devices.",
+      "revId": "46601b3f02fa77c2e5e1d3c4cd32500931475fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
