@@ -5,10 +5,13 @@
 package main
 
 import (
+	"context"
+
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	lsapi "infra/cros/cmd/labservice/api"
 	"infra/cros/cmd/labservice/internal/ufs"
 	"infra/cros/cmd/labservice/internal/ufs/cache"
 )
@@ -16,11 +19,15 @@ import (
 // A server implements the lab service RPCs.
 type server struct {
 	labapi.UnimplementedInventoryServiceServer
+
 	// The client needs a context which is request specific, so the client
 	// needs to be created per incoming request.
 	ufsClientFactory ufs.ClientFactory
 	// cacheLocator is used to cache available caching servers across requests.
 	cacheLocator *cache.Locator
+
+	// Path to TKO database socket file.
+	tkoSocket string
 }
 
 func newServer(c *serverConfig) *server {
@@ -37,9 +44,10 @@ func newServer(c *serverConfig) *server {
 
 // A serverConfig configures newServer.
 type serverConfig struct {
-	ufsService               string
-	serviceAccountPath       string
 	preferredCachingServices []string
+	serviceAccountPath       string
+	tkoSocket                string
+	ufsService               string
 }
 
 func (s *server) GetDutTopology(req *labapi.GetDutTopologyRequest, stream labapi.InventoryService_GetDutTopologyServer) error {
@@ -67,4 +75,10 @@ func (s *server) GetDutTopology(req *labapi.GetDutTopologyRequest, stream labapi
 			},
 		},
 	})
+}
+
+func (s *server) GetTkoAddress(ctx context.Context, in *lsapi.GetTkoAddressRequest) (*lsapi.GetTkoAddressResponse, error) {
+	return &lsapi.GetTkoAddressResponse{
+		SocketPath: s.tkoSocket,
+	}, nil
 }

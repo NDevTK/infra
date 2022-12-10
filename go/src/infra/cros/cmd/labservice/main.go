@@ -17,6 +17,8 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+
+	lsapi "infra/cros/cmd/labservice/api"
 )
 
 func main() {
@@ -32,12 +34,13 @@ func main() {
 
 func innerMain() error {
 	var (
-		addr               = flag.String("addr", "0.0.0.0:1485", "Address to listen to")
-		ufsService         = flag.String("ufs-service", "ufs.api.cr.dev", "UFS service host")
-		serviceAccountPath = flag.String("service-account-json", "",
+		addr                     = flag.String("addr", "0.0.0.0:1485", "Address to listen to")
+		preferredCachingServices strSlice
+		serviceAccountPath       = flag.String("service-account-json", "",
 			"Path to service account JSON file")
+		tkoSocket  = flag.String("tko-socket", "", "Path to TKO database socket file.")
+		ufsService = flag.String("ufs-service", "ufs.api.cr.dev", "UFS service host")
 	)
-	var preferredCachingServices strSlice
 	flag.Var(&preferredCachingServices, "preferred-caching-services", "Comma separated preferred caching services (each in format: [http://]server[:port]) which superseded the ones fetche from UFS")
 
 	flag.Parse()
@@ -46,9 +49,10 @@ func innerMain() error {
 		return err
 	}
 	gs := newGRPCServer(&serverConfig{
-		ufsService:               *ufsService,
-		serviceAccountPath:       *serviceAccountPath,
 		preferredCachingServices: preferredCachingServices,
+		serviceAccountPath:       *serviceAccountPath,
+		tkoSocket:                *tkoSocket,
+		ufsService:               *ufsService,
 	})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, handledSignals...)
@@ -71,6 +75,7 @@ func newGRPCServer(c *serverConfig) *grpc.Server {
 	gs := grpc.NewServer(ic.unaryOption())
 	s := newServer(c)
 	labapi.RegisterInventoryServiceServer(gs, s)
+	lsapi.RegisterLabServiceServer(gs, s)
 	return gs
 }
 
