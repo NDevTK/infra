@@ -146,6 +146,7 @@ func deployActions() map[string]*Action {
 		},
 		"Try to update FW from firmware image with factory mode": {
 			Docs: []string{
+				"Download firmware image to DUT, and install via firmware updater.",
 				"Update firmware from faft stable image with chromeos-firmwareupdate tool",
 				"--mode=facotry will be specified when run chromeos-firmwareupdate",
 				"Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.",
@@ -153,7 +154,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"has_stable_version_fw_image",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 7200},
+			ExecName: "cros_update_firmware_from_firmware_image",
 			ExecExtraArgs: []string{
 				"mode:factory",
 				"force:true",
@@ -162,8 +163,8 @@ func deployActions() map[string]*Action {
 				"update_ap_attempt_count:1",
 				"no_strict_update:true",
 			},
-			ExecName:   "cros_update_firmware_from_firmware_image",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecTimeout: &durationpb.Duration{Seconds: 7200},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Try to update FW from OS image with factory mode": {
 			Docs: []string{
