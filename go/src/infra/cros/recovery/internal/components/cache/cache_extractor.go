@@ -34,7 +34,7 @@ func Extract(ctx context.Context, req *ExtractRequest, run components.Runner) er
 	// But we can utilize the address of caching service and apply some string manipulation to construct the URL that can be used for this.
 	// Example: `http://Addr:8082/extract/chromeos-image-archive/board-release/R99-XXXXX.XX.0/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin`
 	extractPath := strings.Replace(req.CacheFileURL, "/download/", "/extract/", 1)
-	sourcePath := fmt.Sprintf("%s/chromiumos_test_image.tar.xz?file=%s", extractPath, req.ExtractFileName)
+	sourcePath := fmt.Sprintf("%s?file=%s", extractPath, req.ExtractFileName)
 	if err := CurlFile(ctx, run, sourcePath, req.DestintionFilePath, req.Timeout); err != nil {
 		return errors.Annotate(err, "extract from cache").Err()
 	}
