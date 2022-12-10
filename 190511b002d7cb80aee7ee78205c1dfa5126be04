@@ -33,6 +33,24 @@
       "message": "Why not just use `logRoot`?",
       "revId": "190511b002d7cb80aee7ee78205c1dfa5126be04",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f60a0352_95bab427",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_logs_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-12-10T03:09:20Z",
+      "side": 1,
+      "message": "just to keep code self-declarative.",
+      "parentUuid": "20006de4_52928eb7",
+      "revId": "190511b002d7cb80aee7ee78205c1dfa5126be04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
