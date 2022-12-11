@@ -125,6 +125,9 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod and request to use recovery-mode for servod",
 					"Stop servod",
+					"Reset EC from DUT and stop",
+					"Reflash Cr50 fw and stop",
+					"Reset GSC from DUT and stop servod",
 					"Create request to reboot labstation",
 				},
 			},
@@ -1168,6 +1171,9 @@ func servoRepairPlan() *Plan {
 					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
 					"Reset EC from DUT and stop",
+					"Reflash Cr50 fw and stop",
+					"Reset GSC from DUT and stop servod",
+					"Create request to reboot labstation",
 				},
 			},
 			"Servod knows about active_dut_controller control": {
@@ -1489,9 +1495,12 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.",
 				},
-				Dependencies: []string{
+				Conditions: []string{
+					"DUT is SSHable",
 					"is_servo_type_ccd",
 					"Is reflash Cr50 was done more 24 hours ago",
+				},
+				Dependencies: []string{
 					"Reflash Cr50 fw on DUT",
 					"Stop servod",
 				},
@@ -1518,8 +1527,11 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Try to reset GSC from DUT side to wake it up.",
 				},
-				Dependencies: []string{
+				Conditions: []string{
+					"DUT is SSHable",
 					"Is servo_v4(p1) used with type-c connector",
+				},
+				Dependencies: []string{
 					"Reset GSC on DUT",
 					"Stop servod",
 				},
@@ -1532,7 +1544,7 @@ func servoRepairPlan() *Plan {
 					"The command recommended by cr50 team http://b/241161724#comment24.",
 					"Reboot after the fw flash is successful.",
 				},
-				Dependencies: []string{
+				Conditions: []string{
 					"DUT is SSHable",
 				},
 				ExecName: "cros_run_command",
@@ -1587,6 +1599,7 @@ func servoRepairPlan() *Plan {
 					"Try to reset EC from DUT side to wake CR50 up and then stop the servod.",
 				},
 				Conditions: []string{
+					"DUT is SSHable",
 					"is_servo_type_ccd",
 				},
 				Dependencies: []string{
