@@ -284,6 +284,11 @@ func ListVMs(ctx context.Context, pageSize int32, requiredSize int32, pageToken 
 	if err != nil {
 		return nil, "", err
 	}
+	return runVMListQuery(ctx, q, pageSize, requiredSize, pageToken, keysOnly, validFunc)
+}
+
+// Runs the query to list VMs and returns the results
+func runVMListQuery(ctx context.Context, q *datastore.Query, pageSize int32, requiredSize int32, pageToken string, keysOnly bool, validFunc func(*ufspb.VM) bool) (res []*ufspb.VM, nextPageToken string, err error) {
 	var nextCur datastore.Cursor
 	err = datastore.Run(ctx, q, func(ent *VMEntity, cb datastore.CursorCB) error {
 		if keysOnly {
