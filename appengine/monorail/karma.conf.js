@@ -1,8 +1,6 @@
-/* Copyright (c) 2019 The Chromium Authors. All Rights Reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file.
- */
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 

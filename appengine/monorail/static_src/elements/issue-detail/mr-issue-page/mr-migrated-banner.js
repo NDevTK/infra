@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,7 @@ export class MrMigratedBanner extends connectStore(LitElement) {
    */
   get _link() {
     if (this.migratedType === migratedTypes.BUGANIZER_TYPE) {
-      const link = 
+      const link =
         html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
       return html`<p>This issue has moved to ${link}. Updates should be posted in ${link}.</p>`;
     } else {

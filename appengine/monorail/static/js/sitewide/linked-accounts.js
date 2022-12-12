@@ -1,9 +1,6 @@
-/* Copyright 2019 The Chromium Authors. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 const parentSelect = document.getElementById('parent_to_invite');
 const createButton = document.getElementById('create_linked_account_invite');

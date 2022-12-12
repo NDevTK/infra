@@ -1,8 +1,6 @@
--- Copyright 2019 The Chromium Authors. All Rights Reserved.
---
--- Use of this source code is governed by a BSD-style
--- license that can be found in the LICENSE file or at
--- https://developers.google.com/open-source/licenses/bsd
+-- Copyright 2019 The Chromium Authors
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
 
 -- Update all IssueSnapshot rows that incorrectly have their period_end
 -- set to the maximum value 4294967295. For all affected rows, this

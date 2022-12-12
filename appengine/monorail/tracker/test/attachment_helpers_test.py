@@ -1,7 +1,6 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 """Unittest for the tracker helpers module."""
 from __future__ import print_function
@@ -146,4 +145,3 @@ class AttachmentHelpersFunctionsTest(unittest.TestCase):
     # Anything that is not a video.
     attach.mimetype = 'audio/mp3'
     self.assertIsNone(attachment_helpers.GetVideoURL(attach, download_url))
-

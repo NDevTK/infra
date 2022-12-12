@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,7 +155,7 @@ describe('mr-issue-header', () => {
     element.projectName = 'monkeyrail';
 
     await element.updateComplete;
-    
+
     const chopsToggles = element.shadowRoot.querySelectorAll('mr-pref-toggle');
     const markdownButton = chopsToggles[1];
     assert.equal("true", markdownButton.getAttribute('initialvalue'));
