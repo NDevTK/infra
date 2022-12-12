@@ -11,6 +11,7 @@ import (
 func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			"Collect logs before repair",
 			"Set state: repair_failed",
 			"dut_has_board_name",
 			"dut_has_model_name",
@@ -2663,6 +2664,29 @@ func crosRepairActions() map[string]*Action {
 				"check_after_update:true",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
+		"Collect logs before repair": {
+			// TODO (vkjoshi@): Also need to collect the crash dump,
+			// including dmesg.
+			Docs: []string{
+				"We collect any pre-existing logs before executing repairs on ",
+				"the DUT. Any failures with this initial log collection are ",
+				"not critical, and we will proceed with the actual DUT repair ",
+				"immediately after this.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/var/log",
+				"src_type:dir",
+				"use_host_dir:true",
+				"dest_suffix:before_repair",
+			},
+			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
 	}
