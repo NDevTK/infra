@@ -22,6 +22,11 @@ import (
 
 // RunWithTimeout runs command with timeout limit.
 func RunWithTimeout(ctx context.Context, cmd *exec.Cmd, timeout time.Duration, block bool) (stdout string, stderr string, err error) {
+	log.Printf("Run cmd: %q", cmd)
+	return runWithTimeout(ctx, cmd, timeout, block)
+}
+
+func runWithTimeout(ctx context.Context, cmd *exec.Cmd, timeout time.Duration, block bool) (stdout string, stderr string, err error) {
 	// TODO(b/219094608): Implement timeout usage.
 	var se, so bytes.Buffer
 	cmd.Stderr = &se
@@ -39,9 +44,15 @@ func RunWithTimeout(ctx context.Context, cmd *exec.Cmd, timeout time.Duration, b
 	}
 
 	if err != nil {
-		log.Printf("error found with cmd: %q: %s", cmd, err)
+		log.Printf("error found with cmd: %s", err)
 	}
 	return
+}
+
+// RunWithTimeoutRedacted runs command with timeout limit, however only will log whats provided in the logstr input. Useful when running cmds with private info, like oath tokens.
+func RunWithTimeoutSpecialLog(ctx context.Context, cmd *exec.Cmd, timeout time.Duration, block bool, logstr string) (stdout string, stderr string, err error) {
+	log.Printf("Run cmd: %q", logstr)
+	return runWithTimeout(ctx, cmd, timeout, block)
 }
 
 // PrintToLog prints cmd, stdout, stderr to log

@@ -119,7 +119,8 @@ func (d *Docker) Auth(ctx context.Context) (err error) {
 func auth(ctx context.Context, registry string, token string) error {
 	cmd := exec.Command("docker", "login", "-u", "oauth2accesstoken",
 		"-p", token, registry)
-	stdout, stderr, err := common.RunWithTimeout(ctx, cmd, 1*time.Minute, true)
+	logStr := fmt.Sprintf("docker login -u oauth2accesstoken -p %s %s", "<redacted from logs token>", registry)
+	stdout, stderr, err := common.RunWithTimeoutSpecialLog(ctx, cmd, 1*time.Minute, true, logStr)
 	common.PrintToLog("Login", stdout, stderr)
 	if err != nil {
 		return errors.Annotate(err, "failed running 'docker login'").Err()
