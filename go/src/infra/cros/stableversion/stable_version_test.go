@@ -122,25 +122,21 @@ func TestParseFaftVersion(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		input         string
-		platform      string
-		kind          string
-		release       int
-		releaseSuffix string
-		tip           int
-		branch        int
-		branchBranch  int
-		ok            bool
+		input string
+		out   *FaftVersionResult
+		ok    bool
 	}{
 		{
-			input:        "a-firmware/R1-2.3.4",
-			platform:     "a",
-			kind:         "firmware",
-			release:      1,
-			tip:          2,
-			branch:       3,
-			branchBranch: 4,
-			ok:           true,
+			input: "a-firmware/R1-2.3.4",
+			out: &FaftVersionResult{
+				Platform:     "a",
+				Kind:         "firmware",
+				Release:      1,
+				Tip:          2,
+				Branch:       3,
+				BranchBranch: 4,
+			},
+			ok: true,
 		},
 	}
 
@@ -148,23 +144,8 @@ func TestParseFaftVersion(t *testing.T) {
 		tt := tt
 		t.Run(tt.input, func(t *testing.T) {
 			t.Parallel()
-			platform, kind, release, tip, branch, branchBranch, err := ParseFaftVersion(tt.input)
-			if diff := cmp.Diff(tt.platform, platform); diff != "" {
-				t.Errorf("-want +got: %s", diff)
-			}
-			if diff := cmp.Diff(tt.kind, kind); diff != "" {
-				t.Errorf("-want +got: %s", diff)
-			}
-			if diff := cmp.Diff(tt.release, release); diff != "" {
-				t.Errorf("-want +got: %s", diff)
-			}
-			if diff := cmp.Diff(tt.tip, tip); diff != "" {
-				t.Errorf("-want +got: %s", diff)
-			}
-			if diff := cmp.Diff(tt.branch, branch); diff != "" {
-				t.Errorf("-want +got: %s", diff)
-			}
-			if diff := cmp.Diff(tt.branchBranch, branchBranch); diff != "" {
+			out, err := ParseFaftVersion(tt.input)
+			if diff := cmp.Diff(tt.out, out); diff != "" {
 				t.Errorf("-want +got: %s", diff)
 			}
 			if diff := cmp.Diff(tt.ok, (err == nil)); diff != "" {
@@ -174,16 +155,16 @@ func TestParseFaftVersion(t *testing.T) {
 	}
 
 	Convey("Test Parsing Firwmare Version", t, func() {
-		platform, kind, release, tip, branch, branchBranch, err := ParseFaftVersion("a-firmware/R1-2.3.4")
+		r, err := ParseFaftVersion("a-firmware/R1-2.3.4")
 		if err != nil {
 			t.Errorf("expected a-firmware/R1-2.3.4 to parse: %s", err)
 		} else {
-			So(platform, ShouldEqual, "a")
-			So(kind, ShouldEqual, "firmware")
-			So(release, ShouldEqual, 1)
-			So(tip, ShouldEqual, 2)
-			So(branch, ShouldEqual, 3)
-			So(branchBranch, ShouldEqual, 4)
+			So(r.Platform, ShouldEqual, "a")
+			So(r.Kind, ShouldEqual, "firmware")
+			So(r.Release, ShouldEqual, 1)
+			So(r.Tip, ShouldEqual, 2)
+			So(r.Branch, ShouldEqual, 3)
+			So(r.BranchBranch, ShouldEqual, 4)
 		}
 	})
 }
