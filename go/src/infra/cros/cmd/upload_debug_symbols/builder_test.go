@@ -173,21 +173,26 @@ func TestUnpackTarball(t *testing.T) {
 	// Create an array holding some basic info to build headers. Contains regular
 	// files and directories.
 	files := []file{
-		{"/test1.so.sym", "debug symbols", 0600},
-		{"./test2.so.sym", "debug symbols", 0600},
+		{"/test1.so.sym", "MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid", 0600},
+		{"./test2.so.sym", "MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F41 blkid", 0600},
 		{"b/c", "", fs.ModeDir},
-		{"../test3.so.sym", "debug symbols", 0600},
+		// Different Debug ID as other test1.so.sym so should be included.
+		{"b/c/test1.so.sym", "MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F42 blkid", 0600},
+		{"../test3.so.sym", "MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F43 blkid", 0600},
 		{"a/b/c/d/", "", fs.ModeDir},
-		{"./test4.so.sym", "debug symbols", 0600},
+		{"./test4.so.sym", "MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F44 blkid", 0600},
+		// Same Debug ID as previous file so should not be included.
+		{"a/b/c/d/test4.so.sym", "MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F44 blkid", 0600},
 		{"a/shouldntadd.txt", "not a symbol file", 0600},
 	}
 
 	// List of files we expect to see return after the test call.
 	expectedSymbolFiles := map[string]bool{
-		debugSymbolsDir + "/test1.so.sym": false,
-		debugSymbolsDir + "/test2.so.sym": false,
-		debugSymbolsDir + "/test3.so.sym": false,
-		debugSymbolsDir + "/test4.so.sym": false,
+		debugSymbolsDir + "/test1.so.sym":   false,
+		debugSymbolsDir + "/test1.so.sym-1": false,
+		debugSymbolsDir + "/test2.so.sym":   false,
+		debugSymbolsDir + "/test3.so.sym":   false,
+		debugSymbolsDir + "/test4.so.sym":   false,
 	}
 
 	// Write the mock files to the tarball.

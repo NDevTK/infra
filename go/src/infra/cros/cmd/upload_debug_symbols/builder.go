@@ -14,6 +14,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -430,6 +431,10 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 
 	tarReader := tar.NewReader(srcReader)
 
+	// Keep track of the symbols we've already processed for deduping purposes.
+	processedSymbols := map[string]bool{}
+	uniqueSuffix := 1
+
 	// Iterate through the tar file saving only the debug symbols.
 	for {
 		header, err := tarReader.Next()
@@ -450,17 +455,42 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 			}
 			symBase := filepath.Base(header.Name)
 			destFilePath := filepath.Join(outputDir, symBase)
+
+			if _, err := os.Stat(destFilePath); err == nil {
+				// File already exists, need to append unique suffix.
+				symBase = fmt.Sprintf("%s-%d", symBase, uniqueSuffix)
+				destFilePath = filepath.Join(outputDir, symBase)
+				uniqueSuffix += 1
+			} else if !errors.Is(err, os.ErrNotExist) {
+				return nil, err
+			}
+
 			destFile, err := os.Create(destFilePath)
 			if err != nil {
 				return nil, err
 			}
 
-			retArray = append(retArray, destFilePath)
-
 			// Write contents of the symbol file to local storage.
 			_, err = io.Copy(destFile, tarReader)
 			if err != nil {
 				return nil, err
+			}
+
+			// Read back the file from disk and make sure that it's not for
+			// a symbol that was already uploaded.
+			// This wastes some file IO but is the easiest way to use the tar
+			// reader.
+			debugInfo, err := getDebugFileInformation(destFilePath)
+			if err != nil {
+				return nil, err
+			}
+			if _, exists := processedSymbols[debugInfo.DebugId]; exists {
+				if err := os.Remove(destFilePath); err != nil {
+					return nil, err
+				}
+			} else {
+				retArray = append(retArray, destFilePath)
+				processedSymbols[debugInfo.DebugId] = true
 			}
 		}
 	}
@@ -468,10 +498,36 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 	return retArray, err
 }
 
+// getDebugFileInformation parses the given file and returns the debug ID and
+// debug filename, e.g. "352EE5D992DDBBBC19519D0ACB4B0B480", "libassistant.so".
+func getDebugFileInformation(filepath string) (*filterSymbolFileInfo, error) {
+	// Get id from from the first line of the file.
+	file, err := os.Open(filepath)
+	defer file.Close()
+	if err != nil {
+		return nil, err
+	}
+	lineScanner := bufio.NewScanner(file)
+
+	if lineScanner.Scan() {
+		line := strings.Split(lineScanner.Text(), " ")
+
+		// 	The first line of the syms file will read like:
+		// 	  MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid
+		if len(line) != 5 {
+			return nil, fmt.Errorf("error: incorrect first line format for symbol file %s", filepath)
+		}
+		return &filterSymbolFileInfo{
+			DebugFile: line[4],
+			DebugId:   strings.ReplaceAll(line[3], "-", ""),
+		}, nil
+	}
+	return nil, nil
+}
+
 // generateConfigs will take a list of strings with containing the paths to the
 // unpacked symbol files. It will return a list of generated task configs
 // alongside the communication channels to be used.
-
 func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
 	LogOut("Generating %d task configs", len(symbolFiles))
 
@@ -482,32 +538,12 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 
 	// Generate task configurations.
 	for index, filepath := range symbolFiles {
-		var debugId string
-		var debugFile string
-
-		// Get id from from the first line of the file.
-		file, err := os.Open(filepath)
+		debugInfo, err := getDebugFileInformation(filepath)
 		if err != nil {
 			return nil, err
 		}
-		lineScanner := bufio.NewScanner(file)
-
-		if lineScanner.Scan() {
-			line := strings.Split(lineScanner.Text(), " ")
-
-			// 	The first line of the syms file will read like:
-			// 	  MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid
-			if len(line) != 5 {
-				return nil, fmt.Errorf("error: incorrect first line format for symbol file %s", debugFile)
-			}
-
-			debugId = strings.ReplaceAll(line[3], "-", "")
-			debugFile = line[4]
-		}
-		err = file.Close()
-		if err != nil {
-			return nil, err
-		}
+		debugFile := debugInfo.DebugFile
+		debugId := debugInfo.DebugId
 
 		tasks[index] = taskConfig{filepath, debugFile, debugId, dryRun, shouldSleep}
 	}
