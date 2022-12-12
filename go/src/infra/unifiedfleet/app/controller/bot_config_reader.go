@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/common/errors"
@@ -51,6 +52,7 @@ func ImportENCBotConfig(ctx context.Context) error {
 
 	logging.Infof(ctx, "Parsing Ownership config for %d files", len(ownershipConfig.GetEncConfig()))
 	for _, cfg := range ownershipConfig.GetEncConfig() {
+		start := time.Now()
 		logging.Debugf(ctx, "########### Parse %s ###########", cfg.GetName())
 		conf, err := gitClient.GetFile(ctx, cfg.GetRemotePath())
 		if err != nil {
@@ -62,6 +64,8 @@ func ImportENCBotConfig(ctx context.Context) error {
 			return err
 		}
 		ParseBotConfig(ctx, content, cfg.GetName())
+		duration := time.Since(start)
+		logging.Debugf(ctx, "########### Done Parsing %s; Time taken %s ###########", cfg.GetName(), fmt.Sprintf(duration.String()))
 	}
 	return nil
 }
@@ -69,7 +73,7 @@ func ImportENCBotConfig(ctx context.Context) error {
 // ParseBotConfig parses the Bot Config files and stores the ownership data in the Data store for every bot in the config.
 func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInstance string) {
 	for _, botGroup := range config.BotGroup {
-		if len(botGroup.BotId) == 0 {
+		if len(botGroup.BotId) == 0 && len(botGroup.BotIdPrefix) == 0 {
 			continue
 		}
 		botsIds := []string{}
@@ -95,23 +99,31 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 			SwarmingInstance: swarmingInstance,
 		}
 
+		// Update the ownership for the botIdPrefixes
+		updateBotConfigForBotIdPrefix(ctx, botGroup.BotIdPrefix, ownershipData)
+
 		// Update the ownership data for the botIds collected so far.
-		for _, botId := range botsIds {
-			updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData)
+		updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	}
+}
+
+// Updates the Ownership config for the bot ids collected from the config.
+func updateBotConfigForBotIds(ctx context.Context, botIds []string, ownershipData *ufspb.OwnershipData) {
+	for _, botId := range botIds {
+		updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData)
+		if err != nil && status.Code(err) != codes.NotFound {
+			logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
+		}
+		if updated {
+			err = updateOwnership(ctx, botId, ownershipData, assetType)
 			if err != nil {
-				logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
+				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
 			}
-			if updated {
-				err = updateOwnership(ctx, botId, ownershipData, assetType)
-				if err != nil {
-					logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
-				}
-			}
-			logging.Debugf(ctx, "Nothing to update for bot id %s", botId)
 		}
 	}
 }
 
+// Checks if the bot ownership is updated from the last time we read the configs.
 func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufspb.OwnershipData) (bool, string, error) {
 	entity, err := inventory.GetOwnershipData(ctx, botId)
 	// Update ownership for bot if it does not exist in the ownership table or if there is error in retrieving the entity
@@ -129,6 +141,7 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 	return false, "", nil
 }
 
+// Updates the ownership for the given assetType and name
 func updateOwnership(ctx context.Context, botId string, ownership *ufspb.OwnershipData, assetType string) (err error) {
 	return datastore.RunInTransaction(ctx, func(c context.Context) error {
 		// First Update the Ownership for the Asset
@@ -152,6 +165,7 @@ func updateOwnership(ctx context.Context, botId string, ownership *ufspb.Ownersh
 	}, &datastore.TransactionOptions{})
 }
 
+// Updates the ownership for the given id, searches through machine, machineLSE	 and VM entities as asset type is unknown
 func findAndUpdateOwnershipForAsset(ctx context.Context, botId string, ownershipData *ufspb.OwnershipData) (string, error) {
 	errs := make(errors.MultiError, 0)
 	_, err := registration.UpdateMachineOwnership(ctx, botId, ownershipData)
@@ -172,8 +186,92 @@ func findAndUpdateOwnershipForAsset(ctx context.Context, botId string, ownership
 	if err == nil {
 		return inventory.AssetTypeMachineLSE, nil
 	}
-	errs = append(errs, err)
-	return "", errs
+	if status.Code(err) != codes.NotFound {
+		errs = append(errs, err)
+	}
+	if errs.First() != nil {
+		return "", errs
+	}
+	return "", nil
+}
+
+// Update the Ownership config for the bot id prefixes collected from the config.
+func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixes []string,
+	ownershipData *ufspb.OwnershipData) {
+	for _, prefix := range botIdPrefixes {
+		assetType := findAssetTypeForPrefix(ctx, prefix)
+		updateOwnershipForAssetByPrefix(ctx, prefix, ownershipData, assetType)
+	}
+}
+
+// Updates Ownership for the given asset type and name prefix
+func updateOwnershipForAssetByPrefix(ctx context.Context, prefix string, ownership *ufspb.OwnershipData, assetType string) (err error) {
+	// First Update the Ownership for the Asset
+	switch assetType {
+	case inventory.AssetTypeMachine:
+		findAndUpdateMachineOwnershipForPrefix(ctx, prefix, ownership)
+	case inventory.AssetTypeMachineLSE:
+		findAndUpdateMachineLSEOwnershipForPrefix(ctx, prefix, ownership)
+	default:
+		findAndUpdateOwnershipForPrefix(ctx, prefix, ownership)
+	}
+	return err
+}
+
+// Searches the Ownership table to find the asset type for this prefix
+func findAssetTypeForPrefix(ctx context.Context,
+	prefix string) string {
+	entities, _, err := inventory.ListHostsByIdPrefixSearch(ctx, 1, "", prefix, false)
+	// Did not find any entries in the ownership table, return empty assetType
+	if err != nil || len(entities) == 0 {
+		return ""
+	}
+	return entities[0].AssetType
+}
+
+// Searches for entities with names starting with the bot id prefix and
+// updates their ownership config
+func findAndUpdateOwnershipForPrefix(ctx context.Context,
+	prefix string, ownershipData *ufspb.OwnershipData) bool {
+	found := findAndUpdateMachineOwnershipForPrefix(ctx, prefix, ownershipData)
+	if !found {
+		found = findAndUpdateMachineLSEOwnershipForPrefix(ctx, prefix, ownershipData)
+	}
+	return found
+}
+
+// Searches for machine entities with names starting with the bot id prefix and
+// updates their ownership config
+func findAndUpdateMachineOwnershipForPrefix(ctx context.Context,
+	prefix string, ownershipData *ufspb.OwnershipData) bool {
+	entities, _, err := registration.ListMachinesByIdPrefixSearch(ctx, -1, "", prefix, true)
+	if err != nil || len(entities) == 0 {
+		return false
+	}
+	logging.Infof(ctx, "Found %d machines with id prefix %s", len(entities), prefix)
+	botsIds := []string{}
+	for _, machine := range entities {
+		botsIds = append(botsIds, machine.GetName())
+	}
+	updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	return true
+}
+
+// Searches for machineLSE entities with names starting with the bot id prefix and
+// updates their ownership config
+func findAndUpdateMachineLSEOwnershipForPrefix(ctx context.Context,
+	prefix string, ownershipData *ufspb.OwnershipData) bool {
+	entities, _, err := inventory.ListMachineLSEsByIdPrefixSearch(ctx, -1, "", prefix, true)
+	if err != nil || len(entities) == 0 {
+		return false
+	}
+	logging.Infof(ctx, "Found %d machineLSEs with id prefix %s", len(entities), prefix)
+	botsIds := []string{}
+	for _, machineLSE := range entities {
+		botsIds = append(botsIds, machineLSE.GetName())
+	}
+	updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	return true
 }
 
 // GetOwnershipData gets the ownership data in the Data store for the requested bot in the config.

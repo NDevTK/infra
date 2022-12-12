@@ -70,6 +70,13 @@ func mockChromeBrowserMachine(id, name string) *ufspb.Machine {
 	}
 }
 
+// Dummy MachineLSE
+func mockMachineLSE(id string) *ufspb.MachineLSE {
+	return &ufspb.MachineLSE{
+		Name: id,
+	}
+}
+
 // Tests the functionality for importing bot configs from the config files
 func TestImportENCBotConfig(t *testing.T) {
 	t.Parallel()
@@ -101,6 +108,50 @@ func TestImportENCBotConfig(t *testing.T) {
 			err = ImportENCBotConfig(ctx)
 			So(err, ShouldBeNil)
 			resp2, err := registration.GetMachine(ctx, "test1-1")
+			So(resp2, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp2.Ownership, ShouldNotBeNil)
+			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
+		})
+		Convey("happy path - Bot ID Prefix", func() {
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.CreateMachine(ctx, mockChromeBrowserMachine("tester-1", "tester1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.GetMachine(ctx, "testing-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			resp, err = registration.GetMachine(ctx, "tester-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldBeNil)
+		})
+		Convey("happy path - Bot ID Prefix for MachineLSE", func() {
+			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+
+			resp, err = inventory.GetMachineLSE(ctx, "testLSE1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			// Import Again, should not update the Asset
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+			resp2, err := inventory.GetMachineLSE(ctx, "testLSE1")
 			So(resp2, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp2.Ownership, ShouldNotBeNil)
@@ -201,13 +252,13 @@ func TestGetOwnershipData(t *testing.T) {
 		})
 		Convey("happy path - vm", func() {
 			resp, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{{
-				Name: "test2-1",
+				Name: "testVM2-1",
 			}})
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			ParseBotConfig(ctx, mockBotConfig("test{1,2}-1", "abc"), "testSwarming")
-			ownership, err := GetOwnershipData(ctx, "test2-1")
+			ParseBotConfig(ctx, mockBotConfig("testVM{1,2}-1", "abc"), "testSwarming")
+			ownership, err := GetOwnershipData(ctx, "testVM2-1")
 
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)

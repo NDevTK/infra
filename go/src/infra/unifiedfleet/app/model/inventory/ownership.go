@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsds "infra/unifiedfleet/app/model/datastore"
 )
 
 // OwnershipDataKind is the datastore entity kind OwnershipData.
@@ -81,4 +82,37 @@ func GetOwnershipData(ctx context.Context, name string) (*OwnershipDataEntity, e
 		return nil, err
 	}
 	return entity, nil
+}
+
+// ListHostsByIdPrefixSearch lists the hosts
+// Does a query over OwnershipData entities using ID prefix. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). PageSize must be positive.
+func ListHostsByIdPrefixSearch(ctx context.Context, pageSize int32, pageToken string, prefix string, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
+	q, err := ufsds.ListQueryIdPrefixSearch(ctx, OwnershipDataKind, pageSize, pageToken, prefix, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	return runListOwnershipQuery(ctx, q, pageSize, pageToken, keysOnly)
+}
+
+func runListOwnershipQuery(ctx context.Context, query *datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
+	var nextCur datastore.Cursor
+	err = datastore.Run(ctx, query, func(ent *OwnershipDataEntity, cb datastore.CursorCB) error {
+		res = append(res, *ent)
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to List OwnershipData %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
 }
