@@ -50,17 +50,17 @@ export function ResourceList() {
     (state) => state.resource.resources
   );
   const columns: GridColDef[] = [
-    { field: 'resourceId', headerName: 'Id', flex: 0.5, hide: true },
-    { field: 'name', headerName: 'Name', flex: 0.5 },
-    { field: 'type', headerName: 'Type', flex: 0.5 },
-    { field: 'operatingSystem', headerName: 'Operating System', flex: 0.4 },
-    { field: 'description', headerName: 'Description', flex: 0.7 },
-    { field: 'imageSource', headerName: 'Image Source', flex: 0.3 },
+    { field: 'resourceId', headerName: 'Id', flex: 0.4, hide: true },
+    { field: 'name', headerName: 'Name', flex: 0.4 },
+    { field: 'type', headerName: 'Type', flex: 0.4 },
+    { field: 'operatingSystem', headerName: 'Operating System', flex: 0.3 },
+    { field: 'description', headerName: 'Description', flex: 0.6 },
+    { field: 'imageSource', headerName: 'Image Source', flex: 0.7 },
     { field: 'createdBy', headerName: 'Created By', flex: 0.4 },
     {
       field: 'createdAt',
       headerName: 'Created At',
-      flex: 0.5,
+      flex: 0.4,
       valueGetter: getLocalTime,
     },
     {
