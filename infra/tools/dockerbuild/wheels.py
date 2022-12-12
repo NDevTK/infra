@@ -485,6 +485,16 @@ SPECS.update({
             pyversions=['py3'],
             default=False),
         SourceOrPrebuilt(
+            'ijson',
+            '3.1.4',
+            packaged=(),
+            only_plat=[
+                'manylinux-x64-py3',
+                'manylinux-x64-py3.11',
+            ],
+            tpp_libs=[('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
+        ),
+        SourceOrPrebuilt(
             'lazy-object-proxy',
             '1.3.1',
             packaged=(),

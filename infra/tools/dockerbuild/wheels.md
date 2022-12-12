@@ -3362,6 +3362,21 @@ wheel: <
 
 * *universal*
 
+## **ijson**
+
+### 3.1.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ijson/${vpython_platform}"
+  version: "version:3.1.4"
+>
+```
+
+
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.11*
+
 ## **importlab-py3**
 
 ### 0.6.1
