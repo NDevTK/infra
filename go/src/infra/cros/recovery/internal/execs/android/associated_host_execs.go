@@ -38,7 +38,7 @@ func newRunner(info *execs.ExecInfo) components.Runner {
 
 // pingAssociatedHostExec verifies that associated host of the DUT is pingable.
 func pingAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInteval, 2, newPinger(info), info.NewLogger())
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, newPinger(info), info.NewLogger())
 }
 
 // sshAssociatedHostExec verifies ssh access to the associated host of the DUT.

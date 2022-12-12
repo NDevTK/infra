@@ -21,7 +21,7 @@ import (
 
 // pingExec verifies the DUT is pingable.
 func pingExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInteval, 2, info.DefaultPinger(), info.NewLogger())
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, info.DefaultPinger(), info.NewLogger())
 }
 
 // sshExec verifies ssh access to the current plan's device (named by the default resource name).
