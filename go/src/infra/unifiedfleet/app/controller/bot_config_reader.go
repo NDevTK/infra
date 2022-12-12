@@ -14,6 +14,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/gae/service/datastore"
 	configpb "go.chromium.org/luci/swarming/proto/config"
 	"google.golang.org/grpc/codes"
@@ -33,6 +34,8 @@ const (
 	POOL_PREFIX = "pool:"
 )
 
+var prevSha1 = ""
+
 // ImportENCBotConfig imports Bot Config files and stores the bot configs for ownership data in the DataStore.
 func ImportENCBotConfig(ctx context.Context) error {
 	es, err := external.GetServerInterface(ctx)
@@ -40,6 +43,14 @@ func ImportENCBotConfig(ctx context.Context) error {
 		return err
 	}
 	ownershipConfig := config.Get(ctx).GetOwnershipConfig()
+	gitTilesClient, err := es.NewGitTilesInterface(ctx, ownershipConfig.GetGitilesHost())
+	currentSha1, err := fetchLatestSHA1(ctx, gitTilesClient, ownershipConfig.GetProject(), ownershipConfig.GetBranch())
+	if currentSha1 == prevSha1 {
+		logging.Infof(ctx, "Nothing changed for enc config files - lastest SHA1 : %s", prevSha1)
+		return nil
+	}
+	prevSha1 = currentSha1
+
 	gitClient, err := es.NewGitInterface(ctx, ownershipConfig.GetGitilesHost(), ownershipConfig.GetProject(), ownershipConfig.GetBranch())
 	if err != nil {
 		logging.Errorf(ctx, "Got Error for git client : %s", err.Error())
@@ -335,4 +346,20 @@ func parseBotIds(idExpr string) []string {
 		}
 	}
 	return botsIds
+}
+
+// Gets the latest SHA1 for the given project and branch.
+func fetchLatestSHA1(ctx context.Context, gitilesC external.GitTilesClient, project, branch string) (string, error) {
+	resp, err := gitilesC.Log(ctx, &gitiles.LogRequest{
+		Project:    project,
+		Committish: fmt.Sprintf("refs/heads/%s", branch),
+		PageSize:   1,
+	})
+	if err != nil {
+		return "", errors.Annotate(err, "fetch sha1 for %s branch of %s", branch, project).Err()
+	}
+	if len(resp.Log) == 0 {
+		return "", fmt.Errorf("fetch sha1 for %s branch of %s: empty git-log", branch, project)
+	}
+	return resp.Log[0].GetId(), nil
 }
