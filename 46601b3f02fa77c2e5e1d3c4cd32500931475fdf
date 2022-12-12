@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "91e83c7a_b0881d77",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-12-12T00:43:09Z",
+      "side": 1,
+      "message": "Sorry provision is incorrect usage of the work from my side.\n\nThis CL is preparation to switch deploy/repair to use cache server for all extractions. \n\nBefore merge i plan to test a few time again with a few models and then merge to have in latest version one week before push to the prod. if something we can always just rollback this cl and use old methods. or specify it only for some models.",
+      "parentUuid": "3a56a05d_6e18cca0",
+      "range": {
+        "startLine": 7,
+        "startChar": 52,
+        "endLine": 7,
+        "endChar": 61
+      },
+      "revId": "46601b3f02fa77c2e5e1d3c4cd32500931475fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d66d85b1_97bddfe1",
