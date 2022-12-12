@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c2d04f8_7f9979d5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-12-12T20:58:36Z",
+      "side": 1,
+      "message": "common-tls is the command line instance of TLS, but this CL also touchs the library instance of TLS.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 10
+      },
+      "revId": "5dc55fb7961f99bd084863a7778509876f28534e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "c282dd48_d9c0455d",
@@ -14,6 +37,69 @@
       "writtenOn": "2022-12-12T17:53:09Z",
       "side": 1,
       "message": "ping~",
+      "revId": "5dc55fb7961f99bd084863a7778509876f28534e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3c97e8a_ca0a0782",
+        "filename": "go/src/infra/cros/cmd/common-tls/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-12-12T20:58:36Z",
+      "side": 1,
+      "message": "Please add a message here to say, like \"use \u0027dut-ssh-key\u0027 if an alternate key is needed\".",
+      "range": {
+        "startLine": 26,
+        "startChar": 46,
+        "endLine": 26,
+        "endChar": 56
+      },
+      "revId": "5dc55fb7961f99bd084863a7778509876f28534e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0e3a1ed_c58ac9dd",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/tls/background.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-12-12T20:58:36Z",
+      "side": 1,
+      "message": "Comment should no longer than 80 characters. http://go/go-style/decisions#comment-line-length",
+      "revId": "5dc55fb7961f99bd084863a7778509876f28534e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e64b003d_32ae9841",
+        "filename": "go/src/infra/cros/tlslib/server.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-12-12T20:58:36Z",
+      "side": 1,
+      "message": "Make this as an \u0027Option\u0027?\n\n```\nfunc dutSSHKeyOption(path string) Option{\n  return Option(func(s *Server) error {\n    // initialize the public key object\n    s.Auth \u003d ...\n  })\n}\n```\nWhen we call NewServer:\n```\ns \u003d NewServer(ctx, \u003cgrpc.ClientCon\u003e, dutSSHKeyOption(\"path/to/ssh/key\"))\n```\n\nIn this way, you don\u0027t have to change the prototype of the function (and you don\u0027t have to add an empty string to all call sites if it\u0027s not needed).",
+      "range": {
+        "startLine": 59,
+        "startChar": 56,
+        "endLine": 59,
+        "endChar": 77
+      },
       "revId": "5dc55fb7961f99bd084863a7778509876f28534e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
