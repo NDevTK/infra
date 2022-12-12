@@ -2263,7 +2263,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Verify servod is responsive",
 				"Flash EC (FW) by servo",
-				"Flash AP (FW) by servo",
+				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
 				"Cold reset by servo and wait for SSH",
 			},
 			ExecName: "sample_pass",
