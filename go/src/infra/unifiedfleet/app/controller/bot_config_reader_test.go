@@ -8,6 +8,7 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -86,6 +87,24 @@ func TestImportENCBotConfig(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldNotBeNil)
+
+			botResp, err := inventory.GetOwnershipData(ctx, "test1-1")
+			So(err, ShouldBeNil)
+			So(botResp, ShouldNotBeNil)
+			So(botResp.OwnershipData, ShouldNotBeNil)
+			p, err := botResp.GetProto()
+			So(err, ShouldBeNil)
+			pm := p.(*ufspb.OwnershipData)
+			So(pm, ShouldResembleProto, resp.Ownership)
+
+			// Import Again, should not update the Asset
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+			resp2, err := registration.GetMachine(ctx, "test1-1")
+			So(resp2, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp2.Ownership, ShouldNotBeNil)
+			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
 		})
 		Convey("No ENC Config - Ownership not updated", func() {
 			ctx = config.Use(ctx, &config.Config{})
