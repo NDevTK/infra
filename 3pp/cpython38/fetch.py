@@ -54,9 +54,10 @@ urllib.request.install_opener(
 def get_webinstaller_suffix(platform):
   if platform == 'windows-386':
     return '-webinstall.exe'
-  if platform == 'windows-amd64':
+  # Package windows-amd64 to run in emulated mode on windows-arm64.
+  if platform in ['windows-amd64', 'windows-arm64']:
     return '-amd64-webinstall.exe'
-  raise ValueError('fetch.py is only supported for windows-386, windows-amd64')
+  raise ValueError('fetch.py is only supported for windows-(386|amd64|arm64)')
 
 
 # Python 3.8.10 was the last 3.8.x release that will have a binary installer
@@ -98,7 +99,7 @@ def get_download_url(version, platform):
   m = short_re.match(version)
   if m:
     short = m.group(0)
-  path = 'amd64' if platform == 'windows-amd64' else 'win32'
+  path = 'amd64' if platform in ['windows-amd64', 'windows-arm64'] else 'win32'
   base_download_url = (
     'https://www.python.org/ftp/python/%(short)s/%(path)s/'
     % {'short': short, 'path': path}

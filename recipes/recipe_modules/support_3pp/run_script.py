@@ -47,6 +47,7 @@ _DOCKERBUILD_PLATFORM = {
 _WINDOWS_SDK_PLATFORM = {
     'windows-386': 'x86',
     'windows-amd64': 'x64',
+    'windows-arm64': 'arm64',
 }
 
 

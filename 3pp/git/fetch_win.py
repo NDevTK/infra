@@ -23,8 +23,9 @@ urllib.request.install_opener(
 # A regex for a name of the release asset to package, available at
 # https://github.com/git-for-windows/git/releases
 WINDOWS_ASSET_RE = {
-  '386':   re.compile(r'^PortableGit-.*-32-bit\.7z\.exe$'),
-  'amd64': re.compile(r'^PortableGit-.*-64-bit\.7z\.exe$'),
+    '386': re.compile(r'^PortableGit-.*-32-bit\.7z\.exe$'),
+    'amd64': re.compile(r'^PortableGit-.*-64-bit\.7z\.exe$'),
+    'arm64': re.compile(r'^PortableGit-.*-64-bit\.7z\.exe$'),
 }
 
 

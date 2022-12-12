@@ -1,5 +1,5 @@
 create {
-  platform_re: "windows-.*"
+  platform_re: "windows-(amd64|386)"
   source {
     url {
       download_url: "https://go.microsoft.com/fwlink/?linkid=2165884"

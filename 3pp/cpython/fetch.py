@@ -17,9 +17,10 @@ VERSION = '2.7.18'
 def get_installer_suffix(platform):
   if platform == 'windows-386':
     return '.msi'
-  if platform == 'windows-amd64':
+  # Package windows-amd64 to run in emulated mode on windows-arm64.
+  if platform in ['windows-amd64', 'windows-arm64']:
     return '.amd64.msi'
-  raise ValueError('fetch.py is only supported for windows-386, windows-amd64')
+  raise ValueError('fetch.py is only supported for windows-(386|amd64|arm64)')
 
 
 def do_latest():

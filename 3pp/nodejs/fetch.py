@@ -45,6 +45,8 @@ def get_download_url(version, platform):
       ('linux', 'armv6l'): 'linux-armv6l',
       ('linux', 'arm64'): 'linux-arm64',
       ('windows', 'amd64'): 'win-x64',
+      # Package emulated binary for now.
+      ('windows', 'arm64'): 'win-x64',
   }[(targ_os, targ_arch)]
   download_url = (
     '%(base)s/v%(version)s/node-v%(version)s-%(fragment)s%(ext)s'

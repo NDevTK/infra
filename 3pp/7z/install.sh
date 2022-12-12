@@ -18,6 +18,8 @@ if [[ $_3PP_PLATFORM =~ windows-.*  ]]; then
   BIN_EXT=".exe"
   if [[ $_3PP_PLATFORM = "windows-386" ]]; then
     BUILD_DIR=x86
+  elif [[ $_3PP_PLATFORM = "windows-arm64" ]]; then
+    BUILD_DIR=arm64
   else
     BUILD_DIR=x64
   fi

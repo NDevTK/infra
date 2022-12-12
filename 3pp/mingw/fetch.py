@@ -34,6 +34,7 @@ def get_download_url():
       "windows-default-manifest-6.4-3-any.pkg.tar.xz",
       "winpthreads-git-9.0.0.6373.5be8fcd83-1-any.pkg.tar.zst",
   ]
+  # Note: windows-arm64 will package the windows-amd64 build.
   url_prefix = "https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-"
   urls = [url_prefix + p for p in packages]
 

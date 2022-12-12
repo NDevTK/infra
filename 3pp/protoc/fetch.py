@@ -62,6 +62,8 @@ PROTOC_PLATFORMS = {
     'mac-arm64': 'osx-aarch_64',
     'windows-386': 'win32',
     'windows-amd64': 'win64',
+    # Use emulated mode for windows-arm64 for now.
+    'windows-arm64': 'win64',
 }
 
 
