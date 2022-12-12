@@ -33,16 +33,16 @@ type Server struct {
 //
 // On success, caller is responsible for calling Server.Stop() to stop the
 // server and free up resources.
-func StartBackground(tlwAddress string) (*Server, error) {
+func StartBackground(tlwAddress, dutSSHKeyPath string) (*Server, error) {
 	s := &Server{}
-	if err := s.start(tlwAddress); err != nil {
+	if err := s.start(tlwAddress, dutSSHKeyPath); err != nil {
 		s.Stop()
 		return nil, err
 	}
 	return s, nil
 }
 
-func (s *Server) start(tlwAddress string) error {
+func (s *Server) start(tlwAddress, dutSSHKeyPath string) error {
 	conn, err := grpc.Dial(tlwAddress, grpc.WithInsecure())
 	if err != nil {
 		return errors.Annotate(err, "start background tls").Err()
@@ -62,7 +62,7 @@ func (s *Server) start(tlwAddress string) error {
 
 	s.addr = el.Addr()
 
-	ts, err := tlslib.NewServer(context.TODO(), s.tlwConn)
+	ts, err := tlslib.NewServer(context.TODO(), s.tlwConn, tlslib.DUTSSHKeyOption(dutSSHKeyPath))
 	if err != nil {
 		return errors.Annotate(err, "start background tls").Err()
 	}
