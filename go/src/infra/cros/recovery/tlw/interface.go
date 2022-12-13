@@ -113,11 +113,17 @@ type Dut struct {
 // GetAndroid returns Android device.
 // The method created to mimic proto syntactic.
 func (d *Dut) GetAndroid() *Android {
+	if d == nil {
+		return nil
+	}
 	return d.Android
 }
 
 // GetChromeos returns ChromeOS device.
 // The method created to mimic proto syntactic.
 func (d *Dut) GetChromeos() *ChromeOS {
+	if d == nil {
+		return nil
+	}
 	return d.Chromeos
 }
