@@ -21,7 +21,7 @@ import (
 // state matches the expected power state.
 func ValidatePowerState(ctx context.Context, run components.Runner, pinger components.Pinger, expectedOnline bool, timeOut, waitInterval time.Duration) error {
 	return retry.WithTimeout(ctx, waitInterval, timeOut, func() error {
-		if err := cros.IsSSHable(ctx, run); err != nil {
+		if err := cros.IsSSHable(ctx, run, cros.DefaultSSHTimeout); err != nil {
 			log.Debugf(ctx, "Validate Power Source: host is not reachable over SSH.")
 			return errors.Annotate(err, "validate power state").Err()
 		}

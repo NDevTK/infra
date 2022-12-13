@@ -214,7 +214,7 @@ func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	dutUsb := ""
 	dutRunner := info.NewRunner(info.GetDut().Name)
-	if components_cros.IsSSHable(ctx, dutRunner) == nil {
+	if components_cros.IsSSHable(ctx, dutRunner, components_cros.DefaultSSHTimeout) == nil {
 		log.Debugf(ctx, "Servo Audit USB-Key Exec: %q is reachable through SSH", info.GetDut().Name)
 		var err error = nil
 		dutUsb, err = GetUSBDrivePathOnDut(ctx, dutRunner, info.NewServod())

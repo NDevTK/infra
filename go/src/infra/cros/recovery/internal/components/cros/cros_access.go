@@ -18,6 +18,8 @@ import (
 
 const (
 	DefaultPingCount = 3
+	// Default timeout for simple timeout check
+	DefaultSSHTimeout = 10 * time.Second
 )
 
 // IsPingable checks whether the resource is pingable
@@ -36,8 +38,8 @@ func IsNotPingable(ctx context.Context, count int, ping components.Pinger, log l
 }
 
 // IsSSHable checks whether the resource is sshable
-func IsSSHable(ctx context.Context, run components.Runner) error {
-	_, err := run(ctx, time.Minute, "true")
+func IsSSHable(ctx context.Context, run components.Runner, timeout time.Duration) error {
+	_, err := run(ctx, timeout, "true")
 	return errors.Annotate(err, "is sshable").Err()
 }
 
@@ -84,6 +86,6 @@ func WaitUntilNotPingable(ctx context.Context, waitTime, waitInterval time.Durat
 func WaitUntilSSHable(ctx context.Context, waitTime, waitInterval time.Duration, run components.Runner, log logger.Logger) error {
 	log.Debugf("Start SSH check for the next %s.", waitTime)
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
-		return IsSSHable(ctx, run)
+		return IsSSHable(ctx, run, DefaultSSHTimeout)
 	}, "wait to ssh access")
 }
