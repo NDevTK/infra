@@ -10,12 +10,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 	configpb "go.chromium.org/luci/swarming/proto/config"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
@@ -94,24 +97,83 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 
 		// Update the ownership data for the botIds collected so far.
 		for _, botId := range botsIds {
-			errs := make(errors.MultiError, 0)
-			_, err := registration.UpdateMachineOwnership(ctx, botId, ownershipData)
-			if status.Code(err) != codes.NotFound {
-				errs = append(errs, err)
-			}
-			_, err = inventory.UpdateVMOwnership(ctx, botId, ownershipData)
-			if status.Code(err) != codes.NotFound {
-				errs = append(errs, err)
-			}
-			_, err = inventory.UpdateMachineLSEOwnership(ctx, botId, ownershipData)
+			updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData)
 			if err != nil {
-				errs = append(errs, err)
+				logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
 			}
-			if errs.First() != nil {
-				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, errs)
+			if updated {
+				err = updateOwnership(ctx, botId, ownershipData, assetType)
+				if err != nil {
+					logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
+				}
 			}
+			logging.Debugf(ctx, "Nothing to update for bot id %s", botId)
 		}
 	}
+}
+
+func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufspb.OwnershipData) (bool, string, error) {
+	entity, err := inventory.GetOwnershipData(ctx, botId)
+	// Update ownership for bot if it does not exist in the ownership table or if there is error in retrieving the entity
+	if err != nil {
+		return true, "", err
+	}
+	p, err := entity.GetProto()
+	if err != nil {
+		return true, entity.AssetType, err
+	}
+	pm := p.(*ufspb.OwnershipData)
+	if diff := cmp.Diff(pm, newOwnership, protocmp.Transform()); diff != "" {
+		return true, entity.AssetType, nil
+	}
+	return false, "", nil
+}
+
+func updateOwnership(ctx context.Context, botId string, ownership *ufspb.OwnershipData, assetType string) (err error) {
+	return datastore.RunInTransaction(ctx, func(c context.Context) error {
+		// First Update the Ownership for the Asset
+		switch assetType {
+		case inventory.AssetTypeMachine:
+			_, err = registration.UpdateMachineOwnership(ctx, botId, ownership)
+		case inventory.AssetTypeMachineLSE:
+			_, err = inventory.UpdateMachineLSEOwnership(ctx, botId, ownership)
+		case inventory.AssetTypeVM:
+			_, err = inventory.UpdateVMOwnership(ctx, botId, ownership)
+		default:
+			assetType, err = findAndUpdateOwnershipForAsset(ctx, botId, ownership)
+		}
+		if err != nil {
+			return err
+		}
+
+		// Then update the ownership data table
+		_, err = inventory.PutOwnershipData(ctx, ownership, botId, assetType)
+		return err
+	}, &datastore.TransactionOptions{})
+}
+
+func findAndUpdateOwnershipForAsset(ctx context.Context, botId string, ownershipData *ufspb.OwnershipData) (string, error) {
+	errs := make(errors.MultiError, 0)
+	_, err := registration.UpdateMachineOwnership(ctx, botId, ownershipData)
+	if err == nil {
+		return inventory.AssetTypeMachine, nil
+	}
+	if status.Code(err) != codes.NotFound {
+		errs = append(errs, err)
+	}
+	_, err = inventory.UpdateVMOwnership(ctx, botId, ownershipData)
+	if err == nil {
+		return inventory.AssetTypeVM, nil
+	}
+	if status.Code(err) != codes.NotFound {
+		errs = append(errs, err)
+	}
+	_, err = inventory.UpdateMachineLSEOwnership(ctx, botId, ownershipData)
+	if err == nil {
+		return inventory.AssetTypeMachineLSE, nil
+	}
+	errs = append(errs, err)
+	return "", errs
 }
 
 // GetOwnershipData gets the ownership data in the Data store for the requested bot in the config.

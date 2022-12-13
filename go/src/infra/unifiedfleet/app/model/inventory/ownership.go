@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,21 +16,20 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsds "infra/unifiedfleet/app/model/datastore"
 )
 
-const (
-	// OwnershipDataKind is the datastore entity kind OwnershipData.
-	OwnershipDataKind string = "OwnershipData"
+// OwnershipDataKind is the datastore entity kind OwnershipData.
+const OwnershipDataKind string = "OwnershipData"
 
-	// AssetType Machine
-	AssetTypeMachine string = "Machine"
+// AssetType Machine
+const AssetTypeMachine string = "Machine"
 
-	// AssetType MachineLSE
-	AssetTypeMachineLSE string = "MachineLSE"
+// AssetType MachineLSE
+const AssetTypeMachineLSE string = "MachineLSE"
 
-	// AssetType VM
-	AssetTypeVM string = "VM"
-)
+// AssetType VM
+const AssetTypeVM string = "VM"
 
 // OwnershipDataEntity is a datastore entity that tracks a OwnershipData.
 type OwnershipDataEntity struct {
@@ -83,4 +82,41 @@ func GetOwnershipData(ctx context.Context, name string) (*OwnershipDataEntity, e
 		return nil, err
 	}
 	return entity, nil
+}
+
+// ListHostsByIdPrefixSearch lists the hosts
+//
+// Does a query over OwnershipData entities using ID prefix.
+// Returns up to pageSize entities, plus non-nil cursor (
+// if there are more results).
+// PageSize must be positive.
+func ListHostsByIdPrefixSearch(ctx context.Context, pageSize int32, pageToken string, prefix string, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
+	q, err := ufsds.ListQueryIdPrefixSearch(ctx, OwnershipDataKind, pageSize, pageToken, prefix, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	return runListOwnershipQuery(ctx, q, pageSize, pageToken, keysOnly)
+}
+
+// Runs the query to list ownership entities and returns results.
+func runListOwnershipQuery(ctx context.Context, query *datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
+	var nextCur datastore.Cursor
+	err = datastore.Run(ctx, query, func(ent *OwnershipDataEntity, cb datastore.CursorCB) error {
+		res = append(res, *ent)
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to List OwnershipData %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
 }
