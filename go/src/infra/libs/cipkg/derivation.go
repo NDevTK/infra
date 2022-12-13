@@ -6,7 +6,7 @@ package cipkg
 
 import (
 	"crypto/sha256"
-	"encoding/gob"
+	"encoding/base64"
 	"fmt"
 )
 
@@ -46,6 +46,28 @@ type Derivation struct {
 // Calculate a unique ID from the content of a derivation
 func (d Derivation) ID() string {
 	h := sha256.New()
-	gob.NewEncoder(h).Encode(d)
+
+	// sha256 shouldn't return any write error.
+	writeField := func(name string, ss ...string) {
+		enc := base64.RawStdEncoding
+		if _, err := fmt.Fprint(h, enc.EncodeToString([]byte(name))); err != nil {
+			panic(err)
+		}
+		for _, s := range ss {
+			if _, err := fmt.Fprintf(h, "\t%s", enc.EncodeToString([]byte(s))); err != nil {
+				panic(err)
+			}
+		}
+		if _, err := fmt.Fprintln(h); err != nil {
+			panic(err)
+		}
+	}
+
+	writeField("name", d.Name)
+	writeField("platform", d.Platform)
+	writeField("builder", d.Builder)
+	writeField("args", d.Args...)
+	writeField("env", d.Env...)
+	writeField("inputs", d.Inputs...)
 	return fmt.Sprintf("%s-%x", d.Name, h.Sum(nil))
 }
