@@ -52,10 +52,13 @@ func cmdRead() *subcommands.Command {
 			This behavior can be changed, but it would come with a performance penalty.
 
 			The output format is JSON form of chrome.dir_metadata.Mapping protobuf message.
+
+			By default dirmd reads metadata from DIR_METADATA or OWNERS files. If you
+			only want to read from DIR_METADATA files, use "-only-dir-metadata" flag.
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &readRun{}
-			r.RegisterOutputFlag()
+			r.RegisterBaseFlags()
 			r.Flags.StringVar(&r.formString, "form", "original", text.Doc(`
 				The form of the returned mapping.
 				Valid values: "original", "reduced", "computed", "sparse", "full".
@@ -106,7 +109,7 @@ func (r *readRun) run(ctx context.Context, dirs []string) error {
 	}
 	form := dirmdpb.MappingForm(formInt)
 
-	mapping, err := dirmd.ReadMapping(ctx, form, dirs...)
+	mapping, err := dirmd.ReadMapping(ctx, form, r.onlyDirmd, dirs...)
 	if err != nil {
 		return err
 	}

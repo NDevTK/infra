@@ -44,7 +44,7 @@ func cmdCompute() *subcommands.Command {
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &computeRun{}
-			r.RegisterOutputFlag()
+			r.RegisterBaseFlags()
 			r.Flags.String("root", "", "Deprecated, ignored")
 			return r
 		},
@@ -61,7 +61,7 @@ func (r *computeRun) Run(a subcommands.Application, args []string, env subcomman
 }
 
 func (r *computeRun) run(ctx context.Context, targets []string) error {
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, targets...)
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, r.onlyDirmd, targets...)
 	if err != nil {
 		return err
 	}

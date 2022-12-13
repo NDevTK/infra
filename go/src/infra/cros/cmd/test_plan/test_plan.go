@@ -285,7 +285,7 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		return err
 	}
 
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, args...)
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, true, args...)
 	if err != nil {
 		return err
 	}

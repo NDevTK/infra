@@ -29,7 +29,7 @@ func TestRead(t *testing.T) {
 		rootKey := testDataKey + "/root"
 
 		Convey(`Original`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, "testdata/root")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, false, "testdata/root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -67,7 +67,7 @@ func TestRead(t *testing.T) {
 		})
 
 		Convey(`Original with two dirs`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, "testdata/root/subdir", "testdata/root/subdir_with_owners")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, false, "testdata/root/subdir", "testdata/root/subdir_with_owners")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -105,7 +105,7 @@ func TestRead(t *testing.T) {
 		})
 
 		Convey(`Full`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_FULL, "testdata/root")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_FULL, false, "testdata/root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -149,7 +149,7 @@ func TestRead(t *testing.T) {
 		})
 
 		Convey(`Computed`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, "testdata/root")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -185,7 +185,35 @@ func TestRead(t *testing.T) {
 		})
 
 		Convey(`Computed, not from root`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, "testdata/root/subdir")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/root/subdir")
+			So(err, ShouldBeNil)
+			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					rootKey: {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+					},
+					rootKey + "/subdir": {
+						TeamEmail: "team-email@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+						Resultdb: &dirmdpb.ResultDB{
+							Tags: []string{
+								"feature:read-later",
+								"feature:another-one",
+							},
+						},
+					},
+				},
+				Repos: dummyRepos,
+			})
+		})
+
+		Convey(`Computed, only DIR_METADATA`, func() {
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, true, "testdata/root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -216,7 +244,7 @@ func TestRead(t *testing.T) {
 			if runtime.GOOS == "windows" {
 				return
 			}
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, "testdata/sym_root")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/sym_root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -253,7 +281,7 @@ func TestRead(t *testing.T) {
 
 		Convey(`Computed, with mixin`, func() {
 			mxKey := testDataKey + "/mixins"
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, "testdata/mixins")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/mixins")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -289,7 +317,7 @@ func TestRead(t *testing.T) {
 		})
 
 		Convey(`Sparse`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, "testdata/root/subdir")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, false, "testdata/root/subdir")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -312,9 +340,25 @@ func TestRead(t *testing.T) {
 			})
 		})
 
+		Convey(`Sparse, only DIR_METADATA`, func() {
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, true, "testdata/root/subdir_with_owners/")
+			So(err, ShouldBeNil)
+			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					// Include inherited metadata from root/DIR_METADATA, the content of
+					// its OWNERS file is not included.
+					rootKey + "/subdir_with_owners": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+					},
+				},
+				Repos: dummyRepos,
+			})
+		})
+
 		Convey(`Sparse, with mixins`, func() {
 			mxKey := testDataKey + "/mixins"
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, "testdata/mixins/subdir")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, false, "testdata/mixins/subdir")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -350,7 +394,7 @@ func TestRead(t *testing.T) {
 			if runtime.GOOS == "windows" {
 				return
 			}
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, "testdata/sym_root")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, false, "testdata/sym_root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -364,7 +408,7 @@ func TestRead(t *testing.T) {
 		})
 
 		Convey(`Reduced`, func() {
-			m, err := ReadMapping(ctx, dirmdpb.MappingForm_REDUCED, "testdata/root")
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_REDUCED, false, "testdata/root")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{

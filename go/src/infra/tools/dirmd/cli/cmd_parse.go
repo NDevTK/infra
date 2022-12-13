@@ -49,7 +49,7 @@ func cmdParse() *subcommands.Command {
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &parseRun{}
-			r.RegisterOutputFlag()
+			r.RegisterBaseFlags()
 			r.Flags.StringVar(&r.formatString, "format", "dir-metadata", text.Doc(`
 				The format of the input from stdin.
 				Valid values: "owners", "dir-metadata".

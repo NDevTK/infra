@@ -105,7 +105,7 @@ func computeMappingForChangeRevs(
 		return nil, err
 	}
 
-	mapping, err = dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, workdir)
+	mapping, err = dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, true, workdir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read DIR_METADATA for change revs %q: %w", changeRevs, err)
 	}

@@ -34,7 +34,7 @@ func cmdExport() *subcommands.Command {
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &exportRun{}
-			r.RegisterOutputFlag()
+			r.RegisterBaseFlags()
 			r.Flags.Var(flag.StringSlice(&r.roots), "root", text.Doc(`
 				The directory with metadata files. May be specified multiple times.
 
@@ -89,7 +89,7 @@ func (r *exportRun) run(ctx context.Context, args []string) error {
 	}
 	form := dirmdpb.MappingForm(formInt)
 
-	mapping, err := dirmd.ReadMapping(ctx, form, r.roots...)
+	mapping, err := dirmd.ReadMapping(ctx, form, r.onlyDirmd, r.roots...)
 	if err != nil {
 		return err
 	}

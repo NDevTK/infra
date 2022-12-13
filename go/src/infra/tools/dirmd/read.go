@@ -65,9 +65,12 @@ func ReadFile(fileName string) (*dirmdpb.Metadata, error) {
 // See also ReadMapping.
 //
 // Returns (nil, nil) if the metadata is not defined.
-func ReadMetadata(dir string) (*dirmdpb.Metadata, error) {
+func ReadMetadata(dir string, onlyDirmd bool) (*dirmdpb.Metadata, error) {
 	md, err := ReadFile(filepath.Join(dir, Filename))
 	if os.IsNotExist(err) {
+		if onlyDirmd {
+			return nil, nil
+		}
 		md, _, err = ReadOwners(dir)
 	}
 	return md, err
@@ -86,6 +89,9 @@ func ReadMetadata(dir string) (*dirmdpb.Metadata, error) {
 // In the sparse form, metadata of only the specified directories is
 // returned, which is usually much faster.
 //
+// If onlyDirmd is true, only metadata from DIR_METADATA files will be included;
+// otherwise metadata from DIR_METADATA and OWNERS files will be included.
+//
 // Descendants of the specified directories are discovered using
 // "git ls-files <dir>" and not FS walk.
 // This means files outside of the repo are ignored, as well as files
@@ -97,7 +103,7 @@ func ReadMetadata(dir string) (*dirmdpb.Metadata, error) {
 // git-ignored DIR_METADATA in the middle of the ancestry chain.
 // Such a case might indicate that DIR_METADATA files are used incorrectly.
 // This behavior can be changed, but it would come with a performance penalty.
-func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, dirs ...string) (*Mapping, error) {
+func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, dirs ...string) (*Mapping, error) {
 	if len(dirs) == 0 {
 		return nil, nil
 	}
@@ -146,7 +152,7 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, dirs ...string) 
 			wgReadUpMissing.Add(1)
 			r.eg.Go(func() error {
 				defer wgReadUpMissing.Done()
-				err := r.readUpMissing(ctx, repo, dir)
+				err := r.readUpMissing(ctx, repo, dir, onlyDirmd)
 				return errors.Annotate(err, "failed to process %q", dir).Err()
 			})
 		}
@@ -165,7 +171,7 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, dirs ...string) 
 			for _, dir := range repo.dirs {
 				dir := dir
 				r.eg.Go(func() error {
-					err := r.ReadGitFiles(ctx, repo, dir, form == dirmdpb.MappingForm_FULL)
+					err := r.ReadGitFiles(ctx, repo, dir, form == dirmdpb.MappingForm_FULL, onlyDirmd)
 					return errors.Annotate(err, "failed to process %q", dir).Err()
 				})
 			}
@@ -331,7 +337,7 @@ type mappingReader struct {
 //
 // It uses "git-ls-files <dir>" to discover the files, so for example it ignores
 // files outside of the repo. See more in `git ls-files -help`.
-func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTreeRoot string, preserveFileStructure bool) error {
+func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTreeRoot string, preserveFileStructure, onlyDirmd bool) error {
 	// First, determine the key prefix.
 	keyPrefixNative, err := filepath.Rel(r.Root, repo.absRoot)
 	if err != nil {
@@ -368,7 +374,7 @@ func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTre
 			r.mu.Unlock()
 		}
 
-		if base := path.Base(relFileName); base != Filename && base != OwnersFilename {
+		if base := path.Base(relFileName); base != Filename && (base != OwnersFilename || onlyDirmd) {
 			// Not a metadata file.
 			continue
 		}
@@ -378,20 +384,20 @@ func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTre
 		}
 
 		absDir := filepath.Join(repo.absRoot, filepath.FromSlash(relDir))
-		r.goReadDir(ctx, repo, absDir, key)
+		r.goReadDir(ctx, repo, absDir, key, onlyDirmd)
 	}
 	return scan.Err()
 }
 
 // goReadDir starts a goroutine with r.eg to read the metadata of the directory.
-func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, key string) {
+func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, key string, onlyDirmd bool) {
 	r.eg.Go(func() error {
 		if err := r.semReadMetadata.Acquire(ctx, 1); err != nil {
 			return err
 		}
 		defer r.semReadMetadata.Release(1)
 
-		md, err := ReadMetadata(absDir)
+		md, err := ReadMetadata(absDir, onlyDirmd)
 		switch {
 		case err != nil:
 			return errors.Annotate(err, "failed to read metadata from %q", absDir).Err()
@@ -445,7 +451,7 @@ func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, k
 
 // readUpMissing reads metadata of the specified directory and its ancestors,
 // or until it reaches a directory already present in r.Dirs.
-func (r *mappingReader) readUpMissing(ctx context.Context, repo *repoInfo, dir string) error {
+func (r *mappingReader) readUpMissing(ctx context.Context, repo *repoInfo, dir string, onlyDirmd bool) error {
 	key, err := r.DirKey(dir)
 	if err != nil {
 		return err
@@ -474,7 +480,7 @@ func (r *mappingReader) readUpMissing(ctx context.Context, repo *repoInfo, dir s
 			return nil
 		}
 
-		r.goReadDir(ctx, repo, dir, key)
+		r.goReadDir(ctx, repo, dir, key, onlyDirmd)
 
 		if dirNormalized == upTo {
 			return nil

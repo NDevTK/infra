@@ -137,7 +137,7 @@ func (u *Updater) readMapping(ctx context.Context, form dirmdpb.MappingForm) (*d
 	for _, subRepo := range includedSubRepos {
 		dirs = append(dirs, filepath.Join(u.ChromiumCheckout, filepath.FromSlash(subRepo)))
 	}
-	return dirmd.ReadMapping(ctx, form, dirs...)
+	return dirmd.ReadMapping(ctx, form, false, dirs...)
 }
 
 func (u *Updater) writeMapping(ctx context.Context, name string, mapping *dirmd.Mapping, modernFormat bool) error {

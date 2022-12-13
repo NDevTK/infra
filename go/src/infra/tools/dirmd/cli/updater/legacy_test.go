@@ -21,7 +21,7 @@ func TestLegacy(t *testing.T) {
 
 	Convey(`Legacy`, t, func() {
 		ctx := context.Background()
-		m, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_FULL, "testdata/root")
+		m, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_FULL, false, "testdata/root")
 		So(err, ShouldBeNil)
 		actual := toLegacyFormat(m)
 		So(jsonIndent(actual), ShouldEqual, jsonIndent([]byte(`{

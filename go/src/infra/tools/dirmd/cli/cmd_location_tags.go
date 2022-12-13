@@ -34,7 +34,7 @@ func cmdLocationTags() *subcommands.Command {
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &tagRun{}
-			r.RegisterOutputFlag()
+			r.RegisterBaseFlags()
 			r.Flags.StringVar(&r.root, "root", ".", "Path to the root directory")
 			r.Flags.StringVar(&r.repo, "repo", "", "Gitiles URL as the identifier for a repo. In the format of https://<host>/<project>. Must not end with .git.")
 			return r
@@ -71,7 +71,7 @@ func (r *tagRun) run(ctx context.Context, args []string) error {
 	if err := r.validate(); err != nil {
 		return err
 	}
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, r.root)
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, r.onlyDirmd, r.root)
 	if err != nil {
 		return err
 	}

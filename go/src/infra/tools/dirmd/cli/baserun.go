@@ -24,10 +24,14 @@ type baseCommandRun struct {
 	// out is the filename for the output.
 	// Special value "-" means stdout.
 	out string
+
+	// Flag for only reading DIR_METADATA files.
+	onlyDirmd bool
 }
 
-func (r *baseCommandRun) RegisterOutputFlag() {
+func (r *baseCommandRun) RegisterBaseFlags() {
 	r.Flags.StringVar(&r.out, "out", "-", `Path to the output file. If "-", then print the output to stdout`)
+	r.Flags.BoolVar(&r.onlyDirmd, "only-dir-metadata", false, `Flag for only reading DIR_METADATA files.`)
 }
 
 func (r *baseCommandRun) done(ctx context.Context, err error) int {
