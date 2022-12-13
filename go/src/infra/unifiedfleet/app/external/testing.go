@@ -24,6 +24,7 @@ func WithTestingContext(ctx context.Context) context.Context {
 			crosInventoryInterfaceFactory: fakeCrosInventoryInterface,
 			sheetInterfaceFactory:         fakeSheetInterfaceFactory,
 			gitInterfaceFactory:           fakeGitInterfaceFactory,
+			gitTilesInterfaceFactory:      fakeGitTilesInterfaceFactory,
 			hwidInterfaceFactory:          fakeHwidInterfaceFactory,
 		}
 		return context.WithValue(ctx, InterfaceFactoryKey, es)
@@ -45,6 +46,10 @@ func fakeSheetInterfaceFactory(ctx context.Context) (sheet.ClientInterface, erro
 
 func fakeGitInterfaceFactory(ctx context.Context, gitilesHost, project, branch string) (git.ClientInterface, error) {
 	return &fake.GitClient{}, nil
+}
+
+func fakeGitTilesInterfaceFactory(ctx context.Context, gitilesHost string) (GitTilesClient, error) {
+	return &fake.GitTilesClient{}, nil
 }
 
 func fakeHwidInterfaceFactory(ctx context.Context) (hwid.ClientInterface, error) {

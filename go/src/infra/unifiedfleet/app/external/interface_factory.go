@@ -52,6 +52,9 @@ type SheetInterfaceFactory func(ctx context.Context) (sheet.ClientInterface, err
 // GitInterfaceFactory is a constructor for a git.ClientInterface
 type GitInterfaceFactory func(ctx context.Context, gitilesHost, project, branch string) (git.ClientInterface, error)
 
+// GitTilesInterfaceFactory is a constructor for a gitiles.GitilesClient
+type GitTilesInterfaceFactory func(ctx context.Context, gitilesHost string) (GitTilesClient, error)
+
 // HwidInterfaceFactory is a constructor for a HWIDClient
 type HwidInterfaceFactory func(ctx context.Context) (hwid.ClientInterface, error)
 
@@ -62,6 +65,7 @@ type InterfaceFactory struct {
 	sheetInterfaceFactory         SheetInterfaceFactory
 	gitInterfaceFactory           GitInterfaceFactory
 	hwidInterfaceFactory          HwidInterfaceFactory
+	gitTilesInterfaceFactory      GitTilesInterfaceFactory
 }
 
 // CrosInventoryClient refers to the fake inventory v2 client
@@ -87,6 +91,7 @@ func WithServerInterface(ctx context.Context) context.Context {
 		crosInventoryInterfaceFactory: crosInventoryInterfaceFactoryImpl,
 		sheetInterfaceFactory:         sheetInterfaceFactoryImpl,
 		gitInterfaceFactory:           gitInterfaceFactoryImpl,
+		gitTilesInterfaceFactory:      gitTilesInterfaceFactoryImpl,
 		hwidInterfaceFactory:          hwidInterfaceFactoryImpl,
 	})
 }
@@ -145,6 +150,22 @@ func gitInterfaceFactoryImpl(ctx context.Context, gitilesHost, project, branch s
 		return nil, err
 	}
 	return git.NewClient(ctx, &http.Client{Transport: t}, "", gitilesHost, project, branch)
+}
+
+// NewGitInterface creates a new git interface.
+func (es *InterfaceFactory) NewGitTilesInterface(ctx context.Context, gitilesHost string) (GitTilesClient, error) {
+	if es.gitInterfaceFactory == nil {
+		es.gitInterfaceFactory = gitInterfaceFactoryImpl
+	}
+	return es.gitTilesInterfaceFactory(ctx, gitilesHost)
+}
+
+func gitTilesInterfaceFactoryImpl(ctx context.Context, gitilesHost string) (GitTilesClient, error) {
+	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(authclient.OAuthScopeEmail, gitilesapi.OAuthScope))
+	if err != nil {
+		return nil, err
+	}
+	return gitilesapi.NewRESTClient(&http.Client{Transport: t}, gitilesHost, true)
 }
 
 // NewCfgInterface creates a new config interface.

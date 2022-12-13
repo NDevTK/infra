@@ -6,14 +6,24 @@ package fake
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/proto/git"
+	"go.chromium.org/luci/common/proto/gitiles"
+	"google.golang.org/grpc"
 )
 
 // GitClient mocks the git.ClientInterface
 type GitClient struct {
 }
+
+// GitTilesClient mocks the gitiles.GitilesClient
+type GitTilesClient struct {
+}
+
+var sha1 = 0
 
 // GetFile mocks git.ClientInterface.GetFile()
 func (gc *GitClient) GetFile(ctx context.Context, path string) (string, error) {
@@ -28,6 +38,16 @@ func (gc *GitClient) GetFile(ctx context.Context, path string) (string, error) {
 // SwitchProject mocks git.ClientInterface.SwitchProject()
 func (gc *GitClient) SwitchProject(ctx context.Context, project string) error {
 	return nil
+}
+
+// Log mocks gitiles.GitilesClient.Log()
+func (gc *GitTilesClient) Log(ctx context.Context, req *gitiles.LogRequest, opts ...grpc.CallOption) (res *gitiles.LogResponse, err error) {
+	sha1 = sha1 + 1
+	return &gitiles.LogResponse{
+		Log: []*git.Commit{
+			{Id: fmt.Sprintf("%d", sha1)},
+		},
+	}, nil
 }
 
 // GitData mocks a git file content based on a given filepath
