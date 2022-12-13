@@ -81,7 +81,7 @@ func TestUpdateVMOwnership(t *testing.T) {
 	vm1_ownership := mockVMWithOwnership("vm-1", ownershipData)
 	vm2 := mockVMWithOwnership("vm-1", ownershipData2)
 	Convey("UpdateVM", t, func() {
-		Convey("Update existing machine with ownership data", func() {
+		Convey("Update existing VM with ownership data", func() {
 			resp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, []*ufspb.VM{vm1})
@@ -102,13 +102,13 @@ func TestUpdateVMOwnership(t *testing.T) {
 			So(vmResp.GetOwnership(), ShouldNotBeNil)
 			assertVMWithOwnershipEqual(vmResp, vm1_ownership)
 		})
-		Convey("Update non-existing machine with ownership", func() {
+		Convey("Update non-existing VM with ownership", func() {
 			resp, err := UpdateVMOwnership(ctx, "dummy", ownershipData)
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, NotFound)
 		})
-		Convey("Update machine with ownership - invalid ID", func() {
+		Convey("Update VM with ownership - invalid ID", func() {
 			resp, err := UpdateVMOwnership(ctx, "", ownershipData)
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
@@ -219,6 +219,67 @@ func TestListVMs(t *testing.T) {
 	})
 }
 
+// TestListVMsByIdPrefixSearch tests the functionality for listing
+// VMs by searching for name/id prefix
+func TestListVMsByIdPrefixSearch(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+	vm1 := &ufspb.VM{
+		Name:          "vm-1",
+		ResourceState: ufspb.State_STATE_DECOMMISSIONED,
+	}
+	vm2 := &ufspb.VM{
+		Name: "vm-2",
+		Tags: []string{"tag-1", "tag-2"},
+	}
+	vm3 := &ufspb.VM{
+		Name:   "vm-3",
+		Memory: 1234,
+	}
+	vm4 := mockVM("vm-4")
+	vms := []*ufspb.VM{vm1, vm2, vm3, vm4}
+	Convey("ListMachinesByIdPrefixSearch", t, func() {
+		_, err := BatchUpdateVMs(ctx, vms)
+		So(err, ShouldBeNil)
+		Convey("List vms - page_token invalid", func() {
+			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 5, 2, "abc", "vm-", false, nil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+		})
+
+		Convey("List vms - Full listing with valid prefix and no pagination", func() {
+			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 4, 4, "", "vm-", false, nil)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, vms)
+		})
+
+		Convey("List vms - Full listing with invalid prefix", func() {
+			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 4, 2, "", "vm1-", false, nil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("List vms - listing with valid prefix and pagination", func() {
+			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 3, 3, "", "vm-", false, nil)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, vms[:3])
+
+			resp, _, err = ListVMsByIdPrefixSearch(ctx, 2, 2, nextPageToken, "vm-", false, nil)
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, vms[3:])
+		})
+	})
+}
+
 func TestDeleteVMs(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
@@ -246,7 +307,7 @@ func TestDeleteVMs(t *testing.T) {
 			res := DeleteVMs(ctx, []string{""})
 			So(res.Failed(), ShouldHaveLength, 1)
 		})
-		Convey("Delete machine - with ownershipdata", func() {
+		Convey("Delete VM - with ownershipdata", func() {
 			vmResp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			So(err, ShouldBeNil)
 
