@@ -10,7 +10,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -37,7 +37,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -71,7 +71,7 @@
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
-      "DEPOT_TOOLS_REPORT_BUILD": "infra/ci/infra-continuous-win10-64/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "infra/prod/infra-packager-win-64/8945511751514863184",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800"
     },
@@ -86,7 +86,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -144,7 +144,7 @@
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
-      "DEPOT_TOOLS_REPORT_BUILD": "infra/ci/infra-continuous-win10-64/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "infra/prod/infra-packager-win-64/8945511751514863184",
       "GOFLAGS": "-mod=readonly",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -156,7 +156,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -167,27 +167,6 @@
       }
     },
     "name": "gclient runhooks"
-  },
-  {
-    "cmd": [
-      "python",
-      "test.py",
-      "test"
-    ],
-    "cwd": "[CACHE]\\builder\\infra",
-    "luci_context": {
-      "realm": {
-        "name": "infra:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "infra python tests"
   },
   {
     "cmd": [
@@ -204,7 +183,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -238,55 +217,11 @@
   },
   {
     "cmd": [
-      "rdb",
-      "stream",
-      "--",
-      "vpython",
-      "-u",
-      "[CACHE]\\builder\\infra\\go\\test.py"
-    ],
-    "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
-    "env": {
-      "GOFLAGS": "-mod=readonly",
-      "GOROOT": "[CACHE]\\builder\\golang\\go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\builder\\golang\\go"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "[CACHE]\\builder\\infra\\go\\bin",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "infra go tests"
-  },
-  {
-    "cmd": [
       "vpython",
       "[CACHE]\\builder\\infra\\build\\build.py",
       "--no-freshen-python-env",
       "--builder",
-      "infra-continuous-win10-64"
+      "infra-packager-win-64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -307,7 +242,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -322,7 +257,17 @@
   {
     "cmd": [
       "vpython",
-      "[CACHE]\\builder\\infra\\build\\test_packages.py"
+      "[CACHE]\\builder\\infra\\build\\build.py",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--builder",
+      "infra-packager-win-64",
+      "--tags",
+      "luci_build:prod/infra-packager-win-64/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -343,7 +288,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -353,7 +298,23 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - test packages integrity"
+    "name": "cipd - upload packages",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
   },
   {
     "cmd": [
@@ -361,7 +322,7 @@
       "[CACHE]\\builder\\infra\\build\\build.py",
       "--no-freshen-python-env",
       "--builder",
-      "infra-continuous-win10-64"
+      "infra-packager-win-64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -384,7 +345,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -399,7 +360,17 @@
   {
     "cmd": [
       "vpython",
-      "[CACHE]\\builder\\infra\\build\\test_packages.py"
+      "[CACHE]\\builder\\infra\\build\\build.py",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--builder",
+      "infra-packager-win-64",
+      "--tags",
+      "luci_build:prod/infra-packager-win-64/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -422,7 +393,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -432,7 +403,23 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:386]cipd - test packages integrity"
+    "name": "[GOOS:windows GOARCH:386]cipd - upload packages",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
   },
   {
     "cmd": [
@@ -440,7 +427,7 @@
       "[CACHE]\\builder\\infra\\build\\build.py",
       "--no-freshen-python-env",
       "--builder",
-      "infra-continuous-win10-64"
+      "infra-packager-win-64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -463,7 +450,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "infra:ci"
+        "name": "infra:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -474,6 +461,70 @@
       }
     },
     "name": "[GOOS:windows GOARCH:arm64]cipd - build packages"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "[CACHE]\\builder\\infra\\build\\build.py",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--builder",
+      "infra-packager-win-64",
+      "--tags",
+      "luci_build:prod/infra-packager-win-64/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
+    "env": {
+      "GOARCH": "arm64",
+      "GOFLAGS": "-mod=readonly",
+      "GOOS": "windows",
+      "GOROOT": "[CACHE]\\builder\\golang\\go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\builder\\golang\\go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]\\builder\\infra\\go\\bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "[GOOS:windows GOARCH:arm64]cipd - upload packages",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
   },
   {
     "name": "$result"

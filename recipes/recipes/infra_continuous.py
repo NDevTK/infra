@@ -81,6 +81,7 @@ CIPD_PACKAGE_BUILDERS = {
     'infra-continuous-win10-64': [
         'native:test',
         'windows-386:test',
+        'windows-arm64',  # cross compiled, so don't run tests.
     ],
     'infra-continuous-win11-64': [
         'native:test',
@@ -99,6 +100,7 @@ CIPD_PACKAGE_BUILDERS = {
     'infra-internal-continuous-win-64': [
         'native:test',
         'windows-386:test',
+        'windows-arm64',  # cross compiled, so don't run tests.
     ],
     'infra-internal-continuous-mac-11-64': ['native:test:legacy',],
 
@@ -133,6 +135,7 @@ CIPD_PACKAGE_BUILDERS = {
     'infra-packager-win-64': [
         'native',  # ~60 sec
         'windows-386',  # ~100 sec
+        'windows-arm64',  # not timed
     ],
     'infra-internal-packager-linux-64': [
         'native',  # ~60 sec
@@ -148,6 +151,7 @@ CIPD_PACKAGE_BUILDERS = {
     'infra-internal-packager-win-64': [
         'native',  # ~60 sec
         'windows-386',  # ~40 sec
+        'windows-arm64',  # not timed
     ],
 }
 
@@ -315,6 +319,8 @@ def GenTests(api):
   yield test('public-packager-mac_codesign', 'infra-packager-mac-64',
              PUBLIC_REPO, 'infra', 'prod', 'mac') + api.properties(
                  signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
+  yield test('public-packager-win', 'infra-packager-win-64', PUBLIC_REPO,
+             'infra', 'prod', 'win')
 
   yield test('internal-packager-linux', 'infra-internal-packager-linux-64',
              INTERNAL_REPO, 'infra-internal', 'prod', 'linux')
