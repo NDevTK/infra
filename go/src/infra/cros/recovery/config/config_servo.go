@@ -13,56 +13,35 @@ func servoRepairPlan() *Plan {
 		CriticalActions: []string{
 			"Set state:MISSING_CONFIG",
 			"Servo is know in the setup",
-			"Set state:WRONG_CONFIG",
 			"Servod port specified",
 			"Servo serial is specified",
-			"Set state:SERVO_HOST_ISSUE",
 			"Initialize docker container",
-			"Set state:NO_SSH",
-			"Device is SSHable",
+			"Mark labstation as servod is in-use",
+			"Read release info",
 			"Servo_v3 uptime is not long",
 			"Power-cycle by smart-hub",
-			"Set state:SERVO_HOST_ISSUE",
-			"Mark labstation as servod is in-use",
-			"Set state:BROKEN",
 			"Has enough free disk space",
 			"Cache latest servod start time",
-			"Set state:NOT_CONNECTED",
 			"Servo_v4(p1) main present",
-			"Set state:NEED_REPLACEMENT",
 			"Servo_v3 root present",
-			"Set state:SERVO_UPDATER_ISSUE",
 			"All servo's fw updated",
-			"Set state:SERVO_HOST_ISSUE",
 			"Start servod daemon",
-			"Set state:SERVOD_ISSUE",
 			"Servod is responsive to dut-control",
-			"Set state:SERVO_HOST_ISSUE",
 			"Read servo serial by servod harness",
-			"Set state:DUT_NOT_CONNECTED",
 			"Verify servo connected to the DUT",
-			"Set state:COLD_RESET_PIN_ISSUE",
 			"Cold reset pin is detected",
-			"Set state:WARM_RESET_PIN_ISSUE",
 			"Warm reset pin is detected",
-			"Set state:SERVOD_ISSUE",
 			"Charger connected",
 			"Check if PD is src state",
 			"Verify Cr50 detected",
-			"Set state:SERVOD_DUT_CONTROLLER_MISSING",
 			"Servod detect all children components",
-			"Set state:TOPOLOGY_ISSUE",
 			"Servo topology",
 			"Verify that USB drive is detectable",
 			"Update USB drive info",
-			"Set state:SERVOD_PROXY_ISSUE",
 			"Initialize DUT part for servo",
-			"Set state:CR50_CONSOLE_MISSING",
 			"Verify cr50 console",
-			"Set state:CCD_TESTLAB_ISSUE",
 			"Cr50 testlab is enabled",
 			"Verify EC",
-			"Set state:BROKEN",
 			"Record good servo type",
 			"Set state:WORKING",
 		},
@@ -79,6 +58,9 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not servo_v3",
+				},
+				Dependencies: []string{
+					"Set state:WRONG_CONFIG",
 				},
 				ExecName: "dut_servo_has_serial",
 			},
@@ -101,9 +83,23 @@ func servoRepairPlan() *Plan {
 					"Verify that device is reachable by SSH.",
 					"Limited to 15 seconds.",
 				},
+				Dependencies: []string{
+					"Set state:NO_SSH",
+				},
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				ExecName:    "cros_ssh",
 				RunControl:  RunControl_ALWAYS_RUN,
+				RecoveryActions: []string{
+					"Wait for labstation to load",
+				},
+			},
+			"Wait for labstation to load": {
+				Docs: []string{
+					"Sometimes we can try to connect when labstation is the middle of reboot, so we wait.",
+					"Labstation is expected to complete the reboot within 2 minutes.",
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 120},
+				ExecName:    "cros_ssh",
 			},
 			"Cache latest servod start time": {
 				Docs: []string{
@@ -119,6 +115,10 @@ func servoRepairPlan() *Plan {
 			"Start servod daemon": {
 				Docs: []string{
 					"Start servod daemon on servo-host",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:SERVO_HOST_ISSUE",
 				},
 				ExecName:    "servo_host_servod_init",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
@@ -165,6 +165,9 @@ func servoRepairPlan() *Plan {
 					"Servod is not needed as on this stage we just verify that servo host is good.",
 					"If start container with servod and root servo device is not connected it will fail.",
 				},
+				Dependencies: []string{
+					"Set state:NO_SSH",
+				},
 				Conditions: []string{
 					"Uses servod container",
 				},
@@ -196,6 +199,9 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not servo_v3",
+				},
+				Dependencies: []string{
+					"Set state:WRONG_CONFIG",
 				},
 				ExecName: "servo_servod_port_present",
 			},
@@ -270,6 +276,10 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"is_labstation",
 				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:SERVO_HOST_ISSUE",
+				},
 				ExecName: "cros_create_servo_in_use",
 				RecoveryActions: []string{
 					"Sleep 1s",
@@ -282,6 +292,10 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Servod container is not used",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:BROKEN",
 				},
 				ExecName: "cros_has_enough_storage_space",
 				ExecExtraArgs: []string{
@@ -297,6 +311,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Clean up the old servod files as well as labstation.",
 				},
+				Conditions: []string{
+					"Device is SSHable",
+				},
 				Dependencies: []string{
 					"servo_labstation_disk_cleanup",
 					"Remove logs older 5 days",
@@ -306,6 +323,9 @@ func servoRepairPlan() *Plan {
 			"Remove logs older 5 days": {
 				Docs: []string{
 					"Clean up the old servod logs which older than 5 days.",
+				},
+				Conditions: []string{
+					"Device is SSHable",
 				},
 				ExecName: "servo_servod_old_logs_cleanup",
 				ExecExtraArgs: []string{
@@ -320,21 +340,28 @@ func servoRepairPlan() *Plan {
 			},
 			"Servo topology": {
 				Docs: []string{
-					"host.check_diskspace('/mnt/stateful_partition', 0.5)",
+					"Make sure the servo has the required number of servo components.",
 				},
 				Conditions: []string{
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
-					"Device is SSHable",
 					"Servo topology min one child",
 					"Servo topology min two children",
 				},
 				ExecName: "sample_pass",
 			},
 			"Servo topology min one child": {
+				Docs: []string{
+					"Verify that setup has at least one servo child.",
+					"Usually that is ccd_gsc|cr50 or servo_micro or c2d2.",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:TOPOLOGY_ISSUE",
 				},
 				ExecName: "servo_topology_update",
 				ExecExtraArgs: []string{
@@ -356,9 +383,17 @@ func servoRepairPlan() *Plan {
 				},
 			},
 			"Servo topology min two children": {
+				Docs: []string{
+					"Verify that setup has two servo children.",
+					"Usually that is ccd_gsc|cr50 with servo_micro or c2d2.",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 					"is_dual_setup",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:TOPOLOGY_ISSUE",
 				},
 				ExecName: "servo_topology_update",
 				ExecExtraArgs: []string{
@@ -386,6 +421,10 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"Is servo_v3 used",
 				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:NEED_REPLACEMENT",
+				},
 				ExecName: "servo_v3_root_present",
 				RecoveryActions: []string{
 					"Reboot servo_v3",
@@ -397,6 +436,10 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not servo_v3",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:NOT_CONNECTED",
 				},
 				ExecName: "servo_v4_root_present",
 				ExecExtraArgs: []string{
@@ -414,6 +457,10 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"Is not servo_v3",
 				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:SERVO_UPDATER_ISSUE",
+				},
 				ExecName:    "servo_fw_need_update",
 				ExecTimeout: &durationpb.Duration{Seconds: 300},
 				RecoveryActions: []string{
@@ -424,6 +471,9 @@ func servoRepairPlan() *Plan {
 			"Read servo serial by servod harness": {
 				Docs: []string{
 					"Try to read servo serial by XMLRPC request to servod.",
+				},
+				Dependencies: []string{
+					"Set state:SERVO_HOST_ISSUE",
 				},
 				ExecName: "servod_echo",
 				RecoveryActions: []string{
@@ -466,6 +516,9 @@ func servoRepairPlan() *Plan {
 					"has_rpm_info",
 					"Read ppchg5_mv value",
 				},
+				Dependencies: []string{
+					"Set state:SERVOD_ISSUE",
+				},
 				ExecName: "servo_control_min_double_value",
 				ExecExtraArgs: []string{
 					"control:ppchg5_mv",
@@ -491,6 +544,7 @@ func servoRepairPlan() *Plan {
 					"Is servo_v4(p1) used with type-c connector",
 				},
 				Dependencies: []string{
+					"Set state:SERVOD_ISSUE",
 					"Read ppdut5_mv value",
 					"Read ppchg5_mv value",
 				},
@@ -614,6 +668,7 @@ func servoRepairPlan() *Plan {
 				},
 				Dependencies: []string{
 					"Initialize DUT part for servo",
+					"Set state:CR50_CONSOLE_MISSING",
 				},
 				ExecName: "servod_can_read_all",
 				ExecExtraArgs: []string{
@@ -641,6 +696,9 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"Is not servo_v3",
 					"Servo main device is GSC chip",
+				},
+				Dependencies: []string{
+					"Set state:CCD_TESTLAB_ISSUE",
 				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
@@ -679,6 +737,7 @@ func servoRepairPlan() *Plan {
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
+					"Set state:SERVOD_PROXY_ISSUE",
 					"Set main servo device",
 					"Open gsc testlab",
 				},
@@ -739,6 +798,9 @@ func servoRepairPlan() *Plan {
 					"Is not servo_v3",
 					"Is servo_v4(p1) with type-a connector",
 					"DUT has CrOS EC",
+				},
+				Dependencies: []string{
+					"Set state:DUT_NOT_CONNECTED",
 				},
 				ExecName: "servo_low_ppdut5",
 				RecoveryActions: []string{
@@ -802,7 +864,7 @@ func servoRepairPlan() *Plan {
 					"Verify power button signal",
 					"Set state:LID_OPEN_FAILED",
 					"Is lid open",
-					"servo_battery_charging",
+					"Verify battery by servo",
 				},
 				ExecName: "sample_pass",
 			},
@@ -845,12 +907,17 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_check_servod_control",
 			},
-			"servo_battery_charging": {
+			"Verify battery by servo": {
+				// Do not update the servo-state as this check is for the DUT.
+				Docs: []string{
+					"Audit battery via servod",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 					"DUT has CrOS EC",
 					"battery_last_charge_readable",
 				},
+				ExecName:               "servo_battery_charging",
 				AllowFailAfterRecovery: true,
 			},
 			"Update USB drive info": {
@@ -861,7 +928,10 @@ func servoRepairPlan() *Plan {
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:SERVO_HOST_ISSUE",
 					"Change USB drive direction to servo-host",
+					"Set state:BROKEN",
 				},
 				ExecName:               "servo_update_usbkey_history",
 				AllowFailAfterRecovery: true,
@@ -882,6 +952,10 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Will detect the path to USB Drive on servo-host.",
 					"Verify that usb-key is responsive",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:BROKEN",
 				},
 				ExecName:               "servo_detect_usbkey",
 				ExecTimeout:            &durationpb.Duration{Seconds: 120},
@@ -1106,8 +1180,12 @@ func servoRepairPlan() *Plan {
 				},
 			},
 			"Warm reset pin is detected": {
-				Docs: []string{"We need to check for warm reset only for servo micro and V3."},
+				Docs: []string{
+					"We need to check for warm reset only for servo micro and V3.",
+				},
 				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:WARM_RESET_PIN_ISSUE",
 					"Warm reset pin is detected (servo_v3)",
 					"Warm reset pin is detected (servo_micro)",
 				},
@@ -1117,6 +1195,10 @@ func servoRepairPlan() *Plan {
 			"Cold reset pin is detected": {
 				Conditions: []string{
 					"Is servo_v4(p1) with type-a connector",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:COLD_RESET_PIN_ISSUE",
 				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
@@ -1133,6 +1215,10 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Uses a servod control to check whether the servod daemon is responsive.",
 				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Set state:SERVOD_ISSUE",
+				},
 				ExecName:    "servo_servod_echo_host",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 				RecoveryActions: []string{
@@ -1148,6 +1234,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Record servo type information.",
 				},
+				Dependencies: []string{
+					"Set state:SERVO_HOST_ISSUE",
+				},
 				ExecName: "servo_update_servo_type_label",
 			},
 			"Servod detect all children components": {
@@ -1156,6 +1245,9 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not servo_v3",
+				},
+				Dependencies: []string{
+					"Set state:SERVOD_DUT_CONTROLLER_MISSING",
 				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
@@ -1635,6 +1727,9 @@ func servoRepairPlan() *Plan {
 					// We try restart only if we lost network to the dut.
 					"DUT is not SSHable",
 				},
+				Dependencies: []string{
+					"Device is SSHable",
+				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
 					"reset_timeout:60",
@@ -1664,6 +1759,24 @@ func servoRepairPlan() *Plan {
 					"sleep:1",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Read release info": {
+				// TODO(otabek): Think to save the result to logs.
+				Docs: []string{
+					"Read host release data for future analysis.",
+				},
+				Dependencies: []string{
+					"DUT is SSHable",
+					"Set state:SERVO_HOST_ISSUE",
+				},
+				ExecName: "cros_run_command",
+				ExecExtraArgs: []string{
+					// Do not specify host to receive currect host.
+					"host:",
+					"command:cat /etc/lsb-release",
+				},
+				RunControl:             RunControl_RUN_ONCE,
+				AllowFailAfterRecovery: true,
 			},
 		},
 	}

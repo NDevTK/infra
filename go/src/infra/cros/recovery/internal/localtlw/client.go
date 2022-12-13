@@ -134,6 +134,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 			Stderr:   fmt.Sprintf("run: %s", err),
 		}
 	}
+	log.Debugf(ctx, "Prepare %q to run: %q", req.GetResource(), fullCmd)
 	// For backward compatibility we set max limit 1 hour for any request.
 	// 1 hours as some provisioning or download can take longer.
 	timeout := time.Hour
