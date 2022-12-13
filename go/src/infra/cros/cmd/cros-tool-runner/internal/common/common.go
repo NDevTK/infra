@@ -36,7 +36,6 @@ func runWithTimeout(ctx context.Context, cmd *exec.Cmd, timeout time.Duration, b
 		stderr = se.String()
 	}()
 
-	log.Printf("Run cmd: %q", cmd)
 	if block {
 		err = cmd.Run()
 	} else {
