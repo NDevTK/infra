@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"infra/libs/lro"
+	"os"
 
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -41,8 +42,10 @@ func (b *BackgroundTLS) Close() error {
 // NewBackgroundTLS runs a TLS server in the background and create a gRPC client to it.
 //
 // On success, the caller must call BackgroundTLS.Close() to clean up resources.
+// To ensure TLS is initialized correctly, the environment variable
+// PHOSPHORUS_SSH_KEYS_PATH needs to be set.
 func NewBackgroundTLS() (*BackgroundTLS, error) {
-	s, err := StartBackground(fmt.Sprintf("0.0.0.0:%d", droneTLWPort))
+	s, err := StartBackground(fmt.Sprintf("0.0.0.0:%d", droneTLWPort), os.Getenv("PHOSPHORUS_SSH_KEYS_PATH"))
 	if err != nil {
 		return nil, errors.Annotate(err, "start background TLS").Err()
 	}

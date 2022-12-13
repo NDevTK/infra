@@ -12,6 +12,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"strconv"
@@ -52,6 +53,9 @@ type Server struct {
 type Option func(*Server) error
 
 // NewServer creates a new instance of common TLS server.
+//
+// dutSSHKeyPath is an additional ssh key path to the alternate DUT SSH key.
+// This key will be used if the default well-known key doesn't work.
 func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Server, error) {
 	s := Server{
 		ctx:        ctx,
@@ -66,7 +70,7 @@ func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Ser
 			Timeout:         5 * time.Second,
 			// Use the well known testing RSA key as the default SSH auth
 			// method.
-			Auth: []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+			Auth: []ssh.AuthMethod{ssh.PublicKeys(defaultSSHSigner)},
 		},
 	}
 	for _, option := range options {
@@ -75,6 +79,22 @@ func NewServer(ctx context.Context, c *grpc.ClientConn, options ...Option) (*Ser
 		}
 	}
 	return &s, nil
+}
+
+func DUTSSHKeyOption(path string) Option {
+	return Option(func(s *Server) error {
+		dutSSHSigner, err := authMethodFromKeyFile(path)
+		if err != nil {
+			log.Printf("tls-server: fail to parse partner ssh key: %s", err)
+		}
+		dutSSHSigners := []ssh.Signer{defaultSSHSigner}
+		if dutSSHSigner != nil {
+			dutSSHSigners = append(dutSSHSigners, dutSSHSigner)
+		}
+
+		s.sshConfig.Auth = []ssh.AuthMethod{ssh.PublicKeys(dutSSHSigners...)}
+		return nil
+	})
 }
 
 // Serve starts the TLS server and serves client requests.
@@ -407,4 +427,16 @@ func (s *Server) FetchCrashes(req *tls.FetchCrashesRequest, stream tls.Common_Fe
 // wiringClient helps to create a TLW client with configurations/settings.
 func (s *Server) wiringClient() tls.WiringClient {
 	return tls.NewWiringClient(s.wiringConn)
+}
+
+func authMethodFromKeyFile(keyfile string) (ssh.Signer, error) {
+	key, err := ioutil.ReadFile(keyfile)
+	if err != nil {
+		return nil, fmt.Errorf("auth ssh from key file: %s", err)
+	}
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, fmt.Errorf("auth ssh from key file: %s", err)
+	}
+	return signer, nil
 }
