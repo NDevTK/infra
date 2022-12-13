@@ -24,7 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Next Tag: 23
+// Next Tag: 24
 // Config is the configuration data served by luci-config for this app.
 type Config struct {
 	state         protoimpl.MessageState
