@@ -43,7 +43,7 @@ func pingAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // sshAssociatedHostExec verifies ssh access to the associated host of the DUT.
 func sshAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInteval, newRunner(info), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, newRunner(info), info.NewLogger())
 }
 
 // isAssociatedHostLabstationExec verifies that adb is installed at the DUT associated host.

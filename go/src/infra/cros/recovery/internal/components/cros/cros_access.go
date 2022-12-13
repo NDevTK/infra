@@ -64,7 +64,7 @@ func IsFileSystemWritable(ctx context.Context, run components.Runner, log logger
 
 const (
 	PingRetryInterval = 5 * time.Second
-	SSHRetryInteval   = 10 * time.Second
+	SSHRetryInterval  = 10 * time.Second
 )
 
 // WaitUntilPingable waiting resource to be pingable.

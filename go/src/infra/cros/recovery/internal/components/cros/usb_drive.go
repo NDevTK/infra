@@ -80,7 +80,7 @@ func BootFromServoUSBDriveInDevMode(ctx context.Context, waitBootTimeout, waitBo
 	if err != nil {
 		return errors.Annotate(err, "boot from servo usb drive in dev mode").Err()
 	}
-	if err := WaitUntilSSHable(ctx, time.Minute, SSHRetryInteval, dutRun, log); err != nil {
+	if err := WaitUntilSSHable(ctx, time.Minute, SSHRetryInterval, dutRun, log); err != nil {
 		return errors.Annotate(err, "wait for device boot").Err()
 	}
 	// In some cases the device can boot from internal storage by multiple reasons.
