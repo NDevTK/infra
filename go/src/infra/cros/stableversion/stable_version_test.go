@@ -10,11 +10,10 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 // TODO(gregorynisbet): replace with table-driven test
@@ -96,7 +95,7 @@ func TestParseCrOSVersion(t *testing.T) {
 	})
 }
 
-// TODO(gregorynisbet): replace with table-driven test
+// TestParseFaftVersion tests parsing specific FAFT versions.
 func TestValidateFaftVersion(t *testing.T) {
 	good := func(s string) {
 		if err := ValidateFaftVersion(s); err != nil {
@@ -117,7 +116,91 @@ func TestValidateFaftVersion(t *testing.T) {
 	bad("Google_Rammus.11275.41.0")
 }
 
-// TestParseFaftVersion tests parsing specific FAFT versions.
+// TestParseNewFaftPrefix tests parsing a new FAFT prefix.
+func TestParseNewFaftPrefix(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		input  string
+		output map[string]string
+	}{
+		{
+			input:  "",
+			output: nil,
+		},
+		{
+			input: "firmware-a-99.B-branch-firmware",
+			output: map[string]string{
+				"builder":   "a",
+				"tip":       "99",
+				"tipSuffix": "B",
+			},
+		},
+		{
+			input: "firmware-a-99-branch-firmware",
+			output: map[string]string{
+				"builder":   "a",
+				"tip":       "99",
+				"tipSuffix": "",
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+			out, _ := parseNewFaftPrefix(tt.input)
+			if diff := cmp.Diff(tt.output, out); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+		})
+	}
+}
+
+// TestParseNewFaftSuffix tests parsing a new FAFT suffix.
+func TestParseNewFaftSuffix(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		input  string
+		output map[string]string
+	}{
+		{
+			input: "R99-44.33.22",
+			output: map[string]string{
+				"release":      "R99",
+				"tip":          "44",
+				"branch":       "33",
+				"branchbranch": "22",
+				"board":        "",
+			},
+		},
+		{
+			input: "R99-44.33.22/octopus",
+			output: map[string]string{
+				"release":      "R99",
+				"tip":          "44",
+				"branch":       "33",
+				"branchbranch": "22",
+				"board":        "octopus",
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+			out, _ := parseNewFaftSuffix(tt.input)
+			if diff := cmp.Diff(tt.output, out); diff != "" {
+				t.Errorf("-want +got: %s", diff)
+			}
+		})
+	}
+}
+
+// TestParseFaftVersion tests parsing a faft version.
 func TestParseFaftVersion(t *testing.T) {
 	t.Parallel()
 
@@ -138,6 +221,42 @@ func TestParseFaftVersion(t *testing.T) {
 			},
 			ok: true,
 		},
+		{
+			input: "firmware-a-42.B-branch-firmware/R99-42.43.44",
+			out: &FaftVersionResult{
+				Platform:     "a",
+				Kind:         "firmware",
+				Release:      99,
+				Tip:          42,
+				Branch:       43,
+				BranchBranch: 44,
+			},
+			ok: true,
+		},
+		{
+			input: "firmware-a-42.B-branch-firmware/R99-42.43.44/a",
+			out: &FaftVersionResult{
+				Platform:     "a",
+				Kind:         "firmware",
+				Release:      99,
+				Tip:          42,
+				Branch:       43,
+				BranchBranch: 44,
+			},
+			ok: true,
+		},
+		{
+			input: "firmware-something-42.B-branch-firmware/R99-42.43.44/a",
+			out: &FaftVersionResult{
+				Platform:     "a",
+				Kind:         "firmware",
+				Release:      99,
+				Tip:          42,
+				Branch:       43,
+				BranchBranch: 44,
+			},
+			ok: true,
+		},
 	}
 
 	for _, tt := range cases {
@@ -149,24 +268,10 @@ func TestParseFaftVersion(t *testing.T) {
 				t.Errorf("-want +got: %s", diff)
 			}
 			if diff := cmp.Diff(tt.ok, (err == nil)); diff != "" {
-				t.Errorf("-want +got: %s", diff)
+				t.Errorf("-want +got: %s %s", diff, err)
 			}
 		})
 	}
-
-	Convey("Test Parsing Firwmare Version", t, func() {
-		r, err := ParseFaftVersion("a-firmware/R1-2.3.4")
-		if err != nil {
-			t.Errorf("expected a-firmware/R1-2.3.4 to parse: %s", err)
-		} else {
-			So(r.Platform, ShouldEqual, "a")
-			So(r.Kind, ShouldEqual, "firmware")
-			So(r.Release, ShouldEqual, 1)
-			So(r.Tip, ShouldEqual, 2)
-			So(r.Branch, ShouldEqual, 3)
-			So(r.BranchBranch, ShouldEqual, 4)
-		}
-	})
 }
 
 // TODO(gregorynisbet): replace with table-driven test

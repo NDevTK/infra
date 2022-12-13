@@ -31,9 +31,19 @@ func findMatchMap(r *regexp.Regexp, s string) (map[string]string, error) {
 		return nil, fmt.Errorf("mismatch between len(matchNames) (%d) and len(matchValues) (%d)", len(matchNames), len(matchValues))
 	}
 	for i, name := range matchNames {
-		out[name] = matchValues[i]
+		if name != "" {
+			out[name] = matchValues[i]
+		}
 	}
 	return out, nil
+}
+
+func asInt(s string) int {
+	i64, err := strconv.ParseInt(s, 10, 32)
+	if err != nil {
+		return 0
+	}
+	return int(i64)
 }
 
 func parseInt(s string) (int, error) {
