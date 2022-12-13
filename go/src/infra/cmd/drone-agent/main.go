@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 //go:build !windows
-// +build !windows
 
 // Command drone-agent is the client that talks to the drone queen
 // service to provide Swarming bots for running tasks against test
@@ -12,6 +11,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -22,6 +22,7 @@ import (
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
 	"infra/cmd/drone-agent/internal/agent"
@@ -66,7 +67,13 @@ var (
 	botPrefix = getEnv("DRONE_AGENT_BOT_PREFIX", "crossk-")
 )
 
+// versionFilePath is the path to a drone-agent version file.
+// This file should only contain the version i.e. 12345.
+var versionFilePath = flag.String("version-file", "", "Path for drone-agent version file."+
+	"  This is reported to drone queen for analytics.")
+
 func main() {
+	flag.Parse()
 	if err := innerMain(); err != nil {
 		log.Fatal(err)
 	}
@@ -75,6 +82,11 @@ func main() {
 func innerMain() error {
 	// TODO(ayatane): Add environment validation.
 	ctx, cancel := context.WithCancel(context.Background())
+
+	version := readVersionFile(*versionFilePath)
+	log.Printf("version: %v\n", version)
+	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
+
 	ctx = notifySIGTERM(ctx)
 	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
 
@@ -122,6 +134,27 @@ func innerMain() error {
 	}
 	a.Run(ctx)
 	return nil
+}
+
+// readVersionFile reads drone agent version from a given version file.
+func readVersionFile(versionFilePath string) string {
+	const fallback = "unknown"
+	if versionFilePath == "" {
+		log.Println("no path to version file provided")
+		return fallback
+	}
+	fileContent, err := os.ReadFile(versionFilePath)
+	if err != nil {
+		log.Printf("cannot read version file: %v", err)
+		return fallback
+	}
+	version := string(fileContent)
+	// Simple validation for now, to check that the version string only contains numbers.
+	if _, err := strconv.Atoi(version); err != nil {
+		log.Printf("illegal version string passed, version should only contain numbers")
+		return fallback
+	}
+	return version
 }
 
 const checkDrainingInterval = time.Minute
