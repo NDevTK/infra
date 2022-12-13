@@ -60,6 +60,10 @@ type Action struct {
 	SwarmingTaskID string
 	// BuildbucketID is the ID of the buildbucket build.
 	BuildbucketID string
+	// Board is the board of the device.
+	Board string
+	// Model is the model of the device.
+	Model string
 	// AssetTag is the asset tag of the DUT that the observation is recorded for.
 	AssetTag string
 	// StartTime is when the event started.

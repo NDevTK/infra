@@ -469,6 +469,16 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 				metrics.NewStringObservation("plan_resource", execArgs.ResourceName),
 			)
 			metric.PlanName = planName
+			switch {
+			case execArgs.DUT.GetChromeos() != nil:
+				metric.Board = execArgs.DUT.GetChromeos().GetBoard()
+				metric.Model = execArgs.DUT.GetChromeos().GetModel()
+			case execArgs.DUT.GetAndroid() != nil:
+				metric.Board = execArgs.DUT.GetAndroid().GetBoard()
+				metric.Model = execArgs.DUT.GetAndroid().GetModel()
+			default:
+				execArgs.Logger.Warningf("in plan %q, dut %q is neither CrOS nor Android", resource)
+			}
 			return metricSaver(metric)
 		}
 		return nil

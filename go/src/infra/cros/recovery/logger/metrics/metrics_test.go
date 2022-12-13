@@ -40,6 +40,8 @@ func TestNewMetrics(t *testing.T) {
 			`    "ActionKind": "b",`,
 			`    "SwarmingTaskID": "a",`,
 			`    "BuildbucketID": "",`,
+			`    "Board": "b",`,
+			`    "Model": "m",`,
 			`    "AssetTag": "",`,
 			`    "StartTime": "0001-01-01T00:00:00Z",`,
 			`    "StopTime": "0001-01-01T00:00:00Z",`,
@@ -66,6 +68,8 @@ func TestNewMetrics(t *testing.T) {
 	action := &Action{
 		SwarmingTaskID: "a",
 		ActionKind:     "b",
+		Board:          "b",
+		Model:          "m",
 		Observations: []*Observation{
 			{
 				MetricKind: "c",
