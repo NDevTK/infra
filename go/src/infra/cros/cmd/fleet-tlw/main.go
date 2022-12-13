@@ -22,6 +22,7 @@ var (
 	ufsService      = flag.String("ufs-service", "ufs.api.cr.dev", "Host of the UFS service")
 	svcAcctJSONPath = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
 	proxySSHKey     = flag.String("proxy-ssh-key", "", "Path to SSH key for SSH proxy servers (no auth for ExposePortToDut Proxy Mode if unset)")
+	dutSSHKey       = flag.String("dut-ssh-key", "", "Path to alternate SSH key for DUT. This key will be used if the default well-known key doesn't work")
 )
 
 func main() {
@@ -38,12 +39,22 @@ func innerMain() error {
 	}
 	s := grpc.NewServer()
 
-	proxySSHSigner, err := authMethodFromKey(*proxySSHKey)
+	proxySSHSigner, err := authMethodFromKeyFile(*proxySSHKey)
 	if err != nil {
 		return err
 	}
+	var dutSSHSigner ssh.Signer
+	if *dutSSHKey != "" {
+		var err error
+		dutSSHSigner, err = authMethodFromKeyFile(*dutSSHKey)
+		if err != nil {
+			log.Printf("fleet-tlw: failed to parse the alternate ssh key: %s, the default/well-known key will be used.", err)
+		}
+	} else {
+		log.Printf("fleet-tlw: the alternate DUT ssh key path is empty, the default/well-known key will be used.")
+	}
 
-	b := fleetTLWBuilder{ufsService: *ufsService, proxySSHSigner: proxySSHSigner, serviceAcctJSON: *svcAcctJSONPath}
+	b := fleetTLWBuilder{ufsService: *ufsService, dutSSHSigner: dutSSHSigner, proxySSHSigner: proxySSHSigner, serviceAcctJSON: *svcAcctJSONPath}
 	tlw, err := b.build()
 	if err != nil {
 		return err
@@ -69,14 +80,14 @@ func innerMain() error {
 	return s.Serve(l)
 }
 
-func authMethodFromKey(keyfile string) (ssh.Signer, error) {
+func authMethodFromKeyFile(keyfile string) (ssh.Signer, error) {
 	key, err := ioutil.ReadFile(keyfile)
 	if err != nil {
-		return nil, fmt.Errorf("auth ssh from key: %s", err)
+		return nil, fmt.Errorf("auth ssh from key file: %s", err)
 	}
 	signer, err := ssh.ParsePrivateKey(key)
 	if err != nil {
-		return nil, fmt.Errorf("auth ssh from key: %s", err)
+		return nil, fmt.Errorf("auth ssh from key file: %s", err)
 	}
 	return signer, nil
 }

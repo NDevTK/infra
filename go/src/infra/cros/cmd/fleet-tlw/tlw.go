@@ -52,7 +52,7 @@ type tlwServer struct {
 	ufsClient ufsapi.FleetClient
 }
 
-func newTLWServer(ufsService string, proxySSHSigner ssh.Signer, serviceAcctJSON string) (*tlwServer, error) {
+func newTLWServer(ufsService string, dutSSHSigner ssh.Signer, proxySSHSigner ssh.Signer, serviceAcctJSON string) (*tlwServer, error) {
 	ufsClient, err := ufsapi.NewClient(context.Background(), ufsapi.ServiceName(ufsService), ufsapi.ServiceAccountJSONPath(serviceAcctJSON), ufsapi.UserAgent("fleet-tlw/6.0.0"))
 	if err != nil {
 		return nil, errors.Reason("newTLWServer: %s", err).Err()
@@ -62,9 +62,13 @@ func newTLWServer(ufsService string, proxySSHSigner ssh.Signer, serviceAcctJSON 
 		return nil, errors.Reason("newTLWServer: %s", err).Err()
 	}
 
+	dutSSHSigners := []ssh.Signer{defaultSSHSigner}
+	if dutSSHSigner != nil {
+		dutSSHSigners = append(dutSSHSigners, dutSSHSigner)
+	}
 	s := &tlwServer{
 		lroMgr:    lro.New(),
-		dutPool:   sshpool.New(getSSHClientConfig()),
+		dutPool:   sshpool.New(getSSHClientConfig(dutSSHSigners)),
 		proxyPool: sshpool.New(getSSHClientConfigForProxy(proxySSHSigner)),
 		tMgr:      newTunnelManager(),
 		cFrontend: cache.NewFrontend(ce),
@@ -249,12 +253,12 @@ func getCallerIP(ctx context.Context) (string, error) {
 	return callerIP, nil
 }
 
-func getSSHClientConfig() *ssh.ClientConfig {
+func getSSHClientConfig(sshSigners []ssh.Signer) *ssh.ClientConfig {
 	return &ssh.ClientConfig{
 		User:            "root",
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         5 * time.Second,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+		Auth:            []ssh.AuthMethod{ssh.PublicKeys(sshSigners...)},
 	}
 }
 

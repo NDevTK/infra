@@ -61,13 +61,16 @@ type wiringBuilder interface {
 }
 
 type fleetTLWBuilder struct {
-	ufsService      string
+	ufsService string
+	// An SSH key path to alternate DUT SSH key for the DUT connection.
+	// This key will be used if the default well-known key doesn't work.
+	dutSSHSigner    ssh.Signer
 	proxySSHSigner  ssh.Signer
 	serviceAcctJSON string
 }
 
 func (b fleetTLWBuilder) build() (wiringServer, error) {
-	return newTLWServer(b.ufsService, b.proxySSHSigner, b.serviceAcctJSON)
+	return newTLWServer(b.ufsService, b.dutSSHSigner, b.proxySSHSigner, b.serviceAcctJSON)
 }
 
 type sessionServer struct {
