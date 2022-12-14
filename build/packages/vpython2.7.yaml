@@ -11,7 +11,7 @@ install_mode: copy
 root: ../../go/bin
 cipd_export: |
   @Subdir 2.7
-  infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.43
+  infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.44
 data:
   - file: vpython${exe_suffix}
   - dir: "2.7"

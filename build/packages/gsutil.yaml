@@ -15,6 +15,7 @@ platforms:
   - mac-arm64
   - windows-386
   - windows-amd64
+  - windows-arm64
 install_mode: copy
 go_build_environ:
   CGO_ENABLED:

@@ -15,6 +15,7 @@ platforms:
   - mac-arm64
   - windows-386
   - windows-amd64
+  - windows-arm64
 go_packages:
   - infra/tools/dirmd/cmd/dirmd
 install_mode: copy

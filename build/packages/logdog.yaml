@@ -5,6 +5,7 @@ platforms:
   - mac-amd64
   - mac-arm64
   - windows-amd64
+  - windows-arm64
 go_packages:
   - infra/tools/logdog
 root: ../../go/bin

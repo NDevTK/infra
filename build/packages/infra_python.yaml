@@ -6,6 +6,7 @@ platforms:
   - mac-arm64
   - windows-386
   - windows-amd64
+  - windows-arm64
 
 uses_python_env: true
 

@@ -12,6 +12,7 @@ platforms:
   - mac-arm64
   - windows-386
   - windows-amd64
+  - windows-arm64
 # Some Skia tasks isolate golctl binary after it is installed. It is simpler in
 # this case if symlinks are not involved.
 install_mode: copy

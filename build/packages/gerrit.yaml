@@ -9,6 +9,7 @@ platforms:
   - mac-arm64
   - windows-386
   - windows-amd64
+  - windows-arm64
 go_packages:
   - go.chromium.org/luci/client/cmd/gerrit
 root: ../../go/bin

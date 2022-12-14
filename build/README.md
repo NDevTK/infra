@@ -55,6 +55,7 @@ platforms:
   - mac-amd64
   - windows-386
   - windows-amd64
+  - windows-arm64
 
 # Optional list of go packages to 'go install' before zipping this package.
 go_packages:
@@ -110,6 +111,7 @@ copies:
     platforms:
     - windows-386
     - windows-amd64
+    - windows-arm64
 
 # Symlinks apply after the build, but before creating the package. `dst` links
 # are automatically be added as data 'file' entries. These will only run when
@@ -199,6 +201,7 @@ Available variables are defined in [build.py](build.py) in `get_package_vars`:
     * mac-amd64
     * mac-386
     * windows-amd64
+    * windows-arm64
     * windows-386
     * ...
 

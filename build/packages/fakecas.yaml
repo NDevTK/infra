@@ -4,6 +4,7 @@ platforms:
   - linux-amd64
   - mac-amd64
   - windows-amd64
+  - windows-arm64
 go_packages:
   - go.chromium.org/luci/tools/cmd/fakecas
 root: ../../go/bin

@@ -4,6 +4,7 @@ platforms:
   - linux-amd64
   - linux-arm64
   - windows-amd64
+  - windows-arm64
 install_mode: copy
 go_packages:
   - go.chromium.org/luci/gce/cmd/agent

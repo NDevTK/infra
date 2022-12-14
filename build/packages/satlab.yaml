@@ -5,6 +5,7 @@ platforms:
   - mac-amd64
   - mac-arm64
   - windows-amd64
+  - windows-arm64
 go_build_environ:
   CGO_ENABLED:
     darwin:  1  # Inherited from main/build/packages/cipd_client.yaml

@@ -6,6 +6,7 @@ platforms:
   - linux-armv6l
   - windows-386
   - windows-amd64
+  - windows-arm64
 go_build_environ:
   CGO_ENABLED:
     linux:   0  # to avoid linking to system dynamic libraries
@@ -16,7 +17,7 @@ install_mode: copy
 root: ../../go/bin
 cipd_export: |
   @Subdir 3.8
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.24
+  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.25
 data:
   - file: vpython3${exe_suffix}
     generate_bat_shim: true
