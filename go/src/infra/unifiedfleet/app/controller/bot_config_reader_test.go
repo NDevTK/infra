@@ -157,6 +157,30 @@ func TestImportENCBotConfig(t *testing.T) {
 			So(resp2.Ownership, ShouldNotBeNil)
 			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
 		})
+		Convey("happy path - Bot ID Prefix for VM", func() {
+			vm1 := &ufspb.VM{
+				Name: "vm-1",
+			}
+			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
+			So(err, ShouldBeNil)
+
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+
+			resp, err := inventory.GetVM(ctx, "vm-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			// Import Again, should not update the Asset
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+			resp2, err := inventory.GetVM(ctx, "vm-1")
+			So(resp2, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp2.Ownership, ShouldNotBeNil)
+			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
+		})
 		Convey("No ENC Config - Ownership not updated", func() {
 			ctx = config.Use(ctx, &config.Config{})
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test2-1", "test2"))

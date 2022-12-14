@@ -111,27 +111,37 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 		}
 
 		// Update the ownership for the botIdPrefixes
-		updateBotConfigForBotIdPrefix(ctx, botGroup.BotIdPrefix, ownershipData)
+		err := updateBotConfigForBotIdPrefix(ctx, botGroup.BotIdPrefix, ownershipData)
+		logging.Debugf(ctx, "Got errors while parsing bot id prefix config for %s - %v", swarmingInstance, err)
 
 		// Update the ownership data for the botIds collected so far.
-		updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+		err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+		logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", swarmingInstance, err)
 	}
 }
 
 // Updates the Ownership config for the bot ids collected from the config.
-func updateBotConfigForBotIds(ctx context.Context, botIds []string, ownershipData *ufspb.OwnershipData) {
+func updateBotConfigForBotIds(ctx context.Context, botIds []string, ownershipData *ufspb.OwnershipData) error {
+	var errs errors.MultiError
 	for _, botId := range botIds {
 		updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData)
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
+			errs = append(errs, err)
 		}
 		if updated {
 			err = updateOwnership(ctx, botId, ownershipData, assetType)
 			if err != nil {
 				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
+				errs = append(errs, err)
 			}
+			logging.Debugf(ctx, "Nothing to update for bot id %s", botId)
 		}
 	}
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
 }
 
 // Checks if the bot ownership is updated from the last time we read the configs.
@@ -207,11 +217,19 @@ func findAndUpdateOwnershipForAsset(ctx context.Context, botId string, ownership
 }
 
 // Update the Ownership config for the bot id prefixes collected from the config.
-func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixes []string, ownershipData *ufspb.OwnershipData) {
+func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixes []string, ownershipData *ufspb.OwnershipData) error {
+	var errs errors.MultiError
 	for _, prefix := range botIdPrefixes {
 		assetType := findAssetTypeForPrefix(ctx, prefix)
-		updateOwnershipForAssetByPrefix(ctx, prefix, ownershipData, assetType)
+		err := updateOwnershipForAssetByPrefix(ctx, prefix, ownershipData, assetType)
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
 }
 
 // Updates Ownership for the given asset type and name prefix
@@ -219,11 +237,13 @@ func updateOwnershipForAssetByPrefix(ctx context.Context, prefix string, ownersh
 	// First Update the Ownership for the Asset
 	switch assetType {
 	case inventory.AssetTypeMachine:
-		findAndUpdateMachineOwnershipForPrefix(ctx, prefix, ownership)
+		_, err = findAndUpdateMachineOwnershipForPrefix(ctx, prefix, ownership)
 	case inventory.AssetTypeMachineLSE:
-		findAndUpdateMachineLSEOwnershipForPrefix(ctx, prefix, ownership)
+		_, err = findAndUpdateMachineLSEOwnershipForPrefix(ctx, prefix, ownership)
+	case inventory.AssetTypeVM:
+		_, err = findAndUpdateVMOwnershipForPrefix(ctx, prefix, ownership)
 	default:
-		findAndUpdateOwnershipForPrefix(ctx, prefix, ownership)
+		_, err = findAndUpdateOwnershipForPrefix(ctx, prefix, ownership)
 	}
 	return err
 }
@@ -240,44 +260,76 @@ func findAssetTypeForPrefix(ctx context.Context, prefix string) string {
 
 // Searches for entities with names starting with the bot id prefix and
 // updates their ownership config
-func findAndUpdateOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) bool {
-	found := findAndUpdateMachineOwnershipForPrefix(ctx, prefix, ownershipData)
-	if !found {
-		found = findAndUpdateMachineLSEOwnershipForPrefix(ctx, prefix, ownershipData)
+func findAndUpdateOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) (bool, error) {
+	errs := make(errors.MultiError, 0)
+	found, err := findAndUpdateMachineOwnershipForPrefix(ctx, prefix, ownershipData)
+	if err != nil {
+		errs = append(errs, err)
 	}
-	return found
+	if !found {
+		found, err = findAndUpdateMachineLSEOwnershipForPrefix(ctx, prefix, ownershipData)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if !found {
+		found, err = findAndUpdateVMOwnershipForPrefix(ctx, prefix, ownershipData)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if errs.First() != nil {
+		return found, errs
+	}
+	return found, nil
 }
 
 // Searches for machine entities with names starting with the bot id prefix and
 // updates their ownership config
-func findAndUpdateMachineOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) bool {
+func findAndUpdateMachineOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) (bool, error) {
 	entities, _, err := registration.ListMachinesByIdPrefixSearch(ctx, -1, "", prefix, true)
 	if err != nil || len(entities) == 0 {
-		return false
+		return false, err
 	}
 	logging.Infof(ctx, "Found %d machines with id prefix %s", len(entities), prefix)
 	botsIds := []string{}
 	for _, machine := range entities {
 		botsIds = append(botsIds, machine.GetName())
 	}
-	updateBotConfigForBotIds(ctx, botsIds, ownershipData)
-	return true
+	err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	return true, err
 }
 
 // Searches for machineLSE entities with names starting with the bot id prefix and
 // updates their ownership config
-func findAndUpdateMachineLSEOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) bool {
+func findAndUpdateMachineLSEOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) (bool, error) {
 	entities, _, err := inventory.ListMachineLSEsByIdPrefixSearch(ctx, -1, "", prefix, true)
 	if err != nil || len(entities) == 0 {
-		return false
+		return false, err
 	}
 	logging.Infof(ctx, "Found %d machineLSEs with id prefix %s", len(entities), prefix)
 	botsIds := []string{}
 	for _, machineLSE := range entities {
 		botsIds = append(botsIds, machineLSE.GetName())
 	}
-	updateBotConfigForBotIds(ctx, botsIds, ownershipData)
-	return true
+	err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	return true, err
+}
+
+// Searches for machineLSE entities with names starting with the bot id prefix and
+// updates their ownership config
+func findAndUpdateVMOwnershipForPrefix(ctx context.Context, prefix string, ownershipData *ufspb.OwnershipData) (bool, error) {
+	entities, _, err := inventory.ListVMsByIdPrefixSearch(ctx, -1, -1, "", prefix, true, nil)
+	if err != nil || len(entities) == 0 {
+		return false, err
+	}
+	logging.Infof(ctx, "Found %d VMs with id prefix %s", len(entities), prefix)
+	var botIds []string
+	for _, vm := range entities {
+		botIds = append(botIds, vm.GetName())
+	}
+	err = updateBotConfigForBotIds(ctx, botIds, ownershipData)
+	return true, err
 }
 
 // GetOwnershipData gets the ownership data in the Data store for the requested bot in the config.
