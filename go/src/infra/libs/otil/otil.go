@@ -44,7 +44,7 @@ func AddValues(span trace.Span, v ...interface{}) {
 // This function adds metadata (function name, filename, etc) to the
 // span by inspecting the call stack.
 func FuncSpan(ctx context.Context, o ...trace.SpanStartOption) (context.Context, trace.Span) {
-	ctx, span := otel.Tracer(tname).Start(ctx, "doThing", o...)
+	ctx, span := otel.Tracer(tname).Start(ctx, "unknownFuncSpan", o...)
 	if !span.SpanContext().IsSampled() {
 		return ctx, span
 	}
@@ -53,6 +53,7 @@ func FuncSpan(ctx context.Context, o ...trace.SpanStartOption) (context.Context,
 		span.AddEvent("runtime.Caller error")
 		return ctx, span
 	}
+	span.SetName(runtime.FuncForPC(pc).Name())
 	span.SetAttributes(
 		semconv.CodeFunctionKey.String(runtime.FuncForPC(pc).Name()),
 		semconv.CodeFilepathKey.String(file),
