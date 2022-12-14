@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "676eae9d_abac7712",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1530772
+      },
+      "writtenOn": "2022-12-14T04:26:53Z",
+      "side": 1,
+      "message": "Submit after https://chrome-internal-review.googlesource.com/c/infra/puppet/+/5209014",
+      "revId": "2b692768cf71ce3208c4cc9afabbdb2b8958ec1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
