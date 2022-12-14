@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5708ec9a_4ebe1c8d",
+        "filename": "go/src/infra/libs/cipkg/derivation.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-12-14T02:22:39Z",
+      "side": 1,
+      "message": "If I read this correctly, does this assume that any slice is a string slice? Should we check that explicitly or will it already panic() if there is a slice of a different type?",
+      "revId": "6fa0190044e7318175c7e893ef87219dd2dfec85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
