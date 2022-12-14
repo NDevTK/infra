@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	"infra/cros/internal/gerrit"
@@ -23,18 +24,29 @@ func ValidateMapping(ctx context.Context, authedClient gerrit.Client, mapping *d
 		validateStarlarkFileExists,
 	}
 
-	for dir, metadata := range mapping.Dirs {
+	// Iterate the mappings in lexicographical order.
+	dirs := make([]string, 0, len(mapping.Dirs))
+	for dir := range mapping.Dirs {
+		dirs = append(dirs, dir)
+	}
+
+	sort.Strings(dirs)
+
+	multiError := errors.MultiError{}
+
+	for _, dir := range dirs {
+		metadata := mapping.Dirs[dir]
 		logging.Infof(ctx, "validating dir %q", dir)
 		for _, sourceTestPlan := range metadata.GetChromeos().GetCq().GetSourceTestPlans() {
 			for _, fn := range validationFns {
 				if err := fn(ctx, authedClient, dir, sourceTestPlan); err != nil {
-					return errors.Annotate(err, "validation failed for %s", dir).Err()
+					multiError = append(multiError, errors.Annotate(err, "validation failed for %s", dir).Err())
 				}
 			}
 		}
 	}
 
-	return nil
+	return multiError.AsError()
 }
 
 func validateAtLeastOneTestPlanStarlarkFile(_ context.Context, _ gerrit.Client, _ string, plan *planpb.SourceTestPlan) error {

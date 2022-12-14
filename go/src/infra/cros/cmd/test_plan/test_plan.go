@@ -228,9 +228,6 @@ func cmdValidate(authOpts auth.Options) *subcommands.Command {
 		Validate metadata files.
 
 		Validation logic on "DIR_METADATA" files specific to ChromeOS test planning.
-		Note that validation is done on computed metadata, not directly on
-		"DIR_METADATA" files; required fields do not need to be explicitly specified in
-		all files, as long as they are present on computed targets.
 
 		Each positional argument should be a path to a directory to compute and validate
 		metadata for.
@@ -285,7 +282,7 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		return err
 	}
 
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, true, args...)
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, true, args...)
 	if err != nil {
 		return err
 	}

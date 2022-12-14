@@ -183,6 +183,12 @@ func TestValidateMappingErrors(t *testing.T) {
 				Ref:     "HEAD",
 				Path:    "testfile.star",
 			}: nil,
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "testrepo",
+				Ref:     "HEAD",
+				Path:    "testfile.txt",
+			}: nil,
 		},
 	}
 
@@ -287,7 +293,7 @@ func TestValidateMappingErrors(t *testing.T) {
 					},
 				},
 			},
-			"all TestPlanStarlarkFile must specify \".star\" files, got \"testfile.txt\"",
+			"all TestPlanStarlarkFile must specify \".star\" files, got \"testfile.txt\" (and 1 other error)",
 		},
 		{
 			"starlark file missing",
