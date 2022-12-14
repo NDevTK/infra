@@ -6,8 +6,9 @@ package cipkg
 
 import (
 	"crypto/sha256"
-	"encoding/gob"
+	"encoding/base64"
 	"fmt"
+	"reflect"
 )
 
 // Derivation is the atomic level of a build step. It should contain all
@@ -46,6 +47,35 @@ type Derivation struct {
 // Calculate a unique ID from the content of a derivation
 func (d Derivation) ID() string {
 	h := sha256.New()
-	gob.NewEncoder(h).Encode(d)
+
+	// sha256 shouldn't return any write error.
+	writeField := func(name string, ss ...string) {
+		enc := base64.RawStdEncoding
+		if _, err := fmt.Fprint(h, name); err != nil {
+			panic(err)
+		}
+		for _, s := range ss {
+			if _, err := fmt.Fprintf(h, "\t%s", enc.EncodeToString([]byte(s))); err != nil {
+				panic(err)
+			}
+		}
+		if _, err := fmt.Fprintln(h); err != nil {
+			panic(err)
+		}
+	}
+
+	v := reflect.ValueOf(d)
+	for i := 0; i < v.NumField(); i++ {
+		f := v.Field(i)
+		switch f.Kind() {
+		case reflect.String:
+			writeField(v.Type().Field(i).Name, f.String())
+		case reflect.Slice:
+			writeField(v.Type().Field(i).Name, f.Interface().([]string)...)
+		default:
+			panic("unexpected field type")
+		}
+	}
+
 	return fmt.Sprintf("%s-%x", d.Name, h.Sum(nil))
 }
