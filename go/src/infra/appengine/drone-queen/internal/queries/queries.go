@@ -17,11 +17,14 @@ import (
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"
 	"infra/appengine/drone-queen/internal/entities"
+	"infra/libs/otil"
 )
 
 // CreateNewDrone creates a new Drone datastore entity with a unique ID.
 // This function cannot be called in a transaction.
 func CreateNewDrone(ctx context.Context, now time.Time) (entities.DroneID, error) {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
 	return createNewDrone(ctx, now, func() string { return uuid.New().String() })
 }
 
@@ -85,6 +88,9 @@ func getDroneDUTs(ctx context.Context, d entities.DroneID) ([]*entities.DUT, err
 // a transaction, but caveat emptor.  If n is less than zero, return
 // no DUTs. hive is the zone/hive the DUT/Drone belongs to.
 func getUnassignedDUTs(ctx context.Context, n int32, hive string) ([]*entities.DUT, error) {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
+	otil.AddValues(span, n, hive)
 	if n < 0 {
 		return nil, nil
 	}
@@ -107,6 +113,9 @@ func getUnassignedDUTs(ctx context.Context, n int32, hive string) ([]*entities.D
 //
 // This function needs to be run within a datastore transaction.
 func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators, hive string) ([]*entities.DUT, error) {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
+	otil.AddValues(span, d)
 	currentDUTs, err := getDroneDUTs(ctx, d)
 	if err != nil {
 		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
@@ -132,6 +141,8 @@ func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneR
 // FreeInvalidDUTs unassigns DUTs that are assigned to a missing or
 // expired drone.  This function cannot be called in a transaction.
 func FreeInvalidDUTs(ctx context.Context, now time.Time) error {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
 	var d []entities.DUT
 	q := datastore.NewQuery(entities.DUTKind)
 	q = q.Ancestor(entities.DUTGroupKey(ctx))
@@ -186,6 +197,8 @@ func getValidDrones(ctx context.Context, now time.Time) (map[entities.DroneID]bo
 // PruneExpiredDrones deletes Drones that have expired.  This function
 // cannot be called in a transaction.
 func PruneExpiredDrones(ctx context.Context, now time.Time) error {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
 	var d []entities.Drone
 	q := datastore.NewQuery(entities.DroneKind)
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
@@ -207,6 +220,8 @@ func PruneExpiredDrones(ctx context.Context, now time.Time) error {
 // any drone.  This function does not need to be called in a
 // transaction.
 func PruneDrainedDUTs(ctx context.Context) error {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
 	var d []entities.DUT
 	q := datastore.NewQuery(entities.DUTKind)
 	q = q.Ancestor(entities.DUTGroupKey(ctx))
