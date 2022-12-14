@@ -22,6 +22,18 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
 
+	var deps []utilities.BaseDependency
+	deps = append(deps, g.Dependencies...)
+	deps = append(deps,
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: src},
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: setup},
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: common.Stdenv},
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: common.Git},
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: common.Python3},
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
+		utilities.BaseDependency{Type: cipkg.DepsBuildHost, Generator: common.Darwin},
+	)
+
 	base := &utilities.BaseGenerator{
 		Name:    g.Name,
 		Builder: "{{.stdenv_python3}}/bin/python3",
@@ -37,17 +49,9 @@ func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.P
 			// configure.ac expects gnu tools.
 			"GREP={{.posixUtils_import}}/bin/grep",
 		}, g.Env...),
-		Dependencies: append([]utilities.BaseDependency{
-			{Type: cipkg.DepsBuildHost, Generator: src},
-			{Type: cipkg.DepsBuildHost, Generator: common.Stdenv},
-			{Type: cipkg.DepsBuildHost, Generator: common.Git},
-			{Type: cipkg.DepsBuildHost, Generator: common.Python3},
-			{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
-			{Type: cipkg.DepsBuildHost, Generator: common.Darwin},
-			{Type: cipkg.DepsBuildHost, Generator: setup},
-		}, g.Dependencies...),
-		CacheKey: g.CacheKey,
-		Version:  g.Version,
+		Dependencies: deps,
+		CacheKey:     g.CacheKey,
+		Version:      g.Version,
 	}
 	return base.Generate(ctx)
 }

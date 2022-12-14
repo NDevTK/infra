@@ -34,6 +34,8 @@ type Platforms struct {
 	Target Platform
 }
 
+// Platform includes key-value pairs that represent the platform.
+// The minimal platform should at least include os and arch.
 type Platform interface {
 	OS() string
 	Arch() string

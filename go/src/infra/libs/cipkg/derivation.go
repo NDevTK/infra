@@ -24,12 +24,11 @@ type Derivation struct {
 	Name string
 
 	// The platform where this derivation will be executed.
-	// TODO: Specify the format? (e.g amd64_linux)
 	Platform string
 
 	// The command of the execution. In most cases it's the executable binary.
 	// The standard executor (builtins.Execute) provides some basic operations
-	// under "builtin:" prefix, including builtin:fetchUrl, builtin:cipdEnsure
+	// under "builtin:" prefix, including builtin:fetchUrls, builtin:cipdEnsure
 	// and others. In most cases builtin commands should be used with their own
 	// generator (e.g. builtins.CIPDEnsure).
 	Builder string
