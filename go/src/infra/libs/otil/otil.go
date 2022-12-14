@@ -16,7 +16,8 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var tracer = otel.Tracer("infra/libs/otil")
+// Name used for OpenTelemetry tracers.
+const tname = "infra/libs/otil"
 
 // ValuesKey represents a slice of string values to attach to a span or event.
 // This can be the arguments to a function or values relevant to an event.
@@ -43,7 +44,7 @@ func AddValues(span trace.Span, v ...interface{}) {
 // This function adds metadata (function name, filename, etc) to the
 // span by inspecting the call stack.
 func FuncSpan(ctx context.Context, o ...trace.SpanStartOption) (context.Context, trace.Span) {
-	ctx, span := tracer.Start(ctx, "doThing", o...)
+	ctx, span := otel.Tracer(tname).Start(ctx, "doThing", o...)
 	if !span.SpanContext().IsSampled() {
 		return ctx, span
 	}

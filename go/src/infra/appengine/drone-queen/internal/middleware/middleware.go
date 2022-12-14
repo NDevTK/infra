@@ -24,7 +24,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-var tracer trace.Tracer = otel.Tracer("infra/appengine/drone-queen/internal/middleware")
+// Name used for OpenTelemetry tracers.
+const tname = "infra/appengine/drone-queen/internal/middleware"
 
 // A CronWrapper is a function that wraps a cron handler to provide
 // middleware functionality.
@@ -37,7 +38,7 @@ var _ grpc.UnaryServerInterceptor = UnaryTrace
 // not exposed by the LUCI middleware API.
 func UnaryTrace(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	var span trace.Span
-	ctx, span = tracer.Start(ctx, info.FullMethod, trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span = otel.Tracer(tname).Start(ctx, info.FullMethod, trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 	return handler(ctx, req)
 }
@@ -48,7 +49,7 @@ func CronTrace(name string) CronWrapper {
 	return func(h cron.Handler) cron.Handler {
 		return func(ctx context.Context) error {
 			var span trace.Span
-			ctx, span = tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindServer))
+			ctx, span = otel.Tracer(tname).Start(ctx, name, trace.WithSpanKind(trace.SpanKindServer))
 			defer span.End()
 			return h(ctx)
 		}
