@@ -262,51 +262,52 @@ func TestGetOwnershipData(t *testing.T) {
 	ctx := encTestingContext()
 	Convey("GetOwnership Data", t, func() {
 		Convey("happy path - machine", func() {
-			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			ParseBotConfig(ctx, mockBotConfig("test{1,2}-1", "abc"), "testSwarming")
-			ownership, err := GetOwnershipData(ctx, "test1-1")
-
-			So(ownership, ShouldNotBeNil)
+			err = ImportENCBotConfig(ctx)
 			So(err, ShouldBeNil)
-			So(ownership.PoolName, ShouldEqual, "abc")
-			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			ownership, err := GetOwnershipData(ctx, "testing-1")
+
+			So(err, ShouldBeNil)
+			So(ownership, ShouldNotBeNil)
+			So(ownership.PoolName, ShouldEqual, "test")
+			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
 		})
 		Convey("happy path - vm", func() {
-			resp, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{{
-				Name: "testVM2-1",
-			}})
-			So(resp, ShouldNotBeNil)
+			vm1 := &ufspb.VM{
+				Name: "vm-1",
+			}
+			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			So(err, ShouldBeNil)
 
-			ParseBotConfig(ctx, mockBotConfig("testVM{1,2}-1", "abc"), "testSwarming")
-			ownership, err := GetOwnershipData(ctx, "testVM2-1")
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+			ownership, err := GetOwnershipData(ctx, "vm-1")
 
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)
-			So(ownership.PoolName, ShouldEqual, "abc")
-			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			So(ownership.PoolName, ShouldEqual, "test")
+			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
 		})
 		Convey("happy path - machineLSE", func() {
-			resp, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
-				Name: "test3-1",
-			})
+			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			ParseBotConfig(ctx, mockBotConfig("test{1,2,3}-1", "abc"), "testSwarming")
-			ownership, err := GetOwnershipData(ctx, "test3-1")
+			err = ImportENCBotConfig(ctx)
+			So(err, ShouldBeNil)
+			ownership, err := GetOwnershipData(ctx, "testLSE1")
 
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)
-			So(ownership.PoolName, ShouldEqual, "abc")
-			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			So(ownership.PoolName, ShouldEqual, "test")
+			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
 		})
 		Convey("missing host in inventory", func() {
 			ParseBotConfig(ctx, mockBotConfig("test{4}-1", "abc"), "testSwarming")
-			ownership, err := GetOwnershipData(ctx, "test4-1")
+			ownership, err := GetOwnershipData(ctx, "blah4-1")
 			s, _ := status.FromError(err)
 
 			So(ownership, ShouldBeNil)

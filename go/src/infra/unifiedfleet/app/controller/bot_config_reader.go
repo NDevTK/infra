@@ -334,25 +334,15 @@ func findAndUpdateVMOwnershipForPrefix(ctx context.Context, prefix string, owner
 
 // GetOwnershipData gets the ownership data in the Data store for the requested bot in the config.
 func GetOwnershipData(ctx context.Context, hostName string) (*ufspb.OwnershipData, error) {
-	// Check if the host is a machine
-	host, err := registration.GetMachine(ctx, hostName)
-	if err == nil {
-		return host.GetOwnership(), nil
-	} else if status.Code(err) != codes.NotFound {
+	host, err := inventory.GetOwnershipData(ctx, hostName)
+	if err != nil {
 		return nil, err
 	}
-	vm, err := inventory.GetVM(ctx, hostName)
-	if err == nil {
-		return vm.GetOwnership(), nil
-	} else if status.Code(err) != codes.NotFound {
+	proto, err := host.GetProto()
+	if err != nil {
 		return nil, err
 	}
-
-	machineLse, err := inventory.GetMachineLSE(ctx, hostName)
-	if err == nil {
-		return machineLse.GetOwnership(), nil
-	}
-	return nil, err
+	return proto.(*ufspb.OwnershipData), err
 }
 
 // parseBotIds parses a range of bot Ids from the input string and returns an array of bot Ids
