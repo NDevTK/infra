@@ -48,6 +48,9 @@ type MachineEntity struct {
 	Phase            string   `gae:"phase"`
 	Pool             string   `gae:"pool"`
 	SwarmingServer   string   `gae:"swarming_server"`
+	Customer         string   `gae:"customer"`
+	SecurityLevel    string   `gae:"security_level"`
+	MibaRealm        string   `gae:"miba_realm"`
 	// ufspb.Machine cannot be directly used as it contains pointer.
 	Machine []byte `gae:",noindex"`
 }
@@ -88,9 +91,15 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 
 	var poolName string
 	var swarmingInstance string
+	var customer string
+	var securityLevel string
+	var mibaRealm string
 	if p.GetOwnership() != nil {
 		poolName = p.GetOwnership().PoolName
 		swarmingInstance = p.GetOwnership().SwarmingInstance
+		customer = p.GetOwnership().Customer
+		securityLevel = p.GetOwnership().SecurityLevel
+		mibaRealm = p.GetOwnership().MibaRealm
 	}
 
 	return &MachineEntity{
@@ -112,6 +121,9 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 		Phase:            p.GetChromeosMachine().GetPhase(),
 		Pool:             poolName,
 		SwarmingServer:   swarmingInstance,
+		Customer:         customer,
+		SecurityLevel:    securityLevel,
+		MibaRealm:        mibaRealm,
 	}, nil
 }
 
