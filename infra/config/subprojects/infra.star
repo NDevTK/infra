@@ -221,6 +221,7 @@ tpp_tryjob("infra-internal:try/3pp mac-amd64")
 tpp_tryjob("infra-internal:try/3pp mac-arm64")
 tpp_tryjob("infra-internal:try/3pp windows-386")
 tpp_tryjob("infra-internal:try/3pp windows-amd64")
+tpp_tryjob("infra-internal:try/3pp windows-arm64")
 
 # Placeholder tryjob for Buildbucket integration testing
 infra.builder(
