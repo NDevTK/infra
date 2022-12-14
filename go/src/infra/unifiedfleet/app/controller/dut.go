@@ -944,22 +944,26 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufsp
 		return nil, status.Errorf(codes.FailedPrecondition, "machine cannot be empty.")
 	}
 
+	logging.Debugf(ctx, "getSchedulableLabels: listing all DutAttributes")
 	attrs, err := configuration.ListDutAttributes(ctx, false)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get FlatConfig id ${board}-${model}-${model:sku}
+	logging.Debugf(ctx, "getSchedulableLabels: generate FlatConfig id from cros machine")
 	fcId, err := configuration.GenerateFCIdFromCrosMachine(machine)
 	if err != nil {
 		return nil, err
 	}
 
+	logging.Debugf(ctx, "getSchedulableLabels: get FlatConfig by id %s", fcId)
 	fc, err := configuration.GetFlatConfig(ctx, fcId)
 	if err != nil {
 		return nil, err
 	}
 
+	logging.Debugf(ctx, "getSchedulableLabels: generating Swarming dimensions")
 	ufsLabels := make(swarming.Dimensions)
 	for _, dutAttr := range attrs {
 		labelsMap, err := Convert(ctx, dutAttr, fc, lse, state)
@@ -975,6 +979,7 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufsp
 		return nil, err
 	}
 
+	logging.Debugf(ctx, "getSchedulableLabels: generating HWID data labels for Swarming")
 	hwidlabelsMap, err := ConvertHwidDataLabels(ctx, hwidData)
 	if err != nil {
 		return nil, err
@@ -983,6 +988,7 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufsp
 		ufsLabels[k] = v
 	}
 
+	logging.Debugf(ctx, "getSchedulableLabels: creating SchedulableLabels map for %s labels", len(ufsLabels))
 	schedulableLabels := make(map[string]*ufspb.SchedulableLabelValues)
 	for k, v := range ufsLabels {
 		schedulableLabels[k] = &ufspb.SchedulableLabelValues{

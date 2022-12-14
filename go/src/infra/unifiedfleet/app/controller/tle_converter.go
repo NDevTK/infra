@@ -40,8 +40,10 @@ func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload
 		return nil, errors.New("DutAttribute cannot be nil")
 	}
 	if dutAttr.GetTleSource() != nil {
+		logging.Debugf(ctx, "Convert: convert TleSource")
 		return convertTleSource(ctx, dutAttr, lse, dutState)
 	}
+	logging.Debugf(ctx, "Convert: convert FlatConfigSource")
 	return convertFlatConfigSource(ctx, dutAttr, flatConfig)
 }
 
