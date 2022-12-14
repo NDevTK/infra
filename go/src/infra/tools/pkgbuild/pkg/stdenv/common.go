@@ -33,10 +33,15 @@ func init() {
 		panic(err)
 	}
 	setup = &builtins.CopyFiles{
-		Name:  "setup",
-		Files: files,
-		FileMode: func(f fs.File) (fs.FileMode, error) {
-			return fs.ModePerm, nil
+		Name: "setup",
+		Files: builtins.FSWithMode{
+			FS: files,
+			ModeOverride: func(info fs.FileInfo) (fs.FileMode, error) {
+				if filepath.Dir(info.Name()) == "bin" {
+					return info.Mode() | fs.ModePerm, nil
+				}
+				return info.Mode(), nil
+			},
 		},
 	}
 }

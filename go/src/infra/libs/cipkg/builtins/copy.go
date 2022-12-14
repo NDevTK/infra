@@ -1,10 +1,11 @@
 package builtins
 
 import (
+	"archive/tar"
 	"context"
 	"crypto"
-	"encoding/binary"
 	"fmt"
+	"hash"
 	"io"
 	"io/fs"
 	"os"
@@ -14,6 +15,10 @@ import (
 	"infra/libs/cipkg"
 )
 
+// TODO: copy can be merged into import as a special mode after fs.FS adding
+// support for readlink: https://github.com/golang/go/issues/49580
+// Otherwise we can't support copying from embed.FS requiring fs.FS interface
+// and a normal directory which may contain symbolic link at same time.
 const CopyFilesBuilder = BuiltinBuilderPrefix + "copyFiles"
 
 var (
@@ -25,73 +30,32 @@ type CopyFiles struct {
 	Name  string
 	Files fs.FS
 
-	// Override the default Stat function to get FileMode. This can be used for
-	// embedded files since golang's embed strips all the mode bits from files.
-	FileMode func(f fs.File) (fs.FileMode, error)
+	// By default, hash will be calculated for files as version. Manually
+	// assigning the version means users are responsible for updating the
+	// version when files changed.
+	Version string
 }
 
 func (cf *CopyFiles) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
-	h := copyFilesHashAlgorithm.New()
-	fs.WalkDir(cf.Files, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
+	version := cf.Version
+	if version == "" {
+		h := copyFilesHashAlgorithm.New()
+		if err := walkDir(cf.Files, ".", h, func(path string, d fs.DirEntry, err error) error { return err }); err != nil {
+			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 		}
+		version = fmt.Sprintf("%s:%x", copyFilesHashAlgorithm, h.Sum(nil))
+	}
+	copyFilesHashMap[version] = cf
 
-		// Hash path
-		if _, err := h.Write([]byte(path)); err != nil {
-			return fmt.Errorf("write path failed: %s: %w", path, err)
-		}
-
-		if d.IsDir() {
-			return nil
-		}
-
-		// Hash file content
-		f, err := cf.Files.Open(path)
-		if err != nil {
-			return fmt.Errorf("open file failed: %s: %w", path, err)
-		}
-		if _, err := io.Copy(h, f); err != nil {
-			return fmt.Errorf("write file failed: %s: %w", path, err)
-		}
-
-		// Hash file mode
-		m, err := cf.fileMode(f)
-		if err != nil {
-			return fmt.Errorf("get file mode failed: %s: %w", path, err)
-		}
-
-		var mode [4]byte
-		binary.LittleEndian.PutUint32(mode[:], uint32(m))
-		if _, err := h.Write(mode[:]); err != nil {
-			return fmt.Errorf("write mode failed: %s: %w", path, err)
-		}
-
-		return nil
-	})
-	hashValue := fmt.Sprintf("%s:%x", copyFilesHashAlgorithm, h.Sum(nil))
-	copyFilesHashMap[hashValue] = cf
 	return cipkg.Derivation{
 		Name:    cf.Name,
 		Builder: CopyFilesBuilder,
-		Args:    []string{hashValue},
+		Args:    []string{version},
 	}, cipkg.PackageMetadata{}, nil
 }
 
-func (cf *CopyFiles) fileMode(f fs.File) (fs.FileMode, error) {
-	if cf.FileMode != nil {
-		return cf.FileMode(f)
-	}
-
-	finfo, err := f.Stat()
-	if err != nil {
-		return 0, err
-	}
-	return finfo.Mode(), nil
-}
-
 func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
-	// cmd.Args = ["builtin:copyFiles", filesHash]
+	// cmd.Args = ["builtin:copyFiles", version]
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("invalid arguments: %v", cmd.Args)
 	}
@@ -99,14 +63,9 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 
 	h := copyFilesHashAlgorithm.New()
 	cf := copyFilesHashMap[cmd.Args[1]]
-	fs.WalkDir(cf.Files, ".", func(path string, d fs.DirEntry, err error) error {
+	if err := walkDir(cf.Files, ".", h, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		}
-
-		// Hash path
-		if _, err := h.Write([]byte(path)); err != nil {
-			return fmt.Errorf("write path failed: %s: %w", path, err)
 		}
 
 		dst := filepath.Join(out, path)
@@ -119,7 +78,7 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 			return nil
 		}
 
-		// Hash and copy file content
+		// Copy file content
 		dstFile, err := os.Create(dst)
 		if err != nil {
 			return fmt.Errorf("create dst file failed: %s: %w", dst, err)
@@ -128,32 +87,114 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 		if err != nil {
 			return fmt.Errorf("open src file failed: %s: %w", dst, err)
 		}
-
-		if _, err := io.Copy(dstFile, io.TeeReader(srcFile, h)); err != nil {
+		if _, err := io.Copy(dstFile, srcFile); err != nil {
 			return fmt.Errorf("copy file failed: %s: %w", dst, err)
 		}
 
-		// Hash and copy file mode
-		m, err := cf.fileMode(srcFile)
+		// Change file mode
+		info, err := fs.Stat(cf.Files, path)
 		if err != nil {
 			return fmt.Errorf("get file mode failed: %s: %w", path, err)
 		}
-		if err := dstFile.Chmod(m); err != nil {
+		if err := dstFile.Chmod(info.Mode()); err != nil {
 			return fmt.Errorf("chmod failed: %s: %w", dst, err)
 		}
 
-		var mode [4]byte
-		binary.LittleEndian.PutUint32(mode[:], uint32(m))
-		if _, err := h.Write(mode[:]); err != nil {
-			return fmt.Errorf("write mode failed: %s: %w", path, err)
-		}
-
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
 
-	hashValue := fmt.Sprintf("%s:%x", copyFilesHashAlgorithm, h.Sum(nil))
-	if hashValue != cmd.Args[1] {
-		return fmt.Errorf("hash value mismach: expected: %s, result: %s", cmd.Args[1], hashValue)
+	version := cf.Version
+	if version == "" {
+		version = fmt.Sprintf("%s:%x", copyFilesHashAlgorithm, h.Sum(nil))
+	}
+	if version != cmd.Args[1] {
+		return fmt.Errorf("hash value mismatch: expected: %s, result: %s", cmd.Args[1], version)
 	}
 	return nil
+}
+
+func walkDir(src fs.FS, root string, h hash.Hash, fn fs.WalkDirFunc) error {
+	// Tar is used for calculating hash from files - including metadata - in a
+	// simple way.
+	tw := tar.NewWriter(h)
+	defer tw.Close()
+
+	return fs.WalkDir(src, root, func(name string, d fs.DirEntry, err error) error {
+		if err := fn(name, d, err); err != nil {
+			return err
+		}
+
+		info, err := fs.Stat(src, name)
+		if err != nil {
+			return fmt.Errorf("failed to stat file: %s: %w", name, err)
+		}
+
+		switch d.Type() {
+		case fs.ModeSymlink:
+			// We have to copy the file before fs.FS support readlink:
+			// https://github.com/golang/go/issues/49580
+			fallthrough
+		case 0: // Regular File
+			if err := tw.WriteHeader(&tar.Header{
+				Typeflag: tar.TypeReg,
+				Name:     name,
+				Mode:     int64(info.Mode()),
+				Size:     info.Size(),
+			}); err != nil {
+				return fmt.Errorf("failed to write header: %s: %w", name, err)
+			}
+			f, err := src.Open(name)
+			if err != nil {
+				return fmt.Errorf("failed to open file: %s: %w", name, err)
+			}
+			if _, err := io.Copy(tw, f); err != nil {
+				return fmt.Errorf("failed to write file: %s: %w", name, err)
+			}
+		case fs.ModeDir:
+			if err := tw.WriteHeader(&tar.Header{
+				Typeflag: tar.TypeDir,
+				Name:     name,
+				Mode:     int64(info.Mode()),
+			}); err != nil {
+				return fmt.Errorf("failed to write header: %s: %w", name, err)
+			}
+		default:
+			return fmt.Errorf("unsupported file type: %s: %s", name, d.Type())
+		}
+		return nil
+	})
+}
+
+// Override the default FileMode. This can be used for embedded files since
+// golang's embed strips all the mode bits from files.
+type FSWithMode struct {
+	fs.FS
+	ModeOverride func(info fs.FileInfo) (fs.FileMode, error)
+}
+
+type fileInfoWithMode struct {
+	fs.FileInfo
+	mode fs.FileMode
+}
+
+func (fi *fileInfoWithMode) Mode() fs.FileMode {
+	return fi.mode
+}
+
+func (ef *FSWithMode) Stat(name string) (fs.FileInfo, error) {
+	f, err := ef.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	info, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	mode, err := ef.ModeOverride(info)
+	if err != nil {
+		return nil, err
+	}
+	return &fileInfoWithMode{info, mode}, nil
 }

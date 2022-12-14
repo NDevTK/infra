@@ -114,10 +114,9 @@ func CPythonFromPath(dir, cipdName string) (cipkg.Generator, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read version file").Err()
 	}
-	return &builtins.Import{
-		Name: "cpython",
-		Targets: []builtins.ImportTarget{
-			{Source: cpythonDir, Version: string(version), Type: builtins.ImportDirectory},
-		},
+	return &builtins.CopyFiles{
+		Name:    "cpython",
+		Files:   os.DirFS(cpythonDir),
+		Version: string(version),
 	}, nil
 }
