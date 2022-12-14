@@ -35,7 +35,7 @@ type BootInRecoveryRequest struct {
 //
 // Boot in recovery mode performed by RO firmware and in some cases required stopPD negotiation.
 // Please specify callback function to perform needed actions when device booted in recovery mode.
-func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun, dutBackgroundRun components.Runner, dutPing components.Pinger, servod components.Servod, log logger.Logger) error {
+func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun, dutBackgroundRun components.Runner, dutPing components.Pinger, servod components.Servod, log logger.Logger) (rErr error) {
 	if req.BootRetry < 1 {
 		// We retry at least once when method called.
 		req.BootRetry = 1
@@ -71,13 +71,17 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		}
 		return nil
 	}
-	if req.IgnoreRebootFailure {
-		defer func() {
-			if err := closing(); err != nil {
-				log.Debugf("Boot in recovery mode: %s", err)
+	// Always closing to restore the state.
+	defer func() {
+		if err := closing(); err != nil {
+			log.Debugf("Boot in recovery mode: %s", err)
+			// Don't override the original error.
+			if !req.IgnoreRebootFailure && rErr == nil {
+				// We cannot return it, so we set it.
+				rErr = err
 			}
-		}()
-	}
+		}
+	}()
 	retryBootFunc := func() error {
 		log.Infof("Boot in Recovery Mode: starting retry...")
 		// Next:Boot in recovery mode. The steps are:
@@ -113,13 +117,10 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		return errors.Annotate(retryErr, "boot in recovery mode").Err()
 	}
 	if req.Callback != nil {
-		log.Debugf("Boot in recovery mode: passing control to call back")
+		log.Infof("Boot in recovery mode: passing control to call back")
 		if err := req.Callback(ctx); err != nil {
 			return errors.Annotate(err, "boot in recovery mode: callback").Err()
 		}
-	}
-	if !req.IgnoreRebootFailure {
-		return closing()
 	}
 	return nil
 }
