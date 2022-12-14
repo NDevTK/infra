@@ -8,6 +8,7 @@ import (
 	"context"
 	"math"
 	"strconv"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -35,6 +36,8 @@ func averageSbuValue(ctx context.Context, servod components.Servod, sbuControl s
 		retryCount = 1
 	}
 	for i := 0; i < retryCount; i++ {
+		// We need to sleep some time to let system to reflect changes.
+		time.Sleep(100 * time.Millisecond)
 		stringVal, err := servodGetString(ctx, servod, sbuControl)
 		if err != nil {
 			return 0.0, errors.Annotate(err, "average sbu value").Err()
