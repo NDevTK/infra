@@ -441,6 +441,10 @@ luci.realm(
     ],
 )
 
+luci.buildbucket_notification_topic(
+    name = "projects/cr-buildbucket-dev/topics/buildbucket_builds_example",
+)
+
 ################################################################################
 ## Resources used for Buildbucket and Swarming load test.
 
