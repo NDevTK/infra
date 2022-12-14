@@ -440,11 +440,15 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDir); err != nil {
 		return "", errors.Annotate(err, "extract ec files: fail to create a destination directory %s", destDir).Err()
 	}
+	// Candidate files contains new and old format names.
+	// New: board/ec.bin.bin
+	// Old: ./board/ec.bin.bin
 	candidatesFiles := []string{}
 	// Handle special case where some model use non-regular firmware mapping.
 	if m, ok := targetOverrideModels[req.Model]; ok {
 		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
 		candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", m))
+		candidatesFiles = append(candidatesFiles, fmt.Sprintf("./%s/ec.bin", m))
 	}
 	if req.Servod != nil {
 		fwBoard, err := servo.GetString(ctx, req.Servod, "ec_board")
@@ -455,6 +459,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		fwBoard = strings.ToLower(fwBoard)
 		if fwBoard != "" && fwBoard != req.Model && fwBoard != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwBoard))
+			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./%s/ec.bin", fwBoard))
 		}
 	}
 	if !req.FlashThroughServo {
@@ -464,12 +469,16 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		}
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwTarget))
+			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./%s/ec.bin", fwTarget))
 		}
 	}
 	candidatesFiles = append(candidatesFiles,
 		fmt.Sprintf("%s/ec.bin", req.Model),
+		fmt.Sprintf("./%s/ec.bin", req.Model),
 		fmt.Sprintf("%s/ec.bin", req.Board),
+		fmt.Sprintf("./%s/ec.bin", req.Board),
 		"ec.bin",
+		"./ec.bin",
 	)
 	var imagePath string
 	if req.UseCacheToExtractor {
@@ -517,11 +526,15 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDir); err != nil {
 		return "", errors.Annotate(err, "extract ap files: fail to create a destination directory %s", destDir).Err()
 	}
+	// Candidate files contains new and old format names.
+	// New: image-board.bin
+	// Old: ./image-board.bin
 	candidatesFiles := []string{}
 	// Handle special case where some model use non-regular firmware mapping.
 	if m, ok := targetOverrideModels[req.Model]; ok {
 		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
 		candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", m))
+		candidatesFiles = append(candidatesFiles, fmt.Sprintf("./image-%s.bin", m))
 	}
 	if req.Servod != nil {
 		fwBoard, err := servo.GetString(ctx, req.Servod, "ec_board")
@@ -532,6 +545,7 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		fwBoard = strings.ToLower(fwBoard)
 		if fwBoard != "" && fwBoard != req.Model && fwBoard != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwBoard))
+			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./image-%s.bin", fwBoard))
 		}
 	}
 	if !req.FlashThroughServo {
@@ -541,12 +555,16 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		}
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwTarget))
+			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./image-%s.bin", fwTarget))
 		}
 	}
 	candidatesFiles = append(candidatesFiles,
 		fmt.Sprintf("image-%s.bin", req.Model),
+		fmt.Sprintf("./image-%s.bin", req.Model),
 		fmt.Sprintf("image-%s.bin", req.Board),
+		fmt.Sprintf("./image-%s.bin", req.Board),
 		"image.bin",
+		"./image.bin",
 	)
 	var imagePath string
 	if req.UseCacheToExtractor {

@@ -39,7 +39,7 @@ func TestExtractECImage(t *testing.T) {
 		req.Servod = servod
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin my-model/ec.bin my-board/ec.bin ec.bin": `ec.bin
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `ec.bin
 my-board/ec.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC ec.bin": "",
 		}
@@ -55,10 +55,10 @@ my-board/ec.bin`,
 		req.Servod = servod
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin my-model/ec.bin my-board/ec.bin ec.bin": `my-ec.bin
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin`,
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/npcx_monitor.bin my-model/npcx_monitor.bin my-board/npcx_monitor.bin npcx_monitor.bin": ``,
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":                                                  "",
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/npcx_monitor.bin ./s-board/npcx_monitor.bin my-model/npcx_monitor.bin ./my-model/npcx_monitor.bin my-board/npcx_monitor.bin ./my-board/npcx_monitor.bin npcx_monitor.bin ./npcx_monitor.bin": ``,
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, err := extractECImage(ctx, req, tarballPath, logger)
@@ -72,7 +72,7 @@ my-board/ec.bin`,
 		req.Servod = servod
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin my-model/ec.bin my-board/ec.bin ec.bin": `my-ec.bin
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin
 npcx_monitor.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  "",
@@ -87,7 +87,7 @@ npcx_monitor.bin`,
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
-			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin my-board/ec.bin ec.bin": `my-ec.bin
+			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin
 npcx_monitor.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  "",
@@ -102,7 +102,7 @@ npcx_monitor.bin`,
 		req := getBaseTestRequest(false)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
-			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin my-board/ec.bin ec.bin": `my-ec.bin
+			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin
 npcx_monitor.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  "",
@@ -126,7 +126,7 @@ func TestExtractAPImage(t *testing.T) {
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
-			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin image-my-model.bin image-my-board.bin image.bin": `image.bin
+			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin ./image-s-board.bin image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image.bin
 image-my-model.bin`,
 			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image.bin": "",
 		}
@@ -142,7 +142,7 @@ image-my-model.bin`,
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
-			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin image-my-model.bin image-my-board.bin image.bin": `image-my.bin
+			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin ./image-s-board.bin image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image-my.bin
 image-my-model.bin`,
 			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": "",
 		}
@@ -158,7 +158,7 @@ image-my-model.bin`,
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
-			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin image-my-board.bin image.bin": `image-my.bin
+			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image-my.bin
 image-my-model.bin`,
 			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": "",
 		}
@@ -171,7 +171,7 @@ image-my-model.bin`,
 		req := getBaseTestRequest(false)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
-			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin image-my-board.bin image.bin": `image-my.bin
+			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image-my.bin
 image-my-model.bin`,
 			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": "",
 		}
