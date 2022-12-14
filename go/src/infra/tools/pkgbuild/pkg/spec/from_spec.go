@@ -153,6 +153,7 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 		return nil, err
 	}
 
+	plat := utilities.PlatformFromCIPD(hostCipdPlatform)
 	g := &stdenv.Generator{
 		Name:   def.DerivationName(),
 		Source: create.Source,
@@ -165,6 +166,10 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 			fmt.Sprintf("fromSpecInstall=%s", create.Installer),
 			fmt.Sprintf("_3PP_PLATFORM=%s", hostCipdPlatform),
 			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", platform.CurrentPlatform()),
+
+			// TODO: These should be moved to go package
+			fmt.Sprintf("GOOS=%s", plat.OS()),
+			fmt.Sprintf("GOARCH=%s", plat.Arch()),
 		}, create.Enviroments...),
 		CacheKey: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
 		Version:  create.Version,
