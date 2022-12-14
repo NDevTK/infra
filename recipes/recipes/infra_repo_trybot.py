@@ -128,6 +128,13 @@ def RunSteps(api, go_version_variant):
           'cipd - test packages integrity',
           co.path.join(patch_root, 'build', 'test_packages.py'),
           venv=True)
+      if api.platform.is_win:
+        with api.context(env={'GOOS': 'windows', 'GOARCH': 'arm64'}):
+          api.python(
+              'cipd - build packages (ARM64)',
+              co.path.join(patch_root, 'build', 'build.py'),
+              venv=True)
+          # Cross-compiling, so no tests.
     else:
       api.step('skipping slow CIPD packaging tests', cmd=None)
 
@@ -198,3 +205,6 @@ def GenTests(api):
     test('only_cipd_build') +
     diff('build/build.py')
   )
+
+  yield (test('only_cipd_build_win') + api.platform('win', 64) +
+         diff('build/build.py'))
