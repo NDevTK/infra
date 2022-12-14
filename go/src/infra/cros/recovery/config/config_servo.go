@@ -16,6 +16,7 @@ func servoRepairPlan() *Plan {
 			"Servod port specified",
 			"Servo serial is specified",
 			"Initialize docker container",
+			"Device is SSHable",
 			"Mark labstation as servod is in-use",
 			"Read release info",
 			"Servo_v3 uptime is not long",
@@ -1766,7 +1767,7 @@ func servoRepairPlan() *Plan {
 					"Read host release data for future analysis.",
 				},
 				Dependencies: []string{
-					"DUT is SSHable",
+					"Device is SSHable",
 					"Set state:SERVO_HOST_ISSUE",
 				},
 				ExecName: "cros_run_command",
