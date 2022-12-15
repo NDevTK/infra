@@ -87,6 +87,7 @@ type testCommonFlags struct {
 	testHarness          string
 	publicBuilderBucket  string
 	publicBuilder        string
+	luciProject          string
 }
 
 type fleetValidationResults struct {
@@ -134,6 +135,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.BoolVar(&c.scheduke, "scheduke", false, "Schedule via Scheduke.")
 	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
+	f.StringVar(&c.luciProject, "luci-project", "", "LUCI project which the bucket and builder are associated with")
 
 	if mainArgType == testCmdName {
 		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
@@ -212,6 +214,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	// Public Bucket and Public Builder should both provided
 	if (c.publicBuilder == "" && c.publicBuilderBucket != "") || (c.publicBuilder != "" && c.publicBuilderBucket == "") {
 		errors = append(errors, "both PublicBuilderBucket and PublicBuilder should be specified")
+	}
+
+	if c.luciProject != "" && (c.publicBuilderBucket == "" || c.publicBuilder == "") {
+		errors = append(errors, "if luciProject is specified, PublicBuilderBucket and PublicBuilder should be specified")
 	}
 
 	if len(errors) > 0 {
@@ -307,6 +313,9 @@ func (c *testCommonFlags) getCTPBuilder(env site.Environment) *buildbucketpb.Bui
 	}
 	if c.publicBuilder != "" {
 		builder.Builder = c.publicBuilder
+	}
+	if c.luciProject != "" {
+		builder.Project = c.luciProject
 	}
 	return &builder
 }

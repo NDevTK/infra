@@ -149,6 +149,34 @@ missing test arg`,
 		"",
 		"test",
 	},
+	{ // One error raised
+		testCommonFlags{
+			board:       "sample-board",
+			models:      []string{"model1", "model2"},
+			repeats:     6,
+			pool:        "sample-pool",
+			release:     "sample-release",
+			priority:    255,
+			luciProject: "testProject",
+		},
+		[]string{"sample-suite-name"},
+		"if luciProject is specified, PublicBuilderBucket and PublicBuilder should be specified",
+		"suite",
+	},
+	{ // No errors raised
+		testCommonFlags{
+			board:         "sample-board",
+			models:        []string{"model1", "model2"},
+			repeats:       6,
+			pool:          "sample-pool",
+			release:       "sample-release",
+			priority:      255,
+			publicBuilder: "testBuilder",
+		},
+		[]string{"sample-suite-name"},
+		"both PublicBuilderBucket and PublicBuilder should be specified",
+		"suite",
+	},
 }
 
 func TestValidateArgs(t *testing.T) {
@@ -887,11 +915,12 @@ var testGetCustomCTPBuilderData = []struct {
 	{ // With custom bucket and builder
 		common.EnvFlags{}.Env(),
 		testCommonFlags{
+			luciProject:         "testProject",
 			publicBuilderBucket: "testBucket",
 			publicBuilder:       "testBuilder",
 		},
 		&buildbucketpb.BuilderID{
-			Project: "chromeos",
+			Project: "testProject",
 			Bucket:  "testBucket",
 			Builder: "testBuilder",
 		},
