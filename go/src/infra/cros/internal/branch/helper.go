@@ -559,7 +559,7 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 	}
 
 	// Don't allow multiple release branches for the same milestone.
-	if branchType == "release" {
+	if !force && branchType == "release" {
 		releasePrefix := fmt.Sprintf("release-R%d-", vinfo.ChromeBranch)
 		for _, branch := range remoteBranches {
 			if strings.HasPrefix(branch, releasePrefix) {
