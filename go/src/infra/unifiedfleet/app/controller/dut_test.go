@@ -2682,11 +2682,11 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			// So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 
@@ -2700,10 +2700,30 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			// So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
+		})
+
+		Convey("GetChromeOSDevicedata - turn off schedulable label flag", func() {
+			cfgLst := &config.Config{
+				HwidServiceTrafficRatio: 1.0,
+				EnableBoxsterLabels:     false,
+			}
+			noSchedLabelsCtx := config.Use(ctx, cfgLst)
+
+			resp, err := GetChromeOSDeviceData(noSchedLabelsCtx, "", "lse-1")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetLabConfig(), ShouldResembleProto, dutMachinelse)
+			So(resp.GetMachine(), ShouldResembleProto, machine)
+			So(resp.GetDutState(), ShouldResembleProto, dutState)
+			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
+			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
+			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
+			So(resp.GetSchedulableLabels(), ShouldResemble, map[string]*ufspb.SchedulableLabelValues(nil))
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
 		})
 
@@ -2755,9 +2775,9 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldBeNil)
 			So(resp.GetManufacturingConfig(), ShouldBeNil)
 			So(resp.GetHwidData(), ShouldBeNil)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"testerr"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"testerr"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 		})
 
 		Convey("GetChromeOSDevicedata - data not found", func() {
@@ -2807,9 +2827,9 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldBeNil)
 			So(resp.GetManufacturingConfig(), ShouldBeNil)
 			So(resp.GetHwidData(), ShouldBeNil)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"testerr"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"testerr"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 		})
 
 		Convey("GetChromeOSDevicedata - machine not found by hostname", func() {
@@ -2826,7 +2846,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldBeNil)
 			So(resp.GetManufacturingConfig(), ShouldBeNil)
 			So(resp.GetHwidData(), ShouldBeNil)
-			// So(resp.GetSchedulableLabels(), ShouldResemble, map[string]*ufspb.SchedulableLabelValues(nil))
+			So(resp.GetSchedulableLabels(), ShouldResemble, map[string]*ufspb.SchedulableLabelValues(nil))
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
 		})
 
@@ -2844,7 +2864,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldBeNil)
 			So(resp.GetManufacturingConfig(), ShouldBeNil)
 			So(resp.GetHwidData(), ShouldBeNil)
-			// So(resp.GetSchedulableLabels(), ShouldResemble, map[string]*ufspb.SchedulableLabelValues(nil))
+			So(resp.GetSchedulableLabels(), ShouldResemble, map[string]*ufspb.SchedulableLabelValues(nil))
 			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
 		})
 
@@ -2896,10 +2916,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
 			So(resp.GetHwidData(), ShouldResembleProto, expiredHwidData)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldNotContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldNotContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 
@@ -2969,11 +2989,11 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfgBase)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidMockData)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			// So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 
 			hwidEnt, err = configuration.GetHwidData(ctx, hwid)
@@ -2988,6 +3008,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			// valid fake, but HwidClient should not be called due to throttle.
 			cfgLst := &config.Config{
 				HwidServiceTrafficRatio: 0,
+				EnableBoxsterLabels:     true,
 			}
 			trafficCtx := config.Use(ctx, cfgLst)
 
@@ -3021,10 +3042,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldBeNil)
 			So(resp.GetHwidData(), ShouldBeNil)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldNotContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldNotContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 
@@ -3070,11 +3091,11 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidNoCachedMockData)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			// So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), ShouldResemble, []string{"test_component_value"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 
@@ -3131,10 +3152,10 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			So(resp.GetDeviceConfig(), ShouldResembleProto, devCfg)
 			So(resp.GetManufacturingConfig(), ShouldResembleProto, mfgCfg)
 			So(resp.GetHwidData(), ShouldResembleProto, hwidCachedLegacyData)
-			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
-			// So(resp.GetSchedulableLabels(), ShouldNotContainKey, "hw-test-component")
-			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
-			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeFalse)
+			So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
+			So(resp.GetSchedulableLabels(), ShouldNotContainKey, "hw-test-component")
+			So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
+			So(resp.GetRespectAutomatedSchedulableLabels(), ShouldBeTrue)
 			So(resp.GetDutV1().GetCommon().GetLabels().GetStability(), ShouldBeTrue)
 		})
 	})

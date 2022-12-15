@@ -27,6 +27,7 @@ import (
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmanufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/configuration"
 	ufsds "infra/unifiedfleet/app/model/datastore"
@@ -891,6 +892,15 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		}
 	}
 
+	var schedulableLabels map[string]*ufspb.SchedulableLabelValues
+	enableUFSSchedulableLabels := config.Get(ctx).GetEnableBoxsterLabels()
+	if enableUFSSchedulableLabels {
+		schedulableLabels, err = getSchedulableLabels(ctx, machine, lse, dutState, hwidData)
+		if err != nil {
+			logging.Warningf(ctx, "SchedulableLabels not found. Error: %s", err)
+		}
+	}
+
 	data := &ufspb.ChromeOSDeviceData{
 		LabConfig:                         lse,
 		Machine:                           machine,
@@ -898,7 +908,8 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		ManufacturingConfig:               mfgConfig,
 		HwidData:                          hwidData,
 		DutState:                          dutState,
-		RespectAutomatedSchedulableLabels: false,
+		SchedulableLabels:                 schedulableLabels,
+		RespectAutomatedSchedulableLabels: enableUFSSchedulableLabels,
 	}
 	dutV1, err := osutil.AdaptToV1DutSpec(data)
 	if err != nil {
