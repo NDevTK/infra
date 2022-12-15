@@ -131,7 +131,8 @@ os.environ['PYTHONPATH'] = ''
 os.chdir(INFRA_ROOT)
 if '--help' not in flags and '-h' not in flags:
   subprocess.check_call(
-      [python_bin, os.path.join('bootstrap', 'remove_orphaned_pycs.py')])
+      ['python3', '-u',
+       os.path.join('bootstrap', 'remove_orphaned_pycs.py')])
 else:
   usage()
   sys.exit(subprocess.call([python_bin, expect_tests_path, command, '--help']))
