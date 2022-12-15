@@ -19,6 +19,14 @@ import (
 // TerminateOrKill implements Bot.
 func (b realBot) TerminateOrKill() error {
 	log.Printf("Terminating bot %s", b.config.BotID)
+	defer func() {
+		if b.cgroup == nil {
+			return
+		}
+		if err := b.cgroup.Delete(); err != nil {
+			log.Printf("Error deleting cgroup of %s: %s", b.config.BotID, err)
+		}
+	}()
 	err := b.cmd.Process.Signal(unix.SIGTERM)
 	if err != nil {
 		return fmt.Errorf("SIGTERM bot %s: %s", b.config.BotID, err)

@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"time"
 
+	specs "github.com/opencontainers/runtime-spec/specs-go"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -44,6 +45,7 @@ type Bot interface {
 
 type realBot struct {
 	config     Config
+	cgroup     Cgroup
 	cmd        *exec.Cmd
 	logFile    *os.File
 	terminated chan struct{}
@@ -105,13 +107,20 @@ func (s Starter) Start(c Config) (b Bot, err error) {
 	if err := cmd.Start(); err != nil {
 		return nil, errors.Annotate(err, "start bot with %+v", c).Err()
 	}
-	log.Printf("Bot for %s started", c.BotID)
-	return realBot{
+	bot := realBot{
 		config:     c,
 		cmd:        cmd,
 		logFile:    f,
 		terminated: make(chan struct{}),
-	}, nil
+	}
+	control, err := addToCgroup(c.BotID, uint64(cmd.Process.Pid), &specs.LinuxResources{})
+	if err != nil {
+		bot.TerminateOrKill()
+		return nil, errors.Annotate(err, "start bot with %+v", c).Err()
+	}
+	bot.cgroup = control
+	log.Printf("Bot for %s started", c.BotID)
+	return bot, nil
 }
 
 func (s Starter) downloadBotCode(c Config) error {
