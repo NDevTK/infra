@@ -151,6 +151,77 @@ func TestClient(t *testing.T) {
 
 		})
 
+		Convey("FetchLatestRevisionForPath", func() {
+
+			Convey("fails if getting gitiles client fails", func() {
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return nil, errors.New("test gitiles client factory failure")
+				})
+
+				client := NewClient(ctx)
+				revision, err := client.FetchLatestRevisionForPath(ctx, "fake-host", "fake/project", "refs/heads/fake-branch", "fake-path")
+
+				So(err, ShouldNotBeNil)
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("fails if API call fails", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), gomock.Any()).
+					Return(nil, errors.New("fake Log failure"))
+
+				client := NewClient(ctx)
+				revision, err := client.FetchLatestRevisionForPath(ctx, "fake-host", "fake/project", "refs/heads/fake-branch", "fake-path")
+
+				So(err, ShouldNotBeNil)
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("returns latest revision for path on ref", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				matcher := proto.MatcherEqual(&gitilespb.LogRequest{
+					Project:    "fake/project",
+					Committish: "refs/heads/fake-branch",
+					PageSize:   1,
+					Path:       "fake-path",
+				})
+				// Check that potentially transient errors are retried
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.NotFound, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.Unavailable, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					Log(gomock.Any(), matcher).
+					Return(&gitilespb.LogResponse{
+						Log: []*gitpb.Commit{
+							{Id: "fake-revision"},
+						},
+					}, nil)
+
+				client := NewClient(ctx)
+				revision, err := client.FetchLatestRevisionForPath(ctx, "fake-host", "fake/project", "refs/heads/fake-branch", "fake-path")
+
+				So(err, ShouldBeNil)
+				So(revision, ShouldEqual, "fake-revision")
+			})
+
+		})
+
 		Convey("GetParentRevision", func() {
 
 			Convey("fails if getting gitiles client fails", func() {

@@ -83,6 +83,12 @@ func (c *Client) gitilesClientForHost(ctx context.Context, host string) (Gitiles
 // FetchLatestRevision returns the git commit hash for the latest change to the
 // given ref of the given project on the given host.
 func (c *Client) FetchLatestRevision(ctx context.Context, host, project, ref string) (string, error) {
+	return c.FetchLatestRevisionForPath(ctx, host, project, ref, "")
+}
+
+// FetchLatestRevisionForPath returns the git commit hash for the latest change to the given path on
+// the given ref of the given project on the given host.
+func (c *Client) FetchLatestRevisionForPath(ctx context.Context, host, project, ref, path string) (string, error) {
 	gitilesClient, err := c.gitilesClientForHost(ctx, host)
 	if err != nil {
 		return "", err
@@ -91,6 +97,7 @@ func (c *Client) FetchLatestRevision(ctx context.Context, host, project, ref str
 		Project:    project,
 		Committish: ref,
 		PageSize:   1,
+		Path:       path,
 	}
 
 	var response *gitilespb.LogResponse

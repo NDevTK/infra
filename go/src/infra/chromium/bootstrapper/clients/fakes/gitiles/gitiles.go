@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 
 	"infra/chromium/bootstrapper/clients/gitiles"
 	"infra/chromium/util"
@@ -111,19 +112,49 @@ func (c *Client) Log(ctx context.Context, request *gitilespb.LogRequest, options
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown ref %#v for project %#v on host %#v", request.Committish, request.Project, c.hostname))
 	}
 
-	log := make([]*git.Commit, 0, request.PageSize)
-	for i := 0; i < int(request.PageSize); i++ {
-		log = append(log, &git.Commit{Id: commitId})
-		revision, ok := project.Revisions[commitId]
-		if !ok || revision.Parent == "" {
-			break
-		}
-		commitId = revision.Parent
+	history, err := c.getRevisionHistory(request.Project, commitId)
+	if err != nil {
+		return nil, err
 	}
 
-	remaining := int(request.PageSize) - len(log)
-	for i := 1; i <= remaining; i++ {
-		log = append(log, &git.Commit{Id: fmt.Sprintf("%s~%d", commitId, i)})
+	var matchPath func(*Revision) bool
+	if request.Path == "" {
+		matchPath = func(r *Revision) bool { return true }
+	} else {
+		regex := regexp.MustCompile(fmt.Sprintf("%s(/.+)?$", regexp.QuoteMeta(request.Path)))
+		matchPath = func(r *Revision) bool {
+			for path := range r.Files {
+				if regex.MatchString(path) {
+					return true
+				}
+			}
+			return false
+		}
+	}
+
+	log := make([]*git.Commit, 0, request.PageSize)
+	for _, commit := range history {
+		if matchPath(commit.revision) {
+			log = append(log, &git.Commit{Id: commit.id})
+			if len(log) == cap(log) {
+				break
+			}
+		}
+	}
+
+	if request.Path == "" {
+		// The fake repo is arbitrarily large, but a commit will only touch specific files
+		// if so configured, so fill up the requested page size if not looking at a specific
+		// path
+		remaining := int(request.PageSize) - len(log)
+		for i := 1; i <= remaining; i++ {
+			log = append(log, &git.Commit{Id: fmt.Sprintf("%s~%d", commitId, i)})
+		}
+
+	} else if len(log) == 0 {
+		// If a specific path is requested and the path doesn't exist at the revision, then
+		// it is a 404
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("path %#v does not exist at %#v of project %#v on host %#v", request.Path, request.Committish, request.Project, c.hostname))
 	}
 
 	return &gitilespb.LogResponse{

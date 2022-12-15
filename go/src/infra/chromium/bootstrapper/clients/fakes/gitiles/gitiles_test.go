@@ -13,6 +13,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/grpc/grpcutil"
+	"google.golang.org/grpc/codes"
 )
 
 func strPtr(s string) *string {
@@ -63,14 +65,6 @@ func TestFactory(t *testing.T) {
 	})
 }
 
-func logRequest(project, ref string, pageSize int32) *gitilespb.LogRequest {
-	return &gitilespb.LogRequest{
-		Project:    project,
-		Committish: ref,
-		PageSize:   pageSize,
-	}
-}
-
 func TestLog(t *testing.T) {
 	t.Parallel()
 
@@ -81,7 +75,11 @@ func TestLog(t *testing.T) {
 		Convey("returns requested number of revisions by default", func() {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 4))
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "refs/heads/fake-branch",
+				PageSize:   4,
+			})
 
 			So(err, ShouldBeNil)
 			So(response, ShouldNotBeNil)
@@ -101,7 +99,11 @@ func TestLog(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 1))
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "refs/heads/fake-branch",
+				PageSize:   1,
+			})
 
 			So(err, ShouldErrLike, `unknown project "fake/project" on host "fake-host"`)
 			So(response, ShouldBeNil)
@@ -120,7 +122,11 @@ func TestLog(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 1))
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "refs/heads/fake-branch",
+				PageSize:   1,
+			})
 
 			So(err, ShouldErrLike, `unknown ref "refs/heads/fake-branch" for project "fake/project" on host "fake-host"`)
 			So(response, ShouldBeNil)
@@ -144,7 +150,11 @@ func TestLog(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "refs/heads/fake-branch", 3))
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "refs/heads/fake-branch",
+				PageSize:   3,
+			})
 
 			So(err, ShouldBeNil)
 			So(response, ShouldNotBeNil)
@@ -169,7 +179,11 @@ func TestLog(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			response, err := client.Log(ctx, logRequest("fake/project", "fake-revision", 3))
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "fake-revision",
+				PageSize:   3,
+			})
 
 			So(err, ShouldBeNil)
 			So(response, ShouldNotBeNil)
@@ -177,6 +191,82 @@ func TestLog(t *testing.T) {
 			So(response.Log[0].Id, ShouldEqual, "fake-revision")
 			So(response.Log[1].Id, ShouldEqual, "fake-parent-revision")
 			So(response.Log[2].Id, ShouldNotBeEmpty)
+		})
+
+		Convey("fails for path by default", func() {
+			client, _ := Factory(nil)(ctx, "fake-host")
+
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "fake-revision",
+				Path:       "fake/path",
+				PageSize:   3,
+			})
+
+			So(err, ShouldNotBeNil)
+			So(grpcutil.Code(err), ShouldEqual, codes.NotFound)
+			So(response, ShouldBeNil)
+		})
+
+		Convey("returns log for path", func() {
+			client, _ := Factory(map[string]*Host{
+				"fake-host": {
+					Projects: map[string]*Project{
+						"fake/project": {
+							Revisions: map[string]*Revision{
+								"fake-revision-not-touching-path": {
+									Parent: "fake-revision-touching-path",
+								},
+								"fake-revision-touching-path": {
+									Parent: "fake-revision-not-touching-path-2",
+									Files: map[string]*string{
+										"fake/path/foo": strPtr("modified-foo-content"),
+									},
+								},
+								"fake-revision-not-touching-path-2": {
+									Parent: "fake-revision-touching-path-2",
+									Files: map[string]*string{
+										"some/other/path": strPtr("some-other-content"),
+									},
+								},
+								"fake-revision-touching-path-2": {
+									Parent: "fake-revision-touching-path-3",
+									Files: map[string]*string{
+										"fake/path/bar": strPtr("new-bar-content"),
+									},
+								},
+								"fake-revision-touching-path-3": {
+									Parent: "fake-revision-touching-path-4",
+									Files: map[string]*string{
+										"fake/path":     nil,
+										"fake/path/foo": strPtr("new-foo-content"),
+									},
+								},
+								"fake-revision-touching-path-4": {
+									Files: map[string]*string{
+										"fake/path": strPtr("new-fake-path-content"),
+									},
+								},
+							},
+						},
+					},
+				},
+			})(ctx, "fake-host")
+
+			response, err := client.Log(ctx, &gitilespb.LogRequest{
+				Project:    "fake/project",
+				Committish: "fake-revision-not-touching-path",
+				Path:       "fake/path",
+				PageSize:   5,
+			})
+
+			So(err, ShouldBeNil)
+			So(response, ShouldNotBeNil)
+			So(response.Log, ShouldHaveLength, 4)
+			So(response.Log[0].Id, ShouldEqual, "fake-revision-touching-path")
+			So(response.Log[1].Id, ShouldEqual, "fake-revision-touching-path-2")
+			So(response.Log[2].Id, ShouldEqual, "fake-revision-touching-path-3")
+			So(response.Log[3].Id, ShouldEqual, "fake-revision-touching-path-4")
 		})
 
 	})
