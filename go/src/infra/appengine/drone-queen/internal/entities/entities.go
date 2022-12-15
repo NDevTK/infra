@@ -72,6 +72,7 @@ type Drone struct {
 	Expiration  time.Time
 	Description string
 	Hive        string
+	Version     string
 }
 
 // Equal implements equality.

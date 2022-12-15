@@ -112,7 +112,7 @@ func getUnassignedDUTs(ctx context.Context, n int32, hive string) ([]*entities.D
 // to the drone. hive is the zone/hive the DUT/Drone belongs to.
 //
 // This function needs to be run within a datastore transaction.
-func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators, hive string) ([]*entities.DUT, error) {
+func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators, hive string, version string) ([]*entities.DUT, error) {
 	ctx, span := otil.FuncSpan(ctx)
 	defer span.End()
 	otil.AddValues(span, d)
@@ -134,7 +134,7 @@ func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneR
 	if err := datastore.Put(ctx, newDUTs); err != nil {
 		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
 	}
-	updateAgentLoad(d, agentLoad{hive: hive, totalCapacity: int(li.GetDutCapacity()), usedCapacity: len(currentDUTs)})
+	updateAgentLoad(d, agentLoad{hive: hive, version: version, totalCapacity: int(li.GetDutCapacity()), usedCapacity: len(currentDUTs)})
 	return currentDUTs, nil
 }
 

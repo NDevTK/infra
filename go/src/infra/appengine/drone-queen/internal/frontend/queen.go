@@ -16,18 +16,24 @@ package frontend
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"
 	"infra/appengine/drone-queen/internal/entities"
 	"infra/appengine/drone-queen/internal/queries"
 )
+
+// Earliest supported version of drone agent.
+const earliestSupportedVersion = 0
 
 // DroneQueenImpl implements service interfaces.
 type DroneQueenImpl struct {
@@ -43,6 +49,14 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 		Status: api.ReportDroneResponse_OK,
 	}
 	id := entities.DroneID(req.GetDroneUuid())
+
+	// Read drone agent version from context.
+	// Reject service if unsupported.
+	version := getVersionFromContext(ctx)
+	if !isVersionSupported(ctx, version) {
+		return nil, errors.Reason("drone version not supported").Err()
+	}
+
 	// Assign a new UUID if needed.
 	if id == "" {
 		id, err = queries.CreateNewDrone(ctx, q.now())
@@ -67,6 +81,7 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 		d.Expiration = q.now().Add(config.AssignmentDuration(ctx)).UTC()
 		d.Description = req.GetDroneDescription()
 		d.Hive = req.GetHive()
+		d.Version = version
 		if err = datastore.Put(ctx, &d); err != nil {
 			return errors.Annotate(err, "refresh drone expiration").Err()
 		}
@@ -84,7 +99,7 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 	// Assign new DUTs.
 	var duts []*entities.DUT
 	f = func(ctx context.Context) error {
-		duts, err = queries.AssignNewDUTs(ctx, id, req.GetLoadIndicators(), req.GetHive())
+		duts, err = queries.AssignNewDUTs(ctx, id, req.GetLoadIndicators(), req.GetHive(), version)
 		return err
 	}
 	if err = datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -106,6 +121,45 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 		}
 	}
 	return res, nil
+}
+
+// getVersionFromContext reads drone agent version from context metadata and returns it.
+func getVersionFromContext(ctx context.Context) string {
+	const fallback = "unknown"
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		logging.Debugf(ctx, "no metadata found in ReportDrone incoming context")
+		return fallback
+	}
+	versions, ok := md["drone-agent-version"]
+	if !ok {
+		logging.Debugf(ctx, "'drone-agent-version' not found in ReportDrone incoming context metadata")
+		return fallback
+	}
+	if len(versions) == 0 {
+		logging.Debugf(ctx, "empty slice: 'drone-agent-version' in ReportDrone incoming context metadata")
+		return fallback
+	}
+	if versions[0] == "unknown" {
+		logging.Debugf(ctx, "'unknown' drone-agent version was passed by client")
+		return fallback
+	}
+	return versions[0]
+}
+
+// isVersionSupported tests if drone agent version is greater than the earliest supported version.
+func isVersionSupported(ctx context.Context, droneVersion string) bool {
+	return isVersionSupported2(ctx, droneVersion, earliestSupportedVersion)
+}
+
+// isVersionSupported2 is used for unit tests.
+func isVersionSupported2(ctx context.Context, droneVersion string, threshold int) bool {
+	version, err := strconv.Atoi(droneVersion)
+	if err != nil {
+		logging.Debugf(ctx, "could not convert drone version to int: %v", err)
+		return true
+	}
+	return version >= threshold
 }
 
 // ReleaseDuts implements service interfaces.

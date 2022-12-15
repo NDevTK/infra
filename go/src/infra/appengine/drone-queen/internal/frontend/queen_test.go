@@ -28,6 +28,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/grpc/metadata"
 )
 
 func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
@@ -383,6 +384,61 @@ func TestDroneQueenImpl_ReportDrone(t *testing.T) {
 			t.Errorf("Got report status %v; want UNKNOWN_UUID", s)
 		}
 	})
+}
+
+func TestGetVersionFromContext(t *testing.T) {
+	t.Parallel()
+	t.Run("No metadata", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		if version := getVersionFromContext(ctx); version != "unknown" {
+			t.Errorf("Got %v; want unknown", version)
+		}
+	})
+	t.Run("No drone agent version", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		md := metadata.Pairs("something-unrelated", "12345")
+		ctx = metadata.NewIncomingContext(ctx, md)
+		if version := getVersionFromContext(ctx); version != "unknown" {
+			t.Errorf("Got %v; want unknown", version)
+		}
+	})
+	t.Run("Drone agent in metadata", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		md := metadata.Pairs("drone-agent-version", "12345")
+		ctx = metadata.NewIncomingContext(ctx, md)
+		if version := getVersionFromContext(ctx); version != "12345" {
+			t.Errorf("Got %v; want 12345", version)
+		}
+	})
+}
+
+func TestIsVersionSupported2(t *testing.T) {
+	t.Parallel()
+	const threshold = 3000
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	cases := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{name: "empty", input: "", want: true},
+		{name: "unknown", input: "unknown", want: true},
+		{name: "supported", input: "4000", want: true},
+		{name: "equal (supported)", input: "3000", want: true},
+		{name: "unsupported", input: "2000", want: false},
+	}
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+			if supported := isVersionSupported2(ctx, c.input, threshold); supported != c.want {
+				t.Errorf("Got %v; want %v", supported, c.want)
+			}
+		})
+	}
 }
 
 func TestDroneQueenImpl_workflows(t *testing.T) {

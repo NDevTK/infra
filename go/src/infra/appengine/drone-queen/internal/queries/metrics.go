@@ -28,6 +28,7 @@ var (
 		"count of drone agents",
 		nil,
 		field.String("hive"),
+		field.String("version"),
 	)
 	agentCapacity = metric.NewInt(
 		"chromeos/drone-queen/agent/capacity",
@@ -52,21 +53,33 @@ var (
 // agentLoad is a struct to record drone agent load info.
 type agentLoad struct {
 	hive          string
+	version       string
 	totalCapacity int
 	usedCapacity  int
+}
+
+// agentCounter is a map of versions by hives.
+type agentCounter map[string]map[string]int
+
+// increment is used to initialize agentCounter.
+func (a agentCounter) increment(hive string, version string) {
+	if _, ok := a[hive]; !ok {
+		a[hive] = make(map[string]int)
+	}
+	a[hive][version]++
 }
 
 func init() {
 	tsmon.RegisterCallback(func(ctx context.Context) {
 		freeCapacityByHive := make(map[string]int)
 		usedCapacityByHive := make(map[string]int)
-		agentCountByHive := make(map[string]int)
+		ac := make(agentCounter)
 
 		agentLoadTrackerLock.Lock()
 		for _, al := range agentLoadTracker {
 			freeCapacityByHive[al.hive] += al.totalCapacity - al.usedCapacity
 			usedCapacityByHive[al.hive] += al.usedCapacity
-			agentCountByHive[al.hive]++
+			ac.increment(al.hive, al.version)
 		}
 		agentLoadTrackerLock.Unlock()
 
@@ -76,8 +89,10 @@ func init() {
 		for k, v := range usedCapacityByHive {
 			agentCapacity.Set(ctx, int64(v), k, "used")
 		}
-		for k, v := range agentCountByHive {
-			agentCount.Set(ctx, int64(v), k)
+		for hive, versions := range ac {
+			for version, v := range versions {
+				agentCount.Set(ctx, int64(v), hive, version)
+			}
 		}
 	})
 
