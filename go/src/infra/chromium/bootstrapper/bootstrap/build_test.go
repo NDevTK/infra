@@ -323,9 +323,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 				Convey("returns config with properties from top level ref when no commit or change for project", func() {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Parent: "config-changed-revision",
+					}
+					topLevelGitiles.Revisions["config-changed-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
 							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
-								"test_property": "top-level-head-value"
+								"test_property": "config-changed-value"
 							}`),
 						},
 					}
@@ -342,7 +345,16 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}`)
 					So(config.change, ShouldBeNil)
 					So(config.builderProperties, ShouldResembleProtoJSON, `{
-						"test_property": "top-level-head-value"
+						"test_property": "config-changed-value"
+					}`)
+					So(config.configSource, ShouldResembleProtoJSON, `{
+						"last_changed_commit": {
+							"host": "chromium.googlesource.com",
+							"project": "top/level",
+							"ref": "refs/heads/top-level",
+							"id": "config-changed-revision"
+						},
+						"path": "infra/config/fake-bucket/fake-builder/properties.textpb"
 					}`)
 				})
 
@@ -1171,6 +1183,15 @@ func TestUpdateBuild(t *testing.T) {
 					"bar": "builder-bar-value",
 					"shaz": "builder-shaz-value"
 				}`),
+				configSource: &ConfigSource{
+					LastChangedCommit: &buildbucketpb.GitilesCommit{
+						Host:    "fake-host2",
+						Project: "fake-project2",
+						Ref:     "fake-ref2",
+						Id:      "fake-config-revision",
+					},
+					Path: "path/to/properties/file",
+				},
 				skipAnalysisReasons: []string{
 					"skip-analysis-reason1",
 					"skip-analysis-reason2",
@@ -1234,6 +1255,15 @@ func TestUpdateBuild(t *testing.T) {
 									},
 									"cmd": ["fake-exe"]
 								},
+								"config_source": {
+									"last_changed_commit": {
+										"host": "fake-host2",
+										"project": "fake-project2",
+										"ref": "fake-ref2",
+										"id": "fake-config-revision"
+									},
+									"path": "path/to/properties/file"
+								},
 								"skip_analysis_reasons": [
 									"skip-analysis-reason1",
 									"skip-analysis-reason2"
@@ -1286,6 +1316,15 @@ func TestUpdateBuild(t *testing.T) {
 										"actual_version": "fake-cipd-instance-id"
 									},
 									"cmd": ["fake-exe"]
+								},
+								"config_source": {
+									"last_changed_commit": {
+										"host": "fake-host2",
+										"project": "fake-project2",
+										"ref": "fake-ref2",
+										"id": "fake-config-revision"
+									},
+									"path": "path/to/properties/file"
 								},
 								"skip_analysis_reasons": [
 									"skip-analysis-reason1",

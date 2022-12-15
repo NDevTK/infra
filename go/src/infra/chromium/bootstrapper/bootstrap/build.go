@@ -112,6 +112,8 @@ type BootstrapConfig struct {
 	// builderProperties is the properties read from the builder's
 	// properties file.
 	builderProperties *structpb.Struct
+	// Information detailing the source of the loaded config
+	configSource *ConfigSource
 	// skipAnalysisReasons are reasons that the bootstrapped executable
 	// should skip performing analysis to reduce the targets and tests that
 	// are built and run.
@@ -347,12 +349,28 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 		}
 	}
 
+	logging.Infof(ctx, "getting last changed commit for properties file")
+	changedRev, err := b.gitiles.FetchLatestRevisionForPath(ctx, config.configCommit.Host, config.configCommit.Project, config.configCommit.Id, propsFile)
+	if err != nil {
+		return errors.Annotate(err, "failed to get last changed commit for properties file %s", propsFile).Err()
+	}
+	configSource := &ConfigSource{
+		LastChangedCommit: &buildbucketpb.GitilesCommit{
+			Host:    config.configCommit.Host,
+			Project: config.configCommit.Project,
+			Ref:     config.configCommit.Ref,
+			Id:      changedRev,
+		},
+		Path: propsFile,
+	}
+
 	properties := &structpb.Struct{}
 	logging.Infof(ctx, "unmarshalling builder properties file")
 	if err := protojson.Unmarshal([]byte(contents), properties); err != nil {
 		return errors.Annotate(err, "failed to unmarshall builder properties file: {%s}", contents).Err()
 	}
 	config.builderProperties = properties
+	config.configSource = configSource
 
 	return nil
 }
@@ -534,6 +552,7 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 	modProperties := &ChromiumBootstrapModuleProperties{
 		Commits:             commits,
 		Exe:                 bootstrappedExe,
+		ConfigSource:        c.configSource,
 		SkipAnalysisReasons: c.skipAnalysisReasons,
 	}
 	if err := exe.WriteProperties(properties, map[string]interface{}{

@@ -208,8 +208,17 @@ func TestPerformBootstrap(t *testing.T) {
 									"actual_version": "fake-instance-id"
 								},
 								"cmd": ["fake-exe"]
+							},
+							"config_source": {
+								"last_changed_commit": {
+									"host": "fake-host",
+									"project": "fake-project",
+									"ref": "fake-ref",
+									"id": "fake-revision"
+								},
+								"path": "fake-properties-file"
 							}
-						},
+					},
 						"foo": "builder-value"
 					}
 				}
@@ -257,6 +266,15 @@ func TestPerformBootstrap(t *testing.T) {
 									"actual_version": "fake-instance-id"
 								},
 								"cmd": ["fake-exe"]
+							},
+							"config_source": {
+								"last_changed_commit": {
+									"host": "fake-host",
+									"project": "fake-project",
+									"ref": "fake-ref",
+									"id": "fake-revision"
+								},
+								"path": "fake-properties-file"
 							}
 						},
 						"foo": "build-value"

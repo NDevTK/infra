@@ -15,6 +15,8 @@ import "go.chromium.org/luci/swarming/proto/api/swarming.proto";
 option go_package = "infra/chromium/bootstrapper/bootstrap";
 
 // A CIPD location.
+//
+// Next ID: 5
 message Cipd {
   string server = 1;
   string package = 2;
@@ -23,6 +25,8 @@ message Cipd {
 }
 
 // Information about the executable being bootstrapped.
+//
+// Next ID: 4
 message BootstrappedExe {
   // The location that the bootstrapped executable is retrieved from.
   oneof source {
@@ -33,11 +37,29 @@ message BootstrappedExe {
   repeated string cmd = 3;
 }
 
+// Information about from where the config was loaded
+//
+// Next ID: 3
+message ConfigSource {
+  // The commit at which the config was last changed
+  //
+  // This will enable the bootstrapped executable to apply the
+  // optimization to not perform a checkout so long as the version of
+  // the config on disk is the same version as was loaded by the
+  // bootstrapper.
+  buildbucket.v2.GitilesCommit last_changed_commit = 1;
+
+  // The path to the config
+  string path = 2;
+}
+
 // The input properties consumed by the chromium_bootstrap recipe module
 //
 // These will be set by the bootstrapper binary to communicate information about
 // the bootstrap operation that occurred. This enables the bootstrapped
 // executable to operate in a manner consistent with the bootstrapping process.
+//
+// Next ID: 5
 message ChromiumBootstrapModuleProperties {
 
   // Any commits that were accessed by the bootstrapper binary
@@ -59,4 +81,7 @@ message ChromiumBootstrapModuleProperties {
   //
   // This will allow the builder to report the source of the executable.
   BootstrappedExe exe = 3;
+
+  // The information about where the bootstrapped config was loaded
+  ConfigSource config_source = 4;
 }
