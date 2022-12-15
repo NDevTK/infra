@@ -4,7 +4,7 @@ create {
       repo: "https://github.com/pypa/virtualenv.git"
       version_restriction {
         op: EQ
-        val: "16.7.10"
+        val: "16.7.12"
       }
     }
     patch_dir: "patches"
