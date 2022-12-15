@@ -35,4 +35,12 @@ create {
   }
 }
 
+create {
+  platform_re: "windows-arm64"
+  build {
+    tool: "tools/cpython38"
+    tool: "tools/ninja"  # Depend on the bootstrapped version when cross-compiling
+  }
+}
+
 upload { pkg_prefix: "tools" }
