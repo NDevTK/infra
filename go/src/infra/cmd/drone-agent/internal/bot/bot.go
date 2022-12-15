@@ -113,7 +113,7 @@ func (s Starter) Start(c Config) (b Bot, err error) {
 		logFile:    f,
 		terminated: make(chan struct{}),
 	}
-	control, err := addToCgroup(c.BotID, uint64(cmd.Process.Pid), &specs.LinuxResources{})
+	control, err := addToCgroup(c.BotID, uint64(cmd.Process.Pid), c.Resources)
 	if err != nil {
 		bot.TerminateOrKill()
 		return nil, errors.Annotate(err, "start bot with %+v", c).Err()
@@ -159,6 +159,8 @@ type Config struct {
 	// The parent directory should be writable to allow creation
 	// of the drain file.
 	WorkDirectory string
+	// The Linux compute resources (CPU, RAM, I/O, etc.) assigned to this bot.
+	Resources *specs.LinuxResources
 }
 
 func (c Config) drainFilePath() string {

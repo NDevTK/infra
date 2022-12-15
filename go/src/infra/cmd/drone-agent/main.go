@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	specs "github.com/opencontainers/runtime-spec/specs-go"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
 	"google.golang.org/grpc/metadata"
@@ -65,6 +66,12 @@ var (
 	// botPrefix is used as the prefix for the bot ID.
 	// If DRONE_AGENT_BOT_PREFIX env is not set, then 'crossk-' will be used as default
 	botPrefix = getEnv("DRONE_AGENT_BOT_PREFIX", "crossk-")
+
+	// Bot compute resources settings.
+	// Block IO throttle settings. 0 means no throttling. Only /dev/sda (device
+	// number 8:0) is supported.
+	botBlkIOReadBPS  = getIntEnv("DRONE_AGENT_BOT_BLKIO_READ_BPS", 0)
+	botBlkIOWriteBPS = getIntEnv("DRONE_AGENT_BOT_BLKIO_WRITE_BPS", 0)
 )
 
 // versionFilePath is the path to a drone-agent version file.
@@ -131,6 +138,7 @@ func innerMain() error {
 		StartBotFunc:      bot.NewStarter(h).Start,
 		Hive:              hive,
 		BotPrefix:         botPrefix,
+		BotResources:      makeBotResources(),
 	}
 	a.Run(ctx)
 	return nil
@@ -227,4 +235,34 @@ func initializeHive(explicitHive, hostname string) string {
 		return m[1]
 	}
 	return ""
+}
+
+// makeBotResources returns a struct which defines the resources assigned to
+// each bot.
+func makeBotResources() *specs.LinuxResources {
+	// 8 and 0 is major/minor device number of /dev/sda mounted to
+	// drone containers. So far I don't see any other number than it.
+	var diskMajor int64 = 8
+	var diskMinor int64 = 0
+	return &specs.LinuxResources{
+		BlockIO: &specs.LinuxBlockIO{
+			ThrottleReadBpsDevice:  []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, uint64(botBlkIOReadBPS))},
+			ThrottleWriteBpsDevice: []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, uint64(botBlkIOWriteBPS))},
+		},
+	}
+}
+
+// newThrottleDevice returns a new instance of LinuxThrottleDevice.
+func newThrottleDevice(major, minor int64, rate uint64) *specs.LinuxThrottleDevice {
+	// We cannot use struct literals to initialize this struct because "Major"
+	// and "Minor" belong to a nested unexported struct. It has been fixed in
+	// the upstream repo
+	// https://github.com/opencontainers/runtime-spec/commit/84251a48404b19a99cc1b4a8f00c5b523e0d22d0
+	// but is not included in the latest release (v1.0.2) yet.
+	// TODO(guocb): initialize with struct literals when a newer release is
+	// available.
+	dev := specs.LinuxThrottleDevice{Rate: rate}
+	dev.Major = major
+	dev.Minor = minor
+	return &dev
 }

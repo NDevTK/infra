@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	specs "github.com/opencontainers/runtime-spec/specs-go"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/appengine/drone-queen/api"
@@ -56,6 +57,9 @@ type Agent struct {
 	Hive string
 	// botPrefix is used to prefix hostnames for bots.
 	BotPrefix string
+	// BotResources is the compute resources (CPU, RAM, disk I/O etc.) assigned
+	// to each bot.
+	BotResources *specs.LinuxResources
 }
 
 // logger defines the logging interface used by Agent.
@@ -364,6 +368,7 @@ func (h hook) botConfig(dutID string, workDir string) bot.Config {
 		SwarmingURL:   h.a.SwarmingURL,
 		BotID:         botID,
 		WorkDirectory: workDir,
+		Resources:     h.a.BotResources,
 	}
 }
 
