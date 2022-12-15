@@ -90,4 +90,7 @@ message Action {
 
   // allow_fail captures whether the action is allowed to fail or not.
   string allow_fail = 22;
+
+  // Action type is the type of action "ACTION_TYPE_" + {"UNSPECIFIED", "VERIFIER", "CONDITION", "RECOVERY"}.
+  string action_type = 23;
 }

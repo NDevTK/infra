@@ -49,6 +49,15 @@ const (
 	ValueTypeNumber ValueType = "number"
 )
 
+type ActionType string
+
+const (
+	ActionTypeUnspecified = ""
+	ActionTypeVerifier    = "verifier"
+	ActionTypeCondition   = "condition"
+	ActionTypeRecovery    = "recovery"
+)
+
 // Action is an event performed on a DUT.
 // TODO(gregorynisbet): Rename an action to something else so we don't collide with the other notion of an action.
 type Action struct {
@@ -86,6 +95,8 @@ type Action struct {
 	AllowFail AllowFail
 	// Plan name is the name of the currently-executing plan.
 	PlanName string
+	// Action type is "entrypoint", "critical", "recovery", or "condition".
+	Type ActionType
 }
 
 // UpdateStatus updates status of the action and error reason if error was provided.

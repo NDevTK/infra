@@ -65,6 +65,34 @@ func convertKarteAllowFailToAllowFail(allowFail kartepb.Action_AllowFail) metric
 	}
 }
 
+func convertKarteActionTypeToActionType(actionType kartepb.Action_ActionType) metrics.ActionType {
+	switch actionType {
+	case kartepb.Action_ACTION_TYPE_UNSPECIFIED:
+		return metrics.ActionTypeUnspecified
+	case kartepb.Action_ACTION_TYPE_VERIFIER:
+		return metrics.ActionTypeVerifier
+	case kartepb.Action_ACTION_TYPE_CONDITION:
+		return metrics.ActionTypeCondition
+	case kartepb.Action_ACTION_TYPE_RECOVERY:
+		return metrics.ActionTypeRecovery
+	}
+	return metrics.ActionTypeUnspecified
+}
+
+func convertActionTypeToKarteActionType(actionType metrics.ActionType) kartepb.Action_ActionType {
+	switch actionType {
+	case metrics.ActionTypeUnspecified:
+		return kartepb.Action_ACTION_TYPE_UNSPECIFIED
+	case metrics.ActionTypeVerifier:
+		return kartepb.Action_ACTION_TYPE_VERIFIER
+	case metrics.ActionTypeCondition:
+		return kartepb.Action_ACTION_TYPE_CONDITION
+	case metrics.ActionTypeRecovery:
+		return kartepb.Action_ACTION_TYPE_RECOVERY
+	}
+	return kartepb.Action_ACTION_TYPE_UNSPECIFIED
+}
+
 // ConvertTimeToProtobufTimestamp takes a time and converts it to a pointer to a protobuf timestamp.
 // This method sends the zero time to a nil pointer.
 func convertTimeToProtobufTimestamp(t time.Time) *timestamppb.Timestamp {
@@ -113,6 +141,7 @@ func convertActionToKarteAction(action *metrics.Action) *kartepb.Action {
 		Restarts:       action.Restarts,
 		AllowFail:      convertAllowFailToKarteAllowFail(action.AllowFail),
 		PlanName:       action.PlanName,
+		ActionType:     convertActionTypeToKarteActionType(action.Type),
 	}
 }
 
@@ -138,6 +167,7 @@ func convertKarteActionToAction(action *kartepb.Action) *metrics.Action {
 		Restarts:       action.GetRestarts(),
 		AllowFail:      convertKarteAllowFailToAllowFail(action.GetAllowFail()),
 		PlanName:       action.GetPlanName(),
+		Type:           convertKarteActionTypeToActionType(action.GetActionType()),
 	}
 }
 

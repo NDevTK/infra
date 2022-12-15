@@ -37,6 +37,7 @@ var CreateAction = &subcommands.Command{
 		r.Flags.IntVar(&r.restarts, "restarts", 0, "The number of times we restarted the plan")
 		r.Flags.StringVar(&r.planName, "plan-name", "", "The name of the current plan")
 		r.Flags.StringVar(&r.allowFail, "allow-fail", "", `whether the current action is allow to fail or not {"", "f", "u", "t"}`)
+		r.Flags.StringVar(&r.actionType, "action-type", "", `what the action type is {"", "u", "v", "c", "r"}`)
 		return r
 	},
 }
@@ -63,6 +64,7 @@ type createActionRun struct {
 	restarts    int
 	planName    string
 	allowFail   string
+	actionType  string
 }
 
 // nontrivialActionFields counts the number of fields in the action to be created with a non-default value.
@@ -96,6 +98,9 @@ func (c *createActionRun) nontrivialActionFields() int {
 		tally++
 	}
 	if c.allowFail != "" {
+		tally++
+	}
+	if c.actionType != "" {
 		tally++
 	}
 	return tally
@@ -148,6 +153,18 @@ func (c *createActionRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		action.AllowFail = kartepb.Action_ALLOW_FAIL
 	default:
 		return errors.Reason("invalid allowFail value %q", c.allowFail).Err()
+	}
+	switch c.actionType {
+	case "", "u":
+		action.ActionType = kartepb.Action_ACTION_TYPE_UNSPECIFIED
+	case "v":
+		action.ActionType = kartepb.Action_ACTION_TYPE_VERIFIER
+	case "c":
+		action.ActionType = kartepb.Action_ACTION_TYPE_CONDITION
+	case "r":
+		action.ActionType = kartepb.Action_ACTION_TYPE_RECOVERY
+	default:
+		return errors.Reason("invalid allowFail value %q", c.actionType).Err()
 	}
 	out, err := kClient.CreateAction(ctx, &kartepb.CreateActionRequest{Action: action})
 	if err != nil {

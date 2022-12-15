@@ -116,4 +116,17 @@ message Action {
     NO_ALLOW_FAIL = 2;
   };
   AllowFail allow_fail = 22;
+
+  // ActionType is the type of the action: verifier, condition, or recovery.
+  enum ActionType {
+    // ACTION_TYPE_UNSPECIFIED is the default action type.
+    ACTION_TYPE_UNSPECIFIED = 0;
+    // ACTION_TYPE_VERIFIER actions are critical actions and their dependencies.
+    ACTION_TYPE_VERIFIER = 1;
+    // ACTION_TYPE_CONDITION actions are condition actions and their dependencies.
+    ACTION_TYPE_CONDITION = 2;
+    // ACTION_TYPE_RECOVERY actions are recovery actions and their dependencies.
+    ACTION_TYPE_RECOVERY = 3;
+  }
+  ActionType action_type = 23;
 }
