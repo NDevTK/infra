@@ -12,7 +12,7 @@ a.src=g;m.parentNode.insertBefore(a,m)
 
 (function setupGoogleAnalytics() {
   const _EMAIL_REGEX =
-      ["/([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})/"];
+      ["/([a-zA-Z0-9_\-\.]+)(@|%40)([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})/"];
 
   ga('create', '[analytics_id]', {'siteSpeedSampleRate': 100});
 
