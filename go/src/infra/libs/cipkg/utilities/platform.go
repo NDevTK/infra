@@ -33,6 +33,18 @@ func CurrentPlatform() *Platform {
 	return NewPlatform(runtime.GOOS, runtime.GOARCH)
 }
 
+func PlatformFromCIPD(cipdPlat string) *Platform {
+	ss := strings.SplitN(cipdPlat, "-", 2)
+	os, arch := ss[0], ss[1]
+	if os == "mac" {
+		os = "darwin"
+	}
+	if arch == "armv6l" {
+		arch = "arm"
+	}
+	return NewPlatform(os, arch)
+}
+
 // Get(...) will return the value of the attribute
 func (p *Platform) Get(key string) string {
 	for _, attr := range p.attributes {
