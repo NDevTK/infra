@@ -120,12 +120,12 @@ class ProjectAdmin(flaskservlet.FlaskServlet):
 
     logo_gcs_id = ''
     logo_file_name = ''
-    if 'logo' in post_data and not isinstance(post_data['logo'], string_types):
+    if 'logo' in post_data and post_data['logo'].filename != '':
       item = post_data['logo']
       logo_file_name = item.filename
       try:
         logo_gcs_id = gcs_helpers.StoreLogoInGCS(
-            logo_file_name, item.value, mr.project.project_id)
+            logo_file_name, item.read(), mr.project.project_id)
       except gcs_helpers.UnsupportedMimeType, e:
         mr.errors.logo = e.message
     elif mr.project.logo_gcs_id and mr.project.logo_file_name:
