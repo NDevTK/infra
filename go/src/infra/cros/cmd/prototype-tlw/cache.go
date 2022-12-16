@@ -17,8 +17,11 @@ func (s *server) cache(ctx context.Context, parsedURL *url.URL, dutName, opName 
 	log.Printf("CacheForDut: Started Operation = %v", opName)
 	// GS cache URL to be used.
 	// In the "real" CacheForDut implementation, GS cache should be resolved here.
-	// TODO(guocb): Use chromeos6-cache2 instead of IP.
-	const baseURL = "http://100.115.220.100:8888/download/"
+	baseURL := "http://100.115.220.100:8082/download/"
+	// NOTE: Required for `chromeos8-*` DUTs.
+	if s.lab8 {
+		baseURL = "http://10.128.176.201:8082/download/"
+	}
 	if err := s.lroMgr.SetResult(opName, &tls.CacheForDutResponse{
 		Url: baseURL + parsedURL.Host + parsedURL.Path,
 	}); err != nil {

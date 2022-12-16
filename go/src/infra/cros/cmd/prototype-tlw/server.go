@@ -23,6 +23,7 @@ import (
 type server struct {
 	tls.UnimplementedWiringServer
 	lroMgr *lro.Manager
+	lab8   bool
 }
 
 func (s server) Serve(l net.Listener) error {

@@ -14,6 +14,7 @@ import (
 
 var (
 	port = flag.Int("port", 0, "Port to listen to")
+	lab8 = flag.Bool("lab8", false, "Use caching server in chromeos8 lab")
 )
 
 func main() {
@@ -23,6 +24,7 @@ func main() {
 		log.Fatalf("dev-tlw: %s", err)
 	}
 	s := server{}
+	s.lab8 = *lab8
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("dev-tlw: %s", err)
 	}
