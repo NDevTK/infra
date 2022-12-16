@@ -137,7 +137,7 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 			r.LogErr(err.Error())
 			return CmdError
 		}
-		r.bbAddArgs = patchListToBBAddArgs(r.patches)
+		r.bbAddArgs = append(r.bbAddArgs, patchListToBBAddArgs(r.patches)...)
 	}
 
 	if r.useProdTests {

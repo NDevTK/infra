@@ -171,10 +171,10 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 			Stdout: validJSON,
 		})
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	for _, patch := range tc.patches {
 		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
 	}
-	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
 		f.CommandRunners = append(f.CommandRunners,
@@ -302,5 +302,16 @@ func TestRun_stabilize(t *testing.T) {
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
 		expectedOrch:     "release-stabilize-15185.B-orchestrator",
 		expectedChildren: []string{"eve-release-stabilize-15185.B", "kevin-kernelnext-release-stabilize-15185.B"},
+	})
+}
+
+func TestRun_patches(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &runTestConfig{
+		branch:       "release-R106.15054.B",
+		skipPaygen:   false,
+		buildspec:    "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
+		expectedOrch: "staging-release-R106.15054.B-orchestrator",
+		patches:      []string{"crrev.com/c/1234567"},
 	})
 }
