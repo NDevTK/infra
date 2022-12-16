@@ -147,8 +147,8 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 	}
 	defer rc.Close()
 
-	content := make([]byte, unit.UncompressedSize64)
-	_, err = io.ReadFull(rc, content)
+	// TODO(crbug.com/1401479): Investigate why io.ReadAll sometimes fails here.
+	content, err := io.ReadAll(rc)
 	if err != nil {
 		logging.Warningf(ctx, "Error reading generated zip file unit %s: %s", kzip, err)
 		return err
