@@ -66,13 +66,6 @@ def RunSteps(api, go_version_variant):
       if api.platform.arch != 'arm':
         with api.context(cwd=co.path.join(patch_root)):
           api.python('python tests', 'test.py', ['test', '--verbose'])
-          # To preserve high CQ coverage vs very low coverage in infra_internal,
-          # test CQ separately. But only if CQ code is modified.
-          # Note that this will run CQ tests once again.
-          if internal and any(f.startswith('infra_internal/services/cq')
-                              for f in files):
-            api.python('python cq tests', 'test.py',
-                       ['test', 'infra_internal/services/cq'])
         if internal and (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/chromiumdash') for f in files):
           cwd = api.path['checkout'].join('appengine', 'chromiumdash')
@@ -191,11 +184,6 @@ def GenTests(api):
   yield (
     test('only_js') +
     diff('appengine/foo/static/stuff.js')
-  )
-
-  yield (
-    test('infra_internal_with_cq', internal=True) +
-    diff('infra_internal/services/cq/cq.py')
   )
 
   yield (test('infra_internal_with_chromium_dash', internal=True) +
