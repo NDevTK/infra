@@ -298,8 +298,8 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			}
 			log.Printf("provision: time to verify provision took %v", time.Since(t))
 		}
-	} else if isStatefulCorrupt(p.c) {
-		log.Printf("provision: Stateful is marked corrupt, provisioning stateful partition.")
+	} else if isStatefulCorrupt(p.c) || mismatchStatefulCheck(p.c) {
+		log.Printf("provision: Stateful is corrupt, provisioning stateful partition.")
 		t := time.Now()
 		if !req.GetPreserveStateful() && !req.PreventReboot {
 			if err := p.wipeStateful(ctx); err != nil {
@@ -333,6 +333,21 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
 			return
 		}
+
+		// After a reboot, need a new client connection.
+		sshCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+		defer cancel()
+
+		disconnect, err := p.connect(sshCtx, addr)
+		if err != nil {
+			setError(newOperationError(
+				codes.Aborted,
+				fmt.Sprintf("provision: failed to connect to DUT after mismatching/corrupt stateful fix and reboot, %s", err),
+				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+			return
+		}
+		defer disconnect()
+
 		log.Printf("provision: time to provision stateful took %v", time.Since(t))
 	} else {
 		log.Printf("provision: Operation=%s skipped as DUT is already on builder path %s", opName, p.targetBuilderPath)
@@ -612,6 +627,18 @@ func readLsbRelease(c *ssh.Client, r *regexp.Regexp) (string, error) {
 
 func isStatefulCorrupt(c *ssh.Client) bool {
 	return fileExists(c, "/mnt/stateful_partition/.corrupt_stateful")
+}
+
+func mismatchStatefulCheck(c *ssh.Client) bool {
+	// Check the preloaded DLC mismatch.
+	// NOTE: Verify one for now, if flakes in lab still occur, expand to entire supported DLC list.
+	if err := runCmd(c, "which dlcservice_util"); err != nil {
+		if _, err = runCmdOutput(c, "dlcservice_util --install --id=sample-dlc"); err != nil {
+			log.Printf("mismatch stateful check: stateful resident preloaded DLC corrupt, %s", err)
+			return true
+		}
+	}
+	return false
 }
 
 func shouldForceProvision(c *ssh.Client) bool {
