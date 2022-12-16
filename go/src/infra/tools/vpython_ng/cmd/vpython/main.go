@@ -95,7 +95,7 @@ func main() {
 	env := python.Environment{
 		Executable: rt.Executable,
 		CPython:    cpython,
-		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.10.chromium.7"),
+		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.12.chromium.7"),
 	}
 	wheel, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
 	if err != nil {

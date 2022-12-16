@@ -53,7 +53,7 @@ func cmd(app *application.Application) *exec.Cmd {
 	env := python.Environment{
 		Executable: app.PythonExecutable,
 		CPython:    python.CPython3FromCIPD("version:2@3.8.10.chromium.24"),
-		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.10.chromium.7"),
+		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.12.chromium.7"),
 	}
 	wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
 	So(err, ShouldBeNil)
@@ -149,7 +149,7 @@ func TestLegacyCache(t *testing.T) {
 				PythonVersion: "3.8",
 				Virtualenv: &vpython.Spec_Package{
 					Name:    "infra/3pp/tools/virtualenv",
-					Version: "version:2@16.7.10.chromium.7",
+					Version: "version:2@16.7.12.chromium.7",
 				},
 			},
 			Loader: &cipd.PackageLoader{
