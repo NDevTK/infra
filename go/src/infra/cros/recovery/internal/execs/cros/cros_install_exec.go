@@ -134,6 +134,10 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 			if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
 				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 			}
+			haltTimeout := am.AsDuration(ctx, "halt_timeout", 120, time.Second)
+			if _, err := dutRun(ctx, haltTimeout, "halt"); err != nil {
+				logger.Debugf("Install from USB drive: Halt the DUT failed: %s", err)
+			}
 			logger.Debugf("Install from USB drive: finished install process")
 		}
 		if am.AsBool(ctx, "run_fw_update", false) {
@@ -157,7 +161,6 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
 		// Register that device booted and sshable.
 		Callback:            callback,
-		HaltTimeout:         am.AsDuration(ctx, "halt_timeout", 120, time.Second),
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, logger); err != nil {
@@ -191,7 +194,6 @@ func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) err
 		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
 		// Register that device booted and sshable.
 		Callback:            callback,
-		HaltTimeout:         am.AsDuration(ctx, "halt_timeout", 120, time.Second),
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, info.NewLogger()); err != nil {
