@@ -2182,7 +2182,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Flash AP (FW) by servo": {
+		"Flash AP (FW) with GBB 0x18 by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP to the DUT by servo",
 				"Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
@@ -2199,6 +2199,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"update_ap_attempt_count:3",
 				"download_timeout:600",
+				"gbb_flags:0x18",
+				"use_cache_extractor:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 5400,
@@ -2222,6 +2224,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"update_ec_attempt_count:5",
 				"download_timeout:600",
+				"use_cache_extractor:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 6600,
@@ -2249,6 +2252,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ap_attempt_count:3",
 				"download_timeout:600",
 				"gbb_flags:0x18",
+				"use_cache_extractor:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 5400,
@@ -2264,7 +2268,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Verify servod is responsive",
 				"Flash EC (FW) by servo",
-				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+				"Flash AP (FW) with GBB 0x18 by servo",
 				"Cold reset by servo and wait for SSH",
 			},
 			ExecName: "sample_pass",
@@ -2291,6 +2295,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ap_attempt_count:3",
 				"download_timeout:600",
 				"gbb_flags:0x18",
+				"use_cache_extractor:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 10800,
