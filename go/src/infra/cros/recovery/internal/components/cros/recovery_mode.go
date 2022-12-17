@@ -25,9 +25,7 @@ type BootInRecoveryRequest struct {
 	BootTimeout  time.Duration
 	BootInterval time.Duration
 	// Call function to cal after device booted in recovery mode.
-	Callback func(context.Context) error
-	// rebbot after recovery
-	HaltTimeout         time.Duration
+	Callback            func(context.Context) error
 	IgnoreRebootFailure bool
 }
 
@@ -52,18 +50,15 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	closing := func() error {
 		// Register turn off for the DUT if at the end.
 		// All errors just logging as the action to clean up the state.
-		if _, err := dutBackgroundRun(ctx, req.HaltTimeout, "halt"); err != nil {
-			return errors.Annotate(err, "boot in recovery mode").Err()
-		}
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
 			return errors.Annotate(err, "boot in recovery mode").Err()
 		}
 		if err := servo.UpdateUSBVisibility(ctx, servo.USBVisibleOff, servod); err != nil {
-			return errors.Annotate(err, "boot in recovery mode").Err()
+			log.Debugf("Turn off USB drive on servo failed: %s", err)
 		}
 		if needSink {
 			if err := servo.SetPDRole(ctx, servod, servo.PD_ON, false); err != nil {
-				return errors.Annotate(err, "boot in recovery mode").Err()
+				log.Debugf("Restore PD for DUT failed: %s", err)
 			}
 		}
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueON); err != nil {
