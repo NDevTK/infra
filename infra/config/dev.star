@@ -450,7 +450,7 @@ luci.realm(
         # For led.
         luci.binding(
             roles = "role/swarming.poolUser",
-            groups = "mdb/chrome-troopers",
+            groups = ["mdb/chrome-troopers", "mdb/chrome-sre-ops-syd-interns"],
         ),
     ],
 )
