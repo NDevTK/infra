@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -25,22 +26,39 @@ const defaultFilePermissions fs.FileMode = 0666
 
 // DmesgExec grabs dmesg and persists the file into the log directory.
 // DmesgExec fails if and only if the dmesg executable doesn't exist or returns nonzero.
+//
+// This exec function accepts the following parameters from the action:
+// human_readable: whether the dmesg output is expected to be in human-readlable form.
+// create_crashinfo_dir: whether the subdirectory for crashinfo needs to be created.
 func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
+	argMap := info.GetActionArgs(ctx)
+	logRoot := info.GetLogRoot()
+	if argMap.AsBool(ctx, "create_crashinfo_dir", false) {
+		logRoot = filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", info.GetDut().Name))
+	}
 	run := info.DefaultRunner()
 	log := info.NewLogger()
-	logRoot := info.GetLogRoot()
-	output, err := run(ctx, time.Minute, "dmesg", "-H")
+	var output string
+	var err error
+	if argMap.AsBool(ctx, "human_readable", true) {
+		output, err = run(ctx, time.Minute, "dmesg", "-H")
+	} else {
+		output, err = run(ctx, time.Minute, "dmesg")
+	}
 	if err != nil {
 		return errors.Annotate(err, "dmesg exec").Err()
 	}
-	// Output is non-empty and dmesg ran successfully. This exec is successful
+	// Output is non-empty and dmesg ran successfully.
+
+	// Attempting to create a directory that already exists will not
+	// result in an error, hence we can just create this new directory
+	// without checking whether it already exists.
+	if err = os.MkdirAll(logRoot, os.ModePerm); err != nil {
+		return errors.Annotate(err, "dmesg exec").Err()
+	}
 	f := filepath.Join(logRoot, "dmesg")
 	log.Debugf("dmesg path to safe: %s", f)
 	ioutil.WriteFile(f, []byte(output), defaultFilePermissions)
-	// Write the number of bytes we collected to a separate file alongside dmesg.txt.
-	// This allows us to know with complete certainty that we intentionally collected 0 bytes of output, for example.
-	fc := filepath.Join(logRoot, "dmesg_bytes_count")
-	ioutil.WriteFile(fc, []byte(fmt.Sprintf("%d", len(output))), defaultFilePermissions)
 	return nil
 }
 

@@ -2667,8 +2667,21 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 		},
 		"Collect logs before repair": {
-			// TODO (vkjoshi@): Also need to collect the crash dump,
-			// including dmesg.
+			// TODO (vkjoshi@): Also need to collect the crash dump.
+			Docs: []string{
+				"We collect any pre-existing logs before executing repairs on ",
+				"the DUT. Any failures with this initial log collection are ",
+				"not critical, and we will proceed with the actual DUT repair ",
+				"immediately after this.",
+			},
+			Dependencies: []string{
+				"Collect logs from DUT on /var/log/*",
+				"Collect dmesg",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+		},
+		"Collect logs from DUT on /var/log/*": {
 			Docs: []string{
 				"We collect any pre-existing logs before executing repairs on ",
 				"the DUT. Any failures with this initial log collection are ",
@@ -2685,6 +2698,18 @@ func crosRepairActions() map[string]*Action {
 				"src_type:dir",
 				"use_host_dir:true",
 				"dest_suffix:before_repair",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Collect dmesg": {
+			Docs: []string{
+				"We collect the dmesg output.",
+			},
+			ExecName: "cros_dmesg",
+			ExecExtraArgs: []string{
+				"human_readable:false",
+				"create_crashinfo_dir:true",
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
