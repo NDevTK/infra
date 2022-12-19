@@ -500,7 +500,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		monitorFiles = append(monitorFiles, strings.Replace(f, "ec.bin", ecMonitorFileName, 1))
 	}
 	if req.UseCacheToExtractor {
-		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, ecMonitorFileName, candidatesFiles, run, log); err != nil {
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, ecMonitorFileName, monitorFiles, run, log); err != nil {
 			log.Debugf("Extract EC files: fail to extract %q file. Error: %s", ecMonitorFileName, err)
 		}
 	} else {

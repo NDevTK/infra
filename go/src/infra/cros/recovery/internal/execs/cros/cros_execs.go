@@ -338,13 +338,13 @@ func logTypeCStatus(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "log type C status").Err()
 	}
-	log.Infof(ctx, "(%s) %s", status0, out)
+	log.Debugf(ctx, "(%s) %s", status0, out)
 	run(ctx, time.Minute, status0)
 	out, err = run(ctx, time.Minute, status1)
 	if err != nil {
 		return errors.Annotate(err, "log type C status").Err()
 	}
-	log.Infof(ctx, "(%s) %s", status1, out)
+	log.Debugf(ctx, "(%s) %s", status1, out)
 	return nil
 }
 
