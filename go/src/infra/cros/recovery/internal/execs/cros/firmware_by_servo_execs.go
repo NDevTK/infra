@@ -138,7 +138,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	servod := info.NewServod()
 	req := &firmware.InstallFirmwareImageRequest{
 		DownloadImagePath:    downloadFilename,
-		DownloadImageTimeout: am.AsDuration(ctx, "download_timeout", 120, time.Second),
+		DownloadImageTimeout: am.AsDuration(ctx, "download_timeout", 240, time.Second),
 		DownloadDir:          fwDownloadDir,
 		Board:                am.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                am.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),

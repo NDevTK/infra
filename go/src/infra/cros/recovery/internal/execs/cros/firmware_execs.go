@@ -183,7 +183,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 	run := info.DefaultRunner()
 	req := &firmware.InstallFirmwareImageRequest{
 		DownloadImagePath:    downloadFilename,
-		DownloadImageTimeout: actionArgs.AsDuration(ctx, "download_timeout", 120, time.Second),
+		DownloadImageTimeout: actionArgs.AsDuration(ctx, "download_timeout", 240, time.Second),
 		DownloadDir:          fwDownloadDir,
 		DutRunner:            run,
 		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
