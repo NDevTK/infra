@@ -2718,5 +2718,18 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
+		"Collect crash dumps": {
+			Docs: []string{
+				"We collect the crash dumps on the DUT. Additionally, the files ",
+				"on the source are deleted, irrespective of whether the ",
+				"copy-attempt completes with success or not.",
+			},
+			ExecName: "cros_collect_crash_dumps",
+			ExecExtraArgs: []string{
+				"clean:true",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
 	}
 }
