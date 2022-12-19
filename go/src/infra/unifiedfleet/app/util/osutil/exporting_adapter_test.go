@@ -85,6 +85,7 @@ var lse = ufspb.MachineLSE{
 										chromeosLab.ChameleonType_CHAMELEON_TYPE_DP,
 										chromeosLab.ChameleonType_CHAMELEON_TYPE_HDMI,
 									},
+									Hostname:   "test-chameleon",
 									AudioBoard: true,
 								},
 								Rpm: &chromeosLab.OSRPM{
@@ -621,7 +622,7 @@ common {
           audio_board: false
           audio_box: false
           audio_loopback_dongle: false
-          chameleon: true
+          chameleon: false
           chameleon_type: CHAMELEON_TYPE_INVALID
           conductive: false
           huddly: false

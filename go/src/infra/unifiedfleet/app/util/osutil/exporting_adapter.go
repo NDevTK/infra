@@ -97,10 +97,12 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 
 	p.AudioBoard = &falseValue
 	if chameleon := d.GetChameleon(); chameleon != nil {
+		if chameleon.GetHostname() != "" {
+			p.Chameleon = &trueValue
+		}
 		for _, c := range chameleon.GetChameleonPeripherals() {
 			cType := inventory.Peripherals_ChameleonType(c)
 			if cType != inventory.Peripherals_CHAMELEON_TYPE_INVALID {
-				p.Chameleon = &trueValue
 				p.ChameleonType = append(p.ChameleonType, cType)
 			}
 		}
@@ -484,7 +486,6 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	p.ServoState = setPeripheralState(s.GetServo())
 	p.Servo = setDutStateHelper(s.GetServo())
 	p.ChameleonState = setPeripheralState(s.GetChameleon())
-	p.Chameleon = setDutStateHelper(s.GetChameleon())
 	p.AudioLoopbackDongle = setDutStateHelper(s.GetAudioLoopbackDongle())
 	p.ServoUsbState = setHardwareState(s.GetServoUsbState())
 	p.StorageState = setHardwareState(s.GetStorageState())
