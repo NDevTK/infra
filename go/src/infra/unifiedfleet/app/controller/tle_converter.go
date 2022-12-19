@@ -43,8 +43,11 @@ func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload
 		logging.Debugf(ctx, "Convert: convert TleSource")
 		return convertTleSource(ctx, dutAttr, lse, dutState)
 	}
+
+	// TODO (b/263153839): Disabling FlatConfig conversion for now. Pending
+	// redesign of FlatConfig conversion.
 	logging.Debugf(ctx, "Convert: convert FlatConfigSource")
-	return convertFlatConfigSource(ctx, dutAttr, flatConfig)
+	return nil, errors.New("convert FlatConfigSource is disabled; skipping")
 }
 
 // convertFlatConfigSource handles the label conversion of FlatConfig.

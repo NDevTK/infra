@@ -968,16 +968,18 @@ func getSchedulableLabels(ctx context.Context, machine *ufspb.Machine, lse *ufsp
 		return nil, err
 	}
 
-	logging.Debugf(ctx, "getSchedulableLabels: get FlatConfig by id %s", fcId)
-	fc, err := configuration.GetFlatConfig(ctx, fcId)
-	if err != nil {
-		return nil, err
-	}
+	// TODO (b/263153839): Pending redesign of FlatConfig conversion.
+	//
+	// logging.Debugf(ctx, "getSchedulableLabels: get FlatConfig by id %s", fcId)
+	// fc, err := configuration.GetFlatConfig(ctx, fcId)
+	// if err != nil && status.Code(err) != codes.NotFound {
+	// 	return nil, err
+	// }
 
 	logging.Debugf(ctx, "getSchedulableLabels: generating Swarming dimensions")
 	ufsLabels := make(swarming.Dimensions)
 	for _, dutAttr := range attrs {
-		labelsMap, err := Convert(ctx, dutAttr, fc, lse, state)
+		labelsMap, err := Convert(ctx, dutAttr, nil, lse, state)
 		if err != nil {
 			logging.Warningf(ctx, "could not get label values for %s %s: %s", fcId, dutAttr.GetId().GetValue(), err)
 			continue
