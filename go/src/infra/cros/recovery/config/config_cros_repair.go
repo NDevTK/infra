@@ -2604,8 +2604,15 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "is_camerabox_tablet_on_os_version",
 			RecoveryActions: []string{
-				"provision_camerabox_tablet",
+				"provision camerabox tablet",
 			},
+		},
+		"provision camerabox tablet": {
+			Docs: []string{
+				"Provision camerabox tablet",
+			},
+			ExecName:    "provision_camerabox_tablet",
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"is_camerabox_tablet_pool": {
 			Docs: []string{
