@@ -27,6 +27,8 @@ type auditRun struct {
 	runVerifyServoUSB   bool
 	runVerifyDUTStorage bool
 	runVerifyRpmConfig  bool
+
+	latestVersion bool
 }
 
 // AuditDutsCmd contains audit-duts command specification
@@ -43,6 +45,7 @@ var AuditDutsCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.runVerifyServoUSB, "servo-usb", false, "Run the verifier for Servo USB drive.")
 		c.Flags.BoolVar(&c.runVerifyDUTStorage, "dut-storage", false, "Run the verifier for DUT storage.")
 		c.Flags.BoolVar(&c.runVerifyRpmConfig, "rpm-config", false, "Run the verifier to check and cache mac address of DUT NIC to Servo.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
@@ -80,7 +83,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	for _, host := range args {
 		host = heuristics.NormalizeBotNameToDeviceName(host)
 		for _, taskName := range taskNames {
-			taskURL, err := scheduleAuditBuilder(ctx, bc, e, taskName, host, sessionTag)
+			taskURL, err := scheduleAuditBuilder(ctx, bc, e, taskName, host, c.latestVersion, sessionTag)
 			if err != nil {
 				fmt.Fprintf(a.GetErr(), "Skipping %q for %q because %s\n", taskName, host, err.Error())
 			} else {
@@ -111,12 +114,15 @@ func (c *auditRun) getTaskNames() ([]string, error) {
 }
 
 // scheduleAuditBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, taskName string, host string, adminSession string) (string, error) {
+func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, taskName string, host string, latestVersion bool, adminSession string) (string, error) {
 	tn, err := buildbucket.NormalizeTaskName(taskName)
 	if err != nil {
 		return "", errors.Annotate(err, "schedule audit builder").Err()
 	}
 	v := buildbucket.CIPDProd
+	if latestVersion {
+		v = buildbucket.CIPDLatest
+	}
 	p := &buildbucket.Params{
 		BuilderName:    tn.BuilderName(),
 		UnitName:       host,
