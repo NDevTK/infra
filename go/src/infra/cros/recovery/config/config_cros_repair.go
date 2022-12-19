@@ -60,7 +60,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"state:ready",
 			},
-			RunControl: RunControl_RUN_ONCE,
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Set state: needs_repair": {
 			Docs: []string{
@@ -70,7 +71,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"state:needs_repair",
 			},
-			RunControl: RunControl_RUN_ONCE,
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Set state: repair_failed": {
 			Docs: []string{
@@ -80,7 +82,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"state:repair_failed",
 			},
-			RunControl: RunControl_RUN_ONCE,
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Set state: needs_deploy": {
 			Docs: []string{
@@ -90,6 +93,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"state:needs_deploy",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Device is pingable": {
 			Docs: []string{

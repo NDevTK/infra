@@ -22,15 +22,17 @@ func btpeerRepairPlan() *Plan {
 				Docs: []string{
 					"The device state BROKEN.",
 				},
-				ExecName:   "btpeer_state_broken",
-				RunControl: RunControl_RUN_ONCE,
+				ExecName:      "btpeer_state_broken",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state: WORKING": {
 				Docs: []string{
 					"The device state WORKING.",
 				},
-				ExecName:   "btpeer_state_working",
-				RunControl: RunControl_RUN_ONCE,
+				ExecName:      "btpeer_state_working",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Device is pingable": {
 				Docs: []string{

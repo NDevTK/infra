@@ -23,7 +23,8 @@ func CrosVMSuccessConfig() *Configuration {
 						ExecExtraArgs: []string{
 							"state:ready",
 						},
-						RunControl: RunControl_RUN_ONCE,
+						RunControl:    RunControl_RUN_ONCE,
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 					},
 				},
 			},

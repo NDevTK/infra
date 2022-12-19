@@ -1329,159 +1329,182 @@ func servoRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:MISSING_CONFIG",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:WRONG_CONFIG": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:WRONG_CONFIG",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:NO_SSH": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:NO_SSH",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:BROKEN": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:BROKEN",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:NOT_CONNECTED": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:NOT_CONNECTED",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:NEED_REPLACEMENT": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:NEED_REPLACEMENT",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:TOPOLOGY_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:TOPOLOGY_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:CR50_NOT_ENUMERATED": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:CR50_NOT_ENUMERATED",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:SERVOD_DUT_CONTROLLER_MISSING": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:SERVOD_DUT_CONTROLLER_MISSING",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:SERVO_UPDATER_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:SERVO_UPDATER_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:SERVOD_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:SERVOD_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:SERVO_HOST_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:SERVO_HOST_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:SERVOD_PROXY_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:SERVOD_PROXY_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:COLD_RESET_PIN_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:COLD_RESET_PIN_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:WARM_RESET_PIN_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:WARM_RESET_PIN_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:SBU_LOW_VOLTAGE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:SBU_LOW_VOLTAGE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:DUT_NOT_CONNECTED": {
 				ExecExtraArgs: []string{"state:DUT_NOT_CONNECTED"},
 				ExecName:      "servo_set_servo_state",
 				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:CR50_CONSOLE_MISSING": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:CR50_CONSOLE_MISSING",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:EC_BROKEN": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:EC_BROKEN",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:BAD_RIBBON_CABLE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:BAD_RIBBON_CABLE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:LID_OPEN_FAILED": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:LID_OPEN_FAILED",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:CCD_TESTLAB_ISSUE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:CCD_TESTLAB_ISSUE",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:WORKING": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
 					"state:WORKING",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Try fake disconnect and stop": {
 				Docs: []string{
