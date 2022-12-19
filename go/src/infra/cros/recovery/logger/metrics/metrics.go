@@ -49,6 +49,7 @@ const (
 	ValueTypeNumber ValueType = "number"
 )
 
+// ActionType describes the use of the action within the plan.
 type ActionType string
 
 const (

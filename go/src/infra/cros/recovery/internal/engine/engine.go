@@ -138,13 +138,8 @@ func (r *recoveryEngine) runCriticalActionsAttempt(ctx context.Context, attempt 
 		step, ctx = build.StartStep(ctx, stepName)
 		defer func() { step.End(err) }()
 	}
-	return r.runActions(ctx, r.plan.GetCriticalActions(), r.args.EnableRecovery, "Action")
-}
-
-// runActions runs actions in order.
-func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enableRecovery bool, stepNamePrefix string) error {
-	for _, actionName := range actions {
-		if _, _, err := r.runAction(ctx, actionName, enableRecovery, stepNamePrefix); err != nil {
+	for _, actionName := range r.plan.GetCriticalActions() {
+		if _, _, err := r.runAction(ctx, actionName, r.args.EnableRecovery, "Critical Action", metrics.ActionTypeVerifier); err != nil {
 			return errors.Annotate(err, "run actions").Err()
 		}
 	}
@@ -168,7 +163,7 @@ const (
 // 2) Check if the action is applicable based on conditions. Skip if any fail.
 // 3) Run dependencies of the action. Fail if any fails.
 // 4) Run action exec function. Fail if any fail.
-func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool, stepNamePrefix string) (metric *metrics.Action, status actionRunStatus, rErr error) {
+func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool, stepNamePrefix string, actionType metrics.ActionType) (metric *metrics.Action, status actionRunStatus, rErr error) {
 	// The step and metrics need to know about error but if we need to stop from return then it is here.
 	forgiveError := false
 	defer func() {
@@ -228,6 +223,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			metricKind = fmt.Sprintf("action:%s", actionName)
 		}
 		metric = r.args.NewMetricsAction(metricKind)
+		metric.Type = actionType
 		switch act.GetAllowFailAfterRecovery() {
 		case true:
 			metric.AllowFail = metrics.YesAllowFail
@@ -276,7 +272,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		// Return nil error so we can continue execution of next actions...
 		return metric, actionSkip, nil
 	}
-	if err := r.runDependencies(ctx, actionName, enableRecovery); err != nil {
+	if err := r.runDependencies(ctx, actionName, actionType, enableRecovery); err != nil {
 		if startOverTag.In(err) {
 			return metric, actionFail, errors.Annotate(err, "run action %q", actionName).Err()
 		}
@@ -386,7 +382,7 @@ func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName str
 	log.Debugf(ctx, "Action %q: starting running conditions...", actionName)
 	enableRecovery := false
 	for _, condition := range a.GetConditions() {
-		if _, _, err := r.runAction(ctx, condition, enableRecovery, "Condition"); err != nil {
+		if _, _, err := r.runAction(ctx, condition, enableRecovery, "Condition", metrics.ActionTypeCondition); err != nil {
 			log.Debugf(ctx, "Action %q: condition %q fails. Error: %s", actionName, condition, err)
 			return condition, errors.Annotate(err, "run conditions").Err()
 		}
@@ -396,7 +392,7 @@ func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName str
 }
 
 // runDependencies runs action's dependencies.
-func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string, enableRecovery bool) error {
+func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string, actionType metrics.ActionType, enableRecovery bool) error {
 	a := r.getAction(actionName)
 	if len(a.GetDependencies()) == 0 {
 		log.Debugf(ctx, "Action %q: no dependencies.", actionName)
@@ -404,7 +400,7 @@ func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string,
 	}
 	log.Debugf(ctx, "Action %q: starting running dependencies...", actionName)
 	for _, dependencyName := range a.GetDependencies() {
-		if _, _, err := r.runAction(ctx, dependencyName, enableRecovery, "Dependency"); err != nil {
+		if _, _, err := r.runAction(ctx, dependencyName, enableRecovery, "Dependency", actionType); err != nil {
 			log.Debugf(ctx, "Action %q: dependency %q fails. Errors: %s", actionName, dependencyName, err)
 			return errors.Annotate(err, "dependencies").Err()
 		}
@@ -429,7 +425,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 			log.Infof(ctx, "Recovery %q skipped as already used before for %q.", recoveryName, actionName)
 			continue
 		}
-		recoveryMetric, status, err := r.runAction(ctx, recoveryName, false, "Recovery")
+		recoveryMetric, status, err := r.runAction(ctx, recoveryName, false, "Recovery", metrics.ActionTypeRecovery)
 		if err != nil {
 			log.Infof(ctx, "Recovery %q: fail", recoveryName)
 			log.Debugf(ctx, "Recovery %q: fail. Error: %s", recoveryName, err)
