@@ -11,7 +11,7 @@ import (
 func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Collect logs before repair",
+			"Collect logs and crashinfo before repair",
 			"Set state: repair_failed",
 			"dut_has_board_name",
 			"dut_has_model_name",
@@ -2682,8 +2682,7 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Collect logs before repair": {
-			// TODO (vkjoshi@): Also need to collect the crash dump.
+		"Collect logs and crashinfo before repair": {
 			Docs: []string{
 				"We collect any pre-existing logs before executing repairs on ",
 				"the DUT. Any failures with this initial log collection are ",
@@ -2693,8 +2692,10 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Collect logs from DUT on /var/log/*",
 				"Collect dmesg",
+				"Collect crash dumps",
 			},
 			ExecName:               "sample_pass",
+			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
 		"Collect logs from DUT on /var/log/*": {
