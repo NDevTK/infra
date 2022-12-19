@@ -69,7 +69,7 @@ message DutState {
   string hostname = 11;
 }
 
-// Next Tag: 26
+// Next Tag: 27
 enum PeripheralState {
   // Please keep for all unknown states.
   UNKNOWN = 0;
@@ -125,6 +125,8 @@ enum PeripheralState {
   WARM_RESET_PIN_ISSUE = 24;
   // Issue related to power button pin on the DUT.
   POWER_BUTTON_PIN_ISSUE = 25;
+  // Peripheral state is not applicable.
+  NOT_APPLICABLE = 26;
 }
 
 // The states are using for DUT storage and USB-drive on servo.
