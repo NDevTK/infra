@@ -157,7 +157,62 @@ func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// collectCrashDumpsExec fetches the crash dumps from the DUT.
+//
+// This exec function accepts the following parameters from the action:
+// clean: remove the source file on the DUT, even if the copy attempt did not succeed.
+// cleanup_timeout: the amount of time within which file cleanup should happen.
+func collectCrashDumpsExec(ctx context.Context, info *execs.ExecInfo) error {
+	logRoot := info.GetLogRoot()
+	resource := info.GetActiveResource()
+	infoDir := filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", resource))
+	if err := os.MkdirAll(infoDir, os.ModePerm); err != nil {
+		return errors.Annotate(err, "collect crash dumps execs").Err()
+	}
+	// Note: at this time we are only interested in the collection of
+	// logs. The legacy logic to additionally create the stacktrace
+	// for the crashdumps does not work correctly. We will eventually
+	// include a correct implementation of the same in Paris. Bug
+	// http://b/262346604 has been created to keep track of this.
+
+	// The location of crash dumps on the DUT.
+	const crashDir = "/var/spool/crash/"
+	const crashFiles = crashDir + "*"
+	run := info.NewRunner(resource)
+	output, err := run(ctx, time.Minute, "ls", "-1", crashFiles)
+	if err != nil {
+		return errors.Annotate(err, "collect crash dumps exec").Err()
+	}
+	log := info.NewLogger()
+	if output != "" {
+		orphans := strings.Split(output, "\n")
+		argMap := info.GetActionArgs(ctx)
+		cleanUp := argMap.AsBool(ctx, "clean", true)
+		timeout := argMap.AsDuration(ctx, "cleanup_timeout", 10, time.Second)
+		for _, f := range orphans {
+			log.Infof("Collect Crash Dumps Exec: Attempting to collect orphan file %q", f)
+			if err := info.CopyFrom(ctx, info.GetDut().Name, f, infoDir); err != nil {
+				log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while copying %q to %q", err.Error(), f, infoDir)
+			}
+			if cleanUp {
+				fPath := crashDir + f
+				if _, err := run(ctx, timeout, "rm", "-f", fPath); err != nil {
+					log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while removing file %q on the DUT", err.Error(), fPath)
+				}
+			}
+		}
+		if len(orphans) == 0 {
+			log.Debugf("Collect Crash Dumps Exec: There are no orphaned crashes, hence deleting the destination %s", infoDir)
+			if err := os.RemoveAll(infoDir); err != nil {
+				log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while removing the source directory %q", err.Error(), infoDir)
+			}
+		}
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_dmesg", dmesgExec)
 	execs.Register("cros_copy_to_logs", copyToLogsExec)
+	execs.Register("cros_collect_crash_dumps", collectCrashDumpsExec)
 }
