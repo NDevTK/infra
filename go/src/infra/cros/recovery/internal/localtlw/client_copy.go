@@ -83,7 +83,13 @@ func (c *tlwClient) CopyDirectoryTo(ctx context.Context, req *tlw.CopyRequest) e
 
 // CopyDirectoryFrom copies directory from remote device to local, recursively.
 func (c *tlwClient) CopyDirectoryFrom(ctx context.Context, req *tlw.CopyRequest) error {
-	if err := tlwio.CopyDirectoryFrom(ctx, c.sshPool, req); err != nil {
+	// TODO (vkjoshi@): Need to add support for containerized
+	// servo-hosts, analogous to that in CopyFileFrom.
+	if err := tlwio.CopyDirectoryFrom(ctx, c.sshPool, &tlw.CopyRequest{
+		Resource:        localproxy.BuildAddr(req.Resource),
+		PathSource:      req.PathSource,
+		PathDestination: req.PathDestination,
+	}); err != nil {
 		return errors.Annotate(err, "copy directory from").Err()
 	}
 	return nil

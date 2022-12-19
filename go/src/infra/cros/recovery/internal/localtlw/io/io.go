@@ -356,7 +356,7 @@ func checkFileExists(ctx context.Context, filePath string) error {
 		return errors.Annotate(err, "check file exists: cannot determine if %q exists", filePath).Err()
 	}
 	if s.IsDir() {
-		return errors.Annotate(err, "check file exists: %q is a directory, not a file", filePath).Err()
+		return errors.Reason("check file exists: expected a directory, but found a file %q", filePath).Err()
 	}
 	return nil
 }
