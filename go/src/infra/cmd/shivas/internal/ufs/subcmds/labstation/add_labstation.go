@@ -74,6 +74,9 @@ var AddLabstationCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.board, "board", "", "board the device is based on")
 		c.Flags.StringVar(&c.rack, "rack", "", "rack that the labstation is on")
 		c.Flags.StringVar(&c.zone, "zone", "", "zone that the labstation is on. "+cmdhelp.ZoneFilterHelpText)
+
+		// Scheduling
+		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
@@ -102,6 +105,9 @@ type addLabstation struct {
 	board string
 	rack  string
 	zone  string
+
+	// Scheduling
+	latestVersion bool
 }
 
 var mcsvFields = []string{
@@ -175,7 +181,7 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		err := c.addLabstationToUFS(ctx, ic, params)
 		resTable.RecordResult(ufsOp, params.Labstation.GetHostname(), err)
 		if err == nil {
-			dErr := utils.ScheduleDeployTask(ctx, bbClient, e, params.Labstation.GetHostname(), sessionTag)
+			dErr := utils.ScheduleDeployTask(ctx, bbClient, e, params.Labstation.GetHostname(), sessionTag, c.latestVersion)
 			resTable.RecordResult(swarmingOp, params.Labstation.GetHostname(), dErr)
 		} else {
 			// Record deploy task skip.

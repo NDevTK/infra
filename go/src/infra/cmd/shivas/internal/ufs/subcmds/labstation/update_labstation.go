@@ -73,6 +73,9 @@ var UpdateLabstationCmd = &subcommands.Command{
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a redeploy task.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
+
+		// Scheduling
+		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
@@ -97,6 +100,9 @@ type updateLabstation struct {
 	// Deploy task inputs.
 	forceDeploy bool
 	deployTags  []string
+
+	// Scheduling
+	latestVersion bool
 }
 
 func (c *updateLabstation) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -174,7 +180,7 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 		for _, req := range deployTasks {
 			// Check if deploy task is required or force deploy is set.
 			if c.forceDeploy || c.isDeployTaskRequired(req) {
-				err = utils.ScheduleDeployTask(ctx, bbClient, e, req.MachineLSE.GetHostname(), sessionTag)
+				err = utils.ScheduleDeployTask(ctx, bbClient, e, req.MachineLSE.GetHostname(), sessionTag, c.latestVersion)
 				if err != nil {
 					c.verbosePrint("Unable to deploy task for %s: %s\n", req.MachineLSE.GetHostname(), err.Error())
 				}

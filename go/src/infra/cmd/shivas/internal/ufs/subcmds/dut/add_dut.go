@@ -114,6 +114,9 @@ var AddDUTCmd = &subcommands.Command{
 
 		// Multi-peripherals
 		c.Flags.UintVar(&c.bluetoothPeersCount, "btpn", 0, "number of Bluetooth peers connected")
+
+		// Scheduling
+		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
@@ -174,6 +177,9 @@ type addDUT struct {
 
 	// Multi-peripherals
 	bluetoothPeersCount uint
+
+	// Scheduling
+	latestVersion bool
 }
 
 var mcsvFields = []string{
@@ -265,7 +271,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				continue
 			}
 		}
-		utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag)
+		utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag, c.latestVersion)
 	}
 	if len(dutParams) > 1 {
 		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))

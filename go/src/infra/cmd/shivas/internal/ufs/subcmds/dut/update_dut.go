@@ -145,6 +145,9 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
 		c.Flags.Var(utils.CSVString(&c.modemInfo), "modeminfo", cmdhelp.ModemInfoHelpText+". "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(utils.CSVStringList(&c.simInfo), "siminfo", cmdhelp.SimInfoHelpText+". "+cmdhelp.ClearFieldHelpText)
+
+		// Scheduling
+		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
@@ -200,6 +203,9 @@ type updateDUT struct {
 
 	// For use in determining if a flag is set
 	flagInputs map[string]bool
+
+	// Scheduling
+	latestVersion bool
 }
 
 func (c *updateDUT) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -291,7 +297,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 		}
 		// Swarm a deploy task if required or enforced.
 		if needRunDeploy || c.forceDeploy {
-			utils.ScheduleDeployTask(ctx, bc, e, req.GetMachineLSE().GetHostname(), sessionTag)
+			utils.ScheduleDeployTask(ctx, bc, e, req.GetMachineLSE().GetHostname(), sessionTag, c.latestVersion)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
 
 			// Remove the task entry to avoid triggering multiple tasks.

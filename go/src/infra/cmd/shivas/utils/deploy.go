@@ -17,11 +17,14 @@ import (
 )
 
 // ScheduleDeployTask schedules a deploy task by Buildbucket for PARIS.
-func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Environment, unit, sessionTag string) error {
+func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Environment, unit, sessionTag string, useLatestVersion bool) error {
 	if unit == "" {
 		return errors.Reason("schedule deploy task: unit name is empty").Err()
 	}
 	v := buildbucket.CIPDProd
+	if useLatestVersion {
+		v = buildbucket.CIPDLatest
+	}
 	p := &buildbucket.Params{
 		BuilderName:    "deploy",
 		UnitName:       unit,
