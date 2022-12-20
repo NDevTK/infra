@@ -386,17 +386,19 @@ func AuditStorageSMART(ctx context.Context, r components.Runner, storage *tlw.St
 	if !ok {
 		return errors.Reason("audit storage smart: cannot find corresponding hardware state match in the map").Err()
 	}
-	if convertedHardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
+	switch convertedHardwareState {
+	case tlw.HardwareState_HARDWARE_UNSPECIFIED:
 		return errors.Reason("audit storage smart: DUT storage did not detected or state cannot extracted").Err()
-	}
-	if convertedHardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
+	case tlw.HardwareState_HARDWARE_NEED_REPLACEMENT:
 		log.Debugf(ctx, "Detected issue with storage on the DUT")
 		storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-		log.Debugf(ctx, "Audit Storage Smart: setting the dut state to :%s", string(dutstate.NeedsReplacement))
+		log.Debugf(ctx, "Setting the DUT state: %q", string(dutstate.NeedsReplacement))
 		dut.State = dutstate.NeedsReplacement
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()
+	default:
+		log.Debugf(ctx, "New storage state: %q", convertedHardwareState)
+		return nil
 	}
-	return nil
 }
 
 // isItTimeToRunBadBlocksRO determines if it is time to run the RO

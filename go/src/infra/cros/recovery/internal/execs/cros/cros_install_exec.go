@@ -109,30 +109,35 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				} else {
 					log.Debugf(ctx, "Install from USB Drive in Recovery Mode: std err not found.")
 				}
-				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
-			}
-			// Following the logic in legacy repair, we will now
-			// attempt a storage audit on the DUT.
-			if err := storage.AuditStorageSMART(ctx, dutRun, info.GetChromeos().GetStorage(), dut); err != nil {
-				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
-			}
-			// Default values for these variables have also been
-			// included in the action to document their availability
-			// for modification.
-			bbMode := storage.AuditMode(am.AsString(ctx, "badblocks_mode", "auto"))
-			timeoutRO := am.AsDuration(ctx, "rw_badblocks_timeout", 5400, time.Second)
-			timeoutRW := am.AsDuration(ctx, "ro_badblocks_timeout", 3600, time.Second)
-			bbArgs := storage.BadBlocksArgs{
-				AuditMode: bbMode,
-				Run:       dutRun,
-				Storage:   info.GetChromeos().GetStorage(),
-				Dut:       info.GetDut(),
-				Metrics:   info.GetMetrics(),
-				TimeoutRW: timeoutRW,
-				TimeoutRO: timeoutRO,
-			}
-			if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
-				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+				log.Debugf(ctx, "Install from usb drive fail: %s", err)
+				log.Debugf(ctx, "Will try to check storage if that is bad!")
+				// When install fail it can be because of bad storage.
+				// Following the logic in legacy repair, we will now
+				// attempt a storage audit on the DUT.
+				if err := storage.AuditStorageSMART(ctx, dutRun, info.GetChromeos().GetStorage(), dut); err != nil {
+					return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+				}
+				// Default values for these variables have also been
+				// included in the action to document their availability
+				// for modification. As we booted from USB-drive we can check
+				// internal storage for read-write.
+				bbMode := storage.AuditMode(am.AsString(ctx, "badblocks_mode", "rw"))
+				timeoutRO := am.AsDuration(ctx, "rw_badblocks_timeout", 5400, time.Second)
+				timeoutRW := am.AsDuration(ctx, "ro_badblocks_timeout", 3600, time.Second)
+				bbArgs := storage.BadBlocksArgs{
+					AuditMode: bbMode,
+					Run:       dutRun,
+					Storage:   info.GetChromeos().GetStorage(),
+					Dut:       info.GetDut(),
+					Metrics:   info.GetMetrics(),
+					TimeoutRW: timeoutRW,
+					TimeoutRO: timeoutRO,
+				}
+				if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
+					log.Debugf(ctx, "Setting the DUT state as %q", string(dutstate.NeedsReplacement))
+					info.GetDut().State = dutstate.NeedsReplacement
+					return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+				}
 			}
 			haltTimeout := am.AsDuration(ctx, "halt_timeout", 120, time.Second)
 			if _, err := dutRun(ctx, haltTimeout, "halt"); err != nil {
