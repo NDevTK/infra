@@ -189,7 +189,8 @@ func runShellCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 func isFileSystemWritableExec(ctx context.Context, info *execs.ExecInfo) error {
 	// N.B. Order matters here:  Encrypted stateful is loop-mounted from a file in unencrypted stateful,
 	// so we don't test for errors in encrypted stateful if unencrypted fails.
-	testDirs := []string{"/mnt/stateful_partition", "/var/tmp"}
+	args := info.GetActionArgs(ctx)
+	testDirs := args.AsStringSlice(ctx, "paths", []string{"/mnt/stateful_partition", "/var/tmp"})
 	return cros.IsFileSystemWritable(ctx, info.DefaultRunner(), info.NewLogger(), testDirs)
 }
 

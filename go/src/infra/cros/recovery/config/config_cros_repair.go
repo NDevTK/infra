@@ -169,6 +169,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
+				"The stateful partition is responsive",
 				"Kernel does not know issues",
 				"Stateful partition has enough free index nodes",
 				"Stateful partition has enough free space",
@@ -1316,6 +1317,24 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
+		"The stateful partition is responsive": {
+			// TODO(b/261973179): make it critical when recoveries added.
+			Docs: []string{
+				"Verify that stateful partition on internal storage is responsive.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_is_file_system_writable",
+			ExecExtraArgs: []string{
+				"paths:/mnt/stateful_partition/encrypted",
+			},
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for SSH",
+			},
+			// the action belong to anslysis.
+			AllowFailAfterRecovery: true,
+		},
 		"Internal storage is responsive": {
 			Docs: []string{
 				"Verify that internal storage is responsive",
@@ -1324,6 +1343,9 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 			},
 			ExecName: "cros_is_file_system_writable",
+			ExecExtraArgs: []string{
+				"paths:/mnt/stateful_partition,/var/tmp",
+			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
 				"Quick provision OS",
