@@ -112,6 +112,24 @@ func sampleStepLogExec(ctx context.Context, info *ExecInfo) error {
 	return nil
 }
 
+// sampleStepTagsExec sets tags for the step.
+func sampleStepTagsExec(ctx context.Context, info *ExecInfo) error {
+	step, _ := build.StartStep(ctx, "Experimental step")
+	defer func() { step.End(nil) }()
+	tags := make(map[string][]string)
+	for k, v := range info.GetActionArgs(ctx) {
+		tags[k] = []string{v}
+	}
+	step.Modify(func(v *build.StepView) {
+		if len(v.Tags) != 0 {
+			log.Infof(ctx, "Step has tags: %#v", v.Tags)
+		}
+		v.Tags = tags
+	})
+	log.Infof(ctx, "Step with tags: %#v", step)
+	return nil
+}
+
 func init() {
 	Register("sample_pass", samplePassActionExec)
 	Register("sample_fail", sampleFailActionExec)
@@ -120,4 +138,5 @@ func init() {
 	Register("sample_metrics", sampleDemoMetricsExec)
 	Register("sample_step_summary_markdown", sampleStepSummaryMarkdownExec)
 	Register("sample_step_logs", sampleStepLogExec)
+	Register("sample_step_tags", sampleStepTagsExec)
 }
