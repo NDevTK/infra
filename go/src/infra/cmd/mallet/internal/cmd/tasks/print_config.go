@@ -15,6 +15,7 @@ import (
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery"
+	"infra/cros/recovery/config/tree"
 	"infra/cros/recovery/tlw"
 	"infra/libs/skylab/buildbucket"
 )
@@ -30,6 +31,7 @@ var RecoveryConfig = &subcommands.Command{
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", "Task name of the configuration we print.")
 		c.Flags.StringVar(&c.deviceType, "device", "cros", "Device type supported 'cros', 'labstation'.")
 		c.Flags.StringVar(&c.planName, "plan", "", "Print only plan instead of config.")
+		c.Flags.BoolVar(&c.asTree, "tree", true, "Print data as tree.")
 		return c
 	},
 }
@@ -41,6 +43,7 @@ type printConfigRun struct {
 	taskName   string
 	deviceType string
 	planName   string
+	asTree     bool
 }
 
 // Run output the content of the recovery config file.
@@ -76,9 +79,18 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 	}
 	var obj interface{}
 	if c.planName == "" {
-		obj = config
+		if c.asTree {
+			obj = tree.ConvertConfiguration(config)
+		} else {
+			obj = config
+		}
 	} else {
-		obj = config.GetPlans()[c.planName]
+		plan := config.GetPlans()[c.planName]
+		if c.asTree {
+			obj = tree.ConvertPlan(c.planName, plan)
+		} else {
+			obj = plan
+		}
 	}
 	if s, err := json.MarshalIndent(obj, "", "\t"); err != nil {
 		return errors.Annotate(err, "inner run").Err()
