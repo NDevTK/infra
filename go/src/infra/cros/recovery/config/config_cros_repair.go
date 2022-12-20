@@ -26,6 +26,7 @@ func crosRepairPlan() *Plan {
 			"Verify that device is not enrolled",
 			"Check power sources",
 			"Check TPM statuses",
+			"Read TPM ownership",
 			"Verify tmp_fwver is updated correctly",
 			"Verify tpm_kernver is updated correctly",
 			"Verify present of gsctool",
@@ -378,6 +379,23 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Download and install OS in DEV mode using USB-drive",
 			},
+		},
+		"Read TPM ownership": {
+			Docs: []string{
+				"That is initiate action to detect issues for b/246476353",
+				"No recovery action just verify and report of issue.",
+				"Verify that we can read ownership on device.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:hwsec-ownership-id id",
+			},
+			// Action is only for analysis at this stage.
+			AllowFailAfterRecovery: true,
 		},
 		"Firmware validations": {
 			Docs: []string{
