@@ -25,7 +25,8 @@ type repairDuts struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	onlyVerify bool
+	onlyVerify    bool
+	latestVersion bool
 }
 
 // RepairDutsCmd contains repair-duts command specification
@@ -40,6 +41,7 @@ var RepairDutsCmd = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.BoolVar(&c.onlyVerify, "verify", false, "Run only verify actions.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
@@ -72,7 +74,7 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, host := range args {
 		host = heuristics.NormalizeBotNameToDeviceName(host)
-		taskURL, err := scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, sessionTag)
+		taskURL, err := scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, c.latestVersion, sessionTag)
 		if err != nil {
 			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, err.Error())
 		} else {
@@ -84,8 +86,11 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 }
 
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair bool, adminSession string) (string, error) {
+func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair, latestVersion bool, adminSession string) (string, error) {
 	v := buildbucket.CIPDProd
+	if latestVersion {
+		v = buildbucket.CIPDLatest
+	}
 	builderName := "repair"
 	if !runRepair {
 		builderName = "verify"
