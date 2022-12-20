@@ -2689,6 +2689,9 @@ func crosRepairActions() map[string]*Action {
 				"not critical, and we will proceed with the actual DUT repair ",
 				"immediately after this.",
 			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
 			Dependencies: []string{
 				"Collect logs from DUT on /var/log/*",
 				"Collect dmesg",
