@@ -17,6 +17,7 @@ import bootstrap
 
 from util import ROOT, WHEELHOUSE, WHEELS_URL, SOURCE_URL, LOCAL_STORAGE_PATH
 from util import tempdir, tempname, platform_tag, merge_deps, print_deps
+from util import build_manifest
 
 
 REPO_HOST = 'git+https://chromium.googlesource.com/'
@@ -49,7 +50,11 @@ def wheel(arg, source_sha, build, build_options):
 
 def grab_wheel(src, dst, source_sha, build):
   # late import lets us grab the virtualenv pip
-  from pip.wheel import Wheel  # pylint: disable=E0611
+  try:
+    from pip.wheel import Wheel  # pylint: disable=E0611
+  except ImportError:
+    # This module has moved in newer pip releases.
+    from pip._internal.models.wheel import Wheel  # pylint: disable=E0611
 
   items = os.listdir(src)
   assert len(items) == 1, 'Wrong number of files in wheel directory: %r' % items
@@ -175,7 +180,8 @@ def main(args):
 
   print('Parsing deps.pyl')
   deps = merge_deps(deps_files)
-  bootstrap.activate_env(build_env, {'wheel': deps.pop('wheel')})
+  bootstrap.activate_env(build_env,
+                         build_manifest({'wheel': deps.pop('wheel')}))
 
   print('Finding missing deps')
   missing_deps = {}
