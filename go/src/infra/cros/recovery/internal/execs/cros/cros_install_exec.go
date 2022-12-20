@@ -143,12 +143,18 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		if am.AsBool(ctx, "run_fw_update", false) {
 			req := &firmware.FirmwareUpdaterRequest{
 				// Options for the mode are: autoupdate, recovery, factory.
-				Mode:           am.AsString(ctx, "fw_update_mode", "autoupdate"),
-				Force:          am.AsBool(ctx, "fw_update_use_force", false),
-				UpdaterTimeout: am.AsDuration(ctx, "fw_update_timeout", 600, time.Second),
+				Mode:            am.AsString(ctx, "fw_update_mode", "autoupdate"),
+				Force:           am.AsBool(ctx, "fw_update_use_force", false),
+				UpdaterTimeout:  am.AsDuration(ctx, "fw_update_timeout", 600, time.Second),
+				WriteProtection: am.AsBool(ctx, "fw_update_wp", false),
 			}
+			isCritical := am.AsBool(ctx, "fw_update_critical", true)
 			if err := firmware.RunFirmwareUpdater(ctx, req, dutRun, logger); err != nil {
-				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+				if isCritical {
+					return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+				} else {
+					logger.Debugf("Failed to update fw on the DUT: %s", err)
+				}
 			}
 			logger.Debugf("Install from USB drive: finished fw update")
 		}
