@@ -29,6 +29,7 @@ var RecoveryConfig = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", "Task name of the configuration we print.")
 		c.Flags.StringVar(&c.deviceType, "device", "cros", "Device type supported 'cros', 'labstation'.")
+		c.Flags.StringVar(&c.planName, "plan", "", "Print only plan instead of config.")
 		return c
 	},
 }
@@ -39,6 +40,7 @@ type printConfigRun struct {
 
 	taskName   string
 	deviceType string
+	planName   string
 }
 
 // Run output the content of the recovery config file.
@@ -57,25 +59,31 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 	if err != nil {
 		return errors.Annotate(err, "local recovery").Err()
 	}
-	var dsl []tlw.DUTSetupType
+	var ds tlw.DUTSetupType
 	switch c.deviceType {
 	case "labstation":
-		dsl = append(dsl, tlw.DUTSetupTypeLabstation)
+		ds = tlw.DUTSetupTypeLabstation
 	case "android":
-		dsl = append(dsl, tlw.DUTSetupTypeAndroid)
+		ds = tlw.DUTSetupTypeAndroid
 	case "cros":
-		dsl = append(dsl, tlw.DUTSetupTypeCros)
+		ds = tlw.DUTSetupTypeCros
 	default:
 		return errors.Reason("upsupported device type %s", c.deviceType).Err()
 	}
-	for _, ds := range dsl {
-		if c, err := recovery.ParsedDefaultConfiguration(ctx, tn, ds); err != nil {
-			return errors.Annotate(err, "inner run").Err()
-		} else if s, err := json.MarshalIndent(c, "", "\t"); err != nil {
-			return errors.Annotate(err, "inner run").Err()
-		} else {
-			a.GetOut().Write(s)
-		}
+	config, err := recovery.ParsedDefaultConfiguration(ctx, tn, ds)
+	if err != nil {
+		return errors.Annotate(err, "inner run").Err()
+	}
+	var obj interface{}
+	if c.planName == "" {
+		obj = config
+	} else {
+		obj = config.GetPlans()[c.planName]
+	}
+	if s, err := json.MarshalIndent(obj, "", "\t"); err != nil {
+		return errors.Annotate(err, "inner run").Err()
+	} else {
+		a.GetOut().Write(s)
 	}
 	return nil
 }
