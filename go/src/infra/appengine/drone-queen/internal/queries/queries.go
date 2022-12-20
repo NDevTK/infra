@@ -13,12 +13,16 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.opentelemetry.io/otel"
 
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"
 	"infra/appengine/drone-queen/internal/entities"
 	"infra/libs/otil"
 )
+
+// Name used for OpenTelemetry tracers.
+const tname = "infra/appengine/drone-queen/internal/queries"
 
 // CreateNewDrone creates a new Drone datastore entity with a unique ID.
 // This function cannot be called in a transaction.
@@ -156,6 +160,9 @@ func FreeInvalidDUTs(ctx context.Context, now time.Time) error {
 	}
 	for _, d := range d {
 		f := func(ctx context.Context) error {
+			ctx, span := otel.Tracer(tname).Start(ctx, "update DUT")
+			defer span.End()
+			otil.AddValues(span, d.ID)
 			if err := datastore.Get(ctx, &d); err != nil {
 				return errors.Annotate(err, "get DUT %v", d.ID).Err()
 			}
@@ -180,6 +187,8 @@ func FreeInvalidDUTs(ctx context.Context, now time.Time) error {
 
 // getValidDrones returns a map of all valid drones.
 func getValidDrones(ctx context.Context, now time.Time) (map[entities.DroneID]bool, error) {
+	ctx, span := otil.FuncSpan(ctx)
+	defer span.End()
 	q := datastore.NewQuery(entities.DroneKind)
 	var d []entities.Drone
 	if err := datastore.GetAll(ctx, q, &d); err != nil {

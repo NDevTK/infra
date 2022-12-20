@@ -48,11 +48,14 @@ func FuncSpan(ctx context.Context, o ...trace.SpanStartOption) (context.Context,
 	if !span.SpanContext().IsSampled() {
 		return ctx, span
 	}
+	_, span2 := otel.Tracer(tname).Start(ctx, "runtime.Caller")
 	pc, file, line, ok := runtime.Caller(1)
 	if !ok {
-		span.AddEvent("runtime.Caller error")
+		span2.AddEvent("runtime.Caller error")
+		span2.End()
 		return ctx, span
 	}
+	span2.End()
 	span.SetName(runtime.FuncForPC(pc).Name())
 	span.SetAttributes(
 		semconv.CodeFunctionKey.String(runtime.FuncForPC(pc).Name()),

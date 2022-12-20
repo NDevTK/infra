@@ -24,6 +24,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
@@ -31,6 +32,9 @@ import (
 	"infra/appengine/drone-queen/internal/entities"
 	"infra/appengine/drone-queen/internal/queries"
 )
+
+// Name used for OpenTelemetry tracers.
+const tname = "infra/appengine/drone-queen/internal/frontend"
 
 // Earliest supported version of drone agent.
 const earliestSupportedVersion = 0
@@ -68,6 +72,8 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 	// Refresh expiration time.
 	d := entities.Drone{ID: id}
 	f := func(ctx context.Context) error {
+		ctx, span := otel.Tracer(tname).Start(ctx, "update drone")
+		defer span.End()
 		if err = datastore.Get(ctx, &d); err != nil {
 			if datastore.IsErrNoSuchEntity(err) {
 				res.Status = api.ReportDroneResponse_UNKNOWN_UUID
