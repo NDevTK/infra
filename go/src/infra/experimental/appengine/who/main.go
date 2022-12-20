@@ -331,8 +331,7 @@ var getBugsFromMonorail = func(c context.Context, q string,
 	mr := monorail.NewEndpointsClient(client, "https://monorail-prod.appspot.com/_ah/api/monorail/v1/")
 	logging.Infof(c, "mr client: %v", mr)
 
-	// TODO(martiniss): make this look up request info based on Tree datastore
-	// object
+	// TODO: make this look up request info based on Tree datastore object
 	req := &monorail.IssuesListRequest{
 		ProjectId: "chromium",
 		Q:         q,

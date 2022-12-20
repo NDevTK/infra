@@ -446,7 +446,7 @@ class SomAlertView extends Polymer.mixinBehaviors(
         this._mergeBuilders(group.extension.builders,
           alert.extension.builders,
           alert.extension.stages);
-        // TODO(martiniss): Comment this back in once the logic is robust.
+        // TODO: Comment this back in once the logic is robust.
         // Right now this isn't very useful if you actually want to use these
         // regression ranges to determine which alerts should be grouped
         // together, etc.... In addition, usage of regression ranges by sheriffs

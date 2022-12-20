@@ -58,8 +58,7 @@ type BugQueueHandler struct {
 // A bit of a hack to let us mock getBugsFromMonorail.
 func (bqh *BugQueueHandler) getBugsFromMonorail(c context.Context, q string, projectID string,
 	can monorail.IssuesListRequest_CannedQuery) (*monorail.IssuesListResponse, error) {
-	// TODO(martiniss): make this look up request info based on Tree datastore
-	// object
+	// TODO: make this look up request info based on Tree datastore object
 	req := &monorail.IssuesListRequest{
 		ProjectId: projectID,
 		Q:         q,

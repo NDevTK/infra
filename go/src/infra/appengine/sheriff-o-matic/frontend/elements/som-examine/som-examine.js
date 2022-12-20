@@ -66,7 +66,7 @@ class SomExamine extends Polymer.LegacyElementMixin(Polymer.Element) {
     if (reason && reason.test_names) {
       this.hideTests = false;
       this.selectedTest = reason.test_names[0];
-      // TODO(martiniss): put the failing step name back into the alert
+      // TODO: put the failing step name back into the alert
       // JSON so we don't have to peek at the alert title to tell if
       // if the failing step is webkit_layout_tests.
       // TODO(crbug/706192): Remove the check for webkit_tests, once this
