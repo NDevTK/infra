@@ -27,11 +27,8 @@ var RecoveryConfig = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &printConfigRun{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
-		c.Flags.BoolVar(&c.auditRPM, "audit-rpm", false, "Use auditRPM task.")
-		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Use deploy task.")
-		c.Flags.BoolVar(&c.cros, "cros", false, "Print for ChromeOS devices.")
-		c.Flags.BoolVar(&c.deepRecovery, "deep-repair", false, "Print deep-repair plan")
-		c.Flags.BoolVar(&c.labstation, "labstation", false, "Print for labstations.")
+		c.Flags.StringVar(&c.taskName, "task-name", "recovery", "Task name of the configuration we print.")
+		c.Flags.StringVar(&c.deviceType, "device", "cros", "Device type supported 'cros', 'labstation'.")
 		return c
 	},
 }
@@ -40,11 +37,8 @@ type printConfigRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
 
-	auditRPM     bool
-	deployTask   bool
-	cros         bool
-	deepRecovery bool
-	labstation   bool
+	taskName   string
+	deviceType string
 }
 
 // Run output the content of the recovery config file.
@@ -59,21 +53,20 @@ func (c *printConfigRun) Run(a subcommands.Application, args []string, env subco
 // innerRun executes internal logic of output file content.
 func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	tn := buildbucket.Recovery
-	switch {
-	case c.deployTask:
-		tn = buildbucket.Deploy
-	case c.auditRPM:
-		tn = buildbucket.AuditRPM
-	case c.deepRecovery:
-		tn = buildbucket.DeepRecovery
+	tn, err := buildbucket.NormalizeTaskName(c.taskName)
+	if err != nil {
+		return errors.Annotate(err, "local recovery").Err()
 	}
 	var dsl []tlw.DUTSetupType
-	if c.cros || c.deepRecovery {
-		dsl = append(dsl, tlw.DUTSetupTypeCros)
-	}
-	if c.labstation {
+	switch c.deviceType {
+	case "labstation":
 		dsl = append(dsl, tlw.DUTSetupTypeLabstation)
+	case "android":
+		dsl = append(dsl, tlw.DUTSetupTypeAndroid)
+	case "cros":
+		dsl = append(dsl, tlw.DUTSetupTypeCros)
+	default:
+		return errors.Reason("upsupported device type %s", c.deviceType).Err()
 	}
 	for _, ds := range dsl {
 		if c, err := recovery.ParsedDefaultConfiguration(ctx, tn, ds); err != nil {
