@@ -7258,6 +7258,20 @@ wheel: <
 
 * *universal*
 
+## **unittest-xml-reporting**
+
+### 3.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/unittest-xml-reporting-py2_py3"
+  version: "version:3.1.0"
+>
+```
+
+
+* *universal*
+
 ## **uritemplate**
 
 ### 3.0.0

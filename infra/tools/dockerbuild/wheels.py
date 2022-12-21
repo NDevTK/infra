@@ -1101,6 +1101,7 @@ SPECS.update({
         UniversalSource('termcolor', '1.1.0'),
         UniversalSource('tlslite', '0.4.9'),
         UniversalSource('tlslite-ng', '0.7.6'),
+        UniversalSource('unittest-xml-reporting', '3.1.0'),
         UniversalSource('vcrpy', '4.2.1'),
         UniversalSource('websocket_client', '0.40.0'),
         UniversalSource('websockets', '10.1', pyversions=['py3']),
