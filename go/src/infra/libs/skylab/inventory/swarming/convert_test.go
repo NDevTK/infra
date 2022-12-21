@@ -57,7 +57,7 @@ peripherals: {
   mimo: true
   huddly: true
   conductive: true
-  chameleon_type: 3
+  chameleon_type: 2
   chameleon_type: 5
   chameleon: true
   chameleon_state: 1
@@ -206,7 +206,7 @@ peripherals: {
   mimo: true
   huddly: true
   conductive: true
-  chameleon_type: 3
+  chameleon_type: 2
   chameleon_type: 5
   chameleon: true
   chameleon_state: 1
@@ -330,7 +330,7 @@ var fullDimensions = Dimensions{
 	"label-cellular_modem":        {"fake_cellular"},
 	"label-chameleon":             {"True"},
 	"label-chameleon_type": {
-		"CHAMELEON_TYPE_DP_HDMI",
+		"CHAMELEON_TYPE_DP",
 		"CHAMELEON_TYPE_HDMI",
 	},
 	"label-chameleon_state":         {"WORKING"},

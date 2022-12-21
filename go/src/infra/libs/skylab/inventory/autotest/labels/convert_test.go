@@ -76,7 +76,7 @@ peripherals: {
   mimo: true
   huddly: true
   conductive: true
-  chameleon_type: 3
+  chameleon_type: 2
   chameleon_type: 5
   chameleon: true
   camerabox: true
@@ -198,7 +198,7 @@ var fullLabels = []string{
 	"camerabox_light:led",
 	"carrier:tmobile",
 	"chameleon",
-	"chameleon:dp_hdmi",
+	"chameleon:dp",
 	"chameleon:hdmi",
 	"chaos_dut",
 	"chaos_nightly",
@@ -668,7 +668,7 @@ peripherals: {
   mimo: true
   huddly: true
   conductive: true
-  chameleon_type: 3
+  chameleon_type: 2
   chameleon_type: 5
   chameleon: true
   camerabox: true
@@ -791,7 +791,7 @@ var fullLabelsSpecial = []string{
 	"camerabox_light:led",
 	"carrier:tmobile",
 	"chameleon",
-	"chameleon:dp_hdmi",
+	"chameleon:dp",
 	"chameleon:hdmi",
 	"chaos_dut",
 	"chaos_nightly",

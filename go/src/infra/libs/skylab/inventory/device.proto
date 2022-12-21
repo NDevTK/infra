@@ -405,8 +405,8 @@ message Peripherals {
     reserved 1, 6 to 8;
     CHAMELEON_TYPE_INVALID = 0;
     CHAMELEON_TYPE_DP = 2;
-    CHAMELEON_TYPE_DP_HDMI = 3;
-    CHAMELEON_TYPE_VGA = 4;
+    CHAMELEON_TYPE_DP_HDMI = 3 [deprecated = true];
+    CHAMELEON_TYPE_VGA = 4 [deprecated = true];
     CHAMELEON_TYPE_HDMI = 5;
     CHAMELEON_TYPE_V2 = 9;
     CHAMELEON_TYPE_V3 = 10;
