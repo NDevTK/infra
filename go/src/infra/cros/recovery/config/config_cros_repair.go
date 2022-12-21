@@ -389,6 +389,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Device is SSHable",
+				"Is hwsec-ownership-id present",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -397,6 +398,19 @@ func crosRepairActions() map[string]*Action {
 			},
 			// Action is only for analysis at this stage.
 			AllowFailAfterRecovery: true,
+		},
+		"Is hwsec-ownership-id present": {
+			Docs: []string{
+				"Check if hwsec-ownership-id is present on the DUT.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:which hwsec-ownership-id",
+			},
 		},
 		"Firmware validations": {
 			Docs: []string{
