@@ -63,9 +63,10 @@ func TestFinder(authOpts auth.Options) *subcommands.Command {
 func (c *runTestFinderCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
 	if err := metricsInit(ctx); err != nil {
-		log.Printf("metrics init: %s", err)
+		log.Printf("metrics init Failed (NON-CRITICAL): %s", err)
+	} else {
+		defer metricsShutdown(ctx)
 	}
-	defer metricsShutdown(ctx)
 
 	out, err := c.innerRun(ctx, a, args, env)
 	// Unexpected error will counted as incorrect request data.

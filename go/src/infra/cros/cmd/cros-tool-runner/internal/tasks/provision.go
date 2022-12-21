@@ -68,9 +68,10 @@ cros-tool-runner provision -images docker-images.json -input provision_request.j
 func (c *runCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
 	if err := metricsInit(ctx); err != nil {
-		log.Printf("metrics init: %s", err)
+		log.Printf("metrics init Failed (NON-CRITICAL): %s", err)
+	} else {
+		defer metricsShutdown(ctx)
 	}
-	defer metricsShutdown(ctx)
 
 	returnCode := 0
 	out, err := c.innerRun(ctx, a, args, env)
