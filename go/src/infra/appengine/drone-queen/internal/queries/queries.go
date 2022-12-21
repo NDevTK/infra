@@ -26,9 +26,9 @@ const tname = "infra/appengine/drone-queen/internal/queries"
 
 // CreateNewDrone creates a new Drone datastore entity with a unique ID.
 // This function cannot be called in a transaction.
-func CreateNewDrone(ctx context.Context, now time.Time) (entities.DroneID, error) {
+func CreateNewDrone(ctx context.Context, now time.Time) (_ entities.DroneID, err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	return createNewDrone(ctx, now, func() string { return uuid.New().String() })
 }
 
@@ -91,9 +91,9 @@ func getDroneDUTs(ctx context.Context, d entities.DroneID) ([]*entities.DUT, err
 // DUTs.  Draining DUTs are ignored.  This does not have to be run in
 // a transaction, but caveat emptor.  If n is less than zero, return
 // no DUTs. hive is the zone/hive the DUT/Drone belongs to.
-func getUnassignedDUTs(ctx context.Context, n int32, hive string) ([]*entities.DUT, error) {
+func getUnassignedDUTs(ctx context.Context, n int32, hive string) (_ []*entities.DUT, err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	otil.AddValues(span, n, hive)
 	if n < 0 {
 		return nil, nil
@@ -116,9 +116,9 @@ func getUnassignedDUTs(ctx context.Context, n int32, hive string) ([]*entities.D
 // to the drone. hive is the zone/hive the DUT/Drone belongs to.
 //
 // This function needs to be run within a datastore transaction.
-func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators, hive string, version string) ([]*entities.DUT, error) {
+func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators, hive string, version string) (_ []*entities.DUT, err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	otil.AddValues(span, d)
 	currentDUTs, err := getDroneDUTs(ctx, d)
 	if err != nil {
@@ -144,9 +144,9 @@ func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneR
 
 // FreeInvalidDUTs unassigns DUTs that are assigned to a missing or
 // expired drone.  This function cannot be called in a transaction.
-func FreeInvalidDUTs(ctx context.Context, now time.Time) error {
+func FreeInvalidDUTs(ctx context.Context, now time.Time) (err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	var d []entities.DUT
 	q := datastore.NewQuery(entities.DUTKind)
 	q = q.Ancestor(entities.DUTGroupKey(ctx))
@@ -186,9 +186,9 @@ func FreeInvalidDUTs(ctx context.Context, now time.Time) error {
 }
 
 // getValidDrones returns a map of all valid drones.
-func getValidDrones(ctx context.Context, now time.Time) (map[entities.DroneID]bool, error) {
+func getValidDrones(ctx context.Context, now time.Time) (_ map[entities.DroneID]bool, err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	q := datastore.NewQuery(entities.DroneKind)
 	var d []entities.Drone
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
@@ -205,9 +205,9 @@ func getValidDrones(ctx context.Context, now time.Time) (map[entities.DroneID]bo
 
 // PruneExpiredDrones deletes Drones that have expired.  This function
 // cannot be called in a transaction.
-func PruneExpiredDrones(ctx context.Context, now time.Time) error {
+func PruneExpiredDrones(ctx context.Context, now time.Time) (err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	var d []entities.Drone
 	q := datastore.NewQuery(entities.DroneKind)
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
@@ -228,9 +228,9 @@ func PruneExpiredDrones(ctx context.Context, now time.Time) error {
 // PruneDrainedDUTs deletes DUTs that are draining and not assigned to
 // any drone.  This function does not need to be called in a
 // transaction.
-func PruneDrainedDUTs(ctx context.Context) error {
+func PruneDrainedDUTs(ctx context.Context) (err error) {
 	ctx, span := otil.FuncSpan(ctx)
-	defer span.End()
+	defer func() { otil.EndSpan(span, err) }()
 	var d []entities.DUT
 	q := datastore.NewQuery(entities.DUTKind)
 	q = q.Ancestor(entities.DUTGroupKey(ctx))

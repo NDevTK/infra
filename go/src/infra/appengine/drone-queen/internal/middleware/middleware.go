@@ -20,6 +20,7 @@ import (
 
 	"go.chromium.org/luci/server/cron"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 )
@@ -51,7 +52,12 @@ func CronTrace(name string) CronWrapper {
 			var span trace.Span
 			ctx, span = otel.Tracer(tname).Start(ctx, name, trace.WithSpanKind(trace.SpanKindServer))
 			defer span.End()
-			return h(ctx)
+			err := h(ctx)
+			if err != nil {
+				span.RecordError(err)
+				span.SetStatus(codes.Error, err.Error())
+			}
+			return err
 		}
 	}
 }

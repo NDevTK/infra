@@ -3,6 +3,14 @@
 // These utilities are for convenience and do not have to be used.
 // The OpenTelemetry API is canonical, and this package interoperates
 // with it.
+//
+// To add instrumentation to a function:
+//
+//	func MyFunc(ctx context.Context) (err error) {
+//		ctx, span :- otil.FuncSpan(ctx)
+//		defer func() { otil.EndSpan(span, err) }()
+//		// rest of function
+//	}
 package otil
 
 import (
@@ -12,6 +20,7 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -52,6 +61,7 @@ func FuncSpan(ctx context.Context, o ...trace.SpanStartOption) (context.Context,
 	pc, file, line, ok := runtime.Caller(1)
 	if !ok {
 		span2.AddEvent("runtime.Caller error")
+		span2.SetStatus(codes.Error, "runtime.Caller error")
 		span2.End()
 		return ctx, span
 	}
@@ -63,4 +73,13 @@ func FuncSpan(ctx context.Context, o ...trace.SpanStartOption) (context.Context,
 		semconv.CodeLineNumberKey.Int(line),
 	)
 	return ctx, span
+}
+
+// EndSpan ends a span and provides some convenience for handling errors.
+func EndSpan(span trace.Span, err error) {
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+	}
+	span.End()
 }
