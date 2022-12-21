@@ -202,7 +202,7 @@ func collectCrashDumpsExec(ctx context.Context, info *execs.ExecInfo) error {
 			}
 		}
 		if len(orphans) == 0 {
-			log.Debugf("Collect Crash Dumps Exec: There are no orphaned crashes, hence deleting the destination %s", infoDir)
+			log.Debugf("Collect Crash Dumps Exec: There are no orphaned crashdump files on the source-side, hence deleting the destination folder %q", infoDir)
 			if err := os.RemoveAll(infoDir); err != nil {
 				log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while removing the source directory %q", err.Error(), infoDir)
 			}
