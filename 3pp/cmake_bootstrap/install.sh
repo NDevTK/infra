@@ -13,7 +13,7 @@ if [[ $_3PP_PLATFORM == mac* ]]; then
   EXTRA_CONFIGURE_ARGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET"
 fi
 
-./bootstrap -- \
+./bootstrap --parallel=$(nproc) -- \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="$PREFIX" \
   -DCMAKE_USE_OPENSSL=OFF \
