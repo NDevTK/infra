@@ -304,7 +304,14 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 // runActionExec runs action's exec function and initiates recovery flow if exec fails.
 // The recover flow start only recoveries is enabled.
 func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, metric *metrics.Action, enableRecovery bool) error {
-	if err := r.runActionExecWithTimeout(ctx, actionName, metric); err != nil {
+	startExec := time.Now()
+	err := r.runActionExecWithTimeout(ctx, actionName, metric)
+	durationExec := time.Since(startExec)
+	log.Debugf(ctx, "Action %q exec execution time: %v", actionName, durationExec)
+	if metric != nil {
+		metric.Observations = append(metric.Observations, metrics.NewInt64Observation("exec_execution", int64(durationExec)))
+	}
+	if err != nil {
 		a := r.getAction(actionName)
 		if enableRecovery && len(a.GetRecoveryActions()) > 0 {
 			log.Infof(ctx, "Action %q: starting recovery actions.", actionName)
