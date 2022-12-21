@@ -237,7 +237,7 @@ func copyFromHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyReques
 	// '-C' flag changes the current directory to the location of
 	// the source file. This ensures that the tar archive includes
 	// paths relative only to this directory.
-	rCmd := fmt.Sprintf("%s -c --gzip -C %s %s", tarCmd, filepath.Dir(remoteSrc), remoteFileName)
+	rCmd := fmt.Sprintf("%s -c --mode='a+r' --gzip -C %s %s", tarCmd, filepath.Dir(remoteSrc), remoteFileName)
 	p, err := session.StdoutPipe()
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: error with obtaining the stdout pipe").Err()
