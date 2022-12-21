@@ -2789,6 +2789,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_collect_crash_dumps",
 			ExecExtraArgs: []string{
 				"clean:true",
+				"cleanup_timeout:10",
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
