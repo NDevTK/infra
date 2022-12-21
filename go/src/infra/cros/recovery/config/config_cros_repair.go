@@ -2766,6 +2766,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"We collect the dmesg output.",
 			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
 			ExecName: "cros_dmesg",
 			ExecExtraArgs: []string{
 				"human_readable:false",
@@ -2779,6 +2782,9 @@ func crosRepairActions() map[string]*Action {
 				"We collect the crash dumps on the DUT. Additionally, the files ",
 				"on the source are deleted, irrespective of whether the ",
 				"copy-attempt completes with success or not.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
 			},
 			ExecName: "cros_collect_crash_dumps",
 			ExecExtraArgs: []string{
