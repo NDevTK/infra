@@ -34,7 +34,7 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 	argMap := info.GetActionArgs(ctx)
 	logRoot := info.GetLogRoot()
 	if argMap.AsBool(ctx, "create_crashinfo_dir", false) {
-		logRoot = filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", info.GetDut().Name))
+		logRoot = filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", info.GetActiveResource()))
 	}
 	run := info.DefaultRunner()
 	log := info.NewLogger()
