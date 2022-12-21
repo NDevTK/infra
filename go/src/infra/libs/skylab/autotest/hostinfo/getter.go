@@ -64,9 +64,13 @@ func (g *Getter) GetContentsForHostname(ctx context.Context, hostname string) (s
 	}
 	di := crosDeviceData.GetDutV1()
 	hi := ConvertDut(di)
-	hi.StableVersions, err = g.GetStableVersionForHostname(ctx, hostname)
-	if err != nil {
-		return "", err
+	// Devboard device does not have stable version.
+	// Only obtains stable version when device is not a devboard.
+	if crosDeviceData.GetMachine().GetDevboard() == nil {
+		hi.StableVersions, err = g.GetStableVersionForHostname(ctx, hostname)
+		if err != nil {
+			return "", err
+		}
 	}
 	bytes, err := MarshalIndent(hi)
 	if err != nil {
