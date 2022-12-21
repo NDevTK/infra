@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -67,6 +68,39 @@ func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("match os version: mismatch, expected %q, found %q", expected, fromDevice).Err()
 	}
 	return nil
+}
+
+// Regex to extract milestone from OS version.
+var extractOsMilestone = regexp.MustCompile(`\/R([0-9]*)`)
+
+// isOnExpectedVersionExec matches device OS version to expected version.
+// Expectation can be provide by following args:
+//
+//	`min_version` ->  Example: 101
+func isOnExpectedVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	minVersion := argsMap.AsInt(ctx, "min_version", 0)
+	log.Debugf(ctx, "Expected min version: R%v", minVersion)
+	if minVersion <= 0 {
+		return errors.Reason("is OS on expected version: min version is not provided").Err()
+	}
+	deviceVersion, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
+	if err != nil {
+		return errors.Annotate(err, "is OS on expected version").Err()
+	}
+	log.Infof(ctx, "Version on device: %s", deviceVersion)
+	// Example for eve-release/R109-15236.35.0 we expecting get [["/R109" "109"]] where 109 is milestone.
+	if matches := extractOsMilestone.FindAllStringSubmatch(deviceVersion, -1); len(matches) > 0 && len(matches[0]) > 1 && matches[0][1] != "" {
+		foundVersion, err := strconv.Atoi(matches[0][1])
+		if err != nil {
+			return errors.Annotate(err, "is OS on expected version").Err()
+		}
+		if foundVersion < minVersion {
+			return errors.Reason("is OS on expected version: min version %v but found %v", minVersion, foundVersion).Err()
+		}
+		return nil
+	}
+	return errors.Reason("is OS on expected version: couldn't extract milestone data from %q", deviceVersion).Err()
 }
 
 // notOnStableVersionExec verifies devices OS is not matches stable CrOS version.
@@ -359,6 +393,7 @@ func init() {
 	execs.Register("cros_read_os_version", readOSVersionExec)
 	execs.Register("cros_is_default_boot_from_disk", isDefaultBootFromDiskExec)
 	execs.Register("cros_is_not_in_dev_mode", isNotInDevModeExec)
+	execs.Register("cros_is_on_expected_version", isOnExpectedVersionExec)
 	execs.Register("cros_is_booted_in_secure_mode", isBootedInSecureModeExec)
 	execs.Register("cros_run_shell_command", runShellCommandExec)
 	execs.Register("cros_run_command", runCommandExec)

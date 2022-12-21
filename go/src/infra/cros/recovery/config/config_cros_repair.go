@@ -389,7 +389,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Device is SSHable",
-				"Is hwsec-ownership-id present",
+				"Is hwsec-ownership-id expected",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -399,17 +399,16 @@ func crosRepairActions() map[string]*Action {
 			// Action is only for analysis at this stage.
 			AllowFailAfterRecovery: true,
 		},
-		"Is hwsec-ownership-id present": {
+		"Is hwsec-ownership-id expected": {
 			Docs: []string{
-				"Check if hwsec-ownership-id is present on the DUT.",
+				"The hwsec-ownership-id is expected from R101 version of ChromeOS on the DUT.",
 			},
 			Conditions: []string{
 				"Device is SSHable",
 			},
-			ExecName: "cros_run_command",
+			ExecName: "cros_is_on_expected_version",
 			ExecExtraArgs: []string{
-				"host:dut",
-				"command:which hwsec-ownership-id",
+				"min_version:101",
 			},
 		},
 		"Firmware validations": {
