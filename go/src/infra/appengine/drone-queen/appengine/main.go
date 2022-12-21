@@ -50,6 +50,7 @@ func main() {
 			tp := trace.NewTracerProvider(
 				trace.WithBatcher(exp),
 				trace.WithResource(newResource(ctx)),
+				trace.WithSampler(trace.ParentBased(trace.TraceIDRatioBased(0.5))),
 			)
 			srv.RegisterCleanup(func(ctx context.Context) {
 				if err := tp.Shutdown(ctx); err != nil {
