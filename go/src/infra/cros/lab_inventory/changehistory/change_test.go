@@ -220,13 +220,13 @@ func TestUpdateDut(t *testing.T) {
 
 		Convey("change chameleon", func() {
 			newDut.GetDut().GetPeripherals().GetChameleon().ChameleonPeripherals = []lab.ChameleonType{
-				lab.ChameleonType_CHAMELEON_TYPE_VGA,
+				lab.ChameleonType_CHAMELEON_TYPE_DP,
 			}
 			changes := LogChromeOSDeviceChanges(&oldDut, &newDut)
 			So(changes, ShouldHaveLength, 1)
 			So(changes[0].Label, ShouldEqual, "chameleon")
 			So(changes[0].OldValue, ShouldContainSubstring, "TYPE_HDMI")
-			So(changes[0].NewValue, ShouldContainSubstring, "TYPE_VGA")
+			So(changes[0].NewValue, ShouldContainSubstring, "TYPE_DP")
 		})
 
 		Convey("change RPM", func() {

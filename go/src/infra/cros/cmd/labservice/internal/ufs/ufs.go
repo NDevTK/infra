@@ -290,10 +290,6 @@ func mapChameleonPeripherals(p *lab.Peripherals, c *lab.Chameleon) []labapi.Cham
 			m = labapi.Chameleon_PREIPHERAL_UNSPECIFIED
 		case lab.ChameleonType_CHAMELEON_TYPE_DP:
 			m = labapi.Chameleon_DP
-		case lab.ChameleonType_CHAMELEON_TYPE_DP_HDMI:
-			m = labapi.Chameleon_DP_HDMI
-		case lab.ChameleonType_CHAMELEON_TYPE_VGA:
-			m = labapi.Chameleon_VGA
 		case lab.ChameleonType_CHAMELEON_TYPE_HDMI:
 			m = labapi.Chameleon_HDMI
 			// TODO(ivanbrovkovich): are these not mapped to anything?
