@@ -68,9 +68,15 @@ func metricsInit(ctx context.Context) error {
 	// Application level flags.
 	log.Printf("Setting up CTR docker tsmon...")
 
+	credsFile := "/creds/service_accounts/service_account_prodx_mon.json"
+
+	if _, err := os.Stat(credsFile); err != nil {
+		return errors.Annotate(err, "failed to find tsmon creds file %s", credsFile).Err()
+	}
+
 	tsmonFlags := tsmon.NewFlags()
 	tsmonFlags.Endpoint = "https://prodxmon-pa.googleapis.com/v1:insert"
-	tsmonFlags.Credentials = "/creds/service_accounts/service_account_prodx_mon.json"
+	tsmonFlags.Credentials = credsFile
 	tsmonFlags.Target.TargetType = target.TaskType
 	tsmonFlags.Target.TaskServiceName = "CTR-DockerOps"
 	tsmonFlags.Target.TaskJobName = "CTR-DockerOps"
