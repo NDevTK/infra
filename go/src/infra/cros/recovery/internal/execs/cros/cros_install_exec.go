@@ -88,17 +88,33 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	dutPing := info.NewPinger(dut.Name)
 	servod := info.NewServod()
 	logger := info.NewLogger()
+	// Record if device booted in recovery mode.
+	bootedInrecoveryMode := "no"
+	finishedTPMReset := "no"
+	finishedOSInstall := "no"
+	finishedFWUpdate := "no"
+	defer func() {
+		info.AddObservation(metrics.NewStringObservation("bootedInrecoveryMode", bootedInrecoveryMode))
+		info.AddObservation(metrics.NewStringObservation("finishedTPMReset", finishedTPMReset))
+		info.AddObservation(metrics.NewStringObservation("finishedOSInstall", finishedOSInstall))
+		info.AddObservation(metrics.NewStringObservation("finishedFWUpdate", finishedFWUpdate))
+	}()
 	callback := func(_ context.Context) error {
+		bootedInrecoveryMode = "yes"
 		if am.AsBool(ctx, "run_tpm_reset", false) {
 			// Clear TPM is not critical as can fail in some cases.
 			tpmResetTimeout := am.AsDuration(ctx, "tpm_reset_timeout", 60, time.Second)
 			if _, err := dutRun(ctx, tpmResetTimeout, "chromeos-tpm-recovery"); err != nil {
+				finishedTPMReset = "failed"
 				logger.Debugf("Install from USB drive: (non-critical) fail to reset tmp: Error: %s", err)
+			} else {
+				finishedTPMReset = "yes"
 			}
 		}
 		if am.AsBool(ctx, "run_os_install", false) {
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
 			if _, err := dutRun(ctx, installTimeout, "chromeos-install", "--yes"); err != nil {
+				finishedOSInstall = "failed"
 				stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
 				if ok {
 					stdErrStr := stdErr.(string)
@@ -144,6 +160,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				logger.Debugf("Install from USB drive: Halt the DUT failed: %s", err)
 			}
 			logger.Debugf("Install from USB drive: finished install process")
+			finishedOSInstall = "yes"
 		}
 		if am.AsBool(ctx, "run_fw_update", false) {
 			req := &firmware.FirmwareUpdaterRequest{
@@ -155,11 +172,14 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 			}
 			isCritical := am.AsBool(ctx, "fw_update_critical", true)
 			if err := firmware.RunFirmwareUpdater(ctx, req, dutRun, logger); err != nil {
+				finishedFWUpdate = "failed"
 				if isCritical {
 					return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 				} else {
 					logger.Debugf("Failed to update fw on the DUT: %s", err)
 				}
+			} else {
+				finishedFWUpdate = "true"
 			}
 			logger.Debugf("Install from USB drive: finished fw update")
 		}
