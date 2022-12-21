@@ -6,12 +6,15 @@ package cros
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/servo"
+	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
 )
@@ -95,8 +98,42 @@ func BootFromServoUSBDriveInDevMode(ctx context.Context, waitBootTimeout, waitBo
 }
 
 // RunInstallOSCommand run chromeos-install command on the host.
-func RunInstallOSCommand(ctx context.Context, timeout time.Duration, run components.Runner, log logger.Logger) error {
+func RunInstallOSCommand(ctx context.Context, timeout time.Duration, run components.Runner) error {
 	out, err := run(ctx, timeout, "chromeos-install", "--yes")
-	log.Debugf("Install OS:\n%s", out)
+	log.Debugf(ctx, "Install OS:\n%s", out)
 	return errors.Annotate(err, "install OS").Err()
+}
+
+// storageErrors are all the possible key parts of error messages that can be
+// generated if OS install process fails due to errors with the
+// storage device.
+var storageErrors = []string{
+	"No space left on device",
+	"I/O error when trying to write primary GPT",
+	"Input/output error while writing out",
+	"cannot read GPT header",
+	"can not determine destination device",
+	"wrong fs type",
+	"bad superblock on",
+}
+
+// StorageIssuesExist checks is error indicate issue with storage.
+func StorageIssuesExist(ctx context.Context, err error) bool {
+	if err == nil {
+		return false
+	}
+	stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
+	if !ok {
+		log.Debugf(ctx, "Check storage error: stderr not found.")
+		return false
+	}
+	stdErrStr := stdErr.(string)
+	// Check if the error message contains any message indicating a problem with the storage.
+	for _, storageError := range storageErrors {
+		if strings.Contains(stdErrStr, storageError) {
+			log.Debugf(ctx, "Failed to install ChromeOS due to the specified storage error: %q", storageError)
+			return true
+		}
+	}
+	return false
 }

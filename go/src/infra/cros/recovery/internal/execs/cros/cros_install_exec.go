@@ -6,7 +6,6 @@ package cros
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -61,21 +60,13 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 // Install ChromeOS from servo USB drive when booted from it.
 func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run, info.NewLogger())
+	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run)
+	if cros.StorageIssuesExist(ctx, err) {
+		info.GetDut().State = dutstate.NeedsReplacement
+		log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
+		return errors.Annotate(err, "install from usb drive in recovery mode: storage is bad").Tag(retry.LoopBreakTag()).Err()
+	}
 	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
-}
-
-// storageErrors are all the possible key parts of error messages that can be
-// generated if OS install process fails due to errors with the
-// storage device.
-var storageErrors = []string{
-	"No space left on device",
-	"I/O error when trying to write primary GPT",
-	"Input/output error while writing out",
-	"cannot read GPT header",
-	"can not determine destination device",
-	"wrong fs type",
-	"bad superblock on",
 }
 
 // installFromUSBDriveInRecoveryModeExec re-installs a test image from USB.
@@ -114,22 +105,12 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		}
 		if am.AsBool(ctx, "run_os_install", false) {
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
-			if _, err := dutRun(ctx, installTimeout, "chromeos-install", "--yes"); err != nil {
+			if err := cros.RunInstallOSCommand(ctx, installTimeout, dutRun); err != nil {
 				finishedOSInstall = "failed"
-				stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
-				if ok {
-					stdErrStr := stdErr.(string)
-					// Check if the error message contains any message indicating a problem with the storage.
-					for _, storageError := range storageErrors {
-						if strings.Contains(stdErrStr, storageError) {
-							info.GetDut().State = dutstate.NeedsReplacement
-							log.Debugf(ctx, "Failed to install ChromeOS due to the specified storage error: %q", storageError)
-							log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-							return errors.Annotate(err, "install from usb drive in recovery mode: storage is bad").Tag(retry.LoopBreakTag()).Err()
-						}
-					}
-				} else {
-					log.Debugf(ctx, "Install from USB Drive in Recovery Mode: std err not found.")
+				if cros.StorageIssuesExist(ctx, err) {
+					info.GetDut().State = dutstate.NeedsReplacement
+					log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
+					return errors.Annotate(err, "install from usb drive in recovery mode: storage is bad").Tag(retry.LoopBreakTag()).Err()
 				}
 				log.Debugf(ctx, "Install from usb drive fail: %s", err)
 				log.Debugf(ctx, "Will try to check storage if that is bad!")
