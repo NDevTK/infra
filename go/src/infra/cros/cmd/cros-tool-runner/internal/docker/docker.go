@@ -232,24 +232,25 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 		filePath, err = common.FindFile("log.txt", d.LogFileDir)
 
 		if err != nil {
-			// If we don't find it within timeout, log time as the timeout
-			// Better than nothing.
-			Logerr := logServiceFound(ctx, filePath, startTime, service)
-			if Logerr != nil {
-				return errors.Annotate(err, "logServiceFound Metric upload (No File Found) failed: %s", Logerr).Err()
-			}
 			return errors.Annotate(err, "failed to find file %s log file; logged timeout as metric", d.LogFileDir).Err()
 		}
 
-		// If found, alsl log it
+		// File found? Search the file for the starter text and log once found.
+		// This will *only* log if the start-key is found, otherwise it exits w/ err
+		// and the loop continues until either its found, or the timeout is hit.
 		err = logServiceFound(ctx, filePath, startTime, service)
 		if err != nil {
 			return errors.Annotate(err, "logServiceFound Metric upload failed %s", d.LogFileDir).Err()
 		}
+
 		return nil
 	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
+
+	// File not found? Log the timeout duration.
 	if err != nil {
-		log.Printf("metrics failed to log runtime: %s", err)
+		logRunTime(ctx, startTime, service)
+		log.Println("Log file not found, logged max tiemout. Task will fail.")
+		return
 	}
 }
 
@@ -476,6 +477,6 @@ func logServiceFound(ctx context.Context, LogFileName string, startTime time.Tim
 		logRunTime(ctx, startTime, service)
 		return nil
 	}
-	return errors.Reason("failed to extract port from %s", LogFileName).Err()
+	return errors.Reason("failed to starting line from %s", LogFileName).Err()
 
 }
