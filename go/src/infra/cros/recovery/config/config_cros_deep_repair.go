@@ -60,19 +60,12 @@ func deepRepairServoPlan() *Plan {
 			"Servod port specified": {
 				Docs: []string{
 					"Verify that servod port is present in servo data.",
-					"Port is not expected to be specified for servo_V3.",
-				},
-				Conditions: []string{
-					"Is not servo_v3",
 				},
 				ExecName: "servo_servod_port_present",
 			},
 			"Servo serial is specified": {
 				Docs: []string{
 					"Check if root servo serial is present.",
-				},
-				Conditions: []string{
-					"Is not servo_v3",
 				},
 				ExecName: "dut_servo_has_serial",
 			},
@@ -90,7 +83,6 @@ func deepRepairServoPlan() *Plan {
 					"Try to reset(power-cycle) the servo via smart usbhub.",
 				},
 				Conditions: []string{
-					"Is not servo_v3",
 					// Disable power-cycle by smart hub for v4p1 due to b/243042046,
 					// The built-in reboot and ethernet power control in v4p1 also
 					// makes power-cycle the entire device unnecessary.
@@ -219,15 +211,6 @@ func deepRepairServoPlan() *Plan {
 				ExecName:   "sample_fail",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"Is not servo_v3": {
-				Docs: []string{
-					"Verify that servo_v3 isn ot used in setup.",
-				},
-				ExecName: "is_servo_v3",
-				ExecExtraArgs: []string{
-					"reverse:true",
-				},
-			},
 			"Serial number is not servo_v4p1": {
 				Docs: []string{
 					"Verify that the servo serial number is not a servo_v4p1 serial number",
@@ -287,7 +270,6 @@ func deepRepairClosingPlan() *Plan {
 					"Ensure that servo usbkey power is in off state.",
 				},
 				Conditions: []string{
-					"Is not servo_v3",
 					"dut_servo_host_present",
 				},
 				ExecName: "servo_set",
@@ -314,15 +296,6 @@ func deepRepairClosingPlan() *Plan {
 					"invert_result:true",
 				},
 				ExecName: "dut_check_model",
-			},
-			"Is not servo_v3": {
-				Docs: []string{
-					"Verify that servo_v3 isn ot used in setup.",
-				},
-				Conditions: []string{
-					"is_servo_v3",
-				},
-				ExecName: "sample_fail",
 			},
 		},
 	}

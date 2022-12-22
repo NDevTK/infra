@@ -141,7 +141,6 @@ func crosClosePlan() *Plan {
 				},
 				Conditions: []string{
 					"dut_servo_host_present",
-					"Is not servo_v3",
 				},
 				ExecName:               "cros_collect_servod_logs",
 				AllowFailAfterRecovery: true,
@@ -152,7 +151,6 @@ func crosClosePlan() *Plan {
 				},
 				Conditions: []string{
 					"dut_servo_host_present",
-					"Is not servo_v3",
 				},
 				ExecName: "cros_copy_to_logs",
 				ExecExtraArgs: []string{
@@ -162,18 +160,6 @@ func crosClosePlan() *Plan {
 					"use_host_dir:true",
 				},
 				AllowFailAfterRecovery: true,
-			},
-			"Is not servo_v3": {
-				Docs: []string{
-					"Verify that servo_v3 isn ot used in setup.",
-				},
-				ExecName: "is_servo_v3",
-				ExecExtraArgs: []string{
-					"reverse:true",
-				},
-				MetricsConfig: &MetricsConfig{
-					UploadPolicy: MetricsConfig_SKIP_ALL,
-				},
 			},
 			"Update peripheral wifi state": {
 				Docs: []string{
@@ -264,7 +250,6 @@ func crosClosePlan() *Plan {
 					"Ensure that servo usbkey power is in off state.",
 				},
 				Conditions: []string{
-					"Is not servo_v3",
 					"dut_servo_host_present",
 				},
 				ExecName: "servo_set",

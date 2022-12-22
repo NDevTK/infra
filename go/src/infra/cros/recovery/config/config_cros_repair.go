@@ -813,26 +813,15 @@ func crosRepairActions() map[string]*Action {
 			},
 		},
 		"Update Servo NIC mac address": {
+			Docs: []string{
+				"Update mac address of servo-NIC in servod.",
+			},
 			Conditions: []string{
 				"Setup has servo info",
-				"Is not servo_v3",
 				"servod_control_exist_for_mac_address",
 			},
 			ExecName:               "servo_audit_nic_mac_address",
 			AllowFailAfterRecovery: true,
-		},
-		"Is not servo_v3": {
-			Docs: []string{
-				"Verify that servo_v3 isn ot used in setup.",
-			},
-			ExecName: "is_servo_v3",
-			ExecExtraArgs: []string{
-				"reverse:true",
-			},
-			MetricsConfig: &MetricsConfig{
-				// Use default upload policy out of an abundance of caution.
-				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
-			},
 		},
 		"servod_control_exist_for_mac_address": {
 			Conditions: []string{
@@ -1793,7 +1782,6 @@ func crosRepairActions() map[string]*Action {
 				"cr50 reset will clear some some init like `ccd testlab open` so we want to re-initialize servo after cr50 reset if the main device uses cr50/gsc console commands.",
 			},
 			Conditions: []string{
-				"Is not servo_v3",
 				"Servo main device is GSC chip",
 			},
 			Dependencies: []string{
