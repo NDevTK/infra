@@ -827,6 +827,13 @@ def build_go_code(go_workspace, module_map, pkg_defs):
   # figuring out a go environment (and cwd) they want.
   go_packages = {}  # go package name => GoEnviron
 
+  # Validate that all binary names are unique, since we rely on this fact.
+  bin_name_to_pkg = {}
+
+  # The name of the binary we will produce from this go package.
+  def binary_name(go_pkg):
+    return go_pkg[go_pkg.rfind('/') + 1:] + EXE_SUFFIX
+
   for pkg_def in pkg_defs:
     pkg_env = default_environ
     pkg_env = pkg_env._replace(
@@ -843,6 +850,12 @@ def build_go_code(go_workspace, module_map, pkg_defs):
             '(%s and %s), this is not supported' %
             (name, pkg_env, go_packages[name]))
       go_packages[name] = pkg_env
+      bin_name = binary_name(name)
+      if bin_name in bin_name_to_pkg and bin_name_to_pkg[bin_name] != name:
+        raise BuildException(
+            'Go package %s produces binary name %s, which collides with '
+            'package %s' % (name, bin_name, bin_name_to_pkg[bin_name]))
+      bin_name_to_pkg[bin_name] = name
 
   # Group packages by the environment they want.
   packages_per_env = {}  # GoEnviron => [str]
@@ -876,10 +889,9 @@ def build_go_code(go_workspace, module_map, pkg_defs):
       # expects them to be (see also 'root' property in package definition
       # YAMLs).
       go_bin = os.path.join(go_workspace, 'bin')
-      exe_suffix = get_package_vars()['exe_suffix']
       for pkg in to_install:
-        bin_name = pkg[pkg.rfind('/')+1:] + exe_suffix
-        run_go_build(go_workspace, pkg_env, pkg, os.path.join(go_bin, bin_name))
+        run_go_build(go_workspace, pkg_env, pkg,
+                     os.path.join(go_bin, binary_name(pkg)))
 
 
 def enumerate_packages(package_def_dir, package_def_files):
