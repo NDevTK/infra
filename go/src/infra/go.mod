@@ -51,6 +51,7 @@ require (
 	github.com/otiai10/copy v1.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/profile v1.6.0
+	github.com/savaki/jq v0.0.0-20161209013833-0e6baecebbf8
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/ulikunitz/xz v0.5.10
