@@ -116,6 +116,13 @@ func (b *Build) autotestResult() *skylab_test_runner.Result_Autotest {
 	return b.result.GetAutotestResult()
 }
 
+func (b *Build) prejob() *skylab_test_runner.Result_Prejob {
+	if b.result == nil {
+		return nil
+	}
+	return b.result.GetPrejob()
+}
+
 // The life cycles that are not final.
 var transientLifeCycles = map[test_platform.TaskState_LifeCycle]bool{
 	test_platform.TaskState_LIFE_CYCLE_PENDING: true,
@@ -212,9 +219,33 @@ func (b *Build) testCases() []*steps.ExecuteResponse_TaskResult_TestCaseResult {
 	ret := make([]*steps.ExecuteResponse_TaskResult_TestCaseResult, len(tcs))
 	for i, tc := range tcs {
 		ret[i] = &steps.ExecuteResponse_TaskResult_TestCaseResult{
-			Name:                 tc.Name,
+			Name:                 tc.GetName(),
 			Verdict:              liftTestCaseRunnerVerdict[tc.Verdict],
-			HumanReadableSummary: tc.HumanReadableSummary,
+			HumanReadableSummary: tc.GetHumanReadableSummary(),
+		}
+	}
+	return ret
+}
+
+var liftPreJobVerdict = map[skylab_test_runner.Result_Prejob_Step_Verdict]test_platform.TaskState_Verdict{
+	skylab_test_runner.Result_Prejob_Step_VERDICT_PASS:      test_platform.TaskState_VERDICT_PASSED,
+	skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL:      test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED: test_platform.TaskState_VERDICT_FAILED,
+}
+
+// prejobSteps unpacks prejob steps contained in the results of a build.
+func (b *Build) prejobSteps() []*steps.ExecuteResponse_TaskResult_TestCaseResult {
+	pjs := b.prejob().GetStep()
+	if len(pjs) == 0 {
+		// Prefer a nil over an empty slice since it's the proto default.
+		return nil
+	}
+	ret := make([]*steps.ExecuteResponse_TaskResult_TestCaseResult, len(pjs))
+	for i, pj := range pjs {
+		ret[i] = &steps.ExecuteResponse_TaskResult_TestCaseResult{
+			Name:                 pj.GetName(),
+			Verdict:              liftPreJobVerdict[pj.Verdict],
+			HumanReadableSummary: pj.GetHumanReadableSummary(),
 		}
 	}
 	return ret
@@ -230,8 +261,9 @@ func (b *Build) Result() *steps.ExecuteResponse_TaskResult {
 			LifeCycle: b.lifeCycle,
 			Verdict:   b.verdict(),
 		},
-		TaskUrl:   b.url,
-		TestCases: b.testCases(),
+		TaskUrl:     b.url,
+		TestCases:   b.testCases(),
+		PrejobSteps: b.prejobSteps(),
 	}
 	if ld := b.result.GetLogData(); ld != nil {
 		r.LogData = proto.Clone(ld).(*common.TaskLogData)

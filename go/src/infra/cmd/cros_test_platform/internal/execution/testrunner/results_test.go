@@ -58,6 +58,7 @@ func TestResultBeforeRefresh(t *testing.T) {
 			So(r.LogUrl, ShouldBeEmpty)
 			So(r.LogData, ShouldBeNil)
 			So(r.TestCases, ShouldHaveLength, 0)
+			So(r.PrejobSteps, ShouldHaveLength, 0)
 		})
 	})
 }
@@ -216,7 +217,7 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 		for _, c := range cases {
 			Convey(c.description, func() {
 				Convey("then task results are correctly converted to verdict.", func() {
-					result := callTaskResult(c.result)
+					result := callTaskResult(c.result, nil)
 					So(result, ShouldNotBeNil)
 					So(result.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
 					So(result.State.Verdict, ShouldEqual, c.expectVerdict)
@@ -225,6 +226,95 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 						So(result.LogData.GsUrl, ShouldEqual, "gs://some-url")
 					}
 					So(result.LogUrl, ShouldEqual, "https://stainless.corp.google.com/browse/some-url")
+				})
+			})
+		}
+	})
+}
+
+func TestPrejobSteps(t *testing.T) {
+	Convey("Given a single task's prejob steps", t, func() {
+		cases := []struct {
+			description     string
+			result          *skylab_test_runner.Result_Prejob
+			expectTestCases []*steps.ExecuteResponse_TaskResult_TestCaseResult
+		}{
+			{
+				description: "with no result",
+			},
+			{
+				description: "with no prejob step",
+				result:      &skylab_test_runner.Result_Prejob{},
+			},
+			{
+				description: "with passing prejob step",
+				result: &skylab_test_runner.Result_Prejob{
+					Step: []*skylab_test_runner.Result_Prejob_Step{
+						{
+							Name:                 "foo-pass",
+							Verdict:              skylab_test_runner.Result_Prejob_Step_VERDICT_PASS,
+							HumanReadableSummary: "foo-pass",
+						},
+					},
+				},
+				expectTestCases: []*steps.ExecuteResponse_TaskResult_TestCaseResult{
+					{
+						Name:                 "foo-pass",
+						Verdict:              test_platform.TaskState_VERDICT_PASSED,
+						HumanReadableSummary: "foo-pass",
+					},
+				},
+			},
+			{
+				description: "with failing prejob step",
+				result: &skylab_test_runner.Result_Prejob{
+					Step: []*skylab_test_runner.Result_Prejob_Step{
+						{
+							Name:                 "foo-fail",
+							Verdict:              skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL,
+							HumanReadableSummary: "foo-fail",
+						},
+					},
+				},
+				expectTestCases: []*steps.ExecuteResponse_TaskResult_TestCaseResult{
+					{
+						Name:                 "foo-fail",
+						Verdict:              test_platform.TaskState_VERDICT_FAILED,
+						HumanReadableSummary: "foo-fail",
+					},
+				},
+			},
+			{
+				description: "with undefined prejob step",
+				result: &skylab_test_runner.Result_Prejob{
+					Step: []*skylab_test_runner.Result_Prejob_Step{
+						{
+							Name:                 "foo-undefined",
+							Verdict:              skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED,
+							HumanReadableSummary: "foo-undefined",
+						},
+					},
+				},
+				expectTestCases: []*steps.ExecuteResponse_TaskResult_TestCaseResult{
+					{
+						Name:                 "foo-undefined",
+						Verdict:              test_platform.TaskState_VERDICT_FAILED,
+						HumanReadableSummary: "foo-undefined",
+					},
+				},
+			},
+		}
+		for _, c := range cases {
+			Convey(c.description, func() {
+				Convey("then prejob steps are reported correctly.", func() {
+					result := callTaskResult(nil, c.result)
+					sort.SliceStable(result.PrejobSteps, func(i, j int) bool {
+						return result.PrejobSteps[i].Name < result.PrejobSteps[j].Name
+					})
+					sort.SliceStable(c.expectTestCases, func(i, j int) bool {
+						return c.expectTestCases[i].Name < c.expectTestCases[j].Name
+					})
+					So(result.PrejobSteps, ShouldResembleProto, c.expectTestCases)
 				})
 			})
 		}
@@ -315,7 +405,7 @@ func TestAutotestTestCases(t *testing.T) {
 		for _, c := range cases {
 			Convey(c.description, func() {
 				Convey("then test cases are reported correctly.", func() {
-					result := callTaskResult(c.result)
+					result := callTaskResult(c.result, nil)
 					sort.SliceStable(result.TestCases, func(i, j int) bool {
 						return result.TestCases[i].Name < result.TestCases[j].Name
 					})
@@ -329,7 +419,7 @@ func TestAutotestTestCases(t *testing.T) {
 	})
 }
 
-func callTaskResult(autotestResult *skylab_test_runner.Result_Autotest) *steps.ExecuteResponse_TaskResult {
+func callTaskResult(autotestResult *skylab_test_runner.Result_Autotest, prejob *skylab_test_runner.Result_Prejob) *steps.ExecuteResponse_TaskResult {
 	t := &Build{
 		result: &skylab_test_runner.Result{
 			Harness: &skylab_test_runner.Result_AutotestResult{
@@ -339,6 +429,7 @@ func callTaskResult(autotestResult *skylab_test_runner.Result_Autotest) *steps.E
 				GsUrl:        "gs://some-url",
 				StainlessUrl: "https://stainless.corp.google.com/browse/some-url",
 			},
+			Prejob: prejob,
 		},
 		lifeCycle:      test_platform.TaskState_LIFE_CYCLE_COMPLETED,
 		swarmingTaskID: "foo-task-ID",
