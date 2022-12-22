@@ -1,0 +1,64 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package vmlab.api;
+
+import "infra/libs/vmlab/api/image.proto";
+
+option go_package = "infra/libs/vmlab/api";
+
+// ProviderId is the ID of various VM service providers: GCloud, VM leaser
+// service etc.
+enum ProviderId {
+  UNKNOWN = 0;
+  GCLOUD = 1;
+}
+
+// VMInstance represents a created VM instance.
+message VmInstance {
+  // A unique identifier of the VM that can identify the VM among all configs.
+  string name = 1;
+  // The AddressPort information for SSH.
+  AddressPort ssh = 2;
+}
+
+// Request for the InstanceApi.Create endpoint.
+message CreateVmInstanceRequest {
+  // Configuration of the backend to start the instance.
+  Config config = 1;
+  // Optional tags to be associated to the instance.
+  map<string, string> tags = 2;
+}
+
+// Request for the InstanceApi.Cleanup endpoint.
+message CleanupVmInstancesRequest {
+  // Instances with matching tags will be cleaned up.
+  map<string, string> tag_filters = 1;
+}
+
+// AddressPort represents the SSH address of an VMInstance.
+message AddressPort {
+  // An accessible address: IP, domain, or instance name if in the same network.
+  string address = 1;
+  // Port number for SSH.
+  int32 port = 2;
+}
+
+// TODO(b/250961857): finalize fields and add documentation
+message Config {
+  oneof backend {
+    GCloudBackend gcloud_backend = 1;
+  }
+
+  message GCloudBackend {
+    string project = 1;
+    string zone = 2;
+    string machine_type = 3;
+    string instance_prefix = 4;
+    bool public_ip = 5;
+    GceImage image = 6;
+  }
+}
