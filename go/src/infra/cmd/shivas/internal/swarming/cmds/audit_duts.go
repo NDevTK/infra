@@ -45,7 +45,7 @@ var AuditDutsCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.runVerifyServoUSB, "servo-usb", false, "Run the verifier for Servo USB drive.")
 		c.Flags.BoolVar(&c.runVerifyDUTStorage, "dut-storage", false, "Run the verifier for DUT storage.")
 		c.Flags.BoolVar(&c.runVerifyRpmConfig, "rpm-config", false, "Run the verifier to check and cache mac address of DUT NIC to Servo.")
-		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }

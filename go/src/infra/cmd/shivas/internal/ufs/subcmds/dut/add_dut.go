@@ -116,7 +116,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.UintVar(&c.bluetoothPeersCount, "btpn", 0, "number of Bluetooth peers connected")
 
 		// Scheduling
-		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }

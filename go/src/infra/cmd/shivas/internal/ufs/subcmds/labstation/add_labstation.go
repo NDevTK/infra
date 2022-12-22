@@ -76,7 +76,7 @@ var AddLabstationCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.zone, "zone", "", "zone that the labstation is on. "+cmdhelp.ZoneFilterHelpText)
 
 		// Scheduling
-		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }

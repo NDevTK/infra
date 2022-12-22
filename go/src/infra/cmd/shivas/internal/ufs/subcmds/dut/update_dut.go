@@ -147,7 +147,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVStringList(&c.simInfo), "siminfo", cmdhelp.SimInfoHelpText+". "+cmdhelp.ClearFieldHelpText)
 
 		// Scheduling
-		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }

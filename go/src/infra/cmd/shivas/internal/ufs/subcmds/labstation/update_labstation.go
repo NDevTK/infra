@@ -75,7 +75,7 @@ var UpdateLabstationCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
 
 		// Scheduling
-		c.Flags.BoolVar(&c.latestVersion, "latest", true, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		return c
 	},
 }
