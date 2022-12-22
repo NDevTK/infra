@@ -60,6 +60,7 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 
 		// Publish the MachineLSE creation via Pub/Sub.
 		if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+			logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming CreateMachineLSE results.")
 			// Create a new object so we are not accidentally mutating the original struct.
 			if err == nil {
 				var pubsubMachineLSE ufspb.MachineLSE = *machineLSE
@@ -70,14 +71,14 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 				}
 				data, err_ps := json.Marshal(row)
 				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 					return machineLSE, nil
 				}
 
 				// Publish the message via Pub/Sub.
 				err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
 				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 				}
 			}
 		}
@@ -321,6 +322,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 	}
 
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming UpdateMachineLSE results.")
 		// Create a new object so we are not accidentally mutating the original struct.
 		var pubsubMachineLSE ufspb.MachineLSE = *updatedMachinelse
 		// Generate the message for Pub/Sub
@@ -330,14 +332,14 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		}
 		data, err_ps := json.Marshal(row)
 		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 			return machinelse, nil
 		}
 
 		// Publish the message via Pub/Sub.
 		err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
 		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 		}
 	}
 
@@ -541,6 +543,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 		// Publish the list to Pub/Sub.
 		if len(lses) > 0 {
+			logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming ListMachineLSE results.")
 			// Generate the message for Pub/Sub
 			msgs := [][]byte{}
 			for _, machinelse := range lses {
@@ -553,7 +556,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 				}
 				data, err_ps := json.Marshal(row)
 				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 					return lses, nextPageToken, err
 				}
 				msgs = append(msgs, data)
@@ -562,7 +565,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 			// Publish the message via Pub/Sub.
 			err_ps := publish(ctx, machinelsePubsubTopicID, msgs)
 			if err_ps != nil {
-				logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+				logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 			}
 		}
 	}
@@ -692,6 +695,7 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 	}
 
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming DeleteMachineLSE results.")
 		// Create a new object so we are not accidentally mutating the original struct.
 		var pubsubMachineLSE ufspb.MachineLSE = *existingMachinelse
 
@@ -702,14 +706,14 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		}
 		data, err_ps := json.Marshal(row)
 		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 			return nil
 		}
 
 		// Publish the message via Pub/Sub.
 		err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
 		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub error: %s", err_ps.Error())
+			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 		}
 	}
 
