@@ -12,10 +12,50 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/savaki/jq"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/led/job"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+// GetBuild gets the specified build using `bb get`.
+func (m tryRunBase) GetBuild(ctx context.Context, bbid string) (*bbpb.Build, error) {
+	stdout, stderr, err := m.RunCmd(ctx, "bb", "get", bbid, "-p", "-json")
+	if err != nil {
+		if strings.Contains(stderr, "not found") {
+			return nil, fmt.Errorf("builder not found")
+		}
+		m.LogErr(stderr)
+		return nil, errors.Annotate(err, "could not fetch builder").Err()
+	}
+
+	var build bbpb.Build
+	// See the comment below for more context, but enum fields cannot be
+	// extracted properly. Manually extract the fields we care about.
+	op, err := jq.Parse(".status")
+	if err != nil {
+		return nil, errors.Annotate(err, "error extracting status").Err()
+	}
+	status, err := op.Apply([]byte(stdout))
+	if err != nil {
+		return nil, errors.Annotate(err, "error extracting status").Err()
+	}
+	build.Status = bbpb.Status(bbpb.Status_value[strings.Trim(string(status), "\"")])
+
+	if err := json.Unmarshal([]byte(stdout), &build); err != nil {
+		// `bb get` returns proto enum fields as strings instead of ints,
+		// like buildbucket.bbagent_args.infra.experiment_reasons.
+		// json.Unmarshal considers that to be an inappropriate type, returns an
+		// UnmarshalTypeError, and otherwise unmarshals as best as it can.
+		// If the error is an UnmarshalTypeError then there's no problem.
+		if _, ok := err.(*json.UnmarshalTypeError); ok {
+			return &build, nil
+		}
+		return nil, errors.Annotate(err, "unmarshaling `bb get` output").Err()
+	}
+	return &build, nil
+}
 
 func (m tryRunBase) GetBuilderInputProps(ctx context.Context, fullBuilderName string) (*structpb.Struct, error) {
 	bucket, builder, err := separateBucketFromBuilder(fullBuilderName)
@@ -34,9 +74,12 @@ func (m tryRunBase) GetBuilderInputProps(ctx context.Context, fullBuilderName st
 
 	var definition job.Definition_Buildbucket
 	if err := json.Unmarshal([]byte(stdout), &definition); err != nil {
-		// `led get-builder` returns proto enum fields as strings instead of ints, like buildbucket.bbagent_args.infra.experiment_reasons.
-		// json.Unmarshal considers that to be an inappropriate type, returns an UnmarshalTypeError, and otherwise unmarshals as best as it can.
-		// If the error is an UnmarshalTypeError, and InputProperties seem to have been unmarshaled OK, then there's no problem.
+		// `led get-builder` returns proto enum fields as strings instead of
+		// ints, like buildbucket.bbagent_args.infra.experiment_reasons.
+		// json.Unmarshal considers that to be an inappropriate type, returns an
+		// UnmarshalTypeError, and otherwise unmarshals as best as it can.
+		// If the error is an UnmarshalTypeError, and InputProperties seem to
+		// have been unmarshaled OK, then there's no problem.
 		inputProps := definitionToInputProperties(definition)
 		if _, ok := err.(*json.UnmarshalTypeError); ok && inputProps != nil {
 			return inputProps, nil

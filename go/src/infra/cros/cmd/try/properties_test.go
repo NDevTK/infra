@@ -11,6 +11,7 @@ import (
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -184,4 +185,93 @@ func TestSetProperty_error(t *testing.T) {
 
 	err = setProperty(s, "my_other_prop.invalid_nest", 123)
 	assert.ErrorContains(t, err, "not a struct")
+}
+
+const (
+	buildUnmarshalErrorButInputPropsOK = `{
+		"id": "8794230068334833057",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-release-main-orchestrator"
+		},
+		"status": "SUCCESS",
+		"output": {
+			"properties": {
+				"$chromeos/my_module": {
+					"my_prop": 100
+				},
+				"my_other_prop": 101
+			}
+		}
+	}`
+	// "outputt" is mispelled.
+	buildUnmarshalErrorWithNoInputProperties = `{
+		"id": "8794230068334833057",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-release-main-orchestrator"
+		},
+		"outputt": {
+			"properties": {
+				"$chromeos/my_module": {
+					"my_prop": 100
+				},
+				"my_other_prop": 101
+			}
+		}
+	}`
+)
+
+// TestGetBuild tests GetBuild.
+func TestGetBuild(t *testing.T) {
+	t.Parallel()
+	bbid := "12345"
+	var okBuild bbpb.Build
+
+	outputProps, err := structpb.NewStruct(map[string]interface{}{
+		"$chromeos/my_module": map[string]interface{}{
+			"my_prop": 100,
+		},
+		"my_other_prop": 101,
+	})
+	if err != nil {
+		t.Fatal("Error constructing outputProps:", err)
+	}
+	okBuild.Status = bbpb.Status_SUCCESS
+	okBuild.Builder = &bbpb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "staging",
+		Builder: "staging-release-main-orchestrator",
+	}
+	okBuild.Output = &bbpb.Build_Output{
+		Properties: outputProps,
+	}
+
+	m := tryRunBase{}
+	for i, tc := range []struct {
+		bbGetStdout   string
+		expectError   bool
+		expectedBuild *bbpb.Build // Unchecked if expectError
+	}{
+		{invalidJSON, true, nil},
+		{buildUnmarshalErrorButInputPropsOK, false, &okBuild},
+		{buildUnmarshalErrorWithNoInputProperties, true, nil},
+	} {
+		m.cmdRunner = cmd.FakeCommandRunner{
+			ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+			Stdout:      tc.bbGetStdout,
+		}
+		build, err := m.GetBuild(context.Background(), bbid)
+		if err != nil && !tc.expectError {
+			t.Errorf("#%d: Unexpected error running GetBuild: %+v", i, err)
+		}
+		if err == nil && tc.expectError {
+			t.Errorf("#%d: Expected error running GetBuild; got no error. build: %+v", i, build)
+		}
+		if !tc.expectError && build.String() != tc.expectedBuild.String() {
+			t.Errorf("#%d: Unexpected build: got %+v; want %+v", i, build, tc.expectedBuild)
+		}
+	}
 }
