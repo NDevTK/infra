@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb77ab07_85c2fe39",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-12-22T00:24:58Z",
+      "side": 1,
+      "message": "please provide example of the values expected here.",
+      "range": {
+        "startLine": 439,
+        "startChar": 2,
+        "endLine": 440,
+        "endChar": 30
+      },
+      "revId": "5b51e03c016256ac6c7ede038c4dfc499efcf011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
