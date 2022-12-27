@@ -430,6 +430,8 @@ CREATE TABLE IssueUpdate (
   new_value MEDIUMTEXT COLLATE utf8mb4_unicode_ci,
   added_user_id INT UNSIGNED,
   removed_user_id INT UNSIGNED,
+  added_component_id INT,
+  removed_component_id INT,
   custom_field_name VARCHAR(255),
   is_spam BOOLEAN DEFAULT FALSE,
 
