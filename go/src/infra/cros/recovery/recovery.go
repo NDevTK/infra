@@ -85,6 +85,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		}
 		// Create karte metric
 		resourceMetric := args.newMetric(resource, metrics.TasknameToMetricsKind(string(args.TaskName)))
+		resourceMetric.Observations = append(resourceMetric.Observations, metrics.NewStringObservation("task_name", string(args.TaskName)))
 		err := runResource(ctx, resource, args)
 		if err != nil {
 			errs = append(errs, errors.Annotate(err, "run recovery %q", resource).Err())
