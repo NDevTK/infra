@@ -35,6 +35,12 @@ class IssueExportTest(unittest.TestCase):
   def testParseComment(self):
     """Test a Comment JSON is correctly parsed."""
     users_id_dict = {'adam@test.com': 111}
+    config = {
+        'component_defs': [{
+            'path': 'comp1',
+            'component_id': 1,
+        }],
+    }
     json = {
         'timestamp': 123,
         'commenter': 'adam@test.com',
@@ -44,7 +50,12 @@ class IssueExportTest(unittest.TestCase):
         'description_num': None,
         }
     comment = self.servlet._ParseComment(
-        12, users_id_dict, json, self.event_log)
+        12,
+        users_id_dict,
+        json,
+        self.event_log,
+        config,
+    )
     self.assertEqual(
         comment, tracker_pb2.IssueComment(
             project_id=12, timestamp=123, user_id=111,
