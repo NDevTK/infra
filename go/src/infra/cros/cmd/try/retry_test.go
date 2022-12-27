@@ -101,7 +101,7 @@ type retryTestConfig struct {
 	dryrun bool
 }
 
-func doRetryTestRun(t *testing.T, tc *retryTestConfig) {
+func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	t.Helper()
 	propsFile, err := os.CreateTemp("", "input_props")
 	defer os.Remove(propsFile.Name())
@@ -181,15 +181,74 @@ func doRetryTestRun(t *testing.T, tc *retryTestConfig) {
 
 func TestRetry_dryRun(t *testing.T) {
 	t.Parallel()
-	doRetryTestRun(t, &retryTestConfig{
+	doOrchestratorRetryTestRun(t, &retryTestConfig{
 		dryrun: true,
 	})
 }
 func TestRetry_fullRun(t *testing.T) {
 	t.Parallel()
-	doRetryTestRun(t, &retryTestConfig{
+	doOrchestratorRetryTestRun(t, &retryTestConfig{
 		dryrun: false,
 	})
+}
+
+func TestRetry_childBuilder_fullRun(t *testing.T) {
+	propsFile, err := os.CreateTemp("", "input_props")
+	defer os.Remove(propsFile.Name())
+	assert.NilError(t, err)
+
+	bbid := "8794230068334833059"
+	f := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			fakeAuthInfoRunner("bb", 0),
+			fakeAuthInfoRunner("led", 0),
+			{
+				ExpectedCmd: []string{
+					"led", "auth-info",
+				},
+				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+				Stdout:      failedChildJSON,
+			},
+		},
+	}
+	expectedBucket := "chromeos/staging"
+	expectedBuilder := "staging-zork-release-main"
+	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
+	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
+	f.CommandRunners = append(f.CommandRunners,
+		cmd.FakeCommandRunner{
+			ExpectedCmd: expectedAddCmd,
+		},
+	)
+
+	r := retryRun{
+		propsFile:    propsFile,
+		originalBBID: bbid,
+		tryRunBase: tryRunBase{
+			cmdRunner: f,
+			dryrun:    false,
+		},
+	}
+	ret := r.Run(nil, nil, nil)
+	assert.IntsEqual(t, ret, Success)
+
+	properties, err := readStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	checkpointProps := properties.GetFields()["$chromeos/checkpoint"].GetStructValue()
+
+	assert.Assert(t, checkpointProps.GetFields()["retry"].GetBoolValue())
+
+	originalBuildBBID := checkpointProps.GetFields()["original_build_bbid"].GetStringValue()
+	assert.StringsEqual(t, originalBuildBBID, bbid)
+
+	execSteps := checkpointProps.GetFields()["exec_steps"].GetStructValue().GetFields()["steps"].GetListValue().AsSlice()
+	assert.IntsEqual(t, len(execSteps), 1)
+	assert.IntsEqual(t, int(execSteps[0].(float64)), int(pb.RetryStep_DEBUG_SYMBOLS.Number()))
 }
 
 func TestGetExecStep(t *testing.T) {

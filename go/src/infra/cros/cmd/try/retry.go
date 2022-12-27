@@ -203,15 +203,8 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 
 	propsStruct := buildData.GetInput().GetProperties()
 	recipe := propsStruct.AsMap()["recipe"].(string)
-	// TODO(b/262388770): Support build_release.
-	if recipe != "orchestrator" {
+	if recipe != "orchestrator" && recipe != "build_release" {
 		r.LogErr(fmt.Errorf("unsupported recipe `%s`", recipe).Error())
-		return CmdError
-	}
-
-	childInfo, err := r.getChildBuildInfo(ctx, originalBuildProps)
-	if err != nil {
-		r.LogErr(err.Error())
 		return CmdError
 	}
 
@@ -238,6 +231,15 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 		r.LogErr(err.Error())
 		return CmdError
 	}
+	var childInfo map[string]childBuild
+	if recipe == "orchestrator" {
+		childInfo, err = r.getChildBuildInfo(ctx, originalBuildProps)
+		if err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
+
 	if recipe == "orchestrator" && hasFailedChild(childInfo) {
 		execStep = pb.RetryStep_RUN_FAILED_CHILDREN
 	}
