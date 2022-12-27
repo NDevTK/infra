@@ -43,6 +43,32 @@ func errToCode(a subcommands.Application, err error) int {
 	return 0
 }
 
+// baseTestPlanRun embeds subcommands.CommandRunBase and implements flags shared
+// across commands, such as logging and auth flags. It should be embedded in
+// another struct that implements Run() for a specific command. baseTestPlanRun
+// implements cli.ContextModificator, to set the log level based on flags.
+type baseTestPlanRun struct {
+	subcommands.CommandRunBase
+	authFlags authcli.Flags
+	logLevel  logging.Level
+}
+
+// addSharedFlags adds shared auth and logging flags.
+func (r *baseTestPlanRun) addSharedFlags(authOpts auth.Options) {
+	r.authFlags = authcli.Flags{}
+	r.authFlags.Register(r.GetFlags(), authOpts)
+
+	r.logLevel = logging.Info
+	r.Flags.Var(&r.logLevel, "loglevel", text.Doc(`
+	Log level, valid options are "debug", "info", "warning", "error". Default is "info".
+	`))
+}
+
+// ModifyContext returns a new Context with the log level set in the flags.
+func (r *baseTestPlanRun) ModifyContext(ctx context.Context) context.Context {
+	return logging.SetLevel(ctx, r.logLevel)
+}
+
 func app(authOpts auth.Options) *cli.Application {
 	return &cli.Application{
 		Name:    "test_plan",
@@ -73,8 +99,8 @@ func cmdRelevantPlans(authOpts auth.Options) *subcommands.Command {
 	`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &relevantPlansRun{}
-			r.authFlags = authcli.Flags{}
-			r.authFlags.Register(r.GetFlags(), authOpts)
+			r.addSharedFlags(authOpts)
+
 			r.Flags.Var(luciflag.StringSlice(&r.cls), "cl", text.Doc(`
 			CL URL for the patchsets being tested. Must be specified at least once.
 			Changes will be merged in the order they are passed on the command line.
@@ -83,22 +109,15 @@ func cmdRelevantPlans(authOpts auth.Options) *subcommands.Command {
 		`))
 			r.Flags.StringVar(&r.out, "out", "", "Path to the output test plan")
 
-			r.logLevel = logging.Info
-			r.Flags.Var(&r.logLevel, "loglevel", text.Doc(`
-			Log level, valid options are "debug", "info", "warning", "error". Default is "info".
-			`))
-
 			return r
 		},
 	}
 }
 
 type relevantPlansRun struct {
-	subcommands.CommandRunBase
-	authFlags authcli.Flags
-	cls       []string
-	out       string
-	logLevel  logging.Level
+	baseTestPlanRun
+	cls []string
+	out string
 }
 
 func (r *relevantPlansRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -176,8 +195,6 @@ func (r *relevantPlansRun) run(ctx context.Context) error {
 		return err
 	}
 
-	ctx = logging.SetLevel(ctx, r.logLevel)
-
 	authOpts, err := r.authFlags.Options()
 	if err != nil {
 		return err
@@ -236,16 +253,14 @@ func cmdValidate(authOpts auth.Options) *subcommands.Command {
 	`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &validateRun{}
-			r.authFlags = authcli.Flags{}
-			r.authFlags.Register(r.GetFlags(), authOpts)
+			r.addSharedFlags(authOpts)
 			return r
 		},
 	}
 }
 
 type validateRun struct {
-	subcommands.CommandRunBase
-	authFlags authcli.Flags
+	baseTestPlanRun
 }
 
 func (r *validateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
