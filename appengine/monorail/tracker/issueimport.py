@@ -17,7 +17,7 @@ from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
 from proto import tracker_pb2
-
+from tracker import tracker_bizobj
 
 ParserState = collections.namedtuple(
     'ParserState',
@@ -202,7 +202,8 @@ class IssueImport(flaskservlet.FlaskServlet):
 
     return field
 
-  def _ParseComment(self, project_id, user_id_dict, comment_json, event_log):
+  def _ParseComment(
+      self, project_id, user_id_dict, comment_json, event_log, config):
     comment = tracker_pb2.IssueComment(
         # Note: issue_id is filled in after the issue is saved.
         project_id=project_id,
@@ -212,7 +213,7 @@ class IssueImport(flaskservlet.FlaskServlet):
 
     for amendment in comment_json['amendments']:
       comment.amendments.append(
-          self._ParseAmendment(amendment, user_id_dict, event_log))
+          self._ParseAmendment(amendment, user_id_dict, event_log, config))
 
     for attachment in comment_json['attachments']:
       comment.attachments.append(
@@ -223,7 +224,7 @@ class IssueImport(flaskservlet.FlaskServlet):
 
     return comment
 
-  def _ParseAmendment(self, amendment_json, user_id_dict, _event_log):
+  def _ParseAmendment(self, amendment_json, user_id_dict, _event_log, config):
     amendment = tracker_pb2.Amendment(
         field=tracker_pb2.FieldID(amendment_json['field']))
 
@@ -237,7 +238,16 @@ class IssueImport(flaskservlet.FlaskServlet):
     if 'removed_users' in amendment_json:
       amendment.removed_user_ids.extend(
           [user_id_dict[email] for email in amendment_json['removed_users']])
-
+    if 'added_components' in amendment_json:
+      for comp in amendment_json['added_components']:
+        comp_def = tracker_bizobj.FindComponentDef(comp, config)
+        if comp_def:
+          amendment.added_component_ids.extend(comp_def.component_id)
+    if 'removed_components' in amendment_json:
+      for comp_id in amendment_json['removed_components']:
+        comp_def = tracker_bizobj.FindComponentDef(comp, config)
+        if comp_def:
+          amendment.removed_component_ids.extend(comp_def.component_id)
     return amendment
 
   def _ParseAttachment(self, attachment_json, _event_log):
@@ -263,6 +273,7 @@ class IssueImport(flaskservlet.FlaskServlet):
     total_comments = 0
     total_stars = 0
     config = self.services.config.GetProjectConfig(cnxn, project_id)
+    comp_dic
     for issue in state.issue_list:
       # TODO(jrobbins): renumber issues if there is a local_id conflict.
       if issue.local_id not in state.starrers_dict:
