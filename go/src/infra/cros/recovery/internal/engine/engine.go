@@ -205,12 +205,12 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	// Please do not create metrics for cached actions as it will lead for creating too many repeated metrics.
 	if aErr, ok := r.actionResultFromCache(actionName); ok {
 		if aErr == nil {
-			log.Infof(ctx, "Action %q: pass (cached).", actionName)
+			log.Infof(ctx, "Action %q (level: %d): pass (cached).", actionName, actionLevel)
 			// Return nil error so we can continue execution of next actions...
 			return nil, actionPassCache, nil
 		}
 		if act.GetAllowFailAfterRecovery() {
-			log.Infof(ctx, "Action %q: fail (cached). Error: %s", actionName, aErr)
+			log.Infof(ctx, "Action %q (level: %d): fail (cached). Error: %s", actionName, actionLevel, aErr)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
 			// Return error to report for step and metrics but stop from return to parent.
 			forgiveError = true
@@ -258,7 +258,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			}
 		}()
 	}
-	log.Infof(ctx, "Action %q: started.", actionName)
+	log.Infof(ctx, "Action %q (level: %d): started.", actionName, actionLevel)
 	conditionName, err := r.runActionConditions(ctx, actionName, actionLevel+1)
 	if err != nil {
 		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed.", actionName, conditionName)
