@@ -1740,3 +1740,9 @@ ALTER TABLE FieldDef ADD COLUMN is_restricted_field BOOL DEFAULT FALSE;
 2020-05-14: Add option to force detailed notifications for projects.
 
 ALTER TABLE Project ADD COLUMN issue_notify_always_detailed BOOLEAN DEFAULT FALSE;
+
+================================================================
+2022-12-27: Added more IssueUpdate fields.
+
+ALTER TABLE IssueUpdate ADD COLUMN added_component_id VARCHAR(80);
+ALTER TABLE IssueUpdate ADD COLUMN removed_component_id VARCHAR(80);

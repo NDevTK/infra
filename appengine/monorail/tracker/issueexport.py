@@ -148,7 +148,7 @@ class IssueExportJSON(jsonfeed.FlaskJsonFeed):
     }
     return json_data
 
-  def _MakeAmendmentJSON(self, amendment, email_dict):
+  def _MakeAmendmentJSON(self, amendment, email_dict, comp_dict):
     amendment_json = {
         'field': amendment.field.name,
     }
@@ -164,6 +164,24 @@ class IssueExportJSON(jsonfeed.FlaskJsonFeed):
       amendment_json.update(
           {'removed_emails': [email_dict.get(user_id)
                               for user_id in amendment.removed_user_ids]})
+    if amendment.added_component_ids:
+      amendment_json.update(
+          {
+              'added_components':
+                  [
+                      comp_dict.get(component_id).path.lower()
+                      for component_id in amendment.added_component_ids
+                  ]
+          })
+    if amendment.removed_component_ids:
+      amendment_json.update(
+          {
+              'removed_components':
+                  [
+                      comp_dict.get(component_id).path.lower()
+                      for component_id in amendment.removed_component_ids
+                  ]
+          })
     return amendment_json
 
   def _MakeAttachmentJSON(self, attachment):
@@ -177,11 +195,13 @@ class IssueExportJSON(jsonfeed.FlaskJsonFeed):
     }
     return attachment_json
 
-  def _MakeCommentJSON(self, comment, email_dict):
+  def _MakeCommentJSON(self, comment, email_dict, comp_dict):
     if comment.deleted_by:
       return None
-    amendments = [self._MakeAmendmentJSON(a, email_dict)
-                  for a in comment.amendments]
+    amendments = [
+        self._MakeAmendmentJSON(a, email_dict, comp_dict)
+        for a in comment.amendments
+    ]
     attachments = [self._MakeAttachmentJSON(a)
                    for a in comment.attachments]
     comment_json = {
@@ -236,10 +256,13 @@ class IssueExportJSON(jsonfeed.FlaskJsonFeed):
     descriptions = [c for c in comment_list if c.is_description]
     for i, d in enumerate(descriptions):
       d.description_num = str(i+1)
-    comments = [self._MakeCommentJSON(c, email_dict) for c in comment_list]
     phase_dict = {phase.phase_id: phase.name for phase in issue.phases}
     config = self.services.config.GetProjectConfig(
         mr.cnxn, mr.project.project_id)
+    comp_dict = {comp.component_id: comp for comp in config.component_defs}
+    comments = [
+        self._MakeCommentJSON(c, email_dict, comp_dict) for c in comment_list
+    ]
     fd_dict = {fd.field_id: fd for fd in config.field_defs}
     issue_json = {
         'local_id': issue.local_id,
