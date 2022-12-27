@@ -86,7 +86,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		// Create karte metric
 		resourceMetric := args.newMetric(resource, metrics.TasknameToMetricsKind(string(args.TaskName)))
 		resourceMetric.Observations = append(resourceMetric.Observations, metrics.NewStringObservation("task_name", string(args.TaskName)))
-		err := runResource(ctx, resource, args)
+		err := runResource(ctx, resource, resourceMetric, args)
 		if err != nil {
 			errs = append(errs, errors.Annotate(err, "run recovery %q", resource).Err())
 		}
@@ -104,7 +104,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 }
 
 // runResource run single resource.
-func runResource(ctx context.Context, resource string, args *RunArgs) (rErr error) {
+func runResource(ctx context.Context, resource string, runMetric *metrics.Action, args *RunArgs) (rErr error) {
 	log.Infof(ctx, "Resource %q: started", resource)
 	if args.ShowSteps {
 		var step *build.Step
@@ -116,6 +116,9 @@ func runResource(ctx context.Context, resource string, args *RunArgs) (rErr erro
 	dut, err := readInventory(ctx, resource, args)
 	if err != nil {
 		return errors.Annotate(err, "run resource %q", resource).Err()
+	}
+	if runMetric != nil {
+		metricsApplyBoardModel(ctx, dut, runMetric, resource)
 	}
 	// Load Configuration.
 	config, err := loadConfiguration(ctx, dut, args)
@@ -470,22 +473,26 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 				metrics.NewStringObservation("plan_resource", execArgs.ResourceName),
 			)
 			metric.PlanName = planName
-			switch {
-			case execArgs.DUT.GetChromeos() != nil:
-				metric.Board = execArgs.DUT.GetChromeos().GetBoard()
-				metric.Model = execArgs.DUT.GetChromeos().GetModel()
-			case execArgs.DUT.GetAndroid() != nil:
-				metric.Board = execArgs.DUT.GetAndroid().GetBoard()
-				metric.Model = execArgs.DUT.GetAndroid().GetModel()
-			default:
-				execArgs.Logger.Warningf("in plan %q, dut %q is neither CrOS nor Android", resource)
-			}
+			metricsApplyBoardModel(ctx, execArgs.DUT, metric, resource)
 			return metricSaver(metric)
 		}
 		return nil
 	}
 	err := engine.Run(ctx, planName, plan, execArgs, planResourceMetricSaver)
 	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
+}
+
+func metricsApplyBoardModel(ctx context.Context, dut *tlw.Dut, metric *metrics.Action, resource string) {
+	switch {
+	case dut.GetChromeos() != nil:
+		metric.Board = dut.GetChromeos().GetBoard()
+		metric.Model = dut.GetChromeos().GetModel()
+	case dut.GetAndroid() != nil:
+		metric.Board = dut.GetAndroid().GetBoard()
+		metric.Model = dut.GetAndroid().GetModel()
+	default:
+		log.Warningf(ctx, "In plan %q, dut %q is neither CrOS nor Android", resource)
+	}
 }
 
 // collectResourcesForPlan collect resource names for supported plan.
