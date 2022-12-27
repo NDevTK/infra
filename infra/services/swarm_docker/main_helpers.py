@@ -104,7 +104,7 @@ def update_docker(canary, docker_version):
 
   try:
     subprocess.check_call(['/usr/bin/apt-get', 'install', '-y',
-                           package_with_version])
+                           '--allow-downgrades', package_with_version])
   except subprocess.CalledProcessError:
     logging.exception('Unable to install/upgrade docker-ce to %s.',
                       package_with_version)
