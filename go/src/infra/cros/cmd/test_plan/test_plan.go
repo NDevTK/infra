@@ -8,19 +8,24 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	igerrit "infra/cros/internal/gerrit"
+	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/shared"
 	"infra/cros/internal/testplan"
+	"infra/cros/internal/testplan/migrationstatus"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
@@ -77,6 +82,7 @@ func app(authOpts auth.Options) *cli.Application {
 		Commands: []*subcommands.Command{
 			cmdRelevantPlans(authOpts),
 			cmdValidate(authOpts),
+			cmdMigrationStatus(authOpts),
 
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
@@ -116,9 +122,8 @@ func cmdRelevantPlans(authOpts auth.Options) *subcommands.Command {
 
 type relevantPlansRun struct {
 	baseTestPlanRun
-	cls      []string
-	out      string
-	logLevel logging.Level
+	cls []string
+	out string
 }
 
 func (r *relevantPlansRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -304,6 +309,105 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 	}
 
 	return testplan.ValidateMapping(ctx, gerritClient, mapping)
+}
+
+func cmdMigrationStatus(authOpts auth.Options) *subcommands.Command {
+	return &subcommands.Command{
+		UsageLine: "migration-status -crossrcroot ~/chromiumos [-project PROJECT1 -project PROJECT2...]",
+		ShortDesc: "summarize the migration status of projects",
+		LongDesc: text.Doc(`
+		Summarize the migration status of projects in the manifest.
+
+		Reads the default manifest and Buildbucket config from -crossrcroot, and
+		for each project in the manifest checks if it has a matching 
+		CrosTestPlanV2Properties.ProjectMigrationConfig in the input properties
+		of the CQ orchestrators. Prints a summary of the number of projects
+		migrated.
+
+		Optionally takes multiple -project arguments, and prints whether those
+		specific projects are migrated. If one of these projects does not exist
+		in the manifest, an error is returned.
+		`),
+		CommandRun: func() subcommands.CommandRun {
+			r := &migrationStatusRun{}
+			r.addSharedFlags(authOpts)
+
+			r.Flags.StringVar(&r.crosSrcRoot, "crossrcroot", "", text.Doc(`
+			Required, path to the root of a ChromeOS checkout. The manifest and
+			generated Buildbucket config found in this checkout will be used.
+			`))
+			r.Flags.Var(luciflag.StringSlice(&r.projects), "project", text.Doc(`
+			Projects to check the specific migration status of.
+			`))
+			return r
+		},
+	}
+}
+
+type migrationStatusRun struct {
+	baseTestPlanRun
+	crosSrcRoot string
+	projects    []string
+}
+
+func (r *migrationStatusRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, r, env)
+	return errToCode(a, r.run(ctx))
+}
+
+func (r *migrationStatusRun) validateFlagsAndSetDefaults() error {
+	if r.crosSrcRoot == "" {
+		return fmt.Errorf("-crossrcroot must be set")
+	}
+
+	return nil
+}
+
+func (r *migrationStatusRun) run(ctx context.Context) error {
+	if err := r.validateFlagsAndSetDefaults(); err != nil {
+		return err
+	}
+
+	authOpts, err := r.authFlags.Options()
+	if err != nil {
+		return err
+	}
+
+	authedClient, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).Client()
+	if err != nil {
+		return err
+	}
+
+	gerritClient, err := igerrit.NewClient(authedClient)
+	if err != nil {
+		return err
+	}
+
+	logging.Debugf(ctx, "reading default.xml manifest from chromeos/manifest-internal")
+	manifest, err := manifestutil.LoadManifestFromGitilesWithIncludes(
+		ctx, gerritClient, "chrome-internal.googlesource.com", "chromeos/manifest-internal",
+		"HEAD", "default.xml")
+
+	bbCfgPath := filepath.Join(r.crosSrcRoot, "infra", "config", "generated", "cr-buildbucket.cfg")
+	logging.Debugf(ctx, "reading Buildbucket config from %q", bbCfgPath)
+	bbCfgBytes, err := os.ReadFile(bbCfgPath)
+	if err != nil {
+		return err
+	}
+
+	bbCfg := &bbpb.BuildbucketCfg{}
+	if err := prototext.Unmarshal(bbCfgBytes, bbCfg); err != nil {
+		return err
+	}
+
+	textSummary, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, r.projects)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(textSummary)
+
+	return nil
 }
 
 func main() {
