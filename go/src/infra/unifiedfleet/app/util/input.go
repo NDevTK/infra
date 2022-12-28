@@ -528,8 +528,6 @@ func ToUFSDeviceType(devicetype string) ufspb.ChromeOSDeviceType {
 var StrToChameleonType = map[string]string{
 	"invalid": "CHAMELEON_TYPE_INVALID",
 	"dp":      "CHAMELEON_TYPE_DP",
-	"dphdmi":  "CHAMELEON_TYPE_DP_HDMI",
-	"vga":     "CHAMELEON_TYPE_VGA",
 	"hdmi":    "CHAMELEON_TYPE_HDMI",
 }
 
