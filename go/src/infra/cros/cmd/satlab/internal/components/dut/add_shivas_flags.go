@@ -77,18 +77,6 @@ func makeAddShivasFlags(c *addDUT) flagmap {
 	if len(c.deployTags) != 0 {
 		out["deploy-tags"] = []string{strings.Join(c.deployTags, ",")}
 	}
-	if c.deploySkipDownloadImage {
-		out["deploy-skip-download-image"] = []string{}
-	}
-	if c.deploySkipInstallFirmware {
-		out["deploy-skip-install-fw"] = []string{}
-	}
-	if c.deploySkipInstallOS {
-		out["deploy-skip-install-os"] = []string{}
-	}
-	if c.deploySkipRecoveryMode {
-		out["deploy-skip-recovery-mode"] = []string{}
-	}
 	if len(c.tags) != 0 {
 		out["tags"] = []string{strings.Join(c.tags, ",")}
 	}
@@ -157,12 +145,6 @@ func makeAddShivasFlags(c *addDUT) flagmap {
 	}
 	if c.envFlags.Namespace != "" {
 		out["namespace"] = []string{c.envFlags.Namespace}
-	}
-	if c.paris {
-		out["paris"] = []string{}
-	} else {
-		// false need provide with = or will be ignored with shivas.
-		out["paris=false"] = []string{}
 	}
 	return out
 }
@@ -266,10 +248,10 @@ func registerAddShivasFlags(c *addDUT) {
 	c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 	c.Flags.BoolVar(&c.ignoreUFS, "ignore-ufs", false, "skip updating UFS create a deploy task.")
 	c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma separated tags for deployment task.")
-	c.Flags.BoolVar(&c.deploySkipDownloadImage, "deploy-skip-download-image", false, "skips downloading image and staging usb")
-	c.Flags.BoolVar(&c.deploySkipInstallFirmware, "deploy-skip-install-fw", false, "skips installing firmware")
-	c.Flags.BoolVar(&c.deploySkipInstallOS, "deploy-skip-install-os", false, "skips installing os image")
-	c.Flags.BoolVar(&c.deploySkipRecoveryMode, "deploy-skip-recovery-mode", false, "skips recovery mode step for dut deployment")
+	c.Flags.BoolVar(&c.deploySkipDownloadImage, "deploy-skip-download-image", false, "DEPRECATED: skips downloading image and staging usb")
+	c.Flags.BoolVar(&c.deploySkipInstallFirmware, "deploy-skip-install-fw", false, "DEPRECATED: skips installing firmware")
+	c.Flags.BoolVar(&c.deploySkipInstallOS, "deploy-skip-install-os", false, "DEPRECATED: skips installing os image")
+	c.Flags.BoolVar(&c.deploySkipRecoveryMode, "deploy-skip-recovery-mode", false, "DEPRECATED: skips recovery mode step for dut deployment")
 	c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
 	c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags.")
 	c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
