@@ -36,7 +36,6 @@ type OwnershipRecorder interface {
 // array to record all declarations on names, and a map of name to ID to track
 // the current state.
 type ownershipState struct {
-	OwnershipRecorder
 	history []string
 	mapping map[string]string
 }

@@ -50,9 +50,7 @@ type portDiscoverer interface {
 }
 
 // RequestRouter is the entry point to template processing.
-type RequestRouter struct {
-	TemplateProcessor
-}
+type RequestRouter struct{}
 
 func (r *RequestRouter) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
 	actualProcessor, err := r.getActualProcessor(request)
@@ -92,9 +90,7 @@ func (*RequestRouter) getActualProcessor(request *api.StartTemplatedContainerReq
 // The returned Container_PortBinding will only have ContainerPort populated.
 // Each template processor is responsible for decorating the Protocol field, and
 // the HostIp and HostPort fields if the network is `host`.
-type defaultPortDiscoverer struct {
-	portDiscoverer
-}
+type defaultPortDiscoverer struct{}
 
 func (*defaultPortDiscoverer) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
 	cmd := commands.DockerExec{

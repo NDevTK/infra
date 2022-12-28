@@ -47,13 +47,12 @@ const (
 	LocalhostPortScheme = "ctr-localhost-port"
 )
 
-// populatorRouter is the entry point
+// populatorRouter is the entry point that implements placeholderPopulator
 type populatorRouter struct {
-	placeholderPopulator
 	containerLookuper ContainerLookuper
 }
 
-func newPopulatorRouter() *populatorRouter {
+func newPopulatorRouter() placeholderPopulator {
 	return &populatorRouter{containerLookuper: &TemplateUtils}
 }
 

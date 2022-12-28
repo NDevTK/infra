@@ -20,7 +20,7 @@ type CommandExecutor interface {
 // be used in a granular way: retrieve one piece of information at a time. The
 // motivation is to make it easier to support both docker and podman commands
 // which have subtle differences in stdout and data model.
-type DefaultCommandExecutor struct{ CommandExecutor }
+type DefaultCommandExecutor struct{}
 
 // Execute of DefaultCommandExecutor executes the command as is and processes
 // the stdout to extract only the first line (without the newline character).

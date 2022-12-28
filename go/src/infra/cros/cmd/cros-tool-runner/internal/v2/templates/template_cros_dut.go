@@ -13,7 +13,6 @@ import (
 )
 
 type crosDutProcessor struct {
-	TemplateProcessor
 	defaultPortDiscoverer portDiscoverer
 	defaultServerPort     string // Default port used in cros-provision
 	dockerArtifactDirName string // Path on the drone where service put the logs by default

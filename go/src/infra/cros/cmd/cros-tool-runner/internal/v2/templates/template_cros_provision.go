@@ -15,7 +15,6 @@ import (
 )
 
 type crosProvisionProcessor struct {
-	TemplateProcessor
 	placeholderPopulator  placeholderPopulator
 	defaultPortDiscoverer portDiscoverer
 	defaultServerPort     string // Default port used in cros-provision

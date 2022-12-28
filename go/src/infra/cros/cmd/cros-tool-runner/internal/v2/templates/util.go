@@ -29,7 +29,6 @@ type ContainerLookuper interface {
 
 // templateUtils implements ContainerLookuper
 type templateUtils struct {
-	ContainerLookuper
 	templateRouter TemplateProcessor
 }
 

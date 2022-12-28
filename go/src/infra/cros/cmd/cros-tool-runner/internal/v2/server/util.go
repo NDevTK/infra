@@ -15,8 +15,7 @@ import (
 var utils = serverUtils{}
 
 // serverUtils groups all utility methods for the package.
-type serverUtils struct {
-}
+type serverUtils struct{}
 
 // firstLine extracts the first line from a multiline string.
 func (*serverUtils) firstLine(s string) string {

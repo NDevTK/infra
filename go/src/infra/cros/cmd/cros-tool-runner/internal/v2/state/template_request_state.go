@@ -22,7 +22,6 @@ type TemplateRequestRecorder interface {
 // templateRequestState is the implementation of TemplateRequestRecorder. It
 // uses a map to track the state.
 type templateRequestState struct {
-	TemplateRequestRecorder
 	state map[string]*api.StartTemplatedContainerRequest
 }
 

@@ -16,7 +16,6 @@ import (
 )
 
 type crosTestProcessor struct {
-	TemplateProcessor
 	defaultPortDiscoverer portDiscoverer
 	defaultServerPort     string // Default port used in cros-test
 }
