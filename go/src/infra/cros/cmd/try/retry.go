@@ -166,19 +166,18 @@ func hasFailedChild(childData map[string]buildInfo) bool {
 
 // getExecStep looks at the retry summary and decides what step we need to pick
 // up at during the retry run.
-func getExecStep(recipe string, childInfo buildInfo) (pb.RetryStep, error) {
+func getExecStep(recipe string, buildData buildInfo) (pb.RetryStep, error) {
 	steps, ok := recipeSteps[recipe]
 	if !ok {
 		return pb.RetryStep_UNDEFINED, fmt.Errorf("unsupported recipe \"%s\"", recipe)
 	}
 
-	// TODO(b/262388770): Refuse to retry if the build failed but the retry_summary is all SUCCESS.
 	// Make sure that the build we're trying to retry doesn't violate the suffix
 	// constraint.
 	missingStep := false
 	foundFailedStep := pb.RetryStep_UNDEFINED
 	for _, step := range steps {
-		status, stepRan := childInfo.retrySummary[step]
+		status, stepRan := buildData.retrySummary[step]
 		if !stepRan {
 		} else if missingStep {
 			return pb.RetryStep_UNDEFINED, fmt.Errorf("retry summary is missing step %v but has later ones. Can't retry.", step)
@@ -197,8 +196,8 @@ func getExecStep(recipe string, childInfo buildInfo) (pb.RetryStep, error) {
 	// previous build. Everything between PUSH_IMAGES and COLLECT_SIGNING
 	// (currently just DEBUG_SYMBOLS) can be rerun without consequence /
 	// clobbering (if this changes we'll need to tweak this approach).
-	if recipe == "build_release" && len(childInfo.signingSummary) > 0 {
-		for _, status := range childInfo.signingSummary {
+	if recipe == "build_release" && len(buildData.signingSummary) > 0 {
+		for _, status := range buildData.signingSummary {
 			if status == "FAILED" || status == "TIMED_OUT" {
 				return pb.RetryStep_PUSH_IMAGES, nil
 			}
@@ -207,11 +206,17 @@ func getExecStep(recipe string, childInfo buildInfo) (pb.RetryStep, error) {
 
 	// Return the earliest failed step, or the first one that didn't run.
 	for _, step := range steps {
-		if status, stepRan := childInfo.retrySummary[step]; !stepRan || status != "SUCCESS" {
+		if status, stepRan := buildData.retrySummary[step]; !stepRan || status != "SUCCESS" {
 			return step, nil
 		}
 	}
 	// If all the steps succeeded, there's nothing to retry.
+	// If the build is successful, this isn't a problem (this function shouldn't
+	// really be getting called anyways). If the build failed, we should fail
+	// too.
+	if buildData.status != bbpb.Status_SUCCESS {
+		return pb.RetryStep_UNDEFINED, fmt.Errorf("build %v was not successful but all retry steps passed, not sure what to retry", buildData.bbid)
+	}
 	return pb.RetryStep_UNDEFINED, nil
 }
 
@@ -237,11 +242,16 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 	}
 
 	// Set exec_steps.
-	execStep, err := getExecStep(recipe, buildInfo{retrySummary: retrySummary})
+	execStep, err := getExecStep(recipe, buildInfo{
+		bbid:         r.originalBBID,
+		status:       buildData.GetStatus(),
+		retrySummary: retrySummary,
+	})
 	if err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
+
 	var childInfo map[string]buildInfo
 	if recipe == "orchestrator" {
 		childInfo, err = r.getChildBuildInfo(ctx, originalBuildProps)
@@ -365,6 +375,10 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 		return CmdError
 	}
 	propsStruct := buildData.GetInput().GetProperties()
+
+	if buildData.GetStatus() != bbpb.Status_SUCCESS {
+
+	}
 
 	if r.paygenRetry {
 		ret := r.processPaygenRetry(ctx, buildData, propsStruct)
