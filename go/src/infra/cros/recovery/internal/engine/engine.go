@@ -226,6 +226,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 		metric = r.args.NewMetricsAction(metricKind)
 		metric.Type = actionType
+		metric.Observations = append(metric.Observations, metrics.NewStringObservation("action_type", string(actionType)))
 		switch act.GetAllowFailAfterRecovery() {
 		case true:
 			metric.AllowFail = metrics.YesAllowFail
