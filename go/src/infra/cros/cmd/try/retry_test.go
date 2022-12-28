@@ -163,6 +163,9 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 
 	assert.Assert(t, checkpointProps.GetFields()["retry"].GetBoolValue())
 
+	signingProps := properties.GetFields()["$chromeos/signing"].GetStructValue()
+	assert.Assert(t, signingProps.GetFields()["ignore_already_exists_errors"].GetBoolValue())
+
 	originalBuildBBID := checkpointProps.GetFields()["original_build_bbid"].GetStringValue()
 	assert.StringsEqual(t, originalBuildBBID, bbid)
 
@@ -257,6 +260,7 @@ func TestGetExecStep(t *testing.T) {
 	for i, tc := range []struct {
 		recipe           string
 		retrySummary     map[pb.RetryStep]string
+		signingSummary   map[string]string
 		expectedExecStep pb.RetryStep
 		expectError      bool
 	}{
@@ -271,6 +275,37 @@ func TestGetExecStep(t *testing.T) {
 			recipe:           "orchestrator",
 			retrySummary:     map[pb.RetryStep]string{},
 			expectedExecStep: pb.RetryStep_CREATE_BUILDSPEC,
+		},
+		{
+			// Signing retry.
+			recipe: "build_release",
+			retrySummary: map[pb.RetryStep]string{
+				pb.RetryStep_STAGE_ARTIFACTS: "SUCCESS",
+				pb.RetryStep_PUSH_IMAGES:     "SUCCESS",
+				pb.RetryStep_DEBUG_SYMBOLS:   "SUCCESS",
+				pb.RetryStep_COLLECT_SIGNING: "SUCCESS",
+				pb.RetryStep_PAYGEN:          "FAILED",
+			},
+			signingSummary: map[string]string{
+				"gs://chromeos-releases/canary-channel/...instructions": "PASSED",
+				"gs://chromeos-releases/dev-channel/...instructions":    "FAILED",
+			},
+			expectedExecStep: pb.RetryStep_PUSH_IMAGES,
+		},
+		{
+			// Signing retry.
+			recipe: "build_release",
+			retrySummary: map[pb.RetryStep]string{
+				pb.RetryStep_STAGE_ARTIFACTS: "SUCCESS",
+				pb.RetryStep_PUSH_IMAGES:     "SUCCESS",
+				pb.RetryStep_DEBUG_SYMBOLS:   "SUCCESS",
+				pb.RetryStep_COLLECT_SIGNING: "FAILED",
+			},
+			signingSummary: map[string]string{
+				"gs://chromeos-releases/canary-channel/...instructions": "PASSED",
+				"gs://chromeos-releases/dev-channel/...instructions":    "TIMED_OUT",
+			},
+			expectedExecStep: pb.RetryStep_PUSH_IMAGES,
 		},
 		{
 			recipe: "build_release",
@@ -326,7 +361,10 @@ func TestGetExecStep(t *testing.T) {
 			expectError: true,
 		},
 	} {
-		execStep, err := getExecStep(tc.recipe, tc.retrySummary)
+		execStep, err := getExecStep(tc.recipe, buildInfo{
+			retrySummary:   tc.retrySummary,
+			signingSummary: tc.signingSummary,
+		})
 		if tc.expectError && err == nil {
 			t.Errorf("#%d: expected error from GetExecStep, got none", i)
 		}

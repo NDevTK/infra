@@ -70,21 +70,39 @@ func (r *retryRun) getRetrySummary(ctx context.Context, bbid string, outputProps
 	return summary, nil
 }
 
-type childBuild struct {
-	bbid         string
-	status       bbpb.Status
-	retrySummary map[pb.RetryStep]string
+// getSigningSummary gets the signing_summary from the specified build.
+func (r *retryRun) getSigningSummary(ctx context.Context, bbid string, outputProps *structpb.Struct, allowEmpty bool) (map[string]string, error) {
+	v, ok := outputProps.AsMap()["signing_summary"]
+	if !ok {
+		if allowEmpty {
+			return map[string]string{}, nil
+		}
+		return nil, fmt.Errorf("Could not get `signing_summary` property from %s", bbid)
+	}
+	signingSummary := reflect.ValueOf(v)
+	summary := map[string]string{}
+	for _, k := range signingSummary.MapKeys() {
+		summary[k.Interface().(string)] = signingSummary.MapIndex(k).Interface().(string)
+	}
+	return summary, nil
+}
+
+type buildInfo struct {
+	bbid           string
+	status         bbpb.Status
+	retrySummary   map[pb.RetryStep]string
+	signingSummary map[string]string
 }
 
 // getChildBuildInfo gets information about child builders. The map keys are the
 // builder name.
-func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps *structpb.Struct) (map[string]childBuild, error) {
+func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps *structpb.Struct) (map[string]buildInfo, error) {
 	childBuildBBIDs, ok := parentBuildOutputProps.AsMap()["child_builds"]
 	if !ok {
 		return nil, fmt.Errorf("Could not get `child_builds` property from %s", r.originalBBID)
 	}
 
-	childBuildInfo := map[string]childBuild{}
+	childBuildInfo := map[string]buildInfo{}
 	for _, v := range childBuildBBIDs.([]interface{}) {
 		bbid := v.(string)
 
@@ -102,17 +120,22 @@ func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps
 		if err != nil {
 			return nil, err
 		}
-		childBuildInfo[buildData.GetBuilder().GetBuilder()] = childBuild{
-			bbid:         bbid,
-			status:       buildData.GetStatus(),
-			retrySummary: retrySummary,
+		signingSummary, err := r.getSigningSummary(ctx, bbid, originalBuildOutputProps, true)
+		if err != nil {
+			return nil, err
+		}
+		childBuildInfo[buildData.GetBuilder().GetBuilder()] = buildInfo{
+			bbid:           bbid,
+			status:         buildData.GetStatus(),
+			retrySummary:   retrySummary,
+			signingSummary: signingSummary,
 		}
 
 	}
 	return childBuildInfo, nil
 }
 
-func hasFailedChild(childData map[string]childBuild) bool {
+func hasFailedChild(childData map[string]buildInfo) bool {
 	for _, data := range childData {
 		if data.status != bbpb.Status_SUCCESS {
 			return true
@@ -123,7 +146,7 @@ func hasFailedChild(childData map[string]childBuild) bool {
 
 // getExecStep looks at the retry summary and decides what step we need to pick
 // up at during the retry run.
-func getExecStep(recipe string, retrySummary map[pb.RetryStep]string) (pb.RetryStep, error) {
+func getExecStep(recipe string, childInfo buildInfo) (pb.RetryStep, error) {
 	recipeSteps := map[string][]pb.RetryStep{
 		"orchestrator": {
 			pb.RetryStep_CREATE_BUILDSPEC,
@@ -149,7 +172,7 @@ func getExecStep(recipe string, retrySummary map[pb.RetryStep]string) (pb.RetryS
 	missingStep := false
 	foundFailedStep := pb.RetryStep_UNDEFINED
 	for _, step := range steps {
-		status, stepRan := retrySummary[step]
+		status, stepRan := childInfo.retrySummary[step]
 		if !stepRan {
 		} else if missingStep {
 			return pb.RetryStep_UNDEFINED, fmt.Errorf("retry summary is missing step %v but has later ones. Can't retry.", step)
@@ -161,9 +184,24 @@ func getExecStep(recipe string, retrySummary map[pb.RetryStep]string) (pb.RetryS
 		}
 	}
 
+	// If there are signing failures, start at PUSH_IMAGES to rekick signing.
+	// The suffix constraint steps above will prevent us from skipping earlier
+	// steps that didn't pass in the previous build, and we know that if
+	// signing_summary is set then we at least got to COLLECT_SIGNING in the
+	// previous build. Everything between PUSH_IMAGES and COLLECT_SIGNING
+	// (currently just DEBUG_SYMBOLS) can be rerun without consequence /
+	// clobbering (if this changes we'll need to tweak this approach).
+	if recipe == "build_release" && len(childInfo.signingSummary) > 0 {
+		for _, status := range childInfo.signingSummary {
+			if status == "FAILED" || status == "TIMED_OUT" {
+				return pb.RetryStep_PUSH_IMAGES, nil
+			}
+		}
+	}
+
 	// Return the earliest failed step, or the first one that didn't run.
 	for _, step := range steps {
-		if status, stepRan := retrySummary[step]; !stepRan || status != "SUCCESS" {
+		if status, stepRan := childInfo.retrySummary[step]; !stepRan || status != "SUCCESS" {
 			return step, nil
 		}
 	}
@@ -226,12 +264,12 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 	}
 
 	// Set exec_steps.
-	execStep, err := getExecStep(recipe, retrySummary)
+	execStep, err := getExecStep(recipe, buildInfo{retrySummary: retrySummary})
 	if err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
-	var childInfo map[string]childBuild
+	var childInfo map[string]buildInfo
 	if recipe == "orchestrator" {
 		childInfo, err = r.getChildBuildInfo(ctx, originalBuildProps)
 		if err != nil {
@@ -250,13 +288,17 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 		r.LogErr(err.Error())
 		return CmdError
 	}
+	if err := setProperty(propsStruct, "$chromeos/signing.ignore_already_exists_errors", true); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
 	// If we're retrying an orchestrator, try and set builder_exec_steps.
 	if recipe == "orchestrator" && execStep == pb.RetryStep_RUN_FAILED_CHILDREN {
 		for builder, info := range childInfo {
 			if info.status == bbpb.Status_SUCCESS {
 				continue
 			}
-			execStep, err := getExecStep("build_release", info.retrySummary)
+			execStep, err := getExecStep("build_release", info)
 			if err != nil {
 				r.LogErr(err.Error())
 				return CmdError
