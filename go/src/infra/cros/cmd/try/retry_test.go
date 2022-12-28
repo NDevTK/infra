@@ -195,12 +195,22 @@ func TestRetry_fullRun(t *testing.T) {
 	})
 }
 
-func TestRetry_childBuilder_fullRun(t *testing.T) {
+type childRetryTestConfig struct {
+	dryrun           bool
+	bbid             string
+	builderName      string
+	builderJSON      string
+	expectedExecStep pb.RetryStep
+	expectError      bool
+	paygenRetry      bool
+}
+
+func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
+	t.Helper()
 	propsFile, err := os.CreateTemp("", "input_props")
 	defer os.Remove(propsFile.Name())
 	assert.NilError(t, err)
 
-	bbid := "8794230068334833059"
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			fakeAuthInfoRunner("bb", 0),
@@ -212,13 +222,13 @@ func TestRetry_childBuilder_fullRun(t *testing.T) {
 				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
 			},
 			{
-				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
-				Stdout:      failedChildJSON,
+				ExpectedCmd: []string{"bb", "get", tc.bbid, "-p", "-json"},
+				Stdout:      tc.builderJSON,
 			},
 		},
 	}
 	expectedBucket := "chromeos/staging"
-	expectedBuilder := "staging-zork-release-main"
+	expectedBuilder := tc.builderName
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
@@ -230,14 +240,20 @@ func TestRetry_childBuilder_fullRun(t *testing.T) {
 
 	r := retryRun{
 		propsFile:    propsFile,
-		originalBBID: bbid,
+		originalBBID: tc.bbid,
+		paygenRetry:  tc.paygenRetry,
 		tryRunBase: tryRunBase{
 			cmdRunner: f,
-			dryrun:    false,
+			dryrun:    tc.dryrun,
 		},
 	}
 	ret := r.Run(nil, nil, nil)
-	assert.IntsEqual(t, ret, Success)
+	if !tc.expectError {
+		assert.IntsEqual(t, ret, Success)
+	} else {
+		assert.IntsNotEqual(t, ret, Success)
+		return
+	}
 
 	properties, err := readStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
@@ -247,11 +263,78 @@ func TestRetry_childBuilder_fullRun(t *testing.T) {
 	assert.Assert(t, checkpointProps.GetFields()["retry"].GetBoolValue())
 
 	originalBuildBBID := checkpointProps.GetFields()["original_build_bbid"].GetStringValue()
-	assert.StringsEqual(t, originalBuildBBID, bbid)
+	assert.StringsEqual(t, originalBuildBBID, tc.bbid)
 
 	execSteps := checkpointProps.GetFields()["exec_steps"].GetStructValue().GetFields()["steps"].GetListValue().AsSlice()
 	assert.IntsEqual(t, len(execSteps), 1)
-	assert.IntsEqual(t, int(execSteps[0].(float64)), int(pb.RetryStep_DEBUG_SYMBOLS.Number()))
+	assert.IntsEqual(t, int(execSteps[0].(float64)), int(tc.expectedExecStep.Number()))
+}
+
+func TestRetry_childBuilder_fullRun(t *testing.T) {
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		dryrun:           false,
+		bbid:             "8794230068334833050",
+		builderName:      "staging-zork-release-main",
+		builderJSON:      failedChildJSON,
+		expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
+	})
+}
+
+func TestRetry_childBuilder_paygen_fullRun(t *testing.T) {
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		dryrun:           false,
+		bbid:             "8794230068334833058",
+		builderName:      "staging-eve-release-main",
+		builderJSON:      successfulChildJSON,
+		expectedExecStep: pb.RetryStep_PAYGEN,
+		paygenRetry:      true,
+	})
+}
+
+const (
+	noRetrySummaryJSON = `{
+	"id": "879423006833483308",
+	"builder": {
+		"project": "chromeos",
+		"bucket": "staging",
+		"builder": "staging-zork-release-main"
+	},
+	"status": "FAILURE",
+	"input": {
+		"properties": {
+			"recipe": "build_release",
+			"input_prop": 102
+		}
+	},
+	"output": {
+		"properties": {
+		}
+	}
+}`
+)
+
+func TestRetry_childBuilder_paygen_fail_noSummary(t *testing.T) {
+	// This build has no retry_summary and failed so we can't retry it.
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		dryrun:      false,
+		bbid:        "8794230068334833058",
+		builderName: "staging-zork-release-main",
+		builderJSON: noRetrySummaryJSON,
+		expectError: true,
+		paygenRetry: true,
+	})
+}
+
+func TestRetry_childBuilder_paygen_fail_hasSummary(t *testing.T) {
+	// This build has failed steps before paygen and thus should not run.
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		dryrun:      false,
+		bbid:        "8794230068334833058",
+		builderName: "staging-zork-release-main",
+		builderJSON: failedChildJSON,
+		expectError: true,
+		paygenRetry: true,
+	})
 }
 
 func TestGetExecStep(t *testing.T) {

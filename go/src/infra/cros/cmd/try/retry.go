@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"strings"
 
 	"infra/cros/internal/cmd"
 
@@ -20,6 +21,23 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+var (
+	recipeSteps = map[string][]pb.RetryStep{
+		"orchestrator": {
+			pb.RetryStep_CREATE_BUILDSPEC,
+			pb.RetryStep_RUN_CHILDREN,
+			pb.RetryStep_LAUNCH_TESTS,
+		},
+		"build_release": {
+			pb.RetryStep_STAGE_ARTIFACTS,
+			pb.RetryStep_PUSH_IMAGES,
+			pb.RetryStep_DEBUG_SYMBOLS,
+			pb.RetryStep_COLLECT_SIGNING,
+			pb.RetryStep_PAYGEN,
+		},
+	}
+)
+
 func getCmdRetry() *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "retry [flags]",
@@ -28,6 +46,7 @@ func getCmdRetry() *subcommands.Command {
 			c := &retryRun{}
 			c.tryRunBase.cmdRunner = cmd.RealCommandRunner{}
 			c.addDryrunFlag()
+			c.Flags.BoolVar(&c.paygenRetry, "paygen", false, "If set, only retries paygen.")
 			c.Flags.StringVar(&c.originalBBID, "bbid", "", "Buildbucket ID of the builder to retry.")
 			if flag.NArg() > 1 && flag.Args()[1] == "help" {
 				fmt.Printf("Run `cros try help` or `cros try help ${subcomand}` for help.")
@@ -42,6 +61,7 @@ func getCmdRetry() *subcommands.Command {
 type retryRun struct {
 	tryRunBase
 	originalBBID string
+	paygenRetry  bool
 	// Used for testing purposes. If set, props will be written to this file
 	// rather than a temporary one.
 	propsFile *os.File
@@ -147,26 +167,12 @@ func hasFailedChild(childData map[string]buildInfo) bool {
 // getExecStep looks at the retry summary and decides what step we need to pick
 // up at during the retry run.
 func getExecStep(recipe string, childInfo buildInfo) (pb.RetryStep, error) {
-	recipeSteps := map[string][]pb.RetryStep{
-		"orchestrator": {
-			pb.RetryStep_CREATE_BUILDSPEC,
-			pb.RetryStep_RUN_CHILDREN,
-			pb.RetryStep_LAUNCH_TESTS,
-		},
-		"build_release": {
-			pb.RetryStep_STAGE_ARTIFACTS,
-			pb.RetryStep_PUSH_IMAGES,
-			pb.RetryStep_DEBUG_SYMBOLS,
-			pb.RetryStep_COLLECT_SIGNING,
-			pb.RetryStep_PAYGEN,
-		},
-	}
-
 	steps, ok := recipeSteps[recipe]
 	if !ok {
 		return pb.RetryStep_UNDEFINED, fmt.Errorf("unsupported recipe \"%s\"", recipe)
 	}
 
+	// TODO(b/262388770): Refuse to retry if the build failed but the retry_summary is all SUCCESS.
 	// Make sure that the build we're trying to retry doesn't violate the suffix
 	// constraint.
 	missingStep := false
@@ -209,28 +215,8 @@ func getExecStep(recipe string, childInfo buildInfo) (pb.RetryStep, error) {
 	return pb.RetryStep_UNDEFINED, nil
 }
 
-// Run provides the logic for a `try retry` command run.
-func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
-	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
-	r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
-
-	if err := r.validate(); err != nil {
-		r.LogErr(err.Error())
-		return CmdError
-	}
-
-	ctx := context.Background()
-	if ret, err := r.run(ctx); err != nil {
-		r.LogErr(err.Error())
-		return ret
-	}
-
-	buildData, err := r.GetBuild(ctx, r.originalBBID)
-	if err != nil {
-		r.LogErr(err.Error())
-		return CmdError
-	}
-	builder := buildData.GetBuilder()
+// Process a standard retry.
+func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, propsStruct *structpb.Struct) int {
 	originalBuildProps := buildData.GetOutput().GetProperties()
 
 	retrySummary, err := r.getRetrySummary(ctx, r.originalBBID, originalBuildProps, false)
@@ -239,23 +225,10 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 		return CmdError
 	}
 
-	propsStruct := buildData.GetInput().GetProperties()
 	recipe := propsStruct.AsMap()["recipe"].(string)
 	if recipe != "orchestrator" && recipe != "build_release" {
 		r.LogErr(fmt.Errorf("unsupported recipe `%s`", recipe).Error())
 		return CmdError
-	}
-
-	// Set up propsFile.
-	var propsFile *os.File
-	if r.propsFile != nil {
-		propsFile = r.propsFile
-	} else {
-		propsFile, err = os.CreateTemp("", "input_props")
-		if err != nil {
-			r.LogErr(err.Error())
-			return CmdError
-		}
 	}
 
 	checkpointProps := map[string]interface{}{
@@ -313,8 +286,109 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 			}
 		}
 	}
+	return Success
+}
+
+// Process a paygen retry.
+func (r *retryRun) processPaygenRetry(ctx context.Context, buildData *bbpb.Build, propsStruct *structpb.Struct) int {
+	recipe := propsStruct.AsMap()["recipe"].(string)
+	if recipe != "build_release" {
+		r.LogErr("build is not a `build_release` build, can't retry with --paygen")
+		return CmdError
+	}
+
+	retrySummary, err := r.getRetrySummary(ctx, r.originalBBID, buildData.GetOutput().GetProperties(), true)
+	if err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+
+	buildStatus := buildData.GetStatus()
+	if len(retrySummary) == 0 {
+		// If we don't have a retry summary, we can only retry a successful build.
+		if buildStatus != bbpb.Status_SUCCESS {
+			r.LogErr("no `retry_summary` and build was unsuccessful, can't retry paygen")
+			return CmdError
+		}
+	} else {
+		// If we do have a retry summary, everything before PAYGEN must be successful.
+		for _, step := range recipeSteps["build_release"] {
+			if step == pb.RetryStep_PAYGEN {
+				break
+			}
+			status, stepRan := retrySummary[step]
+			if !stepRan {
+				r.LogErr("build did not run step %v, can't retry paygen", step)
+				return CmdError
+			} else if status != "SUCCESS" {
+				r.LogErr("step %v failed, can't retry paygen", step)
+				return CmdError
+			}
+		}
+	}
+
+	checkpointProps := map[string]interface{}{
+		"retry":               true,
+		"original_build_bbid": r.originalBBID,
+		"exec_steps": map[string]interface{}{
+			"steps": []interface{}{int32(pb.RetryStep_PAYGEN.Number())},
+		},
+	}
+	if err := setProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+	return Success
+}
+
+// Run provides the logic for a `try retry` command run.
+func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
+	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
+	r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
+
+	if err := r.validate(); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+	// Allow the "b" suffix on bbids.
+	r.originalBBID = strings.TrimPrefix(r.originalBBID, "b")
+
+	ctx := context.Background()
+	if ret, err := r.run(ctx); err != nil {
+		r.LogErr(err.Error())
+		return ret
+	}
+
+	buildData, err := r.GetBuild(ctx, r.originalBBID)
+	if err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+	propsStruct := buildData.GetInput().GetProperties()
+
+	if r.paygenRetry {
+		ret := r.processPaygenRetry(ctx, buildData, propsStruct)
+		if ret != Success {
+			return ret
+		}
+	} else {
+		ret := r.processRetry(ctx, buildData, propsStruct)
+		if ret != Success {
+			return ret
+		}
+	}
 
 	// Write props to file and launch builder.
+	var propsFile *os.File
+	if r.propsFile != nil {
+		propsFile = r.propsFile
+	} else {
+		propsFile, err = os.CreateTemp("", "input_props")
+		if err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
 	if err := writeStructToFile(propsStruct, propsFile); err != nil {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
@@ -324,6 +398,7 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 	}
 	r.bbAddArgs = append(r.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
+	builder := buildData.GetBuilder()
 	builderName := fmt.Sprintf("%s/%s/%s", builder.GetProject(), builder.GetBucket(), builder.GetBuilder())
 	if err := r.BBAdd(ctx, append([]string{builderName}, r.bbAddArgs...)...); err != nil {
 		r.LogErr(err.Error())
