@@ -63,6 +63,14 @@ func IntsEqual(t *testing.T, a, b int) {
 	}
 }
 
+// IntsNotEqual checks that the two ints are not equal.
+func IntsNotEqual(t *testing.T, a, b int) {
+	t.Helper()
+	if a == b {
+		t.Fatalf("assert failed: %d == %d", a, b)
+	}
+}
+
 // StringsEqual checks that the two strings are equal.
 func StringsEqual(t *testing.T, a, b string) {
 	t.Helper()
