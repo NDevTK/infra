@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34c6bc02_eee716dd",
+        "filename": "go/src/infra/cros/cmd/try/retry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 1355298
+      },
+      "writtenOn": "2022-12-28T20:53:18Z",
+      "side": 1,
+      "message": "Do what?",
+      "revId": "03dd186ef6c2119bfacdfcf2494cc033caaf1c81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
