@@ -12,6 +12,7 @@ import (
 	"infra/cros/internal/cmd"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
 const (
@@ -342,6 +343,7 @@ func TestGetExecStep(t *testing.T) {
 
 	for i, tc := range []struct {
 		recipe           string
+		buildStatus      bbpb.Status
 		retrySummary     map[pb.RetryStep]string
 		signingSummary   map[string]string
 		expectedExecStep pb.RetryStep
@@ -443,8 +445,24 @@ func TestGetExecStep(t *testing.T) {
 			},
 			expectError: true,
 		},
+		{
+			recipe:      "build_release",
+			buildStatus: bbpb.Status_FAILURE,
+			retrySummary: map[pb.RetryStep]string{
+				pb.RetryStep_STAGE_ARTIFACTS: "SUCCESS",
+				pb.RetryStep_PUSH_IMAGES:     "SUCCESS",
+				pb.RetryStep_DEBUG_SYMBOLS:   "SUCCESS",
+				pb.RetryStep_COLLECT_SIGNING: "SUCCESS",
+				pb.RetryStep_PAYGEN:          "SUCCESS",
+			},
+			expectError: true,
+		},
 	} {
+		if tc.buildStatus == bbpb.Status_STATUS_UNSPECIFIED {
+			tc.buildStatus = bbpb.Status_SUCCESS
+		}
 		execStep, err := getExecStep(tc.recipe, buildInfo{
+			status:         tc.buildStatus,
 			retrySummary:   tc.retrySummary,
 			signingSummary: tc.signingSummary,
 		})
@@ -458,5 +476,4 @@ func TestGetExecStep(t *testing.T) {
 			t.Errorf("#%d: unexpected return from GetExecStep: expected %+v, got %+v", i, tc.expectedExecStep, execStep)
 		}
 	}
-
 }
