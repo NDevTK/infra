@@ -119,6 +119,7 @@ func runResource(ctx context.Context, resource string, runMetric *metrics.Action
 	}
 	if runMetric != nil {
 		metricsApplyBoardModel(ctx, dut, runMetric, resource)
+		runMetric.Observations = append(runMetric.Observations, metrics.NewStringObservation("device_type", string(dut.SetupType)))
 	}
 	// Load Configuration.
 	config, err := loadConfiguration(ctx, dut, args)
