@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "731250cc_f669ac3f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2022-12-29T19:27:29Z",
+      "side": 1,
+      "message": "Thought about this some more, I think it would be better to get the total list of projects from `commit-queue.cfg` (so equivalent to `chromeos_repos.star`) instead of reading the manifest at all. I think there are likely some repos in the manifest we don\u0027t actually have listed in config / there are repos explicitly excluded from CQ orchestrator.",
+      "parentUuid": "c0afdb50_4f663d55",
+      "revId": "26abf757f3dfff64917f2fd9dc8a8f20780d09be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bca39fc9_0a3b473d",
         "filename": "go/src/infra/cros/cmd/test_plan/test_plan.go",
         "patchSetId": 1
