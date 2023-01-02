@@ -23,7 +23,7 @@ pins:
   digest: sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6
 - image: docker.io/library/ubuntu
   tag: "18.04"
-  digest: sha256:daf3e62183e8aa9a56878a685ed26f3af3dd8c08c8fd11ef1c167a1aa9bd66a3
+  digest: sha256:a5374f0aef222b0a8516614c174233c4eaa3be2067349fa5fc064e4ba9538741
 - image: docker.io/library/ubuntu
   tag: "20.04"
   digest: sha256:0e0402cd13f68137edb0266e1d2c682f217814420f2d43d300ed8f65479b14fb
