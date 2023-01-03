@@ -61,7 +61,7 @@ func PathHasEnoughValue(ctx context.Context, r execs.Runner, dutName string, pat
 	var cmd string
 	if typeOfSpace == SpaceTypeDisk {
 		oneMB := math.Pow(10, 6)
-		log.Infof(ctx, "Checking for >= %f (GB/inodes) of %s under %s on machine %s", minSpaceNeeded, typeOfSpace, path, dutName)
+		log.Debugf(ctx, "Checking for >= %f (GB/inodes) of %s under %s on machine %s", minSpaceNeeded, typeOfSpace, path, dutName)
 		cmd = fmt.Sprintf(`df -PB %.f %s | tail -1`, oneMB, path)
 	} else {
 		// checking typeOfSpace == "inodes"
