@@ -33,7 +33,7 @@ func encTestingContext() context.Context {
 			GitilesHost: "test_gitiles",
 			Project:     "test_project",
 			Branch:      "test_branch",
-			EncConfig: []*config.OwnershipConfig_ENCConfigFile{
+			EncConfig: []*config.OwnershipConfig_ConfigFile{
 				{
 					Name:       "test_name",
 					RemotePath: "test_enc_git_path",

@@ -76,14 +76,18 @@ message OwnershipConfig {
   // Git branch from which the files should be fetched. Ex: master, main etc
   string branch = 3;
 
-  message ENCConfigFile {
+  message ConfigFile {
     // Name of the config file
     string name = 1;
     // Config file location in the given project
     string remote_path = 2;
   }
 
-  repeated ENCConfigFile enc_config = 4;
+  // LUCI bot config file for ENC
+  repeated ConfigFile enc_config = 4;
+
+  // LUCI UFS security config file
+  repeated ConfigFile security_config = 5;
 }
 
 message PubSub {
