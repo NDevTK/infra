@@ -390,6 +390,8 @@ message Chameleon {
     WORKING = 1;
     // Device is broken or not working as expected.
     BROKEN = 2;
+    // Device State is not applicable.
+    NOT_APPLICABLE = 3;
   }
   // State of the device.
   State state = 2;
