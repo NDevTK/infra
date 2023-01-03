@@ -1,0 +1,11 @@
+--- cpython311.orig/bin/Lib/venv/__init__.py	2023-01-03 15:16:44.422876000 +1100
++++ cpython311/bin/Lib/venv/__init__.py	2023-01-03 14:59:27.732030800 +1100
+@@ -316,7 +316,7 @@
+                         os.path.normcase(f).startswith(('python', 'vcruntime'))
+                     ]
+             else:
+-                suffixes = {'python.exe', 'python_d.exe', 'pythonw.exe', 'pythonw_d.exe'}
++                suffixes = {'python3.exe', 'python_d.exe', 'pythonw.exe', 'pythonw_d.exe'}
+                 base_exe = os.path.basename(context.env_exe)
+                 suffixes.add(base_exe)
+ 
