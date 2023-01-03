@@ -211,8 +211,31 @@ func collectCrashDumpsExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// createLogCollectionInfoExec creates a marker file that indicates
+// that the log files have been collected.
+//
+// This exec accepts the following parameters from the action:
+// info_file: the name of the info file that will be created.
+func createLogCollectionInfoExec(ctx context.Context, info *execs.ExecInfo) error {
+	argMap := info.GetActionArgs(ctx)
+	logRoot := info.GetLogRoot()
+	infoFilePath := filepath.Join(logRoot, argMap.AsString(ctx, "info_file", "log_collection_info"))
+	infoFile, err := os.Create(infoFilePath)
+	if err != nil {
+		return errors.Annotate(err, "create log collection info").Err()
+	}
+	// We store the timestamp in pacific time-zone.
+	loc, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		return errors.Annotate(err, "create log collection info").Err()
+	}
+	_, err = infoFile.WriteString(fmt.Sprintf("Retrieved the prior logs at %q\n", time.Now().In(loc)))
+	return errors.Annotate(err, "create log collection info").Err()
+}
+
 func init() {
 	execs.Register("cros_dmesg", dmesgExec)
 	execs.Register("cros_copy_to_logs", copyToLogsExec)
 	execs.Register("cros_collect_crash_dumps", collectCrashDumpsExec)
+	execs.Register("cros_create_log_collection_info", createLogCollectionInfoExec)
 }
