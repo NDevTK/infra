@@ -432,6 +432,16 @@ message Bluetooth {
   bool expected = 2;
 }
 
+// Cellular holds info about the cellular of the DUT.
+message Cellular {
+  // The hardware expected present based on hardware feature.
+  bool expected = 1;
+  // State of the modem.
+  HardwareState modem_state = 2;
+  // State of the cellular connection.
+  string connection_state = 3;
+}
+
 // Battery holds info about battery of the DUT.
 message Battery {
   // State of the component.
@@ -522,6 +532,9 @@ message ChromeOS {
   map<string, string> ro_vpd_map = 22;
   // CBI contents on the DUT
   chromiumos.test.lab.api.Cbi cbi = 23;
+
+  // Cellular info.
+  Cellular cellular = 24;
 }
 
 // Android specific DUT details
