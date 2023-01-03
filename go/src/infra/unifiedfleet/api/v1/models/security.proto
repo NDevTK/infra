@@ -20,8 +20,10 @@ message SecurityInfo {
    string miba_realm = 4;
    // id of the swarming server that owns this pool
    string swarming_server_id = 5;
-   // hosts that belong to this pool
+   // hosts that belong to this group
    repeated string hosts = 6;
+   // prefixes of the names of the hosts that belong to this group ex:luci-dart-try-focal
+   repeated string host_prefixes = 7;
 }
 
 message SecurityInfos {
