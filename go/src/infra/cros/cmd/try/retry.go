@@ -41,7 +41,7 @@ var (
 func getCmdRetry() *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "retry [flags]",
-		ShortDesc: "Rerun the specified (release) build.",
+		ShortDesc: "(Experimental) Rerun the specified (release) build.",
 		CommandRun: func() subcommands.CommandRun {
 			c := &retryRun{}
 			c.tryRunBase.cmdRunner = cmd.RealCommandRunner{}
