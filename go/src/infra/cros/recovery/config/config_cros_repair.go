@@ -2758,7 +2758,7 @@ func crosRepairActions() map[string]*Action {
 				"src_path:/var/log",
 				"src_type:dir",
 				"use_host_dir:true",
-				"dest_suffix:before_repair",
+				"dest_suffix:prior_logs",
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
