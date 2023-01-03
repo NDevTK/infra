@@ -62,5 +62,5 @@ Puppet repository.
 ## Appengine
 
 There is no single procedure how to deploy appengine apps. Normally, each app
-author deploys his/her app manually, using
+author deploys their app manually, using
 [gae.py](../appengine/README.md#Managing-AppEngine-apps) tool.
