@@ -114,7 +114,6 @@ def GenTests(api):
       'buildbucket',
       'chromium-behavior',
       'chromium-binary-size',
-      'chromium-style',
       'chumpdetector',
       'code-coverage',
       'git-numberer',
