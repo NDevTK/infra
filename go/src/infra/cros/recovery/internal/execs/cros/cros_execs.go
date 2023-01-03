@@ -16,8 +16,10 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // pingExec verifies the DUT is pingable.
@@ -225,7 +227,15 @@ func isFileSystemWritableExec(ctx context.Context, info *execs.ExecInfo) error {
 	// so we don't test for errors in encrypted stateful if unencrypted fails.
 	args := info.GetActionArgs(ctx)
 	testDirs := args.AsStringSlice(ctx, "paths", []string{"/mnt/stateful_partition", "/var/tmp"})
-	return cros.IsFileSystemWritable(ctx, info.DefaultRunner(), info.NewLogger(), testDirs)
+	run := info.DefaultRunner()
+	for _, testDir := range testDirs {
+		log.Infof(ctx, "Verify dir %q is writable!")
+		if err := linux.IsPathWritable(ctx, run, testDir); err != nil {
+			info.AddObservation(metrics.NewStringObservation("fail_directory", testDir))
+			return errors.Annotate(err, "is file system writable").Err()
+		}
+	}
+	return nil
 }
 
 // hasPythonInterpreterExec confirms the presence of a working Python interpreter.

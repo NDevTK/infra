@@ -190,7 +190,7 @@ func collectCrashDumpsExec(ctx context.Context, info *execs.ExecInfo) error {
 		cleanUp := argMap.AsBool(ctx, "clean", true)
 		timeout := argMap.AsDuration(ctx, "cleanup_timeout", 10, time.Second)
 		for _, f := range orphans {
-			log.Infof("Collect Crash Dumps Exec: Attempting to collect orphan file %q", f)
+			log.Debugf("Collect Crash Dumps Exec: Attempting to collect orphan file %q", f)
 			if err := info.CopyFrom(ctx, info.GetDut().Name, f, infoDir); err != nil {
 				log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while copying %q to %q", err.Error(), f, infoDir)
 			}
