@@ -1,6 +1,6 @@
 create {
   verify { test: "python_test.py" }
-  source { patch_version: "chromium.23" }
+  source { patch_version: "chromium.24" }
   package { version_file: ".versions/cpython3.cipd_version" }
 }
 
@@ -83,6 +83,8 @@ create {
     tool: "tools/lessmsi"
 
     install: "install_win.sh"
+    # Note that the patches in patches_win are applied by install.sh
+    # after the .msi files are extracted, rather than by the 3pp recipe.
   }
   verify { test: "python_test.py" }
 }

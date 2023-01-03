@@ -8,6 +8,7 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Remove all .msi bits we don't want.
 rm -vrf -- *_d.msi *_pdb.msi test.msi tcl*.msi doc.msi launcher.msi path.msi \
@@ -38,6 +39,11 @@ mv SourceDir/* "$PREFIX/bin"
 rm -vrf "$PREFIX/bin/Scripts"
 
 mv "$PREFIX/bin/python.exe" "$PREFIX/bin/python3.exe"
+# Because we are renaming the executable, we also must patch the venv
+# module to know about the different name.
+mv "$PREFIX/bin/Lib/venv/scripts/nt/python.exe" \
+  "$PREFIX/bin/Lib/venv/scripts/nt/python3.exe"
+patch -p1 < ${SCRIPT_DIR}/patches_win/venv.patch
 
 # Don't distribute __pycache__. Because the file modification times are not
 # preserved in the CIPD package, Python will try to regenerate the compiled
