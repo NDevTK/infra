@@ -292,10 +292,6 @@ func mapChameleonPeripherals(p *lab.Peripherals, c *lab.Chameleon) []labapi.Cham
 			m = labapi.Chameleon_DP
 		case lab.ChameleonType_CHAMELEON_TYPE_HDMI:
 			m = labapi.Chameleon_HDMI
-			// TODO(ivanbrovkovich): are these not mapped to anything?
-			// BT_BLE_HID
-			// BT_A2DP_SINK
-			// BT_PEER
 		}
 		res = append(res, m)
 	}
