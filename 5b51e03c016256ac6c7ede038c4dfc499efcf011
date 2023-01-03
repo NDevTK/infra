@@ -22,6 +22,30 @@
       },
       "revId": "5b51e03c016256ac6c7ede038c4dfc499efcf011",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6dc345ce_281c5486",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-01-03T17:28:30Z",
+      "side": 1,
+      "message": "Valid modem states can be found in: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/modemmanager-next/include/ModemManager-enums.h;drc\u003dcd5e22841aa72aba9c7bf642efcaacc0622d00ec;l\u003d109\n\n\ne.g: `CONNECTED`, `CONNECTING`, `REGISTERED`, `ENABLED`. These values would be informational only and their values are reliable but not really guaranteed by `mmcli` hence why they\u0027re strings. \n\n@pholla@google.com FYI",
+      "parentUuid": "fb77ab07_85c2fe39",
+      "range": {
+        "startLine": 439,
+        "startChar": 2,
+        "endLine": 440,
+        "endChar": 30
+      },
+      "revId": "5b51e03c016256ac6c7ede038c4dfc499efcf011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
