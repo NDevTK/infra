@@ -84,6 +84,7 @@ func crosClosePlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Update peripheral wifi state",
+			"Update chameleon state for chameleonless dut",
 			"Servo-host logs",
 			"Remove in-use flag on servo-host",
 			"Remove request to reboot if servo is good",
@@ -169,6 +170,16 @@ func crosClosePlan() *Plan {
 					"wifi_router_host_present",
 				},
 				ExecName:               "update_peripheral_wifi_state",
+				AllowFailAfterRecovery: true,
+			},
+			"Update chameleon state for chameleonless dut": {
+				Docs: []string{
+					"Update chameleon state to not applicable for chameleonless dut",
+				},
+				Conditions: []string{
+					"chameleon_not_present",
+				},
+				ExecName:               "chameleon_state_not_applicable",
 				AllowFailAfterRecovery: true,
 			},
 			"Failure count above threshold": {

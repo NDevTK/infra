@@ -107,8 +107,9 @@ func convertServoState(s ufslab.PeripheralState) tlw.ServoHost_State {
 }
 
 var chameleonStates = map[ufslab.PeripheralState]tlw.Chameleon_State{
-	ufslab.PeripheralState_WORKING: tlw.Chameleon_WORKING,
-	ufslab.PeripheralState_BROKEN:  tlw.Chameleon_BROKEN,
+	ufslab.PeripheralState_WORKING:        tlw.Chameleon_WORKING,
+	ufslab.PeripheralState_BROKEN:         tlw.Chameleon_BROKEN,
+	ufslab.PeripheralState_NOT_APPLICABLE: tlw.Chameleon_NOT_APPLICABLE,
 }
 
 func convertChameleonState(s ufslab.PeripheralState) tlw.Chameleon_State {
