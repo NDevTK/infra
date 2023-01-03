@@ -15,6 +15,7 @@ import (
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/storage"
 
+	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
@@ -131,6 +132,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 			Target: target,
 		},
 
+		CIPDHost:   platform.CurrentPlatform(),
 		CIPDTarget: a.TargetPlatform,
 		SpecLoader: loader,
 
@@ -143,6 +145,7 @@ type PackageBuilder struct {
 	Storage   cipkg.Storage
 	Platforms cipkg.Platforms
 
+	CIPDHost   string
 	CIPDTarget string
 	SpecLoader *spec.SpecLoader
 
@@ -158,7 +161,7 @@ type PackageBuilder struct {
 // The package is added to the builder so its content will be available after
 // BuildAll(...) executed.
 func (b *PackageBuilder) Add(ctx context.Context, name string) (cipkg.Package, error) {
-	g, err := b.SpecLoader.FromSpec(name, b.CIPDTarget)
+	g, err := b.SpecLoader.FromSpec(name, b.CIPDHost, b.CIPDTarget)
 	if err != nil {
 		return nil, err
 	}

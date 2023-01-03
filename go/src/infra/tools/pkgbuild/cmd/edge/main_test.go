@@ -19,7 +19,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"runtime"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -32,11 +31,6 @@ import (
 var tests embed.FS
 
 func TestMain(m *testing.M) {
-	if runtime.GOOS == "windows" {
-		log.Println("Skip pkgbuild tests: not implemented.")
-		return
-	}
-
 	if err := stdenv.Init(func(bin string) (string, error) {
 		// We don't need to import binaries from host.
 		return bin, nil
@@ -70,6 +64,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 				Host:   buildPlatform,
 				Target: buildPlatform,
 			},
+			CIPDHost:          cipdPlatform,
 			CIPDTarget:        cipdPlatform,
 			SpecLoader:        loader,
 			BuildTempDir:      buildTemp,
@@ -90,27 +85,24 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipdPlatform)
 		})
 
-		Convey("Build curl", func() {
-			pkg, err := b.Add(ctx, "static_libs/curl")
+		Convey("Build go", func() {
+			pkg, err := b.Add(ctx, "tools/go")
 			So(err, ShouldBeNil)
 			err = b.BuildAll(ctx)
 			So(err, ShouldBeNil)
 
 			drv := pkg.Derivation()
-			So(drv.Name, ShouldEqual, "curl")
+			So(drv.Name, ShouldEqual, "go")
 			So(drv.Platform, ShouldEqual, buildPlatform.String())
 			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipdPlatform)
 		})
 	})
 
 	Convey("Cross-compile platform", t, func() {
-		buildPlatform := utilities.CurrentPlatform()
-		if buildPlatform.OS() != "linux" || buildPlatform.Arch() != "amd64" {
-			return
-		}
-
+		buildPlatform := utilities.NewPlatform("linux", "amd64")
 		hostPlatform := utilities.NewPlatform("linux", "arm64")
-		cipdPlatform := "linux-arm64"
+		cipdHost := "linux-amd64"
+		cipdTarget := "linux-arm64"
 
 		mockBuild := NewMockBuild()
 		mockStorage := NewMockStorage()
@@ -121,7 +113,8 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 				Host:   hostPlatform,
 				Target: hostPlatform,
 			},
-			CIPDTarget:        cipdPlatform,
+			CIPDHost:          cipdHost,
+			CIPDTarget:        cipdTarget,
 			SpecLoader:        loader,
 			BuildTempDir:      buildTemp,
 			DerivationBuilder: utilities.NewBuilder(mockStorage),
@@ -138,7 +131,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			drv := pkg.Derivation()
 			So(drv.Name, ShouldEqual, "ninja")
 			So(drv.Platform, ShouldEqual, buildPlatform.String())
-			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipdPlatform)
+			So(builtins.GetEnv("_3PP_PLATFORM", drv.Env), ShouldEqual, cipdTarget)
 		})
 
 		// If a dependency is not available, ErrPackageNotAvailable should be the
@@ -172,8 +165,8 @@ func TestPackageSources(t *testing.T) {
 	}
 
 	Convey("Native platform", t, func() {
-		buildPlatform := utilities.CurrentPlatform()
-		cipdPlatform := platform.CurrentPlatform()
+		buildPlatform := utilities.NewPlatform("linux", "amd64")
+		cipdPlatform := "linux-amd64"
 
 		mockBuild := NewMockBuild()
 		mockStorage := NewMockStorage()
@@ -184,6 +177,7 @@ func TestPackageSources(t *testing.T) {
 				Host:   buildPlatform,
 				Target: buildPlatform,
 			},
+			CIPDHost:          cipdPlatform,
 			CIPDTarget:        cipdPlatform,
 			SpecLoader:        loader,
 			BuildTempDir:      buildTemp,

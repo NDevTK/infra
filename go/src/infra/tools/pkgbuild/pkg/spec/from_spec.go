@@ -106,7 +106,7 @@ func (l *SpecLoader) ListAllByFullName() (names []string) {
 // Ideally we should use the Host Platform in BuildContext during the
 // generation. But it's much easier to construct the Spec.Create before
 // generate and call SpecLoader.FromSpec recursively for dependencies.
-func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Generator, error) {
+func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform string) (*stdenv.Generator, error) {
 	pkgCacheKey := fmt.Sprintf("%s@%s", fullName, hostCipdPlatform)
 	if g, ok := l.pkgs[pkgCacheKey]; ok {
 		if g == nil {
@@ -149,7 +149,7 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 	if err := create.ParseBuilder(defDerivation); err != nil {
 		return nil, err
 	}
-	if err := create.LoadDependencies(l); err != nil {
+	if err := create.LoadDependencies(buildCipdPlatform, l); err != nil {
 		return nil, err
 	}
 
@@ -164,6 +164,7 @@ func (l *SpecLoader) FromSpec(fullName, hostCipdPlatform string) (*stdenv.Genera
 		Env: append([]string{
 			fmt.Sprintf("patches=%s", strings.Join(create.Patches, string(os.PathListSeparator))),
 			fmt.Sprintf("fromSpecInstall=%s", create.Installer),
+			fmt.Sprintf("_3PP_DEF={{.%s}}", defDerivation.Name),
 			fmt.Sprintf("_3PP_PLATFORM=%s", hostCipdPlatform),
 			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", platform.CurrentPlatform()),
 
@@ -393,7 +394,6 @@ func (p *createParser) ParseBuilder(drv *builtins.CopyFiles) error {
 	if len(installArgs) == 0 {
 		installArgs = []string{"install.sh"}
 	}
-	installArgs[0] = filepath.Join(fmt.Sprintf("{{.%s}}", drv.Name), installArgs[0])
 
 	installer, err := json.Marshal(installArgs)
 	if err != nil {
@@ -404,14 +404,14 @@ func (p *createParser) ParseBuilder(drv *builtins.CopyFiles) error {
 	return nil
 }
 
-func (p *createParser) LoadDependencies(l *SpecLoader) error {
+func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader) error {
 	build := p.create.GetBuild()
 	if build == nil {
 		p.Enviroments = append(p.Enviroments, "_3PP_NO_INSTALL=1")
 		return nil
 	}
 
-	fromSpecByURI := func(dep, host string) (cipkg.Generator, error) {
+	fromSpecByURI := func(dep, hostCipdPlatform string) (cipkg.Generator, error) {
 		// tools/go117@1.17.10
 		var name, ver string
 		ss := strings.SplitN(dep, "@", 2)
@@ -420,9 +420,9 @@ func (p *createParser) LoadDependencies(l *SpecLoader) error {
 			ver = ss[1]
 		}
 
-		g, err := l.FromSpec(name, host)
+		g, err := l.FromSpec(name, buildCipdPlatform, hostCipdPlatform)
 		if err != nil {
-			return nil, fmt.Errorf("failed to load dependency %s on %s: %w", name, host, err)
+			return nil, fmt.Errorf("failed to load dependency %s on %s: %w", name, hostCipdPlatform, err)
 		}
 		if ver != "" && ver != g.Version {
 			return nil, fmt.Errorf("dependency version mismatch: %s, require: %s, have: %s", dep, ver, g.Version)
@@ -431,9 +431,8 @@ func (p *createParser) LoadDependencies(l *SpecLoader) error {
 		return g, nil
 	}
 
-	buildPlat := platform.CurrentPlatform()
 	for _, dep := range build.GetTool() {
-		g, err := fromSpecByURI(dep, buildPlat)
+		g, err := fromSpecByURI(dep, buildCipdPlatform)
 		if err != nil {
 			return err
 		}

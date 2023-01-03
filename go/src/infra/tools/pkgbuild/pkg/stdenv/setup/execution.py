@@ -25,6 +25,15 @@ from typing import Optional
 
 from setup import extract
 
+# Python converts all environment variables to uppercase if the platform's
+# environment variables are case insensiteve. We want to access and preserve
+# the original value to reduce cross-platform inconsistencies.
+if os.name == 'nt':
+  import nt
+  environ = nt.environ
+else:
+  environ = os.environ
+
 
 class PlatType(enum.Enum):
   BUILD = -1
@@ -87,7 +96,7 @@ class Execution:
   ##############################################################################
   # Environment variables
 
-  env: Dict[str, str] = dataclasses.field(default_factory=os.environ.copy)
+  env: Dict[str, str] = dataclasses.field(default_factory=environ.copy)
 
   ENV_PATH = 'PATH'
   ENV_XDG_DATA_DIRS = 'XDG_DATA_DIRS'
@@ -427,7 +436,18 @@ def main() -> None:
   exe.activate_pkgs()
   exe.env['TZ'] = 'UTC'
   exe.env['prefix'] = exe.env['out']
-  exe.env['HOME'] = os.getcwd()
+
+  # TODO(fancl): Move to go package
+  go_env_root = pathlib.Path().joinpath('.go')
+  def pre_build_go(exe) -> bool:
+    def set_go_env(env: str) -> None:
+      d = go_env_root.joinpath(env).absolute()
+      exe.env[env] = str(d)
+      os.makedirs(d)
+    for env in ('GOPATH', 'GOCACHE', 'GOMODCACHE', 'GOTMPDIR'):
+      set_go_env(env)
+    return True
+  exe.add_hook('preBuild', pre_build_go)
 
   # Generic Builder
   for phase in (

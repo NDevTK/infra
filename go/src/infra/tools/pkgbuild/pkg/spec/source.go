@@ -51,26 +51,17 @@ type DefaultSourceResolver struct {
 func (r *DefaultSourceResolver) ResolveGitSource(git *GitSource) (info GitSourceInfo, err error) {
 	cmd := r.command("resolve_git.py", resolveGitScript)
 
-	in, err := cmd.StdinPipe()
+	in, err := json.Marshal(git)
 	if err != nil {
 		return
 	}
-	out, err := cmd.StdoutPipe()
-	if err = cmd.Start(); err != nil {
+	cmd.Args = append(cmd.Args, string(in))
+
+	out, err := output(cmd)
+	if err != nil {
 		return
 	}
-
-	if err = json.NewEncoder(in).Encode(git); err != nil {
-		return
-	}
-	in.Close()
-
-	if err = json.NewDecoder(out).Decode(&info); err != nil {
-		return
-	}
-	out.Close()
-
-	if err = cmd.Wait(); err != nil {
+	if err = json.Unmarshal([]byte(out), &info); err != nil {
 		return
 	}
 
@@ -83,6 +74,7 @@ func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform string, dir
 	if err != nil {
 		return
 	}
+	defer f.Close()
 	s, err := io.ReadAll(f)
 	sourceScript := string(s)
 
@@ -140,12 +132,13 @@ func (r *DefaultSourceResolver) command(name, script string) *exec.Cmd {
 	var cmd *exec.Cmd
 	switch filepath.Ext(name) {
 	case ".py":
-		cmd = exec.Command("vpython3", "-vpython-spec", r.VPythonSpecPath, "-c", script)
+		cmd = exec.Command("vpython3", "-vpython-spec", r.VPythonSpecPath, "-")
 	case ".sh":
-		cmd = exec.Command("bash", "-c", script, "--")
+		cmd = exec.Command("bash", "-s", "-")
 	default:
 		panic("unknown script: " + name)
 	}
 	cmd.Env = os.Environ()
+	cmd.Stdin = strings.NewReader(script)
 	return cmd
 }

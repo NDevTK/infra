@@ -209,7 +209,7 @@ def get_versions(src: GitSource) -> List[str]:
 
 
 def main() -> int:
-  raw = json.load(sys.stdin)
+  raw = json.loads(sys.argv[1])
   src = GitSource(**raw)
   versions = get_versions(src)
   tag, commit = resolve_latest(versions)

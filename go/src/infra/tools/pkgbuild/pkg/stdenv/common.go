@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -28,7 +29,7 @@ var stdenv embed.FS
 
 // Initialize resources defined in each platforms.
 func init() {
-	files, err := fs.Sub(setupFiles, filepath.Join("resources", runtime.GOOS))
+	files, err := fs.Sub(setupFiles, path.Join("resources", runtime.GOOS))
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +38,7 @@ func init() {
 		Files: builtins.FSWithMode{
 			FS: files,
 			ModeOverride: func(info fs.FileInfo) (fs.FileMode, error) {
-				if filepath.Dir(info.Name()) == "bin" {
+				if path.Dir(info.Name()) == "bin" {
 					return info.Mode() | fs.ModePerm, nil
 				}
 				return info.Mode(), nil
@@ -96,7 +97,7 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 		Files: stdenv,
 	}
 
-	if common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import", finder,
+	posixUtils := []string{
 		"awk",
 		"basename",
 		"bash",
@@ -105,15 +106,12 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 		"chmod",
 		"cmp",
 		"cp",
-		"cpio",
 		"date",
 		"dirname",
 		"echo",
-		"egrep",
 		"env",
 		"expr",
 		"false",
-		"fgrep",
 		"file",
 		"find",
 		"grep",
@@ -145,7 +143,18 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 		"wc",
 		"which",
 		"uname",
-	); err != nil {
+	}
+
+	// Optional posix tools
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+		posixUtils = append(posixUtils,
+			"cpio",
+			"egrep",
+			"fgrep",
+		)
+	}
+
+	if common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import", finder, posixUtils...); err != nil {
 		return
 	}
 

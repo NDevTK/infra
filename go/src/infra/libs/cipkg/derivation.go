@@ -6,9 +6,10 @@ package cipkg
 
 import (
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/base32"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // Derivation is the atomic level of a build step. It should contain all
@@ -43,13 +44,14 @@ type Derivation struct {
 	Inputs []string
 }
 
-// Calculate a unique ID from the content of a derivation
+// Calculate a unique ID from the content of a derivation. The ID may also be
+// used as file or directory name on the local filesystem.
 func (d Derivation) ID() string {
 	h := sha256.New()
+	enc := base32.HexEncoding.WithPadding(base32.NoPadding)
 
 	// sha256 shouldn't return any write error.
 	writeField := func(name string, ss ...string) {
-		enc := base64.RawStdEncoding
 		if _, err := fmt.Fprint(h, name); err != nil {
 			panic(err)
 		}
@@ -76,5 +78,9 @@ func (d Derivation) ID() string {
 		}
 	}
 
-	return fmt.Sprintf("%s-%x", d.Name, h.Sum(nil))
+	// We want to keep the hash as short as possible to avoid reaching the path
+	// length limit on windows.
+	// Using base32 instead of base64 because filesystem is not promised to be
+	// case-sensitive.
+	return fmt.Sprintf("%s-%s", d.Name, strings.ToLower(enc.EncodeToString(h.Sum(nil)[:16])))
 }

@@ -31,6 +31,7 @@ def build_phase(exe) -> None:
     return
 
   args = json.loads(exe.env['fromSpecInstall'])
+  args[0] = os.path.join(exe.env['_3PP_DEF'], args[0])
   args.append(exe.env['out'])
   args.append(exe.env['_3PP_PREFIX'])
   _, ext = os.path.splitext(args[0])

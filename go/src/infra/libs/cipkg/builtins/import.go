@@ -11,8 +11,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"infra/libs/cipkg"
+
+	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // Import is used to import file/directory from host environment. The builder
@@ -72,8 +77,12 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 		case ImportNormalFile:
 			newname = filepath.Join(subdir, filepath.Base(t.Source))
 		case ImportExecutable:
-			// TODO: For windows we need to create a bat file instead for dll searching
 			newname = filepath.Join(subdir, filepath.Base(t.Source))
+			if runtime.GOOS == "windows" {
+				// exe suffix is removed because we can call python.lnk using python,
+				// but not python.exe.lnk which requires python.exe.
+				newname = strings.TrimSuffix(newname, ".exe")
+			}
 		case ImportDirectory:
 			if err := os.Remove(subdir); err != nil {
 				return fmt.Errorf("failed to remove output dir: %w", err)
@@ -81,8 +90,14 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 			newname = subdir
 		}
 
-		if err := os.Symlink(t.Source, newname); err != nil {
-			return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
+		if runtime.GOOS == "windows" {
+			if err := makeLink(t.Source, newname); err != nil {
+				return fmt.Errorf("failed to makeLink import: %#v: %w", i, err)
+			}
+		} else {
+			if err := os.Symlink(t.Source, newname); err != nil {
+				return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
+			}
 		}
 	}
 
@@ -94,6 +109,38 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 		return fmt.Errorf("failed to touch import stamp: %w", err)
 	}
 	f.Close()
+
+	return nil
+}
+
+// Create windows shortcut. This is not the real symlink but accepted as a
+// workaround for cygwin when using winsymlinks:lnk.
+// See: https://cygwin.com/cygwin-ug-net/using-cygwinenv.html
+func makeLink(src, dst string) error {
+	if err := ole.CoInitializeEx(0, ole.COINIT_APARTMENTTHREADED|ole.COINIT_SPEED_OVER_MEMORY); err != nil {
+		return err
+	}
+	oleShellObject, err := oleutil.CreateObject("WScript.Shell")
+	if err != nil {
+		return err
+	}
+	defer oleShellObject.Release()
+	wshell, err := oleShellObject.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return err
+	}
+	defer wshell.Release()
+	cs, err := oleutil.CallMethod(wshell, "CreateShortcut", dst+".lnk")
+	if err != nil {
+		return err
+	}
+	idispatch := cs.ToIDispatch()
+	if _, err := oleutil.PutProperty(idispatch, "TargetPath", src); err != nil {
+		return err
+	}
+	if _, err := oleutil.CallMethod(idispatch, "Save"); err != nil {
+		return err
+	}
 
 	return nil
 }

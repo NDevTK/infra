@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/fs"
 	"path"
-	"path/filepath"
 	"regexp"
 
 	"google.golang.org/protobuf/encoding/prototext"
@@ -93,7 +92,7 @@ func LoadPackageDef(name string, dir fs.FS) (*PackageDef, error) {
 }
 
 func FindPackageDefs(dir fs.FS) (defs []*PackageDef, err error) {
-	err = fs.WalkDir(dir, ".", func(path string, d fs.DirEntry, err error) error {
+	err = fs.WalkDir(dir, ".", func(fpath string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -105,14 +104,14 @@ func FindPackageDefs(dir fs.FS) (defs []*PackageDef, err error) {
 		// There are two common hierarchies:
 		// - /path/to/pkg/3pp.pb
 		// - /path/to/pkg/3pp/3pp.pb
-		pkgPath := filepath.Dir(path)
-		parent, name := filepath.Split(pkgPath)
+		pkgPath := path.Dir(fpath)
+		parent, name := path.Split(pkgPath)
 		if name == "3pp" {
-			name = filepath.Base(parent)
+			name = path.Base(parent)
 		}
 
-		if name == "." || name == string(filepath.Separator) {
-			return fmt.Errorf("invalid package: %s", path)
+		if name == "." || name == "/" {
+			return fmt.Errorf("invalid package: %s", fpath)
 		}
 
 		pkgDir, err := fs.Sub(dir, pkgPath)
@@ -121,7 +120,7 @@ func FindPackageDefs(dir fs.FS) (defs []*PackageDef, err error) {
 		}
 		def, err := LoadPackageDef(name, pkgDir)
 		if err != nil {
-			return fmt.Errorf("failed to load %s: %w", path, err)
+			return fmt.Errorf("failed to load %s: %w", fpath, err)
 		}
 
 		defs = append(defs, def)
