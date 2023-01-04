@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f9aa444_d9c04afa",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 441,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-01-04T19:23:13Z",
+      "side": 1,
+      "message": "offline chat, field will be removed and collected to karte for analysis please remove",
+      "range": {
+        "startLine": 439,
+        "startChar": 2,
+        "endLine": 441,
+        "endChar": 30
+      },
+      "revId": "471bebc4e11c7e39c3eb017809cee5f04cb49a47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
