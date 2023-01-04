@@ -1,19 +1,12 @@
 create {
   source {
     git {
-      repo: "https://github.com/pypa/virtualenv.git"
-      version_restriction {
-        op: EQ
-        val: "16.7.12"
-      }
+      repo: "https://github.com/pypa/get-virtualenv.git"
     }
-    patch_dir: "patches"
-    patch_version: "chromium.7"
+    patch_version: "chromium.8"
     cpe_base_address: "cpe:/a:virtualenv:virtualenv"
   }
-  build {
-    dep: "build_support/pip_bootstrap"
-  }
+  build {}
 }
 
 upload {
