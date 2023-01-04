@@ -1,0 +1,10 @@
+package: chromiumos/infra/vmlab/${platform}
+description: VM Lab CLI.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cmd/vmlab
+root: ../../go/bin
+data:
+  - file: vmlab${exe_suffix}
+  - version_file: .versions/vmlab${exe_suffix}.cipd_version
