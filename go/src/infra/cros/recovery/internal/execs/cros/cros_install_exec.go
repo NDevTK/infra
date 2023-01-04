@@ -64,7 +64,7 @@ func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info
 	if cros.StorageIssuesExist(ctx, err) {
 		info.GetDut().State = dutstate.NeedsReplacement
 		log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-		return errors.Annotate(err, "install from usb drive in recovery mode: storage is bad").Tag(retry.LoopBreakTag()).Err()
+		return errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
 	}
 	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
 }
@@ -110,7 +110,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				if cros.StorageIssuesExist(ctx, err) {
 					info.GetDut().State = dutstate.NeedsReplacement
 					log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-					return errors.Annotate(err, "install from usb drive in recovery mode: storage is bad").Tag(retry.LoopBreakTag()).Err()
+					return errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
 				}
 				log.Debugf(ctx, "Install from usb drive fail: %s", err)
 				log.Debugf(ctx, "Will try to check storage if that is bad!")
@@ -139,7 +139,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
 					log.Debugf(ctx, "Setting the DUT state as %q", string(dutstate.NeedsReplacement))
 					info.GetDut().State = dutstate.NeedsReplacement
-					return errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag()).Err()
+					return errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
 				}
 			}
 			haltTimeout := am.AsDuration(ctx, "halt_timeout", 120, time.Second)
