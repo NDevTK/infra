@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "85676b41_ddccf40d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2023-01-04T18:15:39Z",
+      "side": 1,
+      "message": "Ok, ended up still reading the manifest, but skipping projects that aren\u0027t in the \"ToT\" config group, or are excluded by a location filter on CQ orch.",
+      "parentUuid": "731250cc_f669ac3f",
+      "revId": "26abf757f3dfff64917f2fd9dc8a8f20780d09be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bca39fc9_0a3b473d",
@@ -49,6 +67,30 @@
       "writtenOn": "2022-12-28T17:47:20Z",
       "side": 1,
       "message": "From the description of crossrcroot in L335-L337 I thought we\u0027d be reading the local manifest not polling Gitiles for it.",
+      "range": {
+        "startLine": 387,
+        "startChar": 31,
+        "endLine": 387,
+        "endChar": 66
+      },
+      "revId": "26abf757f3dfff64917f2fd9dc8a8f20780d09be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5862394_66ac1c68",
+        "filename": "go/src/infra/cros/cmd/test_plan/test_plan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2023-01-04T18:15:39Z",
+      "side": 1,
+      "message": "Good point, changed to just read the manifest from the local checkout of manifest-internal.",
+      "parentUuid": "bca39fc9_0a3b473d",
       "range": {
         "startLine": 387,
         "startChar": 31,
