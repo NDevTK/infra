@@ -22,6 +22,30 @@
       },
       "revId": "8fdedfa483bde52f1334ae4365d85543d9b42f25",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db346578_bfedf82e",
+        "filename": "go/src/infra/cros/cmd/test_plan/test_plan.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2023-01-04T21:45:17Z",
+      "side": 1,
+      "message": "Yes, thanks for the catch!",
+      "parentUuid": "3bf6137a_f624e474",
+      "range": {
+        "startLine": 387,
+        "startChar": 11,
+        "endLine": 387,
+        "endChar": 14
+      },
+      "revId": "8fdedfa483bde52f1334ae4365d85543d9b42f25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
