@@ -57,6 +57,7 @@ func TestSetupProject(t *testing.T) {
 		"foo_program.xml":                 "chromeos/program/foo",
 		"bar_project.xml":                 "chromeos/project/foo/bar",
 		"baz_chipset.xml":                 "chromeos/overlays/chipset-baz-private",
+		"foo_vendor.xml":                  "chromeos/overlays/vendor-foo-private",
 		"chromeos-other-project_repo.xml": "chromeos/other/project",
 	}
 
@@ -85,6 +86,7 @@ func TestSetupProject(t *testing.T) {
 		localManifestBranch:  branch,
 		project:              "bar",
 		chipset:              "baz",
+		vendor:               "foo",
 		otherRepos:           []string{"chromeos/other/project"},
 	}
 	ctx := context.Background()
@@ -134,6 +136,7 @@ func TestSetupProject_allProjects(t *testing.T) {
 		"bar1_project.xml": "chromeos/project/foo/bar1",
 		"bar2_project.xml": "chromeos/project/foo/bar2",
 		"baz_chipset.xml":  "chromeos/overlays/chipset-baz-private",
+		"foo_vendor.xml":   "chromeos/overlays/vendor-foo-private",
 	}
 
 	expectedDownloads := map[string]map[string]map[string]string{}
@@ -172,6 +175,7 @@ func TestSetupProject_allProjects(t *testing.T) {
 		allProjects:          true,
 		project:              "bar",
 		chipset:              "baz",
+		vendor:               "foo",
 	}
 	ctx := context.Background()
 	assert.NilError(t, b.setupProject(ctx, nil, gc))
@@ -203,6 +207,7 @@ func TestSetupProject_buildspecs(t *testing.T) {
 		"gs://chromeos-foo-bar2" + gsSuffix:                     []byte("chromeos/project/foo/bar2"),
 		"gs://chromeos-other-project" + gsSuffix:                []byte("chromeos/other/project"),
 		"gs://chromeos-overlays-chipset-baz-private" + gsSuffix: []byte("chromeos/overlays/chipset-baz-private"),
+		"gs://chromeos-overlays-vendor-foo-private" + gsSuffix:  []byte("chromeos/overlays/vendor-foo-private"),
 	}
 
 	f := &gs.FakeClient{
@@ -223,6 +228,7 @@ func TestSetupProject_buildspecs(t *testing.T) {
 		allProjects:          true,
 		project:              "bar",
 		chipset:              "baz",
+		vendor:               "foo",
 		buildspec:            buildspec,
 		otherRepos:           []string{"chromeos/other/project"},
 	}
@@ -234,6 +240,7 @@ func TestSetupProject_buildspecs(t *testing.T) {
 		"bar2_project.xml":                "chromeos/project/foo/bar2",
 		"chromeos-other-project_repo.xml": "chromeos/other/project",
 		"baz_chipset.xml":                 "chromeos/overlays/chipset-baz-private",
+		"foo_vendor.xml":                  "chromeos/overlays/vendor-foo-private",
 	}
 	checkFiles(t, localManifestDir, expectedFiles)
 }

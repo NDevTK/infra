@@ -63,6 +63,7 @@ type setupProject struct {
 	project     string
 	allProjects bool
 	chipset     string
+	vendor      string
 	otherRepos  []string
 	// Modifiers on where to get the local manifests.
 	localManifestBranch string
@@ -88,6 +89,8 @@ func cmdSetupProject() *subcommands.Command {
 				"If specified, will include all projects under the specified program.")
 			b.Flags.StringVar(&b.chipset, "chipset", "",
 				"Name of the chipset overlay to sync a local manifest from.")
+			b.Flags.StringVar(&b.vendor, "vendor", "",
+				"Name of the vendor overlay to sync a local manifest from.")
 			b.Flags.Var(luciflag.CommaList(&b.otherRepos), "other-repos",
 				"Other chrome-internal repos to sync a local manifest from, e.g."+
 					"chromeos/vendor/qti/camx.")
@@ -234,6 +237,12 @@ func gsChipsetPath(chipset, buildspec string) lgs.Path {
 	return lgs.MakePath(fmt.Sprintf("chromeos-overlays-chipset-%s-private", chipset), relPath)
 }
 
+// gsVendorPath returns the appropriate GS path for the given vendor/version.
+func gsVendorPath(vendor, buildspec string) lgs.Path {
+	relPath := filepath.Join("buildspecs/", buildspec)
+	return lgs.MakePath(fmt.Sprintf("chromeos-overlays-vendor-%s-private", vendor), relPath)
+}
+
 func dasherizeProject(name string) string {
 	return strings.Join(strings.Split(name, "/"), "-")
 }
@@ -309,6 +318,22 @@ func (b *setupProject) setupProject(ctx context.Context, gsClient gs.Client, git
 				path:       "local_manifest.xml",
 				gsPath:     gspath,
 				downloadTo: fmt.Sprintf("%s_chipset.xml", b.chipset),
+			},
+		)
+	}
+
+	if b.vendor != "" {
+		var gspath lgs.Path
+		if b.buildspec != "" {
+			gspath = gsVendorPath(b.vendor, b.buildspec)
+		}
+		files = append(files,
+			localManifest{
+				project:    fmt.Sprintf("chromeos/overlays/vendor-%s-private", b.vendor),
+				branch:     b.localManifestBranch,
+				path:       "local_manifest.xml",
+				gsPath:     gspath,
+				downloadTo: fmt.Sprintf("%s_vendor.xml", b.vendor),
 			},
 		)
 	}
