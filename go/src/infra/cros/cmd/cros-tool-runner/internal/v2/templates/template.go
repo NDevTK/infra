@@ -11,10 +11,11 @@ import (
 	"strconv"
 	"strings"
 
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const (
@@ -29,6 +30,9 @@ const (
 var aCrosDutProcessor = newCrosDutProcessor()
 var aCrosProvisionProcessor = newCrosProvisionProcessor()
 var aCrosTestProcessor = newCrosTestProcessor()
+var aCrosGcsPublishProcessor = newCrosGcsPublishProcessor()
+var aCrosTkoPublishProcessor = newCrosTkoPublishProcessor()
+var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
 
 // TemplateProcessor converts a container-specific template into a valid generic
 // StartContainerRequest. Besides request conversions, a TemplateProcessor is
@@ -68,7 +72,7 @@ func (r *RequestRouter) discoverPort(request *api.StartTemplatedContainerRequest
 	return actualProcessor.discoverPort(request)
 }
 
-func (*RequestRouter) getActualProcessor(request *api.StartTemplatedContainerRequest) (TemplateProcessor, error) {
+func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerRequest) (TemplateProcessor, error) {
 	if request.GetTemplate().Container == nil {
 		return nil, status.Error(codes.InvalidArgument, "No template set in the request")
 	}
@@ -79,8 +83,23 @@ func (*RequestRouter) getActualProcessor(request *api.StartTemplatedContainerReq
 		return aCrosProvisionProcessor, nil
 	case *api.Template_CrosTest:
 		return aCrosTestProcessor, nil
+	case *api.Template_CrosPublish:
+		return r.getActualPublishProcessor(t.CrosPublish.PublishType)
 	default:
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", t))
+	}
+}
+
+func (*RequestRouter) getActualPublishProcessor(publishType api.CrosPublishTemplate_PublishType) (TemplateProcessor, error) {
+	switch publishType {
+	case api.CrosPublishTemplate_PUBLISH_GCS:
+		return aCrosGcsPublishProcessor, nil
+	case api.CrosPublishTemplate_PUBLISH_TKO:
+		return aCrosTkoPublishProcessor, nil
+	case api.CrosPublishTemplate_PUBLISH_RDB:
+		return aCrosRdbPublishProcessor, nil
+	default:
+		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", publishType))
 	}
 }
 
