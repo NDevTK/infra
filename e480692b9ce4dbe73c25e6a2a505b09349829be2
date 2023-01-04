@@ -22,6 +22,30 @@
       },
       "revId": "e480692b9ce4dbe73c25e6a2a505b09349829be2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62236e2d_b1c4a567",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-01-04T04:12:09Z",
+      "side": 1,
+      "message": "@otabek@google.com did mention that `deviceconfigs` are the preferred method for checking the device\u0027s capabilities since they\u0027re external to the DUT. But `cros_config` should be simple enough that it\u0027s pretty low risk. I\u0027ll switch to that and we can revisit if we run into issues later.",
+      "parentUuid": "0d1962ae_d992822b",
+      "range": {
+        "startLine": 438,
+        "startChar": 0,
+        "endLine": 438,
+        "endChar": 20
+      },
+      "revId": "e480692b9ce4dbe73c25e6a2a505b09349829be2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
