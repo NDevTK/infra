@@ -46,6 +46,30 @@
       },
       "revId": "5b51e03c016256ac6c7ede038c4dfc499efcf011",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a31ffb7_b5285a30",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-01-04T17:30:32Z",
+      "side": 1,
+      "message": "please include it to the description of the field",
+      "parentUuid": "6dc345ce_281c5486",
+      "range": {
+        "startLine": 439,
+        "startChar": 2,
+        "endLine": 440,
+        "endChar": 30
+      },
+      "revId": "5b51e03c016256ac6c7ede038c4dfc499efcf011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
