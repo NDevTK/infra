@@ -65,7 +65,7 @@ require (
 	go.opentelemetry.io/otel v1.10.0
 	go.opentelemetry.io/otel/sdk v1.10.0
 	go.opentelemetry.io/otel/trace v1.10.0
-	go.skia.org/infra v0.0.0-20220916162150-5898edbc8e08
+	go.skia.org/infra v0.0.0-20230104220408-9b60a7a1e47d
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
