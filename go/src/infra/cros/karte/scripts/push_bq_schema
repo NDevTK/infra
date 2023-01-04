@@ -5,8 +5,6 @@
 # found in the LICENSE file.
 
 # This file pushes the bigquery schema to supported Karte projects.
-# Currently, only the dev karte project is supported, but this will change
-# in the near future.
 #
 # This script uses bqschemaupdater to inspect a collection of protos and
 # impose the new schema on the bigquery tables associated with a given
