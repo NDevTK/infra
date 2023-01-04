@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e0c4806_96c2406d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-01-04T01:28:14Z",
+      "side": 1,
+      "message": "Typo: recoveried -\u003e recoveries.",
+      "revId": "8280e3544ec1f1df35b649d602df63f2a268a82a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "484a2edf_627ad46e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-01-04T01:28:14Z",
+      "side": 1,
+      "message": "Did you mallet this change?",
+      "range": {
+        "startLine": 10,
+        "startChar": 4,
+        "endLine": 10,
+        "endChar": 10
+      },
+      "revId": "8280e3544ec1f1df35b649d602df63f2a268a82a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
