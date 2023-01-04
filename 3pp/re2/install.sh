@@ -9,11 +9,5 @@ set -o pipefail
 
 PREFIX="$1"
 
-mkdir build
-cd build
+make install -j $(nproc) prefix=${PREFIX}
 
-cmake .. \
-  -DCMAKE_BUILD_TYPE:STRING=Release \
-  -DCMAKE_INSTALL_PREFIX:STRING="$PREFIX"
-
-make install -j $(nproc)

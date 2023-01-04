@@ -8,10 +8,9 @@ create {
       version: "2022-12-01"
     }
     unpack_archive: true
+    patch_version: "chromium.1"
   }
-  build {
-    tool: "tools/cmake"
-  }
+  build {}
 }
 
 upload { pkg_prefix: "static_libs" }
