@@ -440,6 +440,10 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 			log.Infof(ctx, "Recovery %q: fail", recoveryName)
 			log.Debugf(ctx, "Recovery %q: fail. Error: %s", recoveryName, err)
 			r.registerRecoveryUsage(actionName, recoveryName, err)
+			if execs.PlanStartOverTag.In(err) {
+				log.Infof(ctx, "Recovery %q: requested to start plan %q over.", recoveryName, r.planName)
+				return errors.Annotate(err, "run recoveries").Err()
+			}
 			continue
 		}
 		if status == actionSkip {
@@ -458,7 +462,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 				log.Infof(ctx, "Successful recovery: %q recovered %q", recoveryName, actionName)
 			}
 		}
-		return errors.Reason("recovery %q: request to start over", recoveryName).Tag(execs.PlanStartOverTag).Err()
+		return errors.Reason("run recoveries: recovery %q requested to start over", recoveryName).Tag(execs.PlanStartOverTag).Err()
 	}
 	return nil
 }
