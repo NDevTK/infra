@@ -102,10 +102,14 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 	for {
 		if err := r.runCriticalActionsAttempt(ctx, restartTally); err != nil {
 			if execs.PlanStartOverTag.In(err) {
-				log.Infof(ctx, "Plan %q for %s: received request to start over.", r.planName, r.args.ResourceName)
+				log.Infof(ctx, "Plan %q for %s: received the request to start over!", r.planName, r.args.ResourceName)
 				r.resetCacheAfterSuccessfulRecoveryAction()
 				restartTally++
 				continue
+			}
+			if execs.PlanAbortTag.In(err) {
+				log.Infof(ctx, "Plan %q received the request for abort plan!", r.planName)
+				return errors.Annotate(err, "run plan %q: abort", r.planName).Err()
 			}
 			if r.plan.GetAllowFail() {
 				log.Debugf(ctx, "Plan %q for %s: failed with error: %s.", r.planName, r.args.ResourceName, err)
@@ -442,6 +446,10 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 			r.registerRecoveryUsage(actionName, recoveryName, err)
 			if execs.PlanStartOverTag.In(err) {
 				log.Infof(ctx, "Recovery %q: requested to start plan %q over.", recoveryName, r.planName)
+				return errors.Annotate(err, "run recoveries").Err()
+			}
+			if execs.PlanAbortTag.In(err) {
+				log.Infof(ctx, "Recovery %q: requested an abort of the %q plan.", recoveryName, r.planName)
 				return errors.Annotate(err, "run recoveries").Err()
 			}
 			continue

@@ -11,5 +11,5 @@ var (
 	PlanStartOverTag = errors.BoolTag{Key: errors.NewTagKey("plan-start-over")}
 
 	// Error tag to track error with request to stop execution of the current plan.
-	PlanAboortTag = errors.BoolTag{Key: errors.NewTagKey("plan-abort")}
+	PlanAbortTag = errors.BoolTag{Key: errors.NewTagKey("plan-abort")}
 )

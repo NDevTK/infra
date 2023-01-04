@@ -130,6 +130,12 @@ func sampleStepTagsExec(ctx context.Context, info *ExecInfo) error {
 	return nil
 }
 
+// sampleAbortPlanExec aborts plan execution.
+func sampleAbortPlanExec(ctx context.Context, info *ExecInfo) error {
+	log.Infof(ctx, "Trigger plan abort!")
+	return errors.Reason("sample abort plan").Tag(PlanAbortTag).Err()
+}
+
 func init() {
 	Register("sample_pass", samplePassActionExec)
 	Register("sample_fail", sampleFailActionExec)
@@ -139,4 +145,5 @@ func init() {
 	Register("sample_step_summary_markdown", sampleStepSummaryMarkdownExec)
 	Register("sample_step_logs", sampleStepLogExec)
 	Register("sample_step_tags", sampleStepTagsExec)
+	Register("sample_abort_plan", sampleAbortPlanExec)
 }
