@@ -10,6 +10,9 @@ shopt -s dotglob
 
 PREFIX="$1"
 
+# By default config will be written to home directory.
+export CLOUDSDK_CONFIG="$(pwd)/.config"
+
 # Install additional components. This will also install their dependencies.
 #
 # We assume here that "overall" gcloud SDK version is bumped whenever some of
