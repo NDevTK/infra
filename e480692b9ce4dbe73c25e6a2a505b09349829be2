@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d1962ae_d992822b",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1425417
+      },
+      "writtenOn": "2023-01-04T01:57:38Z",
+      "side": 1,
+      "message": "cros_config /modem firmware-variant should tell us if a modem is expected.",
+      "range": {
+        "startLine": 438,
+        "startChar": 0,
+        "endLine": 438,
+        "endChar": 20
+      },
+      "revId": "e480692b9ce4dbe73c25e6a2a505b09349829be2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
