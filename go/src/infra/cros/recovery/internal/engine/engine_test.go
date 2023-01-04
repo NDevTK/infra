@@ -298,7 +298,7 @@ func TestRunRecovery(t *testing.T) {
 			r.initCache()
 			err := r.runRecoveries(ctx, "a", nil)
 			if c.expStartOver {
-				if !startOverTag.In(err) {
+				if !execs.PlanStartOverTag.In(err) {
 					t.Errorf("Case %q expected to get request to start over. Received: %s", c.name, err)
 				}
 			} else {
@@ -389,7 +389,7 @@ func TestActionExec(t *testing.T) {
 			r.initCache()
 			err := r.runActionExec(ctx, "a", nil, c.enableRecovery)
 			if c.expError && c.expStartOver {
-				if !startOverTag.In(err) {
+				if !execs.PlanStartOverTag.In(err) {
 					t.Errorf("Case %q expected to get request to start over. Received error: %s", c.name, err)
 				}
 			} else if c.expError {

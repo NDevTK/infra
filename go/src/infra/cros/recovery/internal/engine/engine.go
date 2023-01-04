@@ -34,9 +34,6 @@ type recoveryEngine struct {
 	recoveryUsageCache map[recoveryUsageKey]error
 }
 
-// Error tag to track error with request to start critical actions over.
-var startOverTag = errors.BoolTag{Key: errors.NewTagKey("start-over")}
-
 // Run runs the recovery plan.
 func Run(ctx context.Context, planName string, plan *config.Plan, args *execs.RunArgs, metricSaver metrics.MetricSaver) error {
 	r := &recoveryEngine{
@@ -104,7 +101,7 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 	}
 	for {
 		if err := r.runCriticalActionsAttempt(ctx, restartTally); err != nil {
-			if startOverTag.In(err) {
+			if execs.PlanStartOverTag.In(err) {
 				log.Infof(ctx, "Plan %q for %s: received request to start over.", r.planName, r.args.ResourceName)
 				r.resetCacheAfterSuccessfulRecoveryAction()
 				restartTally++
@@ -277,7 +274,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		return metric, actionSkip, nil
 	}
 	if err := r.runDependencies(ctx, actionName, actionType, enableRecovery, actionLevel+1); err != nil {
-		if startOverTag.In(err) {
+		if execs.PlanStartOverTag.In(err) {
 			return metric, actionFail, errors.Annotate(err, "run action %q", actionName).Err()
 		}
 		if act.GetAllowFailAfterRecovery() {
@@ -289,7 +286,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		return metric, actionFail, errors.Annotate(err, "run action %q", actionName).Err()
 	}
 	if err := r.runActionExec(ctx, actionName, metric, enableRecovery); err != nil {
-		if startOverTag.In(err) {
+		if execs.PlanStartOverTag.In(err) {
 			return metric, actionFail, errors.Annotate(err, "run action %q", actionName).Err()
 		}
 		if act.GetAllowFailAfterRecovery() {
@@ -461,7 +458,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 				log.Infof(ctx, "Successful recovery: %q recovered %q", recoveryName, actionName)
 			}
 		}
-		return errors.Reason("recovery %q: request to start over", recoveryName).Tag(startOverTag).Err()
+		return errors.Reason("recovery %q: request to start over", recoveryName).Tag(execs.PlanStartOverTag).Err()
 	}
 	return nil
 }
