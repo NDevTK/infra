@@ -233,9 +233,32 @@ func createLogCollectionInfoExec(ctx context.Context, info *execs.ExecInfo) erro
 	return errors.Annotate(err, "create log collection info").Err()
 }
 
+// confirmFileNotExistsExec confirms that the file mentioned in the
+// parameters does not exist on the actual file system.
+//
+// This exec accepts the following parameters from the action:
+// target_file: complete path of the file that needs to be checked.
+func confirmFileNotExistsExec(ctx context.Context, info *execs.ExecInfo) error {
+	argMap := info.GetActionArgs(ctx)
+	logRoot := info.GetLogRoot()
+	infoFilePath := filepath.Join(logRoot, argMap.AsString(ctx, "target_file", "log_collection_info"))
+	_, err := os.Stat(infoFilePath)
+	if err == nil {
+		return errors.Reason("confirm file not exists: the file %q already exists", infoFilePath).Err()
+	}
+	log := info.NewLogger()
+	if errors.Is(err, os.ErrNotExist) {
+		log.Debugf("Confirm File Not Exists: the file %q does not exist beforehand", infoFilePath)
+		return nil
+	}
+	log.Debugf("Confirm File Not Exists: cannot determine whether the file %q exists or not.", infoFilePath)
+	return errors.Annotate(err, "confirm file not exists").Err()
+}
+
 func init() {
 	execs.Register("cros_dmesg", dmesgExec)
 	execs.Register("cros_copy_to_logs", copyToLogsExec)
 	execs.Register("cros_collect_crash_dumps", collectCrashDumpsExec)
 	execs.Register("cros_create_log_collection_info", createLogCollectionInfoExec)
+	execs.Register("cros_confirm_file_not_exists", confirmFileNotExistsExec)
 }
