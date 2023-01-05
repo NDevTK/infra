@@ -61,11 +61,11 @@ func getFullCrosProvisionTemplateRequest(network string) *api.StartTemplatedCont
 	return &api.StartTemplatedContainerRequest{
 		Name:           "my-container",
 		ContainerImage: "gcr.io/image:123",
+		Network:        network,
+		ArtifactDir:    "/tmp",
 		Template: &api.Template{
 			Container: &api.Template_CrosProvision{
 				CrosProvision: &api.CrosProvisionTemplate{
-					Network:     network,
-					ArtifactDir: "/tmp",
 					InputRequest: &api.CrosProvisionRequest{
 						DutServer: &labApi.IpEndpoint{Address: "ctr-host-port://dut-name", Port: 0},
 						Dut:       &labApi.Dut{Id: &labApi.Dut_Id{Value: "chromeos6-row4-rack5-host14"}},

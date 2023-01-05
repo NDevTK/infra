@@ -99,11 +99,11 @@ func getCrosDutTemplateRequest(network string) *api.StartTemplatedContainerReque
 	return &api.StartTemplatedContainerRequest{
 		Name:           "my-container",
 		ContainerImage: "gcr.io/image:123",
+		Network:        network,
+		ArtifactDir:    "/tmp",
 		Template: &api.Template{
 			Container: &api.Template_CrosDut{
 				CrosDut: &api.CrosDutTemplate{
-					Network:     network,
-					ArtifactDir: "/tmp",
 					CacheServer: &labApi.IpEndpoint{Address: "192.168.1.5", Port: 33},
 					DutAddress:  &labApi.IpEndpoint{Address: "chromeos6-row4-rack5-host14", Port: 22},
 				}}}}
