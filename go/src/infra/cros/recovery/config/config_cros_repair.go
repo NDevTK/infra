@@ -18,6 +18,7 @@ func crosRepairPlan() *Plan {
 			"Device is pingable",
 			// Critical actions above this line are linearized. See b:255051938 for details.
 			"Device is SSHable",
+			"Collect logs and crashinfo",
 			"Verify internal storage",
 			"Set dev_boot_usb is enabled",
 			"Check if last provision was good",
@@ -2721,6 +2722,7 @@ func crosRepairActions() map[string]*Action {
 				"Create log collection info",
 			},
 			ExecName:               "sample_pass",
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Collect logs from DUT on /var/log/*": {
