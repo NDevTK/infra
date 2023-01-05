@@ -128,6 +128,8 @@ func updateBotConfigForBotIds(ctx context.Context, botIds []string, ownershipDat
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
 			errs = append(errs, err)
+		} else if !updated {
+			logging.Debugf(ctx, "Nothing to update for bot id %s", botId)
 		}
 		if updated {
 			err = updateOwnership(ctx, botId, ownershipData, assetType)
@@ -135,7 +137,6 @@ func updateBotConfigForBotIds(ctx context.Context, botIds []string, ownershipDat
 				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
 				errs = append(errs, err)
 			}
-			logging.Debugf(ctx, "Nothing to update for bot id %s", botId)
 		}
 	}
 	if len(errs) > 0 {
