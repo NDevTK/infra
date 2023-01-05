@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ff1b4b0_5e976f0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2023-01-05T10:53:10Z",
+      "side": 1,
+      "message": "Otabek, this CL adds the collection of logs after the ssh access has been restored. \n\nCan you kindly review this?",
+      "revId": "ef78fe9c1d84f3aa4a147577b6dd354c30bbf496",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
