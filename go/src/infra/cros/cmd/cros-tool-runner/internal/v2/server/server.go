@@ -31,7 +31,9 @@ type ContainerServerImpl struct {
 // serverStateManager provides API to clean up server state: remove networks and
 // containers owned by the current server. serverStateManager does not depend on
 // the server as the state is globally shared during the server's lifespan.
-type serverStateManager struct{}
+type serverStateManager struct {
+	executor CommandExecutor
+}
 
 // CreateNetwork creates a new docker network with the given name.
 func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.CreateNetworkRequest) (*api.CreateNetworkResponse, error) {
@@ -337,8 +339,8 @@ func (m *serverStateManager) stopContainers() {
 	// Need to stop container one by one because podman doesn't process a bulk if one of them is dead.
 	for _, id := range containerIds {
 		log.Printf("stopping container: %s", id)
-		cmd := commands.ContainerStop{Names: []string{id}}
-		stdout, stderr, _ := cmd.Execute(context.Background())
+		cmd := &commands.ContainerStop{Names: []string{id}}
+		stdout, stderr, _ := m.executor.Execute(context.Background(), cmd)
 		if stdout != "" {
 			log.Printf("received stdout: %s", stdout)
 		}
@@ -350,15 +352,15 @@ func (m *serverStateManager) stopContainers() {
 }
 
 // removeNetworks removes networks that were created by current CTRv2 service.
-func (*serverStateManager) removeNetworks() {
+func (m *serverStateManager) removeNetworks() {
 	networkIds := state.ServerState.Networks.GetIdsToClearOwnership()
 	if len(networkIds) == 0 {
 		log.Println("no networks to clean up")
 		return
 	}
 	log.Printf("removing networks: %v", state.ServerState.Networks.GetMapping())
-	cmd := commands.NetworkRemove{Names: networkIds}
-	stdout, stderr, _ := cmd.Execute(context.Background())
+	cmd := &commands.NetworkRemove{Names: networkIds}
+	stdout, stderr, _ := m.executor.Execute(context.Background(), cmd)
 	if stdout != "" {
 		log.Printf("received stdout: %s", stdout)
 	}

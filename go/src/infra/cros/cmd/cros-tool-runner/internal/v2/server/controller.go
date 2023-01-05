@@ -16,10 +16,13 @@ import (
 	"go.chromium.org/luci/common/system/signals"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )
 
-var serverCleanup = &serverStateManager{}
+var serverCleanup = &serverStateManager{
+	executor: &commands.ContextualExecutor{},
+}
 
 // NewContainerServer returns a new gRPC server for container services.
 func NewContainerServer() (*grpc.Server, func()) {
