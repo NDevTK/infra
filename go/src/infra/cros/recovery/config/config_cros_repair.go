@@ -2718,6 +2718,7 @@ func crosRepairActions() map[string]*Action {
 				"Collect logs from DUT on /var/log/*",
 				"Collect dmesg",
 				"Collect crash dumps",
+				"Create log collection info",
 			},
 			ExecName:               "sample_pass",
 			RunControl:             RunControl_RUN_ONCE,
@@ -2772,6 +2773,18 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"clean:true",
 				"cleanup_timeout:10",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Create log collection info": {
+			Docs: []string{
+				"When the log collection completes, we create an info file that ",
+				"indicates the successful completion of the collection process.",
+			},
+			ExecName: "cros_create_log_collection_info",
+			ExecExtraArgs: []string{
+				"info_file:log_collection_info",
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
