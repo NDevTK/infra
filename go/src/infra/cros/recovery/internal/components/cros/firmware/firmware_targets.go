@@ -1,0 +1,59 @@
+// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package firmware
+
+// targetOverrideModels holds a map of models that need to override its firmware target.
+var targetOverrideModels = map[string]string{
+	// TODO(b/226402941): Read existing ec image name using futility.
+	"dragonair": "dratini",
+	// Models that use _signed version of firmware.
+	"drallion360": "drallion_signed",
+	"sarien":      "sarien_signed",
+	"arcada":      "arcada_signed",
+	"drallion":    "drallion_signed",
+	// Octopus board.
+	"foob360":    "foob",
+	"blooglet":   "bloog",
+	"garg360":    "garg",
+	"laser14":    "phaser",
+	"bluebird":   "casta",
+	"vorticon":   "meep",
+	"dorp":       "meep",
+	"orbatrix":   "fleex",
+	"blooguard":  "bloog",
+	"grabbiter":  "fleex",
+	"apel":       "ampton",
+	"nospike":    "ampton",
+	"phaser360":  "phaser",
+	"blorb":      "bobba",
+	"droid":      "bobba",
+	"garfour":    "garg",
+	"vortininja": "meep",
+	"sparky":     "bobba",
+	"sparky360":  "bobba",
+	"bobba360":   "bobba",
+	"mimrock":    "meep",
+	// Grunt board.
+	"barla":     "careena",
+	"kasumi":    "aleena",
+	"kasumi360": "aleena",
+}
+
+// targetOverrideHwidSkus holds a map of hwid that need to override its firmware target.
+// Some latest models may uses different firmware based on there hwid, so decide firmware
+// based on models are not sufficient for them.
+var targetOverridebyHwid = map[string]string{
+	// Nissa board.
+	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":         "nivviks_ufs",
+	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T": "nereid_hdmi",
+}
+
+// ecExemptedModels holds a map of models that doesn't have EC firmware.
+var ecExemptedModels = map[string]bool{
+	"drallion360": true,
+	"sarien":      true,
+	"arcada":      true,
+	"drallion":    true,
+}

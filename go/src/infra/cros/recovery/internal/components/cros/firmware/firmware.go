@@ -35,51 +35,6 @@ type ReadAPInfoResponse struct {
 	Keys        []string
 }
 
-// ecExemptedModels holds a map of models that doesn't have EC firmware.
-var ecExemptedModels = map[string]bool{
-	"drallion360": true,
-	"sarien":      true,
-	"arcada":      true,
-	"drallion":    true,
-}
-
-// targetOverrideModels holds a map of models that need to override its firmware target.
-var targetOverrideModels = map[string]string{
-	// TODO(b/226402941): Read existing ec image name using futility.
-	"dragonair": "dratini",
-	// Models that use _signed version of firmware.
-	"drallion360": "drallion_signed",
-	"sarien":      "sarien_signed",
-	"arcada":      "arcada_signed",
-	"drallion":    "drallion_signed",
-	// Octopus board.
-	"foob360":    "foob",
-	"blooglet":   "bloog",
-	"garg360":    "garg",
-	"laser14":    "phaser",
-	"bluebird":   "casta",
-	"vorticon":   "meep",
-	"dorp":       "meep",
-	"orbatrix":   "fleex",
-	"blooguard":  "bloog",
-	"grabbiter":  "fleex",
-	"apel":       "ampton",
-	"nospike":    "ampton",
-	"phaser360":  "phaser",
-	"blorb":      "bobba",
-	"droid":      "bobba",
-	"garfour":    "garg",
-	"vortininja": "meep",
-	"sparky":     "bobba",
-	"sparky360":  "bobba",
-	"bobba360":   "bobba",
-	"mimrock":    "meep",
-	// Grunt board.
-	"barla":     "careena",
-	"kasumi":    "aleena",
-	"kasumi360": "aleena",
-}
-
 // ReadAPInfoByServo read AP info from DUT.
 //
 // AP will be extracted from the DUT to flash back with changes.
@@ -209,6 +164,9 @@ type InstallFirmwareImageRequest struct {
 	// Board and model of the DUT.
 	Board string
 	Model string
+
+	// Hwid of the DUT.
+	Hwid string
 
 	// Dir where we download the fw image file and then extracted.
 	DownloadDir string
@@ -425,61 +383,21 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 	return nil
 }
 
-// Helper function to extract EC image from downloaded tarball.
-// A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
-// For extract firmware image, we're following below orders to decide firmware target on the DUT:
-//
-//	(1) Use data in targetOverrideModels if a model appears in the map.
-//	(2) Use response from `ec_board` control if available, except when it equal to board/model name.
-//	(3) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
-//	(4) Use model name of the DUT.
-//	(5) Use board name of the DUT.
+// extractECImage extracts EC image from the tarball.
 func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "EC")
 	run := req.targetHostRunner()
 	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDir); err != nil {
 		return "", errors.Annotate(err, "extract ec files: fail to create a destination directory %s", destDir).Err()
 	}
+
 	// Candidate files contains new and old format names.
-	// New: board/ec.bin.bin
-	// Old: ./board/ec.bin.bin
-	candidatesFiles := []string{}
-	// Handle special case where some model use non-regular firmware mapping.
-	if m, ok := targetOverrideModels[req.Model]; ok {
-		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
-		candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", m))
-		candidatesFiles = append(candidatesFiles, fmt.Sprintf("./%s/ec.bin", m))
-	}
-	if req.Servod != nil {
-		fwBoard, err := servo.GetString(ctx, req.Servod, "ec_board")
-		if err != nil {
-			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
-		}
-		// Based on b:220157423 some board report name is upper case.
-		fwBoard = strings.ToLower(fwBoard)
-		if fwBoard != "" && fwBoard != req.Model && fwBoard != req.Board {
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwBoard))
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./%s/ec.bin", fwBoard))
-		}
-	}
-	if !req.FlashThroughServo {
-		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
-		if err != nil {
-			log.Debugf("Failed to get firmware target info from DUT.")
-		}
-		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("%s/ec.bin", fwTarget))
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./%s/ec.bin", fwTarget))
-		}
-	}
-	candidatesFiles = append(candidatesFiles,
-		fmt.Sprintf("%s/ec.bin", req.Model),
-		fmt.Sprintf("./%s/ec.bin", req.Model),
-		fmt.Sprintf("%s/ec.bin", req.Board),
-		fmt.Sprintf("./%s/ec.bin", req.Board),
-		"ec.bin",
-		"./ec.bin",
-	)
+	// New: fw_target/ec.bin
+	// Old: ./fw_target/ec.bin
+	candidatesFiles := getFirmwareImageCandidates(ctx, req, []string{"%s/ec.bin", "./%s/ec.bin"}, log)
+	// Some old boards has only one image with vanilla naming in their firmware artifacts.
+	candidatesFiles = append(candidatesFiles, "ec.bin", "./ec.bin")
+
 	var imagePath string
 	if req.UseCacheToExtractor {
 		imagePath = "ec.bin"
@@ -511,61 +429,21 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	return filepath.Join(destDir, imagePath), nil
 }
 
-// Helper function to extract BIOS image from downloaded tarball.
-// A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
-// For extract firmware image, we're following below orders to decide firmware target on the DUT:
-//
-//	(1) Use data in targetOverrideModels if a model appears in the map.
-//	(2) Use response from `ec_board` control if available, except when it equal to board/model name.
-//	(3) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
-//	(4) Use model name of the DUT.
-//	(5) Use board name of the DUT.
+// extractAPImage extracts BIOS image from the tarball.
 func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarballPath string, log logger.Logger) (string, error) {
 	destDir := filepath.Join(filepath.Dir(tarballPath), "AP")
 	run := req.targetHostRunner()
 	if _, err := run(ctx, extractFileTimeout, "mkdir", "-p", destDir); err != nil {
 		return "", errors.Annotate(err, "extract ap files: fail to create a destination directory %s", destDir).Err()
 	}
+
 	// Candidate files contains new and old format names.
-	// New: image-board.bin
-	// Old: ./image-board.bin
-	candidatesFiles := []string{}
-	// Handle special case where some model use non-regular firmware mapping.
-	if m, ok := targetOverrideModels[req.Model]; ok {
-		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
-		candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", m))
-		candidatesFiles = append(candidatesFiles, fmt.Sprintf("./image-%s.bin", m))
-	}
-	if req.Servod != nil {
-		fwBoard, err := servo.GetString(ctx, req.Servod, "ec_board")
-		if err != nil {
-			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
-		}
-		// Based on b:220157423 some board report name is upper case.
-		fwBoard = strings.ToLower(fwBoard)
-		if fwBoard != "" && fwBoard != req.Model && fwBoard != req.Board {
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwBoard))
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./image-%s.bin", fwBoard))
-		}
-	}
-	if !req.FlashThroughServo {
-		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
-		if err != nil {
-			log.Debugf("Failed to get firmware target info from DUT.")
-		}
-		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("image-%s.bin", fwTarget))
-			candidatesFiles = append(candidatesFiles, fmt.Sprintf("./image-%s.bin", fwTarget))
-		}
-	}
-	candidatesFiles = append(candidatesFiles,
-		fmt.Sprintf("image-%s.bin", req.Model),
-		fmt.Sprintf("./image-%s.bin", req.Model),
-		fmt.Sprintf("image-%s.bin", req.Board),
-		fmt.Sprintf("./image-%s.bin", req.Board),
-		"image.bin",
-		"./image.bin",
-	)
+	// New: image-fw_target.bin
+	// Old: ./image-fw_target.bin
+	candidatesFiles := getFirmwareImageCandidates(ctx, req, []string{"image-%s.bin", "./image-%s.bin"}, log)
+	// Some old boards has only one image with vanilla naming in their firmware artifacts.
+	candidatesFiles = append(candidatesFiles, "image.bin", "./image.bin")
+
 	var imagePath string
 	if req.UseCacheToExtractor {
 		imagePath = "image.bin"
@@ -651,4 +529,64 @@ func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log lo
 	log.Debugf("Firmware target info from DUT: %s", out)
 	// The first letter of firmware target read from DUT is capitalized, so convert to lower case here.
 	return strings.ToLower(out), nil
+}
+
+// Helper function to decide firmware candidate image.
+// A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
+// For extract firmware image, we're following below orders to decide firmware target on the DUT:
+//
+// (1) Use data in targetOverridebyHwid if the hwid_sku appears in the map.
+// (2) Use data in targetOverrideModels if a model appears in the map.
+// (3) Use response from `ec_board` control if available, except when it equal to board/model name.
+// (4) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
+// (5) Use model name of the DUT.
+// (6) Use board name of the DUT.
+func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRequest, imageNamePatterns []string, log logger.Logger) []string {
+	run := req.targetHostRunner()
+	candidates := []string{}
+	// Handle special case where firmware target should be decided by hwid.
+	if m, ok := targetOverridebyHwid[req.Hwid]; ok {
+		log.Debugf("Firmware target override by hwid detected, DUT hwid: %s, new firmware target: %s", req.Hwid, m)
+		for _, p := range imageNamePatterns {
+			candidates = append(candidates, fmt.Sprintf(p, m))
+		}
+	}
+	// Handle special case where some model use non-regular firmware mapping.
+	if m, ok := targetOverrideModels[req.Model]; ok {
+		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
+		for _, p := range imageNamePatterns {
+			candidates = append(candidates, fmt.Sprintf(p, m))
+		}
+	}
+	if req.Servod != nil {
+		fwTarget, err := servo.GetString(ctx, req.Servod, "ec_board")
+		if err != nil {
+			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
+		}
+		// Based on b:220157423 some board report name is upper case.
+		fwTarget = strings.ToLower(fwTarget)
+		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
+			for _, p := range imageNamePatterns {
+				candidates = append(candidates, fmt.Sprintf(p, fwTarget))
+			}
+		}
+	}
+	if !req.FlashThroughServo {
+		fwTarget, err := getFirmwareTargetFromDUT(ctx, run, log)
+		if err != nil {
+			log.Debugf("Failed to get firmware target info from DUT.")
+		}
+		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
+			for _, p := range imageNamePatterns {
+				candidates = append(candidates, fmt.Sprintf(p, fwTarget))
+			}
+		}
+	}
+	for _, p := range imageNamePatterns {
+		candidates = append(candidates, fmt.Sprintf(p, req.Model))
+	}
+	for _, p := range imageNamePatterns {
+		candidates = append(candidates, fmt.Sprintf(p, req.Board))
+	}
+	return candidates
 }

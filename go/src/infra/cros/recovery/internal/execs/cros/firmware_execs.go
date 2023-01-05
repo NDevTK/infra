@@ -188,6 +188,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		DutRunner:            run,
 		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
+		Hwid:                 actionArgs.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
 		Servod:               info.NewServod(),
 		ForceUpdate:          actionArgs.AsBool(ctx, "force", false),
 		UpdateEcAttemptCount: actionArgs.AsInt(ctx, "update_ec_attempt_count", 0),
