@@ -63,6 +63,30 @@
       },
       "revId": "d2d060fcb7714ccc030e2e8bbafaf720a687b773",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bb2540f_73a01bbf",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2725,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-01-05T19:28:22Z",
+      "side": 1,
+      "message": "Run-control manage how we we use cache for that. \nIf action fail with condition of dependencies then it will not be cached by default.\n\nRUN_Always - try to run action always in any case\nRUN_ONCE - will run it till first full run, means if dependency fail of condition fail then it will continue try to run it. condition of single run applied to entire plan and cache will not be reseted when we restart the plan\nDefault - will run it till first full run, means if dependency fail of condition fail then it will continue try to run it. condition of single run applied to singel plan run and cache will be reseted when we restart the plan",
+      "parentUuid": "1b223f38_4d7d214f",
+      "range": {
+        "startLine": 2725,
+        "startChar": 27,
+        "endLine": 2725,
+        "endChar": 48
+      },
+      "revId": "d2d060fcb7714ccc030e2e8bbafaf720a687b773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
