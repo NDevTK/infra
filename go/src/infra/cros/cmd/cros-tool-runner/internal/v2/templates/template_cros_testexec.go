@@ -13,17 +13,18 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 type crosTestProcessor struct {
-	defaultPortDiscoverer portDiscoverer
-	defaultServerPort     string // Default port used in cros-test
+	cmdExecutor       cmdExecutor
+	defaultServerPort string // Default port used in cros-test
 }
 
 func newCrosTestProcessor() TemplateProcessor {
 	return &crosTestProcessor{
-		defaultPortDiscoverer: &defaultPortDiscoverer{},
-		defaultServerPort:     "8001",
+		cmdExecutor:       &commands.ContextualExecutor{},
+		defaultServerPort: "8001",
 	}
 }
 
@@ -75,20 +76,8 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 }
 
 func (p *crosTestProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-	t := request.GetTemplate().GetCrosTest()
-	if t == nil {
-		return nil, status.Error(codes.Internal, "unable to process3")
-	}
-	portBinding, err := p.defaultPortDiscoverer.discoverPort(request)
-	if err != nil {
-		return portBinding, err
-	}
-	if request.Network == hostNetworkName {
-		portBinding.HostPort = portBinding.ContainerPort
-		portBinding.HostIp = localhostIp
-	}
-	portBinding.Protocol = protocolTcp
-	return portBinding, nil
+	// delegate to default impl, any template-specific logic should be implemented here.
+	return defaultDiscoverPort(p.cmdExecutor, request)
 }
 
 // createDir creates artifact subdirectories for the given path.

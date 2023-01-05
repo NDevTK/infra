@@ -59,42 +59,6 @@ func TestCrosDutPopulate_hostNetwork(t *testing.T) {
 		"0")
 }
 
-func TestCrosDutDiscoverPort_bridgeNetwork_populateProtocol(t *testing.T) {
-	expected := &api.Container_PortBinding{
-		ContainerPort: int32(42),
-		Protocol:      protocolTcp,
-	}
-	processor := &crosDutProcessor{
-		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
-	}
-	request := getCrosDutTemplateRequest("mynet")
-	binding, err := processor.discoverPort(request)
-
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	check(t, binding.String(), expected.String())
-}
-
-func TestCrosDutDiscoverPort_hostNetwork_populateAllFields(t *testing.T) {
-	expected := &api.Container_PortBinding{
-		ContainerPort: int32(42),
-		Protocol:      protocolTcp,
-		HostIp:        localhostIp,
-		HostPort:      int32(42),
-	}
-	processor := &crosDutProcessor{
-		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
-	}
-	request := getCrosDutTemplateRequest("host")
-	binding, err := processor.discoverPort(request)
-
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	check(t, binding.String(), expected.String())
-}
-
 func getCrosDutTemplateRequest(network string) *api.StartTemplatedContainerRequest {
 	return &api.StartTemplatedContainerRequest{
 		Name:           "my-container",

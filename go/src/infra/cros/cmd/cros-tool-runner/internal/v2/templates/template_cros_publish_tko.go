@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const DockerTkoPublishLogsDir = "/tmp/tko-publish/"
@@ -18,7 +19,7 @@ const DockerTkoPublishPort = "43148"
 
 type crosTkoPublishProcessor struct {
 	TemplateProcessor
-	defaultPortDiscoverer   portDiscoverer
+	cmdExecutor             cmdExecutor
 	defaultServerPort       string // Default port used
 	dockerArtifactDirName   string // Path on the docker where service put the logs by default
 	dockerPublishSrcDirName string // Path on the docker where publish src dir will be mounted to
@@ -26,7 +27,7 @@ type crosTkoPublishProcessor struct {
 
 func newCrosTkoPublishProcessor() TemplateProcessor {
 	return &crosTkoPublishProcessor{
-		defaultPortDiscoverer:   &defaultPortDiscoverer{},
+		cmdExecutor:             &commands.ContextualExecutor{},
 		defaultServerPort:       DockerTkoPublishPort,
 		dockerArtifactDirName:   DockerTkoPublishLogsDir,
 		dockerPublishSrcDirName: DockerTkoPublishTestArtifactsDir,
@@ -63,18 +64,6 @@ func (p *crosTkoPublishProcessor) Process(request *api.StartTemplatedContainerRe
 }
 
 func (p *crosTkoPublishProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-	t := request.GetTemplate().GetCrosPublish()
-	if t == nil {
-		return nil, status.Error(codes.Internal, "unable to process")
-	}
-	portBinding, err := p.defaultPortDiscoverer.discoverPort(request)
-	if err != nil {
-		return portBinding, err
-	}
-	if request.Network == hostNetworkName {
-		portBinding.HostPort = portBinding.ContainerPort
-		portBinding.HostIp = localhostIp
-	}
-	portBinding.Protocol = protocolTcp
-	return portBinding, nil
+	// delegate to default impl, any template-specific logic should be implemented here.
+	return defaultDiscoverPort(p.cmdExecutor, request)
 }

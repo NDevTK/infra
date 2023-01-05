@@ -11,11 +11,10 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const (
@@ -103,20 +102,18 @@ func (*RequestRouter) getActualPublishProcessor(publishType api.CrosPublishTempl
 	}
 }
 
-// defaultPortDiscovery is the standard impl for go/cft-port-discovery across
+// defaultDiscoverPort is the standard impl for go/cft-port-discovery across
 // all templated containers. Each template processor is expected to have
 // customized behavior specifically for its container, e.g. retry, polling...
-// The returned Container_PortBinding will only have ContainerPort populated.
-// Each template processor is responsible for decorating the Protocol field, and
-// the HostIp and HostPort fields if the network is `host`.
-type defaultPortDiscoverer struct{}
-
-func (*defaultPortDiscoverer) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-	cmd := commands.DockerExec{
+// The returned Container_PortBinding will have ContainerPort and Protocol(tcp)
+// populated for bridge network, and HostIp and HostPort fields are also
+// populated for the `host` network.
+func defaultDiscoverPort(cmdExecutor cmdExecutor, request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
+	cmd := &commands.DockerExec{
 		Name:        request.Name,
 		ExecCommand: []string{"/bin/bash", "-c", "source ~/.cftmeta && echo $SERVICE_PORT"},
 	}
-	stdout, stderr, err := cmd.Execute(context.Background())
+	stdout, stderr, err := cmdExecutor.Execute(context.Background(), cmd)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("%v with stderr: %s", err, stderr))
 	}
@@ -124,7 +121,13 @@ func (*defaultPortDiscoverer) discoverPort(request *api.StartTemplatedContainerR
 	if err != nil {
 		return nil, err
 	}
-	return &api.Container_PortBinding{
+	portBinding := &api.Container_PortBinding{
 		ContainerPort: int32(servicePort),
-	}, nil
+		Protocol:      protocolTcp,
+	}
+	if request.Network == hostNetworkName {
+		portBinding.HostPort = portBinding.ContainerPort
+		portBinding.HostIp = localhostIp
+	}
+	return portBinding, nil
 }

@@ -12,11 +12,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 type crosProvisionProcessor struct {
 	placeholderPopulator  placeholderPopulator
-	defaultPortDiscoverer portDiscoverer
+	cmdExecutor           cmdExecutor
 	defaultServerPort     string // Default port used in cros-provision
 	dockerArtifactDirName string // Path on the drone where service put the logs by default
 	inputFileName         string // File in artifact dir to be passed to cros-provision
@@ -25,7 +26,7 @@ type crosProvisionProcessor struct {
 func newCrosProvisionProcessor() *crosProvisionProcessor {
 	return &crosProvisionProcessor{
 		placeholderPopulator:  newPopulatorRouter(),
-		defaultPortDiscoverer: &defaultPortDiscoverer{},
+		cmdExecutor:           &commands.ContextualExecutor{},
 		defaultServerPort:     "80",
 		dockerArtifactDirName: "/tmp/provisionservice",
 		inputFileName:         "in.json",
@@ -65,20 +66,8 @@ func (p *crosProvisionProcessor) Process(request *api.StartTemplatedContainerReq
 }
 
 func (p *crosProvisionProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-	t := request.GetTemplate().GetCrosProvision()
-	if t == nil {
-		return nil, status.Error(codes.Internal, "unable to process")
-	}
-	portBinding, err := p.defaultPortDiscoverer.discoverPort(request)
-	if err != nil {
-		return portBinding, err
-	}
-	if request.Network == hostNetworkName {
-		portBinding.HostPort = portBinding.ContainerPort
-		portBinding.HostIp = localhostIp
-	}
-	portBinding.Protocol = protocolTcp
-	return portBinding, nil
+	// delegate to default impl, any template-specific logic should be implemented here.
+	return defaultDiscoverPort(p.cmdExecutor, request)
 }
 
 func (p *crosProvisionProcessor) processPlaceholders(request *api.StartTemplatedContainerRequest) {
