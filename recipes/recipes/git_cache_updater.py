@@ -87,17 +87,24 @@ def _do_update_bootstrap(api, url, work_dir, gc_aggressive):
     api.step(
         name='populate',
         cmd=[
-          'git_cache.py', 'populate',
-          '--reset-fetch-config',
+            'git_cache.py',
+            'populate',
+            '--reset-fetch-config',
 
-          # By default, "refs/heads/*" and refs/tags/* are checked out by
-          # git_cache. However, for heavy branching repos,
-          # 'refs/branch-heads/*' is also very useful (crbug/942169).
-          # This is a noop for repos without refs/branch-heads.
-          '--ref', 'refs/branch-heads/*',
+            # By default, "refs/heads/*" are checked out by
+            # git_cache. However, for heavy branching repos,
+            # 'refs/branch-heads/*' is also very useful (crbug/942169).
+            # This is a noop for repos without refs/branch-heads.
+            '--ref',
+            'refs/branch-heads/*',
 
-          '--break-locks',
-        ]+opts,
+            # By default, any tags that point to objects we fetch
+            # from remote are also fetched. This ensures ALL tags are
+            # downloaded from remote.
+            '--ref',
+            'refs/tags/*',
+            '--break-locks',
+        ] + opts,
         cost=api.step.ResourceCost(disk=20))
 
     repo_path = api.path.abs_to_path(

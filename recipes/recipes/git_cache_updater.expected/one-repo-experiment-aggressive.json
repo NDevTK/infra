@@ -28,6 +28,8 @@
       "--reset-fetch-config",
       "--ref",
       "refs/branch-heads/*",
+      "--ref",
+      "refs/tags/*",
       "--break-locks",
       "--cache-dir",
       "[CACHE]/builder/w",
