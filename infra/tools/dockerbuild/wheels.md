@@ -5899,6 +5899,20 @@ wheel: <
 
 * *universal*
 
+## **pyre2**
+
+### 0.3.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyre2/${vpython_platform}"
+  version: "version:0.3.6"
+>
+```
+
+
+* *manylinux-x64-py3*
+
 ## **pyrsistent-py3**
 
 ### 0.16.0

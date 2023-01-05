@@ -497,6 +497,7 @@ def BuildPackageFromSource(system,
       env_prefix = []
       if tpp_libs:
         cflags = extra_env.get('CFLAGS', '')
+        cxxflags = extra_env.get('CXXFLAGS', '')
         ldflags = extra_env.get('LDFLAGS', '')
         for pkg, version in tpp_libs:
           pkg_name = '%s/%s' % (pkg, wheel.plat.cipd_platform)
@@ -504,6 +505,7 @@ def BuildPackageFromSource(system,
           system.cipd.init(pkg_dir)
           system.cipd.install(pkg_name, version, pkg_dir)
           cflags += ' -I' + os.path.join(pkg_dir, 'include')
+          cxxflags += ' -I' + os.path.join(pkg_dir, 'include')
           ldflags += ' -L' + os.path.join(pkg_dir, 'lib')
           # Prepend the bin/ directory of each package to PATH.
           env_prefix.append(('PATH', os.path.join(pkg_dir, 'bin')))
@@ -512,6 +514,7 @@ def BuildPackageFromSource(system,
           env_prefix.append(('LD_LIBRARY_PATH', os.path.join(pkg_dir, 'lib')))
 
         extra_env['CFLAGS'] = cflags.lstrip()
+        extra_env['CXXFLAGS'] = cxxflags.lstrip()
         extra_env['LDFLAGS'] = ldflags.lstrip()
 
       if deps:
