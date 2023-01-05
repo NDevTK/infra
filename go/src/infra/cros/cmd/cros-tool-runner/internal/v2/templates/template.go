@@ -40,7 +40,6 @@ var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
 // placeholders in a template, and TemplateProcessor use placeholderPopulators
 // to populate actual values.
 type TemplateProcessor interface {
-	portDiscoverer
 	Process(*api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error)
 }
 
@@ -50,6 +49,12 @@ type TemplateProcessor interface {
 // bindings when docker bridge networks are used. go/cft-port-discovery
 type portDiscoverer interface {
 	discoverPort(*api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error)
+}
+
+// crosTemplate aggregates interfaces that must be implemented by most templates
+type crosTemplate interface {
+	TemplateProcessor
+	portDiscoverer
 }
 
 // RequestRouter is the entry point to template processing.
@@ -71,7 +76,7 @@ func (r *RequestRouter) discoverPort(request *api.StartTemplatedContainerRequest
 	return actualProcessor.discoverPort(request)
 }
 
-func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerRequest) (TemplateProcessor, error) {
+func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerRequest) (crosTemplate, error) {
 	if request.GetTemplate().Container == nil {
 		return nil, status.Error(codes.InvalidArgument, "No template set in the request")
 	}
@@ -89,7 +94,7 @@ func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerR
 	}
 }
 
-func (*RequestRouter) getActualPublishProcessor(publishType api.CrosPublishTemplate_PublishType) (TemplateProcessor, error) {
+func (*RequestRouter) getActualPublishProcessor(publishType api.CrosPublishTemplate_PublishType) (crosTemplate, error) {
 	switch publishType {
 	case api.CrosPublishTemplate_PUBLISH_GCS:
 		return aCrosGcsPublishProcessor, nil
