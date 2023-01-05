@@ -11,7 +11,7 @@ import (
 func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Collect logs and crashinfo before repair",
+			"Collect logs and crashinfo",
 			"Set state: repair_failed",
 			"dut_has_board_name",
 			"dut_has_model_name",
@@ -2704,15 +2704,15 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Collect logs and crashinfo before repair": {
+		"Collect logs and crashinfo": {
 			Docs: []string{
-				"We collect any pre-existing logs before executing repairs on ",
-				"the DUT. Any failures with this initial log collection are ",
-				"not critical, and we will proceed with the actual DUT repair ",
-				"immediately after this.",
+				"We collect any pre-existing logs from before deletes such logs ",
+				"on the DUT. Any logs collection are not critical, and we marks ",
+				"that action attempt to perform to avoid repeating it.",
 			},
 			Conditions: []string{
 				"Device is SSHable",
+				"Confirm log collection info does not exist",
 			},
 			Dependencies: []string{
 				"Collect logs from DUT on /var/log/*",
@@ -2721,7 +2721,6 @@ func crosRepairActions() map[string]*Action {
 				"Create log collection info",
 			},
 			ExecName:               "sample_pass",
-			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
 		"Collect logs from DUT on /var/log/*": {
@@ -2781,6 +2780,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"When the log collection completes, we create an info file that ",
 				"indicates the successful completion of the collection process.",
+			},
+			Conditions: []string{
+				"Confirm log collection info does not exist",
 			},
 			ExecName: "cros_create_log_collection_info",
 			ExecExtraArgs: []string{
