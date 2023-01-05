@@ -39,6 +39,30 @@
       },
       "revId": "d2d060fcb7714ccc030e2e8bbafaf720a687b773",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b223f38_4d7d214f",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2725,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2023-01-05T18:50:50Z",
+      "side": 1,
+      "message": "I see.\n\nWe are calling this action twice - once in the beginning of the critical action list, and then, here. If I change RunControl to run it only once, I will need to create a new action for the post-ssh-check log collection (so that it is not suppressed due to caching).\n\nThe action is conditioned on that the marker file \u0027log_collection_info\u0027 does not exist. So, if the action collects the log in the beginning, it will not do so again here. Only if the logs are not collected in the beginning, will we collect it again here. Is this sufficient, or still creating a different action a better choice?",
+      "parentUuid": "98a2c16e_fc5fd0ae",
+      "range": {
+        "startLine": 2725,
+        "startChar": 27,
+        "endLine": 2725,
+        "endChar": 48
+      },
+      "revId": "d2d060fcb7714ccc030e2e8bbafaf720a687b773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
