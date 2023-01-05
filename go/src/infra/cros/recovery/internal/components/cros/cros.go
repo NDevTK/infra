@@ -45,11 +45,6 @@ func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, pinge
 		log.Debugf(ctx, "Require Sink Mode in Recovery: power delivery is no tsupported on this servo, snk mode is not needed for recovery.")
 		return false, nil
 	}
-	if batteryLevel, err := servo.BatteryChargePercent(ctx, servod); err != nil {
-		return false, errors.Reason("require sink mode in recovery: could not read the battery level using servod control.").Err()
-	} else if batteryLevel < MinimumBatteryLevel {
-		log.Debugf(ctx, "require sink mode in recovery: battery level %d is less than the thresold %d. We will attempt to boot host in recovery mode without changing servo to snk mode. Please note that the host may not be able to see usb drive in recovery mode later due to servo not in snk mode.", batteryLevel, MinimumBatteryLevel)
-	}
 	return true, nil
 }
 

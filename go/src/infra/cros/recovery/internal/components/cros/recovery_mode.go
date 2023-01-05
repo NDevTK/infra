@@ -6,6 +6,7 @@ package cros
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -14,6 +15,7 @@ import (
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 )
 
@@ -26,6 +28,7 @@ type BootInRecoveryRequest struct {
 	BootInterval time.Duration
 	// Call function to cal after device booted in recovery mode.
 	Callback            func(context.Context) error
+	AddObservation      func(*metrics.Observation)
 	IgnoreRebootFailure bool
 }
 
@@ -38,9 +41,40 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		// We retry at least once when method called.
 		req.BootRetry = 1
 	}
+	// If observation is not provided then we create fake to print to logs
+	if req.AddObservation == nil {
+		req.AddObservation = func(observation *metrics.Observation) {
+			if observation != nil {
+				log.Debugf("Observation created kind:%q with %v", observation.MetricKind, observation.Value)
+			}
+		}
+	}
 	needSink, err := RecoveryModeRequiredPDOff(ctx, dutRun, dutPing, servod, req.DUT)
 	if err != nil {
 		return errors.Annotate(err, "boot in recovery mode").Err()
+	}
+	defer func() {
+		// Record the label at the end as it can be changed.
+		req.AddObservation(metrics.NewStringObservation("need_snk_power", fmt.Sprintf("%v", needSink)))
+	}()
+	req.AddObservation(metrics.NewStringObservation("need_snk_expected", fmt.Sprintf("%v", needSink)))
+	if needSink {
+		if batteryLevel, err := servo.BatteryChargePercent(ctx, servod); err != nil {
+			req.AddObservation(metrics.NewInt64Observation("battery_level", -1))
+			log.Debugf("Fail to read battery level from device %s.", err)
+			log.Debugf("We will not set PD to snk mode when boot in recovery mode.")
+			needSink = false
+		} else {
+			req.AddObservation(metrics.NewInt64Observation("battery_level", int64(batteryLevel)))
+			// If device has less 30% of battery then we will not try to recover it.
+			// If device lost power in middle of install it damage the disk.
+			const minBatterLevel = int32(30)
+			if batteryLevel < minBatterLevel {
+				log.Debugf("Battery level %d%% is lower minimum expectation of %d%%.", batteryLevel, minBatterLevel)
+				log.Debugf("We will not set PD to snk mode when boot in recovery mode.")
+				needSink = false
+			}
+		}
 	}
 	log.Debugf("Servo OS Install Repair: needSink :%t", needSink)
 	// Turn power off.

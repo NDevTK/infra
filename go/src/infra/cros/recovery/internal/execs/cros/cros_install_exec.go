@@ -179,6 +179,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
 		// Register that device booted and sshable.
 		Callback:            callback,
+		AddObservation:      info.AddObservation,
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, logger); err != nil {
@@ -212,6 +213,7 @@ func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) err
 		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
 		// Register that device booted and sshable.
 		Callback:            callback,
+		AddObservation:      info.AddObservation,
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, info.NewLogger()); err != nil {
