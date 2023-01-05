@@ -32,15 +32,15 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 
 		return nil, status.Error(codes.Internal, "unable to process")
 	}
-	volume := fmt.Sprintf("%s:%s", t.ArtifactDir, p.dockerArtifactDirName)
+	volume := fmt.Sprintf("%s:%s", request.ArtifactDir, p.dockerArtifactDirName)
 	port := portZero
 	expose := make([]string, 0)
-	if t.Network != hostNetworkName {
+	if request.Network != hostNetworkName {
 		port = p.defaultServerPort
 		expose = append(expose, port)
 	}
 	additionalOptions := &api.StartContainerRequest_Options{
-		Network: t.Network,
+		Network: request.Network,
 		Expose:  expose,
 		Volume:  []string{volume},
 	}
@@ -62,7 +62,7 @@ func (p *crosDutProcessor) discoverPort(request *api.StartTemplatedContainerRequ
 	if err != nil {
 		return portBinding, err
 	}
-	if t.Network == hostNetworkName {
+	if request.Network == hostNetworkName {
 		portBinding.HostPort = portBinding.ContainerPort
 		portBinding.HostIp = localhostIp
 	}

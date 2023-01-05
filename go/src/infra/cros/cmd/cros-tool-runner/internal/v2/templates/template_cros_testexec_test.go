@@ -104,10 +104,9 @@ func getCrosTestTemplateRequest(network string) *api.StartTemplatedContainerRequ
 	return &api.StartTemplatedContainerRequest{
 		Name:           "my-container",
 		ContainerImage: "gcr.io/image:123",
+		Network:        network,
+		ArtifactDir:    "/tmp/unit-tests",
 		Template: &api.Template{
 			Container: &api.Template_CrosTest{
-				CrosTest: &api.CrosTestTemplate{
-					Network:     network,
-					ArtifactDir: "/tmp/unit-tests",
-				}}}}
+				CrosTest: &api.CrosTestTemplate{}}}}
 }
