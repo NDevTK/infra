@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const DockerRdbPublishLogsDir = "/tmp/rdb-publish/"
@@ -23,16 +24,16 @@ const LuciContext = "LUCI_CONTEXT"
 
 type crosRdbPublishProcessor struct {
 	TemplateProcessor
-	defaultPortDiscoverer    portDiscoverer
+	cmdExecutor              cmdExecutor
 	defaultServerPort        string // Default port used
 	dockerArtifactDirName    string // Path on the docker where service put the logs by default
 	dockerPublishLuciDirName string // Path on the docker where publish src dir will be mounted to
 
 }
 
-func newCrosRdbPublishProcessor() TemplateProcessor {
+func newCrosRdbPublishProcessor() *crosRdbPublishProcessor {
 	return &crosRdbPublishProcessor{
-		defaultPortDiscoverer:    &defaultPortDiscoverer{},
+		cmdExecutor:              &commands.ContextualExecutor{},
 		defaultServerPort:        DockerRdbPublishPort,
 		dockerArtifactDirName:    DockerRdbPublishLogsDir,
 		dockerPublishLuciDirName: DockerRdbLuciContextDir,
@@ -79,18 +80,6 @@ func (p *crosRdbPublishProcessor) Process(request *api.StartTemplatedContainerRe
 }
 
 func (p *crosRdbPublishProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-	t := request.GetTemplate().GetCrosPublish()
-	if t == nil {
-		return nil, status.Error(codes.Internal, "unable to process")
-	}
-	portBinding, err := p.defaultPortDiscoverer.discoverPort(request)
-	if err != nil {
-		return portBinding, err
-	}
-	if request.Network == hostNetworkName {
-		portBinding.HostPort = portBinding.ContainerPort
-		portBinding.HostIp = localhostIp
-	}
-	portBinding.Protocol = protocolTcp
-	return portBinding, nil
+	// delegate to default impl, any template-specific logic should be implemented here.
+	return defaultDiscoverPort(p.cmdExecutor, request)
 }

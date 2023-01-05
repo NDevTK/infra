@@ -27,6 +27,11 @@ type ContainerLookuper interface {
 	LookupContainerPortBindings(name string) ([]*api.Container_PortBinding, error)
 }
 
+// cmdExecutor interfaces commands.ContextualExecutor
+type cmdExecutor interface {
+	Execute(ctx context.Context, cmd commands.Command) (string, string, error)
+}
+
 // templateUtils implements ContainerLookuper
 type templateUtils struct {
 	templateRouter TemplateProcessor

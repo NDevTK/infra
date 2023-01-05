@@ -33,18 +33,6 @@ func TestCrosTestPopulate(t *testing.T) {
 	}
 }
 
-func TestCrosTestDiscoverPort_errorPropagated(t *testing.T) {
-	processor := &crosTestProcessor{
-		defaultPortDiscoverer: getMockPortDiscovererWithError("error when discover port"),
-	}
-	request := getCrosTestTemplateRequest("mynet")
-	_, err := processor.discoverPort(request)
-
-	if err == nil {
-		t.Fatalf("Expected error")
-	}
-}
-
 func TestCrosTestPopulate_hostNetwork(t *testing.T) {
 	processor := newCrosTestProcessor()
 	request := getCrosTestTemplateRequest("host")
@@ -62,42 +50,6 @@ func TestCrosTestPopulate_hostNetwork(t *testing.T) {
 	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "-port 0") {
 		t.Fatalf("-port 0 is not part of start command")
 	}
-}
-
-func TestCrosTestDiscoverPort_bridgeNetwork_populateProtocolOnly(t *testing.T) {
-	expected := &api.Container_PortBinding{
-		ContainerPort: int32(42),
-		Protocol:      protocolTcp,
-	}
-	processor := &crosTestProcessor{
-		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
-	}
-	request := getCrosTestTemplateRequest("mynet")
-	binding, err := processor.discoverPort(request)
-
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	check(t, binding.String(), expected.String())
-}
-
-func TestCrosTestDiscoverPort_hostNetwork_populateAllFields(t *testing.T) {
-	expected := &api.Container_PortBinding{
-		ContainerPort: int32(42),
-		Protocol:      protocolTcp,
-		HostIp:        localhostIp,
-		HostPort:      int32(42),
-	}
-	processor := &crosTestProcessor{
-		defaultPortDiscoverer: getMockPortDiscovererWithSuccess(expected.ContainerPort),
-	}
-	request := getCrosTestTemplateRequest("host")
-	binding, err := processor.discoverPort(request)
-
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	check(t, binding.String(), expected.String())
 }
 
 func getCrosTestTemplateRequest(network string) *api.StartTemplatedContainerRequest {

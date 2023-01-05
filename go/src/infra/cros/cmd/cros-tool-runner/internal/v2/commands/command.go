@@ -39,3 +39,10 @@ func execute(ctx context.Context, name string, args []string) (string, string, e
 	// TODO(mingkong) update RunWithTimeout since timeout is part of ctx
 	return common.RunWithTimeout(ctx, cmd, time.Minute, true)
 }
+
+// ContextualExecutor executes a command using the provided context.
+type ContextualExecutor struct{}
+
+func (*ContextualExecutor) Execute(ctx context.Context, cmd Command) (string, string, error) {
+	return cmd.Execute(ctx)
+}

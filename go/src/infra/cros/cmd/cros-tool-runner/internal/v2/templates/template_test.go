@@ -5,40 +5,84 @@
 package templates
 
 import (
+	"context"
+	"errors"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
-// mockPortDiscoverer mocks defaultPortDiscoverer for testing
-type mockPortDiscoverer struct {
-	portDiscoverer
-	portDiscoverFunc func(*api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error)
+// mockCmdExecutor mocks cmdExecutor for testing
+type mockCmdExecutor struct {
+	executeFunc func(ctx context.Context, cmd commands.Command) (string, string, error)
 }
 
-func (m *mockPortDiscoverer) discoverPort(req *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-	return m.portDiscoverFunc(req)
+func (m *mockCmdExecutor) Execute(ctx context.Context, cmd commands.Command) (string, string, error) {
+	return m.executeFunc(ctx, cmd)
 }
 
-func getMockPortDiscovererWithSuccess(containerPort int32) portDiscoverer {
-	return &mockPortDiscoverer{
-		portDiscoverFunc: func(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-			return &api.Container_PortBinding{ContainerPort: containerPort}, nil
+func getMockCmdExecutorWithSuccess(port string) cmdExecutor {
+	return &mockCmdExecutor{
+		executeFunc: func(ctx context.Context, cmd commands.Command) (string, string, error) {
+			return port + "\n", "", nil
 		},
 	}
 }
 
-func getMockPortDiscovererWithError(errMsg string) portDiscoverer {
-	return &mockPortDiscoverer{
-		portDiscoverFunc: func(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
-			return nil, errors.New(errMsg)
+func getMockCmdExecutorWithError(errMsg string) cmdExecutor {
+	return &mockCmdExecutor{
+		executeFunc: func(ctx context.Context, cmd commands.Command) (string, string, error) {
+			return "", "", errors.New(errMsg)
 		},
 	}
 }
 
 func check(t *testing.T, a interface{}, b interface{}) {
-	if a != b {
+	if !cmp.Equal(a, b) {
 		t.Fatalf("%v should match %v", a, b)
 	}
+}
+
+func TestDefaultDiscoverPort_errorPropagated(t *testing.T) {
+	executor := getMockCmdExecutorWithError("something wrong when execute command")
+	request := getCrosProvisionTemplateRequest("mynet")
+	_, err := defaultDiscoverPort(executor, request)
+
+	if err == nil {
+		t.Errorf("Expect error")
+	}
+}
+
+func TestDefaultDiscoverPort_bridgeNetwork_populateProtocolOnly(t *testing.T) {
+	expected := &api.Container_PortBinding{
+		ContainerPort: int32(42),
+		Protocol:      protocolTcp,
+	}
+	executor := getMockCmdExecutorWithSuccess("42")
+	request := getCrosProvisionTemplateRequest("mynet")
+	binding, err := defaultDiscoverPort(executor, request)
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	check(t, binding.String(), expected.String())
+}
+
+func TestDefaultDiscoverPort_hostNetwork_populateAllFields(t *testing.T) {
+	expected := &api.Container_PortBinding{
+		ContainerPort: int32(42),
+		Protocol:      protocolTcp,
+		HostIp:        localhostIp,
+		HostPort:      int32(42),
+	}
+	executor := getMockCmdExecutorWithSuccess("42")
+	request := getCrosProvisionTemplateRequest("host")
+	binding, err := defaultDiscoverPort(executor, request)
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	check(t, binding.String(), expected.String())
 }
