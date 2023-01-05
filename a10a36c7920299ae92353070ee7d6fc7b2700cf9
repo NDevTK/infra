@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d73d87b0_3ab043d2",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-01-05T03:23:21Z",
+      "side": 1,
+      "message": "is the model is part of cellular or that is representation of the cellular? if yes, maybe we can call it as `state`?",
+      "range": {
+        "startLine": 438,
+        "startChar": 16,
+        "endLine": 438,
+        "endChar": 27
+      },
+      "revId": "a10a36c7920299ae92353070ee7d6fc7b2700cf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
