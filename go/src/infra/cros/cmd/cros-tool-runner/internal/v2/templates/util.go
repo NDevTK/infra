@@ -34,10 +34,12 @@ type cmdExecutor interface {
 
 // templateUtils implements ContainerLookuper
 type templateUtils struct {
+	cmdExecutor    cmdExecutor
 	templateRouter TemplateProcessor
 }
 
 var TemplateUtils = templateUtils{
+	cmdExecutor:    &commands.ContextualExecutor{},
 	templateRouter: &RequestRouter{},
 }
 
@@ -89,12 +91,9 @@ func (u *templateUtils) parseMultilinePortBindings(multiline string) ([]*api.Con
 	return result, nil
 }
 
-func (*templateUtils) retrieveContainerPortOutputFromCommand(name string) (string, error) {
-	cmd := commands.ContainerPort{Name: name}
-	stdout, _, err := cmd.Execute(context.Background())
-	if err != nil {
-		return "", nil
-	}
+func (u *templateUtils) retrieveContainerPortOutputFromCommand(name string) (string, error) {
+	cmd := &commands.ContainerPort{Name: name}
+	stdout, _, err := u.cmdExecutor.Execute(context.Background(), cmd)
 	return strings.TrimSpace(stdout), err
 }
 
@@ -132,9 +131,9 @@ func (*templateUtils) writeToFile(file string, content proto.Message) error {
 
 // getTemplateRequest retrieves the StartTemplatedContainerRequest from the
 // global state.
-func (*templateUtils) getTemplateRequest(name string) *api.StartTemplatedContainerRequest {
-	cmd := commands.ContainerInspect{Names: []string{name}, Format: "{{.Id}}"}
-	stdout, _, err := cmd.Execute(context.Background())
+func (u *templateUtils) getTemplateRequest(name string) *api.StartTemplatedContainerRequest {
+	cmd := &commands.ContainerInspect{Names: []string{name}, Format: "{{.Id}}"}
+	stdout, _, err := u.cmdExecutor.Execute(context.Background(), cmd)
 	if err != nil {
 		log.Printf("warning: unable to retrieve container id with name %s: %s", name, err)
 		return nil
