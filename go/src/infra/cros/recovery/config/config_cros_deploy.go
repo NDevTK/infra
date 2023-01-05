@@ -115,6 +115,7 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is SSHable",
+				"Collect HWID into inventory (allow fail)",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
 				"Try to update FW from firmware image with factory mode",
@@ -133,6 +134,7 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is SSHable",
+				"Collect HWID into inventory (allow fail)",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
 				"Try to update FW from firmware image with factory mode",
@@ -399,6 +401,21 @@ func deployActions() map[string]*Action {
 				"has_stable_version_fw_image",
 			},
 			ExecName: "sample_fail",
+		},
+		//TODO(b:264478092): Merge this action with normal hwid collect action.
+		"Collect HWID into inventory (allow fail)": {
+			Docs: []string{
+				"Collect DUT hwid and update it into inventory info during middle of deployment as we may need it during update firmware step.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			Dependencies: []string{
+				"Read HWID from DUT",
+				"Read HWID from DUT (Satlab)",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
 		},
 	}
 }
