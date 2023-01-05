@@ -5,6 +5,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -18,6 +19,8 @@ import (
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )
 
+var serverCleanup = &serverStateManager{}
+
 // NewContainerServer returns a new gRPC server for container services.
 func NewContainerServer() (*grpc.Server, func()) {
 	containerServer := &ContainerServerImpl{
@@ -25,11 +28,22 @@ func NewContainerServer() (*grpc.Server, func()) {
 		templateProcessor: &templates.RequestRouter{},
 		containerLookuper: &templates.TemplateUtils,
 	}
-	s := grpc.NewServer()
-	destructor := func() { containerServer.cleanup() }
+	// Only unary interceptor is needed as CTRv2 has no streaming endpoint.
+	s := grpc.NewServer(grpc.UnaryInterceptor(panicInterceptor))
+	destructor := serverCleanup.cleanup
 	api.RegisterCrosToolRunnerContainerServiceServer(s, containerServer)
 	reflection.Register(s)
 	return s, destructor
+}
+
+// panicInterceptor implements grpc.UnaryServerInterceptor to handle panic
+// (caused by bugs) with proper cleanup for CTRv2 container service.
+func panicInterceptor(ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler) (interface{}, error) {
+	defer serverCleanup.handlePanic()
+	return handler(ctx, req)
 }
 
 // StartServer starts server on the requested port.

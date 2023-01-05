@@ -28,6 +28,11 @@ type ContainerServerImpl struct {
 	containerLookuper templates.ContainerLookuper
 }
 
+// serverStateManager provides API to clean up server state: remove networks and
+// containers owned by the current server. serverStateManager does not depend on
+// the server as the state is globally shared during the server's lifespan.
+type serverStateManager struct{}
+
 // CreateNetwork creates a new docker network with the given name.
 func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.CreateNetworkRequest) (*api.CreateNetworkResponse, error) {
 	if request.Name == "" {
@@ -321,7 +326,7 @@ func (s *ContainerServerImpl) getPortBindings(ctx context.Context, name string) 
 }
 
 // stopContainers removes containers that are owned by current CTRv2 service in the reverse order of how they are started.
-func (s *ContainerServerImpl) stopContainers() {
+func (m *serverStateManager) stopContainers() {
 	containerIds := state.ServerState.Containers.GetIdsToClearOwnership()
 	if len(containerIds) == 0 {
 		log.Println("no containers to clean up")
@@ -345,7 +350,7 @@ func (s *ContainerServerImpl) stopContainers() {
 }
 
 // removeNetworks removes networks that were created by current CTRv2 service.
-func (s *ContainerServerImpl) removeNetworks() {
+func (*serverStateManager) removeNetworks() {
 	networkIds := state.ServerState.Networks.GetIdsToClearOwnership()
 	if len(networkIds) == 0 {
 		log.Println("no networks to clean up")
@@ -364,7 +369,18 @@ func (s *ContainerServerImpl) removeNetworks() {
 }
 
 // cleanup removes containers and networks in order to allow graceful shutdown of the CTRv2 service.
-func (s *ContainerServerImpl) cleanup() {
-	s.stopContainers()
-	s.removeNetworks()
+func (m *serverStateManager) cleanup() {
+	m.stopContainers()
+	m.removeNetworks()
+}
+
+// handlePanic recovers from panic, cleans up server state before panics again.
+func (m *serverStateManager) handlePanic() {
+	if r := recover(); r != nil {
+		log.Println("recovered from panic", r)
+		log.Println("cleanup server state due to panic")
+		m.cleanup()
+		log.Println("finished state cleanup and panic again")
+		panic(fmt.Sprintf("rethrow panic: %v", r))
+	}
 }
