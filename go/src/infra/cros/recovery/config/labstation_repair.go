@@ -20,7 +20,6 @@ func LabstationRepairConfig() *Configuration {
 				CriticalActions: []string{
 					"dut_state_repair_failed",
 					"check_host_info",
-					"Device is pingable",
 					"Device is SSHable",
 					"Clean up logs if necessary",
 					"Filesystem is writable",
@@ -157,17 +156,6 @@ func LabstationRepairConfig() *Configuration {
 							"Power cycle by RPM",
 						},
 					},
-					"Device is pingable": {
-						Docs: []string{
-							"This verifier checks whether a given host is reachable over ping. ",
-							"This should happen as soon as the network driver gets loaded and the network becomes operational.",
-						},
-						RecoveryActions: []string{
-							"Power cycle by RPM",
-						},
-						ExecName:    "cros_ping",
-						ExecTimeout: &durationpb.Duration{Seconds: 15},
-					},
 					"Device is SSHable": {
 						Docs: []string{
 							"This verifier checks whether the host is accessible over ssh.",
@@ -177,6 +165,7 @@ func LabstationRepairConfig() *Configuration {
 						},
 						ExecName:    "cros_ssh",
 						ExecTimeout: &durationpb.Duration{Seconds: 30},
+						RunControl:  RunControl_ALWAYS_RUN,
 					},
 					"Filesystem is writable": {
 						Docs: []string{

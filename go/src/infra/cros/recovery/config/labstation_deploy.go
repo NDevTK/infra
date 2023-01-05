@@ -18,8 +18,7 @@ func LabstationDeployConfig() *Configuration {
 				CriticalActions: []string{
 					"dut_state_needs_deploy",
 					"check_host_info",
-					"cros_ping",
-					"cros_ssh",
+					"Device is SSHable",
 					"Update inventory info",
 					"install_stable_os",
 					"remove_reboot_requests",
@@ -89,6 +88,14 @@ func LabstationDeployConfig() *Configuration {
 						Conditions: []string{
 							"has_rpm_info",
 						},
+					},
+					"Device is SSHable": {
+						Docs: []string{
+							"This verifier checks whether the host is accessible over ssh.",
+						},
+						ExecName:    "cros_ssh",
+						ExecTimeout: &durationpb.Duration{Seconds: 30},
+						RunControl:  RunControl_ALWAYS_RUN,
 					},
 				},
 			},
