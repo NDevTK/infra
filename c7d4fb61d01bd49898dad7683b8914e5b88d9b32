@@ -16,6 +16,24 @@
       "message": "I think this may have broken the build: https://ci.chromium.org/ui/p/infra/builders/ci/infra-continuous-win10-64/37145/overview\n\ncoverage.misc.CoverageException: Couldn\u0027t read \u0027C:\\b\\s\\w\\ir\\cache\\builder\\infra\\infra\\services\\service_manager\\.coveragerc\u0027 as a config file",
       "revId": "c7d4fb61d01bd49898dad7683b8914e5b88d9b32",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "994b7171_cb06b247",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-01-05T02:39:26Z",
+      "side": 1,
+      "message": "Sent https://chromium-review.googlesource.com/c/infra/infra/+/4135569 to fix this. I think the issue is lingering .pyc files in the service_manager directory can cause test.py to think there is still a directory there.",
+      "parentUuid": "d7056272_b5c41ac2",
+      "revId": "c7d4fb61d01bd49898dad7683b8914e5b88d9b32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
