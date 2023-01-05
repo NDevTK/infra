@@ -30,8 +30,6 @@ WIN_ENABLED_PACKAGES = [
 
   'infra/tools/dockerbuild',  # for wheel smoke tests
 
-  'infra/services/service_manager',
-
   'packages/infra_libs/infra_libs/infra_types',
   'packages/infra_libs/infra_libs/logs',
   'packages/infra_libs/infra_libs/time_functions',
