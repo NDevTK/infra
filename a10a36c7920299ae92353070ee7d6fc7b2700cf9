@@ -22,6 +22,30 @@
       },
       "revId": "a10a36c7920299ae92353070ee7d6fc7b2700cf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a2b138a_e265585b",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-01-05T05:01:32Z",
+      "side": 1,
+      "message": "The modem is the main cellular hardware component. It\u0027s possible though that we would be interested in other cellular component states in the future such as the SIM state which could be confusing.",
+      "parentUuid": "d73d87b0_3ab043d2",
+      "range": {
+        "startLine": 438,
+        "startChar": 16,
+        "endLine": 438,
+        "endChar": 27
+      },
+      "revId": "a10a36c7920299ae92353070ee7d6fc7b2700cf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
