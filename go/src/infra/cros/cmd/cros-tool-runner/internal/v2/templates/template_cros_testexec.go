@@ -35,14 +35,14 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 
 	port := portZero
 	expose := make([]string, 0)
-	if t.Network != hostNetworkName {
+	if request.Network != hostNetworkName {
 		port = p.defaultServerPort
 		expose = append(expose, port)
 	}
 	// All non-test harness artifacts will be in <artifact_dir>/cros-test/cros-test.
-	crosTestDir := path.Join(t.ArtifactDir, "cros-test", "cros-test")
+	crosTestDir := path.Join(request.ArtifactDir, "cros-test", "cros-test")
 	// All test result artifacts will be in <artifact_dir>/cros-test/results.
-	resultDir := path.Join(t.ArtifactDir, "cros-test", "results")
+	resultDir := path.Join(request.ArtifactDir, "cros-test", "results")
 	// Setting up directories. Required as podman doesn't create directories for volume mounting.
 	p.createDir(crosTestDir)
 	p.createDir(resultDir)
@@ -61,7 +61,7 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 		volumes = append(volumes, fmt.Sprintf("%s:%s", autotestResultsFolder, autotestResultsFolder))
 	}
 	additionalOptions := &api.StartContainerRequest_Options{
-		Network: t.Network,
+		Network: request.Network,
 		Expose:  expose,
 		Volume:  volumes,
 	}
@@ -83,7 +83,7 @@ func (p *crosTestProcessor) discoverPort(request *api.StartTemplatedContainerReq
 	if err != nil {
 		return portBinding, err
 	}
-	if t.Network == hostNetworkName {
+	if request.Network == hostNetworkName {
 		portBinding.HostPort = portBinding.ContainerPort
 		portBinding.HostIp = localhostIp
 	}

@@ -15,10 +15,10 @@ requests: {
   start_templated_container: {
     name: "my-cros-dut"
     container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8808284912578165185" # you will need to update the tag to a newer version if there is docker pull not_found error
+    network: "host"
+    artifact_dir: "/tmp"
     template: {
       cros_dut: {
-        network: "host"
-        artifact_dir: "/tmp"
         cache_server: {
           address: "localhost"
           port: 7443
@@ -35,10 +35,10 @@ requests: {
   start_templated_container: {
     name: "my-cros-provision"
     container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-provision:8808284912578165185"
+    network: "host"
+    artifact_dir: "/tmp"
     template: {
       cros_provision: {
-        network: "host"
-        artifact_dir: "/tmp"
         input_request: {
           dut: {
             id: { value: "chromeos6-row4-rack5-host14" } # more information is required in dut, but validation only requires id
@@ -64,10 +64,10 @@ requests: {
   start_templated_container: {
     name: "my-cros-test"
     container_image: "us-docker.pkg.dev/cros-registry/test-services/cros-test:8808545304957887457"
+    network: "host"
+    artifact_dir: "/tmp/local-test"
     template: {
       cros_test: {
-        network: "host"
-        artifact_dir: "/tmp/local-test"
       }
     }
   }

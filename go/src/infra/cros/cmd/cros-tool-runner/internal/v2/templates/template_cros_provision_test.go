@@ -126,9 +126,8 @@ func getCrosProvisionTemplateRequest(network string) *api.StartTemplatedContaine
 	return &api.StartTemplatedContainerRequest{
 		Name:           "my-container",
 		ContainerImage: "gcr.io/image:123",
+		Network:        network,
 		Template: &api.Template{
 			Container: &api.Template_CrosProvision{
-				CrosProvision: &api.CrosProvisionTemplate{
-					Network: network,
-				}}}}
+				CrosProvision: &api.CrosProvisionTemplate{}}}}
 }
