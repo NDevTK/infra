@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d7056272_b5c41ac2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-01-05T02:26:45Z",
+      "side": 1,
+      "message": "I think this may have broken the build: https://ci.chromium.org/ui/p/infra/builders/ci/infra-continuous-win10-64/37145/overview\n\ncoverage.misc.CoverageException: Couldn\u0027t read \u0027C:\\b\\s\\w\\ir\\cache\\builder\\infra\\infra\\services\\service_manager\\.coveragerc\u0027 as a config file",
+      "revId": "c7d4fb61d01bd49898dad7683b8914e5b88d9b32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
