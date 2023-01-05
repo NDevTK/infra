@@ -5,10 +5,15 @@
 package templates
 
 import (
+	"context"
+	"errors"
+	"reflect"
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
 )
 
 func TestParsePortBindingString(t *testing.T) {
@@ -21,10 +26,10 @@ func TestParsePortBindingString(t *testing.T) {
 	}
 	parsed, err := TemplateUtils.parsePortBindingString(original)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Errorf(err.Error())
 	}
 	if parsed.String() != expect.String() {
-		t.Fatalf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
+		t.Errorf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
 	}
 }
 
@@ -36,10 +41,10 @@ func TestParseMultilinePortBindings(t *testing.T) {
 	}
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Errorf(err.Error())
 	}
 	if len(parsed) != len(expect) || parsed[0].String() != expect[0].String() || parsed[1].String() != expect[1].String() {
-		t.Fatalf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
+		t.Errorf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
 	}
 }
 
@@ -50,10 +55,10 @@ func TestParseMultilinePortBindings_ipv6BindingIgnored(t *testing.T) {
 	}
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Errorf(err.Error())
 	}
 	if len(parsed) != len(expect) || parsed[0].String() != expect[0].String() {
-		t.Fatalf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
+		t.Errorf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
 	}
 }
 
@@ -61,10 +66,10 @@ func TestParseMultilinePortBindings_empty(t *testing.T) {
 	original := "\n"
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Errorf(err.Error())
 	}
 	if len(parsed) != 0 {
-		t.Fatalf("Expect empty port bindings returned")
+		t.Errorf("Expect empty port bindings returned")
 	}
 }
 
@@ -75,6 +80,70 @@ func TestEndpointToAddress(t *testing.T) {
 	}
 	address := TemplateUtils.endpointToAddress(endpoint)
 	if address != "xyz:123" {
-		t.Fatalf("Incorrect address conversion %s", address)
+		t.Errorf("Incorrect address conversion %s", address)
 	}
+}
+
+func TestLookupContainerPortBindings_errorRetrievePort(t *testing.T) {
+	util := templateUtils{
+		cmdExecutor:    getMockCmdExecutorWithError("error retrieve port"),
+		templateRouter: &RequestRouter{},
+	}
+	bindings, err := util.LookupContainerPortBindings("my-container")
+	if err == nil {
+		t.Errorf("Expect error")
+	}
+	if bindings != nil {
+		t.Errorf("expect bindings to be nil")
+	}
+}
+
+func TestLookupContainerPortBindings_hasDockerPortBinding(t *testing.T) {
+	expect := []*api.Container_PortBinding{
+		{ContainerPort: 80, Protocol: "tcp", HostIp: "0.0.0.0", HostPort: 42222},
+	}
+	util := templateUtils{
+		cmdExecutor: &mockCmdExecutor{
+			executeFunc: func(ctx context.Context, cmd commands.Command) (string, string, error) {
+				return "80/tcp -> 0.0.0.0:42222\n80/tcp -> :::42222", "", nil
+			},
+		},
+		templateRouter: &RequestRouter{},
+	}
+	bindings, err := util.LookupContainerPortBindings("my-container")
+	check(t, err, nil)
+	check(t, len(bindings), len(expect))
+	check(t, bindings[0].String(), expect[0].String())
+}
+
+func TestLookupContainerPortBindings_fallbackToDiscoveryPortBinding(t *testing.T) {
+	expect := []*api.Container_PortBinding{
+		{ContainerPort: 4222, Protocol: "tcp", HostIp: "localhost", HostPort: 42222},
+	}
+
+	containerId := "my-container-id"
+	state.ServerState.TemplateRequest.Add(containerId, &api.StartTemplatedContainerRequest{})
+	util := templateUtils{
+		cmdExecutor: &mockCmdExecutor{
+			executeFunc: func(ctx context.Context, cmd commands.Command) (string, string, error) {
+				cmdType := reflect.TypeOf(cmd).String()
+				if cmdType == "*commands.ContainerPort" {
+					return "\n", "", nil
+				}
+				if cmdType == "*commands.ContainerInspect" {
+					return containerId, "", nil
+				}
+				return "", "", errors.New("unknown command")
+			},
+		},
+		templateRouter: &mockTemplateProcessor{
+			portDiscoverFunc: func(req *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
+				return expect[0], nil
+			}},
+	}
+
+	bindings, err := util.LookupContainerPortBindings("my-container")
+	check(t, err, nil)
+	check(t, len(bindings), len(expect))
+	check(t, bindings[0].String(), expect[0].String())
 }
