@@ -4,11 +4,13 @@
 
 import {assert} from 'chai';
 import {MrIssueLink} from './mr-issue-link.js';
+import sinon from 'sinon';
 
 let element;
 
 describe('mr-issue-link', () => {
   beforeEach(() => {
+    window.ga = sinon.stub();
     element = document.createElement('mr-issue-link');
     document.body.appendChild(element);
   });

@@ -10,6 +10,7 @@ import 'elements/chops/chops-button/chops-button.js';
 import 'elements/chops/chops-dialog/chops-dialog.js';
 import {fromShortlink, GoogleIssueTrackerIssue} from 'shared/federated.js';
 import {MrCue} from './mr-cue.js';
+import {logEvent} from 'monitoring/client-logger.js';
 
 /**
  * `<mr-fed-ref-cue>`
@@ -68,6 +69,8 @@ export class MrFedRefCue extends MrCue {
             >sign in here</a> with your Google email.
         `;
       }
+      // Determine how often this cue is used.
+      logEvent('mr-fed-ref-cue', 'shown');
       return html`
         This references an issue in the ${fedRef.trackerName} issue tracker.
         ${authLink}
