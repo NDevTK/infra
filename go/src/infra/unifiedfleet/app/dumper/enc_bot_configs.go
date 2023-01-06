@@ -10,12 +10,12 @@ import (
 	"infra/unifiedfleet/app/controller"
 )
 
-// getEncBotConfigs reads the bot configs.
+// getBotConfigs reads the bot configs.
 //
 // Bot configs are read from the files specified in the UFS config
-// to get Ownership data needed by Puppet ENC
+// to get Ownership and security data needed by Puppet ENC
 // which is stored in the datastore per bot(machine, vm etc).
-func getEncBotConfigs(ctx context.Context) (retErr error) {
+func getBotConfigs(ctx context.Context) (retErr error) {
 	// TODO - Imported bot configs should be saved to DataStore
 	retErr = controller.ImportENCBotConfig(ctx)
 	return retErr

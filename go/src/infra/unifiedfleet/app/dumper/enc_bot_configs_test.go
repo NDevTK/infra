@@ -46,7 +46,7 @@ func TestGetEncBotConfigs(t *testing.T) {
 
 	Convey("Read Bot Configs", t, func() {
 		Convey("happy path", func() {
-			err := getEncBotConfigs(encTestingContext())
+			err := getBotConfigs(encTestingContext())
 			So(err, ShouldBeNil)
 		})
 	})

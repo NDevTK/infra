@@ -93,11 +93,11 @@ var Jobs = []*cron.CronTab{
 		Job:      swarmingLabelsDiffHandler,
 	},
 	{
-		// Sync ENC bot configs
-		Name:     util.CronJobNames["encBotConfigSyncCron"],
-		Time:     24 * time.Hour, //TODO(gowriden) - Reduce time to every 5 minutes once completely implemented
+		// Sync ENC bot and security configs
+		Name:     util.CronJobNames["botConfigSyncCron"],
+		Time:     1 * time.Hour, //TODO(gowriden) - Reduce time to every 5 minutes once completely implemented
 		TrigType: cron.EVERY,
-		Job:      getEncBotConfigs,
+		Job:      getBotConfigs,
 	},
 }
 
