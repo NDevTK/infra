@@ -2788,5 +2788,17 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_RUN_ONCE,
 		},
+		"Confirm log collection info does not exist": {
+			Docs: []string{
+				"We need to check whether the log collection info file already ",
+				"exists in the file system. A pre-existing file indicates that ",
+				"the collection of any pre-existing logs has already been ",
+				"tried to be collected.",
+			},
+			ExecName: "cros_confirm_file_not_exists",
+			ExecExtraArgs: []string{
+				"target_file:log_collection_info",
+			},
+		},
 	}
 }
