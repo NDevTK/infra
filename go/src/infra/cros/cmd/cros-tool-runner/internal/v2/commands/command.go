@@ -15,10 +15,16 @@ import (
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
-// dockerCmd is the name of docker command. To mimic drone environment locally
-// the value can be changed to podman, which is the underlying command on drones
-// (docker is an alias to podman on drones).
-const dockerCmd = "docker"
+const (
+	// dockerCmd is the name of docker command. To mimic drone environment locally
+	// the value can be changed to podman, which is the underlying command on drones
+	// (docker is an alias to podman on drones).
+	dockerCmd = "docker"
+
+	// lockFile is the lock file to control one gcloud command executed at a time:
+	// gcloud doesn't support parallel execution: b/132194628
+	lockFile = "/var/lock/go-lock.lock"
+)
 
 // Command is the interface of the command pattern. Only support blocking
 // execution for now.
@@ -38,6 +44,12 @@ func execute(ctx context.Context, name string, args []string) (string, string, e
 	cmd := exec.CommandContext(ctx, name, args...)
 	// TODO(mingkong) update RunWithTimeout since timeout is part of ctx
 	return common.RunWithTimeout(ctx, cmd, time.Minute, true)
+}
+
+// sensitiveExecute accepts a censored string for logging to protect secrets.
+func sensitiveExecute(ctx context.Context, name string, args []string, censored string) (string, string, error) {
+	cmd := exec.CommandContext(ctx, name, args...)
+	return common.RunWithTimeoutSpecialLog(ctx, cmd, time.Minute, true, censored)
 }
 
 // ContextualExecutor executes a command using the provided context.

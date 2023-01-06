@@ -7,7 +7,9 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/gofrs/flock"
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
@@ -85,7 +87,8 @@ type DockerLogin struct {
 
 func (c *DockerLogin) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"login", "-u", c.Username, "-p", c.Password, c.Registry}
-	return execute(ctx, dockerCmd, args)
+	censored := fmt.Sprintf("%s login -u %s -p %s %s", dockerCmd, c.Username, "<redacted from logs token>", c.Registry)
+	return sensitiveExecute(ctx, dockerCmd, args, censored)
 }
 
 // GcloudAuthTokenPrint represents `gcloud auth print-access-token`
@@ -94,6 +97,13 @@ type GcloudAuthTokenPrint struct {
 
 func (c *GcloudAuthTokenPrint) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"auth", "print-access-token"}
+	// TODO(mingkong) refactor commands package to make command unit testable
+	fileLock := flock.New(lockFile)
+	err := fileLock.Lock()
+	if err != nil {
+		return "", "failed to get FLock prior to gcloud auth print-access-token call", err
+	}
+	defer fileLock.Unlock()
 	return execute(ctx, "gcloud", args)
 }
 
@@ -105,5 +115,11 @@ type GcloudAuthServiceAccount struct {
 func (c *GcloudAuthServiceAccount) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"auth", "activate-service-account"}
 	args = append(args, c.Args...)
+	fileLock := flock.New(lockFile)
+	err := fileLock.Lock()
+	if err != nil {
+		return "", "failed to get FLock prior to gcloud auth activate-service-account call", err
+	}
+	defer fileLock.Unlock()
 	return execute(ctx, "gcloud", args)
 }
