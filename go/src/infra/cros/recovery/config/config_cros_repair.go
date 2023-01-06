@@ -2715,6 +2715,7 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 			},
 			Dependencies: []string{
+				"Create log collection info",
 				"Collect logs from DUT on /var/log/*",
 				"Collect dmesg",
 				"Collect crash dumps",
@@ -2775,6 +2776,17 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
+		},
+		"Create log collection info": {
+			Docs: []string{
+				"When the log collection completes, we create an info file that ",
+				"indicates the successful completion of the collection process.",
+			},
+			ExecName: "cros_create_log_collection_info",
+			ExecExtraArgs: []string{
+				"info_file:log_collection_info",
+			},
+			RunControl: RunControl_RUN_ONCE,
 		},
 	}
 }
