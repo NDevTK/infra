@@ -48,6 +48,7 @@ var targetOverridebyHwid = map[string]string{
 	// Nissa board.
 	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":         "nivviks_ufs",
 	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T": "nereid_hdmi",
+	"YAVIKS-BVSW B3B-A2C-B2A-Q6W-I3T":     "yaviks_ufs",
 }
 
 // ecExemptedModels holds a map of models that doesn't have EC firmware.
