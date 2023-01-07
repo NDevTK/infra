@@ -20,6 +20,7 @@ import (
 
 const (
 	LAUNCHED_BOARD                = "launched_board"
+	LAUNCHED_BOARD_NO_MODELS      = "launched_board_no_models"
 	UNLAUNCHED_BOARD              = "unlaunched_board"
 	LAUNCHED_BOARD_PRIVATE_MODELS = "launched_board_private_models"
 	VALID_IMAGE_EVE               = "eve-public/R120-xyz" // Any image with a prefix eve-public/R is a valid image
@@ -457,6 +458,19 @@ func TestImportPublicBoardsAndModels(t *testing.T) {
 			So(len(entity.Models), ShouldEqual, 2)
 			So(entity.BoardHasPrivateModels, ShouldBeTrue)
 		})
+		Convey("Launched board with no models", func() {
+			mockDevice := mockDevices()
+
+			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
+			entity, err := configuration.GetPublicBoardModelData(ctx, LAUNCHED_BOARD_NO_MODELS)
+
+			So(dataerr, ShouldBeNil)
+			So(err, ShouldBeNil)
+			So(entity.Board, ShouldEqual, LAUNCHED_BOARD_NO_MODELS)
+			So(len(entity.Models), ShouldEqual, 1)
+			So(entity.Models, ShouldResemble, []string{LAUNCHED_BOARD_NO_MODELS})
+			So(entity.BoardHasPrivateModels, ShouldBeFalse)
+		})
 	})
 }
 
@@ -546,6 +560,15 @@ func mockDevices() *ufspb.GoldenEyeDevices {
 							{Name: "model2New1"},
 							{Name: "model2New2"},
 						},
+					},
+				},
+			},
+			{
+				LaunchDate: "2021-01-01",
+				Boards: []*ufspb.Board{
+					{
+						PublicCodename: LAUNCHED_BOARD_NO_MODELS,
+						Models:         []*ufspb.Model{},
 					},
 				},
 			},

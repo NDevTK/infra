@@ -128,8 +128,13 @@ func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.Go
 			// Already launched board and model, can be added to allowed list
 			for _, board := range device.Boards {
 				logging.Infof(ctx, "Launched Board from Golden Eye Device data %s", board.PublicCodename)
-				for _, model := range board.Models {
-					boardPublicModelMap[board.GetPublicCodename()] = append(boardPublicModelMap[board.GetPublicCodename()], model.Name)
+				boardName := board.GetPublicCodename()
+				if len(board.Models) == 0 && boardPublicModelMap[boardName] == nil {
+					boardPublicModelMap[boardName] = append(boardPublicModelMap[boardName], boardName)
+				} else {
+					for _, model := range board.Models {
+						boardPublicModelMap[boardName] = append(boardPublicModelMap[boardName], model.Name)
+					}
 				}
 			}
 		} else {
