@@ -193,7 +193,7 @@ func TestPackageSources(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			verifySource(t, mockBuild.Packages, cipkg.PackageMetadata{
-				CacheKey: "mock/sources/git/github.com/ninja-build/ninja?subdir=src&tag=" + url.QueryEscape("2@git-tag"),
+				CacheKey: "mock/sources/git/github.com/ninja-build/ninja?subdir=src&tag=" + url.QueryEscape("3@git-tag"),
 			})
 		})
 
@@ -204,7 +204,7 @@ func TestPackageSources(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			verifySource(t, mockBuild.Packages, cipkg.PackageMetadata{
-				CacheKey: "mock/sources/url/static_libs/curl/" + cipdPlatform + "?tag=" + url.QueryEscape("2@7.59.0"),
+				CacheKey: "mock/sources/url/static_libs/curl/" + cipdPlatform + "?tag=" + url.QueryEscape("3@7.59.0"),
 			})
 		})
 
@@ -215,7 +215,7 @@ func TestPackageSources(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			verifySource(t, mockBuild.Packages, cipkg.PackageMetadata{
-				CacheKey: "mock/sources/script/tools/go/" + cipdPlatform + "?tag=" + url.QueryEscape("2@script-version"),
+				CacheKey: "mock/sources/script/tools/go/" + cipdPlatform + "?tag=" + url.QueryEscape("3@script-version"),
 			})
 		})
 	})

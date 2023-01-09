@@ -266,7 +266,9 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 		return fmt.Errorf("source.subdir not supported.")
 	}
 
-	if source.GetUnpackArchive() {
+	// Git used to be unpacked - which means we always want to unpack the source
+	// if it's a git method.
+	if source.GetUnpackArchive() || source.GetGit() != nil {
 		p.Enviroments = append(p.Enviroments, "_3PP_UNPACK_ARCHIVE=1")
 	}
 
@@ -290,7 +292,7 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 					Path: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.GetRepo())),
 					RawQuery: url.Values{
 						"subdir": {"src"},
-						"tag":    {fmt.Sprintf("2@%s", info.Tag)},
+						"tag":    {fmt.Sprintf("3@%s", info.Tag)},
 					}.Encode(),
 				}).String(),
 			}, info.Tag, nil
@@ -307,7 +309,7 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				CacheKey: (&url.URL{
 					Path: path.Join(packagePrefix, sourceCachePrefix, "url", def.FullNameWithOverride(), p.host),
 					RawQuery: url.Values{
-						"tag": {fmt.Sprintf("2@%s", s.GetVersion())},
+						"tag": {fmt.Sprintf("3@%s", s.GetVersion())},
 					}.Encode(),
 				}).String(),
 			}, s.GetVersion(), nil
@@ -347,7 +349,7 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				CacheKey: (&url.URL{
 					Path: path.Join(packagePrefix, sourceCachePrefix, "script", def.FullNameWithOverride(), p.host),
 					RawQuery: url.Values{
-						"tag": {fmt.Sprintf("2@%s", info.Version)},
+						"tag": {fmt.Sprintf("3@%s", info.Version)},
 					}.Encode(),
 				}).String(),
 			}, info.Version, nil

@@ -222,13 +222,8 @@ type Generator struct {
 	Version  string
 }
 
-const gitCommand = `
-cd "${out}" && \
-"$0" clone "$1" src && \
-cd src && \
-"$0" checkout "$2" && \
-"$0" submodule update --init --recursive && \
-rm -rf .git`
+//go:embed git_archive.py
+var gitSource embed.FS
 
 func (g *Generator) fetchSource() (cipkg.Generator, string, error) {
 	// The name of the source derivation. It's also used in environment variable
@@ -239,15 +234,20 @@ func (g *Generator) fetchSource() (cipkg.Generator, string, error) {
 	case *SourceGit:
 		return &utilities.BaseGenerator{
 			Name:    name,
-			Builder: "{{.posixUtils_import}}/bin/bash",
-			Args:    []string{"-c", gitCommand, "{{.stdenv_git}}/bin/git", s.URL, s.Ref},
+			Builder: "{{.stdenv_python3}}/bin/python3",
+			Args:    []string{"{{.git_source}}/git_archive.py", s.URL, s.Ref},
+			Env:     []string{"PATH={{.stdenv_git}}/bin"},
 			Dependencies: append([]utilities.BaseDependency{
-				{Type: cipkg.DepsBuildHost, Generator: common.PosixUtils},
 				{Type: cipkg.DepsBuildHost, Generator: common.Git},
+				{Type: cipkg.DepsBuildHost, Generator: common.Python3},
+				{Type: cipkg.DepsBuildHost, Generator: &builtins.CopyFiles{
+					Name:  "git_source",
+					Files: gitSource,
+				}},
 			}),
 			Version:  s.Version,
 			CacheKey: s.CacheKey,
-		}, fmt.Sprintf("srcs={{.%s}}", name), nil
+		}, fmt.Sprintf("srcs={{.%s}}/src.tar", name), nil
 	case *SourceURLs:
 		urls := builtins.FetchURLs{
 			Name: name,

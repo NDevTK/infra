@@ -135,6 +135,7 @@ def unpack_cmd(exe, include_files: str = '*') -> bool:
 
   print('Extracting %s -> %s ...' % (src, out))
   if ext in {
+      '.tar',
       '.gz', '.tgz',
       '.xz', '.txz',
       '.bz2', '.tbz', '.tbz2', '.tb2',
