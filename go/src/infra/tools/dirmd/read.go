@@ -267,6 +267,9 @@ func dirsByRepoRoot(ctx context.Context, dirs []string) (map[string]*repoInfo, e
 			cmd := exec.CommandContext(ctx, gitBinary, "-C", dir, "rev-parse", "--show-toplevel")
 			stdout, err := cmd.Output()
 			if err != nil {
+				if exitErr, _ := err.(*exec.ExitError); exitErr != nil {
+					return errors.Reason("failed to call %q: %s", cmd.Args, exitErr.Stderr).Err()
+				}
 				return errors.Annotate(err, "failed to call %q", cmd.Args).Err()
 			}
 			repoRoot := string(bytes.TrimSpace(stdout))
