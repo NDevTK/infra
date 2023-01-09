@@ -169,8 +169,16 @@ func TestCrosTestResultConversions(t *testing.T) {
 					}),
 				},
 			}
+
+			for i, tr := range expected {
+				PopulateProperties(tr, results.TestResult.TestRuns[i])
+			}
+
 			So(testResults, ShouldHaveLength, 2)
 			So(testResults, ShouldResembleProto, expected)
+			for _, tr := range testResults {
+				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+			}
 		})
 
 		Convey(`Check expected skip and unexpected skip tests`, func() {
@@ -202,8 +210,16 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
 				},
 			}
+
+			for i, tr := range expected {
+				PopulateProperties(tr, results.TestResult.TestRuns[i])
+			}
+
 			So(testResults, ShouldHaveLength, 2)
 			So(testResults, ShouldResembleProto, expected)
+			for _, tr := range testResults {
+				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+			}
 		})
 
 		Convey(`Check the full list of tags`, func() {
@@ -252,8 +268,11 @@ func TestCrosTestResultConversions(t *testing.T) {
 					}),
 				},
 			}
+			PopulateProperties(expected[0], results.TestResult.TestRuns[0])
+
 			So(testResults, ShouldHaveLength, 1)
 			So(testResults, ShouldResembleProto, expected)
+			So(testResults[0].GetProperties().GetFields(), ShouldNotBeEmpty)
 		})
 
 		Convey(`Check multi DUT testing`, func() {
@@ -285,8 +304,12 @@ func TestCrosTestResultConversions(t *testing.T) {
 					}),
 				},
 			}
+
+			PopulateProperties(expected[0], results.TestResult.TestRuns[0])
+
 			So(testResults, ShouldHaveLength, 1)
 			So(testResults, ShouldResembleProto, expected)
+			So(testResults[0].GetProperties().GetFields(), ShouldNotBeEmpty)
 		})
 	})
 }

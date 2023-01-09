@@ -13,10 +13,12 @@ import (
 
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	protojson "google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // Follows ChromeOS test result convention. Use TestResult to represent the
@@ -74,6 +76,10 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			}
 		}
 
+		if err := PopulateProperties(tr, testRun); err != nil {
+			return nil, errors.Annotate(err, "Failed to unmarshal properties for test result").Err()
+		}
+
 		ret = append(ret, tr)
 	}
 	return ret, nil
@@ -97,6 +103,25 @@ func genTestResultStatus(result *apipb.TestCaseResult) pb.TestStatus {
 	default:
 		return pb.TestStatus_STATUS_UNSPECIFIED
 	}
+}
+
+// PopulateProperties populates the properties of the test result.
+func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestRun) error {
+	if testRun == nil {
+		return nil
+	}
+
+	if testResult == nil {
+		return errors.Reason("The input test result is nil").Err()
+	}
+
+	data, err := protojson.Marshal(testRun)
+	if err != nil {
+		return err
+	}
+
+	testResult.Properties = &structpb.Struct{}
+	return protojson.Unmarshal(data, testResult.Properties)
 }
 
 // TODO(b/240897202): Remove the tags when a JSON type field is supported in
