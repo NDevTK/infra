@@ -10,6 +10,10 @@ from PB.recipes.infra.windows_image_builder import sources as src_pb
 from PB.recipes.infra.windows_image_builder import dest as dest_pb
 
 
+class SourceException(Exception):
+  pass
+
+
 class Source:
   """ Source handles all the pinning, downloading, and uploading artifacts to
       Git, GCS and CIPD repositories. See (git|gcs|cipd)_manager.py for
@@ -47,21 +51,25 @@ class Source:
       * src: sources.Src proto object that contains ref to an artifact
       * ctx: dict containing the context for local_src
     """
-    if src and src.WhichOneof('src') == 'git_src':
-      src.git_src.CopyFrom(self._git.pin_package(src.git_src))
-      return src
-    if src and src.WhichOneof('src') == 'gcs_src':
-      src.gcs_src.CopyFrom(self._gcs.pin_package(src.gcs_src))
-      return src
-    if src and src.WhichOneof('src') == 'cipd_src':
-      src.cipd_src.CopyFrom(self._cipd.pin_package(src.cipd_src))
-      return src
+    try:
+      if src and src.WhichOneof('src') == 'git_src':
+        src.git_src.CopyFrom(self._git.pin_package(src.git_src))
+        return src
+      if src and src.WhichOneof('src') == 'gcs_src':
+        src.gcs_src.CopyFrom(self._gcs.pin_package(src.gcs_src))
+        return src
+      if src and src.WhichOneof('src') == 'cipd_src':
+        src.cipd_src.CopyFrom(self._cipd.pin_package(src.cipd_src))
+        return src
+    except Exception as e:
+      raise SourceException('Cannot resolve {}: {}'.format(
+          self.get_url(src), e))
     if src and src.WhichOneof('src') == 'local_src':  # pragma: no cover
       if src.local_src in ctx:
         src.CopyFrom(ctx[src.local_src])
         return src
       else:
-        raise Exception('Cannot resolve {}'.format(src.local_src))
+        raise SourceException('Cannot resolve {}'.format(src.local_src))
 
   def download(self, src):
     """ download downloads all the pinned packages to cache on disk
@@ -69,12 +77,16 @@ class Source:
     Args:
       * src: sources.Src proto object that contains ref to an artifact
     """
-    if src and src.WhichOneof('src') == 'git_src':
-      return self._git.download_package(src.git_src)
-    if src and src.WhichOneof('src') == 'gcs_src':
-      return self._gcs.download_package(src.gcs_src)
-    if src and src.WhichOneof('src') == 'cipd_src':
-      return self._cipd.download_package(src.cipd_src)
+    try:
+      if src and src.WhichOneof('src') == 'git_src':
+        return self._git.download_package(src.git_src)
+      if src and src.WhichOneof('src') == 'gcs_src':
+        return self._gcs.download_package(src.gcs_src)
+      if src and src.WhichOneof('src') == 'cipd_src':
+        return self._cipd.download_package(src.cipd_src)
+    except Exception as e:
+      raise SourceException('Cannot download {}: {}'.format(
+          self.get_url(src), e))
 
   def get_local_src(self, src):
     """ get_local_src returns path on the disk that points to the given src ref
@@ -122,7 +134,7 @@ class Source:
       if artifact and artifact.WhichOneof('src') == 'git_src':
         return self._git.get_gitiles_url(artifact.git_src)
 
-    raise Exception('Cannot get url for {}'.format(artifact))
+    raise SourceException('Cannot get url for {}'.format(artifact))
 
   def upload_package(self, dest, source):
     """ upload_package uploads a given package to the given destination
@@ -156,7 +168,8 @@ class Source:
       if src.WhichOneof('dest') == 'cipd_src':
         return self._cipd.exists(src.cipd_src)
 
-    raise Exception('Cannot determine if {} exists'.format(self.get_url(src)))
+    raise SourceException('Cannot determine if {} exists'.format(
+        self.get_url(src)))
 
   def dest_to_src(self, dest):  # pragma: no cover
     """ dest_to_src returns a src_pb.Src object from dest.Dest object.

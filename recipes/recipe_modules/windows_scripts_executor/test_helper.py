@@ -221,8 +221,11 @@ def DEINIT_WIM_ADD_CFG_TO_ROOT(api, key, image, customization, success=True):
       stdout=json_res(api, success))
 
 
-def GIT_PIN_FILE(api, cust, refs, path, data):
+def GIT_PIN_FILE(api, cust, refs, path, data, success=True):
   """ mock git pin file step """
+  retcode = 1
+  if success:
+    retcode = 0
   return api.step_data(
       NEST(
           NEST_PROCESS_CUST(),
@@ -230,6 +233,22 @@ def GIT_PIN_FILE(api, cust, refs, path, data):
           'gitiles log: ' + '{}/{}'.format(refs, path),
       ),
       api.gitiles.make_log_test_data(data),
+      retcode=retcode,
+  )
+
+
+def GIT_DOWNLOAD_FILE(api, cust, repo, refs, path, success=True):
+  """ mock git checkout commit step """
+  retcode = 1
+  if success:  # pragma: nocover
+    retcode = 0
+  return api.step_data(
+      NEST(
+          NEST_DOWNLOAD_ALL_SRC(cust),
+          'Download {}/+/{}/{}'.format(repo, refs, path),
+          'git checkout ({})'.format(path),
+      ),
+      retcode=retcode,
   )
 
 

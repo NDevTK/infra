@@ -10,6 +10,7 @@ from PB.recipes.infra.windows_image_builder import sources
 
 from recipe_engine.post_process import DropExpectation, StatusFailure
 from recipe_engine.post_process import StatusSuccess, StepCommandRE
+from recipe_engine.post_process import StatusException
 from RECIPE_MODULES.infra.windows_scripts_executor import test_helper as t
 
 DEPS = [
@@ -83,6 +84,33 @@ def GenTests(api):
          # mock adding the file to wim
          t.ADD_FILE(api, image, customization, STARTNET_URL) +
          api.post_process(StatusSuccess) +  # recipe should pass
+         api.post_process(DropExpectation))
+
+  yield (api.test('Fail download git_src', api.platform('win', 64)) +
+         # run a config for adding startnet file to wim
+         api.properties(
+             t.WPE_IMAGE(image, wib.ARCH_X86, customization,
+                         'add_startnet_file', [ACTION_ADD_STARTNET])) +
+         # mock pin of the git src
+         t.GIT_PIN_FILE(api, customization, 'HEAD',
+                        'windows/artifacts/startnet.cmd', 'HEAD') +
+         t.GIT_DOWNLOAD_FILE(api, customization, 'chromium.dev',
+                             'ef70cb069518e6dc3ff24bfae7f195de5099c377',
+                             'windows/artifacts/startnet.cmd', False) +
+         api.post_process(StatusException) +
+         api.expect_exception('SourceException') +
+         api.post_process(DropExpectation))
+
+  yield (api.test('Fail pin git_src', api.platform('win', 64)) +
+         # run a config for adding startnet file to wim
+         api.properties(
+             t.WPE_IMAGE(image, wib.ARCH_X86, customization,
+                         'add_startnet_file', [ACTION_ADD_STARTNET])) +
+         # mock pin of the git src
+         t.GIT_PIN_FILE(api, customization, 'HEAD',
+                        'windows/artifacts/startnet.cmd', 'HEAD', False) +
+         api.post_process(StatusException) +
+         api.expect_exception('SourceException') +
          api.post_process(DropExpectation))
 
   # Adding same git src in multiple actions should trigger only one fetch action

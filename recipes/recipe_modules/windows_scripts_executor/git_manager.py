@@ -65,7 +65,8 @@ class GITManager:
     Args:
       * git_src: proto GITSrc object representing the artifact to be downloaded
     """
-    with self.m.step.nest('Download {}'.format(self.get_gitiles_url(git_src))):
+    with self.m.step.nest(
+        'Download {}'.format(self.get_gitiles_url(git_src)), status='last'):
       local_path = self.get_local_src(git_src)
       if not local_path in self._downloads_cache:
         download_path = self._cache.join(git_src.ref)

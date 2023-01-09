@@ -2046,11 +2046,11 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [tests](/recipes/recipe_modules/windows_scripts_executor/examples/get_executable_configs.py#190)(config):**
 ### *recipes* / [windows\_scripts\_executor:examples/git\_test](/recipes/recipe_modules/windows_scripts_executor/examples/git_test.py)
 
-[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/git_test.py#15): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/git_test.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/git_test.py#35)(api, config):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/git_test.py#36)(api, config):**
 ### *recipes* / [windows\_scripts\_executor:examples/online\_windows\_customization](/recipes/recipe_modules/windows_scripts_executor/examples/online_windows_customization.py)
 
 [DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/online_windows_customization.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
