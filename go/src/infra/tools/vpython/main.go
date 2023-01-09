@@ -99,9 +99,19 @@ var defaultConfig = application.Config{
 	DefaultSpec: vpython.Spec{
 		PythonVersion: "2.7",
 	},
-	VENVPackage: vpython.Spec_Package{
-		Name:    "infra/3pp/tools/virtualenv",
-		Version: "version:2@16.7.12.chromium.7",
+	VENVPackageMap: map[string]*vpython.Spec_Package{
+		"2.7": {
+			Name:    "infra/3pp/tools/virtualenv",
+			Version: "version:2@16.7.12.chromium.7",
+		},
+		"3.8": {
+			Name:    "infra/3pp/tools/virtualenv",
+			Version: "version:2@16.7.12.chromium.7",
+		},
+		"3.11": {
+			Name:    "infra/3pp/tools/virtualenv",
+			Version: "version:2@20.17.1.chromium.8",
+		},
 	},
 	InterpreterPaths:        setupBundledInterpreters(),
 	PruneThreshold:          7 * 24 * time.Hour, // One week.
