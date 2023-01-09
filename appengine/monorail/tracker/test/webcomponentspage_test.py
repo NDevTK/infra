@@ -9,12 +9,9 @@ from __future__ import absolute_import
 import mock
 import unittest
 
-import ezt
 
-import settings
-from framework import permissions
+from framework import exceptions
 from proto import project_pb2
-from proto import site_pb2
 from services import service_manager
 from tracker import webcomponentspage
 from testing import fake
@@ -112,7 +109,6 @@ class ProjectListPageTest(unittest.TestCase):
     mr = testing_helpers.MakeMonorailRequest()
     mr.request.host = 'example.com'
     self.servlet.redirect = mock.Mock()
-    msg = self.servlet._MaybeRedirectToDomainDefaultProject(mr)
-    print('msg: ' + msg)
-    self.assertTrue(msg.startswith('Redirected'))
-    self.servlet.redirect.assert_called_once()
+    with self.assertRaises(exceptions.RedirectException) as e:
+      self.servlet._MaybeRedirectToDomainDefaultProject(mr)
+    self.assertIn('/p/a', e.exception.message)

@@ -15,6 +15,7 @@ from __future__ import absolute_import
 import logging
 
 import settings
+from framework import exceptions
 from framework import flaskservlet
 from framework import servlet
 from framework import permissions
@@ -168,8 +169,7 @@ class ProjectListPage(FlaskWebComponentsPage):
       return 'User cannot view default project: %r' % project
 
     project_url = '/p/%s' % project_name
-    self.redirect(project_url, abort=True)
-    return 'Redirected to %r' % project_url
+    raise exceptions.RedirectException(project_url)
 
   def GetProjectListPage(self, **kwargs):
     return self.handler(**kwargs)
