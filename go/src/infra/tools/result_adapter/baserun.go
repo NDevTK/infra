@@ -32,8 +32,9 @@ type baseRun struct {
 	subcommands.CommandRunBase
 
 	// Flags.
-	artifactDir string
-	resultFile  string
+	artifactDir        string
+	resultFile         string
+	trimArtifactPrefix string
 
 	sinkCtx       *lucictx.ResultSink
 	sinkC         sinkpb.SinkClient
@@ -48,6 +49,9 @@ func (r *baseRun) RegisterGlobalFlags() {
 			`))
 	r.Flags.StringVar(&r.resultFile, "result-file", "", text.Doc(`
 				Path to the result output file. Required.
+			`))
+	r.Flags.StringVar(&r.trimArtifactPrefix, "trim-artifact-prefix", "", text.Doc(`
+				Artifact Path to be trimmed, e.g. absolute path inside a container. Optional.
 			`))
 }
 
