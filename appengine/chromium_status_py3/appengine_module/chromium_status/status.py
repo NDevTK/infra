@@ -490,7 +490,7 @@ class MainPage(BasePage):
     current_status = get_status()
     if current_status and (last_status_key != str(
         current_status.key.integer_id())):
-      error_message = ('Message not saved, mid-air collision detected, '
+      error_message = ('Message not saved, collision detected, '
                        'please resolve any conflicts and try again!')
       last_message = new_message
       return self._handle(error_message, last_message)
