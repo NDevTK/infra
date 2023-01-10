@@ -47,6 +47,7 @@ func chamCmd(mode action) *subcommands.Command {
 
 			c.Flags.StringVar(&c.rpmHostname, "rpm", "", "hostname for rpm connected to chameleon")
 			c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "outlet number of rpm connected to chameleon")
+			c.Flags.BoolVar(&c.audioBoard, "audio-board", false, "audio board chameleon")
 			return &c
 		},
 	}
@@ -67,6 +68,7 @@ type manageChamCmd struct {
 
 	rpmHostname string
 	rpmOutlet   string
+	audioBoard  bool
 
 	mode action
 }
@@ -220,6 +222,7 @@ func (c *manageChamCmd) createChameleon() *lab.Chameleon {
 	ret := &lab.Chameleon{
 		Hostname:             c.hostname,
 		ChameleonPeripherals: c.chameleonTypes,
+		AudioBoard:           c.audioBoard,
 	}
 	if c.rpmHostname != "" {
 		ret.Rpm = &lab.OSRPM{
