@@ -43,6 +43,9 @@ const (
 	stagingUploadUrl = "https://staging-crashsymbolcollector-pa.googleapis.com/v1"
 	// Time in milliseconds to sleep before retrying the task.
 	sleepTime = time.Second
+	// Limit upload invocation rate within this time window to this count.
+	uploadRateLimitWindow = time.Second
+	uploadRateLimitCount  = 1000
 	// This is the location on the bots where we'll find our key.
 	keyPath = "/creds/api_keys/api_key-chromeos-crash-uploader"
 	// TODO(juahurta): add constants for crash file size limits
@@ -659,6 +662,7 @@ func uploadSymbols(tasks []taskConfig, maximumWorkers, retryQuota uint64,
 	currentWorkerCount := uint64(0)
 
 	var waitgroup sync.WaitGroup
+	queryRateCounter := NewRateCounter(uploadRateLimitWindow)
 
 	// This is the main driver loop for the distributed worker design.
 	for {
@@ -681,12 +685,19 @@ func uploadSymbols(tasks []taskConfig, maximumWorkers, retryQuota uint64,
 			continue
 		}
 
+		// Limit the query rate by limiting the frequency of spawning workers.
+		if queryRateCounter.GetRate(time.Now()) > uploadRateLimitCount {
+			time.Sleep(time.Millisecond)
+			continue
+		}
+
 		// Perform a non-blocking check for a task in the queue.
 		select {
 		// If there is a task in the queue, create a worker to handle it.
 		case task := <-taskQueue:
 			atomic.AddUint64(&currentWorkerCount, uint64(1))
 			waitgroup.Add(1)
+			queryRateCounter.Add(time.Now())
 
 			// Spawn a worker to handle the task.
 			go func() {
