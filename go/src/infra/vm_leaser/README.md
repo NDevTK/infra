@@ -33,15 +33,15 @@ To list all services available at the endpoint:
 ```bash
 > grpcurl -plaintext localhost:50051 list
 grpc.reflection.v1alpha.ServerReflection
-vm_leaser.api.VmLeaserService
+vm_leaser.api.v1.VMLeaserService
 ```
 
 To list all APIs available for a given service:
 ```bash
-> grpcurl -plaintext localhost:50051 list vm_leaser.api.VmLeaserService
-vm_leaser.api.VmLeaserService.ExtendLease
-vm_leaser.api.VmLeaserService.LeaseVm
-vm_leaser.api.VmLeaserService.ReleaseVm
+> grpcurl -plaintext localhost:50051 list vm_leaser.api.v1.VMLeaserService
+vm_leaser.api.v1.VMLeaserService.ExtendLease
+vm_leaser.api.v1.VMLeaserService.LeaseVM
+vm_leaser.api.v1.VMLeaserService.ReleaseVM
 ```
 
 To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an example of how to lease a VM:
@@ -51,7 +51,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
   -proto api/service.proto \
   -d '{}' \
   localhost:50051 \
-  vm_leaser.api.VmLeaserService.LeaseVm
+  vm_leaser.api.v1.VMLeaserService.LeaseVM
 
 {
   "leaseId": "Test ID"
@@ -83,11 +83,11 @@ To list the RPCs available for our service:
 > grpcurl \
   -reflect-header "Authorization: Bearer $(gcloud auth print-identity-token)" \
   ${VM_LEASER_ENDPOINT}:443 \
-  list vm_leaser.api.VmLeaserService
+  list vm_leaser.api.v1.VMLeaserService
 
-vm_leaser.api.VmLeaserService.ExtendLease
-vm_leaser.api.VmLeaserService.LeaseVm
-vm_leaser.api.VmLeaserService.ReleaseVm
+vm_leaser.api.v1.VMLeaserService.ExtendLease
+vm_leaser.api.v1.VMLeaserService.LeaseVM
+vm_leaser.api.v1.VMLeaserService.ReleaseVM
 ```
 
 To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an example of how to lease a VM:
@@ -96,7 +96,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
   -rpc-header "Authorization: Bearer $(gcloud auth print-identity-token)" \
   -proto api/service.proto \
   ${VM_LEASER_ENDPOINT}:443 \
-  vm_leaser.api.VmLeaserService.LeaseVm
+  vm_leaser.api.v1.VMLeaserService.LeaseVM
 
 {
   "leaseId": "Test ID"

@@ -9,15 +9,15 @@ import (
 	"fmt"
 	"log"
 
-	pb "infra/vm_leaser/api"
+	pb "infra/vm_leaser/api/v1"
 )
 
-// Prove that Server implements pb.VmLeaserServiceServer by instantiating a Server
-var _ pb.VmLeaserServiceServer = (*Server)(nil)
+// Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
+var _ pb.VMLeaserServiceServer = (*Server)(nil)
 
-// Server is a struct implements the pb.VmLeaserServiceServer
+// Server is a struct implements the pb.VMLeaserServiceServer
 type Server struct {
-	pb.UnimplementedVmLeaserServiceServer
+	pb.UnimplementedVMLeaserServiceServer
 }
 
 // NewServer returns a new Server
@@ -25,14 +25,14 @@ func NewServer() *Server {
 	return &Server{}
 }
 
-// LeaseVm leases a VM defined by LeaseVmRequest
-func (s *Server) LeaseVm(ctx context.Context, r *pb.LeaseVmRequest) (*pb.LeaseVmResponse, error) {
-	log.Println("[server:LeaseVm] Started")
+// LeaseVM leases a VM defined by LeaseVMRequest
+func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVMResponse, error) {
+	log.Println("[server:LeaseVM] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.LeaseVmResponse{}, fmt.Errorf("client cancelled: abandoning")
+		return &pb.LeaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
-	return &pb.LeaseVmResponse{
+	return &pb.LeaseVMResponse{
 		LeaseId: "Test ID",
 	}, nil
 }
@@ -47,12 +47,12 @@ func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb
 	return &pb.ExtendLeaseResponse{}, nil
 }
 
-// ReleaseVm releases a VM lease
-func (s *Server) ReleaseVm(ctx context.Context, r *pb.ReleaseVmRequest) (*pb.ReleaseVmResponse, error) {
-	log.Println("[server:ReleaseVm] Started")
+// ReleaseVM releases a VM lease
+func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.ReleaseVMResponse, error) {
+	log.Println("[server:ReleaseVM] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.ReleaseVmResponse{}, fmt.Errorf("client cancelled: abandoning")
+		return &pb.ReleaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
-	return &pb.ReleaseVmResponse{}, nil
+	return &pb.ReleaseVMResponse{}, nil
 }

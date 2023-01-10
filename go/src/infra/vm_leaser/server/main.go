@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb "infra/vm_leaser/api"
+	pb "infra/vm_leaser/api/v1"
 )
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 	log.Printf("gRPC endpoint [%s]", grpcEndpoint)
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterVmLeaserServiceServer(grpcServer, NewServer())
+	pb.RegisterVMLeaserServiceServer(grpcServer, NewServer())
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
