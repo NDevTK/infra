@@ -148,6 +148,11 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		}
 	}
 
+	if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.schedule_public_build", false); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+
 	if r.skipPaygen {
 		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.skip_paygen", true); err != nil {
 			r.LogErr(err.Error())

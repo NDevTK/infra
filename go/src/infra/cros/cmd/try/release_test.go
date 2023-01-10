@@ -254,6 +254,9 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		assert.Assert(t, exists && skipPaygen.GetBoolValue())
 	}
 
+	noPublicBuild, exists := properties.GetFields()["$chromeos/orch_menu"].GetStructValue().GetFields()["schedule_public_build"]
+	assert.Assert(t, exists && !noPublicBuild.GetBoolValue())
+
 	if tc.buildspec != "" {
 		manifestInfo := properties.GetFields()["$chromeos/cros_source"].GetStructValue().GetFields()["syncToManifest"].GetStructValue()
 		syncToManifest := manifestInfo.GetFields()["manifestGsPath"].GetStringValue()
