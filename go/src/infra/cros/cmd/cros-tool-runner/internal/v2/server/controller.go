@@ -11,6 +11,9 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"path"
+	"regexp"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/system/signals"
@@ -47,7 +50,7 @@ func panicInterceptor(ctx context.Context,
 }
 
 // StartServer starts server on the requested port.
-func StartServer(port int) int {
+func StartServer(port int, exportTo string) int {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -77,6 +80,10 @@ func StartServer(port int) int {
 		destructor()
 	}()
 
+	if exportTo != "" {
+		exportMetadata(lis, exportTo)
+	}
+
 	// Wait for channel operations
 	select {
 	case err := <-errChan:
@@ -86,4 +93,35 @@ func StartServer(port int) int {
 		log.Println("interrupt signal received")
 	}
 	return 0
+}
+
+func exportMetadata(address net.Listener, exportTo string) {
+	metaFile := path.Join(exportTo, ".cftmeta")
+
+	f, err := os.OpenFile(metaFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Printf("error: cannot open metadata file %v", err)
+		return
+	}
+	defer f.Close()
+
+	r := regexp.MustCompile(`.*:(\d+)$`)
+	match := r.FindStringSubmatch(address.Addr().String())
+	if match == nil {
+		log.Printf("error: cannot find port from address %v", address)
+		return
+	}
+
+	port := match[1]
+	content := fmt.Sprintf("%s=%s\n%s=%s\n%s=%s\n",
+		"SERVICE_PORT", port,
+		"SERVICE_NAME", "CTRv2",
+		"SERVICE_START_TIME", time.Now().Format(time.RFC3339))
+	_, err = f.WriteString(content)
+	if err != nil {
+		log.Printf("error: cannot write to metadata file %v", err)
+		return
+	}
+
+	log.Printf("service metadata has been exported to %v", metaFile)
 }

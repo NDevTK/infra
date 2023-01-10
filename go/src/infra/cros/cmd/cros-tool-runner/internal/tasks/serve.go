@@ -15,15 +15,19 @@ type runServeCmd struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
 	port      int
+	exportTo  string
 }
 
 func Serve(authOpts auth.Options) *subcommands.Command {
 	const serveDesc = `serve,
 
-	Tool used to start cros-tool-runner v2 services.
+Tool used to start cros-tool-runner v2 services. When --export-metadata is
+used, service metadata will be exported into the specified folder following
+the same convention as http://go/cft-port-discovery
 
-	Example:
-	cros-tool-runner serve
+Example:
+cros-tool-runner serve
+cros-tool-runner serve --port 0 --export-metadata=/tmp
 	`
 
 	c := &runServeCmd{}
@@ -34,6 +38,7 @@ func Serve(authOpts auth.Options) *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			c.authFlags.Register(&c.Flags, authOpts)
 			c.Flags.IntVar(&c.port, "port", 8082, "port number server listens to")
+			c.Flags.StringVar(&c.exportTo, "export-metadata", "", "folder path to export CTRv2 server metadata into")
 			return c
 		},
 	}
@@ -41,5 +46,5 @@ func Serve(authOpts auth.Options) *subcommands.Command {
 
 // Run executes the tool.
 func (c *runServeCmd) Run(subcommands.Application, []string, subcommands.Env) int {
-	return server.StartServer(c.port)
+	return server.StartServer(c.port, c.exportTo)
 }
