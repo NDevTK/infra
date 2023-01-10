@@ -1,7 +1,7 @@
 // Copyright 2022 The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package main
+package buildbucket
 
 import (
 	"context"
@@ -104,7 +104,6 @@ func TestGetBuilderInputProps(t *testing.T) {
 	if err != nil {
 		t.Fatal("Error constructing okInputProperties:", err)
 	}
-	m := tryRunBase{}
 	for i, tc := range []struct {
 		ledGetBuilderStdout string
 		expectError         bool
@@ -115,11 +114,11 @@ func TestGetBuilderInputProps(t *testing.T) {
 		{unmarshalErrorButInputPropsOK, false, okInputProperties},
 		{unmarshalErrorWithNoInputProperties, true, nil},
 	} {
-		m.cmdRunner = cmd.FakeCommandRunner{
+		c := NewClient(cmd.FakeCommandRunner{
 			ExpectedCmd: []string{"led", "get-builder", "chromeos/release:release-main-orchestrator"},
 			Stdout:      tc.ledGetBuilderStdout,
-		}
-		propsStruct, err := m.GetBuilderInputProps(context.Background(), "chromeos/release/release-main-orchestrator")
+		})
+		propsStruct, err := c.GetBuilderInputProps(context.Background(), "chromeos/release/release-main-orchestrator")
 		if err != nil && !tc.expectError {
 			t.Errorf("#%d: Unexpected error running GetBuilderInputProps: %+v", i, err)
 		}
@@ -143,9 +142,9 @@ func TestSetProperty(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	setProperty(s, "$chromeos/my_module.my_prop", 200)
-	setProperty(s, "$chromeos/my_module.new_prop.foo", []string{"a", "b", "c"})
-	setProperty(s, "my_other_prop", "201")
+	SetProperty(s, "$chromeos/my_module.my_prop", 200)
+	SetProperty(s, "$chromeos/my_module.new_prop.foo", []string{"a", "b", "c"})
+	SetProperty(s, "my_other_prop", "201")
 
 	fields := s.GetFields()
 	assert.IntsEqual(t, int(fields["$chromeos/my_module"].GetStructValue().GetFields()["my_prop"].GetNumberValue()), 200)
@@ -177,13 +176,13 @@ func TestSetProperty_error(t *testing.T) {
 		"foo",
 		123,
 	}
-	err = setProperty(s, "$chromeos/my_module.my_prop", invalidValue)
+	err = SetProperty(s, "$chromeos/my_module.my_prop", invalidValue)
 	assert.ErrorContains(t, err, "invalid type")
 
-	err = setProperty(s, "totally_new_prop", invalidValue)
+	err = SetProperty(s, "totally_new_prop", invalidValue)
 	assert.ErrorContains(t, err, "invalid type")
 
-	err = setProperty(s, "my_other_prop.invalid_nest", 123)
+	err = SetProperty(s, "my_other_prop.invalid_nest", 123)
 	assert.ErrorContains(t, err, "not a struct")
 }
 
@@ -249,7 +248,6 @@ func TestGetBuild(t *testing.T) {
 		Properties: outputProps,
 	}
 
-	m := tryRunBase{}
 	for i, tc := range []struct {
 		bbGetStdout   string
 		expectError   bool
@@ -259,11 +257,11 @@ func TestGetBuild(t *testing.T) {
 		{buildUnmarshalErrorButInputPropsOK, false, &okBuild},
 		{buildUnmarshalErrorWithNoInputProperties, true, nil},
 	} {
-		m.cmdRunner = cmd.FakeCommandRunner{
+		c := NewClient(cmd.FakeCommandRunner{
 			ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
 			Stdout:      tc.bbGetStdout,
-		}
-		build, err := m.GetBuild(context.Background(), bbid)
+		})
+		build, err := c.GetBuild(context.Background(), bbid)
 		if err != nil && !tc.expectError {
 			t.Errorf("#%d: Unexpected error running GetBuild: %+v", i, err)
 		}

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
@@ -157,7 +158,7 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	ret := r.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, Success)
 
-	properties, err := readStructFromFile(propsFile.Name())
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
 
 	checkpointProps := properties.GetFields()["$chromeos/checkpoint"].GetStructValue()
@@ -256,7 +257,7 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 		return
 	}
 
-	properties, err := readStructFromFile(propsFile.Name())
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
 
 	checkpointProps := properties.GetFields()["$chromeos/checkpoint"].GetStructValue()

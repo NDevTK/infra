@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"strings"
 
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 
 	"github.com/maruel/subcommands"
@@ -126,7 +127,7 @@ func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps
 	for _, v := range childBuildBBIDs.([]interface{}) {
 		bbid := v.(string)
 
-		buildData, err := r.GetBuild(ctx, bbid)
+		buildData, err := r.bbClient.GetBuild(ctx, bbid)
 		if err != nil {
 			return nil, errors.Annotate(err, "Could not get output props for %s", bbid).Err()
 		}
@@ -267,11 +268,11 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 	checkpointProps["exec_steps"] = map[string]interface{}{
 		"steps": []interface{}{int32(execStep.Number())},
 	}
-	if err := setProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {
+	if err := bb.SetProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
-	if err := setProperty(propsStruct, "$chromeos/signing.ignore_already_exists_errors", true); err != nil {
+	if err := bb.SetProperty(propsStruct, "$chromeos/signing.ignore_already_exists_errors", true); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
@@ -290,7 +291,7 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 				"steps": []interface{}{int32(execStep.Number())},
 			}
 			subproperty := fmt.Sprintf("$chromeos/checkpoint.builder_exec_steps.%s", builder)
-			if err := setProperty(propsStruct, subproperty, steps); err != nil {
+			if err := bb.SetProperty(propsStruct, subproperty, steps); err != nil {
 				r.LogErr(err.Error())
 				return CmdError
 			}
@@ -344,7 +345,7 @@ func (r *retryRun) processPaygenRetry(ctx context.Context, buildData *bbpb.Build
 			"steps": []interface{}{int32(pb.RetryStep_PAYGEN.Number())},
 		},
 	}
-	if err := setProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {
+	if err := bb.SetProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
@@ -369,7 +370,7 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 		return ret
 	}
 
-	buildData, err := r.GetBuild(ctx, r.originalBBID)
+	buildData, err := r.bbClient.GetBuild(ctx, r.originalBBID)
 	if err != nil {
 		r.LogErr(err.Error())
 		return CmdError
@@ -399,7 +400,7 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 			return CmdError
 		}
 	}
-	if err := writeStructToFile(propsStruct, propsFile); err != nil {
+	if err := bb.WriteStructToFile(propsStruct, propsFile); err != nil {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
 	}

@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strings"
 
+	"infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 
 	"github.com/maruel/subcommands"
@@ -37,6 +38,7 @@ type tryRunBase struct {
 	stderrLog *log.Logger
 	bbAddArgs []string
 	cmdRunner cmd.CommandRunner
+	bbClient  *buildbucket.Client
 	// Used for testing.
 	skipProductionPrompt bool
 
@@ -109,6 +111,8 @@ func (t *tryRunBase) validate() error {
 
 // run executes common run logic for all tryRunBase commands.
 func (t *tryRunBase) run(ctx context.Context) (int, error) {
+	t.bbClient = buildbucket.NewClient(t.cmdRunner)
+
 	if err := t.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		return AuthError, err
 	}

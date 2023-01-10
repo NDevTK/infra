@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 
 	"github.com/maruel/subcommands"
@@ -78,7 +79,7 @@ func (r *releaseRun) checkChildrenExist(ctx context.Context) error {
 		}
 		for i, builderName := range builderNames {
 			fullBuilderName := fmt.Sprintf("chromeos/%s/%s", bucket, builderName)
-			_, err := r.GetBuilderInputProps(ctx, fullBuilderName)
+			_, err := r.bbClient.GetBuilderInputProps(ctx, fullBuilderName)
 			if err != nil && strings.Contains(err.Error(), "not found") {
 				return fmt.Errorf("%s is not a valid build target for %s", r.buildTargets[i], r.branch)
 			}
@@ -118,7 +119,7 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		return CmdError
 	}
 
-	propsStruct, err := r.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())
+	propsStruct, err := r.bbClient.GetBuilderInputProps(ctx, r.getReleaseOrchestratorName())
 	if err != nil {
 		r.LogErr(err.Error())
 		if strings.Contains(err.Error(), "not found") {
@@ -133,7 +134,7 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		// If gerrit patches are set, the orchestrator by default will try to do
 		// build planning, which is meaningless for release builds and drops
 		// all children. This property skips pruning.
-		if err := setProperty(propsStruct, "$chromeos/build_plan.disable_build_plan_pruning", true); err != nil {
+		if err := bb.SetProperty(propsStruct, "$chromeos/build_plan.disable_build_plan_pruning", true); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
@@ -141,28 +142,28 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 	}
 
 	if r.useProdTests {
-		if err := setProperty(propsStruct, "$chromeos/cros_test_plan.use_prod_config", true); err != nil {
+		if err := bb.SetProperty(propsStruct, "$chromeos/cros_test_plan.use_prod_config", true); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
 	}
 
 	if r.skipPaygen {
-		if err := setProperty(propsStruct, "$chromeos/orch_menu.skip_paygen", true); err != nil {
+		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.skip_paygen", true); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
 	}
 
 	if len(r.buildTargets) > 0 {
-		if err := setProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
+		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
 	}
 
 	if r.buildspec != "" {
-		if err := setProperty(propsStruct, "$chromeos/cros_source.syncToManifest.manifestGsPath", r.buildspec); err != nil {
+		if err := bb.SetProperty(propsStruct, "$chromeos/cros_source.syncToManifest.manifestGsPath", r.buildspec); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
@@ -178,7 +179,7 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 			return CmdError
 		}
 	}
-	if err := writeStructToFile(propsStruct, propsFile); err != nil {
+	if err := bb.WriteStructToFile(propsStruct, propsFile); err != nil {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
 	}

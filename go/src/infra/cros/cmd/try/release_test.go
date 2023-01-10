@@ -11,7 +11,34 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+)
+
+const (
+	validJSON = `{
+		"buildbucket": {
+			"bbagent_args": {
+				"build": {
+					"input": {
+						"properties": {
+							"$chromeos/my_module": {
+								"my_prop": 100
+							},
+							"my_other_prop": 101
+						}
+					},
+					"infra": {
+						"buildbucket": {
+							"experiment_reasons": {
+								"chromeos.cros_artifacts.use_gcloud_storage": 1
+							}
+						}
+					}
+				}
+			}
+		}
+	}`
 )
 
 // TestGetReleaseOrchestratorName tests getReleaseOrchestratorName.
@@ -206,7 +233,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		assert.IntsEqual(t, ret, Success)
 	}
 
-	properties, err := readStructFromFile(propsFile.Name())
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
 
 	if len(tc.buildTargets) > 0 {

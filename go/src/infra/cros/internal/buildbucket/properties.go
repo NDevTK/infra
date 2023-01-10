@@ -1,7 +1,7 @@
 // Copyright 2022 The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package main
+package buildbucket
 
 import (
 	"context"
@@ -20,14 +20,13 @@ import (
 )
 
 // GetBuild gets the specified build using `bb get`.
-func (m tryRunBase) GetBuild(ctx context.Context, bbid string) (*bbpb.Build, error) {
-	stdout, stderr, err := m.RunCmd(ctx, "bb", "get", bbid, "-p", "-json")
+func (c *Client) GetBuild(ctx context.Context, bbid string) (*bbpb.Build, error) {
+	stdout, stderr, err := c.runCmd(ctx, "bb", "get", bbid, "-p", "-json")
 	if err != nil {
 		if strings.Contains(stderr, "not found") {
 			return nil, fmt.Errorf("builder not found")
 		}
-		m.LogErr(stderr)
-		return nil, errors.Annotate(err, "could not fetch builder").Err()
+		return nil, errors.Annotate(err, "could not fetch builder.\nstderr:\n%s", stderr).Err()
 	}
 
 	var build bbpb.Build
@@ -57,19 +56,18 @@ func (m tryRunBase) GetBuild(ctx context.Context, bbid string) (*bbpb.Build, err
 	return &build, nil
 }
 
-func (m tryRunBase) GetBuilderInputProps(ctx context.Context, fullBuilderName string) (*structpb.Struct, error) {
-	bucket, builder, err := separateBucketFromBuilder(fullBuilderName)
+func (c *Client) GetBuilderInputProps(ctx context.Context, fullBuilderName string) (*structpb.Struct, error) {
+	bucket, builder, err := SeparateBucketFromBuilder(fullBuilderName)
 	if err != nil {
 		return &structpb.Struct{}, err
 	}
 
-	stdout, stderr, err := m.RunCmd(ctx, "led", "get-builder", fmt.Sprintf("%s:%s", bucket, builder))
+	stdout, stderr, err := c.runCmd(ctx, "led", "get-builder", fmt.Sprintf("%s:%s", bucket, builder))
 	if err != nil {
 		if strings.Contains(stderr, "not found") {
 			return &structpb.Struct{}, fmt.Errorf("builder not found")
 		}
-		m.LogErr(stderr)
-		return &structpb.Struct{}, errors.Annotate(err, "could not fetch builder").Err()
+		return nil, errors.Annotate(err, "could not fetch builder.\nstderr:\n%s", stderr).Err()
 	}
 
 	var definition job.Definition_Buildbucket
@@ -94,8 +92,8 @@ func definitionToInputProperties(definition job.Definition_Buildbucket) *structp
 	return definition.Buildbucket.GetBbagentArgs().GetBuild().GetInput().GetProperties()
 }
 
-// writeStructToFile creates a tempfile and writes the struct as JSON data.
-func writeStructToFile(s *structpb.Struct, file *os.File) error {
+// WriteStructToFile creates a tempfile and writes the struct as JSON data.
+func WriteStructToFile(s *structpb.Struct, file *os.File) error {
 	jsonBytes, err := s.MarshalJSON()
 	if err != nil {
 		return err
@@ -106,8 +104,8 @@ func writeStructToFile(s *structpb.Struct, file *os.File) error {
 	return nil
 }
 
-// readStructFromFile reads a struct from the specified file.
-func readStructFromFile(path string) (*structpb.Struct, error) {
+// ReadStructFromFile reads a struct from the specified file.
+func ReadStructFromFile(path string) (*structpb.Struct, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -119,7 +117,7 @@ func readStructFromFile(path string) (*structpb.Struct, error) {
 	return s, nil
 }
 
-func setProperty(s *structpb.Struct, key string, value interface{}) error {
+func SetProperty(s *structpb.Struct, key string, value interface{}) error {
 	// Inner function for recursing over each component of the key ('.' separated).
 	setPropertyInner := func(s *structpb.Struct, toProcess []string, value interface{}) error {
 		processed := []string{}
@@ -143,7 +141,7 @@ func setProperty(s *structpb.Struct, key string, value interface{}) error {
 					return fmt.Errorf("The value for %s is not a struct, cannot resolve key %s.",
 						strings.Join(processed, ","), k)
 				} else {
-					return setProperty(v.GetStructValue(), strings.Join(toProcess, "."), value)
+					return SetProperty(v.GetStructValue(), strings.Join(toProcess, "."), value)
 				}
 			}
 		}
