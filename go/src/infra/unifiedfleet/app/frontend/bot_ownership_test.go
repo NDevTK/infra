@@ -58,7 +58,7 @@ func TestGetOwnershipData(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			err = controller.ImportENCBotConfig(ctx)
+			err = controller.ImportBotConfigs(ctx)
 			So(err, ShouldBeNil)
 			req := &api.GetOwnershipDataRequest{
 				Hostname: "testing-1",

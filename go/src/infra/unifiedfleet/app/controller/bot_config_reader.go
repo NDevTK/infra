@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
@@ -22,6 +23,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"infra/libs/git"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/inventory"
@@ -34,33 +36,56 @@ const (
 	POOL_PREFIX = "pool:"
 )
 
-var prevSha1 = ""
+type ConfigSha struct {
+	mu   sync.Mutex
+	sha1 string
+}
 
-// ImportENCBotConfig imports Bot Config files and stores the bot configs for ownership data in the DataStore.
-func ImportENCBotConfig(ctx context.Context) error {
-	es, err := external.GetServerInterface(ctx)
+var prevConfig = ConfigSha{sha1: ""}
+
+// ImportBotsConfig gets the OwnershipConfig and git client and passes them to functions for importing bot configs
+func ImportBotConfigs(ctx context.Context) error {
+	ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
 	if err != nil {
 		return err
+	}
+	if ownershipConfig == nil {
+		return nil
+	}
+
+	err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
+	return err
+}
+
+// GetConfigAndGitClient reads the OwnershipConfig and creates a corresponding git client
+func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.ClientInterface, error) {
+	es, err := external.GetServerInterface(ctx)
+	if err != nil {
+		return nil, nil, err
 	}
 	ownershipConfig := config.Get(ctx).GetOwnershipConfig()
 	gitTilesClient, err := es.NewGitTilesInterface(ctx, ownershipConfig.GetGitilesHost())
 	currentSha1, err := fetchLatestSHA1(ctx, gitTilesClient, ownershipConfig.GetProject(), ownershipConfig.GetBranch())
-	if currentSha1 == prevSha1 {
-		logging.Infof(ctx, "Nothing changed for enc config files - lastest SHA1 : %s", prevSha1)
-		return nil
+	isSameSha1 := prevConfig.compareAndSetSha(currentSha1)
+	if isSameSha1 {
+		logging.Infof(ctx, "Nothing changed for enc/security config files - lastest SHA1 : %s", prevConfig.sha1)
+		return nil, nil, nil
 	}
-	prevSha1 = currentSha1
 
 	gitClient, err := es.NewGitInterface(ctx, ownershipConfig.GetGitilesHost(), ownershipConfig.GetProject(), ownershipConfig.GetBranch())
 	if err != nil {
 		logging.Errorf(ctx, "Got Error for git client : %s", err.Error())
-		return fmt.Errorf("failed to initialize connection to Gitiles while importing enc bot configs")
+		return nil, nil, fmt.Errorf("failed to initialize connection to Gitiles while importing enc bot configs")
 	}
 	if ownershipConfig == nil {
 		logging.Errorf(ctx, "No config found to read ownership data")
-		return fmt.Errorf("no config found to read ownership data")
+		return nil, nil, fmt.Errorf("no config found to read ownership data")
 	}
+	return ownershipConfig, gitClient, nil
+}
 
+// ImportENCBotConfig imports Bot Config files and stores the bot configs for ownership data in the DataStore.
+func ImportENCBotConfig(ctx context.Context, ownershipConfig *config.OwnershipConfig, gitClient git.ClientInterface) error {
 	logging.Infof(ctx, "Parsing Ownership config for %d files", len(ownershipConfig.GetEncConfig()))
 	for _, cfg := range ownershipConfig.GetEncConfig() {
 		start := time.Now()
@@ -384,6 +409,14 @@ func parseBotIds(idExpr string) []string {
 		}
 	}
 	return botsIds
+}
+
+func (s *ConfigSha) compareAndSetSha(currentSha1 string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	isSameSha := s.sha1 == currentSha1
+	s.sha1 = currentSha1
+	return isSameSha
 }
 
 // Gets the latest SHA1 for the given project and branch.

@@ -23,8 +23,6 @@ type GitClient struct {
 type GitTilesClient struct {
 }
 
-var sha1 = 0
-
 // GetFile mocks git.ClientInterface.GetFile()
 func (gc *GitClient) GetFile(ctx context.Context, path string) (string, error) {
 	if path == "test_git_path" {
@@ -42,10 +40,9 @@ func (gc *GitClient) SwitchProject(ctx context.Context, project string) error {
 
 // Log mocks gitiles.GitilesClient.Log()
 func (gc *GitTilesClient) Log(ctx context.Context, req *gitiles.LogRequest, opts ...grpc.CallOption) (res *gitiles.LogResponse, err error) {
-	sha1 = sha1 + 1
 	return &gitiles.LogResponse{
 		Log: []*git.Commit{
-			{Id: fmt.Sprintf("%d", sha1)},
+			{Id: fmt.Sprintf("%s-%s", req.Project, req.Committish)},
 		},
 	}, nil
 }

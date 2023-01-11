@@ -17,6 +17,6 @@ import (
 // which is stored in the datastore per bot(machine, vm etc).
 func getBotConfigs(ctx context.Context) (retErr error) {
 	// TODO - Imported bot configs should be saved to DataStore
-	retErr = controller.ImportENCBotConfig(ctx)
+	retErr = controller.ImportBotConfigs(ctx)
 	return retErr
 }
