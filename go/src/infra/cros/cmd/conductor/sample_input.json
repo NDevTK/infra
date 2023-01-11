@@ -1,0 +1,8 @@
+{
+    "rules": [
+        {
+            "status": [20, 36],
+            "cutoff_seconds": 1
+        }
+    ]
+}
