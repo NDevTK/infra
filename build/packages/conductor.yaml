@@ -1,0 +1,10 @@
+package: chromiumos/infra/conductor/${platform}
+description: Utility for collecting/retrying ChromeOS builders. See go/cros-infra:build-conductor-dd.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/conductor
+root: ../../go/bin
+data:
+  - file: conductor${exe_suffix}
+  - version_file: .versions/conductor${exe_suffix}.cipd_version
