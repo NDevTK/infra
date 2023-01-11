@@ -224,12 +224,7 @@ func createLogCollectionInfoExec(ctx context.Context, info *execs.ExecInfo) erro
 	if err != nil {
 		return errors.Annotate(err, "create log collection info").Err()
 	}
-	// We store the timestamp in pacific time-zone.
-	loc, err := time.LoadLocation("America/Los_Angeles")
-	if err != nil {
-		return errors.Annotate(err, "create log collection info").Err()
-	}
-	_, err = infoFile.WriteString(fmt.Sprintf("Retrieved the prior logs at %q\n", time.Now().In(loc)))
+	_, err = infoFile.WriteString(fmt.Sprintf("Retrieved the prior logs at %q\n", time.Now()))
 	return errors.Annotate(err, "create log collection info").Err()
 }
 
