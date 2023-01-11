@@ -4,29 +4,10 @@
 package main
 
 import (
-	"reflect"
 	"testing"
 
 	"infra/cros/internal/assert"
 )
-
-// TestPrependString tests prependString.
-func TestPrependString(t *testing.T) {
-	t.Parallel()
-	for i, tc := range []struct {
-		newElem        string
-		arr            []string
-		expectedResult []string
-	}{
-		{"foo", []string{}, []string{"foo"}},
-		{"foo", []string{"bar", "baz"}, []string{"foo", "bar", "baz"}},
-	} {
-		actualResult := prependString(tc.newElem, tc.arr)
-		if !reflect.DeepEqual(actualResult, tc.expectedResult) {
-			t.Errorf("#%d: prependString(%s, %s) returned %s; want %s", i, tc.newElem, tc.arr, actualResult, tc.expectedResult)
-		}
-	}
-}
 
 // TestParseEmailFromAuthInfo tests parseEmailFromAuthInfo.
 func TestParseEmailFromAuthInfo(t *testing.T) {

@@ -90,7 +90,7 @@ func (c *collectRun) readInput() (*pb.CollectConfig, error) {
 func (c *collectRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	c.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
 	c.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
-	c.bbClient = bb.NewClient(c.cmdRunner)
+	c.bbClient = bb.NewClient(c.cmdRunner, c.stdoutLog, c.stderrLog)
 
 	if err := c.validate(); err != nil {
 		c.LogErr(err.Error())

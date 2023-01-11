@@ -5,10 +5,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
 	"infra/cros/internal/assert"
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 )
 
@@ -23,12 +25,14 @@ func TestDoesFWBranchHaveBuilder(t *testing.T) {
 		gruntBuilder = "chromeos/firmware/firmware-grunt-11031.B-branch"
 		namiBuilder  = "chromeos/firmware/firmware-nami-10775.B-branch"
 	)
+	cmdRunner := &cmd.FakeCommandRunner{
+		ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
+		Stdout:      strings.Join([]string{eveBuilder, gruntBuilder}, "\n"),
+	}
 	f := firmwareRun{
 		tryRunBase: tryRunBase{
-			cmdRunner: cmd.FakeCommandRunner{
-				ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
-				Stdout:      strings.Join([]string{eveBuilder, gruntBuilder}, "\n"),
-			},
+			cmdRunner: cmdRunner,
+			bbClient:  bb.NewClient(cmdRunner, nil, nil),
 		},
 	}
 	ctx := context.Background()
@@ -73,14 +77,16 @@ func TestValidate_firmwareRun(t *testing.T) {
 	ctx := context.Background()
 
 	// Test the good workflow
+	cmdRunner := &cmd.FakeCommandRunner{
+		ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
+		Stdout:      eveFWBuilder,
+	}
 	f := firmwareRun{
 		tryRunBase: tryRunBase{
 			branch:     eveFWBranch,
 			production: true,
-			cmdRunner: cmd.FakeCommandRunner{
-				ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
-				Stdout:      eveFWBuilder,
-			},
+			cmdRunner:  cmdRunner,
+			bbClient:   bb.NewClient(cmdRunner, nil, nil),
 		},
 	}
 	assert.NilError(t, f.validate(ctx))
@@ -108,5 +114,88 @@ func TestValidate_firmwareRun(t *testing.T) {
 		ExpectedCmd: []string{"bb", "builders", "chromeos/staging"},
 		Stdout:      "chromeos/staging/staging-firmware-eve-9584.B-branch",
 	}
+	f.bbClient = bb.NewClient(f.cmdRunner, nil, nil)
 	assert.NilError(t, f.validate(ctx))
+}
+
+type firmwareTestConfig struct {
+	// e.g. ["crrev.com/c/1234567"]
+	patches []string
+	// e.g. staging-release-R106.15054.B-orchestrator
+	expectedBuilder string
+	production      bool
+	dryrun          bool
+	branch          string
+}
+
+func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
+	t.Helper()
+
+	var expectedBucket string
+	expectedBuilder := tc.expectedBuilder
+	if tc.production {
+		expectedBucket = "chromeos/firmware"
+	} else {
+		expectedBucket = "chromeos/staging"
+	}
+
+	f := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeAuthInfoRunner("led", 0),
+			{
+				ExpectedCmd: []string{
+					"led", "auth-info",
+				},
+				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
+			},
+			{
+				ExpectedCmd: []string{
+					"bb", "builders", expectedBucket,
+				},
+				Stdout: fmt.Sprintf("foo\n%s/%s\nbar\n", expectedBucket, tc.expectedBuilder),
+			},
+		},
+	}
+	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
+	for _, patch := range tc.patches {
+		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
+	}
+	if !tc.dryrun {
+		f.CommandRunners = append(f.CommandRunners,
+			cmd.FakeCommandRunner{
+				ExpectedCmd: expectedAddCmd,
+			},
+		)
+	}
+
+	r := firmwareRun{
+		tryRunBase: tryRunBase{
+			cmdRunner:            f,
+			branch:               tc.branch,
+			production:           tc.production,
+			patches:              tc.patches,
+			skipProductionPrompt: true,
+		},
+	}
+	ret := r.Run(nil, nil, nil)
+	assert.IntsEqual(t, ret, Success)
+}
+
+func TestFirmware_production(t *testing.T) {
+	t.Parallel()
+	doFirmwareTest(t, &firmwareTestConfig{
+		branch:          "firmware-nissa-15217.B",
+		expectedBuilder: "firmware-nissa-15217.B-branch",
+		production:      true,
+	})
+}
+func TestFirmware_staging(t *testing.T) {
+	t.Parallel()
+	doFirmwareTest(t, &firmwareTestConfig{
+		branch:          "firmware-nissa-15217.B",
+		expectedBuilder: "staging-firmware-nissa-15217.B-branch",
+		production:      false,
+	})
 }

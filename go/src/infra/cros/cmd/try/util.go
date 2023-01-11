@@ -9,11 +9,6 @@ import (
 	"strings"
 )
 
-// prependString returns an array with an element at the beginning.
-func prependString(newElem string, arr []string) []string {
-	return append([]string{newElem}, arr...)
-}
-
 // interfaceSlicetoStr converts a slice of interface{}s to a slice of strings.
 func interfaceSliceToStr(s []interface{}) []string {
 	ret := make([]string, len(s))

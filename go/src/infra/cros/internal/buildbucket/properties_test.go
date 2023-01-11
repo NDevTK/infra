@@ -117,7 +117,7 @@ func TestGetBuilderInputProps(t *testing.T) {
 		c := NewClient(cmd.FakeCommandRunner{
 			ExpectedCmd: []string{"led", "get-builder", "chromeos/release:release-main-orchestrator"},
 			Stdout:      tc.ledGetBuilderStdout,
-		})
+		}, nil, nil)
 		propsStruct, err := c.GetBuilderInputProps(context.Background(), "chromeos/release/release-main-orchestrator")
 		if err != nil && !tc.expectError {
 			t.Errorf("#%d: Unexpected error running GetBuilderInputProps: %+v", i, err)
@@ -269,7 +269,7 @@ func TestGetBuild(t *testing.T) {
 		c := NewClient(cmd.FakeCommandRunner{
 			ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
 			Stdout:      tc.bbGetStdout,
-		})
+		}, nil, nil)
 		build, err := c.GetBuild(context.Background(), bbid)
 		if err != nil && !tc.expectError {
 			t.Errorf("#%d: Unexpected error running GetBuild: %+v", i, err)
@@ -321,7 +321,7 @@ func TestGetBuilds(t *testing.T) {
 	c := NewClient(cmd.FakeCommandRunner{
 		ExpectedCmd: []string{"bb", "get", "12345", "12346", "-p", "-json"},
 		Stdout:      stdout,
-	})
+	}, nil, nil)
 	builds, err := c.GetBuilds(context.Background(), []string{"12345", "12346"})
 	if err != nil {
 		t.Errorf("Unexpected error running GetBuild: %+v", err)

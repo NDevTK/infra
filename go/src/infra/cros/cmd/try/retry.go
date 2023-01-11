@@ -411,7 +411,7 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 
 	builder := buildData.GetBuilder()
 	builderName := fmt.Sprintf("%s/%s/%s", builder.GetProject(), builder.GetBucket(), builder.GetBuilder())
-	if err := r.BBAdd(ctx, append([]string{builderName}, r.bbAddArgs...)...); err != nil {
+	if err := r.bbClient.BBAdd(ctx, r.dryrun, append([]string{builderName}, r.bbAddArgs...)...); err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}

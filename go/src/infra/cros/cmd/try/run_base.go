@@ -111,7 +111,7 @@ func (t *tryRunBase) validate() error {
 
 // run executes common run logic for all tryRunBase commands.
 func (t *tryRunBase) run(ctx context.Context) (int, error) {
-	t.bbClient = buildbucket.NewClient(t.cmdRunner)
+	t.bbClient = buildbucket.NewClient(t.cmdRunner, t.stdoutLog, t.stderrLog)
 
 	if err := t.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		return AuthError, err

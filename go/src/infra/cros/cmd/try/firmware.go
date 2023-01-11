@@ -43,10 +43,16 @@ func (f *firmwareRun) Run(_ subcommands.Application, _ []string, _ subcommands.E
 	f.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
 
 	ctx := context.Background()
+	// Need to call run first to do LUCI auth / set up other shared constructs.
+	if ret, err := f.run(ctx); err != nil {
+		f.LogErr(err.Error())
+		return ret
+	}
 	if err := f.validate(ctx); err != nil {
 		f.LogErr(err.Error())
 		return CmdError
 	}
+
 	if len(f.patches) > 0 {
 		f.bbAddArgs = patchListToBBAddArgs(f.patches)
 	}
@@ -82,7 +88,7 @@ func (f *firmwareRun) doesFWBranchHaveBuilder(ctx context.Context, branch string
 	if staging {
 		bucket = "staging"
 	}
-	allFWBuilders, err := f.BBBuilders(ctx, bucket)
+	allFWBuilders, err := f.bbClient.BBBuilders(ctx, bucket)
 	if err != nil {
 		return false, errors.Annotate(err, "querying bb for firmware builders").Err()
 	}
@@ -104,5 +110,5 @@ func getFWBuilderFullName(branch string, staging bool) string {
 // runFWBuilder creates a firmware build via `bb add`, and reports it to the user.
 func (f *firmwareRun) runFirmwareBuilder(ctx context.Context) error {
 	builderName := getFWBuilderFullName(f.branch, !f.production)
-	return f.BBAdd(ctx, append([]string{builderName}, f.bbAddArgs...)...)
+	return f.bbClient.BBAdd(ctx, f.dryrun, append([]string{builderName}, f.bbAddArgs...)...)
 }

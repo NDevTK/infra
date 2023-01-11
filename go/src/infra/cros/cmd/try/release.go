@@ -241,5 +241,5 @@ func (r *releaseRun) getReleaseBuilderNames() []string {
 // runReleaseOrchestrator creates a release orchestrator build via `bb add`, and reports it to the user.
 func (r *releaseRun) runReleaseOrchestrator(ctx context.Context) error {
 	orchName := r.getReleaseOrchestratorName()
-	return r.BBAdd(ctx, append([]string{orchName}, r.bbAddArgs...)...)
+	return r.bbClient.BBAdd(ctx, r.dryrun, append([]string{orchName}, r.bbAddArgs...)...)
 }
