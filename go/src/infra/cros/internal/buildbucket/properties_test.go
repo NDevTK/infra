@@ -5,7 +5,7 @@ package buildbucket
 
 import (
 	"context"
-	"fmt"
+	"strings"
 	"testing"
 
 	"infra/cros/internal/assert"
@@ -123,7 +123,6 @@ func TestGetBuilderInputProps(t *testing.T) {
 			t.Errorf("#%d: Unexpected error running GetBuilderInputProps: %+v", i, err)
 		}
 		if err == nil && tc.expectError {
-			fmt.Println("yo", propsStruct.String())
 			t.Errorf("#%d: Expected error running GetBuilderInputProps; got no error. props: %+v", i, propsStruct)
 		}
 		if !tc.expectError && propsStruct.String() != tc.expectedInputProps.String() {
@@ -188,7 +187,7 @@ func TestSetProperty_error(t *testing.T) {
 
 const (
 	buildUnmarshalErrorButInputPropsOK = `{
-		"id": "8794230068334833057",
+		"id": "12345",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -204,7 +203,16 @@ const (
 			}
 		}
 	}`
-	// "outputt" is mispelled.
+	buildUnmarshalNoError = `{
+		"id": "12346",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-release-main-orchestrator"
+		},
+		"status": "FAILURE"
+	}`
+	// "outputt" is misspelled.
 	buildUnmarshalErrorWithNoInputProperties = `{
 		"id": "8794230068334833057",
 		"builder": {
@@ -238,6 +246,7 @@ func TestGetBuild(t *testing.T) {
 	if err != nil {
 		t.Fatal("Error constructing outputProps:", err)
 	}
+	okBuild.Id = 12345
 	okBuild.Status = bbpb.Status_SUCCESS
 	okBuild.Builder = &bbpb.BuilderID{
 		Project: "chromeos",
@@ -253,9 +262,9 @@ func TestGetBuild(t *testing.T) {
 		expectError   bool
 		expectedBuild *bbpb.Build // Unchecked if expectError
 	}{
-		{invalidJSON, true, nil},
-		{buildUnmarshalErrorButInputPropsOK, false, &okBuild},
-		{buildUnmarshalErrorWithNoInputProperties, true, nil},
+		{stripNewlines(invalidJSON), true, nil},
+		{stripNewlines(buildUnmarshalErrorButInputPropsOK), false, &okBuild},
+		{stripNewlines(buildUnmarshalErrorWithNoInputProperties), true, nil},
 	} {
 		c := NewClient(cmd.FakeCommandRunner{
 			ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
@@ -269,7 +278,57 @@ func TestGetBuild(t *testing.T) {
 			t.Errorf("#%d: Expected error running GetBuild; got no error. build: %+v", i, build)
 		}
 		if !tc.expectError && build.String() != tc.expectedBuild.String() {
-			t.Errorf("#%d: Unexpected build: got %+v; want %+v", i, build, tc.expectedBuild)
+			t.Errorf("#%d: Unexpected build:\ngot\n%+v\n\nwant\n%+v", i, build, tc.expectedBuild)
+		}
+	}
+}
+
+func stripNewlines(s string) string {
+	return strings.ReplaceAll(s, "\n", "")
+}
+
+// TestGetBuilds tests GetBuilds.
+func TestGetBuilds(t *testing.T) {
+	t.Parallel()
+
+	outputProps, err := structpb.NewStruct(map[string]interface{}{
+		"$chromeos/my_module": map[string]interface{}{
+			"my_prop": 100,
+		},
+		"my_other_prop": 101,
+	})
+	if err != nil {
+		t.Fatal("Error constructing outputProps:", err)
+	}
+
+	var expectedBuild bbpb.Build
+	expectedBuild.Status = bbpb.Status_SUCCESS
+	expectedBuild.Builder = &bbpb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "staging",
+		Builder: "staging-release-main-orchestrator",
+	}
+	expectedBuilds := []bbpb.Build{expectedBuild, expectedBuild}
+	expectedBuilds[0].Id = 12345
+	expectedBuilds[0].Output = &bbpb.Build_Output{
+		Properties: outputProps,
+	}
+	expectedBuilds[1].Id = 12346
+	expectedBuilds[1].Status = bbpb.Status_FAILURE
+
+	stdout := (stripNewlines(buildUnmarshalErrorButInputPropsOK) + "\n" +
+		stripNewlines(buildUnmarshalNoError))
+	c := NewClient(cmd.FakeCommandRunner{
+		ExpectedCmd: []string{"bb", "get", "12345", "12346", "-p", "-json"},
+		Stdout:      stdout,
+	})
+	builds, err := c.GetBuilds(context.Background(), []string{"12345", "12346"})
+	if err != nil {
+		t.Errorf("Unexpected error running GetBuild: %+v", err)
+	}
+	for i := range expectedBuilds {
+		if builds[i].String() != expectedBuilds[i].String() {
+			t.Errorf("Unexpected build #%d:\ngot\n%+v\n\nwant\n%+v\n", i, builds[i].String(), expectedBuilds[i].String())
 		}
 	}
 }

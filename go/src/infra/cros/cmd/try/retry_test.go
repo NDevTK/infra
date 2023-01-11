@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"infra/cros/internal/assert"
@@ -99,6 +100,10 @@ const (
 	}`
 )
 
+func stripNewlines(s string) string {
+	return strings.ReplaceAll(s, "\n", "")
+}
+
 type retryTestConfig struct {
 	dryrun bool
 }
@@ -122,15 +127,15 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 			},
 			{
 				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
-				Stdout:      retryTestGoodJSON,
+				Stdout:      stripNewlines(retryTestGoodJSON),
 			},
 			{
 				ExpectedCmd: []string{"bb", "get", "8794230068334833058", "-p", "-json"},
-				Stdout:      successfulChildJSON,
+				Stdout:      stripNewlines(successfulChildJSON),
 			},
 			{
 				ExpectedCmd: []string{"bb", "get", "8794230068334833059", "-p", "-json"},
-				Stdout:      failedChildJSON,
+				Stdout:      stripNewlines(failedChildJSON),
 			},
 		},
 	}
@@ -277,7 +282,7 @@ func TestRetry_childBuilder_fullRun(t *testing.T) {
 		dryrun:           false,
 		bbid:             "8794230068334833050",
 		builderName:      "staging-zork-release-main",
-		builderJSON:      failedChildJSON,
+		builderJSON:      stripNewlines(failedChildJSON),
 		expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
 	})
 }
@@ -287,7 +292,7 @@ func TestRetry_childBuilder_paygen_fullRun(t *testing.T) {
 		dryrun:           false,
 		bbid:             "8794230068334833058",
 		builderName:      "staging-eve-release-main",
-		builderJSON:      successfulChildJSON,
+		builderJSON:      stripNewlines(successfulChildJSON),
 		expectedExecStep: pb.RetryStep_PAYGEN,
 		paygenRetry:      true,
 	})
@@ -321,7 +326,7 @@ func TestRetry_childBuilder_paygen_fail_noSummary(t *testing.T) {
 		dryrun:      false,
 		bbid:        "8794230068334833058",
 		builderName: "staging-zork-release-main",
-		builderJSON: noRetrySummaryJSON,
+		builderJSON: stripNewlines(noRetrySummaryJSON),
 		expectError: true,
 		paygenRetry: true,
 	})
@@ -333,7 +338,7 @@ func TestRetry_childBuilder_paygen_fail_hasSummary(t *testing.T) {
 		dryrun:      false,
 		bbid:        "8794230068334833058",
 		builderName: "staging-zork-release-main",
-		builderJSON: failedChildJSON,
+		builderJSON: stripNewlines(failedChildJSON),
 		expectError: true,
 		paygenRetry: true,
 	})
