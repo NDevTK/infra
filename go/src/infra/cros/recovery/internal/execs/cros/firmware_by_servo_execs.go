@@ -142,6 +142,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		DownloadDir:          fwDownloadDir,
 		Board:                am.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
 		Model:                am.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
+		Hwid:                 am.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
 		ForceUpdate:          am.AsBool(ctx, "force", false),
 		UpdateEcAttemptCount: am.AsInt(ctx, "update_ec_attempt_count", 0),
 		UpdateApAttemptCount: am.AsInt(ctx, "update_ap_attempt_count", 0),
