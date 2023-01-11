@@ -75,7 +75,7 @@ func setupBundledInterpreters() map[string]string {
 		exeSuffix = ".exe"
 	}
 	ret := make(map[string]string)
-	for _, version := range []string{"2.7", "3.8"} {
+	for _, version := range []string{"2.7", "3.8", "3.11"} {
 		pythonName := "python"
 		if version[0] == '3' {
 			pythonName += "3"
