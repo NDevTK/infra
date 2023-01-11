@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/logger"
 )
 
 // MatchCrossystemValueToExpectation reads value from crossystem and compared to expected value.
@@ -24,6 +25,39 @@ func MatchCrossystemValueToExpectation(ctx context.Context, run components.Runne
 	actualValue := strings.TrimSpace(out)
 	if actualValue != expectedValue {
 		return errors.Reason("match crossystem value to expectation: %q, found: %q", expectedValue, actualValue).Err()
+	}
+	return nil
+}
+
+// MatchSuffixValueToExpectation reads value from crossystem, split both read out and expected value with a given delimiter and then compare their suffix.
+func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, subcommand string, expectedValue string, delimiter string, log logger.Logger) error {
+	out, err := run(ctx, time.Minute, "crossystem", subcommand)
+	if err != nil {
+		return errors.Annotate(err, "match suffix value to expectation: fail read %s", subcommand).Err()
+	}
+
+	splittedOut := strings.SplitN(strings.TrimSpace(out), delimiter, 2)
+	if len(splittedOut) != 2 {
+		return errors.Reason(fmt.Sprintf("match suffix value to expectation: cannot split output %s with delimiter %s", out, delimiter)).Err()
+	}
+	actual := splittedOut[1]
+	if actual == "" {
+		return errors.Reason("match suffix value to expectation: suffix from output value is empty after split.").Err()
+	}
+	log.Debugf(fmt.Sprintf("Suffix found from splitted output value: %s", actual))
+
+	splittedExpectedValue := strings.SplitN(expectedValue, delimiter, 2)
+	if len(splittedExpectedValue) != 2 {
+		return errors.Reason(fmt.Sprintf("match suffix value to expectation: cannot split expected value %s with delimiter %s", expectedValue, delimiter)).Err()
+	}
+	expected := splittedExpectedValue[1]
+	if expected == "" {
+		return errors.Reason("match suffix value to expectation: suffix from expected value is empty after split.").Err()
+	}
+	log.Debugf(fmt.Sprintf("Suffix found from splitted expected value: %s", expected))
+
+	if actual != expected {
+		return errors.Reason("match crossystem value to expectation: %q, found: %q", expected, actual).Err()
 	}
 	return nil
 }

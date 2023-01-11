@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -34,6 +35,13 @@ type ReadAPInfoResponse struct {
 	GBBFlags    int
 	Keys        []string
 }
+
+// Regexp that match to output of `crosid` from a given DUT.
+// Below is an example output of `crosid`:
+// SKU='163840'
+// CONFIG_INDEX='88'
+// FIRMWARE_MANIFEST_KEY='nirwen_ufs'
+var firmwareManifestRegexp = regexp.MustCompile("FIRMWARE_MANIFEST_KEY='(.*)'")
 
 // ReadAPInfoByServo read AP info from DUT.
 //
@@ -321,6 +329,16 @@ func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareIma
 		}
 		updaterReq.ApImage = apImage
 	}
+	// Override firmware model if target DUT is with hwid that using mult-firmware.
+	if IsMultiFirmwareHwid(req.Hwid) {
+		log.Debugf("Multi-firmware hwid detected, collecting firmware manifest key from the DUT.")
+		fwModel, err := getFirmwareManifestKeyFromDUT(ctx, req.DutRunner, log)
+		if err != nil {
+			return errors.Annotate(err, "install firmware via updater").Err()
+		}
+		log.Debugf(fmt.Sprintf("Override firmware model to %s", fwModel))
+		updaterReq.Model = fwModel
+	}
 	return RunFirmwareUpdater(ctx, &updaterReq, req.DutRunner, log)
 }
 
@@ -531,6 +549,19 @@ func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log lo
 	return strings.ToLower(out), nil
 }
 
+// getFirmwareManifestKeyFromDUT read FIRMWARE_MANIFEST_KEY of crosid output from the DUT.
+func getFirmwareManifestKeyFromDUT(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
+	out, err := run(ctx, time.Second*15, "crosid")
+	if err != nil {
+		return "", errors.Annotate(err, "get firmware manifest key from DUT").Err()
+	}
+	fwLine := firmwareManifestRegexp.FindStringSubmatch(out)
+	if len(fwLine) == 0 || fwLine[1] == "" {
+		return "", errors.Reason("get firmware manifest key: empty content from crosid").Err()
+	}
+	return fwLine[1], nil
+}
+
 // Helper function to decide firmware candidate image.
 // A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
 // For extract firmware image, we're following below orders to decide firmware target on the DUT:
@@ -589,4 +620,10 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 		candidates = append(candidates, fmt.Sprintf(p, req.Board))
 	}
 	return candidates
+}
+
+// IsMultiFirmwareHwid determines if a given hwid maps to multi-firmware use case by check key existence in targetOverridebyHwid map.
+func IsMultiFirmwareHwid(hwid string) bool {
+	_, ok := targetOverridebyHwid[hwid]
+	return ok
 }

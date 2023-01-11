@@ -68,11 +68,21 @@ func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) 
 
 // isOnROFirmwareStableVersionExec confirms that the current RO firmware on DUT is match with model specific stable version.
 func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	logger := info.NewLogger()
 	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "on ro firmware stable version").Err()
 	}
-	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "ro_fwid", sv.FwVersion)
+	// For multiple firmware model, firmware name may change based on hwid batch, e.g. "Google_Nivviks.15217.58.0" and "Google_Nivviks_Ufs.15217.58.0".
+	// So we only compare the version number in this case given stable_version can only store one value.
+	versionNumberOnly := firmware.IsMultiFirmwareHwid(info.GetChromeos().GetHwid())
+	if versionNumberOnly {
+		delimiter := "."
+		logger.Debugf("Multi-firmware hwid detected, will only compare version number for firmware match validation.")
+		err = cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), "ro_fwid", sv.FwVersion, delimiter, logger)
+	} else {
+		err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "ro_fwid", sv.FwVersion)
+	}
 	return errors.Annotate(err, "on ro firmware stable version").Err()
 }
 
