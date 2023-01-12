@@ -73,7 +73,10 @@ func checkTaskFailuresExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "check task failures").Err()
 	}
-	if repairFailedCount > repairFailedCountTarget {
+	// We do not count the current repair attempt in the target, we only count the failures that have previously occurred.
+	// Therefore, if we currently meet or exceed the repair-failed target, then the device should be set to the needs-manual-repair state.
+	// See b:264309811 comment 10 for details.
+	if repairFailedCount >= repairFailedCountTarget {
 		log.Infof(ctx, "The number of repair attempts %d exceeded the threshold of %d", repairFailedCount, repairFailedCountTarget)
 		return nil
 	}
