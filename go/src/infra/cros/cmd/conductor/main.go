@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 
+	"infra/cros/cmd/try/try"
 	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 
@@ -31,10 +32,12 @@ type collectRun struct {
 	stderrLog *log.Logger
 	cmdRunner cmd.CommandRunner
 	bbClient  *bb.Client
+	tryClient try.RetryClient
 
 	inputJSON              string
 	pollingIntervalSeconds int
 	bbids                  list
+	dryrun                 bool
 }
 
 type list []string
@@ -55,9 +58,11 @@ func cmdCollect() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			c := &collectRun{}
 			c.cmdRunner = cmd.RealCommandRunner{}
+			c.tryClient = &try.Client{}
 			c.Flags.StringVar(&c.inputJSON, "input_json", "", "Path to JSON proto representing a CollectConfig")
 			c.Flags.IntVar(&c.pollingIntervalSeconds, "polling_interval", 60, "Seconds to wait between polling builders")
 			c.Flags.Var(&c.bbids, "bbids", "(comma-separated) initial set of BBIDs to watch.")
+			c.Flags.BoolVar(&c.dryrun, "dryrun", true, "Dry run (i.e. don't actually retry builds).")
 			return c
 		}}
 }
@@ -93,7 +98,7 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 	c.bbClient = bb.NewClient(c.cmdRunner, c.stdoutLog, c.stderrLog)
 
 	ctx := context.Background()
-	if err := c.bbClient.EnsureLUCIToolsAuthed(ctx, "bb"); err != nil {
+	if err := c.bbClient.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		c.LogErr(err.Error())
 		// TODO(b/264680777): Factor return_codes.go out of try and use those.
 		return 1

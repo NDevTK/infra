@@ -10,13 +10,31 @@ import (
 	"strings"
 	"time"
 
+	"infra/cros/cmd/try/try"
 	"infra/cros/internal/shared"
+
+	"go.chromium.org/luci/common/errors"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
+// retryBuild retries a build using `cros try retry`. It returns the BBID of the
+// new build.
+func (c *collectRun) retryBuild(build *bbpb.Build) (string, error) {
+	opts := &try.RetryRunOpts{
+		StdoutLog: c.stdoutLog,
+		StderrLog: c.stderrLog,
+		CmdRunner: c.cmdRunner,
+
+		BBID:   fmt.Sprintf("%d", build.GetId()),
+		Dryrun: c.dryrun,
+	}
+	return c.tryClient.DoRetry(opts)
+}
+
 func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) error {
+	state := initCollectState(config)
 	watchSet := c.bbids
 
 	pollingDelay := time.Duration(c.pollingIntervalSeconds) * time.Second
@@ -28,6 +46,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 		Retries:     5,
 	}
 
+	errs := []error{}
 	for len(watchSet) > 0 {
 		c.LogOut("Sleeping for %d seconds", c.pollingIntervalSeconds)
 		time.Sleep(pollingDelay)
@@ -63,10 +82,28 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 				newWatchSet = append(newWatchSet, fmt.Sprintf("%d", build.GetId()))
 			} else {
 				c.LogOut("Build %d finished with status %s", build.GetId(), build.GetStatus())
+				if build.GetStatus() != bbpb.Status_SUCCESS {
+					if state.canRetry(build) {
+						if c.dryrun {
+							c.LogOut("(Dryrun) Would have retried %d", build.GetId())
+						} else {
+							if newBBID, err := c.retryBuild(build); err != nil {
+								errs = append(errs, err)
+								c.LogErr("Failed to retry %d: %v", build.GetId(), err)
+								c.LogErr("Continuing with best effort collection")
+							} else {
+								newWatchSet = append(newWatchSet, newBBID)
+								state.recordRetry(build)
+							}
+						}
+					}
+				}
 			}
 		}
 		watchSet = newWatchSet
 	}
-
+	if len(errs) > 0 {
+		return errors.NewMultiError(errs...)
+	}
 	return nil
 }

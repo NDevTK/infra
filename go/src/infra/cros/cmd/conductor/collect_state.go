@@ -9,13 +9,13 @@ import (
 )
 
 type Rule struct {
-	rule *pb.RetryRule
+	rule         *pb.RetryRule
+	totalRetries uint32
 }
 
 // CollectState tracks state for a conductor collect.
 type CollectState struct {
-	rules        []*Rule
-	totalRetries uint32
+	rules []*Rule
 }
 
 // initCollectState returns a new CollectState based on the specified config.
@@ -23,12 +23,12 @@ func initCollectState(config *pb.CollectConfig) *CollectState {
 	rules := []*Rule{}
 	for _, rule := range config.GetRules() {
 		rules = append(rules, &Rule{
-			rule: rule,
+			rule:         rule,
+			totalRetries: 0,
 		})
 	}
 	return &CollectState{
-		rules:        rules,
-		totalRetries: 0,
+		rules: rules,
 	}
 }
 
@@ -44,15 +44,20 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 			continue
 		}
 		if rule.rule.GetMaxRetries() > 0 {
-			if c.totalRetries >= uint32(rule.rule.GetMaxRetries()) {
+			if rule.totalRetries >= uint32(rule.rule.GetMaxRetries()) {
 				return false
 			}
 		}
 	}
-	return true
+	// No retries if there are no rules configured.
+	return len(c.rules) > 0
 }
 
 // recordRetry records that the build was retried.
 func (c *CollectState) recordRetry(build *bbpb.Build) {
-	c.totalRetries += 1
+	for _, rule := range c.rules {
+		if rule.matches(build) {
+			rule.totalRetries += 1
+		}
+	}
 }

@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"infra/cros/cmd/try/try"
 	"infra/cros/internal/assert"
 	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
@@ -61,10 +62,24 @@ type collectResult struct {
 	status bbpb.Status
 }
 
+type FakeTryClient struct {
+	t                   *testing.T
+	originalToRetryBBID map[string]string
+}
+
+func (c *FakeTryClient) DoRetry(opts *try.RetryRunOpts) (string, error) {
+	retryBBID, ok := c.originalToRetryBBID[opts.BBID]
+	if !ok {
+		return "", fmt.Errorf("unexpected retry for BBID %v", opts.BBID)
+	}
+	return retryBBID, nil
+}
+
 type collectTestConfig struct {
-	configJSON     string
-	bbids          []int64
-	collectResults []map[int64]collectResult
+	configJSON          string
+	bbids               []int64
+	collectResults      []map[int64]collectResult
+	originalToRetryBBID map[string]string
 }
 
 func doTestRun(t *testing.T, tc *collectTestConfig) {
@@ -81,6 +96,7 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 	var initialBBIDs []string
 	commandRunners := []cmd.FakeCommandRunner{
 		bb.FakeAuthInfoRunner("bb", 0),
+		bb.FakeAuthInfoRunner("led", 0),
 	}
 	for _, collectResults := range tc.collectResults {
 		var stdout string
@@ -108,6 +124,10 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 		})
 	}
 	c := collectRun{
+		tryClient: &FakeTryClient{
+			t:                   t,
+			originalToRetryBBID: tc.originalToRetryBBID,
+		},
 		cmdRunner: &cmd.FakeCommandRunnerMulti{
 			CommandRunners: commandRunners,
 		},
@@ -123,6 +143,7 @@ func TestCollect_NoRetries(t *testing.T) {
 	t.Parallel()
 	doTestRun(t, &collectTestConfig{
 		configJSON: "{}",
+		bbids:      []int64{12345, 12346, 12347},
 		collectResults: []map[int64]collectResult{
 			{
 				12345: {
@@ -151,6 +172,77 @@ func TestCollect_NoRetries(t *testing.T) {
 					bbpb.Status_FAILURE,
 				},
 				12347: {
+					bbpb.Status_INFRA_FAILURE,
+				},
+			},
+		},
+	})
+}
+
+var (
+	basicRetryConfig = `{
+		"rules": [
+			{
+				"max_retries": 3
+			}
+		]
+	}`
+)
+
+func TestCollect_Retries(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &collectTestConfig{
+		configJSON: basicRetryConfig,
+		bbids:      []int64{12345, 12346, 12347},
+		originalToRetryBBID: map[string]string{
+			"12346": "12348",
+			"12348": "12350",
+			"12347": "12349",
+		},
+		collectResults: []map[int64]collectResult{
+			{
+				12345: {
+					bbpb.Status_SCHEDULED,
+				},
+				12346: {
+					bbpb.Status_STARTED,
+				},
+				12347: {
+					bbpb.Status_STARTED,
+				},
+			},
+			{
+				12345: {
+					bbpb.Status_SUCCESS,
+				},
+				12346: {
+					bbpb.Status_STARTED,
+				},
+				12347: {
+					bbpb.Status_STARTED,
+				},
+			},
+			{
+				12346: {
+					bbpb.Status_FAILURE,
+				},
+				12347: {
+					bbpb.Status_INFRA_FAILURE,
+				},
+			},
+			{
+				12348: {
+					bbpb.Status_FAILURE,
+				},
+				12349: {
+					bbpb.Status_STARTED,
+				},
+			},
+			{
+				12350: {
+					bbpb.Status_FAILURE,
+				},
+				12349: {
 					bbpb.Status_INFRA_FAILURE,
 				},
 			},

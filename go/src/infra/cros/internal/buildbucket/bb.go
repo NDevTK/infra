@@ -129,9 +129,9 @@ func (c *Client) BBAdd(ctx context.Context, dryRun bool, args ...string) (string
 		return "", err
 	}
 	if dryRun {
-		return "", nil
+		return "dry_run_bbid", nil
 	}
-	c.LogOut("\n" + stdout)
+	c.LogOut("\n" + strings.Split(stdout, "\n")[0])
 	bbidRegexp := regexp.MustCompile(`http:\/\/ci.chromium.org\/b\/(?P<bbid>\d+) `)
 	matches := bbidRegexp.FindStringSubmatch(stdout)
 	if matches == nil {
