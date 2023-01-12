@@ -1019,6 +1019,7 @@ func crosRepairActions() map[string]*Action {
 				"Audit storage (SMART only)",
 				"Audit wifi",
 				"Audit bluetooth",
+				"Audit cellular",
 				"Check DUT state and fail if needs replacement",
 			},
 			ExecName: "sample_pass",
@@ -1066,6 +1067,23 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_audit_bluetooth",
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Audit cellular": {
+			Docs: []string{
+				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_audit_cellular",
+			ExecExtraArgs: []string{
+				"wait_manager_when_not_expected:120",
+				"wait_manager_when_expected:15",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 180,
 			},
 			AllowFailAfterRecovery: true,
 		},
