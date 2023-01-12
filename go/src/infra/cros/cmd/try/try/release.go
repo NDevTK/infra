@@ -81,7 +81,11 @@ func (r *releaseRun) checkChildrenExist(ctx context.Context) error {
 			fullBuilderName := fmt.Sprintf("chromeos/%s/%s", bucket, builderName)
 			_, err := r.bbClient.GetBuilderInputProps(ctx, fullBuilderName)
 			if err != nil && strings.Contains(err.Error(), "not found") {
-				return fmt.Errorf("%s is not a valid build target for %s", r.buildTargets[i], r.branch)
+				return fmt.Errorf(
+					"%s is not a valid build target for %s. (If you just "+
+						"created the branch, you may need to wait 10-15 min "+
+						"for LUCI to pick up the new builders.)",
+					r.buildTargets[i], r.branch)
 			}
 		}
 	}
