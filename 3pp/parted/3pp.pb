@@ -1,10 +1,11 @@
 create {
   platform_re: "linux-amd64"
-   source {
+  source {
     git {
       repo: "https://git.savannah.gnu.org/git/parted.git"
       tag_pattern: "v%s"
     }
+    cpe_base_address: "cpe:/a:parted_project:parted"
   }
   build {
     tool: "tools/rsync"
