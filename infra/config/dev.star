@@ -451,6 +451,11 @@ luci.realm(
         luci.binding(
             roles = "role/swarming.poolUser",
             groups = ["mdb/chrome-troopers", "mdb/chrome-sre-ops-syd-interns"],
+            users = "swarming-bot@luci-backend-dev.iam.gserviceaccount.com",
+        ),
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
+            users = "swarming-bot@luci-backend-dev.iam.gserviceaccount.com",
         ),
     ],
 )
