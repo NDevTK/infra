@@ -14,6 +14,8 @@ option go_package = "infra/appengine/crosskylabadmin/internal/app/config";
 
 // Config is the configuration data served by luci-config for this app.
 message Config {
+  reserved 5, 6, 9;
+  reserved "inventory_provider", "inventory", "endpoint";
   // AccessGroup is the luci-auth group controlling access to admin app APIs.
   string access_group = 1;
 
@@ -27,22 +29,12 @@ message Config {
   // Cron contains the configuration data specific to cron jobs on this app.
   Cron cron = 4;
 
-  // Inventory contains configuration information about skylab inventory
-  // repo.
-  Inventory inventory = 5;
-
-  // endpoint contains configuration of specific API endpoints.
-  Endpoint endpoint = 6;
-
   // RPCcontrol controls rpc traffic.
   RPCControl rpc_control = 7;
 
-  // StableVersionConfig determines the location of stable version related information
+  // StableVersionConfig determines the location of stable version related
+  // information
   StableVersionConfig stable_version_config = 8;
-
-  // InventoryProvider contains configuration of inventory provider, e.g.
-  // inventory v2 service.
-  InventoryProvider inventory_provider = 9;
 
   // Paris is the configuration settings for paris (the new repair &c flow).
   Paris paris = 10;
@@ -94,6 +86,8 @@ message Tasker {
 
 // Cron contains the configuration data specific to cron jobs on this app.
 message Cron {
+  reserved 5;
+  reserved "pool_balancer";
   // FleetAdminTaskPriority is the swarming task priority of created tasks.
   //
   // This must be numerically smaller (i.e. more important) than Skylab's test
@@ -112,15 +106,13 @@ message Cron {
   // RepairAttemptDelayDuration is the time between successive attempts at
   // repairing repair failed bots in the fleet.
   google.protobuf.Duration repair_attempt_delay_duration = 4;
-
-  // Configuration of automatic pool balancing to keep critical pools healthy.
-  PoolBalancer pool_balancer = 5;
 }
 
 // next tag: 11
 message RPCControl {
-  // Configuration of if disabling some rpc calls. It's used in experimental stage.
-  // Once an RPC call is verified to be working/useless, it will be added/deleted.
+  // Configuration of if disabling some rpc calls. It's used in experimental
+  // stage. Once an RPC call is verified to be working/useless, it will be
+  // added/deleted.
   bool disable_ensure_background_tasks = 1;
   bool disable_ensure_critical_pools_healthy = 2;
   bool disable_push_bots_for_admin_tasks = 3;
@@ -131,118 +123,6 @@ message RPCControl {
   bool disable_push_labstations_for_repair = 8;
   bool disable_dump_stable_version_to_datastore = 9;
   bool disable_push_duts_for_admin_audit = 10;
-}
-
-// Skylab inventory is stored in a git project. A Gitiles server as well as
-// Gerrit review server are used by this app to view and update the inventory
-// data.
-message Inventory {
-  // Gitiles server hosting inventory project.
-  // e.g. chromium.googlesource.com
-  string gitiles_host = 1;
-
-  // Gerrit code review server hosting inventory project.
-  // e.g. chromium-review.googlesource.com
-  string gerrit_host = 2;
-
-  // Git project containing the inventory data.
-  string project = 3;
-
-  // Git branch from the inventory project to be used.
-  string branch = 4;
-
-  string data_path = 5 [deprecated=true];
-
-  // Inventory environment managed by this instance of the app.
-  // e.g. ENVIRONMENT_STAGING
-  string environment = 6;
-
-  // Path to the infrastructure inventory data file within the git project.
-  // e.g. data/skylab/server_db.textpb
-  string infrastructure_data_path = 7;
-
-  // Path to the lab inventory data file within the git project.
-  // e.g. data/skylab/lab.textpb
-  string lab_data_path = 8;
-
-  // dut_info_cache_validty is the amount of time cached inventory information
-  // about a DUT is valid after being refreshed.
-  //
-  // This duration should be long enough to
-  // (1) smooth over any refresh failures due to backing gitiles flake or quota
-  //     issues.
-  // (2) Allow a human to interfere and fix corrupt inventory data about (some)
-  //     DUTs.
-  //
-  // A DUT will continue to live in the cache (and hence be served via various
-  // RPCs) for dut_info_cache_validity after it has been deleted from the
-  // inventory.
-  google.protobuf.Duration dut_info_cache_validity = 9;
-
-  // update_limit_per_minute is used to rate limit some inventory updates.
-  int32 update_limit_per_minute = 10;
-
-  // Queen service to push inventory to.
-  string queen_service = 11;
-
-  // Git project containing the device config.
-  string device_config_project = 12;
-
-  // Git branch from the device config project to be used.
-  string device_config_branch = 13;
-
-  // The device config file path.
-  // e.g. deviceconfig/generated/device_configs.cfg
-  string device_config_path = 14;
-
-  // If using multi files for inventory. See crbug.com/1008442 for details.
-  bool multifile = 15;
-
-  // Git project containing the manufacturing config.
-  string manufacturing_config_project = 16;
-
-  // Git branch from the manufacturing config project to be used.
-  string manufacturing_config_branch = 17;
-
-  // The device config file path.
-  // e.g. manufacturingconfig/generated/manufacturing_configs.cfg
-  string manufacturing_config_path = 18;
-}
-
-message PoolBalancer {
-  // Names of the pools to keep healthy automatically via pool balancing.
-  repeated string target_pools = 1;
-
-  // Name of the pool to use as the spare pool for pool balancing.
-  string spare_pool = 2;
-
-  // Maximum number of unhealthy DUTs per model that can be balanced away from
-  // a single target pool.
-  int32 max_unhealthy_duts = 3;
-}
-
-message Endpoint {
-  DeployDut deploy_dut = 1;
-}
-
-message DeployDut {
-  // Amount of time the deploy Skylab task can be PENDING.
-  //
-  // This should be long enough for the newly updated inventory information to
-  // propagate to the Swarming bots.
-  google.protobuf.Duration task_expiration_timeout = 1;
-
-  // Amount of time the deploy Skylab task is allowed to run.
-  //
-  // This should be enough for possibly installing firmware and test image on
-  // the DUT.
-  google.protobuf.Duration task_execution_timeout = 2;
-
-  // Priority of the deploy Skylab task.
-  //
-  // This should be the same as, or higher priority (i.e., numerically lower)
-  // than other admin tasks.
-  int64 task_priority = 3;
 }
 
 message StableVersionConfig {
@@ -263,46 +143,16 @@ message StableVersionConfig {
   string stable_version_data_path = 5;
 }
 
-message InventoryProvider{
-  // The inventory service hostname, e.g. "cros-lab-inventory.appspot.com".
-  string host = 1;
-
-  // TODO (guocb) Remove `traffic_ratio` `read_traffic_ratio` and
-  // `write_traffic_ratio` after migration.
-  uint32 traffic_ratio = 2 [deprecated=true];
-
-  // The ratio (a number in [0, 100]) of reading traffic FAN OUT to inventory
-  // service. Just for migrating purpose.
-  uint32 read_traffic_ratio = 3;
-
-  // The ratio (a number in [0, 100]) of reading traffic DUPLICATED to
-  // inventory service. Just for migrating purpose.
-  uint32 write_traffic_ratio = 4;
-
-  // The device uuids for migration testing.
-  repeated string testing_device_uuids = 5;
-
-  // The device names for migration testing.
-  repeated string testing_device_names = 6;
-
-  // The flag to control if we write to inventory v1.
-  bool inventory_v2_only = 7;
-}
-
 // Paris controls whether the Paris is enabled for tasks like repair and audit.
 // It also supports slow rollouts.
 //
-// Note that there are a few levels of checks before we actually use the Paris flow.
-// For example, if we are considering repairing a labstation with Paris, we will consult
-// the configuration in the following way.
-//
-// 1) Is recovery enabled for labstations in the first place? If not, use the old flow.
-// 2) Did we opt the particular labstation in question in to the new flow? If not, use the old flow.
-//        This step requires checking both `optin_all_labstations` and `optin_labstation_prefix`.
-// 3) With probability p, use the new flow, where p is determined from the config file.
+// Note that there are a few levels of checks before we actually use the Paris
+// flow. For example, if we are considering repairing a labstation with Paris,
+// we will consult the configuration in the following way.
 message Paris {
   reserved 1, 2, 3, 4, 7;
-  reserved "enable_labstation_recovery", "optin_all_labstations", "optin_labstation_pool", "labstation_recovery_permille", "dut_audit";
+  reserved "enable_labstation_recovery", "optin_all_labstations",
+      "optin_labstation_pool", "labstation_recovery_permille", "dut_audit";
   // DUT_repair controls the repair task for DUTs.
   // For expected state needs_repair.
   RolloutConfig dut_repair = 5;
@@ -333,8 +183,9 @@ message Paris {
 
 // RolloutConfig controls the rollout of a new feature.
 //
-// For example, the following config rolls out a new feature at the 5% (50/1000) level for
-// devices in the pools "a" and "b". Devices not in these pools are rolled out at the 0% level.
+// For example, the following config rolls out a new feature at the 5% (50/1000)
+// level for devices in the pools "a" and "b". Devices not in these pools are
+// rolled out at the 0% level.
 //
 // {
 //  "enable": True,
@@ -345,33 +196,39 @@ message Paris {
 message RolloutConfig {
   reserved 4, 5;
   reserved "ufs_error_policy", "rollout_permille";
-  // Enable is set to true when recovery is enabled at all. If it is set to false, the entire
-  // DUT recovery flow for PARIS is skipped and the legacy flow is used instead.
+  // Enable is set to true when recovery is enabled at all. If it is set to
+  // false, the entire DUT recovery flow for PARIS is skipped and the legacy
+  // flow is used instead.
   bool enable = 1;
 
-  // Optin_all_duts opts in every DUT (regardless of optin_dut_prefix) if set to true.
+  // Optin_all_duts opts in every DUT (regardless of optin_dut_prefix) if set to
+  // true.
   bool optin_all_duts = 2;
 
   // Optin_dut_pool controls on a per-bool basis.
   repeated string optin_dut_pool = 3;
 
-  // prod_permille is the probability (multiplied by 1000) that we use the new flow for a DUT if
-  // we are permitted to repair the device in question by the other settings in the config file.
+  // prod_permille is the probability (multiplied by 1000) that we use the new
+  // flow for a DUT if we are permitted to repair the device in question by the
+  // other settings in the config file.
   int32 prod_permille = 6;
 
-  // latest_permille is the probability (multiplied by 1000) that we use the new flow for a DUT at
-  // the "latest" label. The "latest" label is automatically marched forward to the latest version of
-  // paris that has been build, as opposed to "prod" which is manually updated after validation.
+  // latest_permille is the probability (multiplied by 1000) that we use the new
+  // flow for a DUT at the "latest" label. The "latest" label is automatically
+  // marched forward to the latest version of paris that has been build, as
+  // opposed to "prod" which is manually updated after validation.
   //
   // Note that latest_permille and prod_permille are alternatives.
   // latest_permille + prod_permille is the chance of using Paris at all.
-  // 1000 - latest_permille - prod_permille is the chance of using the legacy flow.
+  // 1000 - latest_permille - prod_permille is the chance of using the legacy
+  // flow.
   //
-  // For example, if prod is 500 and latest is 200, then legacy is implicitly 300.
-  // If prod is 20 and legacy is 1, then legacy is implicitly 979.
+  // For example, if prod is 500 and latest is 200, then legacy is implicitly
+  // 300. If prod is 20 and legacy is 1, then legacy is implicitly 979.
   int32 latest_permille = 7;
 
-  // A Pattern associates a regex identifier to a prod_permille and latest_permille.
+  // A Pattern associates a regex identifier to a prod_permille and
+  // latest_permille.
   message Pattern {
     // A pattern is a regex like "^satlab-555555".
     string pattern = 1;
@@ -381,23 +238,25 @@ message RolloutConfig {
 
     // latest_permille is the probability multiplied by 1000 of using latest.
     //
-    // In the event that latest + prod > 1000, latest is treated as if it were (1000 - prod).
+    // In the event that latest + prod > 1000, latest is treated as if it were
+    // (1000 - prod).
     int32 latest_permille = 3;
   };
 
-  // pattern is a list of regex patterns that are associated with prod and latest permilles.
+  // pattern is a list of regex patterns that are associated with prod and
+  // latest permilles.
   //
   // The patterns are tried LAST to FIRST.
-  // The reason for this is to allow more general patterns to come first and more specific
-  // overrides to come later.
+  // The reason for this is to allow more general patterns to come first and
+  // more specific overrides to come later.
   //
   // For example, the following is a reasonable sequence of patterns.
   //   - ^satlab
   //   - ^satlab-555555
   //   - ^satlab-555555-host1
   //
-  // Organizing these patterns more specific to less specific reads better than organizing
-  // them in another way.
+  // Organizing these patterns more specific to less specific reads better than
+  // organizing them in another way.
   repeated Pattern pattern = 8;
 };
 
