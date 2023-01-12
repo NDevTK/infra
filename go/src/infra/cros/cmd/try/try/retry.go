@@ -1,7 +1,7 @@
 // Copyright 2022 The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package main
+package try
 
 import (
 	"context"
@@ -39,7 +39,7 @@ var (
 	}
 )
 
-func getCmdRetry() *subcommands.Command {
+func GetCmdRetry() *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "retry [flags]",
 		ShortDesc: "(Experimental) Rerun the specified (release) build.",

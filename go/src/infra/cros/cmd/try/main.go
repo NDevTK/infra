@@ -9,6 +9,8 @@ package main
 import (
 	"os"
 
+	"infra/cros/cmd/try/try"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 )
@@ -19,9 +21,9 @@ func newApplication() *cli.Application {
 		Title: "cros try CLI",
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
-			getCmdRelease(),
-			getCmdRetry(),
-			getCmdFirmware(),
+			try.GetCmdRelease(),
+			try.GetCmdRetry(),
+			try.GetCmdFirmware(),
 		},
 	}
 }

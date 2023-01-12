@@ -1,7 +1,7 @@
 // Copyright 2022 The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package main
+package try
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-func getCmdRelease() *subcommands.Command {
+func GetCmdRelease() *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "release [flags]",
 		ShortDesc: "Run a release builder.",
