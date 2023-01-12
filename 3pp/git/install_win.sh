@@ -9,11 +9,7 @@ set -o pipefail
 
 PREFIX="$1"
 
-cipd.exe ensure -root 7zpkg -ensure-file - <<EOF
-infra/7z/\${platform} version:9.20
-EOF
-
-./7zpkg/7z.exe x raw_source_0.7z.exe "-o$PREFIX" -y
+7zr x raw_source_0.7z.exe "-o$PREFIX" -y
 
 cd "$PREFIX"
 

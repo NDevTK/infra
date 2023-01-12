@@ -1,7 +1,7 @@
 create {
   verify { test: "git_test.py" }
   source {
-    patch_version: "chromium.10"
+    patch_version: "chromium.11"
     cpe_base_address: "cpe:/a:git_project:git"
   }
 }
@@ -31,7 +31,11 @@ create {
 create {
   platform_re: "windows-.*"
   source { script { name: "fetch_win.py" }}
-  build { install: "install_win.sh" }
+  build {
+    install: "install_win.sh"
+
+    tool: "tools/7z"
+  }
   package {
     # On windows we actually source the version of git from the git-on-windows
     # project, which maintains its own patch suffix of the form ".windows.XX".
