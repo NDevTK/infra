@@ -230,6 +230,7 @@ var devUFSState = chromeosLab.DutState{
 	BatteryState:           chromeosLab.HardwareState_HARDWARE_UNKNOWN,
 	WifiState:              chromeosLab.HardwareState_HARDWARE_ACCEPTABLE,
 	BluetoothState:         chromeosLab.HardwareState_HARDWARE_NORMAL,
+	CellularModemState:     chromeosLab.HardwareState_HARDWARE_NORMAL,
 	RpmState:               chromeosLab.PeripheralState_WORKING,
 	WifiPeripheralState:    chromeosLab.PeripheralState_WORKING,
 }
@@ -539,6 +540,7 @@ common {
 			battery_state: HARDWARE_UNKNOWN,
 			wifi_state: HARDWARE_ACCEPTABLE,
 			bluetooth_state: HARDWARE_NORMAL,
+			cellular_modem_state: HARDWARE_NORMAL
 			wificell: true
 			router_802_11ax: true
 			working_bluetooth_btpeer: 3
@@ -640,6 +642,7 @@ common {
           battery_state: HARDWARE_UNKNOWN
           wifi_state: HARDWARE_ACCEPTABLE
           bluetooth_state: HARDWARE_NORMAL
+          cellular_modem_state: HARDWARE_NORMAL
           rpm_state: WORKING
           peripheral_wifi_state: WORKING
 		  chameleon_state: WORKING
