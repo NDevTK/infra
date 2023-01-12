@@ -51,6 +51,10 @@ func shouldIgnoreMountpoint(mountpoint string) bool {
 	return strings.HasPrefix(mountpoint, "/var/lib/docker")
 }
 
+func shouldIgnoreDevice(device string) bool {
+	return false
+}
+
 func removeDiskDevices(names []string) []string {
 	disksWithPartitions := map[string]struct{}{}
 	for _, name := range names {

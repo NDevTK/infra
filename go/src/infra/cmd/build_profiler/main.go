@@ -30,8 +30,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/shirou/gopsutil/v3/cpu"
-	"github.com/shirou/gopsutil/v3/process"
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/process"
 	"golang.org/x/sync/errgroup"
 
 	"go.chromium.org/luci/common/errors"

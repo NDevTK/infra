@@ -7,7 +7,7 @@ package system
 import (
 	"testing"
 
-	"github.com/shirou/gopsutil/v3/host"
+	"github.com/shirou/gopsutil/host"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

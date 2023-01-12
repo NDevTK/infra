@@ -12,6 +12,10 @@ func shouldIgnoreMountpoint(mountpoint string) bool {
 	return false
 }
 
+func shouldIgnoreDevice(device string) bool {
+	return false
+}
+
 func removeDiskDevices(names []string) []string {
 	return names
 }

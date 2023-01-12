@@ -8,7 +8,7 @@ import (
 	"context"
 	"io/ioutil"
 
-	"github.com/shirou/gopsutil/v3/host"
+	"github.com/shirou/gopsutil/host"
 )
 
 func osInformation() (string, string, error) {
