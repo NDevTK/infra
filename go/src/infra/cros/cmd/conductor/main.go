@@ -110,7 +110,7 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 		return 3
 	}
 
-	if err := c.Collect(collectConfig); err != nil {
+	if err := c.Collect(ctx, collectConfig); err != nil {
 		c.LogErr(err.Error())
 		return 4
 	}

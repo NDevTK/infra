@@ -10,23 +10,44 @@ import (
 	"strings"
 	"time"
 
+	"infra/cros/internal/shared"
+
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
-func (c *collectRun) Collect(config *pb.CollectConfig) error {
+func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) error {
 	watchSet := c.bbids
+
+	pollingDelay := time.Duration(c.pollingIntervalSeconds) * time.Second
+	// Retry `bb get` as needed, waiting multiples of the polling interval.
+	// Want to include a little backoff in case there's a legimiate outage.
+	bbRetryOpts := shared.Options{
+		BaseDelay:   pollingDelay,
+		BackoffBase: 1.5,
+		Retries:     5,
+	}
 
 	for len(watchSet) > 0 {
 		c.LogOut("Sleeping for %d seconds", c.pollingIntervalSeconds)
-		time.Sleep(time.Duration(c.pollingIntervalSeconds) * time.Second)
+		time.Sleep(pollingDelay)
 
 		sort.Strings(watchSet)
 		c.LogOut("Waiting for %s", strings.Join(watchSet, ","))
-		builds, err := c.bbClient.GetBuilds(context.Background(), watchSet)
+
+		ch := make(chan []*bbpb.Build, 1)
+		err := shared.DoWithRetry(ctx, bbRetryOpts, func() error {
+			builds, err := c.bbClient.GetBuilds(context.Background(), watchSet)
+			if err != nil {
+				return err
+			}
+			ch <- builds
+			return nil
+		})
 		if err != nil {
 			return err
 		}
+		builds := <-ch
 
 		watchSetMap := map[string]bool{}
 		for _, bbid := range watchSet {
