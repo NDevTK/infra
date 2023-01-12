@@ -485,3 +485,65 @@ func TestGetExecStep(t *testing.T) {
 		}
 	}
 }
+
+func Test_DirectEntry(t *testing.T) {
+	t.Parallel()
+	propsFile, err := os.CreateTemp("", "input_props")
+	defer os.Remove(propsFile.Name())
+	assert.NilError(t, err)
+
+	bbid := "8794230068334833058"
+
+	f := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeAuthInfoRunner("led", 0),
+			{
+				ExpectedCmd: []string{
+					"led", "auth-info",
+				},
+				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
+		},
+	}
+	expectedBucket := "chromeos/staging"
+	expectedBuilder := "staging-zork-release-main"
+	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
+	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
+	f.CommandRunners = append(f.CommandRunners,
+		cmd.FakeCommandRunner{
+			ExpectedCmd: expectedAddCmd,
+			Stdout:      bbAddOutput("12345679"),
+		},
+	)
+
+	retryOpts := &RetryRunOpts{
+		CmdRunner: f,
+		PropsFile: propsFile,
+		BBID:      bbid,
+		Dryrun:    false,
+	}
+	retryClient := &Client{}
+	newBBID, err := retryClient.DoRetry(retryOpts)
+	assert.NilError(t, err)
+	assert.StringsEqual(t, newBBID, "12345679")
+
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	checkpointProps := properties.GetFields()["$chromeos/checkpoint"].GetStructValue()
+
+	assert.Assert(t, checkpointProps.GetFields()["retry"].GetBoolValue())
+
+	originalBuildBBID := checkpointProps.GetFields()["original_build_bbid"].GetStringValue()
+	assert.StringsEqual(t, originalBuildBBID, bbid)
+
+	execSteps := checkpointProps.GetFields()["exec_steps"].GetStructValue().GetFields()["steps"].GetListValue().AsSlice()
+	assert.IntsEqual(t, len(execSteps), 1)
+	assert.IntsEqual(t, int(execSteps[0].(float64)), int(pb.RetryStep_DEBUG_SYMBOLS.Number()))
+}

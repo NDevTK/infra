@@ -68,6 +68,48 @@ type retryRun struct {
 	propsFile *os.File
 }
 
+// RunRetryOpts contains options for the RetryClient.
+type RetryRunOpts struct {
+	StdoutLog *log.Logger
+	StderrLog *log.Logger
+	CmdRunner cmd.CommandRunner
+	// Used for testing purposes. If set, props will be written to this file
+	// rather than a temporary one.
+	PropsFile *os.File
+
+	BBID   string
+	Dryrun bool
+}
+
+// RetryClient allows users to call `cros try retry` through code instead of the
+// CLI.
+type RetryClient interface {
+	DoRetry(opts *RetryRunOpts) (string, error)
+}
+
+// Client is an actual implementation of RetryClient.
+type Client struct{}
+
+// DoRetry offers an entry point to `cros try retry`. Returns the BBID of the
+// new build.
+func (c *Client) DoRetry(opts *RetryRunOpts) (string, error) {
+	r := &retryRun{
+		tryRunBase: tryRunBase{
+			stdoutLog: opts.StdoutLog,
+			stderrLog: opts.StderrLog,
+			cmdRunner: opts.CmdRunner,
+			dryrun:    opts.Dryrun,
+		},
+		originalBBID: opts.BBID,
+		propsFile:    opts.PropsFile,
+	}
+	bbid, ret := r.innerRun()
+	if ret != 0 {
+		return "", fmt.Errorf("`cros try retry` had non-zero return code (%d)", ret)
+	}
+	return bbid, nil
+}
+
 // validate validates retry-specific args for the command.
 func (r *retryRun) validate() error {
 	return nil
