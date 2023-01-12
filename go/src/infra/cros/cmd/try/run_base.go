@@ -113,7 +113,7 @@ func (t *tryRunBase) validate() error {
 func (t *tryRunBase) run(ctx context.Context) (int, error) {
 	t.bbClient = buildbucket.NewClient(t.cmdRunner, t.stdoutLog, t.stderrLog)
 
-	if err := t.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
+	if err := t.bbClient.EnsureLUCIToolsAuthed(ctx, "bb", "led"); err != nil {
 		return AuthError, err
 	}
 	if err := t.tagBuilds(ctx); err != nil {

@@ -12,6 +12,7 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"infra/cros/internal/assert"
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 )
 
@@ -78,7 +79,9 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 	assert.NilError(t, inputFile.Close())
 
 	var initialBBIDs []string
-	commandRunners := []cmd.FakeCommandRunner{}
+	commandRunners := []cmd.FakeCommandRunner{
+		bb.FakeAuthInfoRunner("bb", 0),
+	}
 	for _, collectResults := range tc.collectResults {
 		var stdout string
 		bbids := []string{}

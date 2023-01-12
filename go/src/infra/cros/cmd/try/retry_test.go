@@ -117,8 +117,8 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	bbid := "8794230068334833057"
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
-			fakeAuthInfoRunner("bb", 0),
-			fakeAuthInfoRunner("led", 0),
+			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeAuthInfoRunner("led", 0),
 			{
 				ExpectedCmd: []string{
 					"led", "auth-info",
@@ -220,8 +220,8 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
-			fakeAuthInfoRunner("bb", 0),
-			fakeAuthInfoRunner("led", 0),
+			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeAuthInfoRunner("led", 0),
 			{
 				ExpectedCmd: []string{
 					"led", "auth-info",

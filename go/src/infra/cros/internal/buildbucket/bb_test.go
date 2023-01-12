@@ -1,35 +1,19 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2023 The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package main
+package buildbucket
 
 import (
 	"context"
-	"fmt"
-	"os/exec"
 	"strings"
 	"testing"
 
 	"infra/cros/internal/cmd"
 )
 
-// fakeAuthInfoRunner creates a FakeCommandRunner for `{tool} auth-info` (like bb or led).
-func fakeAuthInfoRunner(tool string, exitCode int) cmd.FakeCommandRunner {
-	return cmd.FakeCommandRunner{
-		ExpectedCmd: []string{tool, "auth-info"},
-		FailCommand: exitCode != 0,
-		FailError:   createCmdFailError(exitCode),
-	}
-}
-
-// createCmdFailError creates an error with the desired exit status.
-func createCmdFailError(exitCode int) error {
-	return exec.Command("bash", "-c", fmt.Sprintf("exit %d", exitCode)).Run()
-}
-
 // TestIsLUCIToolAuthed tests tryRunBase.IsLUCIToolAuthed() by mocking `bb auth-info` output.
 func TestIsLUCIToolAuthed(t *testing.T) {
-	var m tryRunBase
+	c := &Client{}
 	ctx := context.Background()
 	for i, tc := range []struct {
 		bbExitCode   int
@@ -40,8 +24,8 @@ func TestIsLUCIToolAuthed(t *testing.T) {
 		{1, false, false},
 		{2, false, true},
 	} {
-		m.cmdRunner = fakeAuthInfoRunner("bb", tc.bbExitCode)
-		authed, err := m.IsLUCIToolAuthed(ctx, "bb")
+		c.cmdRunner = FakeAuthInfoRunner("bb", tc.bbExitCode)
+		authed, err := c.IsLUCIToolAuthed(ctx, "bb")
 		if authed != tc.expectAuthed {
 			t.Errorf("#%d: IsLUCIToolAuthed returned %v; want %v", i, authed, tc.expectAuthed)
 		}
@@ -56,7 +40,7 @@ func TestIsLUCIToolAuthed(t *testing.T) {
 
 // TestEnsureLUCIToolAuthed tests tryRunBase.EnsureLUCIToolAuthed() by mocking `bb auth-info` output.
 func TestEnsureLUCIToolAuthed(t *testing.T) {
-	var m tryRunBase
+	c := &Client{}
 	ctx := context.Background()
 	for i, tc := range []struct {
 		bbExitCode  int
@@ -66,8 +50,8 @@ func TestEnsureLUCIToolAuthed(t *testing.T) {
 		{1, true},  // User is logged out
 		{2, true},  // Unexpected error
 	} {
-		m.cmdRunner = fakeAuthInfoRunner("bb", tc.bbExitCode)
-		err := m.EnsureLUCIToolAuthed(ctx, "bb")
+		c.cmdRunner = FakeAuthInfoRunner("bb", tc.bbExitCode)
+		err := c.EnsureLUCIToolAuthed(ctx, "bb")
 		if err == nil && tc.expectError {
 			t.Errorf("#%d: EnsureLUCIToolAuthed returned no error; want error", i)
 		} else if err != nil && !tc.expectError {
@@ -78,7 +62,7 @@ func TestEnsureLUCIToolAuthed(t *testing.T) {
 
 // TestEnsureLUCIToolsAuthed tests tryRunBase.EnsureLUCIToolsAuthed() by mocking `bb auth-info` and `led auth-info` output.
 func TestEnsureLUCIToolsAuthed(t *testing.T) {
-	var m tryRunBase
+	c := &Client{}
 	ctx := context.Background()
 	for i, tc := range []struct {
 		bbExitCode  int
@@ -89,11 +73,11 @@ func TestEnsureLUCIToolsAuthed(t *testing.T) {
 		{0, 1, true},
 		{1, 1, true},
 	} {
-		m.cmdRunner = &cmd.FakeCommandRunnerMulti{CommandRunners: []cmd.FakeCommandRunner{
-			fakeAuthInfoRunner("bb", tc.bbExitCode),
-			fakeAuthInfoRunner("led", tc.ledExitCode),
+		c.cmdRunner = &cmd.FakeCommandRunnerMulti{CommandRunners: []cmd.FakeCommandRunner{
+			FakeAuthInfoRunner("bb", tc.bbExitCode),
+			FakeAuthInfoRunner("led", tc.ledExitCode),
 		}}
-		err := m.EnsureLUCIToolsAuthed(ctx, "bb", "led")
+		err := c.EnsureLUCIToolsAuthed(ctx, "bb", "led")
 		if err == nil && tc.expectError {
 			t.Errorf("#%d: EnsureLUCIToolsAuthed returned no error; want error", i)
 		} else if err != nil && !tc.expectError {

@@ -92,20 +92,27 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 	c.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
 	c.bbClient = bb.NewClient(c.cmdRunner, c.stdoutLog, c.stderrLog)
 
+	ctx := context.Background()
+	if err := c.bbClient.EnsureLUCIToolsAuthed(ctx, "bb"); err != nil {
+		c.LogErr(err.Error())
+		// TODO(b/264680777): Factor return_codes.go out of try and use those.
+		return 1
+	}
+
 	if err := c.validate(); err != nil {
 		c.LogErr(err.Error())
-		return 1
+		return 2
 	}
 
 	collectConfig, err := c.readInput()
 	if err != nil {
 		c.LogErr(err.Error())
-		return 2
+		return 3
 	}
 
 	if err := c.Collect(collectConfig); err != nil {
 		c.LogErr(err.Error())
-		return 3
+		return 4
 	}
 
 	return 0
