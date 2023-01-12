@@ -259,8 +259,13 @@ func isMojomTarget(t *gnTarget) bool {
 	}
 
 	// TODO(crbug.com/1057746): Fix cross reference support for auto-generated files.
+	// https://crrev.com/cf22716b233ddaacea5c966df00db07b5c7b9102 adds
+	// cpp_templates.zip and mojolpm_templates.zip to //out to enable
+	// remote execution.
 	for _, src := range t.targetInfo.Sources {
-		if strings.HasPrefix(src, "//out") {
+		if strings.HasPrefix(src, "//out") &&
+			!strings.HasSuffix(src, "cpp_templates.zip") &&
+			!strings.HasSuffix(src, "mojolpm_templates.zip") {
 			return false
 		}
 	}

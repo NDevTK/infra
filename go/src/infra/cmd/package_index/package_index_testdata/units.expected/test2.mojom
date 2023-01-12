@@ -30,7 +30,11 @@ unit {
   argument: "--enable_feature"
   argument: "ipc_logging"
   argument: "../../test2.mojom"
+  argument: "../mojo/public/tools/bindings/cpp_templates.zip"
+  argument: "../mojo/public/tools/bindings/mojolpm_templates.zip"
   source_file: "../../test2.mojom"
+  source_file: "../mojo/public/tools/bindings/cpp_templates.zip"
+  source_file: "../mojo/public/tools/bindings/mojolpm_templates.zip"
   details {
     [kythe.io/proto/kythe.proto.BuildDetails] {
       build_config: "linux"
