@@ -13,7 +13,10 @@ def RunNode(infra_root, cmd_parts, stdout=None):
   # checked out.
   cipd_node = os.path.join(infra_root, 'cipd', 'bin', 'node')
   process = subprocess.Popen(
-      [cipd_node] + cmd_parts, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      [cipd_node] + cmd_parts,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      universal_newlines=True)
   stdout, stderr = process.communicate()
 
   if stderr:
@@ -117,8 +120,8 @@ class JSChecker(object):
 
     affected_files = self.input_api.AffectedFiles(
         file_filter=self.file_filter, include_deletes=False)
-    affected_js_files = filter(
-        lambda f: f.LocalPath().endswith('.js'), affected_files)
+    affected_js_files = list(filter(
+        lambda f: f.LocalPath().endswith('.js'), affected_files))
 
     if affected_js_files:
       self.input_api.logging.info(

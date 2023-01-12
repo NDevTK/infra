@@ -5,10 +5,14 @@
 """appengine-specific presubmit for running pylint.
 """
 
+USE_PYTHON3 = True
+
 # LGTM FROM iannucci@ REQUIRED TO EDIT THIS LIST:
 DISABLED_PYLINT_WARNINGS = [
     'W0231',  # __init__ method from base class is not called
     'W0232',  # Class has no __init__ method
+    'unused-argument',
+    'attribute-defined-outside-init',
 ]
 
 DISABLED_PYLINT_FILES = [
@@ -52,18 +56,6 @@ def FetchAllFiles(input_api, files_to_check, files_to_skip):
       '%s directories in %ss' % (len(files), len(dirs_walked),
       duration.total_seconds()))
   return files
-
-
-def EnvAddingPythonPath(input_api, extra_python_paths):
-  # Copy the system path to the environment so pylint can find the right
-  # imports.
-  # FIXME: Is there no nicer way to pass a modified python path
-  # down to subprocess?
-  env = input_api.environ.copy()
-  import sys
-  env['PYTHONPATH'] = input_api.os_path.pathsep.join(
-      extra_python_paths + sys.path).encode('utf8')
-  return env
 
 
 def IgnoredPaths(input_api): # pragma: no cover
@@ -138,8 +130,8 @@ def GetAppEngineLibraryPaths(input_api, appengine_env_path):  # pragma: no cover
 
 
 # Forked with prejudice from depot_tools/presubmit_canned_checks.py
-def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings,
-                extra_python_paths):  # pragma: no cover
+# pragma: no cover
+def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings):
   input_api.logging.debug('Running pylint on: %s', files)
 
   # FIXME: depot_tools should be right next to infra, however DEPS
@@ -150,8 +142,6 @@ def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings,
 
   pylint_args = ['-d', ','.join(disabled_warnings)]
 
-  env = EnvAddingPythonPath(input_api, extra_python_paths)
-
   pylint_path = input_api.os_path.join(depot_tools_path, 'pylint-1.5')
 
   # Make paths relative to pylint_root
@@ -160,7 +150,7 @@ def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings,
   files = [filename[len(pylint_root)+1:] if pylint_root else filename
            for filename in files]
 
-  kwargs = {'env': env, 'stdin': '\n'.join(pylint_args + files)}
+  kwargs = {'stdin': '\n'.join(pylint_args + files).encode()}
   if pylint_root:
     kwargs['cwd'] = pylint_root
 
@@ -176,25 +166,10 @@ def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings,
 
 
 def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
-  infra_root = input_api.os_path.dirname(input_api.PresubmitLocalPath())
-
-  # See DEPS.
-  appengine_env_path = input_api.os_path.join(
-      input_api.os_path.dirname(infra_root),
-      'gcloud', 'platform', 'google_appengine')
-  venv_path = input_api.os_path.join(infra_root, 'ENV', 'lib', 'python2.7')
-
-  # Cause all pylint commands to execute in the virtualenv
-  input_api.python_executable = (
-    input_api.os_path.join(infra_root, 'ENV', 'bin', 'python'))
-
   files_to_check = [r'.*\.py$']
   files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP)
   files_to_skip += DISABLED_PYLINT_FILES
   files_to_skip += IgnoredPaths(input_api)
-
-  appengine_lib_paths = GetAppEngineLibraryPaths(input_api, appengine_env_path)
-  extra_syspaths = [appengine_env_path, venv_path] + appengine_lib_paths
 
   source_filter = lambda path: input_api.FilterSourceFile(
       path, files_to_check=files_to_check, files_to_skip=files_to_skip)
@@ -212,8 +187,10 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
     if changed_py_files:
       input_api.logging.info('Running pylint on %d files',
                              len(changed_py_files))
-      return [PylintFiles(input_api, output_api, changed_py_files, None,
-                          DISABLED_PYLINT_WARNINGS, extra_syspaths)]
+      return [
+          PylintFiles(input_api, output_api, changed_py_files, None,
+                      DISABLED_PYLINT_WARNINGS)
+      ]
     return []
 
   all_python_files = FetchAllFiles(input_api, files_to_check, files_to_skip)
@@ -226,10 +203,9 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
     if python_files:
       input_api.logging.info('Running appengine pylint on %d files under %s',
                              len(python_files), root_path or 'appengine')
-      syspaths = extra_syspaths
-
-      tests.append(PylintFiles(input_api, output_api, python_files, root_path,
-        DISABLED_PYLINT_WARNINGS, syspaths))
+      tests.append(
+          PylintFiles(input_api, output_api, python_files, root_path,
+                      DISABLED_PYLINT_WARNINGS))
   return tests
 
 
