@@ -6,15 +6,19 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"infra/cros/cmd/try/try"
 	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+
+	"go.chromium.org/luci/common/errors"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
@@ -35,6 +39,7 @@ type collectRun struct {
 	tryClient try.RetryClient
 
 	inputJSON              string
+	outputJSON             string
 	pollingIntervalSeconds int
 	bbids                  list
 	dryrun                 bool
@@ -60,6 +65,7 @@ func cmdCollect() *subcommands.Command {
 			c.cmdRunner = cmd.RealCommandRunner{}
 			c.tryClient = &try.Client{}
 			c.Flags.StringVar(&c.inputJSON, "input_json", "", "Path to JSON proto representing a CollectConfig")
+			c.Flags.StringVar(&c.outputJSON, "output_json", "", "Path to write final set of BBIDs to.")
 			c.Flags.IntVar(&c.pollingIntervalSeconds, "polling_interval", 60, "Seconds to wait between polling builders")
 			c.Flags.Var(&c.bbids, "bbids", "(comma-separated) initial set of BBIDs to watch.")
 			c.Flags.BoolVar(&c.dryrun, "dryrun", true, "Dry run (i.e. don't actually retry builds).")
@@ -71,6 +77,10 @@ func cmdCollect() *subcommands.Command {
 func (c *collectRun) validate() error {
 	if c.inputJSON == "" {
 		return fmt.Errorf("--input_json is required")
+	}
+
+	if c.outputJSON == "" {
+		return fmt.Errorf("--output_json is required")
 	}
 
 	if len(c.bbids) == 0 {
@@ -90,6 +100,24 @@ func (c *collectRun) readInput() (*pb.CollectConfig, error) {
 		return nil, fmt.Errorf("Couldn't decode %s as a CollectConfig\n%v", c.inputJSON, err)
 	}
 	return req, nil
+}
+
+// writeOutput writes the given BBIDs to the path provided by --output_json.
+func (c *collectRun) writeOutput(bbids []string) error {
+	sort.Strings(bbids)
+	data, err := json.MarshalIndent(bbids, "", " ")
+	if err != nil {
+		return err
+	}
+	f, err := os.OpenFile(c.outputJSON, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	if _, err := f.Write(data); err != nil {
+		return err
+	}
+	f.Sync()
+	return nil
 }
 
 func (c *collectRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -115,9 +143,16 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 		return 3
 	}
 
-	if err := c.Collect(ctx, collectConfig); err != nil {
+	bbids, err := c.Collect(ctx, collectConfig)
+	if err != nil {
 		c.LogErr(err.Error())
 		return 4
+	}
+
+	c.LogOut("Final set of builds (including only most recent retries): %s", strings.Join(bbids, ","))
+	if err := c.writeOutput(bbids); err != nil {
+		c.LogErr(errors.Annotate(err, "error writing BBIDs to output").Err().Error())
+		return 5
 	}
 
 	return 0

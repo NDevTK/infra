@@ -33,7 +33,22 @@ func (c *collectRun) retryBuild(build *bbpb.Build) (string, error) {
 	return c.tryClient.DoRetry(opts)
 }
 
-func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) error {
+// filterReturnSet includes only the BBIDs that have a value of "true" in the
+// given map.
+func filterReturnSet(returnSet map[string]bool) []string {
+	returnBBIDs := []string{}
+	for bbid, include := range returnSet {
+		if include {
+			returnBBIDs = append(returnBBIDs, bbid)
+		}
+	}
+	return returnBBIDs
+}
+
+// Collect collects on the specified BBIDs, retrying as configured.
+// It returns the final set of BBIDs (the last retry for each build) and any
+// errors.
+func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) ([]string, error) {
 	state := initCollectState(config)
 	watchSet := c.bbids
 
@@ -47,6 +62,9 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 	}
 
 	errs := []error{}
+	previousBuild := map[string]string{}
+	// Will only keep the most recent retry.
+	returnSet := map[string]bool{}
 	for len(watchSet) > 0 {
 		c.LogOut("Sleeping for %d seconds", c.pollingIntervalSeconds)
 		time.Sleep(pollingDelay)
@@ -64,7 +82,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 			return nil
 		})
 		if err != nil {
-			return err
+			return append(filterReturnSet(returnSet), watchSet...), err
 		}
 		builds := <-ch
 
@@ -75,13 +93,18 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 
 		newWatchSet := []string{}
 		for _, build := range builds {
-			if _, ok := watchSetMap[fmt.Sprintf("%d", build.GetId())]; !ok {
+			bbid := fmt.Sprintf("%d", build.GetId())
+			if _, ok := watchSetMap[bbid]; !ok {
 				continue
 			}
 			if (int(build.GetStatus()) & int(bbpb.Status_ENDED_MASK)) == 0 {
-				newWatchSet = append(newWatchSet, fmt.Sprintf("%d", build.GetId()))
+				newWatchSet = append(newWatchSet, bbid)
 			} else {
 				c.LogOut("Build %d finished with status %s", build.GetId(), build.GetStatus())
+				returnSet[bbid] = true
+				if previousBBID, ok := previousBuild[bbid]; ok {
+					returnSet[previousBBID] = false
+				}
 				if build.GetStatus() != bbpb.Status_SUCCESS {
 					if state.canRetry(build) {
 						if c.dryrun {
@@ -93,6 +116,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 								c.LogErr("Continuing with best effort collection")
 							} else {
 								newWatchSet = append(newWatchSet, newBBID)
+								previousBuild[newBBID] = bbid
 								state.recordRetry(build)
 							}
 						}
@@ -102,8 +126,9 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) erro
 		}
 		watchSet = newWatchSet
 	}
+	returnBBIDs := filterReturnSet(returnSet)
 	if len(errs) > 0 {
-		return errors.NewMultiError(errs...)
+		return returnBBIDs, errors.NewMultiError(errs...)
 	}
-	return nil
+	return returnBBIDs, nil
 }

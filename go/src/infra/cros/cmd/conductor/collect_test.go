@@ -50,10 +50,16 @@ func TestValidate(t *testing.T) {
 	r = &collectRun{
 		inputJSON: "foo",
 	}
+	assert.ErrorContains(t, r.validate(), "--output_json")
+	r = &collectRun{
+		inputJSON:  "foo",
+		outputJSON: "bar",
+	}
 	assert.ErrorContains(t, r.validate(), "BBID")
 	r = &collectRun{
-		inputJSON: "foo",
-		bbids:     []string{"123"},
+		inputJSON:  "foo",
+		outputJSON: "bar",
+		bbids:      []string{"123"},
 	}
 	assert.NilError(t, r.validate())
 }
@@ -80,6 +86,7 @@ type collectTestConfig struct {
 	bbids               []int64
 	collectResults      []map[int64]collectResult
 	originalToRetryBBID map[string]string
+	expectedBBIDS       []int64
 }
 
 func doTestRun(t *testing.T, tc *collectTestConfig) {
@@ -87,6 +94,10 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 
 	inputFile, err := os.CreateTemp("", "input_json")
 	defer os.Remove(inputFile.Name())
+	assert.NilError(t, err)
+
+	outputFile, err := os.CreateTemp("", "output_json")
+	defer os.Remove(outputFile.Name())
 	assert.NilError(t, err)
 
 	_, err = inputFile.WriteString(tc.configJSON)
@@ -132,18 +143,31 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 			CommandRunners: commandRunners,
 		},
 		inputJSON:              inputFile.Name(),
+		outputJSON:             outputFile.Name(),
 		pollingIntervalSeconds: 0,
 		bbids:                  initialBBIDs,
 	}
 	ret := c.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, 0)
+
+	data, err := os.ReadFile(outputFile.Name())
+	assert.NilError(t, err)
+
+	var bbids []string
+	assert.NilError(t, json.Unmarshal(data, &bbids))
+	strBBIDs := make([]string, len(tc.expectedBBIDS))
+	for i, bbid := range tc.expectedBBIDS {
+		strBBIDs[i] = fmt.Sprintf("%d", bbid)
+	}
+	assert.StringArrsEqual(t, bbids, strBBIDs)
 }
 
 func TestCollect_NoRetries(t *testing.T) {
 	t.Parallel()
 	doTestRun(t, &collectTestConfig{
-		configJSON: "{}",
-		bbids:      []int64{12345, 12346, 12347},
+		configJSON:    "{}",
+		bbids:         []int64{12345, 12346, 12347},
+		expectedBBIDS: []int64{12345, 12346, 12347},
 		collectResults: []map[int64]collectResult{
 			{
 				12345: {
@@ -192,8 +216,9 @@ var (
 func TestCollect_Retries(t *testing.T) {
 	t.Parallel()
 	doTestRun(t, &collectTestConfig{
-		configJSON: basicRetryConfig,
-		bbids:      []int64{12345, 12346, 12347},
+		configJSON:    basicRetryConfig,
+		bbids:         []int64{12345, 12346, 12347},
+		expectedBBIDS: []int64{12345, 12349, 12350},
 		originalToRetryBBID: map[string]string{
 			"12346": "12348",
 			"12348": "12350",
@@ -240,7 +265,7 @@ func TestCollect_Retries(t *testing.T) {
 			},
 			{
 				12350: {
-					bbpb.Status_FAILURE,
+					bbpb.Status_SUCCESS,
 				},
 				12349: {
 					bbpb.Status_INFRA_FAILURE,
