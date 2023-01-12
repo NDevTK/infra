@@ -166,6 +166,7 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 		f.CommandRunners = append(f.CommandRunners,
 			cmd.FakeCommandRunner{
 				ExpectedCmd: expectedAddCmd,
+				Stdout:      bbAddOutput("12345"),
 			},
 		)
 	}

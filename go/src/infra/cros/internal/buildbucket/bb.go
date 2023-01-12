@@ -5,9 +5,11 @@ package buildbucket
 
 import (
 	"context"
+	gerr "errors"
 	"fmt"
 	"log"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"infra/cros/internal/cmd"
@@ -118,15 +120,24 @@ func (c *Client) runBBCmd(ctx context.Context, dryRun bool, subcommand string, a
 	return c.runCmd(ctx, "bb", util.PrependString(subcommand, args)...)
 }
 
-// BBAdd runs a `bb add` command, and prints stdout to the user.
-func (c *Client) BBAdd(ctx context.Context, dryRun bool, args ...string) error {
+// BBAdd runs a `bb add` command, and prints stdout to the user. Returns the
+// bbid of the build and an error (if any).
+func (c *Client) BBAdd(ctx context.Context, dryRun bool, args ...string) (string, error) {
 	stdout, stderr, err := c.runBBCmd(ctx, dryRun, "add", args...)
 	if err != nil {
-		fmt.Println(stderr)
-		return err
+		c.LogErr(stderr)
+		return "", err
 	}
-	fmt.Println(stdout)
-	return nil
+	if dryRun {
+		return "", nil
+	}
+	c.LogOut("\n" + stdout)
+	bbidRegexp := regexp.MustCompile(`http:\/\/ci.chromium.org\/b\/(?P<bbid>\d+) `)
+	matches := bbidRegexp.FindStringSubmatch(stdout)
+	if matches == nil {
+		return "", gerr.New("could not parse BBID from `bb add` stdout.")
+	}
+	return matches[1], nil
 }
 
 // getBuilders runs the `bb builders` command to get all builders in the given bucket.
@@ -134,7 +145,7 @@ func (c *Client) BBAdd(ctx context.Context, dryRun bool, args ...string) error {
 func (c *Client) BBBuilders(ctx context.Context, bucket string) ([]string, error) {
 	stdout, stderr, err := c.runBBCmd(ctx, false, "builders", fmt.Sprintf("chromeos/%s", bucket))
 	if err != nil {
-		fmt.Println(stderr)
+		c.LogErr(stderr)
 		return []string{}, err
 	}
 	return strings.Split(stdout, "\n"), nil

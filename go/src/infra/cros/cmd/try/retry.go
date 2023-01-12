@@ -354,12 +354,21 @@ func (r *retryRun) processPaygenRetry(ctx context.Context, buildData *bbpb.Build
 
 // Run provides the logic for a `try retry` command run.
 func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
-	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
-	r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
+	_, ret := r.innerRun()
+	return ret
+}
+
+func (r *retryRun) innerRun() (string, int) {
+	if r.stdoutLog == nil {
+		r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
+	}
+	if r.stderrLog == nil {
+		r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
+	}
 
 	if err := r.validate(); err != nil {
 		r.LogErr(err.Error())
-		return CmdError
+		return "", CmdError
 	}
 	// Allow the "b" suffix on bbids.
 	r.originalBBID = strings.TrimPrefix(r.originalBBID, "b")
@@ -367,25 +376,25 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 	ctx := context.Background()
 	if ret, err := r.run(ctx); err != nil {
 		r.LogErr(err.Error())
-		return ret
+		return "", ret
 	}
 
 	buildData, err := r.bbClient.GetBuild(ctx, r.originalBBID)
 	if err != nil {
 		r.LogErr(err.Error())
-		return CmdError
+		return "", CmdError
 	}
 	propsStruct := buildData.GetInput().GetProperties()
 
 	if r.paygenRetry {
 		ret := r.processPaygenRetry(ctx, buildData, propsStruct)
 		if ret != Success {
-			return ret
+			return "", ret
 		}
 	} else {
 		ret := r.processRetry(ctx, buildData, propsStruct)
 		if ret != Success {
-			return ret
+			return "", ret
 		}
 	}
 
@@ -397,12 +406,12 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 		propsFile, err = os.CreateTemp("", "input_props")
 		if err != nil {
 			r.LogErr(err.Error())
-			return CmdError
+			return "", CmdError
 		}
 	}
 	if err := bb.WriteStructToFile(propsStruct, propsFile); err != nil {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
-		return UnspecifiedError
+		return "", UnspecifiedError
 	}
 	if r.propsFile == nil {
 		defer os.Remove(propsFile.Name())
@@ -411,10 +420,10 @@ func (r *retryRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env)
 
 	builder := buildData.GetBuilder()
 	builderName := fmt.Sprintf("%s/%s/%s", builder.GetProject(), builder.GetBucket(), builder.GetBuilder())
-	if err := r.bbClient.BBAdd(ctx, r.dryrun, append([]string{builderName}, r.bbAddArgs...)...); err != nil {
+	if bbid, err := r.bbClient.BBAdd(ctx, r.dryrun, append([]string{builderName}, r.bbAddArgs...)...); err != nil {
 		r.LogErr(err.Error())
-		return CmdError
+		return "", CmdError
+	} else {
+		return bbid, Success
 	}
-
-	return Success
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 )
 
@@ -95,4 +96,24 @@ func TestEnsureLUCIToolsAuthed(t *testing.T) {
 			}
 		}
 	}
+}
+
+var (
+	bbAddOuput = `http://ci.chromium.org/b/8792234052127739409 SCHEDULED 'chromeos/infra/mybuilder'
+Canary
+Created just now`
+)
+
+func TestBBAdd(t *testing.T) {
+	t.Parallel()
+	c := &Client{
+		cmdRunner: &cmd.FakeCommandRunner{
+			ExpectedCmd: []string{"bb", "add", "chromeos/infra/mybuilder"},
+			Stdout:      bbAddOuput,
+		},
+	}
+	ctx := context.Background()
+	bbid, err := c.BBAdd(ctx, false, "chromeos/infra/mybuilder")
+	assert.NilError(t, err)
+	assert.StringsEqual(t, bbid, "8792234052127739409")
 }

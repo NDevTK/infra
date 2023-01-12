@@ -148,6 +148,7 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 		f.CommandRunners = append(f.CommandRunners,
 			cmd.FakeCommandRunner{
 				ExpectedCmd: expectedAddCmd,
+				Stdout:      bbAddOutput(bbid),
 			},
 		)
 	}
@@ -242,6 +243,7 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 	f.CommandRunners = append(f.CommandRunners,
 		cmd.FakeCommandRunner{
 			ExpectedCmd: expectedAddCmd,
+			Stdout:      bbAddOutput(tc.bbid),
 		},
 	)
 

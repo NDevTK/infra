@@ -110,5 +110,6 @@ func getFWBuilderFullName(branch string, staging bool) string {
 // runFWBuilder creates a firmware build via `bb add`, and reports it to the user.
 func (f *firmwareRun) runFirmwareBuilder(ctx context.Context) error {
 	builderName := getFWBuilderFullName(f.branch, !f.production)
-	return f.bbClient.BBAdd(ctx, f.dryrun, append([]string{builderName}, f.bbAddArgs...)...)
+	_, err := f.bbClient.BBAdd(ctx, f.dryrun, append([]string{builderName}, f.bbAddArgs...)...)
+	return err
 }

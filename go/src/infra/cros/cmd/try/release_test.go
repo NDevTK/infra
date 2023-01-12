@@ -41,6 +41,10 @@ const (
 	}`
 )
 
+func bbAddOutput(bbid string) string {
+	return fmt.Sprintf("http://ci.chromium.org/b/%s SCHEDULED ...\n", bbid)
+}
+
 // TestGetReleaseOrchestratorName tests getReleaseOrchestratorName.
 func TestGetReleaseOrchestratorName(t *testing.T) {
 	t.Parallel()
@@ -207,6 +211,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		f.CommandRunners = append(f.CommandRunners,
 			cmd.FakeCommandRunner{
 				ExpectedCmd: expectedAddCmd,
+				Stdout:      bbAddOutput("12345"),
 			},
 		)
 	}
