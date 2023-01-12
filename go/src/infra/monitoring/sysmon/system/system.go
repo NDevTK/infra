@@ -10,13 +10,13 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/host"
-	"github.com/shirou/gopsutil/load"
-	"github.com/shirou/gopsutil/mem"
-	"github.com/shirou/gopsutil/net"
-	"github.com/shirou/gopsutil/process"
+	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v3/host"
+	"github.com/shirou/gopsutil/v3/load"
+	"github.com/shirou/gopsutil/v3/mem"
+	"github.com/shirou/gopsutil/v3/net"
+	"github.com/shirou/gopsutil/v3/process"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -267,7 +267,7 @@ func updateDiskMetrics(c context.Context) errors.MultiError {
 		ret = append(ret, fmt.Errorf("failed to get list of partitions: %s", err))
 	} else {
 		for _, part := range partitions {
-			if part.Mountpoint == "" || part.Device == "none" || shouldIgnoreFstype(part.Fstype) || shouldIgnoreMountpoint(part.Mountpoint) || shouldIgnoreDevice(part.Device) {
+			if part.Mountpoint == "" || part.Device == "none" || shouldIgnoreFstype(part.Fstype) || shouldIgnoreMountpoint(part.Mountpoint) {
 				continue
 			}
 
