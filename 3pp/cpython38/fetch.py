@@ -18,7 +18,7 @@ import certifi
 
 # TODO: Find these files dynamically.
 # List of files to download for installation.
-_FILES = frozenset([
+_FILES = (
     'core.msi',
     'core_d.msi',
     'core_pdb.msi',
@@ -41,8 +41,8 @@ _FILES = frozenset([
     'test_d.msi',
     'test_pdb.msi',
     'tools.msi',
-    'ucrt.msi'
-])
+    'ucrt.msi',
+)
 
 # Make sure up-to-date root certificates are used.
 urllib.request.install_opener(
