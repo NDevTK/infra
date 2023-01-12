@@ -12,6 +12,7 @@ create {
     tool: "tools/gperf"
     dep: "static_libs/libuuid"
   }
+  unsupported: true  # Temporary disabled, crbug.com/1406706
 }
 
 upload { pkg_prefix: "tools" }
