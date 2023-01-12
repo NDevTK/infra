@@ -164,6 +164,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Storage:             createDUTStorage(dc, ds),
 			Wifi:                createDUTWifi(make, ds),
 			Bluetooth:           createDUTBluetooth(ds, dc),
+			Cellular:            createDUTCellular(ds),
 			Battery:             battery,
 			Chameleon:           createChameleon(p, ds),
 			WifiRouters:         createWifiRouterHosts(p.GetWifi()),
@@ -339,6 +340,12 @@ func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.Bluetoot
 	return &tlw.Bluetooth{
 		Expected: configHasFeature(dc, ufsdevice.Config_HARDWARE_FEATURE_BLUETOOTH),
 		State:    convertHardwareState(ds.GetBluetoothState()),
+	}
+}
+
+func createDUTCellular(ds *ufslab.DutState) *tlw.Cellular {
+	return &tlw.Cellular{
+		ModemState: convertHardwareState(ds.GetCellularModemState()),
 	}
 }
 
