@@ -73,6 +73,7 @@ peripherals: {
   battery_state: 3
   wifi_state: 3
   bluetooth_state: 3
+  cellular_modem_state: 3
   mimo: true
   huddly: true
   conductive: true
@@ -197,6 +198,7 @@ var fullLabels = []string{
 	"camerabox_facing:back",
 	"camerabox_light:led",
 	"carrier:tmobile",
+	"cellular_modem_state:NEED_REPLACEMENT",
 	"chameleon",
 	"chameleon:dp",
 	"chameleon:hdmi",
@@ -665,6 +667,7 @@ peripherals: {
   battery_state: 3
   wifi_state: 3
   bluetooth_state: 3
+  cellular_modem_state: 3
   mimo: true
   huddly: true
   conductive: true
@@ -790,6 +793,7 @@ var fullLabelsSpecial = []string{
 	"camerabox_facing:back",
 	"camerabox_light:led",
 	"carrier:tmobile",
+	"cellular_modem_state:NEED_REPLACEMENT",
 	"chameleon",
 	"chameleon:dp",
 	"chameleon:hdmi",

@@ -388,7 +388,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 34
+// NEXT TAG: 35
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -464,6 +464,7 @@ message Peripherals {
   optional HardwareState battery_state = 26;
   optional HardwareState wifi_state = 28;
   optional HardwareState bluetooth_state = 29;
+  optional HardwareState cellular_modem_state = 34;
   optional PeripheralState rpm_state = 25;
 
 
