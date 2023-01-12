@@ -1872,6 +1872,24 @@ class IssueServiceTest(unittest.TestCase):
     self.assertEqual(2, len(comments))
     self.assertEqual(222, comments[0].importer_id)
 
+  def testUpackAmendment(self):
+    amendment_row = (
+        1, 78901, 7890101, 'cc', 'old', 'new val', 222, None, None, None, None)
+    amendment, comment_id = self.services.issue._UnpackAmendment(amendment_row)
+    self.assertEqual(comment_id, 7890101)
+    self.assertEqual(amendment.field, tracker_pb2.FieldID('CC'))
+    self.assertEqual(amendment.newvalue, 'new val')
+    self.assertEqual(amendment.oldvalue, 'old')
+    self.assertEqual(amendment.added_user_ids, [222])
+
+  def testUpackAmendment_With_Unicode(self):
+    amendment_row = (
+        1, 78901, 7890102, 'custom', None, None, None, None, None, u'123', None)
+    amendment, comment_id = self.services.issue._UnpackAmendment(amendment_row)
+    self.assertEqual(comment_id, 7890102)
+    self.assertEqual(amendment.field, tracker_pb2.FieldID('CUSTOM'))
+    self.assertEqual(amendment.added_component_ids, [123])
+
   def MockTheRestOfGetCommentsByID(self, comment_ids):
     self.services.issue.commentcontent_tbl.Select = Mock(
         return_value=[

@@ -1931,8 +1931,10 @@ class IssueService(object):
     if custom_field_name:
       amendment.custom_field_name = custom_field_name
     if added_component_id:
+      added_component_id = int(added_component_id)
       amendment.added_component_ids.append(added_component_id)
     if removed_component_id:
+      removed_component_id = int(removed_component_id)
       amendment.removed_component_ids.append(removed_component_id)
     return amendment, comment_id
 
