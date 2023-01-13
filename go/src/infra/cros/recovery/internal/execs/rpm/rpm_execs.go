@@ -60,7 +60,7 @@ func hasRpmInfoDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
 	deviceType := argsMap.AsString(ctx, "device_type", "")
 	_, r, err := deviceHostnameAndRPMOutlet(info, deviceType)
 	if err != nil {
-		errors.Annotate(err, "has rpm info: ").Err()
+		return errors.Annotate(err, "has rpm info: ").Err()
 	}
 	if r.GetHostname() != "" && r.GetOutlet() != "" {
 		return nil
