@@ -152,13 +152,15 @@ message Touch {
 // Next Tag: 3
 message Camerabox {
   // Facing of DUT's camera to be tested whose FOV should cover chart tablet's screen.
-  // Next Tag: 3
+  // Next Tag: 4
   enum Facing {
     FACING_UNKNOWN = 0;
     // DUT's back camera is facing to chart tablet.
     FACING_BACK = 1;
     // DUT's front camera is facing to chart tablet.
     FACING_FRONT = 2;
+    // DUT has no camera
+    FACING_NOCAMERA = 3;
   }
   // Light provision of camerabox, if LED is present or not.
   // Next Tag: 3

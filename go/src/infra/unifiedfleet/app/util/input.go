@@ -687,9 +687,10 @@ func ToCableType(cableType string) chromeosLab.CableType {
 
 // StrToFacing refers a map between a string to a Facing map.
 var StrToFacing = map[string]string{
-	"unknown": "FACING_UNKNOWN",
-	"back":    "FACING_BACK",
-	"front":   "FACING_FRONT",
+	"unknown":  "FACING_UNKNOWN",
+	"back":     "FACING_BACK",
+	"front":    "FACING_FRONT",
+	"nocamera": "FACING_NOCAMERA",
 }
 
 // IsFacing checks if a string refers to a valid Facing.
