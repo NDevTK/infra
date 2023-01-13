@@ -50,6 +50,7 @@ type deviceInfo struct {
 	machineLse          *ufspb.MachineLSE
 	manufactoringConfig *manufacturing.ManufacturingConfig
 	hwidData            *ufspb.HwidData
+	dutState            *lab.DutState
 }
 
 // GetDutTopology returns a DutTopology constructed from UFS.
@@ -127,6 +128,7 @@ func appendDeviceInfo(deviceInfos []*deviceInfo, resp *ufsapi.GetDeviceDataRespo
 			machineLse:          resp.GetChromeOsDeviceData().GetLabConfig(),
 			manufactoringConfig: resp.GetChromeOsDeviceData().GetManufacturingConfig(),
 			hwidData:            resp.GetChromeOsDeviceData().GetHwidData(),
+			dutState:            resp.GetChromeOsDeviceData().GetDutState(),
 		}), nil
 	case ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return append(deviceInfos, &deviceInfo{
@@ -187,7 +189,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				},
 				DutModel:       getDutModel(di),
 				Servo:          getServo(p),
-				Chameleon:      getChameleon(p),
+				Chameleon:      getChameleon(p, di.dutState),
 				Audio:          getAudio(p),
 				Wifi:           getWifi(p),
 				Touch:          getTouch(p),
@@ -270,19 +272,31 @@ func getServo(p *lab.Peripherals) *labapi.Servo {
 	return nil
 }
 
-func getChameleon(p *lab.Peripherals) *labapi.Chameleon {
+func getChameleon(p *lab.Peripherals, ds *lab.DutState) *labapi.Chameleon {
 	c := p.GetChameleon()
 	if c == nil {
 		return nil
 	}
-	return &labapi.Chameleon{
+	cham := &labapi.Chameleon{
 		AudioBoard:  c.GetAudioBoard(),
 		Peripherals: mapChameleonPeripherals(p, c),
+		Hostname:    c.GetHostname(),
+		Types:       mapChameleonTypes(p, c),
 	}
+	switch ds.GetChameleon() {
+	case lab.PeripheralState_WORKING:
+		cham.State = labapi.PeripheralState_WORKING
+	case lab.PeripheralState_BROKEN:
+		cham.State = labapi.PeripheralState_BROKEN
+	case lab.PeripheralState_NOT_APPLICABLE:
+		cham.State = labapi.PeripheralState_NOT_APPLICABLE
+	}
+	return cham
 }
 
 func mapChameleonPeripherals(p *lab.Peripherals, c *lab.Chameleon) []labapi.Chameleon_Peripheral {
 	var res []labapi.Chameleon_Peripheral
+forLoop:
 	for _, cp := range c.GetChameleonPeripherals() {
 		m := labapi.Chameleon_PREIPHERAL_UNSPECIFIED
 		switch cp {
@@ -292,8 +306,24 @@ func mapChameleonPeripherals(p *lab.Peripherals, c *lab.Chameleon) []labapi.Cham
 			m = labapi.Chameleon_DP
 		case lab.ChameleonType_CHAMELEON_TYPE_HDMI:
 			m = labapi.Chameleon_HDMI
+		// Skip V2, V3 which are not physical peripherals but chameleon types
+		case lab.ChameleonType_CHAMELEON_TYPE_V2, lab.ChameleonType_CHAMELEON_TYPE_V3:
+			continue forLoop
 		}
 		res = append(res, m)
+	}
+	return res
+}
+
+func mapChameleonTypes(p *lab.Peripherals, c *lab.Chameleon) []labapi.Chameleon_Type {
+	var res []labapi.Chameleon_Type
+	for _, cp := range c.GetChameleonPeripherals() {
+		switch cp {
+		case lab.ChameleonType_CHAMELEON_TYPE_V2:
+			res = append(res, labapi.Chameleon_V2)
+		case lab.ChameleonType_CHAMELEON_TYPE_V3:
+			res = append(res, labapi.Chameleon_V3)
+		}
 	}
 	return res
 }

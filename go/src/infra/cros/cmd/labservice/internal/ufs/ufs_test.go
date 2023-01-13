@@ -42,7 +42,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 											},
 											Chameleon: &lab.Chameleon{
 												AudioBoard:           true,
-												ChameleonPeripherals: []lab.ChameleonType{lab.ChameleonType_CHAMELEON_TYPE_DP},
+												ChameleonPeripherals: []lab.ChameleonType{lab.ChameleonType_CHAMELEON_TYPE_DP, lab.ChameleonType_CHAMELEON_TYPE_V3},
 											},
 											Servo: &lab.Servo{
 												ServoHostname: "servo_host",
@@ -125,6 +125,9 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 					},
 				},
 			},
+			DutState: &lab.DutState{
+				Chameleon: lab.PeripheralState_NOT_APPLICABLE,
+			},
 		},
 		CachingServices: &ufsapi.ListCachingServicesResponse{
 			CachingServices: []*ufspb.CachingService{
@@ -158,6 +161,8 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						Chameleon: &labapi.Chameleon{
 							AudioBoard:  true,
 							Peripherals: []labapi.Chameleon_Peripheral{labapi.Chameleon_DP},
+							Types:       []labapi.Chameleon_Type{labapi.Chameleon_V3},
+							State:       labapi.PeripheralState_NOT_APPLICABLE,
 						},
 						Servo: &labapi.Servo{
 							Present: true,
