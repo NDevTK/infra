@@ -66,11 +66,7 @@ func TestSetDeployActions(t *testing.T) {
 		hasServo := true
 		c.setDeployActions(hasServo)
 
-		So(c.deploySkipDownloadImage, ShouldBeFalse)
-		So(c.deploySkipInstallOS, ShouldBeFalse)
-		So(c.deploySkipInstallFirmware, ShouldBeFalse)
-		So(c.deploySkipRecoveryMode, ShouldBeFalse)
-		So(c.deployActions, ShouldResemble, []string{"hi", "verify-recovery-mode"})
+		So(c.deployActions, ShouldResemble, []string{"hi"})
 	})
 	Convey("Not full deploy with servo", t, func() {
 		c := &addDUT{
@@ -82,10 +78,6 @@ func TestSetDeployActions(t *testing.T) {
 		hasServo := true
 		c.setDeployActions(hasServo)
 
-		So(c.deploySkipDownloadImage, ShouldBeTrue)
-		So(c.deploySkipInstallOS, ShouldBeTrue)
-		So(c.deploySkipInstallFirmware, ShouldBeTrue)
-		So(c.deploySkipRecoveryMode, ShouldBeTrue)
 		So(c.deployActions, ShouldResemble, []string{"hi"})
 	})
 	Convey("Full deploy without servo", t, func() {
@@ -98,10 +90,6 @@ func TestSetDeployActions(t *testing.T) {
 		hasServo := false
 		c.setDeployActions(hasServo)
 
-		So(c.deploySkipDownloadImage, ShouldBeTrue)
-		So(c.deploySkipInstallOS, ShouldBeTrue)
-		So(c.deploySkipInstallFirmware, ShouldBeTrue)
-		So(c.deploySkipRecoveryMode, ShouldBeTrue)
 		So(c.deployActions, ShouldResemble, []string{"hi"})
 	})
 	Convey("Not full deploy without servo", t, func() {
@@ -114,10 +102,6 @@ func TestSetDeployActions(t *testing.T) {
 		hasServo := false
 		c.setDeployActions(hasServo)
 
-		So(c.deploySkipDownloadImage, ShouldBeTrue)
-		So(c.deploySkipInstallOS, ShouldBeTrue)
-		So(c.deploySkipInstallFirmware, ShouldBeTrue)
-		So(c.deploySkipRecoveryMode, ShouldBeTrue)
 		So(c.deployActions, ShouldResemble, []string{"hi"})
 	})
 }

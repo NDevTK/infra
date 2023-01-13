@@ -5,7 +5,6 @@
 package dut
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/maruel/subcommands"
@@ -14,7 +13,6 @@ import (
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/utils"
 	"infra/cros/cmd/satlab/internal/site"
-	"infra/libs/swarming"
 )
 
 // MakeShivasFlags takes an add DUT command and serializes its flags in such
@@ -67,9 +65,6 @@ func makeAddShivasFlags(c *addDUT) flagmap {
 	}
 	if c.rpmOutlet != "" {
 		out["rpm-outlet"] = []string{c.rpmOutlet}
-	}
-	if c.deployTaskTimeout != 0 {
-		out["deploy-timeout"] = []string{fmt.Sprintf("%d", c.deployTaskTimeout)}
 	}
 	if c.ignoreUFS {
 		// This flag is unsupported.
@@ -172,18 +167,14 @@ type shivasAddDUT struct {
 	rpm                      string
 	rpmOutlet                string
 
-	ignoreUFS                 bool
-	deployTaskTimeout         int64
-	deployActions             []string
-	deployTags                []string
-	deploySkipDownloadImage   bool
-	deploySkipInstallOS       bool
-	deploySkipInstallFirmware bool
-	deploySkipRecoveryMode    bool
-	deploymentTicket          string
-	tags                      []string
-	state                     string
-	description               string
+	ignoreUFS         bool
+	deployTaskTimeout int64
+	deployActions     []string
+	deployTags        []string
+	deploymentTicket  string
+	tags              []string
+	state             string
+	description       string
 
 	// Asset location fields
 	zone string
@@ -211,9 +202,6 @@ type shivasAddDUT struct {
 	// Machine specific fields
 	model string
 	board string
-
-	// Task scheduling fields.
-	paris bool
 }
 
 // DefaultDeployTaskActions are the default actoins run at deploy time.
@@ -245,13 +233,8 @@ func registerAddShivasFlags(c *addDUT) {
 	c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
 	c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the DUT.")
 	c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
-	c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 	c.Flags.BoolVar(&c.ignoreUFS, "ignore-ufs", false, "skip updating UFS create a deploy task.")
 	c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma separated tags for deployment task.")
-	c.Flags.BoolVar(&c.deploySkipDownloadImage, "deploy-skip-download-image", false, "DEPRECATED: skips downloading image and staging usb")
-	c.Flags.BoolVar(&c.deploySkipInstallFirmware, "deploy-skip-install-fw", false, "DEPRECATED: skips installing firmware")
-	c.Flags.BoolVar(&c.deploySkipInstallOS, "deploy-skip-install-os", false, "DEPRECATED: skips installing os image")
-	c.Flags.BoolVar(&c.deploySkipRecoveryMode, "deploy-skip-recovery-mode", false, "DEPRECATED: skips recovery mode step for dut deployment")
 	c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
 	c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags.")
 	c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
@@ -280,5 +263,4 @@ func registerAddShivasFlags(c *addDUT) {
 	// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
 	c.Flags.StringVar(&c.model, "model", "", "model of the DUT undergoing deployment. If not given, HaRT data is used. Fails if model is not known for the DUT")
 	c.Flags.StringVar(&c.board, "board", "", "board of the DUT undergoing deployment. If not given, HaRT data is used. Fails if board is not known for the DUT")
-	c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow (dogfood).")
 }

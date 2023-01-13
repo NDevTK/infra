@@ -229,15 +229,7 @@ func (c *addDUT) setupServoArguments(dockerHostBoxIdentifier string) bool {
 func (c *addDUT) setDeployActions(hasServo bool) {
 	// For Satlab,  default we skip certain deployment task such as
 	// downloading image, installing OS and firmware".
-	if !c.fullDeploy || !hasServo {
-		c.deploySkipDownloadImage = true
-		c.deploySkipInstallOS = true
-		c.deploySkipInstallFirmware = true
-		c.deploySkipRecoveryMode = true
-		if c.fullDeploy {
-			fmt.Fprintf(os.Stderr, "full deploy is not supported for setup without servo.\n")
-		}
-	} else {
-		c.deployActions = append(c.deployActions, "verify-recovery-mode")
+	if c.fullDeploy && !hasServo {
+		fmt.Fprintf(os.Stderr, "full deploy is not supported for setup without servo.\n")
 	}
 }
