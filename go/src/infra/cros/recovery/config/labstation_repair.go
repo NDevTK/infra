@@ -84,7 +84,8 @@ func LabstationRepairConfig() *Configuration {
 						Docs: []string{
 							"Read and update cros-provision label.",
 						},
-						ExecName: "cros_update_provision_os_version",
+						ExecName:               "cros_update_provision_os_version",
+						AllowFailAfterRecovery: true,
 					},
 					"labstation_langid_check": {
 						Docs: []string{
