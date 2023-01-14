@@ -156,7 +156,7 @@ func (p *provisionLacrosState) extractLacrosMetadata(ctx context.Context) error 
 	if err != nil {
 		return fmt.Errorf("extractMetadata: failed to get a metadata URL, %s", err)
 	}
-	metadataJSONStr, err := runCmdOutput(p.c, fmt.Sprintf("curl -s %s", metadataURL))
+	metadataJSONStr, err := runCmdOutput(p.c, fmt.Sprintf("curl --keepalive-time 20 -S -s -v -# -C - --retry 3 --retry-delay 60 %s", metadataURL))
 	if err != nil {
 		return fmt.Errorf("extractMetadata: failed to read Lacros metadata.json from %v, %s", metadataURL, err)
 	}
@@ -194,7 +194,7 @@ func (p *provisionLacrosState) installLacrosAsComponent(ctx context.Context) err
 	p.lacrosComponentPath = path.Join(p.lacrosComponentRootPath, p.metadata.Content.Version)
 	p.lacrosImagePath = path.Join(p.lacrosComponentPath, "image.squash")
 
-	if err := runCmd(p.c, fmt.Sprintf("mkdir -p %s && curl %s --output %s", p.lacrosComponentPath, imageURL, p.lacrosImagePath)); err != nil {
+	if err := runCmdRetry(ctx, p.c, 5, fmt.Sprintf("mkdir -p %s && curl --keepalive-time 20 -S -s -v -# -C - --retry 3 --retry-delay 60 %s --output %s", p.lacrosComponentPath, imageURL, p.lacrosImagePath)); err != nil {
 		return fmt.Errorf("installLacrosAsComponent: failed to install Lacros image from %s, %s", imageURL, err)
 	}
 
