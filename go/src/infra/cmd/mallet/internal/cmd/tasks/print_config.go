@@ -31,7 +31,7 @@ var RecoveryConfig = &subcommands.Command{
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", "Task name of the configuration we print.")
 		c.Flags.StringVar(&c.deviceType, "device", "cros", "Device type supported 'cros', 'labstation'.")
 		c.Flags.StringVar(&c.planName, "plan", "", "Print only plan instead of config.")
-		c.Flags.BoolVar(&c.asTree, "tree", true, "Print data as tree.")
+		c.Flags.BoolVar(&c.asTree, "tree", false, "Print data as tree.")
 		return c
 	},
 }
