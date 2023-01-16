@@ -31,6 +31,9 @@ cmake --build . -j "$(nproc)"
 # Run the test suite, if not cross-compiling.
 # TODO(fancl): Fix tests on windows.
 if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-* ]]; then
+  # CMake.CheckSourceTree checks if the source tree is clean, which won't be
+  # because we patch the code.
+  #
   # RunCMake.CPack_STGZ (Self extracting Tar GZip compression) will generate a
   # shell script use pax instead of tar if possible to unpack itself. This is
   # fine in most cases since STGZ use restricted-pax format which is supported
@@ -49,7 +52,7 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
-    --exclude-regex '(RunCMake.CPack_STGZ|CTestLimitDashJ|FileDownload|BootstrapTest|CTestTimeoutAfterMatch)'
+    --exclude-regex '(CMake.CheckSourceTree|RunCMake.CPack_STGZ|CTestLimitDashJ|FileDownload|BootstrapTest|CTestTimeoutAfterMatch)'
 
   env -u CMAKE_TOOLCHAIN_FILE \
     ./bin/ctest \
