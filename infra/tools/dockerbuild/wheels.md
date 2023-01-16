@@ -3595,6 +3595,20 @@ wheel: <
 
 * *universal*
 
+## **junitparser**
+
+### 2.8.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/junitparser-py2_py3"
+  version: "version:2.8.0"
+>
+```
+
+
+* *universal*
+
 ## **keras-py3**
 
 ### 2.6.0
