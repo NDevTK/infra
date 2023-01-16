@@ -174,6 +174,18 @@ wheel: <
 
 * *universal*
 
+### 3.1.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/jinja2-py3"
+  version: "version:3.1.2"
+>
+```
+
+
+* *universal*
+
 ## **Keras-Preprocessing**
 
 ### 1.1.2
@@ -3403,6 +3415,18 @@ wheel: <
 
 * *universal*
 
+### 0.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/importlab-py3"
+  version: "version:0.8"
+>
+```
+
+
+* *universal*
+
 ## **importlib-metadata**
 
 ### 1.6.0
@@ -3728,6 +3752,25 @@ wheel: <
 
 * *mac-x64-cp38*
 * *manylinux-x64-py3*
+* *windows-x64-py3*
+
+## **libcst**
+
+### 0.4.9
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/libcst/${vpython_platform}"
+  version: "version:0.4.9"
+>
+```
+
+
+* *linux-arm64-py3*
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.11*
 * *windows-x64-py3*
 
 ## **libcst-py3**
@@ -5377,6 +5420,20 @@ wheel: <
 
 * *universal*
 
+## **pybind11**
+
+### 2.10.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pybind11-py2_py3"
+  version: "version:2.10.3"
+>
+```
+
+
+* *universal*
+
 ## **pybrctl**
 
 ### 0.1.3
@@ -5458,6 +5515,20 @@ wheel: <
 
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+
+## **pydot**
+
+### 1.4.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pydot-py2_py3"
+  version: "version:1.4.2"
+>
+```
+
+
+* *universal*
 
 ## **pyelftools**
 
@@ -5705,6 +5776,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pylint-py3"
   version: "version:2.13.8"
+>
+```
+
+
+* *universal*
+
+### 2.14.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pylint-py3"
+  version: "version:2.14.4"
 >
 ```
 
@@ -6235,6 +6318,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pytype/${vpython_platform}"
   version: "version:2022.5.5"
+>
+```
+
+
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+
+### 2022.12.15
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytype/${vpython_platform}"
+  version: "version:2022.12.15"
 >
 ```
 
@@ -6794,6 +6891,18 @@ wheel: <
 
 * *universal*
 
+### 0.8.10
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tabulate-py3"
+  version: "version:0.8.10"
+>
+```
+
+
+* *universal*
+
 ## **tempora**
 
 ### 1.11
@@ -7160,6 +7269,18 @@ wheel: <
 
 * *universal*
 
+### 0.10.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/toml-py3"
+  version: "version:0.10.2"
+>
+```
+
+
+* *universal*
+
 ## **tomli-py3**
 
 ### 1.1.0
@@ -7266,6 +7387,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/typing-extensions-py3"
   version: "version:4.0.1"
+>
+```
+
+
+* *universal*
+
+### 4.3.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.3.0"
 >
 ```
 
