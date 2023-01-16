@@ -624,6 +624,63 @@ def GenTests(api):
       )
   )
 
+  # test for patch version
+  tool1 = '''
+  create {
+    platform_re: "linux-amd64|mac-.*"
+    source {
+      git {
+        repo: "https://go.repo/tool"
+        tag_pattern: "v%s"
+      }
+      patch_version: "chromium.1"
+    }
+    build {}
+  }
+  upload { pkg_prefix: "pkg" }
+  '''
+  tool2 = '''
+  create {
+    platform_re: "linux-amd64|mac-.*"
+    source {
+      git {
+        repo: "https://go.repo/tool"
+        tag_pattern: "v%s"
+      }
+      patch_version: "chromium.2"
+    }
+    build {}
+  }
+  upload { pkg_prefix: "pkg" }
+  '''
+  yield (api.test('package-patch-changed')
+      + api.properties(GOOS='linux', GOARCH='amd64')
+      + api.properties(key_path=KEY_PATH)
+      + api.step_data(
+          'find package specs',
+          api.file.glob_paths(['%s/3pp.pb' % pkg for pkg in ['tool1', 'tool2']]))
+      + api.step_data(
+          mk_name("load package specs", "read 'tool1/3pp.pb'"),
+          api.file.read_text(tool1))
+      + api.step_data(
+          mk_name("load package specs", "read 'tool2/3pp.pb'"),
+          api.file.read_text(tool2))
+      + api.step_data(
+          mk_name(
+              'building pkg/tool1', 'run installation',
+              'install.sh '
+              '[START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/out '
+              '[START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/deps_prefix'),
+        )
+      + api.step_data(
+          mk_name(
+              'building pkg/tool2', 'run installation',
+              'install.sh '
+              '[START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/out '
+              '[START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/deps_prefix'),
+        )
+  )
+
   # test for git tag movement.
   pkg = 'dir_deps/bottom_dep_git'
   yield (api.test('catch-git-tag-movement')
@@ -636,9 +693,9 @@ def GenTests(api):
       + api.override_step_data(
           mk_name('building deps/bottom_dep_git',
                   'fetch sources',
-                  'cipd describe 3pp/sources/git/go.repo/dep'),
+                  'cipd describe 3pp/sources/git/go.repo/dep/linux-amd64'),
         api.cipd.example_describe(
-        '3pp/sources/git/go.repo/dep',
+        '3pp/sources/git/go.repo/dep/linux-amd64',
         version='version:1.5.0-rc1',
         test_data_tags=['version:1.5.0-rc1','external_hash:deadbeef']),
       )

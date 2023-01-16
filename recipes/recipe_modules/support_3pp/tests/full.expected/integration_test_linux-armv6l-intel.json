@@ -1521,7 +1521,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/dep",
+      "3pp/sources/git/go.repo/dep/linux-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -1548,7 +1548,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1601,7 +1601,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/dep",
+      "3pp/sources/git/go.repo/dep/linux-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -1628,7 +1628,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep (2)",
+    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep/linux-amd64 (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -1894,7 +1894,7 @@
       "cipd",
       "pkg-build",
       "-pkg-def",
-      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/dep\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-amd64/1.5.0-rc1/checkout\"}",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/dep/linux-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-amd64/1.5.0-rc1/checkout\"}",
       "-out",
       "[CLEANUP]/tmp_tmp_2",
       "-hash-algo",
@@ -1923,13 +1923,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.build 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.build 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -1945,7 +1945,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep"
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-amd64"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -1983,7 +1983,7 @@
       "/path/to/tmp/json",
       "move",
       "[CLEANUP]/tmp_tmp_2",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/40-chars-fake-of-the-package-instance_id"
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -2023,7 +2023,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/dep",
+      "3pp/sources/git/go.repo/dep/linux-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -2050,7 +2050,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -2065,7 +2065,7 @@
     "cmd": [
       "cipd",
       "pkg-register",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/40-chars-fake-of-the-package-instance_id",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -2096,17 +2096,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@3pp/sources/git/go.repo/dep@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/dep/+/40-chars-fake-of-the-package-instance_id@@@"
+      "@@@STEP_LINK@3pp/sources/git/go.repo/dep/linux-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/dep/linux-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -2785,11 +2785,44 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "building deps/bottom_dep_git (2).fetch sources.Verify External Hash",
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/sources/git/go.repo/dep/linux-armv6l",
+      "-version",
+      "version:2@1.5.0-rc1",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.cipd describe 3pp/sources/git/go.repo/dep/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_TEXT@external source verification successful.@@@"
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
@@ -2834,10 +2867,10 @@
   {
     "cmd": [
       "cipd",
-      "pkg-deploy",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/40-chars-fake-of-the-package-instance_id",
-      "-root",
-      "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+      "describe",
+      "3pp/sources/git/go.repo/dep/linux-armv6l",
+      "-version",
+      "version:2@1.5.0-rc1",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -2862,16 +2895,485 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git (2).fetch sources.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/40-chars-fake-of-the-package-instance_id",
+    "name": "building deps/bottom_dep_git (2).fetch sources.cipd describe 3pp/sources/git/go.repo/dep/linux-armv6l (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+      "--url",
+      "https://chromium.googlesource.com/external/go.repo/dep"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "hash",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/dep/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/checkout\"}",
+      "-out",
+      "[CLEANUP]/tmp_tmp_4",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.build 3pp/sources/git/go.repo/dep/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep/linux-armv6l\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-armv6l"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CLEANUP]/tmp_tmp_4",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building deps/bottom_dep_git (2).fetch sources.upload source to cipd",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/sources/git/go.repo/dep/linux-armv6l",
+      "-version",
+      "version:2@1.5.0-rc1",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/dep/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-armv6l/40-chars-fake-of-the-package-instance_id",
+      "-tag",
+      "build_id:8945511751514863184",
+      "-tag",
+      "external_hash:hash",
+      "-tag",
+      "version:2@1.5.0-rc1",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git (2).fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/dep/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@3pp/sources/git/go.repo/dep/linux-armv6l@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/dep/linux-armv6l/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -3082,7 +3584,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/deps/bottom_dep_git/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-armv6l/1.5.0-rc1/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_4",
+      "[CLEANUP]/tmp_tmp_5",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -3168,7 +3670,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_4",
+      "[CLEANUP]/tmp_tmp_5",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -3590,7 +4092,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/url/deps/bottom_dep_url/linux-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-amd64/1.2.3/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_5",
+      "[CLEANUP]/tmp_tmp_6",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -3676,7 +4178,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_5",
+      "[CLEANUP]/tmp_tmp_6",
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/linux-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -4009,7 +4511,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/deps/bottom_dep_url/linux-amd64\", \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-amd64/1.2.3/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_6",
+      "[CLEANUP]/tmp_tmp_7",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -4095,7 +4597,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_6",
+      "[CLEANUP]/tmp_tmp_7",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/linux-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -4517,7 +5019,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/url/deps/bottom_dep_url/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-armv6l/1.2.3/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_7",
+      "[CLEANUP]/tmp_tmp_8",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -4603,7 +5105,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_7",
+      "[CLEANUP]/tmp_tmp_8",
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -4936,7 +5438,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/deps/bottom_dep_url/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-armv6l/1.2.3/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_8",
+      "[CLEANUP]/tmp_tmp_9",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -5022,7 +5524,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_8",
+      "[CLEANUP]/tmp_tmp_9",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -5430,7 +5932,7 @@
       "-version",
       "version:1.2.3",
       "-out",
-      "[CLEANUP]/tmp_tmp_9",
+      "[CLEANUP]/tmp_tmp_10",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -5517,7 +6019,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_9",
+      "[CLEANUP]/tmp_tmp_10",
       "[CACHE]/3pp_cipd/source/deep_dep/resolved-instance_id-of-version:1.2.3---"
     ],
     "env": {
@@ -5639,7 +6141,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/deps/deep_dep/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/deps/deep_dep/linux-armv6l/1.2.3/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_10",
+      "[CLEANUP]/tmp_tmp_11",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -5727,7 +6229,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_10",
+      "[CLEANUP]/tmp_tmp_11",
       "[CACHE]/3pp_cipd/3pp/deps/deep_dep/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -6296,7 +6798,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/fetch_and_package/linux-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/tools/fetch_and_package/linux-amd64/2.0.0/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_11",
+      "[CLEANUP]/tmp_tmp_12",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -6382,7 +6884,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_11",
+      "[CLEANUP]/tmp_tmp_12",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/fetch_and_package/linux-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -6553,7 +7055,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/fetch_and_package\", \"root\": \"[START_DIR]/3pp/wd/tools/fetch_and_package/linux-amd64/2.0.0/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_12",
+      "[CLEANUP]/tmp_tmp_13",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -6639,7 +7141,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_12",
+      "[CLEANUP]/tmp_tmp_13",
       "[CACHE]/3pp_cipd/3pp/tools/fetch_and_package/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -7061,7 +7563,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/url/tools/pkg/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/linux-armv6l/1.1.2/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_13",
+      "[CLEANUP]/tmp_tmp_14",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -7147,7 +7649,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_13",
+      "[CLEANUP]/tmp_tmp_14",
       "[CACHE]/3pp_cipd/3pp/sources/url/tools/pkg/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -7480,7 +7982,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/linux-armv6l/1.1.2/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_14",
+      "[CLEANUP]/tmp_tmp_15",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -7566,7 +8068,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_14",
+      "[CLEANUP]/tmp_tmp_15",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -7907,7 +8409,7 @@
       "-version",
       "version:1.2.0",
       "-out",
-      "[CLEANUP]/tmp_tmp_15",
+      "[CLEANUP]/tmp_tmp_16",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -7992,7 +8494,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_15",
+      "[CLEANUP]/tmp_tmp_16",
       "[CACHE]/3pp_cipd/source/posix_tool/resolved-instance_id-of-version:1.2.0---"
     ],
     "env": {
@@ -8122,7 +8624,7 @@
       "/path/to/tmp/json",
       "copy",
       "[START_DIR]/3pp/wd/tools/posix_tool/linux-armv6l/1.2.0/checkout/archive.tgz",
-      "[CLEANUP]/tmp_tmp_16/archive.tgz"
+      "[CLEANUP]/tmp_tmp_17/archive.tgz"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -8194,7 +8696,7 @@
       "-u",
       "RECIPE_MODULE[recipe_engine::archive]/resources/extract.py",
       "--json-input",
-      "{\"archive_file\": \"[CLEANUP]/tmp_tmp_16/archive.tgz\", \"include_files\": [], \"output\": \"[START_DIR]/3pp/wd/tools/posix_tool/linux-armv6l/1.2.0/checkout\", \"safe_mode\": true}",
+      "{\"archive_file\": \"[CLEANUP]/tmp_tmp_17/archive.tgz\", \"include_files\": [], \"output\": \"[START_DIR]/3pp/wd/tools/posix_tool/linux-armv6l/1.2.0/checkout\", \"safe_mode\": true}",
       "--json-output",
       "/path/to/tmp/json"
     ],
@@ -8477,7 +8979,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/posix_tool/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/tools/posix_tool/linux-armv6l/1.2.0/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_17",
+      "[CLEANUP]/tmp_tmp_18",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -8563,7 +9065,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_17",
+      "[CLEANUP]/tmp_tmp_18",
       "[CACHE]/3pp_cipd/3pp/tools/posix_tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -9061,7 +9563,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/windows_experiment/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/tools/windows_experiment/linux-armv6l/2.0.0/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_18",
+      "[CLEANUP]/tmp_tmp_19",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -9147,7 +9649,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_18",
+      "[CLEANUP]/tmp_tmp_19",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/windows_experiment/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -9480,7 +9982,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/windows_experiment/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/tools/windows_experiment/linux-armv6l/2.0.0/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_19",
+      "[CLEANUP]/tmp_tmp_20",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -9566,7 +10068,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_19",
+      "[CLEANUP]/tmp_tmp_20",
       "[CACHE]/3pp_cipd/3pp/tools/windows_experiment/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -9915,7 +10417,7 @@
       "-version",
       "version:2@0.9.0.chops.1",
       "-out",
-      "[CLEANUP]/tmp_tmp_20",
+      "[CLEANUP]/tmp_tmp_21",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -10002,7 +10504,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_20",
+      "[CLEANUP]/tmp_tmp_21",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/linux-amd64/resolved-instance_id-of-version:2@0.9.0."
     ],
     "env": {
@@ -10176,7 +10678,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/git_tool",
+      "3pp/sources/git/go.repo/git_tool/linux-armv6l",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -10204,7 +10706,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -10258,7 +10760,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/git_tool",
+      "3pp/sources/git/go.repo/git_tool/linux-armv6l",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -10286,7 +10788,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool (2)",
+    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool/linux-armv6l (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -10559,9 +11061,9 @@
       "cipd",
       "pkg-build",
       "-pkg-def",
-      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/git_tool\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/build_tools/git_tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool\"}",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/git_tool/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/build_tools/git_tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_21",
+      "[CLEANUP]/tmp_tmp_22",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -10589,13 +11091,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.build 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.build 3pp/sources/git/go.repo/git_tool/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool/linux-armv6l\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -10611,7 +11113,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool"
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/linux-armv6l"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -10649,8 +11151,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_21",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/40-chars-fake-of-the-package-instance_id"
+      "[CLEANUP]/tmp_tmp_22",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -10691,7 +11193,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/git_tool",
+      "3pp/sources/git/go.repo/git_tool/linux-armv6l",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -10719,7 +11221,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/git_tool/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -10734,7 +11236,7 @@
     "cmd": [
       "cipd",
       "pkg-register",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/40-chars-fake-of-the-package-instance_id",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/linux-armv6l/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -10766,17 +11268,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/git_tool/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool/linux-armv6l\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@3pp/sources/git/go.repo/git_tool@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/git_tool/+/40-chars-fake-of-the-package-instance_id@@@"
+      "@@@STEP_LINK@3pp/sources/git/go.repo/git_tool/linux-armv6l@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/git_tool/linux-armv6l/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -11148,7 +11650,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}, {\"version_file\": \".versions/tool.cipd_version\"}], \"install_mode\": \"copy\", \"package\": \"3pp/build_tools/git_tool/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/build_tools/git_tool/linux-armv6l/1.5.0-rc1/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_22",
+      "[CLEANUP]/tmp_tmp_23",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -11236,7 +11738,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_22",
+      "[CLEANUP]/tmp_tmp_23",
       "[CACHE]/3pp_cipd/3pp/build_tools/git_tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -11933,7 +12435,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/tool",
+      "3pp/sources/git/go.repo/tool/linux-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -11961,7 +12463,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -12015,7 +12517,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/tool",
+      "3pp/sources/git/go.repo/tool/linux-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -12043,7 +12545,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/tool (2)",
+    "name": "building build_tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/tool/linux-amd64 (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -12316,9 +12818,9 @@
       "cipd",
       "pkg-build",
       "-pkg-def",
-      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/tool\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/checkout/src/go.repo/tool\"}",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/tool/linux-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/checkout/src/go.repo/tool\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_23",
+      "[CLEANUP]/tmp_tmp_24",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -12346,13 +12848,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.build 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.build 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -12368,7 +12870,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool"
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-amd64"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -12406,8 +12908,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_23",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/40-chars-fake-of-the-package-instance_id"
+      "[CLEANUP]/tmp_tmp_24",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
@@ -12448,7 +12950,7 @@
     "cmd": [
       "cipd",
       "describe",
-      "3pp/sources/git/go.repo/tool",
+      "3pp/sources/git/go.repo/tool/linux-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -12476,7 +12978,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -12491,7 +12993,7 @@
     "cmd": [
       "cipd",
       "pkg-register",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/40-chars-fake-of-the-package-instance_id",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -12523,17 +13025,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@3pp/sources/git/go.repo/tool@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/tool/+/40-chars-fake-of-the-package-instance_id@@@"
+      "@@@STEP_LINK@3pp/sources/git/go.repo/tool/linux-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/tool/linux-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -12904,7 +13406,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}, {\"version_file\": \".versions/tool.cipd_version\"}], \"install_mode\": \"copy\", \"package\": \"3pp/build_tools/tool/linux-amd64\", \"root\": \"[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_24",
+      "[CLEANUP]/tmp_tmp_25",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -12992,7 +13494,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_24",
+      "[CLEANUP]/tmp_tmp_25",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -13743,10 +14245,10 @@
   {
     "cmd": [
       "cipd",
-      "pkg-deploy",
-      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/40-chars-fake-of-the-package-instance_id",
-      "-root",
-      "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+      "describe",
+      "3pp/sources/git/go.repo/tool/linux-armv6l",
+      "-version",
+      "version:2@1.5.0-rc1",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -13772,16 +14274,495 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool (2).fetch sources.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/40-chars-fake-of-the-package-instance_id",
+    "name": "building build_tools/tool (2).fetch sources.cipd describe 3pp/sources/git/go.repo/tool/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+      "--url",
+      "https://go.repo/tool"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "main",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/tool/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/checkout/src/go.repo/tool\"}",
+      "-out",
+      "[CLEANUP]/tmp_tmp_26",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.build 3pp/sources/git/go.repo/tool/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool/linux-armv6l\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-armv6l"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CLEANUP]/tmp_tmp_26",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building build_tools/tool (2).fetch sources.upload source to cipd",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/sources/git/go.repo/tool/linux-armv6l",
+      "-version",
+      "version:2@1.5.0-rc1",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/tool/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-armv6l/40-chars-fake-of-the-package-instance_id",
+      "-tag",
+      "build_id:8945511751514863184",
+      "-tag",
+      "version:2@1.5.0-rc1",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "arm",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "build_tools/tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building build_tools/tool (2).fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/tool/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@3pp/sources/git/go.repo/tool/linux-armv6l@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/tool/linux-armv6l/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -14153,7 +15134,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}, {\"version_file\": \".versions/tool.cipd_version\"}], \"install_mode\": \"copy\", \"package\": \"3pp/build_tools/tool/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/build_tools/tool/linux-armv6l/1.5.0-rc1/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_25",
+      "[CLEANUP]/tmp_tmp_27",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -14241,7 +15222,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_25",
+      "[CLEANUP]/tmp_tmp_27",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -14986,7 +15967,7 @@
       "-version",
       "version:1.0.0",
       "-out",
-      "[CLEANUP]/tmp_tmp_26",
+      "[CLEANUP]/tmp_tmp_28",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -15071,7 +16052,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_26",
+      "[CLEANUP]/tmp_tmp_28",
       "[CACHE]/3pp_cipd/source/dep/resolved-instance_id-of-version:1.0.0---"
     ],
     "env": {
@@ -15504,7 +16485,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/deps/dep/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/deps/dep/linux-armv6l/1.0.0/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_27",
+      "[CLEANUP]/tmp_tmp_29",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -15590,7 +16571,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_27",
+      "[CLEANUP]/tmp_tmp_29",
       "[CACHE]/3pp_cipd/3pp/deps/dep/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -16231,7 +17212,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/pkg/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/tools/pkg/linux-armv6l/2.0.0/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_28",
+      "[CLEANUP]/tmp_tmp_30",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -16317,7 +17298,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_28",
+      "[CLEANUP]/tmp_tmp_30",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -16840,7 +17821,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/tools/pkg/linux-armv6l/2.0.0/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_29",
+      "[CLEANUP]/tmp_tmp_31",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -16926,7 +17907,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_29",
+      "[CLEANUP]/tmp_tmp_31",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -17520,7 +18501,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/pkg_checkout/linux-armv6l\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/tools/pkg_checkout/linux-armv6l/2.0.0/checkout\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_30",
+      "[CLEANUP]/tmp_tmp_32",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -17606,7 +18587,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_30",
+      "[CLEANUP]/tmp_tmp_32",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_checkout/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -18129,7 +19110,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg_checkout/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/tools/pkg_checkout/linux-armv6l/2.0.0/out\"}",
       "-out",
-      "[CLEANUP]/tmp_tmp_31",
+      "[CLEANUP]/tmp_tmp_33",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -18215,7 +19196,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]/tmp_tmp_31",
+      "[CLEANUP]/tmp_tmp_33",
       "[CACHE]/3pp_cipd/3pp/tools/pkg_checkout/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {

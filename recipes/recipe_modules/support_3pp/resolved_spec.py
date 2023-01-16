@@ -128,7 +128,7 @@ class ResolvedSpec(object):
         repo_url = repo_url[len('http://'):]
       _source_cache = get_cipd_pkg_name([
           self._package_prefix, self._source_cache_prefix, method,
-          repo_url.lower()])
+          repo_url.lower(), self._platform])
     elif method == 'script' or method == 'url':
       _source_cache = get_cipd_pkg_name([
           self._package_prefix, self._source_cache_prefix, method,

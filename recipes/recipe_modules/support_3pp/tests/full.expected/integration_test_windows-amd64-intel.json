@@ -1521,7 +1521,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/dep",
+      "3pp/sources/git/go.repo/dep/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -1548,7 +1548,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1601,7 +1601,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/dep",
+      "3pp/sources/git/go.repo/dep/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -1628,7 +1628,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep (2)",
+    "name": "building deps/bottom_dep_git.fetch sources.cipd describe 3pp/sources/git/go.repo/dep/windows-amd64 (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -1894,7 +1894,7 @@
       "cipd.bat",
       "pkg-build",
       "-pkg-def",
-      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/dep\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\deps\\\\bottom_dep_git\\\\windows-amd64\\\\1.5.0-rc1\\\\checkout\"}",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/dep/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\deps\\\\bottom_dep_git\\\\windows-amd64\\\\1.5.0-rc1\\\\checkout\"}",
       "-out",
       "[CLEANUP]\\tmp_tmp_2",
       "-hash-algo",
@@ -1923,13 +1923,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.build 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.build 3pp/sources/git/go.repo/dep/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep/windows-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -1945,7 +1945,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep"
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep\\windows-amd64"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
@@ -1983,7 +1983,7 @@
       "/path/to/tmp/json",
       "move",
       "[CLEANUP]\\tmp_tmp_2",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep\\40-chars-fake-of-the-package-instance_id"
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
@@ -2023,7 +2023,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/dep",
+      "3pp/sources/git/go.repo/dep/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -2050,7 +2050,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/dep/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -2065,7 +2065,7 @@
     "cmd": [
       "cipd.bat",
       "pkg-register",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep\\40-chars-fake-of-the-package-instance_id",
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -2096,17 +2096,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/dep",
+    "name": "building deps/bottom_dep_git.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/dep/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/dep/windows-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@3pp/sources/git/go.repo/dep@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/dep/+/40-chars-fake-of-the-package-instance_id@@@"
+      "@@@STEP_LINK@3pp/sources/git/go.repo/dep/windows-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/dep/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -7211,7 +7211,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/git_tool",
+      "3pp/sources/git/go.repo/git_tool/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -7239,7 +7239,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -7293,7 +7293,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/git_tool",
+      "3pp/sources/git/go.repo/git_tool/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -7321,7 +7321,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool (2)",
+    "name": "building build_tools/git_tool.fetch sources.cipd describe 3pp/sources/git/go.repo/git_tool/windows-amd64 (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -7594,7 +7594,7 @@
       "cipd.bat",
       "pkg-build",
       "-pkg-def",
-      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/git_tool\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\build_tools\\\\git_tool\\\\windows-amd64\\\\1.5.0-rc1\\\\checkout\\\\src\\\\go.repo\\\\tool\"}",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/git_tool/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\build_tools\\\\git_tool\\\\windows-amd64\\\\1.5.0-rc1\\\\checkout\\\\src\\\\go.repo\\\\tool\"}",
       "-out",
       "[CLEANUP]\\tmp_tmp_13",
       "-hash-algo",
@@ -7624,13 +7624,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.build 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.build 3pp/sources/git/go.repo/git_tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool/windows-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -7646,7 +7646,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool"
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool\\windows-amd64"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
@@ -7685,7 +7685,7 @@
       "/path/to/tmp/json",
       "move",
       "[CLEANUP]\\tmp_tmp_13",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool\\40-chars-fake-of-the-package-instance_id"
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
@@ -7726,7 +7726,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/git_tool",
+      "3pp/sources/git/go.repo/git_tool/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -7754,7 +7754,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/git_tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -7769,7 +7769,7 @@
     "cmd": [
       "cipd.bat",
       "pkg-register",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool\\40-chars-fake-of-the-package-instance_id",
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -7801,17 +7801,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/git_tool",
+    "name": "building build_tools/git_tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/git_tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/git_tool/windows-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@3pp/sources/git/go.repo/git_tool@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/git_tool/+/40-chars-fake-of-the-package-instance_id@@@"
+      "@@@STEP_LINK@3pp/sources/git/go.repo/git_tool/windows-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/git_tool/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
@@ -9169,7 +9169,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/tool",
+      "3pp/sources/git/go.repo/tool/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -9197,7 +9197,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -9470,7 +9470,7 @@
       "cipd.bat",
       "pkg-build",
       "-pkg-def",
-      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/tool\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\build_tools\\\\tool\\\\windows-amd64\\\\1.5.0-rc1\\\\checkout\\\\src\\\\go.repo\\\\tool\"}",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": [\"\\\\.git\"]}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/git/go.repo/tool/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\build_tools\\\\tool\\\\windows-amd64\\\\1.5.0-rc1\\\\checkout\\\\src\\\\go.repo\\\\tool\"}",
       "-out",
       "[CLEANUP]\\tmp_tmp_15",
       "-hash-algo",
@@ -9500,13 +9500,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.build 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.build 3pp/sources/git/go.repo/tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool/windows-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -9522,7 +9522,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool"
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool\\windows-amd64"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
@@ -9561,7 +9561,7 @@
       "/path/to/tmp/json",
       "move",
       "[CLEANUP]\\tmp_tmp_15",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool\\40-chars-fake-of-the-package-instance_id"
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
@@ -9602,7 +9602,7 @@
     "cmd": [
       "cipd.bat",
       "describe",
-      "3pp/sources/git/go.repo/tool",
+      "3pp/sources/git/go.repo/tool/windows-amd64",
       "-version",
       "version:2@1.5.0-rc1",
       "-json-output",
@@ -9630,7 +9630,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@tag 'version:2@1.5.0-rc1' not found@@@",
@@ -9645,7 +9645,7 @@
     "cmd": [
       "cipd.bat",
       "pkg-register",
-      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool\\40-chars-fake-of-the-package-instance_id",
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -9675,17 +9675,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "building build_tools/tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/tool",
+    "name": "building build_tools/tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/tool/windows-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/git/go.repo/tool/windows-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@3pp/sources/git/go.repo/tool@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/tool/+/40-chars-fake-of-the-package-instance_id@@@"
+      "@@@STEP_LINK@3pp/sources/git/go.repo/tool/windows-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/git/go.repo/tool/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
     ]
   },
   {
