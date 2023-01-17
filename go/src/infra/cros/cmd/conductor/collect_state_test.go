@@ -68,3 +68,44 @@ func TestCollectState_MaxRetriesPerBuild(t *testing.T) {
 	}
 	assert.IntsEqual(t, retries, 2)
 }
+
+type fakeClock struct {
+	currentTime int64
+}
+
+func (f *fakeClock) Now() int64 {
+	return f.currentTime
+}
+
+func TestCollectState_CutoffSeconds(t *testing.T) {
+	t.Parallel()
+
+	fakeClock := &fakeClock{
+		currentTime: 100,
+	}
+
+	collectState := initCollectStateTest(&pb.CollectConfig{
+		Rules: []*pb.RetryRule{
+			{
+				CutoffSeconds: 300, // Can't retry after time 400.
+			},
+		},
+	}, fakeClock)
+	build := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+	}
+
+	assert.Assert(t, collectState.canRetry(build))
+	fakeClock.currentTime = 200
+	assert.Assert(t, collectState.canRetry(build))
+	fakeClock.currentTime = 300
+	assert.Assert(t, collectState.canRetry(build))
+	fakeClock.currentTime = 500
+	assert.Assert(t, !collectState.canRetry(build))
+}
