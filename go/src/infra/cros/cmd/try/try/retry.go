@@ -5,6 +5,7 @@ package try
 
 import (
 	"context"
+	gerr "errors"
 	"flag"
 	"fmt"
 	"log"
@@ -112,6 +113,9 @@ func (c *Client) DoRetry(opts *RetryRunOpts) (string, error) {
 
 // validate validates retry-specific args for the command.
 func (r *retryRun) validate() error {
+	if r.originalBBID == "" {
+		return gerr.New("--bbid is required")
+	}
 	return nil
 }
 
@@ -428,7 +432,15 @@ func (r *retryRun) innerRun() (string, int) {
 	}
 	propsStruct := buildData.GetInput().GetProperties()
 
-	if r.paygenRetry {
+	recipe := propsStruct.AsMap()["recipe"].(string)
+	if recipe == "paygen_orchestrator" || recipe == "paygen" {
+		r.LogOut("Warning: paygen-orchestrator/paygen builds do not communicate directly with GoldenEye. " +
+			"This build will not be ingested unless a child builder reports its results -- this " +
+			"will happen if this build was relaunched with the conductor, but not if it was " +
+			"retried manually.")
+		// No partial retries for paygen-orchestrator but clobbering is allowed
+		// so just fire off a new one.
+	} else if r.paygenRetry {
 		ret := r.processPaygenRetry(ctx, buildData, propsStruct)
 		if ret != Success {
 			return "", ret

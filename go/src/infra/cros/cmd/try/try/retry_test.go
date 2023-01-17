@@ -17,6 +17,17 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
+func TestValidate_retryRim(t *testing.T) {
+	t.Parallel()
+	r := retryRun{}
+	assert.ErrorContains(t, r.validate(), "--bbid")
+
+	r = retryRun{
+		originalBBID: "123",
+	}
+	assert.NilError(t, r.validate())
+}
+
 const (
 	retryTestGoodJSON = `{
 	"id": "8794230068334833057",
@@ -546,4 +557,136 @@ func Test_DirectEntry(t *testing.T) {
 	execSteps := checkpointProps.GetFields()["exec_steps"].GetStructValue().GetFields()["steps"].GetListValue().AsSlice()
 	assert.IntsEqual(t, len(execSteps), 1)
 	assert.IntsEqual(t, int(execSteps[0].(float64)), int(pb.RetryStep_DEBUG_SYMBOLS.Number()))
+}
+
+const (
+	paygenOrchJSON = `{
+	"id": "879423006833483308",
+	"builder": {
+		"project": "chromeos",
+		"bucket": "staging",
+		"builder": "staging-paygen-orchestrator"
+	},
+	"status": "FAILURE",
+	"input": {
+		"properties": {
+			"recipe": "paygen_orchestrator",
+			"input_prop": 102
+		}
+	},
+	"output": {
+		"properties": {
+		}
+	}
+}`
+
+	paygenJSON = `{
+"id": "879423006833483308",
+"builder": {
+	"project": "chromeos",
+	"bucket": "staging",
+	"builder": "staging-paygen"
+},
+"status": "FAILURE",
+"input": {
+	"properties": {
+		"recipe": "paygen",
+		"input_prop": 102
+	}
+},
+"output": {
+	"properties": {
+	}
+}
+}`
+)
+
+type paygenTestConfig struct {
+	expectedBuilder string
+	buildJSON       string
+	dryrun          bool
+}
+
+func doPaygenTest(t *testing.T, tc *paygenTestConfig) {
+	t.Helper()
+	propsFile, err := os.CreateTemp("", "input_props")
+	defer os.Remove(propsFile.Name())
+	assert.NilError(t, err)
+
+	f := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeAuthInfoRunner("led", 0),
+			{
+				ExpectedCmd: []string{
+					"led", "auth-info",
+				},
+				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", "879423006833483308", "-p", "-json"},
+				Stdout:      stripNewlines(tc.buildJSON),
+			},
+		},
+	}
+	expectedBuilder := fmt.Sprintf("chromeos/staging/%s", tc.expectedBuilder)
+	expectedAddCmd := []string{"bb", "add", expectedBuilder}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
+	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
+	if !tc.dryrun {
+		f.CommandRunners = append(f.CommandRunners,
+			cmd.FakeCommandRunner{
+				ExpectedCmd: expectedAddCmd,
+				Stdout:      bbAddOutput("12345679"),
+			},
+		)
+	}
+
+	r := retryRun{
+		propsFile:    propsFile,
+		originalBBID: "879423006833483308",
+		tryRunBase: tryRunBase{
+			cmdRunner: f,
+			dryrun:    tc.dryrun,
+		},
+	}
+	ret := r.Run(nil, nil, nil)
+	assert.IntsEqual(t, ret, Success)
+
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	// Check that we haven't set any checkpoint properties.
+	_, exists := properties.GetFields()["$chromeos/checkpoint"]
+	assert.Assert(t, !exists)
+}
+
+func TestRetry_paygenOrch(t *testing.T) {
+	doPaygenTest(t, &paygenTestConfig{
+		expectedBuilder: "staging-paygen-orchestrator",
+		buildJSON:       paygenOrchJSON,
+	})
+}
+
+func TestRetry_paygen(t *testing.T) {
+	doPaygenTest(t, &paygenTestConfig{
+		expectedBuilder: "staging-paygen",
+		buildJSON:       paygenJSON,
+	})
+}
+
+func TestRetry_paygenOrch_dryrun(t *testing.T) {
+	doPaygenTest(t, &paygenTestConfig{
+		expectedBuilder: "staging-paygen-orchestrator",
+		buildJSON:       paygenOrchJSON,
+		dryrun:          true,
+	})
+}
+
+func TestRetry_paygen_dryrun(t *testing.T) {
+	doPaygenTest(t, &paygenTestConfig{
+		expectedBuilder: "staging-paygen",
+		buildJSON:       paygenJSON,
+		dryrun:          true,
+	})
 }
