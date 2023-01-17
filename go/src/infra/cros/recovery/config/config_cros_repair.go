@@ -776,7 +776,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
-				"lsusb -d 03eb | grep \"Atmel Corp. atmega32u4 DFU bootloader\"",
+				"lsusb -d 03eb: | grep \"Atmel Corp. atmega32u4 DFU bootloader\"",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 30,
