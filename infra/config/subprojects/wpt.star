@@ -28,5 +28,5 @@ def cron(name, recipe, execution_timeout = None, schedule = None):
     )
 
 cron(name = "wpt-exporter", recipe = "wpt_export")
-cron(name = "wpt-importer", recipe = "wpt_import", execution_timeout = 6 * time.hour)
+cron(name = "wpt-importer", recipe = "wpt_import", schedule = "with 1800s interval", execution_timeout = 6 * time.hour)
 cron(name = "wpt-uploader", recipe = "wpt_upload", schedule = "with 10800s interval")
