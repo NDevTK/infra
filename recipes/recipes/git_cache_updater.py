@@ -101,6 +101,7 @@ def _do_update_bootstrap(api, url, work_dir, gc_aggressive):
             # By default, any tags that point to objects we fetch
             # from remote are also fetched. This ensures ALL tags are
             # downloaded from remote.
+            # This is needed by chromeos builders.
             '--ref',
             'refs/tags/*',
             '--break-locks',
