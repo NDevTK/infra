@@ -7,9 +7,11 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
+	bb "infra/cros/internal/buildbucket"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestCollectState_MaxRetries(t *testing.T) {
@@ -128,9 +130,18 @@ func TestCollectState_BuildMatches(t *testing.T) {
 					".*source cache.*",
 					".*gclient.*",
 				},
+				FailedCheckpoint: pb.RetryStep_STAGE_ARTIFACTS,
 			},
 		},
 	}, nil, nil)
+
+	inputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	assert.NilError(t, err)
+	err = bb.SetProperty(inputProperties,
+		"$chromeos/checkpoint.retry_summary.STAGE_ARTIFACTS",
+		"FAILED")
+	assert.NilError(t, err)
+
 	failedBuild := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -140,8 +151,12 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
+		Input: &bbpb.Build_Input{
+			Properties: inputProperties,
+		},
 	}
 	assert.Assert(t, collectState.canRetry(failedBuild))
+
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_SUCCESS,

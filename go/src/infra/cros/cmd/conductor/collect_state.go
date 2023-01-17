@@ -137,6 +137,27 @@ func matchesAny(term string, res []*regexp.Regexp) bool {
 	return false
 }
 
+func extractCheckpointStatus(build *bbpb.Build, checkpoint pb.RetryStep) *string {
+	properties, ok := build.GetInput().GetProperties().GetFields()["$chromeos/checkpoint"]
+	if !ok {
+		return nil
+	}
+	prop, ok := properties.GetStructValue().GetFields()["retry_summary"]
+	if !ok {
+		return nil
+	}
+	retrySummary := prop.GetStructValue().AsMap()
+	status, ok := retrySummary[checkpoint.String()]
+	if !ok {
+		return nil
+	}
+	statusString, ok := status.(string)
+	if !ok {
+		return nil
+	}
+	return &statusString
+}
+
 // matches evaluates whether the given build result matches the rule.
 func (r *Rule) matches(build *bbpb.Build) bool {
 	if len(r.rule.GetStatus()) > 0 {
@@ -166,6 +187,13 @@ func (r *Rule) matches(build *bbpb.Build) bool {
 		if len(r.summaryMarkdownRe) > 0 {
 			matches := matchesAny(summaryMarkdown, r.summaryMarkdownRe)
 			if !matches {
+				return false
+			}
+		}
+
+		if r.rule.GetFailedCheckpoint() != pb.RetryStep_UNDEFINED {
+			checkpointStatus := extractCheckpointStatus(build, r.rule.GetFailedCheckpoint())
+			if checkpointStatus != nil && *checkpointStatus != "FAILED" {
 				return false
 			}
 		}
