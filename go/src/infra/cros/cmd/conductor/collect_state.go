@@ -9,8 +9,9 @@ import (
 )
 
 type Rule struct {
-	rule         *pb.RetryRule
-	totalRetries uint32
+	rule           *pb.RetryRule
+	totalRetries   uint32
+	retriesByBuild map[string]uint32
 }
 
 // CollectState tracks state for a conductor collect.
@@ -23,8 +24,9 @@ func initCollectState(config *pb.CollectConfig) *CollectState {
 	rules := []*Rule{}
 	for _, rule := range config.GetRules() {
 		rules = append(rules, &Rule{
-			rule:         rule,
-			totalRetries: 0,
+			rule:           rule,
+			totalRetries:   0,
+			retriesByBuild: map[string]uint32{},
 		})
 	}
 	return &CollectState{
@@ -39,12 +41,19 @@ func (r *Rule) matches(build *bbpb.Build) bool {
 
 // canRetry evaluates whether a retry is permitted by all matching rules.
 func (c *CollectState) canRetry(build *bbpb.Build) bool {
+	buildName := build.GetBuilder().GetBuilder()
 	for _, rule := range c.rules {
 		if !rule.matches(build) {
 			continue
 		}
 		if rule.rule.GetMaxRetries() > 0 {
 			if rule.totalRetries >= uint32(rule.rule.GetMaxRetries()) {
+				return false
+			}
+		}
+		if rule.rule.GetMaxRetriesPerBuild() > 0 {
+			buildRetries, ok := rule.retriesByBuild[buildName]
+			if ok && buildRetries >= uint32(rule.rule.GetMaxRetriesPerBuild()) {
 				return false
 			}
 		}
@@ -55,9 +64,15 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 
 // recordRetry records that the build was retried.
 func (c *CollectState) recordRetry(build *bbpb.Build) {
+	buildName := build.GetBuilder().GetBuilder()
 	for _, rule := range c.rules {
 		if rule.matches(build) {
 			rule.totalRetries += 1
+			if _, ok := rule.retriesByBuild[buildName]; ok {
+				rule.retriesByBuild[buildName] += 1
+			} else {
+				rule.retriesByBuild[buildName] = 1
+			}
 		}
 	}
 }
