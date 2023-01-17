@@ -245,6 +245,7 @@ func getExecStep(recipe string, buildData buildInfo) (pb.RetryStep, error) {
 	// clobbering (if this changes we'll need to tweak this approach).
 	if recipe == "build_release" && len(buildData.signingSummary) > 0 {
 		for _, status := range buildData.signingSummary {
+			// TODO(b/262388770): Do we want to retry failures, or just timeouts?
 			if status == "FAILED" || status == "TIMED_OUT" {
 				return pb.RetryStep_PUSH_IMAGES, nil
 			}
@@ -446,6 +447,11 @@ func (r *retryRun) innerRun() (string, int) {
 			return "", ret
 		}
 	} else {
+		if recipe == "build_release" && buildData.GetStatus() == bbpb.Status_SUCCESS {
+			r.LogOut("Build was succesful, nothing to retry.")
+			return "", Success
+		}
+
 		ret := r.processRetry(ctx, buildData, propsStruct)
 		if ret != Success {
 			return "", ret

@@ -216,6 +216,7 @@ func TestRetry_fullRun(t *testing.T) {
 
 type childRetryTestConfig struct {
 	dryrun           bool
+	testNoRun        bool
 	bbid             string
 	builderName      string
 	builderJSON      string
@@ -251,12 +252,14 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
-	f.CommandRunners = append(f.CommandRunners,
-		cmd.FakeCommandRunner{
-			ExpectedCmd: expectedAddCmd,
-			Stdout:      bbAddOutput(tc.bbid),
-		},
-	)
+	if !tc.dryrun && !tc.testNoRun {
+		f.CommandRunners = append(f.CommandRunners,
+			cmd.FakeCommandRunner{
+				ExpectedCmd: expectedAddCmd,
+				Stdout:      bbAddOutput(tc.bbid),
+			},
+		)
+	}
 
 	r := retryRun{
 		propsFile:    propsFile,
@@ -272,6 +275,10 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 		assert.IntsEqual(t, ret, Success)
 	} else {
 		assert.IntsNotEqual(t, ret, Success)
+		return
+	}
+
+	if tc.testNoRun {
 		return
 	}
 
@@ -299,15 +306,22 @@ func TestRetry_childBuilder_fullRun(t *testing.T) {
 		expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
 	})
 }
-
-func TestRetry_childBuilder_paygen_fullRun(t *testing.T) {
+func TestRetry_childBuilder_dryRun(t *testing.T) {
 	doChildRetryTestRun(t, &childRetryTestConfig{
-		dryrun:           false,
-		bbid:             "8794230068334833058",
-		builderName:      "staging-eve-release-main",
-		builderJSON:      stripNewlines(successfulChildJSON),
-		expectedExecStep: pb.RetryStep_PAYGEN,
-		paygenRetry:      true,
+		dryrun:           true,
+		bbid:             "8794230068334833050",
+		builderName:      "staging-zork-release-main",
+		builderJSON:      stripNewlines(failedChildJSON),
+		expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
+	})
+}
+
+func TestRetry_childBuilder_successfulNoRetry(t *testing.T) {
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		bbid:        "8794230068334833058",
+		builderName: "staging-eve-release-main",
+		builderJSON: stripNewlines(successfulChildJSON),
+		testNoRun:   true,
 	})
 }
 
