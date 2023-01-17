@@ -25,10 +25,11 @@ func (c *RealClock) Now() int64 {
 }
 
 type Rule struct {
-	rule           *pb.RetryRule
-	builderNameRe  []*regexp.Regexp
-	totalRetries   uint32
-	retriesByBuild map[string]uint32
+	rule              *pb.RetryRule
+	builderNameRe     []*regexp.Regexp
+	summaryMarkdownRe []*regexp.Regexp
+	totalRetries      uint32
+	retriesByBuild    map[string]uint32
 }
 
 // CollectState tracks state for a conductor collect.
@@ -79,6 +80,7 @@ func initCollectStateTest(config *pb.CollectConfig, clock Clock) *CollectState {
 	return initCollectState_inner(config, nil, nil, clock)
 }
 
+// initRules initializes the rules (and associated state) for the collect state.
 func (c *CollectState) initRules(config *pb.CollectConfig) []*Rule {
 	rules := []*Rule{}
 	for i, rule := range config.GetRules() {
@@ -105,11 +107,37 @@ func (c *CollectState) initRules(config *pb.CollectConfig) []*Rule {
 			continue
 		}
 		r.builderNameRe = builderNameRe
+
+		summaryMarkdownRe := []*regexp.Regexp{}
+		for _, re := range rule.GetSummaryMarkdownRe() {
+			exp, err := regexp.Compile(re)
+			if err != nil {
+				skipRule = true
+				c.LogErr("Could not compile regexp `%s`, skipping rule %d", re, i)
+				break
+			}
+			summaryMarkdownRe = append(summaryMarkdownRe, exp)
+		}
+		if skipRule {
+			continue
+		}
+		r.summaryMarkdownRe = summaryMarkdownRe
+
 		rules = append(rules, r)
 	}
 	return rules
 }
 
+func matchesAny(term string, res []*regexp.Regexp) bool {
+	for _, re := range res {
+		if re.MatchString(term) {
+			return true
+		}
+	}
+	return false
+}
+
+// matches evaluates whether the given build result matches the rule.
 func (r *Rule) matches(build *bbpb.Build) bool {
 	if len(r.rule.GetStatus()) > 0 {
 		if len(r.rule.GetStatus()) > 0 {
@@ -125,15 +153,19 @@ func (r *Rule) matches(build *bbpb.Build) bool {
 				return false
 			}
 		}
+
 		builderName := build.GetBuilder().GetBuilder()
 		if len(r.builderNameRe) > 0 {
-			builderNameMatch := false
-			for _, re := range r.builderNameRe {
-				if re.MatchString(builderName) {
-					builderNameMatch = true
-				}
+			matches := matchesAny(builderName, r.builderNameRe)
+			if !matches {
+				return false
 			}
-			if !builderNameMatch {
+		}
+
+		summaryMarkdown := build.GetSummaryMarkdown()
+		if len(r.summaryMarkdownRe) > 0 {
+			matches := matchesAny(summaryMarkdown, r.summaryMarkdownRe)
+			if !matches {
 				return false
 			}
 		}

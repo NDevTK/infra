@@ -124,6 +124,10 @@ func TestCollectState_BuildMatches(t *testing.T) {
 					"coral-.*",
 					"eve-.*",
 				},
+				SummaryMarkdownRe: []string{
+					".*source cache.*",
+					".*gclient.*",
+				},
 			},
 		},
 	}, nil, nil)
@@ -135,6 +139,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Bucket:  "release",
 			Builder: "eve-release-main",
 		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
 	}
 	assert.Assert(t, collectState.canRetry(failedBuild))
 	successfulBuild := &bbpb.Build{
@@ -145,6 +150,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Bucket:  "release",
 			Builder: "coral-release-main",
 		},
+		SummaryMarkdown: "gclient error",
 	}
 	assert.Assert(t, !collectState.canRetry(successfulBuild))
 	otherBuild := &bbpb.Build{
@@ -155,6 +161,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Bucket:  "release",
 			Builder: "atlas-release-main",
 		},
+		SummaryMarkdown: "unknown error",
 	}
 	assert.Assert(t, !collectState.canRetry(otherBuild))
 }
