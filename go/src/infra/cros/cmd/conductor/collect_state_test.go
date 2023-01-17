@@ -21,7 +21,7 @@ func TestCollectState_MaxRetries(t *testing.T) {
 				MaxRetries: 3,
 			},
 		},
-	})
+	}, nil, nil)
 	build := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -50,7 +50,7 @@ func TestCollectState_MaxRetriesPerBuild(t *testing.T) {
 				MaxRetriesPerBuild: 2,
 			},
 		},
-	})
+	}, nil, nil)
 	build := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -108,4 +108,40 @@ func TestCollectState_CutoffSeconds(t *testing.T) {
 	assert.Assert(t, collectState.canRetry(build))
 	fakeClock.currentTime = 500
 	assert.Assert(t, !collectState.canRetry(build))
+}
+
+func TestCollectState_BuildMatches(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&pb.CollectConfig{
+		Rules: []*pb.RetryRule{
+			{
+				Status: []int32{
+					int32(bbpb.Status_FAILURE),
+					int32(bbpb.Status_INFRA_FAILURE),
+				},
+			},
+		},
+	}, nil, nil)
+	failedBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+	}
+	successfulBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_SUCCESS,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+	}
+
+	assert.Assert(t, collectState.canRetry(failedBuild))
+	assert.Assert(t, !collectState.canRetry(successfulBuild))
 }
