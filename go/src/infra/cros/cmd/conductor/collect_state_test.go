@@ -120,6 +120,10 @@ func TestCollectState_BuildMatches(t *testing.T) {
 					int32(bbpb.Status_FAILURE),
 					int32(bbpb.Status_INFRA_FAILURE),
 				},
+				BuilderNameRe: []string{
+					"coral-.*",
+					"eve-.*",
+				},
 			},
 		},
 	}, nil, nil)
@@ -132,16 +136,25 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 	}
+	assert.Assert(t, collectState.canRetry(failedBuild))
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_SUCCESS,
 		Builder: &bbpb.BuilderID{
 			Project: "chromeos",
 			Bucket:  "release",
-			Builder: "eve-release-main",
+			Builder: "coral-release-main",
 		},
 	}
-
-	assert.Assert(t, collectState.canRetry(failedBuild))
 	assert.Assert(t, !collectState.canRetry(successfulBuild))
+	otherBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "atlas-release-main",
+		},
+	}
+	assert.Assert(t, !collectState.canRetry(otherBuild))
 }

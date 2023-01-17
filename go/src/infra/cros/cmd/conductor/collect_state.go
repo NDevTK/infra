@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 	"time"
 
@@ -25,6 +26,7 @@ func (c *RealClock) Now() int64 {
 
 type Rule struct {
 	rule           *pb.RetryRule
+	builderNameRe  []*regexp.Regexp
 	totalRetries   uint32
 	retriesByBuild map[string]uint32
 }
@@ -53,52 +55,87 @@ func (c *CollectState) LogErr(format string, a ...interface{}) {
 	}
 }
 
-// initCollectState returns a new CollectState based on the specified config.
-func initCollectState(config *pb.CollectConfig, stdoutLog, stderrLog *log.Logger) *CollectState {
-	clock := &RealClock{}
-	return &CollectState{
+// initCollectState_inner returns a new CollectState based on the specified config.
+func initCollectState_inner(config *pb.CollectConfig, stdoutLog, stderrLog *log.Logger, clock Clock) *CollectState {
+	c := &CollectState{
 		clock:     clock,
 		stdoutLog: stdoutLog,
 		stderrLog: stderrLog,
-		rules:     initRules(config),
 		startTime: clock.Now(),
 	}
+	c.rules = c.initRules(config)
+	return c
+}
+
+// initCollectState returns a new CollectState based on the specified config.
+func initCollectState(config *pb.CollectConfig, stdoutLog, stderrLog *log.Logger) *CollectState {
+	clock := &RealClock{}
+	return initCollectState_inner(config, stdoutLog, stderrLog, clock)
 }
 
 // initCollectStateTest returns a new CollectState based on the specified
 // config that uses the specified clock.
 func initCollectStateTest(config *pb.CollectConfig, clock Clock) *CollectState {
-	return &CollectState{
-		rules:     initRules(config),
-		clock:     clock,
-		startTime: clock.Now(),
-	}
+	return initCollectState_inner(config, nil, nil, clock)
 }
 
-func initRules(config *pb.CollectConfig) []*Rule {
+func (c *CollectState) initRules(config *pb.CollectConfig) []*Rule {
 	rules := []*Rule{}
-	for _, rule := range config.GetRules() {
-		rules = append(rules, &Rule{
+	for i, rule := range config.GetRules() {
+		r := &Rule{
 			rule:           rule,
 			totalRetries:   0,
 			retriesByBuild: map[string]uint32{},
-		})
+		}
+		skipRule := false
+		builderNameRe := []*regexp.Regexp{}
+		// We don't want to crash out a whole build due to bad config, so if
+		// we can't build a rule for any reason, we'll omit it (and log that
+		// we're doing so) -- no retries is closer to baseline behavior.
+		for _, re := range rule.GetBuilderNameRe() {
+			exp, err := regexp.Compile(re)
+			if err != nil {
+				skipRule = true
+				c.LogErr("Could not compile regexp `%s`, skipping rule %d", re, i)
+				break
+			}
+			builderNameRe = append(builderNameRe, exp)
+		}
+		if skipRule {
+			continue
+		}
+		r.builderNameRe = builderNameRe
+		rules = append(rules, r)
 	}
 	return rules
 }
 
 func (r *Rule) matches(build *bbpb.Build) bool {
 	if len(r.rule.GetStatus()) > 0 {
-		status := build.GetStatus()
-		statusMatch := false
-		for _, ruleStatus := range r.rule.GetStatus() {
-			if status == bbpb.Status(ruleStatus) {
-				statusMatch = true
-				break
+		if len(r.rule.GetStatus()) > 0 {
+			status := build.GetStatus()
+			statusMatch := false
+			for _, ruleStatus := range r.rule.GetStatus() {
+				if status == bbpb.Status(ruleStatus) {
+					statusMatch = true
+					break
+				}
+			}
+			if !statusMatch {
+				return false
 			}
 		}
-		if !statusMatch {
-			return false
+		builderName := build.GetBuilder().GetBuilder()
+		if len(r.builderNameRe) > 0 {
+			builderNameMatch := false
+			for _, re := range r.builderNameRe {
+				if re.MatchString(builderName) {
+					builderNameMatch = true
+				}
+			}
+			if !builderNameMatch {
+				return false
+			}
 		}
 	}
 	return true
