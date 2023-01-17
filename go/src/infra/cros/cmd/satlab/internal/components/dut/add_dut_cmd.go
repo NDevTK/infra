@@ -33,7 +33,6 @@ var AddDUTCmd = &subcommands.Command{
 		// Manual_tags must be key:value form.
 		c.deployTags = []string{"satlab:true"}
 		// TODO(gregorynisbet): Consider skipping actions for satlab by default.
-		c.deployActions = defaultDeployTaskActions
 		c.assetType = "dut"
 
 		c.Flags.StringVar(&c.address, "address", "", "IP address of host")
@@ -104,8 +103,6 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 
 	c.qualifiedHostname = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.hostname)
 	c.qualifiedRack = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.rack)
-	// Fro easy track we check if servo is expected to be supported.
-	hasServo := c.setupServoArguments(dockerHostBoxIdentifier)
 
 	if c.zone == "" {
 		c.zone = site.DefaultZone
@@ -149,8 +146,6 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			}
 		})()
 	}
-
-	c.setDeployActions(hasServo)
 
 	if err := (&shivas.Rack{
 		Name:      c.qualifiedRack,
@@ -223,13 +218,4 @@ func (c *addDUT) setupServoArguments(dockerHostBoxIdentifier string) bool {
 		c.qualifiedServo = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.servo)
 	}
 	return true
-}
-
-// setDeployActions sets deployment steps or specify if they need to be skipped.
-func (c *addDUT) setDeployActions(hasServo bool) {
-	// For Satlab,  default we skip certain deployment task such as
-	// downloading image, installing OS and firmware".
-	if c.fullDeploy && !hasServo {
-		fmt.Fprintf(os.Stderr, "full deploy is not supported for setup without servo.\n")
-	}
 }

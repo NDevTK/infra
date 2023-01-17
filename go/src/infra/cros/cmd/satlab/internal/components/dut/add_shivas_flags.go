@@ -169,7 +169,6 @@ type shivasAddDUT struct {
 
 	ignoreUFS         bool
 	deployTaskTimeout int64
-	deployActions     []string
 	deployTags        []string
 	deploymentTicket  string
 	tags              []string
