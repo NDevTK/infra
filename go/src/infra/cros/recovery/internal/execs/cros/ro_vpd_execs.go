@@ -15,8 +15,10 @@ import (
 	"infra/cros/recovery/internal/log"
 )
 
-// ROVPDKeys is the list of keys from RO_VPD that should be persisted and flashed in the recovery process.
-var ROVPDKeys = []string{"wifi_sar"}
+// roVPDKeys is the list of keys from RO_VPD that should be persisted and flashed in the recovery process.
+var roVPDKeys = []string{
+	"wifi_sar",
+}
 
 const (
 	// readROVPDValuesCmdGlob reads the value of VPD key from RO_VPD partition by name.
@@ -68,13 +70,13 @@ func setFakeROVPDSkuNumber(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// updateROVPDToInv reads RO_VPD values from ROVPDKeys from the resource and updates DUT info.
+// updateROVPDToInv reads RO_VPD values from the resource listed in roVPDKeys into the inventory.
 func updateROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	if info.GetChromeos().RoVpdMap == nil {
+	if info.GetChromeos().GetRoVpdMap() == nil {
 		info.GetChromeos().RoVpdMap = make(map[string]string)
 	}
-	for _, key := range ROVPDKeys {
+	for _, key := range roVPDKeys {
 		cmd := fmt.Sprintf(readROVPDValuesCmd, key)
 		if value, err := r(ctx, time.Minute, cmd); err == nil {
 			info.GetChromeos().RoVpdMap[key] = value
@@ -84,10 +86,10 @@ func updateROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// matchROVPDToInv matches RO_VPD values from ROVPDKeys from the resource to values in the Inventory.
+// matchROVPDToInv matches RO_VPD values from resource to inventory.
 func matchROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	for k, v := range info.GetChromeos().RoVpdMap {
+	for k, v := range info.GetChromeos().GetRoVpdMap() {
 		cmd := fmt.Sprintf(readROVPDValuesCmd, k)
 		value, err := r(ctx, time.Minute, cmd)
 		if err != nil {
@@ -101,15 +103,14 @@ func matchROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// setROVPD sets RO_VPD values from ROVPDKeys from the Inventory to the resource.
+// setROVPD sets RO_VPD values from inventory to resource.
 func setROVPD(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	for k, v := range info.GetChromeos().RoVpdMap {
+	for k, v := range info.GetChromeos().GetRoVpdMap() {
 		cmd := fmt.Sprintf(writeVPDValuesCmd, k, v)
 		if _, err := r(ctx, time.Minute, cmd); err != nil {
 			return errors.Annotate(err, "cannot set RO_VPD key").Err()
 		}
-
 	}
 	log.Infof(ctx, "set RO_VPD values successfully")
 	return nil
