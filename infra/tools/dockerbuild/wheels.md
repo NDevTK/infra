@@ -7785,6 +7785,20 @@ wheel: <
 
 * *universal*
 
+## **yamllint-py3**
+
+### 1.29.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/yamllint-py3"
+  version: "version:1.29.0"
+>
+```
+
+
+* *universal*
+
 ## **yapf**
 
 ### 0.22.0
