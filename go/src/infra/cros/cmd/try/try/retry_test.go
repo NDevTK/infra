@@ -109,6 +109,28 @@ const (
 			}
 		}
 	}`
+
+	emptyRetrySummaryJSON = `{
+		"id": "8794230068334833059",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-zork-release-main"
+		},
+		"status": "FAILURE",
+		"input": {
+			"properties": {
+				"recipe": "build_release",
+				"input_prop": 102
+			}
+		},
+		"output": {
+			"properties": {
+				"retry_summary": {
+				}
+			}
+		}
+	}`
 )
 
 func stripNewlines(s string) string {
@@ -322,6 +344,15 @@ func TestRetry_childBuilder_successfulNoRetry(t *testing.T) {
 		builderName: "staging-eve-release-main",
 		builderJSON: stripNewlines(successfulChildJSON),
 		testNoRun:   true,
+	})
+}
+
+func TestRetry_childBuilder_failedNoRetrySummary(t *testing.T) {
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		bbid:             "8794230068334833059",
+		builderName:      "staging-zork-release-main",
+		builderJSON:      stripNewlines(emptyRetrySummaryJSON),
+		expectedExecStep: pb.RetryStep_STAGE_ARTIFACTS,
 	})
 }
 
