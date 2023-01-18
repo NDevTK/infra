@@ -22,22 +22,41 @@ def has_allowed_extension(filename):
   """ Checks if this file has one of the approved extensions. """
 
   # Exclude everything except generated source code.
-  # Note that we use a allowlist here instead of a blacklist, because:
+  # Note that we use a allowlist here instead of a blocklist, because:
   # 1. If we allowlist, the problem is that some legit files might be excluded.
   #    The solution to this is simple; we just allowlist the filetype and then
   #    they show up in CS a few hours later.
-  # 2. If we blacklist, the problem is that some large binary files of a new
+  # 2. If we blocklist, the problem is that some large binary files of a new
   #    filetype may show up. This could go undetected for a long time, causing
   #    the Git repo to start expanding until it gets too big for the builders to
   #    fetch. The fix in this case is essentially to blow away the generated Git
   #    repo and start again.
   # Since the problems caused by allowlisting are more easily managed than those
-  # caused by blacklisting, we allowlist below.
+  # caused by blocklisting, we allowlist below.
   allowed_extensions = {
-      'c', 'cc', 'cpp', 'css', 'desugardeps', 'h', 'html', 'inc', 'java', 'js',
-      'json', 'proto', 'py', 'strings', 'txt', 'xml'
+      'c',
+      'cc',
+      'cpp',
+      'css',
+      'cxx'
+      'desugardeps',
+      'h',
+      'hpp ',
+      'htm',
+      'html',
+      'hxx',
+      'inc',
+      'java',
+      'js',
+      'json',
+      'proto',
+      'py',
+      'rs',
+      'strings',
+      'txt',
+      'xml',
   }
-  dot_index = filename.rfind(".")
+  dot_index = filename.rfind('.')
   return dot_index != -1 and filename[dot_index + 1:] in allowed_extensions
 
 
