@@ -585,7 +585,7 @@ def PrepareBuildDependenciesCmd(system, wheel, build_dir, deps_dir, deps):
   # environment. Currently this only matters on Linux, where we cross-compile.
   if sys.platform.startswith('linux'):
     host_plat = build_platform.ALL.get({
-        'cp38': 'manylinux-x64-py3',
+        'cp38': 'manylinux-x64-py3.8',
         'cp311': 'manylinux-x64-py3.11',
     }[wheel.plat.wheel_abi])
   else:

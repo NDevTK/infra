@@ -40,6 +40,12 @@ class Platform(
             # (None if not using dockcross).
             'dockcross_tag',
 
+            # The name of the dockerbuild docker image we have built
+            # for this platform. The same image may be shared between
+            # several Platform tuples. May be None if this platform
+            # does not use Docker.
+            'dockerbuild_image',
+
             # The OpenSSL "Configure" script build target.
             'openssl_target',
 
@@ -52,6 +58,10 @@ class Platform(
             # Extra environment variables to set when building wheels on this
             # platform.
             'env',
+
+            # Temporary field to indicate that the platform is a rename of an
+            # existing platform. Remove once the rename is complete.
+            'is_new_name',
         ))):
 
   @property
@@ -79,10 +89,27 @@ ALL = {
                         'linux_armv9l'),
             dockcross_base='linux-armv6',
             dockcross_tag='20210625-795dd4d',
+            dockerbuild_image='linux-armv6-py3',
             openssl_target='linux-armv4',
             packaged=False,
             cipd_platform='linux-armv6l',
             env={},
+            is_new_name=False,
+        ),
+        Platform(
+            name='linux-armv6-py3.8',
+            cross_triple='arm-linux-gnueabihf',
+            wheel_abi='cp38',
+            wheel_plat=('linux_armv6l', 'linux_armv7l', 'linux_armv8l',
+                        'linux_armv9l'),
+            dockcross_base='linux-armv6',
+            dockcross_tag='20210625-795dd4d',
+            dockerbuild_image='linux-armv6-py3',
+            openssl_target='linux-armv4',
+            packaged=False,
+            cipd_platform='linux-armv6l',
+            env={},
+            is_new_name=True,
         ),
         Platform(
             name='linux-arm64-py3',
@@ -91,10 +118,26 @@ ALL = {
             wheel_plat=('linux_arm64', 'linux_aarch64'),
             dockcross_base='linux-arm64',
             dockcross_tag='20210625-795dd4d',
+            dockerbuild_image='linux-arm64-py3',
             openssl_target='linux-aarch64',
             packaged=False,
             cipd_platform='linux-arm64',
             env={},
+            is_new_name=False,
+        ),
+        Platform(
+            name='linux-arm64-py3.8',
+            cross_triple='aarch64-unknown-linux-gnueabi',
+            wheel_abi='cp38',
+            wheel_plat=('linux_arm64', 'linux_aarch64'),
+            dockcross_base='linux-arm64',
+            dockcross_tag='20210625-795dd4d',
+            dockerbuild_image='linux-arm64-py3',
+            openssl_target='linux-aarch64',
+            packaged=False,
+            cipd_platform='linux-arm64',
+            env={},
+            is_new_name=True,
         ),
         Platform(
             name='manylinux-x64-py3',
@@ -103,10 +146,26 @@ ALL = {
             wheel_plat=('manylinux2014_x86_64',),
             dockcross_base='manylinux2014-x64',
             dockcross_tag='latest',
+            dockerbuild_image='manylinux-x64-py3',
             openssl_target='linux-x86_64',
             packaged=True,
             cipd_platform='linux-amd64',
             env=_MANYLINUX_ENV,
+            is_new_name=False,
+        ),
+        Platform(
+            name='manylinux-x64-py3.8',
+            cross_triple='x86_64-linux-gnu',
+            wheel_abi='cp38',
+            wheel_plat=('manylinux2014_x86_64',),
+            dockcross_base='manylinux2014-x64',
+            dockcross_tag='latest',
+            dockerbuild_image='manylinux-x64-py3',
+            openssl_target='linux-x86_64',
+            packaged=True,
+            cipd_platform='linux-amd64',
+            env=_MANYLINUX_ENV,
+            is_new_name=True,
         ),
         Platform(
             name='manylinux-x64-py3.11',
@@ -115,19 +174,22 @@ ALL = {
             wheel_plat=('manylinux2014_x86_64',),
             dockcross_base='manylinux2014-x64',
             dockcross_tag='latest',
+            dockerbuild_image='manylinux-x64-py3',
             openssl_target='linux-x86_64',
             packaged=False,  # Most wheels not available on pypi.org
             cipd_platform='linux-amd64',
             env=_MANYLINUX_ENV,
+            is_new_name=False,
         ),
         Platform(
-            # TODO: Rename to -py3 to conform to other Python 3 platform names.
+            # TODO: Rename to -py3.8
             name='mac-x64-cp38',
             cross_triple='',
             wheel_abi='cp38',
             wheel_plat=('macosx_10_11_x86_64',),
             dockcross_base=None,
             dockcross_tag=None,
+            dockerbuild_image=None,
             openssl_target='darwin64-x86_64-cc',
             packaged=True,
             cipd_platform='mac-amd64',
@@ -137,6 +199,26 @@ ALL = {
                 'ARCHFLAGS': '-arch x86_64',
                 'MACOSX_DEPLOYMENT_TARGET': '10.11'
             },
+            is_new_name=False,
+        ),
+        Platform(
+            name='mac-x64-py3.8',
+            cross_triple='',
+            wheel_abi='cp38',
+            wheel_plat=('macosx_10_11_x86_64',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='darwin64-x86_64-cc',
+            packaged=True,
+            cipd_platform='mac-amd64',
+            env={
+                # Necessary for some wheels to build. See for instance:
+                # https://github.com/giampaolo/psutil/issues/1832
+                'ARCHFLAGS': '-arch x86_64',
+                'MACOSX_DEPLOYMENT_TARGET': '10.11'
+            },
+            is_new_name=True,
         ),
         Platform(
             name='mac-arm64-cp38',
@@ -145,6 +227,7 @@ ALL = {
             wheel_plat=('macosx_11_0_arm64',),
             dockcross_base=None,
             dockcross_tag=None,
+            dockerbuild_image=None,
             openssl_target='darwin64-arm64-cc',
             # TODO: See whether this can be enabled now that Python 3.8.10
             # supports mac-arm64.
@@ -156,6 +239,28 @@ ALL = {
                 'ARCHFLAGS': '-arch arm64',
                 'MACOSX_DEPLOYMENT_TARGET': '11.0'
             },
+            is_new_name=False,
+        ),
+        Platform(
+            name='mac-arm64-py3.8',
+            cross_triple='',
+            wheel_abi='cp38',
+            wheel_plat=('macosx_11_0_arm64',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='darwin64-arm64-cc',
+            # TODO: See whether this can be enabled now that Python 3.8.10
+            # supports mac-arm64.
+            packaged=False,
+            cipd_platform='mac-arm64',
+            env={
+                # Necessary for some wheels to build. See for instance:
+                # https://github.com/giampaolo/psutil/issues/1832
+                'ARCHFLAGS': '-arch arm64',
+                'MACOSX_DEPLOYMENT_TARGET': '11.0'
+            },
+            is_new_name=True,
         ),
         Platform(
             name='windows-x86-py3',
@@ -164,10 +269,26 @@ ALL = {
             wheel_plat=('win32',),
             dockcross_base=None,
             dockcross_tag=None,
+            dockerbuild_image=None,
             openssl_target='Cygwin-x86',
             packaged=True,
             cipd_platform='windows-386',
             env={},
+            is_new_name=False,
+        ),
+        Platform(
+            name='windows-x86-py3.8',
+            cross_triple='',
+            wheel_abi='cp38',
+            wheel_plat=('win32',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='Cygwin-x86',
+            packaged=True,
+            cipd_platform='windows-386',
+            env={},
+            is_new_name=True,
         ),
         Platform(
             name='windows-x64-py3',
@@ -176,10 +297,26 @@ ALL = {
             wheel_plat=('win_amd64',),
             dockcross_base=None,
             dockcross_tag=None,
+            dockerbuild_image=None,
             openssl_target='Cygwin-x86_64',
             packaged=True,
             cipd_platform='windows-amd64',
             env={},
+            is_new_name=False,
+        ),
+        Platform(
+            name='windows-x64-py3.8',
+            cross_triple='',
+            wheel_abi='cp38',
+            wheel_plat=('win_amd64',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='Cygwin-x86_64',
+            packaged=True,
+            cipd_platform='windows-amd64',
+            env={},
+            is_new_name=True,
         ),
         Platform(
             name='universal',
@@ -188,10 +325,12 @@ ALL = {
             wheel_plat=('any',),
             dockcross_base=None,
             dockcross_tag=None,
+            dockerbuild_image=None,
             openssl_target=None,
             packaged=True,
             cipd_platform=None,
             env={},
+            is_new_name=False,
         ),
     )
 }
@@ -234,9 +373,12 @@ def NativePlatforms():
   if sys.platform == 'darwin':
     arch = {'x86_64': 'x64', 'arm64': 'arm64'}[NativeMachine()]
     plat_name = 'mac-%s' % arch
-    return plats + [ALL[plat_name + '-cp38']]
+    return plats + [ALL[plat_name + '-cp38'], ALL[plat_name + '-py3.8']]
   elif sys.platform == 'win32':
-    return plats + [ALL['windows-x86-py3'], ALL['windows-x64-py3']]
+    return plats + [
+        ALL['windows-x86-py3'], ALL['windows-x86-py3.8'],
+        ALL['windows-x64-py3'], ALL['windows-x64-py3.8']
+    ]
   elif sys.platform.startswith('linux'):
     # Linux platforms are built with docker, so Linux doesn't support any
     # non-universal platforms natively.

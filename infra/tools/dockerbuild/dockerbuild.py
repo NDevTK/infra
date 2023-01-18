@@ -285,6 +285,12 @@ def _main_wheel_dump(args, system):
       for plat in build_platform.ALL.values():
         if not build.supported(plat):
           continue
+        # Don't complain about collisions during presubmit while renaming
+        # platforms. We will still throw an error in wheel-build if both
+        # an old and new platform name are enabled. Remove this once the
+        # rename is complete.
+        if plat.is_new_name:
+          continue
         w = build.wheel(system, plat)
         all_wheels.append(w)
         if w.spec.universal:
