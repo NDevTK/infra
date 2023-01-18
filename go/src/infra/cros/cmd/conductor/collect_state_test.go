@@ -17,13 +17,14 @@ import (
 func TestCollectState_MaxRetries(t *testing.T) {
 	t.Parallel()
 
-	collectState := initCollectState(&pb.CollectConfig{
-		Rules: []*pb.RetryRule{
-			{
-				MaxRetries: 3,
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					MaxRetries: 3,
+				},
 			},
-		},
-	}, nil, nil)
+		}})
 	build := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -45,14 +46,15 @@ func TestCollectState_MaxRetries(t *testing.T) {
 func TestCollectState_MaxRetriesPerBuild(t *testing.T) {
 	t.Parallel()
 
-	collectState := initCollectState(&pb.CollectConfig{
-		Rules: []*pb.RetryRule{
-			{
-				MaxRetries:         3,
-				MaxRetriesPerBuild: 2,
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					MaxRetries:         3,
+					MaxRetriesPerBuild: 2,
+				},
 			},
-		},
-	}, nil, nil)
+		}})
 	build := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -86,13 +88,14 @@ func TestCollectState_CutoffSeconds(t *testing.T) {
 		currentTime: 100,
 	}
 
-	collectState := initCollectStateTest(&pb.CollectConfig{
-		Rules: []*pb.RetryRule{
-			{
-				CutoffSeconds: 300, // Can't retry after time 400.
+	collectState := initCollectStateTest(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					CutoffSeconds: 300, // Can't retry after time 400.
+				},
 			},
-		},
-	}, fakeClock)
+		}}, fakeClock)
 	build := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -111,29 +114,60 @@ func TestCollectState_CutoffSeconds(t *testing.T) {
 	fakeClock.currentTime = 500
 	assert.Assert(t, !collectState.canRetry(build))
 }
+func TestCollectState_CutoffPercent(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					CutoffPercent: 0.5,
+				},
+			},
+		},
+		initialBuildCount: 4})
+	build := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+	}
+
+	retries := 0
+	for collectState.canRetry(build) {
+		collectState.recordRetry(build)
+		retries += 1
+	}
+	// Should only retry 0.5 * 4 = 2 builds.
+	assert.IntsEqual(t, retries, 2)
+}
 
 func TestCollectState_BuildMatches(t *testing.T) {
 	t.Parallel()
 
-	collectState := initCollectState(&pb.CollectConfig{
-		Rules: []*pb.RetryRule{
-			{
-				Status: []int32{
-					int32(bbpb.Status_FAILURE),
-					int32(bbpb.Status_INFRA_FAILURE),
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					Status: []int32{
+						int32(bbpb.Status_FAILURE),
+						int32(bbpb.Status_INFRA_FAILURE),
+					},
+					BuilderNameRe: []string{
+						"coral-.*",
+						"eve-.*",
+					},
+					SummaryMarkdownRe: []string{
+						".*source cache.*",
+						".*gclient.*",
+					},
+					FailedCheckpoint: pb.RetryStep_STAGE_ARTIFACTS,
 				},
-				BuilderNameRe: []string{
-					"coral-.*",
-					"eve-.*",
-				},
-				SummaryMarkdownRe: []string{
-					".*source cache.*",
-					".*gclient.*",
-				},
-				FailedCheckpoint: pb.RetryStep_STAGE_ARTIFACTS,
 			},
-		},
-	}, nil, nil)
+		}})
 
 	inputProperties, err := structpb.NewStruct(map[string]interface{}{})
 	assert.NilError(t, err)

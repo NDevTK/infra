@@ -37,9 +37,10 @@ type CollectState struct {
 	stdoutLog *log.Logger
 	stderrLog *log.Logger
 
-	rules     []*Rule
-	startTime int64
-	clock     Clock
+	rules             []*Rule
+	startTime         int64
+	clock             Clock
+	initialBuildCount int
 }
 
 // LogOut logs to stdout.
@@ -56,28 +57,36 @@ func (c *CollectState) LogErr(format string, a ...interface{}) {
 	}
 }
 
+type collectStateOpts struct {
+	config            *pb.CollectConfig
+	stdoutLog         *log.Logger
+	stderrLog         *log.Logger
+	initialBuildCount int
+}
+
 // initCollectState_inner returns a new CollectState based on the specified config.
-func initCollectState_inner(config *pb.CollectConfig, stdoutLog, stderrLog *log.Logger, clock Clock) *CollectState {
+func initCollectState_inner(opts *collectStateOpts, clock Clock) *CollectState {
 	c := &CollectState{
-		clock:     clock,
-		stdoutLog: stdoutLog,
-		stderrLog: stderrLog,
-		startTime: clock.Now(),
+		clock:             clock,
+		stdoutLog:         opts.stdoutLog,
+		stderrLog:         opts.stderrLog,
+		startTime:         clock.Now(),
+		initialBuildCount: opts.initialBuildCount,
 	}
-	c.rules = c.initRules(config)
+	c.rules = c.initRules(opts.config)
 	return c
 }
 
 // initCollectState returns a new CollectState based on the specified config.
-func initCollectState(config *pb.CollectConfig, stdoutLog, stderrLog *log.Logger) *CollectState {
+func initCollectState(opts *collectStateOpts) *CollectState {
 	clock := &RealClock{}
-	return initCollectState_inner(config, stdoutLog, stderrLog, clock)
+	return initCollectState_inner(opts, clock)
 }
 
 // initCollectStateTest returns a new CollectState based on the specified
 // config that uses the specified clock.
-func initCollectStateTest(config *pb.CollectConfig, clock Clock) *CollectState {
-	return initCollectState_inner(config, nil, nil, clock)
+func initCollectStateTest(opts *collectStateOpts, clock Clock) *CollectState {
+	return initCollectState_inner(opts, clock)
 }
 
 // initRules initializes the rules (and associated state) for the collect state.
@@ -243,6 +252,12 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 				c.LogOut("Rule %d only allows retries %d seconds into the collection"+
 					" (we're at %d seconds), not retrying.",
 					i, rule.rule.GetCutoffSeconds(), currentTime-c.startTime)
+				return false
+			}
+		}
+		if rule.rule.GetCutoffPercent() > 0 {
+			if 1.0*float32(rule.totalRetries)/float32(c.initialBuildCount) >= rule.rule.GetCutoffPercent() {
+				c.LogOut("Rule %d will only retry %2.2f%% builds, not retrying.", i, rule.rule.GetCutoffPercent()*100)
 				return false
 			}
 		}
