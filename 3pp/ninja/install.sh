@@ -27,8 +27,15 @@ if [[ $_3PP_TOOL_PLATFORM != $_3PP_PLATFORM ]]; then
 else
   CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" python3 ./configure.py --bootstrap
   ./ninja -j $(nproc) all
-  ./ninja_test
+
+  if [[ $_3PP_PLATFORM == windows* ]]; then
+    # Override the PATH to avoid using posix tools in ninja_test
+    PATH="$(cygpath "${SYSTEMROOT}\\System32")" ./ninja_test
+  else
+    ./ninja_test
+  fi
 fi
+
 if [[ $_3PP_PLATFORM == windows* ]]; then
   cp ninja.exe "$PREFIX"
 else
