@@ -27,11 +27,11 @@ func containers(plat cipkg.Platform) string {
 	}
 	switch plat.Arch() {
 	case "amd64":
-		return prefix + "manylinux-x64-py3" + version
+		return prefix + "manylinux-x64-py3.8" + version
 	case "arm64":
-		return prefix + "linux-arm64-py3" + version
+		return prefix + "linux-arm64-py3.8" + version
 	case "arm":
-		return prefix + "linux-armv6-py3" + version
+		return prefix + "linux-armv6-py3.8" + version
 	default:
 		return ""
 	}
