@@ -54,6 +54,14 @@ func ImportBotConfigs(ctx context.Context) error {
 	}
 
 	err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
+	if err != nil {
+		return err
+	}
+
+	enableSecurityConfigImport := ownershipConfig.GetEnableSecurityConfigImport()
+	if enableSecurityConfigImport {
+		err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+	}
 	return err
 }
 
@@ -68,7 +76,7 @@ func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.Cl
 	currentSha1, err := fetchLatestSHA1(ctx, gitTilesClient, ownershipConfig.GetProject(), ownershipConfig.GetBranch())
 	isSameSha1 := prevConfig.compareAndSetSha(currentSha1)
 	if isSameSha1 {
-		logging.Infof(ctx, "Nothing changed for enc/security config files - lastest SHA1 : %s", prevConfig.sha1)
+		logging.Infof(ctx, "Nothing changed for enc/security config files - lastest SHA1 : %s", currentSha1)
 		return nil, nil, nil
 	}
 
@@ -106,6 +114,28 @@ func ImportENCBotConfig(ctx context.Context, ownershipConfig *config.OwnershipCo
 	return nil
 }
 
+// ImportSecurityConfig imports Security Config files and stores security data for each bot in the DataStore.
+func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.OwnershipConfig, gitClient git.ClientInterface) error {
+	logging.Infof(ctx, "Parsing Security config for %d files", len(ownershipConfig.GetSecurityConfig()))
+	for _, cfg := range ownershipConfig.GetSecurityConfig() {
+		start := time.Now()
+		logging.Debugf(ctx, "########### Parse %s ###########", cfg.GetName())
+		conf, err := gitClient.GetFile(ctx, cfg.GetRemotePath())
+		if err != nil {
+			return err
+		}
+		content := &ufspb.SecurityInfos{}
+		err = prototext.Unmarshal([]byte(conf), content)
+		if err != nil {
+			return err
+		}
+		ParseSecurityConfig(ctx, content)
+		duration := time.Since(start)
+		logging.Debugf(ctx, "########### Done Parsing %s; Time taken %s ###########", cfg.GetName(), fmt.Sprintf(duration.String()))
+	}
+	return nil
+}
+
 // ParseBotConfig parses the Bot Config files and stores the ownership data in the Data store for every bot in the config.
 func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInstance string) {
 	for _, botGroup := range config.BotGroup {
@@ -137,11 +167,47 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 
 		// Update the ownership for the botIdPrefixes
 		err := updateBotConfigForBotIdPrefix(ctx, botGroup.BotIdPrefix, ownershipData)
-		logging.Debugf(ctx, "Got errors while parsing bot id prefix config for %s - %v", swarmingInstance, err)
+		if err != nil {
+			logging.Debugf(ctx, "Got errors while parsing bot id prefix config for %s - %v", swarmingInstance, err)
+		}
 
 		// Update the ownership data for the botIds collected so far.
 		err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
-		logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", swarmingInstance, err)
+		if err != nil {
+			logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", swarmingInstance, err)
+		}
+	}
+}
+
+// ParseSecurityConfig parses the Security Config files and stores the security data in the DataStore for every bot in the config.
+func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
+	for _, pool := range config.Pools {
+		if len(pool.Hosts) == 0 {
+			continue
+		}
+		hosts := []string{}
+		for _, host := range pool.Hosts {
+			if strings.Contains(host, "{") {
+				// Parse the Host Range
+				hosts = append(hosts, parseBotIds(host)...)
+			} else {
+				hosts = append(hosts, host)
+			}
+		}
+
+		ownershipData := &ufspb.OwnershipData{
+			SecurityLevel:    pool.SecurityLevel,
+			PoolName:         pool.PoolName,
+			SwarmingInstance: pool.SwarmingServerId,
+			MibaRealm:        pool.MibaRealm,
+			Customer:         pool.Customer,
+		}
+
+		// Update the ownership data for the botIds (ie. Hosts) collected so far.
+		err := updateBotConfigForBotIds(ctx, hosts, ownershipData)
+		if err != nil {
+			logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", pool.SwarmingServerId, err)
+		}
 	}
 }
 
@@ -411,6 +477,7 @@ func parseBotIds(idExpr string) []string {
 	return botsIds
 }
 
+// Checks if the hashes are equal, updates s.sha1 to the current hash, and returns the comparison result
 func (s *ConfigSha) compareAndSetSha(currentSha1 string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()

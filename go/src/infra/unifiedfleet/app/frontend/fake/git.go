@@ -29,6 +29,8 @@ func (gc *GitClient) GetFile(ctx context.Context, path string) (string, error) {
 		return GitData("../frontend/fake/dhcp_test.conf")
 	} else if path == "test_enc_git_path" {
 		return GitData("../frontend/fake/bots.cfg")
+	} else if path == "test_security_git_path" {
+		return GitData("../frontend/fake/ufs_security.cfg")
 	}
 	return "", errors.Reason("Unspecified mock path %s", path).Err()
 }

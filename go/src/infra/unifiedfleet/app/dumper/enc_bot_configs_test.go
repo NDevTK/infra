@@ -32,6 +32,12 @@ func encTestingContext() context.Context {
 					RemotePath: "test_enc_git_path",
 				},
 			},
+			SecurityConfig: []*config.OwnershipConfig_ConfigFile{
+				{
+					Name:       "test_name",
+					RemotePath: "test_security_git_path",
+				},
+			},
 		},
 	})
 	ctx = external.WithTestingContext(ctx)

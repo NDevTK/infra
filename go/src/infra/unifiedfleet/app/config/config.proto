@@ -88,6 +88,9 @@ message OwnershipConfig {
 
   // LUCI UFS security config file
   repeated ConfigFile security_config = 5;
+
+  // Enable importing security configs
+  bool enable_security_config_import = 6;
 }
 
 message PubSub {

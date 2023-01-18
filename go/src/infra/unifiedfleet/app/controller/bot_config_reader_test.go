@@ -51,6 +51,12 @@ func mockOwnershipConfig() *config.Config {
 					RemotePath: "test_enc_git_path",
 				},
 			},
+			SecurityConfig: []*config.OwnershipConfig_ConfigFile{
+				{
+					Name:       "test_name",
+					RemotePath: "test_security_git_path",
+				},
+			},
 		},
 	}
 }
@@ -62,6 +68,19 @@ func mockBotConfig(botRange string, pool string) *configpb.BotsCfg {
 			{
 				BotId:      []string{botRange},
 				Dimensions: []string{"pool:" + pool},
+			},
+		},
+	}
+}
+
+// Dummy security config for bots
+func mockSecurityConfig(botRange string, pool string, swarmingServerId string) *ufspb.SecurityInfos {
+	return &ufspb.SecurityInfos{
+		Pools: []*ufspb.SecurityInfo{
+			{
+				Hosts:            []string{botRange},
+				PoolName:         pool,
+				SwarmingServerId: swarmingServerId,
 			},
 		},
 	}
@@ -87,8 +106,11 @@ func mockMachineLSE(id string) *ufspb.MachineLSE {
 }
 
 // Tests the functionality for fetching the config file and importing the configs
+// No t.Parallel(): The happy path test relies on comparing a global variable for sha1 hash testing.
+// A race condition arises in which another test can modify this variable before the test finishes.
+// In addition, the test suite hangs or panics when it reaches the timestamp deep equal assertion.
+// TODO(b/265826661): Fix hang/panic with accessing test context and re-enable parallelization
 func TestImportBotConfigs(t *testing.T) {
-	t.Parallel()
 	ctx := encTestingContext()
 	Convey("Import Bot Configs", t, func() {
 		contextConfig := mockOwnershipConfig()
@@ -232,6 +254,7 @@ func TestImportENCBotConfig(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldNotBeNil)
 
+			// Import Again, should not update the Asset
 			err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
 			So(err, ShouldBeNil)
 			resp2, err := inventory.GetMachineLSE(ctx, "testLSE1")
@@ -267,7 +290,32 @@ func TestImportENCBotConfig(t *testing.T) {
 	})
 }
 
-// Tests the functionality for parsing and storing bot configs in Datastore
+// Tests the functionality for importing security configs from the config files
+func TestImportSecurityConfig(t *testing.T) {
+	t.Parallel()
+	ctx := encTestingContext()
+	Convey("Import Security Config", t, func() {
+		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
+		ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
+		So(err, ShouldBeNil)
+		Convey("happy path", func() {
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.GetMachine(ctx, "test1-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+		})
+	})
+}
+
+// Tests the functionality for parsing and storing bot ownership configs in Datastore
 func TestParseBotConfig(t *testing.T) {
 	t.Parallel()
 	ctx := encTestingContext()
@@ -290,6 +338,38 @@ func TestParseBotConfig(t *testing.T) {
 		})
 		Convey("Does not update non existent bots", func() {
 			ParseBotConfig(ctx, mockBotConfig("test{2,3}-1", "abc"), "testSwarming")
+
+			resp, err := registration.GetMachine(ctx, "test2-1")
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "NotFound")
+		})
+	})
+}
+
+// Tests the functionality for parsing and storing bot security configs in Datastore
+func TestParseSecurityConfig(t *testing.T) {
+	t.Parallel()
+	ctx := encTestingContext()
+	Convey("Parse Security Config", t, func() {
+		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
+		Convey("happy path", func() {
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{1,2}-1", "abc", "testSwarming"))
+
+			resp, err = registration.GetMachine(ctx, "test1-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+			So(resp.Ownership.PoolName, ShouldEqual, "abc")
+			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+		})
+		Convey("Does not update non existent bots", func() {
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming"))
 
 			resp, err := registration.GetMachine(ctx, "test2-1")
 			So(resp, ShouldBeNil)
