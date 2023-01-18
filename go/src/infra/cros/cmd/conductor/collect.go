@@ -49,7 +49,11 @@ func filterReturnSet(returnSet map[string]bool) []string {
 // It returns the final set of BBIDs (the last retry for each build) and any
 // errors.
 func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) ([]string, error) {
-	state := initCollectState(config, c.stdoutLog, c.stderrLog)
+	state := initCollectState(&collectStateOpts{
+		config:            config,
+		initialBuildCount: len(c.bbids),
+		stdoutLog:         c.stdoutLog,
+		stderrLog:         c.stderrLog})
 	watchSet := c.bbids
 
 	pollingDelay := time.Duration(c.pollingIntervalSeconds) * time.Second
