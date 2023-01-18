@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d33a4dfd_9ef3a6f3",
+        "filename": "go/src/infra/cros/cmd/conductor/collect_state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1355298
+      },
+      "writtenOn": "2023-01-18T19:41:27Z",
+      "side": 1,
+      "message": "Need this? Maybe you were doing this to cast before?",
+      "range": {
+        "startLine": 259,
+        "startChar": 6,
+        "endLine": 259,
+        "endChar": 9
+      },
+      "revId": "3cad827336d475f7b0d9922fe1522574f7618bf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
