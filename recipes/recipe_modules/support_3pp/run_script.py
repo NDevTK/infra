@@ -35,12 +35,12 @@ def _extract_contextual_dockerbuild_env_args(api):
 # Dockerbuild uses different names than the CIPD platform names. This maps from
 # the CIPD platform name to the dockerbuild name.
 _DOCKERBUILD_PLATFORM = {
-    'linux-armv6l': 'linux-armv6-py3',
-    'linux-arm64': 'linux-arm64-py3',
+    'linux-armv6l': 'linux-armv6-py3.8',
+    'linux-arm64': 'linux-arm64-py3.8',
     # TODO: Remove linux-mips platforms or update the images to py3.
     #  'linux-mipsle': 'linux-mipsel',
     #  'linux-mips64': 'linux-mips64',
-    'linux-amd64': 'manylinux-x64-py3',
+    'linux-amd64': 'manylinux-x64-py3.8',
 }
 
 # Transform a CIPD platform to a windows_sdk target_arch.

@@ -1211,7 +1211,7 @@
       "--logs-debug",
       "run",
       "--platform",
-      "linux-arm64-py3",
+      "linux-arm64-py3.8",
       "--workdir",
       "[START_DIR]/3pp/wd/tools/self_dependency/linux-arm64/2.0.0",
       "--env-prefix",

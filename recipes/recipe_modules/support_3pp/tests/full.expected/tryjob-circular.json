@@ -1334,7 +1334,7 @@
       "--logs-debug",
       "run",
       "--platform",
-      "manylinux-x64-py3",
+      "manylinux-x64-py3.8",
       "--workdir",
       "[START_DIR]/3pp/wd/prefix/deps/a/linux-amd64/2.0.0",
       "--env-prefix",
