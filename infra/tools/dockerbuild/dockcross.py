@@ -166,7 +166,7 @@ class Builder(object):
         bin=os.path.join(self._system.bin_dir,
                          'dockcross-%s-v3' % (plat.name,)),
         docker_image=DockerImage(
-            name='infra-dockerbuild/%s' % (plat.name,),
+            name='infra-dockerbuild/%s' % (plat.dockerbuild_image,),
             tag=self.DOCKER_IMAGE_TAG,
         ),
     )
