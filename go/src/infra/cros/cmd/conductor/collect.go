@@ -48,7 +48,7 @@ func filterReturnSet(returnSet map[string]bool) []string {
 // Collect collects on the specified BBIDs, retrying as configured.
 // It returns the final set of BBIDs (the last retry for each build) and any
 // errors.
-func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) ([]string, error) {
+func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*CollectOutput, error) {
 	state := initCollectState(&collectStateOpts{
 		config:            config,
 		initialBuildCount: len(c.bbids),
@@ -86,7 +86,9 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) ([]s
 			return nil
 		})
 		if err != nil {
-			return append(filterReturnSet(returnSet), watchSet...), err
+			return &CollectOutput{
+				BBIDs: append(filterReturnSet(returnSet), watchSet...),
+			}, err
 		}
 		builds := <-ch
 
@@ -130,9 +132,11 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) ([]s
 		}
 		watchSet = newWatchSet
 	}
-	returnBBIDs := filterReturnSet(returnSet)
-	if len(errs) > 0 {
-		return returnBBIDs, errors.NewMultiError(errs...)
+	output := &CollectOutput{
+		BBIDs: filterReturnSet(returnSet),
 	}
-	return returnBBIDs, nil
+	if len(errs) > 0 {
+		return output, errors.NewMultiError(errs...)
+	}
+	return output, nil
 }

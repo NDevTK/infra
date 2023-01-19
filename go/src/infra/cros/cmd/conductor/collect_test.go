@@ -10,11 +10,12 @@ import (
 	"sort"
 	"testing"
 
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"infra/cros/cmd/try/try"
 	"infra/cros/internal/assert"
 	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
 const (
@@ -153,13 +154,15 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 	data, err := os.ReadFile(outputFile.Name())
 	assert.NilError(t, err)
 
-	var bbids []string
-	assert.NilError(t, json.Unmarshal(data, &bbids))
+	fmt.Printf("%v\n", string(data))
+
+	var output CollectOutput
+	assert.NilError(t, json.Unmarshal(data, &output))
 	strBBIDs := make([]string, len(tc.expectedBBIDS))
 	for i, bbid := range tc.expectedBBIDS {
 		strBBIDs[i] = fmt.Sprintf("%d", bbid)
 	}
-	assert.StringArrsEqual(t, bbids, strBBIDs)
+	assert.StringArrsEqual(t, output.BBIDs, strBBIDs)
 }
 
 func TestCollect_NoRetries(t *testing.T) {

@@ -102,10 +102,15 @@ func (c *collectRun) readInput() (*pb.CollectConfig, error) {
 	return req, nil
 }
 
+type CollectOutput struct {
+	// Final set of BBIDs (only includes the most recent retry for each build).
+	BBIDs []string `json:"bbids"`
+}
+
 // writeOutput writes the given BBIDs to the path provided by --output_json.
-func (c *collectRun) writeOutput(bbids []string) error {
-	sort.Strings(bbids)
-	data, err := json.MarshalIndent(bbids, "", " ")
+func (c *collectRun) writeOutput(output *CollectOutput) error {
+	sort.Strings(output.BBIDs)
+	data, err := json.MarshalIndent(*output, "", " ")
 	if err != nil {
 		return err
 	}
@@ -143,14 +148,15 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 		return 3
 	}
 
-	bbids, err := c.Collect(ctx, collectConfig)
+	output, err := c.Collect(ctx, collectConfig)
 	if err != nil {
 		c.LogErr(err.Error())
 		return 4
 	}
 
-	c.LogOut("Final set of builds (including only most recent retries): %s", strings.Join(bbids, ","))
-	if err := c.writeOutput(bbids); err != nil {
+	// TODO: move BBIDs under a field in the output, add e2e test.
+	c.LogOut("Final set of builds (including only most recent retries): %s", strings.Join(output.BBIDs, ","))
+	if err := c.writeOutput(output); err != nil {
 		c.LogErr(errors.Annotate(err, "error writing BBIDs to output").Err().Error())
 		return 5
 	}
