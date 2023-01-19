@@ -20,7 +20,7 @@ func DeepRepairConfig() *Configuration {
 		Plans: map[string]*Plan{
 			PlanServo:   deepRepairServoPlan(),
 			PlanCrOS:    deepRepairCrosPlan(),
-			PlanClosing: setAllowFail(deepRepairClosingPlan(), true),
+			PlanClosing: setAllowFail(crosClosePlan(), true),
 		},
 	}
 }
@@ -203,7 +203,7 @@ func deepRepairServoPlan() *Plan {
 			},
 			"DUT is not SSHable": {
 				Docs: []string{
-					"verify if DUT is SSH-able",
+					"Verify if DUT is not SSH-able",
 				},
 				Conditions: []string{
 					"DUT is SSHable",
@@ -243,59 +243,6 @@ func deepRepairServoPlan() *Plan {
 					"sleep:1",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
-			},
-		},
-	}
-}
-
-// deepRepairClosingPlan returns a clean up plan which should be exclusively used for deep repair.
-func deepRepairClosingPlan() *Plan {
-	return &Plan{
-		CriticalActions: []string{
-			"Remove in-use flag on servo-host",
-			"Turn off servo usbkey power",
-			"Stop servod",
-		},
-		Actions: map[string]*Action{
-			"Remove in-use flag on servo-host": {
-				Conditions: []string{
-					"Is not Flex device",
-					"dut_servo_host_present",
-				},
-				ExecName:               "cros_remove_servo_in_use",
-				AllowFailAfterRecovery: true,
-			},
-			"Turn off servo usbkey power": {
-				Docs: []string{
-					"Ensure that servo usbkey power is in off state.",
-				},
-				Conditions: []string{
-					"dut_servo_host_present",
-				},
-				ExecName: "servo_set",
-				ExecExtraArgs: []string{
-					"command:image_usbkey_pwr",
-					"string_value:off",
-				},
-				RunControl:             RunControl_ALWAYS_RUN,
-				AllowFailAfterRecovery: true,
-			},
-			"Stop servod": {
-				Docs: []string{
-					"Stop the servod daemon.",
-					"Allowed to fail as can be run when servod is not running.",
-				},
-				ExecName:               "servo_host_servod_stop",
-				RunControl:             RunControl_ALWAYS_RUN,
-				AllowFailAfterRecovery: true,
-			},
-			"Is not Flex device": {
-				Docs: []string{"Verify that device is belong Reven models"},
-				ExecExtraArgs: []string{
-					"string_values:x1c",
-					"invert_result:true",
-				},
-				ExecName: "dut_check_model",
 			},
 		},
 	}

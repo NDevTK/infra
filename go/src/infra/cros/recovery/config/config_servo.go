@@ -1561,7 +1561,7 @@ func servoRepairPlan() *Plan {
 			},
 			"DUT is not SSHable": {
 				Docs: []string{
-					"verify if DUT is SSH-able",
+					"Verify if DUT is not SSH-able",
 				},
 				Conditions: []string{
 					"DUT is SSHable",
