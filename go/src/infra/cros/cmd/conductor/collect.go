@@ -54,6 +54,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 		initialBuildCount: len(c.bbids),
 		stdoutLog:         c.stdoutLog,
 		stderrLog:         c.stderrLog})
+	report := &CollectReport{}
 	watchSet := c.bbids
 
 	pollingDelay := time.Duration(c.pollingIntervalSeconds) * time.Second
@@ -87,7 +88,8 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 		})
 		if err != nil {
 			return &CollectOutput{
-				BBIDs: append(filterReturnSet(returnSet), watchSet...),
+				BBIDs:  append(filterReturnSet(returnSet), watchSet...),
+				Report: report,
 			}, err
 		}
 		builds := <-ch
@@ -108,9 +110,11 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 			} else {
 				c.LogOut("Build %d finished with status %s", build.GetId(), build.GetStatus())
 				returnSet[bbid] = true
-				if previousBBID, ok := previousBuild[bbid]; ok {
+				previousBBID, isRetry := previousBuild[bbid]
+				if isRetry {
 					returnSet[previousBBID] = false
 				}
+				report.recordBuild(build, isRetry)
 				if build.GetStatus() != bbpb.Status_SUCCESS {
 					if state.canRetry(build) {
 						if c.dryrun {
@@ -133,7 +137,8 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 		watchSet = newWatchSet
 	}
 	output := &CollectOutput{
-		BBIDs: filterReturnSet(returnSet),
+		BBIDs:  filterReturnSet(returnSet),
+		Report: report,
 	}
 	if len(errs) > 0 {
 		return output, errors.NewMultiError(errs...)

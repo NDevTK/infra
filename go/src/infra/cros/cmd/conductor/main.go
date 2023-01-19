@@ -104,7 +104,8 @@ func (c *collectRun) readInput() (*pb.CollectConfig, error) {
 
 type CollectOutput struct {
 	// Final set of BBIDs (only includes the most recent retry for each build).
-	BBIDs []string `json:"bbids"`
+	BBIDs  []string       `json:"bbids"`
+	Report *CollectReport `json:"report"`
 }
 
 // writeOutput writes the given BBIDs to the path provided by --output_json.
