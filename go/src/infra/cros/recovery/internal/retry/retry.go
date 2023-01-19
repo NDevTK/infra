@@ -84,8 +84,9 @@ func LimitCount(ctx context.Context, count int, interval time.Duration, f func()
 			err := f()
 			if err == nil {
 				log.Debugf(ctx, getSuccessMessage(opName, atomic.LoadInt32(&attempts), startTime))
+			} else {
+				log.Debugf(ctx, "Retry %q: attempts %d of %d, error: %s", opName, attempts, count, err)
 			}
-			log.Debugf(ctx, "Retry %q: attempts %d of %d, error: %s", opName, attempts, count, err)
 			return err
 		},
 		hasNext: func(ctx context.Context) bool {
