@@ -13,6 +13,10 @@ import "infra/unifiedfleet/api/v1/models/chromeos/device/config_id.proto";
 // These are the distinct configs combinations that will constitue a ChromeOS
 // device.
 
+// WARNING: These configs are visible to partners who can access other
+// information about that specific board/model. Do not add fields that cannot
+// be exposed at that visibility.
+
 // Next tag: 22
 message Config {
 
