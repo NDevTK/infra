@@ -215,6 +215,10 @@ func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) err
 		Callback:            callback,
 		AddObservation:      info.AddObservation,
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
+		// After reboot action settings.
+		AfterRebootVerify:             am.AsBool(ctx, "after_reboot_check", false),
+		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
+		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, info.NewLogger()); err != nil {
 		return errors.Annotate(err, "verify boot in recovery mode").Err()

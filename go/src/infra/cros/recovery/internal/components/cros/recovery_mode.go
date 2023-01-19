@@ -30,6 +30,10 @@ type BootInRecoveryRequest struct {
 	Callback            func(context.Context) error
 	AddObservation      func(*metrics.Observation)
 	IgnoreRebootFailure bool
+	// After reboot params specified to check if device booted or not.
+	AfterRebootVerify             bool
+	AfterRebootTimeout            time.Duration
+	AfterRebootAllowUseServoReset bool
 }
 
 // BootInRecoveryMode perform boot device in recovery mode.
@@ -81,7 +85,8 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
 		return errors.Annotate(err, "boot in recovery mode").Err()
 	}
-	closing := func() error {
+	restoreServoState := func() error {
+		log.Debugf("Boot in recovery mode: recover servo states...")
 		// Register turn off for the DUT if at the end.
 		// All errors just logging as the action to clean up the state.
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
@@ -95,19 +100,44 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 				log.Debugf("Restore PD for DUT failed: %s", err)
 			}
 		}
+		// Waiting 10 seconds before turn it on as the device can be still in transition to off.
+		time.Sleep(10 * time.Second)
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueON); err != nil {
 			return errors.Annotate(err, "boot in recovery mode").Err()
 		}
+		log.Debugf("Boot in recovery mode: servo states recovered.")
 		return nil
 	}
-	// Always closing to restore the state.
+	// Always restore servo state by the end!
 	defer func() {
-		if err := closing(); err != nil {
+		if err := restoreServoState(); err != nil {
 			log.Debugf("Boot in recovery mode: %s", err)
 			// Don't override the original error.
 			if !req.IgnoreRebootFailure && rErr == nil {
 				// We cannot return it, so we set it.
+				// If we fail when restored the states then we have issues.
 				rErr = err
+				return
+			}
+		}
+		// Verify the boot only if pass the execution or restore states.
+		if rErr == nil && req.AfterRebootVerify {
+			log.Debugf("Boot in recovery mode: starting verification of the boot...")
+			for {
+				if err := WaitUntilSSHable(ctx, req.AfterRebootTimeout, req.BootInterval, dutRun, log); err != nil {
+					if req.AfterRebootAllowUseServoReset {
+						req.AfterRebootAllowUseServoReset = false
+						if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueReset); err != nil {
+							log.Infof("Fail to reset by servo: %s", err)
+						}
+						continue
+					}
+					log.Debugf("Device is not SSH-able after reboot!")
+					rErr = err
+				} else {
+					log.Debugf("Device is SSH-able!")
+				}
+				break
 			}
 		}
 	}()
@@ -146,10 +176,11 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		return errors.Annotate(retryErr, "boot in recovery mode").Err()
 	}
 	if req.Callback != nil {
-		log.Infof("Boot in recovery mode: passing control to call back")
+		log.Infof("Boot in recovery mode: passing control to call back.")
 		if err := req.Callback(ctx); err != nil {
 			return errors.Annotate(err, "boot in recovery mode: callback").Err()
 		}
+		log.Infof("Boot in recovery mode: control returned.")
 	}
 	return nil
 }

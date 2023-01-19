@@ -241,9 +241,6 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Devices deployed with servo in the pools required secure mode need to be able to be boot in recovery mode.",
 			},
-			Conditions: []string{
-				"Pools required to be in Secure mode",
-			},
 			Dependencies: []string{
 				"dut_servo_host_present",
 				"servod_echo",
@@ -252,11 +249,15 @@ func deployActions() map[string]*Action {
 			ExecName: "cros_verify_boot_in_recovery_mode",
 			ExecExtraArgs: []string{
 				"boot_timeout:480",
+				"boot_retry:1",
 				"boot_interval:10",
 				"halt_timeout:120",
 				"ignore_reboot_failure:false",
+				"after_reboot_check:true",
+				"after_reboot_timeout:150",
+				"after_reboot_allow_use_servo_reset:false",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 1200},
+			ExecTimeout: &durationpb.Duration{Seconds: 1500},
 			RecoveryActions: []string{
 				"Cold reset DUT by servo and wait to boot",
 				// The other reason why it fail on good DUT is that USB-key has not good image.
