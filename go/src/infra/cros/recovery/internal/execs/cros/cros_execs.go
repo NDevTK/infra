@@ -29,7 +29,24 @@ func pingExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // sshExec verifies ssh access to the current plan's device (named by the default resource name).
 func sshExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, info.DefaultRunner(), info.NewLogger())
+	argsMap := info.GetActionArgs(ctx)
+	run := info.DefaultRunner()
+	deviceType := argsMap.AsString(ctx, "device_type", "")
+	switch deviceType {
+	case "dut":
+		run = info.NewRunner(info.GetDut().Name)
+	case "servo":
+		name := info.GetChromeos().GetServo().GetName()
+		if name == "" {
+			return errors.Reason("ssh: servod host is not specified").Err()
+		}
+		run = info.NewRunner(name)
+	case "":
+		// Use default runner based on plan info.
+	default:
+		return errors.Reason("ssh: unsupported device-type %q", deviceType).Err()
+	}
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, run, info.NewLogger())
 }
 
 // sshDUTExec verifies ssh access to the DUT.

@@ -4,6 +4,10 @@
 
 package config
 
+import (
+	"google.golang.org/protobuf/types/known/durationpb"
+)
+
 // setAllowFail updates allowFail property and return plan.
 func setAllowFail(p *Plan, allowFail bool) *Plan {
 	p.AllowFail = allowFail
@@ -85,13 +89,9 @@ func crosClosePlan() *Plan {
 		CriticalActions: []string{
 			"Update peripheral wifi state",
 			"Update chameleon state for chameleonless dut",
-			"Servo-host logs",
-			"Remove in-use flag on servo-host",
-			"Remove request to reboot if servo is good",
 			"Update DUT state for failures more than threshold",
 			"Update DUT state based on servo state",
-			"Turn off servo usbkey power",
-			"Stop servod",
+			"Close Servo-host",
 		},
 		Actions: map[string]*Action{
 			"Is servo_state:working": {
@@ -100,20 +100,48 @@ func crosClosePlan() *Plan {
 				},
 				ExecName:      "servo_match_state",
 				ExecExtraArgs: []string{"state:WORKING"},
+				MetricsConfig: &MetricsConfig{
+					UploadPolicy: MetricsConfig_SKIP_ALL,
+				},
+			},
+			"Servo-host known": {
+				ExecName: "dut_servo_host_present",
+				MetricsConfig: &MetricsConfig{
+					UploadPolicy: MetricsConfig_SKIP_ALL,
+				},
 			},
 			"Remove request to reboot if servo is good": {
 				Conditions: []string{
 					"Is not Flex device",
-					"dut_servo_host_present",
+					"Servo-host known",
 					"Is servo_state:working",
 				},
 				ExecName:               "cros_remove_reboot_request",
 				AllowFailAfterRecovery: true,
 			},
+			"Close Servo-host": {
+				Conditions: []string{
+					"Servo-host known",
+					"Is not Flex device",
+					"Servo-host is sshable",
+				},
+				Dependencies: []string{
+					"Try copy messages from servo-host",
+					"Try to collect servod logs",
+					"Remove in-use flag on servo-host",
+					"Remove request to reboot if servo is good",
+					"Turn off servo usbkey power",
+					"Stop servod",
+				},
+				ExecName: "sample_pass",
+				MetricsConfig: &MetricsConfig{
+					UploadPolicy: MetricsConfig_SKIP_ALL,
+				},
+				AllowFailAfterRecovery: true,
+			},
 			"Remove in-use flag on servo-host": {
 				Conditions: []string{
-					"Is not Flex device",
-					"dut_servo_host_present",
+					"Servo-host known",
 				},
 				ExecName:               "cros_remove_servo_in_use",
 				AllowFailAfterRecovery: true,
@@ -129,19 +157,12 @@ func crosClosePlan() *Plan {
 					UploadPolicy: MetricsConfig_SKIP_ALL,
 				},
 			},
-			"Servo-host logs": {
-				Dependencies: []string{
-					"Try copy messages from servo-host",
-					"Try to collect servod logs",
-				},
-				ExecName: "sample_pass",
-			},
 			"Try to collect servod logs": {
 				Docs: []string{
 					"Try to collect all servod logs since latest start time.",
 				},
 				Conditions: []string{
-					"dut_servo_host_present",
+					"Servo-host known",
 				},
 				ExecName:               "cros_collect_servod_logs",
 				AllowFailAfterRecovery: true,
@@ -151,7 +172,7 @@ func crosClosePlan() *Plan {
 					"Try to collect /var/log/messages from servo-host.",
 				},
 				Conditions: []string{
-					"dut_servo_host_present",
+					"Servo-host known",
 				},
 				ExecName: "cros_copy_to_logs",
 				ExecExtraArgs: []string{
@@ -247,7 +268,7 @@ func crosClosePlan() *Plan {
 				Conditions: []string{
 					"DUT state is repair_failed",
 					"Failure count are not above threshold",
-					"dut_servo_host_present",
+					"Servo-host known",
 					"Servo state demands manual repair",
 				},
 				ExecName: "dut_set_state",
@@ -261,7 +282,7 @@ func crosClosePlan() *Plan {
 					"Ensure that servo usbkey power is in off state.",
 				},
 				Conditions: []string{
-					"dut_servo_host_present",
+					"Servo-host known",
 				},
 				ExecName: "servo_set",
 				ExecExtraArgs: []string{
@@ -279,6 +300,20 @@ func crosClosePlan() *Plan {
 				ExecName:               "servo_host_servod_stop",
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
+			},
+			"Servo-host is sshable": {
+				Docs: []string{
+					"Stop the servod daemon.",
+					"Allowed to fail as can be run when servod is not running.",
+				},
+				ExecName: "cros_ssh",
+				ExecExtraArgs: []string{
+					"device_type:servo",
+				},
+				ExecTimeout: &durationpb.Duration{
+					Seconds: 15,
+				},
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 		},
 	}
