@@ -244,11 +244,16 @@ func makeBotResources() *specs.LinuxResources {
 	// drone containers. So far I don't see any other number than it.
 	var diskMajor int64 = 8
 	var diskMinor int64 = 0
+
+	var spec specs.LinuxBlockIO
+	if rate := uint64(botBlkIOReadBPS); rate > 0 {
+		spec.ThrottleReadBpsDevice = []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, rate)}
+	}
+	if rate := uint64(botBlkIOWriteBPS); rate > 0 {
+		spec.ThrottleWriteBpsDevice = []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, rate)}
+	}
 	return &specs.LinuxResources{
-		BlockIO: &specs.LinuxBlockIO{
-			ThrottleReadBpsDevice:  []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, uint64(botBlkIOReadBPS))},
-			ThrottleWriteBpsDevice: []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, uint64(botBlkIOWriteBPS))},
-		},
+		BlockIO: &spec,
 	}
 }
 
