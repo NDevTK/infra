@@ -43,14 +43,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **CherryPy**
 
@@ -254,14 +254,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 2.0.1
 
@@ -273,14 +273,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **PeakUtils**
 
@@ -322,14 +322,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **PyYAML-py3**
 
@@ -495,14 +495,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **altgraph**
 
@@ -1022,13 +1022,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **beautifulsoup4-py3**
 
@@ -1164,14 +1164,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **certifi**
 
@@ -1259,12 +1259,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.14.5.chromium.7
 
@@ -1276,14 +1276,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.15.0
 
@@ -1295,14 +1295,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **chardet**
 
@@ -1455,13 +1455,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **crcmod**
 
@@ -1475,14 +1475,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **crontab**
 
@@ -1510,8 +1510,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ### 2.9.2.chromium.1
 
@@ -1523,14 +1523,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 3.3.1.chromium.1
 
@@ -1542,14 +1542,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **debugpy**
 
@@ -1563,13 +1563,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **decorator-py3**
 
@@ -1649,8 +1649,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **docker**
 
@@ -1886,11 +1886,11 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 2.2.0.chromium.4
 
@@ -1902,11 +1902,11 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **frozendict-py3**
 
@@ -2016,13 +2016,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **gin-py3**
 
@@ -2782,8 +2782,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ### 1.3.0
 
@@ -2795,10 +2795,10 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ## **google-pasta-py3**
 
@@ -2918,13 +2918,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 0.4.16
 
@@ -2936,13 +2936,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.0.0.chromium.1
 
@@ -2954,13 +2954,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **grpc-google-iam-admin-v1**
 
@@ -3016,10 +3016,10 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.34.1
 
@@ -3031,10 +3031,10 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.39.0
 
@@ -3046,11 +3046,11 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.44.0
 
@@ -3062,12 +3062,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **grpcio-status-py3**
 
@@ -3095,10 +3095,10 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.39.0
 
@@ -3110,11 +3110,11 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **gym-py3**
 
@@ -3168,9 +3168,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 3.1.0
 
@@ -3182,9 +3182,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 3.6.0
 
@@ -3196,9 +3196,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **hjson**
 
@@ -3386,8 +3386,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ## **importlab-py3**
 
@@ -3699,12 +3699,12 @@ wheel: <
 ```
 
 
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *manylinux-x64-py3*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.4.3
 
@@ -3716,13 +3716,13 @@ wheel: <
 ```
 
 
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **libclang**
 
@@ -3736,9 +3736,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 12.0.0
 
@@ -3750,9 +3750,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **libcst**
 
@@ -3766,12 +3766,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **libcst-py3**
 
@@ -3839,7 +3839,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ### 4.6.3
 
@@ -3851,13 +3851,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **macholib**
 
@@ -4179,14 +4179,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **multiprocessing-logging**
 
@@ -4228,9 +4228,9 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
 
 ## **networkx-py3**
 
@@ -4258,8 +4258,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ### 1.10.2.4
 
@@ -4271,13 +4271,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **nose-py3**
 
@@ -4343,13 +4343,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.20.3.chromium.1
 
@@ -4361,12 +4361,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.21.1.chromium.1
 
@@ -4378,13 +4378,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 1.22.1.chromium.1
 
@@ -4396,11 +4396,11 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **oauth2client**
 
@@ -4528,12 +4528,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **opt-einsum-py3**
 
@@ -4589,9 +4589,9 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
 
 ### 1.3.2.chromium.1
 
@@ -4603,12 +4603,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **parameterized**
 
@@ -4712,13 +4712,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pathspec-py3**
 
@@ -4800,14 +4800,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pillow**
 
@@ -4821,8 +4821,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 8.2.0
 
@@ -4834,9 +4834,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 8.3.1
 
@@ -4848,12 +4848,12 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pipenv-py3**
 
@@ -5253,11 +5253,11 @@ wheel: <
 ```
 
 
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 5.7.2
 
@@ -5269,14 +5269,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ### 5.8.0.chromium.3
 
@@ -5288,14 +5288,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **py**
 
@@ -5335,14 +5335,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pyasn1**
 
@@ -5498,8 +5498,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ## **pycryptodome**
 
@@ -5513,8 +5513,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ## **pydot**
 
@@ -5846,14 +5846,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pynacl**
 
@@ -5867,8 +5867,8 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
 * *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
 
 ### 1.4.0
 
@@ -5880,12 +5880,12 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pyobjc**
 
@@ -5899,8 +5899,8 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 
 ## **pyocd-py3**
 
@@ -6008,7 +6008,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ## **pyrsistent-py3**
 
@@ -6298,7 +6298,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ### 2021.11.2
 
@@ -6310,7 +6310,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ### 2022.5.5
 
@@ -6322,9 +6322,9 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
 
 ### 2022.12.15
 
@@ -6336,9 +6336,9 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
 
 ## **pytz**
 
@@ -6378,8 +6378,8 @@ wheel: <
 ```
 
 
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **pywinauto**
 
@@ -6579,13 +6579,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **scipy**
 
@@ -6599,7 +6599,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ### 1.6.2
 
@@ -6611,9 +6611,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 1.7.1
 
@@ -6625,9 +6625,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **selenium**
 
@@ -7007,9 +7007,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 2.5.0
 
@@ -7021,9 +7021,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 2.6.0
 
@@ -7035,9 +7035,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 2.7.0
 
@@ -7049,9 +7049,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **tensorflow-decision-forests**
 
@@ -7065,7 +7065,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ## **tensorflow-estimator**
 
@@ -7131,9 +7131,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **tensorflow-probability**
 
@@ -7347,7 +7347,7 @@ wheel: <
 ```
 
 
-* *manylinux-x64-py3*
+* *manylinux-x64-py3.8*
 
 ### 1.5.3
 
@@ -7359,13 +7359,13 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **typing-extensions-py3**
 
@@ -7737,9 +7737,9 @@ wheel: <
 ```
 
 
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 1.12.1
 
@@ -7751,10 +7751,10 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ### 1.13.3
 
@@ -7766,10 +7766,10 @@ wheel: <
 ```
 
 
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
-* *windows-x64-py3*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
 
 ## **wsproto-py3**
 
@@ -7887,14 +7887,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 ## **zipp**
 
@@ -7948,14 +7948,14 @@ wheel: <
 ```
 
 
-* *linux-arm64-py3*
-* *linux-armv6-py3*
-* *mac-arm64-cp38*
-* *mac-x64-cp38*
-* *manylinux-x64-py3*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
-* *windows-x64-py3*
-* *windows-x86-py3*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
 
 
 # Contact

@@ -54,6 +54,23 @@ class Builder(object):
     self._only_plat = frozenset(only_plat or ())
     self._skip_plat = frozenset(skip_plat or ())
 
+    def _valid_platform(p):
+      return p in build_platform.NAMES
+
+    # Validate the platforms.
+    for p in self._arch_map.keys():
+      assert _valid_platform(
+          p), "Wheel %r has invalid platform %s in arch_map" % (self._spec, p)
+    for p in self._abi_map.keys():
+      assert _valid_platform(
+          p), "Wheel %r has invalid platform %s in abi_map" % (self._spec, p)
+    for p in self._only_plat:
+      assert _valid_platform(
+          p), "Wheel %r has invalid platform %s in only_plat" % (self._spec, p)
+    for p in self._skip_plat:
+      assert _valid_platform(
+          p), "Wheel %r has invalid platform %s in skip_plat" % (self._spec, p)
+
   def build_fn(self, system, wheel, output_dir):
     """Must be overridden by the subclass.
 
