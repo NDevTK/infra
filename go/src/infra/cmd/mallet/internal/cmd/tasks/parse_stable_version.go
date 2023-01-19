@@ -79,6 +79,9 @@ func (c *parseStableVersionRun) innerRun(a subcommands.Application, args []strin
 			}
 		}
 		log.Println("Files are equal!")
+	} else {
+		log.Println("Generated methods")
+		log.Printf("\n %v\n", targetData)
 	}
 	return nil
 }
@@ -93,6 +96,7 @@ func readFile(file string) (*lab_platform.StableVersions, error) {
 	if err := jsonpb.Unmarshal(jsonFile, scv); err != nil {
 		return nil, errors.Annotate(err, "read file").Err()
 	}
+	log.Printf("Finished parsing %q!\n", file)
 	return scv, nil
 }
 
