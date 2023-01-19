@@ -442,11 +442,12 @@ message Peripherals {
 
   // Facing of DUT's camera to be tested whose FOV should cover chart tablet's
   // screen in camerabox setup.
-  // NEXT TAG: 3
+  // NEXT TAG: 4
   enum CameraboxFacing {
     CAMERABOX_FACING_UNKNOWN = 0;
     CAMERABOX_FACING_BACK = 1;
     CAMERABOX_FACING_FRONT = 2;
+    CAMERABOX_FACING_NOCAMERA = 3;
   }
   optional CameraboxFacing camerabox_facing = 18;
 
