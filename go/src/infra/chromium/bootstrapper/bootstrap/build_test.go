@@ -844,9 +844,6 @@ func TestGetBootstrapConfig(t *testing.T) {
 						Files: map[string]*string{
 							"DEPS": strPtr(`deps = {
 								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
-								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
-								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
-								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
 								'other/repo/path': 'https://chromium.googlesource.com/other.git@new-other-revision',
 							}`),
 						},
@@ -855,9 +852,6 @@ func TestGetBootstrapConfig(t *testing.T) {
 						Files: map[string]*string{
 							"DEPS": strPtr(`deps = {
 								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
-								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
-								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
-								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
 								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
 							}`),
 						},
@@ -867,9 +861,6 @@ func TestGetBootstrapConfig(t *testing.T) {
 						Files: map[string]*string{
 							"DEPS": strPtr(`deps = {
 								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@new-dependency-revision',
-								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
-								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
-								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
 								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
 							}`),
 						},

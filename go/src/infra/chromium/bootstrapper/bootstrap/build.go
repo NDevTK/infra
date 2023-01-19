@@ -205,54 +205,26 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		}, nil
 	}
 
-	diff := ""
 	commit, change, err = b.getCommitAndChange(ctx, input, dependency.TopLevelRepo, dependency.TopLevelRef)
 	if err != nil {
 		return nil, err
 	}
-	if change != nil {
-		diff, err = b.getDiffForMaybeAffectedFile(ctx, change, "DEPS")
-		if err != nil {
-			return nil, err
-		}
-	}
-	contents, err := b.downloadFile(ctx, commit, "DEPS")
-	if err != nil {
-		return nil, err
-	}
 
-	gclient, err := b.gclientGetter(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to get gclient").Err()
-	}
-
-	dependencyRevision, err := gclient.GetDep(ctx, contents, dependency.ConfigRepoPath)
+	dependencyRevision, oldDependencyRevision, err := b.getDependencyRevision(ctx, dependency.ConfigRepoPath, commit, change)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get dependency revision for %s", dependency.ConfigRepoPath).Err()
 	}
 
+	// If the DEPS pin for the config repo has changed, find out if the properties file has
+	// changed so that a skip analysis reason can be provided
 	var skipAnalysisReasons []string
-	if diff != "" {
-		logging.Infof(ctx, "patching DEPS")
-		contents, err = patchFile(ctx, "DEPS", contents, diff)
+	if oldDependencyRevision != "" {
+		propertiesDiff, err := b.gitiles.DownloadDiff(ctx, dependency.ConfigRepo.Host, dependency.ConfigRepo.Project, dependencyRevision, oldDependencyRevision, propsFile)
 		if err != nil {
-			return nil, errors.Annotate(err, "failed to patch DEPS").Err()
+			return nil, errors.Annotate(err, "failed to determine if properties file was affected").Err()
 		}
-		newDependencyRevision, err := gclient.GetDep(ctx, contents, dependency.ConfigRepoPath)
-		if err != nil {
-			return nil, errors.Annotate(err, "failed to get patched dependency revision for %s", dependency.ConfigRepoPath).Err()
-		}
-		// If the DEPS pin for the config repo has changed, find out if the properties file
-		// has changed so that a skip analysis reason can be provided
-		if newDependencyRevision != dependencyRevision {
-			propertiesDiff, err := b.gitiles.DownloadDiff(ctx, dependency.ConfigRepo.Host, dependency.ConfigRepo.Project, newDependencyRevision, dependencyRevision, propsFile)
-			if err != nil {
-				return nil, errors.Annotate(err, "failed to determine if properties file was affected").Err()
-			}
-			if propertiesDiff != "" {
-				skipAnalysisReasons = append(skipAnalysisReasons, fmt.Sprintf("properties file %s is affected by CL (via DEPS change)", propsFile))
-			}
-			dependencyRevision = newDependencyRevision
+		if propertiesDiff != "" {
+			skipAnalysisReasons = append(skipAnalysisReasons, fmt.Sprintf("properties file %s is affected by CL (via DEPS change)", propsFile))
 		}
 	}
 
@@ -274,6 +246,62 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		configCommit:                   configCommit,
 		skipAnalysisReasons:            skipAnalysisReasons,
 	}, nil
+}
+
+func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRepoPath string, topLevelRepoCommit *gitilesCommit, topLevelRepoChange *gerritChange) (string, string, error) {
+	gclient, err := b.gclientGetter(ctx)
+	if err != nil {
+		return "", "", errors.Annotate(err, "failed to get gclient").Err()
+	}
+
+	getRevision := func(ctx context.Context, commit *gitilesCommit) (string, error) {
+		contents, err := b.downloadFile(ctx, commit, "DEPS")
+		if err != nil {
+			return "", err
+		}
+		return gclient.GetDep(ctx, contents, configRepoPath)
+	}
+
+	// If there is a change for the top-level repo, get the revision for the dependency repo
+	// from the CL and its base. If they are different, than we can just use the revision from
+	// the CL and indicate that there was a change to the pin.
+	if topLevelRepoChange != nil {
+		clDependencyRevision, err := getRevision(ctx, &gitilesCommit{
+			GitilesCommit: &buildbucketpb.GitilesCommit{
+				Host:    topLevelRepoCommit.Host,
+				Project: topLevelRepoCommit.Project,
+				Id:      topLevelRepoChange.gitilesRevision,
+			},
+		})
+		if err != nil {
+			return "", "", errors.Annotate(err, "failed to get dependency revision for CL %s", topLevelRepoChange).Err()
+		}
+		baseRevision, err := b.gitiles.GetParentRevision(ctx, topLevelRepoCommit.Host, topLevelRepoCommit.Project, topLevelRepoChange.gitilesRevision)
+		if err != nil {
+			return "", "", errors.Annotate(err, "failed to get base revision for CL %s", topLevelRepoChange).Err()
+		}
+		baseDependencyRevision, err := getRevision(ctx, &gitilesCommit{
+			GitilesCommit: &buildbucketpb.GitilesCommit{
+				Host:    topLevelRepoCommit.Host,
+				Project: topLevelRepoCommit.Project,
+				Id:      baseRevision,
+			},
+		})
+		if err != nil {
+			return "", "", errors.Annotate(err, "failed to get dependency revision for base of CL %s", topLevelRepoChange).Err()
+		}
+		if clDependencyRevision != baseDependencyRevision {
+			return clDependencyRevision, baseDependencyRevision, nil
+		}
+	}
+
+	// There is no change to the pin for the dependency repo, so just use the pin from the head
+	// DEPS file
+	revision, err := getRevision(ctx, topLevelRepoCommit)
+	if err != nil {
+		return "", "", errors.Annotate(err, "failed to get dependency revision from commit %s", topLevelRepoCommit).Err()
+	}
+	return revision, "", nil
 }
 
 // getCommitAndChange gets the commit and change for a given repo. If there is
