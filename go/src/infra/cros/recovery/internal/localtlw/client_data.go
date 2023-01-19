@@ -98,7 +98,7 @@ func (c *tlwClient) getDevice(ctx context.Context, name string) (*tlw.Dut, error
 	}
 	// First check if device is already in the cache.
 	if d, ok := c.devices[name]; ok {
-		log.Debugf(ctx, "Get device %q: received from cache.", name)
+		log.Debugf(ctx, "Get device info %q: received from cache.", name)
 		return d, nil
 	}
 	// Ask to read inventory and then get device from the cache.
@@ -107,7 +107,7 @@ func (c *tlwClient) getDevice(ctx context.Context, name string) (*tlw.Dut, error
 		return nil, errors.Annotate(err, "get device").Err()
 	}
 	if d, ok := c.devices[name]; ok {
-		log.Debugf(ctx, "Get device %q: received from cache.", name)
+		log.Debugf(ctx, "Get device info %q: from inventory.", name)
 		return d, nil
 	}
 	return nil, errors.Reason("get device: unexpected error").Err()
