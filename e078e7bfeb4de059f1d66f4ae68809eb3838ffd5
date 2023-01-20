@@ -16,6 +16,24 @@
       "message": "This is kind of what I want, but not really, because it breaks using --no-rebuild.\n\nThe fundamental problem is that the values of the on_change tags are not preserved in the built CIPD package, so there is no way to access it on upload. Currently, this \"works\" by accessing the go binary from go/bin, but this doesn\u0027t help when we want to include on_change tags for files created by copies/cipd_export.\n\n@vadimsh@chromium.org any suggestions?",
       "revId": "e078e7bfeb4de059f1d66f4ae68809eb3838ffd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "214aaf99_af9ef177",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-01-20T04:38:01Z",
+      "side": 1,
+      "message": "(leave comment open)",
+      "parentUuid": "5c28dea6_36025c0f",
+      "revId": "e078e7bfeb4de059f1d66f4ae68809eb3838ffd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
