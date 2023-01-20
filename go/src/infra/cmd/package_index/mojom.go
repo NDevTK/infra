@@ -118,6 +118,11 @@ func (m *mojomTarget) findMojomImports() ([]string, error) {
 	return imports.ToSlice(), nil
 }
 
+// isMojomFile checks if extenion matches mojom file extension.
+func isMojomFile(filename string) bool {
+	return strings.HasSuffix(filename, ".mojom")
+}
+
 // getUnit returns a compilation unit for a mojom target.
 func (m *mojomTarget) getUnit() (*kpb.CompilationUnit, error) {
 	unitProto := &kpb.CompilationUnit{}
@@ -127,6 +132,9 @@ func (m *mojomTarget) getUnit() (*kpb.CompilationUnit, error) {
 		gn, err := convertGnPath(m.ctx, src, m.outDir)
 		if err != nil {
 			return nil, err
+		}
+		if !isMojomFile(gn) {
+			continue
 		}
 		sourceFiles = append(sourceFiles, convertPathToForwardSlashes(gn))
 	}
@@ -196,6 +204,11 @@ func (m *mojomTarget) getFiles() ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
+		if !isMojomFile(gn) {
+			// Only add .mojom files; we don't care about any other
+			// one, e.g. zip that currently mojom targets have.
+			continue
+		}
 		dataFiles = append(dataFiles, filepath.Join(m.rootDir, m.outDir, gn))
 	}
 	return dataFiles, nil
@@ -263,9 +276,10 @@ func isMojomTarget(t *gnTarget) bool {
 	// cpp_templates.zip and mojolpm_templates.zip to //out to enable
 	// remote execution.
 	for _, src := range t.targetInfo.Sources {
-		if strings.HasPrefix(src, "//out") &&
-			!strings.HasSuffix(src, "cpp_templates.zip") &&
-			!strings.HasSuffix(src, "mojolpm_templates.zip") {
+		if !isMojomFile(src) {
+			continue
+		}
+		if strings.HasPrefix(src, "//out") {
 			return false
 		}
 	}

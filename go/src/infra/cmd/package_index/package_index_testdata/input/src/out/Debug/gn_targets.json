@@ -24,7 +24,7 @@
       "gen/mojo_bindings__type_mappings"
     ],
     "script": "//mojo/mojom_bindings_generator.py",
-    "sources": ["//test.mojom", "//out/mojo/public/tools/bindings/cpp_templates.zip", "//out/mojo/public/tools/bindings/mojolpm_templates.zip"],
+    "sources": ["//test.mojom", "//out/mojo/public/tools/bindings/cpp_templates.zip", "//out/mojo/public/tools/bindings/mojolpm_templates.zip", "//out/debug/gen/supervised_user_commands_mojom__type_mappings"],
     "outputs": ["//out/Debug/gen/test.mojom.h"]
   },
   "//:test_mojom__parser(//foo/bar:baz)": {
@@ -104,7 +104,7 @@
     "public": "*",
     "response_file_contents": [ "gen/mojo/public/cpp/bindings/tests/generated.test-mojom" ],
     "script": "//mojo/public/tools/bindings/mojom_bindings_generator.py",
-    "sources": [ "//out/android-Debug/gen/mojo/public/cpp/bindings/tests/generated.test-mojom", "//out/mojo/public/tools/bindings/cpp_templates.zip", "//out/mojo/public/tools/bindings/mojolpm_templates.zip" ],
+    "sources": [ "//out/android-Debug/gen/mojo/public/cpp/bindings/tests/generated.test-mojom", "//out/mojo/public/tools/bindings/cpp_templates.zip", "//out/mojo/public/tools/bindings/mojolpm_templates.zip", "//out/debug/gen/supervised_user_commands_mojom__type_mappings"],
     "testonly": false,
     "toolchain": "//build/toolchain/android:android_clang_arm",
     "type": "action",
