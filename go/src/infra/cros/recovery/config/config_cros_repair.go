@@ -1768,6 +1768,9 @@ func crosRepairActions() map[string]*Action {
 				"Then, using servo to initialize dut again.",
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
+			Conditions: []string{
+				"Not Satlab device",
+			},
 			Dependencies: []string{
 				"Verify servod is responsive",
 				"servod_has_control_cr50_reboot",
