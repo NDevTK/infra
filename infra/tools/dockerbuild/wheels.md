@@ -3873,6 +3873,20 @@ wheel: <
 
 * *universal*
 
+## **markdown-it-py-py3**
+
+### 2.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/markdown-it-py-py3"
+  version: "version:2.1.0"
+>
+```
+
+
+* *universal*
+
 ## **mccabe**
 
 ### 0.6.1
@@ -3881,6 +3895,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/mccabe-py2_py3"
   version: "version:0.6.1"
+>
+```
+
+
+* *universal*
+
+## **mdurl-py3**
+
+### 0.1.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdurl-py3"
+  version: "version:0.1.2"
 >
 ```
 
@@ -5610,6 +5638,20 @@ wheel: <
 
 * *universal*
 
+## **pygments-py3**
+
+### 2.14.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pygments-py3"
+  version: "version:2.14.0"
+>
+```
+
+
+* *universal*
+
 ## **pykwalify**
 
 ### 1.8.0
@@ -6501,12 +6543,12 @@ wheel: <
 
 ## **rich-py3**
 
-### 12.5.1
+### 13.2.0
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/rich-py3"
-  version: "version:12.5.1"
+  version: "version:13.2.0"
 >
 ```
 
