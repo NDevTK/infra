@@ -12,6 +12,8 @@ install_mode: copy
 root: ../../go/bin
 upload_on_change:
   - file: vpython3
+  - file: vpython3.app/Contents/Resources/3.8/.versions/cpython3.cipd_version
+  - file: vpython3.app/Contents/Resources/3.11/.versions/cpython3.cipd_version
 mac_bundle:
   name: vpython3.app
   info: |
@@ -37,6 +39,7 @@ mac_bundle:
         infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.25
         @Subdir Contents/Resources/3.11
         infra/3pp/tools/cpython3/${target_platform} version:2@3.11.1.chromium.23
+        # Adding a new python version? Make sure to add it to upload_on_change above.
   codesign:
     requirements: =designated => identifier "org.chromium.infra.vpython3" and anchor trusted
 posix_symlinks:
