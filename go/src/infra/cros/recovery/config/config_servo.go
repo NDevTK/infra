@@ -589,7 +589,16 @@ func servoRepairPlan() *Plan {
 				Dependencies: []string{
 					"is_servo_v4",
 				},
-				ExecName: "servo_main_device_is_gcs",
+				ExecName: "servo_main_device_is_gsc",
+			},
+			"Servo main device is CCD": {
+				Docs: []string{
+					"Verify that main device is CCD",
+				},
+				Dependencies: []string{
+					"is_servo_v4",
+				},
+				ExecName: "servo_main_device_is_ccd",
 			},
 			"Verify cr50 console": {
 				Docs: []string{
@@ -626,7 +635,7 @@ func servoRepairPlan() *Plan {
 					"Expect that cr50/GSC will required to set cr50 testlab is enabled.",
 				},
 				Conditions: []string{
-					"Servo main device is GSC chip",
+					"Servo main device is CCD",
 				},
 				Dependencies: []string{
 					"Set state:CCD_TESTLAB_ISSUE",

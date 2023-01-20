@@ -1801,7 +1801,7 @@ func crosRepairActions() map[string]*Action {
 				"Setup has servo info",
 				"servo_host_is_labstation",
 			},
-			ExecName: "servo_main_device_is_gcs",
+			ExecName: "servo_main_device_is_gsc",
 		},
 		"servod_has_control_cr50_reboot": {
 			Docs: []string{

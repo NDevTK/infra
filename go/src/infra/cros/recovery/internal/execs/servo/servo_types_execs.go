@@ -156,6 +156,24 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 }
 
+// mainDeviceIsCCDExec checks whether or not the servo device is CCD.
+func mainDeviceIsCCDExec(ctx context.Context, info *execs.ExecInfo) error {
+	sType, err := WrappedServoType(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "main devices is ccd").Err()
+	}
+	md := sType.MainDevice()
+	switch md {
+	case servo.CCD_CR50:
+		fallthrough
+	case servo.CCD_GSC:
+		info.NewLogger().Debugf("Found main device: %q", md)
+		return nil
+	default:
+		return errors.Reason("main devices is ccd: found %q does not match expectations", md).Err()
+	}
+}
+
 // servoTypeRegexMatchExec checks if servo_type match to provided regex.
 func servoTypeRegexMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 	actionMap := info.GetActionArgs(ctx)
@@ -186,6 +204,7 @@ func init() {
 	execs.Register("is_dual_setup_configured", servoIsDualSetupConfiguredExec)
 	execs.Register("is_dual_setup", servoVerifyDualSetupExec)
 	execs.Register("is_servo_type_ccd", servoVerifyServoCCDExec)
-	execs.Register("servo_main_device_is_gcs", mainDeviceIsGSCExec)
+	execs.Register("servo_main_device_is_gsc", mainDeviceIsGSCExec)
+	execs.Register("servo_main_device_is_ccd", mainDeviceIsCCDExec)
 	execs.Register("servo_type_regex_match", servoTypeRegexMatchExec)
 }
