@@ -13,7 +13,6 @@ import (
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/utils"
 	"infra/cros/cmd/satlab/internal/site"
-	"infra/libs/swarming"
 )
 
 // MakeUpdateShivasFlags serializes the command line arguments of updateDUT into a flagmap
@@ -55,9 +54,6 @@ func makeUpdateShivasFlags(c *updateDUT) flagmap {
 	}
 	if c.rpmOutlet != "" {
 		out["rpm-outlet"] = []string{c.rpmOutlet}
-	}
-	if c.deployTaskTimeout != 0 {
-		// Do nothing.
 	}
 	if len(c.deployTags) != 0 {
 		out["deploy-tags"] = []string{strings.Join(c.deployTags, ",")}
@@ -122,12 +118,6 @@ func makeUpdateShivasFlags(c *updateDUT) flagmap {
 	if c.envFlags.Namespace != "" {
 		// Do nothing.
 	}
-	if c.paris {
-		out["paris"] = []string{}
-	} else {
-		// false need provide with = or will be ignored with shivas.
-		out["paris=false"] = []string{}
-	}
 	return out
 }
 
@@ -157,13 +147,8 @@ type shivasUpdateDUT struct {
 	description              string
 
 	// Deploy task inputs.
-	forceDeploy          bool
-	deployTaskTimeout    int64
-	deployTags           []string
-	forceDownloadImage   bool
-	forceInstallOS       bool
-	forceInstallFirmware bool
-	forceUpdateLabels    bool
+	forceDeploy bool
+	deployTags  []string
 
 	// ACS DUT fields
 	chameleons        []string
@@ -186,8 +171,6 @@ type shivasUpdateDUT struct {
 
 	// For use in determining if a flag is set
 	flagInputs map[string]bool
-
-	paris bool
 }
 
 // RegisterUpdateShivasFlags registers the flags inherited from shivas.
@@ -214,13 +197,8 @@ func registerUpdateShivasFlags(c *updateDUT) {
 	c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags. You can only append new tags or delete all of them. "+cmdhelp.ClearFieldHelpText)
 	c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
 
-	c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 	c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 	c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
-	c.Flags.BoolVar(&c.forceDownloadImage, "force-download-image", false, "force download image and stage usb if deploy task is run.")
-	c.Flags.BoolVar(&c.forceInstallFirmware, "force-install-fw", false, "force install firmware if deploy task is run.")
-	c.Flags.BoolVar(&c.forceInstallOS, "force-install-os", false, "force install os image if deploy task is run.")
-	c.Flags.BoolVar(&c.forceUpdateLabels, "force-update-labels", false, "force update labels if deploy task is run.")
 
 	// ACS DUT fields
 	c.Flags.Var(utils.CSVString(&c.chameleons), "chameleons", cmdhelp.ChameleonTypeHelpText+". "+cmdhelp.ClearFieldHelpText)
@@ -240,6 +218,4 @@ func registerUpdateShivasFlags(c *updateDUT) {
 	c.Flags.BoolVar(&c.chaos, "chaos", false, "adding this flag will specify if chaos is present")
 	c.Flags.BoolVar(&c.audioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
 	c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
-
-	c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow (dogfood).")
 }

@@ -167,13 +167,12 @@ type shivasAddDUT struct {
 	rpm                      string
 	rpmOutlet                string
 
-	ignoreUFS         bool
-	deployTaskTimeout int64
-	deployTags        []string
-	deploymentTicket  string
-	tags              []string
-	state             string
-	description       string
+	ignoreUFS        bool
+	deployTags       []string
+	deploymentTicket string
+	tags             []string
+	state            string
+	description      string
 
 	// Asset location fields
 	zone string

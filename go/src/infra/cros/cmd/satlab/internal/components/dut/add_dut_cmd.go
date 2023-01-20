@@ -37,11 +37,6 @@ var AddDUTCmd = &subcommands.Command{
 
 		c.Flags.StringVar(&c.address, "address", "", "IP address of host")
 		c.Flags.BoolVar(&c.skipDNS, "skip-dns", false, "whether to skip updating the DNS")
-		c.Flags.BoolVar(
-			&c.fullDeploy,
-			"full-deploy",
-			false,
-			"whether to run full deployment workflow(include OS and firmware install)")
 		registerAddShivasFlags(c)
 		return c
 	},
@@ -64,8 +59,6 @@ type addDUT struct {
 	qualifiedServo string
 	// QualifiedRack is the rack with the satlab ID prepended.
 	qualifiedRack string
-	// FullDeploy is run complete deployment task which includes OS and Firmware installs
-	fullDeploy bool
 }
 
 // Run adds a DUT and returns an exit status.
@@ -103,6 +96,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 
 	c.qualifiedHostname = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.hostname)
 	c.qualifiedRack = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.rack)
+	c.setupServoArguments(dockerHostBoxIdentifier)
 
 	if c.zone == "" {
 		c.zone = site.DefaultZone
