@@ -206,7 +206,7 @@ class PackageDef(collections.namedtuple(
       return not is_cross_compiling()
     return get_package_vars()['platform'] in platforms
 
-  def preprocess(self, build_root, pkg_vars, cipd_exe, sign_id=None):
+  def preprocess(self, build_root, pkg_vars, cipd_exe):
     """Parses the definition and filters/extends it before passing to CIPD.
 
     This process may generate additional files that are put into the package.
@@ -215,7 +215,6 @@ class PackageDef(collections.namedtuple(
       build_root: root directory for building cipd package.
       pkg_vars: dict with variables passed to cipd as -pkg-var.
       cipd_exe: path to cipd executable.
-      sign_id: identity used for Mac codesign.
 
     Returns:
       Path to filtered package definition YAML.
@@ -257,20 +256,6 @@ class PackageDef(collections.namedtuple(
           shutil.copy(src, dst)
         elif 'cipd_export' in d:
           process_cipd_export(d['cipd_export'], bundle['root'])
-
-      if 'codesign' in bundle_def:
-        cmd = ['/usr/bin/codesign', '--deep', '--force']
-        if sign_id:
-          for k, v in bundle_def['codesign'].items():
-            cmd.extend(['--' + k, v])
-          cmd.extend(['--sign', sign_id])
-        else:
-          # Ignoring all codesign args and use ad-hoc signing for testing.
-          cmd.extend(['--sign', '-'])
-        cmd.append(bundle['root'])
-
-        print('Running %s' % ' '.join(cmd))
-        subprocess.check_call(cmd)
 
     for cp in pkg_def.get('copies', ()):
       plat = cp.get('platforms')
@@ -322,15 +307,12 @@ class PackageDef(collections.namedtuple(
       json.dump(pkg_def, f)
     return out_path
 
-  def on_change_info(self, pkg_vars):
-    """Returns tags and path to check package changed."""
-    on_change_tags = [
-        get_on_change_tag(self.pkg_root, d, pkg_vars)
+  def on_change_info(self, pkg_vars, build_root):
+    """Returns tags to check package changed."""
+    return [
+        get_on_change_tag(build_root, d, pkg_vars)
         for d in self.pkg_def.get('upload_on_change', [])
     ]
-    pkg_path = render_path(
-        self.pkg_def.get('package'), pkg_vars, replace_sep=False)
-    return on_change_tags, pkg_path
 
 # Carries modifications for go-related env vars and cwd.
 #
@@ -1101,7 +1083,7 @@ def build_pkg(cipd_exe, pkg_def, out_file, package_vars, sign_id=None):
     sign_id: identity used for Mac codesign.
 
   Returns:
-    {'package': <name>, 'instance_id': <hash>}
+    {'package': <name>, 'instance_id': <hash>, 'on_change_tags': [<tag>, ...]}
 
   Raises:
     BuildException on error.
@@ -1117,8 +1099,27 @@ def build_pkg(cipd_exe, pkg_def, out_file, package_vars, sign_id=None):
 
     # Parse the definition and filter/extend it before passing to CIPD. This
     # process may generate additional files that are put into the package.
-    processed_yaml = pkg_def.preprocess(
-        build_root, package_vars, cipd_exe, sign_id=sign_id)
+    processed_yaml = pkg_def.preprocess(build_root, package_vars, cipd_exe)
+
+    # Compute on_change tags, before signing.
+    on_change_tags = pkg_def.on_change_info(package_vars, build_root)
+
+    # Sign the package
+    if 'mac_bundle' in pkg_def.pkg_def:
+      bundle_def = pkg_def.pkg_def['mac_bundle']
+      if 'codesign' in bundle_def:
+        cmd = ['/usr/bin/codesign', '--deep', '--force']
+        if sign_id:
+          for k, v in bundle_def['codesign'].items():
+            cmd.extend(['--' + k, v])
+          cmd.extend(['--sign', sign_id])
+        else:
+          # Ignoring all codesign args and use ad-hoc signing for testing.
+          cmd.extend(['--sign', '-'])
+        cmd.append(build_root)
+
+        print('Running %s' % ' '.join(cmd))
+        subprocess.check_call(cmd)
 
     # Build the package.
     args = ['-pkg-def', processed_yaml]
@@ -1134,7 +1135,9 @@ def build_pkg(cipd_exe, pkg_def, out_file, package_vars, sign_id=None):
 
     # Expected result is {'package': 'name', 'instance_id': 'hash'}
     info = json_output['result']
-    print '%s %s' % (info['package'], info['instance_id'])
+    info['on_change_tags'] = on_change_tags
+    print '%s %s %s' % (info['package'], info['instance_id'],
+                        info['on_change_tags'])
     return info
   finally:
     shutil.rmtree(build_root, ignore_errors=True)
@@ -1430,7 +1433,7 @@ def run(
               (pkg_def.name,))
           continue
 
-        on_change_tags, pkg_path = pkg_def.on_change_info(package_vars)
+        on_change_tags = pkg_def.get('on_change_tags', [])
         if on_change_tags:
           existed_pkg = search_pkg(cipd_exe, pkg_path, service_url,
                                    on_change_tags, service_account_json)
