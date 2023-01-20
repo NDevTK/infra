@@ -1,0 +1,10 @@
+package: infra/experimental/golangbuild/${platform}
+description: A luciexe that builds and tests the Go project
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/experimental/golangbuild
+root: ../../go/bin
+data:
+  - file: golangbuild${exe_suffix}
+  - version_file: .versions/golangbuild${exe_suffix}.cipd_version

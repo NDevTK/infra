@@ -1,0 +1,24 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package golangbuildpb;
+
+option go_package = "infra/experimental/golangbuild/golangbuildpb";
+
+message Inputs {
+  // Name of the project this is supposed to build against.
+  //
+  // Used for both validation, and necessary in order to identify when a
+  // subrepo builder is triggered by a different repository, like the main
+  // Go repository.
+  string project = 1;
+
+  // Indicates that this build should run with the race detector enabled.
+  bool race_mode = 2;
+
+  // Extra environment variables to set for building and testing.
+  map<string, string> env = 3;
+}
