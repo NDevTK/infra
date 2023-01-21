@@ -24,6 +24,8 @@ func convertActionStatusToKarteActionStatus(status metrics.ActionStatus) kartepb
 		return kartepb.Action_SUCCESS
 	case metrics.ActionStatusFail:
 		return kartepb.Action_FAIL
+	case metrics.ActionStatusSkip:
+		return kartepb.Action_SKIP
 	default:
 		return kartepb.Action_STATUS_UNSPECIFIED
 	}
@@ -36,6 +38,8 @@ func convertKarteActionStatusToActionStatus(status kartepb.Action_Status) metric
 		return metrics.ActionStatusSuccess
 	case kartepb.Action_FAIL:
 		return metrics.ActionStatusFail
+	case kartepb.Action_SKIP:
+		return metrics.ActionStatusSkip
 	default:
 		return metrics.ActionStatusUnspecified
 	}
