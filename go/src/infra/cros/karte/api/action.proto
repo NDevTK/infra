@@ -63,6 +63,7 @@ message Action {
     STATUS_UNSPECIFIED = 0;
     SUCCESS = 1;
     FAIL = 2;
+    SKIP = 3;
   }
   Status status = 9;
 
