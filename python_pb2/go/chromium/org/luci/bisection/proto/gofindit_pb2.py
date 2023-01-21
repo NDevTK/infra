@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z-go.chromium.org/luci/bisection/proto;gofindit',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n3go.chromium.org/luci/bisection/proto/gofindit.proto\x12\x08gofindit\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a;go.chromium.org/luci/buildbucket/proto/builder_common.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\".\n\x12GetAnalysisRequest\x12\x18\n\x0b\x61nalysis_id\x18\x01 \x01(\x03\x42\x03\xe0\x41\x02\"E\n\x14QueryAnalysisRequest\x12-\n\rbuild_failure\x18\x01 \x01(\x0b\x32\x16.gofindit.BuildFailure\"=\n\x15QueryAnalysisResponse\x12$\n\x08\x61nalyses\x18\x01 \x03(\x0b\x32\x12.gofindit.Analysis\"<\n\x13ListAnalysesRequest\x12\x11\n\tpage_size\x18\x01 \x01(\x05\x12\x12\n\npage_token\x18\x02 \x01(\t\"U\n\x14ListAnalysesResponse\x12$\n\x08\x61nalyses\x18\x01 \x03(\x0b\x32\x12.gofindit.Analysis\x12\x17\n\x0fnext_page_token\x18\x02 \x01(\t\"l\n\x16TriggerAnalysisRequest\x12-\n\rbuild_failure\x18\x01 \x01(\x0b\x32\x16.gofindit.BuildFailure\x12#\n\x08\x62ug_info\x18\x02 \x03(\x0b\x32\x11.gofindit.BugInfo\"V\n\x17TriggerAnalysisResponse\x12\"\n\x06result\x18\x01 \x01(\x0b\x32\x12.gofindit.Analysis\x12\x17\n\x0fis_new_analysis\x18\x02 \x01(\x08\"V\n\x15UpdateAnalysisRequest\x12\x18\n\x0b\x61nalysis_id\x18\x01 \x01(\tB\x03\xe0\x41\x02\x12#\n\x08\x62ug_info\x18\x02 \x03(\x0b\x32\x11.gofindit.BugInfo\"\xb6\x01\n\x1dUpdateAnalysisProgressRequest\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\x03\x12\x0e\n\x06\x62ot_id\x18\x02 \x01(\t\x12\x0c\n\x04\x62\x62id\x18\x03 \x01(\x03\x12\x35\n\x0egitiles_commit\x18\x04 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12+\n\x0crerun_result\x18\x05 \x01(\x0b\x32\x15.gofindit.RerunResult\"]\n\x1eUpdateAnalysisProgressResponse\x12;\n\x14next_revision_to_run\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\"\xd6\x04\n\x08\x41nalysis\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\x03\x12-\n\rbuild_failure\x18\x02 \x01(\x0b\x32\x16.gofindit.BuildFailure\x12(\n\x06status\x18\x03 \x01(\x0e\x32\x18.gofindit.AnalysisStatus\x12\x18\n\x10last_passed_bbid\x18\x04 \x01(\x03\x12\x19\n\x11\x66irst_failed_bbid\x18\x05 \x01(\x03\x12\x30\n\x0c\x63reated_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11last_updated_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12;\n\x10heuristic_result\x18\t \x01(\x0b\x32!.gofindit.HeuristicAnalysisResult\x12>\n\x12nth_section_result\x18\n \x01(\x0b\x32\".gofindit.NthSectionAnalysisResult\x12*\n\x07\x62uilder\x18\r \x01(\x0b\x32\x19.buildbucket.v2.BuilderID\x12\x36\n\x12\x62uild_failure_type\x18\x0e \x01(\x0e\x32\x1a.gofindit.BuildFailureType\x12#\n\x08\x63ulprits\x18\x0f \x03(\x0b\x32\x11.gofindit.CulpritJ\x04\x08\x0b\x10\x0cJ\x04\x08\x0c\x10\r\"\x93\x01\n\x07\x43ulprit\x12-\n\x06\x63ommit\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x12\n\nreview_url\x18\x02 \x01(\t\x12\x14\n\x0creview_title\x18\x03 \x01(\t\x12/\n\x0e\x63ulprit_action\x18\x04 \x03(\x0b\x32\x17.gofindit.CulpritAction\"\xcf\x01\n\x17HeuristicAnalysisResult\x12(\n\x06status\x18\x01 \x01(\x0e\x32\x18.gofindit.AnalysisStatus\x12,\n\x08suspects\x18\x02 \x03(\x0b\x32\x1a.gofindit.HeuristicSuspect\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xe5\x01\n\x10HeuristicSuspect\x12\x35\n\x0egitiles_commit\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x11\n\treviewUrl\x18\x02 \x01(\t\x12\r\n\x05score\x18\x03 \x01(\x05\x12\x15\n\rjustification\x18\x04 \x01(\t\x12\x10\n\x08verified\x18\x05 \x01(\x08\x12:\n\x10\x63onfidence_level\x18\x06 \x01(\x0e\x32 .gofindit.SuspectConfidenceLevel\x12\x13\n\x0breviewTitle\x18\x07 \x01(\t\"\xbe\x03\n\x18NthSectionAnalysisResult\x12(\n\x06status\x18\x01 \x01(\x0e\x32\x18.gofindit.AnalysisStatus\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11last_updated_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\x07\x63ulprit\x18\x05 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x10\n\x08verified\x18\x06 \x01(\x08\x12;\n\x18remainingNthSectionRange\x18\x07 \x01(\x0b\x32\x19.gofindit.RegressionRange\x12\x15\n\rerror_message\x18\x08 \x01(\t\x12%\n\x06reruns\x18\t \x03(\x0b\x32\x15.gofindit.SingleRerun\x12&\n\tblameList\x18\n \x01(\x0b\x32\x13.gofindit.BlameList\"=\n\tBlameList\x12\x30\n\x07\x63ommits\x18\x01 \x03(\x0b\x32\x1f.gofindit.BlameListSingleCommit\"O\n\x15\x42lameListSingleCommit\x12\x0e\n\x06\x63ommit\x18\x01 \x01(\t\x12\x11\n\treviewUrl\x18\x02 \x01(\t\x12\x13\n\x0breviewTitle\x18\x03 \x01(\t\"i\n\rCulpritAction\x12\x30\n\x0b\x61\x63tion_type\x18\x01 \x01(\x0e\x32\x1b.gofindit.CulpritActionType\x12\x15\n\rrevert_cl_url\x18\x02 \x01(\t\x12\x0f\n\x07\x62ug_url\x18\x03 \x01(\t\"\x97\x01\n\x0fRegressionRange\x12\x32\n\x0blast_passed\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x33\n\x0c\x66irst_failed\x18\x02 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x1b\n\x13number_of_revisions\x18\x03 \x01(\x05\"\xfe\x01\n\x0bSingleRerun\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11last_updated_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0c\n\x04\x62\x62id\x18\x04 \x01(\x03\x12\x0f\n\x07task_id\x18\x05 \x01(\t\x12\x0e\n\x06\x62ot_id\x18\x06 \x01(\t\x12+\n\x0crerun_result\x18\x07 \x01(\x0b\x32\x15.gofindit.RerunResult\"Q\n\x0bRerunResult\x12+\n\x0crerun_status\x18\x01 \x01(\x0e\x32\x15.gofindit.RerunStatus\x12\x15\n\rerror_message\x18\x02 \x01(\t\"6\n\x0c\x42uildFailure\x12\x0c\n\x04\x62\x62id\x18\x01 \x01(\x03\x12\x18\n\x10\x66\x61iled_step_name\x18\x02 \x01(\t\"\x82\x01\n\x07\x42ugInfo\x12\x36\n\x11monorail_bug_info\x18\x01 \x01(\x0b\x32\x19.gofindit.MonorailBugInfoH\x00\x12\x38\n\x12\x62uganizer_bug_info\x18\x02 \x01(\x0b\x32\x1a.gofindit.BuganizerBugInfoH\x00\x42\x05\n\x03\x62ug\"2\n\x0fMonorailBugInfo\x12\x0f\n\x07project\x18\x01 \x01(\t\x12\x0e\n\x06\x62ug_id\x18\x02 \x01(\x05\"\"\n\x10\x42uganizerBugInfo\x12\x0e\n\x06\x62ug_id\x18\x01 \x01(\x03*\x81\x01\n\x0e\x41nalysisStatus\x12\x1f\n\x1b\x41NALYSIS_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07\x43REATED\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\x12\t\n\x05\x46OUND\x10\x03\x12\x0c\n\x08NOTFOUND\x10\x04\x12\t\n\x05\x45RROR\x10\x05\x12\x10\n\x0cSUSPECTFOUND\x10\x06*\xa6\x01\n\x11\x43ulpritActionType\x12#\n\x1f\x43ULPRIT_ACTION_TYPE_UNSPECIFIED\x10\x00\x12\r\n\tNO_ACTION\x10\x01\x12\x19\n\x15\x43ULPRIT_AUTO_REVERTED\x10\x02\x12\x15\n\x11REVERT_CL_CREATED\x10\x03\x12\x18\n\x14\x43ULPRIT_CL_COMMENTED\x10\x04\x12\x11\n\rBUG_COMMENTED\x10\x05*f\n\x0bRerunStatus\x12\x1c\n\x18RERUN_STATUS_UNSPECIFIED\x10\x00\x12\x0f\n\x0bIN_PROGRESS\x10\x01\x12\n\n\x06PASSED\x10\x02\x12\n\n\x06\x46\x41ILED\x10\x03\x12\x10\n\x0cINFRA_FAILED\x10\x04*a\n\x16SuspectConfidenceLevel\x12(\n$SUSPECT_CONFIDENCE_LEVEL_UNSPECIFIED\x10\x00\x12\x07\n\x03LOW\x10\x01\x12\n\n\x06MEDIUM\x10\x02\x12\x08\n\x04HIGH\x10\x03*c\n\x10\x42uildFailureType\x12\"\n\x1e\x42UILD_FAILURE_TYPE_UNSPECIFIED\x10\x00\x12\x0b\n\x07\x43OMPILE\x10\x01\x12\x08\n\x04TEST\x10\x02\x12\t\n\x05INFRA\x10\x03\x12\t\n\x05OTHER\x10\x04\x32\x92\x03\n\x0fGoFinditService\x12?\n\x0bGetAnalysis\x12\x1c.gofindit.GetAnalysisRequest\x1a\x12.gofindit.Analysis\x12P\n\rQueryAnalysis\x12\x1e.gofindit.QueryAnalysisRequest\x1a\x1f.gofindit.QueryAnalysisResponse\x12M\n\x0cListAnalyses\x12\x1d.gofindit.ListAnalysesRequest\x1a\x1e.gofindit.ListAnalysesResponse\x12V\n\x0fTriggerAnalysis\x12 .gofindit.TriggerAnalysisRequest\x1a!.gofindit.TriggerAnalysisResponse\x12\x45\n\x0eUpdateAnalysis\x12\x1f.gofindit.UpdateAnalysisRequest\x1a\x12.gofindit.Analysis2\x81\x01\n\x12GoFinditBotService\x12k\n\x16UpdateAnalysisProgress\x12\'.gofindit.UpdateAnalysisProgressRequest\x1a(.gofindit.UpdateAnalysisProgressResponseB/Z-go.chromium.org/luci/bisection/proto;gofinditb\x06proto3'
+  serialized_pb=b'\n3go.chromium.org/luci/bisection/proto/gofindit.proto\x12\x08gofindit\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a;go.chromium.org/luci/buildbucket/proto/builder_common.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\".\n\x12GetAnalysisRequest\x12\x18\n\x0b\x61nalysis_id\x18\x01 \x01(\x03\x42\x03\xe0\x41\x02\"E\n\x14QueryAnalysisRequest\x12-\n\rbuild_failure\x18\x01 \x01(\x0b\x32\x16.gofindit.BuildFailure\"=\n\x15QueryAnalysisResponse\x12$\n\x08\x61nalyses\x18\x01 \x03(\x0b\x32\x12.gofindit.Analysis\"<\n\x13ListAnalysesRequest\x12\x11\n\tpage_size\x18\x01 \x01(\x05\x12\x12\n\npage_token\x18\x02 \x01(\t\"U\n\x14ListAnalysesResponse\x12$\n\x08\x61nalyses\x18\x01 \x03(\x0b\x32\x12.gofindit.Analysis\x12\x17\n\x0fnext_page_token\x18\x02 \x01(\t\"l\n\x16TriggerAnalysisRequest\x12-\n\rbuild_failure\x18\x01 \x01(\x0b\x32\x16.gofindit.BuildFailure\x12#\n\x08\x62ug_info\x18\x02 \x03(\x0b\x32\x11.gofindit.BugInfo\"V\n\x17TriggerAnalysisResponse\x12\"\n\x06result\x18\x01 \x01(\x0b\x32\x12.gofindit.Analysis\x12\x17\n\x0fis_new_analysis\x18\x02 \x01(\x08\"V\n\x15UpdateAnalysisRequest\x12\x18\n\x0b\x61nalysis_id\x18\x01 \x01(\tB\x03\xe0\x41\x02\x12#\n\x08\x62ug_info\x18\x02 \x03(\x0b\x32\x11.gofindit.BugInfo\"\xb6\x01\n\x1dUpdateAnalysisProgressRequest\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\x03\x12\x0e\n\x06\x62ot_id\x18\x02 \x01(\t\x12\x0c\n\x04\x62\x62id\x18\x03 \x01(\x03\x12\x35\n\x0egitiles_commit\x18\x04 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12+\n\x0crerun_result\x18\x05 \x01(\x0b\x32\x15.gofindit.RerunResult\"]\n\x1eUpdateAnalysisProgressResponse\x12;\n\x14next_revision_to_run\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\"\xd6\x04\n\x08\x41nalysis\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\x03\x12-\n\rbuild_failure\x18\x02 \x01(\x0b\x32\x16.gofindit.BuildFailure\x12(\n\x06status\x18\x03 \x01(\x0e\x32\x18.gofindit.AnalysisStatus\x12\x18\n\x10last_passed_bbid\x18\x04 \x01(\x03\x12\x19\n\x11\x66irst_failed_bbid\x18\x05 \x01(\x03\x12\x30\n\x0c\x63reated_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11last_updated_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12;\n\x10heuristic_result\x18\t \x01(\x0b\x32!.gofindit.HeuristicAnalysisResult\x12>\n\x12nth_section_result\x18\n \x01(\x0b\x32\".gofindit.NthSectionAnalysisResult\x12*\n\x07\x62uilder\x18\r \x01(\x0b\x32\x19.buildbucket.v2.BuilderID\x12\x36\n\x12\x62uild_failure_type\x18\x0e \x01(\x0e\x32\x1a.gofindit.BuildFailureType\x12#\n\x08\x63ulprits\x18\x0f \x03(\x0b\x32\x11.gofindit.CulpritJ\x04\x08\x0b\x10\x0cJ\x04\x08\x0c\x10\r\"\xd7\x01\n\x07\x43ulprit\x12-\n\x06\x63ommit\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x12\n\nreview_url\x18\x02 \x01(\t\x12\x14\n\x0creview_title\x18\x03 \x01(\t\x12/\n\x0e\x63ulprit_action\x18\x04 \x03(\x0b\x32\x17.gofindit.CulpritAction\x12\x42\n\x14verification_details\x18\x05 \x01(\x0b\x32$.gofindit.SuspectVerificationDetails\"\x87\x01\n\x1aSuspectVerificationDetails\x12\x0e\n\x06status\x18\x01 \x01(\t\x12,\n\rsuspect_rerun\x18\x02 \x01(\x0b\x32\x15.gofindit.SingleRerun\x12+\n\x0cparent_rerun\x18\x03 \x01(\x0b\x32\x15.gofindit.SingleRerun\"\xcf\x01\n\x17HeuristicAnalysisResult\x12(\n\x06status\x18\x01 \x01(\x0e\x32\x18.gofindit.AnalysisStatus\x12,\n\x08suspects\x18\x02 \x03(\x0b\x32\x1a.gofindit.HeuristicSuspect\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xa9\x02\n\x10HeuristicSuspect\x12\x35\n\x0egitiles_commit\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x11\n\treviewUrl\x18\x02 \x01(\t\x12\r\n\x05score\x18\x03 \x01(\x05\x12\x15\n\rjustification\x18\x04 \x01(\t\x12\x10\n\x08verified\x18\x05 \x01(\x08\x12:\n\x10\x63onfidence_level\x18\x06 \x01(\x0e\x32 .gofindit.SuspectConfidenceLevel\x12\x13\n\x0breviewTitle\x18\x07 \x01(\t\x12\x42\n\x14verification_details\x18\x08 \x01(\x0b\x32$.gofindit.SuspectVerificationDetails\"\xc5\x03\n\x18NthSectionAnalysisResult\x12(\n\x06status\x18\x01 \x01(\x0e\x32\x18.gofindit.AnalysisStatus\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11last_updated_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x10\n\x08verified\x18\x06 \x01(\x08\x12>\n\x1bremaining_nth_section_range\x18\x07 \x01(\x0b\x32\x19.gofindit.RegressionRange\x12\x15\n\rerror_message\x18\x08 \x01(\t\x12%\n\x06reruns\x18\t \x03(\x0b\x32\x15.gofindit.SingleRerun\x12&\n\tblameList\x18\n \x01(\x0b\x32\x13.gofindit.BlameList\x12,\n\x07suspect\x18\x0b \x01(\x0b\x32\x1b.gofindit.NthSectionSuspectJ\x04\x08\x05\x10\x06\"\xb6\x01\n\x11NthSectionSuspect\x12\x35\n\x0egitiles_commit\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x11\n\treviewUrl\x18\x02 \x01(\t\x12\x13\n\x0breviewTitle\x18\x03 \x01(\t\x12\x42\n\x14verification_details\x18\x04 \x01(\x0b\x32$.gofindit.SuspectVerificationDetails\"=\n\tBlameList\x12\x30\n\x07\x63ommits\x18\x01 \x03(\x0b\x32\x1f.gofindit.BlameListSingleCommit\"O\n\x15\x42lameListSingleCommit\x12\x0e\n\x06\x63ommit\x18\x01 \x01(\t\x12\x11\n\treviewUrl\x18\x02 \x01(\t\x12\x13\n\x0breviewTitle\x18\x03 \x01(\t\"\x9a\x01\n\rCulpritAction\x12\x30\n\x0b\x61\x63tion_type\x18\x01 \x01(\x0e\x32\x1b.gofindit.CulpritActionType\x12\x15\n\rrevert_cl_url\x18\x02 \x01(\t\x12\x0f\n\x07\x62ug_url\x18\x03 \x01(\t\x12/\n\x0b\x61\x63tion_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\x97\x01\n\x0fRegressionRange\x12\x32\n\x0blast_passed\x18\x01 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x33\n\x0c\x66irst_failed\x18\x02 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\x1b\n\x13number_of_revisions\x18\x03 \x01(\x05\"\xca\x02\n\x0bSingleRerun\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11last_updated_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0c\n\x04\x62\x62id\x18\x04 \x01(\x03\x12\x0f\n\x07task_id\x18\x05 \x01(\t\x12\x0e\n\x06\x62ot_id\x18\x06 \x01(\t\x12+\n\x0crerun_result\x18\x07 \x01(\x0b\x32\x15.gofindit.RerunResult\x12-\n\x06\x63ommit\x18\x08 \x01(\x0b\x32\x1d.buildbucket.v2.GitilesCommit\x12\r\n\x05index\x18\t \x01(\t\x12\x0c\n\x04type\x18\n \x01(\t\"Q\n\x0bRerunResult\x12+\n\x0crerun_status\x18\x01 \x01(\x0e\x32\x15.gofindit.RerunStatus\x12\x15\n\rerror_message\x18\x02 \x01(\t\"6\n\x0c\x42uildFailure\x12\x0c\n\x04\x62\x62id\x18\x01 \x01(\x03\x12\x18\n\x10\x66\x61iled_step_name\x18\x02 \x01(\t\"\x82\x01\n\x07\x42ugInfo\x12\x36\n\x11monorail_bug_info\x18\x01 \x01(\x0b\x32\x19.gofindit.MonorailBugInfoH\x00\x12\x38\n\x12\x62uganizer_bug_info\x18\x02 \x01(\x0b\x32\x1a.gofindit.BuganizerBugInfoH\x00\x42\x05\n\x03\x62ug\"2\n\x0fMonorailBugInfo\x12\x0f\n\x07project\x18\x01 \x01(\t\x12\x0e\n\x06\x62ug_id\x18\x02 \x01(\x05\"\"\n\x10\x42uganizerBugInfo\x12\x0e\n\x06\x62ug_id\x18\x01 \x01(\x03*\x81\x01\n\x0e\x41nalysisStatus\x12\x1f\n\x1b\x41NALYSIS_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07\x43REATED\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\x12\t\n\x05\x46OUND\x10\x03\x12\x0c\n\x08NOTFOUND\x10\x04\x12\t\n\x05\x45RROR\x10\x05\x12\x10\n\x0cSUSPECTFOUND\x10\x06*^\n\x11\x41nalysisRunStatus\x12#\n\x1f\x41NALYSIS_RUN_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07STARTED\x10\x02\x12\t\n\x05\x45NDED\x10\x03\x12\x0c\n\x08\x43\x41NCELED\x10\x04*\xc8\x01\n\x11\x43ulpritActionType\x12#\n\x1f\x43ULPRIT_ACTION_TYPE_UNSPECIFIED\x10\x00\x12\r\n\tNO_ACTION\x10\x01\x12\x19\n\x15\x43ULPRIT_AUTO_REVERTED\x10\x02\x12\x15\n\x11REVERT_CL_CREATED\x10\x03\x12\x18\n\x14\x43ULPRIT_CL_COMMENTED\x10\x04\x12\x11\n\rBUG_COMMENTED\x10\x05\x12 \n\x1c\x45XISTING_REVERT_CL_COMMENTED\x10\x06*\xb5\x01\n\x0bRerunStatus\x12\x1c\n\x18RERUN_STATUS_UNSPECIFIED\x10\x00\x12\x1c\n\x18RERUN_STATUS_IN_PROGRESS\x10\x01\x12\x17\n\x13RERUN_STATUS_PASSED\x10\x02\x12\x17\n\x13RERUN_STATUS_FAILED\x10\x03\x12\x1d\n\x19RERUN_STATUS_INFRA_FAILED\x10\x04\x12\x19\n\x15RERUN_STATUS_CANCELED\x10\x05*a\n\x16SuspectConfidenceLevel\x12(\n$SUSPECT_CONFIDENCE_LEVEL_UNSPECIFIED\x10\x00\x12\x07\n\x03LOW\x10\x01\x12\n\n\x06MEDIUM\x10\x02\x12\x08\n\x04HIGH\x10\x03*c\n\x10\x42uildFailureType\x12\"\n\x1e\x42UILD_FAILURE_TYPE_UNSPECIFIED\x10\x00\x12\x0b\n\x07\x43OMPILE\x10\x01\x12\x08\n\x04TEST\x10\x02\x12\t\n\x05INFRA\x10\x03\x12\t\n\x05OTHER\x10\x04\x32\x92\x03\n\x0fGoFinditService\x12?\n\x0bGetAnalysis\x12\x1c.gofindit.GetAnalysisRequest\x1a\x12.gofindit.Analysis\x12P\n\rQueryAnalysis\x12\x1e.gofindit.QueryAnalysisRequest\x1a\x1f.gofindit.QueryAnalysisResponse\x12M\n\x0cListAnalyses\x12\x1d.gofindit.ListAnalysesRequest\x1a\x1e.gofindit.ListAnalysesResponse\x12V\n\x0fTriggerAnalysis\x12 .gofindit.TriggerAnalysisRequest\x1a!.gofindit.TriggerAnalysisResponse\x12\x45\n\x0eUpdateAnalysis\x12\x1f.gofindit.UpdateAnalysisRequest\x1a\x12.gofindit.Analysis2\x81\x01\n\x12GoFinditBotService\x12k\n\x16UpdateAnalysisProgress\x12\'.gofindit.UpdateAnalysisProgressRequest\x1a(.gofindit.UpdateAnalysisProgressResponseB/Z-go.chromium.org/luci/bisection/proto;gofinditb\x06proto3'
   ,
   dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,])
 
@@ -73,12 +73,48 @@ _ANALYSISSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3807,
-  serialized_end=3936,
+  serialized_start=4399,
+  serialized_end=4528,
 )
 _sym_db.RegisterEnumDescriptor(_ANALYSISSTATUS)
 
 AnalysisStatus = enum_type_wrapper.EnumTypeWrapper(_ANALYSISSTATUS)
+_ANALYSISRUNSTATUS = _descriptor.EnumDescriptor(
+  name='AnalysisRunStatus',
+  full_name='gofindit.AnalysisRunStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='ANALYSIS_RUN_STATUS_UNSPECIFIED', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='STARTED', index=1, number=2,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ENDED', index=2, number=3,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='CANCELED', index=3, number=4,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=4530,
+  serialized_end=4624,
+)
+_sym_db.RegisterEnumDescriptor(_ANALYSISRUNSTATUS)
+
+AnalysisRunStatus = enum_type_wrapper.EnumTypeWrapper(_ANALYSISRUNSTATUS)
 _CULPRITACTIONTYPE = _descriptor.EnumDescriptor(
   name='CulpritActionType',
   full_name='gofindit.CulpritActionType',
@@ -116,11 +152,16 @@ _CULPRITACTIONTYPE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='EXISTING_REVERT_CL_COMMENTED', index=6, number=6,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3939,
-  serialized_end=4105,
+  serialized_start=4627,
+  serialized_end=4827,
 )
 _sym_db.RegisterEnumDescriptor(_CULPRITACTIONTYPE)
 
@@ -138,30 +179,35 @@ _RERUNSTATUS = _descriptor.EnumDescriptor(
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='IN_PROGRESS', index=1, number=1,
+      name='RERUN_STATUS_IN_PROGRESS', index=1, number=1,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='PASSED', index=2, number=2,
+      name='RERUN_STATUS_PASSED', index=2, number=2,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='FAILED', index=3, number=3,
+      name='RERUN_STATUS_FAILED', index=3, number=3,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='INFRA_FAILED', index=4, number=4,
+      name='RERUN_STATUS_INFRA_FAILED', index=4, number=4,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='RERUN_STATUS_CANCELED', index=5, number=5,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4107,
-  serialized_end=4209,
+  serialized_start=4830,
+  serialized_end=5011,
 )
 _sym_db.RegisterEnumDescriptor(_RERUNSTATUS)
 
@@ -196,8 +242,8 @@ _SUSPECTCONFIDENCELEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4211,
-  serialized_end=4308,
+  serialized_start=5013,
+  serialized_end=5110,
 )
 _sym_db.RegisterEnumDescriptor(_SUSPECTCONFIDENCELEVEL)
 
@@ -237,8 +283,8 @@ _BUILDFAILURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4310,
-  serialized_end=4409,
+  serialized_start=5112,
+  serialized_end=5211,
 )
 _sym_db.RegisterEnumDescriptor(_BUILDFAILURETYPE)
 
@@ -250,17 +296,23 @@ FOUND = 3
 NOTFOUND = 4
 ERROR = 5
 SUSPECTFOUND = 6
+ANALYSIS_RUN_STATUS_UNSPECIFIED = 0
+STARTED = 2
+ENDED = 3
+CANCELED = 4
 CULPRIT_ACTION_TYPE_UNSPECIFIED = 0
 NO_ACTION = 1
 CULPRIT_AUTO_REVERTED = 2
 REVERT_CL_CREATED = 3
 CULPRIT_CL_COMMENTED = 4
 BUG_COMMENTED = 5
+EXISTING_REVERT_CL_COMMENTED = 6
 RERUN_STATUS_UNSPECIFIED = 0
-IN_PROGRESS = 1
-PASSED = 2
-FAILED = 3
-INFRA_FAILED = 4
+RERUN_STATUS_IN_PROGRESS = 1
+RERUN_STATUS_PASSED = 2
+RERUN_STATUS_FAILED = 3
+RERUN_STATUS_INFRA_FAILED = 4
+RERUN_STATUS_CANCELED = 5
 SUSPECT_CONFIDENCE_LEVEL_UNSPECIFIED = 0
 LOW = 1
 MEDIUM = 2
@@ -808,6 +860,13 @@ _CULPRIT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='verification_details', full_name='gofindit.Culprit.verification_details', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -821,7 +880,53 @@ _CULPRIT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1744,
-  serialized_end=1891,
+  serialized_end=1959,
+)
+
+
+_SUSPECTVERIFICATIONDETAILS = _descriptor.Descriptor(
+  name='SuspectVerificationDetails',
+  full_name='gofindit.SuspectVerificationDetails',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='gofindit.SuspectVerificationDetails.status', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='suspect_rerun', full_name='gofindit.SuspectVerificationDetails.suspect_rerun', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='parent_rerun', full_name='gofindit.SuspectVerificationDetails.parent_rerun', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1962,
+  serialized_end=2097,
 )
 
 
@@ -873,8 +978,8 @@ _HEURISTICANALYSISRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1894,
-  serialized_end=2101,
+  serialized_start=2100,
+  serialized_end=2307,
 )
 
 
@@ -935,6 +1040,13 @@ _HEURISTICSUSPECT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='verification_details', full_name='gofindit.HeuristicSuspect.verification_details', index=7,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -947,8 +1059,8 @@ _HEURISTICSUSPECT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2104,
-  serialized_end=2333,
+  serialized_start=2310,
+  serialized_end=2607,
 )
 
 
@@ -989,43 +1101,43 @@ _NTHSECTIONANALYSISRESULT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='culprit', full_name='gofindit.NthSectionAnalysisResult.culprit', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='verified', full_name='gofindit.NthSectionAnalysisResult.verified', index=5,
+      name='verified', full_name='gofindit.NthSectionAnalysisResult.verified', index=4,
       number=6, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='remainingNthSectionRange', full_name='gofindit.NthSectionAnalysisResult.remainingNthSectionRange', index=6,
+      name='remaining_nth_section_range', full_name='gofindit.NthSectionAnalysisResult.remaining_nth_section_range', index=5,
       number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='error_message', full_name='gofindit.NthSectionAnalysisResult.error_message', index=7,
+      name='error_message', full_name='gofindit.NthSectionAnalysisResult.error_message', index=6,
       number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='reruns', full_name='gofindit.NthSectionAnalysisResult.reruns', index=8,
+      name='reruns', full_name='gofindit.NthSectionAnalysisResult.reruns', index=7,
       number=9, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='blameList', full_name='gofindit.NthSectionAnalysisResult.blameList', index=9,
+      name='blameList', full_name='gofindit.NthSectionAnalysisResult.blameList', index=8,
       number=10, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='suspect', full_name='gofindit.NthSectionAnalysisResult.suspect', index=9,
+      number=11, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -1042,8 +1154,61 @@ _NTHSECTIONANALYSISRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2336,
-  serialized_end=2782,
+  serialized_start=2610,
+  serialized_end=3063,
+)
+
+
+_NTHSECTIONSUSPECT = _descriptor.Descriptor(
+  name='NthSectionSuspect',
+  full_name='gofindit.NthSectionSuspect',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='gitiles_commit', full_name='gofindit.NthSectionSuspect.gitiles_commit', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='reviewUrl', full_name='gofindit.NthSectionSuspect.reviewUrl', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='reviewTitle', full_name='gofindit.NthSectionSuspect.reviewTitle', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='verification_details', full_name='gofindit.NthSectionSuspect.verification_details', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3066,
+  serialized_end=3248,
 )
 
 
@@ -1074,8 +1239,8 @@ _BLAMELIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2784,
-  serialized_end=2845,
+  serialized_start=3250,
+  serialized_end=3311,
 )
 
 
@@ -1120,8 +1285,8 @@ _BLAMELISTSINGLECOMMIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2847,
-  serialized_end=2926,
+  serialized_start=3313,
+  serialized_end=3392,
 )
 
 
@@ -1154,6 +1319,13 @@ _CULPRITACTION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='action_time', full_name='gofindit.CulpritAction.action_time', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1166,8 +1338,8 @@ _CULPRITACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2928,
-  serialized_end=3033,
+  serialized_start=3395,
+  serialized_end=3549,
 )
 
 
@@ -1212,8 +1384,8 @@ _REGRESSIONRANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3036,
-  serialized_end=3187,
+  serialized_start=3552,
+  serialized_end=3703,
 )
 
 
@@ -1274,6 +1446,27 @@ _SINGLERERUN = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='commit', full_name='gofindit.SingleRerun.commit', index=7,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='index', full_name='gofindit.SingleRerun.index', index=8,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='type', full_name='gofindit.SingleRerun.type', index=9,
+      number=10, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1286,8 +1479,8 @@ _SINGLERERUN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3190,
-  serialized_end=3444,
+  serialized_start=3706,
+  serialized_end=4036,
 )
 
 
@@ -1325,8 +1518,8 @@ _RERUNRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3446,
-  serialized_end=3527,
+  serialized_start=4038,
+  serialized_end=4119,
 )
 
 
@@ -1364,8 +1557,8 @@ _BUILDFAILURE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3529,
-  serialized_end=3583,
+  serialized_start=4121,
+  serialized_end=4175,
 )
 
 
@@ -1408,8 +1601,8 @@ _BUGINFO = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=3586,
-  serialized_end=3716,
+  serialized_start=4178,
+  serialized_end=4308,
 )
 
 
@@ -1447,8 +1640,8 @@ _MONORAILBUGINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3718,
-  serialized_end=3768,
+  serialized_start=4310,
+  serialized_end=4360,
 )
 
 
@@ -1479,8 +1672,8 @@ _BUGANIZERBUGINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3770,
-  serialized_end=3804,
+  serialized_start=4362,
+  serialized_end=4396,
 )
 
 _QUERYANALYSISREQUEST.fields_by_name['build_failure'].message_type = _BUILDFAILURE
@@ -1505,28 +1698,36 @@ _ANALYSIS.fields_by_name['build_failure_type'].enum_type = _BUILDFAILURETYPE
 _ANALYSIS.fields_by_name['culprits'].message_type = _CULPRIT
 _CULPRIT.fields_by_name['commit'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
 _CULPRIT.fields_by_name['culprit_action'].message_type = _CULPRITACTION
+_CULPRIT.fields_by_name['verification_details'].message_type = _SUSPECTVERIFICATIONDETAILS
+_SUSPECTVERIFICATIONDETAILS.fields_by_name['suspect_rerun'].message_type = _SINGLERERUN
+_SUSPECTVERIFICATIONDETAILS.fields_by_name['parent_rerun'].message_type = _SINGLERERUN
 _HEURISTICANALYSISRESULT.fields_by_name['status'].enum_type = _ANALYSISSTATUS
 _HEURISTICANALYSISRESULT.fields_by_name['suspects'].message_type = _HEURISTICSUSPECT
 _HEURISTICANALYSISRESULT.fields_by_name['start_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _HEURISTICANALYSISRESULT.fields_by_name['end_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _HEURISTICSUSPECT.fields_by_name['gitiles_commit'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
 _HEURISTICSUSPECT.fields_by_name['confidence_level'].enum_type = _SUSPECTCONFIDENCELEVEL
+_HEURISTICSUSPECT.fields_by_name['verification_details'].message_type = _SUSPECTVERIFICATIONDETAILS
 _NTHSECTIONANALYSISRESULT.fields_by_name['status'].enum_type = _ANALYSISSTATUS
 _NTHSECTIONANALYSISRESULT.fields_by_name['start_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _NTHSECTIONANALYSISRESULT.fields_by_name['last_updated_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _NTHSECTIONANALYSISRESULT.fields_by_name['end_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_NTHSECTIONANALYSISRESULT.fields_by_name['culprit'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
-_NTHSECTIONANALYSISRESULT.fields_by_name['remainingNthSectionRange'].message_type = _REGRESSIONRANGE
+_NTHSECTIONANALYSISRESULT.fields_by_name['remaining_nth_section_range'].message_type = _REGRESSIONRANGE
 _NTHSECTIONANALYSISRESULT.fields_by_name['reruns'].message_type = _SINGLERERUN
 _NTHSECTIONANALYSISRESULT.fields_by_name['blameList'].message_type = _BLAMELIST
+_NTHSECTIONANALYSISRESULT.fields_by_name['suspect'].message_type = _NTHSECTIONSUSPECT
+_NTHSECTIONSUSPECT.fields_by_name['gitiles_commit'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
+_NTHSECTIONSUSPECT.fields_by_name['verification_details'].message_type = _SUSPECTVERIFICATIONDETAILS
 _BLAMELIST.fields_by_name['commits'].message_type = _BLAMELISTSINGLECOMMIT
 _CULPRITACTION.fields_by_name['action_type'].enum_type = _CULPRITACTIONTYPE
+_CULPRITACTION.fields_by_name['action_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _REGRESSIONRANGE.fields_by_name['last_passed'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
 _REGRESSIONRANGE.fields_by_name['first_failed'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
 _SINGLERERUN.fields_by_name['start_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _SINGLERERUN.fields_by_name['last_updated_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _SINGLERERUN.fields_by_name['end_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _SINGLERERUN.fields_by_name['rerun_result'].message_type = _RERUNRESULT
+_SINGLERERUN.fields_by_name['commit'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._GITILESCOMMIT
 _RERUNRESULT.fields_by_name['rerun_status'].enum_type = _RERUNSTATUS
 _BUGINFO.fields_by_name['monorail_bug_info'].message_type = _MONORAILBUGINFO
 _BUGINFO.fields_by_name['buganizer_bug_info'].message_type = _BUGANIZERBUGINFO
@@ -1548,9 +1749,11 @@ DESCRIPTOR.message_types_by_name['UpdateAnalysisProgressRequest'] = _UPDATEANALY
 DESCRIPTOR.message_types_by_name['UpdateAnalysisProgressResponse'] = _UPDATEANALYSISPROGRESSRESPONSE
 DESCRIPTOR.message_types_by_name['Analysis'] = _ANALYSIS
 DESCRIPTOR.message_types_by_name['Culprit'] = _CULPRIT
+DESCRIPTOR.message_types_by_name['SuspectVerificationDetails'] = _SUSPECTVERIFICATIONDETAILS
 DESCRIPTOR.message_types_by_name['HeuristicAnalysisResult'] = _HEURISTICANALYSISRESULT
 DESCRIPTOR.message_types_by_name['HeuristicSuspect'] = _HEURISTICSUSPECT
 DESCRIPTOR.message_types_by_name['NthSectionAnalysisResult'] = _NTHSECTIONANALYSISRESULT
+DESCRIPTOR.message_types_by_name['NthSectionSuspect'] = _NTHSECTIONSUSPECT
 DESCRIPTOR.message_types_by_name['BlameList'] = _BLAMELIST
 DESCRIPTOR.message_types_by_name['BlameListSingleCommit'] = _BLAMELISTSINGLECOMMIT
 DESCRIPTOR.message_types_by_name['CulpritAction'] = _CULPRITACTION
@@ -1562,6 +1765,7 @@ DESCRIPTOR.message_types_by_name['BugInfo'] = _BUGINFO
 DESCRIPTOR.message_types_by_name['MonorailBugInfo'] = _MONORAILBUGINFO
 DESCRIPTOR.message_types_by_name['BuganizerBugInfo'] = _BUGANIZERBUGINFO
 DESCRIPTOR.enum_types_by_name['AnalysisStatus'] = _ANALYSISSTATUS
+DESCRIPTOR.enum_types_by_name['AnalysisRunStatus'] = _ANALYSISRUNSTATUS
 DESCRIPTOR.enum_types_by_name['CulpritActionType'] = _CULPRITACTIONTYPE
 DESCRIPTOR.enum_types_by_name['RerunStatus'] = _RERUNSTATUS
 DESCRIPTOR.enum_types_by_name['SuspectConfidenceLevel'] = _SUSPECTCONFIDENCELEVEL
@@ -1652,6 +1856,13 @@ Culprit = _reflection.GeneratedProtocolMessageType('Culprit', (_message.Message,
   })
 _sym_db.RegisterMessage(Culprit)
 
+SuspectVerificationDetails = _reflection.GeneratedProtocolMessageType('SuspectVerificationDetails', (_message.Message,), {
+  'DESCRIPTOR' : _SUSPECTVERIFICATIONDETAILS,
+  '__module__' : 'go.chromium.org.luci.bisection.proto.gofindit_pb2'
+  # @@protoc_insertion_point(class_scope:gofindit.SuspectVerificationDetails)
+  })
+_sym_db.RegisterMessage(SuspectVerificationDetails)
+
 HeuristicAnalysisResult = _reflection.GeneratedProtocolMessageType('HeuristicAnalysisResult', (_message.Message,), {
   'DESCRIPTOR' : _HEURISTICANALYSISRESULT,
   '__module__' : 'go.chromium.org.luci.bisection.proto.gofindit_pb2'
@@ -1672,6 +1883,13 @@ NthSectionAnalysisResult = _reflection.GeneratedProtocolMessageType('NthSectionA
   # @@protoc_insertion_point(class_scope:gofindit.NthSectionAnalysisResult)
   })
 _sym_db.RegisterMessage(NthSectionAnalysisResult)
+
+NthSectionSuspect = _reflection.GeneratedProtocolMessageType('NthSectionSuspect', (_message.Message,), {
+  'DESCRIPTOR' : _NTHSECTIONSUSPECT,
+  '__module__' : 'go.chromium.org.luci.bisection.proto.gofindit_pb2'
+  # @@protoc_insertion_point(class_scope:gofindit.NthSectionSuspect)
+  })
+_sym_db.RegisterMessage(NthSectionSuspect)
 
 BlameList = _reflection.GeneratedProtocolMessageType('BlameList', (_message.Message,), {
   'DESCRIPTOR' : _BLAMELIST,
@@ -1755,8 +1973,8 @@ _GOFINDITSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=4412,
-  serialized_end=4814,
+  serialized_start=5214,
+  serialized_end=5616,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetAnalysis',
@@ -1821,8 +2039,8 @@ _GOFINDITBOTSERVICE = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=4817,
-  serialized_end=4946,
+  serialized_start=5619,
+  serialized_end=5748,
   methods=[
   _descriptor.MethodDescriptor(
     name='UpdateAnalysisProgress',
