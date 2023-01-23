@@ -93,7 +93,7 @@ func fromGTestJsonStatus(s string, failed bool) (status pb.TestStatus, expected 
 	if failed {
 		return pb.TestStatus_FAIL, false, nil
 	} else if s == "SKIPPED" {
-		return pb.TestStatus_SKIP, false, nil
+		return pb.TestStatus_SKIP, true, nil
 	} else if s == "SUPPRESSED" {
 		return pb.TestStatus_SKIP, true, nil
 	} else if s == "COMPLETED" {

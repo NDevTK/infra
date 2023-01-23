@@ -245,10 +245,12 @@ func TestGTestJsonConversions(t *testing.T) {
 					},
 				},
 				{
-					TestId: "FooTest.DoesBar",
-					Status: pb.TestStatus_SKIP,
+					TestId:   "FooTest.DoesBar",
+					Expected: true,
+					Status:   pb.TestStatus_SKIP,
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
+						"disabled_test", "true",
 					),
 					TestMetadata: &pb.TestMetadata{
 						Name: "FooTest.DoesBar",
