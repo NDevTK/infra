@@ -182,7 +182,7 @@ func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInsta
 // ParseSecurityConfig parses the Security Config files and stores the security data in the DataStore for every bot in the config.
 func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 	for _, pool := range config.Pools {
-		if len(pool.Hosts) == 0 {
+		if len(pool.Hosts) == 0 && len(pool.HostPrefixes) == 0 {
 			continue
 		}
 		hosts := []string{}
@@ -203,8 +203,14 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 			Customer:         pool.Customer,
 		}
 
+		// Update the ownership for the botIdPrefixes (ie. HostPrefixes)
+		err := updateBotConfigForBotIdPrefix(ctx, pool.HostPrefixes, ownershipData)
+		if err != nil {
+			logging.Debugf(ctx, "Got errors while parsing bot id prefix config for %s - %v", pool.SwarmingServerId, err)
+		}
+
 		// Update the ownership data for the botIds (ie. Hosts) collected so far.
-		err := updateBotConfigForBotIds(ctx, hosts, ownershipData)
+		err = updateBotConfigForBotIds(ctx, hosts, ownershipData)
 		if err != nil {
 			logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", pool.SwarmingServerId, err)
 		}

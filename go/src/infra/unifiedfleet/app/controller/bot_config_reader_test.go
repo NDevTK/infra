@@ -311,6 +311,83 @@ func TestImportSecurityConfig(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldNotBeNil)
+
+			botResp, err := inventory.GetOwnershipData(ctx, "test1-1")
+			So(err, ShouldBeNil)
+			So(botResp, ShouldNotBeNil)
+			So(botResp.OwnershipData, ShouldNotBeNil)
+			p, err := botResp.GetProto()
+			So(err, ShouldBeNil)
+			pm := p.(*ufspb.OwnershipData)
+			So(pm, ShouldResembleProto, resp.Ownership)
+		})
+		Convey("happy path - Bot ID Prefix", func() {
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.CreateMachine(ctx, mockChromeBrowserMachine("tester-1", "tester1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.GetMachine(ctx, "testing-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			resp, err = registration.GetMachine(ctx, "tester-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldBeNil)
+		})
+		Convey("happy path - Bot ID Prefix for MachineLSE", func() {
+			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+
+			resp, err = inventory.GetMachineLSE(ctx, "testLSE1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			// Import Again, should not update the Asset
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+			resp2, err := inventory.GetMachineLSE(ctx, "testLSE1")
+			So(resp2, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp2.Ownership, ShouldNotBeNil)
+			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
+		})
+		Convey("happy path - Bot ID Prefix for VM", func() {
+			vm1 := &ufspb.VM{
+				Name: "vm-1",
+			}
+			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
+			So(err, ShouldBeNil)
+
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+
+			resp, err := inventory.GetVM(ctx, "vm-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			// Import Again, should not update the Asset
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+			resp2, err := inventory.GetVM(ctx, "vm-1")
+			So(resp2, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp2.Ownership, ShouldNotBeNil)
+			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
 		})
 	})
 }
@@ -413,14 +490,12 @@ func TestGetOwnershipData(t *testing.T) {
 	Convey("GetOwnership Data", t, func() {
 		contextConfig := mockOwnershipConfig()
 		ctx = config.Use(ctx, contextConfig)
-		ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-		So(err, ShouldBeNil)
 		Convey("happy path - machine", func() {
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
+			err = ImportBotConfigs(ctx)
 			So(err, ShouldBeNil)
 			ownership, err := GetOwnershipData(ctx, "testing-1")
 
@@ -436,7 +511,7 @@ func TestGetOwnershipData(t *testing.T) {
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			So(err, ShouldBeNil)
 
-			err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
+			err = ImportBotConfigs(ctx)
 			So(err, ShouldBeNil)
 			ownership, err := GetOwnershipData(ctx, "vm-1")
 
@@ -450,7 +525,7 @@ func TestGetOwnershipData(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
+			err = ImportBotConfigs(ctx)
 			So(err, ShouldBeNil)
 			ownership, err := GetOwnershipData(ctx, "testLSE1")
 
