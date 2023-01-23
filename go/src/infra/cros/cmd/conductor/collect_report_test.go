@@ -22,7 +22,7 @@ func TestCollectReport(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 	}
-	report.recordBuild(build, false)
+	report.recordBuild(build, "12345", false)
 	build = &bbpb.Build{
 		Id:     12346,
 		Status: bbpb.Status_SUCCESS,
@@ -32,7 +32,7 @@ func TestCollectReport(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 	}
-	report.recordBuild(build, true)
+	report.recordBuild(build, "12345", true)
 	build = &bbpb.Build{
 		Id:     12347,
 		Status: bbpb.Status_SUCCESS,
@@ -42,35 +42,39 @@ func TestCollectReport(t *testing.T) {
 			Builder: "atlas-release-main",
 		},
 	}
-	report.recordBuild(build, false)
+	report.recordBuild(build, "12347", false)
 
 	expectedReport := &CollectReport{
-		BuilderInfo: map[string]*BuilderRun{
+		BuilderInfo: map[string][]*BuilderRun{
 			"eve-release-main": {
-				Builds: []*BuildInfo{
-					{
-						BBID:   12345,
-						Status: "FAILURE",
-						Retry:  false,
+				{
+					Builds: []*BuildInfo{
+						{
+							BBID:   12345,
+							Status: "FAILURE",
+							Retry:  false,
+						},
+						{
+							BBID:   12346,
+							Status: "SUCCESS",
+							Retry:  true,
+						},
 					},
-					{
-						BBID:   12346,
-						Status: "SUCCESS",
-						Retry:  true,
-					},
+					RetryCount: 1,
+					LastStatus: "SUCCESS",
 				},
-				RetryCount: 1,
-				LastStatus: "SUCCESS",
 			},
 			"atlas-release-main": {
-				Builds: []*BuildInfo{
-					{
-						BBID:   12347,
-						Status: "SUCCESS",
-						Retry:  false,
+				{
+					Builds: []*BuildInfo{
+						{
+							BBID:   12347,
+							Status: "SUCCESS",
+							Retry:  false,
+						},
 					},
+					LastStatus: "SUCCESS",
 				},
-				LastStatus: "SUCCESS",
 			},
 		},
 		RetryCount: 1,

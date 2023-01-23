@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 package main
 
-import bbpb "go.chromium.org/luci/buildbucket/proto"
+import (
+	"fmt"
+
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+)
 
 type BuildInfo struct {
 	BBID   int64  `json:"bbid"`
@@ -19,32 +23,52 @@ type BuilderRun struct {
 
 type CollectReport struct {
 	// Maps builder name to information about the series of retries.
-	BuilderInfo map[string]*BuilderRun `json:"builders"`
-	RetryCount  int                    `json:"retry_count"`
+	// Retries are grouped by the original build they're retrying.
+	BuilderInfo map[string][]*BuilderRun `json:"builders"`
+	RetryCount  int                      `json:"retry_count"`
+	ReportError bool                     `json:"report_error"`
 }
 
 // recordRetry records a build result.
-func (r *CollectReport) recordBuild(build *bbpb.Build, isRetry bool) {
+func (r *CollectReport) recordBuild(build *bbpb.Build, originalBBID string, isRetry bool) {
 	// Perform necessary initialization.
 	if r.BuilderInfo == nil {
-		r.BuilderInfo = map[string]*BuilderRun{}
+		r.BuilderInfo = map[string][]*BuilderRun{}
 	}
 	builderName := build.GetBuilder().GetBuilder()
 	if _, ok := r.BuilderInfo[builderName]; !ok {
-		r.BuilderInfo[builderName] = &BuilderRun{
-			Builds: []*BuildInfo{},
-		}
+		r.BuilderInfo[builderName] = []*BuilderRun{}
 	}
 
 	status := build.GetStatus().String()
-	r.BuilderInfo[builderName].Builds = append(r.BuilderInfo[builderName].Builds, &BuildInfo{
+	buildInfo := &BuildInfo{
 		BBID:   build.GetId(),
 		Status: status,
 		Retry:  isRetry,
-	})
-	r.BuilderInfo[builderName].LastStatus = status
+	}
+
+	var builderRun *BuilderRun
+	// Look for existing builder run.
+	if len(originalBBID) > 0 {
+		for i := range r.BuilderInfo[builderName] {
+			builds := r.BuilderInfo[builderName][i].Builds
+			if len(builds) > 0 && fmt.Sprintf("%d", builds[0].BBID) == originalBBID {
+				builderRun = r.BuilderInfo[builderName][i]
+			}
+		}
+	}
+	if builderRun == nil {
+		// Start new builder run.
+		builderRun = &BuilderRun{
+			Builds: []*BuildInfo{},
+		}
+		r.BuilderInfo[builderName] = append(r.BuilderInfo[builderName], builderRun)
+	}
+
+	builderRun.Builds = append(builderRun.Builds, buildInfo)
+	builderRun.LastStatus = status
 	if isRetry {
-		r.BuilderInfo[builderName].RetryCount += 1
+		builderRun.RetryCount += 1
 		r.RetryCount += 1
 	}
 }

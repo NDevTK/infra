@@ -45,6 +45,16 @@ func filterReturnSet(returnSet map[string]bool) []string {
 	return returnBBIDs
 }
 
+// getOriginalBBID traverses backwards through the previousBBID to find the
+// original BBID for a retry build.
+func getOriginalBBID(previousBBID map[string]string, BBID string) string {
+	prevBBID, ok := previousBBID[BBID]
+	if !ok {
+		return BBID
+	}
+	return getOriginalBBID(previousBBID, prevBBID)
+}
+
 // Collect collects on the specified BBIDs, retrying as configured.
 // It returns the final set of BBIDs (the last retry for each build) and any
 // errors.
@@ -114,7 +124,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 				if isRetry {
 					returnSet[previousBBID] = false
 				}
-				report.recordBuild(build, isRetry)
+				report.recordBuild(build, getOriginalBBID(previousBuild, bbid), isRetry)
 				if build.GetStatus() != bbpb.Status_SUCCESS {
 					if state.canRetry(build) {
 						if c.dryrun {
