@@ -3,6 +3,7 @@ package computemapping
 import (
 	"context"
 	"fmt"
+	"path"
 	"sort"
 	"strings"
 
@@ -26,6 +27,22 @@ type MappingInfo struct {
 // a cleanup function, and an error if one occurred.
 type WorkdirCreation func() (string, func() error, error)
 
+// changeRevsContainDirmd returns true if any file in changeRevs is a
+// DIR_METADATA.
+func changeRevsContainDirmd(changeRevs []*gerrit.ChangeRev) bool {
+	for _, changeRev := range changeRevs {
+		for _, file := range changeRev.Files {
+			// Use path because the filenames are coming from Gerrit, so are
+			// slash-separated (not whatever the local OS separator is).
+			if path.Base(file) == "DIR_METADATA" {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 // mergeChangeRevs merges changeRevs to dir.
 //
 // changeRevs must all have the same project and branch. For each changeRev, if
@@ -45,7 +62,15 @@ func mergeChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.Chang
 	remote := fmt.Sprintf("https://%s/%s", googlesourceHost, changeRevs[0].Project)
 	branch := strings.Replace(changeRevs[0].Branch, "refs/heads/", "", 1)
 
-	logging.Debugf(ctx, "cloning repo %q, branch %q", remote, branch)
+	// If none of the ChangeRevs contain a DIR_METADATA, there is no need to
+	// merge / cherry-pick the changes, since we only care about changed
+	// DIR_METADATAS. Just clone the repo with depth=1 for speed.
+	if !changeRevsContainDirmd(changeRevs) {
+		logging.Debugf(ctx, "change revs for repo %q, branch %q don't affect DIR_METADATA files, cloning with depth=1", remote, branch)
+		return git.Clone(remote, dir, git.NoTags(), git.Branch(branch), git.Depth(1))
+	}
+
+	logging.Debugf(ctx, "change revs for repo %q, branch %q do affect DIR_METADATA files, cloning full repo", remote, branch)
 
 	if err := git.Clone(remote, dir, git.NoTags(), git.Branch(branch)); err != nil {
 		return err

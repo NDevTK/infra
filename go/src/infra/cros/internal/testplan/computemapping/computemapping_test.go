@@ -45,7 +45,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 			Project: "chromium/testprojectB",
 			Branch:  "main",
 			Ref:     "refs/changes/78/789/5",
-			Files:   []string{"test.c", "test.h"},
+			Files:   []string{"test.c", "test.h", "a/b/DIR_METADATA"},
 		},
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
@@ -105,18 +105,8 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 				ExpectedCmd: []string{
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
-					"--no-tags", "--branch", "otherbranch",
+					"--no-tags", "--branch", "otherbranch", "--depth", "1",
 				},
-			},
-			{
-				ExpectedCmd: []string{
-					"git", "fetch",
-					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/10/1011/1",
-					"--no-tags",
-				},
-			},
-			{
-				ExpectedCmd: []string{"git", "merge", "FETCH_HEAD"},
 			},
 			{
 				ExpectedCmd: []string{
@@ -181,7 +171,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 	expectedAffectedFiles := [][]string{
 		{"a/b/test1.txt", "a/b/test2.txt", "DIR_METADATA"},
 		{"branchfile.txt"},
-		{"test.c", "test.h"},
+		{"test.c", "test.h", "a/b/DIR_METADATA"},
 	}
 
 	for i, pmi := range projectMappingInfos {
@@ -230,18 +220,8 @@ func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
 				ExpectedCmd: []string{
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectA", "bad_dirmd",
-					"--no-tags", "--branch", "main",
+					"--no-tags", "--branch", "main", "--depth", "1",
 				},
-			},
-			{
-				ExpectedCmd: []string{
-					"git", "fetch",
-					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
-					"--no-tags",
-				},
-			},
-			{
-				ExpectedCmd: []string{"git", "merge", "FETCH_HEAD"},
 			},
 		},
 	}
@@ -273,7 +253,7 @@ func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 			Project: "chromium/testprojectA",
 			Branch:  "main",
 			Ref:     "refs/changes/23/123/5",
-			Files:   []string{"a/b/test1.txt", "a/b/test2.txt"},
+			Files:   []string{"a/b/test1.txt", "a/b/test2.txt", "DIR_METADATA"},
 		},
 	}
 
@@ -347,7 +327,7 @@ func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 		},
 	}
 	expectedAffectedFiles := [][]string{
-		{"a/b/test1.txt", "a/b/test2.txt"},
+		{"a/b/test1.txt", "a/b/test2.txt", "DIR_METADATA"},
 	}
 
 	for i, pmi := range projectMappingInfos {
