@@ -49,11 +49,14 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest)
 	}
 
 	ctr := &crostoolrunner.CrosToolRunner{
-		CtrCipdInfo: ctrCipdInfo,
+		CtrCipdInfo:       ctrCipdInfo,
+		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
 	}
 
 	// Create configs
-	executorCfg := configs.NewExecutorConfig(ctr)
+	containerImagesMap := req.GetContainerMetadata().GetContainers()[req.GetPrimaryDut().GetContainerMetadataKey()].GetImages()
+	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap)
+	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper

@@ -27,6 +27,9 @@ var LoadDutTopology_InvExecutor = &CommandExecutorPairedConfig{CommandType: comm
 var CtrStartAsync_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.CtrServiceStartAsyncCmdType, ExecutorType: executors.CtrExecutorType}
 var CtrStop_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.CtrServiceStopCmdType, ExecutorType: executors.CtrExecutorType}
 var GcloudAuth_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.GcloudAuthCmdType, ExecutorType: executors.CtrExecutorType}
+var DutServerStart_CrosDutExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutExecutorType}
+var ProvisionServerStart_CrosProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProvisionServiceStartCmdType, ExecutorType: executors.CrosProvisionExecutorType}
+var ProvisionInstall_CrosProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context) *Configs {
@@ -38,6 +41,9 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 		InvServiceStop_InvExecutor,
 		CtrStartAsync_CtrExecutor,
 		GcloudAuth_CtrExecutor,
+		DutServerStart_CrosDutExecutor,
+		ProvisionServerStart_CrosProvisionExecutor,
+		ProvisionInstall_CrosProvisionExecutor,
 		CtrStop_CtrExecutor,
 	}
 
@@ -48,4 +54,17 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 	}
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
+// GetHwConfigsEnvVars gets all env vars that are required for hw test execution configs.
+func GetHwConfigsEnvVars() []string {
+	return []string{
+		"LUCI_CONTEXT",
+		"GCE_METADATA_HOST",
+		"GCE_METADATA_IP",
+		"GCE_METADATA_ROOT",
+		"CONTAINER_CACHE_SERVICE_PORT",
+		"CONTAINER_CACHE_SERVICE_HOST",
+		"DRONE_AGENT_BOT_BLKIO_READ_BPS",
+		"DRONE_AGENT_BOT_BLKIO_WRITE_BPS"}
 }

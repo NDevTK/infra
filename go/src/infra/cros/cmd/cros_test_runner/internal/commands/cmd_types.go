@@ -24,6 +24,13 @@ const (
 	CtrServiceStopCmdType       interfaces.CommandType = "CtrServiceStop"
 	GcloudAuthCmdType           interfaces.CommandType = "GcloudAuth"
 
+	// Dut service related commands
+	DutServiceStartCmdType interfaces.CommandType = "DutServiceStart"
+
+	// Provision service related commands
+	ProvisionServiceStartCmdType interfaces.CommandType = "ProvisionServiceStart"
+	ProvisonInstallCmdType       interfaces.CommandType = "ProvisonInstall"
+
 	// For testing purposes only
 	UnSupportedCmdType interfaces.CommandType = "UnSupportedCmd"
 )

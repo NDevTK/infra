@@ -18,7 +18,8 @@ func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 	Convey("Unsupported command type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, nil)
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		cmd, err := cmdConfig.GetCommand(commands.UnSupportedCmdType, executors.NoExecutorType)
 		So(cmd, ShouldBeNil)
@@ -32,7 +33,8 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 	Convey("Supported command type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 
 		cmd, err := cmdConfig.GetCommand(commands.BuildInputValidationCmdType, executors.NoExecutorType)
@@ -64,6 +66,18 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		cmd, err = cmdConfig.GetCommand(commands.GcloudAuthCmdType, executors.CtrExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.DutServiceStartCmdType, executors.CrosDutExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.ProvisionServiceStartCmdType, executors.CrosProvisionExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.ProvisonInstallCmdType, executors.CrosProvisionExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 	})

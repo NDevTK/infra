@@ -20,7 +20,8 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, nil)
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(UnSupportedTestExecutionConfigType, cmdConfig, sk)
@@ -35,7 +36,8 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, nil)
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
@@ -50,7 +52,8 @@ func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, nil)
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
@@ -65,7 +68,8 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, nil)
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
@@ -86,7 +90,8 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		execConfig := NewExecutorConfig(ctr)
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
+		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678}}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)

@@ -1,0 +1,157 @@
+// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package executors
+
+import (
+	"context"
+	"fmt"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
+	"google.golang.org/grpc"
+
+	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+)
+
+// CrosProvisionExecutor represents executor for all cros-provision related commands.
+type CrosProvisionExecutor struct {
+	*interfaces.AbstractExecutor
+
+	Container                  interfaces.ContainerInterface
+	CrosProvisionServiceClient test_api.GenericProvisionServiceClient
+	ServerAddress              string
+}
+
+func NewCrosProvisionExecutor(container interfaces.ContainerInterface) *CrosProvisionExecutor {
+	return &CrosProvisionExecutor{AbstractExecutor: interfaces.NewAbstractExecutor(CrosProvisionExecutorType), Container: container}
+}
+
+func (ex *CrosProvisionExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
+	switch cmd := cmdInterface.(type) {
+	case *commands.ProvisionServiceStartCmd:
+		return ex.provisionStartCommandExecution(ctx, cmd)
+	case *commands.ProvisionInstallCmd:
+		return ex.provisionInstallCommandExecution(ctx, cmd)
+	default:
+		return fmt.Errorf("Command type %s is not supported by %s executor type!", cmd.GetCommandType(), ex.GetExecutorType())
+	}
+}
+
+// provisionStartCommandExecution executes the provision start command.
+func (ex *CrosProvisionExecutor) provisionStartCommandExecution(ctx context.Context, cmd *commands.ProvisionServiceStartCmd) error {
+	var err error
+	step, ctx := build.StartStep(ctx, "Provision service start")
+	defer func() { step.End(err) }()
+
+	provReq := &test_api.CrosProvisionRequest{Dut: cmd.PrimaryDut, ProvisionState: cmd.ProvisionState, DutServer: cmd.DutServerAddress}
+
+	err = ex.Start(ctx, provReq)
+	if err != nil {
+		return errors.Annotate(err, "Start provision cmd err: ").Err()
+	}
+
+	return err
+}
+
+// provisionInstallCommandExecution executes the provision install command.
+func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(ctx context.Context, cmd *commands.ProvisionInstallCmd) error {
+	var err error
+	step, ctx := build.StartStep(ctx, "Provision install")
+	defer func() { step.End(err) }()
+
+	req := &test_api.InstallRequest{ImagePath: cmd.OsImagePath, PreventReboot: cmd.PreventReboot, Metadata: cmd.InstallMetadata}
+	common.WriteProtoToStepLog(ctx, step, req, "provision request")
+
+	logsLoc, err := ex.Container.GetLogsLocation()
+	if err != nil {
+		logging.Infof(ctx, "error during getting container log location: %s", err)
+		return err
+	}
+	containerLog := step.Log("Cros-provision Log")
+
+	taskDone, wg, err := common.StreamLogAsync(ctx, logsLoc, containerLog)
+	if err != nil {
+		logging.Infof(ctx, "Warning: error during reading container log: %s", err)
+	}
+
+	resp, err := ex.Install(ctx, req)
+	taskDone <- true // Notify logging process that main task is done
+	wg.Wait()        // Wait for the logging to complete
+	if err != nil {
+		return errors.Annotate(err, "Provision install cmd err: ").Err()
+	}
+
+	common.WriteProtoToStepLog(ctx, step, resp, "provision response")
+
+	return err
+}
+
+// Start starts the cros-provision server.
+func (ex *CrosProvisionExecutor) Start(ctx context.Context, provisionInputReq *test_api.CrosProvisionRequest) error {
+	if provisionInputReq == nil {
+		return fmt.Errorf("Cannot start provision service with nil provision request.")
+	}
+
+	provisionTemplate := &test_api.CrosProvisionTemplate{InputRequest: provisionInputReq}
+	template := &api.Template{Container: &api.Template_CrosProvision{CrosProvision: provisionTemplate}}
+
+	// Process container.
+	serverAddress, err := ex.Container.ProcessContainer(ctx, template)
+	if err != nil {
+		return errors.Annotate(err, "error processing container: ").Err()
+	}
+	ex.ServerAddress = serverAddress
+
+	// Connect with the service.
+	conn, err := common.ConnectWithService(ctx, serverAddress)
+	if err != nil {
+		logging.Infof(ctx, "error during connecting with provision server at %s: %s", serverAddress, err.Error())
+		return err
+	}
+	logging.Infof(ctx, "Connected with provision service.")
+
+	// Create new client.
+	provisionClient := api.NewGenericProvisionServiceClient(conn)
+	if provisionClient == nil {
+		return fmt.Errorf("ProvisionServiceClient is nil")
+	}
+
+	ex.CrosProvisionServiceClient = provisionClient
+
+	return nil
+}
+
+// Install invokes the provision install endpoint of cros-provision.
+func (ex *CrosProvisionExecutor) Install(ctx context.Context, installReq *test_api.InstallRequest) (*test_api.InstallResponse, error) {
+	if installReq == nil {
+		return nil, fmt.Errorf("Cannot execute provision install for nil install request.")
+	}
+	if ex.CrosProvisionServiceClient == nil {
+		return nil, fmt.Errorf("CrosProvisionServiceClient is nil in CrosProvisionExecutor")
+	}
+
+	provisionOp, err := ex.CrosProvisionServiceClient.Install(ctx, installReq, grpc.EmptyCallOption{})
+	if err != nil {
+		return nil, errors.Annotate(err, "provision install failure: ").Err()
+	}
+
+	opResp, err := common.ProcessLro(ctx, provisionOp)
+	if err != nil {
+		return nil, errors.Annotate(err, "provision lro failure: ").Err()
+	}
+
+	provisionResp := &test_api.InstallResponse{}
+	if err := opResp.UnmarshalTo(provisionResp); err != nil {
+		logging.Infof(ctx, "provision lro response unmarshalling failed: %s", err.Error())
+		return nil, errors.Annotate(err, "provision lro response unmarshalling failed: ").Err()
+	}
+
+	return provisionResp, nil
+}

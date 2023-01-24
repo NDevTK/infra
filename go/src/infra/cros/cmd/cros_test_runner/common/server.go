@@ -7,9 +7,12 @@ package common
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -19,6 +22,9 @@ import (
 
 // ConnectWithService connects with the service at the provided server address.
 func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.ClientConn, error) {
+	if serverAddress == "" {
+		return nil, fmt.Errorf("Cannot connect to empty service address.")
+	}
 	var err error
 	step, ctx := build.StartStep(ctx, "Connect to server")
 	defer func() { step.End(err) }()
@@ -57,4 +63,19 @@ func GetServerAddressFromGetContResponse(resp *test_api.GetContainerResponse) (s
 	}
 
 	return fmt.Sprintf("%s:%v", hostIp, hostPort), nil
+}
+
+// GetIpEndpoint creates IpEndpoint from provided server address.
+// Server address example: (address:port) -> localhost:8080.
+func GetIpEndpoint(serverAddress string) (*lab_api.IpEndpoint, error) {
+	addressInfo := strings.Split(serverAddress, ":")
+	if len(addressInfo) != 2 {
+		return nil, fmt.Errorf("invalid dut server address!")
+	}
+	port, err := strconv.Atoi(addressInfo[1])
+	if err != nil {
+		return nil, fmt.Errorf("error during extracting port info: %s", err)
+	}
+
+	return &lab_api.IpEndpoint{Address: addressInfo[0], Port: int32(port)}, nil
 }

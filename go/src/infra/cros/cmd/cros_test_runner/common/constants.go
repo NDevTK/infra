@@ -12,4 +12,6 @@ const (
 	ServiceConnectionTimeout = 5 * time.Minute
 	CtrCipdPackage           = "chromiumos/infra/cros-tool-runner/${platform}"
 	ContainerDefaultNetwork  = "host"
+	LabDockerKeyFileLocation = "/creds/service_accounts/skylab-drone.json"
+	LroSleepTime             = 5 * time.Second
 )

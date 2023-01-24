@@ -7,6 +7,7 @@ package data
 import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
@@ -20,8 +21,12 @@ type HwTestStateKeeper struct {
 	CftTestRequest *skylab_test_runner.CFTTestRequest
 
 	// Dut related
-	HostName    string
-	DutTopology *lab_api.DutTopology
+	HostName         string
+	DutTopology      *lab_api.DutTopology
+	DutServerAddress *lab_api.IpEndpoint
+
+	// Provsion related
+	InstallMetadata *anypb.Any
 
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner

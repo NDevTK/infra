@@ -82,6 +82,27 @@ func (cfg *CommandConfig) GetCommand(cmdType interfaces.CommandType, execType in
 		}
 		cmd = commands.NewGcloudAuthCmd(exec)
 
+	case commands.DutServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewDutServiceStartCmd(exec)
+
+	case commands.ProvisionServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewProvisionServiceStartCmd(exec)
+
+	case commands.ProvisonInstallCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewProvisionInstallCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

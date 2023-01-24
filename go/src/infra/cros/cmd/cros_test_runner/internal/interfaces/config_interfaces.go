@@ -47,3 +47,9 @@ type ExecutorConfigInterface interface {
 	// GetExecutor returns the concrete executor based on provided executor type.
 	GetExecutor(execType ExecutorType) (ExecutorInterface, error)
 }
+
+// ContainerConfigInterface defines the contract container config will have to satisfy.
+type ContainerConfigInterface interface {
+	// GetContainer returns the concrete container based on provided container type.
+	GetContainer(contType ContainerType) (ContainerInterface, error)
+}
