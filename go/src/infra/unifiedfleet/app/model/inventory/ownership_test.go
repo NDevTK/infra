@@ -171,3 +171,53 @@ func TestGetOwnershipData(t *testing.T) {
 		}
 	})
 }
+
+func TestGetAllOwnershipData(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+
+	t.Run("Get all OwnershipData", func(t *testing.T) {
+		ownershipData := &ufspb.OwnershipData{
+			PoolName:         "pool1",
+			SwarmingInstance: "test-swarming",
+			SecurityLevel:    "untrusted",
+			Customer:         "browser",
+		}
+		assetType := "machine"
+		expectedName := "test"
+		_, err := PutOwnershipData(ctx, ownershipData, expectedName, assetType)
+		if err != nil {
+			t.Fatalf("PutOwnershipData failed: %s", err)
+		}
+
+		got, _, err := ListOwnerships(ctx, 10, "", nil, false)
+		if err != nil {
+			t.Fatalf("ListOwnerships failed: %s", err)
+		}
+		if len(got) == 0 {
+			t.Errorf("ListOwnerships returned no results")
+		}
+		if got[0].Name != expectedName {
+			t.Errorf("GetOwnershipData returned unexpected Name:\n%s", got[0].Name)
+		}
+		p, err := got[0].GetProto()
+		if err != nil {
+			t.Fatalf("Unmarshalling ownership data from datatstore failed: %s", err)
+		}
+		pm := p.(*ufspb.OwnershipData)
+
+		if pm.PoolName != ownershipData.PoolName {
+			t.Errorf("PutOwnershipData returned unexpected result for Pool Name:\n%v", pm.PoolName)
+		}
+		if pm.Customer != ownershipData.Customer {
+			t.Errorf("PutOwnershipData returned unexpected result for Customer:\n%v", pm.Customer)
+		}
+		if pm.SecurityLevel != ownershipData.SecurityLevel {
+			t.Errorf("PutOwnershipData returned unexpected result for Pool Name:\n%v", pm.SecurityLevel)
+		}
+		if pm.SwarmingInstance != ownershipData.SwarmingInstance {
+			t.Errorf("PutOwnershipData returned unexpected result for Pool Name:\n%v", pm.SwarmingInstance)
+		}
+	})
+}

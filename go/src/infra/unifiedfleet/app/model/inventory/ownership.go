@@ -20,7 +20,7 @@ import (
 )
 
 // OwnershipDataKind is the datastore entity kind OwnershipData.
-const OwnershipDataKind string = "OwnershipData"
+const OwnershipDataKind string = "Ownership"
 
 // AssetType Machine
 const AssetTypeMachine string = "Machine"
@@ -82,6 +82,17 @@ func GetOwnershipData(ctx context.Context, name string) (*OwnershipDataEntity, e
 		return nil, err
 	}
 	return entity, nil
+}
+
+// ListOwnerships lists the owmerships
+// Does a query over Ownership entities. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). pageSize must be positive.
+func ListOwnerships(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
+	q, err := ufsds.ListQuery(ctx, OwnershipDataKind, pageSize, pageToken, filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	return runListOwnershipQuery(ctx, q, pageSize, pageToken, keysOnly)
 }
 
 // ListHostsByIdPrefixSearch lists the hosts
