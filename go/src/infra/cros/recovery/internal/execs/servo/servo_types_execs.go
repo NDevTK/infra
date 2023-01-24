@@ -80,16 +80,48 @@ func servoVerifyV4p1BySerialNumberExec(ctx context.Context, info *execs.ExecInfo
 // servoVerifyServoMicroExec verifies whether the servo attached to
 // the servo host is of type servo micro.
 func servoVerifyServoMicroExec(ctx context.Context, info *execs.ExecInfo) error {
+	args := info.GetActionArgs(ctx)
+	reverse := args.AsBool(ctx, "reverse", false)
 	sType, err := WrappedServoType(ctx, info)
 	if err != nil {
 		log.Debugf(ctx, "Servo Verify Servo Micro: could not determine the servo type")
 		return errors.Annotate(err, "servo verify servo micro").Err()
 	}
-	if !sType.IsMicro() {
-		log.Debugf(ctx, "Servo Verify servo micro: servo type is not servo micro.")
-		return errors.Reason("servo verify servo micro: servo type %q is not servo micro.", sType).Err()
+	if sType.IsMicro() {
+		if reverse {
+			return errors.Reason("servo verify servo micro: servo type is servo micro").Err()
+		} else {
+			log.Debugf(ctx, "Servo Verify: servo type is servo micro!")
+			return nil
+		}
+	} else if reverse {
+		log.Debugf(ctx, "Servo Verify: servo type is not servo micro!")
+		return nil
 	}
-	return nil
+	return errors.Reason("servo verify servo micro: servo type %q is not servo micro", sType).Err()
+}
+
+// servoVerifyC2D2Exec verifies whether the servo attached to the servo host is C2D2.
+func servoVerifyC2D2Exec(ctx context.Context, info *execs.ExecInfo) error {
+	args := info.GetActionArgs(ctx)
+	reverse := args.AsBool(ctx, "reverse", false)
+	sType, err := WrappedServoType(ctx, info)
+	if err != nil {
+		log.Debugf(ctx, "Servo Verify C2D2: could not determine the servo type.")
+		return errors.Annotate(err, "servo verify C2D2").Err()
+	}
+	if sType.IsC2D2() {
+		if reverse {
+			return errors.Reason("servo verify C2D2: servo type is C2D2").Err()
+		} else {
+			log.Debugf(ctx, "Servo Verify: servo type is C2D2!")
+			return nil
+		}
+	} else if reverse {
+		log.Debugf(ctx, "Servo Verify: servo type is not C2D2!")
+		return nil
+	}
+	return errors.Reason("servo verify servo micro: servo type %q is not C2D2", sType).Err()
 }
 
 // servoIsDualSetupConfiguredExec checks whether the servo device has
@@ -201,6 +233,7 @@ func init() {
 	execs.Register("is_servo_v4p1", servoVerifyV4p1Exec)
 	execs.Register("is_servo_v4p1_by_serial_number", servoVerifyV4p1BySerialNumberExec)
 	execs.Register("is_servo_micro", servoVerifyServoMicroExec)
+	execs.Register("is_servo_c2d2", servoVerifyC2D2Exec)
 	execs.Register("is_dual_setup_configured", servoIsDualSetupConfiguredExec)
 	execs.Register("is_dual_setup", servoVerifyDualSetupExec)
 	execs.Register("is_servo_type_ccd", servoVerifyServoCCDExec)
