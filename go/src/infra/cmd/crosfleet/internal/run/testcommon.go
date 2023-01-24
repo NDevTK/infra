@@ -25,6 +25,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -258,9 +259,8 @@ func latestImage(ctx context.Context, board, bbService string, authFlags authcli
 	return image, nil
 }
 
-// buildTagsForModel combines test metadata tags with user-added tags for the
-// given model.
-func (c *testCommonFlags) buildTagsForModel(crosfleetTool string, model string, mainArg string) map[string]string {
+// buildTagsForCrosfleet combines test metadata tags with user-added tags
+func (c *testCommonFlags) commonTagsForAllBuilds(crosfleetTool string, mainArg string) map[string]string {
 	tags := map[string]string{}
 
 	// Add user-added tags.
@@ -279,28 +279,12 @@ func (c *testCommonFlags) buildTagsForModel(crosfleetTool string, model string, 
 		tags[fmt.Sprintf("label-%s", crosfleetTool)] = mainArg
 	}
 
-	// Add metadata tags.
-	if c.board != "" {
-		tags["label-board"] = c.board
-	}
-	if model != "" {
-		tags["label-model"] = model
-	}
-	if c.pool != "" {
-		tags["label-pool"] = c.pool
-	}
-	if c.image != "" {
-		tags["label-image"] = c.image
-	}
-	// Only surface the priority if Quota Account was unset.
-	// NOTE: these addedTags themselves will NOT be processed by Buildbucket or
-	// Swarming--they are for metadata purposes only.
-	// addedTags attached here will NOT be processed by CTP.
-	if c.qsAccount != "" {
-		tags["label-quota-account"] = c.qsAccount
-	} else if c.priority != 0 {
-		tags["label-priority"] = fmt.Sprint(c.priority)
-	}
+	return tags
+}
+
+func (c *testCommonFlags) buildTagsForCTPBuilds(crosfleetTool string, mainArg string) map[string]string {
+	tags := c.commonTagsForAllBuilds(crosfleetTool, mainArg)
+	tags[buildbucket.UserAgentTagKey] = buildbucket.CrosfleetUserAgent
 
 	return tags
 }
@@ -383,24 +367,43 @@ func (l *ctpRunLauncher) launchTestsAsync(ctx context.Context) (*crosfleetpb.Bui
 // cros_test_platform Buildbucket build for the CTP run launcher's test plan,
 // build tags, and command line flags, and returns the ID of the pending build.
 func (l *ctpRunLauncher) scheduleCTPBuild(ctx context.Context, model string) (*buildbucketpb.Build, error) {
-	buildTags := l.cliFlags.buildTagsForModel(l.cmdName, model, l.mainArgsTag)
-	ctpRequest, err := l.testPlatformRequest(model, buildTags)
-	if err != nil {
-		return nil, err
+	ctp := l.ctpBuilder(model)
+	return ctp.ScheduleCTPBuild(ctx)
+}
+
+func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
+	ctpTags := l.cliFlags.buildTagsForCTPBuilds(l.cmdName, l.mainArgsTag)
+	testRunnerTags := l.cliFlags.commonTagsForAllBuilds(l.cmdName, l.mainArgsTag)
+	props := map[string]interface{}{}
+	buildbucket.AddServiceVersion(props)
+
+	return &builder.CTPBuilder{
+		BBClient:             l.bbClient.GetBuildsClient(),
+		Board:                l.cliFlags.board,
+		BuilderID:            l.bbClient.GetBuilderID(),
+		CFT:                  l.cliFlags.cft,
+		CTPBuildTags:         ctpTags,
+		Dimensions:           l.cliFlags.addedDims,
+		Image:                l.cliFlags.image,
+		ImageBucket:          l.cliFlags.bucket,
+		Keyvals:              l.cliFlags.keyvals,
+		LacrosPath:           l.cliFlags.lacrosPath,
+		MaxRetries:           l.cliFlags.maxRetries,
+		Model:                model,
+		Pool:                 l.cliFlags.pool,
+		Priority:             l.cliFlags.priority,
+		Properties:           props,
+		ProvisionLabels:      l.cliFlags.provisionLabels,
+		QSAccount:            l.cliFlags.qsAccount,
+		SecondaryBoards:      l.cliFlags.secondaryBoards,
+		SecondaryImages:      l.cliFlags.secondaryImages,
+		SecondaryLacrosPaths: l.cliFlags.secondaryLacrosPaths,
+		SecondaryModels:      l.cliFlags.secondaryModels,
+		TestPlan:             l.testPlan,
+		TestRunnerBuildTags:  testRunnerTags,
+		TimeoutMins:          l.cliFlags.timeoutMins,
+		UseScheduke:          l.cliFlags.scheduke,
 	}
-	buildProps := map[string]interface{}{
-		"requests": map[string]interface{}{
-			// Convert to protoreflect.ProtoMessage for easier type comparison.
-			"default": ctpRequest.ProtoReflect().Interface(),
-		},
-	}
-	// Parent cros_test_platform builds run on generic GCE bots at the default
-	// priority, so we pass zero values for the dimensions and priority of the
-	// parent build.
-	//
-	// buildProps contains separate dimensions and priority values to apply to
-	// the child test_runner builds that will be launched by the parent build.
-	return l.bbClient.ScheduleBuild(ctx, buildProps, nil, buildTags, 0)
 }
 
 // scheduleCTPBuildsAsync schedules all builds asynchronously and returns a

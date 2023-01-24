@@ -30,18 +30,18 @@ import (
 )
 
 const (
-	userAgentTagKey    = "user_agent"
-	crosfleetUserAgent = "crosfleet"
+	UserAgentTagKey    = "user_agent"
+	CrosfleetUserAgent = "crosfleet"
 )
 
 var maxServiceVersion = &test_platform.ServiceVersion{
 	CrosfleetTool: site.VersionNumber,
 }
 
-// addServiceVersion marshals the max service version proto to a JSON-encoded
+// AddServiceVersion marshals the max service version proto to a JSON-encoded
 // string, adds it to the given Buildbucket property map, and returns the
 // property map.
-func addServiceVersion(props map[string]interface{}) map[string]interface{} {
+func AddServiceVersion(props map[string]interface{}) map[string]interface{} {
 	props["$chromeos/service_version"] = map[string]interface{}{
 		// Convert to protoreflect.ProtoMessage for easier type comparison.
 		"version": maxServiceVersion.ProtoReflect().Interface(),
@@ -75,6 +75,16 @@ func NewClient(ctx context.Context, builder *buildbucketpb.BuilderID, bbService 
 	}, nil
 }
 
+// GetBuildsClient returns a builds client associated with the Client.
+func (c *Client) GetBuildsClient() buildbucketpb.BuildsClient {
+	return c.client
+}
+
+// GetBuilderId returns a builder ID associated with the Client.
+func (c *Client) GetBuilderID() *buildbucketpb.BuilderID {
+	return c.builderID
+}
+
 // NewClientForTesting returns a new client with only the builderID configured.
 func NewClientForTesting(builder *buildbucketpb.BuilderID) *Client {
 	return &Client{builderID: builder}
@@ -93,10 +103,10 @@ func NewClientForTesting(builder *buildbucketpb.BuilderID) *Client {
 //
 // NOTE: Buildbucket priority is separate from internal swarming priority.
 func (c *Client) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
-	props = addServiceVersion(props)
+	props = AddServiceVersion(props)
 	propStruct, err := common.MapToStruct(props)
 
-	tags[userAgentTagKey] = crosfleetUserAgent
+	tags[UserAgentTagKey] = CrosfleetUserAgent
 
 	if err != nil {
 		return nil, err

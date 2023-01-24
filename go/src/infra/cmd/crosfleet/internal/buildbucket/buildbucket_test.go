@@ -26,7 +26,7 @@ func TestAddServiceVersion(t *testing.T) {
 			}).ProtoReflect().Interface(),
 		},
 	}
-	gotProps := addServiceVersion(startingProps)
+	gotProps := AddServiceVersion(startingProps)
 	if diff := cmp.Diff(wantProps, gotProps, common.CmpOpts); diff != "" {
 		t.Errorf("unexpected diff (%s)", diff)
 	}

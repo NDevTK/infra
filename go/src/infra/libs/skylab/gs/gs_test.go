@@ -213,7 +213,7 @@ func TestExtractCloudErrorCode(t *testing.T) {
 
 			actualErr, actualCode := extractCloudErrorCode(tt.in)
 
-			if diff := cmp.Diff(tt.cloudErr, actualErr); diff != "" {
+			if diff := cmp.Diff(tt.cloudErr, actualErr, cmp.AllowUnexported(googleapi.Error{})); diff != "" {
 				t.Errorf("cloudErr differs (-want +got): %s", diff)
 			}
 

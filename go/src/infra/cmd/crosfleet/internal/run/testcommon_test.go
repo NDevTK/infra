@@ -8,22 +8,22 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/common"
+	"infra/cmd/crosfleet/internal/site"
+	models "infra/unifiedfleet/api/v1/models"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	"strings"
 	"testing"
 	"time"
 
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
-
-	models "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 var testValidateArgsData = []struct {
@@ -198,18 +198,55 @@ func TestValidateArgs(t *testing.T) {
 	}
 }
 
-var testBuildTagsData = []struct {
+var testBuildTagsForCTPData = []struct {
 	testCommonFlags
 	wantTags map[string]string
 }{
 	{ // Missing all values
 		testCommonFlags{
-			board:     "",
-			models:    []string{""},
-			pool:      "",
-			image:     "",
-			qsAccount: "",
-			priority:  0,
+			addedTags: nil,
+		},
+		map[string]string{
+			"crosfleet-tool": "suite",
+			"label-suite":    "sample-suite",
+			"user_agent":     "crosfleet",
+		},
+	},
+	{ // Includes all values
+		testCommonFlags{
+			addedTags: map[string]string{
+				"foo": "bar",
+			},
+		},
+		map[string]string{
+			"foo":            "bar",
+			"crosfleet-tool": "suite",
+			"label-suite":    "sample-suite",
+			"user_agent":     "crosfleet",
+		},
+	},
+}
+
+func TestBuildTagsForCTPBuilds(t *testing.T) {
+	t.Parallel()
+	for _, tt := range testBuildTagsForCTPData {
+		tt := tt
+		t.Run(fmt.Sprintf("(%s)", tt.wantTags), func(t *testing.T) {
+			t.Parallel()
+			gotTags := tt.testCommonFlags.buildTagsForCTPBuilds("suite", "sample-suite")
+			if diff := cmp.Diff(tt.wantTags, gotTags); diff != "" {
+				t.Errorf("unexpected diff (%s)", diff)
+			}
+		})
+	}
+}
+
+var testCommonTagsData = []struct {
+	testCommonFlags
+	wantTags map[string]string
+}{
+	{ // Missing all values
+		testCommonFlags{
 			addedTags: nil,
 		},
 		map[string]string{
@@ -217,57 +254,27 @@ var testBuildTagsData = []struct {
 			"label-suite":    "sample-suite",
 		},
 	},
-	{ // Missing some values
-		testCommonFlags{
-			board:     "sample-board",
-			models:    []string{""},
-			pool:      "sample-pool",
-			image:     "sample-image",
-			qsAccount: "",
-			priority:  99,
-			addedTags: map[string]string{},
-		},
-		map[string]string{
-			"crosfleet-tool": "suite",
-			"label-suite":    "sample-suite",
-			"label-board":    "sample-board",
-			"label-pool":     "sample-pool",
-			"label-image":    "sample-image",
-			"label-priority": "99",
-		},
-	},
 	{ // Includes all values
 		testCommonFlags{
-			board:     "sample-board",
-			models:    []string{"sample-model"},
-			pool:      "sample-pool",
-			image:     "sample-image",
-			qsAccount: "sample-qs-account",
-			priority:  99,
 			addedTags: map[string]string{
 				"foo": "bar",
 			},
 		},
 		map[string]string{
-			"foo":                 "bar",
-			"crosfleet-tool":      "suite",
-			"label-suite":         "sample-suite",
-			"label-board":         "sample-board",
-			"label-model":         "sample-model",
-			"label-pool":          "sample-pool",
-			"label-image":         "sample-image",
-			"label-quota-account": "sample-qs-account",
+			"foo":            "bar",
+			"crosfleet-tool": "suite",
+			"label-suite":    "sample-suite",
 		},
 	},
 }
 
-func TestBuildTags(t *testing.T) {
+func TestCommonTagsForAllBuilds(t *testing.T) {
 	t.Parallel()
-	for _, tt := range testBuildTagsData {
+	for _, tt := range testCommonTagsData {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantTags), func(t *testing.T) {
 			t.Parallel()
-			gotTags := tt.testCommonFlags.buildTagsForModel("suite", tt.testCommonFlags.models[0], "sample-suite")
+			gotTags := tt.testCommonFlags.commonTagsForAllBuilds("suite", "sample-suite")
 			if diff := cmp.Diff(tt.wantTags, gotTags); diff != "" {
 				t.Errorf("unexpected diff (%s)", diff)
 			}
@@ -946,6 +953,141 @@ func TestGetCTPBuilder(t *testing.T) {
 			gotCtpBuilder := tt.testCommonFlags.getCTPBuilder(tt.Environment)
 			if diff := cmp.Diff(tt.wantCtpBuilder, gotCtpBuilder, common.CmpOpts); diff != "" {
 				t.Errorf("unexpected diff (%s); got : %s; want : %s", diff, gotCtpBuilder, tt.wantCtpBuilder)
+			}
+		})
+	}
+}
+
+func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
+	tests := []struct {
+		name     string
+		launcher ctpRunLauncher
+		model    string
+		want     *builder.CTPBuilder
+	}{
+		{
+			"minimal",
+			ctpRunLauncher{
+				mainArgsTag: "sample-test",
+				printer:     common.CLIPrinter{},
+				cmdName:     "test",
+				bbClient:    buildbucket.NewClientForTesting(&buildbucketpb.BuilderID{Project: "test"}),
+				testPlan:    &test_platform.Request_TestPlan{},
+				cliFlags:    &testCommonFlags{},
+			},
+			"model",
+			&builder.CTPBuilder{
+				CTPBuildTags: map[string]string{
+					"crosfleet-tool": "test",
+					"label-test":     "sample-test",
+					"user_agent":     "crosfleet",
+				},
+				BuilderID: &buildbucketpb.BuilderID{Project: "test"},
+				Model:     "model",
+				Properties: map[string]interface{}{
+					"$chromeos/service_version": map[string]interface{}{
+						// Convert to protoreflect.ProtoMessage for easier type comparison.
+						"version": (&test_platform.ServiceVersion{
+							CrosfleetTool: 4,
+						}).ProtoReflect().Interface(),
+					},
+				},
+				TestPlan: &test_platform.Request_TestPlan{},
+				TestRunnerBuildTags: map[string]string{
+					"crosfleet-tool": "test",
+					"label-test":     "sample-test",
+				},
+			},
+		},
+		{
+			"maximal",
+			ctpRunLauncher{
+				mainArgsTag: "sample-test",
+				printer:     common.CLIPrinter{},
+				cmdName:     "test",
+				bbClient:    buildbucket.NewClientForTesting(&buildbucketpb.BuilderID{Project: "test"}),
+				testPlan:    &test_platform.Request_TestPlan{},
+				cliFlags: &testCommonFlags{
+					board:                "test-board",
+					secondaryBoards:      []string{"secondary-board"},
+					models:               []string{"model"},
+					secondaryModels:      []string{"secondary-model"},
+					pool:                 "pool",
+					bucket:               "image-bucket",
+					image:                "image",
+					secondaryImages:      []string{"secondary-image"},
+					release:              "release",
+					qsAccount:            "qs-account",
+					maxRetries:           5,
+					repeats:              4,
+					priority:             100,
+					timeoutMins:          600,
+					addedDims:            map[string]string{"dim": "yes"},
+					provisionLabels:      map[string]string{"provision": "this"},
+					addedTags:            map[string]string{"foo": "bar"},
+					keyvals:              map[string]string{"key": "bar"},
+					exitEarly:            true,
+					lacrosPath:           "lacros",
+					secondaryLacrosPaths: []string{"secondary-lacros"},
+					cft:                  true,
+					scheduke:             true,
+					testHarness:          "tauto",
+					publicBuilderBucket:  "bucket",
+					publicBuilder:        "builder",
+					luciProject:          "project",
+				},
+			},
+			"model",
+			&builder.CTPBuilder{
+				BBClient:  nil,
+				Board:     "test-board",
+				BuilderID: &buildbucketpb.BuilderID{Project: "test"},
+				CFT:       true,
+				CTPBuildTags: map[string]string{
+					"crosfleet-tool": "test",
+					"label-test":     "sample-test",
+					"user_agent":     "crosfleet",
+					"foo":            "bar",
+				},
+				Dimensions:  map[string]string{"dim": "yes"},
+				Image:       "image",
+				ImageBucket: "image-bucket",
+				Keyvals:     map[string]string{"key": "bar"},
+				LacrosPath:  "lacros",
+				MaxRetries:  5,
+				Model:       "model",
+				Pool:        "pool",
+				Priority:    100,
+				Properties: map[string]interface{}{
+					"$chromeos/service_version": map[string]interface{}{
+						// Convert to protoreflect.ProtoMessage for easier type comparison.
+						"version": (&test_platform.ServiceVersion{
+							CrosfleetTool: 4,
+						}).ProtoReflect().Interface(),
+					},
+				},
+				ProvisionLabels:      map[string]string{"provision": "this"},
+				QSAccount:            "qs-account",
+				SecondaryBoards:      []string{"secondary-board"},
+				SecondaryImages:      []string{"secondary-image"},
+				SecondaryModels:      []string{"secondary-model"},
+				SecondaryLacrosPaths: []string{"secondary-lacros"},
+				TestPlan:             &test_platform.Request_TestPlan{},
+				TestRunnerBuildTags: map[string]string{
+					"crosfleet-tool": "test",
+					"label-test":     "sample-test",
+					"foo":            "bar",
+				},
+				TimeoutMins: 600,
+				UseScheduke: true,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.launcher.ctpBuilder(tt.model)
+			if diff := cmp.Diff(got, tt.want, common.CmpOpts); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
 	}
