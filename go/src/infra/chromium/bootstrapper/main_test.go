@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -384,21 +385,21 @@ func TestBootstrapMain(t *testing.T) {
 			So(record.build, ShouldBeNil)
 		})
 
-		Convey("does not update build on exe failure", func() {
-			cmdErr := &exec.ExitError{
+		Convey("does not update build on bootstrapped exe failure", func() {
+			exeErr := &exec.ExitError{
 				ProcessState: &os.ProcessState{},
-				Stderr:       []byte("test cmd failure"),
+				Stderr:       []byte("test exe failure"),
 			}
-			execute := testExecuteCmdFn(cmdErr)
+			execute := testExecuteCmdFn(exeErr)
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
 
-			So(err, ShouldErrLike, cmdErr)
+			So(err, ShouldErrLike, exeErr)
 			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldBeNil)
 		})
 
-		Convey("updates build when failing to execute cmd", func() {
+		Convey("updates build when failing to execute bootstrapped exe", func() {
 			cmdErr := errors.New("test cmd execution failure")
 			execute := testExecuteCmdFn(cmdErr)
 
@@ -410,6 +411,23 @@ func TestBootstrapMain(t *testing.T) {
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test cmd execution failure</pre>"
 			}`)
+		})
+
+		Convey("updates build on failure of non-bootstrapped exe process", func() {
+			cmdErr := &exec.ExitError{
+				ProcessState: &os.ProcessState{},
+				Stderr:       []byte("test process failure"),
+			}
+			performBootstrap := testBootstrapFn(cmdErr)
+
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+
+			So(err, ShouldErrLike, cmdErr)
+			So(sleepDuration, ShouldEqual, 0)
+			So(record.build, ShouldResembleProtoJSON, fmt.Sprintf(`{
+				"status": "INFRA_FAILURE",
+				"summary_markdown": "<pre>%s</pre>"
+			}`, cmdErr))
 		})
 
 		Convey("updates build for generic bootstrap failure", func() {

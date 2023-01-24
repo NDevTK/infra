@@ -218,10 +218,6 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 	if err == nil {
 		logging.Infof(ctx, "executing %s", cmd)
 		err = executeCmd(ctx, cmd, input)
-	}
-
-	if err != nil {
-		logging.Errorf(ctx, err.Error())
 		// An ExitError indicates that we were able to bootstrap the executable and that it
 		// failed, as opposed to being unable to launch the bootstrapped executable. In that
 		// case, the recipe will have run and we don't need to make any modifications to the
@@ -230,6 +226,10 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 		if stderrors.As(err, &exitErr) {
 			return 0, err
 		}
+	}
+
+	if err != nil {
+		logging.Errorf(ctx, err.Error())
 
 		build := &buildbucketpb.Build{}
 		build.Status = buildbucketpb.Status_INFRA_FAILURE
