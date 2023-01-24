@@ -10,10 +10,13 @@ import (
 
 // All supported executor types.
 const (
-	NoExecutorType            interfaces.ExecutorType = "NoExecutor"
-	InvServiceExecutorType    interfaces.ExecutorType = "InvServiceExecutor"
-	CtrExecutorType           interfaces.ExecutorType = "CtrExecutor"
-	CrosDutExecutorType       interfaces.ExecutorType = "CrosDutExecutor"
-	CrosProvisionExecutorType interfaces.ExecutorType = "CrosProvisionExecutor"
-	CrosTestExecutorType      interfaces.ExecutorType = "CrosTestExecutor"
+	NoExecutorType             interfaces.ExecutorType = "NoExecutor"
+	InvServiceExecutorType     interfaces.ExecutorType = "InvServiceExecutor"
+	CtrExecutorType            interfaces.ExecutorType = "CtrExecutor"
+	CrosDutExecutorType        interfaces.ExecutorType = "CrosDutExecutor"
+	CrosProvisionExecutorType  interfaces.ExecutorType = "CrosProvisionExecutor"
+	CrosTestExecutorType       interfaces.ExecutorType = "CrosTestExecutor"
+	CrosGcsPublishExecutorType interfaces.ExecutorType = "CrosGcsPublishExecutor"
+	CrosTkoPublishExecutorType interfaces.ExecutorType = "CrosTkoPublishExecutor"
+	CrosRdbPublishExecutorType interfaces.ExecutorType = "CrosRdbPublishExecutor"
 )

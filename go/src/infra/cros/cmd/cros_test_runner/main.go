@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
@@ -60,7 +61,8 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper
-	sk := &data.HwTestStateKeeper{CftTestRequest: req}
+	gcsurl := configs.GetHwConfigsGcsUrl()
+	sk := &data.HwTestStateKeeper{CftTestRequest: req, Ctr: ctr, DockerKeyFileLocation: common.LabDockerKeyFileLocation, GcsPublishSrcDir: os.Getenv("TEMPDIR"), GcsUrl: gcsurl, StainlessUrl: configs.GetHwConfigsStainlessUrl(gcsurl)}
 
 	// Generate config
 	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk)

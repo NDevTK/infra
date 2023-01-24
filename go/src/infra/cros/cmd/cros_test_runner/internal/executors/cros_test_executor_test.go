@@ -101,7 +101,7 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		exec := NewCrosTestExecutor(cont)
 		mocked_client := mocked_services.NewMockExecutionServiceClient(ctrl)
 		exec.CrosTestServiceClient = mocked_client
-		getMockedExecuteTests(mocked_client).Return(nil, fmt.Errorf("some_error"))
+		getMockedExecuteTests(mocked_client).Return(nil, nil)
 		resp, err := exec.ExecuteTests(ctx, &test_api.CrosTestRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)

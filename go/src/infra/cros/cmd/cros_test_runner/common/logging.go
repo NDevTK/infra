@@ -18,6 +18,10 @@ import (
 
 // WriteProtoToStepLog writes provided proto to build step.
 func WriteProtoToStepLog(ctx context.Context, step *build.Step, proto proto.Message, logText string) {
+	if step == nil {
+		return
+	}
+
 	outputLog := step.Log(logText)
 	marshaller := protojson.MarshalOptions{Multiline: true, Indent: "  "}
 	bytes, err := marshaller.Marshal(proto)
@@ -61,6 +65,10 @@ func WriteProtoToJsonFile(ctx context.Context, dirPath string, fileName string, 
 
 // LogExecutionDetails logs provided cmds to build step.
 func LogExecutionDetails(ctx context.Context, step *build.Step, cmds []string) {
+	if step == nil {
+		return
+	}
+
 	outputLog := step.Log("Execution Details")
 	logCmdsStr := fmt.Sprintf("%+q", cmds)
 	_, err := outputLog.Write([]byte(logCmdsStr))

@@ -35,6 +35,16 @@ const (
 	TestServiceStartCmdType interfaces.CommandType = "TestServiceStart"
 	TestsExecutionCmdType   interfaces.CommandType = "TestsExecution"
 
+	// Publish service related commands
+	GcsPublishStartCmdType  interfaces.CommandType = "GcsPublishStart"
+	GcsPublishUploadCmdType interfaces.CommandType = "GcsPublishUpload"
+
+	TkoPublishStartCmdType  interfaces.CommandType = "TkoPublishStart"
+	TkoPublishUploadCmdType interfaces.CommandType = "TkoPublishUpload"
+
+	RdbPublishStartCmdType  interfaces.CommandType = "RdbPublishStart"
+	RdbPublishUploadCmdType interfaces.CommandType = "RdbPublishUpload"
+
 	// For testing purposes only
 	UnSupportedCmdType interfaces.CommandType = "UnSupportedCmd"
 )

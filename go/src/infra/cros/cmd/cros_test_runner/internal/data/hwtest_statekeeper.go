@@ -33,7 +33,11 @@ type HwTestStateKeeper struct {
 	TestResponses *test_api.CrosTestResponse
 
 	// Publish related
-	TkoPublishSrcDir string
+	GcsUrl              string
+	StainlessUrl        string
+	GcsPublishSrcDir    string
+	CurrentInvocationId string
+	TkoPublishSrcDir    string
 
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner

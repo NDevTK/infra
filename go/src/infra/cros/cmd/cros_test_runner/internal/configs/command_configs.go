@@ -117,6 +117,48 @@ func (cfg *CommandConfig) GetCommand(cmdType interfaces.CommandType, execType in
 		}
 		cmd = commands.NewTestsExecutionCmd(exec)
 
+	case commands.GcsPublishStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewGcsPublishServiceStartCmd(exec)
+
+	case commands.GcsPublishUploadCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewGcsPublishUploadCmd(exec)
+
+	case commands.RdbPublishStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewRdbPublishServiceStartCmd(exec)
+
+	case commands.RdbPublishUploadCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewRdbPublishUploadCmd(exec)
+
+	case commands.TkoPublishStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewTkoPublishServiceStartCmd(exec)
+
+	case commands.TkoPublishUploadCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewTkoPublishUploadCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

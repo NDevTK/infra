@@ -6,10 +6,15 @@ package configs
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+
+	"github.com/google/uuid"
 )
 
 // CommandExecutorPairedConfig represents command and executor pair
@@ -32,6 +37,12 @@ var ProvisionServerStart_CrosProvisionExecutor = &CommandExecutorPairedConfig{Co
 var ProvisionInstall_CrosProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
 var TestServerStart_CrosTestExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestServiceStartCmdType, ExecutorType: executors.CrosTestExecutorType}
 var TestsExecution_CrosTestExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestsExecutionCmdType, ExecutorType: executors.CrosTestExecutorType}
+var GcsPublishStart_CrosGcsPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.GcsPublishStartCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
+var GcsPublishUpload_CrosGcsPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.GcsPublishUploadCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
+var RdbPublishStart_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.RdbPublishStartCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
+var RdbPublishUpload_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.RdbPublishUploadCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
+var TkoPublishStart_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishStartCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
+var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context) *Configs {
@@ -48,12 +59,21 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 		ProvisionInstall_CrosProvisionExecutor,
 		TestServerStart_CrosTestExecutor,
 		TestsExecution_CrosTestExecutor,
+		RdbPublishStart_CrosRdbPublishExecutor,
+		RdbPublishUpload_CrosRdbPublishExecutor,
+		// TODO (b/241155482): Enable TKO publish after tko publish issues are fixed.
+		//TkoPublishStart_CrosTkoPublishExecutor,
+		//TkoPublishUpload_CrosTkoPublishExecutor,
+		GcsPublishStart_CrosGcsPublishExecutor,
+		GcsPublishUpload_CrosGcsPublishExecutor,
 		CtrStop_CtrExecutor,
 	}
 
 	// Clean up configs. They will be executed if any failures occurs in main configs.
 	// If any of the cleanup cmd is already executed, they will be skipped.
 	cleanupConfigs := []*CommandExecutorPairedConfig{
+		GcsPublishStart_CrosGcsPublishExecutor,
+		GcsPublishUpload_CrosGcsPublishExecutor,
 		CtrStop_CtrExecutor,
 	}
 
@@ -71,4 +91,14 @@ func GetHwConfigsEnvVars() []string {
 		"CONTAINER_CACHE_SERVICE_HOST",
 		"DRONE_AGENT_BOT_BLKIO_READ_BPS",
 		"DRONE_AGENT_BOT_BLKIO_WRITE_BPS"}
+}
+
+// GetHwConfigsGcsUrl gets gcs url for hw test execution configs.
+func GetHwConfigsGcsUrl() string {
+	return fmt.Sprintf("%s/%s/%s", common.HwTestLabGsRoot, time.Now().Format("2006-01-02"), uuid.New().String())
+}
+
+// GetHwConfigsStainlessUrl gets stainless url.
+func GetHwConfigsStainlessUrl(gcsUrl string) string {
+	return fmt.Sprintf("%s%s", common.StainlessUrlPrefix, gcsUrl[len("gs://"):])
 }

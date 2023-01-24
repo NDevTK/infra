@@ -9,8 +9,11 @@ import "infra/cros/cmd/cros_test_runner/internal/interfaces"
 // All supported container types.
 const (
 	// For testing purposes only
-	UnsupportedContainerType            interfaces.ContainerType = "UnsupportedContainer"
-	CrosProvisionTemplatedContainerType interfaces.ContainerType = "CrosProvisionTemplatedContainer"
-	CrosDutTemplatedContainerType       interfaces.ContainerType = "CrosDutTemplatedContainer"
-	CrosTestTemplatedContainerType      interfaces.ContainerType = "CrosTestTemplatedContainer"
+	UnsupportedContainerType             interfaces.ContainerType = "UnsupportedContainer"
+	CrosProvisionTemplatedContainerType  interfaces.ContainerType = "CrosProvisionTemplatedContainer"
+	CrosDutTemplatedContainerType        interfaces.ContainerType = "CrosDutTemplatedContainer"
+	CrosTestTemplatedContainerType       interfaces.ContainerType = "CrosTestTemplatedContainer"
+	CrosGcsPublishTemplatedContainerType interfaces.ContainerType = "CrosGcsPublishTemplatedContainer"
+	CrosTkoPublishTemplatedContainerType interfaces.ContainerType = "CrosTkoPublishTemplatedContainer"
+	CrosRdbPublishTemplatedContainerType interfaces.ContainerType = "CrosRdbPublishTemplatedContainer"
 )
