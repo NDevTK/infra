@@ -5,6 +5,8 @@
 package configs
 
 import (
+	"fmt"
+	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 )
 
@@ -21,5 +23,26 @@ func NewExecutorConfig() interfaces.ExecutorConfigInterface {
 
 // GetExecutor returns the concrete executor based on provided executor type.
 func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interfaces.ExecutorInterface, error) {
-	return nil, nil
+	// Return executor if already created.
+	if savedExec, ok := cfg.execsMap[execType]; ok {
+		return savedExec, nil
+	}
+
+	var exec interfaces.ExecutorInterface
+
+	// Get executor type based on executor type.
+	switch execType {
+	case executors.InvServiceExecutorType:
+		invServiceAddress := ""
+		if cfg.InvServiceAddress != "" {
+			invServiceAddress = cfg.InvServiceAddress
+		}
+		exec = executors.NewInvServiceExecutor(invServiceAddress)
+
+	default:
+		return nil, fmt.Errorf("Executor type %s not supported in executor configs!", execType)
+	}
+
+	cfg.execsMap[execType] = exec
+	return exec, nil
 }

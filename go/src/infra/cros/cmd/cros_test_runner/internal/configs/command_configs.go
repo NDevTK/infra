@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // CommandConfig represents command config.
@@ -37,6 +39,27 @@ func (cfg *CommandConfig) GetCommand(cmdType interfaces.CommandType, execType in
 
 	case commands.ParseEnvInfoCmdType:
 		cmd = commands.NewParseEnvInfoCmd()
+
+	case commands.InvServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewInvServiceStartCmd(exec)
+
+	case commands.InvServiceStopCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewInvServiceStopCmd(exec)
+
+	case commands.LoadDutTopologyCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewLoadDutTopologyCmd(exec)
 
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)

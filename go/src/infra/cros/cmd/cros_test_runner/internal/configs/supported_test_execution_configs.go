@@ -21,12 +21,18 @@ type CommandExecutorPairedConfig struct {
 // All currently supported command-executor pairs.
 var InputValidation_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.BuildInputValidationCmdType, ExecutorType: executors.NoExecutorType}
 var ParseEnvInfo_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ParseEnvInfoCmdType, ExecutorType: executors.NoExecutorType}
+var InvServiceStart_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.InvServiceStartCmdType, ExecutorType: executors.InvServiceExecutorType}
+var InvServiceStop_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.InvServiceStopCmdType, ExecutorType: executors.InvServiceExecutorType}
+var LoadDutTopology_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.LoadDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context) *Configs {
 	mainConfigs := []*CommandExecutorPairedConfig{
 		InputValidation_NoExecutor,
 		ParseEnvInfo_NoExecutor,
+		InvServiceStart_InvExecutor,
+		LoadDutTopology_InvExecutor,
+		InvServiceStop_InvExecutor,
 	}
 
 	// Clean up configs. They will be executed if any failures occurs in main configs.

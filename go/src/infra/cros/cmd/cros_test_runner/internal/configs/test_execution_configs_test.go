@@ -80,12 +80,25 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678}}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
 
-		// Generate configs first
-		err := testExecConfig.GenerateConfig(ctx)
-		So(err, ShouldBeNil)
+		// Use mock configs for simplicity
+		testExecConfig.configs = getMockedHwTestConfig()
 
 		// Execute configs
-		err = testExecConfig.Execute(ctx)
+		err := testExecConfig.Execute(ctx)
 		So(err, ShouldBeNil)
 	})
+}
+
+func getMockedHwTestConfig() *Configs {
+	mainConfigs := []*CommandExecutorPairedConfig{
+		InputValidation_NoExecutor,
+		ParseEnvInfo_NoExecutor,
+	}
+
+	// This should be skipped
+	cleanupConfigs := []*CommandExecutorPairedConfig{
+		ParseEnvInfo_NoExecutor,
+	}
+
+	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }

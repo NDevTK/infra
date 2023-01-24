@@ -37,5 +37,17 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		cmd, err = cmdConfig.GetCommand(commands.ParseEnvInfoCmdType, executors.NoExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.InvServiceStartCmdType, executors.InvServiceExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.InvServiceStopCmdType, executors.InvServiceExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.LoadDutTopologyCmdType, executors.InvServiceExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 	})
 }

@@ -5,6 +5,7 @@
 package data
 
 import (
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -18,5 +19,6 @@ type HwTestStateKeeper struct {
 	CftTestRequest *skylab_test_runner.CFTTestRequest
 
 	// Dut related
-	HostName string
+	HostName    string
+	DutTopology *lab_api.DutTopology
 }

@@ -11,4 +11,6 @@ import (
 // All supported executor types.
 const (
 	NoExecutorType interfaces.ExecutorType = "NoExecutor"
+
+	InvServiceExecutorType = "InvServiceExecutor"
 )
