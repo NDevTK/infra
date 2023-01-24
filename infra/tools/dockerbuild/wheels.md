@@ -6687,6 +6687,21 @@ wheel: <
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 
+### 1.7.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/scipy/${vpython_platform}"
+  version: "version:1.7.3"
+>
+```
+
+
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+
 ## **selenium**
 
 ### 2.29.0

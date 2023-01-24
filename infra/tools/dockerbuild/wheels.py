@@ -1017,6 +1017,16 @@ SPECS.update({
             pyversions=['py3'],
         ),
         Prebuilt(
+            'scipy',
+            '1.7.3',
+            [
+                'manylinux-x64-py3.8', 'mac-x64-py3.8', 'mac-arm64-py3.8',
+                'windows-x64-py3.8'
+            ],
+            pyversions=['py3'],
+            arch_map={'mac-arm64-py3.8': ['macosx_12_0_arm64']},
+        ),
+        Prebuilt(
             'tensorflow',
             '2.4.1',
             ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
