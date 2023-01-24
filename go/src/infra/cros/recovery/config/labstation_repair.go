@@ -318,6 +318,29 @@ func LabstationRepairConfig() *Configuration {
 						ExecName:               "sample_pass",
 						AllowFailAfterRecovery: true,
 					},
+					"Labstation image contains target GenesysLogic firmware": {
+						Docs: []string{
+							"Check if the current labstation OS image contains required GenesysLogic firmware",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName: "cros_genesys_logic_firmware_image_exists",
+					},
+					"Update GenesysLogic Firmware for servos": {
+						Docs: []string{
+							"Attempt to update GenesysLogic firmware for all servos on the labstation if needed.",
+							"The update run will be a no-op if a servo is already updated to the target firmware.",
+						},
+						Conditions: []string{
+							"Labstation image contains target GenesysLogic firmware",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName:               "cros_update_genesys_logic_firmware",
+						AllowFailAfterRecovery: true,
+					},
 				},
 			},
 		},

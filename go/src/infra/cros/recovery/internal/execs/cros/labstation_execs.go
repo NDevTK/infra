@@ -20,6 +20,8 @@ const (
 	// Threshold of messages log size we can keep. It should use expression(bcwkMG) that supported by `find` cli.
 	currentMessagesLogSizeThreshold = "300M"
 	oldMessagesLogSizeThreshold     = "50M"
+	// A specific firmware for servo dock, applies to servo_v4.1 only.
+	genesysLogicFirmwarePath = "/usr/share/fwupd/remotes.d/vendor/firmware/be2c9146ff4cfac5d647376c39ce0b78151e9f1a785a287e93ac3968aff2ed50-GenesysLogic_GL3590_64.17.cab"
 )
 
 // cleanTmpOwnerRequestExec cleans tpm owner requests.
@@ -130,6 +132,27 @@ func removeBluetoothDeviceExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
+// checkGenesysLogicFirmwareImageExists checks if the OS image on labstation contains a specific GenesysLogic firmware image.
+func checkGenesysLogicFirmwareImageExists(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.DefaultRunner()
+	if _, err := run(ctx, 20*time.Second, fmt.Sprintf("test -f %s", genesysLogicFirmwarePath)); err != nil {
+		return errors.Reason("check genesys logic firmware image exists: current labstation image does not contains target firmware.").Err()
+	}
+	return nil
+}
+
+// updateGenesysLogicFirmwareForServos updates a specific version of GenesysLogic firmware for all
+// servo_v4p1 on the labstation. The update is a no-op for servos that already updated to the given
+// firmware, and servos that doesn't have the applicable chip(e.g. servo_v4).
+func updateGenesysLogicFirmwareForServos(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.DefaultRunner()
+	if _, err := run(ctx, 20*time.Minute, fmt.Sprintf("fwupdtool install %s", genesysLogicFirmwarePath)); err != nil {
+		// We expected non-zero exit code in no-op cases, so just log the error here.
+		log.Debugf(ctx, "(Non-critical)fwupdtool run returns non-zero exit code, %s", err.Error())
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_clean_tmp_owner_request", cleanTmpOwnerRequestExec)
 	execs.Register("cros_validate_uptime", validateUptime)
@@ -137,4 +160,6 @@ func init() {
 	execs.Register("cros_filesystem_io_not_blocked", filesystemIoNotBlockedExec)
 	execs.Register("cros_log_clean_up", logCleanupExec)
 	execs.Register("cros_remove_bt_devices", removeBluetoothDeviceExec)
+	execs.Register("cros_update_genesys_logic_firmware", updateGenesysLogicFirmwareForServos)
+	execs.Register("cros_genesys_logic_firmware_image_exists", checkGenesysLogicFirmwareImageExists)
 }
