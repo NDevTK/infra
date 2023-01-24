@@ -1261,7 +1261,6 @@ wheel: <
 
 * *linux-arm64-py3.8*
 * *linux-armv6-py3.8*
-* *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
@@ -1280,7 +1279,6 @@ wheel: <
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.8*
 * *mac-x64-py3.8*
-* *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
@@ -1291,6 +1289,24 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/cffi/${vpython_platform}"
   version: "version:1.15.0"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
+### 1.15.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/cffi/${vpython_platform}"
+  version: "version:1.15.1"
 >
 ```
 

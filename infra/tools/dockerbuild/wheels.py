@@ -282,13 +282,16 @@ SPECS.update({
             'cffi',
             '1.14.3',
             pyversions=['py3'],
-            skip_plat=['mac-x64-py3.8', 'mac-arm64-py3.8'],
+            skip_plat=[
+                'mac-x64-py3.8', 'mac-arm64-py3.8', 'manylinux-x64-py3.11'
+            ],
         ),
         SourceOrPrebuilt(
             'cffi',
             '1.14.5',
             packaged=(),
             pyversions=['py2', 'py3'],
+            skip_plat=['manylinux-x64-py3.11'],
             # patch_version is incremented to force a rebuild when fixes are
             # made to the build environment.
             patch_version='chromium.7',
@@ -296,6 +299,13 @@ SPECS.update({
         SourceOrPrebuilt(
             'cffi',
             '1.15.0',
+            packaged=(),
+            pyversions=['py2', 'py3'],
+            skip_plat=['manylinux-x64-py3.11'],
+        ),
+        SourceOrPrebuilt(
+            'cffi',
+            '1.15.1',
             packaged=(),
             pyversions=['py2', 'py3'],
         ),
