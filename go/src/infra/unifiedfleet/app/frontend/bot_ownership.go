@@ -30,3 +30,15 @@ func (fs *FleetServerImpl) GetOwnershipData(ctx context.Context, req *api.GetOwn
 	logging.Errorf(ctx, "Error while querying ownership data : %v", err)
 	return nil, err
 }
+
+// ListOwnershipData returns the ownership data entries.
+// TODO(b/266235815) - Implement this RPC
+func (fs *FleetServerImpl) ListOwnershipData(ctx context.Context, req *api.ListOwnershipDataRequest) (response *api.ListOwnershipDataResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	return &api.ListOwnershipDataResponse{}, nil
+}

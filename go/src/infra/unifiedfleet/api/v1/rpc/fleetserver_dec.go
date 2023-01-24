@@ -2152,3 +2152,20 @@ func (s *DecoratedFleet) GetOwnershipData(ctx context.Context, req *GetOwnership
 	}
 	return
 }
+
+func (s *DecoratedFleet) ListOwnershipData(ctx context.Context, req *ListOwnershipDataRequest) (rsp *ListOwnershipDataResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListOwnershipData", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListOwnershipData(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListOwnershipData", rsp, err)
+	}
+	return
+}

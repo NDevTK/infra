@@ -1516,6 +1516,14 @@ func (r *GetOwnershipDataRequest) Validate() error {
 	return nil
 }
 
+// Validate validates input requests of ListOwnershipDataRequest.
+func (r *ListOwnershipDataRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
+	return validatePageSize(r.PageSize)
+}
+
 func validatePageSize(pageSize int32) error {
 	if pageSize < 0 {
 		return status.Errorf(codes.InvalidArgument, InvalidPageSize)
