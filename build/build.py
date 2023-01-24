@@ -328,6 +328,15 @@ class PackageDef(collections.namedtuple(
         get_on_change_tag(self.pkg_root, d, pkg_vars)
         for d in self.pkg_def.get('upload_on_change', [])
     ]
+
+    # If any on_change tags are in use, also create one for the spec itself.
+    # This will capture changes such as `copies` or `cipd_export`.
+    if on_change_tags:
+      on_change_tags.append(
+          get_on_change_tag(
+              os.path.dirname(self.path), {'file': os.path.basename(self.path)},
+              pkg_vars))
+
     pkg_path = render_path(
         self.pkg_def.get('package'), pkg_vars, replace_sep=False)
     return on_change_tags, pkg_path
