@@ -10,7 +10,6 @@ from __future__ import absolute_import
 import mock
 import os
 import unittest
-import webapp2
 import flask
 
 from google.appengine.api import memcache

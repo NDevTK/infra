@@ -226,12 +226,7 @@ class FlaskServlet(object):
     return self.response
 
   def get(self):
-    """Collect page-specific and generic info, then render the page.
-
-    Args:
-      Any path components parsed by webapp2 will be in kwargs, but we do
-        our own parsing later anyway, so ignore them for now.
-    """
+    """Collect page-specific and generic info, then render the page."""
     page_data = {}
     nonce = framework_helpers.MakeRandomKey(length=NONCE_LENGTH)
     try:

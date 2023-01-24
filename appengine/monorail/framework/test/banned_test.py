@@ -9,8 +9,6 @@ from __future__ import absolute_import
 
 import unittest
 
-import webapp2
-
 from framework import banned
 from framework import monorailrequest
 from services import service_manager

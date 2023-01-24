@@ -16,8 +16,6 @@ from testing import testing_helpers
 from tracker import componentcreate
 from tracker import tracker_bizobj
 
-import webapp2
-
 
 class ComponentCreateTest(unittest.TestCase):
 

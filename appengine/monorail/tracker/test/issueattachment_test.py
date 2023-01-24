@@ -15,7 +15,6 @@ try:
   from mox3 import mox
 except ImportError:
   import mox
-import webapp2
 
 from framework import exceptions, gcs_helpers
 from framework import permissions

@@ -9,8 +9,6 @@ from __future__ import absolute_import
 
 import unittest
 
-import webapp2
-
 from framework import exceptions
 from services import service_manager
 from sitewide import moved

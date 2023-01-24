@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from mock import Mock, patch
+from mock import Mock
 
 try:
   from mox3 import mox
@@ -25,8 +25,6 @@ from testing import fake
 from testing import testing_helpers
 from tracker import componentdetail
 from tracker import tracker_bizobj
-
-import webapp2
 
 
 class ComponentDetailTest(unittest.TestCase):

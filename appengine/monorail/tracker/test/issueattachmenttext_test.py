@@ -14,8 +14,6 @@ import ezt
 from google.appengine.ext import testbed
 from google.cloud import storage
 
-import webapp2
-
 from framework import permissions
 from proto import tracker_pb2
 from services import service_manager

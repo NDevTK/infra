@@ -18,7 +18,6 @@ import ezt
 
 from google.appengine.ext import testbed
 from mock import Mock, patch
-import webapp2
 
 from framework import framework_bizobj
 from framework import framework_views

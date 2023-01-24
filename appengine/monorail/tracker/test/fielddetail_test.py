@@ -14,10 +14,6 @@ except ImportError:
 import unittest
 import logging
 
-import webapp2
-
-import ezt
-
 from framework import permissions
 from proto import project_pb2
 from proto import tracker_pb2
@@ -26,7 +22,6 @@ from testing import fake
 from testing import testing_helpers
 from tracker import fielddetail
 from tracker import tracker_bizobj
-from tracker import tracker_views
 
 
 class FieldDetailTest(unittest.TestCase):

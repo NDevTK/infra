@@ -11,8 +11,6 @@ import json
 import logging
 import os
 import time
-from six.moves import urllib
-import webapp2
 import flask
 
 from google.appengine.api import app_identity
