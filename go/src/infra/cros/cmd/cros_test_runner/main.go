@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
 	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
 func main() {
@@ -40,8 +42,18 @@ func main() {
 
 // executeHwTests executes hw tests
 func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest) error {
+	// Create ctr
+	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
+		Version:        "prod", // TODO (azrahman): Get this from input.
+		CtrCipdPackage: common.CtrCipdPackage,
+	}
+
+	ctr := &crostoolrunner.CrosToolRunner{
+		CtrCipdInfo: ctrCipdInfo,
+	}
+
 	// Create configs
-	executorCfg := configs.NewExecutorConfig()
+	executorCfg := configs.NewExecutorConfig(ctr)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper

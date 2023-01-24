@@ -7,6 +7,7 @@ package configs
 import (
 	"context"
 	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -17,7 +18,9 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 	t.Parallel()
 	Convey("Unsupported test execution config type", t, func() {
 		ctx := context.Background()
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(UnSupportedTestExecutionConfigType, cmdConfig, sk)
@@ -30,7 +33,9 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 	t.Parallel()
 	Convey("Supported test execution config type", t, func() {
 		ctx := context.Background()
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
@@ -43,7 +48,9 @@ func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 	t.Parallel()
 	Convey("Execute without generating configs", t, func() {
 		ctx := context.Background()
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
@@ -56,7 +63,9 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 	t.Parallel()
 	Convey("Execute hw tests with failure", t, func() {
 		ctx := context.Background()
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
@@ -75,7 +84,9 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 	t.Parallel()
 	Convey("Execute hw tests successfully", t, func() {
 		ctx := context.Background()
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678}}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)

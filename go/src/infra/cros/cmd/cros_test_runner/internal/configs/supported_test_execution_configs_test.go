@@ -21,6 +21,6 @@ func TestGenerateHwConfigs(t *testing.T) {
 		So(hwConfigs.MainConfigs, ShouldNotBeNil)
 		So(hwConfigs.CleanupConfigs, ShouldNotBeNil)
 		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
-		So(len(hwConfigs.CleanupConfigs), ShouldEqual, 0)
+		So(len(hwConfigs.CleanupConfigs), ShouldBeGreaterThan, 0)
 	})
 }

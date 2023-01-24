@@ -6,6 +6,7 @@ package configs
 
 import (
 	"infra/cros/cmd/cros_test_runner/internal/executors"
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -14,7 +15,9 @@ import (
 func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {
 	t.Parallel()
 	Convey("Unsupported executor type", t, func() {
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		executor, err := execConfig.GetExecutor(executors.NoExecutorType)
 		So(executor, ShouldBeNil)
 		So(err, ShouldNotBeNil)
@@ -24,7 +27,9 @@ func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {
 func TestGetExecutor_SupportedExecutorType(t *testing.T) {
 	t.Parallel()
 	Convey("Supported executor type", t, func() {
-		execConfig := NewExecutorConfig()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		execConfig := NewExecutorConfig(ctr)
 		executor, err := execConfig.GetExecutor(executors.InvServiceExecutorType)
 		So(executor, ShouldNotBeNil)
 		So(err, ShouldBeNil)

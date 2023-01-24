@@ -8,17 +8,19 @@ import (
 	"fmt"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
 // ExecutorConfig represents executor configs.
 type ExecutorConfig struct {
 	InvServiceAddress string
+	Ctr               *crostoolrunner.CrosToolRunner
 
 	execsMap map[interfaces.ExecutorType]interfaces.ExecutorInterface
 }
 
-func NewExecutorConfig() interfaces.ExecutorConfigInterface {
-	return &ExecutorConfig{execsMap: make(map[interfaces.ExecutorType]interfaces.ExecutorInterface)}
+func NewExecutorConfig(ctr *crostoolrunner.CrosToolRunner) interfaces.ExecutorConfigInterface {
+	return &ExecutorConfig{Ctr: ctr, execsMap: make(map[interfaces.ExecutorType]interfaces.ExecutorInterface)}
 }
 
 // GetExecutor returns the concrete executor based on provided executor type.
@@ -38,6 +40,12 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 			invServiceAddress = cfg.InvServiceAddress
 		}
 		exec = executors.NewInvServiceExecutor(invServiceAddress)
+
+	case executors.CtrExecutorType:
+		if cfg.Ctr == nil {
+			return nil, fmt.Errorf("CrosToolRunner is nil!")
+		}
+		exec = executors.NewCtrExecutor(cfg.Ctr)
 
 	default:
 		return nil, fmt.Errorf("Executor type %s not supported in executor configs!", execType)

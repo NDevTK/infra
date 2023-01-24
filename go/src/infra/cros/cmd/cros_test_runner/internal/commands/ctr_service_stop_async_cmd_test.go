@@ -9,30 +9,35 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestInvServiceStopCmd_NoDeps(t *testing.T) {
+func TestCtrServiceStopCmd_NoDeps(t *testing.T) {
 	t.Parallel()
 	Convey("No deps", t, func() {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
-		exec := executors.NewInvServiceExecutor("")
-		cmd := commands.NewInvServiceStopCmd(exec)
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		exec := executors.NewCtrExecutor(ctr)
+		cmd := commands.NewCtrServiceStopCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
 	})
 }
 
-func TestInvServiceStopCmd_NoUpdates(t *testing.T) {
+func TestCtrServiceStopCmd_NoUpdates(t *testing.T) {
 	t.Parallel()
 	Convey("No updates", t, func() {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
-		exec := executors.NewInvServiceExecutor("")
-		cmd := commands.NewInvServiceStopCmd(exec)
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		exec := executors.NewCtrExecutor(ctr)
+		cmd := commands.NewCtrServiceStopCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
 	})

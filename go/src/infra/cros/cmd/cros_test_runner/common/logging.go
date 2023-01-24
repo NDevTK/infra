@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package common
 
 import (
@@ -53,4 +57,14 @@ func WriteProtoToJsonFile(ctx context.Context, dirPath string, fileName string, 
 	}
 
 	return protoFilePath, nil
+}
+
+// LogExecutionDetails logs provided cmds to build step.
+func LogExecutionDetails(ctx context.Context, step *build.Step, cmds []string) {
+	outputLog := step.Log("Execution Details")
+	logCmdsStr := fmt.Sprintf("%+q", cmds)
+	_, err := outputLog.Write([]byte(logCmdsStr))
+	if err != nil {
+		logging.Infof(ctx, "Failed to create execution details for cmd: %q", cmds)
+	}
 }

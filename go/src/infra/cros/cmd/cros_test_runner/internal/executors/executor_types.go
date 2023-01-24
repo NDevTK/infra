@@ -10,7 +10,7 @@ import (
 
 // All supported executor types.
 const (
-	NoExecutorType interfaces.ExecutorType = "NoExecutor"
-
-	InvServiceExecutorType = "InvServiceExecutor"
+	NoExecutorType         interfaces.ExecutorType = "NoExecutor"
+	InvServiceExecutorType interfaces.ExecutorType = "InvServiceExecutor"
+	CtrExecutorType        interfaces.ExecutorType = "CtrExecutor"
 )
