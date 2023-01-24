@@ -5,6 +5,7 @@
 package data
 
 import (
+	test_api "go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -27,6 +28,12 @@ type HwTestStateKeeper struct {
 
 	// Provsion related
 	InstallMetadata *anypb.Any
+
+	// Test related
+	TestResponses *test_api.CrosTestResponse
+
+	// Publish related
+	TkoPublishSrcDir string
 
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner

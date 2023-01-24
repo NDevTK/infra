@@ -30,6 +30,8 @@ var GcloudAuth_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.
 var DutServerStart_CrosDutExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutExecutorType}
 var ProvisionServerStart_CrosProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProvisionServiceStartCmdType, ExecutorType: executors.CrosProvisionExecutorType}
 var ProvisionInstall_CrosProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
+var TestServerStart_CrosTestExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestServiceStartCmdType, ExecutorType: executors.CrosTestExecutorType}
+var TestsExecution_CrosTestExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestsExecutionCmdType, ExecutorType: executors.CrosTestExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context) *Configs {
@@ -44,6 +46,8 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 		DutServerStart_CrosDutExecutor,
 		ProvisionServerStart_CrosProvisionExecutor,
 		ProvisionInstall_CrosProvisionExecutor,
+		TestServerStart_CrosTestExecutor,
+		TestsExecution_CrosTestExecutor,
 		CtrStop_CtrExecutor,
 	}
 

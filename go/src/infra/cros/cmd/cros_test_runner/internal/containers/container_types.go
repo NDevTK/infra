@@ -12,4 +12,5 @@ const (
 	UnsupportedContainerType            interfaces.ContainerType = "UnsupportedContainer"
 	CrosProvisionTemplatedContainerType interfaces.ContainerType = "CrosProvisionTemplatedContainer"
 	CrosDutTemplatedContainerType       interfaces.ContainerType = "CrosDutTemplatedContainer"
+	CrosTestTemplatedContainerType      interfaces.ContainerType = "CrosTestTemplatedContainer"
 )

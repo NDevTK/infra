@@ -1,0 +1,109 @@
+// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands_test
+
+import (
+	"context"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/cmd/cros_test_runner/internal/containers"
+	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/internal/executors"
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+)
+
+func TestTestsExecutionCmd_UnsupportedSK(t *testing.T) {
+	t.Parallel()
+	Convey("Unsupported state keeper", t, func() {
+		ctx := context.Background()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
+		exec := executors.NewCrosTestExecutor(cont)
+		cmd := commands.NewTestsExecutionCmd(exec)
+		sk := &UnsupportedStateKeeper{}
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestTestsExecutionCmd_MissingDeps(t *testing.T) {
+	t.Parallel()
+	Convey("Cmd missing deps", t, func() {
+		ctx := context.Background()
+		sk := &data.HwTestStateKeeper{}
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
+		exec := executors.NewCrosTestExecutor(cont)
+		cmd := commands.NewTestsExecutionCmd(exec)
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestTestsExecutionCmd_UpdateSK(t *testing.T) {
+	t.Parallel()
+	Convey("Cmd with no updates", t, func() {
+		ctx := context.Background()
+		sk := &data.HwTestStateKeeper{}
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
+		exec := executors.NewCrosTestExecutor(cont)
+		cmd := commands.NewTestsExecutionCmd(exec)
+		err := cmd.UpdateStateKeeper(ctx, sk)
+		So(err, ShouldBeNil)
+	})
+}
+
+func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
+	t.Parallel()
+
+	Convey("TestsExecutionCmd extract deps", t, func() {
+		ctx := context.Background()
+		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{TestSuites: []*api.TestSuite{&test_api.TestSuite{}}}, DutTopology: &lab_api.DutTopology{Duts: []*lab_api.Dut{{}}}, DutServerAddress: &lab_api.IpEndpoint{}}
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
+		exec := executors.NewCrosTestExecutor(cont)
+		cmd := commands.NewTestsExecutionCmd(exec)
+
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldBeNil)
+	})
+}
+
+func TestTestsExecutionCmd_UpdateSKSuccess(t *testing.T) {
+	t.Parallel()
+	Convey("TestsExecutionCmd update SK", t, func() {
+		ctx := context.Background()
+		sk := &data.HwTestStateKeeper{}
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
+		exec := executors.NewCrosTestExecutor(cont)
+		cmd := commands.NewTestsExecutionCmd(exec)
+
+		wantTestResp := &test_api.CrosTestResponse{TestCaseResults: []*test_api.TestCaseResult{{TestCaseId: &test_api.TestCase_Id{}}}}
+		wantTkoPublishSrcDir := "tko/src/dir"
+		cmd.TestResponses = wantTestResp
+		cmd.TkoPublishSrcDir = wantTkoPublishSrcDir
+
+		// Update SK
+		err := cmd.UpdateStateKeeper(ctx, sk)
+		So(err, ShouldBeNil)
+		So(sk.TestResponses, ShouldNotBeNil)
+		So(sk.TkoPublishSrcDir, ShouldNotBeNil)
+		So(sk.TestResponses, ShouldEqual, wantTestResp)
+		So(sk.TkoPublishSrcDir, ShouldEqual, wantTkoPublishSrcDir)
+	})
+}

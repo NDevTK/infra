@@ -15,4 +15,5 @@ const (
 	CtrExecutorType           interfaces.ExecutorType = "CtrExecutor"
 	CrosDutExecutorType       interfaces.ExecutorType = "CrosDutExecutor"
 	CrosProvisionExecutorType interfaces.ExecutorType = "CrosProvisionExecutor"
+	CrosTestExecutorType      interfaces.ExecutorType = "CrosTestExecutor"
 )

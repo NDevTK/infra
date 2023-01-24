@@ -55,6 +55,13 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 		}
 		cont = containers.NewCrosProvisionTemplatedContainer(containerImage, cfg.Ctr)
 
+	case containers.CrosTestTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap("cros-test", cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewCrosTestTemplatedContainer(containerImage, cfg.Ctr)
+
 	default:
 		return nil, fmt.Errorf("Container type %s not supported in container configs!", contType)
 	}

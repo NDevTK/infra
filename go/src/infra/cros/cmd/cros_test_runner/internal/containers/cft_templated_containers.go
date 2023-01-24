@@ -12,3 +12,7 @@ func NewCrosDutTemplatedContainer(containerImage string, ctr *crostoolrunner.Cro
 func NewCrosProvisionTemplatedContainer(containerImage string, ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 	return NewContainer(CrosProvisionTemplatedContainerType, "cros-provision", containerImage, ctr, true)
 }
+
+func NewCrosTestTemplatedContainer(containerImage string, ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+	return NewContainer(CrosTestTemplatedContainerType, "cros-test", containerImage, ctr, true)
+}

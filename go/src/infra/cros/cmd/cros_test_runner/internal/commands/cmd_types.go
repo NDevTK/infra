@@ -31,6 +31,10 @@ const (
 	ProvisionServiceStartCmdType interfaces.CommandType = "ProvisionServiceStart"
 	ProvisonInstallCmdType       interfaces.CommandType = "ProvisonInstall"
 
+	// Test service related commands
+	TestServiceStartCmdType interfaces.CommandType = "TestServiceStart"
+	TestsExecutionCmdType   interfaces.CommandType = "TestsExecution"
+
 	// For testing purposes only
 	UnSupportedCmdType interfaces.CommandType = "UnSupportedCmd"
 )

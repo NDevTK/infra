@@ -103,6 +103,20 @@ func (cfg *CommandConfig) GetCommand(cmdType interfaces.CommandType, execType in
 		}
 		cmd = commands.NewProvisionInstallCmd(exec)
 
+	case commands.TestServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewTestServiceStartCmd(exec)
+
+	case commands.TestsExecutionCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewTestsExecutionCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

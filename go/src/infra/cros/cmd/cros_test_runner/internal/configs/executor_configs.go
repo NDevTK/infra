@@ -65,6 +65,13 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = executors.NewCrosProvisionExecutor(container)
 
+	case executors.CrosTestExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CrosTestTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewCrosTestExecutor(container)
+
 	default:
 		return nil, fmt.Errorf("Executor type %s not supported in executor configs!", execType)
 	}
