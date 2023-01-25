@@ -170,41 +170,39 @@ func extractCheckpointStatus(build *bbpb.Build, checkpoint pb.RetryStep) *string
 // matches evaluates whether the given build result matches the rule.
 func (r *Rule) matches(build *bbpb.Build) bool {
 	if len(r.rule.GetStatus()) > 0 {
-		if len(r.rule.GetStatus()) > 0 {
-			status := build.GetStatus()
-			statusMatch := false
-			for _, ruleStatus := range r.rule.GetStatus() {
-				if status == bbpb.Status(ruleStatus) {
-					statusMatch = true
-					break
-				}
-			}
-			if !statusMatch {
-				return false
+		status := build.GetStatus()
+		statusMatch := false
+		for _, ruleStatus := range r.rule.GetStatus() {
+			if status == bbpb.Status(ruleStatus) {
+				statusMatch = true
+				break
 			}
 		}
-
-		builderName := build.GetBuilder().GetBuilder()
-		if len(r.builderNameRe) > 0 {
-			matches := matchesAny(builderName, r.builderNameRe)
-			if !matches {
-				return false
-			}
+		if !statusMatch {
+			return false
 		}
+	}
 
-		summaryMarkdown := build.GetSummaryMarkdown()
-		if len(r.summaryMarkdownRe) > 0 {
-			matches := matchesAny(summaryMarkdown, r.summaryMarkdownRe)
-			if !matches {
-				return false
-			}
+	builderName := build.GetBuilder().GetBuilder()
+	if len(r.builderNameRe) > 0 {
+		matches := matchesAny(builderName, r.builderNameRe)
+		if !matches {
+			return false
 		}
+	}
 
-		if r.rule.GetFailedCheckpoint() != pb.RetryStep_UNDEFINED {
-			checkpointStatus := extractCheckpointStatus(build, r.rule.GetFailedCheckpoint())
-			if checkpointStatus != nil && *checkpointStatus != "FAILED" {
-				return false
-			}
+	summaryMarkdown := build.GetSummaryMarkdown()
+	if len(r.summaryMarkdownRe) > 0 {
+		matches := matchesAny(summaryMarkdown, r.summaryMarkdownRe)
+		if !matches {
+			return false
+		}
+	}
+
+	if r.rule.GetFailedCheckpoint() != pb.RetryStep_UNDEFINED {
+		checkpointStatus := extractCheckpointStatus(build, r.rule.GetFailedCheckpoint())
+		if checkpointStatus == nil || (checkpointStatus != nil && *checkpointStatus != "FAILED") {
+			return false
 		}
 	}
 	return true

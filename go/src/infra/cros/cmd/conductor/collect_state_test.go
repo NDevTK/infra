@@ -214,3 +214,158 @@ func TestCollectState_BuildMatches(t *testing.T) {
 	}
 	assert.Assert(t, !collectState.canRetry(otherBuild))
 }
+
+func TestCollectState_Status(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					Status: []int32{
+						int32(bbpb.Status_FAILURE),
+						int32(bbpb.Status_INFRA_FAILURE),
+					},
+				},
+			},
+		}})
+
+	successfulBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_SUCCESS,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "coral-release-main",
+		},
+		SummaryMarkdown: "gclient error",
+	}
+	assert.Assert(t, !collectState.canRetry(successfulBuild))
+}
+
+func TestCollectState_BuilderNameRe(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					BuilderNameRe: []string{
+						"coral-.*",
+						"eve-.*",
+					},
+				},
+			},
+		}})
+
+	failedBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+	}
+	assert.Assert(t, collectState.canRetry(failedBuild))
+
+	successfulBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_SUCCESS,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "coral-release-main",
+		},
+		SummaryMarkdown: "gclient error",
+	}
+	assert.Assert(t, collectState.canRetry(successfulBuild))
+}
+
+func TestCollectState_SummaryMarkdown(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					SummaryMarkdownRe: []string{
+						".*source cache.*",
+						".*gclient.*",
+					},
+				},
+			},
+		}})
+
+	failedBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+	}
+	assert.Assert(t, collectState.canRetry(failedBuild))
+
+	successfulBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_SUCCESS,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "coral-release-main",
+		},
+		SummaryMarkdown: "random error",
+	}
+	assert.Assert(t, !collectState.canRetry(successfulBuild))
+}
+
+func TestCollectState_FailedCheckpoint(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					FailedCheckpoint: pb.RetryStep_STAGE_ARTIFACTS,
+				},
+			},
+		}})
+
+	inputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	assert.NilError(t, err)
+	err = bb.SetProperty(inputProperties,
+		"$chromeos/checkpoint.retry_summary.STAGE_ARTIFACTS",
+		"FAILED")
+	assert.NilError(t, err)
+
+	failedBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+		Input: &bbpb.Build_Input{
+			Properties: inputProperties,
+		},
+	}
+	assert.Assert(t, collectState.canRetry(failedBuild))
+
+	successfulBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_SUCCESS,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "coral-release-main",
+		},
+		SummaryMarkdown: "gclient error",
+	}
+	assert.Assert(t, !collectState.canRetry(successfulBuild))
+}

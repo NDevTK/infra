@@ -1,8 +1,26 @@
 {
-    "rules": [
-        {
-            "status": [20, 36],
-            "cutoff_seconds": 1
-        }
-    ]
+  "rules": [
+    {
+      "builderNameRe": [
+        ".*"
+      ],
+      "cutoffSeconds": 36000
+    },
+    {
+      "cutoffPercent": 0.1,
+      "cutoffSeconds": 21600,
+      "failedCheckpoint": "STAGE_ARTIFACTS",
+      "status": [
+        36
+      ]
+    },
+    {
+      "cutoffPercent": 0.05,
+      "failedCheckpoint": "PUSH_IMAGES"
+    },
+    {
+      "cutoffPercent": 0.15,
+      "failedCheckpoint": "COLLECT_SIGNING"
+    }
+  ]
 }
