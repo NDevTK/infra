@@ -82,6 +82,12 @@ func RunAutoserv(
 	}()
 	a := j.AutoservArgs()
 	if j, ok := j.(keyvalsJob); ok {
+		kv, _ := json.Marshal(j.JobKeyvals())
+		logging.Infof(
+			ctx,
+			"Job keyval: %s",
+			string(kv),
+		)
 		if err := writeKeyvals(a.ResultsDir, j.JobKeyvals()); err != nil {
 			return &Result{}, err
 		}
