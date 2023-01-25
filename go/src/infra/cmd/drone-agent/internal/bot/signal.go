@@ -12,7 +12,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/shirou/gopsutil/process"
+	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/unix"
 )
 
