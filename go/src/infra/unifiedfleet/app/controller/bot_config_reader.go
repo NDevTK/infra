@@ -30,6 +30,7 @@ import (
 	"infra/unifiedfleet/app/model/registration"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	api "infra/unifiedfleet/api/v1/rpc"
 )
 
 const (
@@ -215,6 +216,38 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 			logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", pool.SwarmingServerId, err)
 		}
 	}
+}
+
+// ListOwnershipConfigs lists the ownerships based on the specified parameters.
+func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*api.OwnershipByHost, string, error) {
+	var filterMap map[string][]interface{}
+	var err error
+	if filter != "" {
+		filterMap, err = getFilterMap(filter, inventory.GetOwnershipIndexedFieldName)
+		if err != nil {
+			return nil, "", errors.Annotate(err, "failed to read filter for listing Ownerships").Err()
+		}
+	}
+	res, pageToken, err := inventory.ListOwnerships(ctx, pageSize, pageToken, filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	var entities []*api.OwnershipByHost
+
+	for _, entity := range res {
+		p, err := entity.GetProto()
+		if err != nil {
+			logging.Errorf(ctx, "Error parsing entity for ListOwnershipConfigs : %s", err)
+		} else {
+			pm := p.(*ufspb.OwnershipData)
+			ownership := &api.OwnershipByHost{
+				Hostname:  entity.Name,
+				Ownership: pm,
+			}
+			entities = append(entities, ownership)
+		}
+	}
+	return entities, pageToken, nil
 }
 
 // Updates the Ownership config for the bot ids collected from the config.

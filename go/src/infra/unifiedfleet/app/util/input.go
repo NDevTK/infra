@@ -132,6 +132,7 @@ var (
 	CpuCoresFilterName             string = "cpucores"
 	MemoryFilterName               string = "memory"
 	StorageFilterName              string = "storage"
+	AssetType                      string = "assettype"
 )
 
 const separator string = "/"

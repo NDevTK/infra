@@ -290,6 +290,26 @@ func TestImportENCBotConfig(t *testing.T) {
 	})
 }
 
+// Tests the functionality for getting all the bot security configs
+func TestGetAllOwnershipConfigs(t *testing.T) {
+	t.Parallel()
+	ctx := encTestingContext()
+	Convey("Get all ownership Configs", t, func() {
+		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
+		ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
+		So(err, ShouldBeNil)
+		Convey("happy path", func() {
+			err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+			ownerships, _, err := ListOwnershipConfigs(ctx, 20, "", "", false)
+			So(err, ShouldBeNil)
+			So(ownerships, ShouldNotBeNil)
+			So(len(ownerships), ShouldEqual, 11)
+		})
+	})
+}
+
 // Tests the functionality for importing security configs from the config files
 func TestImportSecurityConfig(t *testing.T) {
 	t.Parallel()

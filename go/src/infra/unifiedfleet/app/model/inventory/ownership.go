@@ -7,6 +7,7 @@ package inventory
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
@@ -17,6 +18,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsds "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 )
 
 // OwnershipDataKind is the datastore entity kind OwnershipData.
@@ -130,4 +132,17 @@ func runListOwnershipQuery(ctx context.Context, query *datastore.Query, pageSize
 		nextPageToken = nextCur.String()
 	}
 	return
+}
+
+// GetOwnershipIndexedFieldName returns the index name
+func GetOwnershipIndexedFieldName(input string) (string, error) {
+	var field string
+	input = strings.TrimSpace(input)
+	switch strings.ToLower(input) {
+	case util.AssetType:
+		field = "AssetType"
+	default:
+		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are assettype", input)
+	}
+	return field, nil
 }
