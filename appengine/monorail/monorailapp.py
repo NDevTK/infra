@@ -16,7 +16,7 @@ import flask
 from components import endpoints_flask
 import gae_ts_mon
 
-import flaskregisterpages
+import registerpages
 from framework import sorting
 from search import search_helpers
 from services import api_svc_v1
@@ -28,7 +28,7 @@ search_helpers.InitializeAppEngineSearchAPI()
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)
 
-flask_regist = flaskregisterpages.ServletRegistry()
+flask_regist = registerpages.ServletRegistry()
 
 app = flask.Flask(__name__)
 
