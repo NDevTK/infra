@@ -325,6 +325,27 @@ SPECS.update({
             packaged=(),
         ),
         SourceOrPrebuilt(
+            'cryptography',
+            '3.3.2',
+            pyversions=['py2', 'py3'],
+            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools >= 40.6.0',
+                    'wheel',
+                ],
+                local=[
+                    SourceOrPrebuilt(
+                        'cffi',
+                        '1.15.1',
+                        packaged=(),
+                    ),
+                ],
+            ),
+            tpp_libs=[('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1j.chromium.2')],
+        ),
+        SourceOrPrebuilt(
             'debugpy',
             '1.5.1',
             only_plat=[
