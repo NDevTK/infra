@@ -5,6 +5,8 @@ package frontend
 
 import (
 	"context"
+	"fmt"
+	"sync/atomic"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -21,6 +23,8 @@ import (
 	"infra/unifiedfleet/app/model/registration"
 )
 
+var branchNumber uint32 = 0
+
 // encTestingContext creates a testing context which mocks the logging and datastore services.
 // Also loads a custom config, which will allow the loading of a dummy bot config file
 func encTestingContext() context.Context {
@@ -31,7 +35,7 @@ func encTestingContext() context.Context {
 		OwnershipConfig: &config.OwnershipConfig{
 			GitilesHost: "test_gitiles",
 			Project:     "test_project",
-			Branch:      "test_branch",
+			Branch:      fmt.Sprintf("test_branch_%d", atomic.AddUint32(&branchNumber, 1)),
 			EncConfig: []*config.OwnershipConfig_ConfigFile{
 				{
 					Name:       "test_name",
@@ -79,6 +83,43 @@ func TestGetOwnershipData(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(res, ShouldBeNil)
 			So(err.Error(), ShouldContainSubstring, "not found")
+		})
+	})
+}
+
+// Tests the RPC for listing ownership data
+func TestListOwnershipData(t *testing.T) {
+	t.Parallel()
+	ctx := encTestingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("List Ownership Data for Bots", t, func() {
+		Convey("happy path", func() {
+			err := controller.ImportBotConfigs(ctx)
+			So(err, ShouldBeNil)
+			req := &api.ListOwnershipDataRequest{
+				PageSize: 10,
+			}
+
+			res, err := tf.Fleet.ListOwnershipData(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(res, ShouldNotBeNil)
+			So(len(res.OwnershipData), ShouldEqual, 10)
+			So(res.NextPageToken, ShouldNotBeBlank)
+
+			// Get next set of entities
+			req = &api.ListOwnershipDataRequest{
+				PageSize:  10,
+				PageToken: res.NextPageToken,
+			}
+
+			res, err = tf.Fleet.ListOwnershipData(ctx, req)
+
+			So(err, ShouldBeNil)
+			So(res, ShouldNotBeNil)
+			So(len(res.OwnershipData), ShouldEqual, 1)
+			So(res.NextPageToken, ShouldBeBlank)
 		})
 	})
 }

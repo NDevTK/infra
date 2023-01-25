@@ -13,6 +13,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
+	"infra/unifiedfleet/app/util"
 )
 
 // GetOwnershipData returns the ownership data for a given host.
@@ -32,7 +33,6 @@ func (fs *FleetServerImpl) GetOwnershipData(ctx context.Context, req *api.GetOwn
 }
 
 // ListOwnershipData returns the ownership data entries.
-// TODO(b/266235815) - Implement this RPC
 func (fs *FleetServerImpl) ListOwnershipData(ctx context.Context, req *api.ListOwnershipDataRequest) (response *api.ListOwnershipDataResponse, err error) {
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
@@ -40,5 +40,13 @@ func (fs *FleetServerImpl) ListOwnershipData(ctx context.Context, req *api.ListO
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &api.ListOwnershipDataResponse{}, nil
+	pageSize := util.GetPageSize(req.PageSize)
+	result, nextPageToken, err := controller.ListOwnershipConfigs(ctx, pageSize, req.PageToken, req.Filter, req.KeysOnly)
+	if err != nil {
+		return nil, err
+	}
+	return &api.ListOwnershipDataResponse{
+		OwnershipData: result,
+		NextPageToken: nextPageToken,
+	}, nil
 }
