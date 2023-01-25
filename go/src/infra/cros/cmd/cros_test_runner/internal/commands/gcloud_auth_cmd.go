@@ -23,7 +23,8 @@ type GcloudAuthCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *GcloudAuthCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *GcloudAuthCmd) ExtractDependencies(ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -39,7 +40,10 @@ func (cmd *GcloudAuthCmd) ExtractDependencies(ctx context.Context, ski interface
 	return nil
 }
 
-func (cmd *GcloudAuthCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *GcloudAuthCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.DockerKeyFileLocation == "" {
 		return fmt.Errorf("Cmd %q missing dependency: DockerKeyFileLocation", cmd.GetCommandType())
 	}

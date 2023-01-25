@@ -23,8 +23,11 @@ type ExecutorConfig struct {
 	execsMap map[interfaces.ExecutorType]interfaces.ExecutorInterface
 }
 
-func NewExecutorConfig(ctr *crostoolrunner.CrosToolRunner, contConfig interfaces.ContainerConfigInterface) interfaces.ExecutorConfigInterface {
-	return &ExecutorConfig{Ctr: ctr, ContainerConfig: contConfig, execsMap: make(map[interfaces.ExecutorType]interfaces.ExecutorInterface)}
+func NewExecutorConfig(
+	ctr *crostoolrunner.CrosToolRunner,
+	contConfig interfaces.ContainerConfigInterface) interfaces.ExecutorConfigInterface {
+	execsMap := make(map[interfaces.ExecutorType]interfaces.ExecutorInterface)
+	return &ExecutorConfig{Ctr: ctr, ContainerConfig: contConfig, execsMap: execsMap}
 }
 
 // GetExecutor returns the concrete executor based on provided executor type.

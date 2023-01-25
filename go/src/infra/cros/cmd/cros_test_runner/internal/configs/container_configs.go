@@ -19,8 +19,16 @@ type CftContainerConfig struct {
 	containersMap map[interfaces.ContainerType]interfaces.ContainerInterface
 }
 
-func NewCftContainerConfig(ctr *crostoolrunner.CrosToolRunner, containerImagesMap map[string]*api.ContainerImageInfo) interfaces.ContainerConfigInterface {
-	return &CftContainerConfig{Ctr: ctr, ContainerImagesMap: containerImagesMap, containersMap: make(map[interfaces.ContainerType]interfaces.ContainerInterface)}
+func NewCftContainerConfig(
+	ctr *crostoolrunner.CrosToolRunner,
+	containerImagesMap map[string]*api.ContainerImageInfo) interfaces.ContainerConfigInterface {
+
+	contMap := make(map[interfaces.ContainerType]interfaces.ContainerInterface)
+	return &CftContainerConfig{
+		Ctr:                ctr,
+		ContainerImagesMap: containerImagesMap,
+		containersMap:      contMap,
+	}
 }
 
 // GetContainer returns the concrete container based on provided container type.

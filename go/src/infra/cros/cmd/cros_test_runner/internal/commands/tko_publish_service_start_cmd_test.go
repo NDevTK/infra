@@ -23,8 +23,13 @@ func TestTkoPublishStartCmd_UnsupportedSK(t *testing.T) {
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosTkoPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosTkoPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosTkoPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -38,8 +43,13 @@ func TestTkoPublishStartCmd_MissingDeps(t *testing.T) {
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosTkoPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosTkoPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosTkoPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -53,8 +63,13 @@ func TestTkoPublishStartCmd_UpdateSK(t *testing.T) {
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosTkoPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosTkoPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosTkoPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishServiceStartCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
@@ -70,8 +85,13 @@ func TestTkoPublishStartCmd_ExtractDepsSuccess(t *testing.T) {
 		sk := &data.HwTestStateKeeper{TkoPublishSrcDir: wantPublishSrcDir}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosTkoPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosTkoPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosTkoPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishServiceStartCmd(exec)
 
 		// Extract deps first

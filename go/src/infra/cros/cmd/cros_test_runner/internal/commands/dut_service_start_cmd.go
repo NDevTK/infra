@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/cros_test_runner/internal/data"
@@ -16,15 +16,18 @@ type DutServiceStartCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	CacheServerAddress *lab_api.IpEndpoint
-	DutSshAddress      *lab_api.IpEndpoint
+	CacheServerAddress *labapi.IpEndpoint
+	DutSshAddress      *labapi.IpEndpoint
 
 	// Updates
-	DutServerAddress *lab_api.IpEndpoint
+	DutServerAddress *labapi.IpEndpoint
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *DutServiceStartCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *DutServiceStartCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -42,7 +45,10 @@ func (cmd *DutServiceStartCmd) ExtractDependencies(ctx context.Context, ski inte
 }
 
 // UpdateStateKeeper updates the state keeper with info from the cmd.
-func (cmd *DutServiceStartCmd) UpdateStateKeeper(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *DutServiceStartCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -56,7 +62,10 @@ func (cmd *DutServiceStartCmd) UpdateStateKeeper(ctx context.Context, ski interf
 	return nil
 }
 
-func (cmd *DutServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *DutServiceStartCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.DutTopology == nil {
 		return fmt.Errorf("Cmd %q missing dependency: DutTopology", cmd.GetCommandType())
 	}
@@ -78,7 +87,10 @@ func (cmd *DutServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx context.Cont
 	return nil
 }
 
-func (cmd *DutServiceStartCmd) updateHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *DutServiceStartCmd) updateHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if cmd.DutServerAddress != nil {
 		sk.DutServerAddress = cmd.DutServerAddress
 	}
@@ -87,7 +99,8 @@ func (cmd *DutServiceStartCmd) updateHwTestStateKeeper(ctx context.Context, sk *
 }
 
 func NewDutServiceStartCmd(executor interfaces.ExecutorInterface) *DutServiceStartCmd {
-	cmd := &DutServiceStartCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(DutServiceStartCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(DutServiceStartCmdType, executor)
+	cmd := &DutServiceStartCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

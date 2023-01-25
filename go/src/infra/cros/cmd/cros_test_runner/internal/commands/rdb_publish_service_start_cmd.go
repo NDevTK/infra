@@ -14,7 +14,8 @@ type RdbPublishServiceStartCmd struct {
 }
 
 func NewRdbPublishServiceStartCmd(executor interfaces.ExecutorInterface) *RdbPublishServiceStartCmd {
-	cmd := &RdbPublishServiceStartCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(RdbPublishStartCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(RdbPublishStartCmdType, executor)
+	cmd := &RdbPublishServiceStartCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

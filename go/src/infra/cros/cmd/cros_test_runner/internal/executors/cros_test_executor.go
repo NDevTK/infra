@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -22,27 +22,37 @@ type CrosTestExecutor struct {
 	*interfaces.AbstractExecutor
 
 	Container             interfaces.ContainerInterface
-	CrosTestServiceClient test_api.ExecutionServiceClient
+	CrosTestServiceClient testapi.ExecutionServiceClient
 	ServerAddress         string
 }
 
 func NewCrosTestExecutor(container interfaces.ContainerInterface) *CrosTestExecutor {
-	return &CrosTestExecutor{AbstractExecutor: interfaces.NewAbstractExecutor(CrosTestExecutorType), Container: container}
+	absExec := interfaces.NewAbstractExecutor(CrosTestExecutorType)
+	return &CrosTestExecutor{AbstractExecutor: absExec, Container: container}
 }
 
-func (ex *CrosTestExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
+func (ex *CrosTestExecutor) ExecuteCommand(
+	ctx context.Context,
+	cmdInterface interfaces.CommandInterface) error {
+
 	switch cmd := cmdInterface.(type) {
 	case *commands.TestServiceStartCmd:
 		return ex.testStartCommandExecution(ctx, cmd)
 	case *commands.TestsExecutionCmd:
 		return ex.testExecutionCommandExecution(ctx, cmd)
 	default:
-		return fmt.Errorf("Command type %s is not supported by %s executor type!", cmd.GetCommandType(), ex.GetExecutorType())
+		return fmt.Errorf(
+			"Command type %s is not supported by %s executor type!",
+			cmd.GetCommandType(),
+			ex.GetExecutorType())
 	}
 }
 
 // testStartCommandExecution executes the test server start command.
-func (ex *CrosTestExecutor) testStartCommandExecution(ctx context.Context, cmd *commands.TestServiceStartCmd) error {
+func (ex *CrosTestExecutor) testStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.TestServiceStartCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Test service start")
 	defer func() { step.End(err) }()
@@ -56,12 +66,19 @@ func (ex *CrosTestExecutor) testStartCommandExecution(ctx context.Context, cmd *
 }
 
 // testExecutionCommandExecution executes the test execution command.
-func (ex *CrosTestExecutor) testExecutionCommandExecution(ctx context.Context, cmd *commands.TestsExecutionCmd) error {
+func (ex *CrosTestExecutor) testExecutionCommandExecution(
+	ctx context.Context,
+	cmd *commands.TestsExecutionCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Tests execution")
 	defer func() { step.End(err) }()
 
-	testReq := &test_api.CrosTestRequest{TestSuites: cmd.TestSuites, Primary: cmd.PrimaryDevice, Companions: cmd.CompanionDevices}
+	testReq := &testapi.CrosTestRequest{
+		TestSuites: cmd.TestSuites,
+		Primary:    cmd.PrimaryDevice,
+		Companions: cmd.CompanionDevices}
+
 	common.WriteProtoToStepLog(ctx, step, testReq, "test request")
 
 	logsLoc, err := ex.Container.GetLogsLocation()
@@ -93,7 +110,10 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(ctx context.Context, c
 
 // Start starts the cros-test server.
 func (ex *CrosTestExecutor) Start(ctx context.Context) error {
-	template := &api.Template{Container: &api.Template_CrosTest{CrosTest: &test_api.CrosTestTemplate{}}}
+	template := &api.Template{Container: &api.Template_CrosTest{
+		CrosTest: &testapi.CrosTestTemplate{},
+	},
+	}
 
 	// Process container.
 	serverAddress, err := ex.Container.ProcessContainer(ctx, template)
@@ -106,7 +126,11 @@ func (ex *CrosTestExecutor) Start(ctx context.Context) error {
 	// Connect with the service.
 	conn, err := common.ConnectWithService(ctx, serverAddress)
 	if err != nil {
-		logging.Infof(ctx, "error during connecting with cros-test server at %s: %s", serverAddress, err.Error())
+		logging.Infof(
+			ctx,
+			"error during connecting with cros-test server at %s: %s",
+			serverAddress,
+			err.Error())
 		return err
 	}
 	logging.Infof(ctx, "Connected with cros-test service.")
@@ -123,7 +147,9 @@ func (ex *CrosTestExecutor) Start(ctx context.Context) error {
 }
 
 // ExecuteTests invokes the run tests endpoint of cros-test.
-func (ex *CrosTestExecutor) ExecuteTests(ctx context.Context, testReq *test_api.CrosTestRequest) (*test_api.CrosTestResponse, error) {
+func (ex *CrosTestExecutor) ExecuteTests(
+	ctx context.Context,
+	testReq *testapi.CrosTestRequest) (*testapi.CrosTestResponse, error) {
 	if testReq == nil {
 		return nil, fmt.Errorf("Cannot execute tests for nil test request.")
 	}
@@ -140,7 +166,7 @@ func (ex *CrosTestExecutor) ExecuteTests(ctx context.Context, testReq *test_api.
 		return nil, errors.Annotate(err, "test execution lro failure: ").Err()
 	}
 
-	testResp := &test_api.CrosTestResponse{}
+	testResp := &testapi.CrosTestResponse{}
 
 	if err := opResp.UnmarshalTo(testResp); err != nil {
 		logging.Infof(ctx, "test execution lro response unmarshalling failed: %s", err.Error())

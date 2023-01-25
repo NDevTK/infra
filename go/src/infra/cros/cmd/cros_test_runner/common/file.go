@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
-	build_api "go.chromium.org/chromiumos/config/go/build/api"
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -33,8 +33,9 @@ func CreateTempDir(ctx context.Context, tempDirPattern string) (tempDir string, 
 	return tempDir, err
 }
 
-// CreateImagePath creates image path (ex: us-docker.pkg.dev/cros-registry/test-services/cros-provision:<tag>) from container image info.
-func CreateImagePath(i *build_api.ContainerImageInfo) (string, error) {
+// CreateImagePath creates image path from container image info.
+// Ex: us-docker.pkg.dev/cros-registry/test-services/cros-provision:<tag>
+func CreateImagePath(i *buildapi.ContainerImageInfo) (string, error) {
 	if i.GetName() == "" {
 		return "", errors.Reason("create image path: name is empty").Err()
 	}
@@ -76,7 +77,7 @@ func GetContainerImageFromMap(key string, imageMap map[string]*api.ContainerImag
 }
 
 // CreateRegistryName creates the Registry name used for authing to docker.
-func CreateRegistryName(i *build_api.ContainerImageInfo) (string, error) {
+func CreateRegistryName(i *buildapi.ContainerImageInfo) (string, error) {
 	if i.GetRepository() == nil {
 		return "", errors.Reason("create image path: no repository info").Err()
 	}
@@ -88,7 +89,13 @@ func CreateRegistryName(i *build_api.ContainerImageInfo) (string, error) {
 }
 
 // AddContentsToLog adds contents of the file of fileName to log
-func AddFileContentsToLog(ctx context.Context, fileName string, rootDir string, msgToAdd string, writer io.Writer) error {
+func AddFileContentsToLog(
+	ctx context.Context,
+	fileName string,
+	rootDir string,
+	msgToAdd string,
+	writer io.Writer) error {
+
 	filePath, err := FindFile(ctx, fileName, rootDir)
 	if err != nil {
 		logging.Infof(ctx, "%s finding file '%s' at '%s' failed:%s", msgToAdd, fileName, rootDir, err)
@@ -155,12 +162,20 @@ func StreamLogAsync(ctx context.Context, rootDir string, writer io.Writer) (chan
 	// Kick off async reading the file and writing contents to writer
 	go WriteFromFile(ctx, fi, writer, taskDone, &wg, 3*time.Second)
 
-	// return channels and waitgroup to caller for it to control file reading and writing
+	// return channels and waitgroup to caller for it to control
+	// file reading and writing
 	return taskDone, &wg, nil
 }
 
 // WriteFromFile writes contents from a file to a provided writer.
-func WriteFromFile(ctx context.Context, fi *os.File, writer io.Writer, taskDone <-chan bool, wg *sync.WaitGroup, poll time.Duration) {
+func WriteFromFile(
+	ctx context.Context,
+	fi *os.File,
+	writer io.Writer,
+	taskDone <-chan bool,
+	wg *sync.WaitGroup,
+	poll time.Duration) {
+
 	defer fi.Close()
 	reader := bufio.NewReader(fi)
 
@@ -171,7 +186,7 @@ func WriteFromFile(ctx context.Context, fi *os.File, writer io.Writer, taskDone 
 			select {
 			// Delay reading as we do not want to overwhelm io resources
 			case <-time.After(poll):
-				// foreground task is done. prepare to conclude file reading
+			// Foreground task is done. prepare to conclude file reading
 			case <-taskDone:
 				isTaskDone = true
 			}
@@ -189,21 +204,4 @@ func WriteFromFile(ctx context.Context, fi *os.File, writer io.Writer, taskDone 
 		writer.Write(line)
 	}
 	wg.Done()
-}
-
-// TestScanner makes a scanner to read from test streams.
-func TestScanner(ctx context.Context, stream io.Reader, writer io.Writer) {
-	const maxCapacity = 4096 * 1024
-	scanner := bufio.NewScanner(stream)
-	// Expand the buffer size to avoid deadlocks on heavy logs
-	buf := make([]byte, maxCapacity)
-	scanner.Buffer(buf, maxCapacity)
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		writer.Write([]byte(scanner.Text() + "\n"))
-	}
-	if scanner.Err() != nil {
-		logging.Infof(ctx, "Failed to read pipe: ", scanner.Err())
-	}
-	logging.Infof(ctx, "file reading done")
 }

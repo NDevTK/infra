@@ -28,7 +28,13 @@ const (
 	ContainerStateStopped        ContainerState = "Stopped"
 )
 
-func NewContainer(contType interfaces.ContainerType, namePrefix string, containerImage string, ctr *crostoolrunner.CrosToolRunner, isTemplated bool) interfaces.ContainerInterface {
+func NewContainer(
+	contType interfaces.ContainerType,
+	namePrefix string,
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner,
+	isTemplated bool) interfaces.ContainerInterface {
+
 	if isTemplated {
 		return NewTemplatedContainer(contType, namePrefix, containerImage, ctr)
 	} else {
@@ -54,7 +60,12 @@ type AbstractContainer struct {
 	GetContainerResp   *api.GetContainerResponse
 }
 
-func NewAbstractContainer(contType interfaces.ContainerType, namePrefix string, containerImage string, ctr *crostoolrunner.CrosToolRunner) AbstractContainer {
+func NewAbstractContainer(
+	contType interfaces.ContainerType,
+	namePrefix string,
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) AbstractContainer {
+
 	return AbstractContainer{containerType: contType, namePrefix: namePrefix, containerImage: containerImage, ctr: ctr, state: ContainerStateNotInitialized}
 }
 
@@ -73,7 +84,11 @@ func (cont *AbstractContainer) GetLogsLocation() (string, error) {
 // InitializeBase does initial work that is common to all containers.
 func (cont *AbstractContainer) InitializeBase(ctx context.Context) error {
 	if cont.state != ContainerStateNotInitialized && cont.state != ContainerStateStopped {
-		return fmt.Errorf("Expected state %s or %s during initializing, found state %s instead!", ContainerStateNotInitialized, ContainerStateStopped, cont.state)
+		return fmt.Errorf(
+			"Expected state %s or %s during initializing, found state %s instead!",
+			ContainerStateNotInitialized,
+			ContainerStateStopped,
+			cont.state)
 	}
 	if cont.namePrefix == "" {
 		return fmt.Errorf("No name prefix provided for container")
@@ -99,7 +114,10 @@ func (cont *AbstractContainer) InitializeBase(ctx context.Context) error {
 // GetContainer gets the container info.
 func (cont *AbstractContainer) GetContainer(ctx context.Context) (*api.GetContainerResponse, error) {
 	if cont.state != ContainerStateStarted {
-		return nil, fmt.Errorf("Expected state %s during getting container, found state %s instead!", ContainerStateStarted, cont.state)
+		return nil, fmt.Errorf(
+			"Expected state %s during getting container, found state %s instead!",
+			ContainerStateStarted,
+			cont.state)
 	}
 	if cont.Name == "" {
 		return nil, fmt.Errorf("Container name not found while trying to get the container!")
@@ -116,8 +134,12 @@ func (cont *AbstractContainer) GetContainer(ctx context.Context) (*api.GetContai
 // StopContainer stop the container.
 func (cont *AbstractContainer) StopContainer(ctx context.Context) error {
 	if cont.state != ContainerStateStarted {
-		return fmt.Errorf("Expected state %s during stopping container, found state %s instead!", ContainerStateStarted, cont.state)
+		return fmt.Errorf(
+			"Expected state %s during stopping container, found state %s instead!",
+			ContainerStateStarted,
+			cont.state)
 	}
+
 	if cont.Name == "" {
 		return fmt.Errorf("Container name not found while trying to get the container!")
 	}
@@ -133,8 +155,12 @@ func (cont *AbstractContainer) StopContainer(ctx context.Context) error {
 	return err
 }
 
-// ProcessContainer processes(initialize, start, get, retrieve server address) the container.
-func (cont *AbstractContainer) ProcessContainer(ctx context.Context, template *api.Template) (string, error) {
+// ProcessContainer processes(initialize, start, get, retrieve server address)
+// the container.
+func (cont *AbstractContainer) ProcessContainer(
+	ctx context.Context,
+	template *api.Template) (string, error) {
+
 	if err := cont.ConcreteContainer.Initialize(ctx, template); err != nil {
 		return "", errors.Annotate(err, "error during initializing container: ").Err()
 	}

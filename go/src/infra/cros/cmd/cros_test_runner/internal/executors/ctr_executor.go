@@ -12,23 +12,25 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
-// CrosProvisionExecutor represents executor for all crostoolrunner (ctr) related commands.
+// CrosProvisionExecutor represents executor
+// for all crostoolrunner (ctr) related commands.
 type CtrExecutor struct {
 	*interfaces.AbstractExecutor
 
 	Ctr                        *crostoolrunner.CrosToolRunner
-	CrosProvisionServiceClient test_api.GenericProvisionServiceClient
+	CrosProvisionServiceClient testapi.GenericProvisionServiceClient
 }
 
 func NewCtrExecutor(ctr *crostoolrunner.CrosToolRunner) *CtrExecutor {
-	return &CtrExecutor{AbstractExecutor: interfaces.NewAbstractExecutor(CtrExecutorType), Ctr: ctr}
+	absExec := interfaces.NewAbstractExecutor(CtrExecutorType)
+	return &CtrExecutor{AbstractExecutor: absExec, Ctr: ctr}
 }
 
 func (ex *CtrExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
@@ -41,14 +43,23 @@ func (ex *CtrExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfac
 		ex.stopCommandExecution(ctx, cmd)
 
 	default:
-		return fmt.Errorf("Command type %s, %T, %v is not supported by %s executor type!", cmd.GetCommandType(), cmdInterface, cmdInterface, ex.GetExecutorType())
+		return fmt.Errorf(
+			"Command type %s, %T, %v is not supported by %s executor type!",
+			cmd.GetCommandType(),
+			cmdInterface,
+			cmdInterface,
+			ex.GetExecutorType())
 	}
 
 	return nil
 }
 
-// startAsyncCommandExecution executes the start ctr server asynchronously command.
-func (ex *CtrExecutor) startAsyncCommandExecution(ctx context.Context, cmd *commands.CtrServiceStartAsyncCmd) error {
+// startAsyncCommandExecution executes the start ctr server
+// asynchronously command.
+func (ex *CtrExecutor) startAsyncCommandExecution(
+	ctx context.Context,
+	cmd *commands.CtrServiceStartAsyncCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Ctr service start")
 	defer func() { step.End(err) }()
@@ -62,7 +73,10 @@ func (ex *CtrExecutor) startAsyncCommandExecution(ctx context.Context, cmd *comm
 }
 
 // stopCommandExecution executes stop ctr server command.
-func (ex *CtrExecutor) stopCommandExecution(ctx context.Context, cmd *commands.CtrServiceStopCmd) error {
+func (ex *CtrExecutor) stopCommandExecution(
+	ctx context.Context,
+	cmd *commands.CtrServiceStopCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Ctr service stop")
 	defer func() { step.End(err) }()
@@ -76,7 +90,10 @@ func (ex *CtrExecutor) stopCommandExecution(ctx context.Context, cmd *commands.C
 }
 
 // gcloudAuthCommandExecution executes the gcloud registry auth command.
-func (ex *CtrExecutor) gcloudAuthCommandExecution(ctx context.Context, cmd *commands.GcloudAuthCmd) error {
+func (ex *CtrExecutor) gcloudAuthCommandExecution(
+	ctx context.Context,
+	cmd *commands.GcloudAuthCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Gcloud Auth")
 	defer func() { step.End(err) }()
@@ -108,8 +125,7 @@ func (ex *CtrExecutor) StartAsync(ctx context.Context) error {
 	}
 
 	// Connect to CTR Server
-	// TODO (azrahman): remove hardcoded serveraddress after impmenting portdiscovery for CTR.
-	// CTR will have to support taking an input path where the port info will be written to avoid race issues in lab env.
+	// TODO (azrahman): remove hardcoded serveraddress.
 	serverAddress := "[::]:8082"
 	_, err = ex.Ctr.ConnectToCTRServer(ctx, serverAddress)
 	if err != nil {

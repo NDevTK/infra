@@ -7,8 +7,8 @@ import (
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	test_api_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -25,20 +25,28 @@ type CrosPublishExecutor struct {
 	*interfaces.AbstractExecutor
 
 	Container               interfaces.ContainerInterface
-	GcsPublishServiceClient test_api.GenericPublishServiceClient
-	TkoPublishServiceClient test_api.GenericPublishServiceClient
-	RdbPublishServiceClient test_api.GenericPublishServiceClient
+	GcsPublishServiceClient testapi.GenericPublishServiceClient
+	TkoPublishServiceClient testapi.GenericPublishServiceClient
+	RdbPublishServiceClient testapi.GenericPublishServiceClient
 	ServerAddress           string
 }
 
-func NewCrosPublishExecutor(container interfaces.ContainerInterface, execType interfaces.ExecutorType) *CrosPublishExecutor {
-	if execType != CrosGcsPublishExecutorType && execType != CrosTkoPublishExecutorType && execType != CrosRdbPublishExecutorType {
+func NewCrosPublishExecutor(
+	container interfaces.ContainerInterface,
+	execType interfaces.ExecutorType) *CrosPublishExecutor {
+	if execType != CrosGcsPublishExecutorType &&
+		execType != CrosTkoPublishExecutorType &&
+		execType != CrosRdbPublishExecutorType {
 		return nil
 	}
-	return &CrosPublishExecutor{AbstractExecutor: interfaces.NewAbstractExecutor(execType), Container: container}
+	absExec := interfaces.NewAbstractExecutor(execType)
+	return &CrosPublishExecutor{AbstractExecutor: absExec, Container: container}
 }
 
-func (ex *CrosPublishExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
+func (ex *CrosPublishExecutor) ExecuteCommand(
+	ctx context.Context,
+	cmdInterface interfaces.CommandInterface) error {
+
 	switch cmd := cmdInterface.(type) {
 	case *commands.GcsPublishServiceStartCmd:
 		return ex.gcsPublishStartCommandExecution(ctx, cmd)
@@ -53,20 +61,35 @@ func (ex *CrosPublishExecutor) ExecuteCommand(ctx context.Context, cmdInterface 
 	case *commands.TkoPublishUploadCmd:
 		return ex.tkoPublishUploadCommandExecution(ctx, cmd)
 	default:
-		return fmt.Errorf("Command type %s is not supported by %s executor type!", cmd.GetCommandType(), ex.GetExecutorType())
+		return fmt.Errorf(
+			"Command type %s is not supported by %s executor type!",
+			cmd.GetCommandType(),
+			ex.GetExecutorType())
 	}
 }
 
 // -- GCS Commands --
 
 // gcsPublishStartCommandExecution executes the gcs-publish start command.
-func (ex *CrosPublishExecutor) gcsPublishStartCommandExecution(ctx context.Context, cmd *commands.GcsPublishServiceStartCmd) error {
+func (ex *CrosPublishExecutor) gcsPublishStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.GcsPublishServiceStartCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "gcs-publish service start")
 	defer func() { step.End(err) }()
 
-	gcsPublishTemplate := &test_api.CrosPublishTemplate{PublishType: test_api.CrosPublishTemplate_PUBLISH_GCS, PublishSrcDir: cmd.GcsPublishSrcDir}
-	publishClient, err := ex.Start(ctx, &api.Template{Container: &api.Template_CrosPublish{CrosPublish: gcsPublishTemplate}})
+	gcsPublishTemplate := &testapi.CrosPublishTemplate{
+		PublishType:   testapi.CrosPublishTemplate_PUBLISH_GCS,
+		PublishSrcDir: cmd.GcsPublishSrcDir}
+	publishClient, err := ex.Start(
+		ctx,
+		&api.Template{
+			Container: &api.Template_CrosPublish{
+				CrosPublish: gcsPublishTemplate,
+			},
+		},
+	)
 	if err != nil {
 		return errors.Annotate(err, "Start gcs-publish cmd err: ").Err()
 	}
@@ -77,34 +100,59 @@ func (ex *CrosPublishExecutor) gcsPublishStartCommandExecution(ctx context.Conte
 }
 
 // gcsPublishUploadCommandExecution executes the gcs-publish upload command.
-func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(ctx context.Context, cmd *commands.GcsPublishUploadCmd) error {
+func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
+	ctx context.Context,
+	cmd *commands.GcsPublishUploadCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "gcs-publish upload")
 	defer func() { step.End(err) }()
 	step.SetSummaryMarkdown(fmt.Sprintf("* [GCS Link](%s)", getGcsClickableLink(cmd.GcsUrl)))
 
 	// Create request.
-	artifactDirPath := &_go.StoragePath{HostType: _go.StoragePath_LOCAL, Path: common.GcsPublishTestArtifactsDir}
-	gcsPath := &_go.StoragePath{HostType: _go.StoragePath_GS, Path: cmd.GcsUrl}
-	gcsMetadata, err := anypb.New(&test_api.PublishGcsMetadata{GcsPath: gcsPath})
+	artifactDirPath := &_go.StoragePath{
+		HostType: _go.StoragePath_LOCAL,
+		Path:     common.GcsPublishTestArtifactsDir}
+	gcsPath := &_go.StoragePath{
+		HostType: _go.StoragePath_GS,
+		Path:     cmd.GcsUrl}
+	gcsMetadata, err := anypb.New(&testapi.PublishGcsMetadata{GcsPath: gcsPath})
 	if err != nil {
 		return errors.Annotate(err, "Creating publish gcs metadata err: ").Err()
 	}
 
-	gcsPublishReq := &test_api.PublishRequest{ArtifactDirPath: artifactDirPath, TestResponse: nil, Metadata: gcsMetadata}
-	return ex.InvokePublishWithAsyncLogging(ctx, "gcs-publish", gcsPublishReq, ex.GcsPublishServiceClient, step)
+	gcsPublishReq := &testapi.PublishRequest{
+		ArtifactDirPath: artifactDirPath,
+		TestResponse:    nil, Metadata: gcsMetadata}
+	return ex.InvokePublishWithAsyncLogging(
+		ctx,
+		"gcs-publish",
+		gcsPublishReq,
+		ex.GcsPublishServiceClient,
+		step)
 }
 
 // -- RDB Commands --
 
 // rdbPublishStartCommandExecution executes the rdb-publish start command.
-func (ex *CrosPublishExecutor) rdbPublishStartCommandExecution(ctx context.Context, cmd *commands.RdbPublishServiceStartCmd) error {
+func (ex *CrosPublishExecutor) rdbPublishStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.RdbPublishServiceStartCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "rdb-publish service start")
 	defer func() { step.End(err) }()
 
-	rdbPublishTemplate := &test_api.CrosPublishTemplate{PublishType: test_api.CrosPublishTemplate_PUBLISH_RDB}
-	publishClient, err := ex.Start(ctx, &api.Template{Container: &api.Template_CrosPublish{CrosPublish: rdbPublishTemplate}})
+	rdbPublishTemplate := &testapi.CrosPublishTemplate{
+		PublishType: testapi.CrosPublishTemplate_PUBLISH_RDB}
+	publishClient, err := ex.Start(
+		ctx,
+		&api.Template{
+			Container: &api.Template_CrosPublish{
+				CrosPublish: rdbPublishTemplate,
+			},
+		},
+	)
 	if err != nil {
 		return errors.Annotate(err, "Start rdb-publish cmd err: ").Err()
 	}
@@ -115,34 +163,64 @@ func (ex *CrosPublishExecutor) rdbPublishStartCommandExecution(ctx context.Conte
 }
 
 // rdbPublishUploadCommandExecution executes the rdb-publish upload command.
-func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(ctx context.Context, cmd *commands.RdbPublishUploadCmd) error {
+func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
+	ctx context.Context,
+	cmd *commands.RdbPublishUploadCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "rdb-publish upload")
 	defer func() { step.End(err) }()
 	step.SetSummaryMarkdown(fmt.Sprintf("* [Stainless Link](%s)", cmd.StainlessUrl))
 
 	// Create request.
-	rdbMetadata, err := anypb.New(&test_api_metadata.PublishRdbMetadata{CurrentInvocationId: cmd.CurrentInvocationId, TestResult: cmd.TestResultForRdb, StainlessUrl: cmd.StainlessUrl})
+	rdbMetadata, err := anypb.New(&testapi_metadata.PublishRdbMetadata{
+		CurrentInvocationId: cmd.CurrentInvocationId,
+		TestResult:          cmd.TestResultForRdb,
+		StainlessUrl:        cmd.StainlessUrl})
 	if err != nil {
 		return errors.Annotate(err, "Creating publish rdb metadata err: ").Err()
 	}
 
 	// TODO (azrhaman): remove artifactDirPath after unnecessary rdb validation is removed.
-	artifactDirPath := &_go.StoragePath{HostType: _go.StoragePath_LOCAL, Path: "/tmp/rdb-publish-test-artifacts/"}
-	rdbPublishReq := &test_api.PublishRequest{ArtifactDirPath: artifactDirPath, TestResponse: nil, Metadata: rdbMetadata}
-	return ex.InvokePublishWithAsyncLogging(ctx, "rdb-publish", rdbPublishReq, ex.RdbPublishServiceClient, step)
+	artifactDirPath := &_go.StoragePath{
+		HostType: _go.StoragePath_LOCAL,
+		Path:     "/tmp/rdb-publish-test-artifacts/",
+	}
+	rdbPublishReq := &testapi.PublishRequest{
+		ArtifactDirPath: artifactDirPath,
+		TestResponse:    nil,
+		Metadata:        rdbMetadata,
+	}
+	return ex.InvokePublishWithAsyncLogging(
+		ctx,
+		"rdb-publish",
+		rdbPublishReq,
+		ex.RdbPublishServiceClient,
+		step)
 }
 
 // -- TKO Commands --
 
 // tkoPublishStartCommandExecution executes the tko-publish start command.
-func (ex *CrosPublishExecutor) tkoPublishStartCommandExecution(ctx context.Context, cmd *commands.TkoPublishServiceStartCmd) error {
+func (ex *CrosPublishExecutor) tkoPublishStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.TkoPublishServiceStartCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "tko-publish service start")
 	defer func() { step.End(err) }()
 
-	tkoPublishTemplate := &test_api.CrosPublishTemplate{PublishType: test_api.CrosPublishTemplate_PUBLISH_TKO, PublishSrcDir: cmd.TkoPublishSrcDir}
-	publishClient, err := ex.Start(ctx, &api.Template{Container: &api.Template_CrosPublish{CrosPublish: tkoPublishTemplate}})
+	tkoPublishTemplate := &testapi.CrosPublishTemplate{
+		PublishType:   testapi.CrosPublishTemplate_PUBLISH_TKO,
+		PublishSrcDir: cmd.TkoPublishSrcDir}
+	publishClient, err := ex.Start(
+		ctx,
+		&api.Template{
+			Container: &api.Template_CrosPublish{
+				CrosPublish: tkoPublishTemplate,
+			},
+		},
+	)
 	if err != nil {
 		return errors.Annotate(err, "Start tko-publish cmd err: ").Err()
 	}
@@ -153,24 +231,44 @@ func (ex *CrosPublishExecutor) tkoPublishStartCommandExecution(ctx context.Conte
 }
 
 // tkoPublishUploadCommandExecution executes the tko-publish upload command.
-func (ex *CrosPublishExecutor) tkoPublishUploadCommandExecution(ctx context.Context, cmd *commands.TkoPublishUploadCmd) error {
+func (ex *CrosPublishExecutor) tkoPublishUploadCommandExecution(
+	ctx context.Context,
+	cmd *commands.TkoPublishUploadCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "tko-publish upload")
 	defer func() { step.End(err) }()
 
 	// Create request.
-	artifactDirPath := &_go.StoragePath{HostType: _go.StoragePath_LOCAL, Path: common.TKOPublishTestArtifactsDir}
-	tkoMetadata, err := anypb.New(&test_api.PublishTkoMetadata{JobName: cmd.TkoJobName})
+	artifactDirPath := &_go.StoragePath{
+		HostType: _go.StoragePath_LOCAL,
+		Path:     common.TKOPublishTestArtifactsDir,
+	}
+	tkoMetadata, err := anypb.New(&testapi.PublishTkoMetadata{
+		JobName: cmd.TkoJobName,
+	},
+	)
 	if err != nil {
 		return errors.Annotate(err, "Creating publish tko metadata err: ").Err()
 	}
 
-	tkoPublishReq := &test_api.PublishRequest{ArtifactDirPath: artifactDirPath, TestResponse: nil, Metadata: tkoMetadata}
-	return ex.InvokePublishWithAsyncLogging(ctx, "tko-publish", tkoPublishReq, ex.TkoPublishServiceClient, step)
+	tkoPublishReq := &testapi.PublishRequest{
+		ArtifactDirPath: artifactDirPath,
+		TestResponse:    nil,
+		Metadata:        tkoMetadata,
+	}
+	return ex.InvokePublishWithAsyncLogging(
+		ctx,
+		"tko-publish",
+		tkoPublishReq,
+		ex.TkoPublishServiceClient,
+		step)
 }
 
 // Start starts the cros-publish server.
-func (ex *CrosPublishExecutor) Start(ctx context.Context, template *api.Template) (test_api.GenericPublishServiceClient, error) {
+func (ex *CrosPublishExecutor) Start(
+	ctx context.Context,
+	template *api.Template) (testapi.GenericPublishServiceClient, error) {
 	if template == nil {
 		return nil, fmt.Errorf("Cannot start publish service with empty template.")
 	}
@@ -186,7 +284,11 @@ func (ex *CrosPublishExecutor) Start(ctx context.Context, template *api.Template
 	// Connect with the service.
 	conn, err := common.ConnectWithService(ctx, serverAddress)
 	if err != nil {
-		logging.Infof(ctx, "error during connecting server at %s: %s", serverAddress, err.Error())
+		logging.Infof(
+			ctx,
+			"error during connecting server at %s: %s",
+			serverAddress,
+			err.Error())
 		return nil, err
 	}
 	logging.Infof(ctx, "Connected with service.")
@@ -201,7 +303,10 @@ func (ex *CrosPublishExecutor) Start(ctx context.Context, template *api.Template
 }
 
 // Publish invokes the publish endpoint of cros-publish.
-func (ex *CrosPublishExecutor) Publish(ctx context.Context, publishReq *test_api.PublishRequest, publishClient test_api.GenericPublishServiceClient) (*test_api.PublishResponse, error) {
+func (ex *CrosPublishExecutor) Publish(
+	ctx context.Context,
+	publishReq *testapi.PublishRequest,
+	publishClient testapi.GenericPublishServiceClient) (*testapi.PublishResponse, error) {
 	if publishClient == nil {
 		return nil, fmt.Errorf("CrosPublishServiceClient is nil in CrosPublishExecutor")
 	}
@@ -219,7 +324,7 @@ func (ex *CrosPublishExecutor) Publish(ctx context.Context, publishReq *test_api
 		return nil, errors.Annotate(err, "publish lro failure: ").Err()
 	}
 
-	publishResp := &test_api.PublishResponse{}
+	publishResp := &testapi.PublishResponse{}
 	if err := opResp.UnmarshalTo(publishResp); err != nil {
 		logging.Infof(ctx, "publish lro response unmarshalling failed: %s", err.Error())
 		return nil, errors.Annotate(err, "publish lro response unmarshalling failed: ").Err()
@@ -229,7 +334,12 @@ func (ex *CrosPublishExecutor) Publish(ctx context.Context, publishReq *test_api
 }
 
 // InvokePublishWithAsyncLogging invokes publish endpoint of the service with async logging.
-func (ex *CrosPublishExecutor) InvokePublishWithAsyncLogging(ctx context.Context, publishType string, request *api.PublishRequest, client api.GenericPublishServiceClient, step *build.Step) error {
+func (ex *CrosPublishExecutor) InvokePublishWithAsyncLogging(
+	ctx context.Context,
+	publishType string,
+	request *api.PublishRequest,
+	client api.GenericPublishServiceClient,
+	step *build.Step) error {
 	if request == nil {
 		return fmt.Errorf("Cannot publish result for %s with empty publish request.", publishType)
 	}

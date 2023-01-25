@@ -93,7 +93,11 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
-		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678}}
+		sk := &data.HwTestStateKeeper{
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				ParentBuildId: 12345678,
+			},
+		}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
 
 		// Use mock configs for simplicity

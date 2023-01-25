@@ -69,7 +69,17 @@ func TestProvisionInstallCmd_ExtractDepsSuccess(t *testing.T) {
 
 	Convey("ProvisionInstallCmd extract deps", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{ProvisionState: &api.ProvisionState{SystemImage: &api.ProvisionState_SystemImage{SystemImagePath: &_go.StoragePath{}}}}}}
+		sk := &data.HwTestStateKeeper{
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+					ProvisionState: &api.ProvisionState{
+						SystemImage: &api.ProvisionState_SystemImage{
+							SystemImagePath: &_go.StoragePath{},
+						},
+					},
+				},
+			},
+		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)

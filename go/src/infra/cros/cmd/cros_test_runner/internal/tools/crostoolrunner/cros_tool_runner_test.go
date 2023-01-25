@@ -13,7 +13,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestStartCtrServer(t *testing.T) {
@@ -125,7 +125,7 @@ func TestStopCtrServer(t *testing.T) {
 		mocked_client := mocked_services.NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctr.CtrClient = mocked_client
 
-		getMockedShutdown(mocked_client).Return(&test_api.ShutdownResponse{}, nil)
+		getMockedShutdown(mocked_client).Return(&testapi.ShutdownResponse{}, nil)
 
 		err := ctr.StopCTRServer(ctx)
 		So(err, ShouldBeNil)
@@ -152,7 +152,7 @@ func TestStartContainer(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
-		resp, err := ctr.StartContainer(ctx, &test_api.StartContainerRequest{})
+		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -166,7 +166,7 @@ func TestStartContainer(t *testing.T) {
 		ctr.CtrClient = mocked_client
 
 		getMockedStartContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
-		resp, err := ctr.StartContainer(ctx, &test_api.StartContainerRequest{})
+		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -179,8 +179,8 @@ func TestStartContainer(t *testing.T) {
 		mocked_client := mocked_services.NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctr.CtrClient = mocked_client
 
-		getMockedStartContainer(mocked_client).Return(&test_api.StartContainerResponse{}, nil)
-		resp, err := ctr.StartContainer(ctx, &test_api.StartContainerRequest{})
+		getMockedStartContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
+		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 	})
@@ -204,7 +204,7 @@ func TestStartTemplatedContainer(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
-		resp, err := ctr.StartTemplatedContainer(ctx, &test_api.StartTemplatedContainerRequest{})
+		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -218,7 +218,7 @@ func TestStartTemplatedContainer(t *testing.T) {
 		ctr.CtrClient = mocked_client
 
 		getMockedStartTemplatedContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
-		resp, err := ctr.StartTemplatedContainer(ctx, &test_api.StartTemplatedContainerRequest{})
+		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -231,8 +231,8 @@ func TestStartTemplatedContainer(t *testing.T) {
 		mocked_client := mocked_services.NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctr.CtrClient = mocked_client
 
-		getMockedStartTemplatedContainer(mocked_client).Return(&test_api.StartContainerResponse{}, nil)
-		resp, err := ctr.StartTemplatedContainer(ctx, &test_api.StartTemplatedContainerRequest{})
+		getMockedStartTemplatedContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
+		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 	})
@@ -309,7 +309,17 @@ func TestGetContainer(t *testing.T) {
 		mocked_client := mocked_services.NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctr.CtrClient = mocked_client
 
-		getMockedGetContainer(mocked_client).Return(&test_api.GetContainerResponse{Container: &test_api.Container{PortBindings: []*test_api.Container_PortBinding{{HostIp: "localhost", HostPort: 1234}}}}, nil)
+		getMockedGetContainer(mocked_client).Return(&testapi.GetContainerResponse{
+			Container: &testapi.Container{
+				PortBindings: []*testapi.Container_PortBinding{
+					{
+						HostIp:   "localhost",
+						HostPort: 1234,
+					},
+				},
+			},
+		},
+			nil)
 		resp, err := ctr.GetContainer(ctx, containerName)
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
@@ -352,7 +362,7 @@ func TestGcloudAuth(t *testing.T) {
 		mocked_client := mocked_services.NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctr.CtrClient = mocked_client
 
-		getMockedLoginRegistry(mocked_client).Return(&test_api.LoginRegistryResponse{}, nil)
+		getMockedLoginRegistry(mocked_client).Return(&testapi.LoginRegistryResponse{}, nil)
 		resp, err := ctr.GcloudAuth(ctx, "docker/file/location")
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
@@ -360,21 +370,36 @@ func TestGcloudAuth(t *testing.T) {
 }
 
 func getMockedShutdown(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().Shutdown(gomock.Any(), gomock.AssignableToTypeOf(&test_api.ShutdownRequest{}), gomock.Any())
+	return mctrclient.EXPECT().Shutdown(
+		gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.ShutdownRequest{}),
+		gomock.Any())
 }
 
 func getMockedStartContainer(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().StartContainer(gomock.Any(), gomock.AssignableToTypeOf(&test_api.StartContainerRequest{}), gomock.Any())
+	return mctrclient.EXPECT().StartContainer(
+		gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.StartContainerRequest{}),
+		gomock.Any())
 }
 
 func getMockedStartTemplatedContainer(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().StartTemplatedContainer(gomock.Any(), gomock.AssignableToTypeOf(&test_api.StartTemplatedContainerRequest{}), gomock.Any())
+	return mctrclient.EXPECT().StartTemplatedContainer(
+		gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.StartTemplatedContainerRequest{}),
+		gomock.Any())
 }
 
 func getMockedGetContainer(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().GetContainer(gomock.Any(), gomock.AssignableToTypeOf(&test_api.GetContainerRequest{}), gomock.Any())
+	return mctrclient.EXPECT().GetContainer(
+		gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.GetContainerRequest{}),
+		gomock.Any())
 }
 
 func getMockedLoginRegistry(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().LoginRegistry(gomock.Any(), gomock.AssignableToTypeOf(&test_api.LoginRegistryRequest{}), gomock.Any())
+	return mctrclient.EXPECT().LoginRegistry(
+		gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.LoginRegistryRequest{}),
+		gomock.Any())
 }

@@ -22,7 +22,10 @@ type GcsPublishUploadCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *GcsPublishUploadCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *GcsPublishUploadCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -39,7 +42,10 @@ func (cmd *GcsPublishUploadCmd) ExtractDependencies(ctx context.Context, ski int
 	return nil
 }
 
-func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.GcsUrl == "" {
 		return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
 	}
@@ -49,7 +55,8 @@ func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 }
 
 func NewGcsPublishUploadCmd(executor interfaces.ExecutorInterface) *GcsPublishUploadCmd {
-	cmd := &GcsPublishUploadCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(GcsPublishUploadCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(GcsPublishUploadCmdType, executor)
+	cmd := &GcsPublishUploadCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

@@ -10,7 +10,8 @@ type TestServiceStartCmd struct {
 }
 
 func NewTestServiceStartCmd(executor interfaces.ExecutorInterface) *TestServiceStartCmd {
-	cmd := &TestServiceStartCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(TestServiceStartCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(TestServiceStartCmdType, executor)
+	cmd := &TestServiceStartCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

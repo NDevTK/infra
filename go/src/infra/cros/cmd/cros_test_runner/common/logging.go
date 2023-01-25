@@ -35,7 +35,12 @@ func WriteProtoToStepLog(ctx context.Context, step *build.Step, proto proto.Mess
 }
 
 // WriteProtoToJsonFile writes provided proto to a json file.
-func WriteProtoToJsonFile(ctx context.Context, dirPath string, fileName string, inputProto proto.Message) (string, error) {
+func WriteProtoToJsonFile(
+	ctx context.Context,
+	dirPath string,
+	fileName string,
+	inputProto proto.Message) (string, error) {
+
 	protoFilePath := path.Join(dirPath, fileName)
 	f, err := os.Create(protoFilePath)
 	if err != nil {

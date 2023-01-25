@@ -5,8 +5,8 @@
 package data
 
 import (
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -23,14 +23,14 @@ type HwTestStateKeeper struct {
 
 	// Dut related
 	HostName         string
-	DutTopology      *lab_api.DutTopology
-	DutServerAddress *lab_api.IpEndpoint
+	DutTopology      *labapi.DutTopology
+	DutServerAddress *labapi.IpEndpoint
 
 	// Provsion related
 	InstallMetadata *anypb.Any
 
 	// Test related
-	TestResponses *test_api.CrosTestResponse
+	TestResponses *testapi.CrosTestResponse
 
 	// Publish related
 	GcsUrl              string

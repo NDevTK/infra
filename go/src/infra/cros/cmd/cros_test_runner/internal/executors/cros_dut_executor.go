@@ -9,8 +9,8 @@ import (
 	"fmt"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -26,16 +26,20 @@ type CrosDutExecutor struct {
 
 	NamePrefix           string
 	Container            interfaces.ContainerInterface
-	CrosDutServiceClient test_api.DutServiceClient
-	DutServerAddress     *lab_api.IpEndpoint
+	CrosDutServiceClient testapi.DutServiceClient
+	DutServerAddress     *labapi.IpEndpoint
 	ServerAddress        string
 }
 
 func NewCrosDutExecutor(container interfaces.ContainerInterface) *CrosDutExecutor {
-	return &CrosDutExecutor{AbstractExecutor: interfaces.NewAbstractExecutor(CrosDutExecutorType), Container: container}
+	absExec := interfaces.NewAbstractExecutor(CrosDutExecutorType)
+	return &CrosDutExecutor{AbstractExecutor: absExec, Container: container}
 }
 
-func (ex *CrosDutExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
+func (ex *CrosDutExecutor) ExecuteCommand(
+	ctx context.Context,
+	cmdInterface interfaces.CommandInterface) error {
+
 	switch cmd := cmdInterface.(type) {
 	case *commands.DutServiceStartCmd:
 		return ex.dutStartCommandExecution(ctx, cmd)
@@ -45,7 +49,10 @@ func (ex *CrosDutExecutor) ExecuteCommand(ctx context.Context, cmdInterface inte
 }
 
 // dutStartCommandExecution executes the dut start command.
-func (ex *CrosDutExecutor) dutStartCommandExecution(ctx context.Context, cmd *commands.DutServiceStartCmd) error {
+func (ex *CrosDutExecutor) dutStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.DutServiceStartCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Dut service start")
 	defer func() { step.End(err) }()
@@ -61,7 +68,11 @@ func (ex *CrosDutExecutor) dutStartCommandExecution(ctx context.Context, cmd *co
 }
 
 // Start starts the cros-dut server.
-func (ex *CrosDutExecutor) Start(ctx context.Context, cacheServerAddress *lab_api.IpEndpoint, dutSshAddress *lab_api.IpEndpoint) error {
+func (ex *CrosDutExecutor) Start(
+	ctx context.Context,
+	cacheServerAddress *labapi.IpEndpoint,
+	dutSshAddress *labapi.IpEndpoint) error {
+
 	if cacheServerAddress == nil {
 		return fmt.Errorf("Cannot start dut service with nil cache server address.")
 	}
@@ -70,8 +81,14 @@ func (ex *CrosDutExecutor) Start(ctx context.Context, cacheServerAddress *lab_ap
 		return fmt.Errorf("Cannot start dut service with nil dut ssh address.")
 	}
 
-	dutTemplate := &test_api.CrosDutTemplate{CacheServer: cacheServerAddress, DutAddress: dutSshAddress}
-	template := &api.Template{Container: &api.Template_CrosDut{CrosDut: dutTemplate}}
+	dutTemplate := &testapi.CrosDutTemplate{
+		CacheServer: cacheServerAddress,
+		DutAddress:  dutSshAddress}
+	template := &api.Template{
+		Container: &api.Template_CrosDut{
+			CrosDut: dutTemplate,
+		},
+	}
 
 	// Process container.
 	serverAddress, err := ex.Container.ProcessContainer(ctx, template)

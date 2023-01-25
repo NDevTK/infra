@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -39,7 +39,8 @@ func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.Client
 	return conn, nil
 }
 
-// getGrpcDialOpts provides the grpc dial options used to connect with a service.
+// getGrpcDialOpts provides the grpc dial options used
+// to connect to a service.
 func getGrpcDialOpts(ctx context.Context, timeout time.Duration) []grpc.DialOption {
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
@@ -50,8 +51,9 @@ func getGrpcDialOpts(ctx context.Context, timeout time.Duration) []grpc.DialOpti
 	return opts
 }
 
-// GetServerAddressFromGetContResponse gets the server address from get container response.
-func GetServerAddressFromGetContResponse(resp *test_api.GetContainerResponse) (string, error) {
+// GetServerAddressFromGetContResponse gets the server address
+// from get container response.
+func GetServerAddressFromGetContResponse(resp *testapi.GetContainerResponse) (string, error) {
 	if resp == nil || len(resp.Container.GetPortBindings()) == 0 {
 		return "", fmt.Errorf("Cannot retrieve address from empty response.")
 	}
@@ -67,7 +69,7 @@ func GetServerAddressFromGetContResponse(resp *test_api.GetContainerResponse) (s
 
 // GetIpEndpoint creates IpEndpoint from provided server address.
 // Server address example: (address:port) -> localhost:8080.
-func GetIpEndpoint(serverAddress string) (*lab_api.IpEndpoint, error) {
+func GetIpEndpoint(serverAddress string) (*labapi.IpEndpoint, error) {
 	addressInfo := strings.Split(serverAddress, ":")
 	if len(addressInfo) != 2 {
 		return nil, fmt.Errorf("invalid dut server address!")
@@ -77,5 +79,5 @@ func GetIpEndpoint(serverAddress string) (*lab_api.IpEndpoint, error) {
 		return nil, fmt.Errorf("error during extracting port info: %s", err)
 	}
 
-	return &lab_api.IpEndpoint{Address: addressInfo[0], Port: int32(port)}, nil
+	return &labapi.IpEndpoint{Address: addressInfo[0], Port: int32(port)}, nil
 }

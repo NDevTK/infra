@@ -10,7 +10,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -22,11 +22,14 @@ type LoadDutTopologyCmd struct {
 	HostName string
 
 	// Updates
-	DutTopology *lab_api.DutTopology
+	DutTopology *labapi.DutTopology
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *LoadDutTopologyCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *LoadDutTopologyCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -44,7 +47,10 @@ func (cmd *LoadDutTopologyCmd) ExtractDependencies(ctx context.Context, ski inte
 }
 
 // UpdateStateKeeper updates the state keeper with info from the cmd.
-func (cmd *LoadDutTopologyCmd) UpdateStateKeeper(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *LoadDutTopologyCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -58,7 +64,10 @@ func (cmd *LoadDutTopologyCmd) UpdateStateKeeper(ctx context.Context, ski interf
 	return nil
 }
 
-func (cmd *LoadDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *LoadDutTopologyCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.HostName == "" {
 		return fmt.Errorf("Cmd %q missing dependency: HostName", cmd.GetCommandType())
 	}
@@ -67,7 +76,10 @@ func (cmd *LoadDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Cont
 	return nil
 }
 
-func (cmd *LoadDutTopologyCmd) updateHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *LoadDutTopologyCmd) updateHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if cmd.DutTopology != nil {
 		sk.DutTopology = cmd.DutTopology
 	}

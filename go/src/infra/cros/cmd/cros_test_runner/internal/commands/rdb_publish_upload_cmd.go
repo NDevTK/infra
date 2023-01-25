@@ -26,7 +26,10 @@ type RdbPublishUploadCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *RdbPublishUploadCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *RdbPublishUploadCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -43,7 +46,10 @@ func (cmd *RdbPublishUploadCmd) ExtractDependencies(ctx context.Context, ski int
 	return nil
 }
 
-func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.CurrentInvocationId == "" {
 		return fmt.Errorf("Cmd %q missing dependency: CurrentInvocationId", cmd.GetCommandType())
 	}
@@ -62,13 +68,17 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 	return nil
 }
 
-func (cmd *RdbPublishUploadCmd) constructTestResultFromStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) (*artifactpb.TestResult, error) {
+func (cmd *RdbPublishUploadCmd) constructTestResultFromStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) (*artifactpb.TestResult, error) {
+
 	// TODO (azrahman): construct test result here with mandatory information. Temporarily using mocked data for testing.
 	return common.GetMockedTestResultProto(), nil
 }
 
 func NewRdbPublishUploadCmd(executor interfaces.ExecutorInterface) *RdbPublishUploadCmd {
-	cmd := &RdbPublishUploadCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(RdbPublishUploadCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(RdbPublishUploadCmdType, executor)
+	cmd := &RdbPublishUploadCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

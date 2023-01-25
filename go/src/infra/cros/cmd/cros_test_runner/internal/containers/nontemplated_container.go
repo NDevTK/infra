@@ -33,14 +33,21 @@ type NonTemplatedContainer struct {
 	StartContainerReq *api.StartContainerRequest
 }
 
-func NewNonTemplatedContainer(contType interfaces.ContainerType, namePrefix string, containerImage string, ctr *crostoolrunner.CrosToolRunner) *NonTemplatedContainer {
+func NewNonTemplatedContainer(
+	contType interfaces.ContainerType,
+	namePrefix string,
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) *NonTemplatedContainer {
+
 	cont := &NonTemplatedContainer{AbstractContainer: NewAbstractContainer(contType, namePrefix, containerImage, ctr)}
 	cont.ConcreteContainer = cont
 	return cont
 }
 
 // Initialize initializes the container.
-func (cont *NonTemplatedContainer) Initialize(ctx context.Context, template *api.Template) error {
+func (cont *NonTemplatedContainer) Initialize(
+	ctx context.Context,
+	template *api.Template) error {
 	if template != nil {
 		logging.Infof(ctx, "Warning: template provided for non-templated container. Will be ignored.")
 	}
@@ -65,7 +72,11 @@ func (cont *NonTemplatedContainer) Initialize(ctx context.Context, template *api
 		Env:     cont.EnvVars,
 	}
 
-	cont.StartContainerReq = &api.StartContainerRequest{Name: cont.Name, ContainerImage: cont.containerImage, StartCommand: cont.StartCmd, AdditionalOptions: additionalOptions}
+	cont.StartContainerReq = &api.StartContainerRequest{
+		Name:              cont.Name,
+		ContainerImage:    cont.containerImage,
+		StartCommand:      cont.StartCmd,
+		AdditionalOptions: additionalOptions}
 
 	cont.state = ContainerStateInitialized
 	return nil

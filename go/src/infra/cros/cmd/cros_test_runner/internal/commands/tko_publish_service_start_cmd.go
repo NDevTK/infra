@@ -22,7 +22,10 @@ type TkoPublishServiceStartCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *TkoPublishServiceStartCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *TkoPublishServiceStartCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -39,7 +42,10 @@ func (cmd *TkoPublishServiceStartCmd) ExtractDependencies(ctx context.Context, s
 	return nil
 }
 
-func (cmd *TkoPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *TkoPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.TkoPublishSrcDir == "" {
 		return fmt.Errorf("Cmd %q missing dependency: TkoPublishSrcDir", cmd.GetCommandType())
 	}
@@ -50,7 +56,8 @@ func (cmd *TkoPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx conte
 }
 
 func NewTkoPublishServiceStartCmd(executor interfaces.ExecutorInterface) *TkoPublishServiceStartCmd {
-	cmd := &TkoPublishServiceStartCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(TkoPublishStartCmdType, executor)}
+	singleCmdExec := interfaces.NewSingleCmdByExecutor(TkoPublishStartCmdType, executor)
+	cmd := &TkoPublishServiceStartCmd{SingleCmdByExecutor: singleCmdExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

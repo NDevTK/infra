@@ -47,9 +47,19 @@ func getMockContainerImagesInfo() map[string]*api.ContainerImageInfo {
 	return map[string]*api.ContainerImageInfo{
 		"cros-dut":       getMockedContainerImageInfo(),
 		"cros-provision": getMockedContainerImageInfo(),
+		"cros-test":      getMockedContainerImageInfo(),
+		"cros-publish":   getMockedContainerImageInfo(),
 	}
 }
 
 func getMockedContainerImageInfo() *api.ContainerImageInfo {
-	return &api.ContainerImageInfo{Name: "name", Digest: "digest", Tags: []string{"tag1"}, Repository: &api.GcrRepository{Hostname: "hostName", Project: "project"}}
+	return &api.ContainerImageInfo{
+		Name:   "name",
+		Digest: "digest",
+		Tags:   []string{"tag1"},
+		Repository: &api.GcrRepository{
+			Hostname: "hostName",
+			Project:  "project",
+		},
+	}
 }

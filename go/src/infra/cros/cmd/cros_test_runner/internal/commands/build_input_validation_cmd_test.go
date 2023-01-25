@@ -56,7 +56,9 @@ func TestBuildInputValidationCmdDeps_Execute(t *testing.T) {
 	t.Parallel()
 	Convey("BuildInputValidationCmd execute", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678}}
+		sk := &data.HwTestStateKeeper{
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678},
+		}
 		cmd := commands.NewBuildInputValidationCmd()
 
 		// Extract deps first

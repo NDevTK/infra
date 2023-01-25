@@ -23,7 +23,10 @@ type TkoPublishUploadCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *TkoPublishUploadCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *TkoPublishUploadCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -40,7 +43,10 @@ func (cmd *TkoPublishUploadCmd) ExtractDependencies(ctx context.Context, ski int
 	return nil
 }
 
-func (cmd *TkoPublishUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *TkoPublishUploadCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	swarmingTaksId := os.Getenv("SWARMING_TASK_ID")
 	if swarmingTaksId == "" {
 		return fmt.Errorf("Cmd %q missing dependency: SWARMING_TASK_ID in env to construct TkoJobName", cmd.GetCommandType())
@@ -57,7 +63,8 @@ func (cmd *TkoPublishUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 }
 
 func NewTkoPublishUploadCmd(executor interfaces.ExecutorInterface) *TkoPublishUploadCmd {
-	cmd := &TkoPublishUploadCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(TkoPublishUploadCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(TkoPublishUploadCmdType, executor)
+	cmd := &TkoPublishUploadCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

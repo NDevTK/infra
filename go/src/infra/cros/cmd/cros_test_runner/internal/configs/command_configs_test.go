@@ -80,5 +80,37 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		cmd, err = cmdConfig.GetCommand(commands.ProvisonInstallCmdType, executors.CrosProvisionExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.TestServiceStartCmdType, executors.CrosTestExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.TestsExecutionCmdType, executors.CrosTestExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.RdbPublishStartCmdType, executors.CrosRdbPublishExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.RdbPublishUploadCmdType, executors.CrosRdbPublishExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.TkoPublishStartCmdType, executors.CrosTkoPublishExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.TkoPublishUploadCmdType, executors.CrosTkoPublishExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.GcsPublishStartCmdType, executors.CrosGcsPublishExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.GcsPublishUploadCmdType, executors.CrosGcsPublishExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 	})
 }

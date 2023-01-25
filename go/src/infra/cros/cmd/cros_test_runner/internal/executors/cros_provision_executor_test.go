@@ -12,7 +12,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
@@ -85,7 +85,7 @@ func TestProvisionServiceInstall(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosProvisionExecutor(cont)
-		resp, err := exec.Install(ctx, &test_api.InstallRequest{})
+		resp, err := exec.Install(ctx, &testapi.InstallRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -99,7 +99,7 @@ func TestProvisionServiceInstall(t *testing.T) {
 		mocked_client := mocked_services.NewMockGenericProvisionServiceClient(ctrl)
 		exec.CrosProvisionServiceClient = mocked_client
 		getMockedProvisionInstall(mocked_client).Return(nil, fmt.Errorf("some_error"))
-		resp, err := exec.Install(ctx, &test_api.InstallRequest{})
+		resp, err := exec.Install(ctx, &testapi.InstallRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -113,7 +113,7 @@ func TestProvisionServiceInstall(t *testing.T) {
 		mocked_client := mocked_services.NewMockGenericProvisionServiceClient(ctrl)
 		exec.CrosProvisionServiceClient = mocked_client
 		getMockedProvisionInstall(mocked_client).Return(nil, nil)
-		resp, err := exec.Install(ctx, &test_api.InstallRequest{})
+		resp, err := exec.Install(ctx, &testapi.InstallRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -126,10 +126,16 @@ func TestProvisionServiceInstall(t *testing.T) {
 		exec := NewCrosProvisionExecutor(cont)
 		mocked_client := mocked_services.NewMockGenericProvisionServiceClient(ctrl)
 		exec.CrosProvisionServiceClient = mocked_client
-		wantResp := &test_api.InstallResponse{}
+		wantResp := &testapi.InstallResponse{}
 		wantRespAnypb, _ := anypb.New(wantResp)
-		getMockedProvisionInstall(mocked_client).Return(&longrunning.Operation{Done: true, Result: &longrunning.Operation_Response{Response: wantRespAnypb}}, nil)
-		resp, err := exec.Install(ctx, &test_api.InstallRequest{})
+		getMockedProvisionInstall(mocked_client).Return(&longrunning.Operation{
+			Done: true,
+			Result: &longrunning.Operation_Response{
+				Response: wantRespAnypb,
+			},
+		},
+			nil)
+		resp, err := exec.Install(ctx, &testapi.InstallRequest{})
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 		//So(resp, ShouldEqual, wantResp)
@@ -172,5 +178,7 @@ func TestProvisionServiceExecuteCommand(t *testing.T) {
 }
 
 func getMockedProvisionInstall(mockClient *mocked_services.MockGenericProvisionServiceClient) *gomock.Call {
-	return mockClient.EXPECT().Install(gomock.Any(), gomock.AssignableToTypeOf(&test_api.InstallRequest{}), gomock.Any())
+	return mockClient.EXPECT().Install(gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.InstallRequest{}),
+		gomock.Any())
 }

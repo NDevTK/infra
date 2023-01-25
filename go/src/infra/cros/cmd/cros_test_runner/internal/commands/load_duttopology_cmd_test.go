@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func TestLoadDutTopologyCmd_UnsupportedSK(t *testing.T) {
@@ -76,7 +76,7 @@ func TestLoadDutTopologyCmd_UpdateSKSuccess(t *testing.T) {
 		sk := &data.HwTestStateKeeper{HostName: "DUT-1234"}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewLoadDutTopologyCmd(exec)
-		cmd.DutTopology = &lab_api.DutTopology{}
+		cmd.DutTopology = &labapi.DutTopology{}
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)

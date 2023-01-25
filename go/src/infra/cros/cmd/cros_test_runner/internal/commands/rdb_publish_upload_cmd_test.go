@@ -23,8 +23,13 @@ func TestRdbPublishPublishCmd_UnsupportedSK(t *testing.T) {
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosRdbPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosRdbPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosRdbPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -38,8 +43,13 @@ func TestRdbPublishPublishCmd_MissingDeps(t *testing.T) {
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosRdbPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosRdbPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosRdbPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -53,8 +63,13 @@ func TestRdbPublishPublishCmd_UpdateSK(t *testing.T) {
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosRdbPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosRdbPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosRdbPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
@@ -68,11 +83,18 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
 		wantStainlessUrl := "www.stainless.com"
-		sk := &data.HwTestStateKeeper{CurrentInvocationId: wantInvId, StainlessUrl: wantStainlessUrl}
+		sk := &data.HwTestStateKeeper{
+			CurrentInvocationId: wantInvId,
+			StainlessUrl:        wantStainlessUrl}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(containers.CrosRdbPublishTemplatedContainerType, "container/image/path", ctr)
-		exec := executors.NewCrosPublishExecutor(cont, executors.CrosRdbPublishExecutorType)
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosRdbPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 
 		// Extract deps first

@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -24,17 +24,19 @@ const (
 	defaultLabInventoryServiceAddress = ":1485" // lab inventory service address
 )
 
-// CrosProvisionExecutor represents executor for all inventory service related commands.
+// CrosProvisionExecutor represents executor for
+// all inventory service related commands.
 type InvServiceExecutor struct {
 	*interfaces.AbstractExecutor
 
 	InventoryServiceAddress string
-	InventoryServiceClient  lab_api.InventoryServiceClient
+	InventoryServiceClient  labapi.InventoryServiceClient
 	GrpcConn                *grpc.ClientConn
-	DutTopology             *lab_api.DutTopology
+	DutTopology             *labapi.DutTopology
 }
 
-// NewInvServiceExecutor creates a new InvServiceExecutor object. inventoryServiceAddress argument is optional.
+// NewInvServiceExecutor creates a new InvServiceExecutor object.
+// inventoryServiceAddress argument is optional.
 // If not provided, defaultLabInventoryServiceAddress will be used.
 func NewInvServiceExecutor(inventoryServiceAddress string) *InvServiceExecutor {
 	// Set service address to default lab address if not provided
@@ -43,10 +45,14 @@ func NewInvServiceExecutor(inventoryServiceAddress string) *InvServiceExecutor {
 	}
 
 	abstractExec := interfaces.NewAbstractExecutor(InvServiceExecutorType)
-	return &InvServiceExecutor{AbstractExecutor: abstractExec, InventoryServiceAddress: inventoryServiceAddress}
+	return &InvServiceExecutor{
+		AbstractExecutor:        abstractExec,
+		InventoryServiceAddress: inventoryServiceAddress}
 }
 
-func (ex *InvServiceExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
+func (ex *InvServiceExecutor) ExecuteCommand(
+	ctx context.Context,
+	cmdInterface interfaces.CommandInterface) error {
 	switch cmd := cmdInterface.(type) {
 	case *commands.InvServiceStartCmd:
 		return ex.invServiceStartCommandExecution(ctx, cmd)
@@ -55,12 +61,17 @@ func (ex *InvServiceExecutor) ExecuteCommand(ctx context.Context, cmdInterface i
 	case *commands.InvServiceStopCmd:
 		return ex.invServiceStopCommandExecution(ctx, cmd)
 	default:
-		return fmt.Errorf("Command type %s is not supported by %s executor type!", cmd.GetCommandType(), ex.GetExecutorType())
+		return fmt.Errorf(
+			"Command type %s is not supported by %s executor type!",
+			cmd.GetCommandType(),
+			ex.GetExecutorType())
 	}
 }
 
 // invServiceStartCommandExecution executes the inventory service start command.
-func (ex *InvServiceExecutor) invServiceStartCommandExecution(ctx context.Context, cmd *commands.InvServiceStartCmd) error {
+func (ex *InvServiceExecutor) invServiceStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.InvServiceStartCmd) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Inventory service start")
 	defer func() { step.End(err) }()
@@ -74,7 +85,10 @@ func (ex *InvServiceExecutor) invServiceStartCommandExecution(ctx context.Contex
 }
 
 // loadDutTopologyCommandExecution executes the load dut topology command.
-func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(ctx context.Context, cmd *commands.LoadDutTopologyCmd) error {
+func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(
+	ctx context.Context,
+	cmd *commands.LoadDutTopologyCmd) error {
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Load DutTopology")
 	defer func() { step.End(err) }()
@@ -91,7 +105,9 @@ func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(ctx context.Contex
 }
 
 // invServiceStopCommandExecution executes the invenotry service stop command.
-func (ex *InvServiceExecutor) invServiceStopCommandExecution(ctx context.Context, cmd *commands.InvServiceStopCmd) error {
+func (ex *InvServiceExecutor) invServiceStopCommandExecution(
+	ctx context.Context,
+	cmd *commands.InvServiceStopCmd) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Inventory service stop")
 	defer func() { step.End(err) }()
@@ -119,14 +135,18 @@ func (ex *InvServiceExecutor) Start(ctx context.Context, invServerAddress string
 	// Connect with service
 	conn, err := common.ConnectWithService(ctx, invServerAddress)
 	if err != nil {
-		logging.Infof(ctx, "error during connecting with inventory server at %s: %s", invServerAddress, err.Error())
+		logging.Infof(
+			ctx,
+			"error during connecting with inventory server at %s: %s",
+			invServerAddress,
+			err.Error())
 		return err
 	}
 	ex.GrpcConn = conn
 	logging.Infof(ctx, "Connected with inventory service.")
 
 	// Get client
-	invClient := lab_api.NewInventoryServiceClient(conn)
+	invClient := labapi.NewInventoryServiceClient(conn)
 	if invClient == nil {
 		return fmt.Errorf("InventoryServiceClient is nil")
 	}
@@ -155,7 +175,10 @@ func (ex *InvServiceExecutor) Stop(ctx context.Context) error {
 }
 
 // GetDUTTopology invokes the get dut topology endpoint of inventory service.
-func (ex *InvServiceExecutor) GetDUTTopology(ctx context.Context, hostName string) (*lab_api.DutTopology, error) {
+func (ex *InvServiceExecutor) GetDUTTopology(
+	ctx context.Context,
+	hostName string) (*labapi.DutTopology, error) {
+
 	if hostName == "" {
 		return nil, fmt.Errorf("Provided hostname is empty!")
 	}
@@ -163,12 +186,17 @@ func (ex *InvServiceExecutor) GetDUTTopology(ctx context.Context, hostName strin
 		return nil, fmt.Errorf("InventoryServiceClient is nil!")
 	}
 
-	dutid := &lab_api.DutTopology_Id{Value: hostName}
-	stream, err := ex.InventoryServiceClient.GetDutTopology(ctx, &lab_api.GetDutTopologyRequest{Id: dutid})
+	dutid := &labapi.DutTopology_Id{Value: hostName}
+	stream, err := ex.InventoryServiceClient.GetDutTopology(
+		ctx,
+		&labapi.GetDutTopologyRequest{
+			Id: dutid,
+		},
+	)
 	if err != nil {
 		return nil, errors.Annotate(err, "error during GetDutTopology: ").Err()
 	}
-	response := &lab_api.GetDutTopologyResponse{}
+	response := &labapi.GetDutTopologyResponse{}
 	err = stream.RecvMsg(response)
 	if err != nil {
 		return nil, errors.Annotate(err, "inventoryServer get response: ").Err()

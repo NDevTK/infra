@@ -23,14 +23,21 @@ type TemplatedContainer struct {
 	StartTemplatedContainerReq *api.StartTemplatedContainerRequest
 }
 
-func NewTemplatedContainer(contType interfaces.ContainerType, namePrefix string, containerImage string, ctr *crostoolrunner.CrosToolRunner) *TemplatedContainer {
+func NewTemplatedContainer(contType interfaces.ContainerType,
+	namePrefix string,
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) *TemplatedContainer {
+
 	cont := &TemplatedContainer{AbstractContainer: NewAbstractContainer(contType, namePrefix, containerImage, ctr)}
 	cont.ConcreteContainer = cont
 	return cont
 }
 
 // Initialize initializes the container.
-func (cont *TemplatedContainer) Initialize(ctx context.Context, template *api.Template) error {
+func (cont *TemplatedContainer) Initialize(
+	ctx context.Context,
+	template *api.Template) error {
+
 	err := cont.AbstractContainer.InitializeBase(ctx)
 	if err != nil {
 		return errors.Annotate(err, "initialization failed for base container: ").Err()
@@ -65,7 +72,12 @@ func (cont *TemplatedContainer) Initialize(ctx context.Context, template *api.Te
 		return fmt.Errorf("TempDirLoc is empty but required for ArtifactDir")
 	}
 
-	cont.StartTemplatedContainerReq = &api.StartTemplatedContainerRequest{Name: cont.Name, ContainerImage: cont.containerImage, Template: template, Network: common.ContainerDefaultNetwork, ArtifactDir: cont.TempDirLoc}
+	cont.StartTemplatedContainerReq = &api.StartTemplatedContainerRequest{
+		Name:           cont.Name,
+		ContainerImage: cont.containerImage,
+		Template:       template,
+		Network:        common.ContainerDefaultNetwork,
+		ArtifactDir:    cont.TempDirLoc}
 
 	cont.state = ContainerStateInitialized
 
@@ -73,7 +85,10 @@ func (cont *TemplatedContainer) Initialize(ctx context.Context, template *api.Te
 }
 
 // initializeCrosDutTemplate initializes cros dut template.
-func (cont *TemplatedContainer) initializeCrosDutTemplate(ctx context.Context, dutTemplate *api.CrosDutTemplate) error {
+func (cont *TemplatedContainer) initializeCrosDutTemplate(
+	ctx context.Context,
+	dutTemplate *api.CrosDutTemplate) error {
+
 	if dutTemplate == nil {
 		return fmt.Errorf("Provided CrosDutTemplate is nil!")
 	}
@@ -90,7 +105,10 @@ func (cont *TemplatedContainer) initializeCrosDutTemplate(ctx context.Context, d
 }
 
 // initializeCrosProvisionTemplate initializes cros provision template.
-func (cont *TemplatedContainer) initializeCrosProvisionTemplate(ctx context.Context, provisionTemplate *api.CrosProvisionTemplate) error {
+func (cont *TemplatedContainer) initializeCrosProvisionTemplate(
+	ctx context.Context,
+	provisionTemplate *api.CrosProvisionTemplate) error {
+
 	if provisionTemplate == nil {
 		return fmt.Errorf("Provided CrosProvisionTemplate is nil!")
 	}
@@ -103,7 +121,10 @@ func (cont *TemplatedContainer) initializeCrosProvisionTemplate(ctx context.Cont
 }
 
 // initializeCrosTestTemplate initializes cros test template.
-func (cont *TemplatedContainer) initializeCrosTestTemplate(ctx context.Context, testTemplate *api.CrosTestTemplate) error {
+func (cont *TemplatedContainer) initializeCrosTestTemplate(
+	ctx context.Context,
+	testTemplate *api.CrosTestTemplate) error {
+
 	if testTemplate == nil {
 		return fmt.Errorf("Provided CrosTestTemplate is nil!")
 	}
@@ -112,12 +133,16 @@ func (cont *TemplatedContainer) initializeCrosTestTemplate(ctx context.Context, 
 }
 
 // initializeCrosPublishTemplate initializes cros publish template.
-func (cont *TemplatedContainer) initializeCrosPublishTemplate(ctx context.Context, publishTemplate *api.CrosPublishTemplate) error {
+func (cont *TemplatedContainer) initializeCrosPublishTemplate(
+	ctx context.Context,
+	publishTemplate *api.CrosPublishTemplate) error {
+
 	if publishTemplate == nil {
 		return fmt.Errorf("Provided CrosPublishTemplate is nil!")
 	}
 
-	if publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_GCS || publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO {
+	if publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_GCS ||
+		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO {
 		if publishTemplate.PublishSrcDir == "" {
 			return fmt.Errorf("PublishSrcDir is empty but required for GCS and TKO publish types!")
 		}

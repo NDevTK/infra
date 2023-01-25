@@ -69,8 +69,9 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 		CtrStop_CtrExecutor,
 	}
 
-	// Clean up configs. They will be executed if any failures occurs in main configs.
-	// If any of the cleanup cmd is already executed, they will be skipped.
+	// Clean up configs. They will be executed if any failures occurs
+	// in main configs. If any of the cleanup cmd is already executed,
+	// they will be skipped.
 	cleanupConfigs := []*CommandExecutorPairedConfig{
 		GcsPublishStart_CrosGcsPublishExecutor,
 		GcsPublishUpload_CrosGcsPublishExecutor,
@@ -80,7 +81,8 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
-// GetHwConfigsEnvVars gets all env vars that are required for hw test execution configs.
+// GetHwConfigsEnvVars gets all env vars that are required
+// for hw test execution configs.
 func GetHwConfigsEnvVars() []string {
 	return []string{
 		"LUCI_CONTEXT",
@@ -95,7 +97,11 @@ func GetHwConfigsEnvVars() []string {
 
 // GetHwConfigsGcsUrl gets gcs url for hw test execution configs.
 func GetHwConfigsGcsUrl() string {
-	return fmt.Sprintf("%s/%s/%s", common.HwTestLabGsRoot, time.Now().Format("2006-01-02"), uuid.New().String())
+	return fmt.Sprintf(
+		"%s/%s/%s",
+		common.HwTestLabGsRoot,
+		time.Now().Format("2006-01-02"),
+		uuid.New().String())
 }
 
 // GetHwConfigsStainlessUrl gets stainless url.

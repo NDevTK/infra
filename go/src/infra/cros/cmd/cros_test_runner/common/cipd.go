@@ -15,12 +15,20 @@ import (
 )
 
 // CreateAuthClient creates new auth client.
-func CreateAuthClient(ctx context.Context, authOpts auth.Options) (*http.Client, error) {
+func CreateAuthClient(
+	ctx context.Context,
+	authOpts auth.Options) (*http.Client, error) {
+
 	return auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOpts).Client()
 }
 
 // CreateCIPDClient creates new cipd client.
-func CreateCIPDClient(ctx context.Context, authOpts auth.Options, host string, root string) (cipd.Client, error) {
+func CreateCIPDClient(
+	ctx context.Context,
+	authOpts auth.Options,
+	host string,
+	root string) (cipd.Client, error) {
+
 	authClient, err := CreateAuthClient(ctx, authOpts)
 	if err != nil {
 		return nil, err
@@ -34,7 +42,15 @@ func CreateCIPDClient(ctx context.Context, authOpts auth.Options, host string, r
 }
 
 // EnsureCIPDPackage ensures the provided cipd package.
-func EnsureCIPDPackage(ctx context.Context, client cipd.Client, authOpts auth.Options, host string, packageTemplate string, version string, subdir string) (*cipd.Actions, error) {
+func EnsureCIPDPackage(
+	ctx context.Context,
+	client cipd.Client,
+	authOpts auth.Options,
+	host string,
+	packageTemplate string,
+	version string,
+	subdir string) (*cipd.Actions, error) {
+
 	actions := &cipd.Actions{}
 	packageDef := ensure.PackageDef{
 		PackageTemplate:   packageTemplate,
@@ -47,13 +63,19 @@ func EnsureCIPDPackage(ctx context.Context, client cipd.Client, authOpts auth.Op
 		PackagesBySubdir: map[string]ensure.PackageSlice{subdir: packageSlice},
 	}
 	resolver := cipd.Resolver{Client: client}
-	resolved, err := resolver.Resolve(ctx, &ensureFile, template.DefaultExpander())
+	resolved, err := resolver.Resolve(
+		ctx,
+		&ensureFile,
+		template.DefaultExpander())
 	if err != nil {
 		return actions, err
 	}
-	actionMap, err := client.EnsurePackages(ctx, resolved.PackagesBySubdir, &cipd.EnsureOptions{
-		Paranoia: resolved.ParanoidMode,
-		DryRun:   false,
-	})
+	actionMap, err := client.EnsurePackages(
+		ctx,
+		resolved.PackagesBySubdir,
+		&cipd.EnsureOptions{
+			Paranoia: resolved.ParanoidMode,
+			DryRun:   false,
+		})
 	return actionMap[subdir], err
 }

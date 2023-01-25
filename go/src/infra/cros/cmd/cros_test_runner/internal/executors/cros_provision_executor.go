@@ -9,7 +9,7 @@ import (
 	"fmt"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -25,32 +25,44 @@ type CrosProvisionExecutor struct {
 	*interfaces.AbstractExecutor
 
 	Container                  interfaces.ContainerInterface
-	CrosProvisionServiceClient test_api.GenericProvisionServiceClient
+	CrosProvisionServiceClient testapi.GenericProvisionServiceClient
 	ServerAddress              string
 }
 
 func NewCrosProvisionExecutor(container interfaces.ContainerInterface) *CrosProvisionExecutor {
-	return &CrosProvisionExecutor{AbstractExecutor: interfaces.NewAbstractExecutor(CrosProvisionExecutorType), Container: container}
+	absExec := interfaces.NewAbstractExecutor(CrosProvisionExecutorType)
+	return &CrosProvisionExecutor{AbstractExecutor: absExec, Container: container}
 }
 
-func (ex *CrosProvisionExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
+func (ex *CrosProvisionExecutor) ExecuteCommand(
+	ctx context.Context,
+	cmdInterface interfaces.CommandInterface) error {
+
 	switch cmd := cmdInterface.(type) {
 	case *commands.ProvisionServiceStartCmd:
 		return ex.provisionStartCommandExecution(ctx, cmd)
 	case *commands.ProvisionInstallCmd:
 		return ex.provisionInstallCommandExecution(ctx, cmd)
 	default:
-		return fmt.Errorf("Command type %s is not supported by %s executor type!", cmd.GetCommandType(), ex.GetExecutorType())
+		return fmt.Errorf(
+			"Command type %s is not supported by %s executor type!",
+			cmd.GetCommandType(),
+			ex.GetExecutorType())
 	}
 }
 
 // provisionStartCommandExecution executes the provision start command.
-func (ex *CrosProvisionExecutor) provisionStartCommandExecution(ctx context.Context, cmd *commands.ProvisionServiceStartCmd) error {
+func (ex *CrosProvisionExecutor) provisionStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.ProvisionServiceStartCmd) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Provision service start")
 	defer func() { step.End(err) }()
 
-	provReq := &test_api.CrosProvisionRequest{Dut: cmd.PrimaryDut, ProvisionState: cmd.ProvisionState, DutServer: cmd.DutServerAddress}
+	provReq := &testapi.CrosProvisionRequest{
+		Dut:            cmd.PrimaryDut,
+		ProvisionState: cmd.ProvisionState,
+		DutServer:      cmd.DutServerAddress}
 
 	err = ex.Start(ctx, provReq)
 	if err != nil {
@@ -61,12 +73,17 @@ func (ex *CrosProvisionExecutor) provisionStartCommandExecution(ctx context.Cont
 }
 
 // provisionInstallCommandExecution executes the provision install command.
-func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(ctx context.Context, cmd *commands.ProvisionInstallCmd) error {
+func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
+	ctx context.Context,
+	cmd *commands.ProvisionInstallCmd) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Provision install")
 	defer func() { step.End(err) }()
 
-	req := &test_api.InstallRequest{ImagePath: cmd.OsImagePath, PreventReboot: cmd.PreventReboot, Metadata: cmd.InstallMetadata}
+	req := &testapi.InstallRequest{
+		ImagePath:     cmd.OsImagePath,
+		PreventReboot: cmd.PreventReboot,
+		Metadata:      cmd.InstallMetadata}
 	common.WriteProtoToStepLog(ctx, step, req, "provision request")
 
 	logsLoc, err := ex.Container.GetLogsLocation()
@@ -94,12 +111,15 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(ctx context.Co
 }
 
 // Start starts the cros-provision server.
-func (ex *CrosProvisionExecutor) Start(ctx context.Context, provisionInputReq *test_api.CrosProvisionRequest) error {
+func (ex *CrosProvisionExecutor) Start(
+	ctx context.Context,
+	provisionInputReq *testapi.CrosProvisionRequest) error {
+
 	if provisionInputReq == nil {
 		return fmt.Errorf("Cannot start provision service with nil provision request.")
 	}
 
-	provisionTemplate := &test_api.CrosProvisionTemplate{InputRequest: provisionInputReq}
+	provisionTemplate := &testapi.CrosProvisionTemplate{InputRequest: provisionInputReq}
 	template := &api.Template{Container: &api.Template_CrosProvision{CrosProvision: provisionTemplate}}
 
 	// Process container.
@@ -112,7 +132,11 @@ func (ex *CrosProvisionExecutor) Start(ctx context.Context, provisionInputReq *t
 	// Connect with the service.
 	conn, err := common.ConnectWithService(ctx, serverAddress)
 	if err != nil {
-		logging.Infof(ctx, "error during connecting with provision server at %s: %s", serverAddress, err.Error())
+		logging.Infof(
+			ctx,
+			"error during connecting with provision server at %s: %s",
+			serverAddress,
+			err.Error())
 		return err
 	}
 	logging.Infof(ctx, "Connected with provision service.")
@@ -129,7 +153,10 @@ func (ex *CrosProvisionExecutor) Start(ctx context.Context, provisionInputReq *t
 }
 
 // Install invokes the provision install endpoint of cros-provision.
-func (ex *CrosProvisionExecutor) Install(ctx context.Context, installReq *test_api.InstallRequest) (*test_api.InstallResponse, error) {
+func (ex *CrosProvisionExecutor) Install(
+	ctx context.Context,
+	installReq *testapi.InstallRequest) (*testapi.InstallResponse, error) {
+
 	if installReq == nil {
 		return nil, fmt.Errorf("Cannot execute provision install for nil install request.")
 	}
@@ -147,7 +174,7 @@ func (ex *CrosProvisionExecutor) Install(ctx context.Context, installReq *test_a
 		return nil, errors.Annotate(err, "provision lro failure: ").Err()
 	}
 
-	provisionResp := &test_api.InstallResponse{}
+	provisionResp := &testapi.InstallResponse{}
 	if err := opResp.UnmarshalTo(provisionResp); err != nil {
 		logging.Infof(ctx, "provision lro response unmarshalling failed: %s", err.Error())
 		return nil, errors.Annotate(err, "provision lro response unmarshalling failed: ").Err()

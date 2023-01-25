@@ -11,7 +11,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func TestCrosDutTemplate(t *testing.T) {
@@ -44,7 +44,7 @@ func TestCrosDutTemplate(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
-		dutTemplate := &api.CrosDutTemplate{CacheServer: &lab_api.IpEndpoint{}}
+		dutTemplate := &api.CrosDutTemplate{CacheServer: &labapi.IpEndpoint{}}
 		err := cont.initializeCrosDutTemplate(ctx, dutTemplate)
 		So(err, ShouldNotBeNil)
 	})
@@ -55,7 +55,9 @@ func TestCrosDutTemplate(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
-		dutTemplate := &api.CrosDutTemplate{CacheServer: &lab_api.IpEndpoint{}, DutAddress: &lab_api.IpEndpoint{}}
+		dutTemplate := &api.CrosDutTemplate{
+			CacheServer: &labapi.IpEndpoint{},
+			DutAddress:  &labapi.IpEndpoint{}}
 		err := cont.initializeCrosDutTemplate(ctx, dutTemplate)
 		So(err, ShouldBeNil)
 	})
@@ -91,7 +93,9 @@ func TestCrosProvisionTemplate(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
-		provisionTemplate := &api.CrosProvisionTemplate{InputRequest: &api.CrosProvisionRequest{}}
+		provisionTemplate := &api.CrosProvisionTemplate{
+			InputRequest: &api.CrosProvisionRequest{},
+		}
 		err := cont.initializeCrosProvisionTemplate(ctx, provisionTemplate)
 		So(err, ShouldBeNil)
 	})

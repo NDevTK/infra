@@ -7,7 +7,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	_go "go.chromium.org/chromiumos/config/go"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -23,7 +23,10 @@ type ProvisionInstallCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *ProvisionInstallCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *ProvisionInstallCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -40,7 +43,10 @@ func (cmd *ProvisionInstallCmd) ExtractDependencies(ctx context.Context, ski int
 	return nil
 }
 
-func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	var err error
 	if sk.CftTestRequest == nil || sk.CftTestRequest.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath() == nil {
 		return fmt.Errorf("Cmd %q missing dependency: OsImagePath", cmd.GetCommandType())
@@ -50,7 +56,7 @@ func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 	cmd.PreventReboot = false
 
 	if sk.InstallMetadata == nil {
-		cmd.InstallMetadata, err = anypb.New(&test_api.CrOSProvisionMetadata{})
+		cmd.InstallMetadata, err = anypb.New(&testapi.CrOSProvisionMetadata{})
 		if err != nil {
 			return errors.Annotate(err, "error during creating provision metadata: ").Err()
 		}
@@ -62,7 +68,8 @@ func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 }
 
 func NewProvisionInstallCmd(executor interfaces.ExecutorInterface) *ProvisionInstallCmd {
-	cmd := &ProvisionInstallCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(ProvisonInstallCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(ProvisonInstallCmdType, executor)
+	cmd := &ProvisionInstallCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

@@ -20,11 +20,15 @@ type CommandConfig struct {
 }
 
 func NewCommandConfig(execConfig interfaces.ExecutorConfigInterface) interfaces.CommandConfigInterface {
-	return &CommandConfig{ExecutorConfig: execConfig, commandsMap: make(map[interfaces.CommandType]interfaces.CommandInterface)}
+	cmdMap := make(map[interfaces.CommandType]interfaces.CommandInterface)
+	return &CommandConfig{ExecutorConfig: execConfig, commandsMap: cmdMap}
 }
 
 // GetCommand returns the concrete command based on provided command and executor type.
-func (cfg *CommandConfig) GetCommand(cmdType interfaces.CommandType, execType interfaces.ExecutorType) (interfaces.CommandInterface, error) {
+func (cfg *CommandConfig) GetCommand(
+	cmdType interfaces.CommandType,
+	execType interfaces.ExecutorType) (interfaces.CommandInterface, error) {
+
 	// Return cmd if already created.
 	if savedCmd, ok := cfg.commandsMap[cmdType]; ok {
 		return savedCmd, nil

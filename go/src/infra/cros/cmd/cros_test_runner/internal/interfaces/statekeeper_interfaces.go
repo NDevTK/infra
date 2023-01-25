@@ -4,7 +4,8 @@
 
 package interfaces
 
-// StateKeeperInterface defines the contract a state keeper will have to satisfy.
+// StateKeeperInterface defines the contract a state keeper
+// will have to satisfy.
 type StateKeeperInterface interface {
 	// IsStateKeeper indicates if current object is a state keeper.
 	IsStateKeeper()

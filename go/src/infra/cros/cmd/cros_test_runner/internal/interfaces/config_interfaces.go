@@ -11,7 +11,8 @@ import (
 // Config type
 type ConfigType string
 
-// TestExecutionConfigInterface defines the contract an execution config will have to satisfy.
+// TestExecutionConfigInterface defines the contract an execution config
+// will have to satisfy.
 type TestExecutionConfigInterface interface {
 	// GetConfigType returns the config type.
 	GetConfigType() ConfigType
@@ -23,7 +24,8 @@ type TestExecutionConfigInterface interface {
 	Execute(context.Context, StateKeeperInterface) error
 }
 
-// AbstractTestExecutionConfig satisfies the config requirement that is common to all.
+// AbstractTestExecutionConfig satisfies the config requirement
+// that is common to all.
 type AbstractTestExecutionConfig struct {
 	configType ConfigType
 }
@@ -36,20 +38,25 @@ func (absConfig *AbstractTestExecutionConfig) GetConfigType() ConfigType {
 	return ConfigType(absConfig.configType)
 }
 
-// CommandConfigInterface defines the contract a command config will have to satisfy.
+// CommandConfigInterface defines the contract a command config
+// will have to satisfy.
 type CommandConfigInterface interface {
-	// GetCommand returns the concrete command based on provided command and executor type.
+	// GetCommand returns the concrete command based on
+	// provided command and executor type.
 	GetCommand(CommandType, ExecutorType) (CommandInterface, error)
 }
 
-// ExecutorConfigInterface defines the contract an executor config will have to satisfy.
+// ExecutorConfigInterface defines the contract an executor config
+// will have to satisfy.
 type ExecutorConfigInterface interface {
 	// GetExecutor returns the concrete executor based on provided executor type.
 	GetExecutor(execType ExecutorType) (ExecutorInterface, error)
 }
 
-// ContainerConfigInterface defines the contract container config will have to satisfy.
+// ContainerConfigInterface defines the contract container config
+// will have to satisfy.
 type ContainerConfigInterface interface {
-	// GetContainer returns the concrete container based on provided container type.
+	// GetContainer returns the concrete container based on
+	// provided container type.
 	GetContainer(contType ContainerType) (ContainerInterface, error)
 }

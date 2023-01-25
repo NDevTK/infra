@@ -11,7 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
@@ -74,7 +74,7 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
-		resp, err := exec.ExecuteTests(ctx, &test_api.CrosTestRequest{})
+		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -88,7 +88,7 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		mocked_client := mocked_services.NewMockExecutionServiceClient(ctrl)
 		exec.CrosTestServiceClient = mocked_client
 		getMockedExecuteTests(mocked_client).Return(nil, fmt.Errorf("some_error"))
-		resp, err := exec.ExecuteTests(ctx, &test_api.CrosTestRequest{})
+		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -102,7 +102,7 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		mocked_client := mocked_services.NewMockExecutionServiceClient(ctrl)
 		exec.CrosTestServiceClient = mocked_client
 		getMockedExecuteTests(mocked_client).Return(nil, nil)
-		resp, err := exec.ExecuteTests(ctx, &test_api.CrosTestRequest{})
+		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -115,10 +115,16 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		exec := NewCrosTestExecutor(cont)
 		mocked_client := mocked_services.NewMockExecutionServiceClient(ctrl)
 		exec.CrosTestServiceClient = mocked_client
-		wantResp := &test_api.CrosTestResponse{}
+		wantResp := &testapi.CrosTestResponse{}
 		wantRespAnypb, _ := anypb.New(wantResp)
-		getMockedExecuteTests(mocked_client).Return(&longrunning.Operation{Done: true, Result: &longrunning.Operation_Response{Response: wantRespAnypb}}, nil)
-		resp, err := exec.ExecuteTests(ctx, &test_api.CrosTestRequest{})
+		getMockedExecuteTests(mocked_client).Return(&longrunning.Operation{
+			Done: true,
+			Result: &longrunning.Operation_Response{
+				Response: wantRespAnypb,
+			},
+		},
+			nil)
+		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 		So(proto.Equal(resp, wantResp), ShouldBeTrue)
@@ -160,5 +166,7 @@ func TestTestServiceExecuteCommand(t *testing.T) {
 }
 
 func getMockedExecuteTests(mockClient *mocked_services.MockExecutionServiceClient) *gomock.Call {
-	return mockClient.EXPECT().RunTests(gomock.Any(), gomock.AssignableToTypeOf(&test_api.CrosTestRequest{}), gomock.Any())
+	return mockClient.EXPECT().RunTests(gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.CrosTestRequest{}),
+		gomock.Any())
 }

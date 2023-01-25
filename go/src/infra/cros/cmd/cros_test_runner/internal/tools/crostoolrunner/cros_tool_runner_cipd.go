@@ -76,7 +76,14 @@ func (ctrCipd *CtrCipdInfo) ensure(ctx context.Context) error {
 		return errors.Annotate(err, "error creating CIPD client: ").Err()
 	}
 
-	_, err = common.EnsureCIPDPackage(ctx, cipdClient, authOpts, cipdHost, common.CtrCipdPackage, ctrCipd.Version, "")
+	_, err = common.EnsureCIPDPackage(
+		ctx,
+		cipdClient,
+		authOpts,
+		cipdHost,
+		common.CtrCipdPackage,
+		ctrCipd.Version,
+		"")
 	if err != nil {
 		return errors.Annotate(err, "CIPD ensure package error: ").Err()
 	}

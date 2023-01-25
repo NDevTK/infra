@@ -15,7 +15,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
@@ -69,7 +69,17 @@ func TestProvisionStartCmd_ExtractDepsSuccess(t *testing.T) {
 
 	Convey("ProvisionStartCmd extract deps", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{ProvisionState: &api.ProvisionState{}}}, DutTopology: &lab_api.DutTopology{Duts: []*lab_api.Dut{{}}}, DutServerAddress: &lab_api.IpEndpoint{}}
+		sk := &data.HwTestStateKeeper{
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+					ProvisionState: &api.ProvisionState{},
+				},
+			},
+			DutTopology: &labapi.DutTopology{
+				Duts: []*labapi.Dut{
+					{},
+				},
+			}, DutServerAddress: &labapi.IpEndpoint{}}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)

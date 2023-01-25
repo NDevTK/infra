@@ -24,7 +24,8 @@ const (
 
 // Configs represents main and cleanup configs.
 // Cleanup configs are executed if any error occurs with main config execution.
-// If any command of cleanup config is already executed, they will be skipped during cleanup.
+// If any command of cleanup config is already executed,
+// they will be skipped during cleanup.
 type Configs struct {
 	MainConfigs    []*CommandExecutorPairedConfig
 	CleanupConfigs []*CommandExecutorPairedConfig
@@ -40,10 +41,18 @@ type TestExecutionConfig struct {
 	executedCommands map[interfaces.CommandType]bool
 }
 
-func NewTestExecutionConfig(configType interfaces.ConfigType, cmdConfig interfaces.CommandConfigInterface, ski interfaces.StateKeeperInterface) TestExecutionConfig {
+func NewTestExecutionConfig(
+	configType interfaces.ConfigType,
+	cmdConfig interfaces.CommandConfigInterface,
+	ski interfaces.StateKeeperInterface) TestExecutionConfig {
+
 	executedCmdMap := make(map[interfaces.CommandType]bool)
 	abstractConfig := interfaces.NewAbstractTestExecutionConfig(configType)
-	return TestExecutionConfig{AbstractTestExecutionConfig: abstractConfig, commandConfig: cmdConfig, stateKeeper: ski, executedCommands: executedCmdMap}
+	return TestExecutionConfig{
+		AbstractTestExecutionConfig: abstractConfig,
+		commandConfig:               cmdConfig,
+		stateKeeper:                 ski,
+		executedCommands:            executedCmdMap}
 }
 
 func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context) error {
@@ -59,13 +68,17 @@ func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context) error {
 
 func (tecfg *TestExecutionConfig) Execute(ctx context.Context) error {
 	if tecfg.configs == nil || len(tecfg.configs.MainConfigs) == 0 {
-		return fmt.Errorf("Cannot execute nil or empty conifgs. Please generate configs first.")
+		return fmt.Errorf(
+			"Cannot execute nil or empty conifgs. Please generate configs first.",
+		)
 	}
 
 	// Process main configs
 	cmds, err := tecfg.processCommandConfig(ctx, tecfg.configs.MainConfigs)
 	if err != nil {
-		return errors.Annotate(err, "error during processing main configs for config type %s: ", tecfg.GetConfigType()).Err()
+		return errors.Annotate(
+			err,
+			"error during processing main configs for config type %s: ", tecfg.GetConfigType()).Err()
 	}
 	if len(cmds) == 0 {
 		return fmt.Errorf("No valid commands found for config type %s.", tecfg.GetConfigType())
@@ -91,7 +104,10 @@ func (tecfg *TestExecutionConfig) Execute(ctx context.Context) error {
 }
 
 // processCommandConfig processes paired configs to specific commands.
-func (tecfg *TestExecutionConfig) processCommandConfig(ctx context.Context, pairedConfig []*CommandExecutorPairedConfig) ([]interfaces.CommandInterface, error) {
+func (tecfg *TestExecutionConfig) processCommandConfig(
+	ctx context.Context,
+	pairedConfig []*CommandExecutorPairedConfig) ([]interfaces.CommandInterface, error) {
+
 	cmds := []interfaces.CommandInterface{}
 	for _, cmdConfig := range pairedConfig {
 		cmd, err := tecfg.commandConfig.GetCommand(cmdConfig.CommandType, cmdConfig.ExecutorType)
@@ -107,7 +123,9 @@ func (tecfg *TestExecutionConfig) processCommandConfig(ctx context.Context, pair
 
 // executeCommands executes given commands.
 // It will skip any commands that are already executed.
-func (tecfg *TestExecutionConfig) executeCommands(ctx context.Context, cmds []interfaces.CommandInterface) error {
+func (tecfg *TestExecutionConfig) executeCommands(
+	ctx context.Context,
+	cmds []interfaces.CommandInterface) error {
 	var err error
 	for _, cmd := range cmds {
 		cmdType := cmd.GetCommandType()

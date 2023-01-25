@@ -11,7 +11,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// GetMockedTestResultProto returns a mock result proto that can be used for testing.
+// GetMockedTestResultProto returns a mock result proto
+// that can be used for testing.
 func GetMockedTestResultProto() *artifactpb.TestResult {
 	testResult := &artifactpb.TestResult{
 		Version: 1,

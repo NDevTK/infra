@@ -11,8 +11,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
@@ -41,7 +41,7 @@ func TestDutServiceStart(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
-		err := exec.Start(ctx, &lab_api.IpEndpoint{}, nil)
+		err := exec.Start(ctx, &labapi.IpEndpoint{}, nil)
 		So(err, ShouldNotBeNil)
 	})
 
@@ -51,7 +51,7 @@ func TestDutServiceStart(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
-		err := exec.Start(ctx, &lab_api.IpEndpoint{}, &lab_api.IpEndpoint{})
+		err := exec.Start(ctx, &labapi.IpEndpoint{}, &labapi.IpEndpoint{})
 		So(err, ShouldNotBeNil)
 	})
 
@@ -64,7 +64,7 @@ func TestDutServiceStart(t *testing.T) {
 		getMockedStartTemplatedContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
-		err := exec.Start(ctx, &lab_api.IpEndpoint{}, &lab_api.IpEndpoint{})
+		err := exec.Start(ctx, &labapi.IpEndpoint{}, &labapi.IpEndpoint{})
 		So(err, ShouldNotBeNil)
 	})
 
@@ -74,11 +74,18 @@ func TestDutServiceStart(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		mocked_client := mocked_services.NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctr.CtrClient = mocked_client
-		getMockedStartTemplatedContainer(mocked_client).Return(&test_api.StartContainerResponse{}, nil)
-		getMockedGetContainer(mocked_client).Return(&test_api.GetContainerResponse{Container: &test_api.Container{PortBindings: []*test_api.Container_PortBinding{{}}}}, nil)
+		getMockedStartTemplatedContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
+		getMockedGetContainer(mocked_client).Return(&testapi.GetContainerResponse{
+			Container: &testapi.Container{
+				PortBindings: []*testapi.Container_PortBinding{
+					{},
+				},
+			},
+		},
+			nil)
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
-		err := exec.Start(ctx, &lab_api.IpEndpoint{}, &lab_api.IpEndpoint{})
+		err := exec.Start(ctx, &labapi.IpEndpoint{}, &labapi.IpEndpoint{})
 		So(err, ShouldNotBeNil)
 	})
 }
@@ -108,9 +115,13 @@ func TestDutServiceExecuteCommand(t *testing.T) {
 }
 
 func getMockedStartTemplatedContainer(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().StartTemplatedContainer(gomock.Any(), gomock.AssignableToTypeOf(&test_api.StartTemplatedContainerRequest{}), gomock.Any())
+	return mctrclient.EXPECT().StartTemplatedContainer(gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.StartTemplatedContainerRequest{}),
+		gomock.Any())
 }
 
 func getMockedGetContainer(mctrclient *mocked_services.MockCrosToolRunnerContainerServiceClient) *gomock.Call {
-	return mctrclient.EXPECT().GetContainer(gomock.Any(), gomock.AssignableToTypeOf(&test_api.GetContainerRequest{}), gomock.Any())
+	return mctrclient.EXPECT().GetContainer(gomock.Any(),
+		gomock.AssignableToTypeOf(&testapi.GetContainerRequest{}),
+		gomock.Any())
 }

@@ -238,8 +238,21 @@ func TestProcessContainer(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
-		getResp := &api.GetContainerResponse{Container: &api.Container{PortBindings: []*api.Container_PortBinding{{HostIp: hostIp, HostPort: hostPort}}}}
-		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: &api.StartContainerResponse{}, StartContainerErr: nil, GetContainerResp: getResp, GetContainerErr: nil}
+		getResp := &api.GetContainerResponse{Container: &api.Container{
+			PortBindings: []*api.Container_PortBinding{
+				{
+					HostIp:   hostIp,
+					HostPort: hostPort,
+				},
+			},
+		},
+		}
+		absContainer.ConcreteContainer = &MockContainer{
+			InitializeErr:      nil,
+			StartContainerResp: &api.StartContainerResponse{},
+			StartContainerErr:  nil,
+			GetContainerResp:   getResp,
+			GetContainerErr:    nil}
 		address, err := absContainer.ProcessContainer(ctx, nil)
 		So(err, ShouldBeNil)
 		So(address, ShouldEqual, fmt.Sprintf("%s:%v", hostIp, hostPort))

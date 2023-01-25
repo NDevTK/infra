@@ -18,7 +18,8 @@ type CommandInterface interface {
 	// GetCommandType returns the command type.
 	GetCommandType() CommandType
 
-	// ExtractDependencies extracts command dependencies from the provided state keeper before command execution.
+	// ExtractDependencies extracts command dependencies from
+	// the provided state keeper before command execution.
 	ExtractDependencies(context.Context, StateKeeperInterface) error
 
 	// Execute executes the command.
@@ -43,12 +44,16 @@ func (cmd *AbstractCmd) GetCommandType() CommandType {
 	return cmd.cmdType
 }
 
-func (cmd *AbstractCmd) ExtractDependencies(ctx context.Context, ski StateKeeperInterface) error {
+func (cmd *AbstractCmd) ExtractDependencies(
+	ctx context.Context,
+	ski StateKeeperInterface) error {
 	// No deps (Sub classes will overwrite if necessary)
 	return nil
 }
 
-func (cmd *AbstractCmd) UpdateStateKeeper(ctx context.Context, ski StateKeeperInterface) error {
+func (cmd *AbstractCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski StateKeeperInterface) error {
 	// Nothing to update (Sub classes will overwrite if necessary)
 	return nil
 }
@@ -67,8 +72,13 @@ type SingleCmdByExecutor struct {
 	commandExecutor ExecutorInterface
 }
 
-func NewSingleCmdByExecutor(cmdType CommandType, executor ExecutorInterface) *SingleCmdByExecutor {
-	return &SingleCmdByExecutor{AbstractCmd: NewAbstractCmd(cmdType), commandExecutor: executor}
+func NewSingleCmdByExecutor(
+	cmdType CommandType,
+	executor ExecutorInterface) *SingleCmdByExecutor {
+	return &SingleCmdByExecutor{
+		AbstractCmd:     NewAbstractCmd(cmdType),
+		commandExecutor: executor,
+	}
 }
 
 func (cmd *SingleCmdByExecutor) Execute(ctx context.Context) error {
@@ -80,7 +90,8 @@ func (cmd *SingleCmdByExecutor) Execute(ctx context.Context) error {
 	return nil
 }
 
-// MultipleCmdsByExecutor represents multiple commands inside a single command executed by an executor.
+// MultipleCmdsByExecutor represents multiple commands
+// inside a single command executed by an executor.
 type MultipleCmdsByExecutor struct {
 	*AbstractCmd
 
@@ -88,8 +99,15 @@ type MultipleCmdsByExecutor struct {
 	commandList     []CommandInterface
 }
 
-func NewMultipleCmdsByExecutor(cmdType CommandType, executor ExecutorInterface, cmdList []CommandInterface) CommandInterface {
-	return &MultipleCmdsByExecutor{AbstractCmd: NewAbstractCmd(cmdType), commandExecutor: executor, commandList: cmdList}
+func NewMultipleCmdsByExecutor(
+	cmdType CommandType,
+	executor ExecutorInterface,
+	cmdList []CommandInterface) CommandInterface {
+	return &MultipleCmdsByExecutor{
+		AbstractCmd:     NewAbstractCmd(cmdType),
+		commandExecutor: executor,
+		commandList:     cmdList,
+	}
 }
 
 func (cmd *MultipleCmdsByExecutor) Execute(ctx context.Context) error {

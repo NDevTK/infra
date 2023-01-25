@@ -26,7 +26,10 @@ type ParseEnvInfoCmd struct {
 }
 
 // UpdateStateKeeper updates the state keeper with info from the cmd.
-func (cmd *ParseEnvInfoCmd) UpdateStateKeeper(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *ParseEnvInfoCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -66,7 +69,10 @@ func (cmd *ParseEnvInfoCmd) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (cmd *ParseEnvInfoCmd) updateHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *ParseEnvInfoCmd) updateHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if cmd.HostName != "" {
 		sk.HostName = cmd.HostName
 	}

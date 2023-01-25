@@ -15,7 +15,7 @@ import (
 
 	"infra/cros/cmd/cros_test_runner/common"
 
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -32,7 +32,7 @@ const (
 type CrosToolRunner struct {
 	CtrCipdInfo
 
-	CtrClient         test_api.CrosToolRunnerContainerServiceClient
+	CtrClient         testapi.CrosToolRunnerContainerServiceClient
 	EnvVarsToPreserve []string
 
 	wg              *sync.WaitGroup
@@ -58,7 +58,10 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 	writer := step.Log("CTR Stdout")
 	cmdArgs := []string{}
 	if len(ctr.EnvVarsToPreserve) > 0 {
-		cmdArgs = append(cmdArgs, fmt.Sprintf("--preserve-env=%s", strings.Join(ctr.EnvVarsToPreserve, ",")))
+		cmdArgs = append(cmdArgs, fmt.Sprintf(
+			"--preserve-env=%s",
+			strings.Join(ctr.EnvVarsToPreserve, ","),
+		))
 	}
 	cmdArgs = append(cmdArgs, ctr.CtrPath, "server")
 	logging.Infof(ctx, "Starting CTR server...")
@@ -72,8 +75,8 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 	return nil
 }
 
-// StartCTRServerAsync starts the server asynchronously. This is necessary as we would want the server
-// to run in background.
+// StartCTRServerAsync starts the server asynchronously.
+// This is necessary as we would want the server to run in background.
 func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) {
 	// Do not start a server if an existing server is running.
 	if ctr.wg != nil {
@@ -95,7 +98,9 @@ func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) 
 }
 
 // ConnectToCTRServer connects to the CTR server in provided server address.
-func (ctr *CrosToolRunner) ConnectToCTRServer(ctx context.Context, serverAddress string) (test_api.CrosToolRunnerContainerServiceClient, error) {
+func (ctr *CrosToolRunner) ConnectToCTRServer(
+	ctx context.Context,
+	serverAddress string) (testapi.CrosToolRunnerContainerServiceClient, error) {
 	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Connect to cros-tool-runner server"))
 	defer func() { step.End(err) }()
@@ -120,7 +125,7 @@ func (ctr *CrosToolRunner) ConnectToCTRServer(ctx context.Context, serverAddress
 	logging.Infof(ctx, "Successfully connected to CTR service!")
 
 	// Construct CTR client
-	ctrClient := test_api.NewCrosToolRunnerContainerServiceClient(conn)
+	ctrClient := testapi.NewCrosToolRunnerContainerServiceClient(conn)
 	if ctrClient == nil {
 		return nil, fmt.Errorf("CrosToolRunnerContainerServiceClient is nil")
 	}
@@ -145,7 +150,7 @@ func (ctr *CrosToolRunner) StopCTRServer(ctx context.Context) error {
 	}
 
 	// Stop CTR server
-	req := test_api.ShutdownRequest{}
+	req := testapi.ShutdownRequest{}
 	common.WriteProtoToStepLog(ctx, step, &req, "StopServerRequest")
 	resp, err := ctr.CtrClient.Shutdown(ctx, &req, grpc.EmptyCallOption{})
 	if err != nil {
@@ -167,7 +172,9 @@ func (ctr *CrosToolRunner) StopCTRServer(ctx context.Context) error {
 // -- Container commands --
 
 // StartContainer starts a non-templated container using ctr client.
-func (ctr *CrosToolRunner) StartContainer(ctx context.Context, startContainerReq *test_api.StartContainerRequest) (*test_api.StartContainerResponse, error) {
+func (ctr *CrosToolRunner) StartContainer(
+	ctx context.Context,
+	startContainerReq *testapi.StartContainerRequest) (*testapi.StartContainerResponse, error) {
 	if startContainerReq == nil {
 		return nil, fmt.Errorf("start container request cannot be nil for start container command.")
 	}
@@ -195,7 +202,10 @@ func (ctr *CrosToolRunner) StartContainer(ctx context.Context, startContainerReq
 }
 
 // StartContainer starts a templated container using ctr client.
-func (ctr *CrosToolRunner) StartTemplatedContainer(ctx context.Context, startContainerReq *test_api.StartTemplatedContainerRequest) (*test_api.StartContainerResponse, error) {
+func (ctr *CrosToolRunner) StartTemplatedContainer(
+	ctx context.Context,
+	startContainerReq *testapi.StartTemplatedContainerRequest) (*testapi.StartContainerResponse, error) {
+
 	if startContainerReq == nil {
 		return nil, fmt.Errorf("start templated container request cannot be nil for start templated container command.")
 	}
@@ -244,7 +254,10 @@ func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName stri
 }
 
 // GetContainer gets the container with provided name.
-func (ctr *CrosToolRunner) GetContainer(ctx context.Context, containerName string) (*test_api.GetContainerResponse, error) {
+func (ctr *CrosToolRunner) GetContainer(
+	ctx context.Context,
+	containerName string) (*testapi.GetContainerResponse, error) {
+
 	if containerName == "" {
 		return nil, fmt.Errorf("Cannot execute get container with empty container name.")
 	}
@@ -258,7 +271,7 @@ func (ctr *CrosToolRunner) GetContainer(ctx context.Context, containerName strin
 	}
 
 	// Get container info
-	getContainerReq := &test_api.GetContainerRequest{Name: containerName}
+	getContainerReq := &testapi.GetContainerRequest{Name: containerName}
 	common.WriteProtoToStepLog(ctx, step, getContainerReq, "GetContainerRequest")
 
 	// TODO (azrahman): use exponential backoff retry
@@ -266,7 +279,7 @@ func (ctr *CrosToolRunner) GetContainer(ctx context.Context, containerName strin
 	retryCount := 50 // This number is currently a bit high due to drone's lower than expected performance
 	timeout := 5 * time.Second
 
-	resp := &test_api.GetContainerResponse{}
+	resp := &testapi.GetContainerResponse{}
 	for !portFound && retryCount > 0 {
 		resp, err = ctr.CtrClient.GetContainer(ctx, getContainerReq, grpc.EmptyCallOption{})
 		if err != nil {
@@ -288,7 +301,9 @@ func (ctr *CrosToolRunner) GetContainer(ctx context.Context, containerName strin
 }
 
 // GcloudAuth does auth to the registry.
-func (ctr *CrosToolRunner) GcloudAuth(ctx context.Context, dockerFileLocation string) (*test_api.LoginRegistryResponse, error) {
+func (ctr *CrosToolRunner) GcloudAuth(
+	ctx context.Context,
+	dockerFileLocation string) (*testapi.LoginRegistryResponse, error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Auth Gcloud with user %s", Username))
 	var err error
 	defer func() { step.End(err) }()
@@ -297,12 +312,14 @@ func (ctr *CrosToolRunner) GcloudAuth(ctx context.Context, dockerFileLocation st
 		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
 	}
 
-	extension := test_api.LoginRegistryExtensions{}
+	extension := testapi.LoginRegistryExtensions{}
 	if dockerFileLocation != "" {
-		extension = test_api.LoginRegistryExtensions{GcloudAuthServiceAccountArgs: []string{"--key-file", dockerFileLocation}}
+		extension = testapi.LoginRegistryExtensions{
+			GcloudAuthServiceAccountArgs: []string{"--key-file",
+				dockerFileLocation}}
 	}
 
-	loginReq := test_api.LoginRegistryRequest{Username: Username, Password: Password, Registry: ImageRegistry, Extensions: &extension}
+	loginReq := testapi.LoginRegistryRequest{Username: Username, Password: Password, Registry: ImageRegistry, Extensions: &extension}
 	common.WriteProtoToStepLog(ctx, step, &loginReq, "LoginRegistryRequest")
 
 	// Login

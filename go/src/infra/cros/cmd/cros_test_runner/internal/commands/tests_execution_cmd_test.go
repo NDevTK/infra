@@ -15,8 +15,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
@@ -70,7 +70,19 @@ func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
 
 	Convey("TestsExecutionCmd extract deps", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{TestSuites: []*api.TestSuite{&test_api.TestSuite{}}}, DutTopology: &lab_api.DutTopology{Duts: []*lab_api.Dut{{}}}, DutServerAddress: &lab_api.IpEndpoint{}}
+		sk := &data.HwTestStateKeeper{
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				TestSuites: []*api.TestSuite{
+					&testapi.TestSuite{},
+				},
+			},
+			DutTopology: &labapi.DutTopology{
+				Duts: []*labapi.Dut{
+					{},
+				},
+			},
+			DutServerAddress: &labapi.IpEndpoint{},
+		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
@@ -93,7 +105,13 @@ func TestTestsExecutionCmd_UpdateSKSuccess(t *testing.T) {
 		exec := executors.NewCrosTestExecutor(cont)
 		cmd := commands.NewTestsExecutionCmd(exec)
 
-		wantTestResp := &test_api.CrosTestResponse{TestCaseResults: []*test_api.TestCaseResult{{TestCaseId: &test_api.TestCase_Id{}}}}
+		wantTestResp := &testapi.CrosTestResponse{
+			TestCaseResults: []*testapi.TestCaseResult{
+				{
+					TestCaseId: &testapi.TestCase_Id{},
+				},
+			},
+		}
 		wantTkoPublishSrcDir := "tko/src/dir"
 		cmd.TestResponses = wantTestResp
 		cmd.TkoPublishSrcDir = wantTkoPublishSrcDir

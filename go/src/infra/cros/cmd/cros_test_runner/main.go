@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -55,7 +56,13 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest)
 	}
 
 	// Create configs
-	containerImagesMap := req.GetContainerMetadata().GetContainers()[req.GetPrimaryDut().GetContainerMetadataKey()].GetImages()
+	metadataContainers := req.GetContainerMetadata().GetContainers()
+	metadataKey := req.GetPrimaryDut().GetContainerMetadataKey()
+	metadataMap, ok := metadataContainers[metadataKey]
+	if !ok {
+		return fmt.Errorf("Provided key %q does not exist in provided container metadata.", metadataKey)
+	}
+	containerImagesMap := metadataMap.GetImages()
 	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)

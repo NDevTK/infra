@@ -14,7 +14,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func TestDutServiceStartCmd_UnsupportedSK(t *testing.T) {
@@ -67,7 +67,18 @@ func TestDutServiceStartCmd_ExtractDepsSuccess(t *testing.T) {
 
 	Convey("DutServiceStartCmd extract deps", t, func() {
 		ctx := context.Background()
-		dutTopo := &lab_api.DutTopology{Duts: []*lab_api.Dut{{CacheServer: &lab_api.CacheServer{Address: &lab_api.IpEndpoint{}}, DutType: &lab_api.Dut_Chromeos{Chromeos: &lab_api.Dut_ChromeOS{Ssh: &lab_api.IpEndpoint{}}}}}}
+		dutTopo := &labapi.DutTopology{
+			Duts: []*labapi.Dut{
+				{
+					CacheServer: &labapi.CacheServer{Address: &labapi.IpEndpoint{}},
+					DutType: &labapi.Dut_Chromeos{
+						Chromeos: &labapi.Dut_ChromeOS{
+							Ssh: &labapi.IpEndpoint{},
+						},
+					},
+				},
+			},
+		}
 		sk := &data.HwTestStateKeeper{DutTopology: dutTopo}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -91,7 +102,7 @@ func TestDutServiceStartCmd_UpdateSKSuccess(t *testing.T) {
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := executors.NewCrosDutExecutor(cont)
 		cmd := commands.NewDutServiceStartCmd(exec)
-		cmd.DutServerAddress = &lab_api.IpEndpoint{}
+		cmd.DutServerAddress = &labapi.IpEndpoint{}
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)

@@ -11,7 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -23,7 +23,9 @@ type UnsupportedCmd struct {
 }
 
 func NewUnsupportedCmd() interfaces.CommandInterface {
-	return &UnsupportedCmd{AbstractSingleCmdByNoExecutor: &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: interfaces.NewAbstractCmd(commands.UnSupportedCmdType)}}
+	absCmd := interfaces.NewAbstractCmd(commands.UnSupportedCmdType)
+	absSingleCmdByNoExec := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: absCmd}
+	return &UnsupportedCmd{AbstractSingleCmdByNoExecutor: absSingleCmdByNoExec}
 }
 
 func TestInvServiceStart(t *testing.T) {
@@ -173,21 +175,43 @@ func TestInvServiceExecuteCommand(t *testing.T) {
 	})
 }
 
-func getMockedGetDutTopology(mis *mocked_services.MockInventoryServiceClient, hostName string) *gomock.Call {
-	return mis.EXPECT().GetDutTopology(gomock.Any(), gomock.Eq(&lab_api.GetDutTopologyRequest{Id: &lab_api.DutTopology_Id{Value: hostName}}))
+func getMockedGetDutTopology(
+	mis *mocked_services.MockInventoryServiceClient,
+	hostName string) *gomock.Call {
+	return mis.EXPECT().GetDutTopology(
+		gomock.Any(),
+		gomock.Eq(&labapi.GetDutTopologyRequest{
+			Id: &labapi.DutTopology_Id{
+				Value: hostName,
+			},
+		},
+		),
+	)
 }
 
-func getMockedGetDutTopologyRcvMsgSuccess(misgtc *mocked_services.MockInventoryService_GetDutTopologyClient, hostName string) *gomock.Call {
-	return misgtc.EXPECT().RecvMsg(gomock.Eq(&lab_api.GetDutTopologyResponse{})).DoAndReturn(
-		func(resp *lab_api.GetDutTopologyResponse) error {
-			resp.Result = &lab_api.GetDutTopologyResponse_Success_{Success: &lab_api.GetDutTopologyResponse_Success{DutTopology: &lab_api.DutTopology{Id: &lab_api.DutTopology_Id{Value: hostName}}}}
+func getMockedGetDutTopologyRcvMsgSuccess(
+	misgtc *mocked_services.MockInventoryService_GetDutTopologyClient,
+	hostName string) *gomock.Call {
+
+	return misgtc.EXPECT().RecvMsg(gomock.Eq(&labapi.GetDutTopologyResponse{})).DoAndReturn(
+		func(resp *labapi.GetDutTopologyResponse) error {
+			resp.Result = &labapi.GetDutTopologyResponse_Success_{
+				Success: &labapi.GetDutTopologyResponse_Success{
+					DutTopology: &labapi.DutTopology{
+						Id: &labapi.DutTopology_Id{
+							Value: hostName,
+						},
+					},
+				},
+			}
 			return nil
 		})
 }
 
-func getMockedGetDutTopologyRcvMsgFailure(misgtc *mocked_services.MockInventoryService_GetDutTopologyClient) *gomock.Call {
-	return misgtc.EXPECT().RecvMsg(gomock.Eq(&lab_api.GetDutTopologyResponse{})).DoAndReturn(
-		func(resp *lab_api.GetDutTopologyResponse) error {
+func getMockedGetDutTopologyRcvMsgFailure(
+	misgtc *mocked_services.MockInventoryService_GetDutTopologyClient) *gomock.Call {
+	return misgtc.EXPECT().RecvMsg(gomock.Eq(&labapi.GetDutTopologyResponse{})).DoAndReturn(
+		func(resp *labapi.GetDutTopologyResponse) error {
 			return fmt.Errorf("some error")
 		})
 }

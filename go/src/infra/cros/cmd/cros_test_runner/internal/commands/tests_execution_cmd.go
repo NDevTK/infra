@@ -6,8 +6,8 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
-	test_api "go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -16,18 +16,21 @@ type TestsExecutionCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	DutServerAddress *lab_api.IpEndpoint
-	TestSuites       []*test_api.TestSuite
-	PrimaryDevice    *test_api.CrosTestRequest_Device
-	CompanionDevices []*test_api.CrosTestRequest_Device
+	DutServerAddress *labapi.IpEndpoint
+	TestSuites       []*testapi.TestSuite
+	PrimaryDevice    *testapi.CrosTestRequest_Device
+	CompanionDevices []*testapi.CrosTestRequest_Device
 
 	// Updates
-	TestResponses    *test_api.CrosTestResponse
+	TestResponses    *testapi.CrosTestResponse
 	TkoPublishSrcDir string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *TestsExecutionCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *TestsExecutionCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -45,7 +48,10 @@ func (cmd *TestsExecutionCmd) ExtractDependencies(ctx context.Context, ski inter
 }
 
 // UpdateStateKeeper updates the state keeper with info from the cmd.
-func (cmd *TestsExecutionCmd) UpdateStateKeeper(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *TestsExecutionCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -59,7 +65,10 @@ func (cmd *TestsExecutionCmd) UpdateStateKeeper(ctx context.Context, ski interfa
 	return nil
 }
 
-func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if sk.CftTestRequest == nil || sk.CftTestRequest.GetTestSuites() == nil || len(sk.CftTestRequest.GetTestSuites()) == 0 {
 		return fmt.Errorf("Cmd %q missing dependency: TestSuites", cmd.GetCommandType())
 	}
@@ -73,20 +82,23 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 		return fmt.Errorf("Cmd %q missing dependency: DutServerAddress", cmd.GetCommandType())
 	}
 
-	cmd.PrimaryDevice = &test_api.CrosTestRequest_Device{Dut: sk.DutTopology.GetDuts()[0], DutServer: sk.DutServerAddress}
+	cmd.PrimaryDevice = &testapi.CrosTestRequest_Device{Dut: sk.DutTopology.GetDuts()[0], DutServer: sk.DutServerAddress}
 
-	cmd.CompanionDevices = []*test_api.CrosTestRequest_Device{}
+	cmd.CompanionDevices = []*testapi.CrosTestRequest_Device{}
 	if sk.DutTopology != nil && sk.DutTopology.GetDuts() != nil && len(sk.DutTopology.GetDuts()) > 1 {
 		for _, eachDut := range sk.DutTopology.GetDuts() {
 			// TODO (azrahman): For multi-dut case, do we need dut server address for each companions?
-			cmd.CompanionDevices = append(cmd.CompanionDevices, &test_api.CrosTestRequest_Device{Dut: eachDut})
+			cmd.CompanionDevices = append(cmd.CompanionDevices, &testapi.CrosTestRequest_Device{Dut: eachDut})
 		}
 	}
 
 	return nil
 }
 
-func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
 	if cmd.TestResponses != nil {
 		sk.TestResponses = cmd.TestResponses
 	}
@@ -98,7 +110,8 @@ func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(ctx context.Context, sk *d
 }
 
 func NewTestsExecutionCmd(executor interfaces.ExecutorInterface) *TestsExecutionCmd {
-	cmd := &TestsExecutionCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(TestsExecutionCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(TestsExecutionCmdType, executor)
+	cmd := &TestsExecutionCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

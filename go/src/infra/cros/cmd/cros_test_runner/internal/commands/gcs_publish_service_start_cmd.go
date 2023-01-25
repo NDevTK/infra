@@ -22,7 +22,10 @@ type GcsPublishServiceStartCmd struct {
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *GcsPublishServiceStartCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+func (cmd *GcsPublishServiceStartCmd) ExtractDependencies(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
 	var err error
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
@@ -39,7 +42,9 @@ func (cmd *GcsPublishServiceStartCmd) ExtractDependencies(ctx context.Context, s
 	return nil
 }
 
-func (cmd *GcsPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+func (cmd *GcsPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
 	if sk.GcsPublishSrcDir == "" {
 		return fmt.Errorf("Cmd %q missing dependency: GcsPublishSrcDir", cmd.GetCommandType())
 	}
@@ -50,7 +55,8 @@ func (cmd *GcsPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx conte
 }
 
 func NewGcsPublishServiceStartCmd(executor interfaces.ExecutorInterface) *GcsPublishServiceStartCmd {
-	cmd := &GcsPublishServiceStartCmd{SingleCmdByExecutor: interfaces.NewSingleCmdByExecutor(GcsPublishStartCmdType, executor)}
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(GcsPublishStartCmdType, executor)
+	cmd := &GcsPublishServiceStartCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }
