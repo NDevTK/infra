@@ -179,7 +179,8 @@ def adhoc_builder(
         properties = None,
         experiments = None,
         schedule = None,
-        triggered_by = None):
+        triggered_by = None,
+        description_html = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -187,6 +188,7 @@ def adhoc_builder(
         name = name,
         bucket = "ci",
         executable = executable,
+        description_html = description_html,
         dimensions = dims,
         properties = properties,
         experiments = experiments,
@@ -303,6 +305,29 @@ adhoc_builder(
             },
         ],
     },
+)
+
+adhoc_builder(
+    name = "linux-rel-buildbucket-noop",
+    os = "Ubuntu-18.04",
+    executable = luci.recipe(
+        name = "placeholder",
+        cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
+        use_python3 = True,
+    ),
+    description_html = "No-op builder to measure and monitor bbagent overhead",
+    properties = {
+        "status": "SUCCESS",
+        "steps": [
+            {
+                "name": "hello",
+                "fake_step": {
+                    "duration_secs": 0,
+                },
+            },
+        ],
+    },
+    schedule = "with 10m interval",
 )
 
 def adhoc_task_backend_builder(
