@@ -213,9 +213,13 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 	buildName := build.GetBuilder().GetBuilder()
 	currentTime := c.clock.Now()
 	matchesRules := []string{}
+	foundSufficient := false
 	for i, rule := range c.rules {
 		if !rule.matches(build) {
 			continue
+		}
+		if !rule.rule.GetInsufficient() {
+			foundSufficient = true
 		}
 		matchesRules = append(matchesRules, fmt.Sprintf("%d", i))
 	}
@@ -226,6 +230,10 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 	}
 
 	c.LogOut("Build %s matches rules %s, evaluating for retry", buildStr, strings.Join(matchesRules, ","))
+	if !foundSufficient {
+		c.LogOut("Build %s only matches insufficient rules, not retrying.", buildStr)
+		return false
+	}
 	for i, rule := range c.rules {
 		if !rule.matches(build) {
 			continue
@@ -258,6 +266,9 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 				c.LogOut("Rule %d will only retry %2.2f%% builds, not retrying.", i, rule.rule.GetCutoffPercent()*100)
 				return false
 			}
+		}
+		if !rule.rule.GetInsufficient() {
+			foundSufficient = true
 		}
 	}
 	return true

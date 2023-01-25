@@ -114,6 +114,7 @@ func TestCollectState_CutoffSeconds(t *testing.T) {
 	fakeClock.currentTime = 500
 	assert.Assert(t, !collectState.canRetry(build))
 }
+
 func TestCollectState_CutoffPercent(t *testing.T) {
 	t.Parallel()
 
@@ -368,4 +369,60 @@ func TestCollectState_FailedCheckpoint(t *testing.T) {
 		SummaryMarkdown: "gclient error",
 	}
 	assert.Assert(t, !collectState.canRetry(successfulBuild))
+}
+
+func TestCollectState_Insufficient(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					BuilderNameRe: []string{
+						".*",
+					},
+					MaxRetries:   3,
+					Insufficient: true,
+				},
+				{
+					BuilderNameRe: []string{
+						"coral-.*",
+						"eve-.*",
+					},
+					MaxRetries: 5,
+				},
+			},
+		}})
+
+	atlasBuild := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "atlas-release-main",
+		},
+		SummaryMarkdown: "gclient error",
+	}
+	// Only matches insufficient rules.
+	assert.Assert(t, !collectState.canRetry(atlasBuild))
+
+	eveBuild := &bbpb.Build{
+		Id:     12346,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+	}
+	assert.Assert(t, collectState.canRetry(eveBuild))
+
+	retries := 0
+	for collectState.canRetry(eveBuild) {
+		collectState.recordRetry(eveBuild)
+		retries += 1
+	}
+	assert.IntsEqual(t, retries, 3)
 }
