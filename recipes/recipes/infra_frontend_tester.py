@@ -55,7 +55,10 @@ def RunInfraInternalFrontendTests(api, env):
   # cwd = api.path['checkout'].join('path', 'to', 'ui', 'root')
   # RunFrontendTests(api, env, cwd, 'myapp')
   # `myapp` is the name that will show up in the step.
-  pass
+
+  testhaus = api.path['checkout'].join('go', 'src', 'infra_internal',
+                                       'appengine', 'testhaus')
+  RunFrontendTests(api, env, testhaus.join('frontend', 'ui'), 'testhaus')
 
 
 def RunInfraFrontendTests(api, env):
