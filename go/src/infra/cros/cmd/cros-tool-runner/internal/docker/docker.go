@@ -249,7 +249,8 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 	// File not found? Log the timeout duration.
 	if err != nil {
 		logRunTime(ctx, startTime, service)
-		log.Println("Log file not found, logged max tiemout. Task will fail.")
+		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
+		log.Println("Log file not found, logged max tiemout.")
 		return
 	}
 }
@@ -421,30 +422,41 @@ var (
 		"Duration of the docker pull.",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("service"),
-		field.String("drone"))
+		field.String("drone"),
+		field.String("image"))
 	runTime = metric.NewFloat("chrome/infra/CFT/docker_runNew",
 		"Duration of the docker run.",
 		&types.MetricMetadata{Units: types.Seconds},
 		field.String("service"),
-		field.String("drone"))
+		field.String("drone"),
+		field.String("image"))
 )
 
-func droneName() string {
-	out, err := exec.Command("echo $DOCKER_DRONE_SERVER_NAME").Output()
-	droneName := string(out)
-	if err != nil {
-		droneName = "NOT_FOUND"
+func getEnvVar(v string) string {
+	out := os.Getenv(v)
+	if out == "" {
+		out = "NOT_FOUND"
 	}
-	log.Printf("Drone name used for metrics: %s", droneName)
-	return droneName
+	return out
+}
+func droneName() string {
+	dn := getEnvVar("DOCKER_DRONE_SERVER_NAME")
+	log.Printf("INFORMATIONAL: Drone name used for metrics: %s", dn)
+	return dn
+}
+
+func droneImage() string {
+	dv := getEnvVar("DOCKER_DRONE_IMAGE")
+	log.Printf("INFORMATIONAL: Drone Image used for metrics: %s", dv)
+	return dv
 }
 
 func logPullTime(ctx context.Context, startTime time.Time, service string) {
-	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName())
+	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
 }
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
-	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName())
+	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneName())
 }
 
 // logServiceFound logs the when the service has started.

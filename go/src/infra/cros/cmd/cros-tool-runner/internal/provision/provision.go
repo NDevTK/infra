@@ -53,6 +53,11 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	}
 	if device == nil || device.GetProvisionState() == nil {
 		res.Err = errors.Reason("run provision: DUT input is empty").Err()
+		res.Out.Outcome = &api.CrosProvisionResponse_Failure{
+			Failure: &api.InstallFailure{
+				Reason: api.InstallFailure_REASON_INVALID_REQUEST,
+			},
+		}
 		return res
 	}
 	dutName := res.Out.Id.GetValue()
@@ -82,6 +87,11 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	dutService, err := services.CreateDutService(ctx, crosDutContainer, dutName, networkName, cacheServerInfo, dutSshInfo, crosDutResultsDir, tokenFile)
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
+		res.Out.Outcome = &api.CrosProvisionResponse_Failure{
+			Failure: &api.InstallFailure{
+				Reason: api.InstallFailure_REASON_DOCKER_UNABLE_TO_START,
+			},
+		}
 		return res
 	}
 	defer func() {
