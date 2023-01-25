@@ -223,6 +223,9 @@ func crosClosePlan() *Plan {
 				Conditions: []string{
 					"DUT state is repair_failed",
 					"Failure count above threshold",
+					// Apply conditions in separate CL.
+					// "DUT state is not ready",
+					// "DUT state is not needs_replacement",
 				},
 				ExecName: "dut_set_state",
 				ExecExtraArgs: []string{
@@ -239,6 +242,26 @@ func crosClosePlan() *Plan {
 					"Failure count above threshold",
 				},
 				ExecName: "sample_fail",
+			},
+			"DUT state is not ready": {
+				Docs: []string{
+					`Check if the DUT state is anything other than "ready".`,
+				},
+				ExecName: "dut_state_match",
+				ExecExtraArgs: []string{
+					"invert:true",
+					"state:ready",
+				},
+			},
+			"DUT state is not needs_replacement": {
+				Docs: []string{
+					`Check if the DUT state is anything other than "needs_replacement".`,
+				},
+				ExecName: "dut_state_match",
+				ExecExtraArgs: []string{
+					"invert:true",
+					"state:needs_replacement",
+				},
 			},
 			"DUT state is repair_failed": {
 				Docs: []string{

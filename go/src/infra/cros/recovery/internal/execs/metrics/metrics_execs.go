@@ -63,21 +63,30 @@ func metricsFoundAtLastTimeExec(ctx context.Context, info *execs.ExecInfo) error
 	return errors.Reason("metrics found at last time: no metric kind of: %q found within the last %v", metricsKind, timeFrameHours).Err()
 }
 
-// checkTaskFailuresExec counts the number of times the task has
-// failed, and verifies if it is greater than a threshold number.
+// checkTaskFailuresExec counts the number of failed attempts (including the current attempt) and
+// exits successfully if the threshold is reached or exceeded.
+//
+// This exec assumes that the current task is failing and *counts it towards the number of
+// currently-failing tasks*. Whenever it is called, care should be taken to exit early without
+// invoking it if the current task appears successful.
+//
+// See b:264309811 comment #10 and b:264309811 comment #14 for details.
 func checkTaskFailuresExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	taskName := argsMap.AsString(ctx, "task_name", "")
 	repairFailedCountTarget := argsMap.AsInt(ctx, "repair_failed_count", 49)
-	repairFailedCount, err := metrics.CountFailedRepairFromMetrics(ctx, info.GetDut().Name, taskName, info.GetMetrics())
+	previousRepairFailedCount, err := metrics.CountFailedRepairFromMetrics(ctx, info.GetDut().Name, taskName, info.GetMetrics())
 	if err != nil {
 		return errors.Annotate(err, "check task failures").Err()
 	}
-	// We do not count the current repair attempt in the target, we only count the failures that have previously occurred.
-	// Therefore, if we currently meet or exceed the repair-failed target, then the device should be set to the needs-manual-repair state.
-	// See b:264309811 comment 10 for details.
+	// When determining whether we have reached or exceeded the target or not,
+	// we DO count the current repair attempt.
+	//
+	// The current repair attempt is not a previous repair attempt, therefore we
+	// must add one to the previous repair failure count.
+	repairFailedCount := previousRepairFailedCount + 1
 	if repairFailedCount >= repairFailedCountTarget {
-		log.Infof(ctx, "The number of repair attempts %d exceeded the threshold of %d", repairFailedCount, repairFailedCountTarget)
+		log.Infof(ctx, "The number of repair attempts including current attempt %d reached or exceeded the threshold of %d", repairFailedCount, repairFailedCountTarget)
 		return nil
 	}
 	return errors.Reason("check task failures: Fail count: %d", repairFailedCount).Err()
