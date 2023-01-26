@@ -456,7 +456,7 @@ func logPullTime(ctx context.Context, startTime time.Time, service string) {
 }
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
-	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneName())
+	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
 }
 
 // logServiceFound logs the when the service has started.
