@@ -26,4 +26,5 @@ go_packages:
 root: ../../go/bin
 data:
   - file: lucicfg${exe_suffix}
+    generate_bat_shim: true
   - version_file: .versions/lucicfg${exe_suffix}.cipd_version
