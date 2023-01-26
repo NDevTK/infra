@@ -51,7 +51,6 @@ class ExportAllCoverageMetrics(BaseHandler):
     more = True
     cursor = None
     page_size = 100
-    make_inactive = []
     while more:
       results, cursor, more = query.fetch_page(
           page_size,
@@ -60,7 +59,6 @@ class ExportAllCoverageMetrics(BaseHandler):
       for x in results:
         if x.gerrit_hashtag or x.author:
           yield x.key.id()
-    ndb.put_multi(make_inactive)
 
   def HandleGet(self):
     # Spawn a sub task for each active filter
@@ -73,11 +71,14 @@ class ExportAllCoverageMetrics(BaseHandler):
       #special characters are not allowed in task name
       author = modifier.author.replace('@', '_') if modifier.author else None
       author = author.replace('.', '_') if author else None
+      task_name = '%s-%s-%s' % (
+          modifier.gerrit_hashtag, author,
+          datetime.datetime.now().strftime('%d%m%Y-%H%M%S'))
+      logging.info(task_name)
       taskqueue.add(
           method='GET',
           url=url,
-          name='%s-%s-%s' % (modifier.gerrit_hashtag, author,
-                             datetime.datetime.now().strftime('%d%m%Y-%H%M%S')),
+          name=task_name,
           queue_name=constants.EXPERIMENTAL_COVERAGE_QUEUE,
           target=constants.CODE_COVERAGE_EXPERIMENTAL_COVERAGE_WORKER)
     return {'return_code': 200}

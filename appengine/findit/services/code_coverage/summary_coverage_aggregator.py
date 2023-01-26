@@ -114,7 +114,7 @@ class SummaryCoverageAggregator(object):
     Throws an assertion error if called after produce_summary_metrics()
     """
     assert not self.produce_summary_coverage_invoked, \
-        "consume_file_coverage() was called before produce_summary_coverage()"
+        "consume_file_coverage() was called after produce_summary_coverage()"
 
     self._update_per_directory_summaries(file_coverage)
     self._update_per_directory_files(file_coverage)

@@ -450,8 +450,6 @@ def ExportCoverage(modifier_id, run_id):
   files_deleted_at_latest = defaultdict(list)
   interesting_lines_per_builder_per_file = defaultdict(lambda: defaultdict(set))
   commits = _GetCandidateCommits(modifier_id)
-  aggregator = summary_coverage_aggregator.SummaryCoverageAggregator(
-      metrics=['line'])
   for commit in commits:
     for file_path in commit['files']:
       file_path = '//' + file_path
@@ -536,6 +534,8 @@ def ExportCoverage(modifier_id, run_id):
     coverage_per_file, files_with_missing_coverage = _GetCoveragePerFile(
         report, interesting_lines_per_builder_per_file[builder])
     _CreateModifiedFileCoverage(coverage_per_file, report, modifier_id)
+    aggregator = summary_coverage_aggregator.SummaryCoverageAggregator(
+        metrics=['line'])
     for file_coverage in coverage_per_file.values():
       aggregator.consume_file_coverage(file_coverage)
     directory_coverage = aggregator.produce_summary_coverage()

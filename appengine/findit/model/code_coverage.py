@@ -219,8 +219,8 @@ class CoverageReportModifier(ndb.Model):
           project=project,
           author=author,
           is_active=is_active)
-    modifier.is_active = is_active
-    modifier.put()
+      modifier.is_active = is_active
+      modifier.put()
     return modifier
 
 
