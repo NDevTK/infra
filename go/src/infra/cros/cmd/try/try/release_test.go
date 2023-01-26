@@ -106,6 +106,14 @@ func TestValidate_releaseRun(t *testing.T) {
 		skipPaygen: true,
 	}
 	assert.ErrorContains(t, r.validate(), "not supported for production")
+	r = releaseRun{
+		tryRunBase: tryRunBase{
+			branch:     "release-R106.15054.B",
+			production: true,
+			buildspec:  "gs://chromeos-manifest-versions/buildspecs/111/15301.0.0.xml",
+		},
+	}
+	assert.ErrorContains(t, r.validate(), "not supported for production")
 }
 
 func TestValidate_stabilizeRun(t *testing.T) {

@@ -54,8 +54,13 @@ type releaseRun struct {
 
 // validate validates release-specific args for the command.
 func (r *releaseRun) validate() error {
-	if r.skipPaygen && r.production {
-		return fmt.Errorf("--skip_paygen is not supported for production builds")
+	if r.production {
+		if r.skipPaygen {
+			return fmt.Errorf("--skip_paygen is not supported for production builds")
+		}
+		if r.buildspec != "" {
+			return fmt.Errorf("--buildspec is not supported for production builds")
+		}
 	}
 
 	if strings.HasPrefix(r.branch, "stabilize-") && !r.production {
