@@ -8,6 +8,7 @@ package testrunner
 import (
 	"context"
 
+	"infra/cmd/cros_test_platform/internal/execution/args"
 	"infra/cmd/cros_test_platform/internal/execution/types"
 
 	"github.com/golang/protobuf/proto"
@@ -28,6 +29,11 @@ type ArgsGenerator interface {
 	GenerateArgs(ctx context.Context) (request.Args, error)
 	// Check the internal consistency of of the generator arguments.
 	CheckConsistency() error
+}
+
+// ArgsModifier is used to inject modifications to
+type ArgsModifier interface {
+	ModifyArgs(ctx context.Context, args request.Args) error
 }
 
 // InvalidDependencies tag indicates that an error was caused because
@@ -75,16 +81,16 @@ type Build struct {
 }
 
 // NewBuild creates a new test_runner build.
-func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerator, retryNumber int32) (*Build, error) {
+func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerator, argsModifier ArgsModifier) (*Build, error) {
 	t := &Build{argsGenerator: argsGenerator}
 	args, err := t.argsGenerator.GenerateArgs(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
 	}
-	if args.CFTIsEnabled && args.CFTTestRunnerRequest != nil {
-		args.CFTTestRunnerRequest.RetryNumber = retryNumber
-	} else if args.TestRunnerRequest != nil {
-		args.TestRunnerRequest.RetryNumber = retryNumber
+	if argsModifier != nil {
+		if err := argsModifier.ModifyArgs(ctx, args); err != nil {
+			return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
+		}
 	}
 	ref, err := c.LaunchTask(ctx, &args)
 	if err != nil {
@@ -278,7 +284,15 @@ func (b *Build) Result() *steps.ExecuteResponse_TaskResult {
 //
 // Retry does not check whether the current build is complete.
 func (b *Build) Retry(ctx context.Context, c trservice.Client, retryNumber int32) (*Build, error) {
-	return NewBuild(ctx, c, b.argsGenerator, retryNumber)
+	testCaseResultsMap := make(map[string]test_platform.TaskState_Verdict)
+	for _, testCaseResult := range b.Result().TestCases {
+		testCaseResultsMap[testCaseResult.Name] = testCaseResult.Verdict
+	}
+	retryModifier := &args.RetryModifier{
+		RetryNumber:         retryNumber,
+		PrevTestCaseResults: testCaseResultsMap,
+	}
+	return NewBuild(ctx, c, b.argsGenerator, retryModifier)
 }
 
 // TaskURL returns the URL to the buildbucket build for this task.

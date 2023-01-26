@@ -155,7 +155,7 @@ func (r *RequestTaskSet) retryParams() luci_retry.Iterator {
 // createNewBuildWithRetry attempts to create new test_runner build. It retries if transient error occurs.
 func (r *RequestTaskSet) createNewBuildWithRetry(ctx context.Context, c *trservice.Client, ag *args.Generator, taskName string) (task *testrunner.Build, err error) {
 	err = luci_retry.Retry(ctx, transient.Only(r.retryParams), func() error {
-		task, err = testrunner.NewBuild(ctx, *c, ag, 0)
+		task, err = testrunner.NewBuild(ctx, *c, ag, nil)
 		if err != nil {
 			if r.isTransientError(ctx, err) {
 				logging.Infof(ctx, "Transient error occured for %s: %s", taskName, err.Error())
@@ -241,6 +241,11 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 		}
 
 		logging.Infof(ctx, "Retrying %s", ts.Name)
+		for _, tc := range tr.TestCases {
+			if tc.Verdict != test_platform.TaskState_VERDICT_PASSED {
+				logging.Infof(ctx, "Test (%s) did not pass with Verdict %s: %s", tc.Name, tc.Verdict, tc.HumanReadableSummary)
+			}
+		}
 		nt, err := task.Retry(ctx, c, int32(r.retryCounter.RetryCount(iid)+1))
 		if err != nil {
 			return false, errors.Annotate(err, "tick for task %s: retry test", tr.LogUrl).Err()
