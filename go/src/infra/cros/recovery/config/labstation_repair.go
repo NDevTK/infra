@@ -78,6 +78,7 @@ func LabstationRepairConfig() *Configuration {
 							"labstation_tryjob",
 							"labstation_canary",
 							"labstation_phone_station",
+							"labstation_block_autoupdate",
 						},
 					},
 					"Update provisioned info": {
