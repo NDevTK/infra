@@ -645,8 +645,21 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	}
 
 	testName := g.Invocation.Test.Name
-	if !strings.HasPrefix(testName, "tauto.") {
-		testName = fmt.Sprintf("tauto.%s", testName)
+	testCaseIds := []*testapi.TestCase_Id{}
+	// "Names" field takes priority and "Name" will only be checked/modified when "Names" is not provided.
+	if g.Invocation.Test.Names == nil || len(g.Invocation.Test.Names) == 0 {
+		if !strings.HasPrefix(testName, "tauto.") {
+			testName = fmt.Sprintf("tauto.%s", testName)
+		}
+		testCaseIds = append(testCaseIds, &testapi.TestCase_Id{
+			Value: testName,
+		})
+	} else {
+		for _, testName_ := range g.Invocation.Test.Names {
+			testCaseIds = append(testCaseIds, &testapi.TestCase_Id{
+				Value: testName_,
+			})
+		}
 	}
 
 	testSuites := []*testapi.TestSuite{
@@ -654,11 +667,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 			Name: kv["suite"],
 			Spec: &testapi.TestSuite_TestCaseIds{
 				TestCaseIds: &testapi.TestCaseIdList{
-					TestCaseIds: []*testapi.TestCase_Id{
-						{
-							Value: testName,
-						},
-					},
+					TestCaseIds: testCaseIds,
 				},
 			},
 		},
