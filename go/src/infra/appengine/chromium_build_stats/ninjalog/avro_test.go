@@ -53,7 +53,7 @@ func TestToAVRO(t *testing.T) {
 
 	got, err := toAVRO(&info)
 	if err != nil {
-		t.Fatalf("want nil; got err: %v", err)
+		t.Fatalf("got err %v, want nil", err)
 	}
 	if diff := cmp.Diff(map[string]interface{}{
 		"build_configs": []map[string]interface{}{},
