@@ -1737,10 +1737,10 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
+				"Setup has servo info",
 				"Verify servod is responsive",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
 				"Trigger kernel panic by servod",
 				"Wait to be SSHable (normal boot)",
 			},
@@ -1769,16 +1769,24 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
+				// Disable by b/266830082 as possible causing issue with servod.
+				"Skip condition",
 				"Not Satlab device",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
-				"Verify servod is responsive",
 				"servod_has_control_cr50_reboot",
 				"Trigger power_state:cr50_reset",
 				"Re-initialize DUT part of servo",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
+		},
+		"Skip condition": {
+			Docs: []string{
+				"Condition which always fail to make possible to skip any action when needed.",
+			},
+			ExecName: "sample_fail",
 		},
 		"Re-initialize DUT part of servo": {
 			Docs: []string{
@@ -2049,9 +2057,11 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Cold reset device by servo and wait for DUT to become ping-able.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
 				"Setup has servo info",
 				"Verify servod is responsive",
+			},
+			Dependencies: []string{
 				"Cold reset DUT by servo",
 				"Wait to be pingable (normal boot)",
 			},
@@ -2064,9 +2074,13 @@ func crosRepairActions() map[string]*Action {
 				"is not booted after off/on performed as part of ",
 				"re-imaging the device from USB device.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
+				"Setup has servo info",
 				"Verify servod is responsive",
-				"Cold reset by servo and wait for SSH",
+			},
+			Dependencies: []string{
+				"Cold reset DUT by servo",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
 		},
@@ -2075,8 +2089,11 @@ func crosRepairActions() map[string]*Action {
 				"This repair action will use servod command to reset power_state on the DUT.",
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
+				"Setup has servo info",
 				"Verify servod is responsive",
+			},
+			Dependencies: []string{
 				"Cold reset DUT by servo",
 				"Wait to be SSHable (normal boot)",
 			},
@@ -2313,11 +2330,15 @@ func crosRepairActions() map[string]*Action {
 				"available. This action exists to wrap these component ",
 				"actions into a single repair action.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
+				"Setup has servo info",
 				"Verify servod is responsive",
+			},
+			Dependencies: []string{
 				"Flash EC (FW) by servo",
 				"Flash AP (FW) with GBB 0x18 by servo",
-				"Cold reset by servo and wait for SSH",
+				"Cold reset DUT by servo",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
 		},
