@@ -43,7 +43,7 @@ func Extract(ctx context.Context, req *ExtractRequest, run components.Runner) er
 
 // CurlFile downloads file by using curl util.
 func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinationPath string, timeout time.Duration) error {
-	out, err := run(ctx, timeout, "curl", sourcePath, "--output", destinationPath)
+	out, err := run(ctx, timeout, "curl", sourcePath, "--output", destinationPath, "--fail")
 	if err == nil {
 		log.Debugf(ctx, "Successfully download %q from %q", destinationPath, sourcePath)
 		return nil
