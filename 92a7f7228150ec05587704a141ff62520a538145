@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2ea5542_c504fcf3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2023-01-26T13:42:40Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "92a7f7228150ec05587704a141ff62520a538145",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd5652e9_a3261e51",
+        "filename": "appengine/findit/model/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2023-01-26T13:42:40Z",
+      "side": 1,
+      "message": "nit: Do we need this since it\u0027s just created with |is_active\u003dis_active|?",
+      "range": {
+        "startLine": 222,
+        "startChar": 6,
+        "endLine": 222,
+        "endChar": 36
+      },
+      "revId": "92a7f7228150ec05587704a141ff62520a538145",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
