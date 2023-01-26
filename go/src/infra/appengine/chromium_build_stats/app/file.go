@@ -53,23 +53,12 @@ func fileHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	defer reader.Close()
 
-	w.Header().Set("Content-Type", reader.ContentType())
-	w.Header().Set("Content-Encoding", reader.ContentEncoding())
+	w.Header().Set("Content-Type", reader.Attrs.ContentType)
+	w.Header().Set("Content-Encoding", reader.Attrs.ContentEncoding)
 
 	_, err = io.Copy(w, reader)
 	if err != nil {
 		log.Errorf(ctx, "failed to copy %s: %v", path, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func copyHeader(dst, src http.Header) {
-	for k, vv := range src {
-		if strings.HasPrefix(k, "X-") {
-			continue
-		}
-		for _, v := range vv {
-			dst.Add(k, v)
-		}
 	}
 }

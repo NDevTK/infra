@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"path"
@@ -36,7 +35,7 @@ func init() {
 
 func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	body, err := ioutil.ReadAll(req.Body)
+	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		http.Error(w, "failed to read body request", http.StatusBadRequest)
 		log.Errorf(ctx, "failed to read body request: %v", err)
@@ -75,8 +74,8 @@ func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 		log.Errorf(ctx, "failed to get file: %v", err)
 
 		// TODO(tikuta): This may not cover all network error.
-		if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
-			http.Error(w, "Failed to get file due to temporary network error", http.StatusInternalServerError)
+		if nerr, ok := err.(net.Error); ok && nerr.Timeout() {
+			http.Error(w, "Failed to get file due to timeout error", http.StatusInternalServerError)
 			return
 		}
 

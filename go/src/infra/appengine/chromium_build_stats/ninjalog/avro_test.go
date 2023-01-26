@@ -51,7 +51,10 @@ func TestToAVRO(t *testing.T) {
 	}()
 	timeNow = func() time.Time { return createdTime }
 
-	got := toAVRO(&info)
+	got, err := toAVRO(&info)
+	if err != nil {
+		t.Fatalf("want nil; got err: %v", err)
+	}
 	if diff := cmp.Diff(map[string]interface{}{
 		"build_configs": []map[string]interface{}{},
 		"build_id":      int64(12345),

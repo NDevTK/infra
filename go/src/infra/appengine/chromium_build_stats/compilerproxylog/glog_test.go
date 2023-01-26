@@ -21,13 +21,19 @@ func timeAt(ts string) time.Time {
 
 func BenchmarkParseLogLine(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ParseLogline([]byte("I0911 03:41:26.740641 27529 compiler_proxy.cc:1498] goma built revision bb0fd40be997d444c8e82b54ddd0361148ba1379@1408698434"))
+		_, err := ParseLogline([]byte("I0911 03:41:26.740641 27529 compiler_proxy.cc:1498] goma built revision bb0fd40be997d444c8e82b54ddd0361148ba1379@1408698434"))
+		if err != nil {
+			b.Fatalf("got error from ParseLogLine(...): %v", err)
+		}
 	}
 }
 
 func BenchmarkLogTimestamp(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		logTimestamp([]byte("0911 03:41:26.740641"))
+		_, _, err := logTimestamp([]byte("0911 03:41:26.740641"))
+		if err != nil {
+			b.Fatalf("got error from logTimestamp(...): %v", err)
+		}
 	}
 }
 

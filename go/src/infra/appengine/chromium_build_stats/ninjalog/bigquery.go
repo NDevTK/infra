@@ -13,9 +13,9 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
+	"cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

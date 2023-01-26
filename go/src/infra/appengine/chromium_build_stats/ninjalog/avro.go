@@ -50,7 +50,7 @@ func avroCodec() (*goavro.Codec, error) {
 var timeNow = time.Now
 
 // toAVRO returns ninja log passed to AVRO codec.
-func toAVRO(info *NinjaLog) map[string]interface{} {
+func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	weightedTime := WeightedTime(info.Steps)
 	steps := Dedup(info.Steps)
 
@@ -58,7 +58,10 @@ func toAVRO(info *NinjaLog) map[string]interface{} {
 	if buildID == 0 {
 		// Set random number if buildID is not set.
 		// This is mainly for ninjalog from chromium developer.
-		binary.Read(rand.Reader, binary.BigEndian, &buildID)
+		err := binary.Read(rand.Reader, binary.BigEndian, &buildID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to call binary.Read: %v", err)
+		}
 	}
 
 	os := "UNKNOWN"
@@ -108,7 +111,7 @@ func toAVRO(info *NinjaLog) map[string]interface{} {
 		"build_configs": buildConfigs,
 		"log_entries":   logEntries,
 		"created_at":    timeNow(),
-	}
+	}, nil
 
 }
 
@@ -146,5 +149,9 @@ func WriteNinjaLogToGCS(ctx context.Context, info *NinjaLog, bucket, filename st
 		return err
 	}
 
-	return ocfw.Append([]interface{}{toAVRO(info)})
+	avro, err := toAVRO(info)
+	if err != nil {
+		return err
+	}
+	return ocfw.Append([]interface{}{avro})
 }

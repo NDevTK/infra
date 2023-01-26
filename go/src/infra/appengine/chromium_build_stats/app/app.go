@@ -84,5 +84,5 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, topHTML)
+	fmt.Fprint(w, topHTML)
 }
