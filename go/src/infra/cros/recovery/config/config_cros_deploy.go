@@ -110,8 +110,8 @@ func deployActions() map[string]*Action {
 				"Reboot device by servo",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -242,8 +242,8 @@ func deployActions() map[string]*Action {
 				"Devices deployed with servo in the pools required secure mode need to be able to be boot in recovery mode.",
 			},
 			Dependencies: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "cros_verify_boot_in_recovery_mode",
@@ -276,8 +276,8 @@ func deployActions() map[string]*Action {
 				"Install OS on the device from USB-key when device is in DEV-mode.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Install OS in DEV mode by USB-drive",
@@ -289,8 +289,8 @@ func deployActions() map[string]*Action {
 				"Download fresh usb image and Install OS from it in DEV-mode.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Download stable image to USB-key",
@@ -303,8 +303,8 @@ func deployActions() map[string]*Action {
 				"Install OS on the device from USB-key when device is in DEV-mode.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Set GBB flags to 0x18 by servo",
@@ -317,8 +317,8 @@ func deployActions() map[string]*Action {
 				"Second attempt to install image in DEV mode",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
-				"servod_echo",
+				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			Dependencies: []string{
 				"Update FW from fw-image by servo and set GBB to 0x18",
@@ -331,7 +331,7 @@ func deployActions() map[string]*Action {
 				"Verify that device is set to boot in DEV mode and enabled to boot from USB-drive.",
 			},
 			Conditions: []string{
-				"dut_servo_host_present",
+				"Setup has servo info",
 			},
 			Dependencies: []string{
 				"cros_remove_default_ap_file_servo_host",

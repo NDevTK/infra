@@ -2578,13 +2578,15 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "sample_pass",
 		},
 		"Setup has servo info": {
-			ExecName:   "dut_servo_host_present",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName: "dut_servo_host_present",
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
 		},
 		"Verify servod is responsive": {
+			Conditions: []string{
+				"Setup has servo info",
+			},
 			ExecName:   "servod_echo",
 			RunControl: RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{
@@ -2595,7 +2597,7 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Record the type C status reported by the DUT",
 			},
-			Dependencies: []string{
+			Conditions: []string{
 				"Device is SSHable",
 			},
 			ExecName:               "cros_log_typec_status",
