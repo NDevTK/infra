@@ -131,7 +131,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.Var(flagx.KeyVals(&c.keyvals), "autotest-keyvals", "Comma-separated Autotest keyvals in same format as -keyval.")
 	f.BoolVar(&c.exitEarly, "exit-early", false, "Exit command as soon as test is scheduled. crosfleet will not notify on test validation failure.")
 	f.StringVar(&c.lacrosPath, "lacros-path", "", "Optional GCS path pointing to a lacros artifact.")
-	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
+	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths(empty string can be used to skip lacros provision for a particular DUT, e.g. -secondary-lacros-paths $path1,,$path2) for secondary DUTs to run tests against, if provided it need to align with boards in secondary-boards args.")
 	f.BoolVar(&c.cft, "cft", false, "Run via CFT.")
 	f.BoolVar(&c.scheduke, "scheduke", false, "Schedule via Scheduke.")
 	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
@@ -677,7 +677,7 @@ func (c *testCommonFlags) secondaryDevices() []*test_platform.Request_Params_Sec
 				Model: c.secondaryModels[i],
 			}
 		}
-		if len(c.secondaryLacrosPaths) > 0 {
+		if len(c.secondaryLacrosPaths) > 0 && c.secondaryLacrosPaths[i] != "" {
 			sd.SoftwareDependencies = append(sd.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
 				Dep: &test_platform.Request_Params_SoftwareDependency_LacrosGcsPath{LacrosGcsPath: c.secondaryLacrosPaths[i]},
 			})
