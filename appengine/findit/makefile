@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 INFRAPYTHON := "../../ENV/bin/python"
-GAE_PY := "gae.py"
+GAE_PY := "./gae.py"
 APPID := "findit-for-me"
 STAGING_APPID := "findit-for-me-staging"
 # Should come with infra repository, if this step fails run
@@ -107,15 +107,15 @@ deploy-findit-prod: test
 	@echo "Released by $(USER)@"
 
 deploy-findit-staging: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(STAGING_APPID) $(FINDIT_MODULES);
+	$(GAE_PY) upload -x -A $(STAGING_APPID) $(FINDIT_MODULES);
 
 deploy-coverage-prod: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(APPID) $(CODE_COVERAGE_MODULES);
+	$(GAE_PY) upload -x -A $(APPID) $(CODE_COVERAGE_MODULES);
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(APPID).appspot.com/p/chromium/coverage"
 
 deploy-coverage-staging: test
-	@$(INFRAPYTHON) $(GAE_PY) upload -x -A $(STAGING_APPID) $(CODE_COVERAGE_MODULES);
+	$(GAE_PY) upload -x -A $(STAGING_APPID) $(CODE_COVERAGE_MODULES);
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(STAGING_APPID).appspot.com/p/chromium/coverage"
 
