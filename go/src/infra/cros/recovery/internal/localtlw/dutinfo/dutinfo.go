@@ -412,6 +412,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.BatteryState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.WifiState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.BluetoothState = ufslab.HardwareState_HARDWARE_UNKNOWN
+	state.CellularModemState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.Chameleon = ufslab.PeripheralState_UNKNOWN
 	state.WorkingBluetoothBtpeer = 0
 
@@ -453,6 +454,9 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 		if b := chromeos.GetBluetooth(); b != nil {
 			state.BluetoothState = convertHardwareStateToUFS(b.GetState())
+		}
+		if c := chromeos.GetCellular(); c != nil {
+			state.CellularModemState = convertHardwareStateToUFS(c.GetModemState())
 		}
 		if ch := chromeos.GetChameleon(); ch != nil {
 			for us, rs := range chameleonStates {
