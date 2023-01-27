@@ -88,6 +88,7 @@ type collectTestConfig struct {
 	collectResults      []map[int64]collectResult
 	originalToRetryBBID map[string]string
 	expectedBBIDS       []int64
+	expectedReturnCode  int
 }
 
 func doTestRun(t *testing.T, tc *collectTestConfig) {
@@ -149,12 +150,10 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 		bbids:                  initialBBIDs,
 	}
 	ret := c.Run(nil, nil, nil)
-	assert.IntsEqual(t, ret, 0)
+	assert.IntsEqual(t, ret, tc.expectedReturnCode)
 
 	data, err := os.ReadFile(outputFile.Name())
 	assert.NilError(t, err)
-
-	fmt.Printf("%v\n", string(data))
 
 	var output CollectOutput
 	assert.NilError(t, json.Unmarshal(data, &output))
@@ -216,16 +215,16 @@ var (
 	}`
 )
 
-func TestCollect_Retries(t *testing.T) {
+func TestCollect_RetryFailure(t *testing.T) {
 	t.Parallel()
 	doTestRun(t, &collectTestConfig{
-		configJSON:    basicRetryConfig,
-		bbids:         []int64{12345, 12346, 12347},
-		expectedBBIDS: []int64{12345, 12349, 12350},
+		configJSON: basicRetryConfig,
+		bbids:      []int64{12345, 12346},
+		// Retry failed so we expect the original set.
+		expectedBBIDS:       []int64{12345, 12346},
+		expectedReturnCode:  4,
 		originalToRetryBBID: map[string]string{
-			"12346": "12348",
-			"12348": "12350",
-			"12347": "12349",
+			// Force an error by omitting "12346".
 		},
 		collectResults: []map[int64]collectResult{
 			{
@@ -235,9 +234,6 @@ func TestCollect_Retries(t *testing.T) {
 				12346: {
 					bbpb.Status_STARTED,
 				},
-				12347: {
-					bbpb.Status_STARTED,
-				},
 			},
 			{
 				12345: {
@@ -246,32 +242,10 @@ func TestCollect_Retries(t *testing.T) {
 				12346: {
 					bbpb.Status_STARTED,
 				},
-				12347: {
-					bbpb.Status_STARTED,
-				},
 			},
 			{
 				12346: {
 					bbpb.Status_FAILURE,
-				},
-				12347: {
-					bbpb.Status_INFRA_FAILURE,
-				},
-			},
-			{
-				12348: {
-					bbpb.Status_FAILURE,
-				},
-				12349: {
-					bbpb.Status_STARTED,
-				},
-			},
-			{
-				12350: {
-					bbpb.Status_SUCCESS,
-				},
-				12349: {
-					bbpb.Status_INFRA_FAILURE,
 				},
 			},
 		},

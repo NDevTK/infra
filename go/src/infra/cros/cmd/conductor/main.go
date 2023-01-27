@@ -152,6 +152,10 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 	output, err := c.Collect(ctx, collectConfig)
 	if err != nil {
 		c.LogErr(err.Error())
+		c.LogOut("Working set of builds: %s", strings.Join(output.BBIDs, ","))
+		if err := c.writeOutput(output); err != nil {
+			c.LogErr(errors.Annotate(err, "error writing BBIDs to output").Err().Error())
+		}
 		return 4
 	}
 
