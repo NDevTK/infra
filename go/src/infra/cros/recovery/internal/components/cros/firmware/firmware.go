@@ -264,6 +264,17 @@ func validateInstallFirmwareImageRequest(req *InstallFirmwareImageRequest) error
 	return nil
 }
 
+// EraseMRCCache erases MRC cache through a provided flash device.
+func EraseMRCCache(ctx context.Context, run components.Runner, serial string) error {
+	const (
+		eraseMRCCacheCmd = "flashrom -E -i UNIFIED_MRC_CACHE -p raiden_debug_spi:target=AP,custom_rst=true,serial=%s"
+	)
+	if _, err := run(ctx, time.Minute*20, fmt.Sprintf(eraseMRCCacheCmd, serial)); err != nil {
+		return errors.Annotate(err, "erase MRC cache").Err()
+	}
+	return nil
+}
+
 // InstallFirmwareImage updates a specific AP or/and EC firmware image on the DUT.
 func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest, log logger.Logger) error {
 	log.Debugf("Received request:\n%+v\n", req)

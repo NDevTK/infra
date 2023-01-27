@@ -167,10 +167,34 @@ func defaultFwFolderPath(d *tlw.Dut) string {
 	return fmt.Sprintf("/mnt/stateful_partition/tmp/fw_%v", d.Name)
 }
 
+// eraseMRCCache erases MRC cache of the DUT via servo.
+func eraseMRCCache(ctx context.Context, info *execs.ExecInfo) error {
+	targetDeviceTypes := map[string]bool{
+		"servo_micro": true,
+		"ccd_gsc":     true,
+		"ccd_cr50":    true,
+	}
+	devices := info.GetChromeos().Servo.ServoTopology.GetChildren()
+	deviceSerial := ""
+	for _, d := range devices {
+		if _, ok := targetDeviceTypes[d.GetType()]; ok {
+			log.Debugf(ctx, "Detected flash device %s with serial number %s", d.GetType(), d.GetSerial())
+			deviceSerial = d.Serial
+			break
+		}
+	}
+	if deviceSerial == "" {
+		return errors.Reason("erase MRC cache: failed to find flash device serial number from servo topology.").Err()
+	}
+	err := firmware.EraseMRCCache(ctx, info.NewRunner(info.GetChromeos().GetServo().GetName()), deviceSerial)
+	return errors.Annotate(err, "erase MRC cache").Err()
+}
+
 func init() {
 	execs.Register("cros_read_gbb_by_servo", readGbbFlagsByServoExec)
 	execs.Register("cros_ap_is_dev_signed_by_servo", checkIfApHasDevSignedImageExec)
 	execs.Register("cros_set_gbb_by_servo", setGbbFlagsByServoExec)
 	execs.Register("cros_remove_default_ap_file_servo_host", removeAPFileFromServoHostExec)
 	execs.Register("cros_update_fw_with_fw_image_by_servo", updateFwWithFwImageByServo)
+	execs.Register("cros_erase_mrc_cache_by_servo", eraseMRCCache)
 }

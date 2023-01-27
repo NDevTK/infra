@@ -89,3 +89,23 @@ func RecoverCBIFromInventoryConfig() *Configuration {
 		},
 	}
 }
+
+func EraseMRCCacheConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanServo,
+			PlanCrOS,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			PlanServo: setAllowFail(servoRepairPlan(), true),
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Erase DUT MRC cache via servo",
+				},
+				Actions: crosRepairActions(),
+			},
+			PlanClosing: setAllowFail(crosClosePlan(), true),
+		},
+	}
+}

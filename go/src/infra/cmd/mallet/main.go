@@ -53,6 +53,7 @@ func getApplication() *cli.Application {
 			tasks.RecoveryHWID,
 			tasks.RepairCBI,
 			tasks.ParseStableVersion,
+			tasks.EraseMRCCache,
 		},
 	}
 }

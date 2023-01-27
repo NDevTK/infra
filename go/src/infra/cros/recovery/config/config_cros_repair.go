@@ -2848,5 +2848,17 @@ func crosRepairActions() map[string]*Action {
 				"target_file:log_collection_info",
 			},
 		},
+		"Erase DUT MRC cache via servo": {
+			Docs: []string{
+				"This action erases MRC cache of the DUT via applicable flash device(servo_micro, CCD) of its servo.",
+			},
+			Dependencies: []string{
+				"Setup has servo info",
+				"Verify servod is responsive",
+			},
+			ExecName:    "cros_erase_mrc_cache_by_servo",
+			RunControl:  RunControl_RUN_ONCE,
+			ExecTimeout: &durationpb.Duration{Seconds: 1200},
+		},
 	}
 }
