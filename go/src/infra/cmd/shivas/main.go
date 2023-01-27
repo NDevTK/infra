@@ -67,6 +67,8 @@ Full documentation http://go/shivas-cli`,
 			operations.AdminCmd,
 			experimental_cmds.VerifyBotStatusCmd,
 			experimental_cmds.DumpNlyteCmd,
+			experimental_cmds.RepairProfileCmd,
+			experimental_cmds.ModelAnalysisCmd,
 		},
 	}
 }
