@@ -88,10 +88,27 @@ func RunAutoserv(
 			"Job keyval: %s",
 			string(kv),
 		)
+		logging.Infof(
+			ctx,
+			"Keyval file content before writing: %s",
+			readKeyvalFile(a.ResultsDir),
+		)
 		if err := writeKeyvals(a.ResultsDir, j.JobKeyvals()); err != nil {
 			return &Result{}, err
 		}
+		logging.Infof(
+			ctx,
+			"Keyval file content after writing: %s",
+			readKeyvalFile(a.ResultsDir),
+		)
 	}
+	defer func() {
+		logging.Infof(
+			ctx,
+			"Keyval file content after test: %s",
+			readKeyvalFile(a.ResultsDir),
+		)
+	}()
 	switch {
 	case isTest(a):
 		return runTest(ctx, m.AutotestConfig, a, w, dockerCmdRunner, containerImageInfo)
@@ -441,4 +458,9 @@ func appendJobFinished(resultsDir string) error {
 
 func keyvalPath(resultsDir string) string {
 	return filepath.Join(resultsDir, keyvalFile)
+}
+
+func readKeyvalFile(resultsDir string) string {
+	content, _ := ioutil.ReadFile(keyvalPath(resultsDir))
+	return string(content)
 }
