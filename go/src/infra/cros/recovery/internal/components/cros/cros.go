@@ -25,15 +25,18 @@ const (
 	MinimumBatteryLevel = 80
 )
 
-// RecoveryModeRequiredPDOff examines whether servo_v4 role needs to
-// snk when booting into recovery mode.
-func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, pinger components.Pinger, servod components.Servod, dut *tlw.Dut) (bool, error) {
+// RecoveryModeRequiredPDOff examines whether servo_pd_role has to be set to
+// `snk` before booting into recovery mode.
+func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, servod components.Servod, dut *tlw.Dut) (bool, error) {
 	expectBattery := dut.GetChromeos().GetBattery() != nil
 	if !expectBattery {
-		log.Debugf(ctx, "recovery mode required PD off: DUT is not expected to have the battery")
+		log.Debugf(ctx, "DUT is not expected to have the battery, so recovery mode does not required PD:snk!")
 		return false, nil
 	}
-	if p, err := power.ReadPowerInfo(ctx, run); err == nil {
+	// Verify that device is SSH-able to avoid an unnecessary attempt to read power-info.
+	if sshErr := IsSSHable(ctx, run, DefaultSSHTimeout); sshErr != nil {
+		log.Debugf(ctx, "Skipping check battery present on the devices as DUT is not SSH-able!")
+	} else if p, err := power.ReadPowerInfo(ctx, run); err == nil {
 		expectBattery, _ = p.HasBattery()
 	}
 	if !expectBattery {

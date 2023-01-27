@@ -53,7 +53,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			}
 		}
 	}
-	needSink, err := RecoveryModeRequiredPDOff(ctx, dutRun, dutPing, servod, req.DUT)
+	needSink, err := RecoveryModeRequiredPDOff(ctx, dutRun, servod, req.DUT)
 	if err != nil {
 		return errors.Annotate(err, "boot in recovery mode").Err()
 	}
@@ -81,10 +81,6 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		}
 	}
 	log.Debugf("Servo OS Install Repair: needSink :%t", needSink)
-	// Turn power off.
-	if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
-		return errors.Annotate(err, "boot in recovery mode").Err()
-	}
 	restoreServoState := func() error {
 		log.Debugf("Boot in recovery mode: recover servo states...")
 		// Register turn off for the DUT if at the end.
@@ -143,6 +139,10 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	}()
 	retryBootFunc := func() error {
 		log.Infof("Boot in Recovery Mode: starting retry...")
+		// Turn power off.
+		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
+			return errors.Annotate(err, "retry boot").Err()
+		}
 		// Next:Boot in recovery mode. The steps are:
 		// Step 1. Switch the USB to DUT on the servo multiplexer
 		if err := servo.UpdateUSBVisibility(ctx, servo.USBVisibleDUT, servod); err != nil {
@@ -154,9 +154,9 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			if err := servo.SetPDRole(ctx, servod, servo.PD_OFF, false); err != nil {
 				return errors.Annotate(err, "retry boot").Err()
 			}
-		} else {
-			log.Infof("Boot in recovery mode: servo type is neither V4, or V4P1, no need to switch power-deliver to sink.")
 		}
+		// Sleep a few seconds to allowed apply all previous states before boot in recovery mode.
+		time.Sleep(1 * time.Second)
 		log.Infof("Boot in Recovery Mode: Started try to boot in recovery mode by power_state:rec.")
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueRecoveryMode); err != nil {
 			log.Debugf("Boot in Recovery Mode: Failure when trying to set power_state:rec with error: %s", err)
