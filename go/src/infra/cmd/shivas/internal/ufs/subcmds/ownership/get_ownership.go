@@ -30,6 +30,8 @@ var GetOwnershipDataCmd = &subcommands.Command{
 Example:
 
 shivas get ownership-data {name1}
+shivas get ownership-data {name1} {name2}
+shivas get ownership-data
 
 Gets the ownership data and prints the output in the user-specified format.`,
 	CommandRun: func() subcommands.CommandRun {
@@ -88,15 +90,64 @@ func (c *getOwnershipData) innerRun(a subcommands.Application, args []string, en
 	emit := !utils.NoEmitMode(c.outputFlags.NoEmit())
 	full := utils.FullMode(c.outputFlags.Full())
 
-	res := utils.ConcurrentGet(ctx, ic, args, c.getSingle)
-	return utils.PrintEntities(ctx, ic, res, utils.PrintOwnershipsJSON, printOwnershipFull, printOwnershipNormal,
-		c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
+	var res []proto.Message
+	if len(args) == 1 {
+		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
+		return utils.PrintEntities(ctx, ic, res, utils.PrintOwnershipsJSON, printOwnershipFull, printOwnershipNormal,
+			c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
+	} else {
+		if len(args) > 0 {
+			res = utils.ConcurrentGet(ctx, ic, args, c.getSingleWithHostName)
+		} else {
+			res, err = utils.BatchList(ctx, ic, ListOwnerships, nil, c.pageSize, c.keysOnly, full)
+		}
+		if err != nil {
+			return err
+		}
+		return utils.PrintEntities(ctx, ic, res, utils.PrintOwnershipsJSONByHost, printOwnershipByHostFull, printOwnershipByHostNormal,
+			c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
+	}
 }
 
+// Get a single ownershipdata entry
 func (c *getOwnershipData) getSingle(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
 	return ic.GetOwnershipData(ctx, &ufsAPI.GetOwnershipDataRequest{
 		Hostname: name,
 	})
+}
+
+// Get a single ownershipdata entry along with hostname
+func (c *getOwnershipData) getSingleWithHostName(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
+	msg, err := ic.GetOwnershipData(ctx, &ufsAPI.GetOwnershipDataRequest{
+		Hostname: name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &ufsAPI.OwnershipByHost{
+		Hostname:  name,
+		Ownership: msg,
+	}
+	return res, err
+}
+
+// ListHosts calls the list MachineLSE in UFS to get a list of MachineLSEs
+func ListOwnerships(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]proto.Message, string, error) {
+	req := &ufsAPI.ListOwnershipDataRequest{
+		PageSize:  pageSize,
+		PageToken: pageToken,
+		Filter:    filter,
+		KeysOnly:  keysOnly,
+	}
+	res, err := ic.ListOwnershipData(ctx, req)
+	if err != nil {
+		return nil, "", err
+	}
+	protos := make([]proto.Message, len(res.GetOwnershipData()))
+	for i, od := range res.GetOwnershipData() {
+		protos[i] = od
+	}
+	return protos, res.GetNextPageToken(), nil
 }
 
 func printOwnershipFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message, tsv bool) error {
@@ -113,5 +164,22 @@ func printOwnershipNormal(entities []proto.Message, tsv, keysOnly bool) error {
 	}
 	utils.PrintTableTitle(utils.OwnershipDataTitle, tsv, keysOnly)
 	utils.PrintOwnerships(entities, keysOnly)
+	return nil
+}
+
+func printOwnershipByHostFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message, tsv bool) error {
+	return printOwnershipNormal(msgs, tsv, false)
+}
+
+func printOwnershipByHostNormal(entities []proto.Message, tsv, keysOnly bool) error {
+	if len(entities) == 0 {
+		return nil
+	}
+	if tsv {
+		utils.PrintTSVOwnershipsByHost(entities, keysOnly)
+		return nil
+	}
+	utils.PrintTableTitle(utils.OwnershipDataByHostTitle, tsv, keysOnly)
+	utils.PrintOwnershipsByHost(entities, keysOnly)
 	return nil
 }

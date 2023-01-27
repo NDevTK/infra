@@ -78,7 +78,8 @@ var (
 	AssetTitle                 = []string{"Asset Name", "Zone", "Rack", "Barcode", "Serial Number", "Hardware ID", "Model", "AssetType", "MacAddress", "SKU", "Phase", "Build Target", "Realm", "UpdateTime"}
 	CachingServiceTitle        = []string{"CachingService Name", "Port", "Zones", "Subnets", "Primary", "Secondary", "State", "Description", "UpdateTime"}
 	SchedulingUnitTitle        = []string{"SchedulingUnit Name", "DUTs", "Pools", "Type", "Description", "UpdateTime"}
-	OwnershipDataTitle         = []string{"Pool", "Security Level", "Swarming Instance"}
+	OwnershipDataTitle         = []string{"Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
+	OwnershipDataByHostTitle   = []string{"Name", "Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
 )
 
 // TimeFormat for all timestamps handled by shivas
@@ -1037,8 +1038,22 @@ func ownershipOutputStrs(pm proto.Message) []string {
 	o := pm.(*ufspb.OwnershipData)
 	return []string{
 		o.GetPoolName(),
-		o.SecurityLevel,
-		o.SwarmingInstance,
+		o.GetSecurityLevel(),
+		o.GetSwarmingInstance(),
+		o.GetMibaRealm(),
+		o.GetCustomer(),
+	}
+}
+
+func ownershipByHostOutputStrs(pm proto.Message) []string {
+	o := pm.(*ufsAPI.OwnershipByHost)
+	return []string{
+		o.GetHostname(),
+		o.Ownership.GetPoolName(),
+		o.Ownership.GetSecurityLevel(),
+		o.Ownership.GetSwarmingInstance(),
+		o.Ownership.GetMibaRealm(),
+		o.Ownership.GetCustomer(),
 	}
 }
 
@@ -1067,6 +1082,43 @@ func PrintOwnershipsJSON(res []proto.Message, emit bool) {
 	ownerships := make([]*ufspb.OwnershipData, len(res))
 	for i, r := range res {
 		ownerships[i] = r.(*ufspb.OwnershipData)
+	}
+	fmt.Print("[")
+	for i, m := range ownerships {
+		PrintProtoJSON(m, emit)
+		if i < len(ownerships)-1 {
+			fmt.Print(",")
+			fmt.Println()
+		}
+	}
+	fmt.Println("]")
+}
+
+// PrintOwnerships prints the all bot ownerships with hostname in table form.
+func PrintOwnershipsByHost(res []proto.Message, keysOnly bool) {
+	ownerships := make([]*ufsAPI.OwnershipByHost, len(res))
+	for i, r := range res {
+		ownerships[i] = r.(*ufsAPI.OwnershipByHost)
+	}
+	defer tw.Flush()
+	for _, od := range ownerships {
+		printOwnershipByHost(od, keysOnly)
+	}
+}
+
+func printOwnershipByHost(o *ufsAPI.OwnershipByHost, keysOnly bool) {
+	var out string
+	for _, s := range ownershipByHostOutputStrs(o) {
+		out += fmt.Sprintf("%s\t", s)
+	}
+	fmt.Fprintln(tw, out)
+}
+
+// PrintOwnershipsJSON prints the ownership details with hostname in json format.
+func PrintOwnershipsJSONByHost(res []proto.Message, emit bool) {
+	ownerships := make([]*ufsAPI.OwnershipByHost, len(res))
+	for i, r := range res {
+		ownerships[i] = r.(*ufsAPI.OwnershipByHost)
 	}
 	fmt.Print("[")
 	for i, m := range ownerships {

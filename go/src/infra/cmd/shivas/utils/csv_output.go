@@ -82,6 +82,11 @@ func PrintTSVOwnerships(msgs []proto.Message, keysOnly bool) {
 	printTSVs(msgs, keysOnly, ownershipOutputStrs)
 }
 
+// PrintTSVOwnerships prints the tsv format of ownership data
+func PrintTSVOwnershipsByHost(msgs []proto.Message, keysOnly bool) {
+	printTSVs(msgs, keysOnly, ownershipByHostOutputStrs)
+}
+
 // PrintTSVDracs prints the tsv format of dracs
 func PrintTSVDracs(msgs []proto.Message, keysOnly bool) {
 	printTSVs(msgs, keysOnly, dracOutputStrs)
