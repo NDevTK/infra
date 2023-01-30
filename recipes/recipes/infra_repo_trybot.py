@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import textwrap
+
 from recipe_engine.recipe_api import Property
 
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
@@ -26,14 +28,17 @@ DEPS = [
 
 
 PROPERTIES = {
-  'go_version_variant': Property(
-    default=None,
-    kind=str,
-    help='A go version variant to bootstrap, see bootstrap.py'),
+    'go_version_variant':
+        Property(
+            default=None,
+            kind=str,
+            help='A go version variant to bootstrap, see bootstrap.py'),
+    'run_lint':
+        Property(default=False, kind=bool, help='Whether to run linter'),
 }
 
 
-def RunSteps(api, go_version_variant):
+def RunSteps(api, go_version_variant, run_lint):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project = cl.project
   assert project in ('infra/infra', 'infra/infra_internal'), (
@@ -48,6 +53,12 @@ def RunSteps(api, go_version_variant):
       go_version_variant=go_version_variant)
   co.commit_change()
   co.gclient_runhooks()
+
+  if run_lint:
+    with api.context(
+        cwd=co.path.join('infra', 'go', 'src', 'infra')), co.go_env():
+      api.infra_checkout.apply_golangci_lint(co, 'go/src/infra')
+    return
 
   # Analyze the CL to skip unnecessary tests.
   files = co.get_changed_files()
@@ -196,3 +207,10 @@ def GenTests(api):
 
   yield (test('only_cipd_build_win') + api.platform('win', 64) +
          diff('build/build.py'))
+
+  yield (test('lint_try_job') + api.properties(run_lint=True) + api.step_data(
+      'get change list',
+      stdout=api.raw_io.output_text(
+          textwrap.dedent("""\
+      tools.go
+      """))))

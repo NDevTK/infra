@@ -211,7 +211,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
 
     return Checkout(self.m)
 
-  def apply_golangci_lint(self, co):
+  def apply_golangci_lint(self, co, path_to_go_modules=''):
     """Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
     """
     go_files = sorted(
@@ -262,7 +262,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       self.m.tricium.add_comment(
           'golangci-lint (%s)' % issue['FromLinter'],
           issue['Text'],
-          pos['Filename'],
+          self.m.path.join(path_to_go_modules, pos['Filename']),
           start_line=line,
           end_line=line,
           # Gerrit (and Tricium, as a pass-through proxy) requires robot
