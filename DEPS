@@ -141,13 +141,13 @@ hooks = [
   {
     "pattern": ".",
     "action": [
-      "python", "-u", "./infra/bootstrap/install_cipd_packages.py", "-v",
+      "python3", "-u", "./infra/bootstrap/install_cipd_packages.py", "-v",
     ],
   },
   {
     "pattern": ".",
     "action": [
-      "python", "-c",
+      "python3", "-c",
       "import shutil; shutil.rmtree('./infra/appengine/monorail/lib', True)",
     ],
   },

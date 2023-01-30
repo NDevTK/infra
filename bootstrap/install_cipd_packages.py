@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import logging
 import os
@@ -150,7 +152,7 @@ def cipd_ensure_list(root, ensure_data, cipd_backend_url=None):
   """
   with tempfile.NamedTemporaryFile(prefix="cipd_ensure", delete=False) as tf:
     for item in ensure_data:
-      print >> tf, "%s %s" % item
+      print("%s %s" % item, file=tf)
   try:
     cipd_ensure(root, tf.name, cipd_backend_url)
   finally:
