@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "./; protos";
+
+message CipdVersionInfo {
+ // Version describes which binary version to use.
+ message Version {
+     // cipd_label describes which cipd label to use for the binary.
+     string cipd_label = 1;
+ }
+ 
+ Version version = 1;
+}

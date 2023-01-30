@@ -20,10 +20,16 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/configs"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
+	"infra/cros/cmd/cros_test_runner/protos"
 )
 
 func main() {
+	// Set input property reader functions
+	var ctrCipdInfoReader func(context.Context) *protos.CipdVersionInfo
+	build.MakePropertyReader(common.HwTestCtrInputPropertyName, &ctrCipdInfoReader)
 	input := &steps.RunTestsRequest{}
+
+	// Set output props writer functions
 	var writeOutputProps func(*steps.RunTestsResponse)
 	var mergeOutputProps func(*steps.RunTestsResponse)
 
@@ -31,7 +37,10 @@ func main() {
 		func(ctx context.Context, args []string, st *build.State) error {
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 			logging.Infof(ctx, "have input %v", input)
-			err := executeHwTests(ctx, input.CftTestRequest)
+			ctrCipdInfo := ctrCipdInfoReader(ctx)
+			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
+			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
+			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel())
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 			}
@@ -43,10 +52,15 @@ func main() {
 }
 
 // executeHwTests executes hw tests
-func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest) error {
+func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest, ctrCipdVersion string) error {
+	// Validation
+	if ctrCipdVersion == "" {
+		return fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
+	}
+
 	// Create ctr
 	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
-		Version:        "prod", // TODO (azrahman): Get this from input.
+		Version:        ctrCipdVersion,
 		CtrCipdPackage: common.CtrCipdPackage,
 	}
 

@@ -19,4 +19,5 @@ const (
 	StainlessUrlPrefix         = "https://stainless.corp.google.com/browse/"
 	GcsUrlPrefix               = "https://pantheon.corp.google.com/storage/browser/"
 	HwTestLabGsRoot            = "gs://chromeos-test-logs/test-runner/prod"
+	HwTestCtrInputPropertyName = "$chromeos/cros_tool_runner"
 )
