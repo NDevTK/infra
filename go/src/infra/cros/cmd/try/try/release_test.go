@@ -53,9 +53,9 @@ func TestGetReleaseOrchestratorName(t *testing.T) {
 		branch     string
 		expected   string
 	}{
-		{false, "main", "chromeos/staging/staging-release-main-orchestrator"},
+		{false, "main", "chromeos/staging-try/staging-release-main-orchestrator"},
 		{true, "main", "chromeos/release/release-main-orchestrator"},
-		{false, "release-R106.15054.B", "chromeos/staging/staging-release-R106.15054.B-orchestrator"},
+		{false, "release-R106.15054.B", "chromeos/staging-try/staging-release-R106.15054.B-orchestrator"},
 		{true, "release-R106.15054.B", "chromeos/release/release-R106.15054.B-orchestrator"},
 	} {
 		r := releaseRun{
@@ -164,7 +164,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	if tc.production {
 		expectedBucket = "chromeos/release"
 	} else {
-		expectedBucket = "chromeos/staging"
+		expectedBucket = "chromeos/staging-try"
 	}
 
 	f := &cmd.FakeCommandRunnerMulti{
