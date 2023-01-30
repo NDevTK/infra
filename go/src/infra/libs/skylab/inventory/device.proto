@@ -312,7 +312,7 @@ message SchedulableLabels {
 
 // Keep sorted by field name.
 //
-// NEXT TAG: 20
+// NEXT TAG: 21
 message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
@@ -343,6 +343,9 @@ message HardwareCapabilities {
     CARRIER_PINLOCK = 21;
   }
   optional Carrier carrier = 16;
+
+  // Mapping between starfish slot_id and carrier name.
+  optional string starfish_slot_mapping = 20;
 
   optional bool detachablebase = 12;
   // Indicating if the device has fingerprint sensor.
