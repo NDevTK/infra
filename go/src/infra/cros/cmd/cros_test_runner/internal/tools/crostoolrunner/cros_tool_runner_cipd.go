@@ -23,6 +23,7 @@ type CtrCipdInfo struct {
 	IsInitialized  bool
 	CtrPath        string
 	CtrCipdPackage string
+	CtrTempDirLoc  string
 }
 
 // Validate validates required ctr cipd info.
@@ -50,6 +51,14 @@ func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 	// Ensure CTR
 	if err = ctrCipd.ensure(ctx); err != nil {
 		return errors.Annotate(err, "Ctr ensure error: ").Err()
+	}
+
+	// Create temp dir for ctr if necessary
+	if ctrCipd.CtrTempDirLoc == "" {
+		ctrCipd.CtrTempDirLoc, err = common.CreateTempDir(ctx, "ctr")
+		if err != nil {
+			return errors.Annotate(err, "Error while creating temp dir for ctr: ").Err()
+		}
 	}
 
 	logging.Infof(ctx, fmt.Sprintf("CTR initialization succeeded."))

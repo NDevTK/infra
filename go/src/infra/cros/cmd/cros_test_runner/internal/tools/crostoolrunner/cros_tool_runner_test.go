@@ -19,7 +19,7 @@ import (
 func TestStartCtrServer(t *testing.T) {
 	t.Parallel()
 
-	Convey("CTR server start error", t, func() {
+	Convey("CTR server start initialization error", t, func() {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -48,6 +48,18 @@ func TestStartCtrServerAsync(t *testing.T) {
 		err := ctr.StartCTRServerAsync(ctx)
 		So(err, ShouldBeNil)
 		So(ctr.wg, ShouldNotBeNil)
+	})
+}
+
+func TestGetServerAddressFromServiceMetadata(t *testing.T) {
+	t.Parallel()
+	Convey("CTR get server address without temp dir error", t, func() {
+		ctx := context.Background()
+		ctrCipd := CtrCipdInfo{Version: "prod"}
+		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
+		serverAddress, err := ctr.GetServerAddressFromServiceMetadata(ctx)
+		So(err, ShouldNotBeNil)
+		So(serverAddress, ShouldEqual, "")
 	})
 }
 

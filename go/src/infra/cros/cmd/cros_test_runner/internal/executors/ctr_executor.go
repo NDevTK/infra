@@ -124,9 +124,13 @@ func (ex *CtrExecutor) StartAsync(ctx context.Context) error {
 		return errors.Annotate(err, "error during starting ctr server: ").Err()
 	}
 
-	// Connect to CTR Server
-	// TODO (azrahman): remove hardcoded serveraddress.
-	serverAddress := "[::]:8082"
+	// Retrieve server address from metadata
+	serverAddress, err := ex.Ctr.GetServerAddressFromServiceMetadata(ctx)
+	if err != nil {
+		return errors.Annotate(err, "cros-tool-runner retrieve server address error: ").Err()
+	}
+
+	// Connect to server
 	_, err = ex.Ctr.ConnectToCTRServer(ctx, serverAddress)
 	if err != nil {
 		return errors.Annotate(err, "cros-tool-runner connect to server error: ").Err()

@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -204,4 +205,111 @@ func WriteFromFile(
 		writer.Write(line)
 	}
 	wg.Done()
+}
+
+// CheckIfFileExists checks if file exists at the provided path.
+func CheckIfFileExists(filePath string) error {
+	// File exists
+	if _, err := os.Stat(filePath); err == nil {
+		return nil
+		// File does not exist
+	} else if errors.Is(err, os.ErrNotExist) {
+		return errors.Annotate(err, "Failed to find file at provided path %q : ", filePath).Err()
+		// Unexpected error
+	} else {
+		return errors.Annotate(err, "Unexpected error while finding file at provided path %q : ", filePath).Err()
+	}
+}
+
+// GetFileContentsInMap returns a map of file contents where the contents on
+// each line is separated by provided separator. Will return error if
+// each line is not formatted like 'key<separator>value'. If writer provided,
+// file contents will be written to writer simultaneously.
+func GetFileContentsInMap(ctx context.Context, filePath string, contentSeparator string, writer io.Writer) (map[string]string, error) {
+	if err := CheckIfFileExists(filePath); err != nil {
+		return nil, err
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, errors.Annotate(err, "Error while opening file at: %s", filePath).Err()
+	}
+	defer file.Close()
+
+	fileContentsMap := make(map[string]string)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		if writer != nil {
+			writer.Write([]byte(fmt.Sprintln(scanner.Text())))
+		}
+		lineContents := strings.Split(scanner.Text(), contentSeparator)
+		if len(lineContents) != 2 {
+			return nil, fmt.Errorf("Line contents %q could not be separated by provided separator %q.", scanner.Text(), contentSeparator)
+		}
+		fileContentsMap[lineContents[0]] = lineContents[1]
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, errors.Annotate(err, "Error while scanning file contents at %q: ", filePath).Err()
+	}
+
+	return fileContentsMap, nil
+}
+
+// GetCftServiceMetadataFromFile waits for the service metadata and returns
+// metadata if found.
+func GetCftServiceMetadataFromFile(ctx context.Context, metadataFilePath string, fileLog io.Writer) (map[string]string, error) {
+	if metadataFilePath == "" {
+		return nil, fmt.Errorf("Cannot get service metadata from empty file path.")
+	}
+
+	var err error
+
+	// TODO (azrahman): use exponential backoff retry
+	fileFound := false
+	retryCount := 50 // This number is currently a bit high due to drone's lower than expected performance
+	timeout := 5 * time.Second
+
+	for !fileFound && retryCount > 0 {
+		if err = CheckIfFileExists(metadataFilePath); err == nil {
+			fileFound = true
+		}
+		retryCount = retryCount - 1
+		time.Sleep(timeout)
+	}
+
+	logging.Infof(ctx, "filefound: %v, remainingretrycount: %v, timeout: %v", fileFound, retryCount, timeout)
+	if !fileFound {
+		return nil, errors.Annotate(err, "Error while retrieving service metadata: ").Err()
+	}
+
+	fileContentsMap, err := GetFileContentsInMap(ctx, metadataFilePath, CftServiceMetadataLineContentSeparator, fileLog)
+	if err != nil {
+		return nil, errors.Annotate(err, "Error while retrieving service metadata: ").Err()
+	}
+
+	return fileContentsMap, nil
+}
+
+// GetCftLocalServerAddress waits for the service metadata file and retrieves
+// server address for localhost.
+func GetCftLocalServerAddress(ctx context.Context, metadataFilePath string, fileLog io.Writer) (string, error) {
+	if metadataFilePath == "" {
+		return "", fmt.Errorf("Cannot get server address from empty file path.")
+	}
+
+	serviceMatadata, err := GetCftServiceMetadataFromFile(ctx, metadataFilePath, fileLog)
+	if err != nil {
+		return "", err
+	}
+	port, ok := serviceMatadata[CftServiceMetadataServicePortKey]
+	if !ok || port == "" {
+		return "", fmt.Errorf("Service port was not found in service metadata.")
+	}
+
+	serverAddress := fmt.Sprintf("localhost:%s", port)
+
+	logging.Infof(ctx, "Server address found: %s", serverAddress)
+
+	return serverAddress, nil
 }

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -41,7 +42,8 @@ type CrosToolRunner struct {
 
 // -- CTR server related methods --
 
-// StartCTRServer starts the server.
+// StartCTRServer starts the server and exports service metadata to
+// already created temp dir.
 func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start cros-tool-runner server"))
@@ -63,7 +65,7 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 			strings.Join(ctr.EnvVarsToPreserve, ","),
 		))
 	}
-	cmdArgs = append(cmdArgs, ctr.CtrPath, "server")
+	cmdArgs = append(cmdArgs, ctr.CtrPath, "server", "--export-metadata", ctr.CtrTempDirLoc)
 	logging.Infof(ctx, "Starting CTR server...")
 
 	cmd := exec.CommandContext(ctx, "sudo", cmdArgs...)
@@ -95,6 +97,28 @@ func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) 
 	}()
 
 	return err
+}
+
+// GetServerAddressFromServiceMetadata waits for the service metadata file and
+// gets ctr server address from it.
+func (ctr *CrosToolRunner) GetServerAddressFromServiceMetadata(ctx context.Context) (string, error) {
+	if ctr.CtrTempDirLoc == "" {
+		return "", fmt.Errorf("Cannot retrieve ctr server address with empty temp dir.")
+	}
+
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Retrieve service metadata"))
+	defer func() { step.End(err) }()
+
+	metaFilePath := path.Join(ctr.CtrTempDirLoc, common.CftServiceMetadataFileName)
+
+	metadataLog := step.Log("Ctr service metadata")
+	serverAddress, err := common.GetCftLocalServerAddress(ctx, metaFilePath, metadataLog)
+	if err != nil {
+		return "", errors.Annotate(err, "Error during getting ctr server address: ").Err()
+	}
+
+	return serverAddress, nil
 }
 
 // ConnectToCTRServer connects to the CTR server in provided server address.
@@ -293,7 +317,7 @@ func (ctr *CrosToolRunner) GetContainer(
 		time.Sleep(timeout)
 	}
 
-	logging.Infof(ctx, "portfound: %v, retrycount: %v, timeout: %v", portFound, retryCount, timeout)
+	logging.Infof(ctx, "portfound: %v, remainingretrycount: %v, timeout: %v", portFound, retryCount, timeout)
 
 	common.WriteProtoToStepLog(ctx, step, resp, "GetContainerResponse")
 	logging.Infof(ctx, "Successfully got container %s.", getContainerReq.GetName())
