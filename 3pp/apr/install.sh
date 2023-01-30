@@ -17,3 +17,5 @@ make install
 # Remove config files that have hard-coded paths.
 rm -rf $PREFIX/lib/pkgconfig
 rm -f $PREFIX/lib/*.la
+# Replace hard-coded sed path.
+sed -i 's/^SED=.*/SED="sed"/' "$PREFIX/build-1/libtool"
