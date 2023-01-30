@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 )
 
@@ -22,7 +23,8 @@ type ParseEnvInfoCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Updates
-	HostName string
+	HostName            string
+	CurrentInvocationId string
 }
 
 // UpdateStateKeeper updates the state keeper with info from the cmd.
@@ -64,6 +66,11 @@ func (cmd *ParseEnvInfoCmd) Execute(ctx context.Context) error {
 		envVarsLog.Write([]byte(fmt.Sprintf("%s\n", e)))
 	}
 
+	// Get current invocation name
+	rdb := lucictx.GetResultDB(ctx)
+	cmd.CurrentInvocationId = rdb.GetCurrentInvocation().GetName()
+	summary = append(summary, fmt.Sprintf("currentInvocationId: %s", cmd.CurrentInvocationId))
+
 	step.SetSummaryMarkdown(strings.Join(summary, "\n"))
 
 	return nil
@@ -75,6 +82,10 @@ func (cmd *ParseEnvInfoCmd) updateHwTestStateKeeper(
 
 	if cmd.HostName != "" {
 		sk.HostName = cmd.HostName
+	}
+
+	if cmd.CurrentInvocationId != "" {
+		sk.CurrentInvocationId = cmd.CurrentInvocationId
 	}
 
 	return nil

@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
@@ -8,6 +9,8 @@ import (
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -96,4 +99,20 @@ func GetMockedTestResultProto() *artifactpb.TestResult {
 func parseTime(s string) time.Time {
 	t, _ := time.Parse("2006-01-02T15:04:05.99Z", s)
 	return t
+}
+
+// GetValueFromRequestKeyvals gets value from provided keyvals based on key.
+func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, key string) string {
+	if cftReq == nil {
+		return ""
+	}
+
+	value, ok := cftReq.GetAutotestKeyvals()[key]
+	if !ok {
+		logging.Infof(ctx, "%s not found in keyvals.", key)
+		return ""
+	}
+
+	logging.Infof(ctx, "%s found in keyvals with value: %s", key, value)
+	return value
 }
