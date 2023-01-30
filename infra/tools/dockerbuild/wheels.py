@@ -161,8 +161,7 @@ def select_numpy(_system, wheel):
       },
       skip_plat=[
           'mac-x64-py3.8',
-          'manylinux-x64-py3.11',  # TODO: Requires version 1.23.3+
-      ],
+      ] + build_platform.ALL_PY311,  # TODO: Requires version 1.23.3+
       patch_version='chromium.1',
       pyversions=['py3'],
   )
@@ -175,7 +174,7 @@ SPECS.update({
             'numpy',
             '1.2x.supported.2',
             select_numpy,
-            skip_plat=['manylinux-x64-py3.11'],  # TODO: version 1.23.3+
+            skip_plat=build_platform.ALL_PY311,  # TODO: version 1.23.3+
         ),
     )
 })
@@ -270,7 +269,7 @@ SPECS.update({
             pyversions=['py3'],
             # To build this on mac-arm64, we would need to supply the
             # arm64 cffi wheel.
-            skip_plat=['mac-arm64-py3.8'],
+            skip_plat=build_platform.ALL_MAC_ARM64,
         ),
         SourceOrPrebuilt(
             'cbor2',
@@ -278,20 +277,21 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
         ),
+        # cffi versions before 1.15.1 don't support python 3.11.
         SourceOrPrebuilt(
             'cffi',
             '1.14.3',
             pyversions=['py3'],
-            skip_plat=[
-                'mac-x64-py3.8', 'mac-arm64-py3.8', 'manylinux-x64-py3.11'
-            ],
-        ),
+            skip_plat=list(
+                sorted(
+                    set(build_platform.ALL_MAC)
+                    | set(build_platform.ALL_PY311)))),
         SourceOrPrebuilt(
             'cffi',
             '1.14.5',
             packaged=(),
             pyversions=['py2', 'py3'],
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             # patch_version is incremented to force a rebuild when fixes are
             # made to the build environment.
             patch_version='chromium.7',
@@ -301,7 +301,7 @@ SPECS.update({
             '1.15.0',
             packaged=(),
             pyversions=['py2', 'py3'],
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
         ),
         SourceOrPrebuilt(
             'cffi',
@@ -315,7 +315,7 @@ SPECS.update({
             packaged=(),
             pyversions=['py2', 'py3'],
             patch_version='chromium.3',  # Rebuild for crbug/1233745
-            skip_plat=['manylinux-x64-py3.11']  # doesn't build
+            skip_plat=build_platform.ALL_PY311  # doesn't build
         ),
         SourceOrPrebuilt(
             'crcmod',
@@ -402,7 +402,7 @@ SPECS.update({
                 ],
             ),
             packaged=[],
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
             patch_version='chromium.1',
         ),
@@ -420,10 +420,8 @@ SPECS.update({
             '1.3.0',
             packaged=[],
             # Other platforms not yet tested.
-            only_plat=[
-                'manylinux-x64-py3.8', 'manylinux-x64-py3.11', 'mac-x64-py3.8',
-                'mac-arm64-py3.8'
-            ],
+            only_plat=['manylinux-x64-py3.8', 'manylinux-x64-py3.11'] +
+            build_platform.ALL_MAC,
             pyversions=['py3'],
             skip_auditwheel=True,
         ),
@@ -431,7 +429,7 @@ SPECS.update({
             'greenlet',
             '0.4.15',
             packaged=(),
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             pyversions=['py2', 'py3'],
             patch_version='chromium.1',
         ),
@@ -439,7 +437,7 @@ SPECS.update({
             'greenlet',
             '0.4.16',
             packaged=(),
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
@@ -449,49 +447,46 @@ SPECS.update({
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
             ],
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
             'grpcio',
             '1.32.0',
             skip_plat=[
-                'manylinux-x64-py3.11',
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
                 # grpcio does not yet support Mac ARM64, but work is underway.
                 # See https://github.com/grpc/grpc/issues/24002
                 'mac-arm64-py3.8',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py3']),
         SourceOrPrebuilt(
             'grpcio',
             '1.34.1',
             skip_plat=[
-                'manylinux-x64-py3.11',
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
                 # grpcio does not yet support Mac ARM64, but work is underway.
                 # See https://github.com/grpc/grpc/issues/24002
                 'mac-arm64-py3.8',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py3']),
         SourceOrPrebuilt(
             'grpcio',
             '1.39.0',
             skip_plat=[
-                'manylinux-x64-py3.11',
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py3']),
         SourceOrPrebuilt(
             'grpcio',
             '1.44.0',
             pyversions=['py3'],
             env_cb=_GrpcEnv,
-            skip_plat=[
-                'manylinux-x64-py3.11',  # TODO: update to version 1.50+
+            skip_plat=build_platform.ALL_PY311 +
+            [  # TODO: update to version 1.50+
                 # This won't work until we update to a dockcross image
                 # with a C++14-compatible compiler.
                 'linux-armv6-py3.8'
@@ -500,20 +495,18 @@ SPECS.update({
             'grpcio-tools',
             '1.32.0',
             skip_plat=[
-                'manylinux-x64-py3.11',
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
                 'mac-arm64-py3.8',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py3']),
         SourceOrPrebuilt(
             'grpcio-tools',
             '1.39.0',
             skip_plat=[
-                'manylinux-x64-py3.11',
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py3'],
             default=False),
         SourceOrPrebuilt(
@@ -553,7 +546,7 @@ SPECS.update({
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
             ],
-            skip_plat=['manylinux-x64-py3.11'],  # TODO: version 4.9.0+
+            skip_plat=build_platform.ALL_PY311,  # TODO: version 4.9.0+
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -586,6 +579,11 @@ SPECS.update({
             packaged=(
                 'mac-x64-py3.8',
                 'mac-arm64-py3.8',
+                # Unable to build from source on Mac Python 3.11, until a new
+                # pip is released with the fix for
+                # https://github.com/pypa/pip/issues/11539
+                'mac-x64-py3.11',
+                'mac-arm64-py3.11',
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
                 'linux-arm64-py3.8',
@@ -593,6 +591,8 @@ SPECS.update({
             arch_map={
                 'mac-x64-py3.8': ['macosx_10_9_x86_64'],
                 'mac-arm64-py3.8': ['macosx_11_0_arm64'],
+                'mac-x64-py3.11': ['macosx_10_9_x86_64'],
+                'mac-arm64-py3.11': ['macosx_11_0_arm64'],
                 'linux-arm64-py3.8': ['manylinux2014_aarch64'],
             },
             skip_plat=[
@@ -610,8 +610,7 @@ SPECS.update({
             arch_map={'mac-x64-py3.8': _NUMPY_MAC_x64},
             skip_plat=[
                 'mac-arm64-py3.8',
-                'manylinux-x64-py3.11',
-            ],
+            ] + build_platform.ALL_PY311,
             patch_version='chromium.1',
             pyversions=['py3'],
         ),
@@ -625,7 +624,7 @@ SPECS.update({
             arch_map={
                 'mac-arm64-py3.8': _NUMPY_MAC_ARM,
             },
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             patch_version='chromium.1',
             pyversions=['py3'],
         ),
@@ -642,8 +641,7 @@ SPECS.update({
             skip_plat=[
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
-                'manylinux-x64-py3.11',
-            ],
+            ] + build_platform.ALL_PY311,
             patch_version='chromium.1',
             pyversions=['py3'],
         ),
@@ -665,8 +663,7 @@ SPECS.update({
             ],
             skip_plat=[
                 'linux-armv6-py3.8',
-                'manylinux-x64-py3.11',  # requires a newer numpy
-            ],
+            ] + build_platform.ALL_PY311,  # requires a newer numpy
             patch_version='chromium.4',
             pyversions=['py3'],
             src_filter=lambda path: not _OPENCV_SRC_RE.match(path),
@@ -677,12 +674,11 @@ SPECS.update({
             '1.1.3',
             packaged=[],
             skip_plat=[
-                'manylinux-x64-py3.11',
                 'mac-x64-py3.8',
                 'mac-arm64-py3.8',
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -707,8 +703,7 @@ SPECS.update({
             ],
             skip_plat=[
                 'linux-armv6-py3.8',
-                'manylinux-x64-py3.11',  # Requires a newer numpy
-            ],
+            ] + build_platform.ALL_PY311,  # Requires a newer numpy
             patch_version='chromium.1',
             pyversions=['py3'],
         ),
@@ -776,9 +771,9 @@ SPECS.update({
             '1.2.1',
             packaged=(),
             skip_plat=[
-                'mac-x64-py3.8', 'mac-arm64-py3.8', 'linux-armv6-py3.8',
-                'linux-arm64-py3.8', 'windows-x86-py3.8', 'windows-x64-py3.8'
-            ],
+                'linux-armv6-py3.8', 'linux-arm64-py3.8', 'windows-x86-py3.8',
+                'windows-x64-py3.8'
+            ] + build_platform.ALL_MAC,
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -850,7 +845,7 @@ SPECS.update({
             'ruamel.yaml.clib',
             '0.2.6',
             packaged=(),
-            skip_plat=['manylinux-x64-py3.11'],  # TODO: version 0.2.7+
+            skip_plat=build_platform.ALL_PY311,  # TODO: version 0.2.7+
             pyversions=['py3'],
         ),
         # TODO: No release of typed-ast yet for python 3.11; authors
@@ -866,7 +861,7 @@ SPECS.update({
             'typed-ast',
             '1.5.3',
             packaged=(),
-            skip_plat=['manylinux-x64-py3.11'],
+            skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
         # TODO: version 1.14.0+ of wrap for python 3.11.
@@ -1612,14 +1607,12 @@ SPECS.update({
             '2.6.1',
             openssl='1.1.0f',
             pyversions=['py2', 'py3'],
-            skip_plat=[
-                'mac-x64-py3.8', 'mac-arm64-py3.8', 'linux-armv6-py3.8',
-                'linux-arm64-py3.8', 'windows-x86-py3.8', 'windows-x64-py3.8'
-            ],
             packaged=(),
             # This wheel currently doesn't build at HEAD.
             # TODO(crbug.com/1218659): Get it working again.
-            default=False),
+            default=False,
+            only_plat=['manylinux-x64-py3.8'],
+        ),
         CryptographyPyPI(
             'cryptography',
             '2.9.2',
@@ -1627,6 +1620,7 @@ SPECS.update({
             pyversions=['py2', 'py3'],
             packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
             patch_version='chromium.1',
+            skip_plat=build_platform.ALL_PY311,
         ),
         CryptographyPyPI(
             'cryptography',
@@ -1635,6 +1629,7 @@ SPECS.update({
             pyversions=['py2', 'py3'],
             packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
             patch_version='chromium.1',
+            skip_plat=build_platform.ALL_PY311,
         ),
     )
 })
@@ -1676,7 +1671,7 @@ SPECS.update({
                 Universal('pyina', '0.2.4'),
             ]),
             pyversions=['py3'],
-            skip_plat=['manylinux-x64-py3.11'],  # TODO: version 3.1.4+
+            skip_plat=build_platform.ALL_PY311,  # TODO: version 3.1.4+
         ),
         # This should actually be 4.8.0, but the version needs to change in
         # order to pick up dependencies that weren't included when the
@@ -1822,6 +1817,7 @@ SPECS.update({
                         ]
                     ]
             ]),
+            # TODO: 8.5.1 needed for python 3.11.
             only_plat=['mac-x64-py3.8', 'mac-arm64-py3.8'],
             pyversions=['py3'],
         ),

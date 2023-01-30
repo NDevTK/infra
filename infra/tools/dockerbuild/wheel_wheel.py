@@ -121,15 +121,19 @@ class SourceOrPrebuilt(Builder):
     self._skip_auditwheel = skip_auditwheel
     self._env_cb = kwargs.pop('env_cb', None)
     version_suffix = '.' + patch_version if patch_version else None
+    spec = Spec(
+        name,
+        self._pypi_src.version,
+        universal=False,
+        pyversions=pyversions,
+        default=default,
+        version_suffix=version_suffix)
 
-    super(SourceOrPrebuilt, self).__init__(
-        Spec(
-            name,
-            self._pypi_src.version,
-            universal=False,
-            pyversions=pyversions,
-            default=default,
-            version_suffix=version_suffix), **kwargs)
+    for p in self._packaged:
+      assert p in build_platform.NAMES, (
+          "Wheel %r has invalid platform %s in packaged" % (spec, p))
+
+    super(SourceOrPrebuilt, self).__init__(spec, **kwargs)
 
   def build_fn(self, system, wheel, output_dir):
     if wheel.plat.name in self._packaged:

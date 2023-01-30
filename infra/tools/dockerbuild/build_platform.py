@@ -149,6 +149,24 @@ ALL = {
             },
         ),
         Platform(
+            name='mac-x64-py3.11',
+            cross_triple='',
+            wheel_abi='cp311',
+            wheel_plat=('macosx_10_11_x86_64',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='darwin64-x86_64-cc',
+            packaged=True,
+            cipd_platform='mac-amd64',
+            env={
+                # Necessary for some wheels to build. See for instance:
+                # https://github.com/giampaolo/psutil/issues/1832
+                'ARCHFLAGS': '-arch x86_64',
+                'MACOSX_DEPLOYMENT_TARGET': '10.11'
+            },
+        ),
+        Platform(
             name='mac-arm64-py3.8',
             cross_triple='',
             wheel_abi='cp38',
@@ -160,6 +178,24 @@ ALL = {
             # TODO: See whether this can be enabled now that Python 3.8.10
             # supports mac-arm64.
             packaged=False,
+            cipd_platform='mac-arm64',
+            env={
+                # Necessary for some wheels to build. See for instance:
+                # https://github.com/giampaolo/psutil/issues/1832
+                'ARCHFLAGS': '-arch arm64',
+                'MACOSX_DEPLOYMENT_TARGET': '11.0'
+            },
+        ),
+        Platform(
+            name='mac-arm64-py3.11',
+            cross_triple='',
+            wheel_abi='cp311',
+            wheel_plat=('macosx_11_0_arm64',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='darwin64-arm64-cc',
+            packaged=True,
             cipd_platform='mac-arm64',
             env={
                 # Necessary for some wheels to build. See for instance:
@@ -230,6 +266,12 @@ NAMES = sorted(ALL.keys())
 PACKAGED = [p for p in ALL.values() if p.packaged]
 ALL_LINUX = [p.name for p in ALL.values() if 'linux' in p.name]
 UNIVERSAL = [p.name for p in ALL.values() if 'universal' in p.name]
+ALL_PY311 = [p.name for p in ALL.values() if p.name.endswith('-py3.11')]
+ALL_MAC_X64 = [p.name for p in ALL.values() if p.name.startswith('mac-x64-')]
+ALL_MAC_ARM64 = [
+    p.name for p in ALL.values() if p.name.startswith('mac-arm64-')
+]
+ALL_MAC = [p.name for p in ALL.values() if p.name.startswith('mac-')]
 _IS_TRANSLATED = _CheckTranslated()
 
 
@@ -246,9 +288,8 @@ def NativePlatforms():
 
   # Identify our native platforms.
   if sys.platform == 'darwin':
-    arch = {'x86_64': 'x64', 'arm64': 'arm64'}[NativeMachine()]
-    plat_name = 'mac-%s' % arch
-    return plats + [ALL[plat_name + '-py3.8']]
+    mac_plats = {'x86_64': ALL_MAC_X64, 'arm64': ALL_MAC_ARM64}
+    return plats + [ALL[p] for p in mac_plats[NativeMachine()]]
   elif sys.platform == 'win32':
     return plats + [ALL['windows-x86-py3.8'], ALL['windows-x64-py3.8']]
   elif sys.platform.startswith('linux'):
