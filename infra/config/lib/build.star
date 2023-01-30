@@ -76,6 +76,10 @@ def presubmit(
             "pool": pool,
         },
         task_template_canary_percentage = 30,
+        experiments = {
+            # TODO(crbug.com/1393420): remove this.
+            "luci.buildbucket.omit_python2": 0,
+        },
     )
     luci.cq_tryjob_verifier(
         builder = name,
