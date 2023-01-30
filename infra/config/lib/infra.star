@@ -153,7 +153,11 @@ def builder(
                 by_timestamp = True,
             ),
         ),
-        experiments = {"luci.buildbucket.backend_go": 100},
+        experiments = {
+            "luci.buildbucket.backend_go": 100,
+            # TODO(crbug.com/1393420): remove this.
+            "luci.buildbucket.omit_python2": 0,
+        },
     )
 
 def _tree_closing_notifiers():
