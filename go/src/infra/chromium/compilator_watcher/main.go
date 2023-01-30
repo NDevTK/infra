@@ -19,7 +19,6 @@ import (
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
@@ -141,77 +140,19 @@ func parseArgs(args []string) (cmdArgs, error) {
 	}, nil
 }
 
-var hideCompSteps = stringset.NewFromSlice(
-	"setup_build", "report builders", "use rts: False", "use rts: True",
-	"gclient config", "gerrit fetch current CL info",
-	"gclient runhooks", "set_output_gitiles_commit", "read test spec",
-	"get compile targets for scripts", "git diff to analyze patch",
-	"create .code-coverage",
-)
-
-func getLatestBuildStepName(build *buildbucket_pb.Build) string {
-	buildSteps := build.GetSteps()
-	buildStepsLen := len(buildSteps)
-	if buildStepsLen > 0 {
-		return buildSteps[buildStepsLen-1].GetName()
-	} else {
-		return ""
-	}
-}
-
-func updateFilteredSteps(
-	luciBuild *buildbucket_pb.Build,
-	compBuild *buildbucket_pb.Build,
-	phase string) {
-	if phase == swarmingPhase {
-		luciBuild.Steps = getStepsUntilSwarmingTriggerProps(compBuild)
-	} else {
-		luciBuild.Steps = getStepsAfterSwarmingTriggerProps(compBuild)
-	}
-}
-
 func getStepsUntilSwarmingTriggerProps(
 	compBuild *buildbucket_pb.Build) []*buildbucket_pb.Step {
-	var filteredSteps []*buildbucket_pb.Step
+	var displayedSteps []*buildbucket_pb.Step
 	for _, compBuildStep := range compBuild.GetSteps() {
 		name := compBuildStep.GetName()
 
-		if !hideCompSteps.Has(name) {
-			filteredSteps = append(filteredSteps, compBuildStep)
-		} else {
-			// Only display hidden step if somethings wrong with it
-			if compBuildStep.Status != buildbucket_pb.Status_STARTED && compBuildStep.Status != buildbucket_pb.Status_SUCCESS {
-				filteredSteps = append(filteredSteps, compBuildStep)
-			}
-		}
+		displayedSteps = append(displayedSteps, compBuildStep)
+
 		if name == swarmingTriggerPropsStepName {
 			break
 		}
 	}
-	return filteredSteps
-}
-
-func updateLastStep(luciBuild *buildbucket_pb.Build, compBuild *buildbucket_pb.Build) {
-	// This function is called when the latest compBuild step name has not
-	// changed but the copied step in luciBuild should still be updated in
-	// case the step's status has changed.
-	compBuildSteps := compBuild.GetSteps()
-	latestCompStep := compBuildSteps[len(compBuildSteps)-1]
-
-	luciBuildSteps := luciBuild.GetSteps()
-
-	if !hideCompSteps.Has(latestCompStep.GetName()) {
-		luciBuildSteps[len(luciBuildSteps)-1] = latestCompStep
-	} else {
-		// Only display hidden step if somethings wrong with it
-		if protoutil.IsEnded(latestCompStep.Status) && latestCompStep.Status != buildbucket_pb.Status_SUCCESS {
-			if len(luciBuildSteps) == 0 || luciBuildSteps[len(luciBuildSteps)-1].GetName() != latestCompStep.GetName() {
-				luciBuild.Steps = append(luciBuild.Steps, latestCompStep)
-			} else {
-				luciBuildSteps[len(luciBuildSteps)-1] = latestCompStep
-			}
-		}
-	}
+	return displayedSteps
 }
 
 func getStepsAfterSwarmingTriggerProps(
@@ -268,8 +209,6 @@ func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs 
 	cctx, cancel := clock.WithTimeout(ctx, parsedArgs.compPollingTimeoutSec)
 	defer cancel()
 
-	var latestCompBuildStepName = ""
-
 	var timeoutCounts int64 = 0
 	for {
 		// Check for context err like a timeout or cancelation before
@@ -294,15 +233,12 @@ func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs 
 		// Reset counter
 		timeoutCounts = 0
 
-		switch maybeLatestCompStepName := getLatestBuildStepName(compBuild); {
-		case maybeLatestCompStepName != latestCompBuildStepName:
-			latestCompBuildStepName = maybeLatestCompStepName
-			updateFilteredSteps(luciBuild, compBuild, parsedArgs.phase)
-			send()
-		case maybeLatestCompStepName != "":
-			updateLastStep(luciBuild, compBuild)
-			send()
+		if parsedArgs.phase == swarmingPhase {
+			luciBuild.Steps = getStepsUntilSwarmingTriggerProps(compBuild)
+		} else {
+			luciBuild.Steps = getStepsAfterSwarmingTriggerProps(compBuild)
 		}
+		send()
 
 		if protoutil.IsEnded(compBuild.GetStatus()) || (parsedArgs.phase == swarmingPhase && swarmingPropsInCompBuildOutput(compBuild)) {
 			return compBuild, nil

@@ -545,7 +545,19 @@ func TestLuciEXEMain(t *testing.T) {
 
 				expectedSteps := getSteps([]stepNameStatusPair{
 					{
+						stepName: "setup_build",
+						status:   buildbucket_pb.Status_SUCCESS,
+					},
+					{
+						stepName: "report builders",
+						status:   buildbucket_pb.Status_SUCCESS,
+					},
+					{
 						stepName: "builder cache",
+						status:   buildbucket_pb.Status_SUCCESS,
+					},
+					{
+						stepName: "gclient config",
 						status:   buildbucket_pb.Status_SUCCESS,
 					},
 					{
@@ -583,48 +595,6 @@ func TestLuciEXEMain(t *testing.T) {
 					{
 						stepName: "gerrit changes",
 						status:   buildbucket_pb.Status_SUCCESS,
-					},
-				})
-				So(input.GetSteps(), ShouldResembleProto, expectedSteps)
-			})
-			Convey("and displays failed hidden steps", func() {
-				compBuilds := []bb.FakeGetBuildResponse{
-					{Build: getBuildsWithSteps([]stepNameStatusPair{
-						{
-							stepName: "setup_build",
-							status:   buildbucket_pb.Status_SUCCESS,
-						},
-						{
-							stepName: "report builders",
-							status:   buildbucket_pb.Status_SUCCESS,
-						},
-						{
-							stepName: "builder cache",
-							status:   buildbucket_pb.Status_FAILURE,
-						},
-						{
-							stepName: "lookup GN args",
-							status:   buildbucket_pb.Status_FAILURE,
-						},
-					}, map[string]*structpb.Value{}, buildbucket_pb.Status_FAILURE)},
-				}
-				ctx = context.WithValue(
-					ctx,
-					bb.FakeBuildsContextKey,
-					compBuilds)
-
-				err := luciEXEMain(ctx, input, userArgs, sender)
-				So(err, ShouldBeNil)
-				So(input.Status, ShouldResemble, buildbucket_pb.Status_FAILURE)
-
-				expectedSteps := getSteps([]stepNameStatusPair{
-					{
-						stepName: "builder cache",
-						status:   buildbucket_pb.Status_FAILURE,
-					},
-					{
-						stepName: "lookup GN args",
-						status:   buildbucket_pb.Status_FAILURE,
 					},
 				})
 				So(input.GetSteps(), ShouldResembleProto, expectedSteps)
