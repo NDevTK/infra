@@ -827,7 +827,12 @@ class Support3ppApi(recipe_api.RecipeApi):
     ret = []
     with self.m.step.defer_results():
       for spec, version in sorted(expanded_build_plan):
+        # Never upload packages for the build platform which are incidentally
+        # built when cross-compiling. These end up racing with the native
+        # builders and leading to multiple CIPD instances being tagged with
+        # the same version.
+        skip_upload = force_build or (spec.platform != platform)
         ret.append(
             self._build_resolved_spec(spec, version, force_build_packages,
-                                      force_build))
+                                      skip_upload))
     return ret, unsupported
