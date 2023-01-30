@@ -184,7 +184,7 @@ class Execution:
         return True
     return default
 
-  def add_to_search_path(
+  def append_to_search_path(
       self, name: str, path: pathlib.Path,
       delimiter: str = os.path.pathsep) -> None:
     """Update the environment variable and append the path to it."""
@@ -193,6 +193,16 @@ class Execution:
 
     ori = self.env.get(name, '')
     self.env[name] = f'{ori}{delimiter if ori else ""}{path}'
+
+  def prepend_to_search_path(
+      self, name: str, path: pathlib.Path,
+      delimiter: str = os.path.pathsep) -> None:
+    """Update the environment variable and prepend the path to it."""
+    if not path.is_dir():
+      return
+
+    ori = self.env.get(name, '')
+    self.env[name] = f'{path}{delimiter if ori else ""}{ori}'
 
   def activate_pkg(
       self, pkg: pathlib.Path, host: PlatType, target: PlatType) -> None:
@@ -218,15 +228,15 @@ class Execution:
     # Only dependencies whose host platform matches the build platform are
     # guaranteed their binaries to be executable.
     if host == PlatType.BUILD:
-      self.add_to_search_path(Execution.ENV_PATH, pkg.joinpath('bin'))
-      self.add_to_search_path(
+      self.append_to_search_path(Execution.ENV_PATH, pkg.joinpath('bin'))
+      self.append_to_search_path(
           Execution.ENV_XDG_DATA_DIRS, pkg.joinpath('share'))
 
     # Only dependencies whose host platform matches the host platform are
     # guaranteed their libraries can be linked.
     # TODO(fancl): Move this to pkg-config package.
     if host == PlatType.HOST:
-      self.add_to_search_path(
+      self.append_to_search_path(
           Execution.ENV_PKG_CONFIG_PATH, pkg.joinpath('lib', 'pkgconfig'))
 
   def activate_pkg_hook(
@@ -327,7 +337,8 @@ class Execution:
   def patch_phase(self) -> None:
     """Apply Patches in ENV_PATCHES to the source code."""
     if patches := _split(self.env.get(Execution.ENV_PATCHES), os.path.pathsep):
-      self.execute_cmd(['git', 'apply', '-v'] + patches)
+      # Ignore whitespace to workaround CRLF/LF differences.
+      self.execute_cmd(['git', 'apply', '--ignore-whitespace', '-v'] + patches)
     pass
 
   def configure_phase(self) -> None:

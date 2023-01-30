@@ -5,12 +5,11 @@
 # pylint: disable=global-at-module-level
 # pylint: disable=undefined-variable
 
-import os
-import subprocess
-
-
 def setup(exe) -> None:
   """Build hooks for linux."""
+  import os
+  import subprocess
+
   dependencies = []
   appending_envs = {}
 

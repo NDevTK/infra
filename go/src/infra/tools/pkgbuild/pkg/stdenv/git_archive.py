@@ -79,7 +79,8 @@ def archive(
   for m in mods_raw.split('\0'):
     k, v = m.split('\n', 1)
     _, mname, mkey = k.split('.')
-    mods[mkey][mname] = v
+    if mkey in mods:
+      mods[mkey][mname] = v
 
   # List all nodes with type commit
   nodes_raw = subprocess.check_output([

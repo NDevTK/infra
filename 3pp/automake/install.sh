@@ -22,7 +22,7 @@ def setup(exe):
   def activate_pkg(exe) -> bool:
     ctx = exe.current_context
     if (aclocal := ctx.pkg.joinpath('share', 'aclocal')).is_dir():
-      exe.add_to_search_path('ACLOCAL_PATH', aclocal)
+      exe.append_to_search_path('ACLOCAL_PATH', aclocal)
     return True
 
   exe.add_hook('activatePkg', activate_pkg)

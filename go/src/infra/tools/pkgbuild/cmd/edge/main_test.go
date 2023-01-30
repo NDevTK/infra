@@ -16,9 +16,7 @@ import (
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 	"io/fs"
-	"log"
 	"net/url"
-	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -30,14 +28,22 @@ import (
 //go:embed tests
 var tests embed.FS
 
-func TestMain(m *testing.M) {
-	if err := stdenv.Init(func(bin string) (string, error) {
-		// We don't need to import binaries from host.
-		return bin, nil
-	}); err != nil {
-		log.Fatalf("failed to init stdenv: %v", err)
-	}
-	os.Exit(m.Run())
+func initStdenv(build *utilities.Platform) {
+	So(stdenv.Init(&stdenv.Config{
+		XcodeDeveloper: &builtins.CopyFiles{
+			Name:  "xcode_import",
+			Files: embed.FS{},
+		},
+		WinSDK: &builtins.CopyFiles{
+			Name:  "winsdk_files",
+			Files: embed.FS{},
+		},
+		FindBinary: func(bin string) (string, error) {
+			// We don't need to import binaries from host.
+			return bin, nil
+		},
+		BuildPlatform: build,
+	}), ShouldBeNil)
 }
 
 func TestBuildPackagesFromSpec(t *testing.T) {
@@ -54,6 +60,8 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 	Convey("Native platform", t, func() {
 		buildPlatform := utilities.CurrentPlatform()
 		cipdPlatform := platform.CurrentPlatform()
+
+		initStdenv(buildPlatform)
 
 		mockBuild := NewMockBuild()
 		mockStorage := NewMockStorage()
@@ -103,6 +111,8 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		hostPlatform := utilities.NewPlatform("linux", "arm64")
 		cipdHost := "linux-amd64"
 		cipdTarget := "linux-arm64"
+
+		initStdenv(buildPlatform)
 
 		mockBuild := NewMockBuild()
 		mockStorage := NewMockStorage()
@@ -167,6 +177,8 @@ func TestPackageSources(t *testing.T) {
 	Convey("Native platform", t, func() {
 		buildPlatform := utilities.NewPlatform("linux", "amd64")
 		cipdPlatform := "linux-amd64"
+
+		initStdenv(buildPlatform)
 
 		mockBuild := NewMockBuild()
 		mockStorage := NewMockStorage()

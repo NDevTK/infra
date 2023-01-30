@@ -15,9 +15,6 @@ import (
 	"strings"
 
 	"infra/libs/cipkg"
-
-	"github.com/go-ole/go-ole"
-	"github.com/go-ole/go-ole/oleutil"
 )
 
 // Import is used to import file/directory from host environment. The builder
@@ -90,14 +87,8 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 			newname = subdir
 		}
 
-		if runtime.GOOS == "windows" {
-			if err := makeLink(t.Source, newname); err != nil {
-				return fmt.Errorf("failed to makeLink import: %#v: %w", i, err)
-			}
-		} else {
-			if err := os.Symlink(t.Source, newname); err != nil {
-				return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
-			}
+		if err := symlink(t.Source, newname); err != nil {
+			return fmt.Errorf("failed to symlink import: %#v: %w", i, err)
 		}
 	}
 
@@ -109,38 +100,6 @@ func importFromHost(ctx context.Context, cmd *exec.Cmd) error {
 		return fmt.Errorf("failed to touch import stamp: %w", err)
 	}
 	f.Close()
-
-	return nil
-}
-
-// Create windows shortcut. This is not the real symlink but accepted as a
-// workaround for cygwin when using winsymlinks:lnk.
-// See: https://cygwin.com/cygwin-ug-net/using-cygwinenv.html
-func makeLink(src, dst string) error {
-	if err := ole.CoInitializeEx(0, ole.COINIT_APARTMENTTHREADED|ole.COINIT_SPEED_OVER_MEMORY); err != nil {
-		return err
-	}
-	oleShellObject, err := oleutil.CreateObject("WScript.Shell")
-	if err != nil {
-		return err
-	}
-	defer oleShellObject.Release()
-	wshell, err := oleShellObject.QueryInterface(ole.IID_IDispatch)
-	if err != nil {
-		return err
-	}
-	defer wshell.Release()
-	cs, err := oleutil.CallMethod(wshell, "CreateShortcut", dst+".lnk")
-	if err != nil {
-		return err
-	}
-	idispatch := cs.ToIDispatch()
-	if _, err := oleutil.PutProperty(idispatch, "TargetPath", src); err != nil {
-		return err
-	}
-	if _, err := oleutil.CallMethod(idispatch, "Save"); err != nil {
-		return err
-	}
 
 	return nil
 }
@@ -157,7 +116,7 @@ type FindBinaryFunc func(bin string) (path string, err error)
 // FromPathBatch(...) is a wrapper for builtins.Import generator. It finds
 // binaries using finder func and caches the result based on the name. if
 // finder is nil, binaries will be searched from the PATH environment.
-func FromPathBatch(name string, finder FindBinaryFunc, bins ...string) (cipkg.Generator, error) {
+func FromPathBatch(name string, finder FindBinaryFunc, bins ...string) (*Import, error) {
 	if finder == nil {
 		finder = exec.LookPath
 	}

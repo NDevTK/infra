@@ -61,7 +61,7 @@ def setup(exe):
   def activate_pkg(exe) -> bool:
     ctx = exe.current_context
     if ctx.host == PlatType.BUILD and not ctx.pkg.joinpath('bin').is_dir():
-      exe.add_to_search_path(Execution.ENV_PATH, ctx.pkg)
+      exe.append_to_search_path(Execution.ENV_PATH, ctx.pkg)
     return True
 
   # Copy the source before unpack if _3PP_UNPACK_ARCHIVE is not set.

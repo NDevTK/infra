@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"infra/libs/cipkg"
 
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/system/filesystem"
 )
 
 type CIPDStorage struct {
@@ -99,6 +101,12 @@ func cipdExport(serviceURL string, pkg cipkg.Package) error {
 	cmd := exec.Command(cipd, "export", "-service-url", serviceURL, "-root", rootDir, "-ensure-file", "-")
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%s version:%s", key.Path, tag))
 	if err := cmd.Run(); err != nil {
+		if err := filesystem.RemoveAll(pkg.Directory()); err != nil {
+			return fmt.Errorf("failed to clean up export directory: %w", err)
+		}
+		if err := os.Mkdir(pkg.Directory(), os.ModePerm); err != nil {
+			return fmt.Errorf("failed to recreate package directory: %w", err)
+		}
 		return err
 	}
 

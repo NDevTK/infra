@@ -4,16 +4,11 @@
 package stdenv
 
 import (
-	"bytes"
-	"crypto"
 	"embed"
 	"fmt"
 	"io/fs"
 	"os/exec"
 	"path"
-	"path/filepath"
-	"runtime"
-	"strings"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -22,56 +17,23 @@ import (
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 )
 
-// TODO(fancl): Use all:setup after go 1.18.
-//
-//go:embed setup/*
-var stdenv embed.FS
+var (
+	//go:embed all:setup
+	stdenv embed.FS
 
-// Initialize resources defined in each platforms.
-func init() {
-	files, err := fs.Sub(setupFiles, path.Join("resources", runtime.GOOS))
-	if err != nil {
-		panic(err)
-	}
-	setup = &builtins.CopyFiles{
-		Name: "setup",
-		Files: builtins.FSWithMode{
-			FS: files,
-			ModeOverride: func(info fs.FileInfo) (fs.FileMode, error) {
-				if path.Dir(info.Name()) == "bin" {
-					return info.Mode() | fs.ModePerm, nil
-				}
-				return info.Mode(), nil
-			},
-		},
-	}
-}
+	//go:embed all:resources
+	resources embed.FS
 
-var common struct {
-	// Static files
-	Stdenv cipkg.Generator
-
-	// Prebuilt binaries
-	Git     cipkg.Generator
-	Python3 cipkg.Generator
-
-	// Import from host environment
-	PosixUtils cipkg.Generator
-	Docker     cipkg.Generator
-	Darwin     cipkg.Generator
-}
-
-var cipdPackages = []ensure.PackageDef{}
+	baseByOS = map[string][]cipkg.Generator{}
+)
 
 const (
 	cipdVersionGit     = "version:2@2.36.1.chromium.8"
 	cipdVersionCPython = "version:2@3.8.10.chromium.24"
 )
 
-// Initialize the stdenv. If finder is nil, binaries will be imported from
-// PATH.
-func Init(finder builtins.FindBinaryFunc) (err error) {
-	common.Git = &builtins.CIPDEnsure{
+var (
+	git = &builtins.CIPDEnsure{
 		Name: "stdenv_git",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -81,7 +43,7 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 			},
 		},
 	}
-	common.Python3 = &builtins.CIPDEnsure{
+	cpython = &builtins.CIPDEnsure{
 		Name: "stdenv_python3",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -91,11 +53,57 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 			},
 		},
 	}
+)
 
-	common.Stdenv = &builtins.CopyFiles{
-		Name:  "stdenv",
-		Files: stdenv,
+type Config struct {
+	XcodeDeveloper cipkg.Generator
+	WinSDK         cipkg.Generator
+	FindBinary     builtins.FindBinaryFunc
+	BuildPlatform  *utilities.Platform
+}
+
+func DefaultConfig() *Config {
+	return &Config{
+		FindBinary:    exec.LookPath,
+		BuildPlatform: utilities.CurrentPlatform(),
 	}
+}
+
+// Initialize the stdenv. If finder is nil, binaries will be imported from
+// PATH.
+func Init(cfg *Config) error {
+	os := cfg.BuildPlatform.OS()
+	if _, ok := baseByOS[os]; ok {
+		return nil
+	}
+	var base []cipkg.Generator
+
+	// Prebuilt binaries
+	files, err := fs.Sub(resources, path.Join("resources", os))
+	if err != nil {
+		return err
+	}
+	base = append(base,
+		&builtins.CopyFiles{
+			Name:  "stdenv",
+			Files: stdenv,
+		},
+		&builtins.CopyFiles{
+			Name: "setup",
+			Files: builtins.FSWithMode{
+				FS: files,
+				ModeOverride: func(info fs.FileInfo) (fs.FileMode, error) {
+					if path.Dir(info.Name()) == "bin" {
+						return info.Mode() | fs.ModePerm, nil
+					}
+					return info.Mode(), nil
+				},
+			},
+		},
+	)
+
+	// Prebuilt binaries
+	base = append(base, git, cpython)
 
 	posixUtils := []string{
 		"awk",
@@ -145,71 +153,29 @@ func Init(finder builtins.FindBinaryFunc) (err error) {
 		"uname",
 	}
 
-	// Optional posix tools
-	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
-		posixUtils = append(posixUtils,
-			"cpio",
-			"egrep",
-			"fgrep",
-		)
-	}
-
-	if common.PosixUtils, err = builtins.FromPathBatch("posixUtils_import", finder, posixUtils...); err != nil {
-		return
-	}
-
 	// OS specified
-	switch runtime.GOOS {
-	case "linux":
-		if common.Docker, err = builtins.FromPathBatch("docker_import", finder, "docker"); err != nil {
-			return
+	gs, err := func() ([]cipkg.Generator, error) {
+		switch os {
+		case "linux":
+			posixUtils = append(posixUtils, "cpio", "egrep", "fgrep")
+			return importLinux(cfg, posixUtils...)
+		case "darwin":
+			posixUtils = append(posixUtils, "cpio", "egrep", "fgrep")
+			return importDarwin(cfg, posixUtils...)
+		case "windows":
+			posixUtils = append(posixUtils, "cygpath", "nproc")
+			return importWindows(cfg, posixUtils...)
+		default:
+			return nil, fmt.Errorf("unknown os: %s", os)
 		}
-	case "darwin":
-		if common.Darwin, err = importDarwin(); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func importDarwin() (cipkg.Generator, error) {
-	cmd := exec.Command("xcode-select", "--print-path")
-	out, err := cmd.Output()
+	}()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	path := string(bytes.TrimSpace(out))
+	base = append(base, gs...)
 
-	cmd = exec.Command(filepath.Join(path, "usr", "bin", "xcodebuild"), "-version")
-	out, err = cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	ver := string(bytes.TrimSpace(out))
-
-	return &builtins.Import{
-		Name: "darwin_import",
-		Targets: []builtins.ImportTarget{
-			{Source: path, Destination: "Developer", Version: ver, Type: builtins.ImportDirectory},
-			{Source: "/usr/bin/codesign", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/sw_vers", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/xcode-select", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/xcrun", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/hdiutil", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/pkgbuild", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/productbuild", Destination: "bin", Type: builtins.ImportExecutable},
-
-			// Using compilers without wrappers require configuring Apple Framework properly, which isn't trivial.
-			// See also: https://github.com/NixOS/nixpkgs/tree/master/pkgs/os-specific/darwin/apple-sdk
-			{Source: "/usr/bin/cc", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/c++", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/clang", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/clang++", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/gcc", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/g++", Destination: "bin", Type: builtins.ImportExecutable},
-		},
-	}, nil
+	baseByOS[os] = base
+	return nil
 }
 
 type Generator struct {
@@ -222,92 +188,52 @@ type Generator struct {
 	Version  string
 }
 
-//go:embed git_archive.py
-var gitSource embed.FS
-
-func (g *Generator) fetchSource() (cipkg.Generator, string, error) {
-	// The name of the source derivation. It's also used in environment variable
-	// srcs to pointing to the location of source file(s), which will be expanded
-	// to absolute path by utilities.BaseGenerator.
-	name := fmt.Sprintf("%s_source", g.Name)
-	switch s := g.Source.(type) {
-	case *SourceGit:
-		return &utilities.BaseGenerator{
-			Name:    name,
-			Builder: "{{.stdenv_python3}}/bin/python3",
-			Args:    []string{"{{.git_source}}/git_archive.py", s.URL, s.Ref},
-			Env:     []string{"PATH={{.stdenv_git}}/bin"},
-			Dependencies: append([]utilities.BaseDependency{
-				{Type: cipkg.DepsBuildHost, Generator: common.Git},
-				{Type: cipkg.DepsBuildHost, Generator: common.Python3},
-				{Type: cipkg.DepsBuildHost, Generator: &builtins.CopyFiles{
-					Name:  "git_source",
-					Files: gitSource,
-				}},
-			}),
-			Version:  s.Version,
-			CacheKey: s.CacheKey,
-		}, fmt.Sprintf("srcs={{.%s}}/src.tar", name), nil
-	case *SourceURLs:
-		urls := builtins.FetchURLs{
-			Name: name,
-		}
-		var srcs []string
-		for _, u := range s.URLs {
-			urls.URLs = append(urls.URLs, builtins.FetchURL{
-				Name:          name,
-				URL:           u.URL,
-				Filename:      u.Filename,
-				HashAlgorithm: u.HashAlgorithm,
-				HashString:    u.HashString,
-			})
-			srcs = append(srcs, fmt.Sprintf("{{.%s}}/%s", name, u.Filename))
-		}
-		return &utilities.WithMetadata{
-			Generator: &urls,
-			Metadata: cipkg.PackageMetadata{
-				Version:  s.Version,
-				CacheKey: s.CacheKey,
-			},
-		}, fmt.Sprintf("srcs=%s", strings.Join(srcs, string(filepath.ListSeparator))), nil
-	default:
-		return nil, "", fmt.Errorf("unknown source type %#v:", s)
+func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
+	src, srcsEnv, err := g.fetchSource()
+	if err != nil {
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 	}
+
+	deps := append([]utilities.BaseDependency{
+		{Type: cipkg.DepsBuildHost, Generator: src},
+	}, g.Dependencies...)
+	for _, g := range baseByOS[ctx.Platforms.Build.OS()] {
+		deps = append(deps, utilities.BaseDependency{
+			Type:      cipkg.DepsBuildHost,
+			Generator: g,
+		})
+	}
+
+	tmpl := &utilities.BaseGenerator{
+		Name:    g.Name,
+		Builder: "{{.stdenv_python3}}/bin/python3",
+		Args:    []string{"-I", "-B", "{{.stdenv}}/setup/main.py"},
+		Env: append([]string{
+			"buildFlags=",
+			"installFlags=",
+			srcsEnv,
+		}, g.Env...),
+		Dependencies: deps,
+		CacheKey:     g.CacheKey,
+		Version:      g.Version,
+	}
+
+	switch ctx.Platforms.Build.OS() {
+	case "linux":
+		if err := g.generateLinux(ctx, tmpl); err != nil {
+			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		}
+	case "darwin":
+		if err := g.generateDarwin(ctx, tmpl); err != nil {
+			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		}
+	case "windows":
+		if err := g.generateWindows(ctx, tmpl); err != nil {
+			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		}
+	default:
+		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("unknown build os: %s", ctx.Platforms.Build.OS())
+	}
+
+	return tmpl.Generate(ctx)
 }
-
-type Source interface {
-	isSourceMethod()
-}
-
-type SourceGit struct {
-	// The url to the git repository. Support any protocol used by the git
-	// command line interfaces.
-	URL string
-
-	// The reference for the git repo. Can be anything supported by git checkout.
-	// Typical use cases:
-	// - refs/tags/xxx
-	// - 8e8722e14772727b0e1cd5bd925a0f089611a60b
-	Ref string
-
-	CacheKey string
-	Version  string
-}
-
-func (s *SourceGit) isSourceMethod() {}
-
-type SourceURL struct {
-	URL           string
-	Filename      string
-	HashAlgorithm crypto.Hash
-	HashString    string
-}
-
-type SourceURLs struct {
-	URLs []SourceURL
-
-	CacheKey string
-	Version  string
-}
-
-func (s *SourceURLs) isSourceMethod() {}

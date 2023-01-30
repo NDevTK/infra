@@ -21,8 +21,6 @@ import (
 	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/stdenv"
-
-	"go.chromium.org/luci/cipd/client/cipd/platform"
 )
 
 // TODO(fancl): Use all:from_spec/build-support after go 1.18.
@@ -166,7 +164,7 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 			fmt.Sprintf("fromSpecInstall=%s", create.Installer),
 			fmt.Sprintf("_3PP_DEF={{.%s}}", defDerivation.Name),
 			fmt.Sprintf("_3PP_PLATFORM=%s", hostCipdPlatform),
-			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", platform.CurrentPlatform()),
+			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", buildCipdPlatform),
 
 			// TODO: These should be moved to go package
 			fmt.Sprintf("GOOS=%s", plat.OS()),
