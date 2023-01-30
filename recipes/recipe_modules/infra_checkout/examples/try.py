@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from recipe_engine.post_process import DropExpectation
+
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
@@ -20,6 +22,7 @@ def RunSteps(api):
   if api.platform.is_linux:
     with co.go_env():
       co.run_presubmit()
+      api.infra_checkout.apply_golangci_lint(co)
 
 
 def GenTests(api):
@@ -40,3 +43,12 @@ def GenTests(api):
         # Simulate too many files on Mac.
         diff(*['file_%d' % i for i in range(1000 if plat == 'mac' else 2)])
     )
+
+  yield (api.test('golangci-lint') + api.buildbucket.try_build(
+      project='infra',
+      bucket='try',
+      builder='presubmit',
+      git_repo='https://chromium.googlesource.com/infra/infra',
+  ) + api.step_data('get change list (3)',
+                    api.raw_io.stream_output_text('main.go')) +
+         api.post_process(DropExpectation))

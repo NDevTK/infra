@@ -45,68 +45,6 @@ PROPERTIES = {
 LUCI_GO_PATH_IN_INFRA = 'infra/go/src/go.chromium.org/luci'
 
 
-def apply_golangci_lint(api, co):
-  go_files = sorted(
-      set([
-          (api.path.dirname(f) or '.') + '/...'
-          # Set --diff-filter to exclude deleted/renamed files.
-          # https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
-          for f in co.get_changed_files(diff_filter='ACMTR')
-          if f.endswith('.go')
-      ]))
-
-  if not go_files:
-    return  # pragma: no cover
-
-  # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/golangci-lint
-  linter = api.cipd.ensure_tool('infra/3pp/tools/golangci-lint/${platform}',
-                                'version:2@1.50.0')
-  result = api.step(
-      'run golangci-lint',
-      [
-          linter,
-          'run',
-          '--out-format=json',
-          '--issues-exit-code=0',
-          '--timeout=5m',
-      ] + go_files,
-      step_test_data=lambda: api.json.test_api.output_stream({
-          'Issues': [{
-              'FromLinter': 'deadcode',
-              'Text': '`foo` is unused',
-              'Severity': '',
-              'SourceLines': ['func foo() {}'],
-              'Pos': {
-                  'Filename': 'client/cmd/isolate/lib/batch_archive.go',
-                  'Offset': 7960,
-                  'Line': 250,
-                  'Column': 6
-              },
-              'HunkPos': 4,
-              'ExpectedNoLintLinter': ''
-          }],
-      }),
-      stdout=api.json.output())
-
-  for issue in result.stdout.get('Issues') or ():
-    pos = issue['Pos']
-    line = pos['Line']
-    api.tricium.add_comment(
-        'golangci-lint (%s)' % issue['FromLinter'],
-        issue['Text'],
-        pos['Filename'],
-        start_line=line,
-        end_line=line,
-        # Gerrit (and Tricium, as a pass-through proxy) requires robot comments
-        # to have valid start/end position.
-        # TODO(crbug/1239584): provide accurate start/end position.
-        start_char=0,
-        end_char=0,
-    )
-
-  api.tricium.write_comments()
-
-
 def RunSteps(
     api, GOARCH, go_version_variant, run_integration_tests, run_lint):
   co = api.infra_checkout.checkout(
@@ -140,7 +78,7 @@ def RunSteps(
                                'result_adapter.exe')
       with api.context(cwd=luci_go):
         if run_lint:
-          apply_golangci_lint(api, co)
+          api.infra_checkout.apply_golangci_lint(co)
         else:
           api.step('go build', ['go', 'build', './...'])
           api.step(
