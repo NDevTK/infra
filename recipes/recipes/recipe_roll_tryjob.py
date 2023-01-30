@@ -19,7 +19,6 @@ DEPS = [
   'recipe_engine/json',
   'recipe_engine/path',
   'recipe_engine/properties',
-  'recipe_engine/python',
   'recipe_engine/raw_io',
   'recipe_engine/step',
 
@@ -253,21 +252,22 @@ class RecipesRepo(object):
       `RecipeTrainingFailure` if the training produces an uncaught exception.
     """
     try:
-      return self._api.python(
-          step_name, self._root.join(self.recipes_py),
-          ['-O', '%s=%s' % (upstream_repo.name, upstream_repo.root),
-          'test', 'train', '--no-docs'])
+      cmd = [
+          'python3',
+          self._root.join(self.recipes_py),
+          '-O',
+          '%s=%s' % (upstream_repo.name, upstream_repo.root),
+          'test',
+          'train',
+          '--no-docs',
+      ]
+      return self._api.step(step_name, cmd)
     except self._api.step.StepFailure:
       # Train recipes again as py3 tests only compare the on-disk expectation
       # files for PY2+3 recipes.
       # TODO(crbug.com/1147793): Remove it after Py3 migration is fully done.
       try:
-        return self._api.python(
-            step_name + ' (py3 retrain)', self._root.join(self.recipes_py), [
-                '-O',
-                '%s=%s' % (upstream_repo.name, upstream_repo.root), 'test',
-                'train', '--no-docs'
-            ])
+        return self._api.step(step_name + ' (py3 retrain)', cmd)
       except self._api.step.StepFailure:
         raise RecipeTrainingFailure('failed to train recipes')
 

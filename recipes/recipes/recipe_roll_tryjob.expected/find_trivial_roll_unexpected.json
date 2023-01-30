@@ -485,7 +485,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",
@@ -633,7 +633,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",
