@@ -85,9 +85,17 @@ func getRepoToRemoteBranchToSourceRootFromLoadedManifests(manifests map[string]*
 			if _, found := repoToSourceRoot[p.Name]; !found {
 				repoToSourceRoot[p.Name] = make(map[string]string)
 			}
+			// Figure out which branch the project is pointing to.
+			// Upstream is the most canonical source of information but it's
+			// not always set. Revision is a good alternative (if it's not
+			// pinned to a specific SHA).
 			branch := p.Upstream
 			if branch == "" {
-				branch = "refs/heads/master"
+				if strings.HasPrefix(p.Revision, "refs/heads/") {
+					branch = p.Revision
+				} else {
+					branch = "refs/heads/main"
+				}
 			}
 			if !strings.HasPrefix(branch, "refs/heads/") {
 				branch = "refs/heads/" + branch

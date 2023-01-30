@@ -53,7 +53,7 @@ func TestGetRepoToRemoteBranchToSourceRootFromFile_success(t *testing.T) {
 		t.Errorf("expected %d project mappings, found %d", 4, len(m))
 	}
 	// Make sure that a sample project is present.
-	if m["baz"]["refs/heads/master"] != "baz/" {
+	if m["baz"]["refs/heads/main"] != "baz/" {
 		t.Errorf("expected to find a mapping for baz. Got mappings: %v", m)
 	}
 }
@@ -67,7 +67,7 @@ func TestGetRepoToRemoteBranchToSourceRootFromFile_duplicate(t *testing.T) {
 		t.Errorf("expected %d project mappings, found %d", 1, len(m))
 	}
 	// The last mapping for a given name and branch should take precedent.
-	if m["foo"]["refs/heads/master"] != "buz/" {
+	if m["foo"]["refs/heads/main"] != "buz/" {
 		t.Errorf("expected to find a mapping for buz. Got mappings: %v", m)
 	}
 }
