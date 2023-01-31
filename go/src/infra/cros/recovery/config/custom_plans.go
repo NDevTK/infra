@@ -98,7 +98,7 @@ func EraseMRCCacheConfig() *Configuration {
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
-			PlanServo: setAllowFail(servoRepairPlan(), true),
+			PlanServo: setAllowFail(servoRepairPlan(), false),
 			PlanCrOS: {
 				CriticalActions: []string{
 					"Erase DUT MRC cache via servo",

@@ -174,7 +174,7 @@ func eraseMRCCache(ctx context.Context, info *execs.ExecInfo) error {
 		"ccd_gsc":     true,
 		"ccd_cr50":    true,
 	}
-	devices := info.GetChromeos().Servo.ServoTopology.GetChildren()
+	devices := info.GetChromeos().GetServo().GetServoTopology().GetChildren()
 	deviceSerial := ""
 	for _, d := range devices {
 		if _, ok := targetDeviceTypes[d.GetType()]; ok {
