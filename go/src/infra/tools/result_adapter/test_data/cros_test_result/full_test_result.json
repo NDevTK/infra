@@ -68,7 +68,7 @@
                 "test_case_metadata":{
                     "test_case":{
                         "id":{
-                            "value":"invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001"
+                            "value":"rlz_CheckPing"
                         },
                         "name":"rlz_CheckPing"
                     }

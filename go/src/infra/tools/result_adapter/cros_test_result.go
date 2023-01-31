@@ -51,8 +51,15 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 		testCaseResult := testCaseInfo.GetTestCaseResult()
 		status := genTestResultStatus(testCaseResult)
 
+		testCase := testCaseMatadata.GetTestCase()
+		testId := getTestId(testCase)
+		if testId == "" {
+			return nil, errors.Reason("TestId is unspecified due to the missing id in test case: %v",
+				testCase).Err()
+		}
+
 		tr := &sinkpb.TestResult{
-			TestId: testCaseMatadata.GetTestCase().GetName(),
+			TestId: testId,
 			Status: status,
 			// The status is expected if the test passed or was skipped
 			// expectedly.
@@ -83,6 +90,20 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 		ret = append(ret, tr)
 	}
 	return ret, nil
+}
+
+// getTestId gets the test id based on the test case info.
+func getTestId(testCase *apipb.TestCase) string {
+	if testCase == nil {
+		return ""
+	}
+
+	// Sets the test case id as test id. Otherwise, fall back to test case name.
+	id := testCase.GetId()
+	if id != nil && id.GetValue() != "" {
+		return id.GetValue()
+	}
+	return testCase.GetName()
 }
 
 // Converts a TestCase Verdict into a ResultSink Status.

@@ -34,6 +34,9 @@ const (
 
 	// Test result JSON file with skipped test results.
 	skippedTestResultFile = "test_data/cros_test_result/skpped_test_result.json"
+
+	// Test result JSON file with missing test id.
+	missingTestIdFile = "test_data/cros_test_result/missing_test_id.json"
 )
 
 func TestCrosTestResultConversions(t *testing.T) {
@@ -73,7 +76,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					TestCaseMetadata: &apipb.TestCaseMetadata{
 						TestCase: &apipb.TestCase{
 							Id: &apipb.TestCase_Id{
-								Value: "invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001",
+								Value: "rlz_CheckPing",
 							},
 							Name: "rlz_CheckPing",
 						},
@@ -96,7 +99,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					TestCaseMetadata: &apipb.TestCaseMetadata{
 						TestCase: &apipb.TestCase{
 							Id: &apipb.TestCase_Id{
-								Value: "invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002",
+								Value: "power_Resume",
 							},
 							Name: "power_Resume",
 						},
@@ -310,6 +313,19 @@ func TestCrosTestResultConversions(t *testing.T) {
 			So(testResults, ShouldHaveLength, 1)
 			So(testResults, ShouldResembleProto, expected)
 			So(testResults[0].GetProperties().GetFields(), ShouldNotBeEmpty)
+		})
+
+		Convey(`Check with missing test id`, func() {
+			// There are 3 test cases in the test file. The first test case has
+			// both id and name while the second one only has the name. The
+			// third one doesn't have id and name, so it would throw an error
+			// to surface the problem explicitly and the first two would be
+			// skipped.
+			testResultsJson := ReadJSONFileToString(missingTestIdFile)
+			results := &CrosTestResult{}
+			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			_, err := results.ToProtos(ctx)
+			So(err, ShouldErrLike, "TestId is unspecified due to the missing id in test case")
 		})
 	})
 }
