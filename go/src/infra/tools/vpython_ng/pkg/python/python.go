@@ -27,7 +27,7 @@ type Environment struct {
 }
 
 func CPython3FromCIPD(version string) cipkg.Generator {
-	return &builtins.CIPDEnsure{
+	return &builtins.CIPDExport{
 		Name: "cpython",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -40,7 +40,7 @@ func CPython3FromCIPD(version string) cipkg.Generator {
 }
 
 func VirtualenvFromCIPD(version string) cipkg.Generator {
-	return &builtins.CIPDEnsure{
+	return &builtins.CIPDExport{
 		Name: "virtualenv",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{

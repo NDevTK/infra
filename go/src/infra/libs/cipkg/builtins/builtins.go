@@ -33,8 +33,8 @@ func Execute(ctx context.Context, cmd *exec.Cmd) error {
 		return copyFiles(ctx, cmd)
 	case ImportBuilder:
 		return importFromHost(ctx, cmd)
-	case CIPDEnsureBuilder:
-		return cipdEnsure(ctx, cmd)
+	case CIPDExportBuilder:
+		return cipdExport(ctx, cmd)
 	}
 	return fmt.Errorf("unknown builtin builder: %s", cmd.Path)
 }

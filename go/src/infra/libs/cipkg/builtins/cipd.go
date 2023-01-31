@@ -21,23 +21,26 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 )
 
-// CIPDEnsure is used for downloading CIPD packages. It behaves similar to
-// `cipd ensure` for the provided ensure file and use ${out} as the cipd
+// CIPDExport is used for downloading CIPD packages. It behaves similar to
+// `cipd export` for the provided ensure file and use ${out} as the cipd
 // root path.
-const CIPDEnsureBuilder = BuiltinBuilderPrefix + "cipdEnsure"
+const CIPDExportBuilder = BuiltinBuilderPrefix + "cipdExport"
 
-type CIPDEnsure struct {
+type CIPDExport struct {
 	Name     string
 	Ensure   ensure.File
 	Expander template.Expander
 
-	CacheDir          string
-	MaxThreads        int
-	ParallelDownloads int
-	ServiceURL        string
+	ConfigFile          string
+	CacheDir            string
+	HTTPUserAgentPrefix string
+	MaxThreads          int
+	ParallelDownloads   int
+	AdmissionPlugin     string
+	ServiceURL          string
 }
 
-func (c *CIPDEnsure) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
+func (c *CIPDExport) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
 	// Expand template based on ctx.Platform.Host before pass it to cipd client
 	// for cross-compile
 	expander := c.Expander
@@ -71,65 +74,40 @@ func (c *CIPDEnsure) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.
 		}
 	}
 
+	addEnv(cipd.EnvConfigFile, c.ConfigFile)
 	addEnv(cipd.EnvCacheDir, c.CacheDir)
+	addEnv(cipd.EnvHTTPUserAgentPrefix, c.HTTPUserAgentPrefix)
 	addEnv(cipd.EnvMaxThreads, strconv.Itoa(c.MaxThreads))
 	addEnv(cipd.EnvParallelDownloads, strconv.Itoa(c.ParallelDownloads))
+	addEnv(cipd.EnvAdmissionPlugin, c.AdmissionPlugin)
 	addEnv(cipd.EnvCIPDServiceURL, c.ServiceURL)
 
 	return cipkg.Derivation{
 		Name:    c.Name,
-		Builder: CIPDEnsureBuilder,
+		Builder: CIPDExportBuilder,
 		Args:    []string{w.String()},
 		Env:     env,
 	}, cipkg.PackageMetadata{}, nil
 }
 
-func cipdEnsure(ctx context.Context, cmd *exec.Cmd) error {
+func cipdExport(ctx context.Context, cmd *exec.Cmd) error {
 	// cmd.Args = ["builtin:cipdEnsure", Ensure{...}]
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("invalid arguments: %v", cmd.Args)
 	}
 	out := GetEnv("out", cmd.Env)
 
-	ef, err := ensure.ParseFile(strings.NewReader(cmd.Args[1]))
-	if err != nil {
-		return fmt.Errorf("failed to parse argument: %#v: %w", cmd.Args[1], err)
+	export := exec.Command("cipd", "export", "--root", out, "--ensure-file", "-")
+	export.Env = cmd.Env
+	export.Dir = cmd.Dir
+	export.Stdin = strings.NewReader(cmd.Args[1])
+	export.Stdout = cmd.Stdout
+	export.Stderr = cmd.Stderr
+
+	if err := export.Run(); err != nil {
+		return fmt.Errorf("failed to export packages: %w", err)
 	}
 
-	ctxWithEnv := environ.New(cmd.Env).SetInCtx(ctx)
-	opts := cipd.ClientOptions{
-		Root:       out,
-		ServiceURL: ef.ServiceURL,
-		UserAgent:  fmt.Sprintf("cipkg, %s", cipd.UserAgent),
-	}
-	clt, err := cipd.NewClientFromEnv(ctxWithEnv, opts)
-	if err != nil {
-		return fmt.Errorf("failed to create cipd client: %w", err)
-	}
-	defer clt.Close(ctx)
-
-	resolver := cipd.Resolver{Client: clt}
-	resolved, err := resolver.Resolve(ctx, ef, template.Expander{})
-	if err != nil {
-		return fmt.Errorf("failed to resolve CIPD package: %w", err)
-	}
-
-	actionMap, err := clt.EnsurePackages(ctx, resolved.PackagesBySubdir, nil)
-	if err != nil {
-		return fmt.Errorf("failed to install CIPD packages: %w", err)
-	}
-	if len(actionMap) > 0 {
-		errorCount := 0
-		for root, action := range actionMap {
-			errorCount += len(action.Errors)
-			for _, err := range action.Errors {
-				fmt.Fprintf(cmd.Stderr, "cipd root %q action %q for pin %q encountered error: %s", root, err.Action, err.Pin, err.Error)
-			}
-		}
-		if errorCount > 0 {
-			return fmt.Errorf("cipd packages installation encountered %d error(s)", errorCount)
-		}
-	}
 	return nil
 }
 

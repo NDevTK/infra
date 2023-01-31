@@ -32,6 +32,19 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 		return nil, errors.Annotate(err, "failed to marshal vpython spec").Err()
 	}
 
+	env := []string{
+		"python_pep425tags={{.python_pep425tags}}",
+	}
+
+	// Add all environment variables started with "CIPD_" from host to Env.
+	// These are environment variables change cipd's behaviour and can be
+	// listed by `cipd help -advanced`.
+	for _, e := range os.Environ() {
+		if strings.HasPrefix(e, "CIPD_") {
+			env = append(env, e)
+		}
+	}
+
 	return &utilities.BaseGenerator{
 		Name:    "wheels",
 		Builder: "builtin:udf:ensureWheels",
@@ -39,9 +52,7 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: tags},
 		},
-		Env: []string{
-			"python_pep425tags={{.python_pep425tags}}",
-		},
+		Env: env,
 	}, nil
 }
 
@@ -96,16 +107,15 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	// Construct CIPD command and execute
-	// TODO: Replacing it with executing cipd binary directly
-	cipd := exec.CommandContext(ctx, builtins.CIPDEnsureBuilder, efs.String())
-	cipd.Env = cmd.Env
-	cipd.Stdin = cmd.Stdin
-	cipd.Stdout = cmd.Stdout
-	cipd.Stderr = cmd.Stderr
-	cipd.Dir = cmd.Dir
+	export := exec.Command("cipd", "export", "--root", builtins.GetEnv("out", cmd.Env), "--ensure-file", "-")
+	export.Env = cmd.Env
+	export.Dir = cmd.Dir
+	export.Stdin = strings.NewReader(efs.String())
+	export.Stdout = cmd.Stdout
+	export.Stderr = cmd.Stderr
 
-	if err := builtins.Execute(ctx, cipd); err != nil {
-		return err
+	if err := export.Run(); err != nil {
+		return errors.Annotate(err, "failed to export packages").Err()
 	}
 
 	// Generate requirements.txt

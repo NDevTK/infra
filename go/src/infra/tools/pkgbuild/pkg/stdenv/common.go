@@ -33,7 +33,7 @@ const (
 )
 
 var (
-	git = &builtins.CIPDEnsure{
+	git = &builtins.CIPDExport{
 		Name: "stdenv_git",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -43,7 +43,7 @@ var (
 			},
 		},
 	}
-	cpython = &builtins.CIPDEnsure{
+	cpython = &builtins.CIPDExport{
 		Name: "stdenv_python3",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
