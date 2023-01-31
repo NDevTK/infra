@@ -118,7 +118,6 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and reboot",
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Update FW with GBB 0x18 by servo and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
 				"Download and install OS in DEV mode using USB-drive",
 				"Reset power using servo if booted from USB",
@@ -1574,6 +1573,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "servo_download_image_to_usb",
 			ExecTimeout:            &durationpb.Duration{Seconds: 3000},
 			AllowFailAfterRecovery: true,
+			RunControl:             RunControl_RUN_ONCE,
 		},
 		"Download stable image to USB-key": {
 			Docs: []string{
@@ -1886,17 +1886,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 2400},
 			AllowFailAfterRecovery: true,
-		},
-		"Update FW with GBB 0x18 by servo and wait for ping": {
-			Docs: []string{
-				"Update firmware, switch to DEV mode by setting the GBB flags to 0x18, ",
-				"and wait for the system to be reachable through ping.",
-			},
-			Dependencies: []string{
-				"Update FW from fw-image by servo and set GBB to 0x18",
-				"Wait to be pingable (normal boot)",
-			},
-			ExecName: "sample_pass",
 		},
 		"Power cycle DUT by RPM and wait": {
 			Docs: []string{
