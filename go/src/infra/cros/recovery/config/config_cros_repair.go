@@ -1891,8 +1891,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Perform RPM cycle and wait to device to boot back.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
 				"has_rpm_info",
+			},
+			Dependencies: []string{
 				"rpm_power_cycle",
 				"Set servo PD to src",
 				"Wait to be pingable (normal boot)",
