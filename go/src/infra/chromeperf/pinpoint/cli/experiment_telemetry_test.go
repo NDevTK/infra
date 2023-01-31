@@ -134,8 +134,9 @@ func TestBatchKickoff(t *testing.T) {
 		var err error
 		runner.baseCommandRun.workDir, err = ioutil.TempDir("", "tmp")
 		runner.initialAttemptCount = int(testInitialAttemptCount)
+		runner.priority = int(testPriority)
 		So(err, ShouldBeNil)
-		jobs, err := runBatchJob(&runner, context.Background(), os.Stdout, c, "batch", batch_experiments, &experiment, testPriority)
+		jobs, err := runBatchJob(&runner, context.Background(), os.Stdout, c, "batch", batch_experiments, &experiment)
 		So(err, ShouldBeNil)
 
 		expected := []startedJob{

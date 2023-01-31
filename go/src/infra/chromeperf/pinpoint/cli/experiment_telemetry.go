@@ -36,14 +36,14 @@ import (
 // TODO(crbug/1230880): Increase concurrency after we solve the underlying Datastore issue.
 const MaxScheduleConcurrency = 1
 
-const defaultJobPriority = 0
-const batchJobPriority = 20 // higher number is lower priority
+const defaultJobPriority = 0 // higher number is lower priority
 
 type experimentTelemetryRun struct {
 	experimentBaseRun
 	benchmark, measurement string
 	stories, storyTags     []string
 	initialAttemptCount    int
+	priority               int
 }
 
 func cmdTelemetryExperiment(p Param) *subcommands.Command {
@@ -102,6 +102,10 @@ func (e *experimentTelemetryRun) RegisterFlags(p Param) {
 	e.Flags.IntVar(&e.initialAttemptCount, "attempts", 10, text.Doc(`
 		The number of A and B iterations to execute.
 	`))
+	e.Flags.IntVar(&e.priority, "priority", defaultJobPriority, text.Doc(`
+		The job priority in Pinpoint's queue.
+		Higher number is lower priority. Default priority is the highest.
+		For INTERNAL use only. (default 0)`))
 }
 
 // Generates the set of jobs to be run from a preset and CLI flags
@@ -137,13 +141,6 @@ func getTelemetryBatchExperiments(e *experimentTelemetryRun,
 	extra_args := e.Flags.Args()
 	applyFlags(e, &batch_experiments, extra_args)
 	return batch_experiments, nil
-}
-
-func getExperimentPriority(p preset) int32 {
-	if p.TelemetryBatchExperiment != nil {
-		return batchJobPriority
-	}
-	return defaultJobPriority // Use default priority for non-batch jobs
 }
 
 func applyFlags(e *experimentTelemetryRun,
@@ -261,7 +258,7 @@ func scheduleTelemetryJob(e *experimentTelemetryRun,
 	initial_attempt_count int,
 	experiment *proto.Experiment,
 	bot_cfg, benchmark, measurement, story string,
-	storyTags, extraArgs []string, priority int32) (*proto.Job, error) {
+	storyTags, extraArgs []string, priority int) (*proto.Job, error) {
 	js := &proto.JobSpec{
 		BatchId:        batch_id,
 		ComparisonMode: proto.JobSpec_PERFORMANCE,
@@ -274,7 +271,7 @@ func scheduleTelemetryJob(e *experimentTelemetryRun,
 			TelemetryBenchmark: newTelemetryBenchmark(
 				benchmark, measurement, story, storyTags, extraArgs),
 		},
-		Priority:            priority,
+		Priority:            int32(priority),
 		InitialAttemptCount: int32(initial_attempt_count),
 	}
 
@@ -303,8 +300,7 @@ func runBatchJob(e *experimentTelemetryRun,
 	c proto.PinpointClient,
 	batch_id string,
 	batch_experiments []telemetryBatchExperiment,
-	experiment *proto.Experiment,
-	priority int32) ([]*proto.Job, error) {
+	experiment *proto.Experiment) ([]*proto.Job, error) {
 
 	outpath := path.Join(e.baseCommandRun.workDir, batch_id+".txt")
 	outfile, err := os.Create(outpath)
@@ -328,7 +324,7 @@ func runBatchJob(e *experimentTelemetryRun,
 							c, batch_id, e.initialAttemptCount,
 							experiment, bot_config, config.Benchmark,
 							config.Measurement, story,
-							[]string{}, config.ExtraArgs, priority)
+							[]string{}, config.ExtraArgs, e.priority)
 						if err != nil {
 							return err
 						}
@@ -344,7 +340,7 @@ func runBatchJob(e *experimentTelemetryRun,
 							c, batch_id, e.initialAttemptCount,
 							experiment, bot_config, config.Benchmark,
 							config.Measurement, "",
-							config.StoryTags, config.ExtraArgs, priority)
+							config.StoryTags, config.ExtraArgs, e.priority)
 						if err != nil {
 							return err
 						}
@@ -386,6 +382,11 @@ func (e *experimentTelemetryRun) Run(ctx context.Context, a subcommands.Applicat
 		return fmt.Errorf("--base-commit and --exp-commit must be explicitly defined to be something other than HEAD when running a batch of jobs.")
 	}
 
+	// prevent users from setting higher priorities than max allowed
+	if e.priority < 0 {
+		e.priority = 0
+	}
+
 	batch_experiments, err := getTelemetryBatchExperiments(e, ctx, p)
 	if err != nil {
 		return err
@@ -400,7 +401,7 @@ func (e *experimentTelemetryRun) Run(ctx context.Context, a subcommands.Applicat
 	defer fmt.Fprintf(a.GetOut(), "Finished actions for batch: %s\n", batch_id)
 
 	jobs, err := runBatchJob(e, ctx, a.GetOut(), c, batch_id,
-		batch_experiments, experiment, getExperimentPriority(p))
+		batch_experiments, experiment)
 	if err != nil {
 		return errors.Annotate(err, "Failed to start all jobs: ").Err()
 	}
