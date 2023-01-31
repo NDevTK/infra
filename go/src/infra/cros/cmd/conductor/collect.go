@@ -80,12 +80,26 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 	previousBuild := map[string]string{}
 	// Will only keep the most recent retry.
 	returnSet := map[string]bool{}
-	for len(watchSet) > 0 {
-		c.LogOut("Sleeping for %d seconds", c.pollingIntervalSeconds)
-		time.Sleep(pollingDelay)
 
+	// We don't want to log "Waiting..."/"Sleeping..." messages over and over,
+	// so we'll go quiet after the first one and only continue logging if
+	// we've logged something else in the meantime.
+	quiet := false
+	justWentQuiet := false
+
+	for len(watchSet) > 0 {
 		sort.Strings(watchSet)
-		c.LogOut("Waiting for %s", strings.Join(watchSet, ","))
+		if justWentQuiet {
+			c.LogOut("(Omitting identical log messages)")
+		}
+		justWentQuiet = false
+		if !quiet {
+			c.LogOut("Waiting for %s.", strings.Join(watchSet, ","))
+			c.LogOut("Sleeping for %d seconds", c.pollingIntervalSeconds)
+			quiet = true
+			justWentQuiet = true
+		}
+		time.Sleep(pollingDelay)
 
 		ch := make(chan []*bbpb.Build, 1)
 		err := shared.DoWithRetry(ctx, bbRetryOpts, func() error {
@@ -118,6 +132,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 			if (int(build.GetStatus()) & int(bbpb.Status_ENDED_MASK)) == 0 {
 				newWatchSet = append(newWatchSet, bbid)
 			} else {
+				quiet = false
 				c.LogOut("Build %d finished with status %s", build.GetId(), build.GetStatus())
 				returnSet[bbid] = true
 				previousBBID, isRetry := previousBuild[bbid]
