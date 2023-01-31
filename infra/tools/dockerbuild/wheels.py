@@ -570,7 +570,7 @@ SPECS.update({
             'ninja',
             '1.10.0.post2',
             packaged=(),
-            only_plat=['manylinux-x64-py3.8', 'manylinux-x64-py3.11'],
+            only_plat=['manylinux-x64-py3.8'],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -597,6 +597,7 @@ SPECS.update({
             },
             skip_plat=[
                 'linux-armv6-py3.8',
+                'manylinux-x64-py3.11',  # fails with cmake error
             ],
             pyversions=['py3'],
         ),
