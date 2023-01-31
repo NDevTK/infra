@@ -7,24 +7,33 @@ import (
 	"infra/cros/internal/git"
 	"infra/cros/internal/testplan"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestFindRelevantPlans(t *testing.T) {
 	ctx := context.Background()
+
+	tz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	changeRevs := []*gerrit.ChangeRev{
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
 				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 123,
 			},
-			Project: "chromium/testprojectA",
-			Branch:  "main",
-			Ref:     "refs/changes/23/123/5",
-			Files:   []string{"go/src/infra/cros/internal/testplan/testdata/good_dirmd/DIR_METADATA"},
+			Project:       "chromium/testprojectA",
+			Branch:        "main",
+			Ref:           "refs/changes/23/123/5",
+			Files:         []string{"go/src/infra/cros/internal/testplan/testdata/good_dirmd/DIR_METADATA"},
+			ChangeCreated: timestamppb.New(time.Date(2022, time.December, 20, 9, 42, 30, 0, tz)),
 		},
 	}
 
@@ -36,6 +45,7 @@ func TestFindRelevantPlans(t *testing.T) {
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
 					"--no-tags", "--branch", "main",
+					"--shallow-since", "Dec 10 2022",
 				},
 			},
 			{
@@ -43,6 +53,7 @@ func TestFindRelevantPlans(t *testing.T) {
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
 					"--no-tags",
+					"--shallow-since", "Dec 10 2022",
 				},
 			},
 			{
@@ -59,7 +70,7 @@ func TestFindRelevantPlans(t *testing.T) {
 	}
 
 	relevantPlans, err := testplan.FindRelevantPlans(
-		ctx, changeRevs, workdirFn,
+		ctx, changeRevs, workdirFn, time.Hour*24*10,
 	)
 	if err != nil {
 		t.Fatalf("testplan.FindRelevantPlans(%q) failed: %s", changeRevs, err)

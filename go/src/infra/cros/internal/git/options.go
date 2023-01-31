@@ -88,6 +88,24 @@ func (o DepthOpt) fetchOptArgs() []string { return o.args() }
 
 func (o DepthOpt) cloneOptArgs() []string { return o.args() }
 
+type ShallowSinceOpt struct {
+	val string
+}
+
+// ShallowSince creates a shallow clone with a history after the specified time.
+func ShallowSince(val string) *ShallowSinceOpt {
+	return &ShallowSinceOpt{val: val}
+}
+
+func (o ShallowSinceOpt) args() []string {
+	return []string{"--shallow-since", fmt.Sprint(o.val)}
+
+}
+
+func (o ShallowSinceOpt) fetchOptArgs() []string { return o.args() }
+
+func (o ShallowSinceOpt) cloneOptArgs() []string { return o.args() }
+
 type NoTagsOpt struct {
 	val bool
 }

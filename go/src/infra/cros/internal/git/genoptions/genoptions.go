@@ -101,6 +101,12 @@ var options = []Option{
 		Doc:  `Depth creates a shallow clone, and limits fetches in a repository created by a shallow clone.`,
 	},
 	{
+		Name: "shallow-since",
+		Type: reflect.String,
+		Cmds: []*Command{fetchCmd, cloneCmd},
+		Doc:  `ShallowSince creates a shallow clone with a history after the specified time.`,
+	},
+	{
 		Name: "no-tags",
 		Type: reflect.Bool,
 		Cmds: []*Command{fetchCmd, cloneCmd},

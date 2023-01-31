@@ -6,6 +6,7 @@ import (
 	"path"
 	"sort"
 	"strings"
+	"time"
 
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/git"
@@ -14,6 +15,11 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
+)
+
+const (
+	// gitDateLayout is a layout string for git's `--shallow-since` argument.
+	gitDateLayout = "Jan 02 2006"
 )
 
 // MappingInfo groups a computed Mapping and affected files for a set
@@ -43,11 +49,36 @@ func changeRevsContainDirmd(changeRevs []*gerrit.ChangeRev) bool {
 	return false
 }
 
+// computeShallowSince finds the earliest creation time in changeRevs and returns
+// a time buffer before this earliest creation time. This is meant to be used
+// as the `--shallow-since` argument to git clone or fetch.
+func computeShallowSince(ctx context.Context, changeRevs []*gerrit.ChangeRev, buffer time.Duration) time.Time {
+	minTime := changeRevs[0].ChangeCreated.AsTime()
+	for _, changeRev := range changeRevs {
+		if changeRev.ChangeCreated.AsTime().Before(minTime) {
+			minTime = changeRev.ChangeCreated.AsTime()
+		}
+	}
+
+	logging.Debugf(ctx, "found change rev with min time: %q", &minTime)
+
+	shallowSince := minTime.Add(-buffer).Truncate(time.Hour * 24)
+
+	logging.Debugf(ctx, "after subtracting buffer and truncating, using shallow since: %q", shallowSince)
+
+	return shallowSince
+}
+
 // mergeChangeRevs merges changeRevs to dir.
 //
 // changeRevs must all have the same project and branch. For each changeRev, if
 // `git merge` fails `git cherry-pick` will be attempted as a fallback.
-func mergeChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.ChangeRev) error {
+func mergeChangeRevs(
+	ctx context.Context,
+	dir string,
+	changeRevs []*gerrit.ChangeRev,
+	cloneDepth time.Duration,
+) error {
 	for i, changeRev := range changeRevs {
 		if i > 0 && (changeRev.Project != changeRevs[0].Project || changeRev.Branch != changeRevs[0].Branch) {
 			// Change revs are sorted by project and branch in the callers.
@@ -70,9 +101,10 @@ func mergeChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.Chang
 		return git.Clone(remote, dir, git.NoTags(), git.Branch(branch), git.Depth(1))
 	}
 
-	logging.Debugf(ctx, "change revs for repo %q, branch %q do affect DIR_METADATA files, cloning full repo", remote, branch)
+	shallowSinceTime := computeShallowSince(ctx, changeRevs, cloneDepth)
+	logging.Debugf(ctx, "change revs for repo %q, branch %q do affect DIR_METADATA files, cloning with shallow-since %q", remote, branch, shallowSinceTime)
 
-	if err := git.Clone(remote, dir, git.NoTags(), git.Branch(branch)); err != nil {
+	if err := git.Clone(remote, dir, git.NoTags(), git.Branch(branch), git.ShallowSince(shallowSinceTime.Format(gitDateLayout))); err != nil {
 		return err
 	}
 
@@ -82,7 +114,7 @@ func mergeChangeRevs(ctx context.Context, dir string, changeRevs []*gerrit.Chang
 		// be kept consistent with how CQ builders apply changes.
 		logging.Debugf(ctx, "fetching ref %q from repo %q", changeRev.Ref, remote)
 
-		if err := git.Fetch(dir, remote, changeRev.Ref, git.NoTags()); err != nil {
+		if err := git.Fetch(dir, remote, changeRev.Ref, git.NoTags(), git.ShallowSince(shallowSinceTime.Format(gitDateLayout))); err != nil {
 			return err
 		}
 
@@ -114,6 +146,7 @@ func computeMappingForChangeRevs(
 	ctx context.Context,
 	changeRevs []*gerrit.ChangeRev,
 	workdirFn WorkdirCreation,
+	cloneDepth time.Duration,
 ) (mapping *dirmd.Mapping, err error) {
 	workdir, cleanup, err := workdirFn()
 	if err != nil {
@@ -126,7 +159,7 @@ func computeMappingForChangeRevs(
 		}
 	}()
 
-	if err = mergeChangeRevs(ctx, workdir, changeRevs); err != nil {
+	if err = mergeChangeRevs(ctx, workdir, changeRevs, cloneDepth); err != nil {
 		return nil, err
 	}
 
@@ -148,6 +181,7 @@ func ProjectInfos(
 	ctx context.Context,
 	changeRevs []*gerrit.ChangeRev,
 	workdirFn WorkdirCreation,
+	cloneDepth time.Duration,
 ) ([]*MappingInfo, error) {
 	projectToBranchToChangeRevs := make(map[string]map[string][]*gerrit.ChangeRev)
 	projectToBranchToAffectedFiles := make(map[string]map[string]stringset.Set)
@@ -210,7 +244,7 @@ func ProjectInfos(
 
 			changeRevsForBranch := branchToChangeRevs[branch]
 
-			mapping, err := computeMappingForChangeRevs(ctx, changeRevsForBranch, workdirFn)
+			mapping, err := computeMappingForChangeRevs(ctx, changeRevsForBranch, workdirFn, cloneDepth)
 			if err != nil {
 				return nil, err
 			}

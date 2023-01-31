@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
@@ -125,6 +126,18 @@ func cmdRelevantPlans(authOpts auth.Options) *subcommands.Command {
 			Example: https://chromium-review.googlesource.com/c/chromiumos/platform2/+/123456
 		`))
 			r.Flags.StringVar(&r.out, "out", "", "Path to the output test plan")
+			r.Flags.DurationVar(&r.cloneDepth, "clonedepth", time.Hour*24*180, text.Doc(`
+			When this command clones and fetches CLs to compute DIR_METADATA
+			files, it will compute the earliest creation time of a group of CLs in
+			a repo, and then clone up to a depth of this earliest creation time
+			+ this duration.
+
+			For example, if the earliest CL in a repo was created on Dec 20 and
+			this argument is 10 days, the clones and fetches will be up to Dec 10.
+
+			A larger duration means there is less chance of a false merge conflict,
+			but the clone and fetch times will be longer. Defaults to 180d.
+			`))
 
 			return r
 		},
@@ -133,8 +146,9 @@ func cmdRelevantPlans(authOpts auth.Options) *subcommands.Command {
 
 type relevantPlansRun struct {
 	baseTestPlanRun
-	cls []string
-	out string
+	cls        []string
+	out        string
+	cloneDepth time.Duration
 }
 
 func (r *relevantPlansRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -246,7 +260,7 @@ func (r *relevantPlansRun) run(ctx context.Context) error {
 		return workdir, func() error { return os.RemoveAll((workdir)) }, nil
 	}
 
-	plans, err := testplan.FindRelevantPlans(ctx, changeRevs, workdirFn)
+	plans, err := testplan.FindRelevantPlans(ctx, changeRevs, workdirFn, r.cloneDepth)
 	if err != nil {
 		return err
 	}

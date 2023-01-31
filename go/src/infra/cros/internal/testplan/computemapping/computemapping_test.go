@@ -6,9 +6,11 @@ import (
 	"reflect"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
@@ -24,6 +26,12 @@ import (
 
 func TestComputeProjectMappingInfos(t *testing.T) {
 	ctx := context.Background()
+
+	tz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// Two changes from testprojectA on branch "main", one from testprojectA on
 	// branch "otherbranch", one from testprojectB on branch "main".
 	changeRevs := []*gerrit.ChangeRev{
@@ -32,40 +40,44 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 456,
 			},
-			Project: "chromium/testprojectA",
-			Branch:  "main",
-			Ref:     "refs/changes/45/456/2",
-			Files:   []string{"DIR_METADATA"},
+			Project:       "chromium/testprojectA",
+			Branch:        "main",
+			Ref:           "refs/changes/45/456/2",
+			Files:         []string{"DIR_METADATA"},
+			ChangeCreated: timestamppb.New(time.Date(2022, time.December, 20, 9, 42, 30, 0, tz)),
 		},
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
 				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 789,
 			},
-			Project: "chromium/testprojectB",
-			Branch:  "main",
-			Ref:     "refs/changes/78/789/5",
-			Files:   []string{"test.c", "test.h", "a/b/DIR_METADATA"},
+			Project:       "chromium/testprojectB",
+			Branch:        "main",
+			Ref:           "refs/changes/78/789/5",
+			Files:         []string{"test.c", "test.h", "a/b/DIR_METADATA"},
+			ChangeCreated: timestamppb.New(time.Date(2022, time.December, 15, 12, 23, 15, 0, tz)),
 		},
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
 				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 123,
 			},
-			Project: "chromium/testprojectA",
-			Branch:  "main",
-			Ref:     "refs/changes/23/123/5",
-			Files:   []string{"a/b/test1.txt", "a/b/test2.txt"},
+			Project:       "chromium/testprojectA",
+			Branch:        "main",
+			Ref:           "refs/changes/23/123/5",
+			Files:         []string{"a/b/test1.txt", "a/b/test2.txt"},
+			ChangeCreated: timestamppb.New(time.Date(2022, time.December, 21, 9, 42, 30, 0, tz)),
 		},
 		{
 			ChangeRevKey: gerrit.ChangeRevKey{
 				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 1011,
 			},
-			Project: "chromium/testprojectA",
-			Branch:  "otherbranch",
-			Ref:     "refs/changes/10/1011/1",
-			Files:   []string{"branchfile.txt"},
+			Project:       "chromium/testprojectA",
+			Branch:        "otherbranch",
+			Ref:           "refs/changes/10/1011/1",
+			Files:         []string{"branchfile.txt"},
+			ChangeCreated: timestamppb.New(time.Date(2022, time.December, 19, 9, 42, 30, 0, tz)),
 		},
 	}
 
@@ -79,6 +91,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
 					"--no-tags", "--branch", "main",
+					"--shallow-since", "Dec 10 2022",
 				},
 			},
 			{
@@ -86,6 +99,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/45/456/2",
 					"--no-tags",
+					"--shallow-since", "Dec 10 2022",
 				},
 			},
 			{
@@ -96,6 +110,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
 					"--no-tags",
+					"--shallow-since", "Dec 10 2022",
 				},
 			},
 			{
@@ -113,6 +128,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectB", "good_dirmd",
 					"--no-tags", "--branch", "main",
+					"--shallow-since", "Dec 05 2022",
 				},
 			},
 			{
@@ -120,6 +136,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectB", "refs/changes/78/789/5",
 					"--no-tags",
+					"--shallow-since", "Dec 05 2022",
 				},
 			},
 			{
@@ -135,7 +152,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 		return "../testdata/good_dirmd", cleanup, nil
 	}
 
-	projectMappingInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn)
+	projectMappingInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn, time.Hour*24*10)
 	if err != nil {
 		t.Fatalf("computeProjectMappingInfos(%v) failed: %s", changeRevs, err)
 	}
@@ -199,6 +216,7 @@ func TestComputeProjectMappingInfos(t *testing.T) {
 
 func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
 	ctx := context.Background()
+
 	// One change from testprojectA.
 	changeRevs := []*gerrit.ChangeRev{
 		{
@@ -233,7 +251,7 @@ func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
 		return "../testdata/bad_dirmd", cleanup, nil
 	}
 
-	_, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn)
+	_, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn, time.Hour*24*10)
 	if err == nil {
 		t.Fatalf("expected error from computeProjectMappingInfos(%v)", changeRevs)
 	}
@@ -243,6 +261,12 @@ func TestComputeProjectMappingInfosBadDirmd(t *testing.T) {
 
 func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 	ctx := context.Background()
+
+	tz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// One change from testprojectA.
 	changeRevs := []*gerrit.ChangeRev{
 		{
@@ -250,10 +274,11 @@ func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 				Host:      "chromium-review.googlesource.com",
 				ChangeNum: 123,
 			},
-			Project: "chromium/testprojectA",
-			Branch:  "main",
-			Ref:     "refs/changes/23/123/5",
-			Files:   []string{"a/b/test1.txt", "a/b/test2.txt", "DIR_METADATA"},
+			Project:       "chromium/testprojectA",
+			Branch:        "main",
+			Ref:           "refs/changes/23/123/5",
+			Files:         []string{"a/b/test1.txt", "a/b/test2.txt", "DIR_METADATA"},
+			ChangeCreated: timestamppb.New(time.Date(2022, time.December, 20, 9, 42, 30, 0, tz)),
 		},
 	}
 
@@ -265,6 +290,7 @@ func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 					"git", "clone",
 					"https://chromium.googlesource.com/chromium/testprojectA", "good_dirmd",
 					"--no-tags", "--branch", "main",
+					"--shallow-since", "Dec 10 2022",
 				},
 			},
 			{
@@ -272,7 +298,7 @@ func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 					"git", "fetch",
 					"https://chromium.googlesource.com/chromium/testprojectA", "refs/changes/23/123/5",
 					"--no-tags",
-				},
+					"--shallow-since", "Dec 10 2022"},
 			},
 			{
 				ExpectedCmd: []string{"git", "merge", "FETCH_HEAD"},
@@ -295,7 +321,7 @@ func TestComputeMergeFailsCherryPickSucceeds(t *testing.T) {
 		return "../testdata/good_dirmd", cleanup, nil
 	}
 
-	projectMappingInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn)
+	projectMappingInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn, time.Hour*24*10)
 	if err != nil {
 		t.Fatalf("computeProjectMappingInfos(%v) failed: %s", changeRevs, err)
 	}

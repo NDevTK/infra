@@ -3,6 +3,7 @@ package testplan
 import (
 	"context"
 	"errors"
+	"time"
 
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/testplan/computemapping"
@@ -16,6 +17,7 @@ func FindRelevantPlans(
 	ctx context.Context,
 	changeRevs []*gerrit.ChangeRev,
 	workdirFn computemapping.WorkdirCreation,
+	cloneDepth time.Duration,
 ) ([]*plan.SourceTestPlan, error) {
 	if len(changeRevs) == 0 {
 		return nil, errors.New("changeRevs must be non-empty")
@@ -23,7 +25,7 @@ func FindRelevantPlans(
 
 	logging.Infof(ctx, "calculating relevant SourceTestPlans based on ChangeRevs")
 
-	projectInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn)
+	projectInfos, err := computemapping.ProjectInfos(ctx, changeRevs, workdirFn, cloneDepth)
 	if err != nil {
 		return nil, err
 	}

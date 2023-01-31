@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // This files contains legacy functions that do not use a client.
@@ -42,8 +43,9 @@ type ChangeRev struct {
 	// Ref that this change targets, e.g.: "refs/heads/main"
 	Branch string
 	// The Git reference for the patch set, e.g. "refs/changes/23/123/5"
-	Ref   string
-	Files []string
+	Ref           string
+	Files         []string
+	ChangeCreated *timestamppb.Timestamp
 }
 
 var (
@@ -155,10 +157,11 @@ func GetChangeRev(ctx context.Context, authedClient *http.Client, changeNum int6
 					ChangeNum: change.Number,
 					Revision:  v.Number,
 				},
-				Branch:  change.Ref,
-				Ref:     v.Ref,
-				Project: change.Project,
-				Files:   getKeys(files),
+				Branch:        change.Ref,
+				Ref:           v.Ref,
+				Project:       change.Project,
+				Files:         getKeys(files),
+				ChangeCreated: change.Created,
 			}, nil
 		}
 	}
