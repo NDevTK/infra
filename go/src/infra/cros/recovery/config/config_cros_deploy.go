@@ -121,7 +121,6 @@ func deployActions() map[string]*Action {
 				"Try to update FW from firmware image with factory mode",
 				"Try to update FW from OS image with factory mode",
 				"Cold reset DUT by servo",
-				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:   "sample_pass",
@@ -140,7 +139,6 @@ func deployActions() map[string]*Action {
 				"Try to update FW from firmware image with factory mode",
 				"Try to update FW from OS image with factory mode",
 				"Simple reboot",
-				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:   "sample_pass",
@@ -163,10 +161,10 @@ func deployActions() map[string]*Action {
 				"updater_timeout:600",
 				"update_ec_attempt_count:1",
 				"update_ap_attempt_count:1",
-				"no_strict_update:true",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 7200},
-			RunControl:  RunControl_ALWAYS_RUN,
+			ExecTimeout:            &durationpb.Duration{Seconds: 7200},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"Try to update FW from OS image with factory mode": {
 			Docs: []string{
@@ -184,9 +182,9 @@ func deployActions() map[string]*Action {
 				"mode:factory",
 				"force:true",
 				"updater_timeout:600",
-				"no_strict_update:true",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"Need to run deployment checks": {
 			Docs: []string{

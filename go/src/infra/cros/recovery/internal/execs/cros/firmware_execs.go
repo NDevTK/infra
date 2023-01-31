@@ -125,23 +125,7 @@ func runFirmwareUpdaterExec(ctx context.Context, info *execs.ExecInfo) error {
 	logger.Debugf("Run firmware update: request to run with %q mode.", req.Mode)
 	if err := firmware.RunFirmwareUpdater(ctx, req, run, logger); err != nil {
 		logger.Debugf("Run firmware update: fail on run updater. Error: %s", err)
-		if am.AsBool(ctx, "no_strict_update", false) {
-			logger.Debugf("Run firmware update: continue as allowed updater to fail.")
-		} else {
-			return errors.Annotate(err, "run firmware update").Err()
-		}
-	}
-	switch am.AsString(ctx, "reboot", "") {
-	case "by_servo":
-		logger.Debugf("Start DUT reset by servo.")
-		if err := info.NewServod().Set(ctx, "power_state", "reset"); err != nil {
-			return errors.Annotate(err, "run firmware update: reboot by servo").Err()
-		}
-	case "by_host":
-		logger.Debugf("Start DUT reset by host.")
-		if _, err := run(ctx, time.Minute, "reboot && exit"); err != nil {
-			logger.Debugf("fail to initiate reboot (not critical): %v", err)
-		}
+		return errors.Annotate(err, "run firmware update").Err()
 	}
 	return nil
 }
@@ -210,11 +194,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 	logger := info.NewLogger()
 	if err := firmware.InstallFirmwareImage(ctx, req, logger); err != nil {
 		logger.Debugf("Update firmware image: failed to run updater. Error: %s", err)
-		if actionArgs.AsBool(ctx, "no_strict_update", false) {
-			logger.Debugf("Update firmware image: continue as allowed updater return non-zero exit code.")
-		} else {
-			return errors.Annotate(err, "update firmware image").Err()
-		}
+		return errors.Annotate(err, "update firmware image").Err()
 	}
 	return nil
 }
