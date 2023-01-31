@@ -215,8 +215,61 @@ func labelAlreadySatisfied(desired, found string) bool {
 	return desired == "" || desired == found
 }
 
+type FirmwareProvision int
+
+const (
+	FW_NONE FirmwareProvision = iota
+	FW_RO_ONLY
+	FW_RW_ONLY
+	FW_RO_RW
+)
+
+// whichFirmwareToProvision helps determine which of the combination to apply when provisioning firmware:
+func whichFirmwareToProvision(roDesired, rwDesired, roFound, rwFound string) FirmwareProvision {
+	ro := labelAlreadySatisfied(roDesired, roFound)
+	rw := labelAlreadySatisfied(rwDesired, rwFound)
+
+	// Both satisfied, there is nothing to do.
+	if ro && rw {
+		return FW_NONE
+	}
+
+	// Flip flop to provision other firmware.
+	if ro {
+		return FW_RW_ONLY
+	}
+	if rw {
+		return FW_RO_ONLY
+	}
+
+	// Special case to handle so we don't need to run `rw_only` control firmware provisioning.
+	if roDesired == rwDesired {
+		return FW_RO_ONLY
+	}
+	return FW_RO_RW
+}
+
+func whichFirmwareLabelsToProvision(roDesired, rwDesired, roFound, rwFound string) []string {
+	switch w := whichFirmwareToProvision(roDesired, rwDesired, roFound, rwFound); w {
+	case FW_RO_ONLY:
+		return []string{
+			fmt.Sprintf("%s:%s", roFirmwareBuildKey, roDesired),
+		}
+	case FW_RW_ONLY:
+		return []string{
+			fmt.Sprintf("%s:%s", rwFirmwareBuildKey, rwDesired),
+		}
+	case FW_RO_RW:
+		return []string{
+			fmt.Sprintf("%s:%s", roFirmwareBuildKey, roDesired),
+			fmt.Sprintf("%s:%s", rwFirmwareBuildKey, rwDesired),
+		}
+	default:
+		return []string{}
+	}
+}
+
 func provisionFirmwareLegacy(ctx context.Context, r *phosphorus.PrejobRequest) (*phosphorus.PrejobResponse, error) {
-	labels := []string{}
 	bc := botCache(r)
 
 	roDesired := roFirmwareBuildDependencyOrEmpty(r.SoftwareDependencies)
@@ -224,19 +277,14 @@ func provisionFirmwareLegacy(ctx context.Context, r *phosphorus.PrejobRequest) (
 	if err != nil {
 		return nil, errors.Annotate(err, "provision firmware").Err()
 	}
-	if !labelAlreadySatisfied(roDesired, roFound) {
-		labels = append(labels, fmt.Sprintf("%s:%s", roFirmwareBuildKey, roDesired))
-	}
 
 	rwDesired := rwFirmwareBuildDependencyOrEmpty(r.SoftwareDependencies)
 	rwFound, err := bc.LoadProvisionableLabel(rwFirmwareBuildKey)
 	if err != nil {
 		return nil, errors.Annotate(err, "provision firmware").Err()
 	}
-	if !labelAlreadySatisfied(rwDesired, rwFound) {
-		labels = append(labels, fmt.Sprintf("%s:%s", rwFirmwareBuildKey, rwDesired))
-	}
 
+	labels := whichFirmwareLabelsToProvision(roDesired, rwDesired, roFound, rwFound)
 	if len(labels) == 0 {
 		// Nothing to be done, so succeed trivially.
 		return &phosphorus.PrejobResponse{State: phosphorus.PrejobResponse_SUCCEEDED}, nil
@@ -265,7 +313,6 @@ func provisionFirmwareLegacy(ctx context.Context, r *phosphorus.PrejobRequest) (
 		}
 	}
 	return resp, err
-
 }
 
 func toPrejobResponse(r *atutil.Result) *phosphorus.PrejobResponse {
