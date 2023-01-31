@@ -228,7 +228,7 @@ func TestSplitTimeRange(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		tt := tt
+		i, tt := i, tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
