@@ -15,7 +15,7 @@ export LDFLAGS="$LDFLAGS -L$DEPS/lib"
 export CFLAGS="$CFLAGS -I$DEPS/include"
 # fix for pkg.m4 (probably a bug as it should check the default locations)
 export ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I/usr/share/aclocal"
-./bootstrap
+./bootstrap --gnulib-srcdir=./gnulib
 # disable device mapper as we don't plan on using this on physical hardware.
 # disable readline as we don't need it and it requires extra dependency.
 ./configure --prefix=${PREFIX} \
