@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 'use strict';
 
 class SomAlertItem extends Polymer.mixinBehaviors(
@@ -371,7 +375,7 @@ class SomAlertItem extends Polymer.mixinBehaviors(
   }
 
   _toggle(evt) {
-    let path = evt.path;
+    let path = evt.composedPath();
     for (let i = 0; i < path.length; i++) {
       let itm = path[i];
       if (itm.classList && itm.classList.contains('no-toggle')) {
