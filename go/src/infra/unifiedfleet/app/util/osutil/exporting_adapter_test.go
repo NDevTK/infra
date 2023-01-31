@@ -273,6 +273,20 @@ var labstationLSE = ufspb.MachineLSE{
 	},
 }
 
+var devboardMachine = ufspb.Machine{
+	Name:         "test_devboard",
+	SerialNumber: "devboard_serial",
+	Device: &ufspb.Machine_Devboard{
+		Devboard: &ufspb.Devboard{
+			Board: &ufspb.Devboard_Andreiboard{
+				Andreiboard: &ufspb.Andreiboard{
+					UltradebugSerial: "test_serial",
+				},
+			},
+		},
+	},
+}
+
 var devboardLSE = ufspb.MachineLSE{
 	Name:     "test_devboard_host",
 	Hostname: "test_devboard_host",
@@ -832,7 +846,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		Convey("Pool is set", func() {
 			extDevboard := ufspb.ChromeOSDeviceData{
 				LabConfig:           &devboardLSE,
-				Machine:             &labstationMachine,
+				Machine:             &devboardMachine,
 				DeviceConfig:        &labstationDevConfig,
 				ManufacturingConfig: &labstationManufacturingconfig,
 				DutState:            nil,
@@ -840,6 +854,8 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			d, err := AdaptToV1DutSpec(&extDevboard)
 			So(err, ShouldBeNil)
 			So(d.GetCommon().GetLabels().GetSelfServePools(), ShouldResemble, []string{"devboard_main"})
+			So(d.GetCommon().GetLabels().GetBoard(), ShouldEqual, "andreiboard")
+			So(d.GetCommon().GetLabels().GetModel(), ShouldEqual, "andreiboard")
 		})
 
 	})

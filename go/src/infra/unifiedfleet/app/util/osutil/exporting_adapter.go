@@ -727,21 +727,26 @@ func adaptV2DevboardToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.Devi
 	attrs.append("serial_number", sn)
 
 	var devboardType inventory.SchedulableLabels_DevboardType
+	var b string
 	if machine.GetDevboard() != nil {
 		if andreiBoard := machine.GetDevboard().GetAndreiboard(); andreiBoard != nil {
 			attrs.append("devboard_type", "andreiboard")
 			attrs.append("ultradebug_serial", andreiBoard.GetUltradebugSerial())
 			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_ANDREIBOARD
+			b = "andreiboard"
 		}
 		if icetower := machine.GetDevboard().GetIcetower(); icetower != nil {
 			attrs.append("devboard_type", "icetower")
 			attrs.append("fingerprint_id", icetower.GetFingerprintId())
 			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_ICETOWER
+			b = "icetower"
 		}
 	}
-
 	labels := &inventory.SchedulableLabels{
 		DevboardType: &devboardType,
+		Board:        &b,
+		// Model is the same as board for devboards
+		Model: &b,
 	}
 	setDutPools(labels, devboard.GetPools())
 	setDutState(labels, data.GetDutState())
