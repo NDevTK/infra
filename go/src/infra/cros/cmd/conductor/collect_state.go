@@ -267,6 +267,14 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 				return false
 			}
 		}
+		if rule.rule.GetBuildRuntimeCutoff() > 0 {
+			buildRuntime := build.GetEndTime().Seconds - build.GetStartTime().Seconds
+			if buildRuntime > int64(rule.rule.GetBuildRuntimeCutoff()) {
+				c.LogOut("Rule %d will only retry %d seconds into a build (we're at %d), not retrying.", i, rule.rule.GetBuildRuntimeCutoff(), buildRuntime)
+				return false
+			}
+		}
+
 		if !rule.rule.GetInsufficient() {
 			foundSufficient = true
 		}

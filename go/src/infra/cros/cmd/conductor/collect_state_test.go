@@ -5,6 +5,7 @@ package main
 
 import (
 	"testing"
+	"time"
 
 	"infra/cros/internal/assert"
 	bb "infra/cros/internal/buildbucket"
@@ -12,6 +13,7 @@ import (
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestCollectState_MaxRetries(t *testing.T) {
@@ -425,4 +427,33 @@ func TestCollectState_Insufficient(t *testing.T) {
 		retries += 1
 	}
 	assert.IntsEqual(t, retries, 3)
+}
+
+func TestCollectState_BuildRuntimeCutoff(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					// 30 minutes.
+					BuildRuntimeCutoff: 30 * 60,
+				},
+			},
+		},
+		initialBuildCount: 1})
+	startTime := time.Now()
+	endTime := startTime.Add(40 * time.Minute)
+	build := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		StartTime: timestamppb.New(startTime),
+		EndTime:   timestamppb.New(endTime),
+	}
+	assert.Assert(t, !collectState.canRetry(build))
 }
