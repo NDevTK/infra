@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmd/shivas/utils/rename"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -16,12 +17,10 @@ import (
 )
 
 // RenameLabstationCmd rename labstation by given name.
-var RenameLabstationCmd = rename.GenGenericRenameCmd("labstation", renameLabstation, printLabstation)
+var RenameLabstationCmd = rename.GenGenericRenameCmd("labstation", renameLabstation, printLabstation, site.OSLikeNamespaces, ufsUtil.OSNamespace)
 
 // renameLabstation calls the RPC that renames the given dut
 func renameLabstation(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {
-	// Set os namespace
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
 	// Change  this  API if you want to reuse the command somewhere else.
 	return ic.RenameMachineLSE(ctx, &ufsAPI.RenameMachineLSERequest{
 		Name:    ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),
