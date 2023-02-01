@@ -139,6 +139,17 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 		return CmdError
 	}
 
+	// TODO(b/266850767): Remove in 2024.
+	// crrev.com/c/4205799 updated `cros try` to track a CIPD ref instead of a
+	// speific CIPD version, allowing us to push updates to users. We want to
+	// invalidate try builds that (roughly) predated this change.
+	// This can be removed after it has baked for a sufficiently long period of
+	// time (several quarters).
+	if err := bb.SetProperty(propsStruct, "$chromeos/cros_try.supported_build", true); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+
 	if len(r.patches) > 0 {
 		// If gerrit patches are set, the orchestrator by default will try to do
 		// build planning, which is meaningless for release builds and drops

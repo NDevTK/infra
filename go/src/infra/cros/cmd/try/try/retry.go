@@ -433,6 +433,17 @@ func (r *retryRun) innerRun() (string, int) {
 	}
 	propsStruct := buildData.GetInput().GetProperties()
 
+	// TODO(b/266850767): Remove in 2024.
+	// crrev.com/c/4205799 updated `cros try` to track a CIPD ref instead of a
+	// speific CIPD version, allowing us to push updates to users. We want to
+	// invalidate try builds that (roughly) predated this change.
+	// This can be removed after it has baked for a sufficiently long period of
+	// time (several quarters).
+	if err := bb.SetProperty(propsStruct, "$chromeos/cros_try.supported_build", true); err != nil {
+		r.LogErr(err.Error())
+		return "", CmdError
+	}
+
 	recipe := propsStruct.AsMap()["recipe"].(string)
 	if recipe == "paygen_orchestrator" || recipe == "paygen" {
 		r.LogOut("Warning: paygen-orchestrator/paygen builds do not communicate directly with GoldenEye. " +

@@ -221,6 +221,9 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	zorkExecSteps := builderExecSteps.GetFields()["staging-zork-release-main"].GetStructValue().GetFields()["steps"].GetListValue().AsSlice()
 	assert.IntsEqual(t, len(zorkExecSteps), 1)
 	assert.IntsEqual(t, int(zorkExecSteps[0].(float64)), int(pb.RetryStep_DEBUG_SYMBOLS.Number()))
+
+	supportedBuild, exists := properties.GetFields()["$chromeos/cros_try"].GetStructValue().GetFields()["supported_build"]
+	assert.Assert(t, exists && supportedBuild.GetBoolValue())
 }
 
 func TestRetry_dryRun(t *testing.T) {
@@ -317,6 +320,9 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 	execSteps := checkpointProps.GetFields()["exec_steps"].GetStructValue().GetFields()["steps"].GetListValue().AsSlice()
 	assert.IntsEqual(t, len(execSteps), 1)
 	assert.IntsEqual(t, int(execSteps[0].(float64)), int(tc.expectedExecStep.Number()))
+
+	supportedBuild, exists := properties.GetFields()["$chromeos/cros_try"].GetStructValue().GetFields()["supported_build"]
+	assert.Assert(t, exists && supportedBuild.GetBoolValue())
 }
 
 func TestRetry_childBuilder_fullRun(t *testing.T) {
