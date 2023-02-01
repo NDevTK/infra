@@ -161,6 +161,7 @@ func deployActions() map[string]*Action {
 				"updater_timeout:600",
 				"update_ec_attempt_count:1",
 				"update_ap_attempt_count:1",
+				"use_cache_extractor:true",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 7200},
 			RunControl:             RunControl_ALWAYS_RUN,

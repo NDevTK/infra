@@ -946,6 +946,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ec_attempt_count:1",
 				"update_ap_attempt_count:1",
 				"updater_timeout:600",
+				"use_cache_extractor:true",
 			},
 			// Allowed to fail as part of b/236417969 to check affect of it.
 			AllowFailAfterRecovery: true,
