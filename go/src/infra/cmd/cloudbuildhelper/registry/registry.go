@@ -32,15 +32,18 @@ var (
 )
 
 // See https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#media-types.
-var manifestMediaTypes = []string{
+// and https://github.com/opencontainers/image-spec/blob/main/media-types.md
+var knownImageMediaTypes = []string{
+	"application/vnd.docker.distribution.manifest.list.v2+json",
 	"application/vnd.docker.distribution.manifest.v1+json",
 	"application/vnd.docker.distribution.manifest.v2+json",
-	"application/vnd.docker.distribution.manifest.list.v2+json",
+	"application/vnd.oci.image.index.v1+json",
+	"application/vnd.oci.image.manifest.v1+json",
 }
 
-// knownManifestMediaType is true if mt is in manifestMediaTypes.
-func knownManifestMediaType(mt string) bool {
-	for _, known := range manifestMediaTypes {
+// knownImageMediaType is true if mt is in knownImageMediaTypes.
+func knownImageMediaType(mt string) bool {
+	for _, known := range knownImageMediaTypes {
 		if mt == known {
 			return true
 		}
@@ -89,7 +92,7 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 	// Note that "Accept" header with the explicit enumeration of recognized media
 	// types is required and if the request image is using some newer manifest
 	// format we don't understand, this request will fail.
-	req.Header.Set("Accept", strings.Join(manifestMediaTypes, ", "))
+	req.Header.Set("Accept", strings.Join(knownImageMediaTypes, ", "))
 
 	// Attach Authorization header, if the registry needs it.
 	if err := c.authorizeRequest(ctx, req, registry, repo, "pull"); err != nil {
@@ -103,8 +106,8 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 
 	// The media type is required and should be one of the requested ones.
 	mt := resp.Header.Get("Content-Type")
-	if !knownManifestMediaType(mt) {
-		return nil, errors.Annotate(ErrBadRegistryResponse, "unexpected media type %q", mt).Err()
+	if !knownImageMediaType(mt) {
+		return nil, errors.Annotate(ErrBadRegistryResponse, "unexpected image media type %q", mt).Err()
 	}
 
 	// The manifest body digest is what we are after. It uniquely identifies
@@ -117,15 +120,11 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 		return nil, errors.Annotate(ErrBadRegistryResponse, "unrecognized digest algo in %q, we support only sha256", digest).Err()
 	}
 
-	// docker.io is broken for non-list manifests, returning wrong hash for them.
-	// See https://github.com/docker/distribution/issues/2395. So do the digest
-	// check only when seeing list.v2 manifests or *not* using docker.io.
-	if registry != "docker.io" || mt == "application/vnd.docker.distribution.manifest.list.v2+json" {
-		h := sha256.Sum256(body)
-		dgst := "sha256:" + hex.EncodeToString(h[:])
-		if digest != dgst {
-			return nil, errors.Annotate(ErrBadRegistryResponse, "expected a manifest with digest %q, but got %q", digest, dgst).Err()
-		}
+	// Verify the manifest body matches reported hash.
+	h := sha256.Sum256(body)
+	dgst := "sha256:" + hex.EncodeToString(h[:])
+	if digest != dgst {
+		return nil, errors.Annotate(ErrBadRegistryResponse, "expected a manifest with digest %q, but got %q", digest, dgst).Err()
 	}
 
 	return &Image{
