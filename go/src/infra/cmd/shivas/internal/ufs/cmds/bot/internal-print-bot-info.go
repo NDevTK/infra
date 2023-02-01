@@ -74,7 +74,7 @@ func (c *printBotInfoRun) innerRun(a subcommands.Application, args []string, env
 		return err
 	}
 	e := c.envFlags.Env()
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(site.AllNamespaces, "")
 	if err != nil {
 		// Set namespace to OS namespace for whatever errors.
 		ns = ufsUtil.OSNamespace

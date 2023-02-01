@@ -46,7 +46,7 @@ func (c *getNamespaceRun) Run(a subcommands.Application, args []string, env subc
 }
 
 func (c *getNamespaceRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(site.AllNamespaces, "")
 	if err != nil {
 		return err
 	}

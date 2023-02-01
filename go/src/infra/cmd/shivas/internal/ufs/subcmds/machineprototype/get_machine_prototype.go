@@ -76,7 +76,7 @@ func (c *getMachineLSEPrototype) Run(a subcommands.Application, args []string, e
 
 func (c *getMachineLSEPrototype) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(site.AllNamespaces, "")
 	if err != nil {
 		return err
 	}

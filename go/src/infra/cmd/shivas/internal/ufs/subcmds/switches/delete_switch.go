@@ -56,7 +56,7 @@ func (c *deleteSwitch) innerRun(a subcommands.Application, args []string, env su
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(site.AllNamespaces, "")
 	if err != nil {
 		return err
 	}
