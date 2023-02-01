@@ -8,9 +8,16 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
+DEPS_PREFIX="$2"
 
 mkdir cmake-build
 cd cmake-build
+
+if [[ $_3PP_PLATFORM  == windows* ]]; then
+  USE_OPENSSL=OFF
+else
+  USE_OPENSSL=ON
+fi
 
 # Use the cmake in path to bootstrap cmak'ing cmake!
 # Force CMAKE_CXX_STANDARD to 14 because C++17 is buggy on gcc10.
@@ -19,7 +26,8 @@ cmake .. \
   -GNinja \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -DCMAKE_INSTALL_PREFIX:STRING="$PREFIX" \
-  -DCMAKE_USE_OPENSSL:BOOL=OFF \
+  -DCMAKE_USE_OPENSSL:BOOL=$USE_OPENSSL \
+  -DOPENSSL_ROOT_DIR:STRING="$DEPS_PREFIX" \
   -DBUILD_TESTING:BOOL=ON \
   -DCMAKE_CXX_STANDARD:STRING=14
 # Our dockcross environment should automatically set the CMAKE toolchain to

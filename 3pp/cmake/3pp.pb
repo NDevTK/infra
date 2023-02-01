@@ -15,7 +15,7 @@ create {
     }
     patch_dir: "patches"
     cpe_base_address: "cpe:/a:cmake_project:cmake"
-    patch_version: "chromium.5"
+    patch_version: "chromium.6"
   }
 
   build {
@@ -34,6 +34,7 @@ create {
     tool: "build_support/cmake_bootstrap"
     tool: "tools/sed"
     tool: "tools/ninja"
+    dep: "static_libs/openssl"
   }
 }
 
