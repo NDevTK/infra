@@ -60,6 +60,10 @@ def RunInfraInternalFrontendTests(api, env):
                                        'appengine', 'testhaus')
   RunFrontendTests(api, env, testhaus.join('frontend', 'ui'), 'testhaus')
 
+  cwd = api.path['checkout'].join('go', 'src', 'infra_internal', 'appengine',
+                                  'spike', 'appengine', 'frontend', 'ui')
+  RunFrontendTests(api, env, cwd, 'spike')
+
 
 def RunInfraFrontendTests(api, env):
   """This function runs the UI tests in `infra` project.

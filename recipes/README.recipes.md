@@ -1768,9 +1768,9 @@ PYTHON_VERSION_COMPATIBILITY: PY2+3
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#94)(api, env, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#98)(api, env, cwd, app_name):**
 
-&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#64)(api, env):**
+&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#68)(api, env):**
 
 This function runs the UI tests in `infra` project.
   
@@ -1780,7 +1780,7 @@ This function runs the UI tests in `infra` project.
 This function runs UI tests in `infra_internal` project.
   
 
-&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#76)(api, env):**
+&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#80)(api, env):**
 
 This function runs UI tests in the `luci-go` project.
   
