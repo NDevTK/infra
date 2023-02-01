@@ -196,6 +196,9 @@ def adhoc_builder(
         build_numbers = True,
         schedule = schedule,
         triggered_by = triggered_by,
+        # TODO(crbug.com/1114804): remove after verifying shadow_service_account and shadow_pool WAI.
+        shadow_service_account = "chromium-ci-builder-shadow-dev@chops-service-accounts.iam.gserviceaccount.com",
+        shadow_pool = "luci.chromium.ci.shadow",
     )
 
 adhoc_builder(
