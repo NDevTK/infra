@@ -24,7 +24,7 @@ message Chameleon {
   OSRPM rpm = 5;
 }
 
-// NEXT TAG: 11
+// NEXT TAG: 12
 enum ChameleonType {
   reserved 1, 6 to 8;
   CHAMELEON_TYPE_INVALID = 0;
@@ -34,4 +34,5 @@ enum ChameleonType {
   CHAMELEON_TYPE_HDMI = 5;
   CHAMELEON_TYPE_V2 = 9;
   CHAMELEON_TYPE_V3 = 10;
+  CHAMELEON_TYPE_RPI = 11;
 }
