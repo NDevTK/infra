@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/shivas/site"
+	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -24,7 +25,7 @@ import (
 // GenGenericRenameCmd creates a simple rename command for shivas. It takes a name of the
 // resource to rename, renameFunc to call the rpc and printRes to print the result of the
 // operation.
-func GenGenericRenameCmd(kind string, rename RenameFunc, printRes PrintResFunc) *subcommands.Command {
+func GenGenericRenameCmd(kind string, rename RenameFunc, printRes PrintResFunc, validNS []string, defaultNS string) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: fmt.Sprintf("%s ...", kind),
 		ShortDesc: fmt.Sprintf("Rename %s with new name", kind),
@@ -48,6 +49,8 @@ func GenGenericRenameCmd(kind string, rename RenameFunc, printRes PrintResFunc) 
 			c.Flags.BoolVar(&c.json, "json", true, "enable to print the result of the rename")
 			c.rename = rename
 			c.printStdOut = printRes
+			c.validNS = validNS
+			c.defaultNS = defaultNS
 			return c
 		},
 	}
@@ -73,6 +76,9 @@ type renameGeneric struct {
 	// RPC and result printing fucntions
 	rename      RenameFunc
 	printStdOut PrintResFunc
+
+	validNS   []string
+	defaultNS string
 }
 
 func (c *renameGeneric) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -88,6 +94,11 @@ func (c *renameGeneric) innerRun(a subcommands.Application, args []string, env s
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
+	ns, err := c.getNamespace()
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
@@ -113,6 +124,10 @@ func (c *renameGeneric) innerRun(a subcommands.Application, args []string, env s
 		fmt.Printf("Renamed %s to %s\n", c.name, c.newName)
 	}
 	return nil
+}
+
+func (c *renameGeneric) getNamespace() (string, error) {
+	return c.envFlags.Namespace(c.validNS, c.defaultNS)
 }
 
 func (c *renameGeneric) validateArgs() error {
