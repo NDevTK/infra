@@ -74,10 +74,11 @@ missing test arg`,
 			pool:            "sample-pool",
 			image:           "sample-image",
 			secondaryBoards: []string{"coral", "eve"},
+			secondaryImages: []string{"sample-image"},
 			priority:        255,
 		},
 		[]string{"sample-suite-name"},
-		"number of requested secondary-boards: 2 does not match with number of requested secondary-images: 0",
+		"number of requested secondary-boards: 2 does not match with number of requested secondary-images: 1",
 		"suite",
 	},
 	{ // One error raised
@@ -614,10 +615,27 @@ var testSecondaryDevicesData = []struct {
 			},
 		},
 	},
-	{ // Test skip image on a secondary DUT.
+	{ // Test skip OS provision for all secondary DUTs.
 		testCommonFlags{
 			secondaryBoards: []string{"board1", "board2"},
-			secondaryImages: []string{"board1-release/10000.0.0", "skip"},
+		},
+		[]*test_platform.Request_Params_SecondaryDevice{
+			{
+				SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{
+					BuildTarget: &chromiumos.BuildTarget{Name: "board1"},
+				},
+			},
+			{
+				SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{
+					BuildTarget: &chromiumos.BuildTarget{Name: "board2"},
+				},
+			},
+		},
+	},
+	{ // Test ignore image on one secondary DUT.
+		testCommonFlags{
+			secondaryBoards: []string{"board1", "board2"},
+			secondaryImages: []string{"board1-release/10000.0.0", ""},
 		},
 		[]*test_platform.Request_Params_SecondaryDevice{
 			{

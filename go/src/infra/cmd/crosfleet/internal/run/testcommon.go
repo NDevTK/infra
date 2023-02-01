@@ -103,7 +103,7 @@ func (c *testCommonFlags) register(f *flag.FlagSet, mainArgType string) {
 	f.StringVar(&c.bucket, "bucket", defaultImageBucket, "Google Storage bucket where the specified image(s) are stored.")
 	f.StringVar(&c.image, "image", "", `Optional fully specified image name to run test against, e.g. octopus-release/R89-13609.0.0.
 If no value for image or release is passed, test will run against the latest green postsubmit build for the given board.`)
-	f.Var(luciflag.CommaList(&c.secondaryImages), "secondary-images", "Comma-separated list of image name(or 'skip' if no provision needed for a secondary dut) for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
+	f.Var(luciflag.CommaList(&c.secondaryImages), "secondary-images", "Comma-separated list of image name(empty string can be used to skip OS provision for a particular DUT, e.g. -secondary-images $path1,,$path2) for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
 	f.StringVar(&c.release, "release", "", `Optional ChromeOS release branch to run test against, e.g. R89-13609.0.0.
 If no value for image or release is passed, test will run against the latest green postsubmit build for the given board.`)
 	f.StringVar(&c.board, "board", "", "Board to run tests on.")
@@ -202,11 +202,12 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	if len(c.secondaryModels) > 0 && len(c.secondaryBoards) != len(c.secondaryModels) {
 		errors = append(errors, fmt.Sprintf("number of requested secondary-boards: %d does not match with number of requested secondary-models: %d", len(c.secondaryBoards), len(c.secondaryModels)))
 	}
-	// Check if image name provided for each secondary devices.
-	if len(c.secondaryBoards) != len(c.secondaryImages) {
+	// If OS provision is required for secondary DUTs, then we require an image name for
+	// each secondary DUT.
+	if len(c.secondaryImages) > 0 && len(c.secondaryBoards) != len(c.secondaryImages) {
 		errors = append(errors, fmt.Sprintf("number of requested secondary-boards: %d does not match with number of requested secondary-images: %d", len(c.secondaryBoards), len(c.secondaryImages)))
 	}
-	// If lacros provision required for secondary DUTs, then we require a path for
+	// If lacros provision is required for secondary DUTs, then we require a path for
 	// each secondary DUT.
 	if len(c.secondaryLacrosPaths) > 0 && len(c.secondaryLacrosPaths) != len(c.secondaryBoards) {
 		errors = append(errors, fmt.Sprintf("number of requested secondary-boards: %d does not match with number of requested secondary-lacros-paths: %d", len(c.secondaryBoards), len(c.secondaryLacrosPaths)))
@@ -667,7 +668,7 @@ func (c *testCommonFlags) secondaryDevices() []*test_platform.Request_Params_Sec
 				BuildTarget: &chromiumos.BuildTarget{Name: b},
 			},
 		}
-		if strings.ToLower(c.secondaryImages[i]) != "skip" {
+		if len(c.secondaryImages) > 0 && c.secondaryImages[i] != "" {
 			sd.SoftwareDependencies = append(sd.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
 				Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: c.secondaryImages[i]},
 			})
