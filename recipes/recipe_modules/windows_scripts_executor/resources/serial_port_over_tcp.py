@@ -14,7 +14,13 @@ import codecs
 import time
 import logging
 
-HANDSHAKE_TIME = 2  # Time in seconds to wait before retrying handshake
+HANDSHAKE_TIME = 5  # Time in seconds to wait before retrying handshake
+
+# Since we blast the host with pings to determine if it is up. We might
+# sometimes ping it more than once. If this is not cleared up. The Pong
+# response might be read in the next command run. This means we will crash.
+# This is the maximum number of responses we attempt to flush.
+BUFFER_FLUSH_MAX = 10
 
 
 # Extend argparse action to support dict type args
@@ -39,14 +45,18 @@ def send_expr(sock, expr, timeout=60, retries=1):
     retries: number of times to retry the expression
   """
   while retries > 0:
-    logging.info('Send req %s', expr)
+    logging.info('[TO: %d]Send req %s', timeout, expr)
     sock.sendall(json.dumps(expr).encode('utf-8'))
     res = resp(sock, timeout=timeout)
     if res:
       return res
     else:
       retries -= 1
-  raise Exception('Timeout: {}'.format(expr))
+  return {
+      'Output': 'Timeout: {}'.format(expr),
+      'Error': 'Timeout: Waited {} seconds'.format(timeout),
+      'Success': False
+  }
 
 
 def resp(sock, timeout=60):
@@ -63,35 +73,52 @@ def resp(sock, timeout=60):
   """
   data = ''
   response = {}
-  timeout = timeout * (10**9)  # convert time in s to ns
+  ns_duration = timeout * (10**9)  # convert time in s to ns
   # Loop until we have timeout or we have received an incomplete message
-  while timeout > 0:
+  while ns_duration > 0:
     # record the start time. Using ns for int result.
     timer = time.monotonic_ns()
     # wait to receive any data, Timeout in seconds
-    read_sock, _, _ = select.select([sock], [], [], timeout // (10**9))
+    read_sock, _, exceptions = select.select([sock], [], [sock],
+                                             ns_duration // (10**9))
+    if read_sock:
+      for s in read_sock:
+        if s == sock:
+          # loop until we get a valid json object
+          try:
+            buf = sock.recv(8192)
+            if len(buf) == 0:
+              # only time sock.recv returns nothing is if the socket is closed
+              # or is being closed.
+              logging.info('Socket closed. data %s', data)
+              return
+            data += buf.decode('utf-8')
+            response = json.loads(data)
+            # ping output is not encoded
+            if 'Output' in response and response['Output']:
+              # Output is always utf8 encoded
+              response['Output'] = decode_logs(response['Output'], 'utf-8')
+            if 'Logs' in response and response['Logs']:
+              for f, log in response['Logs'].items():
+                response['Logs'][f] = decode_logs(log, 'utf-8')
+            if 'Error' in response and response['Error']:
+              response['Error'] = decode_logs(response['Error'], 'utf-8')
+            return response
+          except json.JSONDecodeError:
+            # retry to get rest of the data
+            pass
+    if exceptions:
+      for s in exceptions:
+        if s == sock:
+          # Looks like socket was closed
+          logging.info('Socket closed unexpectedly')
+          return
+    if not read_sock and not exceptions:
+      logging.info('Select gave up waiting. Socket probably closed')
+      # socket closed
+      return
     # update time spent and attempt to get rest of the json
-    timeout -= (time.monotonic_ns() - timer)
-    for s in read_sock:
-      if s == sock:
-        # loop until we get a valid json object
-        try:
-          data += sock.recv(8192).decode('utf-8')
-          response = json.loads(data)
-          # ping output is not encoded
-          if 'Output' in response and response['Output']:
-            # Output is always utf8 encoded
-            response['Output'] = decode_logs(response['Output'], 'utf-8')
-          if 'Logs' in response and response['Logs']:
-            for f, log in response['Logs'].items():
-              response['Logs'][f] = decode_logs(log, 'utf-8')
-          if 'Error' in response and response['Error']:
-            response['Error'] = decode_logs(response['Error'], 'utf-8')
-          logging.info('Recv resp %s', response)
-          return response
-        except json.JSONDecodeError:
-          # retry to get rest of the data
-          pass
+    ns_duration -= (time.monotonic_ns() - timer)
 
 
 def handshake(sock, cont=True, retries=150):
@@ -110,8 +137,18 @@ def handshake(sock, cont=True, retries=150):
   # check every 2 second(s) if the host is up. For 5 mins (default) [2*150 s]
   res = send_expr(sock, cmd, timeout=HANDSHAKE_TIME, retries=retries)
   if 'Output' in res and res['Output'] == "PONG":
-    return res
-  raise Exception('Handshake failed')
+    # Let's try empty the response queue. This can be more than one. Sometimes
+    # PS hook (PSOverCom.ps1) receives multiple pings. Lets ensure this socket
+    # is drained.
+    for i in range(BUFFER_FLUSH_MAX):
+      flush_buf = resp(sock, timeout=HANDSHAKE_TIME)
+      # If we stop getting response. Just return the last response.
+      if flush_buf and 'Output' in flush_buf and flush_buf['Output'] == "PONG":
+        res = flush_buf
+      else:
+        break
+
+  return res
 
 
 def decode_logs(log, encoding):
@@ -190,12 +227,18 @@ def main():
 
   logging.info('Running with %s', args)
   sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  # Add extra 5 minutes socket timeout
+  sock.settimeout(args.timeout + (300.0))
   host, port = args.sock.split(':')
   sock.connect((host, int(port)))
 
   # Attempt to handshake for timeout secs.
   retries = args.timeout // HANDSHAKE_TIME
   res = handshake(sock, retries=retries, cont=True)
+  if not res['Success']:
+    logging.error('Failed to ping client; PONG: %s', res)
+    json.dump(res)
+    return
 
   # add given context to the session
   if args.let:

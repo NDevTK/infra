@@ -70,6 +70,8 @@ def GenTests(api):
   yield (api.test('Test shutdown_vm happy path') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock successfully shutting down the vm
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          # Mock vm status check. VM offline
@@ -87,6 +89,8 @@ def GenTests(api):
   yield (api.test('Test shutdown_vm fail (1)') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock shutting down the vm fail
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
          # Mock powerdown vm successful
@@ -107,6 +111,8 @@ def GenTests(api):
   yield (api.test('Test shutdown_vm fail (2)') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock shutting down the vm fail
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
          # Mock vm status check. VM offline
@@ -126,6 +132,8 @@ def GenTests(api):
   yield (api.test('Test shutdown_vm fail (3)') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock shutting down the vm fail
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
          # Mock powerdown vm successful
@@ -147,6 +155,8 @@ def GenTests(api):
   yield (api.test('Test shutdown_vm fail (4)') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock shutting down the vm fail
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
          # Mock powerdown vm successful

@@ -92,6 +92,8 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          # Mock disk mount for deps.img
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock successful execution of powershell expression
          t.POWERSHELL_EXPR_VM(api, image, cust, 'Install HL3',
                               'HL3 installed successfully') +
@@ -109,6 +111,8 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          # Mock disk mount for deps.img
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock failed execution of powershell expression
          t.POWERSHELL_EXPR_VM(
              api,
@@ -118,9 +122,45 @@ def GenTests(api):
              '',
              'Failed to install, not arm device',
              retcode=12,
-             success=False) + api.post_process(StatusFailure) +
+             success=False) +
          # Mock shutdown vm. successfully shut down vm
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          # Mock stats vm check. VM offline
          t.STATUS_VM(api, image, cust, vm_name) +
          api.post_process(StatusFailure) + api.post_process(DropExpectation))
+
+  yield (api.test('powershell_expr timeout fail') +
+         api.platform('linux', 64, 'intel') +
+         api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock deps.img disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         # Mock disk mount for deps.img
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
+         # Mock failed execution of powershell expression
+         t.POWERSHELL_EXPR_TIMEOUT(api, image, cust, 'Install HL3') +
+         # Mock shutdown vm. successfully shut down vm
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         # Mock stats vm check. VM offline
+         t.STATUS_VM(api, image, cust, vm_name) +
+         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+
+  # Test successful exec on timeout if ignore_timeout
+  ACTION_ADD_FILE.powershell_expr.ignore_timeout = True
+  yield (api.test('powershell_expr timeout ignore') +
+         api.platform('linux', 64, 'intel') +
+         api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock deps.img disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         # Mock disk mount for deps.img
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
+         # Mock failed execution of powershell expression
+         t.POWERSHELL_EXPR_TIMEOUT(api, image, cust, 'Install HL3') +
+         # Mock shutdown vm. successfully shut down vm
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         # Mock stats vm check. VM offline
+         t.STATUS_VM(api, image, cust, vm_name) +
+         api.post_process(StatusSuccess) + api.post_process(DropExpectation))

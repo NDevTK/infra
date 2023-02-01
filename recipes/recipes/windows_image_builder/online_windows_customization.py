@@ -118,6 +118,8 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          # Mock disk mount for deps.img
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock the vm start/boot
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock successful execution of powershell expression
          t.POWERSHELL_EXPR_VM(api, image, cust, 'Install HL3',
                               'HL3 installed successfully') +

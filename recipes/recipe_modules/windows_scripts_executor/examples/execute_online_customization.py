@@ -110,6 +110,7 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
@@ -122,6 +123,7 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
@@ -134,6 +136,7 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
@@ -147,6 +150,7 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
              api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
@@ -162,6 +166,7 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.CHECK_DEBUG_SLEEP(api, image, cust, time=boot_time) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
@@ -176,6 +181,7 @@ def GenTests(api):
          t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name, running=True) +
          t.QUIT_VM(api, image, cust, vm_name, success=True) +

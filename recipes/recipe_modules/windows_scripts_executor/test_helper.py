@@ -133,14 +133,15 @@ def pwsh_json_res(
     retcode=0,
 ):
   """ generate a api.json object to mock outputs """
-  return api.json.output({
-      'Success': success,
-      'Output': output,
-      'Logs': logs,
-      'Error': error,
-      'PWD': 'C:\\Users\\Spongebob\\Documents',
-      'RetCode': retcode,
-  })
+  return api.raw_io.output(
+      api.json.dumps({
+          'Success': success,
+          'Output': output,
+          'Logs': logs,
+          'Error': error,
+          'PWD': 'C:\\Users\\Spongebob\\Documents',
+          'RetCode': retcode,
+      }))
 
 
 def MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, arch, image, customization):
@@ -371,6 +372,18 @@ def POWERSHELL_EXPR_VM(api,
       success=success)
 
 
+def POWERSHELL_EXPR_TIMEOUT(api, image, customization, title):
+  return VM_POWERSHELL_EXEC(
+      api,
+      image,
+      customization,
+      title,
+      output='Timeout: Waited too long',
+      error='Timeout: Waited n seconds',
+      logs=(),
+      success=False)
+
+
 def SHUTDOWN_VM(api, image, customization, vm_name, retcode=0):
   return api.step_data(
       NEST(
@@ -386,6 +399,22 @@ def SHUTDOWN_VM(api, image, customization, vm_name, retcode=0):
           logs=None,
           retcode=retcode,
           success=not bool(retcode)))
+
+
+def STARTUP_VM(api, image, customization, vm_name, success=True):
+  return api.step_data(
+      NEST(
+          NEST_CONFIG_STEP(image),
+          NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
+          NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          'Boot {}'.format(vm_name), 'Powershell> Wait for boot up'),
+      stdout=(pwsh_json_res(
+          api,
+          output='Tuesday, January 31, 2023 10:30:56 AM' if success else '',
+          error='' if success else 'Timeout',
+          logs=None,
+          retcode=0,
+          success=success)))
 
 
 def STATUS_VM(api, image, customization, vm_name, running=False):

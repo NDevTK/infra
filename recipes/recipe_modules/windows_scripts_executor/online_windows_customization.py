@@ -374,9 +374,9 @@ class OnlineWindowsCustomization(customization.Customization):
         # if custom time is specified, Sleep for that amount
         if oc.win_vm_config.boot_time > 0:
           boot_time = oc.win_vm_config.boot_time
-      # Wait for the vm to boot up
-      self.m.step('Wait for the vm to boot up',
-                  ['sleep', '{}'.format(boot_time)])
+      # Wait for boot up by attempting to query for date
+      self.execute_powershell(
+          'Wait for boot up', ctx={}, expr='Get-Date', timeout=boot_time)
       return qemu_vm
 
   def shutdown_vm(self, vm_name):
@@ -387,7 +387,7 @@ class OnlineWindowsCustomization(customization.Customization):
     '''
     try:
       self.execute_powershell(
-          'Shutdown {}'.format(vm_name), ctx={}, expr='robocopy')
+          'Shutdown {}'.format(vm_name), ctx={}, expr='Stop-Computer')
       # The command was sent successfully. VM must be shutting down
       return True
     except Exception:
@@ -598,7 +598,8 @@ class OnlineWindowsCustomization(customization.Customization):
         cont=pwsh_expr.continue_ctx,
         logs=pwsh_expr.logs,
         timeout=timeout,
-        retcode=r_codes)
+        retcode=r_codes,
+        ignore_timeout=pwsh_expr.ignore_timeout)
 
   def execute_powershell(self,
                          name,
@@ -607,7 +608,8 @@ class OnlineWindowsCustomization(customization.Customization):
                          logs=(),
                          cont=False,
                          timeout=300,
-                         retcode=(0,)):
+                         retcode=(0,),
+                         ignore_timeout=False):
     ''' execute_powershell runs the given powershell expression on the vm.
 
     If cont is true, the session is kept alive. This means the next expression
@@ -625,6 +627,7 @@ class OnlineWindowsCustomization(customization.Customization):
       * timeout: time in seconds to wait for the expression to execute.
       * retcode: iterable containing all possible return codes to treat as
       success
+      * ignore_timeout: if set, no exception is thrown on timeout
     '''
     # use the serial_port_over_tcp script to execute the expression
     cmd = [
@@ -645,8 +648,19 @@ class OnlineWindowsCustomization(customization.Customization):
     if cont:
       cmd += ['-c']  # pragma: nocover
     res = self.m.step(
-        'Powershell> {}'.format(name), cmd=cmd, stdout=self.m.json.output())
-    ret = res.stdout
+        'Powershell> {}'.format(name),
+        cmd=cmd,
+        stdout=self.m.raw_io.output(),
+        timeout=(timeout + 300)  # Wait for 5 more minutes more
+    )
+    res.presentation.logs['RawResp'] = res.stdout
+    ret = {}
+    try:
+      # parse the json file
+      ret = self.m.json.loads(res.stdout)
+    except Exception as e:  # pragma: nocover
+      res.presentation.logs['Error'] = 'Failed to parse: ' + str(e)
+      raise e
     # Update the step presentation
     if 'Logs' in ret and ret['Logs']:  # pragma: nocover
       for log_file, log in ret['Logs'].items():
@@ -654,7 +668,12 @@ class OnlineWindowsCustomization(customization.Customization):
     if 'Output' in ret and ret['Output']:
       res.presentation.logs['stdout'] = ret['Output']
     if 'Error' in ret and ret['Error']:
-      res.presentation.logs['stderr'] = ret['Error']
+      res.presentation.logs['Error'] = ret['Error']
+      if 'Timeout' in ret['Error'] and not ret['Success']:
+        if not ignore_timeout:
+          raise self.m.step.StepFailure('Timeout')
+        # This was expected. Just return
+        return res
     # Throw error if return code is not what we expect. Ignore success
     if 'RetCode' in ret and int(ret['RetCode']) not in retcode:
       raise self.m.step.StepFailure('Error in execution. Check stdout, stderr')
