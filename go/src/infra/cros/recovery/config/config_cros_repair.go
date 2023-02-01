@@ -1571,9 +1571,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"servo_servod_echo_host",
+				"Is servo USB key detected",
 			},
 			ExecName:    "servo_download_image_to_usb",
 			ExecTimeout: &durationpb.Duration{Seconds: 3000},
+		},
+		"Is servo USB key detected": {
+			Docs: []string{
+				"The action used as codiion.",
+			},
+			Dependencies: []string{
+				"Setup has servo info",
+				"Verify servod is responsive",
+			},
+			ExecName: "servo_usbkey_is_detected",
 		},
 		"Download stable version OS image to servo usbkey if necessary (allow fail)": {
 			Docs: []string{
@@ -1586,6 +1597,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"servo_servod_echo_host",
+				"Is servo USB key detected",
 			},
 			ExecName:               "servo_download_image_to_usb",
 			ExecTimeout:            &durationpb.Duration{Seconds: 3000},
@@ -1605,6 +1617,7 @@ func crosRepairActions() map[string]*Action {
 				// If servo is responsive then probably we can download image to USB drive.
 				// Present of DUT connection is not critical.
 				"servo_servod_echo_host",
+				"Is servo USB key detected",
 			},
 			ExecName:               "servo_download_image_to_usb",
 			ExecTimeout:            &durationpb.Duration{Seconds: 3000},
