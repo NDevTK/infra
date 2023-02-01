@@ -11,16 +11,33 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // TODO(otabek@): Extract all commands to constants.
 // NOTE: That is just fake execs for local testing during developing phase. The correct/final execs will be introduced later.
 
 func servodEchoActionExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	sshCheck := argsMap.AsBool(ctx, "ssh_check", false)
+	if sshCheck {
+		name := info.GetChromeos().GetServo().GetName()
+		if name == "" {
+			return errors.Reason("servod echo exec: servod host is not specified").Err()
+		}
+		run := info.NewRunner(name)
+		if err := cros.IsSSHable(ctx, run, info.GetExecTimeout()); err != nil {
+			info.AddObservation(metrics.NewStringObservation("ssh_check", "fail"))
+			log.Debugf(ctx, "servod echo exec: error %s while verifying connection to the servo host", err)
+		} else {
+			info.AddObservation(metrics.NewStringObservation("ssh_check", "pass"))
+		}
+	}
 	res, err := servodGetString(ctx, info.NewServod(), "serialname")
 	if err != nil {
 		return errors.Annotate(err, "servod echo exec").Err()
