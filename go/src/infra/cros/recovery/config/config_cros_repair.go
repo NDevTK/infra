@@ -398,6 +398,21 @@ func crosRepairActions() map[string]*Action {
 			// Action is only for analysis at this stage.
 			AllowFailAfterRecovery: true,
 		},
+		"Print block devices of the DUT": {
+			Docs: []string{
+				"Lsblk is used to display details about block devices and these blocks.",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:lsblk",
+			},
+			// Action is only for analysis at this stage.
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
 		"Is hwsec-ownership-id expected": {
 			Docs: []string{
 				"The hwsec-ownership-id is expected from R101 version of ChromeOS on the DUT.",
@@ -1030,8 +1045,10 @@ func crosRepairActions() map[string]*Action {
 				"Timeout is 2 hours.",
 			},
 			Dependencies: []string{
-				"Is servod started",
 				"servo_state_is_working",
+				"Is servod started",
+				"Device NOT booted from USB-drive",
+				"Print block devices of the DUT",
 			},
 			ExecName: "audit_usb_from_dut_side",
 			ExecExtraArgs: []string{
