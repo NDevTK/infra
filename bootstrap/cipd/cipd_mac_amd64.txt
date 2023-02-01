@@ -21,7 +21,7 @@ infra/tools/luci/logdog/logdog/mac-amd64  git_revision:5cf65fdf804a9b3f3023f79d5
 infra/machine-db/crimson/mac-amd64 stable
 
 # Helper for building Docker images and GAE tarballs.
-infra/tools/cloudbuildhelper/mac-amd64 git_revision:4693beef9e565b07b62beaaa3a1a72bf65479f1c
+infra/tools/cloudbuildhelper/mac-amd64 git_revision:0015ff507c91871b14f613c06459d8ba3f019c03
 
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter
