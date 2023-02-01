@@ -2595,7 +2595,11 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Setup has servo info",
 			},
-			ExecName:   "servod_echo",
+			ExecName:    "servod_echo",
+			ExecTimeout: &durationpb.Duration{Seconds: 10},
+			ExecExtraArgs: []string{
+				"ssh_check:false",
+			},
 			RunControl: RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR,
