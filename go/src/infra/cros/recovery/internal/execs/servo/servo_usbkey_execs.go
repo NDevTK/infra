@@ -63,6 +63,37 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	return errors.Reason("servo usb-key has cros stable image: expected %q but found %q", expectedImage, imageName).Err()
 }
 
+func servoUSBKeyIsDetectedExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	fileCheck := argsMap.AsBool(ctx, "file_check", false)
+	servodHostname := info.GetChromeos().GetServo().GetName()
+	if servodHostname == "" {
+		return errors.Reason("servo USB key is detected: servo host is not specified").Err()
+	}
+	servodRun := info.NewRunner(servodHostname)
+	servod := info.NewServod()
+	usbPath, err := servo.USBDrivePath(ctx, fileCheck, servodRun, servod, info.NewLogger())
+	var usbDetectionObservationValue string
+	defer func() {
+		if usbDetectionObservationValue != "" {
+			info.AddObservation(metrics.NewStringObservation("usb_detection", usbDetectionObservationValue))
+		}
+	}()
+	if err != nil {
+		usbDetectionObservationValue = "usbkey_detection_failed"
+		log.Debugf(ctx, "Fail to detect path to USB key connected to the servo from servo-host.")
+		return errors.Annotate(err, "servo USB key is detected").Err()
+	}
+	if usbPath == "" {
+		usbDetectionObservationValue = "usbkey_not_detected"
+		log.Debugf(ctx, "USB key is not detected from servo-host.")
+		return errors.Reason("servo USB key is detected: usb drive is not detected").Err()
+	}
+	usbDetectionObservationValue = "usbkey_detected"
+	log.Debugf(ctx, "USB key is detected from servo-host as: %q.", usbPath)
+	return nil
+}
+
 // createMetricsRecordWhenNewUSBDriveFound creates new metrics record when new USB drive detected in setup.
 // TODO(gregorynisbet): refactor to reduce copy of better interaction with metrics, avoid passing info.
 func createMetricsRecordWhenNewUSBDriveFound(ctx context.Context, info *execs.ExecInfo, newDevice *labApi.UsbDrive) {
@@ -164,4 +195,5 @@ func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) err
 func init() {
 	execs.Register("servo_usbkey_has_stable_image", servoUSBHasCROSStableImageExec)
 	execs.Register("servo_update_usbkey_history", servoUpdateUSBKeyHistoryExec)
+	execs.Register("servo_usbkey_is_detected", servoUSBKeyIsDetectedExec)
 }

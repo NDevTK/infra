@@ -62,7 +62,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
-		return errors.Annotate(err, "cros provision").Err()
+		return errors.Annotate(err, "download image to usb-drive").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
 	osImageName := argsMap.AsString(ctx, "os_name", sv.OSImage)
