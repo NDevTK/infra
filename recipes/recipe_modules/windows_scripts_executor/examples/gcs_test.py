@@ -83,29 +83,31 @@ def GenTests(api):
               bucket='chrome-gce-images',
               source='WIB-OUT/intermediate-winpe.zip')))
 
+  pkg_path = '\[CACHE\]\\\\Pkgs\\\\GCSPkgs\\\\chrome-gce-images\\\\'
+  zip_path = pkg_path + 'WIB-WIM\\\\{}.zip'
+
   # add unpinned artifact from gcs
-  yield (api.test('Add unpinned binary from gcs', api.platform('win', 64)) +
-         api.properties(
-             t.WPE_IMAGE(image, wib.ARCH_X86, customization,
-                         'add artifact from gcs', [ACTION_ADD_PING])) +
-         # allow the build to proceed as there is no image in GCS
-         t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
-         # mock all the init and deint steps
-         t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
-         # self pinned gcs artifact
-         t.GCS_PIN_FILE(api, customization, 'gs://WinTools/net/ping.exe') +
-         # download the unpinned artifact
-         t.GCS_DOWNLOAD_FILE(api, customization, 'WinTools', 'net/ping.exe') +
-         # add the given file to the image
-         t.ADD_FILE(api, image, customization, PING_URL) +
-         # assert that the generated image was uploaded
-         t.CHECK_GCS_UPLOAD(
-             api, image, customization,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(customization),
-             'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         api.post_process(StatusSuccess) +  # recipe should pass
-         api.post_process(DropExpectation))
+  yield (
+      api.test('Add unpinned binary from gcs', api.platform('win', 64)) +
+      api.properties(
+          t.WPE_IMAGE(image, wib.ARCH_X86, customization,
+                      'add artifact from gcs', [ACTION_ADD_PING])) +
+      # allow the build to proceed as there is no image in GCS
+      t.MOCK_CUST_OUTPUT(
+          api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
+      # mock all the init and deint steps
+      t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
+      # self pinned gcs artifact
+      t.GCS_PIN_FILE(api, customization, 'gs://WinTools/net/ping.exe') +
+      # download the unpinned artifact
+      t.GCS_DOWNLOAD_FILE(api, customization, 'WinTools', 'net/ping.exe') +
+      # add the given file to the image
+      t.ADD_FILE(api, image, customization, PING_URL) +
+      # assert that the generated image was uploaded
+      t.CHECK_GCS_UPLOAD(api, image, customization, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      api.post_process(StatusSuccess) +  # recipe should pass
+      api.post_process(DropExpectation))
 
   # add non-existent artifact from gcs
   yield (api.test('Add non-existent binary from gcs', api.platform('win', 64)) +
@@ -146,33 +148,30 @@ def GenTests(api):
       t.GCS_DOWNLOAD_FILE(api, customization, 'chrome-gce-images',
                           'WIB-WIM/ffaa037563.zip') +
       # assert that the generated image was uploaded
-      t.CHECK_GCS_UPLOAD(
-          api, image, customization,
-          '\[CLEANUP\]\\\\gcs_customizations\\\\workdir\\\\gcs.zip',
-          'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      t.CHECK_GCS_UPLOAD(api, image, customization, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
       api.post_process(StatusSuccess) +  # recipe should pass
       api.post_process(DropExpectation))
 
   # Test using GCSSrc as an output destination.
-  yield (api.test('Add custom gcs destination', api.platform('win', 64)) +
-         api.properties(WPE_IMAGE_WITH_DEST) +
-         # allow the build to proceed as there is no image in GCS
-         t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
-         # mock all the init and deint steps
-         t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
-         # assert that the generated image was uploaded
-         t.CHECK_GCS_UPLOAD(
-             api, image, customization,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(customization),
-             'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         # assert that the generated image was uploaded
-         t.CHECK_GCS_UPLOAD(
-             api,
-             image,
-             customization,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(customization),
-             'gs://chrome-gce-images/WIB-OUT/intermediate-winpe.zip',
-             orig='gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         api.post_process(StatusSuccess) +  # recipe should pass
-         api.post_process(DropExpectation))
+  yield (
+      api.test('Add custom gcs destination', api.platform('win', 64)) +
+      api.properties(WPE_IMAGE_WITH_DEST) +
+      # allow the build to proceed as there is no image in GCS
+      t.MOCK_CUST_OUTPUT(
+          api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
+      # mock all the init and deint steps
+      t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
+      # assert that the generated image was uploaded
+      t.CHECK_GCS_UPLOAD(api, image, customization, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      # assert that the generated image was uploaded
+      t.CHECK_GCS_UPLOAD(
+          api,
+          image,
+          customization,
+          pkg_path + 'WIB-OUT\\\\intermediate-winpe.zip',
+          'gs://chrome-gce-images/WIB-OUT/intermediate-winpe.zip',
+          orig='gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      api.post_process(StatusSuccess) +  # recipe should pass
+      api.post_process(DropExpectation))

@@ -243,6 +243,8 @@ def GenTests(api):
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))
 
   # [b/213240613] Test for spaces in Add_File destination
+  pkg_path = '\[CACHE\]\\\\Pkgs\\\\GCSPkgs\\\\'
+  zip_path = pkg_path + 'chrome-gce-images\\\\WIB-WIM\\\\{}.zip'
   yield (
       api.test('Escape spaces in path test', api.platform('win', 64)) +
       # generate image with install wmi action
@@ -257,10 +259,8 @@ def GenTests(api):
       # mock add file to image mount dir step
       t.ADD_FILE(api, image, cust_name, CYGWIN_URL) +
       # assert that the generated image was uploaded
-      t.CHECK_GCS_UPLOAD(
-          api, image, cust_name,
-          '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(cust_name),
-          'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      t.CHECK_GCS_UPLOAD(api, image, cust_name, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
       t.CHECK_ADD_FILE(
           api, image, cust_name, CYGWIN_URL,
           "\"\[CLEANUP\]\\\\generic_cust\\\\workdir\\\\mount\\\\Program Files"
@@ -280,31 +280,32 @@ def GenTests(api):
                   source='out/gce_winpe_rel.zip',
               )))
 
+  wpeg = pkg_path + 'test-bucket\\\\out\\\\gce_winpe_rel.zip'
+
   # Generic happy path for recipe execution
-  yield (api.test('Happy path', api.platform('win', 64)) +
-         # start recipe with happy path image
-         api.properties(HAPPY_PATH_IMAGE) +
-         # mock all the init and deinit steps
-         t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, arch, image, cust_name) +
-         # mock git pin file
-         t.GIT_PIN_FILE(api, cust_name, 'HEAD',
-                        'windows/artifacts/startnet.cmd', 'HEAD') +
-         # mock add file to image mount dir step
-         t.ADD_FILE(api, image, cust_name, STARTNET_URL) +
-         # mock add file to image mount dir step
-         t.ADD_FILE(api, image, cust_name, DOT3SVC_URL) +
-         # assert that the generated image was uploaded
-         t.CHECK_GCS_UPLOAD(
-             api, image, cust_name,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(cust_name),
-             'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         # assert that the generated image was uploaded to custom dest
-         t.CHECK_GCS_UPLOAD(
-             api,
-             image,
-             cust_name,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(cust_name),
-             'gs://test-bucket/out/gce_winpe_rel.zip',
-             orig='gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         # recipe should pass successfully
-         api.post_process(StatusSuccess) + api.post_process(DropExpectation))
+  yield (
+      api.test('Happy path', api.platform('win', 64)) +
+      # start recipe with happy path image
+      api.properties(HAPPY_PATH_IMAGE) +
+      # mock all the init and deinit steps
+      t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, arch, image, cust_name) +
+      # mock git pin file
+      t.GIT_PIN_FILE(api, cust_name, 'HEAD', 'windows/artifacts/startnet.cmd',
+                     'HEAD') +
+      # mock add file to image mount dir step
+      t.ADD_FILE(api, image, cust_name, STARTNET_URL) +
+      # mock add file to image mount dir step
+      t.ADD_FILE(api, image, cust_name, DOT3SVC_URL) +
+      # assert that the generated image was uploaded
+      t.CHECK_GCS_UPLOAD(api, image, cust_name, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      # assert that the generated image was uploaded to custom dest
+      t.CHECK_GCS_UPLOAD(
+          api,
+          image,
+          cust_name,
+          wpeg,
+          'gs://test-bucket/out/gce_winpe_rel.zip',
+          orig='gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      # recipe should pass successfully
+      api.post_process(StatusSuccess) + api.post_process(DropExpectation))

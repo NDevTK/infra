@@ -178,22 +178,23 @@ def GenTests(api):
          # assert that the recipe executed successfully
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))
 
-  yield (api.test('Test cipd upload package', api.platform('win', 64)) +
-         # image with an action to add file from cipd
-         api.properties(
-             t.WPE_IMAGE(image, wib.ARCH_X86, customization,
-                         'add pkg from cipd', [ACTION_ADD_CIPD_1],
-                         [UPLOAD_TO_CIPD_1, UPLOAD_TO_CIPD_2])) +
-         # mock init and deinit steps
-         t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
-         # mock add cipd file step
-         t.ADD_FILE(api, image, customization, CIPD_1_URL) +
-         # assert that the generated image was uploaded
-         t.CHECK_GCS_UPLOAD(
-             api, image, customization,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(customization),
-             'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         t.CHECK_CIPD_UPLOAD(api, image, customization, UPLOAD_TO_CIPD_1) +
-         t.CHECK_CIPD_UPLOAD(api, image, customization, UPLOAD_TO_CIPD_2) +
-         # assert that the recipe was executed successfully
-         api.post_process(StatusSuccess) + api.post_process(DropExpectation))
+  pkg_path = '\[CACHE\]\\\\Pkgs\\\\GCSPkgs\\\\chrome-gce-images\\\\'
+  zip_path = pkg_path + 'WIB-WIM\\\\{}.zip'
+  yield (
+      api.test('Test cipd upload package', api.platform('win', 64)) +
+      # image with an action to add file from cipd
+      api.properties(
+          t.WPE_IMAGE(image, wib.ARCH_X86, customization, 'add pkg from cipd',
+                      [ACTION_ADD_CIPD_1], [UPLOAD_TO_CIPD_1, UPLOAD_TO_CIPD_2])
+      ) +
+      # mock init and deinit steps
+      t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
+      # mock add cipd file step
+      t.ADD_FILE(api, image, customization, CIPD_1_URL) +
+      # assert that the generated image was uploaded
+      t.CHECK_GCS_UPLOAD(api, image, customization, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      t.CHECK_CIPD_UPLOAD(api, image, customization, UPLOAD_TO_CIPD_1) +
+      t.CHECK_CIPD_UPLOAD(api, image, customization, UPLOAD_TO_CIPD_2) +
+      # assert that the recipe was executed successfully
+      api.post_process(StatusSuccess) + api.post_process(DropExpectation))

@@ -87,19 +87,20 @@ def GenTests(api):
          api.expect_exception('AssertionError') +
          api.post_process(DropExpectation))
 
-  yield (api.test('happy path', api.platform('win', 64)) + api.properties(
-      t.WPE_IMAGE(wpe_image, wib.ARCH_X86, wpe_cust, 'happy test',
-                  [ACTION_ADD_STARTNET])) +
-         # mock all the init and deinit steps
-         t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, arch, wpe_image, wpe_cust) +
-         # mock git pin file
-         t.GIT_PIN_FILE(api, wpe_cust, 'HEAD', 'windows/artifacts/startnet.cmd',
-                        'HEAD') +
-         # mock add file to wpe_image mount dir step
-         t.ADD_FILE(api, wpe_image, wpe_cust, STARTNET_URL) +
-         # assert that the generated wpe_image was uploaded
-         t.CHECK_GCS_UPLOAD(
-             api, wpe_image, wpe_cust,
-             '\[CLEANUP\]\\\\{}\\\\workdir\\\\gcs.zip'.format(wpe_cust),
-             'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
-         api.post_process(StatusSuccess) + api.post_process(DropExpectation))
+  pkg_path = '\[CACHE\]\\\\Pkgs\\\\GCSPkgs\\\\chrome-gce-images\\\\'
+  zip_path = pkg_path + 'WIB-WIM\\\\{}.zip'
+  yield (
+      api.test('happy path', api.platform('win', 64)) + api.properties(
+          t.WPE_IMAGE(wpe_image, wib.ARCH_X86, wpe_cust, 'happy test',
+                      [ACTION_ADD_STARTNET])) +
+      # mock all the init and deinit steps
+      t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, arch, wpe_image, wpe_cust) +
+      # mock git pin file
+      t.GIT_PIN_FILE(api, wpe_cust, 'HEAD', 'windows/artifacts/startnet.cmd',
+                     'HEAD') +
+      # mock add file to wpe_image mount dir step
+      t.ADD_FILE(api, wpe_image, wpe_cust, STARTNET_URL) +
+      # assert that the generated wpe_image was uploaded
+      t.CHECK_GCS_UPLOAD(api, wpe_image, wpe_cust, zip_path.format(key),
+                         'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key)) +
+      api.post_process(StatusSuccess) + api.post_process(DropExpectation))
