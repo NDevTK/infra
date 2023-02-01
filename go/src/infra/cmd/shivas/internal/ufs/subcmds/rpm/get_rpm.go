@@ -83,7 +83,7 @@ func (c *getRPM) Run(a subcommands.Application, args []string, env subcommands.E
 
 func (c *getRPM) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(site.AllNamespaces, "")
 	if err != nil {
 		return err
 	}

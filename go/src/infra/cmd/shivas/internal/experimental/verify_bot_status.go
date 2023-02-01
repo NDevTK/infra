@@ -74,7 +74,7 @@ func (c *verifyBotStatusRun) Run(a subcommands.Application, args []string, env s
 
 func (c *verifyBotStatusRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(site.AllNamespaces, "")
 	if err != nil {
 		return err
 	}
