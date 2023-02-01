@@ -101,10 +101,11 @@ func (c *addAsset) innerRun(ctx context.Context, a subcommands.Application, args
 	if err := c.validateArgs(); err != nil {
 		return err
 	}
-	if ns, _ := c.envFlags.Namespace(site.AllNamespaces, ""); ns != "" && ns != ufsUtil.OSNamespace {
-		return fmt.Errorf("refusing to override explicitly set non-OS namespace %q", ns)
+	ns, err := c.getNamespace()
+	if err != nil {
+		return err
 	}
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
+	ctx = utils.SetupContext(ctx, ns)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
@@ -168,6 +169,13 @@ func (c *addAsset) innerRun(ctx context.Context, a subcommands.Application, args
 		fmt.Println("Successfully added the asset: ", res.GetName())
 	}
 	return nil
+}
+
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func (c *addAsset) getNamespace() (string, error) {
+	return c.envFlags.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
 func (c *addAsset) validateArgs() error {
