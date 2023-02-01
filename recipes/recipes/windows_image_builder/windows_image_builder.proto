@@ -38,6 +38,9 @@ message Customization{
     // Customize a windows iso image
     windows_iso.WinISOImage windows_iso_customization = 3;
   }
+
+  // Build mode for this customization
+  CustomizationMode mode = 4;
 }
 
 enum Arch {
@@ -45,4 +48,17 @@ enum Arch {
   ARCH_AMD64 = 1;
   ARCH_X86 = 2;
   ARCH_AARCH64 = 3;
+}
+
+enum CustomizationMode {
+  // CUST_NORMAL builds this customization only if required. This is the
+  // default behavior.
+  CUST_NORMAL = 0;
+  // CUST_DEBUG starts debug mode builds. Debug mode is currently only
+  // supported in online windows customization. Debug mode will let the
+  // process sleep for boot_time on any exceptions.
+  CUST_DEBUG = 1;
+  // CUST_FORCE_BUILD will force the customization to build a new image
+  // every time
+  CUST_FORCE_BUILD = 2;
 }

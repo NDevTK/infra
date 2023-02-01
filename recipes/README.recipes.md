@@ -84,6 +84,7 @@
   * [windows_scripts_executor:examples/add_windows_driver](#recipes-windows_scripts_executor_examples_add_windows_driver) (Python3 ✅)
   * [windows_scripts_executor:examples/add_windows_package](#recipes-windows_scripts_executor_examples_add_windows_package) (Python3 ✅)
   * [windows_scripts_executor:examples/cipd_test](#recipes-windows_scripts_executor_examples_cipd_test) (Python3 ✅)
+  * [windows_scripts_executor:examples/customization_mode](#recipes-windows_scripts_executor_examples_customization_mode) (Python3 ✅)
   * [windows_scripts_executor:examples/edit_offline_registry_test](#recipes-windows_scripts_executor_examples_edit_offline_registry_test) (Python3 ✅)
   * [windows_scripts_executor:examples/execute_online_customization](#recipes-windows_scripts_executor_examples_execute_online_customization) (Python3 ✅)
   * [windows_scripts_executor:examples/gcs_test](#recipes-windows_scripts_executor_examples_gcs_test) (Python3 ✅)
@@ -1201,7 +1202,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#279)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#275)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
@@ -1209,7 +1210,7 @@ custs.
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#290)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#286)(self, custs):**
 
 Executes the windows image builder user config.
 
@@ -1309,7 +1310,7 @@ Example:
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#325)(self, custs):**
+&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#321)(self, custs):**
 
 gen_executable_configs generates wib.Image configs that can be executed.
 
@@ -1326,7 +1327,7 @@ Args:
 Returns a list of tuples containing config and set of customization hash
 that can be executed at the time
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#300)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#296)(self, custs):**
 
 get_executable_configs returns a list of images that can be executed at
 this time.
@@ -2007,6 +2008,13 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/cipd_test.py#34)(api, config):**
+### *recipes* / [windows\_scripts\_executor:examples/customization\_mode](/recipes/recipe_modules/windows_scripts_executor/examples/customization_mode.py)
+
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/customization_mode.py#10): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/customization_mode.py#30)(api, config):**
 ### *recipes* / [windows\_scripts\_executor:examples/edit\_offline\_registry\_test](/recipes/recipe_modules/windows_scripts_executor/examples/edit_offline_registry_test.py)
 
 [DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/edit_offline_registry_test.py#12): [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]

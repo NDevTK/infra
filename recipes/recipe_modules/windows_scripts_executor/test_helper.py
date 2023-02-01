@@ -580,6 +580,19 @@ def CHECK_ADD_FILE(api, image, cust, url, dest):
           'PowerShell> Add file {}'.format(url)), wild_card)
 
 
+def CHECK_DEBUG_SLEEP(api, image, cust, ocust='windows_cust', time=300):
+  """
+      Check debug sleep step
+  """
+  wild_card = ['sleep', str(time)]
+
+  return api.post_process(
+      StepCommandRE,
+      NEST(
+          NEST_CONFIG_STEP(image), NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(cust),
+          NEST_ONLINE_CUSTOMIZATION_STEP(ocust),
+          'Debug sleep for {} seconds'.format(time)), wild_card)
+
 
 #   Generate proto configs helper functions
 
@@ -590,13 +603,15 @@ def WPE_IMAGE(image,
               sub_customization,
               action_list,
               up_dests=None,
-              image_src=None):
+              image_src=None,
+              mode=wib.CustomizationMode.CUST_NORMAL):
   """ generates a winpe customization image """
   return wib.Image(
       name=image,
       arch=arch,
       customizations=[
           wib.Customization(
+              mode=mode,
               offline_winpe_customization=winpe.OfflineWinPECustomization(
                   name=customization,
                   image_src=image_src,
@@ -613,13 +628,15 @@ def WIN_IMAGE(image,
               customization,
               vm_config,
               action_list,
-              win_config=None):
+              win_config=None,
+              mode=wib.CustomizationMode.CUST_NORMAL):
   """ generates a winpe customization image """
   return wib.Image(
       name=image,
       arch=arch,
       customizations=[
           wib.Customization(
+              mode=mode,
               online_windows_customization=owc.OnlineWinCustomization(
                   name=customization,
                   online_customizations=[

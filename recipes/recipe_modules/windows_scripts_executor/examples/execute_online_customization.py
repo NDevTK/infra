@@ -43,6 +43,7 @@ def GenTests(api):
   image = 'Win10'
   cust = 'test'
   vm_name = 'Win10'
+  boot_time = 360
 
   SYSTEM = t.VM_DRIVE(
       name='system.img',
@@ -84,7 +85,7 @@ def GenTests(api):
           dst='$system_img',
       ))
 
-  def IMAGE(arch):
+  def IMAGE(arch, mode=wib.CustomizationMode.CUST_NORMAL):
     return t.WIN_IMAGE(
         image,
         arch,
@@ -92,12 +93,14 @@ def GenTests(api):
         vm_config=WIN_VM,
         action_list=[ACTION_ADD_FILE],
         win_config=windows_pb.WindowsVMConfig(
-            boot_time=300,
+            boot_time=boot_time,
             context={
                 '$system_img': 'C:',
                 '$deps_img': 'D:'
             },
-            shutdown_time=300))
+            shutdown_time=300),
+        mode=mode,
+    )
 
   key_win = '58d14c6fc3a92d22be294beda85d0a471c70af02dad2cfddfa80626ac1604d12'
 
@@ -145,6 +148,22 @@ def GenTests(api):
          t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
+             .format(key_win), False) + api.post_process(StatusFailure) +
+         api.post_process(DropExpectation))
+
+  yield (api.test('execute_customization_fail_add_file_debug') +
+         api.platform('linux', 64, 'intel') +
+         # enable debug mode
+         api.properties(
+             IMAGE(wib.ARCH_AMD64, mode=wib.CustomizationMode.CUST_DEBUG)) +
+         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+             api, image, cust, 'Bootstrap example.py', 8, success=False) +
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         t.CHECK_DEBUG_SLEEP(api, image, cust, time=boot_time) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
              api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
              .format(key_win), False) + api.post_process(StatusFailure) +

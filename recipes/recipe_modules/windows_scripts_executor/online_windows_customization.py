@@ -496,7 +496,8 @@ class OnlineWindowsCustomization(customization.Customization):
     Args:
       * oc: an OnlineCustomization proto object containing the data
     '''
-    with self.m.step.nest('Execute online customization {}'.format(oc.name)):
+    with self.m.step.nest('Execute online customization {}'.format(
+        oc.name)) as s:
       # Boot up the vm
       self.start_qemu(oc)
       try:
@@ -505,6 +506,20 @@ class OnlineWindowsCustomization(customization.Customization):
               online_action.name)):
             for action in online_action.actions:
               self.execute_action(action, oc.win_vm_config.context)
+      except Exception as e:
+        s.presentation.logs['Error'] = str(e)
+        if self.mode == wib.CustomizationMode.CUST_DEBUG:
+          # If its debug mode then we just sleep for boot_time. This will let
+          # you debug by forwarding port 5900 and using a vnc viewer like
+          # remmina. You can also forward port 4445 and serial_over_tcp_port.py
+          # can be used to get powershell that the recipe engine is using.
+          # Don't worry about boot_time, because we cancel the wait as soon as
+          # the PSOverCom.ps1 kicks in.
+          debug_time = oc.win_vm_config.boot_time
+          self.m.step(
+              'Debug sleep for {} seconds'.format(debug_time),
+              cmd=['sleep', debug_time])
+        raise e
       finally:
         self.safely_shutdown_vm(oc)
 

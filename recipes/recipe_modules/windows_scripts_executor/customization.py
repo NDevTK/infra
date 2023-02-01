@@ -77,11 +77,19 @@ class Customization(object):
   def needs_build(self):
     """ needs_build returns True if this customization needs to be built.
     False otherwise """
+    # Override the check if we need to force the build.
+    if self.mode == wib.CustomizationMode.CUST_FORCE_BUILD:
+      return True
     for output in self.outputs:
       # If all the outputs exist. We need not build the image
       if output and not self._source.exists(output):
         return True
     return False
+
+  @property
+  def mode(self):
+    """ mode returns the mode that this customization is set to. """
+    return self._customization.mode
 
   def executable(self, inputs=()):
     """ executable returns true if the customization is executable false
