@@ -795,17 +795,6 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 	return nil
 }
 
-const (
-	// Servod uart command for use in servo v4/v4p1.
-	//
-	// TODO(b/198638900) use servodUartCmd for both servo v4 /v4p1
-	// in the future instead of servodUartV4Cmd and servodUartV4P1Cmd separately.
-	// Currently blocked by: (b/198638900).
-	servodUartV4Cmd   = "servo_v4_uart_cmd"
-	servodUartV4P1Cmd = "servo_v4p1_uart_cmd"
-	servodUartCmd     = "root.servo_uart_cmd"
-)
-
 // servoFakeDisconnectDUTExec tries to unplug DUT from servo and restore the connection.
 //
 // @params: actionArgs should be in the format of:
@@ -817,15 +806,7 @@ func servoFakeDisconnectDUTExec(ctx context.Context, info *execs.ExecInfo) error
 	// Timeout to wait to restore the connection. Default to be 2000ms.
 	timeoutMS := argsMap.AsInt(ctx, "timeout_in_ms", 2000)
 	disconnectCmd := fmt.Sprintf(`fakedisconnect %d %d`, delayMS, timeoutMS)
-	uartCmd := servodUartV4Cmd
-	// TODO(b/204369636): change logic to use unified servod cmd: "root.servo_uart_cmd"
-	// As in the (b/204369636), currently blocked by (b/198638900).
-	if err := info.NewServod().Has(ctx, uartCmd); err != nil {
-		log.Debugf(ctx, "Servod control %q is not supported", servodUartCmd)
-		uartCmd = servodUartV4P1Cmd
-		log.Debugf(ctx, "Using Servod control %q instead", uartCmd)
-	}
-	if err := info.NewServod().Set(ctx, uartCmd, disconnectCmd); err != nil {
+	if err := info.NewServod().Set(ctx, "root.servo_uart_cmd", disconnectCmd); err != nil {
 		return errors.Annotate(err, "servod fake disconnect servo").Err()
 	}
 	// Formula to cover how long we wait to see the effect
@@ -845,17 +826,9 @@ func servoServodCCToggleExec(ctx context.Context, info *execs.ExecInfo) error {
 	ccOffTimeout := ccToggleMap.AsInt(ctx, "off_timeout", 10)
 	// Timeout for initialize configuration channel. Default to be 30s.
 	ccOnTimeout := ccToggleMap.AsInt(ctx, "on_timeout", 30)
-	uartCmd := servodUartV4Cmd
-	// TODO(b/204369636): change logic to use unified servod cmd: "root.servo_uart_cmd"
-	// As in the (b/204369636), currently blocked by (b/198638900).
-	if err := info.NewServod().Has(ctx, uartCmd); err != nil {
-		log.Debugf(ctx, "Servod control %q is not supported", servodUartCmd)
-		uartCmd = servodUartV4P1Cmd
-		log.Debugf(ctx, "Using Servod control %q instead", uartCmd)
-	}
 	// Turning off configuration channel.
 	log.Infof(ctx, "Turn off configuration channel and wait %d seconds.", ccOffTimeout)
-	if err := info.NewServod().Set(ctx, uartCmd, "cc off"); err != nil {
+	if err := info.NewServod().Set(ctx, "root.servo_uart_cmd", "cc off"); err != nil {
 		return errors.Annotate(err, "servod cc toggle").Err()
 	}
 	time.Sleep(time.Duration(ccOffTimeout) * time.Second)
