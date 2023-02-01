@@ -83,7 +83,7 @@ func (c *getSwitch) Run(a subcommands.Application, args []string, env subcommand
 
 func (c *getSwitch) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(nil, "")
 	if err != nil {
 		return err
 	}

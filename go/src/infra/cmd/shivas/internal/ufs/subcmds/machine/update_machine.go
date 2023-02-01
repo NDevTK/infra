@@ -89,7 +89,7 @@ func (c *updateMachine) innerRun(a subcommands.Application, args []string, env s
 	}
 
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(nil, "")
 	if err != nil {
 		return err
 	}
