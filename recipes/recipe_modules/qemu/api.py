@@ -14,6 +14,8 @@ SERIAL_HOST = 'localhost:4445'
 QMP_SOCKET = 'tcp:' + QMP_HOST + ',server,nowait'
 SERIAL_SOCKET = 'tcp:' + SERIAL_HOST + ',server,nowait'
 
+PARTED = 'infra/3pp/tools/parted/linux-amd64'
+
 
 class QEMUError(Exception):
   """ Base QEMU exception class """
@@ -57,6 +59,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     e = self.m.cipd.EnsureFile()
     # download latest if nothing is given
     e.add_package(QEMU_PKG, version if version else 'latest')
+    e.add_package(PARTED, 'latest')
     self.m.cipd.ensure(self._install_dir, e, name="Download qemu")
 
   def create_disk(self, disk_name, fs_format='fat', min_size=0, include=None):
@@ -67,12 +70,14 @@ class QEMUAPI(recipe_api.RecipeApi):
     increased to fit all the files.
 
     Args:
-      * name: name of the disk image file
+      * disk_name: name of the disk image file
       * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
-      * min_size: minimum size of the disk in bytes
+      * min_size: minimum size of the disk in Megabytes(1048576 bytes)
                   (bigger size used if required)
       * include: sequence of files and directories to copy to image
     """
+    # Get the number of bytes
+    min_size = min_size * 1048576
     if include:
       # mock output for testing
       test_res = dedent('''
@@ -101,7 +106,7 @@ class QEMUAPI(recipe_api.RecipeApi):
         loop_file, mount_loc = self.mount_disk_image(self.disks.join(disk_name))
         try:
           for src, dest in include.items():
-            dest = '{}/{}'.format(mount_loc, dest)
+            dest = mount_loc[0] + '/' + dest
             self.m.file.copytree(
                 name='Copy {}'.format(src),
                 source=src
@@ -115,30 +120,15 @@ class QEMUAPI(recipe_api.RecipeApi):
 
     Args:
       * disk_name: name of the disk image file
-      * fs_format: one of [exfat, ext3, fat, msdos, vfat, ext2, ext4, ntfs]
+      * fs_format: one of [ext3, fat, ntfs]
       * size: size of the disk image in bytes
     """
-    # The relation between file system format as recorded by the MBR(msdos)
-    # partition table and the actual format on the partition is given by this
-    # relation. This is mostly because exfat, fat, vfat, and msdos are all
-    # recorded as fat32.
-    FILESYSTEM_AND_PARTITION_ENTRY = {
-        'exfat': 'fat32',
-        'ext3': 'ext3',
-        'ext2': 'ext2',
-        'ext4': 'ext4',
-        'fat': 'fat32',
-        'vfat': 'fat32',
-        'ntfs': 'ntfs',
-        'msdos': 'fat32'
-    }
-    if fs_format not in FILESYSTEM_AND_PARTITION_ENTRY.keys():
-      raise self.m.step.StepFailure('{} not supported'.format(fs_format))
+    bs = 1024
     res = self.m.step(
         name='Check free space on disk for {}'.format(disk_name),
-        cmd=['df', '--output=avail', self.disks],
+        cmd=['df', '--output=avail', '-B', bs, self.disks],
         stdout=self.m.raw_io.output())
-    free_disk = int(res.stdout.splitlines()[-1].strip())
+    free_disk = int(res.stdout.splitlines()[-1].strip()) * bs
     if size > free_disk:
       raise self.m.step.StepFailure(
           'No space on the bot. Required {}, available {}'.format(
@@ -149,17 +139,28 @@ class QEMUAPI(recipe_api.RecipeApi):
     # come up with that number. That is the minimum partition size that
     # microsoft recommends for any partition.
     # https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-biosmbr-based-hard-drive-partitions?view=windows-11#system-partition
-    if size < 104857600:
+    if size < 104857600:  # pragma: no cover
       size = 104857600
+    # replace the periods "." with underscore marks "_". This will be used to
+    # create a powershell var later
+    partition_name = disk_name.replace(".", "_")
     # First create a blank image for given size, We create a msdos style
     # partition table with one partition only
     self.m.step(
-        name='Create blank image {} {}'.format(disk_name, self.disks),
+        name='Create blank image {}/{}'.format(self.disks, disk_name),
         cmd=[
             'python3',
-            self.resource('mk_virt_disk.py'), '-p',
-            'pe_type=primary,pe_fs={},fs={},size={}'.format(
-                FILESYSTEM_AND_PARTITION_ENTRY[fs_format], fs_format, size),
+            self.resource('mk_virt_disk.py'),
+            '-pt',
+            'gpt',
+            '-ps',
+            ' 4MiB',
+            '-p',
+            'type=primary,fs={},size={},name={}'.format(fs_format, size,
+                                                        partition_name),
+            # pass path to the parted binary
+            '-g',
+            self._install_dir.join('sbin', 'parted'),
             self.disks.join(disk_name)
         ])
 

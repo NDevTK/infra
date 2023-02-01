@@ -15,12 +15,12 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 def RunSteps(api):
   api.qemu.init('latest')
   # test good cases for both create_empty_disk and create_disk
-  api.qemu.create_disk('fat_disk', 'fat', 2048)
+  api.qemu.create_disk('fat_disk', 'fat', 20480)
   # mock existence of cache directory
   api.path.mock_add_paths(api.path['cache'], 'DIRECTORY')
   # mock cleanup to be a file
   api.path.mock_add_paths(api.path['cleanup'], 'FILE')
-  api.qemu.create_disk('ext4_disk', 'ext4', 2048,
+  api.qemu.create_disk('ext4_disk', 'ext4', 20480,
                        {api.path['cache']: 'got_cache/i_need_it'})
 
 
@@ -36,7 +36,7 @@ def GenTests(api):
              'Check free space on disk for fat_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
-                           27815012
+                           41943050
                         ''')),
              retcode=0) +
          # mock the free disk size to say there is enough
@@ -44,7 +44,7 @@ def GenTests(api):
              'Check free space on disk for ext4_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
-                           13907506
+                           20971530
                         ''')),
              retcode=0) + api.post_process(DropExpectation))
 
@@ -58,7 +58,7 @@ def GenTests(api):
              'Check free space on disk for fat_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
-                           27815012
+                           41943050
                         ''')),
              retcode=0) +
          # mock the free disk size to say there is enough
@@ -66,7 +66,7 @@ def GenTests(api):
              'Check free space on disk for ext4_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
-                           13907506
+                           20971530
                         ''')),
              retcode=0) + api.step_data(
                  'Copy files to ext4_disk.Mount loop',
@@ -88,6 +88,6 @@ def GenTests(api):
              'Check free space on disk for ext4_disk',
              api.raw_io.stream_output(
                  dedent('''Avail
-                           13907504
+                           6843492
                         ''')),
              retcode=0) + api.post_process(DropExpectation))

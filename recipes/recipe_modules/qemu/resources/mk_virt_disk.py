@@ -9,6 +9,7 @@ import argparse
 import subprocess
 import pathlib
 import os
+import re
 
 # Make a virtual disk image. This script creates a virtual disk image with given
 # partition table and partitions. It does this without a need for root/sudo
@@ -27,7 +28,7 @@ import os
 # table. This works and the resulting image is usable in a VM.
 
 SUPPORTED_PARTITION_TABLES = ['gpt', 'msdos']
-PREFFERED_BLOCK_SIZE = 4096
+SUPPORTED_FS_TYPE = ['ext3', 'ntfs', 'fat']
 
 # Allowed size multipliers
 SIZE_MULT = {
@@ -43,6 +44,9 @@ SIZE_MULT = {
     "B": 1,  # 1 Byte
 }
 
+# Space to be used to write partition table at start and backup at end
+PREFFERED_BLOCK_SIZE = 2 * SIZE_MULT['KiB']
+
 
 class ParsePartition(argparse.Action):
   ''' ParsePartition reads the partition input from the command line
@@ -52,7 +56,7 @@ class ParsePartition(argparse.Action):
     super(ParsePartition, self).__init__(option_strings, dest, **kwargs)
 
   def __call__(self, parser, namespace, values, option_string=None):
-    Partition = namedtuple("Partition", "pe_type pe_fs fs size")
+    Partition = namedtuple("Partition", "type fs size name")
     kwargs = {}
     for element in values.split(','):
       k, v = element.split('=')
@@ -93,6 +97,16 @@ class Size(argparse.Action):
 def dd(infile, outfile, bs=0, seek=0, count=0):
   ''' Run dd with given options.
 
+  Note: A faster way to create blank files of various sizes is to use seek.
+  For example: To create a 100MB file you can do
+          dd if=/dev/zero of=<target> bs=1M count=100
+  This will write a 100MB of zeroes to <target> which can take a while. If we
+  are not worried about the contents of the file <target> being zeroed. We can
+  instead seek to 99M and then write 1M which is faster.
+          dd if=/dev/zero of=<target> bs=1M seek=99 count=1
+  Formatting utility will clean the data wherever required and we don't have to
+  worry about writing zeroes everywhere.
+
   Args:
     * infile: File to copy from
     * outfile: File to copy to
@@ -107,61 +121,163 @@ def dd(infile, outfile, bs=0, seek=0, count=0):
     cmd.append('seek={}'.format(seek))
   if count:
     cmd.append('count={}'.format(count))
-  print(' '.join(cmd))
-  proc = subprocess.Popen(cmd, universal_newlines=True)
-  proc.wait()
+  _run(cmd)
 
 
-def mklabel(disk_image, partition_table_type):
+def mklabel(disk_image, partition_table_type, parted):
   ''' Run mklabel with given options.
 
   Args:
     * disk_image: The disk image file
     * partition_table_type: Type of partition table. [msdos or gpt]
   '''
+  if parted is None:
+    parted = 'parted'
   if partition_table_type not in SUPPORTED_PARTITION_TABLES:
     raise Exception('{} not supported'.format(partition_table_type))
-  cmd = ['parted', '-s', disk_image, 'mklabel', partition_table_type]
-  print(' '.join(cmd))
-  parted = subprocess.Popen(cmd, universal_newlines=True)
-  parted.wait()
+  cmd = [parted, '-s', disk_image, 'mklabel', partition_table_type]
+  _run(cmd)
 
 
-def mkpart(disk_image, partition_type, file_system_type, start, end):
+def mkpart(disk_image, partition_type, name, file_system_type, start, end,
+           parted):
   ''' Run mkpart with given options.
 
   Args:
     * disk_image: The disk image file to partition
     * partition_type: The type of partition to create. One of primary,
       logical or extended
+    * name: name given to the partition
     * file_system_type: The type of filesystem to record in the partition
       table
     * start: The start point for the partition
     * end: The end point for the partition
+    * parted: Command to run for parted
   '''
+  if parted is None:
+    parted = 'parted'
   cmd = [
-      'parted', '-s', disk_image, 'mkpart', partition_type, file_system_type,
-      '{}B'.format(start), '{}B'.format(end)
+      parted, '-s', disk_image, 'mkpart', partition_type, name,
+      file_system_type, '{}B'.format(start), '{}B'.format(end)
   ]
+  _run(cmd)
+
+
+def rescue(disk_image, start, end, parted):
+  ''' Run parted rescue to update partitions in start end range.
+
+  Args:
+    * disk_image: The disk image file to partition
+    * start: The start point for the partition
+    * end: The end point for the partition
+  '''
+  if parted is None:
+    parted = 'parted'
+  # parted rescue is a great way to add the filesystems to the partition table.
+  # But rescue is only interested in adding one partition a time. So we try to
+  # rescue all the partitions in the image by running rescue repeatedly until
+  # we don't have a new partition.
+  start_sector = ''
+  end_sector = end
+  rescue_cmd = lambda start, end: [
+      parted, '-s', '-f', disk_image, '--', 'rescue', start, end
+  ]
+  list_cmd = [parted, '-s', '-f', disk_image, '--', 'print', 'all']
+  list_header = '^\s*Number\s*Start\s*End\s*Size.*File system.*Flags$'
+  new_start = start
+  while start_sector != new_start:
+    start_sector = new_start
+    _run(rescue_cmd(start_sector, end_sector))
+    stdout, _ = _run(list_cmd)
+    for idx, line in enumerate(stdout.splitlines()):
+      if re.match(list_header, line):
+        for _, line in enumerate(stdout.splitlines(), start=idx + 1):
+          # the next lines record the end of sectors
+          tokens = line.split()
+          if len(tokens) > 2:
+            # read the last sector
+            last_sector = tokens[2]
+            new_start = last_sector
+
+
+def _run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
+  ''' _run the given cmd and return stdout and stderr. Also pretty prints the
+  stdout, stderr and the command run.
+
+  Args:
+    * cmd: Command to execute
+    * stdout: File to write stdout to
+    * stderr: File to write stderr to
+
+  Returns stdout and stderr as strings
+  '''
+  print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
   print(' '.join(cmd))
-  parted = subprocess.Popen(cmd, universal_newlines=True)
-  parted.wait()
+  proc = subprocess.Popen(
+      cmd, universal_newlines=True, stdout=stdout, stderr=stderr)
+  proc.wait()
+  stdout_lines = []
+  stderr_lines = []
+  if proc.stdout:
+    print('---------------------------STDOUT---------------------------')
+    while line := proc.stdout.readline():
+      print(line)
+      stdout_lines.append(line)
+  if proc.stderr:
+    print('---------------------------STDERR---------------------------')
+    while line := proc.stderr.readline():
+      print(line)
+      stderr_lines.append(line)
+  if proc.returncode:
+    raise Exception('[{}]Failed to exec {}'.format(proc.returncode,
+                                                   ' '.join(cmd)))
+  return '\n'.join(stdout_lines), '\n'.join(stderr_lines)
 
 
-def mkfs(fs_type, fs_disk_image):
-  ''' Run mkfs to format the given image with the filesystem.
+def mkfs(fs_type, fs_disk_image, fs_disk_label):
+  ''' Run mkfs to format the given image with the filesystem. Only supports
+  SUPPORTED_FS_TYPE filesystems.
 
   Args:
     * fs_type: The type of filesystem to format the image to
     * fs_disk_image: The disk image file to format
+    * fs_disk_label: The name for this disk
   '''
-  cmd = ['mkfs', '-V', '-t', fs_type, fs_disk_image]
-  print(' '.join(cmd))
-  proc = subprocess.Popen(cmd, universal_newlines=True)
-  proc.wait()
+  cmd = []
+  if fs_type == "fat":
+    cmd = ['mkfs', '-V', '-t', fs_type, '-n', fs_disk_label, fs_disk_image]
+  if "ext" in fs_type:
+    cmd = [
+        'mkfs', '-V', '-t', fs_type, '-v', '-c', '-F', '-F', '-E',
+        'root_owner={}:{}'.format(os.getuid(), os.getgid()), '-L',
+        fs_disk_label, fs_disk_image
+    ]
+  if fs_type == "ntfs":
+    cmd = [
+        'mkfs', '-V', '-t', fs_type, '-q', '-F', '-v', '-L', fs_disk_label,
+        fs_disk_image
+    ]
+  if not cmd:
+    raise Exception('Unsupported Type {}. Supported type: {}'.format(
+        fs_type, SUPPORTED_FS_TYPE))
+  _run(cmd)
 
 
-def create_partition_table(partition_type, partition_size, imagefile):
+def cat(file_out, *files):
+  ''' Cat files into file_out
+
+  Args:
+    * file_out: The name of the output file
+    * files: Files to concatenate in order
+  '''
+  cmd = ['cat', *files]
+  out = open(file_out, 'w')
+  _run(cmd, stdout=out)
+  out.close()
+
+
+def create_partition_table(partition_type, partition_size, imagefile,
+                           backup_file, parted):
   ''' create_partition_table creates an image and writes a partition table
   to it
 
@@ -169,7 +285,10 @@ def create_partition_table(partition_type, partition_size, imagefile):
     * partition_type: partition table type
     * partition_size: size of the partition table
     * imagefile: image filename
+    * backup_file: File to write backup table to
   '''
+  if parted is None:
+    parted = 'parted'
   bs = PREFFERED_BLOCK_SIZE
   count = 1
   if partition_size < PREFFERED_BLOCK_SIZE:
@@ -181,16 +300,18 @@ def create_partition_table(partition_type, partition_size, imagefile):
       # Add one to preserve alignment
       count = count + 1
 
-  dd('/dev/zero', imagefile, bs=bs, count=count)
-  mklabel(imagefile, partition_type)
+  dd('/dev/zero', imagefile, bs=bs, count=1, seek=(count - 1))
+  mklabel(imagefile, partition_type, parted)
+  dd('/dev/zero', backup_file, bs=bs, count=1, seek=(count - 1))
 
 
-def create_filesystem(filesystem_type, filesystem_size, imagefile):
+def create_filesystem(filesystem_type, filesystem_size, vol_name, imagefile):
   ''' create_filesystem create an image and format it with given filesystem
 
   Args:
     * filesystem_type: The filesystem type to format the image to
     * filesystem_size: The size of the image
+    * vol_name: Name given to this partition
     * imagefile: The image file to format
   '''
   bs = PREFFERED_BLOCK_SIZE
@@ -203,43 +324,8 @@ def create_filesystem(filesystem_type, filesystem_size, imagefile):
     if r > 0:
       # Add one to preserve alignment
       count = count + 1
-  dd('/dev/zero', imagefile, bs=bs, count=count)
-  mkfs(filesystem_type, imagefile)
-
-
-def add_partition_to_image(imagefile, start, partition_table_filesystem_type,
-                           partition_table_filesystem, filesystem_image,
-                           filesystem_size):
-  ''' add_partition_to_image adds the given filesystem image to the partition
-  image and updates the partiiton image
-  Args:
-    * imagefile: The image file to update.
-    * start: The start of filesystem in the image file
-    * partition_table_filesystem_type: One of primary, logical or extended in
-      partition table entry for the filesystem.
-    * partition_table_filesystem: The filesystem type entry in partition table
-    * filesystem_image: image file formatted with a filesystem to append to
-      imagefile
-    * filesystem_size: size of the image file being appended
-  Returns the total size of the image
-  '''
-  bs = PREFFERED_BLOCK_SIZE
-  seek, r = divmod(start, bs)
-  if r > 0:
-    # Not aligned. Update by Byte
-    bs = 1
-    seek = start
-  # Number of blocks to copy
-  count, r = divmod(filesystem_size, bs)
-  if r > 0:
-    # Add one to preserve alignment
-    count += 1
-
-  dd(filesystem_image, imagefile, bs=bs, seek=seek, count=count)
-  end = start + (count * bs)
-  mkpart(imagefile, partition_table_filesystem_type, partition_table_filesystem,
-         start, end - 1)
-  return end
+  dd('/dev/zero', imagefile, bs=bs, count=1, seek=(count - 1))
+  mkfs(filesystem_type, imagefile, vol_name)
 
 
 def main():
@@ -261,7 +347,7 @@ def main():
   parser.add_argument(
       '-ps',
       '--partition-table-size',
-      metavar='1024',
+      metavar=PREFFERED_BLOCK_SIZE,
       type=str,
       help='Size of partition table',
       action=Size,
@@ -274,14 +360,21 @@ def main():
       type=str,
       help=''' Partition to be created in the image.
                The following options are available.
-               pe_type: The partition type entry. One of primary, logical or extended;
-               pe_fs: The partition table entry of the filesystem type;
+               type: The partition type entry. {primary | logical | extended}
                fs: The file system to format the partition to;
                size: size of the filesystem image to create;
+               name: name of the partition to create;
            ''',
       nargs='+',
       action=ParsePartition,
       required=True)
+
+  parser.add_argument(
+      '-g',
+      '--gparted',
+      metavar='parted',
+      type=pathlib.Path,
+      help='Optional path to parted')
 
   parser.add_argument(
       'image',
@@ -295,24 +388,33 @@ def main():
   imagefile = str(args.image)
   partition_table = args.partition_table
   partition_table_size = args.partition_table_size
-  filesystem_image = '{}.fs'.format(imagefile)
+  partition_table_image = '{}.part'.format(imagefile)
+  partition_table_backup = '{}.blank'.format(imagefile)
   imagesize = partition_table_size
-
+  parted = str(args.gparted) if args.gparted else args.gparted
   # create a image with partition table on it
-  create_partition_table(partition_table, partition_table_size, imagefile)
+  create_partition_table(partition_table, partition_table_size,
+                         partition_table_image, partition_table_backup, parted)
 
-  for part in args.partition:
+  fs_images = []
+  for idx, part in enumerate(args.partition):
     filesystem_size = part.size
     filesystem_type = part.fs
-    partition_entry_type = part.pe_type
-    partition_entry_fs = part.pe_fs
+    partition_entry_type = part.type
+    partition_name = part.name
+    filesystem_image = '{}-{}-{}.fs'.format(partition_name, filesystem_type,
+                                            idx)
+    fsi = str(args.image.parent.joinpath(filesystem_image))
     # create a filesystem image file
-    create_filesystem(filesystem_type, filesystem_size, filesystem_image)
-    # Add the partition to the partition table
-    imagesize = add_partition_to_image(imagefile, imagesize,
-                                       partition_entry_type, partition_entry_fs,
-                                       filesystem_image, filesystem_size)
-    os.remove(filesystem_image)
+    create_filesystem(filesystem_type, filesystem_size, partition_name, fsi)
+    fs_images.append(fsi)
+
+  cat(imagefile, partition_table_image, *fs_images, partition_table_backup)
+  rescue(imagefile, '0', '100%', parted)
+  for fs_image in fs_images:
+    os.remove(fs_image)
+  os.remove(partition_table_image)
+  os.remove(partition_table_backup)
 
 
 main()

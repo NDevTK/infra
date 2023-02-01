@@ -52,7 +52,7 @@ def GenTests(api):
               gcs_src=sources.GCSSrc(
                   bucket='chrome-windows-images', source='WIN-OUT/system.img'))
       ],
-      size=10241024,
+      size=10240,
       media='disk',
       filesystem='fat',
       interface='none')
