@@ -2358,6 +2358,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo",
+				"Sleep 60 seconds",
 				"Flash AP (FW) with GBB 0x18 by servo",
 				// TODO(b:267549690) close the bug if we determine cold reset is not needed after flash AP.
 				"Wait to be SSHable (normal boot)",
@@ -2885,6 +2886,14 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_erase_mrc_cache_by_servo",
 			RunControl:  RunControl_RUN_ONCE,
 			ExecTimeout: &durationpb.Duration{Seconds: 1200},
+		},
+		"Sleep 60 seconds": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:60",
+			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
 		},
 	}
 }
