@@ -12,6 +12,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -72,6 +73,9 @@ type Docker struct {
 
 	// LogFileDir used for the logfile for the service in the container.
 	LogFileDir string
+
+	Stdoutbuf    io.ReadCloser
+	Stdouterrbuf io.ReadCloser
 }
 
 // HostPort returns the port which the given docker port maps to.
@@ -182,6 +186,8 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 
 	args := []string{"run"}
 	if d.Detach {
+		// PRE-pend the log-level log for detached containers.
+		args = append([]string{"--log-level=debug"}, args...)
 		args = append(args, "-d")
 	}
 	args = append(args, "--name", d.Name)
@@ -219,9 +225,30 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 		log.Printf("Skipping metrics gathering")
 	}
 
-	so, se, err := common.RunWithTimeout(ctx, cmd, time.Hour, block)
-	common.PrintToLog(fmt.Sprintf("Run docker image %q", d.Name), so, se)
-	return so, errors.Annotate(err, "run docker image %q: %s", d.Name, se).Err()
+	if block {
+		log.Println("Runing Blocking Docker Run")
+		so, se, err := common.RunWithTimeout(ctx, cmd, time.Hour, block)
+		common.PrintToLog(fmt.Sprintf("Run docker image %q", d.Name), so, se)
+		return so, errors.Annotate(err, "run docker image %q: %s", d.Name, se).Err()
+	} else {
+		log.Println("Runing Non-Blocking Docker Run")
+
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			return "", errors.Annotate(err, "StderrPipe failed to create").Err()
+		}
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			return "", errors.Annotate(err, "StdoutPipe failed to create").Err()
+		}
+		log.Printf("Running cmd %s", cmd)
+		cmd.Start()
+		d.Stdoutbuf = stdout
+		d.Stdouterrbuf = stderr
+		return "", errors.Annotate(err, "run docker image %q: %s", d.Name, "").Err()
+
+	}
+
 }
 
 func (d *Docker) logRunTime(ctx context.Context, service string) {

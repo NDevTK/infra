@@ -120,6 +120,9 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		return nil
 	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
 
+	common.StreamScanner(d.Stdoutbuf, "cros-dut Stdout")
+	common.StreamScanner(d.Stdouterrbuf, "cros-dut StdErr")
+
 	if err != nil {
 		log.Printf("DUT Service polling for port err: %s", err)
 		logStatus(ctx, "fail")
@@ -128,7 +131,6 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 
 	log.Println("DUT Service polling for port completed.")
 	logStatus(ctx, "pass")
-
 	d.ServicePort = dsPort
 	return d, nil
 }

@@ -5,9 +5,11 @@
 package common
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"log"
@@ -106,4 +108,20 @@ func FindFile(fileName string, rootDir string) (string, error) {
 // JsonPbUnMarshaler returns the unmarshaler which should be used across CTR.
 func JsonPbUnmarshaler() jsonpb.Unmarshaler {
 	return jsonpb.Unmarshaler{AllowUnknownFields: true}
+}
+
+// StreamScanner makes a scanner to read from test streams.
+func StreamScanner(stream io.Reader, logtag string) {
+	const maxCapacity = 4096 * 1024
+	scanner := bufio.NewScanner(stream)
+	// Expand the buffer size to avoid deadlocks on heavy logs
+	buf := make([]byte, maxCapacity)
+	scanner.Buffer(buf, maxCapacity)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		log.Printf("[%v] %v", logtag, scanner.Text())
+	}
+	if scanner.Err() != nil {
+		log.Println("Failed to read pipe: ", scanner.Err())
+	}
 }
