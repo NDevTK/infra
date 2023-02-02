@@ -18,6 +18,7 @@ import (
 	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/logger"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // ReadAPInfoRequest holds request date to read AP info.
@@ -612,8 +613,11 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 		if err != nil {
 			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
 		}
-		// Based on b:220157423 some board report name in upper case.
+		// Based on b:220157423 some board report name is upper case.
 		fwTarget = strings.ToLower(fwTarget)
+		if execMetric := metrics.GetDefaultAction(ctx); execMetric != nil {
+			execMetric.Observations = append(execMetric.Observations, metrics.NewStringObservation("servod_ec_board", fwTarget))
+		}
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			for _, p := range imageNamePatterns {
 				candidates = append(candidates, fmt.Sprintf(p, fwTarget))
