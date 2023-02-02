@@ -58,13 +58,6 @@ func (r *releaseRun) validate() error {
 		if r.skipPaygen {
 			return fmt.Errorf("--skip_paygen is not supported for production builds")
 		}
-		if r.buildspec != "" {
-			return fmt.Errorf("--buildspec is not supported for production builds")
-		}
-	}
-
-	if strings.HasPrefix(r.branch, "stabilize-") && !r.production {
-		return fmt.Errorf("can only run production builds for stabilize branches")
 	}
 
 	if err := r.tryRunBase.validate(); err != nil {
@@ -182,13 +175,6 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 
 	if len(r.buildTargets) > 0 {
 		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
-			r.LogErr(err.Error())
-			return CmdError
-		}
-	}
-
-	if r.buildspec != "" {
-		if err := bb.SetProperty(propsStruct, "$chromeos/cros_source.syncToManifest.manifestGsPath", r.buildspec); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
