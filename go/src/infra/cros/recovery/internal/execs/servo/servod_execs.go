@@ -67,17 +67,6 @@ const (
 	usbkeyBootTimeout = 5 * time.Minute
 )
 
-func servodDUTBootRecoveryModeActionExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := info.NewServod().Set(ctx, "power_state", "rec"); err != nil {
-		return errors.Annotate(err, "servod boot in recovery-mode").Err()
-	}
-	run := info.NewRunner(info.GetDut().Name)
-	return retry.WithTimeout(ctx, 10*time.Second, usbkeyBootTimeout, func() error {
-		_, err := run(ctx, 30*time.Second, "true")
-		return errors.Annotate(err, "servod boot in recovery-mode: check ssh access").Err()
-	}, "servod boot in recovery-mode: check ssh access")
-}
-
 func servodDUTColdResetActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := info.NewServod().Set(ctx, "power_state", "reset"); err != nil {
 		return errors.Annotate(err, "servod cold_reset dut").Err()
@@ -181,7 +170,6 @@ func servodSetActiveDutControllerExec(ctx context.Context, info *execs.ExecInfo)
 func init() {
 	execs.Register("servod_echo", servodEchoActionExec)
 	execs.Register("servod_lidopen", servodLidopenActionExec)
-	execs.Register("servod_dut_rec_mode", servodDUTBootRecoveryModeActionExec)
 	execs.Register("servod_dut_cold_reset", servodDUTColdResetActionExec)
 	execs.Register("servod_has", servodHasExec)
 	execs.Register("servod_can_read_all", servodCanReadAllExec)
