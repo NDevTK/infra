@@ -231,7 +231,11 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	}
 
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
+	ns, err := c.getNamespace()
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
@@ -314,6 +318,13 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	resTable.PrintResultsTable(os.Stdout, true)
 
 	return nil
+}
+
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func (c *updateDUT) getNamespace() (string, error) {
+	return c.envFlags.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
 // validateArgs validates the set of inputs to updateDUT.
