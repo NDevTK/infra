@@ -40,7 +40,7 @@ func (cf *CopyFiles) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.
 	version := cf.Version
 	if version == "" {
 		h := copyFilesHashAlgorithm.New()
-		if err := walkDir(cf.Files, ".", h, func(path string, d fs.DirEntry, err error) error { return err }); err != nil {
+		if err := WalkDir(cf.Files, ".", h, func(path string, d fs.DirEntry, err error) error { return err }); err != nil {
 			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
 		}
 		version = fmt.Sprintf("%s:%x", copyFilesHashAlgorithm, h.Sum(nil))
@@ -63,7 +63,7 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 
 	h := copyFilesHashAlgorithm.New()
 	cf := copyFilesHashMap[cmd.Args[1]]
-	if err := walkDir(cf.Files, ".", h, func(path string, d fs.DirEntry, err error) error {
+	if err := WalkDir(cf.Files, ".", h, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -115,7 +115,9 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 	return nil
 }
 
-func walkDir(src fs.FS, root string, h hash.Hash, fn fs.WalkDirFunc) error {
+// WalkDir behave almost same as fs.WalkDir, with extra hash.Hash argument used
+// to calculate hash value from all the files in a directory.
+func WalkDir(src fs.FS, root string, h hash.Hash, fn fs.WalkDirFunc) error {
 	// Tar is used for calculating hash from files - including metadata - in a
 	// simple way.
 	tw := tar.NewWriter(h)

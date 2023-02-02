@@ -2,12 +2,16 @@ package main
 
 import (
 	"context"
+	"crypto"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -31,6 +35,9 @@ type Application struct {
 	StorageDir string
 	// Spec pool directory for finding 3pp specs.
 	SpecPoolDir string
+
+	// If not empty, statistics data will be stored.
+	StatisticsDir string
 
 	// CIPD service URL for downloading and uploading packages.
 	CIPDService string
@@ -58,6 +65,8 @@ func (a *Application) Parse(args []string) error {
 
 	fs.StringVar(&a.StorageDir, "storage-dir", a.StorageDir, "Required; Local storage directory for build and cache packages.")
 	fs.StringVar(&a.SpecPoolDir, "spec-pool", a.SpecPoolDir, "Required; Spec pool directory for finding 3pp specs.")
+
+	fs.StringVar(&a.StatisticsDir, "statistics-dir", a.StatisticsDir, "If statistics-dir is not empty, statistics data will be stored. This may slow down the build.")
 
 	fs.StringVar(&a.CIPDService, "cipd-service", a.CIPDService, "CIPD service URL for downloading and uploading packages.")
 	fs.BoolVar(&a.Upload, "upload", a.Upload, "If upload is true, packages will be uploaded to CIPD.")
@@ -138,6 +147,8 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 
 		BuildTempDir:      filepath.Join(a.StorageDir, "temp"),
 		DerivationBuilder: utilities.NewBuilder(s),
+
+		StatisticsDir: a.StatisticsDir,
 	}, nil
 }
 
@@ -151,6 +162,8 @@ type PackageBuilder struct {
 
 	BuildTempDir      string
 	DerivationBuilder *utilities.Builder
+
+	StatisticsDir string
 
 	// Override the default build func
 	BuildFunc func(p cipkg.Package) error
@@ -215,6 +228,39 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) error {
 		logging.Debugf(ctx, "%s", out.String())
 		return nil
 	}
+
+	if b.StatisticsDir != "" {
+		if err := os.MkdirAll(b.StatisticsDir, os.ModePerm); err != nil {
+			return err
+		}
+		buildF := f
+		f = func(p cipkg.Package) error {
+			id := p.Derivation().ID()
+
+			startTime := time.Now()
+			if err := buildF(p); err != nil {
+				return err
+			}
+			endTime := time.Now()
+
+			h := crypto.SHA256.New()
+			if err := builtins.WalkDir(os.DirFS(p.Directory()), ".", h, func(string, fs.DirEntry, error) error { return nil }); err != nil {
+				return err
+			}
+
+			stat, err := os.Create(filepath.Join(b.StatisticsDir, id+".json"))
+			if err != nil {
+				return err
+			}
+			defer stat.Close()
+
+			return json.NewEncoder(stat).Encode(map[string]any{
+				"buildTimeSeconds": endTime.Sub(startTime).Seconds(),
+				"resultSHA256":     fmt.Sprintf("%x", h.Sum(nil)),
+			})
+		}
+	}
+
 	if b.BuildFunc != nil {
 		f = b.BuildFunc
 	}
