@@ -86,6 +86,7 @@ func New(ufs UFSClient, csac CSAClient, sshKeyPaths []string) (tlw.Access, error
 
 // Close closes all used resources.
 func (c *tlwClient) Close(ctx context.Context) error {
+	log.Debugf(ctx, "Starting closing client..")
 	if err := c.sshPool.Close(); err != nil {
 		return errors.Annotate(err, "tlw client").Err()
 	}

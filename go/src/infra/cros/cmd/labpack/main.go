@@ -110,11 +110,14 @@ func mainRunInternal(ctx context.Context, input *steps.LabpackInput, state *buil
 		// Write result as last step.
 		writeOutputProps(res)
 	}()
+	lg.Infof("Starting task execution...")
 	if err := internalRun(ctx, input, state, lg, logRoot); err != nil {
 		res.Success = false
 		res.FailReason = err.Error()
 		resultErrors = append(resultErrors, err)
 	}
+	lg.Infof("Finished task execution.")
+	lg.Infof("Starting uploading logs...")
 	if err := uploadLogs(ctx, state, lg); err != nil {
 		res.Success = false
 		if len(resultErrors) == 0 {
@@ -124,6 +127,7 @@ func mainRunInternal(ctx context.Context, input *steps.LabpackInput, state *buil
 		}
 		resultErrors = append(resultErrors, err)
 	}
+	lg.Infof("Finished uploading logs.")
 	// if err is nil then will marked as SUCCESS
 	if len(resultErrors) == 0 {
 		// Reset reason and state as no errors detected.
@@ -246,9 +250,10 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State, lg logger.Logger, logRoot string) (err error) {
 	defer func() {
 		// Catching the panic here as luciexe just set a step as fail and but not exit execution.
+		lg.Debugf("Checking if there is a panic!")
 		if r := recover(); r != nil {
-			lg.Debugf("Received panic!")
-			err = errors.Reason("panic: %s", r).Err()
+			lg.Debugf("Received panic: %v\n", r)
+			err = errors.Reason("panic: %v", r).Err()
 		}
 	}()
 	if err = printInputs(ctx, in); err != nil {
@@ -260,7 +265,7 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
 	}
-	defer access.Close(ctx)
+	defer func() { access.Close(ctx) }()
 
 	// Recovery is the task that we want 90% of the time. However, silently making
 	// recovery the default can cause us to silently fall back to performing a recovery task
@@ -303,12 +308,12 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 		return uErr
 	}
 
-	lg.Debugf("Labpack: started recovery engine.")
+	lg.Debugf("Labpack: starting the task...")
 	if err := recovery.Run(ctx, runArgs); err != nil {
-		lg.Debugf("Labpack: finished recovery run with error: %v", err)
+		lg.Debugf("Labpack: finished task run with error: %v", err)
 		return errors.Annotate(err, "internal run").Err()
 	}
-	lg.Debugf("Labpack: finished recovery successful")
+	lg.Debugf("Labpack: finished task successful!")
 	return nil
 }
 
