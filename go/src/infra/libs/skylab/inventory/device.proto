@@ -302,11 +302,12 @@ message SchedulableLabels {
   // devboard_type specifies the type of devboard
   optional DevboardType devboard_type = 39;
 
-  // NEXT TAG: 3
+  // NEXT TAG: 4
   enum DevboardType {
     DEVBOARD_TYPE_INVALID = 0;
     DEVBOARD_TYPE_ANDREIBOARD =1;
     DEVBOARD_TYPE_ICETOWER = 2;
+    DEVBOARD_TYPE_DRAGONCLAW = 3;
   }
 }
 
