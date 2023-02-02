@@ -506,6 +506,7 @@
     ]
   },
   {
-    "name": "$result"
+    "name": "$result",
+    "summaryMarkdown": "Created roll CL https://chromium-review.googlesource.com/c/1234567\n"
   }
 ]

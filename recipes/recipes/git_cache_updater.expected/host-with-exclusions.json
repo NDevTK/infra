@@ -323,6 +323,7 @@
     ]
   },
   {
-    "name": "$result"
+    "name": "$result",
+    "summaryMarkdown": "Updated cache for 2/2 repos."
   }
 ]

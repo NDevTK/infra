@@ -134,6 +134,7 @@
     ]
   },
   {
-    "name": "$result"
+    "name": "$result",
+    "summaryMarkdown": "Updated cache for 0/1 repos.\n\nEncountered warnings for 1 repos:\n\n  * empty (repo has no objects): 1"
   }
 ]

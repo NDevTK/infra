@@ -163,6 +163,7 @@
     ]
   },
   {
-    "name": "$result"
+    "name": "$result",
+    "summaryMarkdown": "Updated cache for 1/1 repos."
   }
 ]
