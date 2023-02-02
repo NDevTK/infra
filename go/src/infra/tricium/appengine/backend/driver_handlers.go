@@ -236,22 +236,46 @@ func decodePubsubMessage(c context.Context, msg *pubsub.PubsubMessage) (*admin.T
 		return nil, 0, errors.Annotate(err, "failed to base64 decode pubsub message").Err()
 	}
 
-	p := struct {
-		Build struct {
-			ID int64 `json:"id,string"`
-		} `json:"build"`
-		Userdata            string `json:"userdata"`
-		BuildbucketUserdata string `json:"user_data"`
-	}{}
-	if err = json.Unmarshal(data, &p); err != nil {
-		return nil, 0, errors.Annotate(err, "failed to unmarshal pubsub JSON payload").Err()
-	}
 	var rawUserdata string
-	if p.Userdata == "" {
-		rawUserdata = p.BuildbucketUserdata
+	var bID int64
+
+	// Handle Buildbucket pubsub v2 message data.
+	if v, ok := msg.Attributes["version"]; ok && v == "v2" {
+		p := struct {
+			Build struct {
+				BuildPubSub struct {
+					ID int64 `json:"id,string"`
+				} `json:"build"`
+			} `json:"buildPubsub"`
+			UserData []byte `json:"userData"`
+		}{}
+		if err = json.Unmarshal(data, &p); err != nil {
+			return nil, 0, errors.Annotate(err, "failed to unmarshal Buildbucket pubsub v2 message").Err()
+		}
+		rawUserdata = string(p.UserData)
+		bID = p.Build.BuildPubSub.ID
 	} else {
-		rawUserdata = p.Userdata
+		// Handle Buildbucket pubsub old message data.
+		// TODO(crbug.com/1410912): remove it after the migration is done.
+		p := struct {
+			Build struct {
+				ID int64 `json:"id,string"`
+			} `json:"build"`
+			Userdata            string `json:"userdata"`
+			BuildbucketUserdata string `json:"user_data"`
+		}{}
+		if err = json.Unmarshal(data, &p); err != nil {
+			return nil, 0, errors.Annotate(err, "failed to unmarshal pubsub JSON payload").Err()
+		}
+		if p.Userdata == "" {
+			rawUserdata = p.BuildbucketUserdata
+		} else {
+			logging.Debugf(c, "Old message has non-empty userdata field (build id - %d)", p.Build.ID)
+			rawUserdata = p.Userdata
+		}
+		bID = p.Build.ID
 	}
+
 	userdata, err := base64.StdEncoding.DecodeString(rawUserdata)
 	if err != nil {
 		return nil, 0, errors.Annotate(err, "failed to base64 decode pubsub userdata").Err()
@@ -260,5 +284,5 @@ func decodePubsubMessage(c context.Context, msg *pubsub.PubsubMessage) (*admin.T
 	if err := proto.Unmarshal([]byte(userdata), tr); err != nil {
 		return nil, 0, errors.Annotate(err, "failed to unmarshal pubsub proto userdata").Err()
 	}
-	return tr, p.Build.ID, nil
+	return tr, bID, nil
 }

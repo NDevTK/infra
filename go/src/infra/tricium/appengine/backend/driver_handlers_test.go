@@ -31,6 +31,12 @@ var (
 		PublishTime: "2017-02-28T19:39:28.104Z",
 		Data:        "eyJidWlsZCI6eyJpZCI6IjEyMzQifSwidXNlcmRhdGEiOiJDSUNBZ0lDQTZOMEtFZ2RoWW1ObFpHWm5HaGhJWld4c2IxOVZZblZ1ZEhVeE5DNHdORjk0T0RZdE5qUT0ifQ==",
 	}
+	msgBBV2 = &pubsub.PubsubMessage{
+		MessageId:   "58708071417624",
+		PublishTime: "2023-01-30T19:39:28.104Z",
+		Data:        "eyJidWlsZFB1YnN1YiI6eyJidWlsZCI6eyJpZCI6IjEyMzQiLCAiYnVpbGRlciI6eyJwcm9qZWN0IjoicHJvamVjdCIsICJidWNrZXQiOiJidWNrZXQiLCAiYnVpbGRlciI6ImJ1aWxkZXIifX0sICJidWlsZExhcmdlRmllbGRzIjoiZUp5cVltaGlaQUFFQUFELy93UHZBUDQ9In0sICJ1c2VyRGF0YSI6IlEwbERRV2RKUTBFMlRqQkxSV2RrYUZsdFRteGFSMXB1UjJob1NWcFhlSE5pTVRsV1dXNVdkV1JJVlhoT1F6UjNUa1k1TkU5RVdYUk9hbEU5In0=",
+		Attributes:  map[string]string{"version": "v2"},
+	}
 	buildID       = 1234             // matches the above pubsub message
 	runID   int64 = 6042091272536064 // matches the above pubsub messages
 )
@@ -67,19 +73,37 @@ func TestHandlePubSubMessage(t *testing.T) {
 		ctx := triciumtest.Context()
 
 		Convey("Enqueues buildbucket collect task", func() {
-			So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
-			received := &ReceivedPubSubMessage{ID: fmt.Sprintf("%d:%d", buildID, runID)}
-			So(ds.Get(ctx, received), ShouldEqual, ds.ErrNoSuchEntity)
-			err := handlePubSubMessage(ctx, msgBB)
-			So(err, ShouldBeNil)
-			So(ds.Get(ctx, received), ShouldBeNil)
-			So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			Convey("Buildbucket old message", func() {
+				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
+				received := &ReceivedPubSubMessage{ID: fmt.Sprintf("%d:%d", buildID, runID)}
+				So(ds.Get(ctx, received), ShouldEqual, ds.ErrNoSuchEntity)
+				err := handlePubSubMessage(ctx, msgBB)
+				So(err, ShouldBeNil)
+				So(ds.Get(ctx, received), ShouldBeNil)
+				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			})
+			Convey("Buildbucket new message", func() {
+				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
+				received := &ReceivedPubSubMessage{ID: fmt.Sprintf("%d:%d", buildID, runID)}
+				So(ds.Get(ctx, received), ShouldEqual, ds.ErrNoSuchEntity)
+				err := handlePubSubMessage(ctx, msgBBV2)
+				So(err, ShouldBeNil)
+				So(ds.Get(ctx, received), ShouldBeNil)
+				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			})
 		})
 
 		Convey("Avoids duplicate processing", func() {
-			So(handlePubSubMessage(ctx, msgBB), ShouldBeNil)
-			So(handlePubSubMessage(ctx, msgBB), ShouldBeNil)
-			So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			Convey("Buildbucket old message", func() {
+				So(handlePubSubMessage(ctx, msgBB), ShouldBeNil)
+				So(handlePubSubMessage(ctx, msgBB), ShouldBeNil)
+				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			})
+			Convey("Buildbucket new message", func() {
+				So(handlePubSubMessage(ctx, msgBBV2), ShouldBeNil)
+				So(handlePubSubMessage(ctx, msgBBV2), ShouldBeNil)
+				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			})
 		})
 	})
 }
