@@ -30,7 +30,6 @@ func GetCmdRelease() *subcommands.Command {
 			c.addProductionFlag()
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
-			c.addBuildspecFlag()
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
 			if flag.NArg() > 1 && flag.Args()[1] == "help" {
@@ -58,13 +57,6 @@ func (r *releaseRun) validate() error {
 		if r.skipPaygen {
 			return fmt.Errorf("--skip_paygen is not supported for production builds")
 		}
-		if r.buildspec != "" {
-			return fmt.Errorf("--buildspec is not supported for production builds")
-		}
-	}
-
-	if strings.HasPrefix(r.branch, "stabilize-") && !r.production {
-		return fmt.Errorf("can only run production builds for stabilize branches")
 	}
 
 	if err := r.tryRunBase.validate(); err != nil {
@@ -182,13 +174,6 @@ func (r *releaseRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 
 	if len(r.buildTargets) > 0 {
 		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
-			r.LogErr(err.Error())
-			return CmdError
-		}
-	}
-
-	if r.buildspec != "" {
-		if err := bb.SetProperty(propsStruct, "$chromeos/cros_source.syncToManifest.manifestGsPath", r.buildspec); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}

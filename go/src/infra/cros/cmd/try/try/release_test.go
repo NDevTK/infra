@@ -106,14 +106,6 @@ func TestValidate_releaseRun(t *testing.T) {
 		skipPaygen: true,
 	}
 	assert.ErrorContains(t, r.validate(), "not supported for production")
-	r = releaseRun{
-		tryRunBase: tryRunBase{
-			branch:     "release-R106.15054.B",
-			production: true,
-			buildspec:  "gs://chromeos-manifest-versions/buildspecs/111/15301.0.0.xml",
-		},
-	}
-	assert.ErrorContains(t, r.validate(), "not supported for production")
 }
 
 func TestValidate_stabilizeRun(t *testing.T) {
@@ -124,7 +116,7 @@ func TestValidate_stabilizeRun(t *testing.T) {
 			production: false,
 		},
 	}
-	assert.ErrorContains(t, r.validate(), "only run production builds")
+	assert.NilError(t, r.validate())
 
 	r = releaseRun{
 		tryRunBase: tryRunBase{
@@ -149,7 +141,6 @@ type runTestConfig struct {
 	skipPaygen       bool
 	production       bool
 	dryrun           bool
-	buildspec        string
 	branch           string
 }
 
@@ -233,7 +224,6 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 			production:           tc.production,
 			patches:              tc.patches,
 			buildTargets:         tc.buildTargets,
-			buildspec:            tc.buildspec,
 			skipProductionPrompt: true,
 		},
 		useProdTests: true,
@@ -270,12 +260,6 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	noPublicBuild, exists := properties.GetFields()["$chromeos/orch_menu"].GetStructValue().GetFields()["schedule_public_build"]
 	assert.Assert(t, exists && !noPublicBuild.GetBoolValue())
 
-	if tc.buildspec != "" {
-		manifestInfo := properties.GetFields()["$chromeos/cros_source"].GetStructValue().GetFields()["syncToManifest"].GetStructValue()
-		syncToManifest := manifestInfo.GetFields()["manifestGsPath"].GetStringValue()
-		assert.StringsEqual(t, r.buildspec, syncToManifest)
-	}
-
 	disable_build_plan_pruning, exists := properties.GetFields()["$chromeos/build_plan"].GetStructValue().GetFields()["disable_build_plan_pruning"]
 	if len(tc.patches) > 0 {
 		assert.Assert(t, disable_build_plan_pruning.GetBoolValue())
@@ -304,7 +288,6 @@ func TestRun_staging_noBuildTargets(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		branch:       "release-R106.15054.B",
 		skipPaygen:   false,
-		buildspec:    "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
 		expectedOrch: "staging-release-R106.15054.B-orchestrator",
 	})
 }
@@ -315,7 +298,6 @@ func TestRun_staging_buildTargets(t *testing.T) {
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
 		expectedOrch:     "staging-release-R106.15054.B-orchestrator",
 		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
-		buildspec:        "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
 	})
 }
 
@@ -356,7 +338,6 @@ func TestRun_patches(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		branch:       "release-R106.15054.B",
 		skipPaygen:   false,
-		buildspec:    "gs://chromiumos-manifest-versions/staging/108/15159.0.0.xml",
 		expectedOrch: "staging-release-R106.15054.B-orchestrator",
 		patches:      []string{"crrev.com/c/1234567"},
 	})
