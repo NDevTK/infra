@@ -8,7 +8,7 @@ package schema;
 
 option go_package = "infra/appengine/depot_tools_metrics/schema;schema";
 
-import "go.chromium.org/luci/buildbucket/proto/builder.proto";
+import "go.chromium.org/luci/buildbucket/proto/builder_common.proto";
 
 // HttpRequest stores information on the HTTP requests made by the command.
 message HttpRequest {
@@ -184,4 +184,7 @@ message Metrics {
 
   // The hooks listed in DEPS that were executed by this command.
   repeated Hook hooks = 17;
+
+  // The environment variables that depot_tools cares about.
+  repeated string env_variables = 18;
 }
