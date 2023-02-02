@@ -103,7 +103,11 @@ func (c *getDut) Run(a subcommands.Application, args []string, env subcommands.E
 
 func (c *getDut) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
+	ns, err := c.getNamespace()
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
@@ -146,6 +150,13 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 	}
 	return utils.PrintEntities(ctx, ic, res, utils.PrintMachineLSEsJSON, printDutFull, printDutNormal,
 		c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
+}
+
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func (c *getDut) getNamespace() (string, error) {
+	return c.envFlags.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
 // getHostInfoStore gets the host-info-store file content from the ufsAPT.FleetClient and print it out.
