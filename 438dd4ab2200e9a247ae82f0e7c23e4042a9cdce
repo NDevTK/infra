@@ -16,6 +16,24 @@
       "message": "does this actually drop the arg or just the behavior?",
       "revId": "438dd4ab2200e9a247ae82f0e7c23e4042a9cdce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "073d138b_33162b83",
+        "filename": "go/src/infra/cros/cmd/try/try/release.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2023-02-02T16:22:23Z",
+      "side": 0,
+      "message": "Just the behavior, though I meant to drop the arg too. Fixed.",
+      "parentUuid": "dda7fa0b_66506739",
+      "revId": "438dd4ab2200e9a247ae82f0e7c23e4042a9cdce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
