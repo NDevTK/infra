@@ -90,6 +90,7 @@ func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.Cl
 		logging.Errorf(ctx, "No config found to read ownership data")
 		return nil, nil, fmt.Errorf("no config found to read ownership data")
 	}
+	logging.Infof(ctx, "Importing new enc/security config files - lastest SHA1 : %s", currentSha1)
 	return ownershipConfig, gitClient, nil
 }
 
