@@ -69,7 +69,7 @@ class SourceOrPrebuilt(Builder):
                patch_base=None,
                patch_version=None,
                build_deps=None,
-               tpp_libs=None,
+               tpp_pkgs=None,
                src_filter=None,
                skip_auditwheel=False,
                **kwargs):
@@ -93,7 +93,7 @@ class SourceOrPrebuilt(Builder):
           for version 1.2.3 of the wheel would be 'version:1.2.3.chromium.1'.
       build_deps (dockerbuild.builder.BuildDependencies|None): Dependencies
           required to build the wheel.
-      tpp_libs (List[(str, str)]|None): 3pp static libraries to install in the
+      tpp_pkgs (List[(str, str)]|None): 3pp packages to install in the
           build environment. The list items are (package name, version).
       src_filter (Callable[[str], bool]): Filtering files from the source. This
           is a workaround for python < 3.6 on Windows to prevent failure caused
@@ -116,7 +116,7 @@ class SourceOrPrebuilt(Builder):
     self._packaged = set(
         kwargs.pop('packaged', (p.name for p in build_platform.PACKAGED)))
     self._build_deps = build_deps
-    self._tpp_libs = tpp_libs
+    self._tpp_pkgs = tpp_pkgs
     self._src_filter = src_filter
     self._skip_auditwheel = skip_auditwheel
     self._env_cb = kwargs.pop('env_cb', None)
@@ -141,7 +141,7 @@ class SourceOrPrebuilt(Builder):
     wheel_env = self._env_cb(wheel) if self._env_cb else None
     return BuildPackageFromSource(system, wheel, self._pypi_src, output_dir,
                                   self._src_filter, self._build_deps,
-                                  self._tpp_libs, wheel_env,
+                                  self._tpp_pkgs, wheel_env,
                                   self._skip_auditwheel)
 
 

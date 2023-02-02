@@ -4349,12 +4349,12 @@ wheel: <
 
 * *manylinux-x64-py3.8*
 
-### 1.10.2.4
+### 1.10.2.4.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/ninja/${vpython_platform}"
-  version: "version:1.10.2.4"
+  version: "version:1.10.2.4.chromium.1"
 >
 ```
 
@@ -4364,6 +4364,7 @@ wheel: <
 * *mac-arm64-py3.8*
 * *mac-x64-py3.11*
 * *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
