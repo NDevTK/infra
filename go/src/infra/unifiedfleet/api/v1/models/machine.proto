@@ -177,6 +177,7 @@ message Devboard {
   oneof board {
     Andreiboard andreiboard = 1;
     Icetower icetower = 2;
+    Dragonclaw dragonclaw = 3;
   }
 }
 
@@ -193,6 +194,14 @@ message Andreiboard {
 //
 // Next Tag: 2
 message Icetower {
+  // Fingerprint module ID.
+  string fingerprint_id = 1;
+}
+
+// Dragonclaw refers to dragonclaw type development boards.
+//
+// Next Tag: 2
+message Dragonclaw {
   // Fingerprint module ID.
   string fingerprint_id = 1;
 }
