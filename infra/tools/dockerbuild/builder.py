@@ -474,7 +474,8 @@ def BuildPackageFromSource(system,
                            output_dir,
                            src_filter=None,
                            deps=None,
-                           tpp_pkgs=None,
+                           tpp_libs=None,
+                           tpp_tools=None,
                            env=None,
                            skip_auditwheel=False):
   """Creates Python wheel from src.
@@ -486,8 +487,11 @@ def BuildPackageFromSource(system,
     output_dir (str): The wheel output directory.
     deps (dockerbuild.builder.BuildDependencies|None): Dependencies required
       to build the wheel.
-    tpp_pkgs (List[(str, str)]|None): 3pp packages to install in the
+    tpp_libs (List[(str, str)]|None): 3pp libraries to install in the
       build environment. The list items are (package name, version).
+    tpp_tools (List[(str, str)]|None): 3pp tools (for the build platform)
+      which are needed to build the wheel. The list items are
+      (package name, version).
     env (Dict[str, str]|None): Additional envvars to set while building the
       wheel.
     skip_auditwheel (bool): See SourceOrPrebuilt documentation.
@@ -512,15 +516,21 @@ def BuildPackageFromSource(system,
 
     with util.tempdir(tdir, 'deps') as tdeps:
       env_prefix = []
-      if tpp_pkgs:
+
+      # Install the given package and return the path to it.
+      def install_pkg(pkg, plat, build_dir=build_dir):
+        pkg_name = '%s/%s' % (pkg, plat)
+        pkg_dir = os.path.join(build_dir, '%s_%s_cipd' % (pkg, plat))
+        system.cipd.init(pkg_dir)
+        system.cipd.install(pkg_name, version, pkg_dir)
+        return pkg_dir
+
+      if tpp_libs:
         cflags = extra_env.get('CFLAGS', '')
         cxxflags = extra_env.get('CXXFLAGS', '')
         ldflags = extra_env.get('LDFLAGS', '')
-        for pkg, version in tpp_pkgs:
-          pkg_name = '%s/%s' % (pkg, wheel.plat.cipd_platform)
-          pkg_dir = os.path.join(build_dir, pkg_name + '_cipd')
-          system.cipd.init(pkg_dir)
-          system.cipd.install(pkg_name, version, pkg_dir)
+        for pkg, version in tpp_libs:
+          pkg_dir = install_pkg(pkg, wheel.plat.cipd_platform)
           cflags += ' -I' + os.path.join(pkg_dir, 'include')
           cxxflags += ' -I' + os.path.join(pkg_dir, 'include')
           ldflags += ' -L' + os.path.join(pkg_dir, 'lib')
@@ -533,6 +543,13 @@ def BuildPackageFromSource(system,
         extra_env['CFLAGS'] = cflags.lstrip()
         extra_env['CXXFLAGS'] = cxxflags.lstrip()
         extra_env['LDFLAGS'] = ldflags.lstrip()
+
+      if tpp_tools:
+        host_plat = HostCipdPlatform()
+        for pkg, version in tpp_tools:
+          pkg_dir = install_pkg(pkg, host_plat)
+          # Prepend the bin/ directory of each package to PATH.
+          env_prefix.append(('PATH', os.path.join(pkg_dir, 'bin')))
 
       if deps:
         util.copy_to(util.resource_path('generate_pyproject.py'), build_dir)

@@ -259,7 +259,7 @@ SPECS.update({
             # TODO(crbug/1252073): We don't yet build OpenSSL for Windows.
             packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
             pyversions=['py3'],
-            tpp_pkgs=[('infra/3pp/static_libs/openssl',
+            tpp_libs=[('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1j.chromium.1')],
         ),
         SourceOrPrebuilt(
@@ -342,7 +342,7 @@ SPECS.update({
                     ),
                 ],
             ),
-            tpp_pkgs=[('infra/3pp/static_libs/openssl',
+            tpp_libs=[('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1j.chromium.2')],
         ),
         SourceOrPrebuilt(
@@ -517,7 +517,7 @@ SPECS.update({
                 'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
             ],
-            tpp_pkgs=[('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
+            tpp_libs=[('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
         ),
         SourceOrPrebuilt(
             'lazy-object-proxy',
@@ -562,7 +562,7 @@ SPECS.update({
             only_plat=[
                 'manylinux-x64-py3.8', 'mac-x64-py3.8', 'mac-arm64-py3.8'
             ],
-            tpp_pkgs=[('infra/3pp/static_libs/mysqlclient', 'version:2@8.0.26'),
+            tpp_libs=[('infra/3pp/static_libs/mysqlclient', 'version:2@8.0.26'),
                       ('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1j.chromium.2')],
         ),
@@ -595,7 +595,7 @@ SPECS.update({
             pyversions=['py3'],
             # Installing cmake through setup.py is both unreliable and
             # non-hermetic, so supply it from the 3pp package.
-            tpp_pkgs=[
+            tpp_tools=[
                 ('infra/3pp/tools/cmake', 'version:2@3.25.2.chromium.6'),
             ],
         ),
@@ -800,7 +800,7 @@ SPECS.update({
             packaged=(),
             only_plat=['manylinux-x64-py3.8'],
             pyversions=['py3'],
-            tpp_pkgs=[('infra/3pp/static_libs/re2',
+            tpp_libs=[('infra/3pp/static_libs/re2',
                        'version:2@2022-12-01.chromium.1')],
         ),
         SourceOrPrebuilt(
