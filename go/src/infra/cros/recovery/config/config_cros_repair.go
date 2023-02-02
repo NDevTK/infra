@@ -115,7 +115,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
-				"Update FW from fw-image by servo and reboot",
+				"Update FW from fw-image by servo and wait for boot",
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
@@ -153,7 +153,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
-				"Update FW from fw-image by servo and reboot",
+				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Download and install OS in DEV mode using USB-drive",
 				"Reset power using servo if booted from USB",
@@ -449,7 +449,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
-				"Update FW from fw-image by servo and reboot",
+				"Update FW from fw-image by servo and wait for boot",
 			},
 		},
 		"Check CBI": {
@@ -907,7 +907,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_on_ro_firmware_stable_version",
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
-				"Update FW from fw-image by servo and reboot",
+				"Update FW from fw-image by servo and wait for boot",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -2345,7 +2345,7 @@ func crosRepairActions() map[string]*Action {
 				Seconds: 5400,
 			},
 		},
-		"Update FW from fw-image by servo and reboot": {
+		"Update FW from fw-image by servo and wait for boot": {
 			Docs: []string{
 				"This action will repair the firmware on the DUT, and ",
 				"then reboot and wait for the DUT to again become ",
@@ -2359,7 +2359,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Flash EC (FW) by servo",
 				"Flash AP (FW) with GBB 0x18 by servo",
-				"Cold reset DUT by servo",
+				// TODO(b:267549690) close the bug if we determine cold reset is not needed after flash AP.
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
