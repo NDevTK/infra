@@ -583,6 +583,9 @@ func getFirmwareManifestKeyFromDUT(ctx context.Context, run components.Runner, l
 // (4) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
 // (5) Use model name of the DUT.
 // (6) Use board name of the DUT.
+//
+// If a candidate found in (1) or (2), then it will be the only candidate we returns.
+// Candidates generated based on (3)-(6) will be all included in a slice based above rule order.
 func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRequest, imageNamePatterns []string, log logger.Logger) []string {
 	run := req.targetHostRunner()
 	candidates := []string{}
@@ -592,6 +595,8 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 		for _, p := range imageNamePatterns {
 			candidates = append(candidates, fmt.Sprintf(p, m))
 		}
+		// We don't need to try other candidates if an override is detected.
+		return candidates
 	}
 	// Handle special case where some model use non-regular firmware mapping.
 	if m, ok := targetOverrideModels[req.Model]; ok {
@@ -599,13 +604,15 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 		for _, p := range imageNamePatterns {
 			candidates = append(candidates, fmt.Sprintf(p, m))
 		}
+		// We don't need to try other candidates if an override is detected.
+		return candidates
 	}
 	if req.Servod != nil {
 		fwTarget, err := servo.GetString(ctx, req.Servod, "ec_board")
 		if err != nil {
 			log.Debugf("Fail to read `ec_board` value from servo. Skipping.")
 		}
-		// Based on b:220157423 some board report name is upper case.
+		// Based on b:220157423 some board report name in upper case.
 		fwTarget = strings.ToLower(fwTarget)
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
 			for _, p := range imageNamePatterns {

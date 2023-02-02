@@ -39,6 +39,9 @@ var targetOverrideModels = map[string]string{
 	"barla":     "careena",
 	"kasumi":    "aleena",
 	"kasumi360": "aleena",
+	// Brya board.
+	"zavala":   "volmar",
+	"crota360": "crota",
 }
 
 // targetOverrideHwidSkus holds a map of hwid that need to override its firmware target.
