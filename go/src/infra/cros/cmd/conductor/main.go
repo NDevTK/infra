@@ -68,7 +68,7 @@ func cmdCollect() *subcommands.Command {
 			c.Flags.StringVar(&c.outputJSON, "output_json", "", "Path to write final set of BBIDs to.")
 			c.Flags.IntVar(&c.pollingIntervalSeconds, "polling_interval", 60, "Seconds to wait between polling builders")
 			c.Flags.Var(&c.bbids, "bbids", "(comma-separated) initial set of BBIDs to watch.")
-			c.Flags.BoolVar(&c.dryrun, "dryrun", true, "Dry run (i.e. don't actually retry builds).")
+			c.Flags.BoolVar(&c.dryrun, "dryrun", false, "Dry run (i.e. don't actually retry builds).")
 			return c
 		}}
 }
