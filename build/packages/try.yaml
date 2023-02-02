@@ -1,5 +1,5 @@
 package: chromiumos/infra/try/${platform}
-description: CLI to create ChromeOS builders with common configurations. See go/tryjobs-2
+description: CLI to create ChromeOS builders with common configurations. See go/cros-try
 platforms:
   - linux-amd64
 go_packages:
