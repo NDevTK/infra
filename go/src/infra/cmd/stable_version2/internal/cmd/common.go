@@ -38,7 +38,9 @@ const Project = "chromeos/infra/config"
 const Branch = "main"
 
 // StableVersionConfigPath is the path to the stable version config file relative to the repo root.
-const StableVersionConfigPath = "lab_platform/stable_version_data/stable_versions.cfg"
+//
+// This path is generated as of 2023 Q1. The source of truth is a starlark file .../lab_platform/recovery_versions_main.star .
+const StableVersionConfigPath = "lab_platform/generated/stable_versions.cfg"
 
 // PrintError writes an error to stderr with the correct program name.
 func PrintError(w io.Writer, err error) {
