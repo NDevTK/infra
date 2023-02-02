@@ -56,6 +56,18 @@ class IncrementalCoverageTest(WaterfallTestCase):
                 "total_lines": 1000
             },
         ],
+        incremental_percentages_unit=[
+            {
+                "path": "//chrome/browser/xyz",
+                "covered_lines": 5,
+                "total_lines": 10
+            },
+        ],
+        absolute_percentages_unit=[{
+            "path": "//chrome/browser/abc",
+            "covered_lines": 10,
+            "total_lines": 10
+        }],
         data={})
     datastore_entity.put()
     run_id = 123
@@ -65,10 +77,14 @@ class IncrementalCoverageTest(WaterfallTestCase):
         'cl_number': 123,
         'cl_patchset': 1,
         'server_host': "chromium-review.googlesource.com",
-        'total_lines': 100,
-        'covered_lines': 100,
-        'total_lines_abs': 1000,
-        'covered_lines_abs': 1000,
+        'total_lines_inc_unit': None,
+        'covered_lines_inc_unit': None,
+        'total_lines_abs_unit': 10,
+        'covered_lines_abs_unit': 10,
+        'total_lines_inc_overall': 100,
+        'covered_lines_inc_overall': 100,
+        'total_lines_abs_overall': 1000,
+        'covered_lines_abs_overall': 1000,
         'path': 'chrome/browser/abc',
         'insert_timestamp': '2020-09-21T00:00:00',
         'run_id': run_id
@@ -76,10 +92,14 @@ class IncrementalCoverageTest(WaterfallTestCase):
         'cl_number': 123,
         'cl_patchset': 1,
         'server_host': "chromium-review.googlesource.com",
-        'total_lines': 100,
-        'covered_lines': 50,
-        'total_lines_abs': 1000,
-        'covered_lines_abs': 500,
+        'total_lines_inc_unit': 10,
+        'covered_lines_inc_unit': 5,
+        'total_lines_abs_unit': None,
+        'covered_lines_abs_unit': None,
+        'total_lines_inc_overall': 100,
+        'covered_lines_inc_overall': 50,
+        'total_lines_abs_overall': 1000,
+        'covered_lines_abs_overall': 500,
         'path': 'chrome/browser/xyz',
         'insert_timestamp': '2020-09-21T00:00:00',
         'run_id': run_id
