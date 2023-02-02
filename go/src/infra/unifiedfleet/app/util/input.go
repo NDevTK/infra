@@ -981,6 +981,8 @@ func GetDevboardType(b *ufspb.Devboard) string {
 		m = b2
 	} else if b2 := b.GetIcetower(); b2 != nil {
 		m = b2
+	} else if b2 := b.GetDragonclaw(); b2 != nil {
+		m = b2
 	}
 	if b != nil {
 		d := m.ProtoReflect().Descriptor()
@@ -993,6 +995,7 @@ func GetDevboardType(b *ufspb.Devboard) string {
 var StrToUFSDevboardType = map[string]string{
 	"andreiboard": "unifiedfleet.api.v1.models.Andreiboard",
 	"icetower":    "unifiedfleet.api.v1.models.Icetower",
+	"dragonclaw":  "unifiedfleet.api.v1.models.Dragonclaw",
 }
 
 // ValidDevboardTypeStr returns a valid str list for attached device type strings.
