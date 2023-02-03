@@ -10,6 +10,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/datastore v1.10.0
 	cloud.google.com/go/firestore v1.9.0
+	cloud.google.com/go/logging v1.6.1
 	cloud.google.com/go/monitoring v1.8.0
 	cloud.google.com/go/pubsub v1.28.0
 	cloud.google.com/go/storage v1.29.0
