@@ -110,6 +110,15 @@ message Hook {
   int64 exit_code = 6;
 }
 
+// EnvVar stores an environment variable.
+message EnvVar {
+  // The name of the environment variable.
+  string name = 1;
+
+  // The value of the environment variable.
+  string value = 2;
+}
+
 // BotMetrics stores information about the bot environment from which the
 // command was executed.
 message BotMetrics {
@@ -185,6 +194,9 @@ message Metrics {
   // The hooks listed in DEPS that were executed by this command.
   repeated Hook hooks = 17;
 
+  // Deprecated.
+  repeated string env_variables = 18 [deprecated=true];
+
   // The environment variables that depot_tools cares about.
-  repeated string env_variables = 18;
+  repeated EnvVar env_vars = 19;
 }
