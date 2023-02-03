@@ -2892,6 +2892,9 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"sleep:60",
 			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 70,
+			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},
