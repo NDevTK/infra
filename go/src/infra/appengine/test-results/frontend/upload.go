@@ -141,20 +141,21 @@ func withParsedUploadForm(ctx *router.Context, next router.Handler) {
 // uploadHandler is the HTTP handler for upload
 // requests.
 func uploadHandler(ctx *router.Context) {
-	// Only bots should upload test results. Check IP address against a whitelist.
+	// Only bots should upload test results. Check IP address against
+	// an allowlist.
 	c, w, r := ctx.Context, ctx.Writer, ctx.Request
-	whitelisted, err := auth.GetState(c).DB().IsInWhitelist(
+	allowlisted, err := auth.GetState(c).DB().IsAllowedIP(
 		c, auth.GetState(c).PeerIP(), "bots")
 	if err != nil {
-		logging.WithError(err).Errorf(c, "uploadHandler: check IP whitelist")
-		http.Error(w, "Failed IP whitelist check", http.StatusInternalServerError)
+		logging.WithError(err).Errorf(c, "uploadHandler: check IP allowlist")
+		http.Error(w, "Failed IP allowlist check", http.StatusInternalServerError)
 		return
 	}
 
-	if !whitelisted {
+	if !allowlisted {
 		logging.WithError(err).Errorf(
-			c, "Uploading IP %s is not whitelisted", auth.GetState(c).PeerIP())
-		http.Error(w, "IP is not whitelisted", http.StatusUnauthorized)
+			c, "Uploading IP %s is not allowlisted", auth.GetState(c).PeerIP())
+		http.Error(w, "IP is not allowlisted", http.StatusUnauthorized)
 		return
 	}
 

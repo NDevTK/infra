@@ -73,8 +73,8 @@ func TestUploadAndGetHandlers(t *testing.T) {
 
 	withTestingContext := func(c *router.Context, next router.Handler) {
 		c.Context = auth.WithState(ctx, &authtest.FakeState{
-			PeerIPOverride:   net.IP{1, 2, 3, 4},
-			PeerIPWhitelists: []string{"bots"},
+			PeerIPOverride:  net.IP{1, 2, 3, 4},
+			PeerIPAllowlist: []string{"bots"},
 		})
 		datastore.GetTestable(ctx).CatchupIndexes()
 		next(c)
