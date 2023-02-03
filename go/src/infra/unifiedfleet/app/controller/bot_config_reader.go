@@ -288,11 +288,23 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 		return true, entity.AssetType, err
 	}
 	pm := p.(*ufspb.OwnershipData)
-	if diff := cmp.Diff(pm, newOwnership, protocmp.Transform()); diff != "" {
+	if isOwnershipFieldUpdated(pm.GetCustomer(), newOwnership.GetCustomer()) ||
+		isOwnershipFieldUpdated(pm.GetMibaRealm(), newOwnership.GetMibaRealm()) ||
+		isOwnershipFieldUpdated(pm.GetSecurityLevel(), newOwnership.GetSecurityLevel()) ||
+		isOwnershipFieldUpdated(pm.GetPoolName(), newOwnership.GetPoolName()) ||
+		isOwnershipFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) {
+		diff := cmp.Diff(pm, newOwnership, protocmp.Transform())
 		logging.Debugf(ctx, "Found ownership diff for bot  %s - %s", botId, diff)
 		return true, entity.AssetType, nil
 	}
 	return false, "", nil
+}
+
+func isOwnershipFieldUpdated(oldVal, newVal string) bool {
+	if (oldVal == "" && newVal != "") || (oldVal != "" && newVal != "" && oldVal != newVal) {
+		return true
+	}
+	return false
 }
 
 // Updates the ownership for the given assetType and name
